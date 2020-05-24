@@ -1,0 +1,102 @@
+	<head>
+		<meta charset="UTF-8" />
+		<title>Live stream test</title>
+    <link rel="stylesheet" href="vender/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="vender/bootstrap/css/bootstrap-responsive.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+		<script src="vender/jquery-2.1.4.min.js"></script>
+		<script src="vender/bootstrap/js/bootstrap.min.js"></script>
+		<script src="vender/knockout-3.4.0.js">
+		</script>
+		<script src="vender/jquery.json-2.5.1.min.js">
+		</script>
+		<script data-main="js/main" src="vender/require.js">
+		</script>
+  </head>
+  
+<!-- Or if you want a more recent canary version -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
+<video id="video" controls></video>
+<script>
+  var video = document.getElementById('video');
+  var videoSrc = 'test.m3u8';
+  if (Hls.isSupported()) {
+    var hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      video.play();
+    });
+  }
+  // hls.js is not supported on platforms that do not have Media Source
+  // Extensions (MSE) enabled.
+  //
+  // When the browser has built-in HLS support (check using `canPlayType`),
+  // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
+  // element through the `src` property. This is using the built-in support
+  // of the plain video element, without using hls.js.
+  //
+  // Note: it would be more normal to wait on the 'canplay' event below however
+  // on Safari (where you are most likely to find built-in HLS support) the
+  // video.src URL must be on the user-driven white-list before a 'canplay'
+  // event will be emitted; the last video event that can be reliably
+  // listened-for when the URL is not on the white-list is 'loadedmetadata'.
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = videoSrc;
+    video.addEventListener('loadedmetadata', function() {
+      video.play();
+    });
+  }
+</script>
+
+<div class="grid-row">
+
+		<div class="span3">
+		</div>
+
+		<div class="span6">
+
+			<h1>Input</h1>
+			<form class="well form-horizontal" data-bind="with: editingMessage">
+
+				<!-- Author -->
+				<div class="control-group">
+					<label class="control-label" for="inputAuthor">Author :</label>
+					<div class="controls">
+						<input id="inputAuthor" type="text" data-bind="value: author"/>
+					</div>
+				</div>
+
+				<!-- Body -->
+				<div class="control-group">
+					<label class="control-label" for="inputBody">Message :</label>
+					<div class="controls">
+						<textarea id="inputBody" data-bind="value: body">
+						</textarea>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<div class="controls">
+						<a href="#" class="btn pull-right" data-bind="click: $parent.send.bind($parent)">Send</a>
+					</div>
+				</div>
+			</form>
+
+			<h1>Messages</h1>
+			<div data-bind="foreach: messages">
+				<div>
+					<h3>
+						<!-- ko text: author --><!-- /ko -->
+						says :
+					</h3>
+					<pre data-bind="text:body">
+					</pre>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="span3">
+		</div>
