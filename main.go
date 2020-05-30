@@ -10,6 +10,12 @@ import (
 )
 
 func main() {
+	createIPFSDirectory()
+
+	resetDirectories()
+	touch("hls/stream.m3u8")
+
+	go monitorVideoContent("./hls/")
 	go startChatServer()
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp", ":1935")
@@ -43,6 +49,7 @@ func main() {
 	if err := srv.Serve(listener); err != nil {
 		log.Panicf("Failed: %+v", err)
 	}
+
 }
 
 func startChatServer() {

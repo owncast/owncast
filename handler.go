@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"syscall"
 
 	"github.com/pkg/errors"
 	"github.com/yutopp/go-flv"
@@ -47,11 +48,11 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 
 	// Record streams as FLV!
 	p := filepath.Join(
-		filepath.Clean(filepath.Join("./", fmt.Sprintf("%s.flv", cmd.PublishingName))),
+		filepath.Clean(filepath.Join("./", fmt.Sprintf("%s.flv", "streampipe"))),
 	)
 	fmt.Println(p)
-
-	f, err := os.OpenFile(p, os.O_CREATE|os.O_WRONLY, 0666)
+	syscall.Mkfifo(p, 0666)
+	f, err := os.OpenFile(p, os.O_RDWR, os.ModeNamedPipe)
 	if err != nil {
 		return errors.Wrap(err, "Failed to create flv file")
 	}
@@ -63,6 +64,8 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 		return errors.Wrap(err, "Failed to create flv encoder")
 	}
 	h.flvEnc = enc
+
+	go pipeTest()
 
 	return nil
 }
