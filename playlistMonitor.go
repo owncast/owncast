@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
-	"log"
+	"path"
 	"path/filepath"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	icore "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/radovskyb/watcher"
@@ -13,7 +14,9 @@ import (
 
 var filesToUpload = make(map[string]string)
 
-func monitorVideoContent(path string, ipfs *icore.CoreAPI) {
+func monitorVideoContent(pathToMonitor string, configuration Config, ipfs *icore.CoreAPI) {
+	log.Printf("Using %s for IPFS files...\n", pathToMonitor)
+
 	w := watcher.New()
 
 	go func() {
@@ -25,28 +28,30 @@ func monitorVideoContent(path string, ipfs *icore.CoreAPI) {
 				}
 				if filepath.Base(event.Path) == "temp.m3u8" {
 
-					for filePath, objectID := range filesToUpload {
-						if objectID != "" {
-							continue
+					if configuration.IPFS.Enabled {
+						for filePath, objectID := range filesToUpload {
+							if objectID != "" {
+								continue
+							}
+
+							newObjectPath := save(path.Join(configuration.PrivateHLSPath, filePath), ipfs)
+							filesToUpload[filePath] = newObjectPath
 						}
-
-						newObjectPath := save("hls/"+filePath, ipfs)
-						fmt.Println(filePath, newObjectPath)
-
-						filesToUpload[filePath] = newObjectPath
 					}
+
 					playlistBytes, err := ioutil.ReadFile(event.Path)
 					verifyError(err)
 					playlistString := string(playlistBytes)
 
-					if false {
-						playlistString = generateRemotePlaylist(playlistString, filesToUpload)
+					if configuration.IPFS.Enabled {
+						playlistString = generateRemotePlaylist(playlistString, configuration.IPFS.Gateway, filesToUpload)
 					}
-					writePlaylist(playlistString, "webroot/stream.m3u8")
+					writePlaylist(playlistString, path.Join(configuration.PublicHLSPath, "/stream.m3u8"))
 
 				} else if filepath.Ext(event.Path) == ".ts" {
-					filesToUpload[filepath.Base(event.Path)] = ""
-					// copy(event.Path, "webroot/"+filepath.Base(event.Path))
+					if configuration.IPFS.Enabled {
+						filesToUpload[filepath.Base(event.Path)] = ""
+					}
 				}
 			case err := <-w.Error:
 				log.Fatalln(err)
@@ -57,7 +62,7 @@ func monitorVideoContent(path string, ipfs *icore.CoreAPI) {
 	}()
 
 	// Watch this folder for changes.
-	if err := w.Add(path); err != nil {
+	if err := w.Add(pathToMonitor); err != nil {
 		log.Fatalln(err)
 	}
 

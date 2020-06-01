@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
+
+	log "github.com/sirupsen/logrus"
 
 	config "github.com/ipfs/go-ipfs-config"
 	files "github.com/ipfs/go-ipfs-files"
@@ -26,12 +27,10 @@ import (
 	"github.com/ipfs/go-ipfs/repo/fsrepo"
 )
 
-var directory = "hls"
 var directoryHash string
 
 var node *core.IpfsNode
 
-//var ctx, _ = context.WithCancel(context.Background())
 var ctx = context.Background()
 
 func createIPFSDirectory(ipfs *icore.CoreAPI, directoryName string) {
@@ -79,9 +78,6 @@ func addFileToDirectory(ipfs *icore.CoreAPI, originalFileHashToModifyPath path.P
 	newDirectoryHash, err := (*ipfs).Object().AddLink(ctx, directoryToAddToPath, filename, originalFileHashToModifyPath)
 
 	verifyError(err)
-
-	fmt.Printf("New hash: %s\n", newDirectoryHash.String())
-
 	return newDirectoryHash.String() + "/" + filename
 }
 
@@ -251,7 +247,7 @@ func createIPFSInstance() (*icore.CoreAPI, *core.IpfsNode, error) {
 }
 
 func startIPFSNode(ipfs icore.CoreAPI, node *core.IpfsNode) { //} icore.CoreAPI {
-	defer fmt.Println("---- IPFS node exited!")
+	defer log.Println("IPFS node exited")
 
 	log.Println("IPFS node is running")
 
@@ -264,6 +260,9 @@ func startIPFSNode(ipfs icore.CoreAPI, node *core.IpfsNode) { //} icore.CoreAPI 
 
 		// IPFS Cluster Pinning nodes
 		"/ip4/138.201.67.219/tcp/4001/p2p/QmUd6zHcbkbcs7SMxwLs48qZVX3vpcM8errYS7xEczwRMA",
+
+		"/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",      // mars.i.ipfs.io
+		"/ip4/104.131.131.82/udp/4001/quic/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ", // mars.i.ipfs.io
 
 		// You can add more nodes here, for example, another IPFS node you might have running locally, mine was:
 		// "/ip4/127.0.0.1/tcp/4010/p2p/QmZp2fhDLxjYue2RiUvLwT9MWdnbDxam32qYFnGmxZDh5L",

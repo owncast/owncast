@@ -1,0 +1,16 @@
+publicHLSPath: webroot/hls
+privateHLSPath: hls
+ffmpegPath: /usr/local/bin/ffmpeg
+webServerPort: 8080
+
+videoSettings:
+  resolutionWidth: 900
+  chunkLengthInSeconds: 4
+
+files:
+  maxNumberInPlaylist: 30
+  maxNumberOnDisk: 60
+
+ipfs:
+  enabled: true
+  gateway: https://ipfs.io

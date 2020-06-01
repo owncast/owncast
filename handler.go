@@ -64,7 +64,7 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	}
 	h.flvEnc = enc
 
-	go startFfmpeg()
+	go startFfmpeg(configuration)
 
 	return nil
 }

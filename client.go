@@ -65,7 +65,6 @@ func (c *Client) Listen() {
 
 // Listen write request via chanel
 func (c *Client) listenWrite() {
-	log.Println("Listening write to client")
 	for {
 		select {
 
@@ -85,7 +84,6 @@ func (c *Client) listenWrite() {
 
 // Listen read request via chanel
 func (c *Client) listenRead() {
-	log.Println("Listening read from client")
 	for {
 		select {
 

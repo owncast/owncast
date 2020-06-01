@@ -4,6 +4,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strconv"
 
 	icore "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/sirupsen/logrus"
@@ -12,21 +13,35 @@ import (
 )
 
 var ipfs icore.CoreAPI
+var configuration = getConfig()
 
 func main() {
-	resetDirectories()
+	checkConfig(configuration)
+	// resetDirectories()
+
+	var hlsDirectoryPath = configuration.PublicHLSPath
+
+	log.Println("Starting up.  Please wait...")
+
+	if configuration.IPFS.Enabled {
+		hlsDirectoryPath = configuration.PrivateHLSPath
+		enableIPFS()
+		go monitorVideoContent(hlsDirectoryPath, configuration, &ipfs)
+	}
+
+	go startChatServer()
+
+	startRTMPService()
+}
+
+func enableIPFS() {
+	log.Println("Enabling IPFS support...")
 
 	ipfsInstance, node, _ := createIPFSInstance()
 	ipfs = *ipfsInstance
 
 	createIPFSDirectory(ipfsInstance, "./hls")
-	// touch("hls/stream.m3u8")
-
 	go startIPFSNode(ipfs, node)
-	go monitorVideoContent("./hls/", ipfsInstance)
-	go startChatServer()
-
-	startRTMPService()
 }
 
 func startChatServer() {
@@ -39,11 +54,14 @@ func startChatServer() {
 	// static files
 	http.Handle("/", http.FileServer(http.Dir("webroot")))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(configuration.WebServerPort), nil))
 }
 
 func startRTMPService() {
-	tcpAddr, err := net.ResolveTCPAddr("tcp", ":1935")
+	port := 1935
+	log.Printf("RTMP server is listening for incoming stream on port %d.\n", port)
+
+	tcpAddr, err := net.ResolveTCPAddr("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		log.Panicf("Failed: %+v", err)
 	}
@@ -74,5 +92,4 @@ func startRTMPService() {
 	if err := srv.Serve(listener); err != nil {
 		log.Panicf("Failed: %+v", err)
 	}
-
 }

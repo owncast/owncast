@@ -76,9 +76,6 @@ func (s *Server) sendAll(msg *Message) {
 // Listen and serve.
 // It serves client connection and broadcast request.
 func (s *Server) Listen() {
-
-	log.Println("Listening server...")
-
 	// websocket handler
 	onConnected := func(ws *websocket.Conn) {
 		defer func() {
@@ -93,7 +90,6 @@ func (s *Server) Listen() {
 		client.Listen()
 	}
 	http.Handle(s.pattern, websocket.Handler(onConnected))
-	log.Println("Created handler")
 
 	for {
 		select {
