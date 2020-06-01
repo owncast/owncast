@@ -43,7 +43,6 @@ func createIPFSDirectory(ipfs *icore.CoreAPI, directoryName string) {
 	verifyError(err)
 
 	directoryHash = newlyCreatedDirectoryHash.String()
-	fmt.Println("Created directory hash " + directoryHash)
 }
 
 func save(filePath string, ipfs *icore.CoreAPI) string {
@@ -107,8 +106,6 @@ func setupPlugins(externalPluginsPath string) error {
 
 // Creates an IPFS node and returns its coreAPI
 func createNode(ctx context.Context, repoPath string) (icore.CoreAPI, *core.IpfsNode, error) {
-	fmt.Println("CreateNode...")
-
 	// Open the repo
 	repo, err := fsrepo.Open(repoPath)
 	verifyError(err)
@@ -142,10 +139,7 @@ func createNode(ctx context.Context, repoPath string) (icore.CoreAPI, *core.Ipfs
 }
 
 func createTempRepo(ctx context.Context) (string, error) {
-	fmt.Println("createTempRepo...")
-
 	repoPath, err := ioutil.TempDir("", "ipfs-shell")
-	fmt.Println(repoPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to get temp dir: %s", err)
 	}
@@ -259,7 +253,7 @@ func createIPFSInstance() (*icore.CoreAPI, *core.IpfsNode, error) {
 func startIPFSNode(ipfs icore.CoreAPI, node *core.IpfsNode) { //} icore.CoreAPI {
 	defer fmt.Println("---- IPFS node exited!")
 
-	fmt.Println("IPFS node is running")
+	log.Println("IPFS node is running")
 
 	bootstrapNodes := []string{
 		// IPFS Bootstrapper nodes.

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	icore "github.com/ipfs/interface-go-ipfs-core"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/yutopp/go-rtmp"
 )
@@ -55,7 +56,7 @@ func startRTMPService() {
 	srv := rtmp.NewServer(&rtmp.ServerConfig{
 		OnConnect: func(conn net.Conn) (io.ReadWriteCloser, *rtmp.ConnConfig) {
 			l := log.StandardLogger()
-			//l.SetLevel(logrus.DebugLevel)
+			l.SetLevel(logrus.WarnLevel)
 
 			h := &Handler{}
 

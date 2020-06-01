@@ -35,12 +35,15 @@ func monitorVideoContent(path string, ipfs *icore.CoreAPI) {
 
 						filesToUpload[filePath] = newObjectPath
 					}
-
 					playlistBytes, err := ioutil.ReadFile(event.Path)
 					verifyError(err)
 					playlistString := string(playlistBytes)
-					remotePlaylistString := generateRemotePlaylist(playlistString, filesToUpload)
-					writePlaylist(remotePlaylistString, "webroot/stream.m3u8")
+
+					if false {
+						playlistString = generateRemotePlaylist(playlistString, filesToUpload)
+					}
+					writePlaylist(playlistString, "webroot/stream.m3u8")
+
 				} else if filepath.Ext(event.Path) == ".ts" {
 					filesToUpload[filepath.Base(event.Path)] = ""
 					// copy(event.Path, "webroot/"+filepath.Base(event.Path))

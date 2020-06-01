@@ -29,17 +29,17 @@ func (h *Handler) OnServe(conn *rtmp.Conn) {
 }
 
 func (h *Handler) OnConnect(timestamp uint32, cmd *rtmpmsg.NetConnectionConnect) error {
-	log.Printf("OnConnect: %#v", cmd)
+	// log.Printf("OnConnect: %#v", cmd)
 	return nil
 }
 
 func (h *Handler) OnCreateStream(timestamp uint32, cmd *rtmpmsg.NetConnectionCreateStream) error {
-	log.Printf("OnCreateStream: %#v", cmd)
+	// log.Printf("OnCreateStream: %#v", cmd)
 	return nil
 }
 
 func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
-	log.Printf("OnPublish: %#v", cmd)
+	// log.Printf("OnPublish: %#v", cmd)
 
 	// (example) Reject a connection when PublishingName is empty
 	if cmd.PublishingName == "" {
@@ -50,7 +50,6 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	p := filepath.Join(
 		filepath.Clean(filepath.Join("./", fmt.Sprintf("%s.flv", "streampipe"))),
 	)
-	fmt.Println(p)
 	syscall.Mkfifo(p, 0666)
 	f, err := os.OpenFile(p, os.O_RDWR, os.ModeNamedPipe)
 	if err != nil {
@@ -65,12 +64,10 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	}
 	h.flvEnc = enc
 
-	go pipeTest()
+	go startFfmpeg()
 
 	return nil
 }
-
-var counter = 0
 
 func (h *Handler) OnSetDataFrame(timestamp uint32, data *rtmpmsg.NetStreamSetDataFrame) error {
 	r := bytes.NewReader(data.Payload)
@@ -81,7 +78,7 @@ func (h *Handler) OnSetDataFrame(timestamp uint32, data *rtmpmsg.NetStreamSetDat
 		return nil // ignore
 	}
 
-	log.Printf("SetDataFrame: Script = %#v", script)
+	// log.Printf("SetDataFrame: Script = %#v", script)
 
 	if err := h.flvEnc.Encode(&flvtag.FlvTag{
 		TagType:   flvtag.TagTypeScriptData,
@@ -90,9 +87,6 @@ func (h *Handler) OnSetDataFrame(timestamp uint32, data *rtmpmsg.NetStreamSetDat
 	}); err != nil {
 		log.Printf("Failed to write script data: Err = %+v", err)
 	}
-
-	counter++
-	fmt.Println("-------------> " + string(counter))
 
 	return nil
 }
