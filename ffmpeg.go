@@ -8,7 +8,7 @@ import (
 )
 
 func pipeTest() {
-	ffmpegCmd := "cat streampipe.flv | ffmpeg -hide_banner -i pipe: -preset ultrafast -f hls -hls_list_size 10 -hls_time 10 -strftime 1 -hls_segment_filename 'hls/stream-%Y%m%d-%s.ts' -hls_flags delete_segments -segment_wrap 100 hls/temp.m3u8"
+	ffmpegCmd := "cat streampipe.flv | ffmpeg -hide_banner -i pipe: -preset ultrafast -f hls -hls_list_size 30 -hls_time 10 -strftime 1 -use_localtime 1 -hls_segment_filename 'hls/stream-%Y%m%d-%s.ts' -hls_flags delete_segments -segment_wrap 100 hls/temp.m3u8"
 
 	out, err := exec.Command("bash", "-c", ffmpegCmd).Output()
 	verifyError(err)
@@ -30,6 +30,8 @@ func generateRemotePlaylist(playlist string, segments map[string]string) string 
 
 func writePlaylist(data string, filePath string) {
 	f, err := os.Create(filePath)
+	defer f.Close()
+
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -37,7 +39,6 @@ func writePlaylist(data string, filePath string) {
 	_, err = f.WriteString(data)
 	if err != nil {
 		fmt.Println(err)
-		f.Close()
 		return
 	}
 }

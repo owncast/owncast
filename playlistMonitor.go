@@ -7,12 +7,13 @@ import (
 	"path/filepath"
 	"time"
 
+	icore "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/radovskyb/watcher"
 )
 
 var filesToUpload = make(map[string]string)
 
-func monitorVideoContent(path string) {
+func monitorVideoContent(path string, ipfs *icore.CoreAPI) {
 	w := watcher.New()
 
 	go func() {
@@ -23,14 +24,13 @@ func monitorVideoContent(path string) {
 					continue
 				}
 				if filepath.Base(event.Path) == "temp.m3u8" {
-					// fmt.Printf("Upload playlist + %d files\n", len(filesToUpload))
 
 					for filePath, objectID := range filesToUpload {
-
 						if objectID != "" {
 							continue
 						}
-						newObjectPath := save("hls/" + filePath)
+
+						newObjectPath := save("hls/"+filePath, ipfs)
 						fmt.Println(filePath, newObjectPath)
 
 						filesToUpload[filePath] = newObjectPath
@@ -58,7 +58,7 @@ func monitorVideoContent(path string) {
 		log.Fatalln(err)
 	}
 
-	if err := w.Start(time.Millisecond * 500); err != nil {
+	if err := w.Start(time.Millisecond * 100); err != nil {
 		log.Fatalln(err)
 	}
 }

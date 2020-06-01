@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/AlekSi/pointer v1.1.0 // indirect
 	github.com/grafov/m3u8 v0.11.1 // indirect
+	github.com/ipfs/go-ipfs v0.5.1 // indirect
 	github.com/ipfs/go-ipfs-api v0.0.3 // indirect
 	github.com/ipfs/go-ipfs-http-client v0.0.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

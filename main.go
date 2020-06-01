@@ -5,19 +5,43 @@ import (
 	"net"
 	"net/http"
 
+	icore "github.com/ipfs/interface-go-ipfs-core"
 	log "github.com/sirupsen/logrus"
 	"github.com/yutopp/go-rtmp"
 )
 
+var ipfs icore.CoreAPI
+
 func main() {
-	createIPFSDirectory()
-
 	resetDirectories()
-	touch("hls/stream.m3u8")
 
-	go monitorVideoContent("./hls/")
+	ipfsInstance, node, _ := createIPFSInstance()
+	ipfs = *ipfsInstance
+
+	createIPFSDirectory(ipfsInstance, "./hls")
+	// touch("hls/stream.m3u8")
+
+	go startIPFSNode(ipfs, node)
+	go monitorVideoContent("./hls/", ipfsInstance)
 	go startChatServer()
 
+	startRTMPService()
+}
+
+func startChatServer() {
+	// log.SetFlags(log.Lshortfile)
+
+	// websocket server
+	server := NewServer("/entry")
+	go server.Listen()
+
+	// static files
+	http.Handle("/", http.FileServer(http.Dir("webroot")))
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func startRTMPService() {
 	tcpAddr, err := net.ResolveTCPAddr("tcp", ":1935")
 	if err != nil {
 		log.Panicf("Failed: %+v", err)
@@ -50,17 +74,4 @@ func main() {
 		log.Panicf("Failed: %+v", err)
 	}
 
-}
-
-func startChatServer() {
-	// log.SetFlags(log.Lshortfile)
-
-	// websocket server
-	server := NewServer("/entry")
-	go server.Listen()
-
-	// static files
-	http.Handle("/", http.FileServer(http.Dir("webroot")))
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }
