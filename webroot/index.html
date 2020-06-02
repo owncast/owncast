@@ -11,6 +11,7 @@
 
   <!-- Used for animating the scrolling of the chat div.  Can that be done other ways? -->
   <script src="vendor/jquery-2.1.4.min.js"></script>
+  <script src="vendor/autolink.js"></script>
 </head>
 
 <div>
@@ -45,7 +46,7 @@
 
               <div class="text-sm">
                 <p class="text-700">{{ message.author }}</p>
-                <p class="text-gray-600">{{ message.body }}</p>
+                <p class="text-gray-600"v-html="message.linkedText()"></p>
               </div>
             </div>
           </div>

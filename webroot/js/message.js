@@ -5,6 +5,10 @@ class Message {
 		this.image = "https://robohash.org/" + model.author
 	}
 
+	linkedText() {
+		return autoLink(this.body, { embed: true })
+	}
+	
 	toModel() {
 		return {
 			author: this.author(),
