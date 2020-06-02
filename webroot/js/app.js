@@ -24,6 +24,7 @@ function setupApp() {
     methods: {
       submitChatForm: function (e) {
         const message = new Message(this.message)
+        localStorage.author = message.author
         const messageJSON = JSON.stringify(message)
         window.ws.send(messageJSON)
         e.preventDefault()
