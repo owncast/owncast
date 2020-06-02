@@ -118,7 +118,9 @@
   else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = videoSrc;
     video.addEventListener("loadedmetadata", function () {
+      document.getElementById('video').muted = true;
       document.getElementById('video').play();
+      document.getElementById('video').muted = false;
     });
   }
 </script>
