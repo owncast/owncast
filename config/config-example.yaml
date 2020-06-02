@@ -6,11 +6,12 @@ webServerPort: 8080
 videoSettings:
   resolutionWidth: 900
   chunkLengthInSeconds: 4
+  streamingKey: abc123
 
 files:
   maxNumberInPlaylist: 30
   maxNumberOnDisk: 60
 
 ipfs:
-  enabled: true
+  enabled: false
   gateway: https://ipfs.io

@@ -20,8 +20,9 @@ type Config struct {
 }
 
 type VideoSettings struct {
-	ResolutionWidth      int `yaml:"resolutionWidth"`
-	ChunkLengthInSeconds int `yaml:"chunkLengthInSeconds"`
+	ResolutionWidth      int    `yaml:"resolutionWidth"`
+	ChunkLengthInSeconds int    `yaml:"chunkLengthInSeconds"`
+	StreamingKey         string `yaml:"streamingKey"`
 }
 
 // MaxNumberOnDisk must be at least as large as MaxNumberInPlaylist
@@ -39,7 +40,7 @@ func getConfig() Config {
 	filePath := "config/config.yaml"
 
 	if !fileExists(filePath) {
-		log.Fatal("ERROR: valid config/config.yaml is required")
+		log.Fatal("ERROR: valid config/config.yaml is required.  Copy config/config-example.yaml to config/config.yaml and edit.")
 	}
 
 	yamlFile, err := ioutil.ReadFile(filePath)

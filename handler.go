@@ -41,6 +41,12 @@ func (h *Handler) OnCreateStream(timestamp uint32, cmd *rtmpmsg.NetConnectionCre
 func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
 	// log.Printf("OnPublish: %#v", cmd)
 
+	log.Println("Incoming stream connected.")
+
+	if cmd.PublishingName != configuration.VideoSettings.StreamingKey {
+		return errors.New("Invalid streaming key!  Rejecting incoming stream.")
+	}
+
 	// (example) Reject a connection when PublishingName is empty
 	if cmd.PublishingName == "" {
 		return errors.New("PublishingName is empty")
