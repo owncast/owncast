@@ -48,7 +48,6 @@ async function getStatus() {
     app.streamStatus = "Stream server is offline."
   }
 
-  setInterval(getStatus, 5000)
 }
 
 function setupWebsocket() {
@@ -66,6 +65,7 @@ function setupWebsocket() {
 setupApp()
 getStatus();
 setupWebsocket()
+setInterval(getStatus, 5000)
 
 var video = document.getElementById("video")
 var videoSrc = "hls/stream.m3u8"
