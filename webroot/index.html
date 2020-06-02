@@ -6,6 +6,7 @@
     href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
     rel="stylesheet"
   />
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -15,73 +16,78 @@
   <script data-main="js/main" src="vendor/require.js"></script>
 </head>
 
-<div
-  class="flex"
->
-  <div class="w-4/6">
-    <video id="video" controls style="width: 100%;"></video>
-  </div>
+<div>
+  <div class="flex">
+    <div class="w-4/6">
+      <video id="video" controls style="width: 100%;"></video>
+      <div id="app">
+        {{ streamStatus }}
+      </div>
+    </div>
 
-  <div class="w-2/6">
-    <div
-      id="messages-container"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      style="height: 60vh; overflow-y: scroll;"
-    >
-      <div data-bind="foreach: messages">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div class="flex items-center">
-            <img data-bind="attr:{src: image}" class="w-10 h-10 rounded-full mr-4 border-black-500" style="padding: 5px; background-color:#ececec;" />
+    <div class="w-2/6">
+      <div
+        id="messages-container"
+        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        style="height: 60vh; overflow-y: scroll;"
+      >
+        <div data-bind="foreach: messages">
+          <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div class="flex items-center">
+              <img
+                data-bind="attr:{src: image}"
+                class="w-10 h-10 rounded-full mr-4 border-black-500"
+                style="padding: 5px; background-color: #ececec;"
+              />
 
-            <div class="text-sm">
-							<p class="text-700" data-bind="text:author"></p>
-              <p class="text-gray-600" data-bind="text:body"></p>
+              <div class="text-sm">
+                <p class="text-700" data-bind="text:author"></p>
+                <p class="text-gray-600" data-bind="text:body"></p>
+              </div>
             </div>
           </div>
         </div>
-			</div>
-			
-				
+      </div>
+      <form
+        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        data-bind="with: editingMessage"
+      >
+        <!-- Author -->
+        <label class="control-label" for="inputAuthor">Author</label>
+        <input
+          id="inputAuthor"
+          type="text"
+          data-bind="value: author"
+          class="appearance-none bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+          placeholder="Name"
+        />
+
+        <!-- Body -->
+        <div>
+          <label class="control-label" for="inputBody">Message</label>
+          <div class="controls">
+            <textarea
+              id="inputBody"
+              data-bind="value: body"
+              placeholder="Message"
+              class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            >
+            </textarea>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <a
+              href="#"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              data-bind="click: $parent.send.bind($parent)"
+              >Send</a
+            >
+          </div>
+        </div>
+      </form>
     </div>
-	<form
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      data-bind="with: editingMessage"
-    >
-      <!-- Author -->
-      <label class="control-label" for="inputAuthor">Author</label>
-      <input
-        id="inputAuthor"
-        type="text"
-        data-bind="value: author"
-        class="appearance-none bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-        placeholder="Name"
-      />
-
-      <!-- Body -->
-      <div>
-        <label class="control-label" for="inputBody">Message</label>
-        <div class="controls">
-          <textarea
-            id="inputBody"
-            data-bind="value: body"
-            placeholder="Message"
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-          >
-          </textarea>
-        </div>
-      </div>
-
-      <div class="control-group">
-        <div class="controls">
-          <a
-            href="#"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            data-bind="click: $parent.send.bind($parent)"
-            >Send</a
-          >
-        </div>
-      </div>
-    </form>
   </div>
 </div>
 
@@ -115,4 +121,34 @@
       video.play();
     });
   }
+</script>
+
+<script>
+  var app = new Vue({
+    el: "#app",
+    data: {
+      streamStatus: "Hello Vue!",
+    },
+  });
+</script>
+
+<script>
+    setInterval(getStatus, 5000);
+
+  async function getStatus() {
+    let url = "/status";
+    try {
+      let response = await fetch(url);
+      let status = await response.json(); // read response body and parse as JSON
+          app.streamStatus = status.online
+      ? "Stream is online."
+      : "Stream is offline.";
+
+    } catch(e) {
+      app.streamStatus = "Stream server is offline."
+    }
+
+  }
+
+  getStatus();
 </script>

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -10,6 +11,7 @@ import (
 
 var ipfs icore.CoreAPI
 var configuration = getConfig()
+var online = false
 
 func main() {
 	checkConfig(configuration)
@@ -49,8 +51,28 @@ func startChatServer() {
 
 	// static files
 	http.Handle("/", http.FileServer(http.Dir("webroot")))
+	http.HandleFunc("/status", getStatus)
 
 	log.Printf("Starting public web server on port %d", configuration.WebServerPort)
 
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(configuration.WebServerPort), nil))
+}
+
+func getStatus(w http.ResponseWriter, r *http.Request) {
+	status := Status{
+		Online: online,
+	}
+	json.NewEncoder(w).Encode(status)
+}
+
+type Status struct {
+	Online bool `json:"online"`
+}
+
+func streamConnected() {
+	online = true
+}
+
+func streamDisconnected() {
+	online = false
 }

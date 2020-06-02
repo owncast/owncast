@@ -38,7 +38,6 @@ func (h *Handler) OnCreateStream(timestamp uint32, cmd *rtmpmsg.NetConnectionCre
 
 func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
 	// log.Printf("OnPublish: %#v", cmd)
-
 	log.Println("Incoming stream connected.")
 
 	if cmd.PublishingName != configuration.VideoSettings.StreamingKey {
@@ -67,6 +66,8 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	h.flvEnc = enc
 
 	go startFfmpeg(configuration)
+
+	streamConnected()
 
 	return nil
 }
@@ -164,4 +165,6 @@ func (h *Handler) OnClose() {
 	if h.flvFile != nil {
 		_ = h.flvFile.Close()
 	}
+
+	streamDisconnected()
 }
