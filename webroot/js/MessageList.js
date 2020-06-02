@@ -17,12 +17,13 @@ define(
 				var message = new Message();
 				message.author(model.author);
 				message.image("https://robohash.org/" + model.author);
-				console.log("https://robohash.org/" + model.author)
 				this.editingMessage(message);
+
+				localStorage.author = model.author
+				console.log(model.author)
 			};
 
 			ws.onmessage = function (e) {
-				console.log("on message")
 				var model = $.evalJSON(e.data);
 				var msg = new Message(model);
 				that.messages.push(msg);

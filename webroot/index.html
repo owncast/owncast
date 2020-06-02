@@ -118,7 +118,7 @@
   else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = videoSrc;
     video.addEventListener("loadedmetadata", function () {
-      video.play();
+      document.getElementById('video').play();
     });
   }
 </script>
@@ -127,7 +127,7 @@
   var app = new Vue({
     el: "#app",
     data: {
-      streamStatus: "Hello Vue!",
+      streamStatus: "",
     },
   });
 </script>
