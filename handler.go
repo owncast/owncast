@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -53,7 +52,6 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 
 	// Record streams as FLV
 	p := getTempPipePath()
-	fmt.Println(p)
 	syscall.Mkfifo(p, 0666)
 	f, err := os.OpenFile(p, os.O_RDWR, os.ModeNamedPipe)
 	if err != nil {

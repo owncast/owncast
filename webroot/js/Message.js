@@ -11,11 +11,14 @@ define(
 				this.author = ko.observable("Anonymous");
 				this.body = ko.observable("");
 			}
+			this.image = ko.observable("https://robohash.org/" + this.author() + "?set=set3&size=50x50")
+
 
 			this.toModel = function() {
 				return {
 					author: this.author(),
-					body: this.body()
+					body: this.body(),
+					image: this.image()
 				};
 			}
 		}
