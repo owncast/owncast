@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -28,6 +29,10 @@ func touch(fileName string) {
 			fmt.Println(err)
 		}
 	}
+}
+
+func getTempPipePath() string {
+	return filepath.Join(os.TempDir(), "streampipe.flv")
 }
 
 func copy(src, dst string) {

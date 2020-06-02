@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 	"syscall"
 
 	"github.com/pkg/errors"
@@ -52,10 +51,9 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 		return errors.New("PublishingName is empty")
 	}
 
-	// Record streams as FLV!
-	p := filepath.Join(
-		filepath.Clean(filepath.Join("./", fmt.Sprintf("%s.flv", "streampipe"))),
-	)
+	// Record streams as FLV
+	p := getTempPipePath()
+	fmt.Println(p)
 	syscall.Mkfifo(p, 0666)
 	f, err := os.OpenFile(p, os.O_RDWR, os.ModeNamedPipe)
 	if err != nil {

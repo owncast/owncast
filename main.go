@@ -50,5 +50,7 @@ func startChatServer() {
 	// static files
 	http.Handle("/", http.FileServer(http.Dir("webroot")))
 
+	log.Printf("Starting public web server on port %d", configuration.WebServerPort)
+
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(configuration.WebServerPort), nil))
 }
