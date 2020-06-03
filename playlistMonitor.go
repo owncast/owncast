@@ -14,7 +14,7 @@ import (
 var filesToUpload = make(map[string]string)
 
 func monitorVideoContent(pathToMonitor string, configuration Config, storage ChunkStorage) {
-	log.Printf("Using %s for IPFS files...\n", pathToMonitor)
+	log.Printf("Using %s files...\n", pathToMonitor)
 
 	w := watcher.New()
 
@@ -27,30 +27,24 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 				}
 				if filepath.Base(event.Path) == "temp.m3u8" {
 
-					if configuration.IPFS.Enabled {
-						for filePath, objectID := range filesToUpload {
-							if objectID != "" {
-								continue
-							}
-
-							newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, filePath))
-							filesToUpload[filePath] = newObjectPath
+					for filePath, objectID := range filesToUpload {
+						if objectID != "" {
+							continue
 						}
+
+						newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, filePath))
+						filesToUpload[filePath] = newObjectPath
 					}
 
 					playlistBytes, err := ioutil.ReadFile(event.Path)
 					verifyError(err)
 					playlistString := string(playlistBytes)
 
-					if configuration.IPFS.Enabled {
-						playlistString = storage.GenerateRemotePlaylist(playlistString, filesToUpload)
-					}
+					playlistString = storage.GenerateRemotePlaylist(playlistString, filesToUpload)
 					writePlaylist(playlistString, path.Join(configuration.PublicHLSPath, "/stream.m3u8"))
 
 				} else if filepath.Ext(event.Path) == ".ts" {
-					if configuration.IPFS.Enabled {
-						filesToUpload[filepath.Base(event.Path)] = ""
-					}
+					filesToUpload[filepath.Base(event.Path)] = ""
 				}
 			case err := <-w.Error:
 				log.Fatalln(err)

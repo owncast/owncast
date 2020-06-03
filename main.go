@@ -15,17 +15,24 @@ var server *Server
 var online = false
 
 func main() {
-	checkConfig(configuration)
 	// resetDirectories()
 
 	var hlsDirectoryPath = configuration.PublicHLSPath
 
 	log.Println("Starting up.  Please wait...")
 
+	var usingExternalStorage = false
+
 	if configuration.IPFS.Enabled {
 		storage = &IPFSStorage{}
-		(storage).Setup(configuration)
+		usingExternalStorage = true
+	} else if configuration.S3.Enabled {
+		storage = &S3Storage{}
+		usingExternalStorage = true
+	}
 
+	if usingExternalStorage {
+		storage.Setup(configuration)
 		hlsDirectoryPath = configuration.PrivateHLSPath
 		go monitorVideoContent(hlsDirectoryPath, configuration, storage)
 	}

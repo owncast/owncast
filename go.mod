@@ -3,6 +3,7 @@ module github.com/gabek/video-stream
 go 1.14
 
 require (
+	github.com/aws/aws-sdk-go v1.31.9
 	github.com/ipfs/go-ipfs v0.5.1
 	github.com/ipfs/go-ipfs-config v0.5.3
 	github.com/ipfs/go-ipfs-files v0.0.8

@@ -13,7 +13,7 @@ func startFfmpeg(configuration Config) {
 	var outputDir = configuration.PublicHLSPath
 	var hlsPlaylistName = path.Join(configuration.PublicHLSPath, "stream.m3u8")
 
-	if configuration.IPFS.Enabled {
+	if configuration.IPFS.Enabled || configuration.S3.Enabled {
 		outputDir = configuration.PrivateHLSPath
 		hlsPlaylistName = path.Join(outputDir, "temp.m3u8")
 	}

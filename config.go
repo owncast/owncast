@@ -17,6 +17,7 @@ type Config struct {
 	Files          Files         `yaml:"files"`
 	FFMpegPath     string        `yaml:"ffmpegPath"`
 	WebServerPort  int           `yaml:"webServerPort"`
+	S3             S3            `yaml:"s3"`
 }
 
 type VideoSettings struct {
@@ -36,6 +37,14 @@ type IPFS struct {
 	Gateway string `yaml:"gateway"`
 }
 
+type S3 struct {
+	Enabled   bool   `yaml:"enabled"`
+	AccessKey string `yaml:"accessKey"`
+	Secret    string `yaml:"secret"`
+	Bucket    string `yaml:"bucket"`
+	Region    string `yaml:"region"`
+}
+
 func getConfig() Config {
 	filePath := "config/config.yaml"
 
@@ -50,10 +59,19 @@ func getConfig() Config {
 	if err != nil {
 		panic(err)
 	}
+
+	checkConfig(config)
+
+	// fmt.Printf("%+v\n", config)
+
 	return config
 }
 
 func checkConfig(config Config) {
+	if config.S3.Enabled && config.IPFS.Enabled {
+		panic("S3 and IPFS support cannot be enabled at the same time.  Choose one.")
+	}
+
 	if !fileExists(config.PrivateHLSPath) {
 		panic(fmt.Sprintf("%s does not exist.", config.PrivateHLSPath))
 	}

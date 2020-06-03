@@ -15,3 +15,10 @@ files:
 ipfs:
   enabled: false
   gateway: https://ipfs.io
+
+s3:
+  enabled: false
+  accessKey: ABC12342069
+  secret: lolomgqwtf49583949
+  region: us-west-2
+  bucket: myvideo
