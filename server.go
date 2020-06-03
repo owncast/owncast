@@ -41,6 +41,10 @@ func NewServer(pattern string) *Server {
 	}
 }
 
+func (s *Server) ClientCount() int {
+	return len(s.clients)
+}
+
 func (s *Server) Add(c *Client) {
 	s.addCh <- c
 }
@@ -99,12 +103,14 @@ func (s *Server) Listen() {
 			log.Println("Added new client")
 			s.clients[c.id] = c
 			log.Println("Now", len(s.clients), "clients connected.")
+			viewerAdded()
 			s.sendPastMessages(c)
 
 		// del a client
 		case c := <-s.delCh:
 			log.Println("Delete client")
 			delete(s.clients, c.id)
+			viewerRemoved()
 
 		// broadcast message for all clients
 		case msg := <-s.sendAllCh:

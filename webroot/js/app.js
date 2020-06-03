@@ -1,8 +1,17 @@
 function setupApp() {
+  Vue.filter('plural', function (string, count) {
+    if (count === 1) {
+      return string
+    } else {
+      return string + "s"
+    }
+  })
+
   window.app = new Vue({
     el: "#app",
     data: {
       streamStatus: "",
+      viewerCount: 0,
     },
   });
 
@@ -44,9 +53,12 @@ async function getStatus() {
     app.streamStatus = status.online
       ? "Stream is online."
       : "Stream is offline."
+    
+    app.viewerCount = status.viewerCount
 
   } catch (e) {
     app.streamStatus = "Stream server is offline."
+    app.viewerCount = 0
   }
 
 }
@@ -60,14 +72,27 @@ function setupWebsocket() {
     this.messagesContainer.messages.push(message)
     scrollSmoothToBottom("messages-container")
   }
+
+  ws.onclose = (e) => {
+    // connection closed, discard old websocket and create a new one in 5s
+    ws = null
+    setTimeout(setupWebsocket, 5000)
+  }
+
+  ws.onerror = (e) => {
+    console.log("ERROR")
+    setupWebsocket()
+  }
+
   window.ws = ws
 }
 
 setupApp()
-getStatus();
+getStatus()
 setupWebsocket()
 setInterval(getStatus, 5000)
 
+// HLS Video setup
 var video = document.getElementById("video")
 var videoSrc = "hls/stream.m3u8"
 if (Hls.isSupported()) {

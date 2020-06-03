@@ -11,6 +11,8 @@ import (
 
 var ipfs icore.CoreAPI
 var configuration = getConfig()
+var server *Server
+
 var online = false
 
 func main() {
@@ -46,7 +48,7 @@ func startChatServer() {
 	// log.SetFlags(log.Lshortfile)
 
 	// websocket server
-	server := NewServer("/entry")
+	server = NewServer("/entry")
 	go server.Listen()
 
 	// static files
@@ -60,13 +62,10 @@ func startChatServer() {
 
 func getStatus(w http.ResponseWriter, r *http.Request) {
 	status := Status{
-		Online: online,
+		Online:      online,
+		ViewerCount: server.ClientCount(),
 	}
 	json.NewEncoder(w).Encode(status)
-}
-
-type Status struct {
-	Online bool `json:"online"`
 }
 
 func streamConnected() {
@@ -75,4 +74,10 @@ func streamConnected() {
 
 func streamDisconnected() {
 	online = false
+}
+
+func viewerAdded() {
+}
+
+func viewerRemoved() {
 }
