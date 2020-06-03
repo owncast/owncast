@@ -1,20 +1,19 @@
 <br />
 <p align="center">
-  <a href="https://github.com/gabek/video-stramer">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/gabek/owncast" alt="Owncast">
+    <img src="doc/logo.png" alt="Logo" width="200">
   </a>
 
-  <h3 align="center">MiStream</h3>
 
   <p align="center">
     Take control over your content and stream it yourself.
     <br />
-    <a href="https://github.com/gabek/video-stream"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/gabek/owncast"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/gabek/video-stream">View Demo</a>
+    <a href="https://github.com/gabek/owncast">View Demo</a>
     ·
-    <a href="https://github.com/gabek/video-stream/issues">Report Bug</a>
+    <a href="https://github.com/gabek/owncast/issues">Report Bug</a>
   </p>
 </p>
 
@@ -156,4 +155,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Gabe Kangas - [@gabek@mastodon.social](https://mastodon.social/@gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
 
-Project Link: [https://github.com/gabek/video-stream](https://github.com/gabek/video-stream)
+Project Link: [https://github.com/gabek/owncast](https://github.com/gabek/owncast)
