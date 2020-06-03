@@ -11,7 +11,7 @@
     <a href="https://github.com/gabek/owncast"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/gabek/owncast">View Demo</a>
+    <a href="https://goth.land/">View Demo</a>
     ·
     <a href="https://github.com/gabek/owncast/issues">Report Bug</a>
   </p>
@@ -26,8 +26,11 @@
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
+  * [Usage](#usage)
 * [Usage with OBS](#usage-with-obs)
+* [Video storage and distribution options](#video-storage-options)
 * [Advanced usage](#advanced-usage)
+* [Building from source](#building-from-source)
 * [Roadmap](#roadmap)
 * [License](#license)
 * [Contact](#contact)
@@ -37,6 +40,8 @@
 ## About The Project
 
 <!-- <img src="https://placeimg.com/640/480/tech"> -->
+
+### This is a work in progress.  The web UI is being worked on and functionality is still being tested and iterated on.  Feel free to test and give feedback, but it's not ready for production.
 
 In 2020 the world changed when everyone become stuck in their homes, looking for creative outlets to share their art, skills and themselves from inside their bedroom.
 
@@ -48,7 +53,7 @@ And as soon as people started streaming their DJ sets, movie watching parties, a
 
 That's when I wanted a better option.  Something you could run yourself and get all the functionality of these services, where you could live stream to an audience and and them take part in the chat, just like they've been used to on all the other services.  But instead you run it, you won't get shut down, and you own it all.
 
-**Keep in mind that while streaming to the big social companies is always free, you pay for it with your identity and your data.  When you self-host anything you'll have to pay with your money instead.  But running a self-hosted live stream server can be done for as cheap as $5/mo, and that's a much better deal than selling your soul to Facebook, Google or Amazon.**
+**Keep in mind that while streaming to the big social companies is always free, you pay for it with your identity and your data, as well as the identity and data of every person that tunes in.  When you self-host anything you'll have to pay with your money instead.  But running a self-hosted live stream server can be done for as cheap as $5/mo, and that's a much better deal than selling your soul to Facebook, Google or Amazon.**
 
 ---
 
@@ -72,9 +77,24 @@ The goal is to have a single service that you can run and it works out of the bo
 1. Set a custom streaming key by editing `streamingKey` in your config.
 
 
-### Video distribution options
+### Usage
+1. Run `./owncloud` from the directory you unzipped it.
+1. Open your web browser and visit http://yourserver:8080/.  If you changed the port in the config file, then change the URL accordingly.  If you are testing this on your own personal computer then you can visit http://localhost:8080.
 
-Three ways of distributing the video is supported.
+
+## Usage with OBS
+
+1. Install [OBS](https://obsproject.com/) and get it working with your local setup.
+1. Open OBS Settings and go to "Stream".
+2. Select "Custom..." as the service.
+3. Enter the URL of the server running your streaming service in the format of rtmp://myserver.net/live.
+4. Enter your "Stream Key" that matches the key you put in your `config.yaml` file.
+5. Start the server.
+6. Press "Start Streaming" on OBS.
+
+## Video storage options
+
+Three ways of storing and distributing the video are supported.
 
 1. [Locally](#local-file-distribution) via the built-in web server.
 2. [Amazon S3](#amazon-s3).
@@ -98,17 +118,6 @@ Enable experimental IPFS support and your video will be distributed through the 
 
 By editing the config file you can change what IPFS gateway server is used, and you can experiment with [trying different ones](https://ipfs.github.io/public-gateway-checker/).
 
-
-## Usage with OBS
-
-1. Open OBS Settings and go to "Stream".
-2. Select "Custom..." as the service.
-3. Enter the URL of the server running your streaming service in the format of rtmp://myserver.net/live.
-4. Enter your "Stream Key" that matches the key you put in your `config.yaml` file.
-5. Start the server.
-6. Press "Start Streaming" on OBS.
-
-
 ## Advanced Usage
 
 Here's a list of some things you can do to increase performance and make things nicer for yourself.
@@ -123,9 +132,19 @@ Here's a list of some things you can do to increase performance and make things 
 
 * [Run Nginx](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/) as a proxy somewhere to support SSL or caching.
 
+## Building from Source
+
+1. Install the [Go toolchain](https://golang.org/dl/).
+1. Clone the repo.  `git clone https://github.com/gabek/owncast`
+1. Follow the above [Getting Started](#getting-started) instructions, making sure ffmpeg exists and your config file is set.
+1. `go run *.go` on the first run will download the required packages needed for the application to build.
+1. It will start running the same as in the above [Usage](#usage) instructions and you can point [OBS to your localhost](#usage-with-obs) instance of it.
+
 ## Roadmap
 
 The following is a list of things, as long as there's some traction, I'd like to focus on.
+
+* Real web layout and chat UI is being worked on by [gingervitis](https://github.com/gingervitis).
 
 * Utilizing non-Amazon owned, but still S3 compatible storage.  There's so many services out there that are S3 compatible such as [Linode Object Storage](https://www.linode.com/products/object-storage/), [Wasabi](https://wasabi.com/what-is-wasabi/), [Google Storage](https://cloud.google.com/storage/), [DreamHost DreamObjects](https://www.dreamhost.com/cloud/storage/), or you can [even run your own](https://min.io/).  So it's good to have options.
 
@@ -142,6 +161,8 @@ The following is a list of things, as long as there's some traction, I'd like to
 * A web Admin UI that allows you to edit settings and view stats, moderate chat, etc.
 
 * Add built-in Let's Encrypt support so SSL is enabled out of the box.
+
+* Add a Dockerfile so you can run it from a container.
 
 <!-- LICENSE -->
 ## License
