@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	icore "github.com/ipfs/interface-go-ipfs-core"
 	log "github.com/sirupsen/logrus"
 )
 
-var ipfs icore.CoreAPI
+var storage ChunkStorage
 var configuration = getConfig()
 var server *Server
 
@@ -24,24 +23,16 @@ func main() {
 	log.Println("Starting up.  Please wait...")
 
 	if configuration.IPFS.Enabled {
+		storage = &IPFSStorage{}
+		(storage).Setup(configuration)
+
 		hlsDirectoryPath = configuration.PrivateHLSPath
-		enableIPFS()
-		go monitorVideoContent(hlsDirectoryPath, configuration, &ipfs)
+		go monitorVideoContent(hlsDirectoryPath, configuration, storage)
 	}
 
 	go startChatServer()
 
 	startRTMPService()
-}
-
-func enableIPFS() {
-	log.Println("Enabling IPFS support...")
-
-	ipfsInstance, node, _ := createIPFSInstance()
-	ipfs = *ipfsInstance
-
-	createIPFSDirectory(ipfsInstance, "./hls")
-	go startIPFSNode(ipfs, node)
 }
 
 func startChatServer() {

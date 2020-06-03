@@ -8,13 +8,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	icore "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/radovskyb/watcher"
 )
 
 var filesToUpload = make(map[string]string)
 
-func monitorVideoContent(pathToMonitor string, configuration Config, ipfs *icore.CoreAPI) {
+func monitorVideoContent(pathToMonitor string, configuration Config, storage ChunkStorage) {
 	log.Printf("Using %s for IPFS files...\n", pathToMonitor)
 
 	w := watcher.New()
@@ -34,7 +33,7 @@ func monitorVideoContent(pathToMonitor string, configuration Config, ipfs *icore
 								continue
 							}
 
-							newObjectPath := save(path.Join(configuration.PrivateHLSPath, filePath), ipfs)
+							newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, filePath))
 							filesToUpload[filePath] = newObjectPath
 						}
 					}
@@ -44,7 +43,7 @@ func monitorVideoContent(pathToMonitor string, configuration Config, ipfs *icore
 					playlistString := string(playlistBytes)
 
 					if configuration.IPFS.Enabled {
-						playlistString = generateRemotePlaylist(playlistString, configuration.IPFS.Gateway, filesToUpload)
+						playlistString = storage.GenerateRemotePlaylist(playlistString, filesToUpload)
 					}
 					writePlaylist(playlistString, path.Join(configuration.PublicHLSPath, "/stream.m3u8"))
 

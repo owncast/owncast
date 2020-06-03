@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path"
 	"strconv"
-	"strings"
 )
 
 func startFfmpeg(configuration Config) {
@@ -35,13 +34,6 @@ func verifyError(e error) {
 	if e != nil {
 		panic(e)
 	}
-}
-
-func generateRemotePlaylist(playlist string, gateway string, segments map[string]string) string {
-	for local, remote := range segments {
-		playlist = strings.ReplaceAll(playlist, local, gateway+remote)
-	}
-	return playlist
 }
 
 func writePlaylist(data string, filePath string) {

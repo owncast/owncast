@@ -38,6 +38,8 @@ type IPFSStorage struct {
 }
 
 func (s *IPFSStorage) Setup(config Config) {
+	log.Println("Setting up IPFS for external storage of video...")
+
 	s.gateway = config.IPFS.Gateway
 
 	s.ctx = context.Background()
