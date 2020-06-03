@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"path"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -65,10 +64,12 @@ func (s *S3Storage) Save(filePath string) string {
 			fmt.Println(err)
 		}
 
+		// The following is a bit of a hack to take the location URL string of that file
+		// and get just the base URL without the file from it.
 		pathComponents := strings.Split(url.Path, "/")
 		pathComponents[len(pathComponents)-1] = ""
-
-		s.host = fmt.Sprintf("%s://%s/%s", url.Scheme, url.Host, strings.Join(pathComponents, "/"))
+		pathString := strings.Join(pathComponents, "/")
+		s.host = fmt.Sprintf("%s://%s%s", url.Scheme, url.Host, pathString)
 	}
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
@@ -77,19 +78,26 @@ func (s *S3Storage) Save(filePath string) string {
 }
 
 func (s *S3Storage) GenerateRemotePlaylist(playlist string, segments map[string]string) string {
+	baseHost, err := url.Parse(s.host)
+	baseHostComponents := []string{baseHost.Scheme + "://", baseHost.Host, baseHost.Path}
+
+	verifyError(err)
+
+	// baseHostString := fmt.Sprintf("%s://%s/%s", baseHost.Scheme, baseHost.Hostname, baseHost.Path)
+
 	var newPlaylist = ""
 
 	scanner := bufio.NewScanner(strings.NewReader(playlist))
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line[0:1] != "#" {
-			line = path.Join(s.host, line)
+			urlComponents := baseHostComponents
+			urlComponents = append(urlComponents, line)
+			line = strings.Join(urlComponents, "") //path.Join(s.host, line)
 		}
 
 		newPlaylist = newPlaylist + line + "\n"
 	}
-
-	// fmt.Println(newPlaylist)
 
 	return newPlaylist
 }
