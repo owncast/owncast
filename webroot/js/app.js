@@ -8,7 +8,7 @@ function setupApp() {
   })
 
   window.app = new Vue({
-    el: "#app",
+    el: "#info",
     data: {
       streamStatus: "",
       viewerCount: 0,
