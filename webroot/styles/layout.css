@@ -74,9 +74,22 @@ header h1 {
   height: calc(100vh - 3em)
 }
 
-#info {
-  height: 500px;
+#chat-input-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #eee;
+  padding: 1em;
+  background-color: #334;
 }
+
+#chat-form {
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 0;
+}
+
+
 
 
 .no-chat .left-col {

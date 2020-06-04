@@ -23,7 +23,7 @@ function setupApp() {
   })
 
   window.chatForm = new Vue({
-    el: "#chatForm",
+    el: "#chat-form",
     data: {
       message: {
         author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),

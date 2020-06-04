@@ -22,13 +22,14 @@
       <h1>
         Maybe a header
       </h1>
+      <span>💬</span>
+
     </header>
     <div id="main-content-container" class="flex nxo-chat">
-
       <!-- LEFT CONTAINER SIDE-->
       <div class="flex main-cols left-col">
 
-        <div id="video-container" class="flex">
+        <div id="video-container" class="flex shadow-md">
           <video
             id="video"
             preload="auto"
@@ -38,7 +39,7 @@
           ></video>
         </div>
 
-        <div id="info">
+        <div id="info-">
           {{ streamStatus }} {{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.
           Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fpesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 
@@ -48,10 +49,11 @@
 
       <!-- RIGHT CONTAINER SIDE-->
       <div class="flex main-cols right-col">
+
         <div id="chat-container">
           <div id="messages-container">
             <div v-for="(message, index) in messages">
-              <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+              <div class="bg-white shadow-md  px-8 pt-6 pb-8 mb-4">
                 <div class="flex items-center">
                   <img
                     v-bind:src="message.image"
@@ -68,45 +70,36 @@
             </div>
           </div>
     
-          <form
-            id="chatForm"
-            @submit="submitChatForm"
-            class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-          >
-            <!-- Author -->
-            <label class="control-label" for="inputAuthor">Author</label>
-            <input
-              id="inputAuthor"
-              type="text"
-              class="appearance-none bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              placeholder="Name"
-              v-model="message.author"
-            />
-    
-            <!-- Body -->
-            <div>
-              <label class="control-label" for="inputBody">Message</label>
-              <div class="controls">
-                <textarea
-                  id="inputBody"
-                  placeholder="Message"
-                  v-model="message.body"
-                  class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                >
-                </textarea>
-              </div>
-            </div>
-    
-            <div class="control-group">
-              <div class="controls">
-                <button
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          </form>
+          <div id="chat-input-container" class="shadow-md">
+            <form id="chat-form" class="flex" @submit="submitChatForm">
+
+              <!-- Author -->
+              <!-- <label class="control-label" for="inputAuthor">Author</label>
+              <input
+                id="inputAuthor"
+                type="text"
+                class="appearance-none bg-gray-200 text-gray-700 border border-black-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                placeholder="Name"
+                v-model="message.author"
+              /> -->
+     
+
+              <textarea
+                id="inputBody"
+                placeholder="Message"
+                v-model="message.body"
+                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 leading-tight  focus:bg-white"
+              >
+              </textarea>
+              
+      
+              <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+              >
+                Send
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
