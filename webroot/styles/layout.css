@@ -1,0 +1,87 @@
+body {
+  font-size: 14px;
+  background-color: #ccc;
+}
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+#app-container {
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+
+  color: white;
+}
+
+header {
+  position: fixed;
+  width: 100%;
+  height: 3em;
+  top: 0;
+  left: 0;
+  background-color: rgba(20,0,40,1);
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #ddd;
+  padding: .5em;
+}
+
+
+#main-content-container {
+  width: 100%;
+  flex-direction: row;
+  position: relative;
+  margin-top: 3em;
+}
+
+.main-cols {
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.left-col {
+  width: calc(100vw - 24em);
+
+}
+#video-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+#video-container video {
+  width: 100%;
+  display: block;
+}
+
+#chat-container {
+  position: fixed;
+  z-index: 9;
+  right: 0;
+  height: 100%;
+  width: 24em;
+  background-color: rgba(20,0,40,.5);
+  height: calc(100vh - 3em)
+}
+
+#info {
+  height: 500px;
+}
+
+
+.no-chat .left-col {
+  width: 100vw;
+}
+.no-chat .right-col {
+  display: none;
+}
