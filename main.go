@@ -15,8 +15,6 @@ var server *Server
 var online = false
 
 func main() {
-	// resetDirectories()
-
 	var hlsDirectoryPath = configuration.PublicHLSPath
 
 	log.Println("Starting up.  Please wait...")

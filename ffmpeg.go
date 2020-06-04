@@ -30,12 +30,6 @@ func startFfmpeg(configuration Config) {
 	verifyError(err)
 }
 
-func verifyError(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func writePlaylist(data string, filePath string) {
 	f, err := os.Create(filePath)
 	defer f.Close()
