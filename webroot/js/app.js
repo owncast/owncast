@@ -8,7 +8,7 @@ function setupApp() {
   })
 
   window.app = new Vue({
-    el: "#info",
+    el: "#app",
     data: {
       streamStatus: "",
       viewerCount: 0,
@@ -23,7 +23,7 @@ function setupApp() {
   })
 
   window.chatForm = new Vue({
-    el: "#chat-form",
+    el: "#chatForm",
     data: {
       message: {
         author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
@@ -103,7 +103,7 @@ function setupWebsocket() {
 
 setupApp()
 getStatus()
-// setupWebsocket()
+setupWebsocket()
 // setInterval(getStatus, 5000)
 
 // HLS Video setup.  Commented out for local html work.  Uncomment to make HLS work.
