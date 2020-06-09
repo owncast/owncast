@@ -48,7 +48,7 @@ func startFfmpeg(configuration Config) {
 		"-master_pl_name stream.m3u8",
 		"-g 48",
 		"-keyint_min 48",
-		"-preset veryfast",
+		"-preset superfast",
 		"-sc_threshold 0",
 		"-profile:v high",
 		"-f hls",
@@ -60,6 +60,8 @@ func startFfmpeg(configuration Config) {
 		"-hls_segment_filename " + path.Join(outputDir, "stream-%Y%m%d-%s.ts"),
 		"-hls_flags delete_segments+program_date_time+temp_file",
 		"-segment_wrap 100",
+		"-tune zerolatency",
+
 		// "-master_m3u8_publish_rate 5",
 		"-var_stream_map \"" + strings.Join(streamMaps, " ") + "\"",
 		variantPlaylistName,
