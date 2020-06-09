@@ -43,7 +43,8 @@ func startFfmpeg(configuration Config) {
 		"-hide_banner",
 		"-i pipe:",
 		strings.Join(videoMaps, " "), // All the different video variants
-		strings.Join(audioMaps, " ") + " -c:a aac -b:a 192k -ac 2", // Audio for all the variants
+		strings.Join(audioMaps, " ") + " -c:a copy", // Audio for all the variants
+		// strings.Join(audioMaps, " ") + " -c:a aac -b:a 192k -ac 2", // Audio for all the variants
 		"-master_pl_name stream.m3u8",
 		"-g 48",
 		"-keyint_min 48",
@@ -59,7 +60,7 @@ func startFfmpeg(configuration Config) {
 		"-hls_segment_filename " + path.Join(outputDir, "stream-%Y%m%d-%s.ts"),
 		"-hls_flags delete_segments+program_date_time+temp_file",
 		"-segment_wrap 100",
-		"-master_m3u8_publish_rate 5",
+		// "-master_m3u8_publish_rate 5",
 		"-var_stream_map \"" + strings.Join(streamMaps, " ") + "\"",
 		variantPlaylistName,
 	}
