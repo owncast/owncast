@@ -8,7 +8,6 @@ videoSettings:
   streamingKey: abc123
 
   streamQualities:
-    - bitrate: 2000k
     - bitrate: 6000k
 
 files:

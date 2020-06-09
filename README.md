@@ -8,7 +8,7 @@
   <p align="center">
     Take control over your content and stream it yourself.
     <br />
-    <a href="https://github.com/gabek/owncast"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/gabek/owncast/tree/master/doc"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://goth.land/">View Demo</a>
