@@ -4,9 +4,12 @@ ffmpegPath: /usr/local/bin/ffmpeg
 webServerPort: 8080
 
 videoSettings:
-  resolutionWidth: 900
   chunkLengthInSeconds: 4
   streamingKey: abc123
+
+  streamQualities:
+    - bitrate: 2000k
+    - bitrate: 6000k
 
 files:
   maxNumberInPlaylist: 30

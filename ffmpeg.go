@@ -6,27 +6,72 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strconv"
+	"strings"
 )
 
 func startFfmpeg(configuration Config) {
 	var outputDir = configuration.PublicHLSPath
-	var hlsPlaylistName = path.Join(configuration.PublicHLSPath, "stream.m3u8")
+	var variantPlaylistPath = configuration.PublicHLSPath
 
 	if configuration.IPFS.Enabled || configuration.S3.Enabled {
 		outputDir = configuration.PrivateHLSPath
-		hlsPlaylistName = path.Join(outputDir, "temp.m3u8")
+		variantPlaylistPath = configuration.PrivateHLSPath
 	}
 
-	log.Printf("Starting transcoder saving to /%s.", outputDir)
+	outputDir = path.Join(outputDir, "%v")
+
+	// var masterPlaylistName = path.Join(configuration.PublicHLSPath, "%v", "stream.m3u8")
+	var variantPlaylistName = path.Join(variantPlaylistPath, "%v", "stream.m3u8")
+	// var variantRootPath = configuration.PublicHLSPath
+
+	// variantRootPath = path.Join(variantRootPath, "%v")
+	// variantPlaylistName := path.Join("%v", "stream.m3u8")
+
+	log.Printf("Starting transcoder saving to /%s.", variantPlaylistName)
 	pipePath := getTempPipePath()
 
-	ffmpegCmd := "cat " + pipePath + " | " + configuration.FFMpegPath +
-		" -hide_banner -i pipe: -vf scale=" + strconv.Itoa(configuration.VideoSettings.ResolutionWidth) + ":-2 -g 48 -keyint_min 48 -preset ultrafast -f hls -hls_list_size 30 -hls_time " +
-		strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds) + " -strftime 1 -use_localtime 1 -hls_segment_filename '" +
-		outputDir + "/stream-%Y%m%d-%s.ts' -hls_flags delete_segments -segment_wrap 100 " + hlsPlaylistName
+	var videoMaps = make([]string, 0)
+	var streamMaps = make([]string, 0)
+	var audioMaps = make([]string, 0)
+	for index, quality := range configuration.VideoSettings.StreamQualities {
+		videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %s", index, index, quality.Bitrate))
+		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", index, index))
+		audioMaps = append(audioMaps, "-map a:0")
+	}
+
+	ffmpegFlags := []string{
+		"-hide_banner",
+		"-i pipe:",
+		strings.Join(videoMaps, " "), // All the different video variants
+		strings.Join(audioMaps, " ") + " -c:a aac -b:a 192k -ac 2", // Audio for all the variants
+		"-master_pl_name stream.m3u8",
+		"-g 48",
+		"-keyint_min 48",
+		"-preset veryfast",
+		"-sc_threshold 0",
+		"-profile:v high",
+		"-f hls",
+		"-hls_list_size 30",
+		"-hls_time 10",
+		"-strftime 1",
+		"-use_localtime 1",
+		"-hls_playlist_type event",
+		"-hls_segment_filename " + path.Join(outputDir, "stream-%Y%m%d-%s.ts"),
+		"-hls_flags delete_segments+program_date_time+temp_file",
+		"-segment_wrap 100",
+		"-master_m3u8_publish_rate 5",
+		"-var_stream_map \"" + strings.Join(streamMaps, " ") + "\"",
+		variantPlaylistName,
+	}
+
+	ffmpegFlagsString := strings.Join(ffmpegFlags, " ")
+
+	ffmpegCmd := "cat " + pipePath + " | " + configuration.FFMpegPath + " " + ffmpegFlagsString
+
+	// fmt.Println(ffmpegCmd)
 
 	_, err := exec.Command("bash", "-c", ffmpegCmd).Output()
+	fmt.Println(err)
 	verifyError(err)
 }
 

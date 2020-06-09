@@ -74,26 +74,22 @@ func (s *S3Storage) Save(filePath string) string {
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
 
-	return filePath
+	return response.Location
 }
 
-func (s *S3Storage) GenerateRemotePlaylist(playlist string, segments map[string]string) string {
-	baseHost, err := url.Parse(s.host)
-	baseHostComponents := []string{baseHost.Scheme + "://", baseHost.Host, baseHost.Path}
-
-	verifyError(err)
-
-	// baseHostString := fmt.Sprintf("%s://%s/%s", baseHost.Scheme, baseHost.Hostname, baseHost.Path)
-
+func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant Variant) string {
 	var newPlaylist = ""
 
 	scanner := bufio.NewScanner(strings.NewReader(playlist))
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line[0:1] != "#" {
-			urlComponents := baseHostComponents
-			urlComponents = append(urlComponents, line)
-			line = strings.Join(urlComponents, "") //path.Join(s.host, line)
+			fullRemotePath := variant.getSegmentForFilename(line)
+			if fullRemotePath != nil {
+				line = fullRemotePath.RemoteID
+			} else {
+				line = ""
+			}
 		}
 
 		newPlaylist = newPlaylist + line + "\n"

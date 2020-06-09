@@ -15,9 +15,9 @@ var server *Server
 var online = false
 
 func main() {
-	var hlsDirectoryPath = configuration.PublicHLSPath
-
 	log.Println("Starting up.  Please wait...")
+	resetDirectories(configuration)
+	checkConfig(configuration)
 
 	var usingExternalStorage = false
 
@@ -31,8 +31,8 @@ func main() {
 
 	if usingExternalStorage {
 		storage.Setup(configuration)
-		hlsDirectoryPath = configuration.PrivateHLSPath
-		go monitorVideoContent(hlsDirectoryPath, configuration, storage)
+		// hlsDirectoryPath = configuration.PrivateHLSPath
+		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
 	}
 
 	go startChatServer()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -38,7 +39,7 @@ type IPFSStorage struct {
 }
 
 func (s *IPFSStorage) Setup(config Config) {
-	log.Println("Setting up IPFS for external storage of video...")
+	log.Println("Setting up IPFS for external storage of video. Please wait..")
 
 	s.gateway = config.IPFS.Gateway
 
@@ -76,14 +77,28 @@ func (s *IPFSStorage) Save(filePath string) string {
 
 	newHash := s.addFileToDirectory(cidFile, filepath.Base(filePath))
 
-	return newHash
+	return s.gateway + newHash
 }
 
-func (s *IPFSStorage) GenerateRemotePlaylist(playlist string, segments map[string]string) string {
-	for local, remote := range segments {
-		playlist = strings.ReplaceAll(playlist, local, s.gateway+remote)
+func (s *IPFSStorage) GenerateRemotePlaylist(playlist string, variant Variant) string {
+	var newPlaylist = ""
+
+	scanner := bufio.NewScanner(strings.NewReader(playlist))
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line[0:1] != "#" {
+			fullRemotePath := variant.getSegmentForFilename(line)
+			if fullRemotePath != nil {
+				line = fullRemotePath.RemoteID
+			} else {
+				line = ""
+			}
+		}
+
+		newPlaylist = newPlaylist + line + "\n"
 	}
-	return playlist
+
+	return newPlaylist
 }
 
 func setupPlugins(externalPluginsPath string) error {

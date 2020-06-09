@@ -21,9 +21,13 @@ type Config struct {
 }
 
 type VideoSettings struct {
-	ResolutionWidth      int    `yaml:"resolutionWidth"`
-	ChunkLengthInSeconds int    `yaml:"chunkLengthInSeconds"`
-	StreamingKey         string `yaml:"streamingKey"`
+	ChunkLengthInSeconds int             `yaml:"chunkLengthInSeconds"`
+	StreamingKey         string          `yaml:"streamingKey"`
+	StreamQualities      []StreamQuality `yaml:"streamQualities"`
+}
+
+type StreamQuality struct {
+	Bitrate string `yaml:"bitrate"`
 }
 
 // MaxNumberOnDisk must be at least as large as MaxNumberInPlaylist
@@ -59,8 +63,6 @@ func getConfig() Config {
 	if err != nil {
 		panic(err)
 	}
-
-	checkConfig(config)
 
 	// fmt.Printf("%+v\n", config)
 
