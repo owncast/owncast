@@ -66,7 +66,7 @@ The goal is to have a single service that you can run and it works out of the bo
 
 ### Prerequisites
 
-* **A computer that's on the public internet to run it on.**  While crunching through video and serving it to viewers can be intensive from the computing side, you can get away with pretty meager resources.  If you don't already have a server to run it on you can get a [Linode](https://www.linode.com/products/nanodes/) instance for $5/mo that runs it fine.  If you worry that you'll be maxing out the bandwidth or transfer limits allotted to you, then utilize [Amazon S3](https://aws.amazon.com/s3/) very cheaply (or even free for a certain amount) to serve the files instead.
+* **A computer that's on the public internet to run it on.**  While crunching through video and serving it to viewers can be intensive from the computing side, you can get away with pretty meager resources.  If you don't already have a server to run it on you can get a [Linode](https://www.linode.com/products/nanodes/) instance for $5/mo that runs it fine.  If you worry that you'll be maxing out the bandwidth or transfer limits allotted to you, then utilize [S3 Storage](https://github.com/gabek/owncast/blob/master/doc/S3.md) very cheaply (or even free for a certain amount) to serve the files instead.
 
 * [ffmpeg](https://ffmpeg.org/) is required to function.  [Install it](https://ffmpeg.org/download.html) first.
 * These instructions are assuming you're using [OBS](https://obsproject.com/) on your personal computer to stream from.  It's not required, but it's a great free piece of software.
@@ -99,16 +99,18 @@ The goal is to have a single service that you can run and it works out of the bo
 Three ways of storing and distributing the video are supported.
 
 1. [Locally](#local-file-distribution) via the built-in web server.
-2. [Amazon S3](#amazon-s3).
+2. [S3-compatible storage](#s3-compatible-storage).
 3. Experimental [IPFS](#ipfs) support.
 
 ### Local file distribution
 
 This is the simplest and works out of the box.  In this scenario video will be served to the public from the computer that is running the server.  If you have a fast internet connection, enough bandwidth alotted to you, and a small audience this may be fine for many people.
 
-### Amazon S3
+### S3-Compatible Storage
 
-Enable S3 support in `config.yaml` and add your AWS access credentials. Files will be distributed from a S3 bucket that you have created for this purpose.  This is a good option for almost any case since S3 is cheap and you don't have to worry about your own bandwdith.
+Enable S3 support in `config.yaml` and add your access credentials. Files will be distributed from a S3 bucket that you have created for this purpose.  This is a good option for almost any case since S3 is cheap and you don't have to worry about your own bandwidth.
+
+Please read the [more detailed documentation about configuration of S3-Compatible Services](https://github.com/gabek/owncast/blob/master/doc/S3.md).
 
 ### IPFS
 
@@ -124,9 +126,10 @@ By editing the config file you can change what IPFS gateway server is used, and 
 
 Here's a list of some things you can do to increase performance and make things nicer for yourself.
 
+* Get a faster server with more cores so you can [enable more bitrates at once](https://github.com/gabek/owncast/blob/master/doc/configuration.md).
 * Put a CDN in front of your server if you serve your files locally.  You can even get a free one like [Cloudflare](https://www.cloudflare.com/).  Then as more people view your stream people will no longer be downloading the stream directly from your server, but from the CDN instead, and it'll be faster.  This is also a good way to enable SSL for your site.
 
-* If you use Amazon S3 for storage, have it [expire files from your bucket after N days](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-lifecycle.html) because old files sitting on your S3 bucket aren't useful to anybody.
+* If you use S3 for storage, have it [expire files from your bucket after N days](https://github.com/gabek/owncast/blob/master/doc/S3.md) because old files sitting on your S3 bucket aren't useful to anybody.
 
 * Edit the `webroot/index.html` file and make it look however you want.
 
@@ -148,13 +151,11 @@ The following is a list of things, as long as there's some traction, I'd like to
 
 * Real web layout and chat UI is being worked on by [gingervitis](https://github.com/gingervitis).
 
-* Utilizing non-Amazon owned, but still S3 compatible storage.  There's so many services out there that are S3 compatible such as [Linode Object Storage](https://www.linode.com/products/object-storage/), [Wasabi](https://wasabi.com/what-is-wasabi/), [Backblaze](https://www.backblaze.com/b2/cloud-storage-pricing.html), [Google Storage](https://cloud.google.com/storage/), [DreamHost DreamObjects](https://www.dreamhost.com/cloud/storage/), or you can [even run your own](https://min.io/).  So it's good to have options.
+* Document more non-Amazon owned, but still S3 compatible storage.  There's so many services out there that are S3 compatible such as [Backblaze](https://www.backblaze.com/b2/cloud-storage-pricing.html), [Google Storage](https://cloud.google.com/storage/), [DreamHost DreamObjects](https://www.dreamhost.com/cloud/storage/), or you can [even run your own](https://min.io/).  So it's good to have options.
 
 * Refactor chat so it's more controlled by the server and doesn't accept just anything from clients and relay it back to everyone.
 
 * Add more functionality to chat UI such as moderation (deleting messages), emojis/gif search, etc.  You know, the stuff other services have and people are used to.
-
-* HLS adaptive bitrates.  Right now there's a single bitrate being generated.  We should be able to enable an array of bitrates in the config and spit out a HLS master playlist pointing to all of them.
 
 * Collect viewer stats so you know how many people tuned into a stream.  People seem to care about that kind of thing.
 
