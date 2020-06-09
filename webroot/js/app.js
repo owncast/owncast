@@ -98,7 +98,7 @@ function setupWebsocket() {
 
 setupApp()
 getStatus()
-setupWebsocket()
+// setupWebsocket()
 // setInterval(getStatus, 5000)
 
 // HLS Video setup

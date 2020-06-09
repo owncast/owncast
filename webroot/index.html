@@ -53,19 +53,17 @@
         <div id="chat-container">
           <div id="messages-container">
             <div v-for="(message, index) in messages">
-              <div class="bg-white shadow-md  px-8 pt-6 pb-8 mb-4">
-                <div class="flex items-center">
+              
+                <div class="message flex">
                   <img
                     v-bind:src="message.image"
-                    class="w-10 h-10 rounded-full mr-4 border-black-500"
-                    style="padding: 5px; background-color: #ececec;"
+                    class="message-avatar rounded-full"
                   />
     
-                  <div class="text-sm">
-                    <p class="text-700">{{ message.author }}</p>
-                    <p class="text-gray-600"v-html="message.linkedText()"></p>
+                  <div class="message-content">
+                    <p class="message-author">{{ message.author }}</p>
+                    <p class="message-text"v-html="message.linkedText()"></p>
                   </div>
-                </div>
               </div>
             </div>
           </div>

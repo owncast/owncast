@@ -96,7 +96,27 @@ header h1 {
   margin-bottom: 0;
 }
 
-
+.message {
+  padding: .85em;
+  align-items: flex-start;
+}
+.message-avatar {
+  height: 2.5em;
+  width: 2.5em;
+  margin-right: .75em;
+  /* background-color: rgba(236, 236, 236, .5); */
+  background-color: rgba(0,0,0, .75);
+}
+.message-content {
+  font-size: .85em;
+}
+.message-author {
+  font-weight: 600;
+}
+.message-text {
+  color: #ccc;
+  font-weight: 100;
+}
 
 
 .no-chat .left-col {
