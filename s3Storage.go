@@ -17,6 +17,7 @@ type S3Storage struct {
 	sess *session.Session
 	host string
 
+	s3Endpoint  string
 	s3Region    string
 	s3Bucket    string
 	s3AccessKey string
@@ -26,6 +27,7 @@ type S3Storage struct {
 func (s *S3Storage) Setup(configuration Config) {
 	log.Println("Setting up S3 for external storage of video...")
 
+	s.s3Endpoint = configuration.S3.Endpoint
 	s.s3Region = configuration.S3.Region
 	s.s3Bucket = configuration.S3.Bucket
 	s.s3AccessKey = configuration.S3.AccessKey
@@ -91,8 +93,10 @@ func (s S3Storage) connectAWS() *session.Session {
 
 	sess, err := session.NewSession(
 		&aws.Config{
-			Region:      aws.String(s.s3Region),
-			Credentials: creds,
+			Region:           aws.String(s.s3Region),
+			Credentials:      creds,
+			Endpoint:         aws.String(s.s3Endpoint),
+			S3ForcePathStyle: aws.Bool(true),
 		},
 	)
 

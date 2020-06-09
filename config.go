@@ -44,6 +44,7 @@ type IPFS struct {
 
 type S3 struct {
 	Enabled   bool   `yaml:"enabled"`
+	Endpoint  string `yaml:"endpoint"`
 	AccessKey string `yaml:"accessKey"`
 	Secret    string `yaml:"secret"`
 	Bucket    string `yaml:"bucket"`
@@ -73,6 +74,20 @@ func getConfig() Config {
 func checkConfig(config Config) {
 	if config.S3.Enabled && config.IPFS.Enabled {
 		panic("S3 and IPFS support cannot be enabled at the same time.  Choose one.")
+	}
+
+	if config.S3.Enabled {
+		if config.S3.AccessKey == "" || config.S3.Secret == "" {
+			panic("S3 support requires an access key and secret.")
+		}
+
+		if config.S3.Region == "" || config.S3.Endpoint == "" {
+			panic("S3 support requires a region and endpoint.")
+		}
+
+		if config.S3.Bucket == "" {
+			panic("S3 support requires a bucket created for storing public video segments.")
+		}
 	}
 
 	if !fileExists(config.PrivateHLSPath) {
