@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
-	"net/url"
 	"os"
 	"strings"
 
@@ -39,7 +37,9 @@ func (s *S3Storage) Setup(configuration Config) {
 func (s *S3Storage) Save(filePath string) string {
 	// fmt.Println("Saving", filePath)
 
-	file, err := os.Open(filePath) // For read access.
+	file, err := os.Open(filePath)
+	defer file.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,22 +54,6 @@ func (s *S3Storage) Save(filePath string) string {
 
 	if err != nil {
 		panic(err)
-	}
-
-	if s.host == "" {
-		// Take note of the root host location so we can regenerate full
-		// URLs to these files later when building the playlist in GenerateRemotePlaylist.
-		url, err := url.Parse(response.Location)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		// The following is a bit of a hack to take the location URL string of that file
-		// and get just the base URL without the file from it.
-		pathComponents := strings.Split(url.Path, "/")
-		pathComponents[len(pathComponents)-1] = ""
-		pathString := strings.Join(pathComponents, "/")
-		s.host = fmt.Sprintf("%s://%s%s", url.Scheme, url.Host, pathString)
 	}
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
