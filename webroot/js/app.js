@@ -45,13 +45,12 @@ function setupApp() {
   });
 }
 
-
 async function getStatus() {
-  let url = "/status";
+  const url = "/status";
 
   try {
-    let response = await fetch(url);
-    let status = await response.json(); // read response body and parse as JSON
+    const response = await fetch(url);
+    const status = await response.json(); // read response body and parse as JSON
     app.streamStatus = status.online
       ? "Stream is online."
       : "Stream is offline."
@@ -65,13 +64,16 @@ async function getStatus() {
 
 }
 
+var websocketReconnectTimer
 function setupWebsocket() {
+  clearTimeout(websocketReconnectTimer)
+
   const protocol = location.protocol == "https:" ? "wss" : "ws"
   var ws = new WebSocket(protocol + "://" + location.host + "/entry")
   
   ws.onmessage = (e) => {
-    var model = JSON.parse(e.data)
-    var message = new Message(model)
+    const model = JSON.parse(e.data)
+    const message = new Message(model)
 
     const existing = this.messagesContainer.messages.filter(function (item) {
       return item.id === message.id
@@ -86,11 +88,14 @@ function setupWebsocket() {
   ws.onclose = (e) => {
     // connection closed, discard old websocket and create a new one in 5s
     ws = null
-    setTimeout(setupWebsocket, 5000)
+    console.log("Websocket closed.")
+    websocketReconnectTimer = setTimeout(setupWebsocket, 5000)
   }
 
+  // On ws error just close the socket and let it re-connect again for now.
   ws.onerror = (e) => {
-    setTimeout(setupWebsocket, 5000)
+    console.log("Websocket error: ", e)
+    ws.close()
   }
 
   window.ws = ws
@@ -102,8 +107,8 @@ setupWebsocket()
 setInterval(getStatus, 5000)
 
 // HLS Video setup
-var video = document.getElementById("video")
-var videoSrc = "hls/stream.m3u8"
+const video = document.getElementById("video")
+const videoSrc = "hls/stream.m3u8"
 if (Hls.isSupported()) {
   var hls = new Hls()
   hls.loadSource(videoSrc)
@@ -133,7 +138,7 @@ else if (video.canPlayType("application/vnd.apple.mpegurl")) {
 }
 
 function scrollSmoothToBottom(id) {
-  var div = document.getElementById(id)
+  const div = document.getElementById(id)
   $('#' + id).animate({
     scrollTop: div.scrollHeight - div.clientHeight
   }, 500)
@@ -141,7 +146,7 @@ function scrollSmoothToBottom(id) {
 
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
