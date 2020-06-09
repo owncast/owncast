@@ -1,3 +1,10 @@
+/* variables */
+:root {
+  --header-height: 3em;
+  --right-col-width: 24em;
+}
+
+
 body {
   font-size: 14px;
   background-color: #ccc;
@@ -19,7 +26,7 @@ body {
 header {
   position: fixed;
   width: 100%;
-  height: 3em;
+  height: var(--header-height);
   top: 0;
   left: 0;
   background-color: rgba(20,0,40,1);
@@ -38,7 +45,7 @@ header h1 {
   width: 100%;
   flex-direction: row;
   position: relative;
-  margin-top: 3em;
+  margin-top: var(--header-height);
 }
 
 .main-cols {
@@ -48,7 +55,7 @@ header h1 {
 }
 
 .left-col {
-  width: calc(100vw - 24em);
+  width: calc(100vw - var(--right-col-width));
 }
 
 #video-container {
@@ -69,9 +76,9 @@ header h1 {
   z-index: 9;
   right: 0;
   height: 100%;
-  width: 24em;
+  width: var(--right-col-width);
   background-color: rgba(20,0,40,.5);
-  height: calc(100vh - 3em)
+  height: calc(100vh - var(--header-height))
 }
 
 #chat-input-container {
@@ -100,11 +107,15 @@ header h1 {
 }
 
 @media screen and (max-width: 860px) {
+  :root {
+    --right-col-width: 20em;
+  }
+  
   #chat-container {
-    width: 20em;
+    width: var(--right-col-width);
   }
   .left-col {
-    width: calc(100vw - 20em);
+    width: calc(100vw -  var(--right-col-width));
   }
 }
 
@@ -112,7 +123,7 @@ header h1 {
   #main-content-container {
     flex-direction: column;
     justify-content: space-between;
-    height: calc(100vh - 3em);
+    height: calc(100vh - var(--header-height));
   }
 
   .main-cols {
