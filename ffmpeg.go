@@ -48,7 +48,7 @@ func startFfmpeg(configuration Config) {
 		"-master_pl_name stream.m3u8",
 		"-g 48",
 		"-keyint_min 48",
-		"-preset superfast",
+		"-preset " + configuration.VideoSettings.EncoderPreset,
 		"-sc_threshold 0",
 		"-profile:v high",
 		"-f hls",

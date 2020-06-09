@@ -23,6 +23,7 @@ type Config struct {
 type VideoSettings struct {
 	ChunkLengthInSeconds int             `yaml:"chunkLengthInSeconds"`
 	StreamingKey         string          `yaml:"streamingKey"`
+	EncoderPreset        string          `yaml:"encoderPreset"`
 	StreamQualities      []StreamQuality `yaml:"streamQualities"`
 }
 
@@ -84,5 +85,13 @@ func checkConfig(config Config) {
 
 	if !fileExists(config.FFMpegPath) {
 		panic(fmt.Sprintf("ffmpeg does not exist at %s.", config.FFMpegPath))
+	}
+
+	if config.VideoSettings.EncoderPreset == "" {
+		panic("A video encoder preset is required to be set in the config file.")
+	}
+
+	if len(config.VideoSettings.StreamQualities) < 1 {
+		panic("At least one stream quality must be set in the config file.")
 	}
 }
