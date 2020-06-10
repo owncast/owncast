@@ -6,8 +6,17 @@
     href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
     rel="stylesheet"
   />
+
+  <!-- unpkg : use the latest version of Video.js -->
+<link href="//unpkg.com/video.js/dist/video-js.min.css" rel="stylesheet">
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css"
+  rel="stylesheet"
+/>
+<script src="//unpkg.com/video.js/dist/video.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<script src="//vjs.zencdn.net/7.8.2/video.min.js"></script>
 
   <!-- Used for animating the scrolling of the chat div.  Can that be done other ways? -->
   <script src="vendor/jquery-2.1.4.min.js"></script>
@@ -20,11 +29,16 @@
     <div class="w-4/6">
       <video
         id="video"
+        class="video-js vjs-theme-fantasy"
         preload="auto"
+        poster="https://picsum.photos/900/600"
         autoplay
         controls
         style="width: 100%;"
-      ></video>
+        data-setup='{}'
+      >
+      <source src="hls/stream.m3u8" type="application/x-mpegURL"/>
+    </video>
       <div id="app">
         {{ streamStatus }} {{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.
       </div>
