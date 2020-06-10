@@ -27,6 +27,7 @@
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
   * [Usage](#usage)
+  * [Docker](#docker)
 * [Usage with OBS](#usage-with-obs)
 * [Video storage and distribution options](#video-storage-options)
 * [Advanced usage](#advanced-usage)
@@ -83,6 +84,13 @@ The goal is to have a single service that you can run and it works out of the bo
 1. Run `./owncloud` from the directory you unzipped it.
 1. Open your web browser and visit http://yourserver:8080/.  If you changed the port in the config file, then change the URL accordingly.  If you are testing this on your own personal computer then you can visit http://localhost:8080.
 
+
+### Docker
+
+If you want a simpler way to run an instance of owncast you can run it in a container with the supplied Dockerfile.
+
+1. Run `docker build -t owncast .`
+1. Run `docker run -p 8080:8080 -p 1935:1935 -it owncast`
 
 ## Usage with OBS
 

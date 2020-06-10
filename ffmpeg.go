@@ -73,7 +73,7 @@ func startFfmpeg(configuration Config) {
 
 	// fmt.Println(ffmpegCmd)
 
-	_, err := exec.Command("bash", "-c", ffmpegCmd).Output()
+	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
 	fmt.Println(err)
 	verifyError(err)
 }
