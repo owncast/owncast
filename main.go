@@ -13,13 +13,12 @@ var configuration = getConfig()
 var server *Server
 
 var online = false
+var usingExternalStorage = false
 
 func main() {
 	log.Println("Starting up.  Please wait...")
 	resetDirectories(configuration)
 	checkConfig(configuration)
-
-	var usingExternalStorage = false
 
 	if configuration.IPFS.Enabled {
 		storage = &IPFSStorage{}
@@ -66,6 +65,11 @@ func getStatus(w http.ResponseWriter, r *http.Request) {
 
 func streamConnected() {
 	online = true
+	chunkPath := configuration.PublicHLSPath
+	if usingExternalStorage {
+		chunkPath = configuration.PrivateHLSPath
+	}
+	startThumbnailGenerator(chunkPath)
 }
 
 func streamDisconnected() {
