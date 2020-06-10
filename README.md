@@ -173,8 +173,6 @@ The following is a list of things, as long as there's some traction, I'd like to
 
 * Add built-in Let's Encrypt support so SSL is enabled out of the box.
 
-* Add a Dockerfile so you can run it from a container.
-
 <!-- LICENSE -->
 ## License
 

@@ -42,7 +42,9 @@ func startFfmpeg(configuration Config) {
 	ffmpegFlags := []string{
 		"-hide_banner",
 		"-i pipe:",
-		strings.Join(videoMaps, " "), // All the different video variants
+		"-vf scale=900:-2",
+		"-sws_flags fast_bilinear",
+		strings.Join(videoMaps, " "),                // All the different video variants
 		strings.Join(audioMaps, " ") + " -c:a copy", // Audio for all the variants
 		// strings.Join(audioMaps, " ") + " -c:a aac -b:a 192k -ac 2", // Audio for all the variants
 		"-master_pl_name stream.m3u8",
