@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"path"
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
@@ -49,7 +50,15 @@ func startChatServer() {
 	go server.Listen()
 
 	// static files
-	http.Handle("/", http.FileServer(http.Dir("webroot")))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
+
+		if path.Ext(r.URL.Path) == ".m3u8" {
+			clientID := getClientIDFromRequest(r)
+			stats.SetClientActive(clientID)
+		}
+	})
+
 	http.HandleFunc("/status", getStatus)
 
 	log.Printf("Starting public web server on port %d", configuration.WebServerPort)
@@ -81,10 +90,10 @@ func streamDisconnected() {
 	stats.StreamDisconnected()
 }
 
-func viewerAdded() {
-	stats.SetViewerCount(server.ClientCount())
+func viewerAdded(clientID string) {
+	stats.SetClientActive(clientID)
 }
 
-func viewerRemoved() {
-	stats.SetViewerCount(server.ClientCount())
+func viewerRemoved(clientID string) {
+	stats.ViewerDisconnected(clientID)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -64,4 +65,21 @@ func resetDirectories(configuration Config) {
 		os.MkdirAll(path.Join(configuration.PrivateHLSPath, strconv.Itoa(index)), 0777)
 		os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(index)), 0777)
 	}
+}
+
+func getClientIDFromRequest(req *http.Request) string {
+	var ipAddress string
+	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
+	if xForwardedFor != "" {
+		ipAddress = xForwardedFor
+	} else {
+		ipAddressString := req.RemoteAddr
+		ipAddressComponents := strings.Split(ipAddressString, ":")
+		ipAddressComponents[len(ipAddressComponents)-1] = ""
+		ipAddress = strings.Join(ipAddressComponents, ":")
+	}
+
+	// fmt.Println("IP address determined to be", ipAddress)
+
+	return ipAddress
 }

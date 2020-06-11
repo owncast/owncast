@@ -11,7 +11,7 @@ import (
 type Server struct {
 	pattern   string
 	messages  []*Message
-	clients   map[int]*Client
+	clients   map[string]*Client
 	addCh     chan *Client
 	delCh     chan *Client
 	sendAllCh chan *Message
@@ -22,7 +22,7 @@ type Server struct {
 // Create new chat server.
 func NewServer(pattern string) *Server {
 	messages := []*Message{}
-	clients := make(map[int]*Client)
+	clients := make(map[string]*Client)
 	addCh := make(chan *Client)
 	delCh := make(chan *Client)
 	sendAllCh := make(chan *Message)
@@ -100,17 +100,14 @@ func (s *Server) Listen() {
 
 		// Add new a client
 		case c := <-s.addCh:
-			log.Println("Added new client")
 			s.clients[c.id] = c
-			log.Println("Now", len(s.clients), "clients connected.")
-			viewerAdded()
+			viewerAdded(c.id)
 			s.sendPastMessages(c)
 
 		// del a client
 		case c := <-s.delCh:
-			log.Println("Delete client")
 			delete(s.clients, c.id)
-			viewerRemoved()
+			viewerRemoved(c.id)
 
 		// broadcast message for all clients
 		case msg := <-s.sendAllCh:
