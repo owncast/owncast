@@ -39,9 +39,17 @@
           ></video>
         </div>
 
-        <div id="info-">
+        <div id="info">
           {{ streamStatus }} {{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fpesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+          Heart rate notifications.
+Apple Watch checks for unusually high or low heart rates in the background, which could be signs of a serious underlying condition. This could help you and your patients identify situations which may warrant further evaluation.
+<br>
+If a patient’s heart rate is above 120 bpm or below 40 bpm while they appear to have been inactive for 10 minutes, the user will receive a notification. Patients can adjust the threshold bpm or turn these notifications on or off. All heart rate notifications — along with date, time, and heart rate — can be viewed in the Health app on iPhone.
+<br>
+Heart rate notifications.
+Apple Watch checks for unusually high or low heart rates in the background, which could be signs of a serious underlying condition. This could help you and your patients identify situations which may warrant further evaluation.
+<br>
+If a patient’s heart rate is above 120 bpm or below 40 bpm while they appear to have been inactive for 10 minutes, the user will receive a notification. Patients can adjust the threshold bpm or turn these notifications on or off. All heart rate notifications — along with date, time, and heart rate — can be viewed in the Health app on iPhone.
 
 
         </div>
@@ -52,6 +60,9 @@
 
         <div id="chat-container">
           <div id="messages-container">
+            Heart rate notifications.
+Apple Watch checks for unusually high or low heart rates in the background, which could be signs of a serious underlying condition. This could help you and your patients identify situations which may warrant further evaluation.— can be viewed in the Health app on iPhone.
+
             <div v-for="(message, index) in messages">
               
                 <div class="message flex">
@@ -70,6 +81,7 @@
     
           <div id="chat-input-container" class="shadow-md">
             <form id="chat-form" class="flex" @submit="submitChatForm">
+              <input type="hidden" name="inputAuthor" id="inputAuthor"  v-model="message.author" />
 
               <!-- Author -->
               <!-- <label class="control-label" for="inputAuthor">Author</label>
