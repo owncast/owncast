@@ -28,7 +28,9 @@
   * [Installation](#installation)
   * [Usage](#usage)
   * [Docker](#docker)
-* [Usage with OBS](#usage-with-obs)
+* [Use with your software](#use-with-your-desktop-software)
+  * [OBS](#usage-with-obs)
+  * [Restream](#usage-with-restream)
 * [Video storage and distribution options](#video-storage-options)
 * [Advanced usage](#advanced-usage)
 * [Building from source](#building-from-source)
@@ -92,7 +94,9 @@ If you want a simpler way to run an instance of owncast you can run it in a cont
 1. Run `docker build -t owncast .`
 1. Run `docker run -p 8080:8080 -p 1935:1935 -it owncast`
 
-## Usage with OBS
+## Use with your desktop software
+
+### Usage with OBS
 
 1. Install [OBS](https://obsproject.com/) and get it working with your local setup.
 1. Open OBS Settings and go to "Stream".
@@ -101,6 +105,10 @@ If you want a simpler way to run an instance of owncast you can run it in a cont
 4. Enter your "Stream Key" that matches the key you put in your `config.yaml` file.
 5. Start the server.
 6. Press "Start Streaming" on OBS.
+
+### Usage with Restream
+
+Read the [detailed documentation for working with Restream](https://github.com/gabek/owncast/blob/master/doc/restream.md)
 
 ## Video storage options
 
