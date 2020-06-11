@@ -11,14 +11,16 @@ import (
 var storage ChunkStorage
 var configuration = getConfig()
 var server *Server
+var stats *Stats
 
-var online = false
 var usingExternalStorage = false
 
 func main() {
 	log.Println("Starting up.  Please wait...")
 	resetDirectories(configuration)
 	checkConfig(configuration)
+	stats = getSavedStats()
+	stats.Setup()
 
 	if configuration.IPFS.Enabled {
 		storage = &IPFSStorage{}
@@ -57,14 +59,17 @@ func startChatServer() {
 
 func getStatus(w http.ResponseWriter, r *http.Request) {
 	status := Status{
-		Online:      online,
-		ViewerCount: server.ClientCount(),
+		Online:                stats.IsStreamConnected(),
+		ViewerCount:           stats.GetViewerCount(),
+		OverallMaxViewerCount: stats.GetOverallMaxViewerCount(),
+		SessionMaxViewerCount: stats.GetSessionMaxViewerCount(),
 	}
 	json.NewEncoder(w).Encode(status)
 }
 
 func streamConnected() {
-	online = true
+	stats.StreamConnected()
+
 	chunkPath := configuration.PublicHLSPath
 	if usingExternalStorage {
 		chunkPath = configuration.PrivateHLSPath
@@ -73,11 +78,13 @@ func streamConnected() {
 }
 
 func streamDisconnected() {
-	online = false
+	stats.StreamDisconnected()
 }
 
 func viewerAdded() {
+	stats.SetViewerCount(server.ClientCount())
 }
 
 func viewerRemoved() {
+	stats.SetViewerCount(server.ClientCount())
 }

@@ -41,6 +41,8 @@
     </video>
       <div id="app">
         {{ streamStatus }} {{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.
+        Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }},
+        {{ overallMaxViewerCount }} overall.
       </div>
     </div>
 
