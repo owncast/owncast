@@ -78,13 +78,14 @@ func (s *Stats) GetOverallMaxViewerCount() int {
 }
 
 func (s *Stats) SetClientActive(clientID string) {
-	fmt.Println("Marking client active:", clientID)
+	if _, ok := s.clients[clientID]; !ok {
+		fmt.Println("Marking client active:", clientID, s.GetViewerCount()+1, "clients connected.")
+	}
 
 	s.clients[clientID] = time.Now()
 	s.SessionMaxViewerCount = int(math.Max(float64(s.GetViewerCount()), float64(s.SessionMaxViewerCount)))
 	s.OverallMaxViewerCount = int(math.Max(float64(s.SessionMaxViewerCount), float64(s.OverallMaxViewerCount)))
 
-	fmt.Println("Now", s.GetViewerCount(), "clients connected.")
 }
 
 func (s *Stats) ViewerDisconnected(clientID string) {
