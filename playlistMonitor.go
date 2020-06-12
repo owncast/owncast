@@ -96,7 +96,13 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 					writePlaylist(playlistString, path.Join(configuration.PublicHLSPath, relativePath))
 				} else if filepath.Ext(event.Path) == ".ts" {
 					segment := getSegmentFromPath(event.Path)
-					newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, segment.RelativeUploadPath))
+
+					newObjectPathChannel := make(chan string, 1)
+					go func() {
+						newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, segment.RelativeUploadPath))
+						newObjectPathChannel <- newObjectPath
+					}()
+					newObjectPath := <-newObjectPathChannel
 					segment.RemoteID = newObjectPath
 					// fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
 
