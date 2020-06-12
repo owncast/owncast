@@ -64,7 +64,7 @@ func startFfmpeg(configuration Config) {
 		"-master_pl_name stream.m3u8",
 		"-g 60", "-keyint_min 60", // create key frame (I-frame) every 48 frames (~2 seconds) - will later affect correct slicing of segments and alignment of renditions
 		"-framerate 30",
-		"-r 15",
+		// "-r 15",
 		"-preset " + configuration.VideoSettings.EncoderPreset,
 		"-sc_threshold 0", // don't create key frames on scene change - only according to -g
 		"-profile:v main", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
