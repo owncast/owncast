@@ -43,17 +43,18 @@ func startFfmpeg(configuration Config) {
 		"-hide_banner",
 		"-re",
 		"-i pipe:",
-		"-vf scale=900:-2",
-		"-sws_flags fast_bilinear",
-		strings.Join(videoMaps, " "), // All the different video variants
+		// "-vf scale=900:-2", // Re-enable in the future with a config to togging resizing?
+		// "-sws_flags fast_bilinear",
+		strings.Join(videoMaps, " "),                // All the different video variants
 		strings.Join(audioMaps, " ") + " -c:a copy", // Audio for all the variants
 		// strings.Join(audioMaps, " ") + " -c:a aac -b:a 192k -ac 2", // Audio for all the variants
 		"-master_pl_name stream.m3u8",
-		"-g 48",
-		"-keyint_min 48",
+		"-g 60", "-keyint_min 60", // create key frame (I-frame) every 48 frames (~2 seconds) - will later affect correct slicing of segments and alignment of renditions
+		"-framerate 30",
+		"-r 15",
 		"-preset " + configuration.VideoSettings.EncoderPreset,
-		"-sc_threshold 0",
-		"-profile:v high",
+		"-sc_threshold 0", // don't create key frames on scene change - only according to -g
+		"-profile:v main", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-f hls",
 		"-hls_list_size 30",
 		"-hls_time 10",
