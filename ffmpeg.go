@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -69,7 +70,7 @@ func startFfmpeg(configuration Config) {
 		"-profile:v main", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-f hls",
 		"-hls_list_size 30",
-		"-hls_time 10",
+		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
 		"-strftime 1",
 		"-use_localtime 1",
 		"-hls_playlist_type event",
