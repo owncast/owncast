@@ -14,7 +14,6 @@ videoSettings:
 
 files:
   maxNumberInPlaylist: 30
-  maxNumberOnDisk: 60
 
 ipfs:
   enabled: false

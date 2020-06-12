@@ -69,14 +69,13 @@ func startFfmpeg(configuration Config) {
 		"-sc_threshold 0", // don't create key frames on scene change - only according to -g
 		"-profile:v main", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-f hls",
-		"-hls_list_size 30",
+		"-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
 		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
 		"-strftime 1",
 		"-use_localtime 1",
 		"-hls_playlist_type event",
 		"-hls_segment_filename " + path.Join(outputDir, "stream-%Y%m%d-%s.ts"),
 		"-hls_flags delete_segments+program_date_time+temp_file",
-		"-segment_wrap 100",
 		"-tune zerolatency",
 
 		streamMappingString,

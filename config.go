@@ -35,7 +35,6 @@ type StreamQuality struct {
 // MaxNumberOnDisk must be at least as large as MaxNumberInPlaylist
 type Files struct {
 	MaxNumberInPlaylist int `yaml:"maxNumberInPlaylist"`
-	MaxNumberOnDisk     int `yaml:"maxNumberOnDisk"`
 }
 
 type IPFS struct {
