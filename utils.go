@@ -57,13 +57,19 @@ func copy(src, dst string) {
 func resetDirectories(configuration Config) {
 	// Wipe the public, web-accessible hls data directory
 	os.RemoveAll(configuration.PublicHLSPath)
+	os.RemoveAll(configuration.PrivateHLSPath)
 	os.MkdirAll(configuration.PublicHLSPath, 0777)
+	os.MkdirAll(configuration.PrivateHLSPath, 0777)
 
 	// Create private hls data dirs
-	os.RemoveAll(configuration.PrivateHLSPath)
-	for index := range configuration.VideoSettings.StreamQualities {
-		os.MkdirAll(path.Join(configuration.PrivateHLSPath, strconv.Itoa(index)), 0777)
-		os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(index)), 0777)
+	if !configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
+		for index := range configuration.VideoSettings.StreamQualities {
+			os.MkdirAll(path.Join(configuration.PrivateHLSPath, strconv.Itoa(index)), 0777)
+			os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(index)), 0777)
+		}
+	} else {
+		os.MkdirAll(path.Join(configuration.PrivateHLSPath, strconv.Itoa(0)), 0777)
+		os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(0)), 0777)
 	}
 }
 

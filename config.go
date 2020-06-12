@@ -25,6 +25,7 @@ type VideoSettings struct {
 	StreamingKey         string          `yaml:"streamingKey"`
 	EncoderPreset        string          `yaml:"encoderPreset"`
 	StreamQualities      []StreamQuality `yaml:"streamQualities"`
+	EnablePassthrough    bool            `yaml:"passthrough"`
 }
 
 type StreamQuality struct {
@@ -106,7 +107,4 @@ func checkConfig(config Config) {
 		panic("A video encoder preset is required to be set in the config file.")
 	}
 
-	if len(config.VideoSettings.StreamQualities) < 1 {
-		panic("At least one stream quality must be set in the config file.")
-	}
 }

@@ -7,6 +7,7 @@ videoSettings:
   chunkLengthInSeconds: 4
   streamingKey: abc123
   encoderPreset: superfast # https://trac.ffmpeg.org/wiki/Encode/H.264
+  passthrough: true # Enabling this will ignore the below stream qualities and pass through the same quality that you're sending it
 
   streamQualities:
     - bitrate: 6000k

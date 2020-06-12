@@ -53,13 +53,16 @@ func getVariantIndexFromPath(fullDiskPath string) int {
 var variants []Variant
 
 func monitorVideoContent(pathToMonitor string, configuration Config, storage ChunkStorage) {
-	// Create structures to store the segments for the different stream variants
+	// Create at least one structure to store the segments for the different stream variants
 	variants = make([]Variant, len(configuration.VideoSettings.StreamQualities))
-	for index := range variants {
-		variants[index] = Variant{index, make([]Segment, 0)}
+	if len(configuration.VideoSettings.StreamQualities) > 0 && !configuration.VideoSettings.EnablePassthrough {
+		for index := range variants {
+			variants[index] = Variant{index, make([]Segment, 0)}
+		}
+	} else {
+		variants[0] = Variant{0, make([]Segment, 0)}
 	}
-
-	log.Printf("Using %s for storing files with %d variants...\n", pathToMonitor, len(variants))
+	log.Printf("Using directory %s for storing files with %d variants...\n", pathToMonitor, len(variants))
 
 	w := watcher.New()
 

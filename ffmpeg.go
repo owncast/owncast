@@ -33,21 +33,33 @@ func startFfmpeg(configuration Config) {
 	var videoMaps = make([]string, 0)
 	var streamMaps = make([]string, 0)
 	var audioMaps = make([]string, 0)
-	for index, quality := range configuration.VideoSettings.StreamQualities {
-		videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %s", index, index, quality.Bitrate))
-		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", index, index))
-		audioMaps = append(audioMaps, "-map a:0")
+	var videoMapsString = ""
+	var audioMapsString = ""
+	var streamMappingString = ""
+
+	if configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
+		fmt.Println("Enabling passthrough video")
+		// videoMaps = append(videoMaps, fmt.Sprintf("-map 0:v -c:v copy"))
+		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", 0, 0))
+	} else {
+		for index, quality := range configuration.VideoSettings.StreamQualities {
+			videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %s", index, index, quality.Bitrate))
+			streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", index, index))
+			videoMapsString = strings.Join(videoMaps, " ")
+			audioMaps = append(audioMaps, "-map a:0")
+			audioMapsString = strings.Join(audioMaps, " ") + " -c:a copy" // Pass through audio for all the variants, don't reencode
+		}
 	}
 
+	streamMappingString = "-var_stream_map \"" + strings.Join(streamMaps, " ") + "\""
 	ffmpegFlags := []string{
 		"-hide_banner",
 		"-re",
 		"-i pipe:",
 		// "-vf scale=900:-2", // Re-enable in the future with a config to togging resizing?
 		// "-sws_flags fast_bilinear",
-		strings.Join(videoMaps, " "),                // All the different video variants
-		strings.Join(audioMaps, " ") + " -c:a copy", // Audio for all the variants
-		// strings.Join(audioMaps, " ") + " -c:a aac -b:a 192k -ac 2", // Audio for all the variants
+		videoMapsString, // All the different video variants
+		audioMapsString,
 		"-master_pl_name stream.m3u8",
 		"-g 60", "-keyint_min 60", // create key frame (I-frame) every 48 frames (~2 seconds) - will later affect correct slicing of segments and alignment of renditions
 		"-framerate 30",
@@ -66,8 +78,7 @@ func startFfmpeg(configuration Config) {
 		"-segment_wrap 100",
 		"-tune zerolatency",
 
-		// "-master_m3u8_publish_rate 5",
-		"-var_stream_map \"" + strings.Join(streamMaps, " ") + "\"",
+		streamMappingString,
 		variantPlaylistName,
 	}
 
