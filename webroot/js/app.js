@@ -1,14 +1,14 @@
 function setupApp() {
   Vue.filter('plural', function (string, count) {
     if (count === 1) {
-      return string
+      return string;
     } else {
-      return string + "s"
+      return string + "s";
     }
   })
 
   window.app = new Vue({
-    el: "#app",
+    el: "#stream-info",
     data: {
       streamStatus: "",
       viewerCount: 0,
@@ -32,17 +32,20 @@ function setupApp() {
     },
     methods: {
       submitChatForm: function (e) {
-        const message = new Message(this.message)
-        message.id = uuidv4()
-        localStorage.author = message.author
-        const messageJSON = JSON.stringify(message)
-        window.ws.send(messageJSON)
-        e.preventDefault()
+        const message = new Message(this.message);
+        message.id = uuidv4();
+        localStorage.author = message.author;
+        const messageJSON = JSON.stringify(message);
+        window.ws.send(messageJSON);
+        e.preventDefault();
 
-        this.message.body = ""
+        this.message.body = "";
       }
     }
   });
+
+  var appMessagingMisc = new Messaging();
+  appMessagingMisc.init();
 }
 
 async function getStatus() {
@@ -64,7 +67,7 @@ async function getStatus() {
 
 }
 
-var websocketReconnectTimer
+var websocketReconnectTimer;
 function setupWebsocket() {
   clearTimeout(websocketReconnectTimer)
 
@@ -138,7 +141,7 @@ setupWebsocket()
 // }
 
 function scrollSmoothToBottom(id) {
-  const div = document.getElementById(id)
+  const div = document.getElementById(id);
   $('#' + id).animate({
     scrollTop: div.scrollHeight - div.clientHeight
   }, 500)
