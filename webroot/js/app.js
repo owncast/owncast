@@ -22,28 +22,29 @@ function setupApp() {
     }
   })
 
-  window.chatForm = new Vue({
-    el: "#chatForm",
-    data: {
-      message: {
-        author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
-        body: ""
-      }
-    },
-    methods: {
-      submitChatForm: function (e) {
-        const message = new Message(this.message);
-        message.id = uuidv4();
-        localStorage.author = message.author;
-        const messageJSON = JSON.stringify(message);
-        window.ws.send(messageJSON);
-        e.preventDefault();
+  // window.chatForm = new Vue({
+  //   el: "#chatForm",
+  //   data: {
+  //     message: {
+  //       author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
+  //       body: ""
+  //     }
+  //   },
+  //   methods: {
+  //     submitChatForm: function (e) {
+  //       const message = new Message(this.message);
+  //       message.id = uuidv4();
+  //       localStorage.author = message.author;
+  //       const messageJSON = JSON.stringify(message);
+  //       window.ws.send(messageJSON);
+  //       e.preventDefault();
 
-        this.message.body = "";
-      }
-    }
-  });
+  //       this.message.body = "";
+  //     }
+  //   }
+  // });
 
+  window.VIDEOJS_NO_DYNAMIC_STYLE = true;
   var appMessagingMisc = new Messaging();
   appMessagingMisc.init();
 }
@@ -109,16 +110,3 @@ getStatus()
 setupWebsocket()
 // setInterval(getStatus, 5000)
 
-function scrollSmoothToBottom(id) {
-  const div = document.getElementById(id);
-  $('#' + id).animate({
-    scrollTop: div.scrollHeight - div.clientHeight
-  }, 500)
-}
-
-function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}

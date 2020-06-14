@@ -2,25 +2,20 @@
   <meta charset="UTF-8" />
   <title>Live stream test</title>
 
-  <link
-    href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
-    rel="stylesheet"
-  />
-  <link href="./styles/layout.css" rel="stylesheet" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
  
   <!-- unpkg : use the latest version of Video.js -->
-<link href="//unpkg.com/video.js/dist/video-js.min.css" rel="stylesheet">
-<link
-  href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css"
-  rel="stylesheet"
-/>
-<script src="//unpkg.com/video.js/dist/video.min.js"></script>
+  <link href="//unpkg.com/video.js/dist/video-js.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css" rel="stylesheet" />
+  <script src="//unpkg.com/video.js/dist/video.min.js"></script>
 
   <!-- Used for animating the scrolling of the chat div.  Can that be done other ways? -->
   <script src="vendor/jquery-2.1.4.min.js"></script>
 
   <script src="vendor/autolink.js"></script>
+  <link href="./styles/layout.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -34,7 +29,7 @@
         <div id="user-info">
           <div id="user-info-display" title="Click to update user name" class="flex">
             <img src="https://robohash.org/username123" id="username-avatar" class="rounded-full" />
-            <span id="username-display">Random Username 123</span>
+            <span id="username-display"></span>
           </div>
 
           <div id="user-info-change">
@@ -134,6 +129,7 @@
     </div>
   </div>
 
+  <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
   <script src="js/app.js"></script>
 </body>

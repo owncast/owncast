@@ -148,10 +148,12 @@ header h1 {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  background-color: black;
 }
 #video-container video {
   width: 100%;
   display: block;
+  min-height: 100%
 }
 
 #stream-info {

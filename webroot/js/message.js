@@ -38,6 +38,8 @@ class Messaging {
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
 
+		this.keyUsername = "owncast_username";
+		this.keyChatDisplayed = "owncast_chat";
 
 		this.tagChatToggle = document.querySelector("#chat-toggle");
 
@@ -47,7 +49,7 @@ class Messaging {
 		this.tagUsernameDisplay = document.querySelector("#username-display");
 		this.imgUsernameAvatar = document.querySelector("#username-avatar");
 
-		this.tagMessageAuthor = document.querySelector("#self-message-author");
+		this.inputMessageAuthor = document.querySelector("#self-message-author");
 
 		this.tagMessageFormWarning = document.querySelector("#message-form-warning");
 		
@@ -58,7 +60,6 @@ class Messaging {
 		this.btnCancelUpdateUsername = document.querySelector("#button-cancel-change"); 
 
 		this.formMessageInput = document.querySelector("#inputBody");
-
 	}
 	init() {
 		this.tagChatToggle.addEventListener("click", this.handleChatToggle);
@@ -69,16 +70,55 @@ class Messaging {
 		
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown);
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown);
+		this.initLocalStates();
+
+		var vueMessageForm = new Vue({
+			el: "#message-form",
+			data: {
+				message: {
+					author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
+					body: ""
+				}
+			},
+			methods: {
+				submitChatForm: function (e) {
+					const message = new Message(this.message);
+					message.id = uuidv4();
+					localStorage.author = message.author;
+					const messageJSON = JSON.stringify(message);
+					window.ws.send(messageJSON);
+					e.preventDefault();
+	
+					this.message.body = "";
+				}
+			}
+		});
+
+		
+	}
+
+	initLocalStates() {
+		this.username = getLocalStorage(this.keyUsername) || "User" + (Math.floor(Math.random() * 42) + 1);
+		this.updateUsernameFields(this.username);
+
+		this.chatDisplayed = getLocalStorage(this.keyChatDisplayed) || false;
+		this.displayChat();
+	}
+	updateUsernameFields(username) {
+		this.tagUsernameDisplay.innerText = username;
+		this.inputChangeUserName.value = username;
+		this.inputMessageAuthor.value = username;
+		this.imgUsernameAvatar.src = this.avatarSource + username;
+	}
+	displayChat() {
+		this.tagAppContainer.className = this.chatDisplayed ?  "flex" : "flex no-chat";
 	}
 
 	handleChatToggle = () => {
-		if (this.chatDisplayed) {
-			this.tagAppContainer.className = "flex no-chat";
-			this.chatDisplayed = false;
-		} else {
-			this.tagAppContainer.className = "flex";
-			this.chatDisplayed = true;
-		}
+		this.chatDisplayed = !this.chatDisplayed;
+
+		setLocalStorage(this.keyChatDisplayed, this.chatDisplayed);
+		this.displayChat();
 	}
 	handleShowChangeNameForm = () => {
 		this.tagUserInfoDisplay.style.display = "none";
@@ -95,10 +135,12 @@ class Messaging {
 
 		if (newValue) {
 			this.userName = newValue;
-			this.inputChangeUserName.value = newValue;
-			this.tagMessageAuthor.innerText = newValue;
-			this.tagUsernameDisplay.innerText = newValue;
-			this.imgUsernameAvatar.src = this.avatarSource + newValue;
+			this.updateUsernameFields(newValue);
+			// this.inputChangeUserName.value = newValue;
+			// this.inputMessageAuthor.value = newValue;
+			// this.tagUsernameDisplay.innerText = newValue;
+			// this.imgUsernameAvatar.src = this.avatarSource + newValue;
+			setLocalStorage(this.keyUsername, newValue);
 		}
 		this.handleHideChangeNameForm();
 	}
