@@ -28,6 +28,8 @@ function setupApp() {
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
   var appMessagingMisc = new Messaging();
   appMessagingMisc.init();
+
+  const config = new Config();
 }
 
 async function getStatus() {
