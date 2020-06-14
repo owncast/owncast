@@ -8,17 +8,24 @@ function getLocalStorage(key) {
 
 function setLocalStorage(key, value) {
   try {
-    localStorage.setItem(key, value);
+    if (value !== "" && value !== null) {
+      localStorage.setItem(key, value);
+    } else {
+      localStorage.removeItem(key);
+    }
     return true;
   } catch (e) {}
   return false;
 }
 
+function clearLocalStorage(key) {
+  localStorage.removeItem(key);
+}
+
 function jumpToBottom(id) {
   const div = document.querySelector(id);
-  console.log(div.scrollTop, div.scrollHeight , div.clientHeight)
   div.scrollTo({
-    top: div.scrollHeight - div.clientHeight,
+    top: div.scrollHeight,// - div.clientHeight,
     left: 0,
     behavior: 'smooth'
   });

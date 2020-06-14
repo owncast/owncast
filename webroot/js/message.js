@@ -1,9 +1,9 @@
 class Message {
 	constructor(model) {
-		this.author = model.author
-		this.body = model.body
-		this.image = "https://robohash.org/" + model.author
-		this.id = model.id
+		this.author = model.author;
+		this.body = model.body;
+		this.image = model.image || "https://robohash.org/" + model.author;
+		this.id = model.id;
 	}
 
 	addNewlines(str) {
@@ -40,9 +40,11 @@ class Messaging {
 		this.keyUsername = "owncast_username";
 		this.keyChatDisplayed = "owncast_chat";
 
+		this.tagAppContainer = document.querySelector("#app-container");
+
 		this.tagChatToggle = document.querySelector("#chat-toggle");
 
-		this.tagUserInfoDisplay = document.querySelector("#user-info-display");
+		this.textUserInfoDisplay = document.querySelector("#user-info-display");
 		this.tagUserInfoChanger = document.querySelector("#user-info-change");
 
 		this.tagUsernameDisplay = document.querySelector("#username-display");
@@ -52,7 +54,6 @@ class Messaging {
 
 		this.tagMessageFormWarning = document.querySelector("#message-form-warning");
 		
-		this.tagAppContainer = document.querySelector("#app-container");
 
 		this.inputChangeUserName = document.querySelector("#username-change-input"); 
 		this.btnUpdateUserName = document.querySelector("#button-update-username"); 
@@ -63,7 +64,7 @@ class Messaging {
 	}
 	init() {
 		this.tagChatToggle.addEventListener("click", this.handleChatToggle);
-		this.tagUsernameDisplay.addEventListener("click", this.handleShowChangeNameForm);
+		this.textUserInfoDisplay.addEventListener("click", this.handleShowChangeNameForm);
 		
 		this.btnUpdateUserName.addEventListener("click", this.handleUpdateUsername);
 		this.btnCancelUpdateUsername.addEventListener("click", this.handleHideChangeNameForm);
@@ -72,7 +73,7 @@ class Messaging {
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown);
 		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton);
 		this.initLocalStates();
-		
+
 	}
 
 	initLocalStates() {
@@ -94,16 +95,19 @@ class Messaging {
 
 	handleChatToggle = () => {
 		this.chatDisplayed = !this.chatDisplayed;
-
-		setLocalStorage(this.keyChatDisplayed, this.chatDisplayed);
+		if (this.chatDisplayed) {
+			setLocalStorage(this.keyChatDisplayed, this.chatDisplayed);
+		} else {
+			clearLocalStorage(this.keyChatDisplayed);
+		}
 		this.displayChat();
 	}
 	handleShowChangeNameForm = () => {
-		this.tagUserInfoDisplay.style.display = "none";
+		this.textUserInfoDisplay.style.display = "none";
 		this.tagUserInfoChanger.style.display = "flex";
 	}
 	handleHideChangeNameForm = () => {
-		this.tagUserInfoDisplay.style.display = "flex";
+		this.textUserInfoDisplay.style.display = "flex";
 		this.tagUserInfoChanger.style.display = "none";
 	}
 	handleUpdateUsername = () => {
