@@ -148,7 +148,7 @@ header h1 {
 
 /* ************************************************8 */
 
-#video-container {
+.owncast-video-container {
   width: 100%;
   height: auto;
   display: flex;
@@ -157,19 +157,32 @@ header h1 {
   align-items: center;
   background-color: black;
 }
-#video-container video {
+.owncast-video-container .video-js {
+  width: 100%;
+  display: block;
+  height: calc(100vh - var(--header-height) - 5em);
+}
+.owncast-video-container video {
   width: 100%;
   display: block;
   min-height: 100%
 }
+/* ************************************************8 */
 
 #stream-info {
-  padding: .5em;
+  padding: .5em 2em;
   text-align: center;
   font-family: monospace;
   font-size: .75em;
   background-color: rgba(0,0,0,.5);
   border-bottom: 1px solid black;
+
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#user-content {
+  padding: 2em;
 }
 
 /* ************************************************8 */
