@@ -84,8 +84,8 @@ function setupWebsocket() {
     })
     
     if (existing.length === 0 || !existing) {
-      this.messagesContainer.messages.push(message)
-      scrollSmoothToBottom("messages-container")
+      this.messagesContainer.messages.push(message);
+      setTimeout(() => { jumpToBottom("#messages-container"); } , 10); // could be better. is there a sort of Vue "componentDidUpdate" we can do this on?
     }
   }
 

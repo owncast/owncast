@@ -198,6 +198,9 @@ header h1 {
   align-items: flex-end;
   margin-bottom: 0;
 }
+#message-body-form {
+  font-size: 1em;
+}
 #message-form-actions {
   flex-direction: row;
   justify-content: space-between;

@@ -8,7 +8,6 @@ class Message {
 
 	addNewlines(str) {
 		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
-
 	}
 	formatText() {
 		var linked = autoLink(this.body, { embed: true });
@@ -21,7 +20,7 @@ class Message {
 			body: this.body(),
 			image: this.image(),
 			id: this.id
-		}
+		};
 	}
 }
 
@@ -58,8 +57,9 @@ class Messaging {
 		this.inputChangeUserName = document.querySelector("#username-change-input"); 
 		this.btnUpdateUserName = document.querySelector("#button-update-username"); 
 		this.btnCancelUpdateUsername = document.querySelector("#button-cancel-change"); 
+		this.btnSubmitMessage = document.querySelector("#button-submit-message");
 
-		this.formMessageInput = document.querySelector("#inputBody");
+		this.formMessageInput = document.querySelector("#message-body-form");
 	}
 	init() {
 		this.tagChatToggle.addEventListener("click", this.handleChatToggle);
@@ -70,30 +70,8 @@ class Messaging {
 		
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown);
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown);
+		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton);
 		this.initLocalStates();
-
-		var vueMessageForm = new Vue({
-			el: "#message-form",
-			data: {
-				message: {
-					author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
-					body: ""
-				}
-			},
-			methods: {
-				submitChatForm: function (e) {
-					const message = new Message(this.message);
-					message.id = uuidv4();
-					localStorage.author = message.author;
-					const messageJSON = JSON.stringify(message);
-					window.ws.send(messageJSON);
-					e.preventDefault();
-	
-					this.message.body = "";
-				}
-			}
-		});
-
 		
 	}
 
@@ -136,10 +114,6 @@ class Messaging {
 		if (newValue) {
 			this.userName = newValue;
 			this.updateUsernameFields(newValue);
-			// this.inputChangeUserName.value = newValue;
-			// this.inputMessageAuthor.value = newValue;
-			// this.tagUsernameDisplay.innerText = newValue;
-			// this.imgUsernameAvatar.src = this.avatarSource + newValue;
 			setLocalStorage(this.keyUsername, newValue);
 		}
 		this.handleHideChangeNameForm();
@@ -160,11 +134,9 @@ class Messaging {
 
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
-				// submit()
+				this.submitChat(value);
 				event.preventDefault();
-				// clear out things.
-				this.formMessageInput.value = "";
-				this.tagMessageFormWarning.innerText = "";
+				
 				return;
 			}
 			this.prepNewLine = false;
@@ -185,7 +157,30 @@ class Messaging {
 			this.tagMessageFormWarning.innerText = "";
 		}
 	}
+	handleSubmitChatButton = event => {
+		var value = this.formMessageInput.value.trim();
+		if (value) {
+			this.submitChat(value);
+			event.preventDefault();
+		return false;
+		}
+		event.preventDefault();
+		return false;
+	}
+	submitChat(content) {
+		if (!content) {
+			return;
+		}
+		var message = new Message({
+			body: content,
+			author: this.username,
+			id: uuidv4(),
+		});
+		const messageJSON = JSON.stringify(message);
+		window.ws.send(messageJSON);
 
-
-
+		// clear out things.
+		this.formMessageInput.value = "";
+		this.tagMessageFormWarning.innerText = "";
+	}
 }
