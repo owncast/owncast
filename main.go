@@ -72,6 +72,8 @@ func enableCors(w *http.ResponseWriter) {
 }
 
 func getStatus(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
 	status := Status{
 		Online:                stats.IsStreamConnected(),
 		ViewerCount:           stats.GetViewerCount(),
