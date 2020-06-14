@@ -113,7 +113,7 @@ AutoLink.prototype = {
     var text = this.options.removeHTTP ? removeHTTP(match) : match
     return (
       p1 +
-      '<a href="' +
+      '<a target="_blank" href="' +
       match +
       '"' +
       this.attrs +

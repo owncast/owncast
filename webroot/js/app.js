@@ -1,19 +1,17 @@
 function setupApp() {
   Vue.filter('plural', function (string, count) {
     if (count === 1) {
-      return string
+      return string;
     } else {
-      return string + "s"
+      return string + "s";
     }
   })
 
   window.app = new Vue({
-    el: "#app",
+    el: "#stream-info",
     data: {
       streamStatus: "",
       viewerCount: 0,
-      sessionMaxViewerCount: 0,
-      overallMaxViewerCount: 0
     },
   });
 
@@ -28,27 +26,30 @@ function setupApp() {
     el: "#chatForm",
     data: {
       message: {
-        author: localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
+        author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
         body: ""
       }
     },
     methods: {
       submitChatForm: function (e) {
-        const message = new Message(this.message)
-        message.id = uuidv4()
-        localStorage.author = message.author
-        const messageJSON = JSON.stringify(message)
-        window.ws.send(messageJSON)
-        e.preventDefault()
+        const message = new Message(this.message);
+        message.id = uuidv4();
+        localStorage.author = message.author;
+        const messageJSON = JSON.stringify(message);
+        window.ws.send(messageJSON);
+        e.preventDefault();
 
-        this.message.body = ""
+        this.message.body = "";
       }
     }
   });
+
+  var appMessagingMisc = new Messaging();
+  appMessagingMisc.init();
 }
 
 async function getStatus() {
-  const url = "/status";
+  let url = "https://util.real-ity.com:8042/status";
 
   try {
     const response = await fetch(url);
@@ -60,7 +61,7 @@ async function getStatus() {
     app.viewerCount = status.viewerCount
     app.sessionMaxViewerCount = status.sessionMaxViewerCount
     app.overallMaxViewerCount = status.overallMaxViewerCount
-
+    
   } catch (e) {
     app.streamStatus = "Stream server is offline."
     app.viewerCount = 0
@@ -68,12 +69,12 @@ async function getStatus() {
 
 }
 
-var websocketReconnectTimer
+var websocketReconnectTimer;
 function setupWebsocket() {
   clearTimeout(websocketReconnectTimer)
 
   const protocol = location.protocol == "https:" ? "wss" : "ws"
-  var ws = new WebSocket(protocol + "://" + location.host + "/entry")
+  var ws = new WebSocket("wss://util.real-ity.com:8042/entry")
   
   ws.onmessage = (e) => {
     const model = JSON.parse(e.data)
@@ -108,10 +109,10 @@ function setupWebsocket() {
 setupApp()
 getStatus()
 setupWebsocket()
-setInterval(getStatus, 5000)
+// setInterval(getStatus, 5000)
 
 function scrollSmoothToBottom(id) {
-  const div = document.getElementById(id)
+  const div = document.getElementById(id);
   $('#' + id).animate({
     scrollTop: div.scrollHeight - div.clientHeight
   }, 500)
