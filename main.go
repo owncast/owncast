@@ -51,6 +51,7 @@ func startChatServer() {
 
 	// static files
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
 
 		if path.Ext(r.URL.Path) == ".m3u8" {
@@ -64,6 +65,10 @@ func startChatServer() {
 	log.Printf("Starting public web server on port %d", configuration.WebServerPort)
 
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(configuration.WebServerPort), nil))
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func getStatus(w http.ResponseWriter, r *http.Request) {
