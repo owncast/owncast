@@ -59,7 +59,9 @@ async function getStatus() {
       : "Stream is offline."
     
     app.viewerCount = status.viewerCount
-
+    app.sessionMaxViewerCount = status.sessionMaxViewerCount
+    app.overallMaxViewerCount = status.overallMaxViewerCount
+    
   } catch (e) {
     app.streamStatus = "Stream server is offline."
     app.viewerCount = 0

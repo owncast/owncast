@@ -74,6 +74,8 @@
 
         <div id="stream-info">
           {{ streamStatus }} {{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.
+          Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }},
+          {{ overallMaxViewerCount }} overall.
         </div>
       </div>
 
