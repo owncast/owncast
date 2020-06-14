@@ -6,8 +6,13 @@ class Message {
 		this.id = model.id
 	}
 
-	linkedText() {
-		return autoLink(this.body, { embed: true })
+	addNewlines(str) {
+		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
+
+	}
+	formatText() {
+		var linked = autoLink(this.body, { embed: true });
+		return this.addNewlines(linked);
 	}
 
 	toModel() {
@@ -31,6 +36,7 @@ class Messaging {
 
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
+		this.maxMessageBuffer = 20;
 
 
 		this.tagChatToggle = document.querySelector("#chat-toggle");
@@ -62,7 +68,7 @@ class Messaging {
 		this.btnCancelUpdateUsername.addEventListener("click", this.handleHideChangeNameForm);
 		
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown);
-		this.formMessageInput.addEventListener("keyup", this.handleMessageInputKeydown);
+		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown);
 	}
 
 	handleChatToggle = () => {
@@ -104,12 +110,19 @@ class Messaging {
 			this.handleHideChangeNameForm();
 		}
 	}
+
 	handleMessageInputKeydown = event => {
-		console.log("keydown text", event.keyCode + ", " + this.formMessageInput.value + " , ", this.formMessageInput.value.length)
-		// if event.isComposing || 
+		var okCodes = [37,38,39,40,16,91,18,46,8];
+		var value = this.formMessageInput.value.trim();
+		var numCharsLeft = this.maxMessageLength - value.length;
+
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
-				// submit
+				// submit()
+				event.preventDefault();
+				// clear out things.
+				this.formMessageInput.value = "";
+				this.tagMessageFormWarning.innerText = "";
 				return;
 			}
 			this.prepNewLine = false;
@@ -120,7 +133,15 @@ class Messaging {
 			this.prepNewLine = true;
 		}
 
-		// var numChars = this.value.
+		if (numCharsLeft <= this.maxMessageBuffer) {
+			this.tagMessageFormWarning.innerText = numCharsLeft + " chars left";
+			if (numCharsLeft <= 0 && !okCodes.includes(event.keyCode)) {
+				event.preventDefault();
+				return;
+			}
+		} else {
+			this.tagMessageFormWarning.innerText = "";
+		}
 	}
 
 

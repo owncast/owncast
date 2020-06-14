@@ -24,8 +24,6 @@
       </h1>
 
       <div id="user-options-container" class="flex">
-        <span id="chat-toggle" class="rounded-full">💬</span>
-
         <div id="user-info">
           <div id="user-info-display" title="Click to update user name" class="flex">
             <img src="https://robohash.org/username123" id="username-avatar" class="rounded-full" />
@@ -44,6 +42,7 @@
             <button id="button-cancel-change" class="bg-gray-900 hover:bg-gray-800 py-1 px-2 rounded user-btn" title="cancel">X</button>
           </div>
         </div>
+        <div id="chat-toggle" class="flex">💬</div>
       </div>
 
     </header>
@@ -56,7 +55,9 @@
             id="video"
             preload="auto"
             controls
-            src="https://ia800300.us.archive.org/17/items/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
+            autoplay
+            muted
+            src="https://goth.land/hls/stream.m3u8"
           ></video>
         </div>
 
@@ -78,7 +79,7 @@
                   />
                   <div class="message-content">
                     <p class="message-author">{{ message.author }}</p>
-                    <p class="message-text"v-html="message.linkedText()"></p>
+                    <p class="message-text"v-html="message.formatText()"></p>
                   </div>
               </div>
             </div>
@@ -108,7 +109,7 @@
               ></textarea>
               
               <div id="message-form-actions" class="flex">
-                <span id="message-form-warning">X chars left</span>
+                <span id="message-form-warning"></span>
                 <button
                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                 > Send

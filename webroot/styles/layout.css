@@ -49,32 +49,33 @@ header h1 {
 }
 
 #chat-toggle {
-  margin-right: 2em;
   cursor: pointer;
-  background-color: #000;
-  border: 1px solid green;
-  display: inline-block;
-  padding: .25em;
-  height: 2em;
-  width: 2em;
+  background-color: #555;
   text-align: center;
+  height: 100%;
+  width: 3em;
+  justify-content: center;
+  align-items: center;
+}
+#chat-toggle:hover {
+  background-color: #666;
 }
 
 /* ************************************************8 */
 
 #user-options-container {
-  padding: .5em 1em;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
 }
 
 #user-info-display {
-  display: none;
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  padding: .5em 1em;
 }
 
 #username-avatar {
@@ -96,9 +97,10 @@ header h1 {
 
 
 #user-info-change {
-  display: flex;
+  display: none;
   justify-content: flex-end;
   align-items: center;
+  padding: .25em;
 }
 #username-change-input {
   font-size: .75em;
@@ -202,6 +204,7 @@ header h1 {
 }
 #message-form-warning {
   font-size: .75em;
+  color: red;
 }
 
 /* ************************************************8 */
@@ -241,6 +244,12 @@ header h1 {
 .no-chat .right-col {
   display: none;
 }
+
+.no-chat #chat-toggle {
+  opacity: .5;
+}
+
+/* ************************************************8 */
 
 @media screen and (max-width: 860px) {
   :root {
