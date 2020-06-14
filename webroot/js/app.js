@@ -33,7 +33,7 @@ function setupApp() {
 }
 
 async function getStatus() {
-  let url = "https://util.real-ity.com:8042/status";
+  let url = "https://goth.land/status";
 
   try {
     const response = await fetch(url);
@@ -57,11 +57,18 @@ var websocketReconnectTimer;
 function setupWebsocket() {
   clearTimeout(websocketReconnectTimer)
 
-  const protocol = location.protocol == "https:" ? "wss" : "ws"
-  var ws = new WebSocket("wss://util.real-ity.com:8042/entry")
-  
+  // Uncomment to point to somewhere other than goth.land
+  // const protocol = location.protocol == "https:" ? "wss" : "ws"
+  // var ws = new WebSocket(protocol + "://" + location.host + "/entry")
+
+  var ws = new WebSocket("wss://goth.land/entry")
+
   ws.onmessage = (e) => {
     const model = JSON.parse(e.data)
+
+    // Ignore non-chat messages (such as keepalive PINGs)
+    if (model.type !== SocketMessageTypes.CHAT) { return; }
+
     const message = new Message(model)
 
     const existing = this.messagesContainer.messages.filter(function (item) {
