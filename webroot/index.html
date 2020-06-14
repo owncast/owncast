@@ -8,7 +8,14 @@
   />
   <link href="./styles/layout.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+ 
+  <!-- unpkg : use the latest version of Video.js -->
+<link href="//unpkg.com/video.js/dist/video-js.min.css" rel="stylesheet">
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css"
+  rel="stylesheet"
+/>
+<script src="//unpkg.com/video.js/dist/video.min.js"></script>
 
   <!-- Used for animating the scrolling of the chat div.  Can that be done other ways? -->
   <script src="vendor/jquery-2.1.4.min.js"></script>
@@ -52,13 +59,17 @@
 
         <div id="video-container" class="flex shadow-md">
           <video
+            class="video-js vjs-theme-fantasy"
             id="video"
             preload="auto"
             controls
             autoplay
             muted
-            src="https://goth.land/hls/stream.m3u8"
-          ></video>
+            poster="https://goth.land/thumbnail.png"
+            data-setup='{}'
+          >
+            <source src="https://goth.land/hls/stream.m3u8" type="application/x-mpegURL"/>
+          </video>
         </div>
 
         <div id="stream-info">
@@ -121,10 +132,6 @@
         </div>
       </div>
     </div>
-
-
-
-
   </div>
 
   <script src="js/message.js"></script>
