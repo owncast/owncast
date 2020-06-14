@@ -74,18 +74,18 @@ func resetDirectories(configuration Config) {
 }
 
 func getClientIDFromRequest(req *http.Request) string {
-	var ipAddress string
+	var clientID string
 	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
 	if xForwardedFor != "" {
-		ipAddress = xForwardedFor
+		clientID = xForwardedFor
 	} else {
 		ipAddressString := req.RemoteAddr
 		ipAddressComponents := strings.Split(ipAddressString, ":")
 		ipAddressComponents[len(ipAddressComponents)-1] = ""
-		ipAddress = strings.Join(ipAddressComponents, ":")
+		clientID = strings.Join(ipAddressComponents, ":")
 	}
 
 	// fmt.Println("IP address determined to be", ipAddress)
 
-	return ipAddress
+	return clientID + req.UserAgent()
 }
