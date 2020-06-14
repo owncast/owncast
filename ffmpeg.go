@@ -63,11 +63,14 @@ func startFfmpeg(configuration Config) {
 		audioMapsString,
 		"-master_pl_name stream.m3u8",
 		"-g 60", "-keyint_min 60", // create key frame (I-frame) every 48 frames (~2 seconds) - will later affect correct slicing of segments and alignment of renditions
-		"-framerate 30",
-		// "-r 15",
+		// "-framerate 30",
+		// "-r 25",
 		"-preset " + configuration.VideoSettings.EncoderPreset,
 		"-sc_threshold 0", // don't create key frames on scene change - only according to -g
-		"-profile:v main", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		"-profile:v high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		"-movflags +faststart",
+		"-pix_fmt yuv420p",
+		"-maxrate 2048k -bufsize 2048k",
 		"-f hls",
 		"-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
 		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
