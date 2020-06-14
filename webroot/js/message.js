@@ -63,15 +63,15 @@ class Messaging {
 		this.formMessageInput = document.querySelector("#message-body-form");
 	}
 	init() {
-		this.tagChatToggle.addEventListener("click", this.handleChatToggle);
-		this.textUserInfoDisplay.addEventListener("click", this.handleShowChangeNameForm);
+		this.tagChatToggle.addEventListener("click", this.handleChatToggle.bind(this));
+		this.textUserInfoDisplay.addEventListener("click", this.handleShowChangeNameForm.bind(this));
 		
-		this.btnUpdateUserName.addEventListener("click", this.handleUpdateUsername);
-		this.btnCancelUpdateUsername.addEventListener("click", this.handleHideChangeNameForm);
+		this.btnUpdateUserName.addEventListener("click", this.handleUpdateUsername.bind(this));
+		this.btnCancelUpdateUsername.addEventListener("click", this.handleHideChangeNameForm.bind(this));
 		
-		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown);
-		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown);
-		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton);
+		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown.bind(this));
+		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown.bind(this));
+		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton.bind(this));
 		this.initLocalStates();
 
 	}
@@ -93,7 +93,7 @@ class Messaging {
 		this.tagAppContainer.className = this.chatDisplayed ?  "flex" : "flex no-chat";
 	}
 
-	handleChatToggle = () => {
+	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
 		if (this.chatDisplayed) {
 			setLocalStorage(this.keyChatDisplayed, this.chatDisplayed);
@@ -102,15 +102,15 @@ class Messaging {
 		}
 		this.displayChat();
 	}
-	handleShowChangeNameForm = () => {
+	handleShowChangeNameForm() {
 		this.textUserInfoDisplay.style.display = "none";
 		this.tagUserInfoChanger.style.display = "flex";
 	}
-	handleHideChangeNameForm = () => {
+	handleHideChangeNameForm() {
 		this.textUserInfoDisplay.style.display = "flex";
 		this.tagUserInfoChanger.style.display = "none";
 	}
-	handleUpdateUsername = () => {
+	handleUpdateUsername() {
 		var newValue = this.inputChangeUserName.value;
 		newValue = newValue.trim();
 		// do other string cleanup?
@@ -123,7 +123,7 @@ class Messaging {
 		this.handleHideChangeNameForm();
 	}
 
-	handleUsernameKeydown = event => {
+	handleUsernameKeydown(event) {
 		if (event.keyCode === 13) { // enter
 			this.handleUpdateUsername();
 		} else if (event.keyCode === 27) { // esc
@@ -131,7 +131,7 @@ class Messaging {
 		}
 	}
 
-	handleMessageInputKeydown = event => {
+	handleMessageInputKeydown(event) {
 		var okCodes = [37,38,39,40,16,91,18,46,8];
 		var value = this.formMessageInput.value.trim();
 		var numCharsLeft = this.maxMessageLength - value.length;
@@ -161,7 +161,7 @@ class Messaging {
 			this.tagMessageFormWarning.innerText = "";
 		}
 	}
-	handleSubmitChatButton = event => {
+	handleSubmitChatButton(event) {
 		var value = this.formMessageInput.value.trim();
 		if (value) {
 			this.submitChat(value);
