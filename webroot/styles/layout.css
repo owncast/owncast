@@ -36,6 +36,7 @@ header {
   z-index: 10;
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 header h1 {
@@ -46,6 +47,7 @@ header h1 {
   color: #ddd;
   padding: .5em;
   white-space: nowrap;
+  width: 20em;
 }
 
 #chat-toggle {
@@ -53,7 +55,7 @@ header h1 {
   background-color: #555;
   text-align: center;
   height: 100%;
-  width: 3em;
+  min-width: 3em;
   justify-content: center;
   align-items: center;
 }
@@ -67,6 +69,7 @@ header h1 {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 #user-info-display {
@@ -76,6 +79,8 @@ header h1 {
   align-items: center;
   cursor: pointer;
   padding: .5em 1em;
+  overflow: hidden;
+  width: 100%;
 }
 
 #username-avatar {
@@ -87,8 +92,10 @@ header h1 {
 #username-display {
   font-weight: bold;
   font-size: .75em;
-  color: #516FEB
-
+  color: #516FEB;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 #user-info-display:hover {
   transition: opacity .2s;
@@ -148,10 +155,12 @@ header h1 {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  background-color: black;
 }
 #video-container video {
   width: 100%;
   display: block;
+  min-height: 100%
 }
 
 #stream-info {
@@ -195,6 +204,9 @@ header h1 {
   flex-direction: column;
   align-items: flex-end;
   margin-bottom: 0;
+}
+#message-body-form {
+  font-size: 1em;
 }
 #message-form-actions {
   flex-direction: row;
@@ -282,8 +294,10 @@ header h1 {
     overflow: hidden;
   }
 
-  
-  #info {
+  #user-info {
+    width: 12em;    
+  }
+  #stream-info {
     display: none;
     overflow: auto;
     height: auto;

@@ -12,6 +12,8 @@ function setupApp() {
     data: {
       streamStatus: "",
       viewerCount: 0,
+      sessionMaxViewerCount: 0,
+      overallMaxViewerCount: 0,
     },
   });
 
@@ -22,28 +24,8 @@ function setupApp() {
     }
   })
 
-  window.chatForm = new Vue({
-    el: "#chatForm",
-    data: {
-      message: {
-        author: "",//localStorage.author || "Viewer" + (Math.floor(Math.random() * 42) + 1),
-        body: ""
-      }
-    },
-    methods: {
-      submitChatForm: function (e) {
-        const message = new Message(this.message);
-        message.id = uuidv4();
-        localStorage.author = message.author;
-        const messageJSON = JSON.stringify(message);
-        window.ws.send(messageJSON);
-        e.preventDefault();
 
-        this.message.body = "";
-      }
-    }
-  });
-
+  window.VIDEOJS_NO_DYNAMIC_STYLE = true;
   var appMessagingMisc = new Messaging();
   appMessagingMisc.init();
 }
@@ -58,9 +40,9 @@ async function getStatus() {
       ? "Stream is online."
       : "Stream is offline."
     
-    app.viewerCount = status.viewerCount
-    app.sessionMaxViewerCount = status.sessionMaxViewerCount
-    app.overallMaxViewerCount = status.overallMaxViewerCount
+    app.viewerCount = status.viewerCount;
+    app.sessionMaxViewerCount = status.sessionMaxViewerCount;
+    app.overallMaxViewerCount = status.overallMaxViewerCount;
     
   } catch (e) {
     app.streamStatus = "Stream server is offline."
@@ -85,8 +67,8 @@ function setupWebsocket() {
     })
     
     if (existing.length === 0 || !existing) {
-      this.messagesContainer.messages.push(message)
-      scrollSmoothToBottom("messages-container")
+      this.messagesContainer.messages.push(message);
+      setTimeout(() => { jumpToBottom("#messages-container"); } , 50); // could be better. is there a sort of Vue "componentDidUpdate" we can do this on?
     }
   }
 
@@ -111,16 +93,3 @@ getStatus()
 setupWebsocket()
 // setInterval(getStatus, 5000)
 
-function scrollSmoothToBottom(id) {
-  const div = document.getElementById(id);
-  $('#' + id).animate({
-    scrollTop: div.scrollHeight - div.clientHeight
-  }, 500)
-}
-
-function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
