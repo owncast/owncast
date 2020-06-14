@@ -34,15 +34,91 @@ header {
   left: 0;
   background-color: var(--header-bg-color);
   z-index: 10;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 header h1 {
   font-size: 1.25em;
-  font-weight: bold;
+  font-weight: 100;
+  letter-spacing: 1.2;
+  text-transform: uppercase;
   color: #ddd;
   padding: .5em;
+  white-space: nowrap;
 }
 
+#chat-toggle {
+  margin-right: 2em;
+  cursor: pointer;
+  background-color: #000;
+  border: 1px solid green;
+  display: inline-block;
+  padding: .25em;
+  height: 2em;
+  width: 2em;
+  text-align: center;
+}
+
+/* ************************************************8 */
+
+#user-options-container {
+  padding: .5em 1em;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+#user-info-display {
+  display: none;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+#username-avatar {
+  height: 1.75em;
+  width: 1.75em;
+  margin-right: .5em;
+  border: 1px solid rgba(255,255,255,.25)
+}
+#username-display {
+  font-weight: bold;
+  font-size: .75em;
+  color: #516FEB
+
+}
+#user-info-display:hover {
+  transition: opacity .2s;
+  opacity: .75;
+}
+
+
+#user-info-change {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+#username-change-input {
+  font-size: .75em;
+}
+#button-update-username {
+  font-size: .65em;
+  text-transform: uppercase;
+  height: 2.5em;
+}
+#button-cancel-change {
+  color: rgba(255,255,255,.5);
+  cursor: pointer;
+  height: 2.5em;
+  font-size: .65em;
+}
+.user-btn {
+  margin: 0 .25em;
+}
+
+/* ************************************************8 */
 
 #main-content-container {
   width: 100%;
@@ -61,6 +137,8 @@ header h1 {
   width: calc(100vw - var(--right-col-width));
 }
 
+/* ************************************************8 */
+
 #video-container {
   width: 100%;
   height: auto;
@@ -73,6 +151,18 @@ header h1 {
   width: 100%;
   display: block;
 }
+
+#stream-info {
+  padding: .5em;
+  text-align: center;
+  font-family: monospace;
+  font-size: .75em;
+  background-color: rgba(0,0,0,.5);
+  border-bottom: 1px solid black;
+}
+
+/* ************************************************8 */
+
 
 #chat-container {
   position: fixed;
@@ -87,22 +177,34 @@ header h1 {
   flex-direction: column;
   justify-content: flex-end;
 }
+
 #messages-container {
   overflow: auto;
   padding: 1em 0;
 }
-#chat-input-container {
+#message-input-container {
   width: 100%;
   border-top: 1px solid #eee;
   padding: 1em;
   background-color: #334;
 }
 
-#chat-form {
+#message-form {
   flex-direction: column;
   align-items: flex-end;
   margin-bottom: 0;
 }
+#message-form-actions {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+#message-form-warning {
+  font-size: .75em;
+}
+
+/* ************************************************8 */
 
 .message {
   padding: .85em;
@@ -112,11 +214,16 @@ header h1 {
   height: 2.5em;
   width: 2.5em;
   margin-right: .75em;
-  /* background-color: rgba(236, 236, 236, .5); */
   background-color: rgba(0,0,0, .75);
 }
 .message-content {
   font-size: .85em;
+}
+.message-content a {
+  color: #6699cc;
+}
+.message-content a:hover {
+  text-decoration: underline;
 }
 .message-author {
   font-weight: 600;
@@ -125,6 +232,7 @@ header h1 {
   color: #ccc;
   font-weight: 100;
 }
+/* ************************************************8 */
 
 
 .no-chat .left-col {
