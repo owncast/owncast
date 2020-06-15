@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/exec"
 	"path"
@@ -37,20 +38,23 @@ func startFfmpeg(configuration Config) {
 	var videoMapsString = ""
 	var audioMapsString = ""
 	var streamMappingString = ""
-
 	if configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
 		fmt.Println("Enabling passthrough video")
 		// videoMaps = append(videoMaps, fmt.Sprintf("-map 0:v -c:v copy"))
 		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", 0, 0))
 	} else {
 		for index, quality := range configuration.VideoSettings.StreamQualities {
-			videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %s", index, index, quality.Bitrate))
+			// minRate := math.Floor(float64(quality.Bitrate) / 2)
+			maxRate := math.Floor(float64(quality.Bitrate) * 0.8)
+			videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %dk -maxrate %dk -bufsize %dk", index, index, int(quality.Bitrate), int(maxRate), int(maxRate)))
 			streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", index, index))
 			videoMapsString = strings.Join(videoMaps, " ")
 			audioMaps = append(audioMaps, "-map a:0")
 			audioMapsString = strings.Join(audioMaps, " ") + " -c:a copy" // Pass through audio for all the variants, don't reencode
 		}
 	}
+
+	framerate := 30
 
 	streamMappingString = "-var_stream_map \"" + strings.Join(streamMaps, " ") + "\""
 	ffmpegFlags := []string{
@@ -62,15 +66,14 @@ func startFfmpeg(configuration Config) {
 		videoMapsString, // All the different video variants
 		audioMapsString,
 		"-master_pl_name stream.m3u8",
-		"-g 60", "-keyint_min 60", // create key frame (I-frame) every 48 frames (~2 seconds) - will later affect correct slicing of segments and alignment of renditions
-		// "-framerate 30",
+		"-framerate " + strconv.Itoa(framerate),
+		"-g " + strconv.Itoa(framerate*2), " -keyint_min " + strconv.Itoa(framerate*2), // multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
 		// "-r 25",
 		"-preset " + configuration.VideoSettings.EncoderPreset,
 		"-sc_threshold 0", // don't create key frames on scene change - only according to -g
 		"-profile:v high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-movflags +faststart",
 		"-pix_fmt yuv420p",
-		"-maxrate 2048k -bufsize 2048k",
 		"-f hls",
 		"-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
 		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
@@ -89,7 +92,7 @@ func startFfmpeg(configuration Config) {
 
 	ffmpegCmd := "cat " + pipePath + " | " + configuration.FFMpegPath + " " + ffmpegFlagsString
 
-	// fmt.Println(ffmpegCmd)
+	fmt.Println(ffmpegCmd)
 
 	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
 	fmt.Println(err)

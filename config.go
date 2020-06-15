@@ -29,7 +29,7 @@ type VideoSettings struct {
 }
 
 type StreamQuality struct {
-	Bitrate string `yaml:"bitrate"`
+	Bitrate int `yaml:"bitrate"`
 }
 
 // MaxNumberOnDisk must be at least as large as MaxNumberInPlaylist

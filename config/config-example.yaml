@@ -10,7 +10,7 @@ videoSettings:
   passthrough: true # Enabling this will ignore the below stream qualities and pass through the same quality that you're sending it
 
   streamQualities:
-    - bitrate: 6000k
+    - bitrate: 1000 # in k
 
 files:
   maxNumberInPlaylist: 30
