@@ -8,18 +8,10 @@ type ChatMessage struct {
 	MessageType string `json:"type"`
 }
 
-func (s *ChatMessage) AsJson() string {
-	return s.Author + " says " + s.Body
-}
-
 func (s *ChatMessage) String() string {
 	return s.Author + " says " + s.Body
 }
 
 type PingMessage struct {
 	MessageType string `json:"type"`
-}
-
-func (self *PingMessage) AsJson() string {
-	return "{type: \"PING\"}"
 }

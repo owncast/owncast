@@ -22,15 +22,6 @@ class Message {
 	userColor() {
 		return messageBubbleColorForString(this.author);
 	}
-
-	toModel() {
-		return {
-			author: this.author(),
-			body: this.body(),
-			image: this.image(),
-			id: this.id
-		};
-	}
 }
 
 
