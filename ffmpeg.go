@@ -46,8 +46,6 @@ func showStreamOfflineState(configuration Config) {
 
 	streamMappingString = "-var_stream_map \"" + strings.Join(streamMaps, " ") + "\""
 
-	// ffmpeg -hide_banner -stream_loop 500 -i doc/logo.png -c:v libx264 -map v:0 -c:v:0 libx264 -b:v:0 1500k -f hls -master_pl_name stream.m3u8 -use_localtime 1 -hls_flags program_date_time+temp_file+append_list -tune zerolatency -var_stream_map "v:0" -hls_segment_filename hls/%v/stream-%Y%m%d-%s.ts hls/%v/stream.m3u8
-
 	ffmpegFlags := []string{
 		"-hide_banner",
 		"-stream_loop 5000",
@@ -72,7 +70,7 @@ func showStreamOfflineState(configuration Config) {
 		"-pix_fmt yuv420p",
 
 		streamMappingString,
-		"-hls_segment_filename " + path.Join(outputDir, "offline-%Y%m%d-%s.ts"),
+		"-hls_segment_filename " + path.Join(outputDir, "offline-%s.ts"),
 		variantPlaylistName,
 	}
 
