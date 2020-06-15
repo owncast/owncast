@@ -122,7 +122,7 @@ class Messaging {
 		// do other string cleanup?
 
 		if (newValue) {
-			this.userName = newValue;
+			this.username = newValue;
 			this.updateUsernameFields(newValue);
 			setLocalStorage(this.keyUsername, newValue);
 		}
