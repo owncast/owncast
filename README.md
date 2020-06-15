@@ -29,7 +29,7 @@
   * [Usage](#usage)
   * [Docker](#docker)
 * [Use with your software](#use-with-your-desktop-software)
-  * [OBS](#usage-with-obs)
+  * [OBS & Streamlabs](#usage-with-obs)
   * [Restream](#usage-with-restream)
 * [Video storage and distribution options](#video-storage-options)
 * [Advanced usage](#advanced-usage)
@@ -98,13 +98,13 @@ If you want a simpler way to run an instance of owncast you can run it in a cont
 
 ### Usage with OBS
 
-1. Install [OBS](https://obsproject.com/) and get it working with your local setup.
+1. Install [OBS](https://obsproject.com/) or [Streamlabs OBS](https://streamlabs.com/) and get it working with your local setup.
 1. Open OBS Settings and go to "Stream".
 2. Select "Custom..." as the service.
 3. Enter the URL of the server running your streaming service in the format of rtmp://myserver.net/live.
 4. Enter your "Stream Key" that matches the key you put in your `config.yaml` file.
 5. Start the server.
-6. Press "Start Streaming" on OBS.
+6. Press "Start Streaming" (OBS) or "Go Live" (Streamlabs) on OBS.
 
 ### Usage with Restream
 
