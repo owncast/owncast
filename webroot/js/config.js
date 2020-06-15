@@ -5,7 +5,7 @@ class Config {
   }
 
   async init() {
-    const configFileLocation = "js/config.json";
+    const configFileLocation = "./js/config.json";
     
     try {
       const response = await fetch(configFileLocation);

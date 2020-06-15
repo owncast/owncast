@@ -27,7 +27,11 @@ function setupApp() {
 
   // style hackings
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
-  mobileVHhack();
+  if (hasTouchScreen()) {
+    mobileVHhack();
+    window.onorientationchange = handleOrientationChange;
+    // document.addEventListener("orientationchange", handleOrientationChange);
+  }
 
 
   // init messaging interactions

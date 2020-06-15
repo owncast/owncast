@@ -4,6 +4,7 @@
   --right-col-width: 24em;
 
   --header-bg-color: rgba(20,0,40,1);
+  --vh: 1vh;
 }
 
 body {
@@ -170,9 +171,11 @@ header h1 {
   padding: .5em 2em;
   text-align: center;
   font-size: .7em;
+  min-height: 3em; /*ios safari hack*/
 
   flex-direction: row;
   justify-content: space-between;
+  
 }
 
 #user-content {
@@ -273,7 +276,10 @@ header h1 {
   }
 }
 
-@media screen and (max-width: 640px ) and (orientation: portrait) {
+/* ************************************************8 */
+
+
+@media screen and (max-width: 640px ) {
   #main-content-container {
     flex-direction: column;
     justify-content: space-between;

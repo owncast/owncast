@@ -81,7 +81,7 @@ class Messaging {
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton.bind(this));
-		if (isAndroidMobile && window.screen.width < 860) {
+		if (isAndroidMobile && window.screen.width <= 860) {
 			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
 			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
 		}
@@ -203,7 +203,9 @@ class Messaging {
 			id: uuidv4(),
 		});
 		const messageJSON = JSON.stringify(message);
-		window.ws.send(messageJSON);
+		if (window && window.ws) {
+			window.ws.send(messageJSON);
+		}
 
 		// clear out things.
 		this.formMessageInput.value = "";
