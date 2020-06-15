@@ -1,9 +1,15 @@
+const SocketMessageTypes = {
+	CHAT: "CHAT",
+	PING: "PING"
+}
+
 class Message {
 	constructor(model) {
 		this.author = model.author;
 		this.body = model.body;
 		this.image = model.image || "https://robohash.org/" + model.author;
 		this.id = model.id;
+		this.type = model.type;
 	}
 
 	addNewlines(str) {
