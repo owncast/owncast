@@ -20,7 +20,7 @@ class Message {
 		return this.addNewlines(linked);
 	}
 	userColor() {
-		return colorForString(this.author);
+		return messageBubbleColorForString(this.author);
 	}
 
 	toModel() {
