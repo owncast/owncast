@@ -75,7 +75,7 @@ header h1 {
 #user-info-display {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   cursor: pointer;
   padding: .5em 1em;
@@ -260,8 +260,8 @@ header h1 {
   color: #ccc;
   font-weight: 100;
 }
-/* ************************************************8 */
 
+/* ************************************************8 */
 
 .no-chat .left-col {
   width: 100vw;
@@ -310,17 +310,18 @@ header h1 {
   #user-info {
     width: 12em;    
   }
-  #stream-info {
+  #user-content {
     display: none;
-    overflow: auto;
-    height: auto;
   }
-
   #chat-container {
     width: 100%;
     height: 100%;
     position: relative;
     height: auto;
+  }
+
+  .owncast-video-container .video-js {
+    height: 40vh;
   }
 
   .no-chat  .left-col {
@@ -329,8 +330,10 @@ header h1 {
   .no-chat  .right-col {
     display: none;
   }
-  .no-chat #info {
+  .no-chat #stream-info {
     display: block;
   }
-
+  .no-chat   #user-content {
+    display: block;
+  }
 }
