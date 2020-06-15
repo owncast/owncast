@@ -72,7 +72,7 @@ class Messaging {
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton.bind(this));
-		if (isAndroidMobile && window.screen.width <= 860) {
+		if (hasTouchScreen) {
 			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
 			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
 		}
@@ -98,11 +98,11 @@ class Messaging {
 	}
 
 	handleKeyboardAppear() {
-		this.tagAppContainer.classList.add("android-message-focus");
+		setTimeout(() => {this.tagAppContainer.classList.add("message-input-focus");}, 50);
 		mobileVHhack();
 	}
 	handleKeyboardOut() {
-		this.tagAppContainer.classList.remove("android-message-focus");
+		setTimeout(() => {this.tagAppContainer.classList.remove("message-input-focus");}, 50);
 		mobileVHhack();
 	}
 

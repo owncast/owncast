@@ -329,39 +329,40 @@ header h1 {
 }
 
 
-.android-message-focus  #main-content-container {
+.message-input-focus  #main-content-container {
   flex-direction: column;
   justify-content: space-between;
   height: calc((var(--vh, 1vh) * 100) - var(--header-height));
 
 }
 
-.android-message-focus .main-cols {
+.message-input-focus .main-cols {
   width: 100vw;
 }
-.android-message-focus .left-col {
+.message-input-focus .left-col {
   flex-direction: column;
   justify-content: stretch;
   z-index: 100;
 }
-.android-message-focus .right-col {
+.message-input-focus .right-col {
   overflow: hidden;
 }
 
-.android-message-focus  #user-info {
+.message-input-focus  #user-info {
   width: 9em;    
 }
-.android-message-focus  #user-content {
+.message-input-focus  #user-content {
   display: none;
 }
-.android-message-focus  #chat-container {
+.message-input-focus  #chat-container {
   width: 100%;
   height: 100%;
   position: relative;
   height: auto;
+  z-index: 999;
 }
 
-.android-message-focus  .owncast-video-container {
+.message-input-focus  .owncast-video-container {
   height: 40vh;
   height: calc((var(--vh, 1vh) * 40));
   min-height: 300px;
