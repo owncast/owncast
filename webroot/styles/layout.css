@@ -168,6 +168,13 @@ header h1 {
   display: block;
   min-height: 100%
 }
+
+.video-js .vjs-big-play-button {
+  left: 50%;
+  top: 50%;
+  margin-left: -1.5em;
+  margin-top: -0.75em;
+}
 /* ************************************************8 */
 
 #stream-info {
