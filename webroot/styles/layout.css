@@ -10,7 +10,8 @@
 
 body {
   font-size: 14px;
-  background-color: #666;
+  background-color: #eee;
+  /* color: white; */
 }
 ::-webkit-scrollbar {
   width: 0px;
@@ -22,8 +23,6 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
-
-  color: white;
 }
 
 header {
@@ -255,6 +254,7 @@ header h1 {
 }
 .message-author {
   font-weight: 600;
+  color: #fff;
 }
 .message-text {
   color: #ccc;
