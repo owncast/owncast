@@ -105,9 +105,11 @@ class Messaging {
 
 	handleKeyboardAppear() {
 		this.tagAppContainer.classList.add("android-message-focus");
+		setVHvar();
 	}
 	handleKeyboardOut() {
 		this.tagAppContainer.classList.remove("android-message-focus");
+		setVHvar();
 	}
 
 	handleChatToggle() {

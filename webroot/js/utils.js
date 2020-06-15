@@ -39,9 +39,10 @@ function uuidv4() {
 }
 
 function setVHvar() {
-  let vh = window.innerHeight * 0.01;
+  var vh = window.innerHeight * 0.01;
   // Then we set the value in the --vh custom property to the root of the document
   document.documentElement.style.setProperty('--vh', `${vh}px`);
+  console.log("== new vh", vh)
 }
 function mobileVHhack() {
   setVHvar();
@@ -53,3 +54,5 @@ function isAndroidMobile() {
   //&& ua.indexOf("mobile");
   return isAndroid;
 }
+
+
