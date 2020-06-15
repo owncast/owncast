@@ -3,13 +3,11 @@
   --header-height: 3em;
   --right-col-width: 24em;
 
-  --chat-bg-color: rgba(11,0,33,.95);
   --header-bg-color: rgba(20,0,40,1);
 }
 
 body {
   font-size: 14px;
-  background-color: #eee;
 }
 ::-webkit-scrollbar {
   width: 0px;
@@ -41,7 +39,6 @@ header h1 {
   font-weight: 100;
   letter-spacing: 1.2;
   text-transform: uppercase;
-  color: #ddd;
   padding: .5em;
   white-space: nowrap;
   width: 20em;
@@ -49,15 +46,11 @@ header h1 {
 
 #chat-toggle {
   cursor: pointer;
-  background-color: #555;
   text-align: center;
   height: 100%;
   min-width: 3em;
   justify-content: center;
   align-items: center;
-}
-#chat-toggle:hover {
-  background-color: #666;
 }
 
 /* ************************************************8 */
@@ -84,12 +77,10 @@ header h1 {
   height: 1.75em;
   width: 1.75em;
   margin-right: .5em;
-  border: 1px solid rgba(255,255,255,.25)
 }
 #username-display {
-  font-weight: bold;
+  font-weight: 600;
   font-size: .75em;
-  color: #516FEB;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -115,7 +106,6 @@ header h1 {
   height: 2.5em;
 }
 #button-cancel-change {
-  color: rgba(255,255,255,.5);
   cursor: pointer;
   height: 2.5em;
   font-size: .65em;
@@ -152,7 +142,6 @@ header h1 {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background-color: black;
 
   height: calc(100vh - 8em); /* Fallback for browsers that do not support Custom Properties */
   height: calc((var(--vh, 1vh) * 100) - var(--header-height) - 5em);
@@ -180,10 +169,7 @@ header h1 {
 #stream-info {
   padding: .5em 2em;
   text-align: center;
-  font-family: monospace;
-  font-size: .75em;
-  background-color: rgba(0,0,0,.5);
-  border-bottom: 1px solid black;
+  font-size: .7em;
 
   flex-direction: row;
   justify-content: space-between;
@@ -202,7 +188,6 @@ header h1 {
   right: 0;
   height: 100%;
   width: var(--right-col-width);
-  background-color: var(--chat-bg-color);
 
   height: calc(100vh - 3em); /* Fallback for browsers that do not support Custom Properties */
   height: calc((var(--vh, 1vh) * 100) - var(--header-height));
@@ -219,9 +204,7 @@ header h1 {
 }
 #message-input-container {
   width: 100%;
-  border-top: 1px solid #eee;
   padding: 1em;
-  background-color: #334;
 }
 
 #message-form {
@@ -238,10 +221,7 @@ header h1 {
   align-items: center;
   width: 100%;
 }
-#message-form-warning {
-  font-size: .75em;
-  color: red;
-}
+
 
 /* ************************************************8 */
 
@@ -253,25 +233,17 @@ header h1 {
   height: 2.5em;
   width: 2.5em;
   margin-right: .75em;
-  background-color: rgba(0,0,0, .75);
 }
 .message-content {
   font-size: .85em;
 }
 .message-content a {
-  color: #6699cc;
+  color: #7F9CF5; /* indigo-400 */
 }
 .message-content a:hover {
   text-decoration: underline;
 }
-.message-author {
-  font-weight: 600;
-  color: #fff;
-}
-.message-text {
-  color: #ccc;
-  font-weight: 200;
-}
+
 
 /* ************************************************8 */
 
@@ -283,7 +255,7 @@ header h1 {
 }
 
 .no-chat #chat-toggle {
-  opacity: .5;
+  opacity: .75;
 }
 
 /* ************************************************8 */
