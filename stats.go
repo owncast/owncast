@@ -30,7 +30,7 @@ type Stats struct {
 func (s *Stats) Setup() {
 	s.clients = make(map[string]time.Time)
 
-	statsSaveTimer := time.NewTicker(2 * time.Minute)
+	statsSaveTimer := time.NewTicker(1 * time.Minute)
 	go func() {
 		for {
 			select {
@@ -40,7 +40,7 @@ func (s *Stats) Setup() {
 		}
 	}()
 
-	staleViewerPurgeTimer := time.NewTicker(5 * time.Second)
+	staleViewerPurgeTimer := time.NewTicker(3 * time.Second)
 	go func() {
 		for {
 			select {
