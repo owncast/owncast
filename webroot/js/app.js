@@ -100,5 +100,5 @@ function setupWebsocket() {
 setupApp()
 getStatus()
 setupWebsocket()
-// setInterval(getStatus, 5000)
+setInterval(getStatus, 5000)
 
