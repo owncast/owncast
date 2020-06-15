@@ -47,3 +47,9 @@ function mobileVHhack() {
   setVHvar();
   window.addEventListener("orientationchange", setVHvar);
 }
+
+function isAndroidMobile() {
+  var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1; 
+  //&& ua.indexOf("mobile");
+  return isAndroid;
+}

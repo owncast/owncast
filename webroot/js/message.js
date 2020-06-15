@@ -78,6 +78,10 @@ class Messaging {
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton.bind(this));
+		if (isAndroidMobile && window.screen.width < 860) {
+			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
+			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
+		}
 		this.initLocalStates();
 
 	}
@@ -97,6 +101,13 @@ class Messaging {
 	}
 	displayChat() {
 		this.tagAppContainer.className = this.chatDisplayed ?  "flex" : "flex no-chat";
+	}
+
+	handleKeyboardAppear() {
+		this.tagAppContainer.classList.add("android-message-focus");
+	}
+	handleKeyboardOut() {
+		this.tagAppContainer.classList.remove("android-message-focus");
 	}
 
 	handleChatToggle() {
