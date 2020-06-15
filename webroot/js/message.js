@@ -99,11 +99,11 @@ class Messaging {
 
 	handleKeyboardAppear() {
 		this.tagAppContainer.classList.add("android-message-focus");
-		setVHvar();
+		mobileVHhack();
 	}
 	handleKeyboardOut() {
 		this.tagAppContainer.classList.remove("android-message-focus");
-		setVHvar();
+		mobileVHhack();
 	}
 
 	handleChatToggle() {

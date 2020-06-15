@@ -44,9 +44,9 @@ function setVHvar() {
   document.documentElement.style.setProperty('--vh', `${vh}px`);
   console.log("== new vh", vh)
 }
+// delayed
 function mobileVHhack() {
-  setVHvar();
-  // window.addEventListener("orientationchange", setVHvar);
+  setTimeout(setVHvar, 100);
 }
 
 function isAndroidMobile() {
@@ -83,5 +83,5 @@ function hasTouchScreen() {
 
 function handleOrientationChange(event) {
   console.log("====orientation change 123", event, window.screen.orientation, window.orientation)
-  setVHvar();
+  mobileVHhack();
 }

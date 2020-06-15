@@ -28,9 +28,8 @@ function setupApp() {
   // style hackings
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
   if (hasTouchScreen()) {
-    mobileVHhack();
+    setVHvar();
     window.onorientationchange = handleOrientationChange;
-    // document.addEventListener("orientationchange", handleOrientationChange);
   }
 
 
