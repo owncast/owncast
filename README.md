@@ -91,8 +91,12 @@ The goal is to have a single service that you can run and it works out of the bo
 
 If you want a simpler way to run an instance of owncast you can run it in a container with the supplied Dockerfile.
 
-1. Run `docker build -t owncast .`
+1. Copy `config/config-example.yaml` to `config/config.yaml`
+1. Edit `config/config.yaml` and change the path of ffmpeg to `/usr/bin/ffmpeg`
+1. Make any other config changes.
+1. Run `docker build -t owncast .` and wait.  It may take a few minutes to build.
 1. Run `docker run -p 8080:8080 -p 1935:1935 -it owncast`
+1. If you ever make any future config file changes you must rerun the `docker build` step otherwise you can just run the `docker run` step to run the service going forward.
 
 ## Use with your desktop software
 

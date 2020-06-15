@@ -37,9 +37,9 @@ func main() {
 		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
 	}
 
-	go startChatServer()
+	go startRTMPService()
 
-	startRTMPService()
+	startChatServer()
 }
 
 func startChatServer() {
