@@ -19,6 +19,9 @@ class Message {
 		var linked = autoLink(this.body, { embed: true });
 		return this.addNewlines(linked);
 	}
+	userColor() {
+		return colorForString(this.author);
+	}
 
 	toModel() {
 		return {
