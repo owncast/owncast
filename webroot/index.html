@@ -51,7 +51,7 @@
       <!-- LEFT CONTAINER SIDE-->
       <div class="flex main-cols left-col">
 
-        <div id="video-container" class="flex shadow-md">
+        <div id="video-container" class="flex shadow-md owncast-video-container">
           <video
             class="video-js"
             id="video"
@@ -66,10 +66,27 @@
           </video>
         </div>
 
-        <div id="stream-info">
-          {{ streamStatus }} {{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.
-          Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }},
-          {{ overallMaxViewerCount }} overall.
+        <div id="stream-info" class="flex">
+          <span>{{ streamStatus }}</span>
+          <span>{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
+          <span>Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
+          <span>{{ overallMaxViewerCount }} overall.</span>        
+        </div>
+
+        <div id="user-content">
+
+          <!-- USER CONTENT... -->
+          <div>
+            Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
+
+
+          </div>
+          <div>
+            Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
+
+
+          </div>
+
         </div>
       </div>
 
