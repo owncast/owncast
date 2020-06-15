@@ -40,11 +40,9 @@ func startFfmpeg(configuration Config) {
 	var streamMappingString = ""
 	if configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
 		fmt.Println("Enabling passthrough video")
-		// videoMaps = append(videoMaps, fmt.Sprintf("-map 0:v -c:v copy"))
 		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", 0, 0))
 	} else {
 		for index, quality := range configuration.VideoSettings.StreamQualities {
-			// minRate := math.Floor(float64(quality.Bitrate) / 2)
 			maxRate := math.Floor(float64(quality.Bitrate) * 0.8)
 			videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %dk -maxrate %dk -bufsize %dk", index, index, int(quality.Bitrate), int(maxRate), int(maxRate)))
 			streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", index, index))
@@ -54,7 +52,7 @@ func startFfmpeg(configuration Config) {
 		}
 	}
 
-	framerate := 30
+	framerate := 25
 
 	streamMappingString = "-var_stream_map \"" + strings.Join(streamMaps, " ") + "\""
 	ffmpegFlags := []string{
