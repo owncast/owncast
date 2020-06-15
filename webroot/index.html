@@ -1,6 +1,6 @@
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
 
   <title>Live stream test</title>
 
@@ -42,7 +42,7 @@
             <button id="button-cancel-change" class="bg-gray-900 hover:bg-gray-800 py-1 px-2 rounded user-btn" title="cancel">X</button>
           </div>
         </div>
-        <div id="chat-toggle" class="flex">💬</div>
+        <button type="button" id="chat-toggle" class="flex">💬</button>
       </div>
 
     </header>
@@ -62,7 +62,7 @@
             poster="https://goth.land/thumbnail.png"
             data-setup='{}'
           >
-            <source src="https://goth.land/hls/stream.m3u8" type="application/x-mpegURL"/>
+            <!-- <source src="https://goth.land/hls/stream.m3u8" type="application/x-mpegURL"/> -->
           </video>
         </div>
 

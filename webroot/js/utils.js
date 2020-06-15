@@ -37,3 +37,13 @@ function uuidv4() {
     return v.toString(16);
   });
 }
+
+function setVHvar() {
+  let vh = window.innerHeight * 0.01;
+  // Then we set the value in the --vh custom property to the root of the document
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+function mobileVHhack() {
+  setVHvar();
+  window.addEventListener("orientationchange", setVHvar);
+}

@@ -25,7 +25,12 @@ function setupApp() {
   })
 
 
+  // style hackings
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
+  mobileVHhack();
+
+
+  // init messaging interactions
   var appMessagingMisc = new Messaging();
   appMessagingMisc.init();
 
