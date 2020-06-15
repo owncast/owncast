@@ -7,11 +7,9 @@
   --header-bg-color: rgba(20,0,40,1);
 }
 
-
 body {
   font-size: 14px;
   background-color: #eee;
-  /* color: white; */
 }
 ::-webkit-scrollbar {
   width: 0px;
@@ -155,11 +153,15 @@ header h1 {
   justify-content: flex-start;
   align-items: center;
   background-color: black;
+
+  height: calc(100vh - 8em); /* Fallback for browsers that do not support Custom Properties */
+  height: calc((var(--vh, 1vh) * 100) - var(--header-height) - 5em);
+
 }
 .owncast-video-container .video-js {
   width: 100%;
+  height: 100%;
   display: block;
-  height: calc(100vh - var(--header-height) - 5em);
 }
 .owncast-video-container video {
   width: 100%;
@@ -194,7 +196,10 @@ header h1 {
   height: 100%;
   width: var(--right-col-width);
   background-color: var(--chat-bg-color);
-  height: calc(100vh - var(--header-height));
+
+  height: calc(100vh - 3em); /* Fallback for browsers that do not support Custom Properties */
+  height: calc((var(--vh, 1vh) * 100) - var(--header-height));
+
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -258,7 +263,7 @@ header h1 {
 }
 .message-text {
   color: #ccc;
-  font-weight: 100;
+  font-weight: 200;
 }
 
 /* ************************************************8 */
@@ -293,7 +298,6 @@ header h1 {
   #main-content-container {
     flex-direction: column;
     justify-content: space-between;
-    height: calc(100vh - var(--header-height));
   }
 
   .main-cols {
@@ -302,13 +306,14 @@ header h1 {
   .left-col {
     flex-direction: column;
     justify-content: stretch;
+    z-index: 100;
   }
   .right-col {
     overflow: hidden;
   }
 
   #user-info {
-    width: 12em;    
+    width: 9em;    
   }
   #user-content {
     display: none;
@@ -320,18 +325,17 @@ header h1 {
     height: auto;
   }
 
-  .owncast-video-container .video-js {
+  .owncast-video-container {
     height: 40vh;
+    height: calc((var(--vh, 1vh) * 40));
+    min-height: 300px;
   }
 
-  .no-chat  .left-col {
-    height: 100%;
-  }
   .no-chat  .right-col {
     display: none;
   }
   .no-chat #stream-info {
-    display: block;
+    display: flex;
   }
   .no-chat   #user-content {
     display: block;
