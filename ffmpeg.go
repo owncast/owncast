@@ -11,6 +11,83 @@ import (
 	"strings"
 )
 
+func showStreamOfflineState(configuration Config) {
+	fmt.Println("----- Stream offline!  Showing offline state!")
+
+	var outputDir = configuration.PublicHLSPath
+	var variantPlaylistPath = configuration.PublicHLSPath
+
+	if configuration.IPFS.Enabled || configuration.S3.Enabled {
+		outputDir = configuration.PrivateHLSPath
+		variantPlaylistPath = configuration.PrivateHLSPath
+	}
+
+	outputDir = path.Join(outputDir, "%v")
+	var variantPlaylistName = path.Join(variantPlaylistPath, "%v", "stream.m3u8")
+
+	var videoMaps = make([]string, 0)
+	var streamMaps = make([]string, 0)
+	var videoMapsString = ""
+	var streamMappingString = ""
+	if configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
+		fmt.Println("Enabling passthrough video")
+		streamMaps = append(streamMaps, fmt.Sprintf("v:%d", 0))
+	} else {
+		for index, quality := range configuration.VideoSettings.StreamQualities {
+			maxRate := math.Floor(float64(quality.Bitrate) * 0.8)
+			videoMaps = append(videoMaps, fmt.Sprintf("-map v:0 -c:v:%d libx264 -b:v:%d %dk -maxrate %dk -bufsize %dk", index, index, int(quality.Bitrate), int(maxRate), int(maxRate)))
+			streamMaps = append(streamMaps, fmt.Sprintf("v:%d", index))
+			videoMapsString = strings.Join(videoMaps, " ")
+		}
+
+	}
+
+	framerate := 25
+
+	streamMappingString = "-var_stream_map \"" + strings.Join(streamMaps, " ") + "\""
+
+	// ffmpeg -hide_banner -stream_loop 500 -i doc/logo.png -c:v libx264 -map v:0 -c:v:0 libx264 -b:v:0 1500k -f hls -master_pl_name stream.m3u8 -use_localtime 1 -hls_flags program_date_time+temp_file+append_list -tune zerolatency -var_stream_map "v:0" -hls_segment_filename hls/%v/stream-%Y%m%d-%s.ts hls/%v/stream.m3u8
+
+	ffmpegFlags := []string{
+		"-hide_banner",
+		"-stream_loop 5000",
+		"-i", configuration.VideoSettings.OfflineImage,
+		videoMapsString, // All the different video variants
+		"-f hls",
+		"-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
+		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
+		"-strftime 1",
+		"-use_localtime 1",
+		"-hls_playlist_type", "event",
+		"-master_pl_name", "stream.m3u8",
+		"-use_localtime 1",
+		"-hls_flags program_date_time+temp_file",
+		"-tune", "zerolatency",
+		"-framerate " + strconv.Itoa(framerate),
+		"-g " + strconv.Itoa(framerate*2), " -keyint_min " + strconv.Itoa(framerate*2), // multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
+		"-preset " + configuration.VideoSettings.EncoderPreset,
+		"-sc_threshold 0",    // don't create key frames on scene change - only according to -g
+		"-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		"-movflags +faststart",
+		"-pix_fmt yuv420p",
+
+		streamMappingString,
+		"-hls_segment_filename " + path.Join(outputDir, "offline-%Y%m%d-%s.ts"),
+		variantPlaylistName,
+	}
+
+	ffmpegFlagsString := strings.Join(ffmpegFlags, " ")
+
+	ffmpegCmd := configuration.FFMpegPath + " " + ffmpegFlagsString
+
+	fmt.Println(ffmpegCmd)
+
+	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
+	fmt.Println(err)
+	verifyError(err)
+
+}
+
 func startFfmpeg(configuration Config) {
 	var outputDir = configuration.PublicHLSPath
 	var variantPlaylistPath = configuration.PublicHLSPath
@@ -21,13 +98,7 @@ func startFfmpeg(configuration Config) {
 	}
 
 	outputDir = path.Join(outputDir, "%v")
-
-	// var masterPlaylistName = path.Join(configuration.PublicHLSPath, "%v", "stream.m3u8")
 	var variantPlaylistName = path.Join(variantPlaylistPath, "%v", "stream.m3u8")
-	// var variantRootPath = configuration.PublicHLSPath
-
-	// variantRootPath = path.Join(variantRootPath, "%v")
-	// variantPlaylistName := path.Join("%v", "stream.m3u8")
 
 	log.Printf("Starting transcoder saving to /%s.", variantPlaylistName)
 	pipePath := getTempPipePath()
