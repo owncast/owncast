@@ -4,7 +4,6 @@
   --right-col-width: 24em;
   --video-container-height: 50vh;
   --header-bg-color: rgba(20,0,40,1);
-  --vh: 1vh;
 }
 
 body {
@@ -54,6 +53,30 @@ header h1 {
   align-items: center;
 }
 
+
+/* ************************************************8 */
+
+#stream-info {
+  padding: .5em 2em;
+  text-align: center;
+  width: 100%;
+
+  flex-direction: row;
+  justify-content: space-between;
+  
+}
+#stream-info span {
+  font-size: .7em;
+}
+.user-content {
+  padding: 2em;
+}
+#user-content {
+  display: block;
+}
+#user-content-touch {
+  display: none;
+}
 /* ************************************************8 */
 
 #user-options-container {
@@ -117,35 +140,20 @@ header h1 {
 
 /* ************************************************8 */
 
-#main-content-container {
+
+#video-container {
+  /* height: var(--video-container-height); */
+  height: calc(var(--video-container-height) - var(--header-height));
   width: 100%;
-  flex-direction: row;
-  position: relative;
-  margin-top: var(--header-height);
 }
-
-.main-cols {
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-}
-
-.left-col {
-  width: calc(100vw - var(--right-col-width));
-}
-
-/* ************************************************8 */
 
 .owncast-video-container {
-  width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
 
-  height: calc(100vh - 8em); /* Fallback for browsers that do not support Custom Properties */
-  height: calc((var(--vh, 1vh) * 100) - var(--header-height) - 5em);
 
 }
 .owncast-video-container .video-js {
@@ -165,34 +173,35 @@ header h1 {
   margin-left: -1.5em;
   margin-top: -0.75em;
 }
-/* ************************************************8 */
 
-#stream-info {
-  padding: .5em 2em;
-  text-align: center;
-  font-size: .7em;
 
-  flex-direction: row;
-  justify-content: space-between;
-  
-}
 
-#user-content {
-  padding: 2em;
-}
 
 /* ************************************************8 */
 
 
-#xchat-container {
+.no-chat #chat-container-wrap {
+  display: none;
+}
+.chat #chat-container-wrap {
+  display: block;
+}
+
+.chat #video-container,
+.chat #stream-info,
+.chat #user-content {
+  width: calc(100% - var(--right-col-width));
+}
+
+
+#chat-container {
   position: fixed;
   z-index: 9;
+  top: var(--header-height);
   right: 0;
-  height: 100%;
   width: var(--right-col-width);
 
-  height: calc(100vh - 3em); /* Fallback for browsers that do not support Custom Properties */
-  height: calc((var(--vh, 1vh) * 100) - var(--header-height));
+  height: calc(100vh - var(--header-height));
 
   overflow: hidden;
   display: flex;
@@ -273,112 +282,33 @@ header h1 {
     --right-col-width: 20em;
   }
   
-  #xchat-container {
+  #chat-container {
     width: var(--right-col-width);
   }
-  .left-col {
+  /* .left-col {
     width: calc(100vw -  var(--right-col-width));
-  }
+  } */
 }
 
-/* ************************************************8 */
-
-/* 
 @media screen and (max-width: 640px ) {
-  #main-content-container {
-    flex-direction: column;
-    justify-content: space-between;
-    height: calc((var(--vh, 1vh) * 100) - var(--header-height));
-  }
-
-  .main-cols {
-    width: 100vw;
-  }
-  .left-col {
-    flex-direction: column;
-    justify-content: stretch;
-    z-index: 100;
-    height: 55%;
-    min-height: 300px;
-  }
-  .right-col {
-    overflow: hidden;
-    height: 45%;
-  }
-
-  #user-info {
-    width: 9em;    
-  }
-  #user-content {
-    display: none;
-  }
-  #xchat-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
+  .desktop #chat-container {
     height: auto;
+    position: relative;
+    right: unset;
+    top: unset;
+    width: 100%;
+    z-index: 1;
   }
-
-  .owncast-video-container {
-    height: 100%;
+  .desktop.chat #video-container,
+  .desktop.chat #stream-info,
+  .desktop.chat #user-content {
+    width: 100%;
   }
-  .no-chat  .left-col {
-    height: 100%;
-  }
-  .no-chat .owncast-video-container {
-    min-height: 50vh;
-  }
-  .no-chat  .right-col {
+  .desktop.chat #user-content{
     display: none;
   }
-  .no-chat #xstream-info {
-    display: flex;
-  }
-  .no-chat   #user-content {
-    display: block;
-  }
-} */
-
-/* 
-.message-input-focus  #main-content-container {
-  flex-direction: column;
-  justify-content: space-between;
-  height: calc((var(--vh, 1vh) * 100) - var(--header-height));
 
 }
-
-.message-input-focus .main-cols {
-  width: 100vw;
-}
-.message-input-focus .left-col {
-  flex-direction: column;
-  justify-content: stretch;
-  z-index: 100;
-}
-.message-input-focus .right-col {
-  overflow: hidden;
-}
-
-.message-input-focus  #user-info {
-  width: 9em;    
-}
-.message-input-focus  #user-content {
-  display: none;
-}
-.message-input-focus  #chat-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  height: auto;
-  z-index: 999;
-}
-
-.message-input-focus  .owncast-video-container {
-  height: 40vh;
-  height: calc((var(--vh, 1vh) * 40));
-  min-height: 300px;
-} */
-
 
 /* ************************************************8 */
 /* ************************************************8 */
@@ -386,15 +316,21 @@ header h1 {
 .touch-screen header {
   position: relative;
 }
-.touch-screen #fixed-content {
+.touch-screen #top-content {
   position: fixed;
   left: 0;
   top: 0;
   width: 100%;
+  z-index: 10;
 }
 
-.touch-screen #main-content-container {
+
+
+.touch-screen #user-content {
   display: none;
+}
+.touch-screen #user-content-touch {
+  display: block;
 }
 
 .touch-screen #stream-info {
@@ -402,10 +338,29 @@ header h1 {
   overflow: hidden;
 }
 
-#main-mobile-container {
+.touch-screen #chat-container-wrap {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: auto;
   flex-direction: column;
-  margin-top: calc(var(--header-height) + var(--video-container-height));
+  margin-top: calc(var(--header-height) + var(--video-container-height) + 2.5em);
 }
+.touch-screen #chat-container {
+  height: auto;
+  position: relative;
+  right: unset;
+  top: unset;
+  width: 100%;
+  z-index: 1;
+}
+.touch-screen.chat #video-container,
+.touch-screen.chat #stream-info,
+.touch-screen.chat #user-content {
+  width: 100%;
+}
+
+
 .touch-screen #video-container {
   height: var(--video-container-height);
 }
@@ -413,13 +368,13 @@ header h1 {
   height: 100%;
 }
 
-.touch-screen #user-content {
+.touch-screen #user-content-touch {
   display: none;
 }
 .touch-screen #chat-container {
   display: block;
 }
-.touch-screen.no-chat #user-content {
+.touch-screen.no-chat #user-content-touch {
   display: block;
 }
 .touch-screen.no-chat #chat-container {
@@ -445,7 +400,7 @@ header h1 {
   #main-mobile-container {
     margin-top: calc(var(--header-height) + var(--video-container-height));
   }
-  .touch-screen #user-content {
+  .touch-screen .user-content {
     display: block;
   }
   .touch-screen #chat-container {

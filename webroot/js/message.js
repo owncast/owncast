@@ -81,6 +81,8 @@ class Messaging {
 
 			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
 			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
+		} else {
+			this.tagAppContainer.classList.add("desktop");
 		}
 
 	}
@@ -100,9 +102,11 @@ class Messaging {
 	}
 	displayChat() {
 		if (this.chatDisplayed) {
+			this.tagAppContainer.classList.add("chat");
 			this.tagAppContainer.classList.remove("no-chat");
 		} else {
 			this.tagAppContainer.classList.add("no-chat");
+			this.tagAppContainer.classList.remove("chat");
 		}
 	}
 

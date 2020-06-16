@@ -27,8 +27,6 @@ function setupApp() {
 
   // style hackings
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
-  // setVHvar();
-
 
   // init messaging interactions
   var appMessagingMisc = new Messaging();
