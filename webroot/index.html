@@ -40,123 +40,146 @@ possible hacks
 </script>
 <body class="bg-gray-300 text-gray-800">
   <div id="app-container" class="flex no-chat">
-    <header class="flex border-b border-gray-900 border-solid shadow-md">
-      <h1 class="text-gray-400">
-        😈 Owncast 
-      </h1>
 
-      <div id="user-options-container" class="flex">
-        <div id="user-info">
-          <div id="user-info-display" title="Click to update user name" class="flex">
-            <img src="https://robohash.org/username123" id="username-avatar" class="rounded-full bg-black bg-opacity-50 border border-solid border-gray-700" />
-            <span id="username-display" class="text-indigo-600"></span>
-          </div>
+    <div id="top-content">  
+      <header class="flex border-b border-gray-900 border-solid shadow-md">
+        <h1 class="text-gray-400">
+          😈 Owncast 
+        </h1>
 
-          <div id="user-info-change">
-            <input type="text"
-              id="username-change-input"
-              class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight focus:bg-white"
-              value="Random Username 123"
-              maxlength="100"
-              placeholder="Update username"
-            >
-            <button id="button-update-username" class="bg-blue-500 hover:bg-blue-700 text-white py-1 px-1 rounded user-btn">Update</button>
-            <button id="button-cancel-change" class="bg-gray-900 hover:bg-gray-800 py-1 px-2 rounded user-btn text-white text-opacity-50" title="cancel">X</button>
-          </div>
-        </div>
-        <button type="button" id="chat-toggle" class="flex bg-gray-800 hover:bg-gray-700">💬</button>
-      </div>
+        <div id="user-options-container" class="flex">
+          <div id="user-info">
+            <div id="user-info-display" title="Click to update user name" class="flex">
+              <img src="https://robohash.org/username123" id="username-avatar" class="rounded-full bg-black bg-opacity-50 border border-solid border-gray-700" />
+              <span id="username-display" class="text-indigo-600"></span>
+            </div>
 
-    </header>
-    <div id="main-content-container" class="flex">
-      <!-- LEFT CONTAINER SIDE-->
-      <div class="flex main-cols left-col">
-
-        <div id="video-container" class="flex owncast-video-container bg-black">
-          <video
-            class="video-js"
-            id="video"
-            preload="auto"
-            controls
-            autoplay
-            playsinline
-            muted
-            poster="/thumbnail.png"
-            data-setup='{}'
-          >
-            <source src="hls/stream.m3u8" type="application/x-mpegURL"/>
-          </video>
-        </div>
-
-        <div id="stream-info" class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid">
-          <span>{{ streamStatus }}</span>
-          <span>{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
-          <span>Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
-          <span>{{ overallMaxViewerCount }} overall.</span>        
-        </div>
-
-        <div id="user-content">
-
-          <!-- USER CONTENT... -->
-          <div>
-            Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
-
-
-          </div>
-          <div>
-            Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
-
-
-          </div>
-
-        </div>
-      </div>
-
-      <!-- RIGHT CONTAINER SIDE-->
-      <div class="flex main-cols right-col">
-
-        <div id="chat-container" class="bg-gray-800">
-          <div id="messages-container">
-            <div v-for="(message, index) in messages">
-                <div class="message flex">
-                  <img
-                    v-bind:src="message.image"
-                    class="message-avatar rounded-full bg-black bg-opacity-50"
-                    v-bind:style="{ backgroundColor: message.userColor() }"
-                  />
-                  <div class="message-content">
-                    <p class="message-author text-white font-bold">{{ message.author }}</p>
-                    <p class="message-text text-gray-400 font-thin " v-html="message.formatText()"></p>
-                  </div>
-              </div>
+            <div id="user-info-change">
+              <input type="text"
+                id="username-change-input"
+                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight focus:bg-white"
+                value="Random Username 123"
+                maxlength="100"
+                placeholder="Update username"
+              >
+              <button id="button-update-username" class="bg-blue-500 hover:bg-blue-700 text-white py-1 px-1 rounded user-btn">Update</button>
+              <button id="button-cancel-change" class="bg-gray-900 hover:bg-gray-800 py-1 px-2 rounded user-btn text-white text-opacity-50" title="cancel">X</button>
             </div>
           </div>
-    
-          <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
-            <form id="message-form" class="flex" /*@submit="submitChatForm"*/>
+          <button type="button" id="chat-toggle" class="flex bg-gray-800 hover:bg-gray-700">💬</button>
+        </div>
 
-              <input type="hidden" name="inputAuthor" id="self-message-author"  v-model="message.author" />
+      </header>
 
-              <textarea
-                id="message-body-form"
-                placeholder="Message"
-                v-model="message.body"
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
-              ></textarea>
-              
-              <div id="message-form-actions" class="flex">
-                <span id="message-form-warning" class="text-red-600 text-xs"></span>
-                <button
-                  id="button-submit-message"
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                > Send
-                </button>
-              </div>
-      
-            </form>
+
+      <div id="video-container" class="flex owncast-video-container bg-black">
+        <video
+          class="video-js"
+          id="video"
+          preload="auto"
+          controls
+          autoplay
+          playsinline
+          muted
+          poster="/thumbnail.png"
+          data-setup='{}'
+        >
+          <source src="hls/stream.m3u8" type="application/x-mpegURL"/>
+        </video>
+      </div>
+
+
+      <div id="stream-info" class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid">
+        <span>{{ streamStatus }}</span>
+        <span>{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
+        <span>Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
+        <span>{{ overallMaxViewerCount }} overall.</span>        
+      </div>
+
+      <div id="user-content" class="user-content">
+
+        <!-- USER CONTENT... -->
+        <div>
+          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
+          <br />
+
+        </div>
+        <div>
+          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
+
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <div id="chat-container-wrap" class="flex">
+
+
+
+      <div id="user-content-touch" class="user-content">
+
+        <!-- USER CONTENT... -->
+        <div>
+          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
+          <br />
+
+        </div>
+        <div>
+          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
+
+
+        </div>
+
+      </div>
+
+      <div id="chat-container" class="bg-gray-800">
+        <div id="messages-container">
+          <div v-for="(message, index) in messages">
+              <div class="message flex">
+                <img
+                  v-bind:src="message.image"
+                  class="message-avatar rounded-full bg-black bg-opacity-50"
+                  v-bind:style="{ backgroundColor: message.userColor() }"
+                />
+                <div class="message-content">
+                  <p class="message-author text-white font-bold">{{ message.author }}</p>
+                  <p class="message-text text-gray-400 font-thin " v-html="message.formatText()"></p>
+                </div>
+            </div>
           </div>
         </div>
+
+
+        <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
+          <form id="message-form" class="flex">
+
+            <input type="hidden" name="inputAuthor" id="self-message-author"  v-model="message.author" />
+
+            <textarea
+              id="message-body-form"
+              placeholder="Message"
+              v-model="message.body"
+              class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
+            ></textarea>
+            
+            <div id="message-form-actions" class="flex">
+              <span id="message-form-warning" class="text-red-600 text-xs"></span>
+              <button
+                id="button-submit-message"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+              > Send
+              </button>
+            </div>
+    
+          </form>
+        </div>
+
       </div>
+
+
+
     </div>
   </div>
 

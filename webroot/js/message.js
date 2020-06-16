@@ -81,6 +81,8 @@ class Messaging {
 
 			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
 			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
+		} else {
+			this.tagAppContainer.classList.add("desktop");
 		}
 
 	}
@@ -99,12 +101,18 @@ class Messaging {
 		this.imgUsernameAvatar.src = this.avatarSource + username;
 	}
 	displayChat() {
-		this.tagAppContainer.className = this.chatDisplayed ?  "flex" : "flex no-chat";
+		if (this.chatDisplayed) {
+			this.tagAppContainer.classList.add("chat");
+			this.tagAppContainer.classList.remove("no-chat");
+		} else {
+			this.tagAppContainer.classList.add("no-chat");
+			this.tagAppContainer.classList.remove("chat");
+		}
 	}
 
 	handleOrientationChange() {
 		console.log("====orientation change 123", event, window.screen.orientation, window.orientation,  window.matchMedia("(orientation: landscape)"))
-		mobileVHhack();
+		// mobileVHhack();
 		// if small landscape, hide chat
 		// var mql = window.matchMedia("(orientation: landscape)"); // what it _was_
 

@@ -23,9 +23,9 @@ function clearLocalStorage(key) {
 }
 
 function jumpToBottom(id) {
-  const div = document.querySelector(id);
+  const div = id ? document.querySelector(id) : document.body;
   div.scrollTo({
-    top: div.scrollHeight,// - div.clientHeight,
+    top: div.scrollHeight,
     left: 0,
     behavior: 'smooth'
   });
