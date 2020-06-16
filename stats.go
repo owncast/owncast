@@ -23,8 +23,8 @@ type Stats struct {
 	SessionMaxViewerCount int       `json:"sessionMaxViewerCount"`
 	OverallMaxViewerCount int       `json:"overallMaxViewerCount"`
 	LastDisconnectTime    time.Time `json:"lastDisconnectTime"`
-
-	clients map[string]time.Time
+	lastConnectTime       time.Time `json:"-"`
+	clients               map[string]time.Time
 }
 
 func (s *Stats) Setup() {
@@ -62,6 +62,17 @@ func (s *Stats) purgeStaleViewers() {
 }
 
 func (s *Stats) IsStreamConnected() bool {
+	if !s.streamConnected {
+		return false
+	}
+
+	// Kind of a hack.  It takes a handful of seconds between a RTMP connection and when HLS data is available.
+	// So account for that with an artificial buffer.
+	timeSinceLastConnected := time.Since(s.lastConnectTime).Seconds()
+	if timeSinceLastConnected < 10 {
+		return false
+	}
+
 	return s.streamConnected
 }
 
@@ -96,6 +107,7 @@ func (s *Stats) ViewerDisconnected(clientID string) {
 
 func (s *Stats) StreamConnected() {
 	s.streamConnected = true
+	s.lastConnectTime = time.Now()
 
 	timeSinceDisconnect := time.Since(s.LastDisconnectTime).Minutes()
 	if timeSinceDisconnect > 15 {
