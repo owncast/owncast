@@ -49,11 +49,6 @@ function mobileVHhack() {
   setTimeout(setVHvar, 100);
 }
 
-function isAndroidMobile() {
-  var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1; 
-  //&& ua.indexOf("mobile");
-  return isAndroid;
-}
 
 // Trying to determine if browser is mobile/tablet.
 // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
@@ -81,7 +76,3 @@ function hasTouchScreen() {
   return hasTouchScreen;
 }
 
-function handleOrientationChange(event) {
-  console.log("====orientation change 123", event, window.screen.orientation, window.orientation)
-  mobileVHhack();
-}

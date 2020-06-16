@@ -27,10 +27,7 @@ function setupApp() {
 
   // style hackings
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
-  if (hasTouchScreen()) {
-    setVHvar();
-    window.onorientationchange = handleOrientationChange;
-  }
+  setVHvar();
 
 
   // init messaging interactions
@@ -102,7 +99,7 @@ function setupWebsocket() {
     ws.close()
   }
 
-  window.ws = ws
+  window.ws = ws;
 }
 
 setupApp()

@@ -72,11 +72,16 @@ class Messaging {
 		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton.bind(this));
-		if (hasTouchScreen) {
+		this.initLocalStates();
+
+		if (hasTouchScreen()) {
+			this.tagAppContainer.classList.add("touch-screen");
+			window.onorientationchange = this.handleOrientationChange.bind(this);
+			this.handleOrientationChange();
+
 			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
 			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
 		}
-		this.initLocalStates();
 
 	}
 
@@ -97,6 +102,25 @@ class Messaging {
 		this.tagAppContainer.className = this.chatDisplayed ?  "flex" : "flex no-chat";
 	}
 
+	handleOrientationChange() {
+		console.log("====orientation change 123", event, window.screen.orientation, window.orientation,  window.matchMedia("(orientation: landscape)"))
+		mobileVHhack();
+		// if small landscape, hide chat
+		// var mql = window.matchMedia("(orientation: landscape)"); // what it _was_
+
+		var isPortrait = Math.abs(window.orientation % 180) === 0;
+
+		if(!isPortrait) {
+			if (document.body.clientWidth < 1024) {
+				this.tagAppContainer.classList.add("no-chat");
+				this.tagAppContainer.classList.add("landscape");
+			}
+		} else {
+			if (this.chatDisplayed) this.tagAppContainer.classList.remove("no-chat");
+			this.tagAppContainer.classList.remove("landscape");
+		}
+	}
+	
 	handleKeyboardAppear() {
 		setTimeout(() => {this.tagAppContainer.classList.add("message-input-focus");}, 50);
 		mobileVHhack();

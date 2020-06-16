@@ -171,7 +171,6 @@ header h1 {
   padding: .5em 2em;
   text-align: center;
   font-size: .7em;
-  min-height: 3em; /*ios safari hack*/
 
   flex-direction: row;
   justify-content: space-between;
@@ -263,6 +262,12 @@ header h1 {
 
 /* ************************************************8 */
 
+.landscape #chat-toggle {
+  display: none;
+}
+
+/* ************************************************8 */
+
 @media screen and (max-width: 860px) {
   :root {
     --right-col-width: 20em;
@@ -293,9 +298,12 @@ header h1 {
     flex-direction: column;
     justify-content: stretch;
     z-index: 100;
+    height: 55%;
+    min-height: 300px;
   }
   .right-col {
     overflow: hidden;
+    height: 45%;
   }
 
   #user-info {
@@ -312,11 +320,14 @@ header h1 {
   }
 
   .owncast-video-container {
-    height: 40vh;
-    height: calc((var(--vh, 1vh) * 40));
-    min-height: 300px;
+    height: 100%;
   }
-
+  .no-chat  .left-col {
+    height: 100%;
+  }
+  .no-chat .owncast-video-container {
+    min-height: 50vh;
+  }
   .no-chat  .right-col {
     display: none;
   }
