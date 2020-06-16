@@ -95,6 +95,9 @@ func streamConnected() {
 
 func streamDisconnected() {
 	stats.StreamDisconnected()
+	if configuration.EnableOfflineImage {
+		showStreamOfflineState(configuration)
+	}
 }
 
 func viewerAdded(clientID string) {

@@ -10,14 +10,15 @@ import (
 
 // Config struct
 type Config struct {
-	IPFS           IPFS          `yaml:"ipfs"`
-	PublicHLSPath  string        `yaml:"publicHLSPath"`
-	PrivateHLSPath string        `yaml:"privateHLSPath"`
-	VideoSettings  VideoSettings `yaml:"videoSettings"`
-	Files          Files         `yaml:"files"`
-	FFMpegPath     string        `yaml:"ffmpegPath"`
-	WebServerPort  int           `yaml:"webServerPort"`
-	S3             S3            `yaml:"s3"`
+	IPFS               IPFS          `yaml:"ipfs"`
+	PublicHLSPath      string        `yaml:"publicHLSPath"`
+	PrivateHLSPath     string        `yaml:"privateHLSPath"`
+	VideoSettings      VideoSettings `yaml:"videoSettings"`
+	Files              Files         `yaml:"files"`
+	FFMpegPath         string        `yaml:"ffmpegPath"`
+	WebServerPort      int           `yaml:"webServerPort"`
+	S3                 S3            `yaml:"s3"`
+	EnableOfflineImage bool          `yaml:"enableOfflineImage"`
 }
 
 type VideoSettings struct {
@@ -26,6 +27,7 @@ type VideoSettings struct {
 	EncoderPreset        string          `yaml:"encoderPreset"`
 	StreamQualities      []StreamQuality `yaml:"streamQualities"`
 	EnablePassthrough    bool            `yaml:"passthrough"`
+	OfflineImage         string          `yaml:"offlineImage"`
 }
 
 type StreamQuality struct {
