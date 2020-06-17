@@ -113,7 +113,12 @@ function setupWebsocket() {
 }
 
 setupApp()
-getStatus()
+
+// Wait until the player is setup before we start polling status
+videojs.hookOnce('setup', function (player) {
+  getStatus();
+  setInterval(getStatus, 5000);
+});
+
 setupWebsocket()
-setInterval(getStatus, 5000)
 
