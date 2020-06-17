@@ -23,23 +23,14 @@ GW TODO:
 - remove listeners on unload?
 - config customizations
 
-mobile yucks:
-problems;
-- mobile browsers need custom vh calculation due to browser chrome taken into consideration
-- mobile chrome softkeyboard changes perceived width of page, alters layout
-- chat windwo placementis messedup on orientation changes.. needs new vh.
-orientationchange oly happens on mobile.
-does orientationchange happen when keyboard appears?
-- changing vh after orientation change sometimes yields same value
-
-possible hacks
-- if mobile, don't show chat + chat icon in landscape?.. 
+- expand user name change text box on focus.chat
+- accessilbity
 
 
 */
 </script>
 <body class="bg-gray-300 text-gray-800">
-  <div id="app-container" class="flex no-chat">
+  <main id="app-container" class="flex no-chat">
 
     <div id="top-content">  
       <header class="flex border-b border-gray-900 border-solid shadow-md">
@@ -151,7 +142,7 @@ possible hacks
               <button
                 id="button-submit-message"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-              > Send
+              > Chat
               </button>
             </div>
     
@@ -163,7 +154,7 @@ possible hacks
 
 
     </div>
-  </div>
+  </main>
 
   <script src="js/usercolors.js"></script>
   <script src="js/config.js"></script>

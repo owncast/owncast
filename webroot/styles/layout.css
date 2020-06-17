@@ -142,8 +142,9 @@ header h1 {
 
 
 #video-container {
-  height: calc(var(--video-container-height) - var(--header-height));
+  height: calc(var(--video-container-height));
   width: 100%;
+  margin-top: var(--header-height);
 }
 
 .owncast-video-container {
@@ -152,8 +153,6 @@ header h1 {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-
-
 }
 .owncast-video-container .video-js {
   width: 100%;
@@ -214,6 +213,7 @@ header h1 {
 #messages-container {
   overflow: auto;
   padding: 1em 0;
+  min-height: 50vh;
 }
 #message-input-container {
   width: 100%;
@@ -359,7 +359,7 @@ header h1 {
 
 
 .touch-screen #video-container {
-  height: var(--video-container-height);
+  margin-top: 0;
 }
 .touch-screen .owncast-video-container {
   height: 100%;

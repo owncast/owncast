@@ -54,7 +54,6 @@ class Messaging {
 
 		this.tagMessageFormWarning = document.querySelector("#message-form-warning");
 		
-
 		this.inputChangeUserName = document.querySelector("#username-change-input"); 
 		this.btnUpdateUserName = document.querySelector("#button-update-username"); 
 		this.btnCancelUpdateUsername = document.querySelector("#button-cancel-change"); 
@@ -79,8 +78,8 @@ class Messaging {
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
 
-			this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
-			this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
+			// this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
+			// this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
 		} else {
 			this.tagAppContainer.classList.add("desktop");
 		}
@@ -104,6 +103,7 @@ class Messaging {
 		if (this.chatDisplayed) {
 			this.tagAppContainer.classList.add("chat");
 			this.tagAppContainer.classList.remove("no-chat");
+      setTimeout(() => { jumpToBottom(); } , 50);
 		} else {
 			this.tagAppContainer.classList.add("no-chat");
 			this.tagAppContainer.classList.remove("chat");
@@ -111,7 +111,6 @@ class Messaging {
 	}
 
 	handleOrientationChange() {
-		console.log("====orientation change 123", event, window.screen.orientation, window.orientation,  window.matchMedia("(orientation: landscape)"))
 		// mobileVHhack();
 		// if small landscape, hide chat
 		// var mql = window.matchMedia("(orientation: landscape)"); // what it _was_
@@ -129,14 +128,14 @@ class Messaging {
 		}
 	}
 	
-	handleKeyboardAppear() {
-		setTimeout(() => {this.tagAppContainer.classList.add("message-input-focus");}, 50);
-		mobileVHhack();
-	}
-	handleKeyboardOut() {
-		setTimeout(() => {this.tagAppContainer.classList.remove("message-input-focus");}, 50);
-		mobileVHhack();
-	}
+	// handleKeyboardAppear() {
+	// 	setTimeout(() => {this.tagAppContainer.classList.add("message-input-focus");}, 50);
+	// 	mobileVHhack();
+	// }
+	// handleKeyboardOut() {
+	// 	setTimeout(() => {this.tagAppContainer.classList.remove("message-input-focus");}, 50);
+	// 	mobileVHhack();
+	// }
 
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
