@@ -33,21 +33,24 @@ async function setupApp() {
 }
 
 async function getStatus() {
-  let url = "/status";
+  const url = "/status";
 
   try {
     const response = await fetch(url);
-    const status = await response.json(); // read response body and parse as JSON
+    const status = await response.json();
 
     if (!app.isOnline && status.online) {
       // The stream was offline, but now it's online.  Force start of playback after an arbitrary
       // delay to make sure the stream has actual data ready to go.
       setTimeout(function () {
-        var player = videojs('video');
-        player.pause()
-        player.src(player.src()); // Reload the same video
-        player.load();
-        player.play();
+        try {
+          const player = videojs('video');
+          player.src(player.src()); // Reload the same video
+          player.load();
+          player.play();
+        } catch (e) {
+          console.log(e)
+         }
       }, 3000)
       
     }
