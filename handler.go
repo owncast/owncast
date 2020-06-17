@@ -3,9 +3,10 @@ package main
 import (
 	"bytes"
 	"io"
-	"log"
 	"os"
 	"syscall"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/pkg/errors"
 	"github.com/yutopp/go-flv"

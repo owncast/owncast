@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path"
 	"path/filepath"
@@ -62,7 +61,7 @@ func updateVariantPlaylist(fullPath string) {
 	playlistBytes, err := ioutil.ReadFile(fullPath)
 	verifyError(err)
 	playlistString := string(playlistBytes)
-	fmt.Println("Rewriting playlist", relativePath, "to", path.Join(configuration.PublicHLSPath, relativePath))
+	// fmt.Println("Rewriting playlist", relativePath, "to", path.Join(configuration.PublicHLSPath, relativePath))
 
 	playlistString = storage.GenerateRemotePlaylist(playlistString, variant)
 
@@ -79,7 +78,7 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 	} else {
 		variants[0] = Variant{0, make([]Segment, 0)}
 	}
-	log.Printf("Using directory %s for storing files with %d variants...\n", pathToMonitor, len(variants))
+	// log.Printf("Using directory %s for storing files with %d variants...\n", pathToMonitor, len(variants))
 
 	w := watcher.New()
 
@@ -114,7 +113,7 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 					}()
 					newObjectPath := <-newObjectPathChannel
 					segment.RemoteID = newObjectPath
-					fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
+					// fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
 
 					variants[segment.VariantIndex].Segments = append(variants[segment.VariantIndex].Segments, segment)
 

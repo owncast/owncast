@@ -11,10 +11,11 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"math"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Stats struct {

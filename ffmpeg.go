@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"os"
 	"os/exec"
 	"path"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func showStreamOfflineState(configuration Config) {

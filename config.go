@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"gopkg.in/yaml.v2"
 )
