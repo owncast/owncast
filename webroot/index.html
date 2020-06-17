@@ -44,7 +44,7 @@ possible hacks
     <div id="top-content">  
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 class="text-gray-400">
-          😈 Owncast 
+          😈 {{title}} 
         </h1>
 
         <div id="user-options-container" class="flex">
@@ -99,16 +99,8 @@ possible hacks
       <div id="user-content" class="user-content">
 
         <!-- USER CONTENT... -->
-        <div>
-          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
-          <br />
+        <div v-html="description"></div>
 
-        </div>
-        <div>
-          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
-
-
-        </div>
 
       </div>
     </div>
@@ -121,16 +113,7 @@ possible hacks
       <div id="user-content-touch" class="user-content">
 
         <!-- USER CONTENT... -->
-        <div>
-          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
-          <br />
-
-        </div>
-        <div>
-          Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.
-
-
-        </div>
+        <div v-html="description"></div>
 
       </div>
 

@@ -1,4 +1,4 @@
-function setupApp() {
+async function setupApp() {  
   Vue.filter('plural', function (string, count) {
     if (count === 1) {
       return string;
@@ -15,6 +15,8 @@ function setupApp() {
       sessionMaxViewerCount: 0,
       overallMaxViewerCount: 0,
       messages: [],
+      description: "",
+      title: "",
     },
   });
 
@@ -25,7 +27,9 @@ function setupApp() {
   var appMessagingMisc = new Messaging();
   appMessagingMisc.init();
 
-  const config = new Config();
+  const config = await new Config().init();
+  app.description = autoLink(config.description, { embed: false });
+  app.title = config.title;
 }
 
 async function getStatus() {
