@@ -8,22 +8,15 @@ function setupApp() {
   })
 
   window.app = new Vue({
-    el: "#stream-info",
+    el: "#app-container",
     data: {
       streamStatus: "",
       viewerCount: 0,
       sessionMaxViewerCount: 0,
       overallMaxViewerCount: 0,
+      messages: [],
     },
   });
-
-  window.messagesContainer = new Vue({
-    el: "#messages-container",
-    data: {
-      messages: []
-    }
-  })
-
 
   // style hackings
   window.VIDEOJS_NO_DYNAMIC_STYLE = true;
@@ -76,10 +69,10 @@ function setupWebsocket() {
   clearTimeout(websocketReconnectTimer)
 
   // Uncomment to point to somewhere other than goth.land
-  // const protocol = location.protocol == "https:" ? "wss" : "ws"
-  // var ws = new WebSocket(protocol + "://" + location.host + "/entry")
+  const protocol = location.protocol == "https:" ? "wss" : "ws"
+  var ws = new WebSocket(protocol + "://" + location.host + "/entry")
 
-  var ws = new WebSocket("wss://goth.land/entry")
+  // var ws = new WebSocket("wss://goth.land/entry")
 
   ws.onmessage = (e) => {
     const model = JSON.parse(e.data)
@@ -88,13 +81,13 @@ function setupWebsocket() {
     if (model.type !== SocketMessageTypes.CHAT) { return; }
 
     const message = new Message(model)
-
-    const existing = this.messagesContainer.messages.filter(function (item) {
+    
+    const existing = this.app.messages.filter(function (item) {
       return item.id === message.id
     })
     
     if (existing.length === 0 || !existing) {
-      this.messagesContainer.messages.push(message);
+      this.app.messages.push(message);
       setTimeout(() => { jumpToBottom("#messages-container"); } , 50); // could be better. is there a sort of Vue "componentDidUpdate" we can do this on?
     }
   }
