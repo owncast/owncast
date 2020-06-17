@@ -20,9 +20,6 @@ async function setupApp() {
     },
   });
 
-  // style hackings
-  window.VIDEOJS_NO_DYNAMIC_STYLE = true;
-
   // init messaging interactions
   var appMessagingMisc = new Messaging();
   appMessagingMisc.init();
@@ -43,14 +40,7 @@ async function getStatus() {
       // The stream was offline, but now it's online.  Force start of playback after an arbitrary
       // delay to make sure the stream has actual data ready to go.
       setTimeout(function () {
-        try {
-          const player = videojs('video');
-          player.src(player.src()); // Reload the same video
-          player.load();
-          player.play();
-        } catch (e) {
-          console.log(e)
-         }
+        restartPlayer();
       }, 3000)
       
     }
@@ -116,12 +106,6 @@ function setupWebsocket() {
 }
 
 setupApp()
-
-// Wait until the player is setup before we start polling status
-videojs.hookOnce('setup', function (player) {
-  getStatus();
-  setInterval(getStatus, 5000);
-});
 
 setupWebsocket()
 

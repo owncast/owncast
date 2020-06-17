@@ -39,7 +39,6 @@ func showStreamOfflineState(configuration Config) {
 			streamMaps = append(streamMaps, fmt.Sprintf("v:%d", index))
 			videoMapsString = strings.Join(videoMaps, " ")
 		}
-
 	}
 
 	framerate := 25
@@ -48,29 +47,32 @@ func showStreamOfflineState(configuration Config) {
 
 	ffmpegFlags := []string{
 		"-hide_banner",
-		"-stream_loop 5000",
+		// "-stream_loop 100",
+		// "-fflags", "+genpts",
 		"-i", configuration.VideoSettings.OfflineImage,
+		"-i", "webroot/thumbnail.png",
+		"-filter_complex", "\"[0:v]scale=2640:2360[bg];[bg][1:v]overlay=200:250:enable='between(t,0,3)'\"",
 		videoMapsString, // All the different video variants
 		"-f hls",
-		"-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
-		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
-		"-strftime 1",
-		"-use_localtime 1",
+		// "-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
+		"-hls_time 4", // + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
 		"-hls_playlist_type", "event",
 		"-master_pl_name", "stream.m3u8",
+		"-strftime 1",
 		"-use_localtime 1",
-		"-hls_flags program_date_time+temp_file",
+		"-hls_flags temp_file",
 		"-tune", "zerolatency",
-		"-framerate " + strconv.Itoa(framerate),
 		"-g " + strconv.Itoa(framerate*2), " -keyint_min " + strconv.Itoa(framerate*2), // multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
+		"-framerate " + strconv.Itoa(framerate),
 		"-preset " + configuration.VideoSettings.EncoderPreset,
 		"-sc_threshold 0",    // don't create key frames on scene change - only according to -g
-		"-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
-		"-movflags +faststart",
+		"-profile:v", "main", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		// "-movflags +faststart",
 		"-pix_fmt yuv420p",
 
 		streamMappingString,
 		"-hls_segment_filename " + path.Join(outputDir, "offline-%s.ts"),
+		// "-s", "720x480", // size
 		variantPlaylistName,
 	}
 
@@ -83,7 +85,6 @@ func showStreamOfflineState(configuration Config) {
 	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
 	fmt.Println(err)
 	verifyError(err)
-
 }
 
 func startFfmpeg(configuration Config) {
@@ -126,7 +127,8 @@ func startFfmpeg(configuration Config) {
 	streamMappingString = "-var_stream_map \"" + strings.Join(streamMaps, " ") + "\""
 	ffmpegFlags := []string{
 		"-hide_banner",
-		"-re",
+		// "-re",
+		"-fflags", "+genpts",
 		"-i pipe:",
 		// "-vf scale=900:-2", // Re-enable in the future with a config to togging resizing?
 		// "-sws_flags fast_bilinear",
@@ -150,6 +152,7 @@ func startFfmpeg(configuration Config) {
 		"-hls_segment_filename " + path.Join(outputDir, "stream-%Y%m%d-%s.ts"),
 		"-hls_flags delete_segments+program_date_time+temp_file",
 		"-tune zerolatency",
+		// "-s", "720x480", // size
 
 		streamMappingString,
 		variantPlaylistName,
