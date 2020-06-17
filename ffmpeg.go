@@ -159,7 +159,7 @@ func startFfmpeg(configuration Config) {
 
 	ffmpegCmd := "cat " + pipePath + " | " + configuration.FFMpegPath + " " + ffmpegFlagsString
 
-	fmt.Println(ffmpegCmd)
+	// fmt.Println(ffmpegCmd)
 
 	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
 	fmt.Println(err)

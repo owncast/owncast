@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"golang.org/x/net/websocket"
 )
@@ -73,7 +72,7 @@ func (c *Client) listenWrite() {
 		// send message to the client
 		case msg := <-c.ch:
 			msg.MessageType = "CHAT"
-			log.Println("Send:", msg)
+			// log.Println("Send:", msg)
 			websocket.JSON.Send(c.ws, msg)
 
 		// receive done request
