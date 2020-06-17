@@ -9,6 +9,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Build-time injected values
+var GitCommit string = "unknown"
+var BuildVersion string = "0.0.0"
+var BuildType string = "localdev"
+
 var storage ChunkStorage
 var configuration = getConfig()
 var server *Server
@@ -17,7 +22,8 @@ var stats *Stats
 var usingExternalStorage = false
 
 func main() {
-	log.Println("Starting up.  Please wait...")
+	log.StandardLogger().Printf("Owncast v%s/%s (%s)", BuildVersion, BuildType, GitCommit)
+
 	resetDirectories(configuration)
 	checkConfig(configuration)
 	stats = getSavedStats()
