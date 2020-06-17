@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -52,6 +54,21 @@ func getVariantIndexFromPath(fullDiskPath string) int {
 
 var variants []Variant
 
+func updateVariantPlaylist(fullPath string) {
+	relativePath := getRelativePathFromAbsolutePath(fullPath)
+	variantIndex := getVariantIndexFromPath(relativePath)
+	variant := variants[variantIndex]
+
+	playlistBytes, err := ioutil.ReadFile(fullPath)
+	verifyError(err)
+	playlistString := string(playlistBytes)
+	fmt.Println("Rewriting playlist", relativePath, "to", path.Join(configuration.PublicHLSPath, relativePath))
+
+	playlistString = storage.GenerateRemotePlaylist(playlistString, variant)
+
+	writePlaylist(playlistString, path.Join(configuration.PublicHLSPath, relativePath))
+}
+
 func monitorVideoContent(pathToMonitor string, configuration Config, storage ChunkStorage) {
 	// Create at least one structure to store the segments for the different stream variants
 	variants = make([]Variant, len(configuration.VideoSettings.StreamQualities))
@@ -82,21 +99,11 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 
 				// Handle updates to the master playlist by copying it to webroot
 				if relativePath == path.Join(configuration.PrivateHLSPath, "stream.m3u8") {
-
 					copy(event.Path, path.Join(configuration.PublicHLSPath, "stream.m3u8"))
-					// Handle updates to playlists, but not the master playlist
+
 				} else if filepath.Ext(event.Path) == ".m3u8" {
-					variantIndex := getVariantIndexFromPath(relativePath)
-					variant := variants[variantIndex]
-
-					playlistBytes, err := ioutil.ReadFile(event.Path)
-					verifyError(err)
-					playlistString := string(playlistBytes)
-					// fmt.Println("Rewriting playlist", relativePath, "to", path.Join(configuration.PublicHLSPath, relativePath))
-
-					playlistString = storage.GenerateRemotePlaylist(playlistString, variant)
-
-					writePlaylist(playlistString, path.Join(configuration.PublicHLSPath, relativePath))
+					// Handle updates to playlists, but not the master playlist
+					updateVariantPlaylist(event.Path)
 				} else if filepath.Ext(event.Path) == ".ts" {
 					segment := getSegmentFromPath(event.Path)
 
@@ -107,9 +114,13 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 					}()
 					newObjectPath := <-newObjectPathChannel
 					segment.RemoteID = newObjectPath
-					// fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
+					fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
 
 					variants[segment.VariantIndex].Segments = append(variants[segment.VariantIndex].Segments, segment)
+
+					// Force a variant's playlist to be updated after a file is uploaded.
+					associatedVariantPlaylist := strings.ReplaceAll(event.Path, path.Base(event.Path), "stream.m3u8")
+					updateVariantPlaylist(associatedVariantPlaylist)
 				}
 			case err := <-w.Error:
 				log.Fatalln(err)
