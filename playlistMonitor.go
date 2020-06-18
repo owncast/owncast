@@ -108,7 +108,7 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 
 					newObjectPathChannel := make(chan string, 1)
 					go func() {
-						newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, segment.RelativeUploadPath))
+						newObjectPath := storage.Save(path.Join(configuration.PrivateHLSPath, segment.RelativeUploadPath), 0)
 						newObjectPathChannel <- newObjectPath
 					}()
 					newObjectPath := <-newObjectPathChannel

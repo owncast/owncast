@@ -52,7 +52,7 @@ func (s *IPFSStorage) Setup(config Config) {
 	s.createIPFSDirectory("./hls")
 }
 
-func (s *IPFSStorage) Save(filePath string) string {
+func (s *IPFSStorage) Save(filePath string, retryCount int) string {
 	someFile, err := getUnixfsNode(filePath)
 	defer someFile.Close()
 
