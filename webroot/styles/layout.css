@@ -407,3 +407,12 @@ header h1 {
     display: none;
   }
 }
+
+/* Tailwind sets list styles to none.  I don't know why. */
+ol {
+  list-style: decimal;
+}
+
+ul {
+  list-style: unset;
+}

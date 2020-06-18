@@ -25,8 +25,20 @@ async function setupApp() {
   appMessagingMisc.init();
 
   const config = await new Config().init();
-  app.description = autoLink(config.description, { embed: false });
   app.title = config.title;
+
+  const configFileLocation = "./js/config.json";
+
+  try {
+    const pageContentFile = "/static/content.md"
+    const response = await fetch(pageContentFile);
+    const descriptionMarkdown = await response.text()
+    const descriptionHTML = new showdown.Converter().makeHtml(descriptionMarkdown);
+    app.description = descriptionHTML;
+    return this;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 var websocketReconnectTimer;
