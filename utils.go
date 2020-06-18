@@ -71,6 +71,12 @@ func resetDirectories(configuration Config) {
 		os.MkdirAll(path.Join(configuration.PrivateHLSPath, strconv.Itoa(0)), 0777)
 		os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(0)), 0777)
 	}
+
+	// Provide default files
+	showStreamOfflineState(configuration)
+	if !fileExists("webroot/thumbnail.png") {
+		copy("static/logo.png", "webroot/thumbnail.png")
+	}
 }
 
 func getClientIDFromRequest(req *http.Request) string {

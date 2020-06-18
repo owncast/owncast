@@ -24,7 +24,6 @@ var usingExternalStorage = false
 func main() {
 	log.StandardLogger().Printf("Owncast v%s/%s (%s)", BuildVersion, BuildType, GitCommit)
 
-	resetDirectories(configuration)
 	checkConfig(configuration)
 	stats = getSavedStats()
 	stats.Setup()
@@ -43,6 +42,7 @@ func main() {
 		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
 	}
 
+	resetDirectories(configuration)
 	go startRTMPService()
 
 	startChatServer()
