@@ -81,7 +81,7 @@ func showStreamOfflineState(configuration Config) {
 
 	ffmpegCmd := configuration.FFMpegPath + " " + ffmpegFlagsString
 
-	fmt.Println(ffmpegCmd)
+	// fmt.Println(ffmpegCmd)
 
 	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
 	fmt.Println(err)
