@@ -9,6 +9,11 @@ ARCH=(amd64 amd64)
 
 # Version
 VERSION=$1
+
+if [[ -z "${VERSION}" ]]; then
+  echo "Version must be specified when running build"
+fi
+
 [[ -z "${VERSION}" ]] && VERSION='unknownver' || VERSION="${VERSION}"
 GIT_COMMIT=$(git rev-list -1 HEAD)
 
@@ -33,7 +38,10 @@ build() {
 
   mkdir -p dist/${NAME}/config
 
+  # Default files
   cp config/config-example.yaml dist/${NAME}/config/config.yaml
+  cp webroot/static/content-example.md dist/${NAME}/webroot/static/content.md
+
   cp -R webroot/ dist/${NAME}/webroot/
   cp -R doc/ dist/${NAME}/doc/
   cp README.md dist/${NAME}

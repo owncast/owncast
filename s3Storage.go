@@ -36,14 +36,14 @@ func (s *S3Storage) Setup(configuration Config) {
 	s.sess = s.connectAWS()
 }
 
-func (s *S3Storage) Save(filePath string) string {
+func (s *S3Storage) Save(filePath string, retryCount int) string {
 	// fmt.Println("Saving", filePath)
 
 	file, err := os.Open(filePath)
 	defer file.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln(err)
 	}
 
 	uploader := s3manager.NewUploader(s.sess)
@@ -55,7 +55,11 @@ func (s *S3Storage) Save(filePath string) string {
 	})
 
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		if retryCount < 4 {
+			log.Println("Retrying...")
+			s.Save(filePath, retryCount+1)
+		}
 	}
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
@@ -88,7 +92,7 @@ func (s S3Storage) connectAWS() *session.Session {
 	creds := credentials.NewStaticCredentials(s.s3AccessKey, s.s3Secret, "")
 	_, err := creds.Get()
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 
 	sess, err := session.NewSession(
@@ -101,7 +105,7 @@ func (s S3Storage) connectAWS() *session.Session {
 	)
 
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 	return sess
 }

@@ -3,9 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
-	"path"
-	"strconv"
 
 	log "github.com/sirupsen/logrus"
 
@@ -69,7 +66,7 @@ func getConfig() Config {
 	var config Config
 	err = yaml.Unmarshal(yamlFile, &config)
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 
 	// fmt.Printf("%+v\n", config)
@@ -79,37 +76,37 @@ func getConfig() Config {
 
 func checkConfig(config Config) {
 	if config.S3.Enabled && config.IPFS.Enabled {
-		panic("S3 and IPFS support cannot be enabled at the same time.  Choose one.")
+		log.Panicln("S3 and IPFS support cannot be enabled at the same time.  Choose one.")
 	}
 
 	if config.S3.Enabled {
 		if config.S3.AccessKey == "" || config.S3.Secret == "" {
-			panic("S3 support requires an access key and secret.")
+			log.Panicln("S3 support requires an access key and secret.")
 		}
 
 		if config.S3.Region == "" || config.S3.Endpoint == "" {
-			panic("S3 support requires a region and endpoint.")
+			log.Panicln("S3 support requires a region and endpoint.")
 		}
 
 		if config.S3.Bucket == "" {
-			panic("S3 support requires a bucket created for storing public video segments.")
+			log.Panicln("S3 support requires a bucket created for storing public video segments.")
 		}
 	}
 
-	if !fileExists(config.PrivateHLSPath) {
-		os.MkdirAll(path.Join(config.PrivateHLSPath, strconv.Itoa(0)), 0777)
-	}
+	// if !fileExists(config.PrivateHLSPath) {
+	// 	os.MkdirAll(path.Join(config.PrivateHLSPath, strconv.Itoa(0)), 0777)
+	// }
 
-	if !fileExists(config.PublicHLSPath) {
-		os.MkdirAll(path.Join(config.PublicHLSPath, strconv.Itoa(0)), 0777)
-	}
+	// if !fileExists(config.PublicHLSPath) {
+	// 	os.MkdirAll(path.Join(config.PublicHLSPath, strconv.Itoa(0)), 0777)
+	// }
 
 	if !fileExists(config.FFMpegPath) {
-		panic(fmt.Sprintf("ffmpeg does not exist at %s.", config.FFMpegPath))
+		log.Panicln(fmt.Sprintf("ffmpeg does not exist at %s.", config.FFMpegPath))
 	}
 
 	if config.VideoSettings.EncoderPreset == "" {
-		panic("A video encoder preset is required to be set in the config file.")
+		log.Panicln("A video encoder preset is required to be set in the config file.")
 	}
 
 }
