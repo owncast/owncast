@@ -92,7 +92,7 @@ func (s S3Storage) connectAWS() *session.Session {
 	creds := credentials.NewStaticCredentials(s.s3AccessKey, s.s3Secret, "")
 	_, err := creds.Get()
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 
 	sess, err := session.NewSession(
@@ -105,7 +105,7 @@ func (s S3Storage) connectAWS() *session.Session {
 	)
 
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 	return sess
 }

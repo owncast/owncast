@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
@@ -24,11 +25,11 @@ type Client struct {
 func NewClient(ws *websocket.Conn, server *Server) *Client {
 
 	if ws == nil {
-		panic("ws cannot be nil")
+		log.Panicln("ws cannot be nil")
 	}
 
 	if server == nil {
-		panic("server cannot be nil")
+		log.Panicln("server cannot be nil")
 	}
 
 	ch := make(chan *ChatMessage, channelBufSize)

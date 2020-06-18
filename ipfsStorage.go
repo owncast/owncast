@@ -57,7 +57,7 @@ func (s *IPFSStorage) Save(filePath string, retryCount int) string {
 	defer someFile.Close()
 
 	if err != nil {
-		panic(fmt.Errorf("Could not get File: %s", err))
+		log.Panicln(fmt.Errorf("Could not get File: %s", err))
 	}
 
 	opts := []options.UnixfsAddOption{
@@ -70,7 +70,7 @@ func (s *IPFSStorage) Save(filePath string, retryCount int) string {
 	cidFile, err := (*s.ipfs).Unixfs().Add(s.ctx, someFile, opts...)
 
 	if err != nil {
-		panic(fmt.Errorf("Could not add File: %s", err))
+		log.Panicln(fmt.Errorf("Could not add File: %s", err))
 	}
 
 	// fmt.Printf("Added file to IPFS with CID %s\n", cidFile.String())

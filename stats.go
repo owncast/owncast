@@ -145,7 +145,7 @@ func getSavedStats() *Stats {
 	var stats Stats
 	err = json.Unmarshal(jsonFile, &stats)
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 
 	return &stats
