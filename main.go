@@ -63,6 +63,7 @@ func startChatServer() {
 		if path.Ext(r.URL.Path) == ".m3u8" {
 			clientID := getClientIDFromRequest(r)
 			stats.SetClientActive(clientID)
+			disableCache(&w)
 		}
 	})
 
@@ -75,6 +76,11 @@ func startChatServer() {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
+func disableCache(w *http.ResponseWriter) {
+	(*w).Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	(*w).Header().Set("Expires", "0")
 }
 
 func getStatus(w http.ResponseWriter, r *http.Request) {
