@@ -37,8 +37,6 @@ func main() {
 		usingExternalStorage = true
 	}
 
-	resetDirectories(configuration)
-
 	if usingExternalStorage {
 		storage.Setup(configuration)
 		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
@@ -46,6 +44,7 @@ func main() {
 
 	go startRTMPService()
 
+	resetDirectories(configuration)
 	startWebServer()
 }
 
