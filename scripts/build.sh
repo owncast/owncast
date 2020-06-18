@@ -9,6 +9,11 @@ ARCH=(amd64 amd64)
 
 # Version
 VERSION=$1
+
+if [[ -z "${VERSION}" ]]; then
+  echo "Version must be specified when running build"
+fi
+
 [[ -z "${VERSION}" ]] && VERSION='unknownver' || VERSION="${VERSION}"
 GIT_COMMIT=$(git rev-list -1 HEAD)
 
