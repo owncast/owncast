@@ -37,18 +37,19 @@ func main() {
 		usingExternalStorage = true
 	}
 
+	resetDirectories(configuration)
+
 	if usingExternalStorage {
 		storage.Setup(configuration)
 		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
 	}
 
-	resetDirectories(configuration)
 	go startRTMPService()
 
-	startChatServer()
+	startWebServer()
 }
 
-func startChatServer() {
+func startWebServer() {
 	// log.SetFlags(log.Lshortfile)
 
 	// websocket server
