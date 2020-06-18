@@ -25,8 +25,23 @@ async function setupApp() {
   appMessagingMisc.init();
 
   const config = await new Config().init();
-  app.description = autoLink(config.description, { embed: false });
   app.title = config.title;
+
+    const configFileLocation = "./js/config.json";
+
+  try {
+    const pageContentFile = "/static/content.md"
+    const response = await fetch(pageContentFile);
+    const descriptionMarkdown = await response.text()
+    const descriptionHTML = new showdown.Converter().makeHtml(descriptionMarkdown);
+    console.log(descriptionHTML)
+    app.description = descriptionHTML;
+    // Object.assign(this, configData);
+    return this;
+  } catch (error) {
+    console.log(error);
+    // No config file present.  That's ok.  It's not required.
+  }
 }
 
 var websocketReconnectTimer;
