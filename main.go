@@ -25,6 +25,7 @@ func main() {
 	log.StandardLogger().Printf("Owncast v%s/%s (%s)", BuildVersion, BuildType, GitCommit)
 
 	checkConfig(configuration)
+
 	stats = getSavedStats()
 	stats.Setup()
 
@@ -38,7 +39,6 @@ func main() {
 
 	if usingExternalStorage {
 		storage.Setup(configuration)
-		// hlsDirectoryPath = configuration.PrivateHLSPath
 		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
 	}
 

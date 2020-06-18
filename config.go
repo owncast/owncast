@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 
@@ -94,11 +97,11 @@ func checkConfig(config Config) {
 	}
 
 	if !fileExists(config.PrivateHLSPath) {
-		panic(fmt.Sprintf("%s does not exist.", config.PrivateHLSPath))
+		os.MkdirAll(path.Join(config.PrivateHLSPath, strconv.Itoa(0)), 0777)
 	}
 
 	if !fileExists(config.PublicHLSPath) {
-		panic(fmt.Sprintf("%s does not exist.", config.PublicHLSPath))
+		os.MkdirAll(path.Join(config.PublicHLSPath, strconv.Itoa(0)), 0777)
 	}
 
 	if !fileExists(config.FFMpegPath) {

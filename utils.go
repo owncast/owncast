@@ -55,6 +55,8 @@ func copy(src, dst string) {
 }
 
 func resetDirectories(configuration Config) {
+	log.Println("Resetting file directories to a clean slate.")
+
 	// Wipe the public, web-accessible hls data directory
 	os.RemoveAll(configuration.PublicHLSPath)
 	os.RemoveAll(configuration.PrivateHLSPath)
