@@ -74,6 +74,9 @@ func resetDirectories(configuration Config) {
 		os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(0)), 0777)
 	}
 
+}
+
+func createInitialOfflineState() {
 	// Provide default files
 	showStreamOfflineState(configuration)
 	if !fileExists("webroot/thumbnail.png") {

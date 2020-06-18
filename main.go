@@ -22,9 +22,11 @@ var stats *Stats
 var usingExternalStorage = false
 
 func main() {
+	// logrus.SetReportCaller(true)
 	log.StandardLogger().Printf("Owncast v%s/%s (%s)", BuildVersion, BuildType, GitCommit)
 
 	checkConfig(configuration)
+	resetDirectories(configuration)
 
 	stats = getSavedStats()
 	stats.Setup()
@@ -42,15 +44,13 @@ func main() {
 		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
 	}
 
+	createInitialOfflineState()
 	go startRTMPService()
 
-	resetDirectories(configuration)
 	startWebServer()
 }
 
 func startWebServer() {
-	// log.SetFlags(log.Lshortfile)
-
 	// websocket server
 	server = NewServer("/entry")
 	go server.Listen()

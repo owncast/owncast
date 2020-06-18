@@ -88,6 +88,9 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 			case event := <-w.Event:
 
 				relativePath := getRelativePathFromAbsolutePath(event.Path)
+				if path.Ext(relativePath) == ".tmp" {
+					continue
+				}
 
 				// Ignore removals
 				if event.Op == watcher.Remove {
@@ -130,11 +133,13 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 	}()
 
 	// Watch the hls segment storage folder recursively for changes.
+	w.FilterOps(watcher.Write, watcher.Rename, watcher.Create)
+
 	if err := w.AddRecursive(pathToMonitor); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := w.Start(time.Millisecond * 100); err != nil {
+	if err := w.Start(time.Millisecond * 200); err != nil {
 		log.Fatalln(err)
 	}
 }
