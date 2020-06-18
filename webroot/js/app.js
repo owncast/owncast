@@ -1,11 +1,5 @@
 async function setupApp() {  
-  Vue.filter('plural', function (string, count) {
-    if (count === 1) {
-      return string;
-    } else {
-      return string + "s";
-    }
-  })
+  Vue.filter('plural', pluralize);
 
 
   window.app = new Vue({

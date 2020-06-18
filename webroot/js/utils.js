@@ -47,6 +47,15 @@ function addNewlines(str) {
   return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
 }
 
+function pluralize(string, count) {
+  if (count === 1) {
+    return string;
+  } else {
+    return string + "s";
+  }
+}
+
+
 // Trying to determine if browser is mobile/tablet.
 // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 function hasTouchScreen() {

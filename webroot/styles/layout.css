@@ -1,6 +1,6 @@
 /* variables */
 :root {
-  --header-height: 3em;
+  --header-height: 3.5em;
   --right-col-width: 24em;
   --video-container-height: 50vh;
   --header-bg-color: rgba(20,0,40,1);
@@ -19,6 +19,10 @@ ul {
   list-style: unset;
 }
 
+a:hover {
+  text-decoration: underline;
+}
+[v-cloak] { visibility: hidden; }
 
 ::-webkit-scrollbar {
   width: 0px;
@@ -52,7 +56,15 @@ header h1 {
   text-transform: uppercase;
   padding: .5em;
   white-space: nowrap;
-  width: 20em;
+  /* width: 20em; */
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+img.logo {
+  height: 1.2em;
+  width: 1.2em;
+  display: inline-block;
 }
 
 #chat-toggle {
@@ -64,6 +76,12 @@ header h1 {
   align-items: center;
 }
 
+footer {
+  flex-direction: row;
+  justify-content: center;
+  font-size: .75em;
+  padding: 2em 0;
+}
 
 /* ************************************************8 */
 
