@@ -87,11 +87,8 @@ GW TODO:
       </div>
 
       <div id="user-content" class="user-content">
-
         <!-- USER CONTENT... -->
         <div v-html="description"></div>
-
-
       </div>
     </div>
 
@@ -101,13 +98,12 @@ GW TODO:
 
 
       <div id="user-content-touch" class="user-content">
-
         <!-- USER CONTENT... -->
         <div v-html="description"></div>
-
       </div>
 
       <div id="chat-container" class="bg-gray-800">
+        
         <div id="messages-container">
           <div v-for="message in messages">
               <div class="message flex">
@@ -129,7 +125,7 @@ GW TODO:
           <form id="message-form" class="flex">
 
             <input type="hidden" name="inputAuthor" id="self-message-author" />
-
+            
             <textarea
               id="message-body-form"
               placeholder="Message"

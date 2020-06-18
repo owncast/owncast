@@ -9,6 +9,17 @@
 body {
   font-size: 14px;
 }
+
+/* Tailwind sets list styles to none.  I don't know why. */
+ol {
+  list-style: decimal;
+}
+
+ul {
+  list-style: unset;
+}
+
+
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
@@ -378,6 +389,7 @@ header h1 {
   display: none;
 }
 
+
 @media screen and (max-width: 640px ) {
   :root {
     --video-container-height: 36vh;
@@ -391,28 +403,20 @@ header h1 {
 }
 
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-  :root {
+  :root .landscape {
     --video-container-height: 75vh;
   }
-  #main-mobile-container {
+  .touch-screen.landscape #chat-container-wrap {
     margin-top: calc(var(--header-height) + var(--video-container-height));
   }
-  .touch-screen .user-content {
+  .touch-screen.landscape .user-content {
     display: block;
   }
-  .touch-screen #chat-container {
+  .touch-screen.landscape #chat-container {
     display: none;
   }
-  .touch-screen #chat-toggle {
+  .touch-screen.landscape #chat-toggle {
     display: none;
   }
 }
 
-/* Tailwind sets list styles to none.  I don't know why. */
-ol {
-  list-style: decimal;
-}
-
-ul {
-  list-style: unset;
-}

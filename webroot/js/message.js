@@ -12,12 +12,9 @@ class Message {
 		this.type = model.type;
 	}
 
-	addNewlines(str) {
-		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
-	}
 	formatText() {
 		var linked = autoLink(this.body, { embed: true });
-		return this.addNewlines(linked);
+		return addNewlines(linked);
 	}
 	userColor() {
 		return messageBubbleColorForString(this.author);
@@ -25,7 +22,6 @@ class Message {
 }
 
 
-// convert newlines to <br>s
 
 class Messaging {
 	constructor() {
@@ -41,25 +37,24 @@ class Messaging {
 		this.keyChatDisplayed = "owncast_chat";
 
 		this.tagAppContainer = document.querySelector("#app-container");
-
 		this.tagChatToggle = document.querySelector("#chat-toggle");
-
-		this.textUserInfoDisplay = document.querySelector("#user-info-display");
 		this.tagUserInfoChanger = document.querySelector("#user-info-change");
-
 		this.tagUsernameDisplay = document.querySelector("#username-display");
-		this.imgUsernameAvatar = document.querySelector("#username-avatar");
+		this.tagMessageFormWarning = document.querySelector("#message-form-warning");
 
 		this.inputMessageAuthor = document.querySelector("#self-message-author");
-
-		this.tagMessageFormWarning = document.querySelector("#message-form-warning");
-		
 		this.inputChangeUserName = document.querySelector("#username-change-input"); 
+
 		this.btnUpdateUserName = document.querySelector("#button-update-username"); 
 		this.btnCancelUpdateUsername = document.querySelector("#button-cancel-change"); 
 		this.btnSubmitMessage = document.querySelector("#button-submit-message");
 
 		this.formMessageInput = document.querySelector("#message-body-form");
+
+		this.imgUsernameAvatar = document.querySelector("#username-avatar");
+		this.textUserInfoDisplay = document.querySelector("#user-info-display");
+
+		this.scrollableMessagesContainer = document.querySelector("#messages-container");
 	}
 	init() {
 		this.tagChatToggle.addEventListener("click", this.handleChatToggle.bind(this));
@@ -74,16 +69,13 @@ class Messaging {
 		this.initLocalStates();
 
 		if (hasTouchScreen()) {
+			this.scrollableMessagesContainer = document.body;
 			this.tagAppContainer.classList.add("touch-screen");
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
-
-			// this.formMessageInput.addEventListener("focus", this.handleKeyboardAppear.bind(this));
-			// this.formMessageInput.addEventListener("blur", this.handleKeyboardOut.bind(this));
 		} else {
 			this.tagAppContainer.classList.add("desktop");
 		}
-
 	}
 
 	initLocalStates() {
@@ -103,7 +95,7 @@ class Messaging {
 		if (this.chatDisplayed) {
 			this.tagAppContainer.classList.add("chat");
 			this.tagAppContainer.classList.remove("no-chat");
-      setTimeout(() => { jumpToBottom(); } , 50);
+			jumpToBottom(this.scrollableMessagesContainer);
 		} else {
 			this.tagAppContainer.classList.add("no-chat");
 			this.tagAppContainer.classList.remove("chat");
@@ -111,10 +103,6 @@ class Messaging {
 	}
 
 	handleOrientationChange() {
-		// mobileVHhack();
-		// if small landscape, hide chat
-		// var mql = window.matchMedia("(orientation: landscape)"); // what it _was_
-
 		var isPortrait = Math.abs(window.orientation % 180) === 0;
 
 		if(!isPortrait) {
@@ -128,15 +116,6 @@ class Messaging {
 		}
 	}
 	
-	// handleKeyboardAppear() {
-	// 	setTimeout(() => {this.tagAppContainer.classList.add("message-input-focus");}, 50);
-	// 	mobileVHhack();
-	// }
-	// handleKeyboardOut() {
-	// 	setTimeout(() => {this.tagAppContainer.classList.remove("message-input-focus");}, 50);
-	// 	mobileVHhack();
-	// }
-
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
 		if (this.chatDisplayed) {
@@ -179,7 +158,6 @@ class Messaging {
 		var okCodes = [37,38,39,40,16,91,18,46,8];
 		var value = this.formMessageInput.value.trim();
 		var numCharsLeft = this.maxMessageLength - value.length;
-
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
 				this.submitChat(value);

@@ -22,13 +22,17 @@ function clearLocalStorage(key) {
   localStorage.removeItem(key);
 }
 
-function jumpToBottom(id) {
-  const div = id ? document.querySelector(id) : document.body;
-  div.scrollTo({
-    top: div.scrollHeight,
-    left: 0,
-    behavior: 'smooth'
-  });
+// jump down to the max height of a div, with a slight delay
+function jumpToBottom(element) {
+  if (!element) return;
+
+  setTimeout(() => {
+    element.scrollTo({
+      top: element.scrollHeight,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }, 50, element);
 }
 
 function uuidv4() {
@@ -38,17 +42,10 @@ function uuidv4() {
   });
 }
 
-function setVHvar() {
-  var vh = window.innerHeight * 0.01;
-  // Then we set the value in the --vh custom property to the root of the document
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-  console.log("== new vh", vh)
+// convert newlines to <br>s
+function addNewlines(str) {
+  return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
 }
-// delayed
-function mobileVHhack() {
-  setTimeout(setVHvar, 100);
-}
-
 
 // Trying to determine if browser is mobile/tablet.
 // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent

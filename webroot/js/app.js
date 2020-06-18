@@ -7,6 +7,7 @@ async function setupApp() {
     }
   })
 
+
   window.app = new Vue({
     el: "#app-container",
     data: {
@@ -18,16 +19,28 @@ async function setupApp() {
       description: "",
       title: "",
     },
+    watch: {
+      messages: {
+        deep: true,
+        handler: function (newMessages, oldMessages) {
+          if (newMessages.length !== oldMessages.length) {
+            // jump to bottom
+            jumpToBottom(appMessaging.scrollableMessagesContainer);
+          }
+        },
+      },
+    },
   });
 
+
   // init messaging interactions
-  var appMessagingMisc = new Messaging();
-  appMessagingMisc.init();
+  var appMessaging = new Messaging();
+  appMessaging.init();
 
   const config = await new Config().init();
   app.title = config.title;
 
-    const configFileLocation = "./js/config.json";
+  const configFileLocation = "./js/config.json";
 
   try {
     const pageContentFile = "/static/content.md"
@@ -46,7 +59,7 @@ async function setupApp() {
 
 var websocketReconnectTimer;
 function setupWebsocket() {
-  clearTimeout(websocketReconnectTimer)
+  clearTimeout(websocketReconnectTimer);
 
   // Uncomment to point to somewhere other than goth.land
   const protocol = location.protocol == "https:" ? "wss" : "ws"
@@ -60,35 +73,34 @@ function setupWebsocket() {
     // Ignore non-chat messages (such as keepalive PINGs)
     if (model.type !== SocketMessageTypes.CHAT) { return; }
 
-    const message = new Message(model)
+    const message = new Message(model);
     
     const existing = this.app.messages.filter(function (item) {
-      return item.id === message.id
+      return item.id === message.id;
     })
     
     if (existing.length === 0 || !existing) {
-      this.app.messages.push(message);
-      setTimeout(() => { jumpToBottom("#messages-container"); } , 50); // could be better. is there a sort of Vue "componentDidUpdate" we can do this on?
+      this.app.messages = [...this.app.messages, message];
     }
   }
 
   ws.onclose = (e) => {
     // connection closed, discard old websocket and create a new one in 5s
-    ws = null
+    ws = null;
     console.log("Websocket closed.")
-    websocketReconnectTimer = setTimeout(setupWebsocket, 5000)
+    websocketReconnectTimer = setTimeout(setupWebsocket, 5000);
   }
 
   // On ws error just close the socket and let it re-connect again for now.
   ws.onerror = (e) => {
-    console.log("Websocket error: ", e)
-    ws.close()
+    console.log("Websocket error: ", e);
+    ws.close();
   }
 
   window.ws = ws;
 }
 
-setupApp()
+setupApp();
 
-setupWebsocket()
+setupWebsocket();
 
