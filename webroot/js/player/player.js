@@ -4,12 +4,13 @@ window.VIDEOJS_NO_DYNAMIC_STYLE = true;
 var waitingTimeoutTimer;
 
 // Wait until the player is setup before we start polling status
-videojs.hookOnce('setup', function (player) {
-  // console.log('setup')
+const player = videojs('video');
+
+player.on('ready', function () {
   getStatus();
   setInterval(getStatus, 5000);
   setupPlayerEventHandlers();
-});
+})
 
 function setupPlayerEventHandlers() {
   const player = videojs('video');

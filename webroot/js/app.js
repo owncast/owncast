@@ -10,7 +10,7 @@ async function setupApp() {
   window.app = new Vue({
     el: "#app-container",
     data: {
-      streamStatus: "",
+      streamStatus: "Stream is offline.", // Default state.
       viewerCount: 0,
       sessionMaxViewerCount: 0,
       overallMaxViewerCount: 0,
