@@ -1,15 +1,21 @@
+const streamURL = '/hls/stream.m3u8';
+// const streamURL = 'https://goth.land/hls/stream.m3u'; // Uncomment me to point to remote video
+
 // style hackings
 window.VIDEOJS_NO_DYNAMIC_STYLE = true;
 
-// Wait until the player is setup before we start polling status
-const player = videojs('video');
-
-player.on('ready', function () {
-  console.log('Player ready.')
+// Create the player for the first time
+const player = videojs('video', null, function () {
   getStatus();
   setInterval(getStatus, 5000);
   setupPlayerEventHandlers();
+
 })
+
+player.ready(function () {
+  console.log('Player ready.')
+  player.src({ type: 'application/x-mpegURL', src: streamURL });
+});
 
 function setupPlayerEventHandlers() {
   const player = videojs('video');
