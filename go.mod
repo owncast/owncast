@@ -1,4 +1,4 @@
-module github.com/gabek/video-stream
+module github.com/gabek/owncast
 
 go 1.14
 
