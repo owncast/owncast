@@ -78,10 +78,10 @@ func resetDirectories(configuration Config) {
 
 func createInitialOfflineState() {
 	// Provide default files
-	showStreamOfflineState(configuration)
-	if !fileExists("webroot/thumbnail.png") {
-		copy("static/logo.png", "webroot/thumbnail.png")
+	if !fileExists("webroot/thumbnail.jpg") {
+		copy("static/logo.png", "webroot/thumbnail.jpg")
 	}
+	showStreamOfflineState(configuration)
 }
 
 func getClientIDFromRequest(req *http.Request) string {

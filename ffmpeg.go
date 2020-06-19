@@ -51,7 +51,7 @@ func showStreamOfflineState(configuration Config) {
 		// "-stream_loop 100",
 		// "-fflags", "+genpts",
 		"-i", configuration.VideoSettings.OfflineImage,
-		"-i", "webroot/thumbnail.png",
+		"-i", "webroot/thumbnail.jpg",
 		"-filter_complex", "\"[0:v]scale=2640:2360[bg];[bg][1:v]overlay=200:250:enable='between(t,0,3)'\"",
 		videoMapsString, // All the different video variants
 		"-f hls",

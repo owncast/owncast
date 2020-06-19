@@ -18,7 +18,7 @@ vendor/
 config/config.yaml
 config/stats.json
 owncast
-webroot/thumbnail.png
+webroot/thumbnail.jpg
 webroot/hls
 webroot/static/content.md
 hls/
