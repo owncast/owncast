@@ -32,6 +32,7 @@ func showStreamOfflineState(configuration Config) {
 	var streamMappingString = ""
 	if configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
 		fmt.Println("Enabling passthrough video")
+		videoMapsString = "-b:v 1200k -b:a 128k" // Since we're compositing multiple sources we can't infer bitrate, so pick something reasonable.
 		streamMaps = append(streamMaps, fmt.Sprintf("v:%d", 0))
 	} else {
 		for index, quality := range configuration.VideoSettings.StreamQualities {
@@ -154,6 +155,7 @@ func startFfmpeg(configuration Config) {
 		"-pix_fmt yuv420p",
 		"-f hls",
 		"-hls_list_size " + strconv.Itoa(configuration.Files.MaxNumberInPlaylist),
+		"-hls_delete_threshold 10", // Keep 10 unreferenced segments on disk before they're deleted.
 		"-hls_time " + strconv.Itoa(configuration.VideoSettings.ChunkLengthInSeconds),
 		"-strftime 1",
 		"-use_localtime 1",
