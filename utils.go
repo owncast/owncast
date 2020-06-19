@@ -46,8 +46,7 @@ func copy(src, dst string) {
 		return
 	}
 
-	err = ioutil.WriteFile(dst, input, 0644)
-	if err != nil {
+	if err := ioutil.WriteFile(dst, input, 0644); err != nil {
 		fmt.Println("Error creating", dst)
 		fmt.Println(err)
 		return
@@ -63,6 +62,9 @@ func resetDirectories(configuration Config) {
 	os.MkdirAll(configuration.PublicHLSPath, 0777)
 	os.MkdirAll(configuration.PrivateHLSPath, 0777)
 
+	// Remove the previous thumbnail
+	os.Remove("webroot/thumbnail.jpg")
+
 	// Create private hls data dirs
 	if !configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
 		for index := range configuration.VideoSettings.StreamQualities {
@@ -73,7 +75,6 @@ func resetDirectories(configuration Config) {
 		os.MkdirAll(path.Join(configuration.PrivateHLSPath, strconv.Itoa(0)), 0777)
 		os.MkdirAll(path.Join(configuration.PublicHLSPath, strconv.Itoa(0)), 0777)
 	}
-
 }
 
 func createInitialOfflineState() {
@@ -81,6 +82,7 @@ func createInitialOfflineState() {
 	if !fileExists("webroot/thumbnail.jpg") {
 		copy("static/logo.png", "webroot/thumbnail.jpg")
 	}
+
 	showStreamOfflineState(configuration)
 }
 
