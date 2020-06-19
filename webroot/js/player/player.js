@@ -6,6 +6,7 @@ window.VIDEOJS_NO_DYNAMIC_STYLE = true;
 
 // Create the player for the first time
 const player = videojs('video', null, function () {
+  player.poster('/thumbnail.jpg');
   getStatus();
   setInterval(getStatus, 5000);
   setupPlayerEventHandlers();
