@@ -29,11 +29,13 @@ func (h *Handler) OnServe(conn *rtmp.Conn) {
 
 func (h *Handler) OnConnect(timestamp uint32, cmd *rtmpmsg.NetConnectionConnect) error {
 	// log.Printf("OnConnect: %#v", cmd)
+
 	return nil
 }
 
 func (h *Handler) OnCreateStream(timestamp uint32, cmd *rtmpmsg.NetConnectionCreateStream) error {
 	// log.Printf("OnCreateStream: %#v", cmd)
+
 	return nil
 }
 
@@ -42,12 +44,11 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	log.Println("Incoming stream connected.")
 
 	if cmd.PublishingName != configuration.VideoSettings.StreamingKey {
-		return errors.New("Invalid streaming key!  Rejecting incoming stream.")
+		return errors.New("invalid streaming key; rejecting incoming stream")
 	}
 
-	// (example) Reject a connection when PublishingName is empty
-	if cmd.PublishingName == "" {
-		return errors.New("PublishingName is empty")
+	if stats.IsStreamConnected() {
+		return errors.New("stream already running; can not overtake an existing stream")
 	}
 
 	// Record streams as FLV
