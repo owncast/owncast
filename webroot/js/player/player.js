@@ -9,11 +9,11 @@ const player = videojs('video', null, function () {
   getStatus();
   setInterval(getStatus, 5000);
   setupPlayerEventHandlers();
-
 })
 
 player.ready(function () {
   console.log('Player ready.')
+  player.reset();
   player.src({ type: 'application/x-mpegURL', src: streamURL });
 });
 
@@ -44,9 +44,9 @@ function setupPlayerEventHandlers() {
   //   console.log("stalled");
   // })
   //
-  // player.on('playing', function (e) {
-  //   // console.log("playing");
-  // })
+  player.on('playing', function (e) {
+    clearTimeout(playerRestartTimer);
+  })
   //
   // player.on('waiting', function (e) {
   //   // console.log("waiting");
@@ -55,8 +55,9 @@ function setupPlayerEventHandlers() {
 
 function restartPlayer() {
   try {
+    console.log('restarting')
     const player = videojs('video');
-
+    player.pause();
     player.src(player.src()); // Reload the same video
     player.load();
     player.play();

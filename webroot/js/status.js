@@ -1,3 +1,5 @@
+var playerRestartTimer;
+
 async function getStatus() {
   const url = "/status";
 
@@ -5,13 +7,14 @@ async function getStatus() {
     const response = await fetch(url);
     const status = await response.json();
 
+    clearTimeout(playerRestartTimer);
+
     if (!app.isOnline && status.online) {
       // The stream was offline, but now it's online.  Force start of playback after an arbitrary
       // delay to make sure the stream has actual data ready to go.
-      setTimeout(function () {
+      playerRestartTimer = setTimeout(function () {
         restartPlayer();
-      }, 3000)
-
+      }, 3000);
     }
 
     app.streamStatus = status.online

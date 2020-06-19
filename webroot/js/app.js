@@ -12,6 +12,7 @@ async function setupApp() {
       messages: [],
       description: "",
       title: "",
+      isOnline: false,
     },
     watch: {
       messages: {
