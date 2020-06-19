@@ -21,7 +21,7 @@ GIT_COMMIT=$(git rev-list -1 HEAD)
 cd $(git rev-parse --show-toplevel)
 
 echo "Cleaning working directories..."
-rm -rf ./webroot/hls/* ./hls/* ./webroot/thumbnail.png
+rm -rf ./webroot/hls/* ./hls/* ./webroot/thumbnail.jpg
 
 echo "Creating version ${VERSION} from commit ${GIT_COMMIT}"
 

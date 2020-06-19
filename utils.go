@@ -63,7 +63,7 @@ func resetDirectories(configuration Config) {
 	os.MkdirAll(configuration.PrivateHLSPath, 0777)
 
 	// Remove the previous thumbnail
-	os.Remove("webroot/thumbnail.png")
+	os.Remove("webroot/thumbnail.jpg")
 
 	// Create private hls data dirs
 	if !configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
@@ -79,8 +79,8 @@ func resetDirectories(configuration Config) {
 
 func createInitialOfflineState() {
 	// Provide default files
-	if !fileExists("webroot/thumbnail.png") {
-		copy("static/logo-900x720.png", "webroot/thumbnail.png")
+	if !fileExists("webroot/thumbnail.jpg") {
+		copy("static/logo.png", "webroot/thumbnail.jpg")
 	}
 
 	showStreamOfflineState(configuration)

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 	"time"
 )
 
@@ -30,7 +31,9 @@ func startThumbnailGenerator(chunkPath string) {
 func fireThumbnailGenerator(chunkPath string) {
 	framePath := path.Join(chunkPath, "0")
 	files, err := ioutil.ReadDir(framePath)
-	outputFile := path.Join("webroot", "thumbnail.png")
+
+	// JPG takes less time to encode than PNG
+	outputFile := path.Join("webroot", "thumbnail.jpg")
 
 	// fmt.Println("Generating thumbnail from", framePath, "to", outputFile)
 
@@ -63,7 +66,18 @@ func fireThumbnailGenerator(chunkPath string) {
 
 	mostRecentFile := path.Join(framePath, names[0])
 
-	ffmpegCmd := "ffmpeg -y -i " + mostRecentFile + " -ss 00:00:01.000 -vframes 1 " + outputFile
+	thumbnailCmdFlags := []string{
+		configuration.FFMpegPath,
+		"-y",                 // Overwrite file
+		"-threads 1",         // Low priority processing
+		"-t 1",               // Pull from frame 1
+		"-i", mostRecentFile, // Input
+		"-f image2",  // format
+		"-vframes 1", // Single frame
+		outputFile,
+	}
+
+	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
 
 	// fmt.Println(ffmpegCmd)
 
