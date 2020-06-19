@@ -109,9 +109,16 @@ func startFfmpeg(configuration Config) {
 	var videoMapsString = ""
 	var audioMapsString = ""
 	var streamMappingString = ""
+	var profileString = ""
+
 	if configuration.VideoSettings.EnablePassthrough || len(configuration.VideoSettings.StreamQualities) == 0 {
 		fmt.Println("Enabling passthrough video")
 		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", 0, 0))
+		videoMaps = append(videoMaps, "-map v:0 -c:v copy")
+		videoMapsString = strings.Join(videoMaps, " ")
+		audioMaps = append(audioMaps, "-map a:0")
+		audioMapsString = strings.Join(audioMaps, " ") + " -c:a copy" // Pass through audio for all the variants, don't reencode
+
 	} else {
 		for index, quality := range configuration.VideoSettings.StreamQualities {
 			maxRate := math.Floor(float64(quality.Bitrate) * 0.8)
@@ -120,6 +127,7 @@ func startFfmpeg(configuration Config) {
 			videoMapsString = strings.Join(videoMaps, " ")
 			audioMaps = append(audioMaps, "-map a:0")
 			audioMapsString = strings.Join(audioMaps, " ") + " -c:a copy" // Pass through audio for all the variants, don't reencode
+			profileString = "-profile:v high"                             // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		}
 	}
 
@@ -141,7 +149,7 @@ func startFfmpeg(configuration Config) {
 		// "-r 25",
 		"-preset " + configuration.VideoSettings.EncoderPreset,
 		"-sc_threshold 0", // don't create key frames on scene change - only according to -g
-		"-profile:v high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		profileString,
 		"-movflags +faststart",
 		"-pix_fmt yuv420p",
 		"-f hls",
