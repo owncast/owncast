@@ -46,8 +46,7 @@ func copy(src, dst string) {
 		return
 	}
 
-	err = ioutil.WriteFile(dst, input, 0644)
-	if err != nil {
+	if err = ioutil.WriteFile(dst, input, 0644); err != nil {
 		fmt.Println("Error creating", dst)
 		fmt.Println(err)
 		return
@@ -78,10 +77,11 @@ func resetDirectories(configuration Config) {
 
 func createInitialOfflineState() {
 	// Provide default files
-	showStreamOfflineState(configuration)
 	if !fileExists("webroot/thumbnail.png") {
-		copy("static/logo.png", "webroot/thumbnail.png")
+		copy("static/logo-900x720.png", "webroot/thumbnail.png")
 	}
+
+	showStreamOfflineState(configuration)
 }
 
 func getClientIDFromRequest(req *http.Request) string {
