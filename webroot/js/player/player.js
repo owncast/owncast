@@ -45,7 +45,9 @@ function setupPlayerEventHandlers() {
   // })
   //
   player.on('playing', function (e) {
-    clearTimeout(playerRestartTimer);
+    if (playerRestartTimer) {
+      clearTimeout(playerRestartTimer);
+    }
   })
   //
   // player.on('waiting', function (e) {
