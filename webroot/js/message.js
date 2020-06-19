@@ -13,7 +13,8 @@ class Message {
 	}
 
 	formatText() {
-		var linked = autoLink(this.body, { embed: true });
+		var markdownToHTML = new showdown.Converter({ emoji: true, openLinksInNewWindow: true, tables: false, strikethrough: false, simplifiedAutoLink: false}).makeHtml(this.body);
+		var linked = autoLink(markdownToHTML, { embed: true });
 		return addNewlines(linked);
 	}
 	userColor() {
