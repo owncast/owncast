@@ -1,4 +1,4 @@
-package main
+package storageproviders
 
 import (
 	"bufio"
@@ -11,8 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+
+	"github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/models"
 )
 
+//S3Storage is the s3 implementation of the ChunkStorageProvider
 type S3Storage struct {
 	sess *session.Session
 	host string
@@ -24,27 +28,30 @@ type S3Storage struct {
 	s3Secret    string
 }
 
-func (s *S3Storage) Setup(configuration Config) {
+//Setup sets up the s3 storage for saving the video to s3
+func (s *S3Storage) Setup() error {
 	log.Println("Setting up S3 for external storage of video...")
 
-	s.s3Endpoint = configuration.S3.Endpoint
-	s.s3Region = configuration.S3.Region
-	s.s3Bucket = configuration.S3.Bucket
-	s.s3AccessKey = configuration.S3.AccessKey
-	s.s3Secret = configuration.S3.Secret
+	s.s3Endpoint = config.Config.S3.Endpoint
+	s.s3Region = config.Config.S3.Region
+	s.s3Bucket = config.Config.S3.Bucket
+	s.s3AccessKey = config.Config.S3.AccessKey
+	s.s3Secret = config.Config.S3.Secret
 
 	s.sess = s.connectAWS()
+
+	return nil
 }
 
-func (s *S3Storage) Save(filePath string, retryCount int) string {
+//Save saves the file to the s3 bucket
+func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	// fmt.Println("Saving", filePath)
 
 	file, err := os.Open(filePath)
-	defer file.Close()
-
 	if err != nil {
-		log.Errorln(err)
+		return "", err
 	}
+	defer file.Close()
 
 	uploader := s3manager.NewUploader(s.sess)
 
@@ -55,30 +62,31 @@ func (s *S3Storage) Save(filePath string, retryCount int) string {
 	})
 
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("error uploading:", err.Error())
 		if retryCount < 4 {
 			log.Println("Retrying...")
-			s.Save(filePath, retryCount+1)
+			return s.Save(filePath, retryCount+1)
 		}
 	}
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
 
-	return response.Location
+	return response.Location, nil
 }
 
-func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant Variant) string {
+//GenerateRemotePlaylist implements the 'GenerateRemotePlaylist' method
+func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Variant) string {
 	var newPlaylist = ""
 
 	scanner := bufio.NewScanner(strings.NewReader(playlist))
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line[0:1] != "#" {
-			fullRemotePath := variant.getSegmentForFilename(line)
-			if fullRemotePath != nil {
-				line = fullRemotePath.RemoteID
-			} else {
+			fullRemotePath := variant.GetSegmentForFilename(line)
+			if fullRemotePath == nil {
 				line = ""
+			} else {
+				line = fullRemotePath.RemoteID
 			}
 		}
 

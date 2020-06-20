@@ -1,79 +1,91 @@
-package main
+package rtmp
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/pkg/errors"
 	"github.com/yutopp/go-flv"
 	flvtag "github.com/yutopp/go-flv/tag"
-	"github.com/yutopp/go-rtmp"
+	yutmp "github.com/yutopp/go-rtmp"
 	rtmpmsg "github.com/yutopp/go-rtmp/message"
+
+	"github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/core"
+	"github.com/gabek/owncast/core/ffmpeg"
+	"github.com/gabek/owncast/utils"
 )
 
-var _ rtmp.Handler = (*Handler)(nil)
+var _ yutmp.Handler = (*Handler)(nil)
 
 // Handler An RTMP connection handler
 type Handler struct {
-	rtmp.DefaultHandler
+	yutmp.DefaultHandler
 	flvFile *os.File
 	flvEnc  *flv.Encoder
 }
 
-func (h *Handler) OnServe(conn *rtmp.Conn) {
+//OnServe handles the "OnServe" of the rtmp service
+func (h *Handler) OnServe(conn *yutmp.Conn) {
 }
 
+//OnConnect handles the "OnConnect" of the rtmp service
 func (h *Handler) OnConnect(timestamp uint32, cmd *rtmpmsg.NetConnectionConnect) error {
 	// log.Printf("OnConnect: %#v", cmd)
 
 	return nil
 }
 
+//OnCreateStream handles the "OnCreateStream" of the rtmp service
 func (h *Handler) OnCreateStream(timestamp uint32, cmd *rtmpmsg.NetConnectionCreateStream) error {
 	// log.Printf("OnCreateStream: %#v", cmd)
 
 	return nil
 }
 
+//OnPublish handles the "OnPublish" of the rtmp service
 func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
 	// log.Printf("OnPublish: %#v", cmd)
 	log.Println("Incoming stream connected.")
 
-	if cmd.PublishingName != configuration.VideoSettings.StreamingKey {
+	if cmd.PublishingName != config.Config.VideoSettings.StreamingKey {
 		return errors.New("invalid streaming key; rejecting incoming stream")
 	}
 
-	if stats.IsStreamConnected() {
+	if _isConnected {
 		return errors.New("stream already running; can not overtake an existing stream")
 	}
 
 	// Record streams as FLV
-	p := getTempPipePath()
+	p := utils.GetTemporaryPipePath()
 	syscall.Mkfifo(p, 0666)
+
 	f, err := os.OpenFile(p, os.O_RDWR, os.ModeNamedPipe)
 	if err != nil {
-		return errors.Wrap(err, "Failed to create flv file")
+		return err
 	}
 	h.flvFile = f
 
 	enc, err := flv.NewEncoder(f, flv.FlagsAudio|flv.FlagsVideo)
 	if err != nil {
 		_ = f.Close()
-		return errors.Wrap(err, "Failed to create flv encoder")
+		return err
 	}
 	h.flvEnc = enc
 
-	go startFfmpeg(configuration)
+	//TODO: why is this turned into a goroutine?
+	go ffmpeg.Start()
 
-	streamConnected()
+	_isConnected = true
+	core.SetStreamAsConnected()
 
 	return nil
 }
 
+//OnSetDataFrame handles the setting of the data frame
 func (h *Handler) OnSetDataFrame(timestamp uint32, data *rtmpmsg.NetStreamSetDataFrame) error {
 	r := bytes.NewReader(data.Payload)
 
@@ -96,6 +108,7 @@ func (h *Handler) OnSetDataFrame(timestamp uint32, data *rtmpmsg.NetStreamSetDat
 	return nil
 }
 
+//OnAudio handles when we get audio from the rtmp service
 func (h *Handler) OnAudio(timestamp uint32, payload io.Reader) error {
 	var audio flvtag.AudioData
 	if err := flvtag.DecodeAudioData(payload, &audio); err != nil {
@@ -129,6 +142,7 @@ func (h *Handler) OnAudio(timestamp uint32, payload io.Reader) error {
 	return nil
 }
 
+//OnVideo handles when we video from the rtmp service
 func (h *Handler) OnVideo(timestamp uint32, payload io.Reader) error {
 	var video flvtag.VideoData
 	if err := flvtag.DecodeVideoData(payload, &video); err != nil {
@@ -161,12 +175,14 @@ func (h *Handler) OnVideo(timestamp uint32, payload io.Reader) error {
 	return nil
 }
 
+//OnClose handles the closing of the rtmp connection
 func (h *Handler) OnClose() {
-	log.Printf("OnClose")
+	log.Printf("OnClose of the rtmp service")
 
 	if h.flvFile != nil {
 		_ = h.flvFile.Close()
 	}
 
-	streamDisconnected()
+	_isConnected = false
+	core.SetStreamAsDisconnected()
 }

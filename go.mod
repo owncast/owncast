@@ -1,4 +1,4 @@
-module github.com/gabek/video-stream
+module github.com/gabek/owncast
 
 go 1.14
 
@@ -11,7 +11,6 @@ require (
 	github.com/libp2p/go-libp2p-peer v0.2.0
 	github.com/libp2p/go-libp2p-peerstore v0.2.6
 	github.com/multiformats/go-multiaddr v0.2.2
-	github.com/pkg/errors v0.9.1
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sirupsen/logrus v1.6.0
 	github.com/yutopp/go-flv v0.2.0

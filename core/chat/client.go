@@ -1,4 +1,4 @@
-package main
+package chat
 
 import (
 	"fmt"
@@ -6,24 +6,26 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
+
+	"github.com/gabek/owncast/models"
+	"github.com/gabek/owncast/utils"
 )
 
 const channelBufSize = 100
 
-// Chat client.
+//Client represents a chat client.
 type Client struct {
 	id     string
 	ws     *websocket.Conn
 	server *Server
-	ch     chan *ChatMessage
-	pingch chan *PingMessage
+	ch     chan models.ChatMessage
+	pingch chan models.PingMessage
 
 	doneCh chan bool
 }
 
-// Create new chat client.
+//NewClient creates a new chat client
 func NewClient(ws *websocket.Conn, server *Server) *Client {
-
 	if ws == nil {
 		log.Panicln("ws cannot be nil")
 	}
@@ -32,27 +34,29 @@ func NewClient(ws *websocket.Conn, server *Server) *Client {
 		log.Panicln("server cannot be nil")
 	}
 
-	ch := make(chan *ChatMessage, channelBufSize)
+	ch := make(chan models.ChatMessage, channelBufSize)
 	doneCh := make(chan bool)
-	pingch := make(chan *PingMessage)
-	clientID := getClientIDFromRequest(ws.Request())
+	pingch := make(chan models.PingMessage)
+	clientID := utils.GenerateClientIDFromRequest(ws.Request())
+
 	return &Client{clientID, ws, server, ch, pingch, doneCh}
 }
 
-func (c *Client) Conn() *websocket.Conn {
+//GetConnection gets the connection for the client
+func (c *Client) GetConnection() *websocket.Conn {
 	return c.ws
 }
 
-func (c *Client) Write(msg *ChatMessage) {
+func (c *Client) Write(msg models.ChatMessage) {
 	select {
 	case c.ch <- msg:
 	default:
-		c.server.Del(c)
-		err := fmt.Errorf("client %d is disconnected.", c.id)
-		c.server.Err(err)
+		c.server.Remove(c)
+		c.server.Err(fmt.Errorf("client %s is disconnected", c.id))
 	}
 }
 
+//Done marks the client as done
 func (c *Client) Done() {
 	c.doneCh <- true
 }
@@ -78,7 +82,7 @@ func (c *Client) listenWrite() {
 
 		// receive done request
 		case <-c.doneCh:
-			c.server.Del(c)
+			c.server.Remove(c)
 			c.doneCh <- true // for listenRead method
 			return
 		}
@@ -92,20 +96,20 @@ func (c *Client) listenRead() {
 
 		// receive done request
 		case <-c.doneCh:
-			c.server.Del(c)
+			c.server.Remove(c)
 			c.doneCh <- true // for listenWrite method
 			return
 
 		// read data from websocket connection
 		default:
-			var msg ChatMessage
-			err := websocket.JSON.Receive(c.ws, &msg)
-			if err == io.EOF {
+			var msg models.ChatMessage
+
+			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
 				c.doneCh <- true
 			} else if err != nil {
 				c.server.Err(err)
 			} else {
-				c.server.SendAll(&msg)
+				c.server.SendToAll(msg)
 			}
 		}
 	}

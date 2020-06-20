@@ -15,8 +15,8 @@
 vendor/
 
 #owncast specific
-config/config.yaml
-config/stats.json
+/config.yaml
+/stats.json
 owncast
 webroot/thumbnail.jpg
 webroot/hls
