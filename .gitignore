@@ -22,3 +22,4 @@ webroot/thumbnail.jpg
 webroot/hls
 webroot/static/content.md
 hls/
+dist/
