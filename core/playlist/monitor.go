@@ -2,12 +2,13 @@ package playlist
 
 import (
 	"io/ioutil"
-	"log"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/radovskyb/watcher"
 

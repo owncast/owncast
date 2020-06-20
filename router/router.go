@@ -2,19 +2,21 @@ package router
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/controllers"
+	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/core/rtmp"
 )
 
 //Start starts the router for the http, ws, and rtmp
 func Start() error {
 	// websocket server
-	// server = NewServer("/entry")
-	// go server.Listen()
+	chatServer := chat.NewServer("/entry")
+	go chatServer.Listen()
 
 	// start the rtmp server
 	go rtmp.Start()

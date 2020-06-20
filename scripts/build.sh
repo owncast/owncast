@@ -36,17 +36,17 @@ build() {
 
   echo "Building ${NAME} (${OS}/${ARCH}) release..."
 
-  mkdir -p dist/${NAME}/config
+  mkdir -p dist/${NAME}
 
   # Default files
-  cp config/config-example.yaml dist/${NAME}/config/config.yaml
+  cp config-example.yaml dist/${NAME}/config.yaml
   cp webroot/static/content-example.md dist/${NAME}/webroot/static/content.md
 
   cp -R webroot/ dist/${NAME}/webroot/
   cp -R doc/ dist/${NAME}/doc/
   cp README.md dist/${NAME}
 
-  env CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build -ldflags "-X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -a -o dist/$NAME/owncast
+  env CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build -ldflags "-X core.GitCommit=$GIT_COMMIT -X core.BuildVersion=$VERSION -X core.BuildType=$NAME" -a -o dist/$NAME/owncast
 
   pushd dist/${NAME} >> /dev/null
   zip -r -q -8 ../owncast-$NAME-$VERSION.zip .

@@ -2,11 +2,12 @@ package ffmpeg
 
 import (
 	"io/ioutil"
-	"log"
 	"os/exec"
 	"path"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
 )

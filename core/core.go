@@ -1,12 +1,14 @@
 package core
 
 import (
-	"log"
 	"os"
 	"path"
 	"strconv"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
 )
@@ -41,10 +43,12 @@ func Start() error {
 func createInitialOfflineState() error {
 	// Provide default files
 	if !utils.DoesFileExists("webroot/thumbnail.jpg") {
-		return utils.Copy("static/logo.png", "webroot/thumbnail.jpg")
+		if err := utils.Copy("static/logo.png", "webroot/thumbnail.jpg"); err != nil {
+			return err
+		}
 	}
 
-	return nil
+	return ffmpeg.ShowStreamOfflineState()
 }
 
 func resetDirectories() {

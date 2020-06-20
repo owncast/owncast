@@ -3,10 +3,11 @@ package core
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"math"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"

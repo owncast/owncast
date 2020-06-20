@@ -17,7 +17,7 @@ import (
 
 //ShowStreamOfflineState generates and shows the stream's offline state
 func ShowStreamOfflineState() error {
-	fmt.Println("----- Stream offline!  Showing offline state!")
+	log.Println("----- Stream offline!  Showing offline state!")
 
 	var outputDir = config.Config.PublicHLSPath
 	var variantPlaylistPath = config.Config.PublicHLSPath
@@ -35,7 +35,7 @@ func ShowStreamOfflineState() error {
 	var videoMapsString = ""
 	var streamMappingString = ""
 	if config.Config.VideoSettings.EnablePassthrough || len(config.Config.VideoSettings.StreamQualities) == 0 {
-		fmt.Println("Enabling passthrough video")
+		log.Println("Enabling passthrough video for offline state")
 		videoMapsString = "-b:v 1200k -b:a 128k" // Since we're compositing multiple sources we can't infer bitrate, so pick something reasonable.
 		streamMaps = append(streamMaps, fmt.Sprintf("v:%d", 0))
 	} else {
@@ -86,7 +86,7 @@ func ShowStreamOfflineState() error {
 
 	ffmpegCmd := config.Config.FFMpegPath + " " + ffmpegFlagsString
 
-	// fmt.Println(ffmpegCmd)
+	// log.Println(ffmpegCmd)
 
 	_, err := exec.Command("sh", "-c", ffmpegCmd).Output()
 
@@ -118,7 +118,7 @@ func Start() error {
 	var profileString = ""
 
 	if config.Config.VideoSettings.EnablePassthrough || len(config.Config.VideoSettings.StreamQualities) == 0 {
-		fmt.Println("Enabling passthrough video")
+		log.Println("Enabling passthrough video for stream")
 		streamMaps = append(streamMaps, fmt.Sprintf("v:%d,a:%d", 0, 0))
 		videoMaps = append(videoMaps, "-map v:0 -c:v copy")
 		videoMapsString = strings.Join(videoMaps, " ")

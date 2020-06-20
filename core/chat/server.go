@@ -135,6 +135,8 @@ func (s *Server) Listen() {
 
 	http.Handle(s.Pattern, websocket.Handler(onConnected))
 
+	log.Printf("Starting the websocket listener on: %s", s.Pattern)
+
 	for {
 		select {
 		// add new a client
