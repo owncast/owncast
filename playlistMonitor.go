@@ -22,16 +22,17 @@ type Segment struct {
 
 type Variant struct {
 	VariantIndex int
-	Segments     []Segment
+	Segments     map[string]*Segment
 }
 
 func (v *Variant) getSegmentForFilename(filename string) *Segment {
-	for _, segment := range v.Segments {
-		if path.Base(segment.FullDiskPath) == filename {
-			return &segment
-		}
-	}
-	return nil
+	return v.Segments[filename]
+	// for _, segment := range v.Segments {
+	// 	if path.Base(segment.FullDiskPath) == filename {
+	// 		return &segment
+	// 	}
+	// }
+	// return nil
 }
 
 func getSegmentFromPath(fullDiskPath string) Segment {
@@ -73,10 +74,10 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 	variants = make([]Variant, len(configuration.VideoSettings.StreamQualities))
 	if len(configuration.VideoSettings.StreamQualities) > 0 && !configuration.VideoSettings.EnablePassthrough {
 		for index := range variants {
-			variants[index] = Variant{index, make([]Segment, 0)}
+			variants[index] = Variant{index, make(map[string]*Segment)}
 		}
 	} else {
-		variants[0] = Variant{0, make([]Segment, 0)}
+		variants[0] = Variant{0, make(map[string]*Segment)}
 	}
 	// log.Printf("Using directory %s for storing files with %d variants...\n", pathToMonitor, len(variants))
 
@@ -118,7 +119,7 @@ func monitorVideoContent(pathToMonitor string, configuration Config, storage Chu
 					segment.RemoteID = newObjectPath
 					// fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
 
-					variants[segment.VariantIndex].Segments = append(variants[segment.VariantIndex].Segments, segment)
+					variants[segment.VariantIndex].Segments[filepath.Base(segment.RelativeUploadPath)] = &segment
 
 					// Force a variant's playlist to be updated after a file is uploaded.
 					associatedVariantPlaylist := strings.ReplaceAll(event.Path, path.Base(event.Path), "stream.m3u8")
