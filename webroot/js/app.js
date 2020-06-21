@@ -9,10 +9,16 @@ async function setupApp() {
       sessionMaxViewerCount: 0,
       overallMaxViewerCount: 0,
       messages: [],
-      description: "",
-      title: "",
+      extraUserContent: "",
       isOnline: false,
+      // from config
+      logo: null,
       socialHandles: [],
+      streamerName: "",
+      summary: "",
+      tags: [],
+      title: "",
+
     },
     watch: {
       messages: {
@@ -33,8 +39,12 @@ async function setupApp() {
   appMessaging.init();
 
   const config = await new Config().init();
-  app.title = config.title;
+  app.logo = config.logo;
   app.socialHandles = config.socialHandles;
+  app.streamerName = config.name;
+  app.summary = config.summary && addNewlines(config.summary);
+  app.tags =  config.tags;
+  app.title = config.title;
 
   // const configFileLocation = "../js/config.json";
 
@@ -43,7 +53,7 @@ async function setupApp() {
     const response = await fetch(pageContentFile);
     const descriptionMarkdown = await response.text()
     const descriptionHTML = new showdown.Converter().makeHtml(descriptionMarkdown);
-    app.description = descriptionHTML;
+    app.extraUserContent = descriptionHTML;
     return this;
   } catch (error) {
     console.log(error);

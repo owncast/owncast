@@ -4,20 +4,13 @@
   --right-col-width: 24em;
   --video-container-height: 50vh;
   --header-bg-color: rgba(20,0,40,1);
+  --user-image-width: 10em;
 }
 
 body {
   font-size: 14px;
 }
 
-/* Tailwind sets list styles to none.  I don't know why. */
-ol {
-  list-style: decimal;
-}
-
-ul {
-  list-style: unset;
-}
 
 a:hover {
   text-decoration: underline;
@@ -121,13 +114,58 @@ footer {
 
 
 .user-content {
-  padding: 2em;
+  padding: 3em;
 }
+
+#user-content {
+  display: flex;
+  flex-direction: row;
+}
+.user-content .user-image {
+  padding: 1em;
+  margin-right: 2em;
+  min-width: var(--user-image-width);
+  width: var(--user-image-width);
+  height: var(--user-image-width);
+  max-height: var(--user-image-width);
+}
+
+.user-image img {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+.stream-summary {
+  margin: 1em 0;
+}
+.extra-user-content {
+  margin: 1em 0;
+}
+
+h2 {
+  font-size: 3em; 
+}
+.user-content-header {
+  margin-bottom: 2em;
+}
+
+.tag-list {
+  flex-direction: row;
+  margin: 1em 0;
+}
+.tag-list li {
+  font-size: .75em;
+  text-transform: uppercase;
+  margin-right: .75em;
+  padding: .5em;
+}
+
 
 .social-list {
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  flex-wrap: wrap;
 }
 .social-list .follow-label {
   font-weight: bold;
@@ -162,6 +200,14 @@ footer {
   text-transform: uppercase;
   display: inline-block;
   max-width: 10em;
+}
+
+.extra-user-content ol {
+  list-style: decimal;
+}
+
+.extra-user-content ul {
+  list-style: unset;
 }
 
 
@@ -365,6 +411,7 @@ footer {
 @media screen and (max-width: 860px) {
   :root {
     --right-col-width: 20em;
+    --user-image-width: 6em;
   }
   
   #chat-container {

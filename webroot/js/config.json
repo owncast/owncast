@@ -1,7 +1,10 @@
 {
+  "name": "gabek",
   "title": "Owncast Demo Server",
   "logo": "/img/logo128.png",
-  "description": "This is a demo server for Owncast.  You can read more about it at owncast.online.  You can edit this description in your web config file.  <br><br>Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.",
+
+  "summary": "This is brief summary of whom you are or what your stream is. demo server for Owncast.  You can read more about it at owncast.online.  You can edit this description in your web config file.\n\nBlathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.",
+
   "tags": [
     "music",
     "software",

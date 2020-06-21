@@ -36,7 +36,7 @@ GW TODO:
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 v-cloak class="flex text-gray-400">
           <span id="logo-container" class="rounded-full bg-white mx-2 px-1 py-1">
-            <img class="logo" src="./img/logo128.png">
+            <img class="logo" v-bind:src="logo">
           </span>
           <span>{{title}}</span>
         </h1>
@@ -90,14 +90,22 @@ GW TODO:
      </main>
 
       <section id="user-content" class="user-content">
-        <social-list v-bind:platforms="socialHandles"></social-list>
-        
-
-        <!-- USER CONTENT... -->
-        <div v-html="description"></div>
-
-        <owncast-footer></owncast-footer>
+        <div class="user-image rounded-full bg-white">
+          <img class="logo" v-bind:src="logo">            
+        </div>
+        <div class="">
+          <div class="user-content-header border-b border-gray-500 border-solid">
+            <h2 class="font-semibold">About <span class="streamer-name text-indigo-600">{{streamerName}}</span></h2>
+            <social-list v-bind:platforms="socialHandles"></social-list>
+            <div class="stream-summary" v-html="summary"></div>
+            <stream-tags v-bind:tags="tags"></stream-tags>
+          </div>
+          <!-- USER CONTENT... -->
+          <div class="extra-user-content" v-html="extraUserContent"></div>
+        </div>
       </section>
+      <owncast-footer></owncast-footer>
+
     </div>
 
 
@@ -106,7 +114,7 @@ GW TODO:
         <social-list v-bind:platforms="socialHandles"></social-list>
 
         <!-- USER CONTENT... -->
-        <div v-html="description"></div>
+        <div v-html="extraUserContent"></div>
 
         <owncast-footer></owncast-footer>
        

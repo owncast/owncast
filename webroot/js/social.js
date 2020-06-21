@@ -91,7 +91,7 @@ Vue.component('social-list', {
   props: ['platforms'],
 
   template: `
-    <div class="social-list flex">
+    <ul class="social-list flex">
       <span v-if="this.platforms.length" class="follow-label">Follow me: </span>
       <user-social-icon 
         v-for="(item, index) in this.platforms"
@@ -100,7 +100,7 @@ Vue.component('social-list', {
         v-bind:platform="item.platform"
         v-bind:username="item.handle"
       />
-    </div>
+    </ul>
   `,
 
 });
@@ -130,13 +130,15 @@ Vue.component('user-social-icon', {
     };
   },
   template: `
-    <a
-      v-bind:class="itemClass"
-      target="_blank"
-      :href="link"
-    >
-      <span class="platform-icon rounded-lg" :style="style" />
-      <span v-bind:class="labelClass">Find @{{username}} on {{platform}}</span>
-    </a>
+    <li>
+      <a
+        v-bind:class="itemClass"
+        target="_blank"
+        :href="link"
+      >
+        <span class="platform-icon rounded-lg" :style="style" />
+        <span v-bind:class="labelClass">Find @{{username}} on {{platform}}</span>
+      </a>
+    </li>
   `,
 });

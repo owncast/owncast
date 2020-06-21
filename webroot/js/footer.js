@@ -7,3 +7,21 @@ Vue.component('owncast-footer', {
     </footer>
   `,
 });
+
+
+Vue.component('stream-tags', {
+  props: ['tags'],
+  template: `
+    <ul
+      class="tag-list flex"
+      v-if="this.tags.length"
+    >
+      <li class="tag rounded-sm text-gray-100 bg-gray-700" 
+        v-for="tag in this.tags"
+        v-bind:key="tag"
+      >
+        {{tag}}
+      </li>
+    </ul>
+  `,
+});
