@@ -126,19 +126,21 @@ footer {
 
 .social-list {
   flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 }
-.user-social-item:first-of-type::before {
-  content: 'FOLLOW ME: ';
+.social-list .follow-label {
   font-weight: bold;
   font-size: .75em;
   margin-right: .5em;
+  text-transform: uppercase;
 }
 
 .user-social-item {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-right: 0em;
+  margin-right: -.25em;
 }
 .user-social-item .platform-icon {
   --icon-width: 40px;
