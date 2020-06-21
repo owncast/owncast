@@ -29,6 +29,17 @@ a:hover {
   background: transparent;
 }
 
+
+.visually-hidden { 
+  position: absolute !important;
+  height: 1px; 
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
+}
+
 #app-container {
   width: 100%;
   flex-direction: column;
@@ -106,6 +117,52 @@ footer {
 #user-content-touch {
   display: none;
 }
+/* ************************************************8 */
+
+
+.user-content {
+  padding: 2em;
+}
+
+.social-list {
+  flex-direction: row;
+}
+.user-social-item:first-of-type::before {
+  content: 'FOLLOW ME: ';
+  font-weight: bold;
+  font-size: .75em;
+  margin-right: .5em;
+}
+
+.user-social-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: 0em;
+}
+.user-social-item .platform-icon {
+  --icon-width: 40px;
+  height: var(--icon-width);
+  width: var(--icon-width);
+  background-image: url(../img/social-icons.gif);
+  background-repeat: no-repeat;
+  background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));
+  transform: scale(.65);
+}
+
+.user-social-item.use-default:hover {
+  text-decoration: none;
+  cursor: text;
+}
+
+.user-social-item.use-default .platform-label {
+  font-size: .7em;
+  text-transform: uppercase;
+  display: inline-block;
+  max-width: 10em;
+}
+
+
 /* ************************************************8 */
 
 #user-options-container {
@@ -201,7 +258,8 @@ footer {
   margin-top: -0.75em;
 }
 .vjs-airplay .vjs-icon-placeholder::before {
-  content: 'AP';
+  /* content: 'AP'; */
+  content: url("../img/airplay.png");
 }
 
 

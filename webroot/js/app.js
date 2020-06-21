@@ -1,7 +1,6 @@
 async function setupApp() {  
   Vue.filter('plural', pluralize);
 
-
   window.app = new Vue({
     el: "#app-container",
     data: {
@@ -13,6 +12,7 @@ async function setupApp() {
       description: "",
       title: "",
       isOnline: false,
+      socialHandles: [],
     },
     watch: {
       messages: {
@@ -34,11 +34,12 @@ async function setupApp() {
 
   const config = await new Config().init();
   app.title = config.title;
+  app.socialHandles = config.socialHandles;
 
-  const configFileLocation = "./js/config.json";
+  // const configFileLocation = "../js/config.json";
 
   try {
-    const pageContentFile = "/static/content.md"
+    const pageContentFile = "../static/content.md"
     const response = await fetch(pageContentFile);
     const descriptionMarkdown = await response.text()
     const descriptionHTML = new showdown.Converter().makeHtml(descriptionMarkdown);
@@ -55,9 +56,9 @@ function setupWebsocket() {
 
   // Uncomment to point to somewhere other than goth.land
   const protocol = location.protocol == "https:" ? "wss" : "ws"
-  var ws = new WebSocket(protocol + "://" + location.host + "/entry")
+  // var ws = new WebSocket(protocol + "://" + location.host + "/entry")
 
-  // var ws = new WebSocket("wss://goth.land/entry")
+  var ws = new WebSocket("wss://goth.land/entry")
 
   ws.onmessage = (e) => {
     const model = JSON.parse(e.data)

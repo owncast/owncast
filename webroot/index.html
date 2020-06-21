@@ -13,6 +13,7 @@
   <script src="//unpkg.com/video.js@7.8.3/dist/video.js"></script>
   <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
   <script src="vendor/autolink.js"></script>
+
   <link href="./styles/layout.css" rel="stylesheet" />
 </head>
 <script>
@@ -74,7 +75,7 @@ GW TODO:
             autoplay
             playsinline
             muted
-            poster="/thumbnail.jpg"
+            poster="https://goth.land/thumbnail.jpg"
           >
           </video>
         </div>
@@ -89,29 +90,41 @@ GW TODO:
      </main>
 
       <section id="user-content" class="user-content">
+        <div class="social-list flex">
+          <user-social-icon 
+            v-for="(item, index) in socialHandles"
+            v-if="item.platform && item.handle"
+            v-bind:key="index"
+            v-bind:platform="item.platform"
+            v-bind:username="item.handle"
+          />
+        </div>
+        
+
         <!-- USER CONTENT... -->
         <div v-html="description"></div>
 
-        <footer class="flex border-t border-gray-500 border-solid">
-          <span>
-            <a href="https://github.com/gabek/owncast" target="_blank">About Owncast</a>
-          </span>          
-        </footer>
+        <owncast-footer />
       </section>
     </div>
 
 
     <section id="chat-container-wrap" class="flex">
       <div id="user-content-touch" class="user-content">
+        <div class="social-list flex">
+          <user-social-icon 
+            v-for="(item, index) in socialHandles"
+            v-if="item.platform && item.handle"
+            v-bind:key="index"
+            v-bind:platform="item.platform"
+            v-bind:username="item.handle"
+          />
+        </div>
         <!-- USER CONTENT... -->
         <div v-html="description"></div>
 
-        <!-- need a better way to duplicate footer, use VUE component-->
-        <footer class="flex border-t border-gray-500 border-solid">
-          <span>
-            <a href="https://github.com/gabek/owncast" target="_blank">About Owncast</a>
-          </span>          
-        </footer>
+        <owncast-footer />
+       
       </div>
 
       <div id="chat-container" class="bg-gray-800">        
@@ -167,6 +180,7 @@ GW TODO:
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
+  <script src="js/footer.js"></script>
   <script src="js/app.js"></script>
   <script src="js/player/airplay.js"></script>
   <script src="js/player/player.js"></script>
