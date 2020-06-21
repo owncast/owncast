@@ -13,6 +13,7 @@
   <script src="//unpkg.com/video.js@7.8.3/dist/video.js"></script>
   <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
   <script src="vendor/autolink.js"></script>
+
   <link href="./styles/layout.css" rel="stylesheet" />
 </head>
 <script>
@@ -35,7 +36,7 @@ GW TODO:
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 v-cloak class="flex text-gray-400">
           <span id="logo-container" class="rounded-full bg-white mx-2 px-1 py-1">
-            <img class="logo" src="./img/logo128.png">
+            <img class="logo" v-bind:src="logo">
           </span>
           <span>{{title}}</span>
         </h1>
@@ -74,7 +75,7 @@ GW TODO:
             autoplay
             playsinline
             muted
-            poster="/thumbnail.jpg"
+            poster="https://goth.land/thumbnail.jpg"
           >
           </video>
         </div>
@@ -89,29 +90,34 @@ GW TODO:
      </main>
 
       <section id="user-content" class="user-content">
-        <!-- USER CONTENT... -->
-        <div v-html="description"></div>
-
-        <footer class="flex border-t border-gray-500 border-solid">
-          <span>
-            <a href="https://github.com/gabek/owncast" target="_blank">About Owncast</a>
-          </span>          
-        </footer>
+        <div class="user-image rounded-full bg-white">
+          <img class="logo" v-bind:src="logo">            
+        </div>
+        <div class="">
+          <div class="user-content-header border-b border-gray-500 border-solid">
+            <h2 class="font-semibold">About <span class="streamer-name text-indigo-600">{{streamerName}}</span></h2>
+            <social-list v-bind:platforms="socialHandles"></social-list>
+            <div class="stream-summary" v-html="summary"></div>
+            <stream-tags v-bind:tags="tags"></stream-tags>
+          </div>
+          <!-- USER CONTENT... -->
+          <div class="extra-user-content" v-html="extraUserContent"></div>
+        </div>
       </section>
+      <owncast-footer></owncast-footer>
+
     </div>
 
 
     <section id="chat-container-wrap" class="flex">
       <div id="user-content-touch" class="user-content">
-        <!-- USER CONTENT... -->
-        <div v-html="description"></div>
+        <social-list v-bind:platforms="socialHandles"></social-list>
 
-        <!-- need a better way to duplicate footer, use VUE component-->
-        <footer class="flex border-t border-gray-500 border-solid">
-          <span>
-            <a href="https://github.com/gabek/owncast" target="_blank">About Owncast</a>
-          </span>          
-        </footer>
+        <!-- USER CONTENT... -->
+        <div v-html="extraUserContent"></div>
+
+        <owncast-footer></owncast-footer>
+       
       </div>
 
       <div id="chat-container" class="bg-gray-800">        
@@ -167,6 +173,8 @@ GW TODO:
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
+  <script src="js/social.js"></script>
+  <script src="js/footer.js"></script>
   <script src="js/app.js"></script>
   <script src="js/player/airplay.js"></script>
   <script src="js/player/player.js"></script>

@@ -1,5 +1,5 @@
-const streamURL = '/hls/stream.m3u8';
-// const streamURL = 'https://goth.land/hls/stream.m3u'; // Uncomment me to point to remote video
+// const streamURL = '/hls/stream.m3u8';
+const streamURL = 'https://goth.land/hls/stream.m3u8'; // Uncomment me to point to remote video
 
 // style hackings
 window.VIDEOJS_NO_DYNAMIC_STYLE = true;
