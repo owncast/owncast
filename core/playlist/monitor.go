@@ -25,8 +25,10 @@ var (
 
 //StartVideoContentMonitor starts the video content monitor
 func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
+	_storage = storage
+
 	pathToMonitor := config.Config.PrivateHLSPath
-_storage = storage
+
 	// Create at least one structure to store the segments for the different stream variants
 	variants = make([]models.Variant, len(config.Config.VideoSettings.StreamQualities))
 	if len(config.Config.VideoSettings.StreamQualities) > 0 && !config.Config.VideoSettings.EnablePassthrough {
