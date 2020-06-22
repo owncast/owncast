@@ -1,3 +1,4 @@
+// add more to the promises later.
 class Config {
   async init() {
     const configFileLocation = "./js/config.json";

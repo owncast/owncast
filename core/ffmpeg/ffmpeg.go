@@ -164,7 +164,6 @@ func Start() error {
 		"-hls_time " + strconv.Itoa(config.Config.VideoSettings.ChunkLengthInSeconds),
 		"-strftime 1",
 		"-use_localtime 1",
-		"-hls_playlist_type event",
 		"-hls_segment_filename " + path.Join(outputDir, "stream-%Y%m%d-%s.ts"),
 		"-hls_flags delete_segments+program_date_time+temp_file",
 		"-tune zerolatency",

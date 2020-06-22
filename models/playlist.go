@@ -1,7 +1,5 @@
 package models
 
-import "path"
-
 //Segment represents a segment of the live stream
 type Segment struct {
 	VariantIndex       int    // The bitrate variant
@@ -13,16 +11,10 @@ type Segment struct {
 //Variant represents a single bitrate variant and the segments that make it up
 type Variant struct {
 	VariantIndex int
-	Segments     []Segment
+	Segments     map[string]*Segment
 }
 
 //GetSegmentForFilename gets the segment for the provided filename
 func (v *Variant) GetSegmentForFilename(filename string) *Segment {
-	for _, segment := range v.Segments {
-		if path.Base(segment.FullDiskPath) == filename {
-			return &segment
-		}
-	}
-
-	return nil
+	return v.Segments[filename]
 }

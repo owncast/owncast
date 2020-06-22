@@ -4,20 +4,13 @@
   --right-col-width: 24em;
   --video-container-height: 50vh;
   --header-bg-color: rgba(20,0,40,1);
+  --user-image-width: 10em;
 }
 
 body {
   font-size: 14px;
 }
 
-/* Tailwind sets list styles to none.  I don't know why. */
-ol {
-  list-style: decimal;
-}
-
-ul {
-  list-style: unset;
-}
 
 a:hover {
   text-decoration: underline;
@@ -27,6 +20,17 @@ a:hover {
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
+}
+
+
+.visually-hidden { 
+  position: absolute !important;
+  height: 1px; 
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
 }
 
 #app-container {
@@ -106,6 +110,107 @@ footer {
 #user-content-touch {
   display: none;
 }
+/* ************************************************8 */
+
+
+.user-content {
+  padding: 3em;
+}
+
+#user-content {
+  display: flex;
+  flex-direction: row;
+}
+.user-content .user-image {
+  padding: 1em;
+  margin-right: 2em;
+  min-width: var(--user-image-width);
+  width: var(--user-image-width);
+  height: var(--user-image-width);
+  max-height: var(--user-image-width);
+}
+
+.user-image img {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+.stream-summary {
+  margin: 1em 0;
+}
+.extra-user-content {
+  margin: 1em 0;
+}
+
+h2 {
+  font-size: 3em; 
+}
+.user-content-header {
+  margin-bottom: 2em;
+}
+
+.tag-list {
+  flex-direction: row;
+  margin: 1em 0;
+}
+.tag-list li {
+  font-size: .75em;
+  text-transform: uppercase;
+  margin-right: .75em;
+  padding: .5em;
+}
+
+
+.social-list {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.social-list .follow-label {
+  font-weight: bold;
+  font-size: .75em;
+  margin-right: .5em;
+  text-transform: uppercase;
+}
+
+.user-social-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: -.25em;
+}
+.user-social-item .platform-icon {
+  --icon-width: 40px;
+  height: var(--icon-width);
+  width: var(--icon-width);
+  background-image: url(../img/social-icons.gif);
+  background-repeat: no-repeat;
+  background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));
+  transform: scale(.65);
+}
+
+.user-social-item.use-default:hover {
+  text-decoration: none;
+  cursor: text;
+}
+
+.user-social-item.use-default .platform-label {
+  font-size: .7em;
+  text-transform: uppercase;
+  display: inline-block;
+  max-width: 10em;
+}
+
+.extra-user-content ol {
+  list-style: decimal;
+}
+
+.extra-user-content ul {
+  list-style: unset;
+}
+
+
 /* ************************************************8 */
 
 #user-options-container {
@@ -201,7 +306,8 @@ footer {
   margin-top: -0.75em;
 }
 .vjs-airplay .vjs-icon-placeholder::before {
-  content: 'AP';
+  /* content: 'AP'; */
+  content: url("../img/airplay.png");
 }
 
 
@@ -305,6 +411,7 @@ footer {
 @media screen and (max-width: 860px) {
   :root {
     --right-col-width: 20em;
+    --user-image-width: 6em;
   }
   
   #chat-container {

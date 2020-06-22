@@ -24,7 +24,7 @@ func StartThumbnailGenerator(chunkPath string) {
 			select {
 			case <-ticker.C:
 				if err := fireThumbnailGenerator(chunkPath); err != nil {
-					panic(err)
+					log.Errorln("Unable to generate thumbnail:", err)
 				}
 			case <-quit:
 				//TODO: evaluate if this is ever stopped

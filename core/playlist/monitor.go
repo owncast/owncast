@@ -35,13 +35,13 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 		for index := range variants {
 			variants[index] = models.Variant{
 				VariantIndex: index,
-				Segments:     make([]models.Segment, 0),
+				Segments:     make(map[string]*models.Segment),
 			}
 		}
 	} else {
 		variants[0] = models.Variant{
 			VariantIndex: 0,
-			Segments:     make([]models.Segment, 0),
+			Segments:     make(map[string]*models.Segment),
 		}
 	}
 
@@ -96,7 +96,7 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 					segment.RemoteID = newObjectPath
 					// fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
 
-					variants[segment.VariantIndex].Segments = append(variants[segment.VariantIndex].Segments, segment)
+					variants[segment.VariantIndex].Segments[filepath.Base(segment.RelativeUploadPath)] = &segment
 
 					// Force a variant's playlist to be updated after a file is uploaded.
 					associatedVariantPlaylist := strings.ReplaceAll(event.Path, path.Base(event.Path), "stream.m3u8")
