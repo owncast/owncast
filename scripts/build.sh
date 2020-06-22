@@ -12,6 +12,7 @@ VERSION=$1
 
 if [[ -z "${VERSION}" ]]; then
   echo "Version must be specified when running build"
+  exit
 fi
 
 [[ -z "${VERSION}" ]] && VERSION='unknownver' || VERSION="${VERSION}"
@@ -37,10 +38,13 @@ build() {
   echo "Building ${NAME} (${OS}/${ARCH}) release..."
 
   mkdir -p dist/${NAME}/config
+  mkdir -p dist/${NAME}/webroot/static
+  mkdir -p dist/${NAME}/static
 
   # Default files
   cp config/config-example.yaml dist/${NAME}/config/config.yaml
   cp webroot/static/content-example.md dist/${NAME}/webroot/static/content.md
+  cp webroot/img/logo.png dist/${NAME}/static/logo.png
 
   cp -R webroot/ dist/${NAME}/webroot/
   cp -R doc/ dist/${NAME}/doc/
