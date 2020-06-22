@@ -8,6 +8,8 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func startThumbnailGenerator(chunkPath string) {
@@ -82,5 +84,7 @@ func fireThumbnailGenerator(chunkPath string) {
 	// fmt.Println(ffmpegCmd)
 
 	_, err = exec.Command("sh", "-c", ffmpegCmd).Output()
-	verifyError(err)
+	if err != nil {
+		log.Errorln("Unable to generate thumbnail: ", err)
+	}
 }
