@@ -5,19 +5,19 @@ import (
 	"net/http"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+	"golang.org/x/net/websocket"
+
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/models"
-	log "github.com/sirupsen/logrus"
-
-	"golang.org/x/net/websocket"
 )
 
 //Server represents the server which handles the chat
 type Server struct {
-	Pattern  string
 	Messages []models.ChatMessage
 	Clients  map[string]*Client
 
+	pattern   string
 	addCh     chan *Client
 	delCh     chan *Client
 	sendAllCh chan models.ChatMessage
@@ -27,7 +27,7 @@ type Server struct {
 }
 
 //NewServer creates a new chat server
-func NewServer(pattern string) *Server {
+func NewServer() *Server {
 	messages := []models.ChatMessage{}
 	clients := make(map[string]*Client)
 	addCh := make(chan *Client)
@@ -46,9 +46,9 @@ func NewServer(pattern string) *Server {
 	messages = append(messages, models.ChatMessage{"Blathers", "Blathers is an owl with brown feathers. His face is white and he has a yellow beak. His arms are wing shaped and he has yellow talons. His eyes are very big with small black irises. He also has big pink cheek circles on his cheeks. His belly appears to be checkered in diamonds with light brown and white squares, similar to an argyle vest, which is traditionally associated with academia. His green bowtie further alludes to his academic nature.", "https://vignette.wikia.nocookie.net/animalcrossing/images/b/b3/NH-character-Blathers.png/revision/latest?cb=20200229053519", "demo-message-6", "ChatMessage"})
 
 	server := &Server{
-		pattern,
 		messages,
 		clients,
+		"/entry", //hardcoded due to the UI requiring this and it is not configurable
 		addCh,
 		delCh,
 		sendAllCh,
@@ -116,26 +116,27 @@ func (s *Server) ping() {
 	}
 }
 
+func (s *Server) onConnection(ws *websocket.Conn) {
+	client := NewClient(ws, s)
+
+	defer func() {
+		log.Printf("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.id)
+
+		if err := ws.Close(); err != nil {
+			s.errCh <- err
+		}
+	}()
+
+	s.Add(client)
+	client.Listen()
+}
+
 // Listen and serve.
 // It serves client connection and broadcast request.
 func (s *Server) Listen() {
-	// websocket handler
-	onConnected := func(ws *websocket.Conn) {
-		defer func() {
-			err := ws.Close()
-			if err != nil {
-				s.errCh <- err
-			}
-		}()
+	http.Handle(s.pattern, websocket.Handler(s.onConnection))
 
-		client := NewClient(ws, s)
-		s.Add(client)
-		client.Listen()
-	}
-
-	http.Handle(s.Pattern, websocket.Handler(onConnected))
-
-	log.Printf("Starting the websocket listener on: %s", s.Pattern)
+	log.Printf("Starting the websocket listener on: %s", s.pattern)
 
 	for {
 		select {
