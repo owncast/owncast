@@ -14,9 +14,8 @@ import (
 
 //Start starts the router for the http, ws, and rtmp
 func Start() error {
-	// websocket server
-	chatServer := chat.NewServer()
-	go chatServer.Listen()
+	// websocket chat server
+	go chat.Start()
 
 	// start the rtmp server
 	go rtmp.Start()
@@ -26,6 +25,9 @@ func Start() error {
 
 	// status of the system
 	http.HandleFunc("/status", controllers.GetStatus)
+
+	// chat rest api
+	http.HandleFunc("/chat", controllers.GetChatMessages)
 
 	port := config.Config.WebServerPort
 

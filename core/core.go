@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
@@ -36,6 +37,8 @@ func Start() error {
 		log.Println("failed to create the initial offline state")
 		return err
 	}
+
+	chat.Setup(ChatListenerImpl{})
 
 	return nil
 }
