@@ -66,9 +66,9 @@ function setupWebsocket() {
 
   // Uncomment to point to somewhere other than goth.land
   const protocol = location.protocol == "https:" ? "wss" : "ws"
-  // var ws = new WebSocket(protocol + "://" + location.host + "/entry")
+  var ws = new WebSocket(protocol + "://" + location.host + "/entry")
 
-  var ws = new WebSocket("wss://goth.land/entry")
+  // var ws = new WebSocket("wss://goth.land/entry")
 
   ws.onmessage = (e) => {
     const model = JSON.parse(e.data)

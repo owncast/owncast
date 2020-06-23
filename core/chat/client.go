@@ -3,6 +3,7 @@ package chat
 import (
 	"fmt"
 	"io"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -15,6 +16,9 @@ const channelBufSize = 100
 
 //Client represents a chat client.
 type Client struct {
+	ConnectedAt  time.Time
+	MessageCount int
+
 	id     string
 	ws     *websocket.Conn
 	server *Server
@@ -39,7 +43,7 @@ func NewClient(ws *websocket.Conn, server *Server) *Client {
 	pingch := make(chan models.PingMessage)
 	clientID := utils.GenerateClientIDFromRequest(ws.Request())
 
-	return &Client{clientID, ws, server, ch, pingch, doneCh}
+	return &Client{time.Now(), 0, clientID, ws, server, ch, pingch, doneCh}
 }
 
 //GetConnection gets the connection for the client
@@ -106,9 +110,11 @@ func (c *Client) listenRead() {
 
 			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
 				c.doneCh <- true
+				return
 			} else if err != nil {
 				c.server.Err(err)
 			} else {
+				c.MessageCount++
 				c.server.SendToAll(msg)
 			}
 		}
