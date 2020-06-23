@@ -1,4 +1,4 @@
-package main
+package storageproviders
 
 import (
 	"bufio"
@@ -27,8 +27,12 @@ import (
 	"github.com/ipfs/go-ipfs/core/node/libp2p"
 	"github.com/ipfs/go-ipfs/plugin/loader"
 	"github.com/ipfs/go-ipfs/repo/fsrepo"
+
+	ownconfig "github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/models"
 )
 
+//IPFSStorage is the ipfs implementation of the ChunkStorageProvider
 type IPFSStorage struct {
 	ipfs *icore.CoreAPI
 	node *core.IpfsNode
@@ -38,27 +42,32 @@ type IPFSStorage struct {
 	gateway       string
 }
 
-func (s *IPFSStorage) Setup(config Config) {
+//Setup sets up the ipfs storage for saving the video to ipfs
+func (s *IPFSStorage) Setup() error {
 	log.Println("Setting up IPFS for external storage of video. Please wait..")
 
-	s.gateway = config.IPFS.Gateway
+	s.gateway = ownconfig.Config.IPFS.Gateway
 
 	s.ctx = context.Background()
 
-	ipfsInstance, node, _ := s.createIPFSInstance()
+	ipfsInstance, node, err := s.createIPFSInstance()
+	if err != nil {
+		return err
+	}
+
 	s.ipfs = ipfsInstance
 	s.node = node
 
-	s.createIPFSDirectory("./hls")
+	return s.createIPFSDirectory("./hls")
 }
 
-func (s *IPFSStorage) Save(filePath string, retryCount int) string {
+//Save saves the file to the ipfs storage
+func (s *IPFSStorage) Save(filePath string, retryCount int) (string, error) {
 	someFile, err := getUnixfsNode(filePath)
-	defer someFile.Close()
-
 	if err != nil {
-		log.Panicln(fmt.Errorf("Could not get File: %s", err))
+		return "", err
 	}
+	defer someFile.Close()
 
 	opts := []options.UnixfsAddOption{
 		options.Unixfs.Pin(false),
@@ -68,30 +77,33 @@ func (s *IPFSStorage) Save(filePath string, retryCount int) string {
 	}
 
 	cidFile, err := (*s.ipfs).Unixfs().Add(s.ctx, someFile, opts...)
-
 	if err != nil {
-		log.Panicln(fmt.Errorf("Could not add File: %s", err))
+		return "", err
 	}
 
 	// fmt.Printf("Added file to IPFS with CID %s\n", cidFile.String())
 
-	newHash := s.addFileToDirectory(cidFile, filepath.Base(filePath))
+	newHash, err := s.addFileToDirectory(cidFile, filepath.Base(filePath))
+	if err != nil {
+		return "", err
+	}
 
-	return s.gateway + newHash
+	return s.gateway + newHash, nil
 }
 
-func (s *IPFSStorage) GenerateRemotePlaylist(playlist string, variant Variant) string {
+//GenerateRemotePlaylist implements the 'GenerateRemotePlaylist' method
+func (s *IPFSStorage) GenerateRemotePlaylist(playlist string, variant models.Variant) string {
 	var newPlaylist = ""
 
 	scanner := bufio.NewScanner(strings.NewReader(playlist))
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line[0:1] != "#" {
-			fullRemotePath := variant.getSegmentForFilename(line)
+			fullRemotePath := variant.GetSegmentForFilename(line)
 			if fullRemotePath != nil {
-				line = fullRemotePath.RemoteID
-			} else {
 				line = ""
+			} else {
+				line = fullRemotePath.RemoteID
 			}
 		}
 
@@ -124,8 +136,6 @@ func setupPlugins(externalPluginsPath string) error {
 func createNode(ctx context.Context, repoPath string) (icore.CoreAPI, *core.IpfsNode, error) {
 	// Open the repo
 	repo, err := fsrepo.Open(repoPath)
-	verifyError(err)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -189,8 +199,7 @@ func spawnEphemeral(ctx context.Context) (icore.CoreAPI, *core.IpfsNode, error) 
 	}
 
 	// Spawning an ephemeral IPFS node
-	coreAPI, node, err := createNode(ctx, repoPath)
-	return coreAPI, node, err
+	return createNode(ctx, repoPath)
 }
 
 func connectToPeers(ctx context.Context, ipfs icore.CoreAPI, peers []string) error {
@@ -242,13 +251,12 @@ func getUnixfsNode(path string) (files.Node, error) {
 	return f, nil
 }
 
-func (s *IPFSStorage) addFileToDirectory(originalFileHashToModifyPath path.Path, filename string) string {
+func (s *IPFSStorage) addFileToDirectory(originalFileHashToModifyPath path.Path, filename string) (string, error) {
 	// fmt.Println("directoryToAddTo: "+s.directoryHash, "filename: "+filename, "originalFileHashToModifyPath: "+originalFileHashToModifyPath.String())
 	directoryToAddToPath := path.New(s.directoryHash)
 	newDirectoryHash, err := (*s.ipfs).Object().AddLink(s.ctx, directoryToAddToPath, filename, originalFileHashToModifyPath)
 
-	verifyError(err)
-	return newDirectoryHash.String() + "/" + filename
+	return newDirectoryHash.String() + "/" + filename, err
 }
 
 func (s *IPFSStorage) createIPFSInstance() (*icore.CoreAPI, *core.IpfsNode, error) {
@@ -293,12 +301,19 @@ func (s *IPFSStorage) startIPFSNode() { //} icore.CoreAPI {
 	}
 }
 
-func (s *IPFSStorage) createIPFSDirectory(directoryName string) {
+func (s *IPFSStorage) createIPFSDirectory(directoryName string) error {
 	directory, err := getUnixfsNode(directoryName)
-	verifyError(err)
+	if err != nil {
+		return err
+	}
 	defer directory.Close()
 
 	newlyCreatedDirectoryHash, err := (*s.ipfs).Unixfs().Add(s.ctx, directory)
-	verifyError(err)
+	if err != nil {
+		return err
+	}
+
 	s.directoryHash = newlyCreatedDirectoryHash.String()
+
+	return nil
 }

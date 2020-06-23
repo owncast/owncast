@@ -1,121 +1,33 @@
 package main
 
 import (
-	"encoding/json"
-	"net/http"
-	"path"
-	"strconv"
-
 	log "github.com/sirupsen/logrus"
+
+	"github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/core"
+	"github.com/gabek/owncast/router"
 )
-
-// Build-time injected values
-var GitCommit string = "unknown"
-var BuildVersion string = "0.0.0"
-var BuildType string = "localdev"
-
-var storage ChunkStorage
-var configuration = getConfig()
-var server *Server
-var stats *Stats
-
-var usingExternalStorage = false
 
 func main() {
 	// logrus.SetReportCaller(true)
-	log.StandardLogger().Printf("Owncast v%s/%s (%s)", BuildVersion, BuildType, GitCommit)
+	log.Println(core.GetVersion())
 
-	checkConfig(configuration)
-	resetDirectories(configuration)
+	//TODO: potentially load the config from a flag like:
+	//configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
+	// flag.Parse()
 
-	stats = getSavedStats()
-	stats.Setup()
-
-	if configuration.IPFS.Enabled {
-		storage = &IPFSStorage{}
-		usingExternalStorage = true
-	} else if configuration.S3.Enabled {
-		storage = &S3Storage{}
-		usingExternalStorage = true
+	if err := config.Load("config.yaml"); err != nil {
+		panic(err)
 	}
 
-	if usingExternalStorage {
-		storage.Setup(configuration)
-		go monitorVideoContent(configuration.PrivateHLSPath, configuration, storage)
+	// starts the core
+	if err := core.Start(); err != nil {
+		log.Println("failed to start the core package")
+		panic(err)
 	}
 
-	createInitialOfflineState()
-	go startRTMPService()
-
-	startWebServer()
-}
-
-func startWebServer() {
-	// websocket server
-	server = NewServer("/entry")
-	go server.Listen()
-
-	// static files
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		enableCors(&w)
-		http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
-
-		if path.Ext(r.URL.Path) == ".m3u8" {
-			clientID := getClientIDFromRequest(r)
-			stats.SetClientActive(clientID)
-			disableCache(&w)
-		}
-	})
-
-	http.HandleFunc("/status", getStatus)
-
-	log.Printf("Starting public web server on port %d", configuration.WebServerPort)
-
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(configuration.WebServerPort), nil))
-}
-
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
-
-func disableCache(w *http.ResponseWriter) {
-	(*w).Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	(*w).Header().Set("Expires", "0")
-}
-
-func getStatus(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-
-	status := Status{
-		Online:                stats.IsStreamConnected(),
-		ViewerCount:           stats.GetViewerCount(),
-		OverallMaxViewerCount: stats.GetOverallMaxViewerCount(),
-		SessionMaxViewerCount: stats.GetSessionMaxViewerCount(),
+	if err := router.Start(); err != nil {
+		log.Println("failed to start/run the router")
+		panic(err)
 	}
-	json.NewEncoder(w).Encode(status)
-}
-
-func streamConnected() {
-	stats.StreamConnected()
-
-	chunkPath := configuration.PublicHLSPath
-	if usingExternalStorage {
-		chunkPath = configuration.PrivateHLSPath
-	}
-	startThumbnailGenerator(chunkPath)
-}
-
-func streamDisconnected() {
-	stats.StreamDisconnected()
-	if configuration.EnableOfflineImage {
-		showStreamOfflineState(configuration)
-	}
-}
-
-func viewerAdded(clientID string) {
-	stats.SetClientActive(clientID)
-}
-
-func viewerRemoved(clientID string) {
-	stats.ViewerDisconnected(clientID)
 }

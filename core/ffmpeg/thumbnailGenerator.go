@@ -1,28 +1,34 @@
-package main
+package ffmpeg
 
 import (
-	"fmt"
 	"io/ioutil"
-	"os"
 	"os/exec"
 	"path"
 	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
+
+	"github.com/gabek/owncast/config"
 )
 
-func startThumbnailGenerator(chunkPath string) {
+//StartThumbnailGenerator starts generating thumbnails
+func StartThumbnailGenerator(chunkPath string) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.
 	ticker := time.NewTicker(20 * time.Second)
 	quit := make(chan struct{})
+
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				fireThumbnailGenerator(chunkPath)
+				if err := fireThumbnailGenerator(chunkPath); err != nil {
+					log.Errorln("Unable to generate thumbnail:", err)
+				}
 			case <-quit:
+				//TODO: evaluate if this is ever stopped
+				log.Println("thumbnail generator has stopped")
 				ticker.Stop()
 				return
 			}
@@ -30,18 +36,14 @@ func startThumbnailGenerator(chunkPath string) {
 	}()
 }
 
-func fireThumbnailGenerator(chunkPath string) {
-	framePath := path.Join(chunkPath, "0")
-	files, err := ioutil.ReadDir(framePath)
-
+func fireThumbnailGenerator(chunkPath string) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join("webroot", "thumbnail.jpg")
 
-	// fmt.Println("Generating thumbnail from", framePath, "to", outputFile)
-
+	framePath := path.Join(chunkPath, "0")
+	files, err := ioutil.ReadDir(framePath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
 
 	var modTime time.Time
@@ -63,13 +65,13 @@ func fireThumbnailGenerator(chunkPath string) {
 	}
 
 	if len(names) == 0 {
-		return
+		return nil
 	}
 
 	mostRecentFile := path.Join(framePath, names[0])
 
 	thumbnailCmdFlags := []string{
-		configuration.FFMpegPath,
+		config.Config.FFMpegPath,
 		"-y",                 // Overwrite file
 		"-threads 1",         // Low priority processing
 		"-t 1",               // Pull from frame 1
@@ -83,8 +85,9 @@ func fireThumbnailGenerator(chunkPath string) {
 
 	// fmt.Println(ffmpegCmd)
 
-	_, err = exec.Command("sh", "-c", ffmpegCmd).Output()
-	if err != nil {
-		log.Errorln("Unable to generate thumbnail: ", err)
+	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+		return err
 	}
+
+	return nil
 }

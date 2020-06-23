@@ -1,5 +1,6 @@
-package main
+package models
 
+//ChatMessage represents a single chat message
 type ChatMessage struct {
 	Author      string `json:"author"`
 	Body        string `json:"body"`
@@ -8,10 +9,8 @@ type ChatMessage struct {
 	MessageType string `json:"type"`
 }
 
-func (s *ChatMessage) String() string {
+//String converts the chat message to string
+//TODO: is this required? or can we remove it
+func (s ChatMessage) String() string {
 	return s.Author + " says " + s.Body
-}
-
-type PingMessage struct {
-	MessageType string `json:"type"`
 }

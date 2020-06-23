@@ -77,7 +77,7 @@ The goal is to have a single service that you can run and it works out of the bo
 ### Installation
  
 1. **TODO: Once it's installable add directions here.**
-1. Copy config/config-example.yaml to config/config.yaml.
+1. Copy config-example.yaml to config.yaml.
 1. Edit the config file and point it to `ffmpeg`
 1. Set a custom streaming key by editing `streamingKey` in your config.
 
@@ -91,8 +91,8 @@ The goal is to have a single service that you can run and it works out of the bo
 
 If you want a simpler way to run an instance of owncast you can run it in a container with the supplied Dockerfile.
 
-1. Copy `config/config-example.yaml` to `config/config.yaml`
-1. Edit `config/config.yaml` and change the path of ffmpeg to `/usr/bin/ffmpeg`
+1. Copy `config-example.yaml` to `config.yaml`
+1. Edit `config.yaml` and change the path of ffmpeg to `/usr/bin/ffmpeg`
 1. Make any other config changes.
 1. Run `docker build -t owncast .` and wait.  It may take a few minutes to build.
 1. Run `docker run -p 8080:8080 -p 1935:1935 -it owncast`
@@ -162,7 +162,7 @@ Here's a list of some things you can do to increase performance and make things 
 1. Install the [Go toolchain](https://golang.org/dl/).
 1. Clone the repo.  `git clone https://github.com/gabek/owncast`
 1. Follow the above [Getting Started](#getting-started) instructions, making sure ffmpeg exists and your config file is set.
-1. `go run *.go` on the first run will download the required packages needed for the application to build.
+1. `go run main.go` on the first run will download the required packages needed for the application to build.
 1. It will start running the same as in the above [Usage](#usage) instructions and you can point [OBS to your localhost](#usage-with-obs) instance of it.
 
 ## Roadmap
