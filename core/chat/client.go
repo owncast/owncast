@@ -21,7 +21,6 @@ type Client struct {
 
 	id     string
 	ws     *websocket.Conn
-	server *Server
 	ch     chan models.ChatMessage
 	pingch chan models.PingMessage
 
@@ -29,13 +28,9 @@ type Client struct {
 }
 
 //NewClient creates a new chat client
-func NewClient(ws *websocket.Conn, server *Server) *Client {
+func NewClient(ws *websocket.Conn) *Client {
 	if ws == nil {
 		log.Panicln("ws cannot be nil")
-	}
-
-	if server == nil {
-		log.Panicln("server cannot be nil")
 	}
 
 	ch := make(chan models.ChatMessage, channelBufSize)
@@ -43,7 +38,7 @@ func NewClient(ws *websocket.Conn, server *Server) *Client {
 	pingch := make(chan models.PingMessage)
 	clientID := utils.GenerateClientIDFromRequest(ws.Request())
 
-	return &Client{time.Now(), 0, clientID, ws, server, ch, pingch, doneCh}
+	return &Client{time.Now(), 0, clientID, ws, ch, pingch, doneCh}
 }
 
 //GetConnection gets the connection for the client
@@ -55,8 +50,8 @@ func (c *Client) Write(msg models.ChatMessage) {
 	select {
 	case c.ch <- msg:
 	default:
-		c.server.Remove(c)
-		c.server.Err(fmt.Errorf("client %s is disconnected", c.id))
+		_server.remove(c)
+		_server.err(fmt.Errorf("client %s is disconnected", c.id))
 	}
 }
 
@@ -86,7 +81,7 @@ func (c *Client) listenWrite() {
 
 		// receive done request
 		case <-c.doneCh:
-			c.server.Remove(c)
+			_server.remove(c)
 			c.doneCh <- true // for listenRead method
 			return
 		}
@@ -100,7 +95,7 @@ func (c *Client) listenRead() {
 
 		// receive done request
 		case <-c.doneCh:
-			c.server.Remove(c)
+			_server.remove(c)
 			c.doneCh <- true // for listenWrite method
 			return
 
@@ -112,10 +107,12 @@ func (c *Client) listenRead() {
 				c.doneCh <- true
 				return
 			} else if err != nil {
-				c.server.Err(err)
+				_server.err(err)
 			} else {
 				c.MessageCount++
-				c.server.SendToAll(msg)
+
+				msg.ClientID = c.id
+				_server.SendToAll(msg)
 			}
 		}
 	}

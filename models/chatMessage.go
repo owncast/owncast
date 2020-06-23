@@ -2,6 +2,8 @@ package models
 
 //ChatMessage represents a single chat message
 type ChatMessage struct {
+	ClientID string `json:"-"`
+
 	Author      string `json:"author"`
 	Body        string `json:"body"`
 	Image       string `json:"image"`
