@@ -26,6 +26,9 @@ func Start() error {
 	// status of the system
 	http.HandleFunc("/status", controllers.GetStatus)
 
+	// chat rest api
+	http.HandleFunc("/chat", controllers.GetChatMessages)
+
 	port := config.Config.WebServerPort
 
 	log.Printf("Starting public web server on port: %d", port)
