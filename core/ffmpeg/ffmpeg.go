@@ -6,7 +6,7 @@ import (
 
 //ShowStreamOfflineState generates and shows the stream's offline state
 func ShowStreamOfflineState() {
-	transcoder := CreateTranscoderFromConfig()
+	transcoder := NewTranscoder()
 	transcoder.SetInput(config.Config.VideoSettings.OfflineContent)
 	transcoder.Start()
 }

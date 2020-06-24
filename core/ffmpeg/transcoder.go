@@ -59,8 +59,9 @@ func (v *VideoSize) String() string {
 	return ""
 }
 
+// Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
-	command := t.GetString()
+	command := t.getString()
 
 	log.Printf("Video transcoder started with %d stream variants.", len(t.Variants))
 
@@ -72,7 +73,7 @@ func (t *Transcoder) Start() {
 	return
 }
 
-func (t *Transcoder) GetString() string {
+func (t *Transcoder) getString() string {
 	hlsOptionFlags := []string{
 		"delete_segments",
 		"program_date_time",
@@ -147,8 +148,8 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 	return variant
 }
 
-// CreateTranscoderFromConfig will return a new Transcoder, populated by the config
-func CreateTranscoderFromConfig() Transcoder {
+// NewTranscoder will return a new Transcoder, populated by the config
+func NewTranscoder() Transcoder {
 	transcoder := new(Transcoder)
 
 	var outputPath string

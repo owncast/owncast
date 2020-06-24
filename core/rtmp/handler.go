@@ -76,7 +76,7 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	}
 	h.flvEnc = enc
 
-	transcoder := ffmpeg.CreateTranscoderFromConfig()
+	transcoder := ffmpeg.NewTranscoder()
 	go transcoder.Start()
 
 	_isConnected = true
