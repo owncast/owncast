@@ -113,7 +113,6 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 	variant.Index = index
 	variant.IsAudioPassthrough = quality.IsAudioPassthrough
 	variant.IsVideoPassthrough = quality.IsVideoPassthrough
-	variant.EncoderPreset = quality.EncoderPreset
 
 	// If no audio bitrate is specified then we pass through original audio
 	if quality.AudioBitrate == 0 {
@@ -124,8 +123,19 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 		variant.IsVideoPassthrough = true
 	}
 
+	// If the video is being passed through then
+	// don't continue to set options on the variant.
 	if variant.IsVideoPassthrough {
 		return variant
+	}
+
+	// Set a default, reasonable preset if one is not provided.
+	// "superfast" and "ultrafast" are generally not recommended since they look bad.
+	// https://trac.ffmpeg.org/wiki/Encode/H.264
+	if quality.EncoderPreset != "" {
+		variant.EncoderPreset = quality.EncoderPreset
+	} else {
+		variant.EncoderPreset = "veryfast"
 	}
 
 	variant.SetVideoBitrate(strconv.Itoa(quality.Bitrate) + "k")
