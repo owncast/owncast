@@ -50,7 +50,7 @@ build() {
   cp -R doc/ dist/${NAME}/doc/
   cp README.md dist/${NAME}
 
-  env CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build -ldflags "-X core.GitCommit=$GIT_COMMIT -X core.BuildVersion=$VERSION -X core.BuildType=$NAME" -a -o dist/$NAME/owncast
+  env CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build -ldflags "-X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -a -o dist/$NAME/owncast
 
   pushd dist/${NAME} >> /dev/null
   zip -r -q -8 ../owncast-$NAME-$VERSION.zip .
