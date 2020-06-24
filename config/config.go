@@ -15,28 +15,41 @@ import (
 var Config *config
 
 type config struct {
-	IPFS               ipfs          `yaml:"ipfs"`
-	PublicHLSPath      string        `yaml:"publicHLSPath"`
-	PrivateHLSPath     string        `yaml:"privateHLSPath"`
-	VideoSettings      videoSettings `yaml:"videoSettings"`
-	Files              files         `yaml:"files"`
-	FFMpegPath         string        `yaml:"ffmpegPath"`
-	WebServerPort      int           `yaml:"webServerPort"`
-	S3                 s3            `yaml:"s3"`
-	EnableOfflineImage bool          `yaml:"enableOfflineImage"`
+	IPFS           ipfs          `yaml:"ipfs"`
+	PublicHLSPath  string        `yaml:"publicHLSPath"`
+	PrivateHLSPath string        `yaml:"privateHLSPath"`
+	VideoSettings  videoSettings `yaml:"videoSettings"`
+	Files          files         `yaml:"files"`
+	FFMpegPath     string        `yaml:"ffmpegPath"`
+	WebServerPort  int           `yaml:"webServerPort"`
+	S3             s3            `yaml:"s3"`
 }
 
 type videoSettings struct {
 	ChunkLengthInSeconds int             `yaml:"chunkLengthInSeconds"`
 	StreamingKey         string          `yaml:"streamingKey"`
-	EncoderPreset        string          `yaml:"encoderPreset"`
-	StreamQualities      []streamQuality `yaml:"streamQualities"`
+	StreamQualities      []StreamQuality `yaml:"streamQualities"`
+	OfflineContent       string          `yaml:"offlineContent"`
 	EnablePassthrough    bool            `yaml:"passthrough"`
-	OfflineImage         string          `yaml:"offlineImage"`
 }
 
-type streamQuality struct {
-	Bitrate int `yaml:"bitrate"`
+type StreamQuality struct {
+	// Enable passthrough to copy the video and/or audio directly from the
+	// incoming stream and disable any transcoding.  It will ignore any of
+	// the below settings.
+	IsVideoPassthrough bool `yaml:"videoPassthrough"`
+	IsAudioPassthrough bool `yaml:"audioPassthrough"`
+
+	Bitrate      int `yaml:"bitrate"`
+	AudioBitrate int `yaml:"audioBitrate"`
+
+	// Set only one of these in order to keep your current aspect ratio.
+	// Or set neither to not scale the video.
+	ScaledWidth  int `yaml:"scaledWidth"`
+	ScaledHeight int `yaml:"scaledHeight"`
+
+	Framerate     int    `yaml:"framerate"`
+	EncoderPreset string `yaml:"encoderPreset"`
 }
 
 type files struct {
@@ -106,10 +119,6 @@ func (c *config) verifySettings() error {
 
 	if !utils.DoesFileExists(c.FFMpegPath) {
 		return fmt.Errorf("ffmpeg does not exist at: %s", c.FFMpegPath)
-	}
-
-	if c.VideoSettings.EncoderPreset == "" {
-		return errors.New("a video encoder preset is required to be set in the config file")
 	}
 
 	return nil

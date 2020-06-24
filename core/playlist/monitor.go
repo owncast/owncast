@@ -13,7 +13,6 @@ import (
 	"github.com/radovskyb/watcher"
 
 	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
 )
@@ -159,5 +158,5 @@ func updateVariantPlaylist(fullPath string) error {
 
 	playlistString = _storage.GenerateRemotePlaylist(playlistString, variant)
 
-	return ffmpeg.WritePlaylist(playlistString, path.Join(config.Config.PublicHLSPath, relativePath))
+	return WritePlaylist(playlistString, path.Join(config.Config.PublicHLSPath, relativePath))
 }

@@ -76,8 +76,8 @@ func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) err
 	}
 	h.flvEnc = enc
 
-	//TODO: why is this turned into a goroutine?
-	go ffmpeg.Start()
+	transcoder := ffmpeg.CreateTranscoderFromConfig()
+	go transcoder.Start()
 
 	_isConnected = true
 	core.SetStreamAsConnected()

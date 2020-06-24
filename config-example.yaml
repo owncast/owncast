@@ -1,18 +1,25 @@
 publicHLSPath: webroot/hls
 privateHLSPath: hls
-ffmpegPath: /usr/local/bin/ffmpeg
+ffmpegPath: /usr/bin/ffmpeg
 webServerPort: 8080
-enableOfflineImage: true
 
 videoSettings:
   chunkLengthInSeconds: 4
   streamingKey: abc123
-  encoderPreset: superfast # https://trac.ffmpeg.org/wiki/Encode/H.264
-  passthrough: true # Enabling this will ignore the below stream qualities and pass through the same quality that you're sending it
-  offlineImage: doc/logo.png # Is displayed when a stream ends
+  offlineContent: static/offline.m4v # Is displayed when a stream ends
 
   streamQualities:
-    - bitrate: 1000 # in k
+    # Pass through the exact video and audio that you're streaming.
+    - full:
+      videoPassthrough: true
+      audioPassthrough: true
+
+    # Transcode the video to a lower bitrate and resize
+    # - low:
+    # bitrate: 700
+    # scaledWidth: 600
+    # audioPassthrough: true
+    # encoderPreset: superfast
 
 files:
   maxNumberInPlaylist: 30
