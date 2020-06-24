@@ -16,7 +16,7 @@ videoSettings:
 
     # Transcode the video to a lower bitrate and resize
     # - low:
-    # bitrate: 700
+    # videoBitrate: 700
     # scaledWidth: 600
     # audioPassthrough: true
     # encoderPreset: superfast

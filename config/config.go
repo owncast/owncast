@@ -40,7 +40,7 @@ type StreamQuality struct {
 	IsVideoPassthrough bool `yaml:"videoPassthrough"`
 	IsAudioPassthrough bool `yaml:"audioPassthrough"`
 
-	Bitrate      int `yaml:"bitrate"`
+	VideoBitrate int `yaml:"videoBitrate"`
 	AudioBitrate int `yaml:"audioBitrate"`
 
 	// Set only one of these in order to keep your current aspect ratio.

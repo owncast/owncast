@@ -120,7 +120,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 		variant.IsAudioPassthrough = true
 	}
 
-	if quality.Bitrate == 0 {
+	if quality.VideoBitrate == 0 {
 		variant.IsVideoPassthrough = true
 	}
 
@@ -139,7 +139,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 		variant.EncoderPreset = "veryfast"
 	}
 
-	variant.SetVideoBitrate(strconv.Itoa(quality.Bitrate) + "k")
+	variant.SetVideoBitrate(strconv.Itoa(quality.VideoBitrate) + "k")
 	variant.SetAudioBitrate(strconv.Itoa(quality.AudioBitrate) + "k")
 	variant.SetVideoScalingWidth(quality.ScaledWidth)
 	variant.SetVideoScalingHeight(quality.ScaledHeight)
