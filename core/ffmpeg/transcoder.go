@@ -59,7 +59,7 @@ func (v *VideoSize) String() string {
 	return ""
 }
 
-func (t *Transcoder) Start() error {
+func (t *Transcoder) Start() {
 	command := t.GetString()
 
 	log.Printf("Video transcoder started with %d stream variants.", len(t.Variants))
@@ -69,7 +69,7 @@ func (t *Transcoder) Start() error {
 		log.Panicln(err, command)
 	}
 
-	return err
+	return
 }
 
 func (t *Transcoder) GetString() string {
