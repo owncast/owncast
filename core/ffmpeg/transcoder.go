@@ -2,11 +2,12 @@ package ffmpeg
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"path"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/utils"
@@ -61,12 +62,12 @@ func (v *VideoSize) String() string {
 func (t *Transcoder) Start() error {
 	command := t.GetString()
 
+	log.Printf("Video transcoder started with %d stream variants.", len(t.Variants))
+
 	_, err := exec.Command("sh", "-c", command).Output()
 	if err != nil {
 		log.Panicln(err, command)
 	}
-
-	log.Println("Video transcoder started.")
 
 	return err
 }
@@ -100,7 +101,7 @@ func (t *Transcoder) GetString() string {
 		"-master_pl_name", "stream.m3u8",
 		"-strftime 1",                                                               // Support the use of strftime in filenames
 		"-hls_segment_filename", path.Join(t.SegmentOutputPath, "/%v/stream-%s.ts"), // Each segment's filename
-		"-max_muxing_queue_size", "9999", // Workaround for Too many packets error: https://stackoverflow.com/questions/49686244/ffmpeg-too-many-packets-buffered-for-output-stream-01
+		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 		path.Join(t.SegmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
 	}
 
