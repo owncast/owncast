@@ -207,7 +207,6 @@ class Messaging {
 		var message = new Message({
 			body: content,
 			author: this.username,
-			id: uuidv4(),
 		});
 		const messageJSON = JSON.stringify(message);
 		if (window && window.ws) {

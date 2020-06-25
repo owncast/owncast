@@ -3,8 +3,6 @@ package core
 import (
 	"errors"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/models"
 )
@@ -24,7 +22,6 @@ func (cl ChatListenerImpl) ClientRemoved(clientID string) {
 
 //MessageSent is for when a message is sent
 func (cl ChatListenerImpl) MessageSent(message models.ChatMessage) {
-	log.Printf("Message sent to all: %s", message.String())
 }
 
 //SendMessageToChat sends a message to the chat server

@@ -10,6 +10,8 @@ import (
 
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
+
+	"github.com/teris-io/shortid"
 )
 
 const channelBufSize = 100
@@ -102,6 +104,12 @@ func (c *Client) listenRead() {
 		// read data from websocket connection
 		default:
 			var msg models.ChatMessage
+			id, err := shortid.Generate()
+			if err != nil {
+				log.Panicln(err)
+			}
+
+			msg.ID = id
 
 			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
 				c.doneCh <- true

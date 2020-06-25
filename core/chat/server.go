@@ -69,8 +69,6 @@ func (s *server) sendAll(msg models.ChatMessage) {
 }
 
 func (s *server) ping() {
-	// fmt.Println("Start pinging....", len(s.clients))
-
 	ping := models.PingMessage{MessageType: "PING"}
 	for _, c := range s.Clients {
 		c.pingch <- ping
