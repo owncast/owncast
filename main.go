@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
@@ -24,11 +25,10 @@ func main() {
 	// logrus.SetReportCaller(true)
 	log.Println(getVersion())
 
-	//TODO: potentially load the config from a flag like:
-	//configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
-	// flag.Parse()
+	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
+	flag.Parse()
 
-	if err := config.Load("config.yaml"); err != nil {
+	if err := config.Load(*configFile); err != nil {
 		panic(err)
 	}
 
