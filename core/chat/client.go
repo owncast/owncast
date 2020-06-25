@@ -77,7 +77,6 @@ func (c *Client) listenWrite() {
 			websocket.JSON.Send(c.ws, msg)
 		// send message to the client
 		case msg := <-c.ch:
-			msg.MessageType = "CHAT"
 			// log.Println("Send:", msg)
 			websocket.JSON.Send(c.ws, msg)
 
@@ -110,6 +109,7 @@ func (c *Client) listenRead() {
 			}
 
 			msg.ID = id
+			msg.MessageType = "CHAT"
 
 			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
 				c.doneCh <- true
