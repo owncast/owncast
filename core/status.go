@@ -19,6 +19,8 @@ func GetStatus() models.Status {
 		ViewerCount:           len(_stats.Clients),
 		OverallMaxViewerCount: _stats.OverallMaxViewerCount,
 		SessionMaxViewerCount: _stats.SessionMaxViewerCount,
+		LastDisconnectTime:    _stats.LastDisconnectTime,
+		LastConnectTime:       _stats.LastConnectTime,
 	}
 }
 
