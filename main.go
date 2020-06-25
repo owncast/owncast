@@ -23,7 +23,6 @@ var (
 )
 
 func main() {
-	// logrus.SetReportCaller(true)
 	log.Println(getVersion())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
