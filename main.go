@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
@@ -26,7 +27,13 @@ func main() {
 	log.Println(getVersion())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
+	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
+
 	flag.Parse()
+
+	if *enableDebugOptions {
+		logrus.SetReportCaller(true)
+	}
 
 	if err := config.Load(*configFile); err != nil {
 		panic(err)
