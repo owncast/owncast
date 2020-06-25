@@ -8,6 +8,7 @@ import (
 func ShowStreamOfflineState() {
 	transcoder := NewTranscoder()
 	transcoder.SetSegmentLength(10)
+	transcoder.SetAppendToStream(true)
 	transcoder.SetInput(config.Config.VideoSettings.OfflineContent)
 	transcoder.Start()
 }

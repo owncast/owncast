@@ -21,6 +21,7 @@ type Transcoder struct {
 	Variants             []HLSVariant
 	HLSPlaylistLength    int
 	SegmentLengthSeconds int
+	AppendToStream       bool
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -80,6 +81,11 @@ func (t *Transcoder) getString() string {
 		"program_date_time",
 		"temp_file",
 	}
+
+	if t.AppendToStream {
+		hlsOptionFlags = append(hlsOptionFlags, "append_list")
+	}
+
 	ffmpegFlags := []string{
 		"cat", t.Input, "|",
 		config.Config.FFMpegPath,
@@ -301,4 +307,9 @@ func (t *Transcoder) SetHLSPlaylistLength(length int) {
 // SetSegmentLength Specifies the number of seconds each segment should be
 func (t *Transcoder) SetSegmentLength(seconds int) {
 	t.SegmentLengthSeconds = seconds
+}
+
+// SetAppendToStream enables appending to the HLS stream instead of overwriting
+func (t *Transcoder) SetAppendToStream(append bool) {
+	t.AppendToStream = append
 }
