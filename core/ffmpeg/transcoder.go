@@ -15,11 +15,12 @@ import (
 
 // Transcoder is a single instance of a video transcoder
 type Transcoder struct {
-	Input              string
-	SegmentOutputPath  string
-	PlaylistOutputPath string
-	Variants           []HLSVariant
-	HLSPlaylistLength  int
+	Input                string
+	SegmentOutputPath    string
+	PlaylistOutputPath   string
+	Variants             []HLSVariant
+	HLSPlaylistLength    int
+	SegmentLengthSeconds int
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -88,7 +89,7 @@ func (t *Transcoder) getString() string {
 
 		// HLS Output
 		"-f", "hls",
-		"-hls_time", strconv.Itoa(config.Config.VideoSettings.ChunkLengthInSeconds), // Length of each segment
+		"-hls_time", strconv.Itoa(t.SegmentLengthSeconds), // Length of each segment
 		"-hls_list_size", strconv.Itoa(config.Config.Files.MaxNumberInPlaylist), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		"-hls_flags", strings.Join(hlsOptionFlags, "+"), // Specific options in HLS generation
@@ -166,6 +167,7 @@ func NewTranscoder() Transcoder {
 	transcoder.PlaylistOutputPath = config.Config.PublicHLSPath
 
 	transcoder.Input = utils.GetTemporaryPipePath()
+	transcoder.SegmentLengthSeconds = config.Config.VideoSettings.ChunkLengthInSeconds
 
 	for index, quality := range config.Config.VideoSettings.StreamQualities {
 		variant := getVariantFromConfigQuality(quality, index)
@@ -294,4 +296,9 @@ func (t *Transcoder) SetOutputPath(output string) {
 // SetHLSPlaylistLength will set the max number of items in a HLS variant's playlist
 func (t *Transcoder) SetHLSPlaylistLength(length int) {
 	t.HLSPlaylistLength = length
+}
+
+// SetSegmentLength Specifies the number of seconds each segment should be
+func (t *Transcoder) SetSegmentLength(seconds int) {
+	t.SegmentLengthSeconds = seconds
 }
