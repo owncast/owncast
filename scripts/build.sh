@@ -39,15 +39,14 @@ build() {
 
   mkdir -p dist/${NAME}
   mkdir -p dist/${NAME}/webroot/static
-  mkdir -p dist/${NAME}/static
 
   # Default files
   cp config-example.yaml dist/${NAME}/config.yaml
   cp webroot/static/content-example.md dist/${NAME}/webroot/static/content.md
-  cp webroot/img/logo.png dist/${NAME}/static/logo.png
 
   cp -R webroot/ dist/${NAME}/webroot/
   cp -R doc/ dist/${NAME}/doc/
+  cp -R static/ dist/${NAME}/static
   cp README.md dist/${NAME}
 
   env CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build -ldflags "-X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -a -o dist/$NAME/owncast

@@ -47,7 +47,5 @@ func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = time.Now()
 
-	if config.Config.EnableOfflineImage {
-		ffmpeg.ShowStreamOfflineState()
-	}
+	ffmpeg.ShowStreamOfflineState()
 }

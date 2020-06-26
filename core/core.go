@@ -51,7 +51,9 @@ func createInitialOfflineState() error {
 		}
 	}
 
-	return ffmpeg.ShowStreamOfflineState()
+	ffmpeg.ShowStreamOfflineState()
+
+	return nil
 }
 
 func resetDirectories() {
