@@ -13,10 +13,19 @@ const player = videojs('video', null, function () {
 
 player.ready(function () {
   console.log('Player ready.')
+  resetPlayer(player);
+});
+
+function resetPlayer(player) {
   player.reset();
   player.src({ type: 'application/x-mpegURL', src: streamURL });
-  player.poster('/thumbnail.jpg');
-});
+  if (app.isOnline) {
+    player.poster('/thumbnail.jpg');
+  } else {
+    // Change this to some kind of offline image.
+    player.poster('/img/logo.png');
+  }
+}
 
 function setupPlayerEventHandlers() {
   const player = videojs('video');
@@ -29,9 +38,10 @@ function setupPlayerEventHandlers() {
   //   console.log("loadeddata");
   // })
 
-  // player.on('ended', function (e) {
-  //   console.log("ended");
-  // })
+  player.on('ended', function (e) {
+    console.log("ended");
+    resetPlayer(player);
+  })
   //
   // player.on('abort', function (e) {
   //   console.log("abort");
