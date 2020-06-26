@@ -100,7 +100,7 @@ func (s *IPFSStorage) GenerateRemotePlaylist(playlist string, variant models.Var
 		line := scanner.Text()
 		if line[0:1] != "#" {
 			fullRemotePath := variant.GetSegmentForFilename(line)
-			if fullRemotePath != nil {
+			if fullRemotePath == nil {
 				line = ""
 			} else {
 				line = fullRemotePath.RemoteID
