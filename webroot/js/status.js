@@ -21,6 +21,14 @@ async function getStatus() {
       ? "Stream is online."
       : "Stream is offline."
 
+    const player = videojs('video');
+    if (app.isOnline) {
+      player.poster('/thumbnail.jpg');
+    } else {
+      // Change this to some kind of offline image.
+      player.poster('/img/logo.png');
+    }
+
     app.viewerCount = status.viewerCount;
     app.sessionMaxViewerCount = status.sessionMaxViewerCount;
     app.overallMaxViewerCount = status.overallMaxViewerCount;
