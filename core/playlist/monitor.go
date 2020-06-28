@@ -84,8 +84,7 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 					go func() {
 						newObjectPath, err := storage.Save(path.Join(config.Config.PrivateHLSPath, segment.RelativeUploadPath), 0)
 						if err != nil {
-							log.Println("failed to save the file to the chunk storage")
-							panic(err)
+							log.Errorln("failed to save the file to the chunk storage.", err)
 						}
 
 						newObjectPathChannel <- newObjectPath
