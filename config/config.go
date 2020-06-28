@@ -15,14 +15,26 @@ import (
 var Config *config
 
 type config struct {
-	IPFS           ipfs          `yaml:"ipfs"`
-	PublicHLSPath  string        `yaml:"publicHLSPath"`
-	PrivateHLSPath string        `yaml:"privateHLSPath"`
-	VideoSettings  videoSettings `yaml:"videoSettings"`
-	Files          files         `yaml:"files"`
-	FFMpegPath     string        `yaml:"ffmpegPath"`
-	WebServerPort  int           `yaml:"webServerPort"`
-	S3             s3            `yaml:"s3"`
+	IPFS            ipfs            `yaml:"ipfs"`
+	PublicHLSPath   string          `yaml:"publicHLSPath"`
+	PrivateHLSPath  string          `yaml:"privateHLSPath"`
+	VideoSettings   videoSettings   `yaml:"videoSettings"`
+	Files           files           `yaml:"files"`
+	FFMpegPath      string          `yaml:"ffmpegPath"`
+	WebServerPort   int             `yaml:"webServerPort"`
+	S3              s3              `yaml:"s3"`
+	InstanceDetails InstanceDetails `yaml:"instanceDetails"`
+}
+
+// InstanceDetails defines the user-visible information about this particular instance.
+type InstanceDetails struct {
+	Name          string            `yaml:"name" json:"name"`
+	Title         string            `yaml:"title" json:"title"`
+	Summary       string            `yaml:"summary" json:"summary"`
+	Logo          string            `yaml:"logo" json:"logo"`
+	Tags          []string          `yaml:"tags" json:"tags"`
+	SocialHandles map[string]string `yaml:"socialHandles" json:"socialHandles"`
+	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
 }
 
 type videoSettings struct {
@@ -33,6 +45,7 @@ type videoSettings struct {
 	EnablePassthrough    bool            `yaml:"passthrough"`
 }
 
+// StreamQuality defines the specifics of a single HLS stream variant.
 type StreamQuality struct {
 	// Enable passthrough to copy the video and/or audio directly from the
 	// incoming stream and disable any transcoding.  It will ignore any of
