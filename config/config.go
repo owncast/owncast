@@ -31,7 +31,7 @@ type InstanceDetails struct {
 	Name          string            `yaml:"name" json:"name"`
 	Title         string            `yaml:"title" json:"title"`
 	Summary       string            `yaml:"summary" json:"summary"`
-	Logo          string            `yaml:"logo" json:"logo"`
+	Logo          map[string]string `yaml:"logo" json:"logo"`
 	Tags          []string          `yaml:"tags" json:"tags"`
 	SocialHandles map[string]string `yaml:"socialHandles" json:"socialHandles"`
 	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
