@@ -42,7 +42,6 @@ type videoSettings struct {
 	StreamingKey         string          `yaml:"streamingKey"`
 	StreamQualities      []StreamQuality `yaml:"streamQualities"`
 	OfflineContent       string          `yaml:"offlineContent"`
-	EnablePassthrough    bool            `yaml:"passthrough"`
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.

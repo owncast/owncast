@@ -30,7 +30,7 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 
 	// Create at least one structure to store the segments for the different stream variants
 	variants = make([]models.Variant, len(config.Config.VideoSettings.StreamQualities))
-	if len(config.Config.VideoSettings.StreamQualities) > 0 && !config.Config.VideoSettings.EnablePassthrough {
+	if len(config.Config.VideoSettings.StreamQualities) > 0 {
 		for index := range variants {
 			variants[index] = models.Variant{
 				VariantIndex: index,
