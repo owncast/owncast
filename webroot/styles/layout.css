@@ -82,10 +82,15 @@ img.logo {
 
 footer {
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   font-size: .75em;
-  padding: 2em 0;
+  padding: 2em;
 }
+footer span {
+  display: inline-block;
+  margin: 0 1em;
+}
+
 
 /* ************************************************8 */
 
@@ -210,6 +215,9 @@ h2 {
   list-style: unset;
 }
 
+#footer-touch {
+  display: none;
+}
 
 /* ************************************************8 */
 
@@ -319,6 +327,10 @@ h2 {
 .no-chat #chat-container-wrap {
   display: none;
 }
+.no-chat footer {
+  justify-content: center;
+}
+
 .chat #chat-container-wrap {
   display: block;
 }
@@ -437,7 +449,8 @@ h2 {
   .desktop.chat #user-content {
     width: 100%;
   }
-  .desktop.chat #user-content{
+  .desktop #footer,
+  .desktop.chat #user-content {
     display: none;
   }
 
@@ -459,9 +472,11 @@ h2 {
 
 
 
+.touch-screen #footer,
 .touch-screen #user-content {
   display: none;
 }
+.touch-screen #footer-touch,
 .touch-screen #user-content-touch {
   display: block;
 }

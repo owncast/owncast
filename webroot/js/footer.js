@@ -1,9 +1,17 @@
 Vue.component('owncast-footer', {
+  props: {
+    appVersion: {
+      type: String,
+      default: "0.1",
+    },
+  },
+  
   template: `
-    <footer class="flex border-t border-gray-500 border-solid">
+    <footer class="flex">
       <span>
         <a href="https://github.com/gabek/owncast" target="_blank">About Owncast</a>
-      </span>          
+      </span>
+      <span>Version {{appVersion}}</span>
     </footer>
   `,
 });

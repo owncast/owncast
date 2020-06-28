@@ -25,8 +25,11 @@ GW TODO:
 
 - expand user name change text box on focus.chat
 - accessilbity
+- expect urls out of social list, not usernames
 
-
+- convert all the https://robohash.org/username123 areas to {{}}, put into util
+  - generate ?set=x(1-1)&size=10x10
+- don't force logo to be square. use as bg image :contain
 */
 </script>
 <body class="bg-gray-300 text-gray-800">
@@ -101,10 +104,12 @@ GW TODO:
             <stream-tags v-bind:tags="tags"></stream-tags>
           </div>
           <!-- USER CONTENT... -->
-          <div class="extra-user-content" v-html="extraUserContent"></div>
+          <section class="extra-user-content" v-html="extraUserContent"></section>
         </div>
       </section>
-      <owncast-footer></owncast-footer>
+      <div id="footer">
+        <owncast-footer v-bind:appVersion="appVersion"></owncast-footer>
+      </div>
 
     </div>
 
@@ -112,12 +117,12 @@ GW TODO:
     <section id="chat-container-wrap" class="flex">
       <div id="user-content-touch" class="user-content">
         <social-list v-bind:platforms="socialHandles"></social-list>
-
         <!-- USER CONTENT... -->
-        <div v-html="extraUserContent"></div>
+        <div class="extra-user-content" v-html="extraUserContent"></div>
 
-        <owncast-footer></owncast-footer>
-       
+        <div class="#footer-touch">
+          <owncast-footer v-bind:appVersion="appVersion"></owncast-footer>       
+        </div>
       </div>
 
       <div id="chat-container" class="bg-gray-800">        
