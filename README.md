@@ -25,9 +25,8 @@
 * [About the Project](#about-the-project)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [Docker](#docker)
+  * [Getting Started](#getting-started)
+  * [Configuration](#configuration)
 * [Use with your software](#use-with-your-desktop-software)
   * [OBS & Streamlabs](#usage-with-obs)
   * [Restream](#usage-with-restream)
@@ -41,10 +40,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-<!-- <img src="https://placeimg.com/640/480/tech"> -->
-
-### This is a work in progress.  The web UI is being worked on and functionality is still being tested and iterated on.  Feel free to test and give feedback, but it's not ready for production.
 
 In 2020 the world changed when everyone become stuck in their homes, looking for creative outlets to share their art, skills and themselves from inside their bedroom.
 
@@ -63,44 +58,23 @@ I figured you can install Wordpress and self-host your blog, or install Megento 
 ---
 
 <!-- GETTING STARTED -->
-## Getting Started
-
-The goal is to have a single service that you can run and it works out of the box, but there are some things you need to have, and some choices you might want to make.
-
 ### Prerequisites
 
-* **A computer that's on the public internet to run it on.**  While crunching through video and serving it to viewers can be intensive from the computing side, you can get away with pretty meager resources.  If you don't already have a server to run it on you can get a [Linode](https://www.linode.com/products/nanodes/) instance for $5/mo that runs it fine.  If you worry that you'll be maxing out the bandwidth or transfer limits allotted to you, then utilize [S3 Storage](https://github.com/gabek/owncast/blob/master/doc/S3.md) very cheaply (or even free for a certain amount) to serve the files instead.
+* **A computer that's on the public internet to run it on.**  While crunching through video and serving it to viewers can be intensive from the computing side, you can get away with pretty meager resources on a simple setup.  If you don't already have a server to run it on you can get a [Linode](https://www.linode.com/products/nanodes/) instance for $5/mo that runs it fine.  If you worry that you'll be maxing out the bandwidth or transfer limits allotted to you, then utilize [S3 Storage](https://github.com/gabek/owncast/blob/master/doc/S3.md) very cheaply (or even free for a certain amount) to serve the files instead.
 
-* [ffmpeg](https://ffmpeg.org/) is required to function.  [Install it](https://ffmpeg.org/download.html) first.
-* These instructions are assuming you're using [OBS](https://obsproject.com/) on your personal computer to stream from.  It's not required, but it's a great free piece of software.
+## Getting Started
 
-### Installation
- 
-1. **TODO: Once it's installable add directions here.**
-1. Copy config-example.yaml to config.yaml.
-1. Edit the config file and point it to `ffmpeg`
-1. Set a custom streaming key by editing `streamingKey` in your config.
+The goal is to have a single service that you can run and it works out of the box. **Visit the [Quickstart](doc/quickstart.md) to get up and running.**
 
+## Configuration
 
-### Usage
-1. Run `./owncloud` from the directory you unzipped it.
-1. Open your web browser and visit http://yourserver:8080/.  If you changed the port in the config file, then change the URL accordingly.  If you are testing this on your own personal computer then you can visit http://localhost:8080.
-
-
-### Docker
-
-If you want a simpler way to run an instance of owncast you can run it in a container with the supplied Dockerfile.
-
-1. Copy `config-example.yaml` to `config.yaml`
-1. Edit `config.yaml` and change the path of ffmpeg to `/usr/bin/ffmpeg`
-1. Make any other config changes.
-1. Run `docker build -t owncast .` and wait.  It may take a few minutes to build.
-1. Run `docker run -p 8080:8080 -p 1935:1935 -it owncast`
-1. If you ever make any future config file changes you must rerun the `docker build` step otherwise you can just run the `docker run` step to run the service going forward.
+Many aspects can be adjusted and customized to your preferences.  [Read more about Configuration](/doc/configuration.md) to update the web UI and video easily.
 
 ## Use with your desktop software
 
 ### Usage with OBS
+
+OBS isn't required, but it's a pretty good piece of free software that will get you streaming from your own computer right away.
 
 1. Install [OBS](https://obsproject.com/) or [Streamlabs OBS](https://streamlabs.com/) and get it working with your local setup.
 1. Open OBS Settings and go to "Stream".
@@ -169,11 +143,7 @@ Here's a list of some things you can do to increase performance and make things 
 
 The following is a list of things, as long as there's some traction, I'd like to focus on.
 
-* Real web layout and chat UI is being worked on by [gingervitis](https://github.com/gingervitis).
-
 * Document more non-Amazon owned, but still S3 compatible storage.  There's so many services out there that are S3 compatible such as [Backblaze](https://www.backblaze.com/b2/cloud-storage-pricing.html), [Google Storage](https://cloud.google.com/storage/), [DreamHost DreamObjects](https://www.dreamhost.com/cloud/storage/), or you can [even run your own](https://min.io/).  So it's good to have options.
-
-* Refactor chat so it's more controlled by the server and doesn't accept just anything from clients and relay it back to everyone.
 
 * Add more functionality to chat UI such as moderation (deleting messages), emojis/gif search, etc.  You know, the stuff other services have and people are used to.
 

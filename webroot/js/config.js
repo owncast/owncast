@@ -1,7 +1,7 @@
 // add more to the promises later.
 class Config {
   async init() {
-    const configFileLocation = "./js/config.json";
+    const configFileLocation = "/config";
     
     try {
       const response = await fetch(configFileLocation);

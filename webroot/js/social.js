@@ -20,7 +20,7 @@ const SOCIAL_PLATFORMS_URLS = {
     urlPrefix: "http://www.instagram.com/",
     imgPos: [0,3],
   },
-  instagram: {
+  snapchat: {
     name: "Snapchat",
     urlPrefix: "http://www.snapchat.com/",
     imgPos: [0,4],
@@ -35,8 +35,8 @@ const SOCIAL_PLATFORMS_URLS = {
     urlPrefix: "http://www.soundcloud.com/",
     imgPos: [0,6],
   },
-  basecamp: {
-    name: "Base Camp",
+  bandcamp: {
+    name: "Bandcamp",
     urlPrefix: "http://www.basecamp.com/",
     imgPos: [0,7],
   },
