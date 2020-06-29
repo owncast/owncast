@@ -78,10 +78,13 @@ class Messaging {
 		if (hasTouchScreen()) {
 			this.scrollableMessagesContainer = document.body;
 			this.tagAppContainer.classList.add("touch-screen");
+			window.app.layout = "touch";
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
 		} else {
 			this.tagAppContainer.classList.add("desktop");
+			window.app.layout = "desktop";
+
 		}
 	}
 

@@ -84,45 +84,41 @@ GW TODO:
         </div>
 
 
-        <div id="stream-info" v-cloak class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid">
+        <section id="stream-info" aria-label="Stream status" v-cloak class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid">
           <span>{{ streamStatus }}</span>
           <span>{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
           <span>Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
           <span>{{ overallMaxViewerCount }} overall.</span>        
-        </div>
+        </section>
      </main>
 
-      <section id="user-content" class="user-content">
-        <div class="user-image rounded-full bg-white">
-          <img class="logo" v-bind:src="logo">            
-        </div>
-        <div class="">
-          <div class="user-content-header border-b border-gray-500 border-solid">
-            <h2 class="font-semibold">About <span class="streamer-name text-indigo-600">{{streamerName}}</span></h2>
-            <social-list v-bind:platforms="socialHandles"></social-list>
-            <div class="stream-summary" v-html="summary"></div>
-            <stream-tags v-bind:tags="tags"></stream-tags>
-          </div>
-          <!-- USER CONTENT... -->
-          <section class="extra-user-content" v-html="extraUserContent"></section>
-        </div>
+      <section id="user-content" v-if="layout === 'desktop'" aria-label="User information">
+        <user-details
+          v-bind:logo="logo"
+          v-bind:platforms="socialHandles"
+          v-bind:summary="summary"
+          v-bind:tags="tags"
+          v-bind:extraContent="extraUserContent"
+        >{{streamerName}}</user-details>
       </section>
-      <div id="footer">
-        <owncast-footer v-bind:appVersion="appVersion"></owncast-footer>
-      </div>
+      <owncast-footer v-if="layout === 'desktop'" v-bind:appVersion="appVersion"></owncast-footer>
 
     </div>
 
 
     <section id="chat-container-wrap" class="flex">
-      <div id="user-content-touch" class="user-content">
-        <social-list v-bind:platforms="socialHandles"></social-list>
-        <!-- USER CONTENT... -->
-        <div class="extra-user-content" v-html="extraUserContent"></div>
 
-        <div class="#footer-touch">
-          <owncast-footer v-bind:appVersion="appVersion"></owncast-footer>       
-        </div>
+      <div v-if="layout !== 'desktop'" id="user-content-touch">
+        <user-details
+          v-bind:logo="logo"
+          v-bind:platforms="socialHandles"
+          v-bind:summary="summary"
+          v-bind:tags="tags"
+          v-bind:extraContent="extraUserContent"
+        >{{streamerName}}</user-details>
+
+        <owncast-footer v-bind:appVersion="appVersion"></owncast-footer>       
+        
       </div>
 
       <div id="chat-container" class="bg-gray-800">        

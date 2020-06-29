@@ -11,6 +11,7 @@ async function setupApp() {
       messages: [],
       extraUserContent: "",
       isOnline: false,
+      layout: "desktop",
       // from config
       logo: null,
       socialHandles: [],

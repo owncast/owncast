@@ -85,6 +85,7 @@ footer {
   justify-content: flex-start;
   font-size: .75em;
   padding: 2em;
+  opacity: .5;
 }
 footer span {
   display: inline-block;
@@ -109,20 +110,18 @@ footer span {
 .user-content {
   padding: 2em;
 }
-#user-content {
+/* #user-content {
   display: block;
 }
 #user-content-touch {
   display: none;
-}
+} */
 /* ************************************************8 */
 
 
 .user-content {
   padding: 3em;
-}
 
-#user-content {
   display: flex;
   flex-direction: row;
 }
@@ -215,9 +214,6 @@ h2 {
   list-style: unset;
 }
 
-#footer-touch {
-  display: none;
-}
 
 /* ************************************************8 */
 
@@ -471,15 +467,14 @@ h2 {
 }
 
 
+.touch-screen .user-content {
+  flex-direction: column;
+  align-content: center;
+} 
+.touch-screen .user-image {
+  margin: auto;
+}
 
-.touch-screen #footer,
-.touch-screen #user-content {
-  display: none;
-}
-.touch-screen #footer-touch,
-.touch-screen #user-content-touch {
-  display: block;
-}
 
 .touch-screen #stream-info {
   height: 2.5em;
