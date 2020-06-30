@@ -18,4 +18,5 @@ require (
 	github.com/yutopp/go-rtmp v0.0.0-20191212152852-4e41609a99bb
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	gopkg.in/yaml.v2 v2.3.0
+	xojoc.pw/useragent v0.0.0-20200116211053-1ec61d55e8fe
 )

@@ -1,0 +1,54 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>{{.Config.Name}}</title>
+  <meta name="description" content="{{.Config.Summary}}">
+
+  <meta property="og:title" content="{{.Config.Title}}">
+  <meta property="og:site_name" content="{{.Config.Title}}">
+  <meta property="og:url" content="{{.RequestedURL}}">
+  <meta property="og:description" content="{{.Config.Summary}}">
+  <meta property="og:type" content="video">
+  <meta property="og:image" content="{{.Config.Logo.large}}">
+  <meta property="og:image:url" content="{{.Config.Logo.large}}">
+  <meta property='og:video' content='{{.RequestedURL}}hls/stream.m3u8' />
+  <meta property="og:video:height" content="640" />
+  <meta property="og:video:width" content="385" />
+  <meta property="og:video:type" content="application/x-mpegURL" />
+
+  <meta property="twitter:title" content="{{.Config.Title}}">
+  <meta property="twitter:url" content="{{.RequestedURL}}">
+  <meta property="twitter:description" content="{{.Config.Summary}}">
+  <meta property="twitter:image" content="{{.Config.Logo.large}}">
+  <meta property="twitter:site" content="{{.Config.SocialHandles.twitter}}">
+
+</head>
+
+<body>
+  <h1>{{.Config.Title}}</h1>
+  <h2>{{.Config.Name}}</h2>
+
+  <center>
+    <img src="/thumbnail.jpg" width=10% />
+  </center>
+
+  <h3>{{.Config.Summary}}</h3>
+
+  {{range .Config.Tags}}
+    <li>{{.}}</li>
+  {{end}}
+
+  <br/>
+
+  <h3>Connect with {{.Config.Name}} elsewhere by visiting:</h3>
+  
+  {{range .Config.SocialHandles}}
+    <li><a href="{{.}}">{{.}}</a></li>
+  {{end}}
+
+  
+</body>
+</html>
