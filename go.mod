@@ -10,6 +10,7 @@ require (
 	github.com/ipfs/interface-go-ipfs-core v0.2.7
 	github.com/libp2p/go-libp2p-peer v0.2.0
 	github.com/libp2p/go-libp2p-peerstore v0.2.6
+	github.com/mssola/user_agent v0.5.2
 	github.com/multiformats/go-multiaddr v0.2.2
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sirupsen/logrus v1.6.0
@@ -18,5 +19,4 @@ require (
 	github.com/yutopp/go-rtmp v0.0.0-20191212152852-4e41609a99bb
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	gopkg.in/yaml.v2 v2.3.0
-	xojoc.pw/useragent v0.0.0-20200116211053-1ec61d55e8fe
 )

@@ -2,31 +2,36 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"net/url"
 	"path"
+	"strings"
 	"text/template"
+
+	"github.com/mssola/user_agent"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/router/middleware"
 	"github.com/gabek/owncast/utils"
-
-	"xojoc.pw/useragent"
 )
 
 type MetadataPage struct {
 	Config       config.InstanceDetails
 	RequestedURL string
+	Image        string
+	Thumbnail    string
+	TagsString   string
 }
 
 //IndexHandler handles the default index route
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 
-	ua := useragent.Parse(r.UserAgent())
+	ua := user_agent.New(r.UserAgent())
 
-	if ua.Type == useragent.Crawler && r.URL.Path == "/" {
+	if ua != nil && ua.Bot() && (r.URL.Path == "/" || r.URL.Path == "/index.html") {
 		handleScraperMetadataPage(w, r)
 		return
 	}
@@ -46,11 +51,27 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(path.Join("static", "metadata.html")))
 
-	fullURL := fmt.Sprintf("http://%s%s", r.Host, r.URL.Path)
-	metadata := MetadataPage{config.Config.InstanceDetails, fullURL}
+	fullURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, r.URL.Path))
+
+	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, config.Config.InstanceDetails.Logo["large"]))
+
+	// If the thumbnail does not exist then just use the logo image
+	var thumbnailURL string
+	if utils.DoesFileExists("webroot/thumbnail.jpg") {
+		thumbnail, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/thumbnail.jpg"))
+		if err != nil {
+			log.Errorln(err)
+		}
+		thumbnailURL = thumbnail.String()
+	} else {
+		thumbnailURL = imageURL.String()
+	}
+
+	tagsString := strings.Join(config.Config.InstanceDetails.Tags, ",")
+	metadata := MetadataPage{config.Config.InstanceDetails, fullURL.String(), imageURL.String(), thumbnailURL, tagsString}
 
 	w.Header().Set("Content-Type", "text/html")
-	err := tmpl.Execute(w, metadata)
+	err = tmpl.Execute(w, metadata)
 
 	if err != nil {
 		log.Panicln(err)
