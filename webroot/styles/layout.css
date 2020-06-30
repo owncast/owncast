@@ -60,17 +60,26 @@ header h1 {
   text-transform: uppercase;
   padding: .5em;
   white-space: nowrap;
-  /* width: 20em; */
   justify-content: flex-start;
   align-items: center;
   flex-direction: row;
+  overflow: hidden;
 }
-img.logo {
-  height: 1.2em;
-  width: 1.2em;
+#logo-container{
+  height: 1.75em;
+  width: 1.75em;
+  min-height: 1.75em;
+  min-width: 1.75em;
+  margin-right: .5em;
   display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 1.35em;
 }
-
+header .instance-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #chat-toggle {
   cursor: pointer;
   text-align: center;
@@ -132,13 +141,16 @@ footer span {
   width: var(--user-image-width);
   height: var(--user-image-width);
   max-height: var(--user-image-width);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: calc(var(--user-image-width) - 1em);
 }
 
-.user-image img {
+/* .user-image img {
   display: inline-block;
   width: 100%;
   height: 100%;
-}
+} */
 .stream-summary {
   margin: 1em 0;
 }
@@ -415,44 +427,6 @@ h2 {
 }
 
 /* ************************************************8 */
-
-@media screen and (max-width: 860px) {
-  :root {
-    --right-col-width: 20em;
-    --user-image-width: 6em;
-  }
-  
-  #chat-container {
-    width: var(--right-col-width);
-  }
-
-}
-
-@media screen and (max-width: 640px ) {
-  .desktop {
-    --video-container-height: 50vh;
-  }
-  .desktop #chat-container {
-    height: auto;
-    position: relative;
-    right: unset;
-    top: unset;
-    width: 100%;
-    z-index: 1;
-  }
-  .desktop.chat #video-container,
-  .desktop.chat #stream-info,
-  .desktop.chat #user-content {
-    width: 100%;
-  }
-  .desktop #footer,
-  .desktop.chat #user-content {
-    display: none;
-  }
-
-}
-
-/* ************************************************8 */
 /* ************************************************8 */
 
 .touch-screen header {
@@ -524,10 +498,55 @@ h2 {
   display: none;
 }
 
+/* ************************************************8 */
+
+@media screen and (max-width: 860px) {
+  :root {
+    --right-col-width: 20em;
+    --user-image-width: 6em;
+  }
+  
+  #chat-container {
+    width: var(--right-col-width);
+  }
+
+}
 
 @media screen and (max-width: 640px ) {
   :root {
     --video-container-height: 36vh;
+  }
+
+  .desktop {
+    --video-container-height: 50vh;
+  }
+  .desktop #chat-container {
+    height: auto;
+    position: relative;
+    right: unset;
+    top: unset;
+    width: 100%;
+    z-index: 1;
+  }
+  .desktop.chat #video-container,
+  .desktop.chat #stream-info,
+  .desktop.chat #user-content {
+    width: 100%;
+  }
+  .desktop #footer,
+  .desktop.chat #user-content {
+    display: none;
+  }
+
+
+  #logo-container {
+    display: none;
+  }
+  header h1 {
+    max-width: 58%;
+  }
+  #user-options-container {
+    max-width: 41%;
   }
 }
 

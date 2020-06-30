@@ -35,11 +35,17 @@ Vue.component('stream-tags', {
 });
 
 Vue.component('user-details', {
-  props:  ['logo', 'platforms', 'summary', 'tags', 'extraContent'],
+  props:  ['logo', 'platforms', 'summary', 'tags'],
   template: `
     <div class="user-content">
-      <div class="user-image rounded-full bg-white">
-        <img class="logo" alt="Logo" v-bind:src="logo">            
+      <div
+        class="user-image rounded-full bg-white"
+        v-bind:style="{ backgroundImage: 'url(' + logo + ')' }"
+      >
+        <img
+          class="logo visually-hidden" 
+          alt="Logo" 
+          v-bind:src="logo">            
       </div>
       <div class="user-content-header border-b border-gray-500 border-solid">
         <h2 class="font-semibold">
@@ -51,9 +57,6 @@ Vue.component('user-details', {
         <div class="stream-summary" v-html="summary"></div>
         <stream-tags v-bind:tags="tags"></stream-tags>
       </div>
-
-      <div v-html="extraContent"></div>
-
     </div>
   `,
 });

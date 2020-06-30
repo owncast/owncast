@@ -138,10 +138,17 @@ class Messaging {
 	handleShowChangeNameForm() {
 		this.textUserInfoDisplay.style.display = "none";
 		this.tagUserInfoChanger.style.display = "flex";
+		if (document.body.clientWidth < 640) {
+			this.tagChatToggle.style.display = "none";
+		}
 	}
 	handleHideChangeNameForm() {
 		this.textUserInfoDisplay.style.display = "flex";
 		this.tagUserInfoChanger.style.display = "none";
+		if (document.body.clientWidth < 640) {
+			this.tagChatToggle.style.display = "inline-block";
+
+		}
 	}
 	handleUpdateUsername() {
 		var newValue = this.inputChangeUserName.value;

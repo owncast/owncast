@@ -12,6 +12,7 @@ async function setupApp() {
       extraUserContent: "",
       isOnline: false,
       layout: "desktop",
+
       // from config
       logo: null,
       socialHandles: [],
@@ -20,7 +21,6 @@ async function setupApp() {
       tags: [],
       title: "",
       appVersion: "",
-
     },
     watch: {
       messages: {
@@ -41,24 +41,24 @@ async function setupApp() {
   appMessaging.init();
 
   const config = await new Config().init();
-  app.logo = config.logo;
+  app.logo = config.logo.small;
   app.socialHandles = config.socialHandles;
   app.streamerName = config.name;
   app.summary = config.summary && addNewlines(config.summary);
   app.tags =  config.tags;
   app.title = config.title;
+  app.appVersion = config.appVersion;
 
-  // const configFileLocation = "../js/config.json";
 
   try {
-    const pageContentFile = "../static/content.md"
+    const pageContentFile = config.extraUserInfoFileName;
     const response = await fetch(pageContentFile);
     const descriptionMarkdown = await response.text()
     const descriptionHTML = new showdown.Converter().makeHtml(descriptionMarkdown);
     app.extraUserContent = descriptionHTML;
     return this;
   } catch (error) {
-    console.log(error);
+    console.log("Error",error);
   }
 }
 

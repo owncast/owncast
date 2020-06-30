@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
 
-  <title>Owncast Demo Server</title>
+  <title>{{title}}</title>
 
   <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -21,16 +21,13 @@
 GW TODO:
 - off line/ video done mode.
 - remove listeners on unload?
-- config customizations
 
-- expand user name change text box on focus.chat
 - accessilbity
-- expect urls out of social list, not usernames
 
 - convert all the https://robohash.org/username123 areas to {{}}, put into util
   - generate ?set=x(1-1)&size=10x10
-- don't force logo to be square. use as bg image :contain
-*/
+
+  */
 </script>
 <body class="bg-gray-300 text-gray-800">
   <div id="app-container"  v-cloak class="flex no-chat">
@@ -38,10 +35,14 @@ GW TODO:
     <div id="top-content">  
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 v-cloak class="flex text-gray-400">
-          <span id="logo-container" class="rounded-full bg-white mx-2 px-1 py-1">
-            <img class="logo" v-bind:src="logo">
+          <span
+            id="logo-container"
+            class="rounded-full bg-white px-1 py-1"
+            v-bind:style="{ backgroundImage: 'url(' + logo + ')' }"
+          >
+            <img class="logo visually-hidden" v-bind:src="logo">
           </span>
-          <span>{{title}}</span>
+          <span class="instance-title">{{title}}</span>
         </h1>
 
         <div id="user-options-container" class="flex">
@@ -98,10 +99,13 @@ GW TODO:
           v-bind:platforms="socialHandles"
           v-bind:summary="summary"
           v-bind:tags="tags"
-          v-bind:extraContent="extraUserContent"
         >{{streamerName}}</user-details>
+
+        <div v-html="extraUserContent">{{extraUserContent}}</div>
+
       </section>
-      <owncast-footer v-if="layout === 'desktop'" v-bind:appVersion="appVersion"></owncast-footer>
+
+      <owncast-footer v-if="layout === 'desktop'" v-bind:app-version="appVersion"></owncast-footer>
 
     </div>
 
@@ -114,10 +118,11 @@ GW TODO:
           v-bind:platforms="socialHandles"
           v-bind:summary="summary"
           v-bind:tags="tags"
-          v-bind:extraContent="extraUserContent"
         >{{streamerName}}</user-details>
 
-        <owncast-footer v-bind:appVersion="appVersion"></owncast-footer>       
+        <div v-html="extraUserContent">{{extraUserContent}}</div>
+
+        <owncast-footer v-bind:app-version="appVersion"></owncast-footer>       
         
       </div>
 
@@ -175,7 +180,7 @@ GW TODO:
   <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
   <script src="js/social.js"></script>
-  <script src="js/footer.js"></script>
+  <script src="js/components.js"></script>
   <script src="js/app.js"></script>
   <script src="js/player/airplay.js"></script>
   <script src="js/player/player.js"></script>
