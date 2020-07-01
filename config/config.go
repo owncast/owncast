@@ -33,8 +33,13 @@ type InstanceDetails struct {
 	Summary       string            `yaml:"summary" json:"summary"`
 	Logo          map[string]string `yaml:"logo" json:"logo"`
 	Tags          []string          `yaml:"tags" json:"tags"`
-	SocialHandles map[string]string `yaml:"socialHandles" json:"socialHandles"`
+	SocialHandles []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
 	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
+}
+
+type socialHandle struct {
+	Platform string `yaml:"platform" json:"platform"`
+	URL      string `yaml:"url" json:"url"`
 }
 
 type videoSettings struct {
