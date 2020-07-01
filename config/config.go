@@ -24,6 +24,7 @@ type config struct {
 	WebServerPort   int             `yaml:"webServerPort"`
 	S3              s3              `yaml:"s3"`
 	InstanceDetails InstanceDetails `yaml:"instanceDetails"`
+	VersionInfo     string          `yaml:"-"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
@@ -35,6 +36,7 @@ type InstanceDetails struct {
 	Tags          []string          `yaml:"tags" json:"tags"`
 	SocialHandles []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
 	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
+	Version       string            `json:"version"`
 }
 
 type socialHandle struct {
@@ -142,12 +144,14 @@ func (c *config) verifySettings() error {
 }
 
 //Load tries to load the configuration file
-func Load(filePath string) error {
+func Load(filePath string, versionInfo string) error {
 	Config = new(config)
 
 	if err := Config.load(filePath); err != nil {
 		return err
 	}
+
+	Config.VersionInfo = versionInfo
 
 	return Config.verifySettings()
 }

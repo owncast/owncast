@@ -34,7 +34,7 @@ func main() {
 		logrus.SetReportCaller(true)
 	}
 
-	if err := config.Load(*configFile); err != nil {
+	if err := config.Load(*configFile, getVersion()); err != nil {
 		panic(err)
 	}
 

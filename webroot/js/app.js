@@ -47,7 +47,7 @@ async function setupApp() {
   app.summary = config.summary && addNewlines(config.summary);
   app.tags =  config.tags;
   app.title = config.title;
-  app.appVersion = config.appVersion;
+  app.appVersion = config.version;
 
 
   try {

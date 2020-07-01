@@ -12,7 +12,7 @@ import (
 func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 
-	config := config.Config.InstanceDetails
-
-	json.NewEncoder(w).Encode(config)
+	configuration := config.Config.InstanceDetails
+	configuration.Version = config.Config.VersionInfo
+	json.NewEncoder(w).Encode(configuration)
 }
