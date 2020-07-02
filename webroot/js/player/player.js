@@ -1,3 +1,6 @@
+// const streamURL = '/hls/stream.m3u8';
+const streamURL = '/hls/stream.m3u8'; // Uncomment me to point to remote video
+
 // style hackings
 window.VIDEOJS_NO_DYNAMIC_STYLE = true;
 
