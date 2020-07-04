@@ -13,8 +13,7 @@ require (
 	github.com/libp2p/go-libp2p-peerstore v0.2.6
 	github.com/mssola/user_agent v0.5.2
 	github.com/multiformats/go-multiaddr v0.2.2
-	github.com/nareix/joy4 v0.0.0-20200507095837-05a4ffbb5369 // indirect
-	github.com/nareix/joy5 v0.0.0-20200409150540-6c2a804a2816
+	github.com/nareix/joy4 v0.0.0-20200507095837-05a4ffbb5369
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sirupsen/logrus v1.6.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
@@ -23,3 +22,5 @@ require (
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	gopkg.in/yaml.v2 v2.3.0
 )
+
+replace github.com/nareix/joy4 v0.0.0 => github.com/Seize/joy4 v0.0.0
