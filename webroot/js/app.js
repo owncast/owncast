@@ -46,8 +46,9 @@ async function setupApp() {
   app.streamerName = config.name;
   app.summary = config.summary && addNewlines(config.summary);
   app.tags =  config.tags;
-  app.title = config.title;
   app.appVersion = config.version;
+  app.title = config.title;
+  window.document.title = config.title;
 
 
   try {
