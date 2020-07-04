@@ -74,11 +74,11 @@ Vue.component('social-list', {
   props: ['platforms'],
 
   template: `
-    <ul class="social-list flex">
-      <span v-if="this.platforms.length" class="follow-label">Follow me: </span>
+    <ul class="social-list flex" v-if="this.platforms.length">
+      <span class="follow-label">Follow me: </span>
       <user-social-icon 
         v-for="(item, index) in this.platforms"
-        v-if="item.platform && item.handle"
+        v-if="item.platform && item.url"
         v-bind:key="index"
         v-bind:platform="item.platform"
         v-bind:url="item.url"
@@ -93,23 +93,21 @@ Vue.component('user-social-icon', {
   data: function() {
     const platformInfo = SOCIAL_PLATFORMS[this.platform.toLowerCase()];
     const inList = !!platformInfo;
-    const imgRow = platformInfo.imgPos && platformInfo.imgPos[0] || 0;
-    const imgCol = platformInfo.imgPos && platformInfo.imgPos[1] || 0;
-    c
+    const imgRow = inList ? platformInfo.imgPos[0] : 0;
+    const imgCol = inList ? platformInfo.imgPos[1] : 0;
     return {
       name: inList ? platformInfo.name : this.platform,
-      link: url,
+      link: this.url,
 
       style: `--imgRow: -${imgRow}; --imgCol: -${imgCol};`,
       itemClass: {
         "user-social-item": true,
         "flex": true,
-        "rounded": inList,
-        "use-default": inList,        
+        "use-default": !inList,        
       },
       labelClass: {
         "platform-label": true,
-        "visually-hidden": !inList,
+        "visually-hidden": inList,
         "text-indigo-800": true,
       },
     };
