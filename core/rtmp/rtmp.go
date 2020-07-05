@@ -1,12 +1,15 @@
 package rtmp
 
 import (
+	"io"
+	"net"
 	"os"
 	"strings"
 	"syscall"
+	"time"
 
-	"github.com/Seize/joy4/av/avutil"
-	"github.com/Seize/joy4/format/ts"
+	"github.com/nareix/joy4/av/avutil"
+	"github.com/nareix/joy4/format/ts"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
@@ -14,8 +17,8 @@ import (
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/utils"
 
-	"github.com/Seize/joy4/format"
-	"github.com/Seize/joy4/format/rtmp"
+	"github.com/nareix/joy4/format"
+	"github.com/nareix/joy4/format/rtmp"
 )
 
 var (
@@ -29,7 +32,6 @@ func init() {
 
 //Start starts the rtmp service, listening on port 1935
 func Start() {
-
 	port := 1935
 	server := &rtmp.Server{}
 
@@ -43,12 +45,11 @@ func Start() {
 }
 
 func handlePublish(conn *rtmp.Conn) {
-	// Commented out temporarily because I have no way to set _isConnected to false after RTMP is closed.
-	// if _isConnected {
-	// 	log.Errorln("stream already running; can not overtake an existing stream")
-	// 	conn.Close()
-	// 	return
-	// }
+	if _isConnected {
+		log.Errorln("stream already running; can not overtake an existing stream")
+		conn.Close()
+		return
+	}
 
 	streamingKeyComponents := strings.Split(conn.URL.Path, "/")
 	streamingKey := streamingKeyComponents[len(streamingKeyComponents)-1]
@@ -57,6 +58,8 @@ func handlePublish(conn *rtmp.Conn) {
 		conn.Close()
 		return
 	}
+
+	log.Println("Incoming RTMP connected.")
 
 	pipePath := utils.GetTemporaryPipePath()
 	syscall.Mkfifo(pipePath, 0666)
@@ -71,8 +74,57 @@ func handlePublish(conn *rtmp.Conn) {
 		panic(err)
 	}
 
+	// Is this too fast?  Are there downsides to peeking
+	// into the stream so frequently?
+	ticker := time.NewTicker(500 * time.Millisecond)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				error := connCheck(conn.NetConn())
+				if error == io.EOF {
+					handleDisconnect(conn)
+				}
+			}
+		}
+	}()
 	muxer := ts.NewMuxer(f)
 	avutil.CopyFile(muxer, conn)
+}
+
+// Proactively check if the RTMP connection is still active or not.
+// Taken from https://stackoverflow.com/a/58664631.
+func connCheck(conn net.Conn) error {
+	var sysErr error = nil
+	rc, err := conn.(syscall.Conn).SyscallConn()
+	if err != nil {
+		return err
+	}
+	err = rc.Read(func(fd uintptr) bool {
+		var buf []byte = []byte{0}
+		n, _, err := syscall.Recvfrom(int(fd), buf, syscall.MSG_PEEK|syscall.MSG_DONTWAIT)
+		switch {
+		case n == 0 && err == nil:
+			sysErr = io.EOF
+		case err == syscall.EAGAIN || err == syscall.EWOULDBLOCK:
+			sysErr = nil
+		default:
+			sysErr = err
+		}
+		return true
+	})
+	if err != nil {
+		return err
+	}
+
+	return sysErr
+}
+
+func handleDisconnect(conn *rtmp.Conn) {
+	log.Println("RTMP disconnected.")
+	conn.Close()
+	_isConnected = false
+	core.SetStreamAsDisconnected()
 }
 
 //IsConnected gets whether there is an rtmp connection or not
