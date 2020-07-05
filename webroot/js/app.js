@@ -50,17 +50,7 @@ async function setupApp() {
   app.title = config.title;
   window.document.title = config.title;
 
-
-  try {
-    const pageContentFile = config.extraUserInfoFileName;
-    const response = await fetch(pageContentFile);
-    const descriptionMarkdown = await response.text()
-    const descriptionHTML = new showdown.Converter().makeHtml(descriptionMarkdown);
-    app.extraUserContent = descriptionHTML;
-    return this;
-  } catch (error) {
-    console.log("Error", error);
-  }
+  getExtraUserContent(`${URL_PREFIX}${config.extraUserInfoFileName}`);
 }
 
 var websocketReconnectTimer;

@@ -9,7 +9,7 @@ Vue.component('owncast-footer', {
   template: `
     <footer class="flex">
       <span>
-        <a href="https://github.com/gabek/owncast" target="_blank">About Owncast</a>
+        <a href="${URL_OWNCAST}" target="_blank">About Owncast</a>
       </span>
       <span>Version {{appVersion}}</span>
     </footer>

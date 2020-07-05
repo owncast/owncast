@@ -155,8 +155,8 @@ footer span {
   margin: 1em 0;
 }
 .extra-user-content {
-  margin: 1em 0;
-}
+  padding: 1em 3em 3em 3em;
+  }
 
 h2 {
   font-size: 3em; 

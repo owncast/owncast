@@ -6,8 +6,9 @@ const URL_PREFIX = 'https://goth.land';
 const URL_STATUS = `${URL_PREFIX}/status`;
 const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
 
-const URL_WEBSOCKET = 'wss://goth.land/entry';
-// const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+const URL_WEBSOCKET = URL_PREFIX 
+  ? 'wss://goth.land/entry'
+  : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 
 const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
 const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
@@ -22,6 +23,8 @@ const KEY_AVATAR = 'owncast_avatar';
 const KEY_CHAT_DISPLAYED = 'owncast_chat';
 
 const VIDEO_ID = 'video';
+
+const URL_OWNCAST = 'https://github.com/gabek/owncast';
 
 
 function getLocalStorage(key) {
@@ -119,4 +122,21 @@ function setVideoPoster(online) {
   const player = videojs(VIDEO_ID);
   const poster = online ? POSTER_THUMB : POSTER_DEFAULT;
   player.poster(poster);
+}
+
+function getExtraUserContent(path) {
+  fetch(path)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok ${response.ok}`);
+      }
+      return response.text();
+    })
+    .then(text => {
+      const descriptionHTML = new showdown.Converter().makeHtml(text);
+      app.extraUserContent = descriptionHTML;
+    })
+    .catch(error => {
+      console.log("Error", error);
+    });
 }
