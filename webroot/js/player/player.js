@@ -1,11 +1,8 @@
-// const streamURL = '/hls/stream.m3u8';
-const streamURL = 'https://goth.land/hls/stream.m3u8'; // Uncomment me to point to remote video
-
 // style hackings
 window.VIDEOJS_NO_DYNAMIC_STYLE = true;
 
 // Create the player for the first time
-const player = videojs('video', null, function () {
+const player = videojs(VIDEO_ID, null, function () {
   getStatus();
   setInterval(getStatus, 5000);
   setupPlayerEventHandlers();
@@ -18,17 +15,12 @@ player.ready(function () {
 
 function resetPlayer(player) {
   player.reset();
-  player.src({ type: 'application/x-mpegURL', src: streamURL });
-  if (app.isOnline) {
-    player.poster('/thumbnail.jpg');
-  } else {
-    // Change this to some kind of offline image.
-    player.poster('/img/logo.png');
-  }
+  player.src({ type: 'application/x-mpegURL', src: URL_STREAM });
+  setVideoPoster(app.isOnline);
 }
 
 function setupPlayerEventHandlers() {
-  const player = videojs('video');
+  const player = videojs(VIDEO_ID);
 
   player.on('error', function (e) {
     console.log("Player error: ", e);
@@ -68,8 +60,8 @@ function setupPlayerEventHandlers() {
 
 function restartPlayer() {
   try {
-    console.log('restarting')
-    const player = videojs('video');
+    console.log('restarting', player.src())
+    const player = videojs(VIDEO_ID);
     player.pause();
     player.src(player.src()); // Reload the same video
     player.load();

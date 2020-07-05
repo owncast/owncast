@@ -1,8 +1,3 @@
-const SocketMessageTypes = {
-	CHAT: 'CHAT',
-	PING: 'PING'
-}
-
 class Message {
 	constructor(model) {
 		this.author = model.author;
@@ -38,10 +33,6 @@ class Messaging {
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
-
-		this.keyUsername = 'owncast_username';
-		this.keyUserAvatar = 'owncast_avatar';
-		this.keyChatDisplayed = 'owncast_chat';
 
 		this.tagAppContainer = document.querySelector('#app-container');
 		this.tagChatToggle = document.querySelector('#chat-toggle');
@@ -89,16 +80,11 @@ class Messaging {
 	}
 
 	initLocalStates() {
-		this.username = getLocalStorage(this.keyUsername) || generateUsername();
-		console.log("=== initt state", getLocalStorage(this.keyUserAvatar))
-		this.imgUsernameAvatar.src = getLocalStorage(this.keyUserAvatar) || generateAvatar(this.username);
-
-
-		console.log("===",this.imgUsernameAvatar.src)
-
+		this.username = getLocalStorage(KEY_USERNAME) || generateUsername();
+		this.imgUsernameAvatar.src = getLocalStorage(KEY_AVATAR) || generateAvatar(this.username);
 		this.updateUsernameFields(this.username);
 
-		this.chatDisplayed = getLocalStorage(this.keyChatDisplayed) || false;
+		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || false;
 		this.displayChat();
 	}
 	updateUsernameFields(username) {
@@ -134,9 +120,9 @@ class Messaging {
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
 		if (this.chatDisplayed) {
-			setLocalStorage(this.keyChatDisplayed, this.chatDisplayed);
+			setLocalStorage(KEY_CHAT_DISPLAYED, this.chatDisplayed);
 		} else {
-			clearLocalStorage(this.keyChatDisplayed);
+			clearLocalStorage(KEY_CHAT_DISPLAYED);
 		}
 		this.displayChat();
 	}
@@ -164,8 +150,8 @@ class Messaging {
 			this.username = newValue;
 			this.updateUsernameFields(newValue);
 			this.imgUsernameAvatar.src = generateAvatar(newValue);
-			setLocalStorage(this.keyUsername, newValue);
-			setLocalStorage(this.keyUserAvatar, this.imgUsernameAvatar.src);
+			setLocalStorage(KEY_USERNAME, newValue);
+			setLocalStorage(KEY_AVATAR, this.imgUsernameAvatar.src);
 		}
 		this.handleHideChangeNameForm();
 	}

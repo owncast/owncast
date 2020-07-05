@@ -1,3 +1,29 @@
+const MESSAGE_OFFLINE = 'Stream is offline.';
+const MESSAGE_ONLINE = 'Stream is online.';
+
+// const URL_PREFIX = ''; 
+const URL_PREFIX = 'https://goth.land'; 
+const URL_STATUS = `${URL_PREFIX}/status`;
+const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
+
+const URL_WEBSOCKET = 'wss://goth.land/entry';
+// const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+
+const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
+const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
+
+const SOCKET_MESSAGE_TYPES = {
+	CHAT: 'CHAT',
+	PING: 'PING'
+}
+
+const KEY_USERNAME = 'owncast_username';
+const KEY_AVATAR = 'owncast_avatar';
+const KEY_CHAT_DISPLAYED = 'owncast_chat';
+
+const VIDEO_ID = 'video';
+
+
 function getLocalStorage(key) {
   try {
     return localStorage.getItem(key);
@@ -87,4 +113,10 @@ function generateAvatar(hash) {
 
 function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
+}
+
+function setVideoPoster(online) {
+  const player = videojs(VIDEO_ID);
+  const poster = online ? POSTER_THUMB : POSTER_DEFAULT;
+  player.poster(poster);
 }

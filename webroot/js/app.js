@@ -4,7 +4,7 @@ async function setupApp() {
   window.app = new Vue({
     el: "#app-container",
     data: {
-      streamStatus: "Stream is offline.", // Default state.
+      streamStatus: MESSAGE_OFFLINE, // Default state.
       viewerCount: 0,
       sessionMaxViewerCount: 0,
       overallMaxViewerCount: 0,
@@ -59,7 +59,7 @@ async function setupApp() {
     app.extraUserContent = descriptionHTML;
     return this;
   } catch (error) {
-    console.log("Error",error);
+    console.log("Error", error);
   }
 }
 
@@ -67,17 +67,13 @@ var websocketReconnectTimer;
 function setupWebsocket() {
   clearTimeout(websocketReconnectTimer);
 
-  // Uncomment to point to somewhere other than goth.land
-  const protocol = location.protocol == "https:" ? "wss" : "ws"
-  // var ws = new WebSocket(protocol + "://" + location.host + "/entry")
-
-  var ws = new WebSocket("wss://goth.land/entry")
+  var ws = new WebSocket(URL_WEBSOCKET);
 
   ws.onmessage = (e) => {
-    const model = JSON.parse(e.data)
+    const model = JSON.parse(e.data);
 
     // Ignore non-chat messages (such as keepalive PINGs)
-    if (model.type !== SocketMessageTypes.CHAT) { return; }
+    if (model.type !== SOCKET_MESSAGE_TYPES.CHAT) { return; }
 
     const message = new Message(model);
     
