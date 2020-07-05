@@ -75,3 +75,16 @@ function hasTouchScreen() {
   return hasTouchScreen;
 }
 
+// generate random avatar from https://robohash.org
+function generateAvatar(hash) {
+  const avatarSource = 'https://robohash.org/';
+  const optionSize = '?size=80x80';
+  const optionSet = '&set=set3'; 
+  const optionBg = ''; // or &bgset=bg1 or bg2
+
+  return avatarSource + hash + optionSize + optionSet + optionBg;
+}
+
+function generateUsername() {
+  return `User ${(Math.floor(Math.random() * 42) + 1)}`;
+}

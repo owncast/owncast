@@ -1,13 +1,13 @@
 const SocketMessageTypes = {
-	CHAT: "CHAT",
-	PING: "PING"
+	CHAT: 'CHAT',
+	PING: 'PING'
 }
 
 class Message {
 	constructor(model) {
 		this.author = model.author;
 		this.body = model.body;
-		this.image = model.image || "https://robohash.org/" + model.author;
+		this.image = model.image || generateAvatar(model.author);
 		this.id = model.id;
 		this.type = model.type;
 	}
@@ -33,63 +33,69 @@ class Message {
 class Messaging {
 	constructor() {
 		this.chatDisplayed = false;
-		this.username = "";
-		this.avatarSource = "https://robohash.org/";
+		this.username = '';
 
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
 
-		this.keyUsername = "owncast_username";
-		this.keyChatDisplayed = "owncast_chat";
+		this.keyUsername = 'owncast_username';
+		this.keyUserAvatar = 'owncast_avatar';
+		this.keyChatDisplayed = 'owncast_chat';
 
-		this.tagAppContainer = document.querySelector("#app-container");
-		this.tagChatToggle = document.querySelector("#chat-toggle");
-		this.tagUserInfoChanger = document.querySelector("#user-info-change");
-		this.tagUsernameDisplay = document.querySelector("#username-display");
-		this.tagMessageFormWarning = document.querySelector("#message-form-warning");
+		this.tagAppContainer = document.querySelector('#app-container');
+		this.tagChatToggle = document.querySelector('#chat-toggle');
+		this.tagUserInfoChanger = document.querySelector('#user-info-change');
+		this.tagUsernameDisplay = document.querySelector('#username-display');
+		this.tagMessageFormWarning = document.querySelector('#message-form-warning');
 
-		this.inputMessageAuthor = document.querySelector("#self-message-author");
-		this.inputChangeUserName = document.querySelector("#username-change-input"); 
+		this.inputMessageAuthor = document.querySelector('#self-message-author');
+		this.inputChangeUserName = document.querySelector('#username-change-input'); 
 
-		this.btnUpdateUserName = document.querySelector("#button-update-username"); 
-		this.btnCancelUpdateUsername = document.querySelector("#button-cancel-change"); 
-		this.btnSubmitMessage = document.querySelector("#button-submit-message");
+		this.btnUpdateUserName = document.querySelector('#button-update-username'); 
+		this.btnCancelUpdateUsername = document.querySelector('#button-cancel-change'); 
+		this.btnSubmitMessage = document.querySelector('#button-submit-message');
 
-		this.formMessageInput = document.querySelector("#message-body-form");
+		this.formMessageInput = document.querySelector('#message-body-form');
 
-		this.imgUsernameAvatar = document.querySelector("#username-avatar");
-		this.textUserInfoDisplay = document.querySelector("#user-info-display");
+		this.imgUsernameAvatar = document.querySelector('#username-avatar');
+		this.textUserInfoDisplay = document.querySelector('#user-info-display');
 
-		this.scrollableMessagesContainer = document.querySelector("#messages-container");
+		this.scrollableMessagesContainer = document.querySelector('#messages-container');
 	}
 	init() {
-		this.tagChatToggle.addEventListener("click", this.handleChatToggle.bind(this));
-		this.textUserInfoDisplay.addEventListener("click", this.handleShowChangeNameForm.bind(this));
+		this.tagChatToggle.addEventListener('click', this.handleChatToggle.bind(this));
+		this.textUserInfoDisplay.addEventListener('click', this.handleShowChangeNameForm.bind(this));
 		
-		this.btnUpdateUserName.addEventListener("click", this.handleUpdateUsername.bind(this));
-		this.btnCancelUpdateUsername.addEventListener("click", this.handleHideChangeNameForm.bind(this));
+		this.btnUpdateUserName.addEventListener('click', this.handleUpdateUsername.bind(this));
+		this.btnCancelUpdateUsername.addEventListener('click', this.handleHideChangeNameForm.bind(this));
 		
-		this.inputChangeUserName.addEventListener("keydown", this.handleUsernameKeydown.bind(this));
-		this.formMessageInput.addEventListener("keydown", this.handleMessageInputKeydown.bind(this));
-		this.btnSubmitMessage.addEventListener("click", this.handleSubmitChatButton.bind(this));
+		this.inputChangeUserName.addEventListener('keydown', this.handleUsernameKeydown.bind(this));
+		this.formMessageInput.addEventListener('keydown', this.handleMessageInputKeydown.bind(this));
+		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
 		this.initLocalStates();
 
 		if (hasTouchScreen()) {
 			this.scrollableMessagesContainer = document.body;
-			this.tagAppContainer.classList.add("touch-screen");
-			window.app.layout = "touch";
+			this.tagAppContainer.classList.add('touch-screen');
+			window.app.layout = 'touch';
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
 		} else {
-			this.tagAppContainer.classList.add("desktop");
-			window.app.layout = "desktop";
+			this.tagAppContainer.classList.add('desktop');
+			window.app.layout = 'desktop';
 
 		}
 	}
 
 	initLocalStates() {
-		this.username = getLocalStorage(this.keyUsername) || "User" + (Math.floor(Math.random() * 42) + 1);
+		this.username = getLocalStorage(this.keyUsername) || generateUsername();
+		console.log("=== initt state", getLocalStorage(this.keyUserAvatar))
+		this.imgUsernameAvatar.src = getLocalStorage(this.keyUserAvatar) || generateAvatar(this.username);
+
+
+		console.log("===",this.imgUsernameAvatar.src)
+
 		this.updateUsernameFields(this.username);
 
 		this.chatDisplayed = getLocalStorage(this.keyChatDisplayed) || false;
@@ -99,16 +105,15 @@ class Messaging {
 		this.tagUsernameDisplay.innerText = username;
 		this.inputChangeUserName.value = username;
 		this.inputMessageAuthor.value = username;
-		this.imgUsernameAvatar.src = this.avatarSource + username;
 	}
 	displayChat() {
 		if (this.chatDisplayed) {
-			this.tagAppContainer.classList.add("chat");
-			this.tagAppContainer.classList.remove("no-chat");
+			this.tagAppContainer.classList.add('chat');
+			this.tagAppContainer.classList.remove('no-chat');
 			jumpToBottom(this.scrollableMessagesContainer);
 		} else {
-			this.tagAppContainer.classList.add("no-chat");
-			this.tagAppContainer.classList.remove("chat");
+			this.tagAppContainer.classList.add('no-chat');
+			this.tagAppContainer.classList.remove('chat');
 		}
 	}
 
@@ -117,12 +122,12 @@ class Messaging {
 
 		if(!isPortrait) {
 			if (document.body.clientWidth < 1024) {
-				this.tagAppContainer.classList.add("no-chat");
-				this.tagAppContainer.classList.add("landscape");
+				this.tagAppContainer.classList.add('no-chat');
+				this.tagAppContainer.classList.add('landscape');
 			}
 		} else {
-			if (this.chatDisplayed) this.tagAppContainer.classList.remove("no-chat");
-			this.tagAppContainer.classList.remove("landscape");
+			if (this.chatDisplayed) this.tagAppContainer.classList.remove('no-chat');
+			this.tagAppContainer.classList.remove('landscape');
 		}
 	}
 	
@@ -136,17 +141,17 @@ class Messaging {
 		this.displayChat();
 	}
 	handleShowChangeNameForm() {
-		this.textUserInfoDisplay.style.display = "none";
-		this.tagUserInfoChanger.style.display = "flex";
+		this.textUserInfoDisplay.style.display = 'none';
+		this.tagUserInfoChanger.style.display = 'flex';
 		if (document.body.clientWidth < 640) {
-			this.tagChatToggle.style.display = "none";
+			this.tagChatToggle.style.display = 'none';
 		}
 	}
 	handleHideChangeNameForm() {
-		this.textUserInfoDisplay.style.display = "flex";
-		this.tagUserInfoChanger.style.display = "none";
+		this.textUserInfoDisplay.style.display = 'flex';
+		this.tagUserInfoChanger.style.display = 'none';
 		if (document.body.clientWidth < 640) {
-			this.tagChatToggle.style.display = "inline-block";
+			this.tagChatToggle.style.display = 'inline-block';
 
 		}
 	}
@@ -158,7 +163,9 @@ class Messaging {
 		if (newValue) {
 			this.username = newValue;
 			this.updateUsernameFields(newValue);
+			this.imgUsernameAvatar.src = generateAvatar(newValue);
 			setLocalStorage(this.keyUsername, newValue);
+			setLocalStorage(this.keyUserAvatar, this.imgUsernameAvatar.src);
 		}
 		this.handleHideChangeNameForm();
 	}
@@ -191,13 +198,13 @@ class Messaging {
 		}
 
 		if (numCharsLeft <= this.maxMessageBuffer) {
-			this.tagMessageFormWarning.innerText = numCharsLeft + " chars left";
+			this.tagMessageFormWarning.innerText = `${numCharsLeft} chars left`;
 			if (numCharsLeft <= 0 && !okCodes.includes(event.keyCode)) {
 				event.preventDefault();
 				return;
 			}
 		} else {
-			this.tagMessageFormWarning.innerText = "";
+			this.tagMessageFormWarning.innerText = '';
 		}
 	}
 	handleSubmitChatButton(event) {
@@ -217,6 +224,7 @@ class Messaging {
 		var message = new Message({
 			body: content,
 			author: this.username,
+			image: this.imgUsernameAvatar.src,
 		});
 		const messageJSON = JSON.stringify(message);
 		if (window && window.ws) {
@@ -224,7 +232,7 @@ class Messaging {
 		}
 
 		// clear out things.
-		this.formMessageInput.value = "";
-		this.tagMessageFormWarning.innerText = "";
+		this.formMessageInput.value = '';
+		this.tagMessageFormWarning.innerText = '';
 	}
 }
