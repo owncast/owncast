@@ -28,7 +28,6 @@
   <meta property="twitter:url" content="{{.RequestedURL}}">
   <meta property="twitter:description" content="{{.Config.Summary}}">
   <meta property="twitter:image" content="{{.Image}}">
-  <meta property="twitter:site" content="{{.Config.SocialHandles.twitter}}">
 
 </head>
 
@@ -51,7 +50,7 @@
   <h3>Connect with {{.Config.Name}} elsewhere by visiting:</h3>
   
   {{range .Config.SocialHandles}}
-    <li><a href="{{.}}">{{.}}</a></li>
+    <li><a href="{{.URL}}">{{.Platform}}</a></li>
   {{end}}
 
   
