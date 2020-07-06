@@ -69,7 +69,7 @@ func resetDirectories() {
 	os.Remove("webroot/thumbnail.jpg")
 
 	// Create private hls data dirs
-	if len(config.Config.VideoSettings.StreamQualities) == 0 {
+	if len(config.Config.VideoSettings.StreamQualities) != 0 {
 		for index := range config.Config.VideoSettings.StreamQualities {
 			os.MkdirAll(path.Join(config.Config.PrivateHLSPath, strconv.Itoa(index)), 0777)
 			os.MkdirAll(path.Join(config.Config.PublicHLSPath, strconv.Itoa(index)), 0777)
