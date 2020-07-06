@@ -63,10 +63,10 @@ for i in "${!DISTRO[@]}"; do
 done
 
 # Create the tag
-git tag -a "v${VERSION}" -m "Release build v${VERSION}"
+# git tag -a "v${VERSION}" -m "Release build v${VERSION}"
 
-# On macOS open the Github page for new releases so they can be uploaded
-if test -f "/usr/bin/open"; then
-  open "https://github.com/gabek/owncast/releases/new"
-  open dist
-fi
+# # On macOS open the Github page for new releases so they can be uploaded
+# if test -f "/usr/bin/open"; then
+#   open "https://github.com/gabek/owncast/releases/new"
+#   open dist
+# fi
