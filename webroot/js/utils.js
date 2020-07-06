@@ -120,7 +120,8 @@ function generateUsername() {
 
 function setVideoPoster(online) {
   const player = videojs(VIDEO_ID);
-  const poster = online ? POSTER_THUMB : POSTER_DEFAULT;
+  var cachebuster = Math.round(new Date().getTime() / 1000);
+  const poster = online ? POSTER_THUMB + "?okhi=" + cachebuster : POSTER_DEFAULT;
   player.poster(poster);
 }
 

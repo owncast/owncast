@@ -15,7 +15,6 @@ function handleStatus(status) {
   app.overallMaxViewerCount = status.overallMaxViewerCount;
   app.isOnline = status.online;
   setVideoPoster(app.isOnline);
-
 }
 
 function handleOffline() {
