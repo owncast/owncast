@@ -70,3 +70,15 @@ done
 #   open "https://github.com/gabek/owncast/releases/new"
 #   open dist
 # fi
+
+# Docker build
+# Must authenticate first: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages
+# DOCKER_IMAGE="owncast-${VERSION}"
+# echo "Building Docker image ${DOCKER_IMAGE}..."
+
+# # Change to the root directory of the repository
+# cd $(git rev-parse --show-toplevel)
+
+# docker build -t owncast . -t="${DOCKER_IMAGE}" -f scripts/Dockerfile-build
+# docker tag $DOCKER_IMAGE docker.pkg.github.com/gabek/owncast/$DOCKER_IMAGE:$VERSION
+# docker push docker.pkg.github.com/gabek/owncast/$DOCKER_IMAGE:$VERSION
