@@ -59,7 +59,7 @@ func handlePublish(conn *rtmp.Conn) {
 		return
 	}
 
-	log.Println("Incoming RTMP connected.")
+	log.Infoln("Incoming RTMP connected.")
 
 	pipePath := utils.GetTemporaryPipePath()
 	syscall.Mkfifo(pipePath, 0666)
@@ -121,7 +121,7 @@ func connCheck(conn net.Conn) error {
 }
 
 func handleDisconnect(conn *rtmp.Conn) {
-	log.Println("RTMP disconnected.")
+	log.Infoln("RTMP disconnected.")
 	conn.Close()
 	_isConnected = false
 	core.SetStreamAsDisconnected()
