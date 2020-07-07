@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/gabek/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
-
-	"github.com/gabek/owncast/utils"
 )
 
 //Config contains a reference to the configuration
@@ -45,10 +44,11 @@ type socialHandle struct {
 }
 
 type videoSettings struct {
-	ChunkLengthInSeconds int             `yaml:"chunkLengthInSeconds"`
-	StreamingKey         string          `yaml:"streamingKey"`
-	StreamQualities      []StreamQuality `yaml:"streamQualities"`
-	OfflineContent       string          `yaml:"offlineContent"`
+	ChunkLengthInSeconds      int             `yaml:"chunkLengthInSeconds"`
+	StreamingKey              string          `yaml:"streamingKey"`
+	StreamQualities           []StreamQuality `yaml:"streamQualities"`
+	OfflineContent            string          `yaml:"offlineContent"`
+	HighestQualityStreamIndex int             `yaml"-"`
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.
@@ -105,6 +105,8 @@ func (c *config) load(filePath string) error {
 		log.Fatalf("Unmarshal: %v", err)
 		return err
 	}
+
+	c.VideoSettings.HighestQualityStreamIndex = findHighestQuality(c.VideoSettings.StreamQualities)
 
 	return nil
 }

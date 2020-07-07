@@ -39,7 +39,7 @@ func SetStreamAsConnected() {
 		chunkPath = config.Config.PrivateHLSPath
 	}
 
-	ffmpeg.StartThumbnailGenerator(chunkPath)
+	ffmpeg.StartThumbnailGenerator(chunkPath, config.Config.VideoSettings.HighestQualityStreamIndex)
 }
 
 //SetStreamAsDisconnected sets the stream as disconnected

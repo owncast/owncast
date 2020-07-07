@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 )
 
 //StartThumbnailGenerator starts generating thumbnails
-func StartThumbnailGenerator(chunkPath string) {
+func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.
 	ticker := time.NewTicker(20 * time.Second)
@@ -23,7 +24,7 @@ func StartThumbnailGenerator(chunkPath string) {
 		for {
 			select {
 			case <-ticker.C:
-				if err := fireThumbnailGenerator(chunkPath); err != nil {
+				if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
 					log.Errorln("Unable to generate thumbnail:", err)
 				}
 			case <-quit:
@@ -36,11 +37,11 @@ func StartThumbnailGenerator(chunkPath string) {
 	}()
 }
 
-func fireThumbnailGenerator(chunkPath string) error {
+func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join("webroot", "thumbnail.jpg")
 
-	framePath := path.Join(chunkPath, "0")
+	framePath := path.Join(chunkPath, strconv.Itoa(variantIndex))
 	files, err := ioutil.ReadDir(framePath)
 	if err != nil {
 		return err
