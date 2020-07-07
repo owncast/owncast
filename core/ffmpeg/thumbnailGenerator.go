@@ -75,7 +75,7 @@ func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 		config.Config.FFMpegPath,
 		"-y",                 // Overwrite file
 		"-threads 1",         // Low priority processing
-		"-t 1",               // Pull from frame 1
+		"-sseof -0:0:1",      // Pull from the end of the segment
 		"-i", mostRecentFile, // Input
 		"-f image2",  // format
 		"-vframes 1", // Single frame
