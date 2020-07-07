@@ -29,9 +29,18 @@ type MetadataPage struct {
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 
+	isIndexRequest := r.URL.Path == "/" || r.URL.Path == "/index.html"
+
+	// Reject requests for the web UI if it's disabled.
+	if isIndexRequest && config.Config.DisableWebFeatures {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("404 - y u ask 4 this?  If this is an error let us know: https://github.com/gabek/owncast/issues"))
+		return
+	}
+
 	ua := user_agent.New(r.UserAgent())
 
-	if ua != nil && ua.Bot() && (r.URL.Path == "/" || r.URL.Path == "/index.html") {
+	if ua != nil && ua.Bot() && isIndexRequest {
 		handleScraperMetadataPage(w, r)
 		return
 	}
