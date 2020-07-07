@@ -24,17 +24,17 @@ func Start() error {
 	resetDirectories()
 
 	if err := setupStats(); err != nil {
-		log.Println("failed to setup the stats")
+		log.Error("failed to setup the stats")
 		return err
 	}
 
 	if err := setupStorage(); err != nil {
-		log.Println("failed to setup the storage")
+		log.Error("failed to setup the storage")
 		return err
 	}
 
 	if err := createInitialOfflineState(); err != nil {
-		log.Println("failed to create the initial offline state")
+		log.Error("failed to create the initial offline state")
 		return err
 	}
 
@@ -57,7 +57,7 @@ func createInitialOfflineState() error {
 }
 
 func resetDirectories() {
-	log.Println("Resetting file directories to a clean slate.")
+	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe the public, web-accessible hls data directory
 	os.RemoveAll(config.Config.PublicHLSPath)

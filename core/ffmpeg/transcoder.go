@@ -65,7 +65,7 @@ func (v *VideoSize) getString() string {
 func (t *Transcoder) Start() {
 	command := t.getString()
 
-	log.Printf("Video transcoder started with %d stream variants.", len(t.variants))
+	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
 
 	_, err := exec.Command("sh", "-c", command).Output()
 	if err != nil {

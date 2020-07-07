@@ -30,7 +30,7 @@ type S3Storage struct {
 
 //Setup sets up the s3 storage for saving the video to s3
 func (s *S3Storage) Setup() error {
-	log.Println("Setting up S3 for external storage of video...")
+	log.Trace("Setting up S3 for external storage of video...")
 
 	s.s3Endpoint = config.Config.S3.Endpoint
 	s.s3Region = config.Config.S3.Region
@@ -62,9 +62,9 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	})
 
 	if err != nil {
-		log.Errorln("error uploading:", err.Error())
+		log.Trace("error uploading:", err.Error())
 		if retryCount < 4 {
-			log.Println("Retrying...")
+			log.Trace("Retrying...")
 			return s.Save(filePath, retryCount+1)
 		}
 	}

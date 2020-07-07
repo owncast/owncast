@@ -23,15 +23,24 @@ var (
 )
 
 func main() {
-	log.Println(getVersion())
+	configureLogging()
+
+	log.Infoln(getVersion())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
+	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 
 	flag.Parse()
 
 	if *enableDebugOptions {
 		logrus.SetReportCaller(true)
+	}
+
+	if *enableVerboseLogging {
+		log.SetLevel(log.TraceLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
 	}
 
 	if err := config.Load(*configFile, getVersion()); err != nil {
@@ -40,17 +49,24 @@ func main() {
 
 	// starts the core
 	if err := core.Start(); err != nil {
-		log.Println("failed to start the core package")
+		log.Error("failed to start the core package")
 		panic(err)
 	}
 
 	if err := router.Start(); err != nil {
-		log.Println("failed to start/run the router")
+		log.Error("failed to start/run the router")
 		panic(err)
 	}
+
 }
 
 //getVersion gets the version string
 func getVersion() string {
 	return fmt.Sprintf("Owncast v%s-%s (%s)", BuildVersion, BuildType, GitCommit)
+}
+
+func configureLogging() {
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp: true,
+	})
 }

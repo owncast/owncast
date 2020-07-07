@@ -34,7 +34,7 @@ func Start() error {
 
 	port := config.Config.WebServerPort
 
-	log.Printf("Starting public web server on port: %d", port)
+	log.Infof("Web server running on port: %d", port)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }

@@ -88,7 +88,7 @@ func SetClientActive(clientID string) {
 
 //RemoveClient removes a client from the active clients record
 func RemoveClient(clientID string) {
-	log.Println("Removing the client:", clientID)
+	log.Trace("Removing the client:", clientID)
 
 	delete(_stats.Clients, clientID)
 }

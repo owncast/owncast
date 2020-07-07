@@ -76,7 +76,7 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 				} else if filepath.Ext(event.Path) == ".ts" {
 					segment, err := getSegmentFromPath(event.Path)
 					if err != nil {
-						log.Println("failed to get the segment from path")
+						log.Error("failed to get the segment from path")
 						panic(err)
 					}
 

@@ -95,7 +95,7 @@ func (s *server) onConnection(ws *websocket.Conn) {
 func (s *server) Listen() {
 	http.Handle(s.pattern, websocket.Handler(s.onConnection))
 
-	log.Printf("Starting the websocket listener on: %s", s.pattern)
+	log.Tracef("Starting the websocket listener on: %s", s.pattern)
 
 	for {
 		select {
@@ -121,7 +121,7 @@ func (s *server) Listen() {
 			fmt.Println("PING?", ping)
 
 		case err := <-s.errCh:
-			log.Println("Error:", err.Error())
+			log.Error("Error:", err.Error())
 
 		case <-s.doneCh:
 			return

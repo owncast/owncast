@@ -45,7 +45,7 @@ func Start() {
 		},
 	})
 
-	log.Printf("RTMP server is listening for incoming stream on port: %d", port)
+	log.Infof("RTMP server is listening for incoming stream on port: %d", port)
 	if err := srv.Serve(listener); err != nil {
 		log.Panicf("Failed to serve the rtmp service: %+v", err)
 	}

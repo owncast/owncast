@@ -29,7 +29,7 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 				}
 			case <-quit:
 				//TODO: evaluate if this is ever stopped
-				log.Println("thumbnail generator has stopped")
+				log.Debug("thumbnail generator has stopped")
 				ticker.Stop()
 				return
 			}

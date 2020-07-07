@@ -44,7 +44,7 @@ type IPFSStorage struct {
 
 //Setup sets up the ipfs storage for saving the video to ipfs
 func (s *IPFSStorage) Setup() error {
-	log.Println("Setting up IPFS for external storage of video. Please wait..")
+	log.Trace("Setting up IPFS for external storage of video. Please wait..")
 
 	s.gateway = ownconfig.Config.IPFS.Gateway
 
@@ -267,9 +267,9 @@ func (s *IPFSStorage) createIPFSInstance() (*icore.CoreAPI, *core.IpfsNode, erro
 }
 
 func (s *IPFSStorage) startIPFSNode() { //} icore.CoreAPI {
-	defer log.Println("IPFS node exited")
+	defer log.Debug("IPFS node exited")
 
-	log.Println("IPFS node is running")
+	log.Trace("IPFS node is running")
 
 	bootstrapNodes := []string{
 		// IPFS Bootstrapper nodes.

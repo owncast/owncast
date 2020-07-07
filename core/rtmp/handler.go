@@ -49,7 +49,7 @@ func (h *Handler) OnCreateStream(timestamp uint32, cmd *rtmpmsg.NetConnectionCre
 //OnPublish handles the "OnPublish" of the rtmp service
 func (h *Handler) OnPublish(timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
 	// log.Printf("OnPublish: %#v", cmd)
-	log.Println("Incoming stream connected.")
+	log.Trace("Incoming stream connected.")
 
 	if cmd.PublishingName != config.Config.VideoSettings.StreamingKey {
 		return errors.New("invalid streaming key; rejecting incoming stream")
