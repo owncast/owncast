@@ -206,11 +206,6 @@ h2 {
   transform: scale(.65);
 }
 
-.user-social-item.use-default:hover {
-  text-decoration: none;
-  cursor: text;
-}
-
 .user-social-item.use-default .platform-label {
   font-size: .7em;
   text-transform: uppercase;
