@@ -25,8 +25,9 @@ class Message {
 
 
 
-class Messaging {
+class MessagingInterface {
 	constructor() {
+		this.websocket = null;
 		this.chatDisplayed = false;
 		this.username = '';
 
@@ -54,7 +55,8 @@ class Messaging {
 
 		this.scrollableMessagesContainer = document.querySelector('#messages-container');
 	}
-	init() {
+	init(websocket) {
+		this.websocket = websocket;
 		this.tagChatToggle.addEventListener('click', this.handleChatToggle.bind(this));
 		this.textUserInfoDisplay.addEventListener('click', this.handleShowChangeNameForm.bind(this));
 		
@@ -69,12 +71,12 @@ class Messaging {
 		if (hasTouchScreen()) {
 			this.scrollableMessagesContainer = document.body;
 			this.tagAppContainer.classList.add('touch-screen');
-			window.app.layout = 'touch';
+			// window.app.layout = 'touch';
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
 		} else {
 			this.tagAppContainer.classList.add('desktop');
-			window.app.layout = 'desktop';
+			// window.app.layout = 'desktop';
 
 		}
 	}
@@ -214,12 +216,20 @@ class Messaging {
 			image: this.imgUsernameAvatar.src,
 		});
 		const messageJSON = JSON.stringify(message);
-		if (window && window.ws) {
-			window.ws.send(messageJSON);
+		if (this.websocket) {
+			this.websocket.send(messageJSON);
 		}
 
 		// clear out things.
 		this.formMessageInput.value = '';
 		this.tagMessageFormWarning.innerText = '';
+	}
+
+	// handle Vue.js message display
+	onReceivedMessages(newMessages, oldMessages) {
+		if (newMessages.length !== oldMessages.length) {
+			// jump to bottom
+			jumpToBottom(this.scrollableMessagesContainer);
+		}
 	}
 }

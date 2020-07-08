@@ -174,15 +174,22 @@ GW TODO:
     </section>
   </div>
 
-  <script src="js/status.js"></script>
+  <!-- <script src="js/status.js"></script> -->
   <script src="js/usercolors.js"></script>
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
   <script src="js/social.js"></script>
   <script src="js/components.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/player/airplay.js"></script>
   <script src="js/player/player.js"></script>
+  <script src="js/app.js"></script>
+  <!-- <script src="js/player/airplay.js"></script> -->
+  <script>
+    (function () {
+      const app = new Owncast();
+      app.init();
+
+    })();
+  </script>
 </body>
 </html>

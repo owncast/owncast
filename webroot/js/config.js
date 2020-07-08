@@ -1,10 +1,9 @@
 // add more to the promises later.
 class Config {
   async init() {
-    const configFileLocation = "https://goth.land/config";
     
     try {
-      const response = await fetch(configFileLocation);
+      const response = await fetch(URL_CONFIG);
       const configData = await response.json();
       Object.assign(this, configData);
       return this;

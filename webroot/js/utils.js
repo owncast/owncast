@@ -16,6 +16,8 @@ const URL_WEBSOCKET = LOCAL_TEST
 const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
 const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
 
+const URL_CONFIG = `${URL_PREFIX}/config`;
+
 const SOCKET_MESSAGE_TYPES = {
 	CHAT: 'CHAT',
 	PING: 'PING'
@@ -121,26 +123,3 @@ function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
 }
 
-function setVideoPoster(online) {
-  const player = videojs(VIDEO_ID);
-  var cachebuster = Math.round(new Date().getTime() / 1000);
-  const poster = online ? POSTER_THUMB + "?okhi=" + cachebuster : POSTER_DEFAULT;
-  player.poster(poster);
-}
-
-function getExtraUserContent(path) {
-  fetch(path)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok ${response.ok}`);
-      }
-      return response.text();
-    })
-    .then(text => {
-      const descriptionHTML = new showdown.Converter().makeHtml(text);
-      app.extraUserContent = descriptionHTML;
-    })
-    .catch(error => {
-      console.log("Error", error);
-    });
-}

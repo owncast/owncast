@@ -25,10 +25,7 @@ function handleOffline() {
 }
 
 function getStatus() {
-  const options = {
-    // mode: 'no-cors',
-  }
-  fetch(URL_STATUS, options)
+  fetch(URL_STATUS)
     .then(response => {
       if (!response.ok) {
         throw new Error(`Network response was not ok ${response.ok}`);
