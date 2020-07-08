@@ -13,6 +13,8 @@
     <br />
     <a href="https://goth.land/">View Demo</a>
     ·
+    <a href="https://github.com/gabek/owncast/tree/master/doc/faq.md">FAQ</a>
+    .
     <a href="https://github.com/gabek/owncast/issues">Report Bug</a>
   </p>
 </p>
