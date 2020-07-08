@@ -1,5 +1,5 @@
 
-const LOCAL_TEST = true;
+const LOCAL_TEST = false;
 
 
 const MESSAGE_OFFLINE = 'Stream is offline.';
