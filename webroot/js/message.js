@@ -81,7 +81,8 @@ class Messaging {
 
 	initLocalStates() {
 		this.username = getLocalStorage(KEY_USERNAME) || generateUsername();
-		this.imgUsernameAvatar.src = getLocalStorage(KEY_AVATAR) || generateAvatar(this.username);
+		this.imgUsernameAvatar.src =
+			getLocalStorage(KEY_AVATAR) || generateAvatar(`${this.username}${Date.now()}`);
 		this.updateUsernameFields(this.username);
 
 		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || false;
@@ -149,7 +150,7 @@ class Messaging {
 		if (newValue) {
 			this.username = newValue;
 			this.updateUsernameFields(newValue);
-			this.imgUsernameAvatar.src = generateAvatar(newValue);
+			this.imgUsernameAvatar.src = generateAvatar(`${newValue}${Date.now()}`);
 			setLocalStorage(KEY_USERNAME, newValue);
 			setLocalStorage(KEY_AVATAR, this.imgUsernameAvatar.src);
 		}

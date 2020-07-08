@@ -60,7 +60,6 @@ function setupPlayerEventHandlers() {
 
 function restartPlayer() {
   try {
-    console.log('restarting', player.src())
     const player = videojs(VIDEO_ID);
     player.pause();
     player.src(player.src()); // Reload the same video
