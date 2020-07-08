@@ -64,8 +64,8 @@ const SOCIAL_PLATFORMS = {
     name: "Discord",
     imgPos: [0,15],
   },
-  mastadon: {
-    name: "Mastadon",
+  mastodon: {
+    name: "Mastodon",
     imgPos: [0,16],
   },
 };
