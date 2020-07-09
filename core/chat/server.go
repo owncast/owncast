@@ -79,7 +79,7 @@ func (s *server) onConnection(ws *websocket.Conn) {
 	client := NewClient(ws)
 
 	defer func() {
-		log.Trace("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.id)
+		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.id)
 
 		if err := ws.Close(); err != nil {
 			s.errCh <- err
