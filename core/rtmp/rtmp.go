@@ -41,7 +41,7 @@ func Start() {
 	if error != nil {
 		log.Panicln(error)
 	}
-	log.Printf("RTMP server is listening for incoming stream on port: %d", port)
+	log.Infof("RTMP server is listening for incoming stream on port: %d", port)
 }
 
 func handlePublish(conn *rtmp.Conn) {

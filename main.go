@@ -46,6 +46,7 @@ func main() {
 	if err := config.Load(*configFile, getVersion()); err != nil {
 		panic(err)
 	}
+	config.Config.EnableDebugFeatures = *enableDebugOptions
 
 	// starts the core
 	if err := core.Start(); err != nil {

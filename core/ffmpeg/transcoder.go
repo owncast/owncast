@@ -67,8 +67,13 @@ func (t *Transcoder) Start() {
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
 
+	if config.Config.EnableDebugFeatures {
+		log.Println(command)
+	}
+
 	_, err := exec.Command("sh", "-c", command).Output()
 	if err != nil {
+		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
 		log.Panicln(err, command)
 	}
 
@@ -111,6 +116,7 @@ func (t *Transcoder) getString() string {
 		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s.ts"), // Each segment's filename
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
+		"2> transcoder.log",
 	}
 
 	return strings.Join(ffmpegFlags, " ")
