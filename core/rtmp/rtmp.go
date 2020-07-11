@@ -90,7 +90,6 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
 	_pipe = f
-	fmt.Println(pipePath)
 	if err != nil {
 		panic(err)
 	}

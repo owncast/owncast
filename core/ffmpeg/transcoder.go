@@ -296,8 +296,9 @@ func (v *HLSVariant) getAudioQualityString() string {
 		return fmt.Sprintf("-map a:0 -c:a:%d copy", v.index)
 	}
 
-	encoderCodec := "libfdk_aac"
-	return fmt.Sprintf("-map a:0 -c:a:%d %s -profile:a aac_he -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
+	// libfdk_aac is not a part of every ffmpeg install, so use "aac" instead
+	encoderCodec := "aac"
+	return fmt.Sprintf("-map a:0 -c:a:%d %s -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
 }
 
 // AddVariant adds a new HLS variant to include in the output
