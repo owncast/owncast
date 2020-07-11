@@ -5,8 +5,6 @@ class Player {
 
     this.castApp = castApp;
 
-    console.log("======== ", castApp)
-
     const options = {
       liveui: true,
       sources: [{
@@ -27,19 +25,21 @@ class Player {
   }
   handleReady() {
     this.log('Ready')
-    if (this.castApp.handlePlayerReady) {
+    // should   myPlayer.play() here
+    
+    if (this.castApp.handlePlayerReaFFdy) {
       this.castApp.handlePlayerReady();
     }
     this.player.reset();
   }
 
-  restartPlayer() {
-    this.log('Start player');
+  restartPlayer = () => {
+    this.log('(re)Start player');
     this.player.pause();
     // this.player.src(player.src()); // Reload the same video
     this.player.load();
     this.player.play();
-  }
+  };
 
   setPoster(online) {
     const cachebuster = Math.round(new Date().getTime() / 1000);

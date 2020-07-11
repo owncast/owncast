@@ -31,6 +31,10 @@ const VIDEO_ID = 'video';
 
 const URL_OWNCAST = 'https://github.com/gabek/owncast';
 
+const TIMER_STATUS_UPDATE = 3000; // ms
+const TIMER_WEBSOCKET_RECONNECT = 3000; // ms
+
+const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 function getLocalStorage(key) {
   try {

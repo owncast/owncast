@@ -115,6 +115,7 @@ class Owncast {
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
+    this.getStreamStatus = this.getStreamStatus.bind(this);
   }
 
   init() {
@@ -136,7 +137,8 @@ class Owncast {
         // from config
         appVersion: '',
         extraUserContent: '',
-        logo: null,
+        logo: TEMP_IMAGE,
+        logoLarge: TEMP_IMAGE,
         socialHandles: [],
         streamerName: '',
         summary: '',
@@ -151,15 +153,16 @@ class Owncast {
       },
     });
 
-    this.setupWebsocket();
-    this.messagingInterface.init(this.websocket);
-
+    this.websocket = this.setupWebsocket();
+    this.messagingInterface.init();
+    this.messagingInterface.setupWebsocket(this.websocket);
   }
 
-  setConfigData(data) {
+  setConfigData = (data) => {
 
     this.vueApp.appVersion = data.version;
     this.vueApp.logo = data.logo.small;
+    this.vueApp.logoLarge = data.logo.large;
     this.vueApp.socialHandles = data.socialHandles;
     this.vueApp.streamerName = data.name;
     this.vueApp.summary = data.summary && addNewlines(data.summary);
@@ -174,7 +177,7 @@ class Owncast {
 
   }
 
-  setupWebsocket() {
+  setupWebsocket = () => {
     clearTimeout(this.websocketReconnectTimer);
   
     var ws = new WebSocket(URL_WEBSOCKET);
@@ -196,7 +199,7 @@ class Owncast {
       if (existing.length === 0 || !existing) {
         this.vueApp.messages = [...this.vueApp.messages, message];
       }
-    }
+    };
   
     ws.onclose = (e) => {
       // connection closed, discard old websocket and create a new one in 5s
@@ -210,9 +213,9 @@ class Owncast {
       console.log('Websocket error: ', e);
       ws.close();
     }
-  
-    this.websocket = ws;
-  }
+    return ws;
+    // this.websocket = ws;
+  };
 
   getConfig() {
     fetch(URL_CONFIG)
@@ -230,7 +233,7 @@ class Owncast {
     });
   }
 
-  getStreamStatus() {
+  getStreamStatus = () => {
     fetch(URL_STATUS)
       .then(response => {
         if (!response.ok) {
@@ -242,14 +245,13 @@ class Owncast {
         this.updateStreamStatus(json);
       })
       .catch(error => {
-        console.log("this?", this)
         this.handleOfflineMode();
         this.handleNetworkingError(error);
       });
-  }
+  };
 
 
-  getExtraUserContent(path) {
+  getExtraUserContent = (path) => {
     fetch(path)
       .then(response => {
         if (!response.ok) {
@@ -264,35 +266,40 @@ class Owncast {
       .catch(error => {
         this.handleNetworkingError(error);
       });
-  }
+  };
 
 
-  handleNetworkingError(error) {
+  handleNetworkingError = (error) => {
     console.log(`>>> App Error: ${error}`)
-  }
+  };
 
-  handleOfflineMode() {
+  handleOfflineMode = () => {
     this.player.setPoster(false);
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
     this.vueApp.viewerCount = 0;
-  }
+  };
 
-  handlePlayerReady() {
+  handlePlayerReady = () => {
     this.getStreamStatus();
     setInterval(this.getStreamStatus, 5000); // 
-  }
+  };
 
-  handlePlayerPlaying() {
+  handlePlayerPlaying = () => {
     if (this.playerRestartTimer) {
       clearTimeout(this.playerRestartTimer);
     }
-  }
+  };
 
-  updateStreamStatus(status) {
+  updateStreamStatus = (status) => {
     clearTimeout(this.playerRestartTimer);
     if (status.online && !this.streamIsOnline) {
       // The stream was offline, but now it's online.  Force start of playback after an arbitrary delay to make sure the stream has actual data ready to go.
-      this.playerRestartTimer = setTimeout(this.player.restartPlayer, 3000);
+      // this.playerRestartTimer = setTimeout(this.player.restartPlayer, 3000);
+
+      // gw: should delay on server side. don't need settimeout.
+      this.player.restartPlayer()
+
+
     }
   
     this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
@@ -307,4 +314,4 @@ class Owncast {
 
     this.player.setPoster(this.streamIsOnline);
   }
-}
+};

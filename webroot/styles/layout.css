@@ -290,6 +290,11 @@ h2 {
   height: calc(var(--video-container-height));
   width: 100%;
   margin-top: var(--header-height);
+  background-position: center center;
+  background-repeat: no-repeat;
+  
+  /* cover? */
+  background-size: 30%; 
 }
 
 .owncast-video-container {

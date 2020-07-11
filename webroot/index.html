@@ -13,17 +13,7 @@
 
   <link href="./styles/layout.css" rel="stylesheet" />
 </head>
-<script>
-/* 
-GW TODO:
-- off line/ video done mode.
-- remove listeners on unload?
 
-- accessilbity
-
-
-  */
-</script>
 <body class="bg-gray-300 text-gray-800">
   <div id="app-container" v-cloak class="flex no-chat">
 
@@ -70,7 +60,11 @@ GW TODO:
       </header>
 
       <main>
-        <div id="video-container" class="flex owncast-video-container bg-black">
+        <div
+          id="video-container"
+          class="flex owncast-video-container bg-black"
+          v-bind:style="{ backgroundImage: 'url(' + logoLarge + ')' }"
+        >
           <video
             class="video-js"
             id="video"

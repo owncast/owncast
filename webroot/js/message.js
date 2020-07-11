@@ -35,28 +35,32 @@ class MessagingInterface {
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
 
-		this.tagAppContainer = document.querySelector('#app-container');
-		this.tagChatToggle = document.querySelector('#chat-toggle');
-		this.tagUserInfoChanger = document.querySelector('#user-info-change');
-		this.tagUsernameDisplay = document.querySelector('#username-display');
-		this.tagMessageFormWarning = document.querySelector('#message-form-warning');
-
-		this.inputMessageAuthor = document.querySelector('#self-message-author');
-		this.inputChangeUserName = document.querySelector('#username-change-input'); 
-
-		this.btnUpdateUserName = document.querySelector('#button-update-username'); 
-		this.btnCancelUpdateUsername = document.querySelector('#button-cancel-change'); 
-		this.btnSubmitMessage = document.querySelector('#button-submit-message');
-
-		this.formMessageInput = document.querySelector('#message-body-form');
-
-		this.imgUsernameAvatar = document.querySelector('#username-avatar');
-		this.textUserInfoDisplay = document.querySelector('#user-info-display');
-
-		this.scrollableMessagesContainer = document.querySelector('#messages-container');
 	}
-	init(websocket) {
-		this.websocket = websocket;
+
+	init = () => {
+
+		this.tagAppContainer = document.getElementById('app-container');
+		this.tagChatToggle = document.getElementById('chat-toggle');
+		this.tagUserInfoChanger = document.getElementById('user-info-change');
+		this.tagUsernameDisplay = document.getElementById('username-display');
+		this.tagMessageFormWarning = document.getElementById('message-form-warning');
+
+		this.inputMessageAuthor = document.getElementById('self-message-author');
+		this.inputChangeUserName = document.getElementById('username-change-input'); 
+
+		this.btnUpdateUserName = document.getElementById('button-update-username'); 
+		this.btnCancelUpdateUsername = document.getElementById('button-cancel-change'); 
+		this.btnSubmitMessage = document.getElementById('button-submit-message');
+
+		this.formMessageInput = document.getElementById('message-body-form');
+
+		this.imgUsernameAvatar = document.getElementById('username-avatar');
+		this.textUserInfoDisplay = document.getElementById('user-info-display');
+
+		this.scrollableMessagesContainer = document.getElementById('messages-container');
+
+
+
 		this.tagChatToggle.addEventListener('click', this.handleChatToggle.bind(this));
 		this.textUserInfoDisplay.addEventListener('click', this.handleShowChangeNameForm.bind(this));
 		
@@ -66,19 +70,23 @@ class MessagingInterface {
 		this.inputChangeUserName.addEventListener('keydown', this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener('keydown', this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
+
+		console.log(this)
+
 		this.initLocalStates();
 
 		if (hasTouchScreen()) {
 			this.scrollableMessagesContainer = document.body;
 			this.tagAppContainer.classList.add('touch-screen');
-			// window.app.layout = 'touch';
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
 		} else {
 			this.tagAppContainer.classList.add('desktop');
-			// window.app.layout = 'desktop';
-
 		}
+	}
+
+	setupWebsocket(socket) {
+		this.websocket = socket;
 	}
 
 	initLocalStates() {
@@ -226,7 +234,7 @@ class MessagingInterface {
 	}
 
 	// handle Vue.js message display
-	onReceivedMessages(newMessages, oldMessages) {
+	onReceivedMessages = (newMessages, oldMessages) => {
 		if (newMessages.length !== oldMessages.length) {
 			// jump to bottom
 			jumpToBottom(this.scrollableMessagesContainer);
