@@ -13,6 +13,8 @@ import (
 	"github.com/gabek/owncast/utils"
 )
 
+var _commandExec *exec.Cmd
+
 // Transcoder is a single instance of a video transcoder
 type Transcoder struct {
 	input                string
@@ -61,6 +63,13 @@ func (v *VideoSize) getString() string {
 	return ""
 }
 
+func (t *Transcoder) Stop() {
+	error := _commandExec.Process.Kill()
+	if error != nil {
+		log.Errorln(error)
+	}
+}
+
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
 	command := t.getString()
@@ -71,7 +80,8 @@ func (t *Transcoder) Start() {
 		log.Println(command)
 	}
 
-	_, err := exec.Command("sh", "-c", command).Output()
+	_commandExec = exec.Command("sh", "-c", command)
+	err := _commandExec.Start()
 	if err != nil {
 		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
 		log.Panicln(err, command)
@@ -221,7 +231,7 @@ func (t *Transcoder) getVariantsString() string {
 
 	for _, variant := range t.variants {
 		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString()
-		variantsStreamMaps = variantsStreamMaps + fmt.Sprintf("v:%d?,a:%d? ", variant.index, variant.index)
+		variantsStreamMaps = variantsStreamMaps + fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
 	}
 	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
 
