@@ -9,7 +9,7 @@ import (
 
 //GetTemporaryPipePath gets the temporary path for the streampipe.flv file
 func GetTemporaryPipePath() string {
-	return filepath.Join(os.TempDir(), "streampipe.ts")
+	return filepath.Join(os.TempDir(), "streampipe.flv")
 }
 
 //DoesFileExists checks if the file exists
