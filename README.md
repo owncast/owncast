@@ -135,6 +135,7 @@ Here's a list of some things you can do to increase performance and make things 
 
 ## Building from Source
 
+1. Ensure you have the gcc compiler configured.
 1. Install the [Go toolchain](https://golang.org/dl/).
 1. Clone the repo.  `git clone https://github.com/gabek/owncast`
 1. Follow the above [Getting Started](#getting-started) instructions, making sure ffmpeg exists and your config file is set.
