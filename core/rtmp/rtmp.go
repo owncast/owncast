@@ -18,7 +18,6 @@ import (
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/utils"
-	"github.com/nareix/joy5/codec/h264"
 	"github.com/nareix/joy5/format/rtmp"
 )
 
@@ -98,20 +97,21 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	for {
 		pkt, err := c.ReadPacket()
-		if err != nil {
-			if err == io.EOF {
-				handleDisconnect(nc)
-			}
+		if err == io.EOF {
+			handleDisconnect(nc)
+			return
 		}
 
-		if pkt.Type == av.H264 {
-			nalus, _ := h264.SplitNALUs(pkt.Data)
-			annexb := h264.JoinNALUsAnnexb(nalus)
-			avcc := h264.JoinNALUsAVCC([][]byte{annexb})
-			pkt.Data = avcc
-		} else if pkt.Type == av.Metadata {
+		if pkt.Type == av.Metadata {
 			log.Traceln(string(pkt.Data))
 		}
+
+		// if pkt.Type == av.H264 {
+		// 	nalus, _ := h264.SplitNALUs(pkt.Data)
+		// 	annexb := h264.JoinNALUsAnnexb(nalus)
+		// 	avcc := h264.JoinNALUsAVCC([][]byte{annexb})
+		// 	pkt.Data = avcc
+		// }
 
 		if err := w.WritePacket(pkt); err != nil {
 			panic(err)
