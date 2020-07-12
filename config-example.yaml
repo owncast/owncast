@@ -39,8 +39,8 @@ videoSettings:
   streamQualities:
     # Transcode the video to a lower bitrate and resize
     - medium:
-    videoBitrate: 800
-    encoderPreset: superfast
+      videoBitrate: 800
+      encoderPreset: superfast
 
 files:
   maxNumberInPlaylist: 30
