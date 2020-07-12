@@ -109,6 +109,8 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 			annexb := h264.JoinNALUsAnnexb(nalus)
 			avcc := h264.JoinNALUsAVCC([][]byte{annexb})
 			pkt.Data = avcc
+		} else if pkt.Type == av.Metadata {
+			log.Traceln(string(pkt.Data))
 		}
 
 		if err := w.WritePacket(pkt); err != nil {
