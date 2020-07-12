@@ -24,3 +24,4 @@ webroot/static/content.md
 hls/
 dist/
 transcoder.log
+chat.db

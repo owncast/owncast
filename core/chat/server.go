@@ -116,7 +116,7 @@ func (s *server) Listen() {
 			s.Messages = append(s.Messages, msg)
 			s.listener.MessageSent(msg)
 			s.sendAll(msg)
-
+			addMessage(msg)
 		case ping := <-s.pingCh:
 			fmt.Println("PING?", ping)
 

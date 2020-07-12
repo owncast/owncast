@@ -10,6 +10,7 @@ require (
 	github.com/ipfs/interface-go-ipfs-core v0.2.7
 	github.com/libp2p/go-libp2p-peer v0.2.0
 	github.com/libp2p/go-libp2p-peerstore v0.2.6
+	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/mssola/user_agent v0.5.2
 	github.com/multiformats/go-multiaddr v0.2.2
 	github.com/nareix/joy5 v0.0.0-20200710135721-d57196c8d506

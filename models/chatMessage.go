@@ -11,6 +11,7 @@ type ChatMessage struct {
 	Image       string    `json:"image"`
 	ID          string    `json:"id"`
 	MessageType string    `json:"type"`
+	Visible     bool      `json:"visible"`
 	Timestamp   time.Time `json:"timestamp"`
 }
 
