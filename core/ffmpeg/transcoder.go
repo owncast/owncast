@@ -192,7 +192,14 @@ func NewTranscoder() Transcoder {
 	transcoder.input = utils.GetTemporaryPipePath()
 	transcoder.segmentLengthSeconds = config.Config.VideoSettings.ChunkLengthInSeconds
 
-	for index, quality := range config.Config.VideoSettings.StreamQualities {
+	qualities := config.Config.VideoSettings.StreamQualities
+	if len(qualities) == 0 {
+		defaultQuality := config.StreamQuality{}
+		defaultQuality.VideoBitrate = 1000
+		defaultQuality.EncoderPreset = "superfast"
+		qualities = append(qualities, defaultQuality)
+	}
+	for index, quality := range qualities {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
 	}
