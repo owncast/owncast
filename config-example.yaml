@@ -13,7 +13,8 @@ instanceDetails:
     - software
     - animal crossing
 
-  # See documentation for full list of supported social links.  All optional.
+  # https://github.com/gabek/owncast/blob/master/doc/configuration.md#customization
+  # for full list of supported social links.  All optional.
   socialHandles:
     - platform: twitter
       url: http://twitter.com/owncast
@@ -21,17 +22,14 @@ instanceDetails:
       url: http://instagram.biz/owncast
     - platform: facebook
       url: http://facebook.gov/owncast
-    - platform: tiktok
-      url: http://tiktok.cn/owncast
-    - platform: soundcloud
-      url: http://soundcloud.com/owncast
 
 videoSettings:
+  # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
   offlineContent: static/offline.m4v # Is displayed when a stream ends
 
+  // Determine the bitrate of your stream variants.
+  // See https://github.com/gabek/owncast/blob/master/doc/configuration.md#video-quality for details.
   streamQualities:
-    # Transcode the video to a lower bitrate and resize
     - medium:
       videoBitrate: 800
-      encoderPreset: superfast
