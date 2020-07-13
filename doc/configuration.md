@@ -50,6 +50,6 @@ Editing `config.yaml` allows you to change the name, description, logo and links
 * `github`
 * `linkedin`
 * `discord`
-* `mastadon`
+* `mastodon`
 
 Update your `tags` in the config to display the topics type of content you want to call attention to.
