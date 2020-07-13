@@ -2,8 +2,9 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
+	"os/exec"
+	"strings"
 
 	"github.com/gabek/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -132,19 +133,26 @@ func (c *config) verifySettings() error {
 		}
 	}
 
-	// if !fileExists(config.PrivateHLSPath) {
-	// 	os.MkdirAll(path.Join(config.PrivateHLSPath, strconv.Itoa(0)), 0777)
-	// }
+	return nil
+}
 
-	// if !fileExists(config.PublicHLSPath) {
-	// 	os.MkdirAll(path.Join(config.PublicHLSPath, strconv.Itoa(0)), 0777)
-	// }
-
-	if !utils.DoesFileExists(c.FFMpegPath) {
-		return fmt.Errorf("ffmpeg does not exist at: %s", c.FFMpegPath)
+func (c *config) GetFFMpegPath() string {
+	if c.FFMpegPath != "" {
+		return c.FFMpegPath
 	}
 
-	return nil
+	cmd := exec.Command("which", "ffmpeg")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Panicln("Unable to determine path to ffmpeg. Please specify it in the config file.")
+	}
+
+	path := strings.TrimSpace(string(out))
+
+	// Memoize it for future access
+	c.FFMpegPath = path
+
+	return path
 }
 
 //Load tries to load the configuration file

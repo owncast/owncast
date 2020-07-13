@@ -72,7 +72,7 @@ func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	mostRecentFile := path.Join(framePath, names[0])
 
 	thumbnailCmdFlags := []string{
-		config.Config.FFMpegPath,
+		config.Config.GetFFMpegPath(),
 		"-y",                 // Overwrite file
 		"-threads 1",         // Low priority processing
 		"-t 1",               // Pull from frame 1

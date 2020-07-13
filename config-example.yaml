@@ -1,6 +1,5 @@
 publicHLSPath: webroot/hls
 privateHLSPath: hls
-ffmpegPath: /usr/bin/ffmpeg
 webServerPort: 8080
 
 instanceDetails:

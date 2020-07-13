@@ -104,7 +104,7 @@ func (t *Transcoder) getString() string {
 
 	ffmpegFlags := []string{
 		"cat", t.input, "|",
-		config.Config.FFMpegPath,
+		config.Config.GetFFMpegPath(),
 		"-hide_banner",
 		"-i pipe:",
 		t.getVariantsString(),
