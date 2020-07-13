@@ -109,7 +109,7 @@ class Owncast {
     };
     // On ws error just close the socket and let it re-connect again for now.
     ws.onerror = e => {
-      this.handleNetworkingError(`Stream status: ${error}`);
+      this.handleNetworkingError(`Stream status: ${e}`);
       ws.close();
     };
     ws.onmessage = (e) => {

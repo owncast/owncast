@@ -110,6 +110,7 @@ func (c *Client) listenRead() {
 
 			msg.ID = id
 			msg.MessageType = "CHAT"
+			msg.Timestamp = time.Now()
 
 			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
 				c.doneCh <- true

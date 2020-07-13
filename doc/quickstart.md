@@ -17,7 +17,7 @@ or.....
 ## Through docker
 
 1. Download the code.  `git clone https://github.com/gabek/owncast`
-1. Copy `config-example.yaml` to `config/config.yaml`
+1. Copy `config-example.yaml` to `config.yaml`
 1. [Edit `config.yaml`](#configure) and change the path of ffmpeg to `/usr/bin/ffmpeg`.
 1. Edit your stream key to whatever you'd like it to be in the config.
 1. If you ever make any future config file changes you must rerun the `docker build` step otherwise you can just run the `docker run` step to run the service going forward.

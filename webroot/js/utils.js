@@ -1,5 +1,5 @@
 
-const LOCAL_TEST = true;
+const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 
 
 const MESSAGE_OFFLINE = 'Stream is offline.';

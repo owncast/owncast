@@ -14,17 +14,18 @@ import (
 var Config *config
 
 type config struct {
-	IPFS               ipfs            `yaml:"ipfs"`
-	PublicHLSPath      string          `yaml:"publicHLSPath"`
-	PrivateHLSPath     string          `yaml:"privateHLSPath"`
-	VideoSettings      videoSettings   `yaml:"videoSettings"`
-	Files              files           `yaml:"files"`
-	FFMpegPath         string          `yaml:"ffmpegPath"`
-	WebServerPort      int             `yaml:"webServerPort"`
-	S3                 s3              `yaml:"s3"`
-	InstanceDetails    InstanceDetails `yaml:"instanceDetails"`
-	VersionInfo        string          `yaml:"-"`
-	DisableWebFeatures bool            `yaml:"disableWebFeatures"`
+	IPFS                ipfs            `yaml:"ipfs"`
+	PublicHLSPath       string          `yaml:"publicHLSPath"`
+	PrivateHLSPath      string          `yaml:"privateHLSPath"`
+	VideoSettings       videoSettings   `yaml:"videoSettings"`
+	Files               files           `yaml:"files"`
+	FFMpegPath          string          `yaml:"ffmpegPath"`
+	WebServerPort       int             `yaml:"webServerPort"`
+	S3                  s3              `yaml:"s3"`
+	InstanceDetails     InstanceDetails `yaml:"instanceDetails"`
+	VersionInfo         string          `yaml:"-"`
+	DisableWebFeatures  bool            `yaml:"disableWebFeatures"`
+	EnableDebugFeatures bool            `yaml:"-"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
@@ -93,7 +94,7 @@ type s3 struct {
 
 func (c *config) load(filePath string) error {
 	if !utils.DoesFileExists(filePath) {
-		log.Fatal("ERROR: valid config/config.yaml is required.  Copy config-example.yaml to config.yaml and edit")
+		log.Fatal("ERROR: valid config.yaml is required.  Copy config-example.yaml to config.yaml and edit")
 	}
 
 	yamlFile, err := ioutil.ReadFile(filePath)

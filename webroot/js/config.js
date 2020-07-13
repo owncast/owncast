@@ -1,6 +1,7 @@
 // add more to the promises later.
 class Config {
   async init() {
+    const configFileLocation = "/config";
     
     try {
       const response = await fetch(URL_CONFIG);

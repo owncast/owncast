@@ -13,6 +13,8 @@ import (
 	"github.com/gabek/owncast/utils"
 )
 
+var _commandExec *exec.Cmd
+
 // Transcoder is a single instance of a video transcoder
 type Transcoder struct {
 	input                string
@@ -61,14 +63,28 @@ func (v *VideoSize) getString() string {
 	return ""
 }
 
+func (t *Transcoder) Stop() {
+	log.Traceln("Transcoder STOP requested.")
+	error := _commandExec.Process.Kill()
+	if error != nil {
+		log.Errorln(error)
+	}
+}
+
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
 	command := t.getString()
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
 
-	_, err := exec.Command("sh", "-c", command).Output()
+	if config.Config.EnableDebugFeatures {
+		log.Println(command)
+	}
+
+	_commandExec = exec.Command("sh", "-c", command)
+	err := _commandExec.Start()
 	if err != nil {
+		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
 		log.Panicln(err, command)
 	}
 
@@ -111,6 +127,7 @@ func (t *Transcoder) getString() string {
 		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s.ts"), // Each segment's filename
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
+		"2> transcoder.log",
 	}
 
 	return strings.Join(ffmpegFlags, " ")
@@ -175,7 +192,14 @@ func NewTranscoder() Transcoder {
 	transcoder.input = utils.GetTemporaryPipePath()
 	transcoder.segmentLengthSeconds = config.Config.VideoSettings.ChunkLengthInSeconds
 
-	for index, quality := range config.Config.VideoSettings.StreamQualities {
+	qualities := config.Config.VideoSettings.StreamQualities
+	if len(qualities) == 0 {
+		defaultQuality := config.StreamQuality{}
+		defaultQuality.VideoBitrate = 1000
+		defaultQuality.EncoderPreset = "superfast"
+		qualities = append(qualities, defaultQuality)
+	}
+	for index, quality := range qualities {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
 	}
@@ -280,8 +304,9 @@ func (v *HLSVariant) getAudioQualityString() string {
 		return fmt.Sprintf("-map a:0 -c:a:%d copy", v.index)
 	}
 
-	encoderCodec := "libfdk_aac"
-	return fmt.Sprintf("-map a:0 -c:a:%d %s -profile:a aac_he -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
+	// libfdk_aac is not a part of every ffmpeg install, so use "aac" instead
+	encoderCodec := "aac"
+	return fmt.Sprintf("-map a:0 -c:a:%d %s -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
 }
 
 // AddVariant adds a new HLS variant to include in the output

@@ -37,17 +37,10 @@ videoSettings:
   offlineContent: static/offline.m4v # Is displayed when a stream ends
 
   streamQualities:
-    # Pass through the exact video and audio that you're streaming.
-    - full:
-      videoPassthrough: true
-      audioPassthrough: true
-
     # Transcode the video to a lower bitrate and resize
-    # - low:
-    # videoBitrate: 700
-    # scaledWidth: 600
-    # audioPassthrough: true
-    # encoderPreset: superfast
+    - medium:
+      videoBitrate: 800
+      encoderPreset: superfast
 
 files:
   maxNumberInPlaylist: 30
