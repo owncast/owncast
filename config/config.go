@@ -180,6 +180,15 @@ func (c *config) GetPrivateHLSSavePath() string {
 	return "hls"
 }
 
+func (c *config) GetPublicWebServerPort() int {
+	if c.WebServerPort != 0 {
+		return c.WebServerPort
+	}
+
+	// Default web server port
+	return 8080
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)

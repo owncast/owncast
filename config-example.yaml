@@ -1,5 +1,3 @@
-webServerPort: 8080
-
 instanceDetails:
   name: Owncast
   title: Owncast Demo Server
