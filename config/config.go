@@ -203,7 +203,7 @@ func (c *config) GetOfflineContentPath() string {
 	}
 
 	// This is relative to the webroot, not the project root.
-	return "static/offline.m4"
+	return "static/offline.m4v"
 }
 
 //Load tries to load the configuration file
