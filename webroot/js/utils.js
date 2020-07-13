@@ -2,13 +2,9 @@
 const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 
 
-const MESSAGE_OFFLINE = 'Stream is offline.';
-const MESSAGE_ONLINE = 'Stream is online.';
-
 const URL_PREFIX = LOCAL_TEST ? 'https://goth.land' : ''; 
 const URL_STATUS = `${URL_PREFIX}/status`;
 const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
-
 const URL_WEBSOCKET = LOCAL_TEST 
   ? 'wss://goth.land/entry'
   : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
@@ -18,15 +14,16 @@ const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
 
 const URL_CONFIG = `${URL_PREFIX}/config`;
 
+const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
+
+
+// Webscoket setup
 const SOCKET_MESSAGE_TYPES = {
 	CHAT: 'CHAT',
 	PING: 'PING'
 }
 
-const KEY_USERNAME = 'owncast_username';
-const KEY_AVATAR = 'owncast_avatar';
-const KEY_CHAT_DISPLAYED = 'owncast_chat';
-
+// Video setup
 const VIDEO_ID = 'video';
 const VIDEO_OPTIONS = {
   autoplay: false,
@@ -45,12 +42,19 @@ const VIDEO_OPTIONS = {
   },
 };
 
-const URL_OWNCAST = 'https://github.com/gabek/owncast';
+// local storage keys for chat
+const KEY_USERNAME = 'owncast_username';
+const KEY_AVATAR = 'owncast_avatar';
+const KEY_CHAT_DISPLAYED = 'owncast_chat';
 
 const TIMER_STATUS_UPDATE = 5000; // ms
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
 const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+const MESSAGE_OFFLINE = 'Stream is offline.';
+const MESSAGE_ONLINE = 'Stream is online.';
+
 
 function getLocalStorage(key) {
   try {

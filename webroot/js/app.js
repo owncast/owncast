@@ -60,6 +60,7 @@ class Owncast {
       mounted: this.vueAppMounted,
     });
   }
+  // do all these things after Vue.js has mounted, else we'll get weird DOM issues.
   vueAppMounted = () => {
     this.getConfig();
     this.messagingInterface.init();
@@ -91,7 +92,7 @@ class Owncast {
     this.configData = data;
   }
 
-  // for messaging
+  // websocket for messaging
   setupWebsocket = () => {
     var ws = new WebSocket(URL_WEBSOCKET);  
     ws.onopen = (e) => {
@@ -130,6 +131,7 @@ class Owncast {
     this.messagingInterface.setWebsocket(this.websocket);
   };
 
+  // fetch /config data
   getConfig() {
     fetch(URL_CONFIG)
     .then(response => {
@@ -146,6 +148,7 @@ class Owncast {
     });
   }
 
+  // fetch stream status
   getStreamStatus = () => {
     fetch(URL_STATUS)
       .then(response => {
@@ -163,7 +166,7 @@ class Owncast {
       });
   };
 
-
+  // fetch content.md
   getExtraUserContent = (path) => {
     fetch(path)
       .then(response => {
@@ -181,6 +184,7 @@ class Owncast {
       });
   };
 
+  // handle UI things from stram status result
   updateStreamStatus = (status) => {
     // update UI
     this.vueApp.isOnline = status.online;
@@ -208,14 +212,16 @@ class Owncast {
     console.log(`>>> App Error: ${error}`)
   };
 
+  // basically hide video and show underlying "poster"
   handleOfflineMode = () => {
     this.streamIsOnline = false;
 
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
-    this.vueApp.isOnline = status.online;
+    this.vueApp.isOnline = false;
     // TODO: start offline timer to disable chat.
   };
 
+  // play video!
   handleOnlineMode = () => {
     this.player.startPlayer();
   }
