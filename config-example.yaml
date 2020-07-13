@@ -25,7 +25,6 @@ instanceDetails:
 videoSettings:
   # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
-  offlineContent: static/offline.m4v # Is displayed when a stream ends
 
   // Determine the bitrate of your stream variants.
   // See https://github.com/gabek/owncast/blob/master/doc/configuration.md#video-quality for details.

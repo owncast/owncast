@@ -197,6 +197,15 @@ func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
 	return 20
 }
 
+func (c *config) GetOfflineContentPath() string {
+	if c.VideoSettings.OfflineContent != "" {
+		return c.VideoSettings.OfflineContent
+	}
+
+	// This is relative to the webroot, not the project root.
+	return "static/offline.m4"
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)
