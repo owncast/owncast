@@ -26,8 +26,8 @@ videoSettings:
   # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
 
-  // Determine the bitrate of your stream variants.
-  // See https://github.com/gabek/owncast/blob/master/doc/configuration.md#video-quality for details.
+  # Determine the bitrate of your stream variants.
+  # See https://github.com/gabek/owncast/blob/master/doc/configuration.md#video-quality for details.
   streamQualities:
     - medium:
       videoBitrate: 800
