@@ -26,7 +26,6 @@ class Owncast {
   }
 
   init() {
-    this.getConfig();
     this.messagingInterface = new MessagingInterface();
     this.websocket = this.setupWebsocket();
 
@@ -62,6 +61,7 @@ class Owncast {
     });
   }
   vueAppMounted = () => {
+    this.getConfig();
     this.messagingInterface.init();
 
     this.player = new OwncastPlayer();
