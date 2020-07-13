@@ -60,10 +60,10 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe the public, web-accessible hls data directory
-	os.RemoveAll(config.Config.PublicHLSPath)
-	os.RemoveAll(config.Config.PrivateHLSPath)
-	os.MkdirAll(config.Config.PublicHLSPath, 0777)
-	os.MkdirAll(config.Config.PrivateHLSPath, 0777)
+	os.RemoveAll(config.Config.GetPublicHLSSavePath())
+	os.RemoveAll(config.Config.GetPrivateHLSSavePath())
+	os.MkdirAll(config.Config.GetPublicHLSSavePath(), 0777)
+	os.MkdirAll(config.Config.GetPrivateHLSSavePath(), 0777)
 
 	// Remove the previous thumbnail
 	os.Remove("webroot/thumbnail.jpg")
@@ -71,11 +71,11 @@ func resetDirectories() {
 	// Create private hls data dirs
 	if len(config.Config.VideoSettings.StreamQualities) != 0 {
 		for index := range config.Config.VideoSettings.StreamQualities {
-			os.MkdirAll(path.Join(config.Config.PrivateHLSPath, strconv.Itoa(index)), 0777)
-			os.MkdirAll(path.Join(config.Config.PublicHLSPath, strconv.Itoa(index)), 0777)
+			os.MkdirAll(path.Join(config.Config.GetPrivateHLSSavePath(), strconv.Itoa(index)), 0777)
+			os.MkdirAll(path.Join(config.Config.GetPublicHLSSavePath(), strconv.Itoa(index)), 0777)
 		}
 	} else {
-		os.MkdirAll(path.Join(config.Config.PrivateHLSPath, strconv.Itoa(0)), 0777)
-		os.MkdirAll(path.Join(config.Config.PublicHLSPath, strconv.Itoa(0)), 0777)
+		os.MkdirAll(path.Join(config.Config.GetPrivateHLSSavePath(), strconv.Itoa(0)), 0777)
+		os.MkdirAll(path.Join(config.Config.GetPublicHLSSavePath(), strconv.Itoa(0)), 0777)
 	}
 }

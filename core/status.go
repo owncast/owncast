@@ -34,9 +34,9 @@ func SetStreamAsConnected() {
 		_stats.SessionMaxViewerCount = 0
 	}
 
-	chunkPath := config.Config.PublicHLSPath
+	chunkPath := config.Config.GetPublicHLSSavePath()
 	if usingExternalStorage {
-		chunkPath = config.Config.PrivateHLSPath
+		chunkPath = config.Config.GetPrivateHLSSavePath()
 	}
 
 	ffmpeg.StartThumbnailGenerator(chunkPath, config.Config.VideoSettings.HighestQualityStreamIndex)

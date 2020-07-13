@@ -1,5 +1,3 @@
-publicHLSPath: webroot/hls
-privateHLSPath: hls
 webServerPort: 8080
 
 instanceDetails:

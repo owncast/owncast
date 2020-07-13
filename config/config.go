@@ -164,6 +164,22 @@ func (c *config) GetVideoSegmentSecondsLength() int {
 	return 4
 }
 
+func (c *config) GetPublicHLSSavePath() string {
+	if c.PublicHLSPath != "" {
+		return c.PublicHLSPath
+	}
+
+	return "webroot/hls"
+}
+
+func (c *config) GetPrivateHLSSavePath() string {
+	if c.PrivateHLSPath != "" {
+		return c.PrivateHLSPath
+	}
+
+	return "hls"
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)
