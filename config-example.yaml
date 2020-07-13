@@ -2,7 +2,6 @@ instanceDetails:
   name: Owncast
   title: Owncast Demo Server
   summary: "This is brief summary of whom you are or what your stream is. You can read more about it at owncast.online.  You can edit this description in your config file."
-  extraUserInfoFileName: "/static/content.md"
   
   logo:
     small: /img/logo128.png

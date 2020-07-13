@@ -207,5 +207,12 @@ func Load(filePath string, versionInfo string) error {
 
 	Config.VersionInfo = versionInfo
 
+	// Defaults
+
+	// This is relative to the webroot, not the project root.
+	if Config.InstanceDetails.ExtraInfoFile == "" {
+		Config.InstanceDetails.ExtraInfoFile = "/static/content.md"
+	}
+
 	return Config.verifySettings()
 }
