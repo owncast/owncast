@@ -243,8 +243,8 @@ h2 {
 }
 
 #username-avatar {
-  height: 1.75em;
-  width: 1.75em;
+  height: 2.1em;
+  width: 2.1em;
   margin-right: .5em;
 }
 #username-display {
@@ -293,7 +293,6 @@ h2 {
   background-position: center center;
   background-repeat: no-repeat;
   
-  /* cover? */
   background-size: 30%; 
 }
 
@@ -315,18 +314,24 @@ h2 {
   min-height: 100%
 }
 
-.video-js .vjs-big-play-button {
+/* .video-js .vjs-big-play-button {
   left: 50%;
   top: 50%;
   margin-left: -1.5em;
   margin-top: -0.75em;
-}
+} */
 .vjs-airplay .vjs-icon-placeholder::before {
   /* content: 'AP'; */
   content: url("../img/airplay.png");
 }
 
 
+#video {
+  visibility: hidden;
+}
+.online #video {
+  visibility: visible;
+}
 
 
 /* ************************************************8 */
@@ -363,6 +368,9 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+}
+#chat-container:disabled{
+  opacity: .5;
 }
 
 #messages-container {

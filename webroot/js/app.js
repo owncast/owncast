@@ -1,116 +1,23 @@
-
-// function setupApp() {  
-//   Vue.filter('plural', pluralize);
-
-//   window.app = new Vue({
-//     el: '#app-container',
-//     data: {
-//       streamStatus: MESSAGE_OFFLINE, // Default state.
-//       viewerCount: 0,
-//       sessionMaxViewerCount: 0,
-//       overallMaxViewerCount: 0,
-//       messages: [],
-//       isOnline: false,
-//       layout: 'desktop',
-
-//       // from config
-//       logo: null,
-//       socialHandles: [],
-//       streamerName: '',
-//       summary: '',
-//       tags: [],
-//       title: '',
-//       extraUserContent: '',
-//       appVersion: '',
-//     },
-//     watch: {
-//       messages: {
-//         deep: true,
-//         handler: function (newMessages, oldMessages) {
-//           if (newMessages.length !== oldMessages.length) {
-//             // jump to bottom
-//             jumpToBottom(appMessaging.scrollableMessagesContainer);
-//           }
-//         },
-//       },
-//     },
-//   });
-
-
-//   // init messaging interactions
-//   var appMessaging = new Messaging();
-//   appMessaging.init();
-
-//   const config = await new Config().init();
-//   app.logo = config.logo.small;
-//   app.socialHandles = config.socialHandles;
-//   app.streamerName = config.name;
-//   app.summary = config.summary && addNewlines(config.summary);
-//   app.tags =  config.tags;
-//   app.appVersion = config.version;
-//   app.title = config.title;
-//   window.document.title = config.title;
-
-//   getExtraUserContent(`${URL_PREFIX}${config.extraUserInfoFileName}`);
-// }
-
-// var websocketReconnectTimer;
-// function setupWebsocket() {
-//   clearTimeout(websocketReconnectTimer);
-
-//   var ws = new WebSocket(URL_WEBSOCKET);
-
-//   ws.onmessage = (e) => {
-//     const model = JSON.parse(e.data);
-
-//     // Ignore non-chat messages (such as keepalive PINGs)
-//     if (model.type !== SOCKET_MESSAGE_TYPES.CHAT) { return; }
-
-//     const message = new Message(model);
-    
-//     const existing = this.app.messages.filter(function (item) {
-//       return item.id === message.id;
-//     })
-    
-//     if (existing.length === 0 || !existing) {
-//       this.app.messages = [...this.app.messages, message];
-//     }
-//   }
-
-//   ws.onclose = (e) => {
-//     // connection closed, discard old websocket and create a new one in 5s
-//     ws = null;
-//     console.log('Websocket closed.');
-//     websocketReconnectTimer = setTimeout(setupWebsocket, 5000);
-//   }
-
-//   // On ws error just close the socket and let it re-connect again for now.
-//   ws.onerror = (e) => {
-//     console.log('Websocket error: ', e);
-//     ws.close();
-//   }
-
-//   window.ws = ws;
-// }
-
-// setupApp();
-
-// setupWebsocket();
-////////////////////////
 class Owncast {
   constructor() {
+    this.player;    
+
     this.websocket = null;
-    this.websocketReconnectTimer = null;
-    this.player;
-    this.playerRestartTimer = null;
     this.configData;
     this.vueApp;
     this.messagingInterface = null;
 
+    // timers
+    this.websocketReconnectTimer = null;
+    this.playerRestartTimer = null;
+    this.offlineTimer = null;
+    this.statusTimer = null;
+
+    // misc
     this.streamIsOnline = false;
     Vue.filter('plural', pluralize);
 
-    //bindings
+    // bindings
     this.handleNetworkingError = this.handleNetworkingError.bind(this);
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
@@ -120,9 +27,9 @@ class Owncast {
 
   init() {
     this.getConfig();
-    this.player = new Player({ castApp: this });
-  
     this.messagingInterface = new MessagingInterface();
+    this.websocket = this.setupWebsocket();
+
     this.vueApp = new Vue({
       el: '#app-container',
       data: {
@@ -151,15 +58,23 @@ class Owncast {
           handler: this.messagingInterface.onReceivedMessages,
         },
       },
+      mounted: this.vueAppMounted,
     });
-
-    this.websocket = this.setupWebsocket();
-    this.messagingInterface.init();
-    this.messagingInterface.setupWebsocket(this.websocket);
   }
+  vueAppMounted = () => {
+    this.messagingInterface.init();
+
+    this.player = new OwncastPlayer();
+    this.player.setupPlayerCallbacks({
+      onReady: this.handlePlayerReady,
+      onPlaying: this.handlePlayerPlaying,
+      onEnded: this.handlePlayerEnded,
+      onError: this.handlePlayerError,
+    });
+    this.player.init();
+  };
 
   setConfigData = (data) => {
-
     this.vueApp.appVersion = data.version;
     this.vueApp.logo = data.logo.small;
     this.vueApp.logoLarge = data.logo.large;
@@ -174,47 +89,45 @@ class Owncast {
     this.getExtraUserContent(`${URL_PREFIX}${data.extraUserInfoFileName}`);
 
     this.configData = data;
-
   }
 
+  // for messaging
   setupWebsocket = () => {
-    clearTimeout(this.websocketReconnectTimer);
-  
-    var ws = new WebSocket(URL_WEBSOCKET);
-  
+    var ws = new WebSocket(URL_WEBSOCKET);  
+    ws.onopen = (e) => {
+      if (this.websocketReconnectTimer) {
+        clearTimeout(this.websocketReconnectTimer);
+      }
+      this.messagingInterface.enableChat();
+    };
+    ws.onclose = (e) => {
+      // connection closed, discard old websocket and create a new one in 5s
+      this.websocket = null;
+      this.messagingInterface.disableChat();
+      this.handleNetworkingError('Websocket closed.');
+      this.websocketReconnectTimer = setTimeout(this.setupWebsocket, TIMER_WEBSOCKET_RECONNECT);
+    };
+    // On ws error just close the socket and let it re-connect again for now.
+    ws.onerror = e => {
+      this.handleNetworkingError(`Stream status: ${error}`);
+      ws.close();
+    };
     ws.onmessage = (e) => {
       const model = JSON.parse(e.data);
-  
       // Ignore non-chat messages (such as keepalive PINGs)
       if (model.type !== SOCKET_MESSAGE_TYPES.CHAT) {
-          return; 
-        }
-  
+        return; 
+      }
       const message = new Message(model);
-      
       const existing = this.vueApp.messages.filter(function (item) {
         return item.id === message.id;
       })
-      
       if (existing.length === 0 || !existing) {
         this.vueApp.messages = [...this.vueApp.messages, message];
       }
     };
-  
-    ws.onclose = (e) => {
-      // connection closed, discard old websocket and create a new one in 5s
-      ws = null;
-      console.log('Websocket closed.');
-      this.websocketReconnectTimer = setTimeout(this.setupWebsocket, 5000);
-    }
-  
-    // On ws error just close the socket and let it re-connect again for now.
-    ws.onerror = (e) => {
-      console.log('Websocket error: ', e);
-      ws.close();
-    }
-    return ws;
-    // this.websocket = ws;
+    this.websocket = ws;
+    this.messagingInterface.setWebsocket(this.websocket);
   };
 
   getConfig() {
@@ -229,7 +142,7 @@ class Owncast {
       this.setConfigData(json);
     })
     .catch(error => {
-      this.handleNetworkingError(error);
+      this.handleNetworkingError(`Fetch config: ${error}`);
     });
   }
 
@@ -246,7 +159,7 @@ class Owncast {
       })
       .catch(error => {
         this.handleOfflineMode();
-        this.handleNetworkingError(error);
+        this.handleNetworkingError(`Stream status: ${error}`);
       });
   };
 
@@ -264,54 +177,69 @@ class Owncast {
         this.vueApp.extraUserContent = descriptionHTML;
       })
       .catch(error => {
-        this.handleNetworkingError(error);
+        this.handleNetworkingError(`Fetch extra content: ${error}`);
       });
   };
 
+  updateStreamStatus = (status) => {
+    // update UI
+    this.vueApp.isOnline = status.online;
+    this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
+    this.vueApp.viewerCount = status.viewerCount;
+    this.vueApp.sessionMaxViewerCount = status.sessionMaxViewerCount;
+    this.vueApp.overallMaxViewerCount = status.overallMaxViewerCount;
 
+    if (status.online && !this.streamIsOnline) {
+      // stream has just come online.
+      this.handleOnlineMode();
+    } else if (!status.online && this.streamIsOnline) {
+      // stream has just gone offline.
+      this.handleOfflineMode();
+    }
+
+    if (status.online) {
+      this.player.setPoster();
+    }
+
+    this.streamIsOnline = status.online;
+  };
+  
   handleNetworkingError = (error) => {
     console.log(`>>> App Error: ${error}`)
   };
 
   handleOfflineMode = () => {
-    this.player.setPoster(false);
+    this.streamIsOnline = false;
+
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
-    this.vueApp.viewerCount = 0;
+    this.vueApp.isOnline = status.online;
+    // TODO: start offline timer to disable chat.
   };
 
+  handleOnlineMode = () => {
+    this.player.startPlayer();
+  }
+
+  // when videojs player is ready, start polling for stream
   handlePlayerReady = () => {
     this.getStreamStatus();
-    setInterval(this.getStreamStatus, 5000); // 
+    this.statusTimer = setInterval(this.getStreamStatus, TIMER_STATUS_UPDATE);
   };
+
 
   handlePlayerPlaying = () => {
-    if (this.playerRestartTimer) {
-      clearTimeout(this.playerRestartTimer);
-    }
+    // do something?
   };
 
-  updateStreamStatus = (status) => {
-    clearTimeout(this.playerRestartTimer);
-    if (status.online && !this.streamIsOnline) {
-      // The stream was offline, but now it's online.  Force start of playback after an arbitrary delay to make sure the stream has actual data ready to go.
-      // this.playerRestartTimer = setTimeout(this.player.restartPlayer, 3000);
 
-      // gw: should delay on server side. don't need settimeout.
-      this.player.restartPlayer()
+  handlePlayerEnded = () => {
+    // do something?
+    this.handleOfflineMode();
+  };
 
-
-    }
-  
-    this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
-  
-    this.vueApp.viewerCount = status.viewerCount;
-    this.vueApp.sessionMaxViewerCount = status.sessionMaxViewerCount;
-    this.vueApp.overallMaxViewerCount = status.overallMaxViewerCount;
-
-    this.streamIsOnline = status.online;
-
-    this.vueApp.isOnline = this.streamIsOnline;
-
-    this.player.setPoster(this.streamIsOnline);
-  }
+  handlePlayerError = () => {
+    // do something?
+    this.handleOfflineMode();
+    // stop timers?
+  };
 };

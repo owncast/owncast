@@ -30,15 +30,12 @@ class MessagingInterface {
 		this.websocket = null;
 		this.chatDisplayed = false;
 		this.username = '';
-
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
-
 	}
 
-	init = () => {
-
+	init() {
 		this.tagAppContainer = document.getElementById('app-container');
 		this.tagChatToggle = document.getElementById('chat-toggle');
 		this.tagUserInfoChanger = document.getElementById('user-info-change');
@@ -59,8 +56,7 @@ class MessagingInterface {
 
 		this.scrollableMessagesContainer = document.getElementById('messages-container');
 
-
-
+		// add events
 		this.tagChatToggle.addEventListener('click', this.handleChatToggle.bind(this));
 		this.textUserInfoDisplay.addEventListener('click', this.handleShowChangeNameForm.bind(this));
 		
@@ -70,8 +66,6 @@ class MessagingInterface {
 		this.inputChangeUserName.addEventListener('keydown', this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener('keydown', this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
-
-		console.log(this)
 
 		this.initLocalStates();
 
@@ -85,7 +79,7 @@ class MessagingInterface {
 		}
 	}
 
-	setupWebsocket(socket) {
+	setWebsocket(socket) {
 		this.websocket = socket;
 	}
 
@@ -98,11 +92,13 @@ class MessagingInterface {
 		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || false;
 		this.displayChat();
 	}
+
 	updateUsernameFields(username) {
 		this.tagUsernameDisplay.innerText = username;
 		this.inputChangeUserName.value = username;
 		this.inputMessageAuthor.value = username;
 	}
+
 	displayChat() {
 		if (this.chatDisplayed) {
 			this.tagAppContainer.classList.add('chat');
@@ -116,14 +112,15 @@ class MessagingInterface {
 
 	handleOrientationChange() {
 		var isPortrait = Math.abs(window.orientation % 180) === 0;
-
 		if(!isPortrait) {
 			if (document.body.clientWidth < 1024) {
 				this.tagAppContainer.classList.add('no-chat');
 				this.tagAppContainer.classList.add('landscape');
 			}
 		} else {
-			if (this.chatDisplayed) this.tagAppContainer.classList.remove('no-chat');
+			if (this.chatDisplayed) {
+				this.tagAppContainer.classList.remove('no-chat');
+			}
 			this.tagAppContainer.classList.remove('landscape');
 		}
 	}
@@ -137,6 +134,7 @@ class MessagingInterface {
 		}
 		this.displayChat();
 	}
+
 	handleShowChangeNameForm() {
 		this.textUserInfoDisplay.style.display = 'none';
 		this.tagUserInfoChanger.style.display = 'flex';
@@ -144,14 +142,15 @@ class MessagingInterface {
 			this.tagChatToggle.style.display = 'none';
 		}
 	}
+
 	handleHideChangeNameForm() {
 		this.textUserInfoDisplay.style.display = 'flex';
 		this.tagUserInfoChanger.style.display = 'none';
 		if (document.body.clientWidth < 640) {
 			this.tagChatToggle.style.display = 'inline-block';
-
 		}
 	}
+
 	handleUpdateUsername() {
 		var newValue = this.inputChangeUserName.value;
 		newValue = newValue.trim();
@@ -204,6 +203,7 @@ class MessagingInterface {
 			this.tagMessageFormWarning.innerText = '';
 		}
 	}
+
 	handleSubmitChatButton(event) {
 		var value = this.formMessageInput.value.trim();
 		if (value) {
@@ -214,6 +214,7 @@ class MessagingInterface {
 		event.preventDefault();
 		return false;
 	}
+
 	submitChat(content) {
 		if (!content) {
 			return;
@@ -225,7 +226,12 @@ class MessagingInterface {
 		});
 		const messageJSON = JSON.stringify(message);
 		if (this.websocket) {
-			this.websocket.send(messageJSON);
+			try {
+				this.websocket.send(messageJSON);
+			} catch(e) {
+				console.log('Message send error:', e);
+				return;
+			}
 		}
 
 		// clear out things.
@@ -233,6 +239,13 @@ class MessagingInterface {
 		this.tagMessageFormWarning.innerText = '';
 	}
 
+	disableChat() {
+		this.formMessageInput.disabled = true;
+		// also show "disabled" text/message somewhere.
+	}
+	enableChat() {
+		this.formMessageInput.disabled = false;
+	}
 	// handle Vue.js message display
 	onReceivedMessages = (newMessages, oldMessages) => {
 		if (newMessages.length !== oldMessages.length) {

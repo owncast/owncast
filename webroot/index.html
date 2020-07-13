@@ -15,8 +15,12 @@
 </head>
 
 <body class="bg-gray-300 text-gray-800">
-  <div id="app-container" v-cloak class="flex no-chat">
 
+  <div
+    id="app-container" 
+    class="flex no-chat"
+    v-bind:class="{ online: isOnline }"
+  >
     <div id="top-content">  
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 v-cloak class="flex text-gray-400">
@@ -66,14 +70,12 @@
           v-bind:style="{ backgroundImage: 'url(' + logoLarge + ')' }"
         >
           <video
-            class="video-js"
+            class="video-js vjs-big-play-centered"
             id="video"
             preload="auto"
             controls
-            autoplay
             playsinline
             muted
-            poster="./img/logo.png"
           >
           </video>
         </div>
@@ -102,7 +104,6 @@
       <owncast-footer v-if="layout === 'desktop'" v-bind:app-version="appVersion"></owncast-footer>
 
     </div>
-
 
     <section id="chat-container-wrap" class="flex">
 
@@ -166,23 +167,21 @@
 
 
     </section>
+
   </div>
 
-  <!-- <script src="js/status.js"></script> -->
+
   <script src="js/usercolors.js"></script>
-  <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
   <script src="js/social.js"></script>
   <script src="js/components.js"></script>
   <script src="js/player/player.js"></script>
   <script src="js/app.js"></script>
-  <!-- <script src="js/player/airplay.js"></script> -->
   <script>
     (function () {
       const app = new Owncast();
       app.init();
-
     })();
   </script>
 </body>

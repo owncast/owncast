@@ -1,68 +1,77 @@
 // https://docs.videojs.com/player
-class Player {
-  constructor({ castApp }) {
+
+class OwncastPlayer {
+  constructor() {
     window.VIDEOJS_NO_DYNAMIC_STYLE = true; // style override
 
-    this.castApp = castApp;
+    this.vjsPlayer = null;
 
-    const options = {
-      liveui: true,
-      sources: [{
-        src: URL_STREAM,
-        type: 'application/x-mpegURL',
-      }],
-    };
-    this.player = videojs(VIDEO_ID, options);
+    this.appPlayerReadyCallback = null;
+    this.appPlayerPlayingCallback = null;
+    this.appPlayerEndedCallback = null;
     this.addAirplay();
-    this.setupPlayerEventHandlers();
-
-    this.player.ready(this.handleReady.bind(this));
   }
-  resetPlayer() {
-    this.player.reset();
-    // this.player.src({ type: 'application/x-mpegURL', src: URL_STREAM });
-    // setVideoPoster(app.isOnline); // need?
-  }
-  handleReady() {
-    this.log('Ready')
-    // should   myPlayer.play() here
-    
-    if (this.castApp.handlePlayerReaFFdy) {
-      this.castApp.handlePlayerReady();
-    }
-    this.player.reset();
+  init() {
+    this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
+    this.vjsPlayer.ready(this.handleReady);
   }
 
-  restartPlayer = () => {
-    this.log('(re)Start player');
-    this.player.pause();
-    // this.player.src(player.src()); // Reload the same video
-    this.player.load();
-    this.player.play();
+  setupPlayerCallbacks(callbacks) {
+    const { onReady, onPlaying, onEnded, onError } = callbacks;
+
+    this.appPlayerReadyCallback = onReady;
+    this.appPlayerPlayingCallback = onPlaying;
+    this.appPlayerEndedCallback = onEnded;
+    this.appPlayerErrorCallback = onError;
+  }
+
+  // play
+  startPlayer = () => {
+    this.log('Start playing');
+
+    // this.vjsPlayer.load(); // causes errors? works without?
+    this.vjsPlayer.play();
   };
 
-  setPoster(online) {
-    const cachebuster = Math.round(new Date().getTime() / 1000);
-    const poster = online ? POSTER_THUMB + "?okhi=" + cachebuster : POSTER_DEFAULT;
-    this.player.poster(poster);
+  handleReady = () => {
+    this.log('on Ready');
+    this.vjsPlayer.on('error', this.handleError);
+    this.vjsPlayer.on('playing', this.handlePlaying);
+    this.vjsPlayer.on('ended', this.handleEnded);
+
+    if (this.appPlayerReadyCallback) {
+      // start polling
+      this.appPlayerReadyCallback();
+    }
   }
 
+  handlePlaying = () => {
+    this.log('on Playing');
+    if (this.appPlayerPlayingCallback) {
+      // start polling
+      this.appPlayerPlayingCallback();
+    }
+  }
 
-  setupPlayerEventHandlers() {
-    this.player.on('error', function (e) {
-      this.log('Error: ', e);
-    });
+  handleEnded = () => {
+    this.log('on Ended');
+    if (this.appPlayerEndedCallback) {
+      this.appPlayerEndedCallback();
+    }
+  }
 
-    this.player.on('ended', function (e) {
-      this.log('ended');
-      this.resetPlayer();
-    });
+  handleError = (e) => {
+    this.log(`on Error: ${JSON.stringify(e)}`);
+    if (this.appPlayerEndedCallback) {
+      this.appPlayerEndedCallback();
+    }
+  }
 
-    this.player.on('playing', (function (e) {
-      if (this.castApp.handlePlayerPlaying) {
-        this.castApp.handlePlayerPlaying();
-      }
-    }).bind(this));
+  setPoster = () => {
+    const cachebuster = Math.round(new Date().getTime() / 1000);
+    const poster = POSTER_THUMB + "?okhi=" + cachebuster;
+
+    this.vjsPlayer.poster(poster);
   }
 
   log(message) {
@@ -88,7 +97,7 @@ class Player {
           }
         });
     
-        var concreteButtonInstance = this.player.controlBar.addChild(new concreteButtonClass());
+        var concreteButtonInstance = this.vjsPlayer.controlBar.addChild(new concreteButtonClass());
         concreteButtonInstance.addClass("vjs-airplay");
       }
     });  
@@ -97,74 +106,3 @@ class Player {
 
 }
 
-
-  // // Create the player for the first time
-  // const player = videojs(VIDEO_ID, null, function () {
-  //   getStatus();
-  //   setInterval(getStatus, 5000);
-  //   setupPlayerEventHandlers();
-  // })
-
-  // player.ready(function () {
-  //   console.log('Player ready.')
-  //   resetPlayer(player);
-  // });
-
-  // function resetPlayer(player) {
-  //   player.reset();
-  //   player.src({ type: 'application/x-mpegURL', src: URL_STREAM });
-  //   setVideoPoster(app.isOnline);
-  // }
-
-  // function setupPlayerEventHandlers() {
-  //   const player = videojs(VIDEO_ID);
-
-  //   player.on('error', function (e) {
-  //     console.log("Player error: ", e);
-  //   })
-
-  //   // player.on('loadeddata', function (e) {
-  //   //   console.log("loadeddata");
-  //   // })
-
-  //   player.on('ended', function (e) {
-  //     console.log("ended");
-  //     resetPlayer(player);
-  //   })
-  //   //
-  //   // player.on('abort', function (e) {
-  //   //   console.log("abort");
-  //   // })
-  //   //
-  //   // player.on('durationchange', function (e) {
-  //   //   console.log("durationchange");
-  //   // })
-  //   //
-  //   // player.on('stalled', function (e) {
-  //   //   console.log("stalled");
-  //   // })
-  //   //
-  //   player.on('playing', function (e) {
-  //     if (playerRestartTimer) {
-  //       clearTimeout(playerRestartTimer);
-  //     }
-  //   })
-  //   //
-  //   // player.on('waiting', function (e) {
-  //   //   // console.log("waiting");
-  //   // })
-  // }
-
-  // restartPlayer() {
-  //   try {
-  //     const player = videojs(VIDEO_ID);
-  //     player.pause();
-  //     player.src(player.src()); // Reload the same video
-  //     player.load();
-  //     player.play();
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-
-  // }
-// }

@@ -28,11 +28,27 @@ const KEY_AVATAR = 'owncast_avatar';
 const KEY_CHAT_DISPLAYED = 'owncast_chat';
 
 const VIDEO_ID = 'video';
+const VIDEO_OPTIONS = {
+  autoplay: false,
+  liveui: true, // ?
+  sources: [{
+    src: URL_STREAM,
+    type: 'application/x-mpegURL',
+  }],
+  html5: {
+    nativeAudioTracks: false,
+    nativeVideoTracks: false,
+    hls: {
+      debug: true,
+      overrideNative: true
+    }
+  },
+};
 
 const URL_OWNCAST = 'https://github.com/gabek/owncast';
 
-const TIMER_STATUS_UPDATE = 3000; // ms
-const TIMER_WEBSOCKET_RECONNECT = 3000; // ms
+const TIMER_STATUS_UPDATE = 5000; // ms
+const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
 const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
