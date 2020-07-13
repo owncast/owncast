@@ -49,9 +49,11 @@ build() {
   cp -R static/ dist/${NAME}/static
   cp README.md dist/${NAME}
 
-  env CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build -ldflags "-X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -a -o dist/$NAME/owncast
-
   pushd dist/${NAME} >> /dev/null
+
+  CGO_ENABLED=1 ~/go/bin/xgo -ldflags "-X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/gabek/owncast
+  mv owncast-*-${ARCH} owncast
+
   zip -r -q -8 ../owncast-$NAME-$VERSION.zip .
   popd >> /dev/null
 
