@@ -31,7 +31,6 @@ instanceDetails:
       url: http://soundcloud.com/owncast
 
 videoSettings:
-  chunkLengthInSeconds: 4
   streamingKey: abc123
   offlineContent: static/offline.m4v # Is displayed when a stream ends
 

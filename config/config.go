@@ -155,6 +155,15 @@ func (c *config) GetFFMpegPath() string {
 	return path
 }
 
+func (c *config) GetVideoSegmentSecondsLength() int {
+	if c.VideoSettings.ChunkLengthInSeconds != 0 {
+		return c.VideoSettings.ChunkLengthInSeconds
+	}
+
+	// Default
+	return 4
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)

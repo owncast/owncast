@@ -190,7 +190,7 @@ func NewTranscoder() Transcoder {
 	transcoder.playlistOutputPath = config.Config.PublicHLSPath
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = config.Config.VideoSettings.ChunkLengthInSeconds
+	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
 
 	qualities := config.Config.VideoSettings.StreamQualities
 	if len(qualities) == 0 {
