@@ -112,7 +112,7 @@ func (t *Transcoder) getString() string {
 		// HLS Output
 		"-f", "hls",
 		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
-		"-hls_list_size", strconv.Itoa(config.Config.Files.MaxNumberInPlaylist), // Max # in variant playlist
+		"-hls_list_size", strconv.Itoa(config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		"-hls_flags", strings.Join(hlsOptionFlags, "+"), // Specific options in HLS generation
 

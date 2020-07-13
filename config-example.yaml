@@ -36,9 +36,6 @@ videoSettings:
       videoBitrate: 800
       encoderPreset: superfast
 
-files:
-  maxNumberInPlaylist: 30
-
 ipfs:
   enabled: false
   gateway: https://ipfs.io

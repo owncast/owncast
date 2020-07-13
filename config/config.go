@@ -189,6 +189,14 @@ func (c *config) GetPublicWebServerPort() int {
 	return 8080
 }
 
+func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
+	if c.Files.MaxNumberInPlaylist > 0 {
+		return c.Files.MaxNumberInPlaylist
+	}
+
+	return 20
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)
