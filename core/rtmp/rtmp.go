@@ -64,9 +64,8 @@ func Start() {
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
-			log.Infof("%+v\n", t.DebugFields())
+			log.Traceln("%+v\n", t.DebugFields())
 		}
-
 	}
 
 	if _isConnected {
@@ -107,10 +106,6 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		if err == io.EOF {
 			handleDisconnect(nc)
 			return
-		}
-
-		if pkt.Metadata != nil {
-			fmt.Println(string(pkt.Metadata))
 		}
 
 		if err := w.WritePacket(pkt); err != nil {
