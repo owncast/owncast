@@ -8,7 +8,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/mssola/user_agent"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
@@ -38,9 +37,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ua := user_agent.New(r.UserAgent())
-
-	if ua != nil && ua.Bot() && isIndexRequest {
+	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
 		handleScraperMetadataPage(w, r)
 		return
 	}
