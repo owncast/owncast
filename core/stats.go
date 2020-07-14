@@ -9,6 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
 )
@@ -66,9 +67,9 @@ func IsStreamConnected() bool {
 	}
 
 	// Kind of a hack.  It takes a handful of seconds between a RTMP connection and when HLS data is available.
-	// So account for that with an artificial buffer.
+	// So account for that with an artificial buffer of three segments.
 	timeSinceLastConnected := time.Since(_stats.LastConnectTime).Seconds()
-	if timeSinceLastConnected < 10 {
+	if timeSinceLastConnected < float64(config.Config.GetVideoSegmentSecondsLength()*3.0) {
 		return false
 	}
 
