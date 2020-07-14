@@ -64,7 +64,7 @@ func Start() {
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
-			log.Traceln("%+v\n", t.DebugFields())
+			log.Tracef("%+v\n", t.DebugFields())
 		}
 	}
 
