@@ -3,7 +3,7 @@ name: Build Owncast
 on:
   push:
     branches:
-      - github-actions
+      - master
   pull_request:
     branches: master
 
