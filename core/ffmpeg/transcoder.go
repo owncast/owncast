@@ -219,7 +219,7 @@ func (v *HLSVariant) getVariantString() string {
 	}
 
 	if v.framerate == 0 {
-		v.framerate = 25
+		v.framerate = 30
 	}
 
 	if v.framerate != 0 {
