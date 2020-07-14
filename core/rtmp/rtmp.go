@@ -10,8 +10,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/nareix/joy5/av"
 	"github.com/nareix/joy5/format/flv"
+	"github.com/nareix/joy5/format/flv/flvio"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
@@ -62,6 +62,13 @@ func Start() {
 }
 
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
+	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
+		if t.Type == flvio.TAG_AMF0 {
+			log.Infof("%+v\n", t.DebugFields())
+		}
+
+	}
+
 	if _isConnected {
 		log.Errorln("stream already running; can not overtake an existing stream")
 		nc.Close()
@@ -102,16 +109,9 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 			return
 		}
 
-		if pkt.Type == av.Metadata {
-			log.Traceln(string(pkt.Data))
+		if pkt.Metadata != nil {
+			fmt.Println(string(pkt.Metadata))
 		}
-
-		// if pkt.Type == av.H264 {
-		// 	nalus, _ := h264.SplitNALUs(pkt.Data)
-		// 	annexb := h264.JoinNALUsAnnexb(nalus)
-		// 	avcc := h264.JoinNALUsAVCC([][]byte{annexb})
-		// 	pkt.Data = avcc
-		// }
 
 		if err := w.WritePacket(pkt); err != nil {
 			panic(err)
