@@ -218,9 +218,14 @@ func (v *HLSVariant) getVariantString() string {
 		variantEncoderCommands = append(variantEncoderCommands, v.getScalingString())
 	}
 
+	if v.framerate == 0 {
+		v.framerate = 25
+	}
+
 	if v.framerate != 0 {
 		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-r %d", v.framerate))
-		// multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
+		// Insert a keyframe every 2 seconds.
+		// Multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
 		variantEncoderCommands = append(variantEncoderCommands, "-g "+strconv.Itoa(v.framerate*2))
 		variantEncoderCommands = append(variantEncoderCommands, "-keyint_min "+strconv.Itoa(v.framerate*2))
 	}
