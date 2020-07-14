@@ -1,0 +1,37 @@
+name: Build Owncast
+
+on:
+  push:
+    branches:
+      - github-actions
+  pull_request:
+    branches: master
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        go-version: [1.13.x, 1.14.x]
+        platform: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Install go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - uses: actions/checkout@v2
+        
+      - name: Build
+        run: go build -o owncast *.go
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: docker build . --tag test-docker-image-build
+
+      - name: Run Docker image
+        run: docker run -p 8080:8080 -p 1935:1935 test-docker-image-build
