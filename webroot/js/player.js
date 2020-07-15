@@ -9,7 +9,6 @@ class OwncastPlayer {
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
     this.appPlayerEndedCallback = null;
-    this.addAirplay();
 
     // bind all the things because safari
     this.startPlayer = this.startPlayer.bind(this);
@@ -20,6 +19,7 @@ class OwncastPlayer {
   }
   init() {
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
+    this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
   }
 

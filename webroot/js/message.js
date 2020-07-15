@@ -242,11 +242,15 @@ class MessagingInterface {
 	}
 
 	disableChat() {
-		this.formMessageInput.disabled = true;
+		if (this.formMessageInput) {
+			this.formMessageInput.disabled = true;
+		}
 		// also show "disabled" text/message somewhere.
 	}
 	enableChat() {
-		this.formMessageInput.disabled = false;
+		if (this.formMessageInput) {
+			this.formMessageInput.disabled = false;
+		}
 	}
 	// handle Vue.js message display
 	onReceivedMessages(newMessages, oldMessages) {

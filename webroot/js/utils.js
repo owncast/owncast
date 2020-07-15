@@ -2,7 +2,7 @@
 const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 
 
-const URL_PREFIX = LOCAL_TEST ? 'https://goth.land' : ''; 
+const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
 const URL_STATUS = `${URL_PREFIX}/status`;
 const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
 const URL_WEBSOCKET = LOCAL_TEST 
