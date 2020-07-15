@@ -30,8 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build Docker image
-        run: docker build . --tag test-docker-image-build
 
+      - name: Copy default config file
+        run: cp config-example.yaml config.yaml
+
+      - name: Build Docker image
+        run: docker build -t owncast .
+        
       - name: Run Docker image
-        run: docker run -p 8080:8080 -p 1935:1935 test-docker-image-build
+        run: docker run -p 8080:8080 -p 1935:1935 owncast
