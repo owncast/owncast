@@ -10,6 +10,13 @@ class OwncastPlayer {
     this.appPlayerPlayingCallback = null;
     this.appPlayerEndedCallback = null;
     this.addAirplay();
+
+    // bind all the things because safari
+    this.startPlayer = this.startPlayer.bind(this);
+    this.handleReady = this.handleReady.bind(this);
+    this.handlePlaying = this.handlePlaying.bind(this);
+    this.handleEnded = this.handleEnded.bind(this);
+    this.handleError = this.handleError.bind(this);
   }
   init() {
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
@@ -26,14 +33,14 @@ class OwncastPlayer {
   }
 
   // play
-  startPlayer = () => {
+  startPlayer() {
     this.log('Start playing');
 
     // this.vjsPlayer.load(); // causes errors? works without?
     this.vjsPlayer.play();
   };
 
-  handleReady = () => {
+  handleReady() {
     this.log('on Ready');
     this.vjsPlayer.on('error', this.handleError);
     this.vjsPlayer.on('playing', this.handlePlaying);
@@ -45,7 +52,7 @@ class OwncastPlayer {
     }
   }
 
-  handlePlaying = () => {
+  handlePlaying() {
     this.log('on Playing');
     if (this.appPlayerPlayingCallback) {
       // start polling
@@ -53,21 +60,21 @@ class OwncastPlayer {
     }
   }
 
-  handleEnded = () => {
+  handleEnded() {
     this.log('on Ended');
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
   }
 
-  handleError = (e) => {
+  handleError(e) {
     this.log(`on Error: ${JSON.stringify(e)}`);
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
   }
 
-  setPoster = () => {
+  setPoster() {
     const cachebuster = Math.round(new Date().getTime() / 1000);
     const poster = POSTER_THUMB + "?okhi=" + cachebuster;
 

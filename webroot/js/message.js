@@ -33,6 +33,8 @@ class MessagingInterface {
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
+
+		this.onReceivedMessages = this.onReceivedMessages.bind(this);
 	}
 
 	init() {
@@ -247,7 +249,7 @@ class MessagingInterface {
 		this.formMessageInput.disabled = false;
 	}
 	// handle Vue.js message display
-	onReceivedMessages = (newMessages, oldMessages) => {
+	onReceivedMessages(newMessages, oldMessages) {
 		if (newMessages.length !== oldMessages.length) {
 			// jump to bottom
 			jumpToBottom(this.scrollableMessagesContainer);

@@ -18,11 +18,20 @@ class Owncast {
     Vue.filter('plural', pluralize);
 
     // bindings
+    this.vueAppMounted = this.vueAppMounted.bind(this);
+    this.setConfigData = this.setConfigData.bind(this);
+    this.setupWebsocket = this.setupWebsocket.bind(this);
+    this.getStreamStatus = this.getStreamStatus.bind(this);
+    this.getExtraUserContent = this.getExtraUserContent.bind(this);
+    this.updateStreamStatus = this.updateStreamStatus.bind(this);
+    this.handleNetworkingError = this.handleNetworkingError.bind(this);
+    this.handleOfflineMode = this.handleOfflineMode.bind(this);
+    this.handleOnlineMode = this.handleOnlineMode.bind(this);
     this.handleNetworkingError = this.handleNetworkingError.bind(this);
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
-    this.handleOfflineMode = this.handleOfflineMode.bind(this);
-    this.getStreamStatus = this.getStreamStatus.bind(this);
+    this.handlePlayerEnded = this.handlePlayerEnded.bind(this);
+    this.handlePlayerError = this.handlePlayerError.bind(this);
   }
 
   init() {
@@ -61,7 +70,7 @@ class Owncast {
     });
   }
   // do all these things after Vue.js has mounted, else we'll get weird DOM issues.
-  vueAppMounted = () => {
+  vueAppMounted() {
     this.getConfig();
     this.messagingInterface.init();
 
@@ -75,7 +84,7 @@ class Owncast {
     this.player.init();
   };
 
-  setConfigData = (data) => {
+  setConfigData(data) {
     this.vueApp.appVersion = data.version;
     this.vueApp.logo = data.logo.small;
     this.vueApp.logoLarge = data.logo.large;
@@ -93,7 +102,7 @@ class Owncast {
   }
 
   // websocket for messaging
-  setupWebsocket = () => {
+  setupWebsocket() {
     var ws = new WebSocket(URL_WEBSOCKET);  
     ws.onopen = (e) => {
       if (this.websocketReconnectTimer) {
@@ -149,7 +158,7 @@ class Owncast {
   }
 
   // fetch stream status
-  getStreamStatus = () => {
+  getStreamStatus() {
     fetch(URL_STATUS)
       .then(response => {
         if (!response.ok) {
@@ -167,7 +176,7 @@ class Owncast {
   };
 
   // fetch content.md
-  getExtraUserContent = (path) => {
+  getExtraUserContent(path) {
     fetch(path)
       .then(response => {
         if (!response.ok) {
@@ -185,7 +194,7 @@ class Owncast {
   };
 
   // handle UI things from stram status result
-  updateStreamStatus = (status) => {
+  updateStreamStatus(status) {
     // update UI
     this.vueApp.isOnline = status.online;
     this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
@@ -208,12 +217,12 @@ class Owncast {
     this.streamIsOnline = status.online;
   };
   
-  handleNetworkingError = (error) => {
+  handleNetworkingError(error) {
     console.log(`>>> App Error: ${error}`)
   };
 
   // basically hide video and show underlying "poster"
-  handleOfflineMode = () => {
+  handleOfflineMode() {
     this.streamIsOnline = false;
 
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
@@ -222,28 +231,28 @@ class Owncast {
   };
 
   // play video!
-  handleOnlineMode = () => {
+  handleOnlineMode() {
     this.player.startPlayer();
   }
 
   // when videojs player is ready, start polling for stream
-  handlePlayerReady = () => {
+  handlePlayerReady() {
     this.getStreamStatus();
     this.statusTimer = setInterval(this.getStreamStatus, TIMER_STATUS_UPDATE);
   };
 
 
-  handlePlayerPlaying = () => {
+  handlePlayerPlaying() {
     // do something?
   };
 
 
-  handlePlayerEnded = () => {
+  handlePlayerEnded() {
     // do something?
     this.handleOfflineMode();
   };
 
-  handlePlayerError = () => {
+  handlePlayerError() {
     // do something?
     this.handleOfflineMode();
     // stop timers?
