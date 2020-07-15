@@ -31,9 +31,7 @@
   * [OBS & Streamlabs](#usage-with-obs)
   * [Restream](#usage-with-restream)
 * [Video storage and distribution options](#video-storage-options)
-* [Advanced usage](#advanced-usage)
 * [Building from source](#building-from-source)
-* [Roadmap](#roadmap)
 * [License](#license)
 * [Contact](#contact)
 
@@ -122,20 +120,6 @@ Enable experimental IPFS support and your video will be distributed through the 
 
 By editing the config file you can change what IPFS gateway server is used, and you can experiment with [trying different ones](https://ipfs.github.io/public-gateway-checker/).
 
-## Advanced Usage
-
-Here's a list of some things you can do to increase performance and make things nicer for yourself.
-
-* Get a faster server with more cores so you can [enable more bitrates at once](https://github.com/gabek/owncast/blob/master/doc/configuration.md).
-* Put a CDN in front of your server if you serve your files locally.  You can even get a free one like [Cloudflare](https://www.cloudflare.com/).  Then as more people view your stream people will no longer be downloading the stream directly from your server, but from the CDN instead, and it'll be faster.  This is also a good way to enable SSL for your site.
-
-* If you use S3 for storage, have it [expire files from your bucket after N days](https://github.com/gabek/owncast/blob/master/doc/S3.md) because old files sitting on your S3 bucket aren't useful to anybody.
-
-* Edit the `webroot/index.html` file and make it look however you want.
-
-* Add a `<video>` [tag](https://www.w3schools.com/tags/tag_video.asp) into your existing site and point it at your streaming server's `/hls/stream.m3u8` file and not use the built in web UI at all.
-
-* [Run Nginx](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/) as a proxy somewhere to support SSL or caching.
 
 ## Building from Source
 
@@ -146,21 +130,6 @@ Here's a list of some things you can do to increase performance and make things 
 1. `go run main.go` on the first run will download the required packages needed for the application to build.
 1. It will start running the same as in the above [Usage](#usage) instructions and you can point [OBS to your localhost](#usage-with-obs) instance of it.
 
-## Roadmap
-
-The following is a list of things, as long as there's some traction, I'd like to focus on.
-
-* Document more non-Amazon owned, but still S3 compatible storage.  There's so many services out there that are S3 compatible such as [Backblaze](https://www.backblaze.com/b2/cloud-storage-pricing.html), [Google Storage](https://cloud.google.com/storage/), [DreamHost DreamObjects](https://www.dreamhost.com/cloud/storage/), or you can [even run your own](https://min.io/).  So it's good to have options.
-
-* Add more functionality to chat UI such as moderation (deleting messages), emojis/gif search, etc.  You know, the stuff other services have and people are used to.
-
-* Collect viewer stats so you know how many people tuned into a stream.  People seem to care about that kind of thing.
-
-* Add a simple setup wizard that will generate the config file for you on the first run by asking simple questions.
-
-* A web Admin UI that allows you to edit settings and view stats, moderate chat, etc.
-
-* Add built-in Let's Encrypt support so SSL is enabled out of the box.
 
 <!-- LICENSE -->
 ## License
