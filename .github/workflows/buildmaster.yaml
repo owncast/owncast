@@ -38,4 +38,4 @@ jobs:
         run: docker build -t owncast .
         
       - name: Run Docker image
-        run: docker run -p 8080:8080 -p 1935:1935 owncast
+        run: docker run -d -p 8080:8080 -p 1935:1935 owncast
