@@ -24,6 +24,7 @@ type Transcoder struct {
 	hlsPlaylistLength    int
 	segmentLengthSeconds int
 	appendToStream       bool
+	ffmpegPath           string
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -104,7 +105,7 @@ func (t *Transcoder) getString() string {
 
 	ffmpegFlags := []string{
 		"cat", t.input, "|",
-		config.Config.GetFFMpegPath(),
+		t.ffmpegPath,
 		"-hide_banner",
 		"-i pipe:",
 		t.getVariantsString(),
@@ -112,7 +113,7 @@ func (t *Transcoder) getString() string {
 		// HLS Output
 		"-f", "hls",
 		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
-		"-hls_list_size", strconv.Itoa(config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()), // Max # in variant playlist
+		"-hls_list_size", strconv.Itoa(t.hlsPlaylistLength), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		"-hls_flags", strings.Join(hlsOptionFlags, "+"), // Specific options in HLS generation
 
@@ -175,6 +176,8 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 // NewTranscoder will return a new Transcoder, populated by the config
 func NewTranscoder() Transcoder {
 	transcoder := new(Transcoder)
+	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
+	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
 
 	var outputPath string
 	if config.Config.S3.Enabled || config.Config.IPFS.Enabled {
