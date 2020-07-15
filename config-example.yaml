@@ -5,7 +5,7 @@ instanceDetails:
   
   logo:
     small: /img/logo128.png
-    large: /img/logo128.png
+    large: /img/logo256.png
 
   tags:
     - music
