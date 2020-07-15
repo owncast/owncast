@@ -65,6 +65,7 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
+    this.setPoster();
   }
 
   handleError(e) {
@@ -78,7 +79,10 @@ class OwncastPlayer {
     const cachebuster = Math.round(new Date().getTime() / 1000);
     const poster = POSTER_THUMB + "?okhi=" + cachebuster;
 
-    this.vjsPlayer.poster(poster);
+    // only do this if video is paused, so no unnecessary img fetches
+    if (this.vjsPlayer.paused()) {
+      this.vjsPlayer.poster(poster);
+    }
   }
 
   log(message) {

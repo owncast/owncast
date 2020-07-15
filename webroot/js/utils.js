@@ -27,19 +27,11 @@ const SOCKET_MESSAGE_TYPES = {
 const VIDEO_ID = 'video';
 const VIDEO_OPTIONS = {
   autoplay: false,
-  liveui: true, // ?
+  liveui: true, // try this
   sources: [{
     src: URL_STREAM,
     type: 'application/x-mpegURL',
   }],
-  html5: {
-    nativeAudioTracks: false,
-    nativeVideoTracks: false,
-    hls: {
-      debug: true,
-      overrideNative: true
-    }
-  },
 };
 
 // local storage keys for chat
