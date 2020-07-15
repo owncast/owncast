@@ -243,12 +243,15 @@ class MessagingInterface {
 
 	disableChat() {
 		if (this.formMessageInput) {
+			console.log("====disable chat" , this.formMessageInput)
 			this.formMessageInput.disabled = true;
 		}
 		// also show "disabled" text/message somewhere.
 	}
 	enableChat() {
 		if (this.formMessageInput) {
+			console.log("====enable chat" , this.formMessageInput)
+
 			this.formMessageInput.disabled = false;
 		}
 	}

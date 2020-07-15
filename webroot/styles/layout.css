@@ -314,12 +314,6 @@ h2 {
   min-height: 100%
 }
 
-/* .video-js .vjs-big-play-button {
-  left: 50%;
-  top: 50%;
-  margin-left: -1.5em;
-  margin-top: -0.75em;
-} */
 .vjs-airplay .vjs-icon-placeholder::before {
   /* content: 'AP'; */
   content: url("../img/airplay.png");
@@ -369,9 +363,7 @@ h2 {
   flex-direction: column;
   justify-content: flex-end;
 }
-#chat-container:disabled{
-  opacity: .5;
-}
+
 
 #messages-container {
   overflow: auto;
@@ -390,6 +382,9 @@ h2 {
 }
 #message-body-form {
   font-size: 1em;
+}
+#message-body-form:disabled{
+  opacity: .5;
 }
 #message-form-actions {
   flex-direction: row;

@@ -12,6 +12,7 @@ class Owncast {
     this.playerRestartTimer = null;
     this.offlineTimer = null;
     this.statusTimer = null;
+    this.disableChatTimer = null;
 
     // misc
     this.streamIsOnline = false;
@@ -108,7 +109,6 @@ class Owncast {
       if (this.websocketReconnectTimer) {
         clearTimeout(this.websocketReconnectTimer);
       }
-      this.messagingInterface.enableChat();
     };
     ws.onclose = (e) => {
       // connection closed, discard old websocket and create a new one in 5s
@@ -227,12 +227,18 @@ class Owncast {
 
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
     this.vueApp.isOnline = false;
+
+    this.disableChatTimer = setTimeout(this.messagingInterface.disableChat, TIMER_DISABLE_CHAT_AFTER_OFFLINE);
     // TODO: start offline timer to disable chat.
   };
 
   // play video!
   handleOnlineMode() {
+    console.log("=== online mode")
     this.player.startPlayer();
+    clearTimeout(this.disableChatTimer);
+    this.disableChatTimer = null;
+    this.messagingInterface.enableChat();
   }
 
   // when videojs player is ready, start polling for stream
