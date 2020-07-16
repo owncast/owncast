@@ -16,7 +16,7 @@ class Owncast {
 
     // misc
     this.streamIsOnline = false;
-    this.lastDisconnectTime = 0;
+    this  .lastDisconnectTime = 0;
 
     Vue.filter('plural', pluralize);
 
@@ -197,15 +197,15 @@ class Owncast {
 
   // handle UI things from stream status result
   updateStreamStatus(status) {
+    console.log("======status", status.online ,status,)
+
     // update UI
-    this.vueApp.isOnline = status.online;
     this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
     this.vueApp.viewerCount = status.viewerCount;
     this.vueApp.sessionMaxViewerCount = status.sessionMaxViewerCount;
     this.vueApp.overallMaxViewerCount = status.overallMaxViewerCount;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
-    this.streamIsOnline = status.online;
 
     if (status.online && !this.streamIsOnline) {
       // stream has just come online.
@@ -216,7 +216,10 @@ class Owncast {
     }
 
     if (status.online) {
-      this.player.setPoster();
+      // only do this if video is paused, so no unnecessary img fetches
+      if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
+        this.player.setPoster();
+      }
     }
   };
   
@@ -227,9 +230,8 @@ class Owncast {
   // basically hide video and show underlying "poster"
   handleOfflineMode() {
     this.streamIsOnline = false;
-
-    this.vueApp.streamStatus = MESSAGE_OFFLINE;
     this.vueApp.isOnline = false;
+    this.vueApp.streamStatus = MESSAGE_OFFLINE;
 
     if (this.lastDisconnectTime) {
       const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.lastDisconnectTime));
@@ -240,7 +242,10 @@ class Owncast {
 
   // play video!
   handleOnlineMode() {
-    console.log("=== online mode")
+    this.streamIsOnline = true;
+    this.vueApp.isOnline = true;
+    this.vueApp.streamStatus = MESSAGE_ONLINE;
+
     this.player.startPlayer();
     clearTimeout(this.disableChatTimer);
     this.disableChatTimer = null;

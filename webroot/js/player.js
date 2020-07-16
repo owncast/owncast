@@ -37,6 +37,7 @@ class OwncastPlayer {
     this.log('Start playing');
 
     // this.vjsPlayer.load(); // causes errors? works without?
+    this.vjsPlayer.src(VIDEO_SRC);
     this.vjsPlayer.play();
   };
 
@@ -79,10 +80,7 @@ class OwncastPlayer {
     const cachebuster = Math.round(new Date().getTime() / 1000);
     const poster = POSTER_THUMB + "?okhi=" + cachebuster;
 
-    // only do this if video is paused, so no unnecessary img fetches
-    if (this.vjsPlayer.paused()) {
-      this.vjsPlayer.poster(poster);
-    }
+    this.vjsPlayer.poster(poster);
   }
 
   log(message) {

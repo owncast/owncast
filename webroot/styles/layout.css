@@ -321,10 +321,13 @@ h2 {
 
 
 #video {
+  transition: opacity .5s;
   visibility: hidden;
+  opacity: 0;
 }
 .online #video {
   visibility: visible;
+  opacity: 1;
 }
 
 

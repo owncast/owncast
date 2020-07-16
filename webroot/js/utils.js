@@ -25,13 +25,14 @@ const SOCKET_MESSAGE_TYPES = {
 
 // Video setup
 const VIDEO_ID = 'video';
+const VIDEO_SRC = {
+  src: URL_STREAM,
+  type: 'application/x-mpegURL',
+};
 const VIDEO_OPTIONS = {
   autoplay: false,
   liveui: true, // try this
-  sources: [{
-    src: URL_STREAM,
-    type: 'application/x-mpegURL',
-  }],
+  sources: [VIDEO_SRC],
 };
 
 // local storage keys for chat
