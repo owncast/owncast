@@ -1,0 +1,16 @@
+config:
+  target: 'http://localhost:8080/'
+  
+  ensure:
+    p95: 200
+    maxErrorRate: 1
+
+  phases:
+    - duration: 60
+      arrivalRate: 20
+scenarios:
+  - flow:
+    - get:
+        url: "/hls/stream.m3u8"
+    - get:
+        url: "/status"

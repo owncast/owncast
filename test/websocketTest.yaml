@@ -1,0 +1,24 @@
+config:
+  target: "ws://localhost:8080/entry"
+  processor: "./websocketTest.js"
+
+  ensure:
+    p95: 200
+    maxErrorRate: 1
+
+  phases:
+    - duration: 30
+      arrivalRate: 10
+  ws:
+    subprotocols:
+      - json
+    headers:
+      Connection: Upgrade
+      Origin: http://localhost:8080
+      Sec-WebSocket-Version: 13
+scenarios:
+  - engine: "ws"
+    flow:
+    - function: "createTestMessageObject"
+    - send: "{{ data }}"
+    - think: 5
