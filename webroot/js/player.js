@@ -36,7 +36,7 @@ class OwncastPlayer {
   startPlayer() {
     this.log('Start playing');
     this.vjsPlayer.src(VIDEO_SRC);
-    this.vjsPlayer.play();
+    // this.vjsPlayer.play();
   };
 
   handleReady() {
