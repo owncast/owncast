@@ -15,18 +15,19 @@ import (
 var Config *config
 
 type config struct {
-	IPFS                ipfs            `yaml:"ipfs"`
-	PublicHLSPath       string          `yaml:"publicHLSPath"`
-	PrivateHLSPath      string          `yaml:"privateHLSPath"`
-	VideoSettings       videoSettings   `yaml:"videoSettings"`
-	Files               files           `yaml:"files"`
-	FFMpegPath          string          `yaml:"ffmpegPath"`
-	WebServerPort       int             `yaml:"webServerPort"`
-	S3                  s3              `yaml:"s3"`
-	InstanceDetails     InstanceDetails `yaml:"instanceDetails"`
-	VersionInfo         string          `yaml:"-"`
-	DisableWebFeatures  bool            `yaml:"disableWebFeatures"`
-	EnableDebugFeatures bool            `yaml:"-"`
+	ChatDatabaseFilePath string          `yaml:"chatDatabaseFile"`
+	DisableWebFeatures   bool            `yaml:"disableWebFeatures"`
+	EnableDebugFeatures  bool            `yaml:"-"`
+	FFMpegPath           string          `yaml:"ffmpegPath"`
+	Files                files           `yaml:"files"`
+	IPFS                 ipfs            `yaml:"ipfs"`
+	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
+	PrivateHLSPath       string          `yaml:"privateHLSPath"`
+	PublicHLSPath        string          `yaml:"publicHLSPath"`
+	S3                   s3              `yaml:"s3"`
+	VersionInfo          string          `yaml:"-"`
+	VideoSettings        videoSettings   `yaml:"videoSettings"`
+	WebServerPort        int             `yaml:"webServerPort"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.

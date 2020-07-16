@@ -9,6 +9,8 @@ import (
 
 //Setup sets up the chat server
 func Setup(listener models.ChatListener) {
+	setupPersistence()
+
 	messages := []models.ChatMessage{}
 	clients := make(map[string]*Client)
 	addCh := make(chan *Client)

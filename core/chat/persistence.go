@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
 	_ "github.com/mattn/go-sqlite3"
@@ -13,11 +14,11 @@ import (
 
 var _db *sql.DB
 
-func init() {
-	file := "./chat.db"
+func setupPersistence() {
+	file := config.Config.ChatDatabaseFilePath
 	// Create empty DB file if it doesn't exist.
 	if !utils.DoesFileExists(file) {
-		log.Traceln("Creating new chat history database...")
+		log.Traceln("Creating new chat history database at", file)
 
 		_, err := os.Create(file)
 		if err != nil {
