@@ -25,36 +25,42 @@ class Message {
 
 
 
-class Messaging {
+class MessagingInterface {
 	constructor() {
+		this.websocket = null;
 		this.chatDisplayed = false;
 		this.username = '';
-
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
 
-		this.tagAppContainer = document.querySelector('#app-container');
-		this.tagChatToggle = document.querySelector('#chat-toggle');
-		this.tagUserInfoChanger = document.querySelector('#user-info-change');
-		this.tagUsernameDisplay = document.querySelector('#username-display');
-		this.tagMessageFormWarning = document.querySelector('#message-form-warning');
-
-		this.inputMessageAuthor = document.querySelector('#self-message-author');
-		this.inputChangeUserName = document.querySelector('#username-change-input'); 
-
-		this.btnUpdateUserName = document.querySelector('#button-update-username'); 
-		this.btnCancelUpdateUsername = document.querySelector('#button-cancel-change'); 
-		this.btnSubmitMessage = document.querySelector('#button-submit-message');
-
-		this.formMessageInput = document.querySelector('#message-body-form');
-
-		this.imgUsernameAvatar = document.querySelector('#username-avatar');
-		this.textUserInfoDisplay = document.querySelector('#user-info-display');
-
-		this.scrollableMessagesContainer = document.querySelector('#messages-container');
+		this.onReceivedMessages = this.onReceivedMessages.bind(this);
+		this.disableChat = this.disableChat.bind(this);
+		this.enableChat = this.enableChat.bind(this);
 	}
+
 	init() {
+		this.tagAppContainer = document.getElementById('app-container');
+		this.tagChatToggle = document.getElementById('chat-toggle');
+		this.tagUserInfoChanger = document.getElementById('user-info-change');
+		this.tagUsernameDisplay = document.getElementById('username-display');
+		this.tagMessageFormWarning = document.getElementById('message-form-warning');
+
+		this.inputMessageAuthor = document.getElementById('self-message-author');
+		this.inputChangeUserName = document.getElementById('username-change-input'); 
+
+		this.btnUpdateUserName = document.getElementById('button-update-username'); 
+		this.btnCancelUpdateUsername = document.getElementById('button-cancel-change'); 
+		this.btnSubmitMessage = document.getElementById('button-submit-message');
+
+		this.formMessageInput = document.getElementById('message-body-form');
+
+		this.imgUsernameAvatar = document.getElementById('username-avatar');
+		this.textUserInfoDisplay = document.getElementById('user-info-display');
+
+		this.scrollableMessagesContainer = document.getElementById('messages-container');
+
+		// add events
 		this.tagChatToggle.addEventListener('click', this.handleChatToggle.bind(this));
 		this.textUserInfoDisplay.addEventListener('click', this.handleShowChangeNameForm.bind(this));
 		
@@ -64,19 +70,21 @@ class Messaging {
 		this.inputChangeUserName.addEventListener('keydown', this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener('keydown', this.handleMessageInputKeydown.bind(this));
 		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
+
 		this.initLocalStates();
 
 		if (hasTouchScreen()) {
 			this.scrollableMessagesContainer = document.body;
 			this.tagAppContainer.classList.add('touch-screen');
-			window.app.layout = 'touch';
 			window.onorientationchange = this.handleOrientationChange.bind(this);
 			this.handleOrientationChange();
 		} else {
 			this.tagAppContainer.classList.add('desktop');
-			window.app.layout = 'desktop';
-
 		}
+	}
+
+	setWebsocket(socket) {
+		this.websocket = socket;
 	}
 
 	initLocalStates() {
@@ -88,11 +96,13 @@ class Messaging {
 		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || false;
 		this.displayChat();
 	}
+
 	updateUsernameFields(username) {
 		this.tagUsernameDisplay.innerText = username;
 		this.inputChangeUserName.value = username;
 		this.inputMessageAuthor.value = username;
 	}
+
 	displayChat() {
 		if (this.chatDisplayed) {
 			this.tagAppContainer.classList.add('chat');
@@ -106,14 +116,15 @@ class Messaging {
 
 	handleOrientationChange() {
 		var isPortrait = Math.abs(window.orientation % 180) === 0;
-
 		if(!isPortrait) {
 			if (document.body.clientWidth < 1024) {
 				this.tagAppContainer.classList.add('no-chat');
 				this.tagAppContainer.classList.add('landscape');
 			}
 		} else {
-			if (this.chatDisplayed) this.tagAppContainer.classList.remove('no-chat');
+			if (this.chatDisplayed) {
+				this.tagAppContainer.classList.remove('no-chat');
+			}
 			this.tagAppContainer.classList.remove('landscape');
 		}
 	}
@@ -127,6 +138,7 @@ class Messaging {
 		}
 		this.displayChat();
 	}
+
 	handleShowChangeNameForm() {
 		this.textUserInfoDisplay.style.display = 'none';
 		this.tagUserInfoChanger.style.display = 'flex';
@@ -134,14 +146,15 @@ class Messaging {
 			this.tagChatToggle.style.display = 'none';
 		}
 	}
+
 	handleHideChangeNameForm() {
 		this.textUserInfoDisplay.style.display = 'flex';
 		this.tagUserInfoChanger.style.display = 'none';
 		if (document.body.clientWidth < 640) {
 			this.tagChatToggle.style.display = 'inline-block';
-
 		}
 	}
+
 	handleUpdateUsername() {
 		var newValue = this.inputChangeUserName.value;
 		newValue = newValue.trim();
@@ -194,6 +207,7 @@ class Messaging {
 			this.tagMessageFormWarning.innerText = '';
 		}
 	}
+
 	handleSubmitChatButton(event) {
 		var value = this.formMessageInput.value.trim();
 		if (value) {
@@ -204,6 +218,7 @@ class Messaging {
 		event.preventDefault();
 		return false;
 	}
+
 	submitChat(content) {
 		if (!content) {
 			return;
@@ -214,12 +229,36 @@ class Messaging {
 			image: this.imgUsernameAvatar.src,
 		});
 		const messageJSON = JSON.stringify(message);
-		if (window && window.ws) {
-			window.ws.send(messageJSON);
+		if (this.websocket) {
+			try {
+				this.websocket.send(messageJSON);
+			} catch(e) {
+				console.log('Message send error:', e);
+				return;
+			}
 		}
 
 		// clear out things.
 		this.formMessageInput.value = '';
 		this.tagMessageFormWarning.innerText = '';
+	}
+
+	disableChat() {
+		if (this.formMessageInput) {
+			this.formMessageInput.disabled = true;
+		}
+		// also show "disabled" text/message somewhere.
+	}
+	enableChat() {
+		if (this.formMessageInput) {
+			this.formMessageInput.disabled = false;
+		}
+	}
+	// handle Vue.js message display
+	onReceivedMessages(newMessages, oldMessages) {
+		if (newMessages.length !== oldMessages.length) {
+			// jump to bottom
+			jumpToBottom(this.scrollableMessagesContainer);
+		}
 	}
 }

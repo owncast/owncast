@@ -243,8 +243,8 @@ h2 {
 }
 
 #username-avatar {
-  height: 1.75em;
-  width: 1.75em;
+  height: 2.1em;
+  width: 2.1em;
   margin-right: .5em;
 }
 #username-display {
@@ -290,6 +290,10 @@ h2 {
   height: calc(var(--video-container-height));
   width: 100%;
   margin-top: var(--header-height);
+  background-position: center center;
+  background-repeat: no-repeat;
+  
+  background-size: 30%; 
 }
 
 .owncast-video-container {
@@ -310,18 +314,19 @@ h2 {
   min-height: 100%
 }
 
-.video-js .vjs-big-play-button {
-  left: 50%;
-  top: 50%;
-  margin-left: -1.5em;
-  margin-top: -0.75em;
-}
 .vjs-airplay .vjs-icon-placeholder::before {
   /* content: 'AP'; */
   content: url("../img/airplay.png");
 }
 
 
+#video {
+  transition: opacity .5s;
+  opacity: 0;
+}
+.online #video {
+  opacity: 1;
+}
 
 
 /* ************************************************8 */
@@ -360,6 +365,7 @@ h2 {
   justify-content: flex-end;
 }
 
+
 #messages-container {
   overflow: auto;
   padding: 1em 0;
@@ -377,6 +383,9 @@ h2 {
 }
 #message-body-form {
   font-size: 1em;
+}
+#message-body-form:disabled{
+  opacity: .5;
 }
 #message-form-actions {
   flex-direction: row;

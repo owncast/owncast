@@ -1,14 +1,10 @@
 
-const LOCAL_TEST = false;
+const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 
 
-const MESSAGE_OFFLINE = 'Stream is offline.';
-const MESSAGE_ONLINE = 'Stream is online.';
-
-const URL_PREFIX = LOCAL_TEST ? 'https://goth.land' : ''; 
+const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
 const URL_STATUS = `${URL_PREFIX}/status`;
 const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
-
 const URL_WEBSOCKET = LOCAL_TEST 
   ? 'wss://goth.land/entry'
   : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
@@ -16,18 +12,42 @@ const URL_WEBSOCKET = LOCAL_TEST
 const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
 const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
 
+const URL_CONFIG = `${URL_PREFIX}/config`;
+
+const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
+
+
+// Webscoket setup
 const SOCKET_MESSAGE_TYPES = {
 	CHAT: 'CHAT',
 	PING: 'PING'
 }
 
+// Video setup
+const VIDEO_ID = 'video';
+const VIDEO_SRC = {
+  src: URL_STREAM,
+  type: 'application/x-mpegURL',
+};
+const VIDEO_OPTIONS = {
+  autoplay: false,
+  liveui: true, // try this
+  sources: [VIDEO_SRC],
+};
+
+// local storage keys for chat
 const KEY_USERNAME = 'owncast_username';
 const KEY_AVATAR = 'owncast_avatar';
 const KEY_CHAT_DISPLAYED = 'owncast_chat';
 
-const VIDEO_ID = 'video';
+const TIMER_STATUS_UPDATE = 5000; // ms
+const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
+const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
 
-const URL_OWNCAST = 'https://github.com/gabek/owncast';
+const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+const MESSAGE_OFFLINE = 'Stream is offline.';
+const MESSAGE_ONLINE = 'Stream is online.';
 
 
 function getLocalStorage(key) {
@@ -121,26 +141,3 @@ function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
 }
 
-function setVideoPoster(online) {
-  const player = videojs(VIDEO_ID);
-  var cachebuster = Math.round(new Date().getTime() / 1000);
-  const poster = online ? POSTER_THUMB + "?okhi=" + cachebuster : POSTER_DEFAULT;
-  player.poster(poster);
-}
-
-function getExtraUserContent(path) {
-  fetch(path)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok ${response.ok}`);
-      }
-      return response.text();
-    })
-    .then(text => {
-      const descriptionHTML = new showdown.Converter().makeHtml(text);
-      app.extraUserContent = descriptionHTML;
-    })
-    .catch(error => {
-      console.log("Error", error);
-    });
-}
