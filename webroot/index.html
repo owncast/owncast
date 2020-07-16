@@ -16,11 +16,7 @@
 
 <body class="bg-gray-300 text-gray-800">
 
-  <div
-    id="app-container" 
-    class="flex no-chat"
-    v-bind:class="{ online: isOnline }"
-  >
+  <div id="app-container" class="flex no-chat">
     <div id="top-content">  
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 v-cloak class="flex text-gray-400">
@@ -68,6 +64,7 @@
           id="video-container"
           class="flex owncast-video-container bg-black"
           v-bind:style="{ backgroundImage: 'url(' + logoLarge + ')' }"
+          v-bind:class="{ online: isOnline }"
         >
           <video
             class="video-js vjs-big-play-centered"
