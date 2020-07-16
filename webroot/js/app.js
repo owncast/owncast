@@ -16,7 +16,7 @@ class Owncast {
 
     // misc
     this.streamIsOnline = false;
-    this.status.lastDisconnectTime = 0;
+    this.lastDisconnectTime = 0;
 
     Vue.filter('plural', pluralize);
 
@@ -212,7 +212,7 @@ class Owncast {
       this.handleOnlineMode();
     } else if (!status.online && this.streamIsOnline) {
       // stream has just gone offline.
-      this.handleOfflineMode();
+      // this.handleOfflineMode();
     }
 
     if (status.online) {
