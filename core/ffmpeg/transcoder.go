@@ -146,7 +146,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 	}
 
 	if quality.VideoBitrate == 0 {
-		variant.isVideoPassthrough = true
+		quality.VideoBitrate = 1000
 	}
 
 	// If the video is being passed through then
@@ -202,6 +202,7 @@ func NewTranscoder() Transcoder {
 		defaultQuality.EncoderPreset = "superfast"
 		qualities = append(qualities, defaultQuality)
 	}
+
 	for index, quality := range qualities {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
