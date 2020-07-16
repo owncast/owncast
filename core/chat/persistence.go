@@ -67,7 +67,8 @@ func addMessage(message models.ChatMessage) {
 func getChatHistory() []models.ChatMessage {
 	history := make([]models.ChatMessage, 0)
 
-	rows, err := _db.Query("SELECT * FROM messages WHERE visible = 1")
+	// Get all messages sent within the past day
+	rows, err := _db.Query("SELECT * FROM messages WHERE visible = 1 AND datetime(timestamp) >=datetime('now', '-1 Day')")
 	if err != nil {
 		log.Fatal(err)
 	}
