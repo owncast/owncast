@@ -244,7 +244,6 @@ class MessagingInterface {
 	}
 
 	disableChat() {
-		console.log("--dsiable chat?",this.formMessageInput)
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
 		}
