@@ -1,5 +1,6 @@
 <!-- vscode-markdown-toc -->
 * [Who is this for?](#Whoisthisfor)
+* [Who and what is this not for?](#Whoisthisnotfor)
 * [Why would I use this instead of Twitch, Facebook Live, or YouTube live?](#WhywouldIusethisinsteadofTwitchFacebookLiveorYouTubelive)
 * [What can I customize?](#WhatcanIcustomize)
 * [What kind of server do I need to run Owncast?](#WhatkindofserverdoIneedtorunOwncast)
@@ -15,8 +16,11 @@
 
 ##  1. <a name='Whoisthisfor'></a>Who is this for?
 
-Owncast is for people who are live streamers, or who wants to host live streams for others.
+Owncast is for people who are live streamers, or who wants to host live streams for others.  It's a _"one to many"_ broadcast much like Twitch, Facebook Live, YouTube Live, etc.
 
+##  2. <a name='Whoisthisnotfor'></a>Who or what is this not for?
+
+Owncast is not for video conferencing or any use case where multiple people are wanting to see video of each other.  It's also not a good choice if you have tight real-time requirements as HLS video has inherent delays.
 
 ##  2. <a name='WhywouldIusethisinsteadofTwitchFacebookLiveorYouTubelive'></a>Why would I use this instead of Twitch, Facebook Live, or YouTube live?
 

@@ -26,7 +26,7 @@ var (
 func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 	_storage = storage
 
-	pathToMonitor := config.Config.PrivateHLSPath
+	pathToMonitor := config.Config.GetPrivateHLSSavePath()
 
 	// Create at least one structure to store the segments for the different stream variants
 	variants = make([]models.Variant, len(config.Config.VideoSettings.StreamQualities))
@@ -66,8 +66,8 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 				// fmt.Println(event.Op, relativePath)
 
 				// Handle updates to the master playlist by copying it to webroot
-				if relativePath == path.Join(config.Config.PrivateHLSPath, "stream.m3u8") {
-					utils.Copy(event.Path, path.Join(config.Config.PublicHLSPath, "stream.m3u8"))
+				if relativePath == path.Join(config.Config.GetPrivateHLSSavePath(), "stream.m3u8") {
+					utils.Copy(event.Path, path.Join(config.Config.GetPublicHLSSavePath(), "stream.m3u8"))
 
 				} else if filepath.Ext(event.Path) == ".m3u8" {
 					// Handle updates to playlists, but not the master playlist
@@ -82,7 +82,7 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 
 					newObjectPathChannel := make(chan string, 1)
 					go func() {
-						newObjectPath, err := storage.Save(path.Join(config.Config.PrivateHLSPath, segment.RelativeUploadPath), 0)
+						newObjectPath, err := storage.Save(path.Join(config.Config.GetPrivateHLSSavePath(), segment.RelativeUploadPath), 0)
 						if err != nil {
 							log.Errorln("failed to save the file to the chunk storage.", err)
 						}
@@ -153,9 +153,7 @@ func updateVariantPlaylist(fullPath string) error {
 	}
 
 	playlistString := string(playlistBytes)
-	// fmt.Println("Rewriting playlist", relativePath, "to", path.Join(config.Config.PublicHLSPath, relativePath))
-
 	playlistString = _storage.GenerateRemotePlaylist(playlistString, variant)
 
-	return WritePlaylist(playlistString, path.Join(config.Config.PublicHLSPath, relativePath))
+	return WritePlaylist(playlistString, path.Join(config.Config.GetPublicHLSSavePath(), relativePath))
 }

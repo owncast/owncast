@@ -24,6 +24,7 @@ type Transcoder struct {
 	hlsPlaylistLength    int
 	segmentLengthSeconds int
 	appendToStream       bool
+	ffmpegPath           string
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -104,7 +105,7 @@ func (t *Transcoder) getString() string {
 
 	ffmpegFlags := []string{
 		"cat", t.input, "|",
-		config.Config.FFMpegPath,
+		t.ffmpegPath,
 		"-hide_banner",
 		"-i pipe:",
 		t.getVariantsString(),
@@ -112,7 +113,7 @@ func (t *Transcoder) getString() string {
 		// HLS Output
 		"-f", "hls",
 		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
-		"-hls_list_size", strconv.Itoa(config.Config.Files.MaxNumberInPlaylist), // Max # in variant playlist
+		"-hls_list_size", strconv.Itoa(t.hlsPlaylistLength), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		"-hls_flags", strings.Join(hlsOptionFlags, "+"), // Specific options in HLS generation
 
@@ -175,22 +176,24 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 // NewTranscoder will return a new Transcoder, populated by the config
 func NewTranscoder() Transcoder {
 	transcoder := new(Transcoder)
+	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
+	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
 
 	var outputPath string
 	if config.Config.S3.Enabled || config.Config.IPFS.Enabled {
 		// Segments are not available via the local HTTP server
-		outputPath = config.Config.PrivateHLSPath
+		outputPath = config.Config.GetPrivateHLSSavePath()
 	} else {
 		// Segments are available via the local HTTP server
-		outputPath = config.Config.PublicHLSPath
+		outputPath = config.Config.GetPublicHLSSavePath()
 	}
 
 	transcoder.segmentOutputPath = outputPath
 	// Playlists are available via the local HTTP server
-	transcoder.playlistOutputPath = config.Config.PublicHLSPath
+	transcoder.playlistOutputPath = config.Config.GetPublicHLSSavePath()
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = config.Config.VideoSettings.ChunkLengthInSeconds
+	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
 
 	qualities := config.Config.VideoSettings.StreamQualities
 	if len(qualities) == 0 {
@@ -218,9 +221,14 @@ func (v *HLSVariant) getVariantString() string {
 		variantEncoderCommands = append(variantEncoderCommands, v.getScalingString())
 	}
 
+	if v.framerate == 0 {
+		v.framerate = 30
+	}
+
 	if v.framerate != 0 {
 		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-r %d", v.framerate))
-		// multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
+		// Insert a keyframe every 2 seconds.
+		// Multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
 		variantEncoderCommands = append(variantEncoderCommands, "-g "+strconv.Itoa(v.framerate*2))
 		variantEncoderCommands = append(variantEncoderCommands, "-keyint_min "+strconv.Itoa(v.framerate*2))
 	}

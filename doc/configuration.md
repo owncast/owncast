@@ -1,23 +1,30 @@
 # Configuration
 
+The default `config.yaml` has a handful of values you can change.  However, more can be customized if you need them to be.  Some common changes to the config are:
+
+* Your site name, logo, description and external links.
+* The **stream key** to gain access to broadcasting to your stream.
+* The path to your specific `ffmpeg` executable.
+* Video quality settings.
+* S3 file storage.
+
+An example config file with additional features can be viewed at [config-example-full.yaml](config-example-full.yaml).
 
 ## Video Quality
 
-Owncast supports HLS [Adaptive bitrate streaming](https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming), or in other words, different video qualities that can be used for different network conditions.
+Owncast supports HLS [Adaptive bitrate streaming](https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming), or in other words, different video qualities will be used for different network conditions.
 
 You can edit the `config.yaml` file and add as many stream _variants_ as you like under the `videoSettings` block, like so:
 
 ```
   streamQualities:
     - low:
-      bitrate: 700
+      bitrate: 400
       scaledWidth: 600
       encoderPreset: superfast
     - medium:
-      bitrate: 900
+      bitrate: 800
 ```
-
-You must have at least one bitrate specified.
 
 ### Important caveats
 
@@ -29,9 +36,7 @@ Each bitrate variant adds significant CPU usage and slows down the overall gener
 
 More stream quality variants requires more disk space, since it's another copy of the video on disk.  If you're serving video locally and you have enough disk space then it's probably no big deal and files will rather quickly get rotated and cleaned up.  If you're using something like [S3 for storage](S3.md) then files won't get cleaned up until some point in the future, so you'll have more remote storage use in play.
 
-## Customization
-
-Editing `config.yaml` allows you to change the name, description, logo and links to external sites.
+## External links
 
 `socialHandles` currently supports the following services by name:
 
@@ -50,6 +55,6 @@ Editing `config.yaml` allows you to change the name, description, logo and links
 * `github`
 * `linkedin`
 * `discord`
-* `mastadon`
+* `mastodon`
 
 Update your `tags` in the config to display the topics type of content you want to call attention to.

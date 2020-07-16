@@ -2,9 +2,18 @@ FROM golang:alpine
 EXPOSE 8080 1935
 RUN mkdir /app 
 ADD . /app
-COPY ./config-example.yaml /app/config.yaml
 WORKDIR /app
 RUN apk add --no-cache ffmpeg ffmpeg-libs
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o owncast .
+RUN apk update && apk add --no-cache gcc build-base linux-headers
+
+ARG VERSION
+ENV VERSION=${VERSION}
+ARG GIT_COMMIT
+ENV GIT_COMMIT=${GIT_COMMIT}
+ARG NAME
+ENV NAME=${NAME}
+
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflags \"-static\" -X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -o owncast .
+
 WORKDIR /app
 CMD ["/app/owncast", "-enableVerboseLogging"]

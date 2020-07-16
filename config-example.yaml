@@ -1,24 +1,19 @@
-publicHLSPath: webroot/hls
-privateHLSPath: hls
-ffmpegPath: /usr/bin/ffmpeg
-webServerPort: 8080
-
 instanceDetails:
   name: Owncast
   title: Owncast Demo Server
   summary: "This is brief summary of whom you are or what your stream is. You can read more about it at owncast.online.  You can edit this description in your config file."
-  extraUserInfoFileName: "/static/content.md"
   
   logo:
     small: /img/logo128.png
-    large: /img/logo128.png
+    large: /img/logo256.png
 
   tags:
     - music
     - software
     - animal crossing
 
-  # See documentation for full list of supported social links.  All optional.
+  # https://github.com/gabek/owncast/blob/master/doc/configuration.md#customization
+  # for full list of supported social links.  All optional.
   socialHandles:
     - platform: twitter
       url: http://twitter.com/owncast
@@ -26,33 +21,13 @@ instanceDetails:
       url: http://instagram.biz/owncast
     - platform: facebook
       url: http://facebook.gov/owncast
-    - platform: tiktok
-      url: http://tiktok.cn/owncast
-    - platform: soundcloud
-      url: http://soundcloud.com/owncast
 
 videoSettings:
-  chunkLengthInSeconds: 4
+  # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
-  offlineContent: static/offline.m4v # Is displayed when a stream ends
 
+  # Determine the bitrate of your stream variants.
+  # See https://github.com/gabek/owncast/blob/master/doc/configuration.md#video-quality for details.
   streamQualities:
-    # Transcode the video to a lower bitrate and resize
     - medium:
       videoBitrate: 800
-      encoderPreset: superfast
-
-files:
-  maxNumberInPlaylist: 30
-
-ipfs:
-  enabled: false
-  gateway: https://ipfs.io
-
-s3:
-  enabled: false
-  endpoint: https://s3.us-west-2.amazonaws.com
-  accessKey: ABC12342069
-  secret: lolomgqwtf49583949
-  region: us-west-2
-  bucket: myvideo

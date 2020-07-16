@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mssola/user_agent"
 )
 
 //GetTemporaryPipePath gets the temporary path for the streampipe.flv file
@@ -40,4 +42,25 @@ func Copy(source, destination string) error {
 	}
 
 	return ioutil.WriteFile(destination, input, 0644)
+}
+
+// IsUserAgentABot returns if a web client user-agent is seen as a bot
+func IsUserAgentABot(userAgent string) bool {
+	if userAgent == "" {
+		return false
+	}
+
+	botStrings := []string{
+		"mastodon",
+		"pleroma",
+	}
+
+	for _, botString := range botStrings {
+		if strings.Contains(strings.ToLower(userAgent), botString) {
+			return true
+		}
+	}
+
+	ua := user_agent.New(userAgent)
+	return ua.Bot()
 }

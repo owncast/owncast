@@ -9,6 +9,8 @@ import (
 
 //Setup sets up the chat server
 func Setup(listener models.ChatListener) {
+	setupPersistence()
+
 	messages := []models.ChatMessage{}
 	clients := make(map[string]*Client)
 	addCh := make(chan *Client)
@@ -78,5 +80,21 @@ func GetMessages() []models.ChatMessage {
 		return []models.ChatMessage{}
 	}
 
-	return _server.Messages
+	return getRecentMessages()
+}
+
+func getRecentMessages() []models.ChatMessage {
+	if len(_server.Messages) < 100 {
+		return _server.Messages
+	}
+
+	maxAgeInHours := float64(2)
+	messages := make([]models.ChatMessage, 0)
+	for _, message := range _server.Messages {
+		if time.Since(message.Timestamp).Hours() < maxAgeInHours {
+			messages = append(messages, message)
+		}
+	}
+
+	return messages
 }

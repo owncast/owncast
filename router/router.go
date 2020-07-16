@@ -34,7 +34,7 @@ func Start() error {
 		http.HandleFunc("/config", controllers.GetWebConfig)
 	}
 
-	port := config.Config.WebServerPort
+	port := config.Config.GetPublicWebServerPort()
 
 	log.Infof("Web server running on port: %d", port)
 

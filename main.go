@@ -28,6 +28,7 @@ func main() {
 	log.Infoln(getVersion())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
+	chatDbFile := flag.String("chatDatabase", "", "Path to the chat database file.")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 
@@ -47,6 +48,12 @@ func main() {
 		panic(err)
 	}
 	config.Config.EnableDebugFeatures = *enableDebugOptions
+
+	if *chatDbFile != "" {
+		config.Config.ChatDatabaseFilePath = *chatDbFile
+	} else if config.Config.ChatDatabaseFilePath == "" {
+		config.Config.ChatDatabaseFilePath = "chat.db"
+	}
 
 	// starts the core
 	if err := core.Start(); err != nil {
