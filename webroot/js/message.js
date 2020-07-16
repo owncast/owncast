@@ -35,6 +35,8 @@ class MessagingInterface {
 		this.maxMessageBuffer = 20;
 
 		this.onReceivedMessages = this.onReceivedMessages.bind(this);
+		this.disableChat = this.disableChat.bind(this);
+		this.enableChat = this.enableChat.bind(this);
 	}
 
 	init() {
@@ -242,6 +244,7 @@ class MessagingInterface {
 	}
 
 	disableChat() {
+		console.log("--dsiable chat?",this.formMessageInput)
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
 		}

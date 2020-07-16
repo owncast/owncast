@@ -1,6 +1,7 @@
 class Owncast {
   constructor() {
     this.player;    
+    this.streamStatus = null;
 
     this.websocket = null;
     this.configData;
@@ -16,7 +17,7 @@ class Owncast {
 
     // misc
     this.streamIsOnline = false;
-    this  .lastDisconnectTime = 0;
+    this.lastDisconnectTime = null;
 
     Vue.filter('plural', pluralize);
 
@@ -197,8 +198,6 @@ class Owncast {
 
   // handle UI things from stream status result
   updateStreamStatus(status) {
-    console.log("======status", status.online ,status,)
-
     // update UI
     this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
     this.vueApp.viewerCount = status.viewerCount;
@@ -210,9 +209,10 @@ class Owncast {
     if (status.online && !this.streamIsOnline) {
       // stream has just come online.
       this.handleOnlineMode();
-    } else if (!status.online && this.streamIsOnline) {
+    } else if (!status.online && !this.streamStatus) {
       // stream has just gone offline.
-      // this.handleOfflineMode();
+      // display offline mode the first time we get status, and it's offline.
+      this.handleOfflineMode();
     }
 
     if (status.online) {
@@ -221,6 +221,8 @@ class Owncast {
         this.player.setPoster();
       }
     }
+
+    this.streamStatus = status;
   };
   
   handleNetworkingError(error) {

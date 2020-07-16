@@ -35,8 +35,6 @@ class OwncastPlayer {
   // play
   startPlayer() {
     this.log('Start playing');
-
-    // this.vjsPlayer.load(); // causes errors? works without?
     this.vjsPlayer.src(VIDEO_SRC);
     this.vjsPlayer.play();
   };
