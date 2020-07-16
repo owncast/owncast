@@ -16,6 +16,8 @@ class Owncast {
 
     // misc
     this.streamIsOnline = false;
+    this.status.lastDisconnectTime = 0;
+
     Vue.filter('plural', pluralize);
 
     // bindings
@@ -193,7 +195,7 @@ class Owncast {
       });
   };
 
-  // handle UI things from stram status result
+  // handle UI things from stream status result
   updateStreamStatus(status) {
     // update UI
     this.vueApp.isOnline = status.online;
@@ -201,6 +203,9 @@ class Owncast {
     this.vueApp.viewerCount = status.viewerCount;
     this.vueApp.sessionMaxViewerCount = status.sessionMaxViewerCount;
     this.vueApp.overallMaxViewerCount = status.overallMaxViewerCount;
+
+    this.lastDisconnectTime = status.lastDisconnectTime;
+    this.streamIsOnline = status.online;
 
     if (status.online && !this.streamIsOnline) {
       // stream has just come online.
@@ -213,8 +218,6 @@ class Owncast {
     if (status.online) {
       this.player.setPoster();
     }
-
-    this.streamIsOnline = status.online;
   };
   
   handleNetworkingError(error) {
@@ -228,8 +231,11 @@ class Owncast {
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
     this.vueApp.isOnline = false;
 
-    this.disableChatTimer = setTimeout(this.messagingInterface.disableChat, TIMER_DISABLE_CHAT_AFTER_OFFLINE);
-    // TODO: start offline timer to disable chat.
+    if (this.lastDisconnectTime) {
+      const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.lastDisconnectTime));
+      const countdown = (remainingChatTime < 0) ? 0 : remainingChatTime;
+      this.disableChatTimer = setTimeout(this.messagingInterface.disableChat, countdown);
+    }
   };
 
   // play video!
