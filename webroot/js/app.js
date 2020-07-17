@@ -40,6 +40,7 @@ class Owncast {
 
   init() {
     this.messagingInterface = new MessagingInterface();
+    this.messagingInterface.setChatHistory = this.setChatHistory.bind(this);
     this.websocket = this.setupWebsocket();
 
     this.vueApp = new Vue({
@@ -132,16 +133,24 @@ class Owncast {
         return; 
       }
       const message = new Message(model);
-      const existing = this.vueApp.messages.filter(function (item) {
-        return item.id === message.id;
-      })
-      if (existing.length === 0 || !existing) {
-        this.vueApp.messages = [...this.vueApp.messages, message];
-      }
+      this.addMessage(message);
     };
     this.websocket = ws;
     this.messagingInterface.setWebsocket(this.websocket);
   };
+
+  addMessage(message) {
+    const existing = this.vueApp.messages.filter(function (item) {
+      return item.id === message.id;
+    })
+    if (existing.length === 0 || !existing) {
+      this.vueApp.messages = [...this.vueApp.messages, message];
+    }
+  }
+
+  setChatHistory(messages) {
+    this.vueApp.messages = messages
+  }
 
   // fetch /config data
   getConfig() {
