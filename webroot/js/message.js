@@ -73,7 +73,7 @@ class MessagingInterface {
 
 		this.initLocalStates();
 
-		if (hasTouchScreen()) {
+		if (hasTouchScreen() && window.innerWidth < 1000) {
 			this.scrollableMessagesContainer = document.body;
 			this.tagAppContainer.classList.add('touch-screen');
 			window.onorientationchange = this.handleOrientationChange.bind(this);
