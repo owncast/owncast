@@ -35,7 +35,10 @@ class OwncastPlayer {
   // play
   startPlayer() {
     this.log('Start playing');
-    this.vjsPlayer.src(VIDEO_SRC);
+    const cachebuster = Math.round(new Date().getTime() / 1000);
+    const source = { ...VIDEO_SRC }
+    source.src = source.src + "?okhi=" + cachebuster
+    this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   };
 
