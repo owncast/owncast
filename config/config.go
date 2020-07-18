@@ -3,8 +3,6 @@ package config
 import (
 	"errors"
 	"io/ioutil"
-	"os/exec"
-	"strings"
 
 	"github.com/gabek/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -13,6 +11,7 @@ import (
 
 //Config contains a reference to the configuration
 var Config *config
+var _default config
 
 type config struct {
 	ChatDatabaseFilePath string          `yaml:"chatDatabaseFile"`
@@ -137,32 +136,12 @@ func (c *config) verifySettings() error {
 	return nil
 }
 
-func (c *config) GetFFMpegPath() string {
-	if c.FFMpegPath != "" {
-		return c.FFMpegPath
-	}
-
-	cmd := exec.Command("which", "ffmpeg")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Panicln("Unable to determine path to ffmpeg. Please specify it in the config file.")
-	}
-
-	path := strings.TrimSpace(string(out))
-
-	// Memoize it for future access
-	c.FFMpegPath = path
-
-	return path
-}
-
 func (c *config) GetVideoSegmentSecondsLength() int {
 	if c.VideoSettings.ChunkLengthInSeconds != 0 {
 		return c.VideoSettings.ChunkLengthInSeconds
 	}
 
-	// Default
-	return 4
+	return _default.GetVideoSegmentSecondsLength()
 }
 
 func (c *config) GetPublicHLSSavePath() string {
@@ -170,7 +149,7 @@ func (c *config) GetPublicHLSSavePath() string {
 		return c.PublicHLSPath
 	}
 
-	return "webroot/hls"
+	return _default.PublicHLSPath
 }
 
 func (c *config) GetPrivateHLSSavePath() string {
@@ -178,7 +157,7 @@ func (c *config) GetPrivateHLSSavePath() string {
 		return c.PrivateHLSPath
 	}
 
-	return "hls"
+	return _default.PrivateHLSPath
 }
 
 func (c *config) GetPublicWebServerPort() int {
@@ -186,8 +165,7 @@ func (c *config) GetPublicWebServerPort() int {
 		return c.WebServerPort
 	}
 
-	// Default web server port
-	return 8080
+	return _default.WebServerPort
 }
 
 func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
@@ -195,7 +173,7 @@ func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
 		return c.Files.MaxNumberInPlaylist
 	}
 
-	return 20
+	return _default.GetMaxNumberOfReferencedSegmentsInPlaylist()
 }
 
 func (c *config) GetOfflineContentPath() string {
@@ -204,12 +182,29 @@ func (c *config) GetOfflineContentPath() string {
 	}
 
 	// This is relative to the webroot, not the project root.
-	return "static/offline.m4v"
+	return _default.VideoSettings.OfflineContent
+}
+
+func (c *config) GetFFMpegPath() string {
+	if c.FFMpegPath != "" {
+		return c.FFMpegPath
+	}
+
+	return _default.FFMpegPath
+}
+
+func (c *config) GetVideoStreamQualities() []StreamQuality {
+	if len(c.VideoSettings.StreamQualities) > 0 {
+		return c.VideoSettings.StreamQualities
+	}
+
+	return _default.VideoSettings.StreamQualities
 }
 
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)
+	_default = getDefaults()
 
 	if err := Config.load(filePath); err != nil {
 		return err
@@ -220,8 +215,10 @@ func Load(filePath string, versionInfo string) error {
 	// Defaults
 
 	// This is relative to the webroot, not the project root.
+	// Has to be set here instead of pulled from a getter
+	// since it's serialized to JSON.
 	if Config.InstanceDetails.ExtraInfoFile == "" {
-		Config.InstanceDetails.ExtraInfoFile = "/static/content.md"
+		Config.InstanceDetails.ExtraInfoFile = _default.InstanceDetails.ExtraInfoFile
 	}
 
 	return Config.verifySettings()

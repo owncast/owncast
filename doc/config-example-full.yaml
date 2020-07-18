@@ -55,7 +55,8 @@ videoSettings:
       audioPassthrough: true
       # The slower the preset the higher quality the video is.
       # Select a preset from https://trac.ffmpeg.org/wiki/Encode/H.264
-      encoderPreset: superfast
+      # "superfast" and "ultrafast" are generally not recommended since they look bad.
+      encoderPreset: veryfast
 
     - medium:
       videoBitrate: 800
