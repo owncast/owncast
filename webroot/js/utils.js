@@ -47,7 +47,7 @@ const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
 const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 const MESSAGE_OFFLINE = 'Stream is offline.';
-const MESSAGE_ONLINE = 'Stream is online.';
+const MESSAGE_ONLINE = 'Stream is online';
 
 
 function getLocalStorage(key) {
@@ -141,3 +141,17 @@ function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
 }
 
+function secondsToHMMSS(seconds = 0) {
+  const finiteSeconds = Number.isFinite(+seconds) ? Math.abs(seconds) : 0;
+
+  const hours = Math.floor(finiteSeconds / 3600);
+  const hoursString = hours ? `${hours}:` : '';
+
+  const mins = Math.floor((finiteSeconds / 60) % 60);
+  const minString = mins < 10 ? `0${mins}:` : `${mins}:`;
+
+  const secs = Math.floor(finiteSeconds % 60);
+  const secsString = secs < 10 ? `0${secs}` : `${secs}`;
+
+  return hoursString + minString + secsString;
+}

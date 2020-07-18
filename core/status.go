@@ -6,6 +6,7 @@ import (
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
+	"github.com/gabek/owncast/utils"
 )
 
 //GetStatus gets the status of the system
@@ -27,9 +28,9 @@ func GetStatus() models.Status {
 //SetStreamAsConnected sets the stream as connected
 func SetStreamAsConnected() {
 	_stats.StreamConnected = true
-	_stats.LastConnectTime = time.Now()
+	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
 
-	timeSinceDisconnect := time.Since(_stats.LastDisconnectTime).Minutes()
+	timeSinceDisconnect := time.Since(_stats.LastDisconnectTime.Time).Minutes()
 	if timeSinceDisconnect > 15 {
 		_stats.SessionMaxViewerCount = 0
 	}
@@ -45,7 +46,7 @@ func SetStreamAsConnected() {
 //SetStreamAsDisconnected sets the stream as disconnected
 func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
-	_stats.LastDisconnectTime = time.Now()
+	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
 
 	ffmpeg.ShowStreamOfflineState()
 }

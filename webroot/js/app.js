@@ -223,7 +223,25 @@ class Owncast {
     }
 
     this.streamStatus = status;
+    this.setCurrentStreamDuration();
   };
+  
+  setCurrentStreamDuration() {
+    // If we're offline then don't update any of the UI.
+    if (!this.streamStatus.online) {
+      return;
+    }
+    
+    // Default to something
+    let streamDurationString = ""
+
+    if (this.streamStatus.online && this.streamStatus.lastConnectTime) {
+      const diff = (Date.now() - Date.parse(this.streamStatus.lastConnectTime)) / 1000;
+      streamDurationString = secondsToHMMSS(diff);
+    }
+
+    this.vueApp.streamStatus = `${MESSAGE_ONLINE} ${streamDurationString}.`
+  }
   
   handleNetworkingError(error) {
     console.log(`>>> App Error: ${error}`)
@@ -252,6 +270,8 @@ class Owncast {
     clearTimeout(this.disableChatTimer);
     this.disableChatTimer = null;
     this.messagingInterface.enableChat();
+
+    setInterval(this.setCurrentStreamDuration.bind(this), 1000);
   }
 
   // when videojs player is ready, start polling for stream

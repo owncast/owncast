@@ -1,8 +1,6 @@
 package models
 
-import (
-	"time"
-)
+import "github.com/gabek/owncast/utils"
 
 //Status represents the status of the system
 type Status struct {
@@ -11,6 +9,6 @@ type Status struct {
 	OverallMaxViewerCount int  `json:"overallMaxViewerCount"`
 	SessionMaxViewerCount int  `json:"sessionMaxViewerCount"`
 
-	LastConnectTime    time.Time `json:"lastConnectTime"`
-	LastDisconnectTime time.Time `json:"lastDisconnectTime"`
+	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
+	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
 }
