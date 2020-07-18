@@ -96,7 +96,6 @@ class MessagingInterface {
 
 		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || false;
 		this.displayChat();
-		this.getChatHistory();
 	}
 
 	updateUsernameFields(username) {
@@ -264,15 +263,5 @@ class MessagingInterface {
 			// jump to bottom
 			jumpToBottom(this.scrollableMessagesContainer);
 		}
-	}
-
-	async getChatHistory() {
-		const url = "/chat";
-		const response = await fetch(url);
-		const data = await response.json();
-		const messages = data.map(function (message) {
-			return new Message(message)
-		})
-		this.setChatHistory(messages);
 	}
 }

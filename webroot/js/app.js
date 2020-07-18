@@ -40,7 +40,6 @@ class Owncast {
 
   init() {
     this.messagingInterface = new MessagingInterface();
-    this.messagingInterface.setChatHistory = this.setChatHistory.bind(this);
     this.websocket = this.setupWebsocket();
 
     this.vueApp = new Vue({
@@ -87,6 +86,8 @@ class Owncast {
       onError: this.handlePlayerError,
     });
     this.player.init();
+
+    this.getChatHistory();
   };
 
   setConfigData(data) {
@@ -146,10 +147,6 @@ class Owncast {
     if (existing.length === 0 || !existing) {
       this.vueApp.messages = [...this.vueApp.messages, message];
     }
-  }
-
-  setChatHistory(messages) {
-    this.vueApp.messages = messages
   }
 
   // fetch /config data
@@ -285,4 +282,18 @@ class Owncast {
     this.handleOfflineMode();
     // stop timers?
   };
+
+  async getChatHistory() {
+    const url = "/chat";
+    const response = await fetch(url);
+    const data = await response.json();
+    const messages = data.map(function (message) {
+      return new Message(message);
+    })
+    this.setChatHistory(messages);
+  }
+
+  setChatHistory(messages) {
+    this.vueApp.messages = messages;
+  }
 };
