@@ -366,6 +366,9 @@ h2 {
   flex-direction: column;
   justify-content: flex-end;
 }
+.touch-screen #chat-container {
+  height: calc(100vh - var(--header-height) - 3vh);
+}
 
 
 #messages-container {
@@ -441,9 +444,11 @@ h2 {
 
 }
 
+/* single col layout */
 @media screen and (max-width: 640px ) {
   :root {
     --right-col-width: 0;
+    --video-container-height: 40vh;
   }
   #logo-container {
     display: none;
@@ -455,13 +460,15 @@ h2 {
     max-width: 41%;
   }
 
-  /* single col */
   #chat-container {
     width: 100%;
-    position: relative;
-    min-height: calc(100vh - var(--header-height));
+    position: static;
+    /* min-height: calc(100vh - var(--header-height)); */
+    height: calc(100vh - var(--header-height) - var(--video-container-height) - 3vh)
   }
- 
+  #messages-container {
+    min-height: unset;
+  }
   #user-content {
     width: 100%;
   }
@@ -480,17 +487,18 @@ h2 {
   .chat footer {
     display: none;
   }
-
 }
+
+/* try not making the video fixed position for now */
 @media (min-height: 861px) {
-  main {
+  /* main {
     position: fixed;
     z-index: 9;
     width: 100%;
   }
   #user-content {
     margin-top: calc(var(--video-container-height) + var(--header-height) + 2em)
-  }
+  } */
 }
 
 
@@ -500,18 +508,11 @@ h2 {
 
 
 @media screen and (max-height: 860px ) {
-  #video-container {
-    height: 52vw;
+  :root {
+    --video-container-height: 40vh;
   }
   .user-content {
     flex-direction: column;
   }
-
-  @media screen and (max-height: 640px ) {
-    #video-container {
-      height: 75vh;
-    }
-  }
-
 }
 

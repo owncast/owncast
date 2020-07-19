@@ -72,6 +72,12 @@ class MessagingInterface {
 		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
 
 		this.initLocalStates();
+
+		if (hasTouchScreen()) {
+			setVHvar();
+			window.addEventListener("orientationchange", setVHvar);
+			this.tagAppContainer.classList.add('touch-screen');
+		}
 	}
 
 	setWebsocket(socket) {
@@ -225,7 +231,6 @@ class MessagingInterface {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = "Chat is offline."
 		}
-		// also show "disabled" text/message somewhere.
 	}
 	enableChat() {
 		if (this.formMessageInput) {
