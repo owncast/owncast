@@ -72,15 +72,6 @@ class MessagingInterface {
 		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
 
 		this.initLocalStates();
-
-		// if (hasTouchScreen()) {
-		// 	this.scrollableMessagesContainer = document.body;
-		// 	this.tagAppContainer.classList.add('touch-screen');
-		// 	window.onorientationchange = this.handleOrientationChange.bind(this);
-		// 	this.handleOrientationChange();
-		// } else {
-		// 	this.tagAppContainer.classList.add('desktop');
-		// }
 	}
 
 	setWebsocket(socket) {
@@ -113,22 +104,7 @@ class MessagingInterface {
 			this.tagAppContainer.classList.remove('chat');
 		}
 	}
-/*
-	handleOrientationChange() {
-		var isPortrait = Math.abs(window.orientation % 180) === 0;
-		if(!isPortrait) {
-			if (document.body.clientWidth < 1024) {
-				this.tagAppContainer.classList.add('no-chat');
-				this.tagAppContainer.classList.add('landscape');
-			}
-		} else {
-			if (this.chatDisplayed) {
-				this.tagAppContainer.classList.remove('no-chat');
-			}
-			this.tagAppContainer.classList.remove('landscape');
-		}
-	}
-	*/
+
 	
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
