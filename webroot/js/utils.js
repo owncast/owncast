@@ -42,6 +42,7 @@ const VIDEO_OPTIONS = {
 const KEY_USERNAME = 'owncast_username';
 const KEY_AVATAR = 'owncast_avatar';
 const KEY_CHAT_DISPLAYED = 'owncast_chat';
+const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
 
 const TIMER_STATUS_UPDATE = 5000; // ms
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms

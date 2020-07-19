@@ -293,6 +293,6 @@ class Owncast {
   }
 
   setChatHistory(messages) {
-    this.vueApp.messages = messages;
+    this.vueApp.messages = messages.concat(this.vueApp.messages);
   }
 };
