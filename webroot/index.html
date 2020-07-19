@@ -15,8 +15,7 @@
 </head>
 
 <body class="bg-gray-300 text-gray-800">
-
-  <div id="app-container" class="flex no-chat">
+  <div id="app-container" v-cloak class="flex no-chat">
     <div id="top-content">  
       <header class="flex border-b border-gray-900 border-solid shadow-md">
         <h1 v-cloak class="flex text-gray-400">
@@ -165,7 +164,6 @@
 
   </div>
 
-
   <script src="js/usercolors.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/message.js"></script>
@@ -179,5 +177,32 @@
       app.init();
     })();
   </script>
+
+  <noscript>
+    <style>
+      [v-cloak] { display: none; }
+      .noscript {
+        text-align: center;
+        padding: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .noscript a {
+        display: inline;
+        color: blue;
+        text-decoration: underline;
+      }
+    </style>
+    <div class="noscript">
+      <img src="https://github.com/gabek/owncast/raw/master/doc/logo.png">
+      <br/>
+      <p>
+        This <a href="https://github.com/gabek/owncast" target="_blank">Owncast</a> stream requires Javascript to play.
+      </p>
+    </div>
+  </noscript>
 </body>
 </html>

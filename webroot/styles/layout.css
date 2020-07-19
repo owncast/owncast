@@ -11,10 +11,10 @@ body {
   font-size: 14px;
 }
 
-
 a:hover {
   text-decoration: underline;
 }
+/* vuejs attribute to hide things before content ready */
 [v-cloak] { visibility: hidden; }
 
 ::-webkit-scrollbar {
