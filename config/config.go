@@ -115,6 +115,10 @@ func (c *config) load(filePath string) error {
 }
 
 func (c *config) verifySettings() error {
+	if c.VideoSettings.StreamingKey == "" {
+		return errors.New("No stream key set. Please set one in your config file.")
+	}
+
 	if c.S3.Enabled && c.IPFS.Enabled {
 		return errors.New("s3 and IPFS support cannot be enabled at the same time; choose one")
 	}
