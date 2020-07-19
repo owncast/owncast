@@ -86,6 +86,8 @@ class Owncast {
       onError: this.handlePlayerError,
     });
     this.player.init();
+
+    this.getChatHistory();
   };
 
   setConfigData(data) {
@@ -132,16 +134,20 @@ class Owncast {
         return; 
       }
       const message = new Message(model);
-      const existing = this.vueApp.messages.filter(function (item) {
-        return item.id === message.id;
-      })
-      if (existing.length === 0 || !existing) {
-        this.vueApp.messages = [...this.vueApp.messages, message];
-      }
+      this.addMessage(message);
     };
     this.websocket = ws;
     this.messagingInterface.setWebsocket(this.websocket);
   };
+
+  addMessage(message) {
+    const existing = this.vueApp.messages.filter(function (item) {
+      return item.id === message.id;
+    })
+    if (existing.length === 0 || !existing) {
+      this.vueApp.messages = [...this.vueApp.messages, message];
+    }
+  }
 
   // fetch /config data
   getConfig() {
@@ -276,4 +282,18 @@ class Owncast {
     this.handleOfflineMode();
     // stop timers?
   };
+
+  async getChatHistory() {
+    const url = "/chat";
+    const response = await fetch(url);
+    const data = await response.json();
+    const messages = data.map(function (message) {
+      return new Message(message);
+    })
+    this.setChatHistory(messages);
+  }
+
+  setChatHistory(messages) {
+    this.vueApp.messages = messages;
+  }
 };

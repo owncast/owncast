@@ -81,6 +81,7 @@ class MessagingInterface {
 		} else {
 			this.tagAppContainer.classList.add('desktop');
 		}
+
 	}
 
 	setWebsocket(socket) {
