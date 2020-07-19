@@ -323,9 +323,11 @@ h2 {
 #video {
   transition: opacity .5s;
   opacity: 0;
+  pointer-events: none;
 }
 .online #video {
   opacity: 1;
+  pointer-events: auto;
 }
 
 
