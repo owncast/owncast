@@ -86,7 +86,7 @@ class Owncast {
     });
     this.player.init();
 
-    // this.getChatHistory();
+    this.getChatHistory();
   };
 
   setConfigData(data) {
@@ -201,6 +201,27 @@ class Owncast {
       });
   };
 
+  // fetch chat history
+  getChatHistory() {
+    fetch(URL_CHAT_HISTORY)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok ${response.ok}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const formattedMessages = data.map(function (message) {
+        return new Message(message);
+      })
+      this.vueApp.messages = formattedMessages.concat(this.vueApp.messages);
+    })
+    .catch(error => {
+      this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
+    });
+  }
+
+
   // handle UI things from stream status result
   updateStreamStatus(status = {}) {
     if (!status) {
@@ -231,16 +252,6 @@ class Owncast {
       }
     }
 
-    // if (status.online && !this.streamIsOnline) {
-     
-    // } else if (!status.online && !this.streamStatus) {
-    //   this.handleOfflineMode();
-    // } else if (!status.online && this.streamIsOnline) {
-    //   // we've just flipped from online to offline
-    //   clearInterval(this.streamDurationTimer);
-    //   this.handleOfflineMode();
-    // }
-
     // keep a local copy
     this.streamStatus = status;
 
@@ -268,8 +279,7 @@ class Owncast {
     console.log(`>>> App Error: ${error}`)
   };
 
-  // basically hide video and show underlying "poster"
-  // primarily called when video onEnded was called because some video has been buffered to play after stream has gone offline.
+  // stop status timer and disable chat after some time.
   handleOfflineMode() {
     clearInterval(this.streamDurationTimer);
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
@@ -307,7 +317,7 @@ class Owncast {
 
 
   // likely called some time after stream status has gone offline.
-  // disable chat after some time.
+  // basically hide video and show underlying "poster"
   handlePlayerEnded() {
     this.vueApp.playerOn = false;
   };
@@ -316,19 +326,5 @@ class Owncast {
     // do something?
     this.handleOfflineMode();
     this.handlePlayerEnded();
-    // stop timers?
   };
-
-  async getChatHistory() {
-    const response = await fetch(URL_CHAT_HISTORY);
-    const data = await response.json();
-    const messages = data.map(function (message) {
-      return new Message(message);
-    })
-    this.setChatHistory(messages);
-  }
-
-  setChatHistory(messages) {
-    this.vueApp.messages = messages.concat(this.vueApp.messages);
-  }
 };
