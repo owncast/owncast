@@ -74,13 +74,11 @@ class MessagingInterface {
 		this.initLocalStates();
 
 		if (hasTouchScreen()) {
-			this.scrollableMessagesContainer = document.body;
+			setVHvar();
+			window.addEventListener("orientationchange", setVHvar);
 			this.tagAppContainer.classList.add('touch-screen');
-			window.onorientationchange = this.handleOrientationChange.bind(this);
-			this.handleOrientationChange();
-		} else {
-			this.tagAppContainer.classList.add('desktop');
 		}
+
 	}
 
 	setWebsocket(socket) {
@@ -93,7 +91,7 @@ class MessagingInterface {
 			getLocalStorage(KEY_AVATAR) || generateAvatar(`${this.username}${Date.now()}`);
 		this.updateUsernameFields(this.username);
 
-		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || false;
+		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || true;
 		this.displayChat();
 	}
 
@@ -112,22 +110,9 @@ class MessagingInterface {
 			this.tagAppContainer.classList.add('no-chat');
 			this.tagAppContainer.classList.remove('chat');
 		}
+		this.setChatPlaceholderText();
 	}
 
-	handleOrientationChange() {
-		var isPortrait = Math.abs(window.orientation % 180) === 0;
-		if(!isPortrait) {
-			if (document.body.clientWidth < 1024) {
-				this.tagAppContainer.classList.add('no-chat');
-				this.tagAppContainer.classList.add('landscape');
-			}
-		} else {
-			if (this.chatDisplayed) {
-				this.tagAppContainer.classList.remove('no-chat');
-			}
-			this.tagAppContainer.classList.remove('landscape');
-		}
-	}
 	
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
@@ -241,6 +226,12 @@ class MessagingInterface {
 		// clear out things.
 		this.formMessageInput.value = '';
 		this.tagMessageFormWarning.innerText = '';
+
+		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
+		if (!hasSentFirstChatMessage) {
+			setLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT, true);
+			this.setChatPlaceholderText();
+		}
 	}
 
 	disableChat() {
@@ -248,14 +239,22 @@ class MessagingInterface {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = "Chat is offline."
 		}
-		// also show "disabled" text/message somewhere.
 	}
 	enableChat() {
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = false;
-			this.formMessageInput.placeholder = "Message"
+			this.setChatPlaceholderText();
 		}
 	}
+
+	setChatPlaceholderText() {
+		const firstMessageChatPlacholderText = "Type here to chat, no account necessary.";
+		const chatPlaceholderText = "Message"
+
+		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
+		this.formMessageInput.placeholder = hasSentFirstChatMessage ? chatPlaceholderText : firstMessageChatPlacholderText
+	}
+
 	// handle Vue.js message display
 	onReceivedMessages(newMessages, oldMessages) {
 		if (newMessages.length !== oldMessages.length) {

@@ -11,10 +11,10 @@ body {
   font-size: 14px;
 }
 
-
 a:hover {
   text-decoration: underline;
 }
+/* vuejs attribute to hide things before content ready */
 [v-cloak] { visibility: hidden; }
 
 ::-webkit-scrollbar {
@@ -323,9 +323,11 @@ h2 {
 #video {
   transition: opacity .5s;
   opacity: 0;
+  pointer-events: none;
 }
 .online #video {
   opacity: 1;
+  pointer-events: auto;
 }
 
 
@@ -363,6 +365,9 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+}
+.touch-screen #chat-container {
+  height: calc(100vh - var(--header-height) - 3vh);
 }
 
 
@@ -426,83 +431,6 @@ h2 {
 
 /* ************************************************8 */
 
-.landscape #chat-toggle {
-  display: none;
-}
-
-/* ************************************************8 */
-/* ************************************************8 */
-
-.touch-screen header {
-  position: relative;
-}
-.touch-screen #top-content {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  z-index: 10;
-}
-
-
-.touch-screen .user-content {
-  flex-direction: column;
-  align-content: center;
-} 
-.touch-screen .user-image {
-  margin: auto;
-}
-
-
-.touch-screen #stream-info {
-  height: 2.5em;
-  overflow: hidden;
-}
-
-.touch-screen #chat-container-wrap {
-  display: flex;
-  align-items: flex-end;
-  width: 100%;
-  height: auto;
-  flex-direction: column;
-  margin-top: calc(var(--header-height) + var(--video-container-height) + 2.5em);
-}
-.touch-screen #chat-container {
-  height: auto;
-  position: relative;
-  right: unset;
-  top: unset;
-  width: 100%;
-  z-index: 1;
-}
-.touch-screen.chat #video-container,
-.touch-screen.chat #stream-info,
-.touch-screen.chat #user-content {
-  width: 100%;
-}
-
-
-.touch-screen #video-container {
-  margin-top: 0;
-}
-.touch-screen .owncast-video-container {
-  height: 100%;
-}
-
-.touch-screen #user-content-touch {
-  display: none;
-}
-.touch-screen #chat-container {
-  display: block;
-}
-.touch-screen.no-chat #user-content-touch {
-  display: block;
-}
-.touch-screen.no-chat #chat-container {
-  display: none;
-}
-
-/* ************************************************8 */
 
 @media screen and (max-width: 860px) {
   :root {
@@ -516,33 +444,12 @@ h2 {
 
 }
 
+/* single col layout */
 @media screen and (max-width: 640px ) {
   :root {
-    --video-container-height: 36vh;
+    --right-col-width: 0;
+    --video-container-height: 40vh;
   }
-
-  .desktop {
-    --video-container-height: 50vh;
-  }
-  .desktop #chat-container {
-    height: auto;
-    position: relative;
-    right: unset;
-    top: unset;
-    width: 100%;
-    z-index: 1;
-  }
-  .desktop.chat #video-container,
-  .desktop.chat #stream-info,
-  .desktop.chat #user-content {
-    width: 100%;
-  }
-  .desktop #footer,
-  .desktop.chat #user-content {
-    display: none;
-  }
-
-
   #logo-container {
     display: none;
   }
@@ -552,29 +459,60 @@ h2 {
   #user-options-container {
     max-width: 41%;
   }
+
+  #chat-container {
+    width: 100%;
+    position: static;
+    /* min-height: calc(100vh - var(--header-height)); */
+    height: calc(100vh - var(--header-height) - var(--video-container-height) - 3vh)
+  }
+  #messages-container {
+    min-height: unset;
+  }
+  #user-content {
+    width: 100%;
+  }
+  #stream-info {
+    width: 100%;
+  }
+  #video-container {
+    width: 100%;
+  }
+  .chat #video-container {
+    width: 100%;
+  }
+  .chat #user-content {
+    display: none;
+  }
+  .chat footer {
+    display: none;
+  }
 }
 
-@media screen and (orientation: landscape) and (min-width: 1024px) {
+/* try not making the video fixed position for now */
+@media (min-height: 861px) {
+  /* main {
+    position: fixed;
+    z-index: 9;
+    width: 100%;
+  }
+  #user-content {
+    margin-top: calc(var(--video-container-height) + var(--header-height) + 2em)
+  } */
+}
+
+
+
+
+
+
+
+@media screen and (max-height: 860px ) {
   :root {
-    --video-container-height: 65vh;
+    --video-container-height: 40vh;
   }
-}
-
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-  :root .landscape {
-    --video-container-height: 75vh;
-  }
-  .touch-screen.landscape #chat-container-wrap {
-    margin-top: calc(var(--header-height) + var(--video-container-height));
-  }
-  .touch-screen.landscape .user-content {
-    display: block;
-  }
-  .touch-screen.landscape #chat-container {
-    display: none;
-  }
-  .touch-screen.landscape #chat-toggle {
-    display: none;
+  .user-content {
+    flex-direction: column;
   }
 }
 

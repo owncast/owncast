@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 
+	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/models"
 )
 
@@ -56,12 +57,6 @@ func (s *server) err(err error) {
 	s.errCh <- err
 }
 
-func (s *server) sendPastMessages(c *Client) {
-	for _, msg := range s.Messages {
-		c.Write(msg)
-	}
-}
-
 func (s *server) sendAll(msg models.ChatMessage) {
 	for _, c := range s.Clients {
 		c.Write(msg)
@@ -104,7 +99,7 @@ func (s *server) Listen() {
 			s.Clients[c.id] = c
 
 			s.listener.ClientAdded(c.id)
-			s.sendPastMessages(c)
+			s.sendWelcomeMessageToClient(c)
 
 		// remove a client
 		case c := <-s.delCh:
@@ -127,4 +122,15 @@ func (s *server) Listen() {
 			return
 		}
 	}
+}
+
+func (s *server) sendWelcomeMessageToClient(c *Client) {
+	go func() {
+		time.Sleep(5 * time.Second)
+
+		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
+		initialMessage := models.ChatMessage{"owncast-server", config.Config.InstanceDetails.Name, initialChatMessageText, config.Config.InstanceDetails.Logo["small"], "initial-message-1", "CHAT", true, time.Now()}
+		c.Write(initialMessage)
+	}()
+
 }

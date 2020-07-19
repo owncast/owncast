@@ -32,6 +32,9 @@ const VIDEO_SRC = {
 const VIDEO_OPTIONS = {
   autoplay: false,
   liveui: true, // try this
+  liveTracker: {
+    trackingThreshold: 0,
+  },
   sources: [VIDEO_SRC],
 };
 
@@ -39,6 +42,7 @@ const VIDEO_OPTIONS = {
 const KEY_USERNAME = 'owncast_username';
 const KEY_AVATAR = 'owncast_avatar';
 const KEY_CHAT_DISPLAYED = 'owncast_chat';
+const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
 
 const TIMER_STATUS_UPDATE = 5000; // ms
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
@@ -154,4 +158,11 @@ function secondsToHMMSS(seconds = 0) {
   const secsString = secs < 10 ? `0${secs}` : `${secs}`;
 
   return hoursString + minString + secsString;
+}
+
+function setVHvar() {
+  var vh = window.innerHeight * 0.01;
+  // Then we set the value in the --vh custom property to the root of the document
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+  console.log("== new vh", vh)
 }
