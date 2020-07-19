@@ -73,14 +73,14 @@ class MessagingInterface {
 
 		this.initLocalStates();
 
-		if (hasTouchScreen()) {
-			this.scrollableMessagesContainer = document.body;
-			this.tagAppContainer.classList.add('touch-screen');
-			window.onorientationchange = this.handleOrientationChange.bind(this);
-			this.handleOrientationChange();
-		} else {
-			this.tagAppContainer.classList.add('desktop');
-		}
+		// if (hasTouchScreen()) {
+		// 	this.scrollableMessagesContainer = document.body;
+		// 	this.tagAppContainer.classList.add('touch-screen');
+		// 	window.onorientationchange = this.handleOrientationChange.bind(this);
+		// 	this.handleOrientationChange();
+		// } else {
+		// 	this.tagAppContainer.classList.add('desktop');
+		// }
 	}
 
 	setWebsocket(socket) {
@@ -113,7 +113,7 @@ class MessagingInterface {
 			this.tagAppContainer.classList.remove('chat');
 		}
 	}
-
+/*
 	handleOrientationChange() {
 		var isPortrait = Math.abs(window.orientation % 180) === 0;
 		if(!isPortrait) {
@@ -128,6 +128,7 @@ class MessagingInterface {
 			this.tagAppContainer.classList.remove('landscape');
 		}
 	}
+	*/
 	
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;

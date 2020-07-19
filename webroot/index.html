@@ -84,7 +84,7 @@
         </section>
      </main>
 
-      <section id="user-content" v-if="layout === 'desktop'" aria-label="User information">
+      <section id="user-content" aria-label="User information">
         <user-details
           v-bind:logo="logo"
           v-bind:platforms="socialHandles"
@@ -96,13 +96,13 @@
 
       </section>
 
-      <owncast-footer v-if="layout === 'desktop'" v-bind:app-version="appVersion"></owncast-footer>
+      <owncast-footer v-bind:app-version="appVersion"></owncast-footer>
 
     </div>
 
     <section id="chat-container-wrap" class="flex">
 
-      <div v-if="layout !== 'desktop'" id="user-content-touch">
+      <!-- <div v-if="layout !== 'desktop'" id="user-content-touch">
         <user-details
           v-bind:logo="logo"
           v-bind:platforms="socialHandles"
@@ -114,7 +114,7 @@
 
         <owncast-footer v-bind:app-version="appVersion"></owncast-footer>       
         
-      </div>
+      </div> -->
 
       <div id="chat-container" class="bg-gray-800">        
         <div id="messages-container">

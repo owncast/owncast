@@ -46,7 +46,7 @@ class Owncast {
       el: '#app-container',
       data: {
         isOnline: false,
-        layout: hasTouchScreen() ? 'touch' : 'desktop',
+        // layout: hasTouchScreen() ? 'touch' : 'desktop',
         messages: [],
         overallMaxViewerCount: 0,
         sessionMaxViewerCount: 0,
