@@ -59,7 +59,7 @@
 
       </header>
 
-      <main v-bind:class="{ online: isOnline }">
+      <main v-bind:class="{ online: playerOn }">
         <div
           id="video-container"
           class="flex owncast-video-container bg-black"
@@ -101,24 +101,9 @@
     </div>
 
     <section id="chat-container-wrap" class="flex">
-
-      <!-- <div v-if="layout !== 'desktop'" id="user-content-touch">
-        <user-details
-          v-bind:logo="logo"
-          v-bind:platforms="socialHandles"
-          v-bind:summary="summary"
-          v-bind:tags="tags"
-        >{{streamerName}}</user-details>
-
-        <div v-html="extraUserContent" class="extra-user-content">{{extraUserContent}}</div>
-
-        <owncast-footer v-bind:app-version="appVersion"></owncast-footer>       
-        
-      </div> -->
-
       <div id="chat-container" class="bg-gray-800">        
         <div id="messages-container">
-          <div v-for="message in messages">
+          <div v-for="message in messages" v-cloak>
               <div class="message flex">
                 <img
                   v-bind:src="message.image"
@@ -153,14 +138,9 @@
               > Chat
               </button>
             </div>
-    
           </form>
         </div>
-
       </div>
-
-
-
     </section>
 
   </div>
