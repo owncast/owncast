@@ -78,6 +78,7 @@ class MessagingInterface {
 			window.addEventListener("orientationchange", setVHvar);
 			this.tagAppContainer.classList.add('touch-screen');
 		}
+
 	}
 
 	setWebsocket(socket) {

@@ -56,12 +56,6 @@ func (s *server) err(err error) {
 	s.errCh <- err
 }
 
-func (s *server) sendPastMessages(c *Client) {
-	for _, msg := range s.Messages {
-		c.Write(msg)
-	}
-}
-
 func (s *server) sendAll(msg models.ChatMessage) {
 	for _, c := range s.Clients {
 		c.Write(msg)
@@ -104,7 +98,6 @@ func (s *server) Listen() {
 			s.Clients[c.id] = c
 
 			s.listener.ClientAdded(c.id)
-			s.sendPastMessages(c)
 
 		// remove a client
 		case c := <-s.delCh:

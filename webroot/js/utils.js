@@ -32,6 +32,9 @@ const VIDEO_SRC = {
 const VIDEO_OPTIONS = {
   autoplay: false,
   liveui: true, // try this
+  liveTracker: {
+    trackingThreshold: 0,
+  },
   sources: [VIDEO_SRC],
 };
 
