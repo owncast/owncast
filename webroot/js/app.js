@@ -1,7 +1,6 @@
 class Owncast {
   constructor() {
     this.player;    
-    this.streamStatus = null;
 
     this.websocket = null;
     this.configData;
@@ -14,10 +13,10 @@ class Owncast {
     this.offlineTimer = null;
     this.statusTimer = null;
     this.disableChatTimer = null;
+    this.streamDurationTimer = null;
 
     // misc
-    this.streamIsOnline = false;
-    this.lastDisconnectTime = null;
+    this.streamStatus = null;
 
     Vue.filter('plural', pluralize);
 
@@ -36,6 +35,7 @@ class Owncast {
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
     this.handlePlayerEnded = this.handlePlayerEnded.bind(this);
     this.handlePlayerError = this.handlePlayerError.bind(this);
+    this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
   }
 
   init() {
@@ -45,7 +45,7 @@ class Owncast {
     this.vueApp = new Vue({
       el: '#app-container',
       data: {
-        isOnline: false,
+        playerOn: false,
         messages: [],
         overallMaxViewerCount: 0,
         sessionMaxViewerCount: 0,
@@ -201,8 +201,32 @@ class Owncast {
       });
   };
 
+  // fetch chat history
+  getChatHistory() {
+    fetch(URL_CHAT_HISTORY)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok ${response.ok}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const formattedMessages = data.map(function (message) {
+        return new Message(message);
+      })
+      this.vueApp.messages = formattedMessages.concat(this.vueApp.messages);
+    })
+    .catch(error => {
+      this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
+    });
+  }
+
+
   // handle UI things from stream status result
-  updateStreamStatus(status) {
+  updateStreamStatus(status = {}) {
+    if (!status) {
+      return;
+    }
     // update UI
     this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
     this.vueApp.viewerCount = status.viewerCount;
@@ -211,14 +235,25 @@ class Owncast {
 
     this.lastDisconnectTime = status.lastDisconnectTime;
 
-    if (status.online && !this.streamIsOnline) {
-      // stream has just come online.
-      this.handleOnlineMode();
-    } else if (!status.online && !this.streamStatus) {
-      // stream has just gone offline.
+    if (!this.streamStatus) {
       // display offline mode the first time we get status, and it's offline.
-      this.handleOfflineMode();
+      if (!status.online) {
+        this.handleOfflineMode();
+      } else {
+        this.handleOnlineMode();
+      }
+    } else {
+      if (status.online && !this.streamStatus.online) {
+        // stream has just come online.
+        this.handleOnlineMode();
+      } else if (!status.online && this.streamStatus.online) {
+        // stream has just flipped offline.
+        this.handleOfflineMode();
+      }
     }
+
+    // keep a local copy
+    this.streamStatus = status;
 
     if (status.online) {
       // only do this if video is paused, so no unnecessary img fetches
@@ -226,22 +261,30 @@ class Owncast {
         this.player.setPoster();
       }
     }
-
-    this.streamStatus = status;
   };
+  
+  // update vueApp.streamStatus text when online
+  setCurrentStreamDuration() {
+    // Default to something
+    let streamDurationString = '';
+
+    if (this.streamStatus.lastConnectTime) {
+      const diff = (Date.now() - Date.parse(this.streamStatus.lastConnectTime)) / 1000;
+      streamDurationString = secondsToHMMSS(diff);
+    }
+    this.vueApp.streamStatus = `${MESSAGE_ONLINE} ${streamDurationString}.`
+  }
   
   handleNetworkingError(error) {
     console.log(`>>> App Error: ${error}`)
   };
 
-  // basically hide video and show underlying "poster"
+  // stop status timer and disable chat after some time.
   handleOfflineMode() {
-    this.streamIsOnline = false;
-    this.vueApp.isOnline = false;
+    clearInterval(this.streamDurationTimer);
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
-
-    if (this.lastDisconnectTime) {
-      const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.lastDisconnectTime));
+    if (this.streamStatus) {
+      const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.streamStatus.lastDisconnectTime));
       const countdown = (remainingChatTime < 0) ? 0 : remainingChatTime;
       this.disableChatTimer = setTimeout(this.messagingInterface.disableChat, countdown);
     }
@@ -249,14 +292,16 @@ class Owncast {
 
   // play video!
   handleOnlineMode() {
-    this.streamIsOnline = true;
-    this.vueApp.isOnline = true;
+    this.vueApp.playerOn = true;
     this.vueApp.streamStatus = MESSAGE_ONLINE;
 
     this.player.startPlayer();
     clearTimeout(this.disableChatTimer);
     this.disableChatTimer = null;
     this.messagingInterface.enableChat();
+
+    this.streamDurationTimer =
+      setInterval(this.setCurrentStreamDuration, TIMER_STREAM_DURATION_COUNTER);
   }
 
   // when videojs player is ready, start polling for stream
@@ -271,28 +316,15 @@ class Owncast {
   };
 
 
+  // likely called some time after stream status has gone offline.
+  // basically hide video and show underlying "poster"
   handlePlayerEnded() {
-    // do something?
-    this.handleOfflineMode();
+    this.vueApp.playerOn = false;
   };
 
   handlePlayerError() {
     // do something?
     this.handleOfflineMode();
-    // stop timers?
+    this.handlePlayerEnded();
   };
-
-  async getChatHistory() {
-    const url = "/chat";
-    const response = await fetch(url);
-    const data = await response.json();
-    const messages = data.map(function (message) {
-      return new Message(message);
-    })
-    this.setChatHistory(messages);
-  }
-
-  setChatHistory(messages) {
-    this.vueApp.messages = messages.concat(this.vueApp.messages);
-  }
 };

@@ -4,6 +4,7 @@ const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 
 const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
 const URL_STATUS = `${URL_PREFIX}/status`;
+const URL_CHAT_HISTORY = `${URL_PREFIX}/chat`;
 const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
 const URL_WEBSOCKET = LOCAL_TEST 
   ? 'wss://goth.land/entry'
@@ -47,11 +48,16 @@ const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
 const TIMER_STATUS_UPDATE = 5000; // ms
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
+const TIMER_STREAM_DURATION_COUNTER = 1000;
 
 const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 const MESSAGE_OFFLINE = 'Stream is offline.';
-const MESSAGE_ONLINE = 'Stream is online.';
+const MESSAGE_ONLINE = 'Stream is online';
+
+const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
+const CHAT_PLACEHOLDER_TEXT = 'Message';
+const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
 
 
 function getLocalStorage(key) {
@@ -143,6 +149,21 @@ function generateAvatar(hash) {
 
 function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
+}
+
+function secondsToHMMSS(seconds = 0) {
+  const finiteSeconds = Number.isFinite(+seconds) ? Math.abs(seconds) : 0;
+
+  const hours = Math.floor(finiteSeconds / 3600);
+  const hoursString = hours ? `${hours}:` : '';
+
+  const mins = Math.floor((finiteSeconds / 60) % 60);
+  const minString = mins < 10 ? `0${mins}:` : `${mins}:`;
+
+  const secs = Math.floor(finiteSeconds % 60);
+  const secsString = secs < 10 ? `0${secs}` : `${secs}`;
+
+  return hoursString + minString + secsString;
 }
 
 function setVHvar() {
