@@ -74,12 +74,9 @@ class MessagingInterface {
 		this.initLocalStates();
 
 		if (hasTouchScreen()) {
-			this.scrollableMessagesContainer = document.body;
+			setVHvar();
+			window.addEventListener("orientationchange", setVHvar);
 			this.tagAppContainer.classList.add('touch-screen');
-			window.onorientationchange = this.handleOrientationChange.bind(this);
-			this.handleOrientationChange();
-		} else {
-			this.tagAppContainer.classList.add('desktop');
 		}
 
 	}
@@ -115,20 +112,6 @@ class MessagingInterface {
 		}
 	}
 
-	handleOrientationChange() {
-		var isPortrait = Math.abs(window.orientation % 180) === 0;
-		if(!isPortrait) {
-			if (document.body.clientWidth < 1024) {
-				this.tagAppContainer.classList.add('no-chat');
-				this.tagAppContainer.classList.add('landscape');
-			}
-		} else {
-			if (this.chatDisplayed) {
-				this.tagAppContainer.classList.remove('no-chat');
-			}
-			this.tagAppContainer.classList.remove('landscape');
-		}
-	}
 	
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
@@ -249,7 +232,6 @@ class MessagingInterface {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = "Chat is offline."
 		}
-		// also show "disabled" text/message somewhere.
 	}
 	enableChat() {
 		if (this.formMessageInput) {
