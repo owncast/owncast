@@ -55,6 +55,10 @@ const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALA
 const MESSAGE_OFFLINE = 'Stream is offline.';
 const MESSAGE_ONLINE = 'Stream is online';
 
+const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
+const CHAT_PLACEHOLDER_TEXT = 'Message';
+const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
+
 
 function getLocalStorage(key) {
   try {

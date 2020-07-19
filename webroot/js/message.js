@@ -237,7 +237,7 @@ class MessagingInterface {
 	disableChat() {
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
-			this.formMessageInput.placeholder = "Chat is offline."
+			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;
 		}
 	}
 	enableChat() {
@@ -248,11 +248,8 @@ class MessagingInterface {
 	}
 
 	setChatPlaceholderText() {
-		const firstMessageChatPlacholderText = "Type here to chat, no account necessary.";
-		const chatPlaceholderText = "Message"
-
 		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
-		this.formMessageInput.placeholder = hasSentFirstChatMessage ? chatPlaceholderText : firstMessageChatPlacholderText
+		this.formMessageInput.placeholder = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT
 	}
 
 	// handle Vue.js message display
