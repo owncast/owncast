@@ -418,6 +418,8 @@ h2 {
 
 .message-content {
   font-size: .85em;
+  max-width: 85%;
+  word-wrap: break-word;
 }
 .message-content a {
   color: #7F9CF5; /* indigo-400 */
