@@ -78,9 +78,9 @@
 
         <section id="stream-info" aria-label="Stream status" v-cloak class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid">
           <span>{{ streamStatus }}</span>
-          <span>{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
-          <span>Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
-          <span>{{ overallMaxViewerCount }} overall.</span>        
+          <span v-if="isOnline">{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
+          <span v-if="isOnline">Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
+          <span v-if="isOnline">{{ overallMaxViewerCount }} overall.</span>
         </section>
      </main>
 

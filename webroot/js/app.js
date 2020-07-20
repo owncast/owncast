@@ -51,6 +51,7 @@ class Owncast {
         sessionMaxViewerCount: 0,
         streamStatus: MESSAGE_OFFLINE, // Default state.
         viewerCount: 0,
+        isOnline: false,
   
         // from config
         appVersion: '',
@@ -281,6 +282,7 @@ class Owncast {
 
   // stop status timer and disable chat after some time.
   handleOfflineMode() {
+    this.vueApp.isOnline = false;
     clearInterval(this.streamDurationTimer);
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
     if (this.streamStatus) {
@@ -293,6 +295,7 @@ class Owncast {
   // play video!
   handleOnlineMode() {
     this.vueApp.playerOn = true;
+    this.vueApp.isOnline = true;
     this.vueApp.streamStatus = MESSAGE_ONLINE;
 
     this.player.startPlayer();
