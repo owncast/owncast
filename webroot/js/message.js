@@ -93,6 +93,7 @@ class MessagingInterface {
 
 		this.chatDisplayed = getLocalStorage(KEY_CHAT_DISPLAYED) || true;
 		this.displayChat();
+		this.disableChat(); // Disabled by default.
 	}
 
 	updateUsernameFields(username) {
