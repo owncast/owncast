@@ -124,11 +124,11 @@
         <div id="messages-container">
           <div v-for="message in messages" v-cloak>
               <div class="message flex">
-                <img
-                  v-bind:src="message.image"
-                  class="message-avatar rounded-full bg-black bg-opacity-50"
-                  v-bind:style="{ backgroundColor: message.userColor() }"
-                />
+                <div class="message-avatar rounded-full flex items-center justify-center" v-bind:style="{ backgroundColor: message.userColor() }">
+                  <img
+                    v-bind:src="message.image"
+                  />
+                </div>
                 <div class="message-content">
                   <p class="message-author text-white font-bold">{{ message.author }}</p>
                   <p class="message-text text-gray-400 font-thin " v-html="message.formatText()"></p>

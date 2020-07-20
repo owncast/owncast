@@ -407,10 +407,15 @@ h2 {
   align-items: flex-start;
 }
 .message-avatar {
-  height: 2.5em;
-  width: 2.5em;
   margin-right: .75em;
 }
+.message-avatar img {
+  max-width: unset;
+  height: 25.em;
+  width: 2.5em;
+  padding: 6px;
+}
+
 .message-content {
   font-size: .85em;
 }
