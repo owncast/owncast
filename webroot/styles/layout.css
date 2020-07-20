@@ -411,9 +411,9 @@ h2 {
 }
 .message-avatar img {
   max-width: unset;
-  height: 25.em;
-  width: 2.5em;
-  padding: 6px;
+  height: 3.0em;
+  width: 3.0em;
+  padding: 5px;
 }
 
 .message-content {
