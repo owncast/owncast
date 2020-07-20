@@ -19,7 +19,6 @@ type config struct {
 	EnableDebugFeatures  bool            `yaml:"-"`
 	FFMpegPath           string          `yaml:"ffmpegPath"`
 	Files                files           `yaml:"files"`
-	IPFS                 ipfs            `yaml:"ipfs"`
 	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
 	PrivateHLSPath       string          `yaml:"privateHLSPath"`
 	PublicHLSPath        string          `yaml:"publicHLSPath"`
@@ -78,11 +77,6 @@ type files struct {
 	MaxNumberInPlaylist int `yaml:"maxNumberInPlaylist"`
 }
 
-type ipfs struct {
-	Enabled bool   `yaml:"enabled"`
-	Gateway string `yaml:"gateway"`
-}
-
 //s3 is for configuring the s3 integration
 type s3 struct {
 	Enabled   bool   `yaml:"enabled"`
@@ -117,10 +111,6 @@ func (c *config) load(filePath string) error {
 func (c *config) verifySettings() error {
 	if c.VideoSettings.StreamingKey == "" {
 		return errors.New("No stream key set. Please set one in your config file.")
-	}
-
-	if c.S3.Enabled && c.IPFS.Enabled {
-		return errors.New("s3 and IPFS support cannot be enabled at the same time; choose one")
 	}
 
 	if c.S3.Enabled {

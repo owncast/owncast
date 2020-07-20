@@ -74,9 +74,3 @@ s3:
   secret: lolomgqwtf49583949
   region: us-west-2
   bucket: myvideo
-
-# Experimental IPFS support to store segments in the IPFS network.
-# https://ipfs.io/#how.
-ipfs:
-  enabled: false
-  gateway: https://ipfs.io

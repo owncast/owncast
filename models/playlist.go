@@ -5,7 +5,7 @@ type Segment struct {
 	VariantIndex       int    // The bitrate variant
 	FullDiskPath       string // Where it lives on disk
 	RelativeUploadPath string // Path it should have remotely
-	RemoteID           string // Used for IPFS
+	RemoteID           string
 }
 
 //Variant represents a single bitrate variant and the segments that make it up

@@ -98,7 +98,6 @@ Three ways of storing and distributing the video are supported.
 
 1. [Locally](#local-file-distribution) via the built-in web server.
 2. [S3-compatible storage](#s3-compatible-storage).
-3. Experimental [IPFS](#ipfs) support.
 
 ### Local file distribution
 
@@ -109,17 +108,6 @@ This is the simplest and works out of the box.  In this scenario video will be s
 Enable S3 support in `config.yaml` and add your access credentials. Files will be distributed from a S3 bucket that you have created for this purpose.  This is a good option for almost any case since S3 is cheap and you don't have to worry about your own bandwidth.
 
 Please read the [more detailed documentation about configuration of S3-Compatible Services](https://github.com/gabek/owncast/blob/master/doc/S3.md).
-
-### IPFS
-
-From the [IPFS website](https://ipfs.io/):
-
-> Peer-to-peer IPFS saves big on bandwidth — up to 60% for video — making it possible to efficiently distribute high volumes of data without duplication.
-
-Enable experimental IPFS support and your video will be distributed through the [IPFS network](https://ipfs.io/#how).  In this scenario viewers will stream the video from IPFS nodes instead of the server running the service.  This is free but **can be very slow**.  It can also be just fine, you'll have to experiment for yourself.  It can sometimes take too long for the network to get the video to the user, resulting in delays and heavy buffering.  Try it if you like and make any suggestions on how to make it better so everyone can have free global video distribution without paying for a CDN or a 3rd party storage service.
-
-By editing the config file you can change what IPFS gateway server is used, and you can experiment with [trying different ones](https://ipfs.github.io/public-gateway-checker/).
-
 
 ## Building from Source
 

@@ -180,7 +180,7 @@ func NewTranscoder() Transcoder {
 	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
 
 	var outputPath string
-	if config.Config.S3.Enabled || config.Config.IPFS.Enabled {
+	if config.Config.S3.Enabled {
 		// Segments are not available via the local HTTP server
 		outputPath = config.Config.GetPrivateHLSSavePath()
 	} else {

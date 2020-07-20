@@ -11,10 +11,7 @@ var (
 )
 
 func setupStorage() error {
-	if config.Config.IPFS.Enabled {
-		_storage = &storageproviders.IPFSStorage{}
-		usingExternalStorage = true
-	} else if config.Config.S3.Enabled {
+	if config.Config.S3.Enabled {
 		_storage = &storageproviders.S3Storage{}
 		usingExternalStorage = true
 	}
