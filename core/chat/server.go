@@ -126,7 +126,8 @@ func (s *server) Listen() {
 
 func (s *server) sendWelcomeMessageToClient(c *Client) {
 	go func() {
-		time.Sleep(5 * time.Second)
+		// Add an artificial delay so people notice this message come in.
+		time.Sleep(7 * time.Second)
 
 		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
 		initialMessage := models.ChatMessage{"owncast-server", config.Config.InstanceDetails.Name, initialChatMessageText, config.Config.InstanceDetails.Logo["small"], "initial-message-1", "CHAT", true, time.Now()}
