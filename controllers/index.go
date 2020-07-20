@@ -58,12 +58,13 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(path.Join("static", "metadata.html")))
 
 	fullURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, r.URL.Path))
-
 	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, config.Config.InstanceDetails.Logo["large"]))
 
-	// If the thumbnail does not exist then just use the logo image
+	status := core.GetStatus()
+
+	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string
-	if utils.DoesFileExists("webroot/thumbnail.jpg") {
+	if status.Online && utils.DoesFileExists("webroot/thumbnail.jpg") {
 		thumbnail, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/thumbnail.jpg"))
 		if err != nil {
 			log.Errorln(err)
