@@ -154,9 +154,6 @@ footer span {
 .stream-summary {
   margin: 1em 0;
 }
-.extra-user-content {
-  padding: 1em 3em 3em 3em;
-  }
 
 h2 {
   font-size: 3em; 
@@ -211,14 +208,6 @@ h2 {
   text-transform: uppercase;
   display: inline-block;
   max-width: 10em;
-}
-
-.extra-user-content ol {
-  list-style: decimal;
-}
-
-.extra-user-content ul {
-  list-style: unset;
 }
 
 
@@ -523,3 +512,103 @@ h2 {
   }
 }
 
+.extra-user-content {
+  padding: 1em 3em 3em 3em;
+}
+
+.extra-user-content ol {
+  list-style: decimal;
+}
+
+.extra-user-content ul {
+  list-style: unset;
+}
+
+.extra-user-content h1, .extra-user-content h2, .extra-user-content h3, .extra-user-content h4 {
+  color: #111111;
+  font-weight: 400; }
+
+.extra-user-content h1, .extra-user-content h2, .extra-user-content h3, .extra-user-content h4, .extra-user-content h5, .extra-user-content p {
+  margin-bottom: 24px;
+  padding: 0; }
+
+.extra-user-content h1 {
+  font-size: 48px; }
+
+.extra-user-content h2 {
+  font-size: 36px;
+  margin: 24px 0 6px; }
+
+.extra-user-content h3 {
+  font-size: 24px; }
+
+.extra-user-content h4 {
+  font-size: 21px; }
+
+.extra-user-content h5 {
+  font-size: 18px; }
+
+.extra-user-content a {
+  color: #0099ff;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline; }
+
+.extra-user-content ul, .extra-user-content ol {
+  padding: 0;
+  margin: 0; }
+
+.extra-user-content li {
+  line-height: 24px; }
+
+.extra-user-content li ul, .extra-user-content li ul {
+  margin-left: 24px; }
+
+.extra-user-content p, .extra-user-content ul, .extra-user-content ol {
+  font-size: 16px;
+  line-height: 24px;
+  }
+
+.extra-user-content pre {
+  padding: 0px 24px;
+  max-width: 800px;
+  white-space: pre-wrap; }
+
+.extra-user-content code {
+  font-family: Consolas, Monaco, Andale Mono, monospace;
+  line-height: 1.5;
+  font-size: 13px; }
+
+.extra-user-content aside {
+  display: block;
+  float: right;
+  width: 390px; }
+
+.extra-user-content blockquote {
+  margin: 1em 2em;
+  max-width: 476px; }
+
+.extra-user-content blockquote p {
+  color: #666;
+  max-width: 460px; }
+
+.extra-user-content hr {
+  width: 540px;
+  text-align: left;
+  margin: 0 auto 0 0;
+  color: #999; }
+
+.extra-user-content table {
+  border-collapse: collapse;
+  margin: 1em 1em;
+  border: 1px solid #CCC; }
+
+.extra-user-content table thead {
+  background-color: #EEE; }
+
+.extra-user-content table thead td {
+  color: #666; }
+
+.extra-user-content table td {
+  padding: 0.5em 1em;
+  border: 1px solid #CCC; }
