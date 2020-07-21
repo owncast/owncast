@@ -30,6 +30,8 @@
   <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
   <script src="vendor/autolink.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@3.1.1/dist/index.min.js"></script>
+
   <link href="./styles/layout.css" rel="stylesheet" />
 </head>
 
@@ -156,14 +158,14 @@
           <form id="message-form" class="flex">
 
             <input type="hidden" name="inputAuthor" id="self-message-author" />
-            
             <textarea
               disabled
               id="message-body-form"
               placeholder="Message"
               class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
             ></textarea>
-            
+              <div id="emoji-button">😏</div>
+
             <div id="message-form-actions" class="flex">
               <span id="message-form-warning" class="text-red-600 text-xs"></span>
               <button
