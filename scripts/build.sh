@@ -60,9 +60,9 @@ build() {
   rm -rf dist/${NAME}/
 }
 
-#for i in "${!DISTRO[@]}"; do
-# build ${DISTRO[$i]} ${OS[$i]} ${ARCH[$i]} $VERSION $GIT_COMMIT
-#done
+for i in "${!DISTRO[@]}"; do
+  build ${DISTRO[$i]} ${OS[$i]} ${ARCH[$i]} $VERSION $GIT_COMMIT
+done
 
 # Create the tag
 # git tag -a "v${VERSION}" -m "Release build v${VERSION}"
