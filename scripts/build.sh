@@ -60,9 +60,9 @@ build() {
   rm -rf dist/${NAME}/
 }
 
-for i in "${!DISTRO[@]}"; do
-  build ${DISTRO[$i]} ${OS[$i]} ${ARCH[$i]} $VERSION $GIT_COMMIT
-done
+#for i in "${!DISTRO[@]}"; do
+# build ${DISTRO[$i]} ${OS[$i]} ${ARCH[$i]} $VERSION $GIT_COMMIT
+#done
 
 # Create the tag
 # git tag -a "v${VERSION}" -m "Release build v${VERSION}"
@@ -81,6 +81,12 @@ done
 # # Change to the root directory of the repository
 # cd $(git rev-parse --show-toplevel)
 #
+# Github Packages
 # docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t owncast . -f scripts/Dockerfile-build
 # docker tag $DOCKER_IMAGE docker.pkg.github.com/gabek/owncast/$DOCKER_IMAGE:$VERSION
 # docker push docker.pkg.github.com/gabek/owncast/$DOCKER_IMAGE:$VERSION
+#
+# Dockerhub
+# You must be authenticated via `docker login` with your Dockerhub credentials first.
+# docker tag owncast gabekangas/owncast:$VERSION
+# docker push gabekangas/owncast

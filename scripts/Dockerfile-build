@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ARG NAME
 ENV NAME=${NAME}
 
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflags \"-static\" -X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -o owncast .
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflags \"-static\" -s -w -X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -o owncast .
 
 WORKDIR /app
 CMD ["/app/owncast", "-enableVerboseLogging"]
