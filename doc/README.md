@@ -6,4 +6,5 @@
 * [FAQ](faq.md)
 * [Quickstart](quickstart.md)
 * [Configuration](configuration.md)
+* [Encoding](encoding.md)
 * [S3 Storage](S3.md)

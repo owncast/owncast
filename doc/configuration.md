@@ -26,6 +26,8 @@ You can edit the `config.yaml` file and add as many stream _variants_ as you lik
       bitrate: 800
 ```
 
+Please visit the [Encoding](encoding.md) document to learn about how the video pipeline with Owncast works and how you can tweak it for the best results with your specific hardware and video configurations.
+
 ### Important caveats
 
 #### CPU Usage
