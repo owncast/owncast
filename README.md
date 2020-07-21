@@ -27,6 +27,7 @@
   * [Prerequisites](#prerequisites)
   * [Getting Started](#getting-started)
   * [Configuration](#configuration)
+  * [Web Interface & Chat](#web-interface--chat)
 * [Use with your software](#use-with-your-desktop-software)
   * [OBS & Streamlabs](#usage-with-obs)
   * [Restream](#usage-with-restream)
@@ -73,6 +74,15 @@ The goal is to have a single service that you can run and it works out of the bo
 ## Configuration
 
 Many aspects can be adjusted and customized to your preferences.  [Read more about Configuration](/doc/configuration.md) to update the web UI and video easily.
+
+## Web interface + chat
+
+Owncast includes a web interface to your video with built-in chat that is available once you start the server.  It shows online/offline states, viewer counts, stream duration, your instance's description, images, links and more.  You can just start using it without making any changes and it'll reflect whatever you put in the config file.
+
+If you want to add some additional content you can edit the [`/webroot/static/content.md`](https://github.com/gabek/owncast/blob/master/webroot/static/content-example.md) file.  Anything you put in this using [markdown](https://www.markdownguide.org/) or HTML will display on the page without you having to touch the existing page.  Some ideas here: Your Patreon or Paypal link to support donations, an embed of a Soundcloud track, some images, or an embedded social feed.
+
+However, the web interface was specifically built to be editable by anybody comfortable tweaking a web page.  It's not bundled or transpiled into anything, it's just HTML + Javascript + CSS that you can start editing.  Feel free to add your own branding, links, change the colors in the CSS, fonts, layout, or anything else you could possibly want.  No development environment is needed, just open the files in an editor and start tweaking.
+
 
 ## Use with your desktop software
 
