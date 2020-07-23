@@ -286,7 +286,7 @@ class Owncast {
     clearInterval(this.streamDurationTimer);
     this.vueApp.streamStatus = MESSAGE_OFFLINE;
     if (this.streamStatus) {
-      const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.streamStatus.lastDisconnectTime));
+      const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.lastDisconnectTime));
       const countdown = (remainingChatTime < 0) ? 0 : remainingChatTime;
       this.disableChatTimer = setTimeout(this.messagingInterface.disableChat, countdown);
     }

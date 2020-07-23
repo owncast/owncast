@@ -29,6 +29,7 @@ func GetStatus() models.Status {
 func SetStreamAsConnected() {
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
+	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
 
 	timeSinceDisconnect := time.Since(_stats.LastDisconnectTime.Time).Minutes()
 	if timeSinceDisconnect > 15 {
