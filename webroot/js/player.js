@@ -17,7 +17,17 @@ class OwncastPlayer {
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
   }
+
   init() {
+    videojs.Hls.xhr.beforeRequest = function (options) {
+      const cachebuster = Math.round(new Date().getTime() / 1000);
+      options.uri = options.uri + "?omgwtf=" + cachebuster;
+      options.headers = {
+        'Cache-Control':'no-cache'
+      };
+      return options;
+    };
+
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
@@ -35,9 +45,7 @@ class OwncastPlayer {
   // play
   startPlayer() {
     this.log('Start playing');
-    const cachebuster = Math.round(new Date().getTime() / 1000);
     const source = { ...VIDEO_SRC }
-    source.src = source.src + "?okhi=" + cachebuster
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   };
