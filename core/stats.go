@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
+	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -17,6 +18,8 @@ import (
 const (
 	statsFilePath = "stats.json"
 )
+
+var l = sync.Mutex{}
 
 func setupStats() error {
 	s, err := getSavedStats()
@@ -82,7 +85,9 @@ func SetClientActive(clientID string) {
 	// 	fmt.Println("Marking client active:", clientID, s.GetViewerCount()+1, "clients connected.")
 	// }
 
+	l.Lock()
 	_stats.Clients[clientID] = time.Now()
+	l.Unlock()
 	_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Clients)), float64(_stats.SessionMaxViewerCount)))
 	_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
 }
