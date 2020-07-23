@@ -197,6 +197,15 @@ func (c *config) GetVideoStreamQualities() []StreamQuality {
 	return _default.VideoSettings.StreamQualities
 }
 
+// GetFramerate returns the framerate or default
+func (q *StreamQuality) GetFramerate() int {
+	if q.Framerate > 0 {
+		return q.Framerate
+	}
+
+	return _default.VideoSettings.StreamQualities[0].Framerate
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)

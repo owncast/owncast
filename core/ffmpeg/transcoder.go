@@ -33,7 +33,7 @@ type HLSVariant struct {
 
 	videoSize          VideoSize // Resizes the video via scaling
 	framerate          int       // The output framerate
-	videoBitrate       string    // The output bitrate
+	videoBitrate       int       // The output bitrate
 	isVideoPassthrough bool      // Override all settings and just copy the video stream
 
 	audioBitrate       string // The audio bitrate
@@ -164,11 +164,11 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 		variant.encoderPreset = "veryfast"
 	}
 
-	variant.SetVideoBitrate(strconv.Itoa(quality.VideoBitrate) + "k")
+	variant.SetVideoBitrate(quality.VideoBitrate)
 	variant.SetAudioBitrate(strconv.Itoa(quality.AudioBitrate) + "k")
 	variant.SetVideoScalingWidth(quality.ScaledWidth)
 	variant.SetVideoScalingHeight(quality.ScaledHeight)
-	variant.SetVideoFramerate(quality.Framerate)
+	variant.SetVideoFramerate(quality.GetFramerate())
 
 	return variant
 }
@@ -196,13 +196,6 @@ func NewTranscoder() Transcoder {
 	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
 
 	qualities := config.Config.VideoSettings.StreamQualities
-	if len(qualities) == 0 {
-		defaultQuality := config.StreamQuality{}
-		defaultQuality.VideoBitrate = 1000
-		defaultQuality.EncoderPreset = "superfast"
-		qualities = append(qualities, defaultQuality)
-	}
-
 	for index, quality := range qualities {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
@@ -222,17 +215,7 @@ func (v *HLSVariant) getVariantString() string {
 		variantEncoderCommands = append(variantEncoderCommands, v.getScalingString())
 	}
 
-	if v.framerate == 0 {
-		v.framerate = 30
-	}
-
-	if v.framerate != 0 {
-		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-r %d", v.framerate))
-		// Insert a keyframe every 2 seconds.
-		// Multiply your output frame rate * 2. For example, if your input is -framerate 30, then use -g 60
-		variantEncoderCommands = append(variantEncoderCommands, "-g "+strconv.Itoa(v.framerate*2))
-		variantEncoderCommands = append(variantEncoderCommands, "-keyint_min "+strconv.Itoa(v.framerate*2))
-	}
+	variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-r %d", v.framerate))
 
 	if v.encoderPreset != "" {
 		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-preset %s", v.encoderPreset))
@@ -278,7 +261,7 @@ func (v *HLSVariant) getScalingString() string {
 // Video Quality
 
 // SetVideoBitrate will set the output bitrate of this variant's video
-func (v *HLSVariant) SetVideoBitrate(bitrate string) {
+func (v *HLSVariant) SetVideoBitrate(bitrate int) {
 	v.videoBitrate = bitrate
 }
 
@@ -288,7 +271,19 @@ func (v *HLSVariant) getVideoQualityString() string {
 	}
 
 	encoderCodec := "libx264"
-	return fmt.Sprintf("-map v:0 -c:v:%d %s -b:v:%d %s", v.index, encoderCodec, v.index, v.videoBitrate)
+
+	// -1 to work around segments being generated slightly larger than expected.
+	// https://trac.ffmpeg.org/ticket/6915?replyto=58#comment:57
+	gop := (config.Config.GetVideoSegmentSecondsLength() * v.framerate) - 1
+
+	// For limiting the output bitrate
+	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
+	// https://developer.apple.com/documentation/http_live_streaming/about_apple_s_http_live_streaming_tools
+	// Adjust the max & buffer size until the output bitrate doesn't exceed the ~+10% that Apple's media validator
+	// complains about.
+	maxBitrate := int(float64(v.videoBitrate) * 1.07) // Max is a ~+10% over specified bitrate.
+	bufferSize := int(float64(maxBitrate) * 1.5)      // How often it checks the bitrate of encoded segments to see if it's too high/low.
+	return fmt.Sprintf("-map v:0 -c:v:%d %s -b:v:%d %dk -maxrate:v:%d %dk -bufsize:v:%d %dk -g:v:%d %d -x264-params:v:%d \"scenecut=0:open_gop=0:min-keyint=%d:keyint=%d\"", v.index, encoderCodec, v.index, v.videoBitrate, v.index, maxBitrate, v.index, bufferSize, v.index, gop, v.index, gop, gop)
 }
 
 // SetVideoFramerate will set the output framerate of this variant's video
