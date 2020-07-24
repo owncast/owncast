@@ -1,28 +1,40 @@
 import { EmojiButton } from '/js/vendor/emojibutton.min.js'
-const picker = new EmojiButton({
-  zIndex: 100,
-  theme: 'dark',
-  custom: [
-    {
-      name: 'Owncast',
-      emoji: 'apple-icon.png'
+
+fetch('/emoji')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Network response was not ok ${response.ok}`);
     }
-  ]
-});
-const trigger = document.querySelector('#emoji-button');
+    return response.json();
+  })
+  .then(json => {
+    setupEmojiPickerWithCustomEmoji(json);
+  })
+  .catch(error => {
+    this.handleNetworkingError(`Emoji Fetch: ${error}`);
+  });
+
+function setupEmojiPickerWithCustomEmoji(customEmoji) {
+  const picker = new EmojiButton({
+    zIndex: 100,
+    theme: 'dark',
+    custom: customEmoji
+  });
+  const trigger = document.querySelector('#emoji-button');
 
 
-picker.on('emoji', selection => {
-  // handle the selected emoji here
-  console.log(selection);
-});
+  picker.on('emoji', selection => {
+    // handle the selected emoji here
+    console.log(selection);
+  });
 
-trigger.addEventListener('click', () => picker.togglePicker(trigger));
-picker.on('emoji', emoji => {
-  if (emoji.url) {
-    const url = location.protocol + "//" + location.host + "/" + emoji.url;
-    document.querySelector('#message-body-form').innerHTML += "<img width=30px src=\"" + url + "\"/>";
-  } else {
-    document.querySelector('#message-body-form').innerHTML += emoji.emoji;
-  }
-});
+  trigger.addEventListener('click', () => picker.togglePicker(trigger));
+  picker.on('emoji', emoji => {
+    if (emoji.url) {
+      const url = location.protocol + "//" + location.host + "/" + emoji.url;
+      document.querySelector('#message-body-form').innerHTML += "<img width=35px src=\"" + url + "\"/>";
+    } else {
+      document.querySelector('#message-body-form').innerHTML += emoji.emoji;
+    }
+  });
+}

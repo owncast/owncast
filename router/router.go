@@ -23,6 +23,9 @@ func Start() error {
 	// status of the system
 	http.HandleFunc("/status", controllers.GetStatus)
 
+	// custom emoji supported in the chat
+	http.HandleFunc("/emoji", controllers.GetCustomEmoji)
+
 	if !config.Config.DisableWebFeatures {
 		// websocket chat server
 		go chat.Start()
