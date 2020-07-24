@@ -380,6 +380,11 @@ h2 {
 #message-body-form:disabled{
   opacity: .5;
 }
+#message-body-form img {
+  display: inline;
+  padding-left: 5px;
+  padding-right: 5px;
+}
 #message-form-actions {
   flex-direction: row;
   justify-content: space-between;
@@ -387,6 +392,11 @@ h2 {
   width: 100%;
 }
 
+.message-text img {
+  display: inline;
+  padding-left: 5px;
+  padding-right: 5px;
+}
 
 /* ************************************************8 */
 

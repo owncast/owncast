@@ -1,6 +1,13 @@
 
 const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
+const URL_STATUS = `${URL_PREFIX}/status`;
+const URL_CHAT_HISTORY = `${URL_PREFIX}/chat`;
+const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
+const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+// const URL_WEBSOCKET = LOCAL_TEST
+//   ? 'wss://goth.land/entry'
+//   : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 
 const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
 const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
