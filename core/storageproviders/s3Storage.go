@@ -21,11 +21,12 @@ type S3Storage struct {
 	sess *session.Session
 	host string
 
-	s3Endpoint  string
-	s3Region    string
-	s3Bucket    string
-	s3AccessKey string
-	s3Secret    string
+	s3Endpoint        string
+	s3ServingEndpoint string
+	s3Region          string
+	s3Bucket          string
+	s3AccessKey       string
+	s3Secret          string
 }
 
 //Setup sets up the s3 storage for saving the video to s3
@@ -33,6 +34,7 @@ func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
 	s.s3Endpoint = config.Config.S3.Endpoint
+	s.s3ServingEndpoint = config.Config.S3.ServingEndpoint
 	s.s3Region = config.Config.S3.Region
 	s.s3Bucket = config.Config.S3.Bucket
 	s.s3AccessKey = config.Config.S3.AccessKey
@@ -71,6 +73,10 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
 
+	if s.s3ServingEndpoint != "" {
+		responseLocation := s.s3ServingEndpoint + "/" + filePath
+		return responseLocation, nil
+	}
 	return response.Location, nil
 }
 

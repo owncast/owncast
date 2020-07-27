@@ -79,12 +79,13 @@ type files struct {
 
 //s3 is for configuring the s3 integration
 type s3 struct {
-	Enabled   bool   `yaml:"enabled"`
-	Endpoint  string `yaml:"endpoint"`
-	AccessKey string `yaml:"accessKey"`
-	Secret    string `yaml:"secret"`
-	Bucket    string `yaml:"bucket"`
-	Region    string `yaml:"region"`
+	Enabled         bool   `yaml:"enabled"`
+	Endpoint        string `yaml:"endpoint"`
+	ServingEndpoint string `yaml:"servingEndpoint"`
+	AccessKey       string `yaml:"accessKey"`
+	Secret          string `yaml:"secret"`
+	Bucket          string `yaml:"bucket"`
+	Region          string `yaml:"region"`
 }
 
 func (c *config) load(filePath string) error {
