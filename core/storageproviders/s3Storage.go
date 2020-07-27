@@ -88,7 +88,7 @@ func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Varia
 			if fullRemotePath == nil {
 				line = ""
 			} else if s.s3ServingEndpoint != "" {
-				line = s.s3ServingEndpoint + "/" + fullRemotePath.RelativeUploadPath
+				line = s.s3ServingEndpoint + "/" + config.Config.PrivateHLSPath + "/" + fullRemotePath.RelativeUploadPath
 			} else {
 				line = fullRemotePath.RemoteID
 			}
