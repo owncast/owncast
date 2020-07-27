@@ -73,10 +73,6 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 
 	// fmt.Println("Uploaded", filePath, "to", response.Location)
 
-	if s.s3ServingEndpoint != "" {
-		responseLocation := s.s3ServingEndpoint + "/" + filePath
-		return responseLocation, nil
-	}
 	return response.Location, nil
 }
 
@@ -91,6 +87,8 @@ func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Varia
 			fullRemotePath := variant.GetSegmentForFilename(line)
 			if fullRemotePath == nil {
 				line = ""
+			} else if s.s3ServingEndpoint != "" {
+				line = s.s3ServingEndpoint + "/" + fullRemotePath.RelativeUploadPath
 			} else {
 				line = fullRemotePath.RemoteID
 			}
