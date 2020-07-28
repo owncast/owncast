@@ -70,6 +70,7 @@ files:
 s3:
   enabled: false
   endpoint: https://s3.us-west-2.amazonaws.com
+  servingEndpoint: https://yourcdn.example
   accessKey: ABC12342069
   secret: lolomgqwtf49583949
   region: us-west-2
