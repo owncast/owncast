@@ -26,6 +26,7 @@ type S3Storage struct {
 	s3Bucket    string
 	s3AccessKey string
 	s3Secret    string
+	s3ACL       string
 }
 
 //Setup sets up the s3 storage for saving the video to s3
@@ -37,6 +38,7 @@ func (s *S3Storage) Setup() error {
 	s.s3Bucket = config.Config.S3.Bucket
 	s.s3AccessKey = config.Config.S3.AccessKey
 	s.s3Secret = config.Config.S3.Secret
+	s.s3ACL = config.Config.S3.ACL
 
 	s.sess = s.connectAWS()
 
@@ -54,12 +56,15 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	defer file.Close()
 
 	uploader := s3manager.NewUploader(s.sess)
-
-	response, err := uploader.Upload(&s3manager.UploadInput{
+	uploadInput := &s3manager.UploadInput{
 		Bucket: aws.String(s.s3Bucket), // Bucket to be used
 		Key:    aws.String(filePath),   // Name of the file to be saved
 		Body:   file,                   // File
-	})
+	}
+	if s.s3ACL != "" {
+		uploadInput.ACL = aws.String(s.s3ACL)
+	}
+	response, err := uploader.Upload(uploadInput)
 
 	if err != nil {
 		log.Trace("error uploading:", err.Error())
