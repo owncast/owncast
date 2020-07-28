@@ -23,6 +23,7 @@ const SOCKET_MESSAGE_TYPES = {
 	CHAT: 'CHAT',
   PING: 'PING',
   NAME_CHANGE: 'NAME_CHANGE',
+  PONG: 'PONG'
 }
 
 // Video setup

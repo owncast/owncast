@@ -129,7 +129,7 @@ class Owncast {
     };
     // On ws error just close the socket and let it re-connect again for now.
     ws.onerror = e => {
-      this.handleNetworkingError(`Socket error: ${JSON.Parse(e)}`);
+      this.handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
       ws.close();
     };
     ws.onmessage = (e) => {
