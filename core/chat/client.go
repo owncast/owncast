@@ -121,8 +121,9 @@ func (c *Client) listenRead() {
 			if err != nil {
 				if err == io.EOF {
 					c.doneCh <- true
+				} else {
+					log.Errorln(err)
 				}
-				log.Errorln(err)
 				return
 			}
 
@@ -150,6 +151,7 @@ func (c *Client) userChangedName(data []byte) {
 		log.Errorln(err)
 	}
 	msg.Type = NAMECHANGE
+	msg.ID = shortid.MustGenerate()
 	_server.usernameChanged(msg)
 }
 
