@@ -229,7 +229,6 @@ class Owncast {
       return;
     }
     // update UI
-    this.vueApp.streamStatus = status.online ? MESSAGE_ONLINE : MESSAGE_OFFLINE;
     this.vueApp.viewerCount = status.viewerCount;
     this.vueApp.sessionMaxViewerCount = status.sessionMaxViewerCount;
     this.vueApp.overallMaxViewerCount = status.overallMaxViewerCount;
