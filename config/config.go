@@ -86,7 +86,7 @@ type s3 struct {
 	Secret          string `yaml:"secret"`
 	Bucket          string `yaml:"bucket"`
 	Region          string `yaml:"region"`
-  ACL             string `yaml:"acl"`
+	ACL             string `yaml:"acl"`
 }
 
 func (c *config) load(filePath string) error {
