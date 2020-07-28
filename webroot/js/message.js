@@ -156,7 +156,9 @@ class MessagingInterface {
 		}
 		this.handleHideChangeNameForm();
 
-		this.sendUsernameChange(oldName, newValue);
+		if (oldName !== newValue) {
+			this.sendUsernameChange(oldName, newValue, this.imgUsernameAvatar.src);
+		}
 	}
 
 	handleUsernameKeydown(event) {
@@ -167,15 +169,15 @@ class MessagingInterface {
 		}
 	}
 
-	sendUsernameChange(oldName, newName) {
+	sendUsernameChange(oldName, newName, image) {
 		const nameChange = {
 			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
 			oldName: oldName,
-			newName: newName
+			newName: newName,
+			image: image,
 		};
 
 		const jsonMessage = JSON.stringify(nameChange);
-		console.log(jsonMessage)
 
 		this.websocket.send(jsonMessage)
 	}

@@ -133,7 +133,6 @@ func (c *Client) listenRead() {
 			}
 
 			messageType := messageTypeCheck["type"]
-			fmt.Println(messageTypeCheck)
 
 			if messageType == CHAT {
 				c.chatMessageReceived(data)

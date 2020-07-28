@@ -139,12 +139,12 @@ class Owncast {
       if (model.type === SOCKET_MESSAGE_TYPES.PING) {
         this.sendPong(ws);
         return;
-      // Ignore non-chat messages (such as keepalive PINGs)
-      } else if (model.type !== SOCKET_MESSAGE_TYPES.CHAT) {
-        return; 
+      } else if (model.type === SOCKET_MESSAGE_TYPES.CHAT) {
+        const message = new Message(model);
+        this.addMessage(message);
+      } else if (model.type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
+        this.addMessage(model);
       }
-      const message = new Message(model);
-      this.addMessage(message);
     };
     this.websocket = ws;
     this.messagingInterface.setWebsocket(this.websocket);
