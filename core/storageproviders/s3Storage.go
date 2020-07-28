@@ -89,7 +89,7 @@ func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Varia
 			if fullRemotePath == nil {
 				line = ""
 			} else if s.s3ServingEndpoint != "" {
-				line = fmt.Sprintf("%s/%s/%s", s.s3ServingEndpoint, config.Config.PrivateHLSPath, fullRemotePath.RelativeUploadPath)
+				line = fmt.Sprintf("%s/%s/%s", s.s3ServingEndpoint, config.Config.GetPrivateHLSSavePath(), fullRemotePath.RelativeUploadPath)
 			} else {
 				line = fullRemotePath.RemoteID
 			}
