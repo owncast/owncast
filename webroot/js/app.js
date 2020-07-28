@@ -129,7 +129,7 @@ class Owncast {
     };
     // On ws error just close the socket and let it re-connect again for now.
     ws.onerror = e => {
-      this.handleNetworkingError(`Socket error: ${json.Parse(e)}`);
+      this.handleNetworkingError(`Socket error: ${JSON.Parse(e)}`);
       ws.close();
     };
     ws.onmessage = (e) => {
@@ -152,7 +152,7 @@ class Owncast {
 
   sendPong(ws) {
     try {
-      const pong = { type: 'PONG' };
+      const pong = { type: SOCKET_MESSAGE_TYPES.PONG };
       ws.send(JSON.stringify(pong));
     } catch (e) {
       console.log('PONG error:', e);

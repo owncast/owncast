@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
@@ -21,14 +22,22 @@ type Client struct {
 	ConnectedAt  time.Time
 	MessageCount int
 
-	clientID string // How we identify unique viewers when counting viewer counts.
-	socketID string // How we identify a single websocket client.
-	ws       *websocket.Conn
-	ch       chan models.ChatMessage
-	pingch   chan models.PingMessage
+	clientID              string // How we identify unique viewers when counting viewer counts.
+	socketID              string // How we identify a single websocket client.
+	ws                    *websocket.Conn
+	ch                    chan models.ChatMessage
+	pingch                chan models.PingMessage
+	usernameChangeChannel chan models.NameChangeEvent
 
 	doneCh chan bool
 }
+
+const (
+	CHAT       = "CHAT"
+	NAMECHANGE = "NAME_CHANGE"
+	PING       = "PING"
+	PONG       = "PONG"
+)
 
 //NewClient creates a new chat client
 func NewClient(ws *websocket.Conn) *Client {
@@ -39,10 +48,12 @@ func NewClient(ws *websocket.Conn) *Client {
 	ch := make(chan models.ChatMessage, channelBufSize)
 	doneCh := make(chan bool)
 	pingch := make(chan models.PingMessage)
+	usernameChangeChannel := make(chan models.NameChangeEvent)
+
 	clientID := utils.GenerateClientIDFromRequest(ws.Request())
 	socketID, _ := shortid.Generate()
 
-	return &Client{time.Now(), 0, clientID, socketID, ws, ch, pingch, doneCh}
+	return &Client{time.Now(), 0, clientID, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
 }
 
 //GetConnection gets the connection for the client
@@ -81,7 +92,8 @@ func (c *Client) listenWrite() {
 		case msg := <-c.ch:
 			// log.Println("Send:", msg)
 			websocket.JSON.Send(c.ws, msg)
-
+		case msg := <-c.usernameChangeChannel:
+			websocket.JSON.Send(c.ws, msg)
 		// receive done request
 		case <-c.doneCh:
 			_server.remove(c)
@@ -104,26 +116,53 @@ func (c *Client) listenRead() {
 
 		// read data from websocket connection
 		default:
-			var msg models.ChatMessage
-
-			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
-				c.doneCh <- true
-				return
-			} else if err != nil {
-				_server.err(err)
-			} else {
-				if msg.MessageType == "CHAT" {
-					c.chatMessageReceived(msg)
+			var data []byte
+			err := websocket.Message.Receive(c.ws, &data)
+			if err != nil {
+				if err == io.EOF {
+					c.doneCh <- true
 				}
+				log.Errorln(err)
+				return
+			}
+
+			var messageTypeCheck map[string]interface{}
+			err = json.Unmarshal(data, &messageTypeCheck)
+			if err != nil {
+				log.Errorln(err)
+			}
+
+			messageType := messageTypeCheck["type"]
+			fmt.Println(messageTypeCheck)
+
+			if messageType == CHAT {
+				c.chatMessageReceived(data)
+			} else if messageType == NAMECHANGE {
+				c.userChangedName(data)
 			}
 		}
 	}
 }
 
-func (c *Client) chatMessageReceived(msg models.ChatMessage) {
+func (c *Client) userChangedName(data []byte) {
+	var msg models.NameChangeEvent
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		log.Errorln(err)
+	}
+	msg.Type = NAMECHANGE
+	_server.usernameChanged(msg)
+}
+
+func (c *Client) chatMessageReceived(data []byte) {
+	var msg models.ChatMessage
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		log.Errorln(err)
+	}
+
 	id, _ := shortid.Generate()
 	msg.ID = id
-	msg.MessageType = "CHAT"
 	msg.Timestamp = time.Now()
 	msg.Visible = true
 

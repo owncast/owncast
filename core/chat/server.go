@@ -64,9 +64,15 @@ func (s *server) sendAll(msg models.ChatMessage) {
 }
 
 func (s *server) ping() {
-	ping := models.PingMessage{MessageType: "PING"}
+	ping := models.PingMessage{MessageType: PING}
 	for _, c := range s.Clients {
 		c.pingch <- ping
+	}
+}
+
+func (s *server) usernameChanged(msg models.NameChangeEvent) {
+	for _, c := range s.Clients {
+		c.usernameChangeChannel <- msg
 	}
 }
 

@@ -142,6 +142,7 @@ class MessagingInterface {
 	}
 
 	handleUpdateUsername() {
+		const oldName = this.username;
 		var newValue = this.inputChangeUserName.value;
 		newValue = newValue.trim();
 		// do other string cleanup?
@@ -154,6 +155,8 @@ class MessagingInterface {
 			setLocalStorage(KEY_AVATAR, this.imgUsernameAvatar.src);
 		}
 		this.handleHideChangeNameForm();
+
+		this.sendUsernameChange(oldName, newValue);
 	}
 
 	handleUsernameKeydown(event) {
@@ -162,6 +165,19 @@ class MessagingInterface {
 		} else if (event.keyCode === 27) { // esc
 			this.handleHideChangeNameForm();
 		}
+	}
+
+	sendUsernameChange(oldName, newName) {
+		const nameChange = {
+			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
+			oldName: oldName,
+			newName: newName
+		};
+
+		const jsonMessage = JSON.stringify(nameChange);
+		console.log(jsonMessage)
+
+		this.websocket.send(jsonMessage)
 	}
 
 	handleMessageInputKeydown(event) {
