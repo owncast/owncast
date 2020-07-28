@@ -21,10 +21,11 @@ type Client struct {
 	ConnectedAt  time.Time
 	MessageCount int
 
-	id     string
-	ws     *websocket.Conn
-	ch     chan models.ChatMessage
-	pingch chan models.PingMessage
+	clientID string // How we identify unique viewers when counting viewer counts.
+	socketID string // How we identify a single websocket client.
+	ws       *websocket.Conn
+	ch       chan models.ChatMessage
+	pingch   chan models.PingMessage
 
 	doneCh chan bool
 }
@@ -39,8 +40,9 @@ func NewClient(ws *websocket.Conn) *Client {
 	doneCh := make(chan bool)
 	pingch := make(chan models.PingMessage)
 	clientID := utils.GenerateClientIDFromRequest(ws.Request())
+	socketID, _ := shortid.Generate()
 
-	return &Client{time.Now(), 0, clientID, ws, ch, pingch, doneCh}
+	return &Client{time.Now(), 0, clientID, socketID, ws, ch, pingch, doneCh}
 }
 
 //GetConnection gets the connection for the client
@@ -53,7 +55,7 @@ func (c *Client) Write(msg models.ChatMessage) {
 	case c.ch <- msg:
 	default:
 		_server.remove(c)
-		_server.err(fmt.Errorf("client %s is disconnected", c.id))
+		_server.err(fmt.Errorf("client %s is disconnected", c.clientID))
 	}
 }
 
@@ -103,15 +105,6 @@ func (c *Client) listenRead() {
 		// read data from websocket connection
 		default:
 			var msg models.ChatMessage
-			id, err := shortid.Generate()
-			if err != nil {
-				log.Panicln(err)
-			}
-
-			msg.ID = id
-			msg.MessageType = "CHAT"
-			msg.Timestamp = time.Now()
-			msg.Visible = true
 
 			if err := websocket.JSON.Receive(c.ws, &msg); err == io.EOF {
 				c.doneCh <- true
@@ -119,11 +112,23 @@ func (c *Client) listenRead() {
 			} else if err != nil {
 				_server.err(err)
 			} else {
-				c.MessageCount++
-
-				msg.ClientID = c.id
-				_server.SendToAll(msg)
+				if msg.MessageType == "CHAT" {
+					c.chatMessageReceived(msg)
+				}
 			}
 		}
 	}
+}
+
+func (c *Client) chatMessageReceived(msg models.ChatMessage) {
+	id, _ := shortid.Generate()
+	msg.ID = id
+	msg.MessageType = "CHAT"
+	msg.Timestamp = time.Now()
+	msg.Visible = true
+
+	c.MessageCount++
+
+	msg.ClientID = c.clientID
+	_server.SendToAll(msg)
 }
