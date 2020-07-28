@@ -213,6 +213,7 @@ class MessagingInterface {
 			body: content,
 			author: this.username,
 			image: this.imgUsernameAvatar.src,
+			type: SOCKET_MESSAGE_TYPES.CHAT,
 		});
 		const messageJSON = JSON.stringify(message);
 		if (this.websocket) {

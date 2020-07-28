@@ -114,6 +114,11 @@ class Owncast {
       if (this.websocketReconnectTimer) {
         clearTimeout(this.websocketReconnectTimer);
       }
+
+      // If we're "online" then enable the chat.
+      if (this.streamStatus && this.streamStatus.online) {
+        this.messagingInterface.enableChat();
+      }
     };
     ws.onclose = (e) => {
       // connection closed, discard old websocket and create a new one in 5s
@@ -124,13 +129,18 @@ class Owncast {
     };
     // On ws error just close the socket and let it re-connect again for now.
     ws.onerror = e => {
-      this.handleNetworkingError(`Stream status: ${e}`);
+      this.handleNetworkingError(`Socket error: ${json.Parse(e)}`);
       ws.close();
     };
     ws.onmessage = (e) => {
       const model = JSON.parse(e.data);
+
+      // Send PONGs
+      if (model.type === SOCKET_MESSAGE_TYPES.PING) {
+        this.sendPong(ws);
+        return;
       // Ignore non-chat messages (such as keepalive PINGs)
-      if (model.type !== SOCKET_MESSAGE_TYPES.CHAT) {
+      } else if (model.type !== SOCKET_MESSAGE_TYPES.CHAT) {
         return; 
       }
       const message = new Message(model);
@@ -139,6 +149,15 @@ class Owncast {
     this.websocket = ws;
     this.messagingInterface.setWebsocket(this.websocket);
   };
+
+  sendPong(ws) {
+    try {
+      const pong = { type: 'PONG' };
+      ws.send(JSON.stringify(pong));
+    } catch (e) {
+      console.log('PONG error:', e);
+    }
+  }
 
   addMessage(message) {
     const existing = this.vueApp.messages.filter(function (item) {
