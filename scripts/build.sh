@@ -17,7 +17,7 @@ fi
 
 [[ -z "${VERSION}" ]] && VERSION='unknownver' || VERSION="${VERSION}"
 GIT_COMMIT=$(git rev-list -1 HEAD)
-
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 # Change to the root directory of the repository
 cd $(git rev-parse --show-toplevel)
 
@@ -35,7 +35,7 @@ build() {
   VERSION=$4
   GIT_COMMIT=$5
 
-  echo "Building ${NAME} (${OS}/${ARCH}) release..."
+  echo "Building ${NAME} (${OS}/${ARCH}) release from ${GIT_BRANCH}..."
 
   mkdir -p dist/${NAME}
   mkdir -p dist/${NAME}/webroot/static
@@ -51,7 +51,7 @@ build() {
 
   pushd dist/${NAME} >> /dev/null
 
-  CGO_ENABLED=1 ~/go/bin/xgo -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/gabek/owncast
+  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/gabek/owncast
   mv owncast-*-${ARCH} owncast
 
   zip -r -q -8 ../owncast-$NAME-$VERSION.zip .

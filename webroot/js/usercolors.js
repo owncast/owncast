@@ -84,5 +84,5 @@ function messageBubbleColorForString(str) {
     g: parseInt(result[2], 16),
     b: parseInt(result[3], 16),
   } : null;
-  return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ', 0.3)';
+  return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ', 0.4)';
 }

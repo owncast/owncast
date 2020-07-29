@@ -123,7 +123,8 @@
       <div id="chat-container" class="bg-gray-800">        
         <div id="messages-container">
           <div v-for="message in messages" v-cloak>
-              <div class="message flex">
+            <!-- Regular user chat message-->
+              <div class="message flex" v-if="message.type === 'CHAT'">
                 <div class="message-avatar rounded-full flex items-center justify-center" v-bind:style="{ backgroundColor: message.userColor() }">
                   <img
                     v-bind:src="message.image"
@@ -134,6 +135,19 @@
                   <p class="message-text text-gray-400 font-thin " v-html="message.formatText()"></p>
                 </div>
             </div>
+
+            <!-- Username change message -->
+            <div class="message flex" v-else-if="message.type === 'NAME_CHANGE'">
+                <img
+                class="mr-2"
+                width="30px"
+                  v-bind:src="message.image"
+                />
+                <div class="text-white text-center">
+                  <span class="font-bold">{{ message.oldName }}</span> is now known as <span class="font-bold">{{ message.newName }}</span>.
+                </div>
+            </div>
+
           </div>
         </div>
 
@@ -166,12 +180,12 @@
   </div>
 
   <script src="js/usercolors.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/message.js"></script>
+  <script src="js/utils.js?v=2"></script>
+  <script src="js/message.js?v=2"></script>
   <script src="js/social.js"></script>
   <script src="js/components.js"></script>
   <script src="js/player.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=2"></script>
   <script>
     (function () {
       const app = new Owncast();
