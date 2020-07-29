@@ -1,4 +1,4 @@
-import { EmojiButton } from '/js/vendor/emojibutton.min.js'
+import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button'
 
 fetch('/emoji')
   .then(response => {
@@ -18,17 +18,20 @@ function setupEmojiPickerWithCustomEmoji(customEmoji) {
   const picker = new EmojiButton({
     zIndex: 100,
     theme: 'dark',
-    custom: customEmoji
+    custom: customEmoji,
+    position: {
+      top: '50%',
+      right: '100'
+    }
   });
   const trigger = document.querySelector('#emoji-button');
-
 
   picker.on('emoji', selection => {
     // handle the selected emoji here
     console.log(selection);
   });
 
-  trigger.addEventListener('click', () => picker.togglePicker(trigger));
+  trigger.addEventListener('click', () => picker.togglePicker(picker));
   picker.on('emoji', emoji => {
     if (emoji.url) {
       const url = location.protocol + "//" + location.host + "/" + emoji.url;
