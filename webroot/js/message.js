@@ -8,12 +8,15 @@ class Message {
 	}
 
 	formatText() {
+		showdown.setFlavor('github');
 		var markdownToHTML = new showdown.Converter({
 			emoji: true, 
 			openLinksInNewWindow: true, 
 			tables: false, 
 			strikethrough: false, 
 			simplifiedAutoLink: false,
+			literalMidWordUnderscores: true,
+			strikethrough: true,
 		}).makeHtml(this.body);
 		var linked = autoLink(markdownToHTML, { embed: true });
 		return addNewlines(linked);
