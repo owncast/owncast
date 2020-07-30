@@ -17,7 +17,9 @@ import (
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/core/ffmpeg"
+	"github.com/gabek/owncast/termui"
 	"github.com/gabek/owncast/utils"
+
 	"github.com/nareix/joy5/format/rtmp"
 )
 
@@ -65,6 +67,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
 			log.Tracef("%+v\n", t.DebugFields())
+			termui.SetCurrentInboundStream(fmt.Sprintf("%+v\n", t.DebugFields()))
 		}
 	}
 

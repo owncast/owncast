@@ -12,6 +12,7 @@ import (
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/models"
+	"github.com/gabek/owncast/termui"
 	"github.com/gabek/owncast/utils"
 )
 
@@ -90,6 +91,8 @@ func SetClientActive(clientID string) {
 	l.Unlock()
 	_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Clients)), float64(_stats.SessionMaxViewerCount)))
 	_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+
+	termui.SetClientList(_stats.Clients)
 }
 
 //RemoveClient removes a client from the active clients record
@@ -97,6 +100,7 @@ func RemoveClient(clientID string) {
 	log.Trace("Removing the client:", clientID)
 
 	delete(_stats.Clients, clientID)
+	termui.SetClientList(_stats.Clients)
 }
 
 func saveStatsToFile() error {

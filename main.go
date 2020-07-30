@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 
+	logger "github.com/gabek/owncast/log"
+	"github.com/gabek/owncast/termui"
+	"github.com/prometheus/common/log"
 	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
@@ -22,37 +24,45 @@ var (
 	BuildType = "localdev"
 )
 
-func main() {
-	configureLogging()
+var _logger = logger.Logger{}
 
+func main() {
 	log.Infoln(getVersion())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	chatDbFile := flag.String("chatDatabase", "", "Path to the chat database file.")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
+	enableTerminalUI := flag.Bool("enableTerminalUI", false, "Enable terminal GUI.")
 
 	flag.Parse()
+
+	if err := config.Load(*configFile, getVersion()); err != nil {
+		panic(err)
+	}
+
+	config.Config.EnableDebugFeatures = *enableDebugOptions
+	config.Config.EnableTerminalUI = *enableTerminalUI
+	_logger.Setup()
 
 	if *enableDebugOptions {
 		logrus.SetReportCaller(true)
 	}
 
 	if *enableVerboseLogging {
-		log.SetLevel(log.TraceLevel)
+		logrus.SetLevel(logrus.TraceLevel)
 	} else {
-		log.SetLevel(log.InfoLevel)
+		logrus.SetLevel(logrus.InfoLevel)
 	}
-
-	if err := config.Load(*configFile, getVersion()); err != nil {
-		panic(err)
-	}
-	config.Config.EnableDebugFeatures = *enableDebugOptions
 
 	if *chatDbFile != "" {
 		config.Config.ChatDatabaseFilePath = *chatDbFile
 	} else if config.Config.ChatDatabaseFilePath == "" {
 		config.Config.ChatDatabaseFilePath = "chat.db"
+	}
+
+	if config.Config.EnableTerminalUI {
+		go termui.Setup(getVersion())
 	}
 
 	// starts the core
@@ -65,16 +75,9 @@ func main() {
 		log.Error("failed to start/run the router")
 		panic(err)
 	}
-
 }
 
 //getVersion gets the version string
 func getVersion() string {
 	return fmt.Sprintf("Owncast v%s-%s (%s)", BuildVersion, BuildType, GitCommit)
-}
-
-func configureLogging() {
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp: true,
-	})
 }

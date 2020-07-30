@@ -28,7 +28,7 @@ type S3Storage struct {
 	s3Bucket          string
 	s3AccessKey       string
 	s3Secret          string
- 	s3ACL             string
+	s3ACL             string
 }
 
 //Setup sets up the s3 storage for saving the video to s3

@@ -6,6 +6,7 @@ import (
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
+	"github.com/gabek/owncast/termui"
 	"github.com/gabek/owncast/utils"
 )
 
@@ -49,5 +50,6 @@ func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
 
+	termui.SetCurrentInboundStream("")
 	ffmpeg.ShowStreamOfflineState()
 }
