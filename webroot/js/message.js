@@ -18,6 +18,8 @@ class Message {
 	}
 
 	formatText() {
+		const linked = linkifyStr(this.body);
+
 		showdown.setFlavor('github');
 		var markdownToHTML = new showdown.Converter({
 			emoji: true, 
@@ -26,17 +28,8 @@ class Message {
 			simplifiedAutoLink: false,
 			literalMidWordUnderscores: true,
 			strikethrough: true,
-			ghMentions: false,
-		}).makeHtml(this.body);
-		const linked = autoLink(markdownToHTML, {
-			embed: true,
-			removeHTTP: true,
-			linkAttr: {
-				target: '_blank'
-			}
-		});
-		const highlighted = this.highlightUsername(linked);
-		return addNewlines(highlighted);
+		}).makeHtml(linked);
+		return addNewlines(markdownToHTML);
 	}
 	userColor() {
 		return messageBubbleColorForString(this.author);
@@ -321,6 +314,7 @@ class MessagingInterface {
 	}
 
 	disableChat() {
+		return;
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;
