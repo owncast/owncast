@@ -638,6 +638,10 @@ h2 {
   border-radius: 15px;
 }
 
+.message-text code {
+  background-color:darkslategrey;
+  padding: 3px;
+}
 /* Emoji picker */
 #emoji-button {
   position: relative;
