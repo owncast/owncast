@@ -18,7 +18,13 @@ class Message {
 			literalMidWordUnderscores: true,
 			strikethrough: true,
 		}).makeHtml(this.body);
-		var linked = autoLink(markdownToHTML, { embed: true });
+		const linked = autoLink(markdownToHTML, {
+			embed: true,
+			removeHTTP: true,
+			linkAttr: {
+				target: '_blank'
+			}
+		});
 		return addNewlines(linked);
 	}
 	userColor() {
