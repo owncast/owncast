@@ -363,7 +363,6 @@ h2 {
 #messages-container {
   overflow: auto;
   padding: 1em 0;
-  min-height: 50vh;
 }
 #message-input-container {
   width: 100%;
