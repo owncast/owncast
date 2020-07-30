@@ -83,6 +83,16 @@ If you want to add some additional content you can edit the [`/webroot/static/co
 
 However, the web interface was specifically built to be editable by anybody comfortable tweaking a web page.  It's not bundled or transpiled into anything, it's just HTML + Javascript + CSS that you can start editing.  Feel free to add your own branding, links, change the colors in the CSS, fonts, layout, or anything else you could possibly want.  No development environment is needed, just open the files in an editor and start tweaking.
 
+The web chat supports some basic formatting using markdown:
+
+Italic: `*your text*`
+
+Bold: `**your text**`
+
+Strikethrough: `~~your text~~`
+
+Code blocks: <code>\`your text\`</code>
+
 
 ## Use with your desktop software
 
