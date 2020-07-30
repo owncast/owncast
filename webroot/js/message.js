@@ -314,7 +314,6 @@ class MessagingInterface {
 	}
 
 	disableChat() {
-		return;
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;
