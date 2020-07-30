@@ -611,3 +611,9 @@ h2 {
 .extra-user-content table td {
   padding: 0.5em 1em;
   border: 1px solid #CCC; }
+
+.message-text iframe {
+  width: 100%;
+  height: 170px;
+  border-radius: 15px;
+}
