@@ -33,7 +33,7 @@ func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	// the server to add emoji?
 	for _, f := range files {
 		name := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-		path := filepath.Join(fullPath, f.Name())
+		path := filepath.Join(emojiPath, f.Name())
 		singleEmoji := models.CustomEmoji{name, path}
 		emojiList = append(emojiList, singleEmoji)
 	}

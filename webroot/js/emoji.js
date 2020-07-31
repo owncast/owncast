@@ -26,11 +26,6 @@ function setupEmojiPickerWithCustomEmoji(customEmoji) {
   });
   const trigger = document.querySelector('#emoji-button');
 
-  picker.on('emoji', selection => {
-    // handle the selected emoji here
-    console.log(selection);
-  });
-
   trigger.addEventListener('click', () => picker.togglePicker(picker));
   picker.on('emoji', emoji => {
     if (emoji.url) {

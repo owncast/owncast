@@ -73,7 +73,7 @@ class MessagingInterface {
 		this.tagMessageFormWarning = document.getElementById('message-form-warning');
 
 		this.inputMessageAuthor = document.getElementById('self-message-author');
-		this.inputChangeUserName = document.getElementById('username-change-input'); 
+		this.inputChangeUserName = document.getElementById('username-change-input');
 
 		this.btnUpdateUserName = document.getElementById('button-update-username'); 
 		this.btnCancelUpdateUsername = document.getElementById('button-cancel-change'); 
@@ -240,12 +240,8 @@ class MessagingInterface {
 	}
 
 	handleMessageInputKeydown(event) {
-		var okCodes = [37, 38, 39, 40, 16, 91, 18, 46, 8];
-		if (!this.formMessageInput.value) {
-			return;
-		}
-
-		var value = this.formMessageInput.value.trim();
+		var okCodes = [37,38,39,40,16,91,18,46,8];
+		var value = this.formMessageInput.innerHTML.trim();
 		var numCharsLeft = this.maxMessageLength - value.length;
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
@@ -292,8 +288,6 @@ class MessagingInterface {
 
 	handleSubmitChatButton(event) {
 		var value = this.formMessageInput.innerHTML.trim();
-		this.formMessageInput.innerHTML = "";
-
 		if (value) {
 			this.submitChat(value);
 			event.preventDefault();
@@ -316,7 +310,7 @@ class MessagingInterface {
 		this.send(message);
 
 		// clear out things.
-		this.formMessageInput.value = '';
+		this.formMessageInput.innerHTML = '';
 		this.tagMessageFormWarning.innerText = '';
 
 		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
@@ -327,7 +321,6 @@ class MessagingInterface {
 	}
 
 	disableChat() {
-		return
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;

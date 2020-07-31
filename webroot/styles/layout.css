@@ -376,6 +376,7 @@ h2 {
 }
 #message-body-form {
   font-size: 1em;
+  height: 60px;
 }
 #message-body-form:disabled{
   opacity: .5;
