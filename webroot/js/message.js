@@ -288,8 +288,6 @@ class MessagingInterface {
 
 	handleSubmitChatButton(event) {
 		var value = this.formMessageInput.innerHTML.trim();
-		this.formMessageInput.innerHTML = "";
-
 		if (value) {
 			this.submitChat(value);
 			event.preventDefault();
@@ -323,7 +321,6 @@ class MessagingInterface {
 	}
 
 	disableChat() {
-		return
 		if (this.formMessageInput) {
 			this.formMessageInput.disabled = true;
 			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;
