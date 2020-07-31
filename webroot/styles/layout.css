@@ -386,6 +386,11 @@ h2 {
   padding-left: 5px;
   padding-right: 5px;
 }
+
+#message-body-form .emoji {
+  width: 40px;
+}
+
 #message-form-actions {
   flex-direction: row;
   justify-content: space-between;
@@ -397,6 +402,10 @@ h2 {
   display: inline;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.message-text .emoji {
+  width: 60px;
 }
 
 /* ************************************************8 */
