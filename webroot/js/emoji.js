@@ -30,7 +30,7 @@ function setupEmojiPickerWithCustomEmoji(customEmoji) {
   picker.on('emoji', emoji => {
     if (emoji.url) {
       const url = location.protocol + "//" + location.host + "/" + emoji.url;
-      document.querySelector('#message-body-form').innerHTML += "<img width=35px src=\"" + url + "\"/>";
+      document.querySelector('#message-body-form').innerHTML += "<img alt=\"" + emoji.name + "\" width=35px src=\"" + url + "\"/>";
     } else {
       document.querySelector('#message-body-form').innerHTML += emoji.emoji;
     }
