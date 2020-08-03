@@ -19,6 +19,8 @@ function setupEmojiPickerWithCustomEmoji(customEmoji) {
     zIndex: 100,
     theme: 'dark',
     custom: customEmoji,
+    initialCategory: 'custom',
+    showPreview: false,
     position: {
       top: '50%',
       right: '100'
