@@ -78,6 +78,8 @@ class MessagingInterface {
 		
 		this.inputChangeUserName.addEventListener('keydown', this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener('keydown', this.handleMessageInputKeydown.bind(this));
+		this.formMessageInput.addEventListener('keyup', this.handleMessageInputKeyup.bind(this));
+		this.formMessageInput.addEventListener('blur', this.handleMessageInputBlur.bind(this));
 		this.btnSubmitMessage.addEventListener('click', this.handleSubmitChatButton.bind(this));
 
 		this.initLocalStates();
@@ -199,12 +201,10 @@ class MessagingInterface {
 			if (!this.prepNewLine) {
 				this.submitChat(value);
 				event.preventDefault();
+				this.prepNewLine = false;
 				
 				return;
 			}
-			this.prepNewLine = false;
-		} else {
-			this.prepNewLine = false;
 		}
 		if (event.keyCode === 16 || event.keyCode === 17) { // ctrl, shift
 			this.prepNewLine = true;
@@ -219,6 +219,16 @@ class MessagingInterface {
 		} else {
 			this.tagMessageFormWarning.innerText = '';
 		}
+	}
+
+	handleMessageInputKeyup(event) {
+		if (event.keyCode === 16 || event.keyCode === 17) { // ctrl, shift
+			this.prepNewLine = false;
+		}
+	}
+
+	handleMessageInputBlur(event) {
+		this.prepNewLine = false;
 	}
 
 	handleSubmitChatButton(event) {
