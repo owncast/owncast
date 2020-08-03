@@ -23,10 +23,10 @@ class Message {
 			emoji: true, 
 			openLinksInNewWindow: true, 
 			tables: false, 
-			strikethrough: false, 
 			simplifiedAutoLink: false,
 			literalMidWordUnderscores: true,
 			strikethrough: true,
+			ghMentions: false,
 		}).makeHtml(this.body);
 		const linked = autoLink(markdownToHTML, {
 			embed: true,
