@@ -2,6 +2,7 @@ package termui
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/mum4k/termdash"
@@ -52,12 +53,15 @@ func Setup(version string) error {
 	var t terminalapi.Terminal
 	t, err := termbox.New(termbox.ColorMode(terminalapi.ColorMode256))
 
-	defer t.Close()
-
 	if err != nil {
 		cancel()
 		return err
 	}
+
+	defer func() {
+		t.Close()
+		os.Exit(0)
+	}()
 
 	c, err := container.New(t, container.ID(rootID))
 	if err != nil {
@@ -103,6 +107,7 @@ func Setup(version string) error {
 	return nil
 }
 
+// GetLayout creates a new layout container.
 func GetLayout() ([]container.Option, error) {
 	leftRows := getLeftRows()
 

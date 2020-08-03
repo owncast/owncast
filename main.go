@@ -62,7 +62,13 @@ func main() {
 	}
 
 	if config.Config.EnableTerminalUI {
-		go termui.Setup(getVersion())
+		go func() {
+			err := termui.Setup(getVersion())
+			if err != nil {
+				log.Infoln("Disabling terminal UI.")
+				config.Config.EnableTerminalUI = false
+			}
+		}()
 	}
 
 	// starts the core
