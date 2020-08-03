@@ -51,6 +51,7 @@ class MessagingInterface {
 		this.messageCharCount = 0;
 		this.maxMessageLength = 500;
 		this.maxMessageBuffer = 20;
+		this.chatUsernames = [];
 
 		this.onReceivedMessages = this.onReceivedMessages.bind(this);
 		this.disableChat = this.disableChat.bind(this);
@@ -195,6 +196,42 @@ class MessagingInterface {
 		this.send(nameChange);
 	}
 
+	tryToComplete() {
+		const rawValue = this.formMessageInput.value;
+		const position = this.formMessageInput.selectionStart;
+		const at = rawValue.lastIndexOf('@', position - 1);
+
+		if (at === -1) {
+			return false;
+		}
+
+		var partial = rawValue.substring(at + 1, position).trim();
+
+		if (partial === this.suggestion) {
+			partial = this.partial;
+		} else {
+			this.partial = partial;
+		}
+
+		const possibilities = this.chatUsernames.filter(function (username) {
+			return username.toLowerCase().startsWith(partial.toLowerCase());
+		});
+
+		if (this.completionIndex === undefined || ++this.completionIndex >= possibilities.length) {
+			this.completionIndex = 0;
+		}
+
+		if (possibilities.length > 0) {
+			this.suggestion = possibilities[this.completionIndex];
+
+			this.formMessageInput.value = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
+			this.formMessageInput.selectionStart = at + this.suggestion.length + 2;
+			this.formMessageInput.selectionEnd = this.formMessageInput.selectionStart;
+		}
+
+		return true;
+	}
+
 	handleMessageInputKeydown(event) {
 		var okCodes = [37,38,39,40,16,91,18,46,8];
 		var value = this.formMessageInput.value.trim();
@@ -210,6 +247,15 @@ class MessagingInterface {
 		}
 		if (event.keyCode === 16 || event.keyCode === 17) { // ctrl, shift
 			this.prepNewLine = true;
+		}
+		if (event.keyCode === 9) { // tab
+			if (this.tryToComplete()) {
+				event.preventDefault();
+
+				// value could have been changed, update variables
+				value = this.formMessageInput.value.trim();
+				numCharsLeft = this.maxMessageLength - value.length;
+			}
 		}
 
 		if (numCharsLeft <= this.maxMessageBuffer) {
@@ -287,6 +333,28 @@ class MessagingInterface {
 
 	// handle Vue.js message display
 	onReceivedMessages(newMessages, oldMessages) {
+		// update the list of chat usernames
+		newMessages.slice(oldMessages.length).forEach(function (message) {
+			var username;
+
+			switch (message.type) {
+				case SOCKET_MESSAGE_TYPES.CHAT:
+					username = message.author;
+					break;
+
+				case SOCKET_MESSAGE_TYPES.NAME_CHANGE:
+					username = message.newName;
+					break;
+
+				default:
+					return;
+			}
+
+			if (!this.chatUsernames.includes(username)) {
+				this.chatUsernames.push(username);
+			}
+		}, this);
+
 		if (newMessages.length !== oldMessages.length) {
 			// jump to bottom
 			jumpToBottom(this.scrollableMessagesContainer);
