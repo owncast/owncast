@@ -18,19 +18,34 @@ class Message {
 	}
 
 	formatText() {
-		const linked = linkifyStr(this.body);
-
 		showdown.setFlavor('github');
-		var markdownToHTML = new showdown.Converter({
+		let formattedText = new showdown.Converter({
 			emoji: true, 
 			openLinksInNewWindow: true, 
 			tables: false, 
 			simplifiedAutoLink: false,
 			literalMidWordUnderscores: true,
 			strikethrough: true,
-		}).makeHtml(linked);
-		return addNewlines(markdownToHTML);
+		}).makeHtml(this.body);
+
+		const urls = getURLs(stripTags(this.body));
+		if (urls) {
+			urls.forEach(function (url) {
+				if (getYoutubeIdFromURL(url)) {
+					const youtubeID = getYoutubeIdFromURL(url);
+					formattedText += '<br/>' + getYoutubeEmbedFromID(youtubeID);
+				} else if (url.indexOf('instagram.com/p/') > -1) {
+					formattedText += '<br/>' + getInstagramEmbedFromURL(url);
+				} else if (isImage(url)) {
+					formattedText = getImageForURL(url);
+				}
+			})
+		}
+
+		return addNewlines(formattedText);
 	}
+
+
 	userColor() {
 		return messageBubbleColorForString(this.author);
 	}
@@ -367,3 +382,48 @@ class MessagingInterface {
 }
 
 export { Message, MessagingInterface }
+
+function stripTags(str) {
+	return str.replace(/<\/?[^>]+(>|$)/g, "");
+}
+
+function getURLs(str) {
+	var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	return str.match(exp);
+}
+
+function getYoutubeIdFromURL(url) {
+	try {
+		var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+		var match = url.match(regExp);
+
+		if (match && match[2].length == 11) {
+			return match[2];
+		} else {
+			return null;
+		}
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+}
+
+function getYoutubeEmbedFromID(id) {
+	return `<iframe class="chat-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`
+}
+
+function getInstagramEmbedFromURL(url) {
+	const urlObject = new URL(url.replace(/\/$/, ""));
+	urlObject.pathname += "/embed"
+	return `<iframe class="chat-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`
+}
+
+function isImage(url) {
+	const re = /\.(jpe?g|png|gif)$/;
+	const isImage = re.test(url);
+	return isImage;
+}
+
+function getImageForURL(url) {
+	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`
+}
