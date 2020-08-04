@@ -35,10 +35,17 @@ class Message {
 				target: '_blank'
 			}
 		});
-		return addNewlines(linked);
+		const highlighted = this.highlightUsername(linked);
+		return addNewlines(highlighted);
 	}
 	userColor() {
 		return messageBubbleColorForString(this.author);
+	}
+
+	highlightUsername(message) {
+		const username = document.getElementById('self-message-author').value;
+		const pattern = new RegExp('@?' + username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+		return message.replace(pattern, '<span class="highlighted">$&</span>');
 	}
 }
 
