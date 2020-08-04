@@ -26,6 +26,7 @@ class Message {
 			simplifiedAutoLink: false,
 			literalMidWordUnderscores: true,
 			strikethrough: true,
+			ghMentions: false,
 		}).makeHtml(this.body);
 
 		const urls = getURLs(stripTags(this.body));
@@ -42,7 +43,9 @@ class Message {
 			})
 		}
 
-		return addNewlines(formattedText);
+		// TODO: Need to pass the current user's username in for "test"
+		const highlighted = highlightString("test", formattedText);
+		return addNewlines(highlighted);
 	}
 
 
@@ -409,13 +412,13 @@ function getYoutubeIdFromURL(url) {
 }
 
 function getYoutubeEmbedFromID(id) {
-	return `<iframe class="chat-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`
+	return `<iframe class="chat-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 function getInstagramEmbedFromURL(url) {
 	const urlObject = new URL(url.replace(/\/$/, ""));
-	urlObject.pathname += "/embed"
-	return `<iframe class="chat-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`
+	urlObject.pathname += "/embed";
+	return `<iframe class="chat-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 function isImage(url) {
@@ -425,5 +428,10 @@ function isImage(url) {
 }
 
 function getImageForURL(url) {
-	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`
+	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`;
+}
+
+function highlightString(stringToHighlight, message) {
+	const highlightedString = `<span class="highlighted-string">${stringToHighlight}</span>`;
+	return message.replace(new RegExp(stringToHighlight, 'g'), highlightedString)
 }
