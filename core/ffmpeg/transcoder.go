@@ -283,7 +283,18 @@ func (v *HLSVariant) getVideoQualityString() string {
 	// complains about.
 	maxBitrate := int(float64(v.videoBitrate) * 1.07) // Max is a ~+10% over specified bitrate.
 	bufferSize := int(float64(maxBitrate) * 1.5)      // How often it checks the bitrate of encoded segments to see if it's too high/low.
-	return fmt.Sprintf("-map v:0 -c:v:%d %s -b:v:%d %dk -maxrate:v:%d %dk -bufsize:v:%d %dk -g:v:%d %d -x264-params:v:%d \"scenecut=0:open_gop=0:min-keyint=%d:keyint=%d\"", v.index, encoderCodec, v.index, v.videoBitrate, v.index, maxBitrate, v.index, bufferSize, v.index, gop, v.index, gop, gop)
+
+	cmd := []string{
+		"-map v:0",
+		fmt.Sprintf("-c:v:%d %s", v.index, encoderCodec),                                                      // Video codec used for this variant
+		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),                                                   // The average bitrate for this variant
+		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate),                                                 // The max bitrate allowed for this variant
+		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize),                                                 // How often the encoder checks the bitrate in order to meet average/max values
+		fmt.Sprintf("-g:v:%d %d", v.index, gop),                                                               // How often i-frames are encoded into the segments
+		fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0:min-keyint=%d:keyint=%d\"", v.index, gop, gop), // How often i-frames are encoded into the segments
+	}
+
+	return strings.Join(cmd, " ")
 }
 
 // SetVideoFramerate will set the output framerate of this variant's video
