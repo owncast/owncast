@@ -205,9 +205,9 @@ func NewTranscoder() Transcoder {
 }
 
 // Uses `map` https://www.ffmpeg.org/ffmpeg-all.html#Stream-specifiers-1 https://www.ffmpeg.org/ffmpeg-all.html#Advanced-options
-func (v *HLSVariant) getVariantString() string {
+func (v *HLSVariant) getVariantString(t *Transcoder) string {
 	variantEncoderCommands := []string{
-		v.getVideoQualityString(),
+		v.getVideoQualityString(t),
 		v.getAudioQualityString(),
 	}
 
@@ -230,7 +230,7 @@ func (t *Transcoder) getVariantsString() string {
 	var variantsStreamMaps = " -var_stream_map \""
 
 	for _, variant := range t.variants {
-		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString()
+		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
 		variantsStreamMaps = variantsStreamMaps + fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
 	}
 	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
@@ -265,7 +265,7 @@ func (v *HLSVariant) SetVideoBitrate(bitrate int) {
 	v.videoBitrate = bitrate
 }
 
-func (v *HLSVariant) getVideoQualityString() string {
+func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 	if v.isVideoPassthrough {
 		return fmt.Sprintf("-map v:0 -c:v:%d copy", v.index)
 	}
@@ -274,7 +274,7 @@ func (v *HLSVariant) getVideoQualityString() string {
 
 	// -1 to work around segments being generated slightly larger than expected.
 	// https://trac.ffmpeg.org/ticket/6915?replyto=58#comment:57
-	gop := (config.Config.GetVideoSegmentSecondsLength() * v.framerate) - 1
+	gop := (t.segmentLengthSeconds * v.framerate) - 1
 
 	// For limiting the output bitrate
 	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
