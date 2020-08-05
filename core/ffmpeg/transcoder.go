@@ -282,7 +282,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 	// Adjust the max & buffer size until the output bitrate doesn't exceed the ~+10% that Apple's media validator
 	// complains about.
 	maxBitrate := int(float64(v.videoBitrate) * 1.07) // Max is a ~+10% over specified bitrate.
-	bufferSize := int(float64(maxBitrate) * 1.2)      // How often it checks the bitrate of encoded segments to see if it's too high/low.
+	bufferSize := int(float64(v.videoBitrate) * 1.4)  // How often it checks the bitrate of encoded segments to see if it's too high/low.
 
 	cmd := []string{
 		"-map v:0",
