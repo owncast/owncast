@@ -14,6 +14,7 @@
 
 import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
 
+const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 const URL_WEBSOCKET = LOCAL_TEST
   ? 'wss://goth.land/entry'
   : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
@@ -27,11 +28,12 @@ const CALLBACKS = {
 }
 
 class Websocket {
-  websocket = null;
-  websocketReconnectTimer = null;
-  listeners = [];
 
   constructor() {
+    this.websocket = null;
+    this.websocketReconnectTimer = null;
+    this.listeners = [];
+
     this.send = this.send.bind(this);
 
     const ws = new WebSocket(URL_WEBSOCKET);

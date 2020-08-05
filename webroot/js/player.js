@@ -1,5 +1,33 @@
 // https://docs.videojs.com/player
 
+const VIDEO_ID = 'video';
+const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
+const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
+const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
+
+// Video setup
+const VIDEO_SRC = {
+  src: URL_STREAM,
+  type: 'application/x-mpegURL',
+};
+const VIDEO_OPTIONS = {
+  autoplay: false,
+  liveui: true, // try this
+  preload: 'auto',
+  html5: {
+    vhs: {
+      // used to select the lowest bitrate playlist initially. This helps to decrease playback start time. This setting is false by default.
+      enableLowInitialPlaylist: true,
+
+    }
+  },
+  liveTracker: {
+    trackingThreshold: 0,
+  },
+  sources: [VIDEO_SRC],
+};
+
+
 class OwncastPlayer {
   constructor() {
     window.VIDEOJS_NO_DYNAMIC_STYLE = true; // style override
@@ -124,3 +152,4 @@ class OwncastPlayer {
 
 }
 
+export { OwncastPlayer };

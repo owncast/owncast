@@ -1,5 +1,13 @@
 import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
 
+const KEY_USERNAME = 'owncast_username';
+const KEY_AVATAR = 'owncast_avatar';
+const KEY_CHAT_DISPLAYED = 'owncast_chat';
+const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
+const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
+const CHAT_PLACEHOLDER_TEXT = 'Message';
+const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
+
 class Message {
 	constructor(model) {
 		this.author = model.author;
