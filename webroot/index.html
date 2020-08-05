@@ -181,16 +181,14 @@
 
   <script src="js/usercolors.js"></script>
   <script src="js/utils.js?v=2"></script>
-  <script src="js/message.js?v=2"></script>
+  <script type="module" src="js/message.js?v=2"></script>
   <script src="js/social.js"></script>
   <script src="js/components.js"></script>
   <script src="js/player.js"></script>
-  <script src="js/app.js?v=2"></script>
-  <script>
-    (function () {
+  <script type="module">
+      import Owncast from './js/app.js';
       const app = new Owncast();
       app.init();
-    })();
   </script>
 
   <noscript>

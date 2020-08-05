@@ -6,9 +6,6 @@ const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : '';
 const URL_STATUS = `${URL_PREFIX}/status`;
 const URL_CHAT_HISTORY = `${URL_PREFIX}/chat`;
 const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
-const URL_WEBSOCKET = LOCAL_TEST
-  ? 'wss://goth.land/entry'
-  : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 
 const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
 const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
@@ -17,14 +14,6 @@ const URL_CONFIG = `${URL_PREFIX}/config`;
 
 const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
 
-
-// Webscoket setup
-const SOCKET_MESSAGE_TYPES = {
-	CHAT: 'CHAT',
-  PING: 'PING',
-  NAME_CHANGE: 'NAME_CHANGE',
-  PONG: 'PONG'
-}
 
 // Video setup
 const VIDEO_ID = 'video';
@@ -56,7 +45,6 @@ const KEY_CHAT_DISPLAYED = 'owncast_chat';
 const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
 
 const TIMER_STATUS_UPDATE = 5000; // ms
-const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
 const TIMER_STREAM_DURATION_COUNTER = 1000;
 
@@ -181,4 +169,8 @@ function setVHvar() {
   // Then we set the value in the --vh custom property to the root of the document
   document.documentElement.style.setProperty('--vh', `${vh}px`);
   console.log("== new vh", vh)
+}
+
+function doesObjectSupportFunction(object, functionName) {
+  return typeof object[functionName] === "function";
 }

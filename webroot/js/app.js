@@ -1,14 +1,16 @@
+import Websocket from './websocket.js';
+import { MessagingInterface, Message } from './message.js';
+import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
+
 class Owncast {
   constructor() {
     this.player;    
 
-    this.websocket = null;
     this.configData;
     this.vueApp;
     this.messagingInterface = null;
 
     // timers
-    this.websocketReconnectTimer = null;
     this.playerRestartTimer = null;
     this.offlineTimer = null;
     this.statusTimer = null;
@@ -23,7 +25,6 @@ class Owncast {
     // bindings
     this.vueAppMounted = this.vueAppMounted.bind(this);
     this.setConfigData = this.setConfigData.bind(this);
-    this.setupWebsocket = this.setupWebsocket.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
     this.getExtraUserContent = this.getExtraUserContent.bind(this);
     this.updateStreamStatus = this.updateStreamStatus.bind(this);
@@ -40,7 +41,7 @@ class Owncast {
 
   init() {
     this.messagingInterface = new MessagingInterface();
-    this.websocket = this.setupWebsocket();
+    this.setupWebsocket();
 
     this.vueApp = new Vue({
       el: '#app-container',
@@ -109,53 +110,17 @@ class Owncast {
 
   // websocket for messaging
   setupWebsocket() {
-    var ws = new WebSocket(URL_WEBSOCKET);  
-    ws.onopen = (e) => {
-      if (this.websocketReconnectTimer) {
-        clearTimeout(this.websocketReconnectTimer);
-      }
-
-      // If we're "online" then enable the chat.
-      if (this.streamStatus && this.streamStatus.online) {
-        this.messagingInterface.enableChat();
-      }
-    };
-    ws.onclose = (e) => {
-      // connection closed, discard old websocket and create a new one in 5s
-      this.websocket = null;
-      this.messagingInterface.disableChat();
-      this.handleNetworkingError('Websocket closed.');
-      this.websocketReconnectTimer = setTimeout(this.setupWebsocket, TIMER_WEBSOCKET_RECONNECT);
-    };
-    // On ws error just close the socket and let it re-connect again for now.
-    ws.onerror = e => {
-      this.handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
-      ws.close();
-    };
-    ws.onmessage = (e) => {
-      const model = JSON.parse(e.data);
-
-      // Send PONGs
-      if (model.type === SOCKET_MESSAGE_TYPES.PING) {
-        this.sendPong(ws);
-        return;
-      } else if (model.type === SOCKET_MESSAGE_TYPES.CHAT) {
-        const message = new Message(model);
-        this.addMessage(message);
-      } else if (model.type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
-        this.addMessage(model);
-      }
-    };
-    this.websocket = ws;
-    this.messagingInterface.setWebsocket(this.websocket);
+    this.websocket = new Websocket();
+    this.websocket.addListener(this);
+    this.messagingInterface.send = this.websocket.send;
   };
 
-  sendPong(ws) {
-    try {
-      const pong = { type: SOCKET_MESSAGE_TYPES.PONG };
-      ws.send(JSON.stringify(pong));
-    } catch (e) {
-      console.log('PONG error:', e);
+  rawWebsocketMessageReceived(model) {
+    if (model.type === SOCKET_MESSAGE_TYPES.CHAT) {
+      const message = new Message(model);
+      this.addMessage(message);
+    } else if (model.type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
+      this.addMessage(model);
     }
   }
 
@@ -349,3 +314,5 @@ class Owncast {
     this.handlePlayerEnded();
   };
 };
+
+export default Owncast;
