@@ -128,11 +128,11 @@ class Owncast {
   // websocket for messaging
   setupWebsocket() {
     this.websocket = new Websocket();
-    this.websocket.addListener(this);
+    this.websocket.addListener('rawWebsocketMessageReceived', this.receivedWebsocketMessage.bind(this));
     this.messagingInterface.send = this.websocket.send;
   };
 
-  rawWebsocketMessageReceived(model) {
+  receivedWebsocketMessage(model) {
     if (model.type === SOCKET_MESSAGE_TYPES.CHAT) {
       const message = new Message(model);
       this.addMessage(message);

@@ -1,17 +1,3 @@
-/**
- * Websocket.
- * This is a standalone websocket interface that passes messages to `listeners`, and accepts
- * messages to be sent via `send`.
- * If you have a component that would like to be notified about websocket activity you can
- * pass it to `addListener(object)` and implement any of the following methods:
- * 
- * rawWebsocketMessageReceived(msg): Will send all raw JSON objects that come across the socket.
- * websocketConnected/websocketDisconnected: Be notified on the connectivity state of the socket.
- * 
- * This class should not know anything about views.  Note that error states are not being passed to
- * listeners because listeners shouldn't know or care about specific socket-level errors.
- */
-
 import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
 
 const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
@@ -32,7 +18,10 @@ class Websocket {
   constructor() {
     this.websocket = null;
     this.websocketReconnectTimer = null;
-    this.listeners = [];
+
+    this.websocketConnectedListeners = [];
+    this.websocketDisconnectListeners = [];
+    this.rawMessageListeners = [];
 
     this.send = this.send.bind(this);
 
@@ -46,8 +35,14 @@ class Websocket {
   }
 
   // Other components should register for websocket callbacks.
-  addListener(listener) {
-    this.listeners.push(listener);
+  addListener(type, callback) {
+    if (type == CALLBACKS.WEBSOCKET_CONNECTED) {
+      this.websocketConnectedListeners.push(callback);
+    } else if (type == CALLBACKS.WEBSOCKET_DISCONNECTED) {
+      this.websocketDisconnectListeners.push(callback);
+    } else if (type == CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED) {
+      this.rawMessageListeners.push(callback);
+    }
   }
 
   
@@ -67,11 +62,23 @@ class Websocket {
   // Private methods
 
   // Fire the callbacks of the listeners.
-  notifyListeners(callbackName, message) {
-    this.listeners.forEach(function (listener) {
-      if (doesObjectSupportFunction(listener, callbackName)) {
-        listener[callbackName](message);
-      }
+
+  notifyWebsocketConnectedListeners(message) {
+    this.websocketConnectedListeners.forEach(function (callback) {
+      callback(message);
+    });
+  }
+
+  notifyWebsocketDisconnectedListeners(message) {
+    this.websocketDisconnectListeners.forEach(function (callback) {
+      callback(message);
+    });
+  }
+
+
+  notifyRawMessageListeners(message) {
+    this.rawMessageListeners.forEach(function (callback) {
+      callback(message);
     });
   }
 
@@ -82,13 +89,13 @@ class Websocket {
       clearTimeout(this.websocketReconnectTimer);
     }
 
-    this.notifyListeners(CALLBACKS.WEBSOCKET_CONNECTED);
+    this.notifyWebsocketConnectedListeners();
   }
 
   onClose(e) {
     // connection closed, discard old websocket and create a new one in 5s
     this.websocket = null;
-    this.notifyListeners(CALLBACKS.WEBSOCKET_DISCONNECTED);
+    this.notifyWebsocketDisconnectedListeners();
     this.handleNetworkingError('Websocket closed.');
     this.websocketReconnectTimer = setTimeout(this.setupWebsocket, TIMER_WEBSOCKET_RECONNECT);
   }
@@ -101,13 +108,15 @@ class Websocket {
 
   /*
   onMessage is fired when an inbound object comes across the websocket.
-  We pass these messages along to listeners by firing the
-  RAW_WEBSOCKET_MESSAGE_RECEIVED type callback.
   If the message is of type `PING` we send a `PONG` back and do not
   pass it along to listeners.
   */
   onMessage(e) {
-    const model = JSON.parse(e.data);
+    try {
+      var model = JSON.parse(e.data);
+    } catch (e) {
+      console.log(e)
+    }
     
     // Send PONGs
     if (model.type === SOCKET_MESSAGE_TYPES.PING) {
@@ -116,17 +125,13 @@ class Websocket {
     }
 
     // Notify any of the listeners via the raw socket message callback.
-    this.notifyListeners(CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED, model);
+    this.notifyRawMessageListeners(model);
   }
 
   // Reply to a PING as a keep alive.
   sendPong() {
-    try {
-      const pong = { type: SOCKET_MESSAGE_TYPES.PONG };
-      this.websocket.send(JSON.stringify(pong));
-    } catch (e) {
-      console.log('PONG error:', e);
-    }
+    const pong = { type: SOCKET_MESSAGE_TYPES.PONG };
+    this.send(pong);
   }
 
   handleNetworkingError(error) {
