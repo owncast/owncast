@@ -21,6 +21,7 @@ func getDefaults() config {
 		IsAudioPassthrough: true,
 		VideoBitrate:       1200,
 		EncoderPreset:      "veryfast",
+		Framerate:          24,
 	}
 	defaults.VideoSettings.StreamQualities = []StreamQuality{defaultQuality}
 
