@@ -25,7 +25,7 @@ func CreateStreamInfoTextWidgetElement(widget *text.Text) grid.Element {
 	return grid.RowHeightPerc(13,
 		grid.Widget(widget,
 			container.Border(linestyle.Round),
-			container.BorderTitle("Live Stream 12:38"),
+			container.BorderTitle("Live Stream"),
 		),
 	)
 }

@@ -235,6 +235,7 @@ func Load(filePath string, versionInfo string) error {
 
 func (q *StreamQuality) String() string {
 	qualityStringComponents := []string{}
+
 	if q.VideoBitrate != 0 {
 		qualityStringComponents = append(qualityStringComponents, fmt.Sprintf("%dk", q.VideoBitrate))
 	}
@@ -256,8 +257,10 @@ func (q *StreamQuality) String() string {
 		qualityStringComponents = append(qualityStringComponents, fmt.Sprintf("%dfps", q.ScaledHeight))
 	}
 
-	if q.IsAudioPassthrough {
+	if q.IsAudioPassthrough || q.AudioBitrate == 0 {
 		qualityStringComponents = append(qualityStringComponents, "Audio passthrough enabled")
+	} else {
+		qualityStringComponents = append(qualityStringComponents, fmt.Sprintf("Audio: %dk", q.AudioBitrate))
 	}
 
 	return strings.Join(qualityStringComponents, ". ")

@@ -16,8 +16,8 @@ func CreateVariantListWidget(ctx context.Context) *text.Text {
 
 	rollT, err := newRollText(ctx)
 
-	for _, variant := range variants {
-		rollT.Write(variant.String() + "\n")
+	for index, variant := range variants {
+		rollT.Write(fmt.Sprintf("[%d] %s \n", index, variant.String()))
 	}
 
 	if err != nil {
@@ -33,7 +33,7 @@ func CreateConfigListWidget(ctx context.Context) *text.Text {
 	rollT.Write(fmt.Sprintf("Playlist length: %d\n", config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()))
 
 	if config.Config.S3.Enabled {
-		rollT.Write(fmt.Sprintf("S3 storage: %s\n", config.Config.S3.Endpoint))
+		rollT.Write(fmt.Sprintf("S3 storage: %s/%s\n", config.Config.S3.Endpoint, config.Config.S3.Bucket))
 	}
 
 	if err != nil {

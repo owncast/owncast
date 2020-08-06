@@ -32,6 +32,7 @@ const rootID = "root"
 
 var _headerText *text.Text
 var _currentStreamText *text.Text
+var _streamInfoTextWidget grid.Element
 var _clientList *text.Text
 var _videoVariantList *text.Text
 var _configSettingsList *text.Text
@@ -128,7 +129,7 @@ func getLeftRows() []grid.Element {
 	headerTextLayout := CreateHeaderTextWidgetElement(_headerText)
 
 	_currentStreamText = CreateStreamInfoTextWidget()
-	streamInfoTextWidget := CreateStreamInfoTextWidgetElement(_currentStreamText)
+	_streamInfoTextWidget = CreateStreamInfoTextWidgetElement(_currentStreamText)
 
 	_clientList = CreateClientListWidget(_ctx)
 	clientListBox := CreateClientListElement(_clientList)
@@ -152,7 +153,7 @@ func getLeftRows() []grid.Element {
 	// _textInput = CreateMessageInputWidget()
 	// textInput := CreateMessageInputWidgetElement(_textInput)
 
-	leftRows := []grid.Element{headerTextLayout, streamInfoTextWidget, clientListBox, configurations, hardwareGauges, hardwareGraphs, logText}
+	leftRows := []grid.Element{headerTextLayout, _streamInfoTextWidget, clientListBox, configurations, hardwareGauges, hardwareGraphs, logText}
 
 	return leftRows
 }
