@@ -29,25 +29,59 @@ class Message {
 			ghMentions: false,
 		}).makeHtml(this.body);
 
-		const urls = getURLs(stripTags(this.body));
-		if (urls) {
-			urls.forEach(function (url) {
-				if (getYoutubeIdFromURL(url)) {
-					const youtubeID = getYoutubeIdFromURL(url);
-					formattedText += '<br/>' + getYoutubeEmbedFromID(youtubeID);
-				} else if (url.indexOf('instagram.com/p/') > -1) {
-					formattedText += '<br/>' + getInstagramEmbedFromURL(url);
-				} else if (isImage(url)) {
-					formattedText = getImageForURL(url);
-				}
-			})
-		}
-
-		// TODO: Need to pass the current user's username in for "test"
-		const highlighted = highlightString("test", formattedText);
-		return addNewlines(highlighted);
+		formattedText = this.linkify(formattedText, this.body);
+		return addNewlines(formattedText);
 	}
 
+	// TODO: Move this into a util function once we can organize code
+	// and split things up.
+	linkify(text, rawText) {
+		const urls = getURLs(stripTags(rawText));
+		if (urls) {
+			urls.forEach(function (url) {
+				let linkURL = url;
+
+				// Add http prefix if none exist in the URL so it actually
+				// will work in an anchor tag.
+				if (linkURL.indexOf('http') === -1) {
+					linkURL = 'http://' + linkURL;
+				}
+
+				// Remove the protocol prefix in the display URLs just to make
+				// things look a little nicer.
+				const displayURL = url.replace(/(^\w+:|^)\/\//, '');
+				const link = `<a href="${linkURL}" target="_blank">${displayURL}</a>`;
+				text = text.replace(url, link);
+
+				if (getYoutubeIdFromURL(url)) {
+					if (this.isTextJustURLs(text, [url, displayURL])) {
+						text = '';
+					}
+					const youtubeID = getYoutubeIdFromURL(url);
+					text += '<br/>' + getYoutubeEmbedFromID(youtubeID);
+				} else if (url.indexOf('instagram.com/p/') > -1) {
+					if (this.isTextJustURLs(text, [url, displayURL])) {
+						text = '';
+					}
+					text += '<br/>' + getInstagramEmbedFromURL(url);
+				} else if (isImage(url)) {
+					text = getImageForURL(url);
+				}
+			}.bind(this));
+		}
+		return text;
+	}
+
+	isTextJustURLs(text, urls) {
+		for (var i = 0; i < urls.length; i++) {
+			const url = urls[i];
+			if (stripTags(text) === url) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	userColor() {
 		return messageBubbleColorForString(this.author);
@@ -391,7 +425,7 @@ function stripTags(str) {
 }
 
 function getURLs(str) {
-	var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	var exp = /((\w+:\/\/\S+)|(\w+[\.:]\w+\S+))[^\s,\.]/ig;
 	return str.match(exp);
 }
 
