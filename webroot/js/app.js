@@ -10,7 +10,7 @@ const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALA
 
 const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
 
-const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
+const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : '';
 const URL_CONFIG = `${URL_PREFIX}/config`;
 const URL_STATUS = `${URL_PREFIX}/status`;
 const URL_CHAT_HISTORY = `${URL_PREFIX}/chat`;
