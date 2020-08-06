@@ -1,3 +1,13 @@
+import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
+
+const KEY_USERNAME = 'owncast_username';
+const KEY_AVATAR = 'owncast_avatar';
+const KEY_CHAT_DISPLAYED = 'owncast_chat';
+const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
+const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
+const CHAT_PLACEHOLDER_TEXT = 'Message';
+const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
+
 class Message {
 	constructor(model) {
 		this.author = model.author;
@@ -36,7 +46,6 @@ class Message {
 
 class MessagingInterface {
 	constructor() {
-		this.websocket = null;
 		this.chatDisplayed = false;
 		this.username = '';
 		this.messageCharCount = 0;
@@ -89,11 +98,6 @@ class MessagingInterface {
 			window.addEventListener("orientationchange", setVHvar);
 			this.tagAppContainer.classList.add('touch-screen');
 		}
-
-	}
-
-	setWebsocket(socket) {
-		this.websocket = socket;
 	}
 
 	initLocalStates() {
@@ -188,9 +192,7 @@ class MessagingInterface {
 			image: image,
 		};
 
-		const jsonMessage = JSON.stringify(nameChange);
-
-		this.websocket.send(jsonMessage)
+		this.send(nameChange);
 	}
 
 	handleMessageInputKeydown(event) {
@@ -252,15 +254,7 @@ class MessagingInterface {
 			image: this.imgUsernameAvatar.src,
 			type: SOCKET_MESSAGE_TYPES.CHAT,
 		});
-		const messageJSON = JSON.stringify(message);
-		if (this.websocket) {
-			try {
-				this.websocket.send(messageJSON);
-			} catch(e) {
-				console.log('Message send error:', e);
-				return;
-			}
-		}
+		this.send(message);
 
 		// clear out things.
 		this.formMessageInput.value = '';
@@ -298,4 +292,10 @@ class MessagingInterface {
 			jumpToBottom(this.scrollableMessagesContainer);
 		}
 	}
+
+	send(messageJSON) {
+		console.error('MessagingInterface send() is not linked to the websocket component.');
+	}
 }
+
+export { Message, MessagingInterface }
