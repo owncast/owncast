@@ -18,8 +18,7 @@ var (
 
 //Server represents the server which handles the chat
 type server struct {
-	Messages []models.ChatMessage
-	Clients  map[string]*Client
+	Clients map[string]*Client
 
 	pattern  string
 	listener models.ChatListener
@@ -113,7 +112,6 @@ func (s *server) Listen() {
 
 		// broadcast a message to all clients
 		case msg := <-s.sendAllCh:
-			s.Messages = append(s.Messages, msg)
 			s.listener.MessageSent(msg)
 			s.sendAll(msg)
 			addMessage(msg)
