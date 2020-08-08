@@ -661,11 +661,7 @@ h2 {
   padding: 3px;
 }
 
-.message-text .highlighted-string {
-  color: orange;
-  font-weight: 400;
-  font-size: 14px;
-}/* Emoji picker */
+/* Emoji picker */
 #emoji-button {
   position: relative;
   top: -65px;
@@ -684,7 +680,9 @@ h2 {
 }
 .message-text .highlighted {
   color: orange;
-  font-weight: bold;
+  font-weight: 400;
+  font-size: 14px;
+
 }
 
 .message-text code {

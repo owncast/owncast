@@ -30,6 +30,8 @@ class Message {
 		}).makeHtml(this.body);
 
 		formattedText = this.linkify(formattedText, this.body);
+		formattedText = this.highlightUsername(formattedText);
+
 		return addNewlines(formattedText);
 	}
 
@@ -56,16 +58,26 @@ class Message {
 				if (getYoutubeIdFromURL(url)) {
 					if (this.isTextJustURLs(text, [url, displayURL])) {
 						text = '';
+					} else {
+						text += '<br/>';
 					}
+
 					const youtubeID = getYoutubeIdFromURL(url);
-					text += '<br/>' + getYoutubeEmbedFromID(youtubeID);
+					text += getYoutubeEmbedFromID(youtubeID);
 				} else if (url.indexOf('instagram.com/p/') > -1) {
 					if (this.isTextJustURLs(text, [url, displayURL])) {
 						text = '';
+					} else {
+						text += `<br/>`;
 					}
-					text += '<br/>' + getInstagramEmbedFromURL(url);
+					text += getInstagramEmbedFromURL(url);
 				} else if (isImage(url)) {
-					text = getImageForURL(url);
+					if (this.isTextJustURLs(text, [url, displayURL])) {
+						text = '';
+					} else {
+						text += `<br/>`;
+					}
+					text += getImageForURL(url);
 				}
 			}.bind(this));
 		}
@@ -276,7 +288,7 @@ class MessagingInterface {
 		if (possibilities.length > 0) {
 			this.suggestion = possibilities[this.completionIndex];
 
-			// TODO: Fix the space not working.  I'm guessing because HTML ignores spaces and it requires a nbsp or something?
+			// TODO: Fix the space not working.  I'm guessing because the DOM ignores spaces and it requires a nbsp or something?
 			this.formMessageInput.innerHTML = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
 			setCaretPosition(this.formMessageInput, at + this.suggestion.length + 2);
 		}
@@ -465,10 +477,6 @@ function getImageForURL(url) {
 	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`;
 }
 
-function highlightString(stringToHighlight, message) {
-	const highlightedString = `<span class="highlighted-string">${stringToHighlight}</span>`;
-	return message.replace(new RegExp(stringToHighlight, 'g'), highlightedString)
-}
 
 // Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
 function getCaretPosition(editableDiv) {
