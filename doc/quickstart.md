@@ -3,10 +3,11 @@
 There are two quick ways to get up and running, depending on your preference.  One is to simply download the service and run it, and the other is through Docker, if Docker is your thing.
 
 
-## Download and run
+## Download and run a release
+
 1. Install [`ffmpeg`](https://ffmpeg.org/download.html) if you haven't.
 1. Make a directory to run the service from, and download a release from https://github.com/gabek/owncast/releases into that directory.
-1. Unzip the release's archive: `unzip owncast-linux-x.x.x.zip`.
+1. Unzip the release's archive for linux or macOS: `unzip owncast-linux-x.x.x.zip`.
 1. [Edit `config.yaml` as detailed below](#configure).  Specifically your stream key and `ffmpeg` location.
 1. Run `./owncast` to start the service.
 
@@ -14,7 +15,16 @@ There are two quick ways to get up and running, depending on your preference.  O
 
 or.....
 
-## Through docker
+## Use a Docker image
+
+1. Find the recent version on Docker [by visiting Dockerhub](https://hub.docker.com/repository/registry-1.docker.io/gabekangas/owncast/tags?page=1).
+1. `docker pull gabekangas/owncast:x.x.x` replacing x.x.x with the tag
+1. Run `docker run -p 8080:8080 -p 1935:1935 -it owncast` to start the service.
+
+
+Or if you'd prefer to download the source and use the Dockerfile to configure things
+
+## Download the source and use the Dockerfile
 
 1. Download the code: `git clone https://github.com/gabek/owncast`
 1. Copy `config-example.yaml` to `config.yaml`
