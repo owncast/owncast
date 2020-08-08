@@ -624,6 +624,11 @@ h2 {
   border-radius: 15px;
 }
 
+.message-text .highlighted {
+  color: orange;
+  font-weight: bold;
+}
+
 .message-text code {
   background-color:darkslategrey;
   padding: 3px;
