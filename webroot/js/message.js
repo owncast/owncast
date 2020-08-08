@@ -249,8 +249,8 @@ class MessagingInterface {
 	}
 
 	tryToComplete() {
-		const rawValue = this.formMessageInput.value;
-		const position = this.formMessageInput.selectionStart;
+		const rawValue = this.formMessageInput.innerHTML;
+		const position = getCaretPosition(this.formMessageInput);
 		const at = rawValue.lastIndexOf('@', position - 1);
 
 		if (at === -1) {
@@ -276,9 +276,9 @@ class MessagingInterface {
 		if (possibilities.length > 0) {
 			this.suggestion = possibilities[this.completionIndex];
 
-			this.formMessageInput.value = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
-			this.formMessageInput.selectionStart = at + this.suggestion.length + 2;
-			this.formMessageInput.selectionEnd = this.formMessageInput.selectionStart;
+			// TODO: Fix the space not working.  I'm guessing because HTML ignores spaces and it requires a nbsp or something?
+			this.formMessageInput.innerHTML = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
+			setCaretPosition(this.formMessageInput, at + this.suggestion.length + 2);
 		}
 
 		return true;
@@ -305,7 +305,7 @@ class MessagingInterface {
 				event.preventDefault();
 
 				// value could have been changed, update variables
-				value = this.formMessageInput.value.trim();
+				value = this.formMessageInput.innerHTML.trim();
 				numCharsLeft = this.maxMessageLength - value.length;
 			}
 		}
@@ -468,4 +468,42 @@ function getImageForURL(url) {
 function highlightString(stringToHighlight, message) {
 	const highlightedString = `<span class="highlighted-string">${stringToHighlight}</span>`;
 	return message.replace(new RegExp(stringToHighlight, 'g'), highlightedString)
+}
+
+// Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
+function getCaretPosition(editableDiv) {
+	var caretPos = 0,
+		sel, range;
+	if (window.getSelection) {
+		sel = window.getSelection();
+		if (sel.rangeCount) {
+			range = sel.getRangeAt(0);
+			if (range.commonAncestorContainer.parentNode == editableDiv) {
+				caretPos = range.endOffset;
+			}
+		}
+	} else if (document.selection && document.selection.createRange) {
+		range = document.selection.createRange();
+		if (range.parentElement() == editableDiv) {
+			var tempEl = document.createElement("span");
+			editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+			var tempRange = range.duplicate();
+			tempRange.moveToElementText(tempEl);
+			tempRange.setEndPoint("EndToEnd", range);
+			caretPos = tempRange.text.length;
+		}
+	}
+	return caretPos;
+}
+
+// Pieced together from parts of https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
+function setCaretPosition(editableDiv, position) {
+	var range = document.createRange();
+	var sel = window.getSelection();
+	range.selectNode(editableDiv);
+	range.setStart(editableDiv.childNodes[0], position);
+	range.collapse(true);
+
+	sel.removeAllRanges();
+	sel.addRange(range);
 }
