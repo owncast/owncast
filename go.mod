@@ -3,7 +3,7 @@ module github.com/gabek/owncast
 go 1.14
 
 require (
-	github.com/aws/aws-sdk-go v1.32.1
+	github.com/aws/aws-sdk-go v1.34.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/mssola/user_agent v0.5.2
@@ -17,5 +17,3 @@ require (
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )
-
-replace github.com/nareix/joy4 v0.0.0 => github.com/Seize/joy4 v0.0.0
