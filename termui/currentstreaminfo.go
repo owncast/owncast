@@ -17,6 +17,10 @@ func CreateStreamInfoTextWidget() *text.Text {
 }
 
 func SetCurrentInboundStream(data string) {
+	if _currentStreamText == nil {
+		return
+	}
+
 	_currentStreamText.Reset()
 	_currentStreamText.Write(data)
 }

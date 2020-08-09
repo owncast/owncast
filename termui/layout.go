@@ -43,6 +43,8 @@ var _memoryGraph *linechart.LineChart
 var _textInput *textinput.TextInput
 var _logText *text.Text
 
+var _container *container.Container
+
 var _ctx context.Context
 
 func Setup(version string) error {
@@ -68,6 +70,7 @@ func Setup(version string) error {
 	if err != nil {
 		panic(err)
 	}
+	_container = c
 
 	layout, _ := GetLayout()
 

@@ -107,8 +107,8 @@ func (s *server) Listen() {
 
 		// remove a client
 		case c := <-s.delCh:
-			delete(s.Clients, c.socketID)
 			s.listener.ClientRemoved(c.clientID)
+			delete(s.Clients, c.socketID)
 
 		// broadcast a message to all clients
 		case msg := <-s.sendAllCh:

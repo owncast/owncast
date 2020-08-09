@@ -2,6 +2,7 @@ package termui
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/mum4k/termdash/container"
@@ -47,4 +48,6 @@ func SetClientList(list map[string]time.Time) {
 		_clientList.Write(key)
 	}
 
+	title := fmt.Sprintf("Clients(%d)", len(list))
+	_container.Update("clientListContainer", container.BorderTitle(title))
 }
