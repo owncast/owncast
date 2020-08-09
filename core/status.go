@@ -43,6 +43,8 @@ func SetStreamAsConnected() {
 	}
 
 	ffmpeg.StartThumbnailGenerator(chunkPath, config.Config.VideoSettings.HighestQualityStreamIndex)
+
+	termui.StreamConnectedAt = utils.NullTime{time.Now(), true}
 }
 
 //SetStreamAsDisconnected sets the stream as disconnected
@@ -52,4 +54,5 @@ func SetStreamAsDisconnected() {
 
 	termui.SetCurrentInboundStream("")
 	ffmpeg.ShowStreamOfflineState()
+	termui.StreamConnectedAt = utils.NullTime{}
 }

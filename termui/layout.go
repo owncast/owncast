@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gabek/owncast/utils"
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"
 	"github.com/mum4k/termdash/container/grid"
@@ -25,6 +26,7 @@ const (
 	tcellTerminal   = "tcell"
 )
 
+var StreamConnectedAt = utils.NullTime{}
 var versionString string
 
 // rootID is the ID assigned to the root container.
@@ -97,6 +99,8 @@ func Setup(version string) error {
 				memUsage := getMemoryUsage()
 				_memoryGauge.Percent(int(memUsage))
 				setMemoryGraphValue(_memoryGraph, memUsage)
+
+				updateStreamInfoTitle()
 			case <-quit:
 				ticker.Stop()
 				return
