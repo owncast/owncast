@@ -43,9 +43,13 @@ func CreateConfigListWidget(ctx context.Context) *text.Text {
 }
 
 func CreateConfigElement(videoVariantsList *text.Text, configSettingsList *text.Text) grid.Element {
+	variants := config.Config.GetVideoStreamQualities()
+	title := fmt.Sprintf("Video Variants(%d)", len(variants))
+
 	video := grid.Widget(videoVariantsList,
+		container.ID("videoVariants"),
 		container.Border(linestyle.Round),
-		container.BorderTitle("Video Variants"),
+		container.BorderTitle(title),
 	)
 
 	config := grid.Widget(configSettingsList,
