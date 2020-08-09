@@ -379,18 +379,22 @@ class MessagingInterface {
 
 	disableChat() {
 		if (this.formMessageInput) {
-			this.formMessageInput.disabled = true;
-			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;
+			console.log('disableChat')
+
+			this.formMessageInput.contentEditable = false;
+			this.formMessageInput.innerHTML = CHAT_PLACEHOLDER_OFFLINE;
 		}
 	}
 	enableChat() {
 		if (this.formMessageInput) {
-			this.formMessageInput.disabled = false;
+			this.formMessageInput.contentEditable = false;
 			this.setChatPlaceholderText();
 		}
 	}
 
 	setChatPlaceholderText() {
+		// TODO: contentEditable divs don't support placeholders.
+		// https://stackoverflow.com/questions/9093424/placeholder-in-contenteditable-focus-event-issue
 		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
 		this.formMessageInput.placeholder = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT
 	}
