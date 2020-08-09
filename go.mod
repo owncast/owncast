@@ -7,7 +7,7 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/mssola/user_agent v0.5.2
-	github.com/nareix/joy5 v0.0.0-20200710135721-d57196c8d506
+	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sirupsen/logrus v1.6.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf

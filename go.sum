@@ -23,6 +23,8 @@ github.com/mssola/user_agent v0.5.2 h1:CZkTUahjL1+OcZ5zv3kZr8QiJ8jy2H08vZIEkBeRb
 github.com/mssola/user_agent v0.5.2/go.mod h1:TTPno8LPY3wAIEKRpAtkdMT0f8SE24pLRGPahjCH4uw=
 github.com/nareix/joy5 v0.0.0-20200710135721-d57196c8d506 h1:LclgHa9TCVfOXhpmIEyz8wc2ohx0AF/PJu3wLUZZJ8c=
 github.com/nareix/joy5 v0.0.0-20200710135721-d57196c8d506/go.mod h1:XmAOs6UJXpNXRwKk+KY/nv5kL6xXYXyellk+A1pTlko=
+github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88 h1:CXq5QLPMcfGEZMx8uBMyLdDiUNV72vlkSiyqg+jf7AI=
+github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88/go.mod h1:XmAOs6UJXpNXRwKk+KY/nv5kL6xXYXyellk+A1pTlko=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
