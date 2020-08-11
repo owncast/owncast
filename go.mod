@@ -11,7 +11,6 @@ require (
 	github.com/mum4k/termdash v0.12.1
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/prometheus/common v0.11.1
 	github.com/radovskyb/watcher v1.0.7
 	github.com/shirou/gopsutil v2.20.6+incompatible
 	github.com/sirupsen/logrus v1.6.0

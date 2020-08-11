@@ -6,8 +6,8 @@ import (
 
 	logger "github.com/gabek/owncast/log"
 	"github.com/gabek/owncast/termui"
-	"github.com/prometheus/common/log"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
