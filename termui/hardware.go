@@ -22,11 +22,13 @@ func CreateHardwareGaugeWidgetElement(cpuWidget *gauge.Gauge, memoryWidget *gaug
 	cpu := grid.Widget(cpuWidget,
 		container.Border(linestyle.Light),
 		container.BorderTitle("CPU"),
+		container.BorderColor(cell.ColorCyan),
 	)
 
 	ram := grid.Widget(memoryWidget,
 		container.Border(linestyle.Light),
 		container.BorderTitle("Memory"),
+		container.BorderColor(cell.ColorYellow),
 	)
 
 	return grid.RowHeightPerc(7,
@@ -56,14 +58,15 @@ func setCPUGraphValue(graph *linechart.LineChart, value float64) {
 		_cpuGraphValues = _cpuGraphValues[1:]
 	}
 	_cpuGraphValues = append(_cpuGraphValues, value)
-	graph.Series("Y", _cpuGraphValues)
+	graph.Series("%", _cpuGraphValues)
 }
 
 func CreateCPUGraphWidget() *linechart.LineChart {
 	lc, err := linechart.New(
-		linechart.AxesCellOpts(cell.FgColor(cell.ColorRed)),
-		linechart.YLabelCellOpts(cell.FgColor(cell.ColorGreen)),
-		linechart.XLabelCellOpts(cell.FgColor(cell.ColorGreen)),
+		linechart.AxesCellOpts(cell.FgColor(cell.ColorCyan)),
+		linechart.YLabelCellOpts(cell.FgColor(cell.ColorWhite)),
+		linechart.XLabelCellOpts(cell.FgColor(cell.ColorWhite)),
+		linechart.YAxisFormattedValues(linechart.ValueFormatterRound),
 	)
 
 	if err != nil {
@@ -82,9 +85,10 @@ func setMemoryGraphValue(graph *linechart.LineChart, value int) {
 
 func CreateMemoryGraphWidget() *linechart.LineChart {
 	lc, err := linechart.New(
-		linechart.AxesCellOpts(cell.FgColor(cell.ColorRed)),
-		linechart.YLabelCellOpts(cell.FgColor(cell.ColorGreen)),
-		linechart.XLabelCellOpts(cell.FgColor(cell.ColorGreen)),
+		linechart.AxesCellOpts(cell.FgColor(cell.ColorYellow)),
+		linechart.YLabelCellOpts(cell.FgColor(cell.ColorWhite)),
+		linechart.XLabelCellOpts(cell.FgColor(cell.ColorWhite)),
+		linechart.YAxisFormattedValues(linechart.ValueFormatterRound),
 	)
 	if err != nil {
 		panic(err)
@@ -95,13 +99,15 @@ func CreateMemoryGraphWidget() *linechart.LineChart {
 func CreateHardwareGraphWidgetElement(cpuWidget *linechart.LineChart, memoryWidget *linechart.LineChart) grid.Element {
 	cpu := grid.Widget(cpuWidget,
 		container.Border(linestyle.Round),
+		container.BorderColor(cell.ColorCyan),
 	)
 
 	ram := grid.Widget(memoryWidget,
 		container.Border(linestyle.Round),
+		container.BorderColor(cell.ColorYellow),
 	)
 
-	return grid.RowHeightPerc(25,
+	return grid.RowHeightPerc(23,
 		grid.ColWidthPerc(50,
 			cpu,
 		),

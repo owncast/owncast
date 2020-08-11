@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gabek/owncast/config"
+	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/container"
 	"github.com/mum4k/termdash/container/grid"
 	"github.com/mum4k/termdash/linestyle"
@@ -50,14 +51,16 @@ func CreateConfigElement(videoVariantsList *text.Text, configSettingsList *text.
 		container.ID("videoVariants"),
 		container.Border(linestyle.Round),
 		container.BorderTitle(title),
+		container.BorderColor(cell.ColorGreen),
 	)
 
 	config := grid.Widget(configSettingsList,
 		container.Border(linestyle.Round),
 		container.BorderTitle("Configuration"),
+		container.BorderColor(cell.ColorRed),
 	)
 
-	return grid.RowHeightPerc(15,
+	return grid.RowHeightPerc(13,
 		grid.ColWidthPerc(50,
 			video,
 		),

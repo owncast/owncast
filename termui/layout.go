@@ -35,7 +35,8 @@ const rootID = "root"
 var _headerText *text.Text
 var _currentStreamText *text.Text
 var _streamInfoTextWidget grid.Element
-var _clientList *text.Text
+var _clientListText *text.Text
+var _clientGraph *linechart.LineChart
 var _videoVariantList *text.Text
 var _configSettingsList *text.Text
 var _cpuGauge *gauge.Gauge
@@ -101,6 +102,7 @@ func Setup(version string) error {
 				setMemoryGraphValue(_memoryGraph, memUsage)
 
 				updateStreamInfoTitle()
+				updateClientGraphValues(_clientGraph)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -138,8 +140,9 @@ func getLeftRows() []grid.Element {
 	_currentStreamText = CreateStreamInfoTextWidget()
 	_streamInfoTextWidget = CreateStreamInfoTextWidgetElement(_currentStreamText)
 
-	_clientList = CreateClientListWidget(_ctx)
-	clientListBox := CreateClientListElement(_clientList)
+	_clientListText = CreateClientListWidget(_ctx)
+	_clientGraph = CreateClientGraphWidget()
+	clientListBox := CreateClientListElement(_clientListText, _clientGraph)
 
 	_videoVariantList = CreateVariantListWidget(_ctx)
 	_configSettingsList = CreateConfigListWidget(_ctx)

@@ -50,5 +50,4 @@ func updateStreamInfoTitle() {
 	}
 
 	_container.Update("streamInfo", container.BorderTitle(title))
-
 }
