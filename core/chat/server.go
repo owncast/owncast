@@ -24,7 +24,6 @@ type server struct {
 	listener models.ChatListener
 
 	addCh     chan *Client
-	delCh     chan *Client
 	sendAllCh chan models.ChatMessage
 	pingCh    chan models.PingMessage
 	doneCh    chan bool
@@ -38,7 +37,7 @@ func (s *server) add(c *Client) {
 
 //Remove removes a client from the server
 func (s *server) remove(c *Client) {
-	s.delCh <- c
+	delete(s.Clients, c.socketID)
 }
 
 //SendToAll sends a message to all of the connected clients
@@ -81,6 +80,9 @@ func (s *server) onConnection(ws *websocket.Conn) {
 	defer func() {
 		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.clientID)
 
+		s.listener.ClientRemoved(client.clientID)
+		delete(s.Clients, client.socketID)
+
 		if err := ws.Close(); err != nil {
 			s.errCh <- err
 		}
@@ -105,16 +107,12 @@ func (s *server) Listen() {
 			s.listener.ClientAdded(c.clientID)
 			s.sendWelcomeMessageToClient(c)
 
-		// remove a client
-		case c := <-s.delCh:
-			s.listener.ClientRemoved(c.clientID)
-			delete(s.Clients, c.socketID)
-
 		// broadcast a message to all clients
 		case msg := <-s.sendAllCh:
 			s.listener.MessageSent(msg)
 			s.sendAll(msg)
 			addMessage(msg)
+
 		case ping := <-s.pingCh:
 			fmt.Println("PING?", ping)
 

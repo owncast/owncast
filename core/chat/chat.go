@@ -13,7 +13,6 @@ func Setup(listener models.ChatListener) {
 
 	clients := make(map[string]*Client)
 	addCh := make(chan *Client)
-	delCh := make(chan *Client)
 	sendAllCh := make(chan models.ChatMessage)
 	pingCh := make(chan models.PingMessage)
 	doneCh := make(chan bool)
@@ -24,7 +23,6 @@ func Setup(listener models.ChatListener) {
 		"/entry", //hardcoded due to the UI requiring this and it is not configurable
 		listener,
 		addCh,
-		delCh,
 		sendAllCh,
 		pingCh,
 		doneCh,
