@@ -39,7 +39,14 @@ func GetRelativePathFromAbsolutePath(path string) string {
 	return filepath.Join(variant, file)
 }
 
-//Copy copies the
+func GetIndexFromFilePath(path string) string {
+	pathComponents := strings.Split(path, "/")
+	variant := pathComponents[len(pathComponents)-2]
+
+	return variant
+}
+
+//Copy copies the file to destination
 func Copy(source, destination string) error {
 	input, err := ioutil.ReadFile(source)
 	if err != nil {
@@ -47,6 +54,11 @@ func Copy(source, destination string) error {
 	}
 
 	return ioutil.WriteFile(destination, input, 0644)
+}
+
+//Move moves the file to destination
+func Move(source, destination string) error {
+	return os.Rename(source, destination)
 }
 
 // IsUserAgentABot returns if a web client user-agent is seen as a bot

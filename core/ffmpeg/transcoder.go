@@ -2,6 +2,7 @@ package ffmpeg
 
 import (
 	"fmt"
+	"io"
 	"os/exec"
 	"path"
 	"strconv"
@@ -75,7 +76,7 @@ func (t *Transcoder) Stop() {
 }
 
 // Start will execute the transcoding process with the settings previously set.
-func (t *Transcoder) Start() {
+func (t *Transcoder) Start() io.ReadCloser {
 	command := t.getString()
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
@@ -85,13 +86,16 @@ func (t *Transcoder) Start() {
 	}
 
 	_commandExec = exec.Command("sh", "-c", command)
+	stdout, _ := _commandExec.StdoutPipe()
+
 	err := _commandExec.Start()
 	if err != nil {
 		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
 		log.Panicln(err, command)
 	}
 
-	return
+	return stdout
+	// _commandExec.Wait()
 }
 
 func (t *Transcoder) getString() string {
@@ -113,6 +117,7 @@ func (t *Transcoder) getString() string {
 		"cat", t.input, "|",
 		t.ffmpegPath,
 		"-hide_banner",
+		"-progress", "pipe:0",
 		"-i pipe:",
 		t.getVariantsString(),
 
@@ -134,7 +139,7 @@ func (t *Transcoder) getString() string {
 		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s-"+t.segmentIdentifier+".ts"), // Each segment's filename
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
-		"2> transcoder.log",
+		"2>&1 |tee transcoder.txt",
 	}
 
 	return strings.Join(ffmpegFlags, " ")
@@ -180,7 +185,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config
-func NewTranscoder() Transcoder {
+func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
 	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
@@ -207,7 +212,7 @@ func NewTranscoder() Transcoder {
 		transcoder.AddVariant(variant)
 	}
 
-	return *transcoder
+	return transcoder
 }
 
 // Uses `map` https://www.ffmpeg.org/ffmpeg-all.html#Stream-specifiers-1 https://www.ffmpeg.org/ffmpeg-all.html#Advanced-options

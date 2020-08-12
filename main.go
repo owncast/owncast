@@ -30,8 +30,8 @@ func main() {
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	chatDbFile := flag.String("chatDatabase", "", "Path to the chat database file.")
-	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
-	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
+	enableDebugOptions := flag.Bool("enableDebugFeatures", true, "Enable additional debugging options.")
+	enableVerboseLogging := flag.Bool("enableVerboseLogging", true, "Enable additional logging.")
 
 	flag.Parse()
 

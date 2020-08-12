@@ -17,7 +17,6 @@ import (
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -27,7 +26,6 @@ var (
 	_isConnected = false
 )
 
-var _transcoder ffmpeg.Transcoder
 var _pipe *os.File
 var _rtmpConnection net.Conn
 
@@ -115,9 +113,6 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	pipePath := utils.GetTemporaryPipePath()
 	syscall.Mkfifo(pipePath, 0666)
 
-	_transcoder = ffmpeg.NewTranscoder()
-	go _transcoder.Start()
-
 	_isConnected = true
 	core.SetStreamAsConnected()
 	_rtmpConnection = nc
@@ -153,8 +148,7 @@ func handleDisconnect(conn net.Conn) {
 	conn.Close()
 	_pipe.Close()
 	_isConnected = false
-	_transcoder.Stop()
-	_rtmpConnection = nil
+	//_transcoder.Stop()
 	core.SetStreamAsDisconnected()
 }
 
