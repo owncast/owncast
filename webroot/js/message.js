@@ -385,7 +385,8 @@ class MessagingInterface {
 	}
 	enableChat() {
 		if (this.formMessageInput) {
-			this.formMessageInput.contentEditable = false;
+			this.formMessageInput.contentEditable = true;
+			this.formMessageInput.innerHTML = '';
 			this.setChatPlaceholderText();
 		}
 	}
@@ -394,7 +395,7 @@ class MessagingInterface {
 		// TODO: contentEditable divs don't support placeholders.
 		// https://stackoverflow.com/questions/9093424/placeholder-in-contenteditable-focus-event-issue
 		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
-		this.formMessageInput.placeholder = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT
+		//this.formMessageInput.placeholder = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT
 	}
 
 	// handle Vue.js message display
