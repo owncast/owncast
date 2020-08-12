@@ -379,8 +379,6 @@ class MessagingInterface {
 
 	disableChat() {
 		if (this.formMessageInput) {
-			console.log('disableChat')
-
 			this.formMessageInput.contentEditable = false;
 			this.formMessageInput.innerHTML = CHAT_PLACEHOLDER_OFFLINE;
 		}
