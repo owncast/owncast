@@ -8,12 +8,9 @@ const MESSAGE_ONLINE = 'Stream is online';
 
 const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
-
-const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
-const URL_CONFIG = `${URL_PREFIX}/config`;
-const URL_STATUS = `${URL_PREFIX}/status`;
-const URL_CHAT_HISTORY = `${URL_PREFIX}/chat`;
+const URL_CONFIG = `/config`;
+const URL_STATUS = `/status`;
+const URL_CHAT_HISTORY = `/chat`;
 
 const TIMER_STATUS_UPDATE = 5000; // ms
 const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
@@ -120,7 +117,7 @@ class Owncast {
 
     window.document.title = data.title;
 
-    this.getExtraUserContent(`${URL_PREFIX}${data.extraUserInfoFileName}`);
+    this.getExtraUserContent(`${data.extraUserInfoFileName}`);
 
     this.configData = data;
   }

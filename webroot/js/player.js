@@ -1,9 +1,8 @@
 // https://docs.videojs.com/player
 
 const VIDEO_ID = 'video';
-const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
-const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
-const URL_STREAM = `${URL_PREFIX}/hls/stream.m3u8`;
+// TODO: This directory is customizable in the config.  So we should expose this via the config API.
+const URL_STREAM = `/hls/stream.m3u8`;
 
 // Video setup
 const VIDEO_SRC = {

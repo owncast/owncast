@@ -19,7 +19,7 @@ class Message {
 
 	formatText() {
 		showdown.setFlavor('github');
-		var markdownToHTML = new showdown.Converter({
+		let formattedText = new showdown.Converter({
 			emoji: true, 
 			openLinksInNewWindow: true, 
 			tables: false, 
@@ -28,16 +28,73 @@ class Message {
 			strikethrough: true,
 			ghMentions: false,
 		}).makeHtml(this.body);
-		const linked = autoLink(markdownToHTML, {
-			embed: true,
-			removeHTTP: true,
-			linkAttr: {
-				target: '_blank'
-			}
-		});
-		const highlighted = this.highlightUsername(linked);
-		return addNewlines(highlighted);
+
+		formattedText = this.linkify(formattedText, this.body);
+		formattedText = this.highlightUsername(formattedText);
+
+		return addNewlines(formattedText);
 	}
+
+	// TODO: Move this into a util function once we can organize code
+	// and split things up.
+	linkify(text, rawText) {
+		const urls = getURLs(stripTags(rawText));
+		if (urls) {
+			urls.forEach(function (url) {
+				let linkURL = url;
+
+				// Add http prefix if none exist in the URL so it actually
+				// will work in an anchor tag.
+				if (linkURL.indexOf('http') === -1) {
+					linkURL = 'http://' + linkURL;
+				}
+
+				// Remove the protocol prefix in the display URLs just to make
+				// things look a little nicer.
+				const displayURL = url.replace(/(^\w+:|^)\/\//, '');
+				const link = `<a href="${linkURL}" target="_blank">${displayURL}</a>`;
+				text = text.replace(url, link);
+
+				if (getYoutubeIdFromURL(url)) {
+					if (this.isTextJustURLs(text, [url, displayURL])) {
+						text = '';
+					} else {
+						text += '<br/>';
+					}
+
+					const youtubeID = getYoutubeIdFromURL(url);
+					text += getYoutubeEmbedFromID(youtubeID);
+				} else if (url.indexOf('instagram.com/p/') > -1) {
+					if (this.isTextJustURLs(text, [url, displayURL])) {
+						text = '';
+					} else {
+						text += `<br/>`;
+					}
+					text += getInstagramEmbedFromURL(url);
+				} else if (isImage(url)) {
+					if (this.isTextJustURLs(text, [url, displayURL])) {
+						text = '';
+					} else {
+						text += `<br/>`;
+					}
+					text += getImageForURL(url);
+				}
+			}.bind(this));
+		}
+		return text;
+	}
+
+	isTextJustURLs(text, urls) {
+		for (var i = 0; i < urls.length; i++) {
+			const url = urls[i];
+			if (stripTags(text) === url) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	userColor() {
 		return messageBubbleColorForString(this.author);
 	}
@@ -73,7 +130,7 @@ class MessagingInterface {
 		this.tagMessageFormWarning = document.getElementById('message-form-warning');
 
 		this.inputMessageAuthor = document.getElementById('self-message-author');
-		this.inputChangeUserName = document.getElementById('username-change-input'); 
+		this.inputChangeUserName = document.getElementById('username-change-input');
 
 		this.btnUpdateUserName = document.getElementById('button-update-username'); 
 		this.btnCancelUpdateUsername = document.getElementById('button-cancel-change'); 
@@ -204,8 +261,8 @@ class MessagingInterface {
 	}
 
 	tryToComplete() {
-		const rawValue = this.formMessageInput.value;
-		const position = this.formMessageInput.selectionStart;
+		const rawValue = this.formMessageInput.innerHTML;
+		const position = getCaretPosition(this.formMessageInput);
 		const at = rawValue.lastIndexOf('@', position - 1);
 
 		if (at === -1) {
@@ -231,9 +288,9 @@ class MessagingInterface {
 		if (possibilities.length > 0) {
 			this.suggestion = possibilities[this.completionIndex];
 
-			this.formMessageInput.value = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
-			this.formMessageInput.selectionStart = at + this.suggestion.length + 2;
-			this.formMessageInput.selectionEnd = this.formMessageInput.selectionStart;
+			// TODO: Fix the space not working.  I'm guessing because the DOM ignores spaces and it requires a nbsp or something?
+			this.formMessageInput.innerHTML = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
+			setCaretPosition(this.formMessageInput, at + this.suggestion.length + 2);
 		}
 
 		return true;
@@ -241,7 +298,7 @@ class MessagingInterface {
 
 	handleMessageInputKeydown(event) {
 		var okCodes = [37,38,39,40,16,91,18,46,8];
-		var value = this.formMessageInput.value.trim();
+		var value = this.formMessageInput.innerHTML.trim();
 		var numCharsLeft = this.maxMessageLength - value.length;
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
@@ -260,7 +317,7 @@ class MessagingInterface {
 				event.preventDefault();
 
 				// value could have been changed, update variables
-				value = this.formMessageInput.value.trim();
+				value = this.formMessageInput.innerHTML.trim();
 				numCharsLeft = this.maxMessageLength - value.length;
 			}
 		}
@@ -287,7 +344,7 @@ class MessagingInterface {
 	}
 
 	handleSubmitChatButton(event) {
-		var value = this.formMessageInput.value.trim();
+		var value = this.formMessageInput.innerHTML.trim();
 		if (value) {
 			this.submitChat(value);
 			event.preventDefault();
@@ -310,7 +367,7 @@ class MessagingInterface {
 		this.send(message);
 
 		// clear out things.
-		this.formMessageInput.value = '';
+		this.formMessageInput.innerHTML = '';
 		this.tagMessageFormWarning.innerText = '';
 
 		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
@@ -322,20 +379,25 @@ class MessagingInterface {
 
 	disableChat() {
 		if (this.formMessageInput) {
-			this.formMessageInput.disabled = true;
-			this.formMessageInput.placeholder = CHAT_PLACEHOLDER_OFFLINE;
+			this.formMessageInput.contentEditable = false;
+			this.formMessageInput.innerHTML = '';
+			this.formMessageInput.setAttribute("placeholder", CHAT_PLACEHOLDER_OFFLINE);
 		}
 	}
+
 	enableChat() {
 		if (this.formMessageInput) {
-			this.formMessageInput.disabled = false;
+			this.formMessageInput.contentEditable = true;
 			this.setChatPlaceholderText();
 		}
 	}
 
 	setChatPlaceholderText() {
+		// NOTE: This is a fake placeholder that is being styled via CSS.
+		// You can't just set the .placeholder property because it's not a form element.
 		const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
-		this.formMessageInput.placeholder = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT
+		const placeholderText = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT;
+		this.formMessageInput.setAttribute("placeholder", placeholderText);
 	}
 
 	// handle Vue.js message display
@@ -374,3 +436,87 @@ class MessagingInterface {
 }
 
 export { Message, MessagingInterface }
+
+function stripTags(str) {
+	return str.replace(/<\/?[^>]+(>|$)/g, "");
+}
+
+function getURLs(str) {
+	var exp = /((\w+:\/\/\S+)|(\w+[\.:]\w+\S+))[^\s,\.]/ig;
+	return str.match(exp);
+}
+
+function getYoutubeIdFromURL(url) {
+	try {
+		var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+		var match = url.match(regExp);
+
+		if (match && match[2].length == 11) {
+			return match[2];
+		} else {
+			return null;
+		}
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+}
+
+function getYoutubeEmbedFromID(id) {
+	return `<iframe class="chat-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
+}
+
+function getInstagramEmbedFromURL(url) {
+	const urlObject = new URL(url.replace(/\/$/, ""));
+	urlObject.pathname += "/embed";
+	return `<iframe class="chat-embed instagram-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
+}
+
+function isImage(url) {
+	const re = /\.(jpe?g|png|gif)$/;
+	const isImage = re.test(url);
+	return isImage;
+}
+
+function getImageForURL(url) {
+	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`;
+}
+
+
+// Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
+function getCaretPosition(editableDiv) {
+	var caretPos = 0,
+		sel, range;
+	if (window.getSelection) {
+		sel = window.getSelection();
+		if (sel.rangeCount) {
+			range = sel.getRangeAt(0);
+			if (range.commonAncestorContainer.parentNode == editableDiv) {
+				caretPos = range.endOffset;
+			}
+		}
+	} else if (document.selection && document.selection.createRange) {
+		range = document.selection.createRange();
+		if (range.parentElement() == editableDiv) {
+			var tempEl = document.createElement("span");
+			editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+			var tempRange = range.duplicate();
+			tempRange.moveToElementText(tempEl);
+			tempRange.setEndPoint("EndToEnd", range);
+			caretPos = tempRange.text.length;
+		}
+	}
+	return caretPos;
+}
+
+// Pieced together from parts of https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
+function setCaretPosition(editableDiv, position) {
+	var range = document.createRange();
+	var sel = window.getSelection();
+	range.selectNode(editableDiv);
+	range.setStart(editableDiv.childNodes[0], position);
+	range.collapse(true);
+
+	sel.removeAllRanges();
+	sel.addRange(range);
+}
