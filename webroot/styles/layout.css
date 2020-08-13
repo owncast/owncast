@@ -689,3 +689,31 @@ h2 {
   background-color:darkslategrey;
   padding: 3px;
 }
+
+/*
+The chat input has a fake placeholder that is styled below.
+It pulls the placeholder text from the div's placeholder attribute.
+But really it's just the innerHTML content.
+*/
+
+/* If the div is empty then show the placeholder */
+#message-body-form:empty:before{
+  content: attr(placeholder);
+  pointer-events: none;
+  display: block; /* For Firefox */
+
+  /* Style the div's placeholder text color */
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* When chat is enabled (contenteditable=true)  */
+#message-body-form[contenteditable=true]:before {
+  opacity: 1.0;
+}
+
+
+/* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
+#message-body-form[contenteditable=false] {
+  opacity: 0.6;
+}
+
