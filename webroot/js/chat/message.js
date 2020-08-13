@@ -6,7 +6,7 @@ const html = htm.bind(h);
 import { messageBubbleColorForString } from '../utils/user-colors.js';
 import { formatMessageText } from '../utils/chat.js';
 import { generateAvatar } from '../utils.js';
-import SOCKET_MESSAGE_TYPES from './chat/socket-message-types.js';
+import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
 
 export default class Message extends Component {
   render(props) {

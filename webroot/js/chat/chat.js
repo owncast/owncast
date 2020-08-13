@@ -3,8 +3,8 @@ import htm from 'https://unpkg.com/htm?module';
 // Initialize htm with Preact
 const html = htm.bind(h);
 
-import SOCKET_MESSAGE_TYPES from '../utils/socketMessageTypes.js';
-
+import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
+import Message from './message.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
@@ -47,37 +47,19 @@ export default class Chat extends Component {
 		this.send(nameChange);
 	}
 
-  render() {
-    const { username, userAvatarImage } = this.state;
+  render(props, state) {
+    const { username, userAvatarImage } = props;
+    const { messages } = state;
+
     return (
       html`
         <section id="chat-container-wrap" class="flex">
           <div id="chat-container" class="bg-gray-800">
             <div id="messages-container">
-              messages...
-              <!-- <div v-for="message in messages" v-cloak>
-                  <div class="message flex" v-if="message.type === 'CHAT'">
-                    <div class="message-avatar rounded-full flex items-center justify-center" v-bind:style="{ backgroundColor: message.userColor() }">
-                      <img
-                        v-bind:src="message.image"
-                      />
-                    </div>
-                    <div class="message-content">
-                      <p class="message-author text-white font-bold">{{ message.author }}</p>
-                      <p class="message-text text-gray-400 font-thin " v-html="message.formatText()"></p>
-                    </div>
-                </div>
-                <div class="message flex" v-else-if="message.type === 'NAME_CHANGE'">
-                    <img
-                    class="mr-2"
-                    width="30px"
-                      v-bind:src="message.image"
-                    />
-                    <div class="text-white text-center">
-                      <span class="font-bold">{{ message.oldName }}</span> is now known as <span class="font-bold">{{ message.newName }}</span>.
-                    </div>
-                </div>
-              </div> -->
+              ${
+                messages.map(message => (html`<${Message} message=${message} />`))
+              }
+              messages..
             </div>
 
 
