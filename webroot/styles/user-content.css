@@ -1,8 +1,79 @@
-.extra-user-content {
-  padding: 1em 3em 3em 3em;
+.user-content {
+  padding: 3em;
+
+  display: flex;
+  flex-direction: row;
+}
+.user-content .user-image {
+  padding: 1em;
+  margin-right: 2em;
+  min-width: var(--user-image-width);
+  width: var(--user-image-width);
+  height: var(--user-image-width);
+  max-height: var(--user-image-width);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: calc(var(--user-image-width) - 1em);
+}
+
+.user-content-header {
+  margin-bottom: 2em;
+}
+
+.tag-list {
+  flex-direction: row;
+  margin: 1em 0;
+}
+.tag-list li {
+  font-size: .75em;
+  text-transform: uppercase;
+  margin-right: .75em;
+  padding: .5em;
 }
 
 
+.social-list {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.social-list .follow-label {
+  font-weight: bold;
+  font-size: .75em;
+  margin-right: .5em;
+  text-transform: uppercase;
+}
+
+.user-social-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: -.25em;
+}
+.user-social-item .platform-icon {
+  --icon-width: 40px;
+  height: var(--icon-width);
+  width: var(--icon-width);
+  background-image: url(../img/social-icons.gif);
+  background-repeat: no-repeat;
+  background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));
+  transform: scale(.65);
+}
+
+.user-social-item.use-default .platform-label {
+  font-size: .7em;
+  text-transform: uppercase;
+  display: inline-block;
+  max-width: 10em;
+}
+
+
+
+
+.extra-user-content {
+  padding: 1em 3em 3em 3em;
+}
 
 .extra-user-content ol {
   list-style: decimal;
