@@ -103,30 +103,6 @@ class Owncast {
     this.player.init();
 
     this.getChatHistory();
-
-
-    // window.addEventListener('DOMContentLoaded', () => {
-
-      // const button = document.querySelector('#emoji-button');
-      // const picker = new EmojiButton({
-      //   zIndex: 100,
-      //   theme: 'dark',
-      //   style: 'twemoji',
-      //   custom: [
-      //     {
-      //       name: 'Owncast',
-      //       emoji: 'apple-icon.png'
-      //     }
-      //   ]
-      // });
-      // picker.on('emoji', emoji => {
-      //   document.querySelector('#message-body-form').value += emoji;
-      // });
-
-      // button.addEventListener('click', () => {
-      //   picker.pickerVisible ? picker.hidePicker() : picker.showPicker(button);
-      // });
-    // });
   };
 
   setConfigData(data) {
