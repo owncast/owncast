@@ -1,4 +1,4 @@
-function getHashFromString(string) {
+export function getHashFromString(string) {
   let hash = 1;
   for (let i = 0; i < string.length; i++) {
     const codepoint = string.charCodeAt(i);
@@ -8,7 +8,7 @@ function getHashFromString(string) {
   return Math.abs(hash);
 }
 
-function digitsFromNumber(number) {
+export function digitsFromNumber(number) {
   const numberString = number.toString();
   let digits = [];
 
@@ -50,7 +50,7 @@ function digitsFromNumber(number) {
 //   return filename + '.svg';
 // }
 
-function colorForString(str) {
+export function colorForString(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     // eslint-disable-next-line
@@ -65,7 +65,7 @@ function colorForString(str) {
   return colour;
 }
 
-function messageBubbleColorForString(str) {
+export function messageBubbleColorForString(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     // eslint-disable-next-line

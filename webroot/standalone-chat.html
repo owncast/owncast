@@ -1,0 +1,22 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
+
+  </head>
+
+  <body class="bg-gray-300 text-gray-800">
+
+    <div id="chat-container"></div>
+
+    <script type="module">
+      import { render, html } from "https://unpkg.com/htm/preact/index.mjs?module";
+      import { StandaloneChat } from './js/chat/standalone.js';
+      (function () {
+        render(html`<${StandaloneChat} />`, document.getElementById("chat-container"));
+      })();
+    </script>
+  </body>
+</html>

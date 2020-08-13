@@ -1,13 +1,13 @@
 
-const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
-const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : ''; 
+export const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
+export const URL_PREFIX = LOCAL_TEST ? 'http://localhost:8080' : '';
 
-const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
-const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
+export const POSTER_DEFAULT = `${URL_PREFIX}/img/logo.png`;
+export const POSTER_THUMB = `${URL_PREFIX}/thumbnail.jpg`;
 
-const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
+export const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
 
-function getLocalStorage(key) {
+export function getLocalStorage(key) {
   try {
     return localStorage.getItem(key);
   } catch (e) {
@@ -15,7 +15,7 @@ function getLocalStorage(key) {
   return null;
 }
 
-function setLocalStorage(key, value) {
+export function setLocalStorage(key, value) {
   try {
     if (value !== "" && value !== null) {
       localStorage.setItem(key, value);
@@ -27,12 +27,12 @@ function setLocalStorage(key, value) {
   return false;
 }
 
-function clearLocalStorage(key) {
+export function clearLocalStorage(key) {
   localStorage.removeItem(key);
 }
 
 // jump down to the max height of a div, with a slight delay
-function jumpToBottom(element) {
+export function jumpToBottom(element) {
   if (!element) return;
 
   setTimeout(() => {
@@ -45,11 +45,11 @@ function jumpToBottom(element) {
 }
 
 // convert newlines to <br>s
-function addNewlines(str) {
+export function addNewlines(str) {
   return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
 }
 
-function pluralize(string, count) {
+export function pluralize(string, count) {
   if (count === 1) {
     return string;
   } else {
@@ -60,12 +60,12 @@ function pluralize(string, count) {
 
 // Trying to determine if browser is mobile/tablet.
 // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
-function hasTouchScreen() {
+export function hasTouchScreen() {
   var hasTouchScreen = false;
-  if ("maxTouchPoints" in navigator) { 
+  if ("maxTouchPoints" in navigator) {
       hasTouchScreen = navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {
-      hasTouchScreen = navigator.msMaxTouchPoints > 0; 
+      hasTouchScreen = navigator.msMaxTouchPoints > 0;
   } else {
       var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
       if (mQ && mQ.media === "(pointer:coarse)") {
@@ -85,20 +85,20 @@ function hasTouchScreen() {
 }
 
 // generate random avatar from https://robohash.org
-function generateAvatar(hash) {
+export function generateAvatar(hash) {
   const avatarSource = 'https://robohash.org/';
   const optionSize = '?size=80x80';
-  const optionSet = '&set=set3'; 
+  const optionSet = '&set=set3';
   const optionBg = ''; // or &bgset=bg1 or bg2
 
   return avatarSource + hash + optionSize + optionSet + optionBg;
 }
 
-function generateUsername() {
+export function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
 }
 
-function secondsToHMMSS(seconds = 0) {
+export function secondsToHMMSS(seconds = 0) {
   const finiteSeconds = Number.isFinite(+seconds) ? Math.abs(seconds) : 0;
 
   const hours = Math.floor(finiteSeconds / 3600);
@@ -113,13 +113,15 @@ function secondsToHMMSS(seconds = 0) {
   return hoursString + minString + secsString;
 }
 
-function setVHvar() {
+export function setVHvar() {
   var vh = window.innerHeight * 0.01;
   // Then we set the value in the --vh custom property to the root of the document
   document.documentElement.style.setProperty('--vh', `${vh}px`);
   console.log("== new vh", vh)
 }
 
-function doesObjectSupportFunction(object, functionName) {
+export function doesObjectSupportFunction(object, functionName) {
   return typeof object[functionName] === "function";
 }
+
+const DEFAULT_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';

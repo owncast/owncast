@@ -8,4 +8,4 @@ export default {
   PING: 'PING',
   NAME_CHANGE: 'NAME_CHANGE',
   PONG: 'PONG'
-}
+};
