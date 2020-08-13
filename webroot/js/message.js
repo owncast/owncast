@@ -20,9 +20,9 @@ class Message {
 	formatText() {
 		showdown.setFlavor('github');
 		let formattedText = new showdown.Converter({
-			emoji: true, 
-			openLinksInNewWindow: true, 
-			tables: false, 
+			emoji: true,
+			openLinksInNewWindow: true,
+			tables: false,
 			simplifiedAutoLink: false,
 			literalMidWordUnderscores: true,
 			strikethrough: true,
@@ -132,8 +132,8 @@ class MessagingInterface {
 		this.inputMessageAuthor = document.getElementById('self-message-author');
 		this.inputChangeUserName = document.getElementById('username-change-input');
 
-		this.btnUpdateUserName = document.getElementById('button-update-username'); 
-		this.btnCancelUpdateUsername = document.getElementById('button-cancel-change'); 
+		this.btnUpdateUserName = document.getElementById('button-update-username');
+		this.btnCancelUpdateUsername = document.getElementById('button-cancel-change');
 		this.btnSubmitMessage = document.getElementById('button-submit-message');
 
 		this.formMessageInput = document.getElementById('message-body-form');
@@ -146,10 +146,10 @@ class MessagingInterface {
 		// add events
 		this.tagChatToggle.addEventListener('click', this.handleChatToggle.bind(this));
 		this.textUserInfoDisplay.addEventListener('click', this.handleShowChangeNameForm.bind(this));
-		
+
 		this.btnUpdateUserName.addEventListener('click', this.handleUpdateUsername.bind(this));
 		this.btnCancelUpdateUsername.addEventListener('click', this.handleHideChangeNameForm.bind(this));
-		
+
 		this.inputChangeUserName.addEventListener('keydown', this.handleUsernameKeydown.bind(this));
 		this.formMessageInput.addEventListener('keydown', this.handleMessageInputKeydown.bind(this));
 		this.formMessageInput.addEventListener('keyup', this.handleMessageInputKeyup.bind(this));
@@ -194,7 +194,7 @@ class MessagingInterface {
 		this.setChatPlaceholderText();
 	}
 
-	
+
 	handleChatToggle() {
 		this.chatDisplayed = !this.chatDisplayed;
 		if (this.chatDisplayed) {
@@ -305,7 +305,7 @@ class MessagingInterface {
 				this.submitChat(value);
 				event.preventDefault();
 				this.prepNewLine = false;
-				
+
 				return;
 			}
 		}
@@ -436,87 +436,3 @@ class MessagingInterface {
 }
 
 export { Message, MessagingInterface }
-
-function stripTags(str) {
-	return str.replace(/<\/?[^>]+(>|$)/g, "");
-}
-
-function getURLs(str) {
-	var exp = /((\w+:\/\/\S+)|(\w+[\.:]\w+\S+))[^\s,\.]/ig;
-	return str.match(exp);
-}
-
-function getYoutubeIdFromURL(url) {
-	try {
-		var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-		var match = url.match(regExp);
-
-		if (match && match[2].length == 11) {
-			return match[2];
-		} else {
-			return null;
-		}
-	} catch (e) {
-		console.log(e);
-		return null;
-	}
-}
-
-function getYoutubeEmbedFromID(id) {
-	return `<iframe class="chat-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
-}
-
-function getInstagramEmbedFromURL(url) {
-	const urlObject = new URL(url.replace(/\/$/, ""));
-	urlObject.pathname += "/embed";
-	return `<iframe class="chat-embed instagram-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
-}
-
-function isImage(url) {
-	const re = /\.(jpe?g|png|gif)$/;
-	const isImage = re.test(url);
-	return isImage;
-}
-
-function getImageForURL(url) {
-	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`;
-}
-
-
-// Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
-function getCaretPosition(editableDiv) {
-	var caretPos = 0,
-		sel, range;
-	if (window.getSelection) {
-		sel = window.getSelection();
-		if (sel.rangeCount) {
-			range = sel.getRangeAt(0);
-			if (range.commonAncestorContainer.parentNode == editableDiv) {
-				caretPos = range.endOffset;
-			}
-		}
-	} else if (document.selection && document.selection.createRange) {
-		range = document.selection.createRange();
-		if (range.parentElement() == editableDiv) {
-			var tempEl = document.createElement("span");
-			editableDiv.insertBefore(tempEl, editableDiv.firstChild);
-			var tempRange = range.duplicate();
-			tempRange.moveToElementText(tempEl);
-			tempRange.setEndPoint("EndToEnd", range);
-			caretPos = tempRange.text.length;
-		}
-	}
-	return caretPos;
-}
-
-// Pieced together from parts of https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
-function setCaretPosition(editableDiv, position) {
-	var range = document.createRange();
-	var sel = window.getSelection();
-	range.selectNode(editableDiv);
-	range.setStart(editableDiv.childNodes[0], position);
-	range.collapse(true);
-
-	sel.removeAllRanges();
-	sel.addRange(range);
-}

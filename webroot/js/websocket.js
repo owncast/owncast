@@ -4,7 +4,7 @@ const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${loca
 
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
-const CALLBACKS = {
+export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
   WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
@@ -42,7 +42,7 @@ class Websocket {
     }
   }
 
-  
+
   // Interface with other components
 
   // Outbound: Other components can pass an object to `send`.
@@ -51,7 +51,7 @@ class Websocket {
     if (!message.type || !SOCKET_MESSAGE_TYPES[message.type]) {
       console.warn(`Outbound message: Unknown socket message type: "${message.type}" sent.`);
     }
-    
+
     const messageJSON = JSON.stringify(message);
     this.websocket.send(messageJSON);
   }
@@ -114,7 +114,7 @@ class Websocket {
     } catch (e) {
       console.log(e)
     }
-    
+
     // Send PONGs
     if (model.type === SOCKET_MESSAGE_TYPES.PING) {
       this.sendPong();

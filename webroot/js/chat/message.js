@@ -1,7 +1,4 @@
-import { h, Component, createRef } from 'https://unpkg.com/preact?module';
-import htm from 'https://unpkg.com/htm?module';
-// Initialize htm with Preact
-const html = htm.bind(h);
+import { html, Component } from "https://unpkg.com/htm/preact/index.mjs?module";
 
 import { messageBubbleColorForString } from '../utils/user-colors.js';
 import { formatMessageText } from '../utils/chat.js';
@@ -14,7 +11,7 @@ export default class Message extends Component {
     const { type } = message;
 
     if (type === SOCKET_MESSAGE_TYPES.CHAT) {
-      const { image, author, body, type } = message;
+      const { image, author, body } = message;
       const formattedMessage = formatMessageText(body);
       const avatar = image || generateAvatar(author);
       const avatarBgColor = { backgroundColor: messageBubbleColorForString(author) };
@@ -43,8 +40,7 @@ export default class Message extends Component {
               <span class="font-bold">${oldName}</span> is now known as <span class="font-bold">${newName}</span>.
             </div>
           </div>
-        `
-      )
+        `);
     }
   }
 }

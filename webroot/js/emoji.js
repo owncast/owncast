@@ -1,3 +1,4 @@
+// DEPRECATE.
 import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button'
 
 fetch('/emoji')
@@ -29,6 +30,7 @@ function setupEmojiPickerWithCustomEmoji(customEmoji) {
   const trigger = document.querySelector('#emoji-button');
 
   trigger.addEventListener('click', () => picker.togglePicker(picker));
+
   picker.on('emoji', emoji => {
     if (emoji.url) {
       const url = location.protocol + "//" + location.host + "/" + emoji.url;

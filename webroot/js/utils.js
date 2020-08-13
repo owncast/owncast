@@ -1,12 +1,12 @@
-
-const URL_STATUS = `/status`;
-const URL_CHAT_HISTORY = `/chat`;
+export const URL_STATUS = `/status`;
+export const URL_CHAT_HISTORY = `/chat`;
+export const URL_CUSTOM_EMOJIS = `/emoji`;
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
-const URL_STREAM = `/hls/stream.m3u8`;
-const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+export const URL_STREAM = `/hls/stream.m3u8`;
+export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 
-const POSTER_DEFAULT = `/img/logo.png`;
-const POSTER_THUMB = `/thumbnail.jpg`;
+export const POSTER_DEFAULT = `/img/logo.png`;
+export const POSTER_THUMB = `/thumbnail.jpg`;
 
 export const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
 
@@ -126,5 +126,3 @@ export function setVHvar() {
 export function doesObjectSupportFunction(object, functionName) {
   return typeof object[functionName] === "function";
 }
-
-const DEFAULT_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';

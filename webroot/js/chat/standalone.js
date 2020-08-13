@@ -1,10 +1,4 @@
 import { html, Component } from "https://unpkg.com/htm/preact/index.mjs?module";
-
-// import { h, Component, render } from 'https://unpkg.com/preact?module';
-// import htm from 'https://unpkg.com/htm?module';
-// Initialize htm with Preact
-// const html = htm.bind(h);
-
 import UserInfo from './user-info.js';
 import Chat from './chat.js';
 
