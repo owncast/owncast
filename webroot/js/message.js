@@ -469,7 +469,7 @@ function getYoutubeEmbedFromID(id) {
 function getInstagramEmbedFromURL(url) {
 	const urlObject = new URL(url.replace(/\/$/, ""));
 	urlObject.pathname += "/embed";
-	return `<iframe class="chat-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
+	return `<iframe class="chat-embed instagram-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 function isImage(url) {
