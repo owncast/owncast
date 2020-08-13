@@ -1,9 +1,6 @@
 import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
 
-const LOCAL_TEST = window.location.href.indexOf('localhost:') >= 0;
-const URL_WEBSOCKET = LOCAL_TEST
-  ? 'wss://goth.land/entry'
-  : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
