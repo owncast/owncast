@@ -3,52 +3,49 @@ import htm from 'https://unpkg.com/htm?module';
 // Initialize htm with Preact
 const html = htm.bind(h);
 
-import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button';
-
-
+import { getLocalStorage, setLocalStorage } from '../utils.js';
+import { KEY_CHAT_FIRST_MESSAGE_SENT } from '../utils/chat.js';
 import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
 import Message from './message.js';
-import Websocket, { CALLBACKS } from '../websocket.js';
+import ChatInput from './chat-input.js';
+import { CALLBACKS } from '../websocket.js';
 
-import { URL_CHAT_HISTORY, URL_CUSTOM_EMOJIS } from '../utils.js';
+
+import { URL_CHAT_HISTORY, setVHvar, hasTouchScreen } from '../utils.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.messageCharCount = 0;
-		this.maxMessageLength = 500;
-    this.maxMessageBuffer = 20;
-
     this.state = {
-      inputEnabled: false,
+      inputEnabled: true,
+      hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
+      inputValue: '',
+      inputWarning: '',
       messages: [],
 
       chatUserNames: [],
+
     }
 
-    this.emojiPicker = null;
     this.websocket = null;
 
-
-    this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
-    this.handleEmojiSelected = this.handleEmojiSelected.bind(this);
-    this.getCustomEmojis = this.getCustomEmojis.bind(this);
     this.getChatHistory = this.getChatHistory.bind(this);
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
+
+    this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
   }
 
   componentDidMount() {
-    /*
-    - set up websocket
-    - get emojis
-    - get chat history
-    */
-   this.setupWebSocket();
+   this.setupWebSocketCallbacks();
    this.getChatHistory();
-   this.getCustomEmojis();
 
+   if (hasTouchScreen()) {
+    setVHvar();
+    window.addEventListener("orientationchange", setVHvar);
+    // this.tagAppContainer.classList.add('touch-screen');
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -58,13 +55,15 @@ export default class Chat extends Component {
     if (prevName !== username) {
       this.sendUsernameChange(prevName, username, userAvatarImage);
     }
-
   }
 
-  setupWebSocket() {
-    this.websocket = new Websocket();
-    this.websocket.addListener(CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED, this.receivedWebsocketMessage);
-    this.websocket.addListener(CALLBACKS.WEBSOCKET_DISCONNECTED, this.websocketDisconnected);
+  setupWebSocketCallbacks() {
+    this.websocket = this.props.websocket;
+    if (this.websocket) {
+      this.websocket.addListener(CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED, this.receivedWebsocketMessage);
+      this.websocket.addListener(CALLBACKS.WEBSOCKET_DISCONNECTED, this.websocketDisconnected);
+    }
+
   }
 
   // fetch chat history
@@ -77,6 +76,7 @@ export default class Chat extends Component {
       return response.json();
     })
     .then(data => {
+      console.log("=====chat history data",data)
       this.setState({
         messages: data,
       });
@@ -86,38 +86,11 @@ export default class Chat extends Component {
       // this.vueApp.messages = formattedMessages.concat(this.vueApp.messages);
     })
     .catch(error => {
-      this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
+      // this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
     });
   }
 
-  getCustomEmojis() {
-    fetch(URL_CUSTOM_EMOJIS)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok ${response.ok}`);
-        }
-        return response.json();
-      })
-      .then(json => {
-        this.emojiPicker = new EmojiButton({
-          zIndex: 100,
-          theme: 'dark',
-          custom: json,
-          initialCategory: 'custom',
-          showPreview: false,
-          position: {
-            top: '50%',
-            right: '100'
-          },
-        });
-        this.emojiPicker.on('emoji', emoji => {
-          this.handleEmojiSelected(emoji);
-        });
-      })
-      .catch(error => {
-        this.handleNetworkingError(`Emoji Fetch: ${error}`);
-      });
-  }
+
 
   sendUsernameChange(oldName, newName, image) {
 		const nameChange = {
@@ -126,24 +99,10 @@ export default class Chat extends Component {
 			newName: newName,
 			image: image,
 		};
-		this.send(nameChange);
+		this.websocket.send(nameChange);
   }
 
-  handleEmojiButtonClick() {
-    if (this.emojiPicker) {
-      this.emojiPicker.togglePicker(this.picker);
-    }
-  }
 
-  handleEmojiSelected(emoji) {
-    if (emoji.url) {
-      const url = location.protocol + "//" + location.host + "/" + emoji.url;
-      const name = url.split('\\').pop().split('/').pop();
-      document.querySelector('#message-body-form').innerHTML += "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + url + "\"/>";
-    } else {
-      document.querySelector('#message-body-form').innerHTML += emoji.emoji;
-    }
-  }
 
   receivedWebsocketMessage(message) {
     this.addMessage(message);
@@ -155,24 +114,117 @@ export default class Chat extends Component {
     // }
   }
 
+  // if incoming message has same id as existing message, don't add it
   addMessage(message) {
     const { messages: curMessages } = this.state;
     const existing = curMessages.filter(function (item) {
       return item.id === message.id;
     })
     if (existing.length === 0 || !existing) {
-      this.setState({
+      const newState = {
         messages: [...curMessages, message],
-      });
+      };
+      const updatedChatUserNames = this.updateAuthorList(message);
+      if (updatedChatUserNames.length) {
+        newState.chatUserNames = [...updatedChatUserNames];
+      }
+      this.setState(newState);
     }
+
+    // todo - jump to bottom
+    // jumpToBottom(this.scrollableMessagesContainer);
   }
   websocketDisconnected() {
-    this.websocket = null;
+    // this.websocket = null;
+    this.disableChat()
   }
+
+  handleSubmitChatButton(event) {
+    const { inputValue } = this.state;
+		var value = inputValue.trim();
+		if (value) {
+			this.submitChat(value);
+			event.preventDefault();
+		return false;
+		}
+		event.preventDefault();
+		return false;
+  }
+
+  submitChat(content) {
+		if (!content) {
+			return;
+    }
+    const { username, userAvatarImage } = this.props;
+		var message = new Message({
+			body: content,
+			author: username,
+			image: userAvatarImage,
+			type: SOCKET_MESSAGE_TYPES.CHAT,
+		});
+		this.websocket.send(message);
+
+    // clear out things.
+    const newStates = {
+      inputValue: '',
+      inputWarning: '',
+    };
+		// this.formMessageInput.innerHTML = '';
+		// this.tagMessageFormWarning.innerText = '';
+
+		// const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
+		if (!this.state.hasSentFirstChatMessage) {
+      newStates.hasSentFirstChatMessage = true;
+      setLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT, true);
+			// this.setChatPlaceholderText();
+    }
+    this.setState(newStates);
+  }
+
+  disableChat() {
+    this.setState({
+      inputEnabled: false,
+    });
+		// if (this.formMessageInput) {
+		// 	this.formMessageInput.contentEditable = false;
+		// 	this.formMessageInput.innerHTML = '';
+		// 	this.formMessageInput.setAttribute("placeholder", CHAT_PLACEHOLDER_OFFLINE);
+		// }
+	}
+
+	enableChat() {
+    this.setState({
+      inputEnabled: true,
+    });
+		// if (this.formMessageInput) {
+		// 	this.formMessageInput.contentEditable = true;
+		// 	this.setChatPlaceholderText();
+		// }
+	}
+
+  updateAuthorList(message) {
+    const { type } = message;
+    const username = '';
+    const nameList = this.state.chatUserNames;
+
+    if (
+      type === SOCKET_MESSAGE_TYPES.CHAT &&
+      !nameList.includes(message.author)
+    ) {
+      return nameList.push(message.author);
+    } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
+      const { oldName, newName } = message;
+      const oldNameIndex = nameList.indexOf(oldName);
+      return nameList.splice(oldNameIndex, 1, newName);
+    }
+    return [];
+  }
+
+
 
   render(props, state) {
     const { username } = props;
-    const { messages } = state;
+    const { messages, inputEnabled, hasSentFirstChatMessage, chatUserNames, inputWarning } = state;
 
     return (
       html`
@@ -180,37 +232,35 @@ export default class Chat extends Component {
           <div id="chat-container" class="bg-gray-800">
             <div id="messages-container">
               ${
-                messages.map(message => (html`<${Message} message=${message} />`))
+                messages.map(message => (html`<${Message} message=${message} username=${username} />`))
               }
               messages..
             </div>
 
 
             <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
-              <form id="message-form" class="flex">
+              <!-- <form id="message-form" class="flex"> -->
 
-                <input type="hidden" name="inputAuthor" id="self-message-author" value=${username} />
+                <!-- <input type="hidden" name="inputAuthor" id="self-message-author" value=${username} /> -->
 
-                <textarea
-                  disabled
-                  id="message-body-form"
-                  placeholder="Message"
-                  class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
-                ></textarea>
-                <button
-                  id="emoji-button"
-                  onClick=${this.handleEmojiButtonClick}
-                >😏</button>
+                <${ChatInput}
+                  contenteditable=${inputEnabled}
+                  hasSentFirstChatMessage=${hasSentFirstChatMessage}
+                  chatUserNames=${chatUserNames}
+                  handleSubmitForm=${this.handleSubmitChatButton}
+                />
 
                 <div id="message-form-actions" class="flex">
-                  <span id="message-form-warning" class="text-red-600 text-xs"></span>
+                  <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>
                   <button
+                    onclick=${this.handleSubmitChatButton}
+                    type="button"
                     id="button-submit-message"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                   > Chat
                   </button>
                 </div>
-              </form>
+              <!-- </form> -->
             </div>
           </div>
         </section>
@@ -218,9 +268,3 @@ export default class Chat extends Component {
   }
 
 }
-
-
-
-
-
-

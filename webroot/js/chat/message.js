@@ -7,12 +7,12 @@ import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
 
 export default class Message extends Component {
   render(props) {
-    const { message } = props;
+    const { message, username } = props;
     const { type } = message;
 
     if (type === SOCKET_MESSAGE_TYPES.CHAT) {
       const { image, author, body } = message;
-      const formattedMessage = formatMessageText(body);
+      const formattedMessage = formatMessageText(body, username);
       const avatar = image || generateAvatar(author);
       const avatarBgColor = { backgroundColor: messageBubbleColorForString(author) };
       return (
@@ -26,7 +26,12 @@ export default class Message extends Component {
             </div>
             <div class="message-content">
               <p class="message-author text-white font-bold">${author}</p>
-              <p class="message-text text-gray-400 font-thin">${formattedMessage}</p>
+              <div
+                class="message-text text-gray-400 font-thin"
+                dangerouslySetInnerHTML=${
+                  { __html: formattedMessage }
+                }
+              ></div>
             </div>
         </div>
       `);

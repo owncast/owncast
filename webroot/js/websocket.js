@@ -1,4 +1,4 @@
-import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
+import SOCKET_MESSAGE_TYPES from './utils/socket-message-types.js';
 
 const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 

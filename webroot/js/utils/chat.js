@@ -1,3 +1,5 @@
+import { addNewlines } from '../utils.js';
+
 export const KEY_USERNAME = 'owncast_username';
 export const KEY_AVATAR = 'owncast_avatar';
 export const KEY_CHAT_DISPLAYED = 'owncast_chat';
@@ -6,7 +8,7 @@ export const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account nece
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
 
-export function formatMessageText(message) {
+export function formatMessageText(message, username) {
   showdown.setFlavor('github');
   let formattedText = new showdown.Converter({
     emoji: true,
@@ -19,13 +21,13 @@ export function formatMessageText(message) {
   }).makeHtml(message);
 
   formattedText = linkify(formattedText, message);
-  formattedText = highlightUsername(formattedText);
+  formattedText = highlightUsername(formattedText, username);
 
   return addNewlines(formattedText);
 }
 
-function highlightUsername(message) {
-  const username = document.getElementById('self-message-author').value;
+function highlightUsername(message, username) {
+  // const username = document.getElementById('self-message-author').value;
 	const pattern = new RegExp('@?' + username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
   return message.replace(pattern, '<span class="highlighted">$&</span>');
 }
@@ -170,4 +172,12 @@ export function setCaretPosition(editableDiv, position) {
 
 	sel.removeAllRanges();
 	sel.addRange(range);
+}
+
+
+export function generatePlaceholderText(isEnabled, hasSentFirstChatMessage) {
+  if (isEnabled) {
+    return hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT;
+  }
+  return CHAT_PLACEHOLDER_OFFLINE;
 }

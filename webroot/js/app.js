@@ -1,6 +1,6 @@
 import Websocket from './websocket.js';
 import { MessagingInterface, Message } from './message.js';
-import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
+import SOCKET_MESSAGE_TYPES from './utils/socket-message-types.js';
 import { OwncastPlayer } from './player.js';
 
 const MESSAGE_OFFLINE = 'Stream is offline.';
@@ -18,7 +18,7 @@ const TIMER_STREAM_DURATION_COUNTER = 1000;
 
 class Owncast {
   constructor() {
-    this.player;    
+    this.player;
 
     this.configData;
     this.vueApp;
@@ -67,7 +67,7 @@ class Owncast {
         streamStatus: MESSAGE_OFFLINE, // Default state.
         viewerCount: 0,
         isOnline: false,
-  
+
         // from config
         appVersion: '',
         extraUserContent: '',
@@ -260,7 +260,7 @@ class Owncast {
       }
     }
   };
-  
+
   // update vueApp.streamStatus text when online
   setCurrentStreamDuration() {
     // Default to something
@@ -272,7 +272,7 @@ class Owncast {
     }
     this.vueApp.streamStatus = `${MESSAGE_ONLINE} ${streamDurationString}.`
   }
-  
+
   handleNetworkingError(error) {
     console.log(`>>> App Error: ${error}`)
   };

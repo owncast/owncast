@@ -1,4 +1,4 @@
-import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
+import SOCKET_MESSAGE_TYPES from './utils/socket-message-types.js';
 
 const KEY_USERNAME = 'owncast_username';
 const KEY_AVATAR = 'owncast_avatar';
