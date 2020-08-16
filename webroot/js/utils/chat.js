@@ -181,3 +181,15 @@ export function generatePlaceholderText(isEnabled, hasSentFirstChatMessage) {
   }
   return CHAT_PLACEHOLDER_OFFLINE;
 }
+
+export function extraUserNamesFromMessageHistory(messages) {
+  const list = [];
+  if (messages) {
+    messages.forEach(function(message) {
+      if (!list.includes(message.author)) {
+        list.push(message.author);
+      }
+    });
+  }
+  return list;
+}

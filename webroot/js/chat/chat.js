@@ -3,8 +3,7 @@ import htm from 'https://unpkg.com/htm?module';
 // Initialize htm with Preact
 const html = htm.bind(h);
 
-import { getLocalStorage, setLocalStorage } from '../utils.js';
-import { KEY_CHAT_FIRST_MESSAGE_SENT } from '../utils/chat.js';
+
 import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
 import Message from './message.js';
 import ChatInput from './chat-input.js';
@@ -12,6 +11,7 @@ import { CALLBACKS } from '../websocket.js';
 
 
 import { URL_CHAT_HISTORY, setVHvar, hasTouchScreen } from '../utils.js';
+import { extraUserNamesFromMessageHistory } from '../utils/chat.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
@@ -59,7 +59,6 @@ export default class Chat extends Component {
       this.websocket.addListener(CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED, this.receivedWebsocketMessage);
       this.websocket.addListener(CALLBACKS.WEBSOCKET_DISCONNECTED, this.websocketDisconnected);
     }
-
   }
 
   // fetch chat history
@@ -72,21 +71,17 @@ export default class Chat extends Component {
       return response.json();
     })
     .then(data => {
-      console.log("=====chat history data",data)
+      // extra user names
+      const chatUserNames = extraUserNamesFromMessageHistory(data);
       this.setState({
         messages: data,
+        chatUserNames,
       });
-      // const formattedMessages = data.map(function (message) {
-      //   return new Message(message);
-      // })
-      // this.vueApp.messages = formattedMessages.concat(this.vueApp.messages);
     })
     .catch(error => {
       // this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
     });
   }
-
-
 
   sendUsernameChange(oldName, newName, image) {
 		const nameChange = {
@@ -97,8 +92,6 @@ export default class Chat extends Component {
 		};
 		this.websocket.send(nameChange);
   }
-
-
 
   receivedWebsocketMessage(message) {
     this.addMessage(message);
@@ -158,40 +151,13 @@ export default class Chat extends Component {
 			image: userAvatarImage,
 			type: SOCKET_MESSAGE_TYPES.CHAT,
     };
-		// var message = new Message({
-		// 	body: content,
-		// 	author: username,
-		// 	image: userAvatarImage,
-		// 	type: SOCKET_MESSAGE_TYPES.CHAT,
-		// });
 		this.websocket.send(message);
-
-    // clear out things.
-    // const newStates = {
-    //   inputValue: '',
-    //   inputWarning: '',
-    // };
-		// this.formMessageInput.innerHTML = '';
-		// this.tagMessageFormWarning.innerText = '';
-
-		// const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
-		// if (!this.state.hasSentFirstChatMessage) {
-    //   newStates.hasSentFirstChatMessage = true;
-    //   setLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT, true);
-		// 	// this.setChatPlaceholderText();
-    // }
-    // this.setState(newStates);
   }
 
   disableChat() {
     this.setState({
       inputEnabled: false,
     });
-		// if (this.formMessageInput) {
-		// 	this.formMessageInput.contentEditable = false;
-		// 	this.formMessageInput.innerHTML = '';
-		// 	this.formMessageInput.setAttribute("placeholder", CHAT_PLACEHOLDER_OFFLINE);
-		// }
 	}
 
 	enableChat() {
@@ -217,7 +183,6 @@ export default class Chat extends Component {
     }
     return [];
   }
-
 
 
   render(props, state) {

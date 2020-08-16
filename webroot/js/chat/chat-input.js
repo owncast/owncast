@@ -228,7 +228,6 @@ export default class ChatInput extends Component {
     };
 
     const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
-
     return (
       html`
         <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
