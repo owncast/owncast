@@ -4,8 +4,13 @@ const html = htm.bind(h);
 
 import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button';
 
-import { URL_CUSTOM_EMOJIS } from '../utils.js';
-import { generatePlaceholderText } from '../utils/chat.js';
+import { URL_CUSTOM_EMOJIS, getLocalStorage } from '../utils.js';
+import {
+  KEY_CHAT_FIRST_MESSAGE_SENT,
+  generatePlaceholderText,
+  getCaretPosition,
+  setCaretPosition,
+} from '../utils/chat.js';
 
 export default class ChatInput extends Component {
   constructor(props, context) {
@@ -20,6 +25,12 @@ export default class ChatInput extends Component {
 
     this.prepNewLine = false;
 
+    this.state = {
+      inputValue: '',
+      inputWarning: '',
+      hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
+    };
+
     this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
     this.handleEmojiSelected = this.handleEmojiSelected.bind(this);
     this.getCustomEmojis = this.getCustomEmojis.bind(this);
@@ -28,6 +39,8 @@ export default class ChatInput extends Component {
     this.handleMessageInputKeyup = this.handleMessageInputKeyup.bind(this);
     this.handleMessageInputBlur = this.handleMessageInputBlur.bind(this);
     this.handleMessageInput = this.handleMessageInput.bind(this);
+    this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
+    this.handlePaste = this.handlePaste.bind(this);
   }
 
   componentDidMount() {
@@ -70,19 +83,22 @@ export default class ChatInput extends Component {
   }
 
   handleEmojiSelected(emoji) {
+    let content = '';
     if (emoji.url) {
       const url = location.protocol + "//" + location.host + "/" + emoji.url;
       const name = url.split('\\').pop().split('/').pop();
-      document.querySelector('#message-body-form').innerHTML += "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + url + "\"/>";
+      content = "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + url + "\"/>";
     } else {
-      document.querySelector('#message-body-form').innerHTML += emoji.emoji;
+      content = emoji.emoji;
     }
+
+    this.formMessageInput.current.innerHTML += content;
   }
 
   // autocomplete user names
 	autoCompleteNames() {
     const { chatUserNames } = this.props;
-		const rawValue = this.formMessageInput.innerHTML;
+		const rawValue = this.formMessageInput.current.innerHTML;
 		const position = getCaretPosition(this.formMessageInput);
 		const at = rawValue.lastIndexOf('@', position - 1);
 
@@ -90,7 +106,7 @@ export default class ChatInput extends Component {
 			return false;
 		}
 
-		var partial = rawValue.substring(at + 1, position).trim();
+		const partial = rawValue.substring(at + 1, position).trim();
 
 		if (partial === this.suggestion) {
 			partial = this.partial;
@@ -98,7 +114,7 @@ export default class ChatInput extends Component {
 			this.partial = partial;
 		}
 
-		const possibilities = chatUsernames.filter(function (username) {
+		const possibilities = chatUserNames.filter(function (username) {
 			return username.toLowerCase().startsWith(partial.toLowerCase());
 		});
 
@@ -110,24 +126,24 @@ export default class ChatInput extends Component {
 			this.suggestion = possibilities[this.completionIndex];
 
 			// TODO: Fix the space not working.  I'm guessing because the DOM ignores spaces and it requires a nbsp or something?
-			this.formMessageInput.innerHTML = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
-			setCaretPosition(this.formMessageInput, at + this.suggestion.length + 2);
+			this.formMessageInput.current.innerHTML = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
+			setCaretPosition(this.formMessageInput.current, at + this.suggestion.length + 2);
 		}
 
 		return true;
   }
 
   handleMessageInputKeydown(event) {
-    console.log("========this.formMessageInput", this.formMessageInput)
-		const okCodes = [37,38,39,40,16,91,18,46,8];
-		const value = this.formMessageInput.innerHTML.trim();
-		const numCharsLeft = this.maxMessageLength - value.length;
+    const okCodes = [37,38,39,40,16,91,18,46,8];
+    const formField = this.formMessageInput.current;
+    const htmlValue = formField.innerHTML.trim();
+    let textValue = formField.innerText.trim();
+		let numCharsLeft = this.maxMessageLength - textValue.length;
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
-				this.submitChat(value);
+				this.sendMessage();
 				event.preventDefault();
 				this.prepNewLine = false;
-
 				return;
 			}
 		}
@@ -139,20 +155,25 @@ export default class ChatInput extends Component {
 				event.preventDefault();
 
 				// value could have been changed, update variables
-				value = this.formMessageInput.innerHTML.trim();
-				numCharsLeft = this.maxMessageLength - value.length;
+				textValue = formField.innerText.trim();
+				numCharsLeft = this.maxMessageLength - textValue.length;
 			}
 		}
 
-		// if (numCharsLeft <= this.maxMessageBuffer) {
-		// 	this.tagMessageFormWarning.innerText = `${numCharsLeft} chars left`;
-		// 	if (numCharsLeft <= 0 && !okCodes.includes(event.keyCode)) {
-		// 		event.preventDefault();
-		// 		return;
-		// 	}
-		// } else {
-		// 	this.tagMessageFormWarning.innerText = '';
-		// }
+    // text count
+		if (numCharsLeft <= this.maxMessageBuffer) {
+			this.setState({
+        inputWarning: `${numCharsLeft} chars left`,
+      });
+			if (numCharsLeft <= 0 && !okCodes.includes(event.keyCode)) {
+				event.preventDefault(); // prevent typing more
+				return;
+			}
+		} else {
+      this.setState({
+        inputWarning: '',
+      });
+		}
 	}
 
 	handleMessageInputKeyup(event) {
@@ -166,44 +187,77 @@ export default class ChatInput extends Component {
   }
 
   handleMessageInput(event) {
-    // event.target.value
+    console.log("========on input",event.target, this.formMessageInput.current.innerHTML, this.formMessageInput.current.innerText);
   }
 
-  // setChatPlaceholderText() {
-	// 	// NOTE: This is a fake placeholder that is being styled via CSS.
-	// 	// You can't just set the .placeholder property because it's not a form element.
-	// 	const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
-	// 	const placeholderText = hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT;
-	// 	this.formMessageInput.setAttribute("placeholder", placeholderText);
-  // }
+  handlePaste(event) {
+    event.preventDefault();
+    document.execCommand('inserttext', false, event.clipboardData.getData('text/plain'));
+  }
+
+  handleSubmitChatButton(event) {
+    event.preventDefault();
+    this.sendMessage();
+  }
+
+  sendMessage() {
+    const { handleSendMessage } = this.props;
+    const { hasSentFirstChatMessage } = this.state;
+    const message = this.formMessageInput.current.innerHTML.trim();
+    const newStates = {
+      inputWarning: '',
+    };
+
+    handleSendMessage(message);
+
+    if (!hasSentFirstChatMessage) {
+      newStates.hasSentFirstChatMessage = true;
+      setLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT, true);
+    }
+
+    // clear things out.
+    this.setState(newStates);
+    this.formMessageInput.current.innerHTML = '';
+  }
 
   render(props, state) {
-    const { contenteditable, hasSentFirstChatMessage } = props;
+    const { hasSentFirstChatMessage, inputWarning } = state;
+    const { inputEnabled } = props;
     const emojiButtonStyle = {
       display: this.emojiPicker ? 'block' : 'none',
     };
 
-    const placeholderText = generatePlaceholderText(contenteditable, hasSentFirstChatMessage);
+    const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
 
     return (
       html`
-        <div>
+        <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
           <div
             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
             onkeydown=${this.handleMessageInputKeydown}
             onkeyup=${this.handleMessageInputKeyup}
             onblur=${this.handleMessageInputBlur}
             oninput=${this.handleMessageInput}
-            contenteditable=${contenteditable}
+            onpaste=${this.handlePaste}
+            contenteditable=${inputEnabled}
             placeholder=${placeholderText}
             ref=${this.formMessageInput}
-
           ></div>
           <button
             type="button"
             style=${emojiButtonStyle}
             onclick=${this.handleEmojiButtonClick}
           >😏</button>
+          <div id="message-form-actions" class="flex">
+            <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>
+            <button
+              onclick=${this.handleSubmitChatButton}
+              type="button"
+              id="button-submit-message"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+            > Chat
+            </button>
+          </div>
       </div>
     `);
   }

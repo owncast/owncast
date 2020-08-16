@@ -19,14 +19,9 @@ export default class Chat extends Component {
 
     this.state = {
       inputEnabled: true,
-      hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
-      inputValue: '',
-      inputWarning: '',
       messages: [],
-
       chatUserNames: [],
-
-    }
+    };
 
     this.websocket = null;
 
@@ -34,7 +29,8 @@ export default class Chat extends Component {
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
 
-    this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
+    // this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
+    this.submitChat = this.submitChat.bind(this);
   }
 
   componentDidMount() {
@@ -156,29 +152,35 @@ export default class Chat extends Component {
 			return;
     }
     const { username, userAvatarImage } = this.props;
-		var message = new Message({
-			body: content,
+    const message = {
+      body: content,
 			author: username,
 			image: userAvatarImage,
 			type: SOCKET_MESSAGE_TYPES.CHAT,
-		});
+    };
+		// var message = new Message({
+		// 	body: content,
+		// 	author: username,
+		// 	image: userAvatarImage,
+		// 	type: SOCKET_MESSAGE_TYPES.CHAT,
+		// });
 		this.websocket.send(message);
 
     // clear out things.
-    const newStates = {
-      inputValue: '',
-      inputWarning: '',
-    };
+    // const newStates = {
+    //   inputValue: '',
+    //   inputWarning: '',
+    // };
 		// this.formMessageInput.innerHTML = '';
 		// this.tagMessageFormWarning.innerText = '';
 
 		// const hasSentFirstChatMessage = getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT);
-		if (!this.state.hasSentFirstChatMessage) {
-      newStates.hasSentFirstChatMessage = true;
-      setLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT, true);
-			// this.setChatPlaceholderText();
-    }
-    this.setState(newStates);
+		// if (!this.state.hasSentFirstChatMessage) {
+    //   newStates.hasSentFirstChatMessage = true;
+    //   setLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT, true);
+		// 	// this.setChatPlaceholderText();
+    // }
+    // this.setState(newStates);
   }
 
   disableChat() {
@@ -196,10 +198,6 @@ export default class Chat extends Component {
     this.setState({
       inputEnabled: true,
     });
-		// if (this.formMessageInput) {
-		// 	this.formMessageInput.contentEditable = true;
-		// 	this.setChatPlaceholderText();
-		// }
 	}
 
   updateAuthorList(message) {
@@ -224,7 +222,7 @@ export default class Chat extends Component {
 
   render(props, state) {
     const { username } = props;
-    const { messages, inputEnabled, hasSentFirstChatMessage, chatUserNames, inputWarning } = state;
+    const { messages, inputEnabled, chatUserNames } = state;
 
     return (
       html`
@@ -236,32 +234,11 @@ export default class Chat extends Component {
               }
               messages..
             </div>
-
-
-            <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
-              <!-- <form id="message-form" class="flex"> -->
-
-                <!-- <input type="hidden" name="inputAuthor" id="self-message-author" value=${username} /> -->
-
-                <${ChatInput}
-                  contenteditable=${inputEnabled}
-                  hasSentFirstChatMessage=${hasSentFirstChatMessage}
-                  chatUserNames=${chatUserNames}
-                  handleSubmitForm=${this.handleSubmitChatButton}
-                />
-
-                <div id="message-form-actions" class="flex">
-                  <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>
-                  <button
-                    onclick=${this.handleSubmitChatButton}
-                    type="button"
-                    id="button-submit-message"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                  > Chat
-                  </button>
-                </div>
-              <!-- </form> -->
-            </div>
+            <${ChatInput}
+              chatUserNames=${chatUserNames}
+              inputEnabled=${inputEnabled}
+              handleSendMessage=${this.submitChat}
+            />
           </div>
         </section>
     `);
