@@ -128,17 +128,17 @@ export default class Chat extends Component {
     this.disableChat()
   }
 
-  handleSubmitChatButton(event) {
-    const { inputValue } = this.state;
-		var value = inputValue.trim();
-		if (value) {
-			this.submitChat(value);
-			event.preventDefault();
-		return false;
-		}
-		event.preventDefault();
-		return false;
-  }
+  // handleSubmitChatButton(event) {
+  //   const { inputValue } = this.state;
+	// 	var value = inputValue.trim();
+	// 	if (value) {
+	// 		this.submitChat(value);
+	// 		event.preventDefault();
+	// 	return false;
+	// 	}
+	// 	event.preventDefault();
+	// 	return false;
+  // }
 
   submitChat(content) {
 		if (!content) {

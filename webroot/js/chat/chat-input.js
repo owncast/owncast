@@ -4,13 +4,15 @@ const html = htm.bind(h);
 
 import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button';
 
-import { URL_CUSTOM_EMOJIS, getLocalStorage } from '../utils.js';
+import { URL_CUSTOM_EMOJIS, getLocalStorage, setLocalStorage } from '../utils.js';
 import {
   KEY_CHAT_FIRST_MESSAGE_SENT,
   generatePlaceholderText,
   getCaretPosition,
-  setCaretPosition,
 } from '../utils/chat.js';
+
+import ContentEditable from './content-editable.js';
+
 
 export default class ChatInput extends Component {
   constructor(props, context) {
@@ -26,7 +28,7 @@ export default class ChatInput extends Component {
     this.prepNewLine = false;
 
     this.state = {
-      inputValue: '',
+      inputHTML: '',
       inputWarning: '',
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
     };
@@ -38,9 +40,10 @@ export default class ChatInput extends Component {
     this.handleMessageInputKeydown = this.handleMessageInputKeydown.bind(this);
     this.handleMessageInputKeyup = this.handleMessageInputKeyup.bind(this);
     this.handleMessageInputBlur = this.handleMessageInputBlur.bind(this);
-    this.handleMessageInput = this.handleMessageInput.bind(this);
     this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
+
+    this.handleContentEditableChange = this.handleContentEditableChange.bind(this);
   }
 
   componentDidMount() {
@@ -83,6 +86,7 @@ export default class ChatInput extends Component {
   }
 
   handleEmojiSelected(emoji) {
+    const { inputHTML } = this.state;
     let content = '';
     if (emoji.url) {
       const url = location.protocol + "//" + location.host + "/" + emoji.url;
@@ -92,21 +96,22 @@ export default class ChatInput extends Component {
       content = emoji.emoji;
     }
 
-    this.formMessageInput.current.innerHTML += content;
+    this.setState({
+      inputHTML: inputHTML + content,
+    });
   }
 
   // autocomplete user names
 	autoCompleteNames() {
     const { chatUserNames } = this.props;
-		const rawValue = this.formMessageInput.current.innerHTML;
-		const position = getCaretPosition(this.formMessageInput);
-		const at = rawValue.lastIndexOf('@', position - 1);
-
+		const { inputHTML } = this.state;
+		const position = getCaretPosition(this.formMessageInput.current);
+		const at = inputHTML.lastIndexOf('@', position - 1);
 		if (at === -1) {
 			return false;
 		}
 
-		const partial = rawValue.substring(at + 1, position).trim();
+		const partial = inputHTML.substring(at + 1, position).trim();
 
 		if (partial === this.suggestion) {
 			partial = this.partial;
@@ -125,9 +130,9 @@ export default class ChatInput extends Component {
 		if (possibilities.length > 0) {
 			this.suggestion = possibilities[this.completionIndex];
 
-			// TODO: Fix the space not working.  I'm guessing because the DOM ignores spaces and it requires a nbsp or something?
-			this.formMessageInput.current.innerHTML = rawValue.substring(0, at + 1) + this.suggestion + ' ' + rawValue.substring(position);
-			setCaretPosition(this.formMessageInput.current, at + this.suggestion.length + 2);
+      this.setState({
+        inputHTML: inputHTML.substring(0, at + 1) + this.suggestion + ' ' + inputHTML.substring(position),
+      })
 		}
 
 		return true;
@@ -136,9 +141,10 @@ export default class ChatInput extends Component {
   handleMessageInputKeydown(event) {
     const okCodes = [37,38,39,40,16,91,18,46,8];
     const formField = this.formMessageInput.current;
-    const htmlValue = formField.innerHTML.trim();
-    let textValue = formField.innerText.trim();
-		let numCharsLeft = this.maxMessageLength - textValue.length;
+
+    let textValue = formField.innerText.trim(); // get this only to count chars
+
+    let numCharsLeft = this.maxMessageLength - textValue.length;
 		if (event.keyCode === 13) { // enter
 			if (!this.prepNewLine) {
 				this.sendMessage();
@@ -154,7 +160,7 @@ export default class ChatInput extends Component {
 			if (this.autoCompleteNames()) {
 				event.preventDefault();
 
-				// value could have been changed, update variables
+				// value could have been changed, update char count
 				textValue = formField.innerText.trim();
 				numCharsLeft = this.maxMessageLength - textValue.length;
 			}
@@ -186,10 +192,6 @@ export default class ChatInput extends Component {
 		this.prepNewLine = false;
   }
 
-  handleMessageInput(event) {
-    console.log("========on input",event.target, this.formMessageInput.current.innerHTML, this.formMessageInput.current.innerText);
-  }
-
   handlePaste(event) {
     event.preventDefault();
     document.execCommand('inserttext', false, event.clipboardData.getData('text/plain'));
@@ -202,10 +204,11 @@ export default class ChatInput extends Component {
 
   sendMessage() {
     const { handleSendMessage } = this.props;
-    const { hasSentFirstChatMessage } = this.state;
-    const message = this.formMessageInput.current.innerHTML.trim();
+    const { hasSentFirstChatMessage, inputHTML } = this.state;
+    const message = inputHTML.trim();
     const newStates = {
       inputWarning: '',
+      inputHTML: '',
     };
 
     handleSendMessage(message);
@@ -217,11 +220,14 @@ export default class ChatInput extends Component {
 
     // clear things out.
     this.setState(newStates);
-    this.formMessageInput.current.innerHTML = '';
+  }
+
+  handleContentEditableChange(event) {
+    this.setState({ inputHTML: event.target.value });
   }
 
   render(props, state) {
-    const { hasSentFirstChatMessage, inputWarning } = state;
+    const { hasSentFirstChatMessage, inputWarning, inputHTML } = state;
     const { inputEnabled } = props;
     const emojiButtonStyle = {
       display: this.emojiPicker ? 'block' : 'none',
@@ -231,17 +237,22 @@ export default class ChatInput extends Component {
     return (
       html`
         <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
-          <div
+
+          <${ContentEditable}
             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
-            onkeydown=${this.handleMessageInputKeydown}
-            onkeyup=${this.handleMessageInputKeyup}
-            onblur=${this.handleMessageInputBlur}
-            oninput=${this.handleMessageInput}
-            onpaste=${this.handlePaste}
-            contenteditable=${inputEnabled}
-            placeholder=${placeholderText}
-            ref=${this.formMessageInput}
-          ></div>
+            placeholderText=${placeholderText}
+
+            innerRef=${this.formMessageInput}
+            html=${inputHTML}
+            disabled=${!inputEnabled}
+            onChange=${this.handleContentEditableChange}
+            onKeyDown=${this.handleMessageInputKeydown}
+            onKeyUp=${this.handleMessageInputKeyup}
+            onBlur=${this.handleMessageInputBlur}
+
+            onPaste=${this.handlePaste}
+            />
+
           <button
             type="button"
             style=${emojiButtonStyle}

@@ -21,13 +21,12 @@ export function formatMessageText(message, username) {
   }).makeHtml(message);
 
   formattedText = linkify(formattedText, message);
-  formattedText = highlightUsername(formattedText, username);
+  // formattedText = highlightUsername(formattedText, username);
 
   return addNewlines(formattedText);
 }
 
 function highlightUsername(message, username) {
-  // const username = document.getElementById('self-message-author').value;
 	const pattern = new RegExp('@?' + username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
   return message.replace(pattern, '<span class="highlighted">$&</span>');
 }
@@ -126,7 +125,7 @@ function getInstagramEmbedFromURL(url) {
 }
 
 function isImage(url) {
-	const re = /\.(jpe?g|png|gif)$/;
+	const re = /\.(jpe?g|png|gif)$/i;
 	const isImage = re.test(url);
 	return isImage;
 }
@@ -134,7 +133,6 @@ function isImage(url) {
 function getImageForURL(url) {
 	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`;
 }
-
 
 // Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
 export function getCaretPosition(editableDiv) {
@@ -162,6 +160,7 @@ export function getCaretPosition(editableDiv) {
 	return caretPos;
 }
 
+// Might not need this anymore
 // Pieced together from parts of https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
 export function setCaretPosition(editableDiv, position) {
 	var range = document.createRange();
