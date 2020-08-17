@@ -1,5 +1,5 @@
 import { html, Component } from "https://unpkg.com/htm/preact/index.mjs?module";
-import UserInfo from './user-info.js';
+import UsernameForm from './username.js';
 import Chat from './chat.js';
 import Websocket from '../websocket.js';
 
@@ -37,17 +37,19 @@ export default class StandaloneChat extends Component {
     return (
       html`
         <div class="flex">
-          <${UserInfo}
+          <${UsernameForm}
             username=${username}
             userAvatarImage=${userAvatarImage}
             handleUsernameChange=${this.handleUsernameChange}
             handleChatToggle=${this.handleChatToggle}
           />
+
           <${Chat}
             websocket=${websocket}
             username=${username}
             userAvatarImage=${userAvatarImage}
-            chatEnabled />
+            chatEnabled
+          />
         </div>
     `);
   }

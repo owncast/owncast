@@ -1,3 +1,5 @@
+// DELETE THIS FILE LATER.
+
 Vue.component('owncast-footer', {
   props: {
     appVersion: {
@@ -5,7 +7,7 @@ Vue.component('owncast-footer', {
       default: '0.1',
     },
   },
-  
+
   template: `
     <footer class="flex">
       <span>
@@ -24,7 +26,7 @@ Vue.component('stream-tags', {
       class="tag-list flex"
       v-if="this.tags.length"
     >
-      <li class="tag rounded-sm text-gray-100 bg-gray-700" 
+      <li class="tag rounded-sm text-gray-100 bg-gray-700"
         v-for="tag in this.tags"
         v-bind:key="tag"
       >
@@ -43,9 +45,9 @@ Vue.component('user-details', {
         v-bind:style="{ backgroundImage: 'url(' + logo + ')' }"
       >
         <img
-          class="logo visually-hidden" 
-          alt="Logo" 
-          v-bind:src="logo">            
+          class="logo visually-hidden"
+          alt="Logo"
+          v-bind:src="logo">
       </div>
       <div class="user-content-header border-b border-gray-500 border-solid">
         <h2 class="font-semibold">

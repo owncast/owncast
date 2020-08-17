@@ -1,3 +1,5 @@
+// DELETE THIS FILE LATER.
+
 import SOCKET_MESSAGE_TYPES from './utils/socket-message-types.js';
 
 const KEY_USERNAME = 'owncast_username';
