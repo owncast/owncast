@@ -21,7 +21,7 @@ export function formatMessageText(message, username) {
   }).makeHtml(message);
 
   formattedText = linkify(formattedText, message);
-  // formattedText = highlightUsername(formattedText, username);
+  formattedText = highlightUsername(formattedText, username);
 
   return addNewlines(formattedText);
 }
