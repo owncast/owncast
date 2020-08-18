@@ -9,6 +9,7 @@ import (
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
+	"github.com/gabek/owncast/metrics.go"
 	"github.com/gabek/owncast/router"
 )
 
@@ -54,6 +55,8 @@ func main() {
 	} else if config.Config.ChatDatabaseFilePath == "" {
 		config.Config.ChatDatabaseFilePath = "chat.db"
 	}
+
+	metrics.Start()
 
 	// starts the core
 	if err := core.Start(); err != nil {
