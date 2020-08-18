@@ -9,7 +9,7 @@ import (
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/metrics.go"
+	"github.com/gabek/owncast/metrics"
 	"github.com/gabek/owncast/router"
 )
 
