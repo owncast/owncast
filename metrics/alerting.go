@@ -36,6 +36,6 @@ func handleRAMAlerting() {
 	}
 }
 
-func recentAverage(values []int) int {
-	return int((values[len(values)-1] + values[len(values)-2]) / 2)
+func recentAverage(values []value) int {
+	return int((values[len(values)-1].Value + values[len(values)-2].Value) / 2)
 }

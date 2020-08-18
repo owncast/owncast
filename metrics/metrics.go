@@ -7,9 +7,14 @@ import (
 // How often we poll for updates
 const metricsPollingInterval = 15 * time.Second
 
+type value struct {
+	Time  time.Time
+	Value int
+}
+
 type metrics struct {
-	CPUUtilizations []int
-	RAMUtilizations []int
+	CPUUtilizations []value
+	RAMUtilizations []value
 }
 
 // Metrics is the shared Metrics instance

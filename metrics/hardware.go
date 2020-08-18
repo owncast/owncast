@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"time"
+
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
 )
@@ -13,12 +15,13 @@ func collectCPUUtilization() {
 		Metrics.CPUUtilizations = Metrics.CPUUtilizations[1:]
 	}
 
-	value, err := cpu.Percent(0, false)
+	v, err := cpu.Percent(0, false)
 	if err != nil {
 		panic(err)
 	}
 
-	Metrics.CPUUtilizations = append(Metrics.CPUUtilizations, int(value[0]))
+	metricValue := value{time.Now(), int(v[0])}
+	Metrics.CPUUtilizations = append(Metrics.CPUUtilizations, metricValue)
 }
 
 func collectRAMUtilization() {
@@ -26,6 +29,7 @@ func collectRAMUtilization() {
 		Metrics.RAMUtilizations = Metrics.RAMUtilizations[1:]
 	}
 
-	value, _ := mem.VirtualMemory()
-	Metrics.RAMUtilizations = append(Metrics.RAMUtilizations, int(value.UsedPercent))
+	memoryUsage, _ := mem.VirtualMemory()
+	metricValue := value{time.Now(), int(memoryUsage.UsedPercent)}
+	Metrics.RAMUtilizations = append(Metrics.RAMUtilizations, metricValue)
 }
