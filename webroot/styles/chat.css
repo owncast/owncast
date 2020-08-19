@@ -36,10 +36,9 @@
   cursor: pointer;
   margin-right: .5em;
 }
-
-.emoji-picker__wrapper {}
-
-
+.emoji-picker__emoji {
+  border-radius: 10px;
+}
 
 
 .message {
@@ -61,8 +60,6 @@
   max-width: 85%;
   word-wrap: break-word;
 }
-
-
 
 
 

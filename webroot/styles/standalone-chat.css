@@ -4,19 +4,22 @@ The styles in this file mostly ovveride those coming from chat.css
 */
 
 
-#messages-container.messages-only {
+.messages-only {
 
   /* modify this px number if you want things to be relatively bigger or smaller 8*/
   font-size: 16px;
 
-  padding: 1em .5em;
-  background-color: rgba(0,0,0,.4);
 }
 .messages-only .message-content {
   text-shadow: 1px 1px 0px rgba(0,0,0,0.25);
 }
 .message-avatar {
+  display:  none;
   box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.25);
+}
+.message-avatar img {
+  height: 1.8em;
+  width: 1.8em;
 }
 .messages-only .message {
   padding: .5em;

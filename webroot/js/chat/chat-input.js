@@ -66,6 +66,8 @@ export default class ChatInput extends Component {
           custom: json,
           initialCategory: 'custom',
           showPreview: false,
+          emojiSize: '30px',
+          emojisPerRow: 6,
           position: 'top'
         });
         this.emojiPicker.on('emoji', emoji => {

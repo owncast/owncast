@@ -13,7 +13,7 @@
 
   </head>
 
-  <body class="bg-gray-300 text-gray-800">
+  <body class="messages-only">
 
     <div id="chat-container"></div>
 
@@ -21,7 +21,7 @@
       import { render, html } from "https://unpkg.com/htm/preact/index.mjs?module";
       import StandaloneChat from './js/chat/standalone.js';
 
-      const messagesOnly = true;
+      const messagesOnly = false;
 
       (function () {
         render(html`<${StandaloneChat} messagesOnly=${messagesOnly} />`, document.getElementById("chat-container"));

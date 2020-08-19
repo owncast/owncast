@@ -28,7 +28,7 @@ export default class Message extends Component {
               <img src=${avatar} />
             </div>
             <div class="message-content">
-              <p class="message-author text-white font-bold">${author}</p>
+              <p class="message-author text-white font-bold" style=${authorTextColor}>${author}</p>
               <div
                 class="message-text text-gray-400 font-thin"
                 dangerouslySetInnerHTML=${
