@@ -18,6 +18,7 @@ export default class ChatInput extends Component {
   constructor(props, context) {
     super(props, context);
     this.formMessageInput = createRef();
+    this.emojiPickerButton = createRef();
 
     this.messageCharCount = 0;
 		this.maxMessageLength = 500;
@@ -65,10 +66,7 @@ export default class ChatInput extends Component {
           custom: json,
           initialCategory: 'custom',
           showPreview: false,
-          position: {
-            top: '50%',
-            right: '100'
-          },
+          position: 'top'
         });
         this.emojiPicker.on('emoji', emoji => {
           this.handleEmojiSelected(emoji);
@@ -81,7 +79,7 @@ export default class ChatInput extends Component {
 
   handleEmojiButtonClick() {
     if (this.emojiPicker) {
-      this.emojiPicker.togglePicker(this.emojiPicker);
+      this.emojiPicker.togglePicker(this.emojiPickerButton.current);
     }
   }
 
@@ -253,20 +251,26 @@ export default class ChatInput extends Component {
             onPaste=${this.handlePaste}
             />
 
-          <button
-            type="button"
-            style=${emojiButtonStyle}
-            onclick=${this.handleEmojiButtonClick}
-          >😏</button>
           <div id="message-form-actions" class="flex">
             <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>
-            <button
-              onclick=${this.handleSubmitChatButton}
-              type="button"
-              id="button-submit-message"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-            > Chat
-            </button>
+
+            <div id="message-form-actions-buttons" class="flex">
+              <button
+                ref=${this.emojiPickerButton}
+                id="emoji-button"
+                type="button"
+                style=${emojiButtonStyle}
+                onclick=${this.handleEmojiButtonClick}
+              >😏</button>
+
+              <button
+                onclick=${this.handleSubmitChatButton}
+                type="button"
+                id="button-submit-message"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+              > Chat
+              </button>
+            </div>
           </div>
       </div>
     `);

@@ -128,18 +128,6 @@ export default class Chat extends Component {
     this.disableChat()
   }
 
-  // handleSubmitChatButton(event) {
-  //   const { inputValue } = this.state;
-	// 	var value = inputValue.trim();
-	// 	if (value) {
-	// 		this.submitChat(value);
-	// 		event.preventDefault();
-	// 	return false;
-	// 	}
-	// 	event.preventDefault();
-	// 	return false;
-  // }
-
   submitChat(content) {
 		if (!content) {
 			return;
@@ -186,18 +174,26 @@ export default class Chat extends Component {
 
 
   render(props, state) {
-    const { username } = props;
+    const { username, messagesOnly } = props;
     const { messages, inputEnabled, chatUserNames } = state;
+
+    const messageList = messages.map((message) => (html`<${Message} message=${message} username=${username} key=${message.id} />`));
+
+    if (messagesOnly) {
+      return (
+        html`
+          <div id="messages-container">
+            ${messageList}
+          </div>
+      `);
+    }
 
     return (
       html`
         <section id="chat-container-wrap" class="flex">
           <div id="chat-container" class="bg-gray-800">
             <div id="messages-container">
-              ${
-                messages.map(message => (html`<${Message} message=${message} username=${username} />`))
-              }
-              messages..
+              ${messageList}
             </div>
             <${ChatInput}
               chatUserNames=${chatUserNames}

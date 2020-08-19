@@ -1,4 +1,8 @@
-import { html, Component } from "https://unpkg.com/htm/preact/index.mjs?module";
+import { h, Component, Fragment } from 'https://unpkg.com/preact?module';
+import htm from 'https://unpkg.com/htm?module';
+const html = htm.bind(h);
+
+
 import UsernameForm from './username.js';
 import Chat from './chat.js';
 import Websocket from '../websocket.js';
@@ -33,10 +37,26 @@ export default class StandaloneChat extends Component {
   }
 
   render(props, state) {
+    const { messagesOnly } = props;
     const { username, userAvatarImage, websocket } = state;
+
+
+    if (messagesOnly) {
+      return (
+      html`
+        <${Chat}
+          websocket=${websocket}
+          username=${username}
+          userAvatarImage=${userAvatarImage}
+          chatEnabled
+          messagesOnly
+        />
+      `);
+    }
+
     return (
       html`
-        <div class="flex">
+        <${Fragment}>
           <${UsernameForm}
             username=${username}
             userAvatarImage=${userAvatarImage}
@@ -50,7 +70,7 @@ export default class StandaloneChat extends Component {
             userAvatarImage=${userAvatarImage}
             chatEnabled
           />
-        </div>
+        </${Fragment}>
     `);
   }
 
