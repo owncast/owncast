@@ -182,7 +182,7 @@ export default class Chat extends Component {
     if (messagesOnly) {
       return (
         html`
-          <div id="messages-container">
+          <div id="messages-container" class="messages-only">
             ${messageList}
           </div>
       `);

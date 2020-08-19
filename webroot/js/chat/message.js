@@ -14,7 +14,10 @@ export default class Message extends Component {
       const { image, author, body } = message;
       const formattedMessage = formatMessageText(body, username);
       const avatar = image || generateAvatar(author);
-      const avatarBgColor = { backgroundColor: messageBubbleColorForString(author) };
+
+      const authorColor = messageBubbleColorForString(author);
+      const avatarBgColor = { backgroundColor: authorColor };
+      const authorTextColor = { color: authorColor };
       return (
         html`
           <div class="message flex">
