@@ -175,6 +175,8 @@ export default class App extends Component {
 
   // handle UI things from stream status result
   updateStreamStatus(status = {}) {
+    const { streamOnline: curStreamOnline } = this.state;
+
     if (!status) {
       return;
     }
@@ -184,7 +186,6 @@ export default class App extends Component {
       overallMaxViewerCount,
       online,
     } = status;
-    const { streamOnline: curStreamOnline } = this.state;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
 
@@ -304,6 +305,7 @@ export default class App extends Component {
       streamStatusMessage,
       chatEnabled,
     } = state;
+
     const {
       version: appVersion,
       logo = {},
