@@ -1,6 +1,8 @@
 export const URL_STATUS = `/status`;
 export const URL_CHAT_HISTORY = `/chat`;
 export const URL_CUSTOM_EMOJIS = `/emoji`;
+export const URL_CONFIG = `/config`;
+
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
 export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;

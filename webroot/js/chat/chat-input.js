@@ -111,7 +111,7 @@ export default class ChatInput extends Component {
 			return false;
 		}
 
-		const partial = inputHTML.substring(at + 1, position).trim();
+		let partial = inputHTML.substring(at + 1, position).trim();
 
 		if (partial === this.suggestion) {
 			partial = this.partial;

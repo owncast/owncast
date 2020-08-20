@@ -54,6 +54,7 @@ export default class StandaloneChat extends Component {
       `);
     }
 
+    // not needed for standalone, just messages only. remove later.
     return (
       html`
         <${Fragment}>
