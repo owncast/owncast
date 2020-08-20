@@ -125,7 +125,7 @@ export default class Chat extends Component {
   }
   websocketDisconnected() {
     // this.websocket = null;
-    this.disableChat()
+    this.disableChat();
   }
 
   submitChat(content) {
@@ -156,7 +156,6 @@ export default class Chat extends Component {
 
   updateAuthorList(message) {
     const { type } = message;
-    const username = '';
     const nameList = this.state.chatUserNames;
 
     if (
@@ -174,7 +173,7 @@ export default class Chat extends Component {
 
 
   render(props, state) {
-    const { username, messagesOnly } = props;
+    const { username, messagesOnly, chatEnabled } = props;
     const { messages, inputEnabled, chatUserNames } = state;
 
     const messageList = messages.map((message) => (html`<${Message} message=${message} username=${username} key=${message.id} />`));
@@ -197,7 +196,7 @@ export default class Chat extends Component {
             </div>
             <${ChatInput}
               chatUserNames=${chatUserNames}
-              inputEnabled=${inputEnabled}
+              inputEnabled=${chatEnabled && inputEnabled}
               handleSendMessage=${this.submitChat}
             />
           </div>
