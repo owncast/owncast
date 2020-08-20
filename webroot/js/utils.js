@@ -7,6 +7,14 @@ export const URL_CONFIG = `/config`;
 export const URL_STREAM = `/hls/stream.m3u8`;
 export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 
+export const TIMER_STATUS_UPDATE = 5000; // ms
+export const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
+export const TIMER_STREAM_DURATION_COUNTER = 1000;
+export const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+export const MESSAGE_OFFLINE = 'Stream is offline.';
+export const MESSAGE_ONLINE = 'Stream is online';
+
 export const POSTER_DEFAULT = `/img/logo.png`;
 export const POSTER_THUMB = `/thumbnail.jpg`;
 
@@ -66,27 +74,27 @@ export function pluralize(string, count) {
 // Trying to determine if browser is mobile/tablet.
 // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 export function hasTouchScreen() {
-  var hasTouchScreen = false;
+  let hasTouch = false;
   if ("maxTouchPoints" in navigator) {
-      hasTouchScreen = navigator.maxTouchPoints > 0;
+    hasTouch = navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {
-      hasTouchScreen = navigator.msMaxTouchPoints > 0;
+    hasTouch = navigator.msMaxTouchPoints > 0;
   } else {
       var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
       if (mQ && mQ.media === "(pointer:coarse)") {
-          hasTouchScreen = !!mQ.matches;
+        hasTouch = !!mQ.matches;
       } else if ('orientation' in window) {
-          hasTouchScreen = true; // deprecated, but good fallback
+        hasTouch = true; // deprecated, but good fallback
       } else {
           // Only as a last resort, fall back to user agent sniffing
           var UA = navigator.userAgent;
-          hasTouchScreen = (
+          hasTouch = (
               /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
               /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
           );
       }
   }
-  return hasTouchScreen;
+  return hasTouch;
 }
 
 // generate random avatar from https://robohash.org

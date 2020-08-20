@@ -240,8 +240,8 @@ export default class ChatInput extends Component {
 
           <${ContentEditable}
             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
-            placeholderText=${placeholderText}
 
+            placeholderText=${placeholderText}
             innerRef=${this.formMessageInput}
             html=${inputHTML}
             disabled=${!inputEnabled}
@@ -251,7 +251,7 @@ export default class ChatInput extends Component {
             onBlur=${this.handleMessageInputBlur}
 
             onPaste=${this.handlePaste}
-            />
+          />
 
           <div id="message-form-actions" class="flex">
             <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>

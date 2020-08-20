@@ -59,7 +59,7 @@ export default class UsernameForm extends Component {
   }
 
   render(props, state) {
-    const { username, userAvatarImage, handleChatToggle } = props;
+    const { username, userAvatarImage } = props;
     const { displayForm } = state;
 
     const narrowSpace = document.body.clientWidth < 640;
@@ -76,34 +76,31 @@ export default class UsernameForm extends Component {
     }
     return (
       html`
-        <div id="user-options-container" class="flex">
-          <div id="user-info">
-            <div id="user-info-display" style=${styles.info} title="Click to update user name" class="flex" onClick=${this.handleDisplayForm}>
-              <img
-                src=${userAvatarImage}
-                alt=""
-                id="username-avatar"
-                class="rounded-full bg-black bg-opacity-50 border border-solid border-gray-700"
-              />
-              <span id="username-display" class="text-indigo-600">${username}</span>
-            </div>
-
-            <div id="user-info-change" style=${styles.form}>
-              <input type="text"
-                id="username-change-input"
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight focus:bg-white"
-                maxlength="100"
-                placeholder="Update username"
-                value=${username}
-                onKeydown=${this.handleKeydown}
-                ref=${this.textInput}
-              />
-              <button id="button-update-username" onClick=${this.handleUpdateUsername} class="bg-blue-500 hover:bg-blue-700 text-white py-1 px-1 rounded user-btn">Update</button>
-
-              <button id="button-cancel-change" onClick=${this.handleHideForm} class="bg-gray-900 hover:bg-gray-800 py-1 px-2 rounded user-btn text-white text-opacity-50" title="cancel">X</button>
-            </div>
+        <div id="user-info">
+          <div id="user-info-display" style=${styles.info} title="Click to update user name" class="flex" onClick=${this.handleDisplayForm}>
+            <img
+              src=${userAvatarImage}
+              alt=""
+              id="username-avatar"
+              class="rounded-full bg-black bg-opacity-50 border border-solid border-gray-700"
+            />
+            <span id="username-display" class="text-indigo-600">${username}</span>
           </div>
-          <button type="button" id="chat-toggle" onClick=${handleChatToggle} class="flex bg-gray-800 hover:bg-gray-700">💬</button>
+
+          <div id="user-info-change" style=${styles.form}>
+            <input type="text"
+              id="username-change-input"
+              class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight focus:bg-white"
+              maxlength="100"
+              placeholder="Update username"
+              value=${username}
+              onKeydown=${this.handleKeydown}
+              ref=${this.textInput}
+            />
+            <button id="button-update-username" onClick=${this.handleUpdateUsername} class="bg-blue-500 hover:bg-blue-700 text-white py-1 px-1 rounded user-btn">Update</button>
+
+            <button id="button-cancel-change" onClick=${this.handleHideForm} class="bg-gray-900 hover:bg-gray-800 py-1 px-2 rounded user-btn text-white text-opacity-50" title="cancel">X</button>
+          </div>
         </div>
     `);
   }

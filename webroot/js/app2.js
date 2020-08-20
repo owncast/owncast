@@ -3,11 +3,28 @@ import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 
+import SocialIcon from './social.js';
 import UsernameForm from './chat/username.js';
 import Chat from './chat/chat.js';
 import Websocket from './websocket.js';
+import { OwncastPlayer } from './player.js';
 
-import { getLocalStorage, generateAvatar, generateUsername, URL_OWNCAST, URL_CONFIG, URL_STATUS, addNewlines } from './utils.js';
+import {
+  getLocalStorage,
+  generateAvatar,
+  generateUsername,
+  URL_OWNCAST,
+  URL_CONFIG,
+  URL_STATUS,
+  addNewlines,
+  pluralize,
+  TIMER_STATUS_UPDATE,
+  TIMER_DISABLE_CHAT_AFTER_OFFLINE,
+  TIMER_STREAM_DURATION_COUNTER,
+  TEMP_IMAGE,
+  MESSAGE_OFFLINE,
+  MESSAGE_ONLINE,
+} from './utils.js';
 import { KEY_USERNAME, KEY_AVATAR,  } from './utils/chat.js';
 
 export default class App extends Component {
@@ -16,13 +33,22 @@ export default class App extends Component {
 
     this.state = {
       websocket: new Websocket(),
-      chatEnabled: true, // always true for standalone chat
+      displayChat: false, // chat panel state
+      chatEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       userAvatarImage: getLocalStorage(KEY_AVATAR) || generateAvatar(`${this.username}${Date.now()}`),
 
-      streamStatus: null,
-      player: null,
       configData: {},
+      extraUserContent: '',
+
+      playerActive: false, // player object is active
+      streamOnline: false,  // stream is active/online
+
+      //status
+      streamStatusMessage: MESSAGE_OFFLINE,
+      viewerCount: '',
+      sessionMaxViewerCount: '',
+      overallMaxViewerCount: '',
     };
 
     // timers
@@ -32,25 +58,48 @@ export default class App extends Component {
     this.disableChatTimer = null;
     this.streamDurationTimer = null;
 
+    // misc dom events
+    this.handleChatPanelToggle = this.handleChatPanelToggle.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
+
+    this.handleOfflineMode = this.handleOfflineMode.bind(this);
+    this.handleOnlineMode = this.handleOnlineMode.bind(this);
+    this.disableChatInput = this.disableChatInput.bind(this);
+
+    // player events
+    this.handlePlayerReady = this.handlePlayerReady.bind(this);
+    this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
+    this.handlePlayerEnded = this.handlePlayerEnded.bind(this);
+    this.handlePlayerError = this.handlePlayerError.bind(this);
+
+    // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
     this.getExtraUserContent = this.getExtraUserContent.bind(this);
+
 
   }
 
   componentDidMount() {
     this.getConfig();
 
-    // DO LATER..
-    // this.player = new OwncastPlayer();
-    // this.player.setupPlayerCallbacks({
-    //   onReady: this.handlePlayerReady,
-    //   onPlaying: this.handlePlayerPlaying,
-    //   onEnded: this.handlePlayerEnded,
-    //   onError: this.handlePlayerError,
-    // });
-    // this.player.init();
+    this.player = new OwncastPlayer();
+    this.player.setupPlayerCallbacks({
+      onReady: this.handlePlayerReady,
+      onPlaying: this.handlePlayerPlaying,
+      onEnded: this.handlePlayerEnded,
+      onError: this.handlePlayerError,
+    });
+    this.player.init();
+  }
+
+  componentWillUnmount() {
+    // clear all the timers
+    clearInterval(this.playerRestartTimer);
+    clearInterval(this.offlineTimer);
+    clearInterval(this.statusTimer);
+    clearTimeout(this.disableChatTimer);
+    clearInterval(this.streamDurationTimer);
   }
 
   // fetch /config data
@@ -98,8 +147,9 @@ export default class App extends Component {
         return response.text();
       })
       .then(text => {
-        const descriptionHTML = new showdown.Converter().makeHtml(text);
-        this.vueApp.extraUserContent = descriptionHTML;
+        this.setState({
+          extraUserContent: new showdown.Converter().makeHtml(text),
+        });
       })
       .catch(error => {
         this.handleNetworkingError(`Fetch extra content: ${error}`);
@@ -128,66 +178,89 @@ export default class App extends Component {
     if (!status) {
       return;
     }
-    // update UI
-    this.vueApp.viewerCount = status.viewerCount;
-    this.vueApp.sessionMaxViewerCount = status.sessionMaxViewerCount;
-    this.vueApp.overallMaxViewerCount = status.overallMaxViewerCount;
+    const {
+      viewerCount,
+      sessionMaxViewerCount,
+      overallMaxViewerCount,
+      online,
+    } = status;
+    const { streamOnline: curStreamOnline } = this.state;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
 
-    if (!this.streamStatus) {
-      // display offline mode the first time we get status, and it's offline.
-      if (!status.online) {
-        this.handleOfflineMode();
-      } else {
-        this.handleOnlineMode();
-      }
-    } else {
-      if (status.online && !this.streamStatus.online) {
-        // stream has just come online.
-        this.handleOnlineMode();
-      } else if (!status.online && this.streamStatus.online) {
-        // stream has just flipped offline.
-        this.handleOfflineMode();
-      }
+    if (status.online && !curStreamOnline) {
+      // stream has just come online.
+      this.handleOnlineMode();
+    } else if (!status.online && curStreamOnline) {
+      // stream has just flipped offline.
+      this.handleOfflineMode();
     }
-
-    // keep a local copy
-    this.streamStatus = status;
-
     if (status.online) {
       // only do this if video is paused, so no unnecessary img fetches
       if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
         this.player.setPoster();
       }
     }
+    this.setState({
+      viewerCount,
+      sessionMaxViewerCount,
+      overallMaxViewerCount,
+      streamOnline: online,
+    });
+  }
+
+  // when videojs player is ready, start polling for stream
+  handlePlayerReady() {
+    this.getStreamStatus();
+    this.statusTimer = setInterval(this.getStreamStatus, TIMER_STATUS_UPDATE);
+  }
+
+  handlePlayerPlaying() {
+    // do something?
+  }
+
+
+  // likely called some time after stream status has gone offline.
+  // basically hide video and show underlying "poster"
+  handlePlayerEnded() {
+    this.setState({
+      playerActive: false,
+    });
+  }
+
+  handlePlayerError() {
+    // do something?
+    this.handleOfflineMode();
+    this.handlePlayerEnded();
   }
 
   // stop status timer and disable chat after some time.
   handleOfflineMode() {
-    this.vueApp.isOnline = false;
     clearInterval(this.streamDurationTimer);
-    this.vueApp.streamStatus = MESSAGE_OFFLINE;
-    if (this.streamStatus) {
-      const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.lastDisconnectTime));
-      const countdown = (remainingChatTime < 0) ? 0 : remainingChatTime;
-      this.disableChatTimer = setTimeout(this.messagingInterface.disableChat, countdown);
-    }
+    const remainingChatTime = TIMER_DISABLE_CHAT_AFTER_OFFLINE - (Date.now() - new Date(this.lastDisconnectTime));
+    const countdown = (remainingChatTime < 0) ? 0 : remainingChatTime;
+    this.disableChatTimer = setTimeout(this.disableChatInput, countdown);
+    this.setState({
+      streamOnline: false,
+      streamStatusMessage: MESSAGE_OFFLINE,
+    });
   }
 
   // play video!
   handleOnlineMode() {
-    this.vueApp.playerOn = true;
-    this.vueApp.isOnline = true;
-    this.vueApp.streamStatus = MESSAGE_ONLINE;
-
     this.player.startPlayer();
     clearTimeout(this.disableChatTimer);
     this.disableChatTimer = null;
-    this.messagingInterface.enableChat();
 
     this.streamDurationTimer =
       setInterval(this.setCurrentStreamDuration, TIMER_STREAM_DURATION_COUNTER);
+
+    this.setState({
+      playerActive: true,
+      streamOnline: true,
+      chatEnabled: true,
+      streamStatusMessage: MESSAGE_ONLINE,
+    });
   }
 
 
@@ -198,10 +271,16 @@ export default class App extends Component {
     });
   }
 
-  handleChatToggle() {
-    const { chatEnabled: curChatEnabled } = this.state;
+  handleChatPanelToggle() {
+    const { displayChat: curDisplayed } = this.state;
     this.setState({
-      chatEnabled: !curChatEnabled,
+      displayChat: !curDisplayed,
+    });
+  }
+
+  disableChatInput() {
+    this.setState({
+      chatEnabled: false,
     });
   }
 
@@ -210,49 +289,81 @@ export default class App extends Component {
   }
 
   render(props, state) {
-    const { username, userAvatarImage, websocket, configData } = state;
+    const {
+      username,
+      userAvatarImage,
+      websocket,
+      configData,
+      extraUserContent,
+      displayChat,
+      viewerCount,
+      sessionMaxViewerCount,
+      overallMaxViewerCount,
+      playerActive,
+      streamOnline,
+      streamStatusMessage,
+      chatEnabled,
+    } = state;
     const {
       version: appVersion,
       logo = {},
-      socialHandles,
-      name: streamnerName,
+      socialHandles = [],
+      name: streamerName,
       summary,
-      tags,
+      tags = [],
       title,
     } = configData;
-    const { small: smallLogo, large: largeLogo } = logo;
+    const { small: smallLogo = TEMP_IMAGE, large: largeLogo = TEMP_IMAGE } = logo;
 
     const bgLogo = { backgroundImage: `url(${smallLogo})` };
     const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
 
-    // not needed for standalone, just messages only. remove later.
+    const tagList = !tags.length ?
+      null :
+      tags.map((tag, index) => html`
+        <li key="tag${index}" class="tag rounded-sm text-gray-100 bg-gray-700">${tag}</li>
+      `);
+
+    const socialIconsList =
+      !socialHandles.length ?
+      null :
+      socialHandles.map((item, index) => html`
+        <li key="social${index}">
+          <${SocialIcon} platform=${item.platform} url=${item.url} />
+        </li>
+      `);
+
+
+    const chatClass = displayChat ? 'chat' : 'no-chat';
+    const mainClass = playerActive ? 'online' : '';
+    const streamInfoClass = streamOnline ? 'online' : '';
     return (
       html`
-        <div id="app-container" class="flex chat">
+        <div id="app-container" class="flex ${chatClass}">
           <div id="top-content">
             <header class="flex border-b border-gray-900 border-solid shadow-md">
-              <h1 v-cloak class="flex text-gray-400">
+              <h1 class="flex text-gray-400">
                 <span
                   id="logo-container"
                   class="rounded-full bg-white px-1 py-1"
                   style=${bgLogo}
                 >
-                  <img class="logo visually-hidden" src=${smallLogo}>
+                  <img class="logo visually-hidden" src=${smallLogo} />
                 </span>
                 <span class="instance-title">${title}</span>
               </h1>
-
-              <${UsernameForm}
-                username=${username}
-                userAvatarImage=${userAvatarImage}
-                handleUsernameChange=${this.handleUsernameChange}
-                handleChatToggle=${this.handleChatToggle}
-              />
-
+              <div id="user-options-container" class="flex">
+                <${UsernameForm}
+                  username=${username}
+                  userAvatarImage=${userAvatarImage}
+                  handleUsernameChange=${this.handleUsernameChange}
+                />
+                <button type="button" id="chat-toggle" onClick=${this.handleChatPanelToggle} class="flex bg-gray-800 hover:bg-gray-700">💬</button>
+              </div>
             </header>
           </div>
 
-          <main>
+          <main class=${mainClass}>
             <div
               id="video-container"
               class="flex owncast-video-container bg-black"
@@ -269,23 +380,46 @@ export default class App extends Component {
             </div>
 
 
-            <section id="stream-info" aria-label="Stream status" class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid">
-              <span>{{ streamStatus }}</span>
-              <span v-if="isOnline">{{ viewerCount }} {{ 'viewer' | plural(viewerCount) }}.</span>
-              <span v-if="isOnline">Max {{ sessionMaxViewerCount }} {{ 'viewer' | plural(sessionMaxViewerCount) }}.</span>
-              <span v-if="isOnline">{{ overallMaxViewerCount }} overall.</span>
+            <section id="stream-info" aria-label="Stream status" class="flex font-mono bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid ${streamInfoClass}">
+              <span>${streamStatusMessage}</span>
+              <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
+              <span>Max ${pluralize('viewer', sessionMaxViewerCount)}.</span>
+              <span>${overallMaxViewerCount} overall.</span>
             </section>
           </main>
 
           <section id="user-content" aria-label="User information">
-            <user-details
-              v-bind:logo="logo"
-              v-bind:platforms="socialHandles"
-              v-bind:summary="summary"
-              v-bind:tags="tags"
-            >{{streamerName}}</user-details>
-
-            <div v-html="extraUserContent" class="extra-user-content">{{extraUserContent}}</div>
+            <div class="user-content">
+              <div
+                class="user-image rounded-full bg-white"
+                style=${bgLogoLarge}
+              >
+                <img
+                  class="logo visually-hidden"
+                  alt="Logo"
+                  src=${largeLogo}
+                >
+              </div>
+              <div class="user-content-header border-b border-gray-500 border-solid">
+                <h2 class="font-semibold">
+                  About
+                  <span class="streamer-name text-indigo-600">${streamerName}</span>
+                </h2>
+                <ul class="social-list flex" v-if="this.platforms.length">
+                  <span class="follow-label">Follow me: </span>
+                  ${socialIconsList}
+                </ul>
+                <div class="stream-summary" dangerouslySetInnerHTML=${{ __html: summary }}></div>
+                <ul class="tag-list flex">
+                  ${tagList}
+                </ul>
+              </div>
+            </div>
+            <div
+              id="extra-user-content"
+              class="extra-user-content"
+              dangerouslySetInnerHTML=${{ __html: extraUserContent }}
+            ></div>
           </section>
 
           <footer class="flex">
@@ -300,7 +434,7 @@ export default class App extends Component {
           websocket=${websocket}
           username=${username}
           userAvatarImage=${userAvatarImage}
-          chatEnabled
+          chatEnabled=${chatEnabled}
         />
 
       </div>

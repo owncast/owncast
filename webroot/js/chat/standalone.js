@@ -48,7 +48,6 @@ export default class StandaloneChat extends Component {
           websocket=${websocket}
           username=${username}
           userAvatarImage=${userAvatarImage}
-          chatEnabled
           messagesOnly
         />
       `);
@@ -69,7 +68,6 @@ export default class StandaloneChat extends Component {
             websocket=${websocket}
             username=${username}
             userAvatarImage=${userAvatarImage}
-            chatEnabled
           />
         </${Fragment}>
     `);
