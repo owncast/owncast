@@ -15,8 +15,6 @@ export const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAE
 export const MESSAGE_OFFLINE = 'Stream is offline.';
 export const MESSAGE_ONLINE = 'Stream is online';
 
-
-
 export const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
 
 export function getLocalStorage(key) {

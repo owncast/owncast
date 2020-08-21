@@ -27,10 +27,10 @@ export default class Message extends Component {
             >
               <img src=${avatar} />
             </div>
-            <div class="message-content">
+            <div class="message-content text-sm">
               <p class="message-author text-white font-bold" style=${authorTextColor}>${author}</p>
               <div
-                class="message-text text-gray-400 font-thin"
+                class="message-text text-gray-300 font-normal"
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }
@@ -43,9 +43,11 @@ export default class Message extends Component {
       return (
         html`
           <div class="message flex">
-            <img class="mr-2" src=${image} />
-            <div class="text-white text-center">
-              <span class="font-bold">${oldName}</span> is now known as <span class="font-bold">${newName}</span>.
+            <div class="message-content text-sm">
+              <img class="mr-2" src=${image} />
+              <div class="text-white text-center">
+                <span class="font-bold">${oldName}</span> is now known as <span class="font-bold">${newName}</span>.
+              </div>
             </div>
           </div>
         `);

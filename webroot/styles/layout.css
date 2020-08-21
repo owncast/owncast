@@ -242,7 +242,6 @@ h2 {
 }
 
 .vjs-airplay .vjs-icon-placeholder::before {
-  /* content: 'AP'; */
   content: url("../img/airplay.png");
 }
 

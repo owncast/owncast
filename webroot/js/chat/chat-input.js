@@ -239,6 +239,7 @@ export default class ChatInput extends Component {
         <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
 
           <${ContentEditable}
+            id="message-input"
             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
 
             placeholderText=${placeholderText}

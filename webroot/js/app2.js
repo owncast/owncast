@@ -1,4 +1,4 @@
-import { h, Component, Fragment } from 'https://unpkg.com/preact?module';
+import { h, Component } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
@@ -11,6 +11,8 @@ import { OwncastPlayer } from './player.js';
 
 import {
   getLocalStorage,
+  setLocalStorage,
+  clearLocalStorage,
   generateAvatar,
   generateUsername,
   URL_OWNCAST,
@@ -25,7 +27,7 @@ import {
   MESSAGE_OFFLINE,
   MESSAGE_ONLINE,
 } from './utils.js';
-import { KEY_USERNAME, KEY_AVATAR,  } from './utils/chat.js';
+import { KEY_USERNAME, KEY_AVATAR, KEY_CHAT_DISPLAYED } from './utils/chat.js';
 
 export default class App extends Component {
   constructor(props, context) {
@@ -33,7 +35,7 @@ export default class App extends Component {
 
     this.state = {
       websocket: new Websocket(),
-      displayChat: false, // chat panel state
+      displayChat: getLocalStorage(KEY_CHAT_DISPLAYED), // chat panel state
       chatEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       userAvatarImage: getLocalStorage(KEY_AVATAR) || generateAvatar(`${this.username}${Date.now()}`),
@@ -274,8 +276,15 @@ export default class App extends Component {
 
   handleChatPanelToggle() {
     const { displayChat: curDisplayed } = this.state;
+
+    const displayChat = !curDisplayed;
+    if (displayChat) {
+      setLocalStorage(KEY_CHAT_DISPLAYED, displayChat);
+		} else {
+			clearLocalStorage(KEY_CHAT_DISPLAYED);
+		}
     this.setState({
-      displayChat: !curDisplayed,
+      displayChat,
     });
   }
 

@@ -9,11 +9,54 @@
   padding: 1em;
 }
 
-#message-form {
+/******************************/
+/******************************/
+#message-input {
+  height: 5rem;
+  font-size: .85em;
+}
+#message-input img {
+  display: inline;
+  vertical-align: middle;
+  padding: 5px;
+}
+
+#message-input .emoji {
+  width: 2.2em;
+}
+
+
+/* If the div is empty then show the placeholder */
+#message-input:empty:before{
+  content: attr(placeholderText);
+  pointer-events: none;
+  display: block; /* For Firefox */
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* When chat is enabled (contenteditable=true)  */
+#message-input[contenteditable=true]:before {
+  opacity: 1.0;
+}
+
+
+/* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
+#message-input:disabled,
+#message-input[contenteditable=false] {
+  opacity: 0.6;
+}
+/******************************/
+/******************************/
+
+
+
+
+
+/* #message-form {
   flex-direction: column;
   align-items: flex-end;
   margin-bottom: 0;
-}
+} */
 
 
 
@@ -121,57 +164,6 @@
 
 
 
-
-/*
-The chat input has a fake placeholder that is styled below.
-It pulls the placeholder text from the div's placeholder attribute.
-But really it's just the innerHTML content.
-*/
-
-
-
-
-
-
-
-#message-body-form {
-  font-size: 1em;
-  height: 60px;
-}
-#message-body-form:disabled{
-  opacity: .5;
-}
-#message-body-form img {
-  display: inline;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#message-body-form .emoji {
-  width: 40px;
-}
-
-
-/* If the div is empty then show the placeholder */
-#message-body-form:empty:before{
-  content: attr(placeholder);
-  pointer-events: none;
-  display: block; /* For Firefox */
-
-  /* Style the div's placeholder text color */
-  color: rgba(0, 0, 0, 0.5);
-}
-
-/* When chat is enabled (contenteditable=true)  */
-#message-body-form[contenteditable=true]:before {
-  opacity: 1.0;
-}
-
-
-/* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
-#message-body-form[contenteditable=false] {
-  opacity: 0.6;
-}
 
 
 
