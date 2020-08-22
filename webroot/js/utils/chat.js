@@ -115,13 +115,13 @@ function getYoutubeIdFromURL(url) {
 }
 
 function getYoutubeEmbedFromID(id) {
-	return `<iframe class="chat-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
+	return `<iframe class="chat-embed youtube-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 function getInstagramEmbedFromURL(url) {
 	const urlObject = new URL(url.replace(/\/$/, ""));
 	urlObject.pathname += "/embed";
-	return `<iframe class="chat-embed instagram-embed" height="150px" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
+	return `<iframe class="chat-embed instagram-embed" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 function isImage(url) {
@@ -130,7 +130,7 @@ function isImage(url) {
 }
 
 function getImageForURL(url) {
-	return `<a target="_blank" href="${url}"><img class="embedded-image" src="${url}" width="100%" height="150px"/></a>`;
+	return `<a target="_blank" href="${url}"><img class="chat-embed embedded-image" src="${url}" /></a>`;
 }
 
 // Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
