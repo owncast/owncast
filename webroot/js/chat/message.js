@@ -20,15 +20,17 @@ export default class Message extends Component {
       const authorTextColor = { color: authorColor };
       return (
         html`
-          <div class="message flex">
+          <div class="message flex flex-row align-start p-3">
             <div
-              class="message-avatar rounded-full flex items-center justify-center"
+              class="message-avatar rounded-full flex items-center justify-center mr-3"
               style=${avatarBgColor}
             >
-              <img src=${avatar} />
+              <img src=${avatar} class="p-1" />
             </div>
-            <div class="message-content text-sm">
-              <p class="message-author text-white font-bold" style=${authorTextColor}>${author}</p>
+            <div class="message-content text-sm break-words">
+              <div class="message-author text-white font-bold" style=${authorTextColor}>
+                ${author}
+              </div>
               <div
                 class="message-text text-gray-300 font-normal"
                 dangerouslySetInnerHTML=${
@@ -42,7 +44,7 @@ export default class Message extends Component {
       const { oldName, newName, image } = message;
       return (
         html`
-          <div class="message flex">
+          <div class="message flex align-start p3">
             <div class="message-content text-sm">
               <img class="mr-2" src=${image} />
               <div class="text-white text-center">
@@ -50,7 +52,8 @@ export default class Message extends Component {
               </div>
             </div>
           </div>
-        `);
+        `
+      );
     }
   }
 }

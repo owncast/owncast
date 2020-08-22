@@ -236,11 +236,11 @@ export default class ChatInput extends Component {
     const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
     return (
       html`
-        <div id="message-input-container" class="shadow-md bg-gray-900 border-t border-gray-700 border-solid">
+        <div id="message-input-container" class="w-full shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4">
 
           <${ContentEditable}
             id="message-input"
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white"
+            class="appearance-none block w-full bg-gray-200 text-sm	text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white h-20 overflow-auto"
 
             placeholderText=${placeholderText}
             innerRef=${this.formMessageInput}
@@ -254,13 +254,14 @@ export default class ChatInput extends Component {
             onPaste=${this.handlePaste}
           />
 
-          <div id="message-form-actions" class="flex">
+          <div id="message-form-actions" class="flex flex-row justify-between items-center w-full">
             <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>
 
-            <div id="message-form-actions-buttons" class="flex">
+            <div id="message-form-actions-buttons" class="flex flex-row justify-end items-center">
               <button
                 ref=${this.emojiPickerButton}
                 id="emoji-button"
+                class="mr-2 text-2xl cursor-pointer"
                 type="button"
                 style=${emojiButtonStyle}
                 onclick=${this.handleEmojiButtonClick}

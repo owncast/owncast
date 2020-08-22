@@ -39,90 +39,90 @@ a:hover {
 }
 
 #app-container {
-  width: 100%;
+  /* width: 100%;
   flex-direction: column;
   justify-content: flex-start;
-  position: relative;
+  position: relative; */
 }
 
 header {
-  position: fixed;
-  width: 100%;
+  /* position: fixed;
+  width: 100%; */
   height: var(--header-height);
-  top: 0;
-  left: 0;
+  /* top: 0;
+  left: 0; */
   background-color: var(--header-bg-color);
-  z-index: 10;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: nowrap;
+  /* z-index: 10; */
+  /* flex-direction: row;
+  justify-content: space-between; */
+  /* flex-wrap: nowrap; */
 }
 
 header h1 {
-  font-size: 1.25em;
-  font-weight: 100;
-  letter-spacing: 1.2;
-  text-transform: uppercase;
-  padding: .5em;
-  white-space: nowrap;
-  justify-content: flex-start;
+  /* font-size: 1.25em; */
+  /* font-weight: 100;
+  letter-spacing: 1.2; */
+  /* text-transform: uppercase; */
+  /* padding: .5em; */
+  /* white-space: nowrap; */
+  /* justify-content: flex-start;
   align-items: center;
-  flex-direction: row;
-  overflow: hidden;
+  flex-direction: row; */
+  /* overflow: hidden; */
 }
 #logo-container{
-  height: 1.75em;
-  width: 1.75em;
-  min-height: 1.75em;
-  min-width: 1.75em;
-  margin-right: .5em;
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-position: center center;
+  /* height: 1.75em;
+  width: 1.75em; */
+  /* min-height: 1.75em;
+  min-width: 1.75em; */
+  /* margin-right: .5em; */
+  /* display: inline-block; */
+  /* background-repeat: no-repeat; */
+  /* background-position: center center; */
   background-size: 1.35em;
 }
 header .instance-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* overflow: hidden;
+  text-overflow: ellipsis; */
 }
 #chat-toggle {
-  cursor: pointer;
-  text-align: center;
-  height: 100%;
-  min-width: 3em;
-  justify-content: center;
-  align-items: center;
+  /* cursor: pointer;
+  text-align: center; */
+  /* height: 100%;*/
+  min-width: 3rem;
+/*  justify-content: center;
+  align-items: center; */
 }
 
 footer {
-  flex-direction: row;
+  /* flex-direction: row;
   justify-content: flex-start;
   font-size: .75em;
   padding: 2em;
-  opacity: .5;
+  opacity: .5; */
 }
 footer span {
-  display: inline-block;
-  margin: 0 1em;
+  /* display: inline-block;
+  margin: 0 1em; */
 }
 
 
 /* ************************************************8 */
 
 #stream-info {
-  padding: .5em 2em;
-  text-align: center;
+  /* padding: .5em 2em; */
+  /* text-align: center;
   width: 100%;
 
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-between; */
 
 }
 #stream-info span {
-  font-size: .7em;
+  /* font-size: .7em; */
 }
 .user-content {
-  padding: 2em;
+  /* padding: 2em; */
 }
 /* #user-content {
   display: block;
@@ -141,73 +141,73 @@ footer span {
   height: 100%;
 } */
 .stream-summary {
-  margin: 1em 0;
+  /* margin: 1em 0; */
 }
 
 h2 {
-  font-size: 3em;
+  /* font-size: 3em; */
 }
 
 
 /* ************************************************8 */
 
 #user-options-container {
-  flex-direction: row;
+  /* flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: nowrap; */
 }
 
 #user-info-display {
-  display: flex;
+  /* display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
   cursor: pointer;
   padding: .5em 1em;
   overflow: hidden;
-  width: 100%;
+  width: 100%; */
 }
 
 #username-avatar {
-  height: 2.1em;
+  /* height: 2.1em;
   width: 2.1em;
-  margin-right: .5em;
+  margin-right: .5em; */
 }
 #username-display {
-  font-weight: 600;
-  font-size: .75em;
-  white-space: nowrap;
+  /* font-weight: 600; */
+  /* font-size: .75em; */
+  /* white-space: nowrap;
   text-overflow: ellipsis;
-  overflow: hidden;
+  overflow: hidden; */
 }
 #user-info-display:hover {
-  transition: opacity .2s;
-  opacity: .75;
+  /* transition: opacity .2s;
+  opacity: .75; */
 }
 
 
 #user-info-change {
   display: none;
-  justify-content: flex-end;
+  /* justify-content: flex-end;
   align-items: center;
-  padding: .25em;
+  padding: .25em; */
 }
 #username-change-input {
-  font-size: .75em;
+  /* font-size: .75em; */
 }
 #button-update-username {
-  font-size: .65em;
-  text-transform: uppercase;
-  height: 2.5em;
+  /* font-size: .65em; */
+  /* text-transform: uppercase; */
+  /* height: 2.5em; */
 }
 #button-cancel-change {
-  cursor: pointer;
-  height: 2.5em;
-  font-size: .65em;
+  /* cursor: pointer; */
+  /* height: 2.5em; */
+  /* font-size: .65em; */
 }
 .user-btn {
-  margin: 0 .25em;
+  /* margin: 0 .25em; */
 }
 
 /* ************************************************8 */
@@ -260,16 +260,10 @@ h2 {
 /* ************************************************8 */
 
 
-.no-chat #chat-container-wrap {
-  display: none;
-}
 .no-chat footer {
   justify-content: center;
 }
 
-.chat #chat-container-wrap {
-  display: block;
-}
 
 .chat #video-container,
 .chat #stream-info,
@@ -278,23 +272,6 @@ h2 {
 }
 
 
-#chat-container {
-  position: fixed;
-  z-index: 9;
-  top: var(--header-height);
-  right: 0;
-  width: var(--right-col-width);
-
-  height: calc(100vh - var(--header-height));
-
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-.touch-screen #chat-container {
-  height: calc(100vh - var(--header-height) - 3vh);
-}
 
 
 

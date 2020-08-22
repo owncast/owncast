@@ -98,7 +98,7 @@ export function hasTouchScreen() {
 export function generateAvatar(hash) {
   const avatarSource = 'https://robohash.org/';
   const optionSize = '?size=80x80';
-  const optionSet = '&set=set3';
+  const optionSet = '&set=set2';
   const optionBg = ''; // or &bgset=bg1 or bg2
 
   return avatarSource + hash + optionSize + optionSet + optionBg;
@@ -132,4 +132,18 @@ export function setVHvar() {
 
 export function doesObjectSupportFunction(object, functionName) {
   return typeof object[functionName] === "function";
+}
+
+// return a string of css classes
+export function classNames(json) {
+  const classes = [];
+
+  Object.entries(json).map(function(item) {
+    const [ key, value ] = item;
+    if (value) {
+      classes.push(key);
+    }
+    return null;
+  });
+  return classes.join(' ');
 }

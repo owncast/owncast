@@ -95,12 +95,6 @@ export default class Chat extends Component {
 
   receivedWebsocketMessage(message) {
     this.addMessage(message);
-    // if (model.type === SOCKET_MESSAGE_TYPES.CHAT) {
-    //   const message = new Message(model);
-    //   this.addMessage(message);
-    // } else if (model.type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
-    //   this.addMessage(model);
-    // }
   }
 
   // if incoming message has same id as existing message, don't add it
@@ -181,7 +175,7 @@ export default class Chat extends Component {
     if (messagesOnly) {
       return (
         html`
-          <div id="messages-container">
+          <div id="messages-container" class="py-1 overflow-auto">
             ${messageList}
           </div>
       `);
@@ -189,9 +183,9 @@ export default class Chat extends Component {
 
     return (
       html`
-        <section id="chat-container-wrap" class="flex">
-          <div id="chat-container" class="bg-gray-800">
-            <div id="messages-container">
+        <section id="chat-container-wrap" class="flex flex-col">
+          <div id="chat-container" class="bg-gray-800 flex flex-col justify-end overflow-auto">
+            <div id="messages-container" class="py-1 overflow-auto">
               ${messageList}
             </div>
             <${ChatInput}
