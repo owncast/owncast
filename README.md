@@ -85,7 +85,7 @@ OBS, Streamlabs, Restream and many others have been used with Owncast.  [Read mo
 
 ## Video storage options
 
-Three ways of storing and distributing the video are supported.
+Two ways of storing and distributing the video are supported.
 
 1. [Locally](#local-file-distribution) via the built-in web server.
 2. [S3-compatible storage](#s3-compatible-storage).
