@@ -1,6 +1,6 @@
 /*
-Spefici styles for app layout
-
+Specific styles for main app layout.
+May have overrides for other components with own stylesheets.
 */
 
 /* variables */
@@ -23,6 +23,10 @@ a:hover {
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
+}
+
+* {
+  transition: all .25s;
 }
 
 button[disabled] {
@@ -68,11 +72,11 @@ header {
 /* ************************************************ */
 
 #video-container {
-  height: calc(var(--video-container-height));
+  height: var(--video-container-height);
   margin-top: var(--header-height);
   position: relative;
   width: 100%;
-  /* height: calc((9 / 16) * 100vw); */
+
   min-height: 480px;
   background-size: 30%;
 }
@@ -97,13 +101,79 @@ header {
   opacity: .75;
 }
 
+.no-chat #chat-container-wrap {
+  display: none;
+}
 
 /* *********** overrides when chat is on ***************************** */
+
+.chat {
+  --content-width: calc(100vw - var(--right-col-width));
+}
+.chat #chat-container-wrap {
+  display: block;
+}
 
 .chat #video-container,
 .chat #stream-info,
 .chat #user-content {
-  width: calc(100% - var(--right-col-width));
+  width: var(--content-width);
+}
+
+.chat #video-container {
+  height: calc((9 / 16) * var(--content-width));
+}
+
+
+
+.short-wide.chat #video-container {
+  height: calc(100vh - var(--header-height) - 3rem);
+  min-height: auto;
+}
+
+.short-wide #message-input {
+  height: 3rem;
+}
+
+
+
+
+/* *********** single col layout ***************************** */
+
+.single-col {
+  --right-col-width: 0px;
+}
+.single-col main {
+  position: fixed;
+  width: 100%;
+  z-index: 40;
+}
+.single-col #chat-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+.single-col #video-container {
+  min-height: auto;
+  width: 100%;
+}
+.single-col #user-content,
+.single-col #chat-container-wrap {
+  margin-top: calc(var(--video-container-height) + var(--header-height) + 1rem);
+}
+.single-col #user-content .user-content {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.single-col.chat #user-content {
+  display: none;
+}
+.single-col #message-input-container {
+  width: 100%;
+}
+
+.single-col #message-input {
+  height: 3rem;
 }
 
 
@@ -116,15 +186,13 @@ header {
     --right-col-width: 20em;
     --user-image-width: 6em;
   }
-
-  #chat-container {
-    width: var(--right-col-width);
-  }
-
 }
 
+/* ************************************************8 */
+
+
 /* single col layout */
-@media screen and (max-width: 640px ) {
+/* @media screen and (max-width: 640px ) {
   :root {
     --right-col-width: 0;
     --video-container-height: 40vh;
@@ -142,7 +210,6 @@ header {
   #chat-container {
     width: 100%;
     position: static;
-    /* min-height: calc(100vh - var(--header-height)); */
     height: calc(100vh - var(--header-height) - var(--video-container-height) - 3vh)
   }
   #messages-container {
@@ -166,16 +233,16 @@ header {
   .chat footer {
     display: none;
   }
-}
+} */
 
 
 
 
-@media screen and (max-height: 860px ) {
+/* @media screen and (max-height: 860px ) {
   :root {
     --video-container-height: 40vh;
   }
   .user-content {
     flex-direction: column;
   }
-}
+} */

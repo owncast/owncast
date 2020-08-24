@@ -21,14 +21,11 @@ export default class Chat extends Component {
 
     this.scrollableMessagesContainer = createRef();
 
-
     this.websocket = null;
 
     this.getChatHistory = this.getChatHistory.bind(this);
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
-
-    // this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
     this.submitChat = this.submitChat.bind(this);
   }
 
@@ -39,7 +36,6 @@ export default class Chat extends Component {
    if (hasTouchScreen()) {
     setVHvar();
     window.addEventListener("orientationchange", setVHvar);
-    // this.tagAppContainer.classList.add('touch-screen');
     }
   }
 

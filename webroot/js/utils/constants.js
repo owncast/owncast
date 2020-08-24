@@ -27,3 +27,8 @@ export const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
 export const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
+
+
+// app styling
+export const WIDTH_SINGLE_COL = 730;
+export const HEIGHT_SHORT_WIDE = 500;

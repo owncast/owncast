@@ -128,3 +128,32 @@ export function classNames(json) {
   });
   return classes.join(' ');
 }
+
+
+// taken from
+// https://medium.com/@TCAS3/debounce-deep-dive-javascript-es6-e6f8d983b7a1
+export function debounce(fn, time) {
+  let timeout;
+
+  return function() {
+    const functionCall = () => fn.apply(this, arguments);
+
+    clearTimeout(timeout);
+    timeout = setTimeout(functionCall, time);
+  }
+}
+
+/*
+const debouncedHandleResize = debounce(function handleResize() {
+  setDimensions({
+    height: window.innerHeight,
+    width: window.innerWidth
+  })
+}, 1000)
+window.addEventListener('resize', debouncedHandleResize)
+window.addEventListener('keyup', debounce((e) => {
+  console.log(e);
+}, 1000));
+
+*/
+

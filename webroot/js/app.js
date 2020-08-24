@@ -9,27 +9,31 @@ import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
 
 import {
-  getLocalStorage,
-  setLocalStorage,
+  addNewlines,
+  classNames,
   clearLocalStorage,
+  debounce,
   generateAvatar,
   generateUsername,
-  addNewlines,
+  getLocalStorage,
   pluralize,
+  setLocalStorage,
 } from './utils/helpers.js';
 import {
-  URL_OWNCAST,
-  URL_CONFIG,
-  URL_STATUS,
-  TIMER_STATUS_UPDATE,
-  TIMER_DISABLE_CHAT_AFTER_OFFLINE,
-  TIMER_STREAM_DURATION_COUNTER,
-  TEMP_IMAGE,
-  MESSAGE_OFFLINE,
-  MESSAGE_ONLINE,
-  KEY_USERNAME,
+  HEIGHT_SHORT_WIDE,
   KEY_AVATAR,
   KEY_CHAT_DISPLAYED,
+  KEY_USERNAME,
+  MESSAGE_OFFLINE,
+  MESSAGE_ONLINE,
+  TEMP_IMAGE,
+  TIMER_DISABLE_CHAT_AFTER_OFFLINE,
+  TIMER_STATUS_UPDATE,
+  TIMER_STREAM_DURATION_COUNTER,
+  URL_CONFIG,
+  URL_OWNCAST,
+  URL_STATUS,
+  WIDTH_SINGLE_COL,
 } from './utils/constants.js';
 
 export default class App extends Component {
@@ -41,7 +45,8 @@ export default class App extends Component {
       displayChat: getLocalStorage(KEY_CHAT_DISPLAYED), // chat panel state
       chatEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
-      userAvatarImage: getLocalStorage(KEY_AVATAR) || generateAvatar(`${this.username}${Date.now()}`),
+      userAvatarImage:
+        getLocalStorage(KEY_AVATAR) || generateAvatar(`${this.username}${Date.now()}`),
 
       configData: {},
       extraUserContent: '',
@@ -49,11 +54,15 @@ export default class App extends Component {
       playerActive: false, // player object is active
       streamOnline: false,  // stream is active/online
 
-      //status
+      // status
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
       sessionMaxViewerCount: '',
       overallMaxViewerCount: '',
+
+      // dom
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     };
 
     // timers
@@ -66,6 +75,7 @@ export default class App extends Component {
     // misc dom events
     this.handleChatPanelToggle = this.handleChatPanelToggle.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
+    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 400);
 
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
     this.handleOnlineMode = this.handleOnlineMode.bind(this);
@@ -81,12 +91,11 @@ export default class App extends Component {
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
     this.getExtraUserContent = this.getExtraUserContent.bind(this);
-
-
   }
 
   componentDidMount() {
     this.getConfig();
+    window.addEventListener('resize', this.handleWindowResize);
 
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
@@ -160,7 +169,6 @@ export default class App extends Component {
         this.handleNetworkingError(`Fetch extra content: ${error}`);
       });
   }
-
 
   setConfigData(data = {}) {
     const { title, extraUserInfoFileName, summary } = data;
@@ -301,21 +309,30 @@ export default class App extends Component {
     console.log(`>>> App Error: ${error}`);
   }
 
+  handleWindowResize() {
+    this.setState({
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+    });
+  }
+
   render(props, state) {
     const {
-      username,
-      userAvatarImage,
-      websocket,
+      chatEnabled,
       configData,
-      extraUserContent,
       displayChat,
-      viewerCount,
-      sessionMaxViewerCount,
+      extraUserContent,
       overallMaxViewerCount,
       playerActive,
+      sessionMaxViewerCount,
       streamOnline,
       streamStatusMessage,
-      chatEnabled,
+      userAvatarImage,
+      username,
+      viewerCount,
+      websocket,
+      windowHeight,
+      windowWidth,
     } = state;
 
     const {
@@ -347,14 +364,23 @@ export default class App extends Component {
         </li>
       `);
 
-
-    const chatClass = displayChat ? 'chat' : 'no-chat';
     const mainClass = playerActive ? 'online' : '';
-    const streamInfoClass = streamOnline ? 'online' : '';
+    const streamInfoClass = streamOnline ? 'online' : ''; // need?
+
+    const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE;
+    const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
+    const extraAppClasses = classNames({
+      'chat': displayChat,
+      'no-chat': !displayChat,
+      'single-col': singleColMode,
+      'bg-gray-800': singleColMode && displayChat,
+      'short-wide': shortHeight,
+    })
+
     return (
       html`
-        <div id="app-container" class="flex w-full flex-col justify-start relative ${chatClass}">
-          <div id="top-content">
+        <div id="app-container" class="flex w-full flex-col justify-start relative ${extraAppClasses}">
+          <div id="top-content" class="z-50">
             <header class="flex border-b border-gray-900 border-solid shadow-md fixed z-10 w-full top-0	left-0 flex flex-row justify-between flex-no-wrap">
               <h1 class="flex flex-row items-center justify-start p-2 uppercase text-gray-400 text-xl	font-thin tracking-wider overflow-hidden whitespace-no-wrap">
                 <span
@@ -391,7 +417,6 @@ export default class App extends Component {
                 playsinline
               ></video>
             </div>
-
 
             <section id="stream-info" aria-label="Stream status" class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid ${streamInfoClass}">
               <span>${streamStatusMessage}</span>
@@ -440,16 +465,15 @@ export default class App extends Component {
             <span class="mx-1 inline-block">Version ${appVersion}</span>
           </footer>
 
-
-        <${Chat}
-          websocket=${websocket}
-          username=${username}
-          userAvatarImage=${userAvatarImage}
-          chatEnabled=${chatEnabled}
-        />
-
-      </div>
-    `);
+          <${Chat}
+            websocket=${websocket}
+            username=${username}
+            userAvatarImage=${userAvatarImage}
+            chatEnabled //=${chatEnabled}
+          />
+        </div>
+      `
+    );
   }
 }
 

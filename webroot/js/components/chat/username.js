@@ -22,8 +22,9 @@ export default class UsernameForm extends Component {
   }
 
   handleDisplayForm() {
+    const { displayForm: curDisplay } = this.state;
     this.setState({
-      displayForm: true,
+      displayForm: !curDisplay,
     });
   }
 
@@ -65,7 +66,7 @@ export default class UsernameForm extends Component {
     const formDisplayStyle = narrowSpace ? 'inline-block' : 'flex';
     const styles = {
       info: {
-        display: displayForm || narrowSpace ? 'none' : 'flex',
+        display: displayForm ? 'none' : 'flex',
       },
       form: {
         display: displayForm ? formDisplayStyle : 'none',
