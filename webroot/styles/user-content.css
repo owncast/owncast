@@ -1,71 +1,18 @@
-.user-content {
-  /* padding: 3rem; */
-
-  /* display: flex;
-  flex-direction: row; */
-}
 .user-content .user-image {
-  /* padding: 1rem;
-  margin-right: 2rem; */
   min-width: var(--user-image-width);
   width: var(--user-image-width);
   height: var(--user-image-width);
   max-height: var(--user-image-width);
-  /* background-repeat: no-repeat;
-  background-position: center center; */
   background-size: calc(var(--user-image-width) - 1em);
 }
 
-.user-content-header {
-  /* margin-bottom: 2rem; */
-}
-
-.tag-list {
-  /* flex-direction: row; */
-  /* margin: 1em 0; */
-}
-.tag-list li {
-  /* font-size: .75rem; */
-  /* text-transform: uppercase; */
-  /* margin-right: .75rem; */
-  /* padding: .5rem; */
-}
-
-
-.social-list {
-  /* flex-direction: row; */
-  /* align-items: center; */
-  /* justify-content: flex-start; */
-  /* flex-wrap: wrap; */
-}
-.social-list .follow-label {
-  /* font-weight: bold; */
-  /* font-size: .75rem; */
-  /* margin-right: .5rem; */
-  /* text-transform: uppercase; */
-}
-
-.user-social-item {
-  /* display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-right: -.25rem; */
-}
 .user-social-item .platform-icon {
   --icon-width: 40px;
   height: var(--icon-width);
   width: var(--icon-width);
   background-image: url(/img/social-icons.gif);
-  /* background-repeat: no-repeat; */
   background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));
   transform: scale(.65);
-}
-
-.user-social-item.use-default .platform-label {
-  /* font-size: .7rem; */
-  /* text-transform: uppercase; */
-  /* display: inline-block; */
-  /* max-width: 10rem; */
 }
 
 
@@ -74,9 +21,6 @@ EXTRA CUSTOM CONTENT STYLES
 Assumes markup converted from markdown input.
 */
 
-#extra-user-content {
-  /* padding: 1rem 3rem 3rem 3rem; */
-}
 
 #extra-user-content ul,
 #extra-user-content ol {
@@ -94,14 +38,6 @@ Assumes markup converted from markdown input.
   margin-left: 1.5rem;
 }
 
-/* #extra-user-content h1,
-#extra-user-content h2,
-#extra-user-content h3,
-#extra-user-content h4 {
-  color: #111111;
-  font-weight: 400;
-} */
-
 #extra-user-content h1,
 #extra-user-content h2,
 #extra-user-content h3,
@@ -114,7 +50,6 @@ Assumes markup converted from markdown input.
   font-weight: 600;
   line-height: 1.2;
 }
-
 
 
 #extra-user-content h1 {

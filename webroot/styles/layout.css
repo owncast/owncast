@@ -1,6 +1,7 @@
 /*
 Overall layout styles for all of owncast app.
 
+DE[RECATE THIS LAYOUT.CSS FILE.
 */
 
 /* variables */
@@ -12,21 +13,18 @@ Overall layout styles for all of owncast app.
   --user-image-width: 10em;
 }
 
-body {
-  font-size: 14px;
+html {
+  font-size:  14px;
 }
 
 a:hover {
   text-decoration: underline;
 }
-/* vuejs attribute to hide things before content ready */
-[v-cloak] { visibility: hidden; }
 
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
-
 
 .visually-hidden {
   position: absolute !important;
@@ -38,176 +36,25 @@ a:hover {
   white-space: nowrap; /* added line */
 }
 
-#app-container {
-  /* width: 100%;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative; */
-}
 
 header {
-  /* position: fixed;
-  width: 100%; */
   height: var(--header-height);
-  /* top: 0;
-  left: 0; */
   background-color: var(--header-bg-color);
-  /* z-index: 10; */
-  /* flex-direction: row;
-  justify-content: space-between; */
-  /* flex-wrap: nowrap; */
 }
 
-header h1 {
-  /* font-size: 1.25em; */
-  /* font-weight: 100;
-  letter-spacing: 1.2; */
-  /* text-transform: uppercase; */
-  /* padding: .5em; */
-  /* white-space: nowrap; */
-  /* justify-content: flex-start;
-  align-items: center;
-  flex-direction: row; */
-  /* overflow: hidden; */
-}
-#logo-container{
-  /* height: 1.75em;
-  width: 1.75em; */
-  /* min-height: 1.75em;
-  min-width: 1.75em; */
-  /* margin-right: .5em; */
-  /* display: inline-block; */
-  /* background-repeat: no-repeat; */
-  /* background-position: center center; */
+#logo-container {
   background-size: 1.35em;
 }
-header .instance-title {
-  /* overflow: hidden;
-  text-overflow: ellipsis; */
-}
+
 #chat-toggle {
-  /* cursor: pointer;
-  text-align: center; */
-  /* height: 100%;*/
   min-width: 3rem;
-/*  justify-content: center;
-  align-items: center; */
 }
-
-footer {
-  /* flex-direction: row;
-  justify-content: flex-start;
-  font-size: .75em;
-  padding: 2em;
-  opacity: .5; */
-}
-footer span {
-  /* display: inline-block;
-  margin: 0 1em; */
-}
-
 
 /* ************************************************8 */
-
-#stream-info {
-  /* padding: .5em 2em; */
-  /* text-align: center;
-  width: 100%;
-
-  flex-direction: row;
-  justify-content: space-between; */
-
-}
-#stream-info span {
-  /* font-size: .7em; */
-}
-.user-content {
-  /* padding: 2em; */
-}
-/* #user-content {
-  display: block;
-}
-#user-content-touch {
-  display: none;
-} */
-/* ************************************************8 */
-
-
-
-
-/* .user-image img {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-} */
-.stream-summary {
-  /* margin: 1em 0; */
-}
-
-h2 {
-  /* font-size: 3em; */
-}
-
-
-/* ************************************************8 */
-
-#user-options-container {
-  /* flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: nowrap; */
-}
-
-#user-info-display {
-  /* display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  cursor: pointer;
-  padding: .5em 1em;
-  overflow: hidden;
-  width: 100%; */
-}
-
-#username-avatar {
-  /* height: 2.1em;
-  width: 2.1em;
-  margin-right: .5em; */
-}
-#username-display {
-  /* font-weight: 600; */
-  /* font-size: .75em; */
-  /* white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden; */
-}
-#user-info-display:hover {
-  /* transition: opacity .2s;
-  opacity: .75; */
-}
 
 
 #user-info-change {
   display: none;
-  /* justify-content: flex-end;
-  align-items: center;
-  padding: .25em; */
-}
-#username-change-input {
-  /* font-size: .75em; */
-}
-#button-update-username {
-  /* font-size: .65em; */
-  /* text-transform: uppercase; */
-  /* height: 2.5em; */
-}
-#button-cancel-change {
-  /* cursor: pointer; */
-  /* height: 2.5em; */
-  /* font-size: .65em; */
-}
-.user-btn {
-  /* margin: 0 .25em; */
 }
 
 /* ************************************************8 */
@@ -215,20 +62,12 @@ h2 {
 
 #video-container {
   height: calc(var(--video-container-height));
-  /* width: 100%; */
   margin-top: var(--header-height);
-  /* background-position: center center;
-  background-repeat: no-repeat; */
-
   background-size: 30%;
 }
 
 .owncast-video-container {
   height: auto;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center; */
 }
 .owncast-video-container .video-js {
   width: 100%;
@@ -271,10 +110,9 @@ h2 {
   width: calc(100% - var(--right-col-width));
 }
 
-
-
-
-
+#stream-info span {
+  font-size: .70rem;
+}
 
 /* ************************************************8 */
 
