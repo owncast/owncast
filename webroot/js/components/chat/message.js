@@ -22,7 +22,7 @@ export default class Message extends Component {
       const authorTextColor = { color: authorColor };
       return (
         html`
-          <div class="message flex flex-row align-start p-3">
+          <div class="message flex flex-row items-start p-3">
             <div
               class="message-avatar rounded-full flex items-center justify-center mr-3"
               style=${avatarBgColor}
@@ -46,10 +46,15 @@ export default class Message extends Component {
       const { oldName, newName, image } = message;
       return (
         html`
-          <div class="message flex align-start p3">
-            <div class="message-content text-sm">
-              <img class="mr-2" src=${image} />
-              <div class="text-white text-center">
+          <div class="message message-name-change flex items-center justify-start p-3">
+            <div class="message-content flex flex-row items-center justify-center text-sm">
+              <div
+                class="message-avatar rounded-full mr-3 bg-gray-900"
+              >
+                <img class="mr-2 p-1" src=${image} />
+              </div>
+
+              <div class="text-white text-center opacity-50">
                 <span class="font-bold">${oldName}</span> is now known as <span class="font-bold">${newName}</span>.
               </div>
             </div>
