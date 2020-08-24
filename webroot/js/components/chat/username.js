@@ -1,6 +1,5 @@
 import { h, Component, createRef } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
-// Initialize htm with Preact
 const html = htm.bind(h);
 
 import { generateAvatar, setLocalStorage } from '../../utils/helpers.js';

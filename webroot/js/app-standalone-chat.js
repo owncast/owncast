@@ -1,4 +1,4 @@
-import { h, Component, Fragment } from 'https://unpkg.com/preact?module';
+import { h, Component } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 

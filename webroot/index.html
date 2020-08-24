@@ -48,7 +48,9 @@
   <div id="app"></div>
 
   <script type="module">
-    import { render, html } from "https://unpkg.com/htm/preact/index.mjs?module";
+    import { render, h } from 'https://unpkg.com/preact?module';
+    import htm from 'https://unpkg.com/htm?module';
+    const html = htm.bind(h);
     import App from './js/app.js';
 
     (function () {

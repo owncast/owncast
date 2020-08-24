@@ -1,4 +1,6 @@
-import { html } from "https://unpkg.com/htm/preact/index.mjs?module";
+import { h } from 'https://unpkg.com/preact?module';
+import htm from 'https://unpkg.com/htm?module';
+const html = htm.bind(h);
 import { SOCIAL_PLATFORMS } from '../utils/social.js';
 import { classNames } from '../utils/helpers.js';
 
