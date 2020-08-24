@@ -114,6 +114,7 @@ export default class App extends Component {
     clearInterval(this.statusTimer);
     clearTimeout(this.disableChatTimer);
     clearInterval(this.streamDurationTimer);
+    window.removeEventListener('resize', this.handleWindowResize);
   }
 
   // fetch /config data

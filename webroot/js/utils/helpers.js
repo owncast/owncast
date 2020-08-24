@@ -142,18 +142,3 @@ export function debounce(fn, time) {
     timeout = setTimeout(functionCall, time);
   }
 }
-
-/*
-const debouncedHandleResize = debounce(function handleResize() {
-  setDimensions({
-    height: window.innerHeight,
-    width: window.innerWidth
-  })
-}, 1000)
-window.addEventListener('resize', debouncedHandleResize)
-window.addEventListener('keyup', debounce((e) => {
-  console.log(e);
-}, 1000));
-
-*/
-
