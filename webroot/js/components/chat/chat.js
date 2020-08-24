@@ -1,11 +1,11 @@
-import { h, Component } from 'https://unpkg.com/preact?module';
+import { h, Component, createRef } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 import Message from './message.js';
 import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
-import { setVHvar, hasTouchScreen } from '../../utils/helpers.js';
+import { setVHvar, hasTouchScreen, jumpToBottom } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
 import { URL_CHAT_HISTORY } from '../../utils/constants.js';
 
@@ -18,6 +18,9 @@ export default class Chat extends Component {
       messages: [],
       chatUserNames: [],
     };
+
+    this.scrollableMessagesContainer = createRef();
+
 
     this.websocket = null;
 
@@ -40,12 +43,20 @@ export default class Chat extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { username: prevName } = prevProps;
     const { username, userAvatarImage } = this.props;
+
+    const { messages: prevMessages } = prevState;
+    const { messages } = this.state;
+
     // if username updated, send a message
     if (prevName !== username) {
       this.sendUsernameChange(prevName, username, userAvatarImage);
+    }
+    // scroll to bottom of messages list when new ones come in
+    if (messages.length > prevMessages.length) {
+      jumpToBottom(this.scrollableMessagesContainer.current);
     }
   }
 
@@ -109,9 +120,6 @@ export default class Chat extends Component {
       }
       this.setState(newState);
     }
-
-    // todo - jump to bottom
-    // jumpToBottom(this.scrollableMessagesContainer);
   }
   websocketDisconnected() {
     // this.websocket = null;
@@ -171,7 +179,11 @@ export default class Chat extends Component {
     if (messagesOnly) {
       return (
         html`
-          <div id="messages-container" class="py-1 overflow-auto">
+          <div
+            id="messages-container"
+            ref=${this.scrollableMessagesContainer}
+            class="py-1 overflow-auto"
+          >
             ${messageList}
           </div>
       `);
@@ -181,7 +193,11 @@ export default class Chat extends Component {
       html`
         <section id="chat-container-wrap" class="flex flex-col">
           <div id="chat-container" class="bg-gray-800 flex flex-col justify-end overflow-auto">
-            <div id="messages-container" class="py-1 overflow-auto">
+            <div
+              id="messages-container"
+              ref=${this.scrollableMessagesContainer}
+              class="py-1 overflow-auto"
+            >
               ${messageList}
             </div>
             <${ChatInput}
