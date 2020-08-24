@@ -2,13 +2,12 @@ import { h, Component, Fragment } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
+import UsernameForm from './components/chat/username.js';
+import Chat from './components/chat.js';
+import Websocket from './utils/websocket.js';
 
-import UsernameForm from './username.js';
-import Chat from './chat.js';
-import Websocket from '../websocket.js';
-
-import { getLocalStorage, generateAvatar, generateUsername } from '../utils.js';
-import { KEY_USERNAME, KEY_AVATAR } from '../utils/chat.js';
+import { getLocalStorage, generateAvatar, generateUsername } from './utils/helpers.js';
+import { KEY_USERNAME, KEY_AVATAR } from '../utils/constants.js';
 
 export default class StandaloneChat extends Component {
   constructor(props, context) {

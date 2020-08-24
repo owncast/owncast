@@ -1,6 +1,6 @@
 import { html } from "https://unpkg.com/htm/preact/index.mjs?module";
-import { SOCIAL_PLATFORMS } from './utils/social.js';
-import { classNames } from './utils.js';
+import { SOCIAL_PLATFORMS } from '../utils/social.js';
+import { classNames } from '../utils/helpers.js';
 
 export default function SocialIcon(props) {
   const { platform, url } = props;

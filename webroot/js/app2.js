@@ -2,12 +2,11 @@ import { h, Component } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
-
-import SocialIcon from './social.js';
-import UsernameForm from './chat/username.js';
-import Chat from './chat/chat.js';
-import Websocket from './websocket.js';
-import { OwncastPlayer } from './player.js';
+import { OwncastPlayer } from './components/player.js';
+import SocialIcon from './components/social.js';
+import UsernameForm from './components/chat/username.js';
+import Chat from './components/chat/chat.js';
+import Websocket from './utils/websocket.js';
 
 import {
   getLocalStorage,
@@ -15,19 +14,23 @@ import {
   clearLocalStorage,
   generateAvatar,
   generateUsername,
+  addNewlines,
+  pluralize,
+} from './utils/helpers.js';
+import {
   URL_OWNCAST,
   URL_CONFIG,
   URL_STATUS,
-  addNewlines,
-  pluralize,
   TIMER_STATUS_UPDATE,
   TIMER_DISABLE_CHAT_AFTER_OFFLINE,
   TIMER_STREAM_DURATION_COUNTER,
   TEMP_IMAGE,
   MESSAGE_OFFLINE,
   MESSAGE_ONLINE,
-} from './utils.js';
-import { KEY_USERNAME, KEY_AVATAR, KEY_CHAT_DISPLAYED } from './utils/chat.js';
+  KEY_USERNAME,
+  KEY_AVATAR,
+  KEY_CHAT_DISPLAYED,
+} from './utils/constants.js';
 
 export default class App extends Component {
   constructor(props, context) {

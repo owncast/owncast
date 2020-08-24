@@ -1,8 +1,14 @@
-import SOCKET_MESSAGE_TYPES from './utils/socket-message-types.js';
-
-const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
-
-const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
+/**
+ * These are the types of messages that we can handle with the websocket.
+ * Mostly used by `websocket.js` but if other components need to handle
+ * different types then it can import this file.
+ */
+export const SOCKET_MESSAGE_TYPES = {
+  CHAT: 'CHAT',
+  PING: 'PING',
+  NAME_CHANGE: 'NAME_CHANGE',
+  PONG: 'PONG'
+};
 
 export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
@@ -10,8 +16,10 @@ export const CALLBACKS = {
   WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
 }
 
-class Websocket {
+const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
+export default class Websocket {
   constructor() {
     this.websocket = null;
     this.websocketReconnectTimer = null;
@@ -133,7 +141,5 @@ class Websocket {
 
   handleNetworkingError(error) {
     console.error(`Websocket Error: ${error}`)
-  };
+  }
 }
-
-export default Websocket;

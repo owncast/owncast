@@ -1,9 +1,9 @@
 import { html, Component } from "https://unpkg.com/htm/preact/index.mjs?module";
 
-import { messageBubbleColorForString } from '../utils/user-colors.js';
-import { formatMessageText } from '../utils/chat.js';
-import { generateAvatar } from '../utils.js';
-import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
+import { messageBubbleColorForString } from '../../utils/user-colors.js';
+import { formatMessageText } from '../../utils/chat.js';
+import { generateAvatar } from '../../utils/helpers.js';
+import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default class Message extends Component {
   render(props) {

@@ -6,7 +6,6 @@ and here:
 https://stackoverflow.com/questions/22677931/react-js-onchange-event-for-contenteditable/27255103#27255103
 
 */
-
 import { Component, createRef, createElement } from 'https://unpkg.com/preact?module';
 
 function replaceCaret(el) {

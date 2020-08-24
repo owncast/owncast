@@ -1,12 +1,13 @@
-import { addNewlines } from '../utils.js';
-
-export const KEY_USERNAME = 'owncast_username';
-export const KEY_AVATAR = 'owncast_avatar';
-export const KEY_CHAT_DISPLAYED = 'owncast_chat';
-export const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
-export const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
-export const CHAT_PLACEHOLDER_TEXT = 'Message';
-export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
+import { addNewlines } from './helpers.js';
+import {
+  KEY_USERNAME,
+  KEY_AVATAR,
+  KEY_CHAT_DISPLAYED,
+  KEY_CHAT_FIRST_MESSAGE_SENT,
+  CHAT_INITIAL_PLACEHOLDER_TEXT,
+  CHAT_PLACEHOLDER_TEXT,
+  CHAT_PLACEHOLDER_OFFLINE,
+} from './constants.js';
 
 export function formatMessageText(message, username) {
   showdown.setFlavor('github');

@@ -3,15 +3,10 @@ import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button';
-
-import { URL_CUSTOM_EMOJIS, getLocalStorage, setLocalStorage } from '../utils.js';
-import {
-  KEY_CHAT_FIRST_MESSAGE_SENT,
-  generatePlaceholderText,
-  getCaretPosition,
-} from '../utils/chat.js';
-
 import ContentEditable from './content-editable.js';
+import { generatePlaceholderText, getCaretPosition } from '../../utils/chat.js';
+import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
+import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT } from '../../utils/constants.js';
 
 
 export default class ChatInput extends Component {

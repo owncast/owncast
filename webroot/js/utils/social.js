@@ -1,4 +1,3 @@
-
 // x, y pixel psitions of /img/social.gif image.
 export const SOCIAL_PLATFORMS = {
   default: {

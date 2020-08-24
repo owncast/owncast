@@ -3,8 +3,8 @@ import htm from 'https://unpkg.com/htm?module';
 // Initialize htm with Preact
 const html = htm.bind(h);
 
-import { generateAvatar, setLocalStorage } from '../utils.js';
-import { KEY_USERNAME, KEY_AVATAR } from '../utils/chat.js';
+import { generateAvatar, setLocalStorage } from '../../utils/helpers.js';
+import { KEY_USERNAME, KEY_AVATAR } from '../../utils/constants.js';
 
 export default class UsernameForm extends Component {
   constructor(props, context) {

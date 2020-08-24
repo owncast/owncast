@@ -3,15 +3,12 @@ import htm from 'https://unpkg.com/htm?module';
 // Initialize htm with Preact
 const html = htm.bind(h);
 
-
-import SOCKET_MESSAGE_TYPES from '../utils/socket-message-types.js';
 import Message from './message.js';
 import ChatInput from './chat-input.js';
-import { CALLBACKS } from '../websocket.js';
-
-
-import { URL_CHAT_HISTORY, setVHvar, hasTouchScreen } from '../utils.js';
-import { extraUserNamesFromMessageHistory } from '../utils/chat.js';
+import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
+import { setVHvar, hasTouchScreen } from '../../utils/helpers.js';
+import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
+import { URL_CHAT_HISTORY } from '../../utils/constants.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
@@ -199,3 +196,4 @@ export default class Chat extends Component {
   }
 
 }
+
