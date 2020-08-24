@@ -7,7 +7,7 @@ Spefici styles for app layout
 :root {
   --header-height: 3.5em;
   --right-col-width: 24em;
-  --video-container-height: 55vh;
+  --video-container-height: calc((9 / 16) * 100vw);
   --header-bg-color: rgba(20,0,40,1);
   --user-image-width: 10em;
 }
@@ -70,6 +70,10 @@ header {
 #video-container {
   height: calc(var(--video-container-height));
   margin-top: var(--header-height);
+  position: relative;
+  width: 100%;
+  /* height: calc((9 / 16) * 100vw); */
+  min-height: 480px;
   background-size: 30%;
 }
 #video-container #video {

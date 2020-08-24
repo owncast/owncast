@@ -1,0 +1,31 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
+
+    <link href="//unpkg.com/video.js@7.9.2/dist/video-js.css" rel="stylesheet">
+    <link href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css" rel="stylesheet" />
+    <script src="//unpkg.com/video.js@7.9.2/dist/video.js"></script>
+
+    <link href="./styles/video.css" rel="stylesheet" />
+    <link href="./styles/video-only.css" rel="stylesheet" />
+
+    <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
+  </head>
+
+  <body>
+
+    <div id="video-only"></div>
+
+    <script type="module">
+      import { render, html } from "https://unpkg.com/htm/preact/index.mjs?module";
+      import VideoOnly from './js/app-video-only.js';
+
+      (function () {
+        render(html`<${VideoOnly} />`, document.getElementById("video-only"));
+      })();
+    </script>
+  </body>
+</html>

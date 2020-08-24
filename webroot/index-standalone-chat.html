@@ -11,16 +11,16 @@
 
   </head>
 
-  <body class="messages-only">
+  <body>
 
-    <div id="chat-container"></div>
+    <div id="messages-only"></div>
 
     <script type="module">
       import { render, html } from "https://unpkg.com/htm/preact/index.mjs?module";
-      import StandaloneChat from './js/app-standalong-chat.js';
+      import StandaloneChat from './js/app-standalone-chat.js';
 
       (function () {
-        render(html`<${StandaloneChat} messagesOnly />`, document.getElementById("chat-container"));
+        render(html`<${StandaloneChat} messagesOnly />`, document.getElementById("messages-only"));
       })();
     </script>
   </body>

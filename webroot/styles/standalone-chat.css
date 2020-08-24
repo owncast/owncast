@@ -1,37 +1,33 @@
 /*
 The styles in this file mostly ovveride those coming from chat.css
-
 */
 
-
-.messages-only {
-
-  /* modify this px number if you want things to be relatively bigger or smaller 8*/
+/* modify this px number if you want things to be relatively bigger or smaller */
+#messages-only {
   font-size: 16px;
-
 }
-.messages-only .message-content {
+#messages-only .message-content {
   text-shadow: 1px 1px 0px rgba(0,0,0,0.25);
 }
-.message-avatar {
+#messages-only .message-avatar {
   display:  none;
   box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.25);
 }
-.message-avatar img {
+#messages-only .message-avatar img {
   height: 1.8em;
   width: 1.8em;
 }
-.messages-only .message {
+#messages-only .message {
   padding: .5em;
 }
 
-.messages-only .message-text {
+#messages-only .message-text {
   font-weight: 400;
   color: white;
 }
-.messages-only .message-text a {
+#messages-only .message-text a {
   color: #fc0;
 }
-.messages-only .message-author {
+#messages-only .message-author {
   color: rgba(20,0,40,1);
 }

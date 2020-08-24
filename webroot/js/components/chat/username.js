@@ -63,17 +63,16 @@ export default class UsernameForm extends Component {
     const { displayForm } = state;
 
     const narrowSpace = document.body.clientWidth < 640;
+    const formDisplayStyle = narrowSpace ? 'inline-block' : 'flex';
     const styles = {
       info: {
         display: displayForm || narrowSpace ? 'none' : 'flex',
       },
       form: {
-        display: displayForm ? 'flex' : 'none',
+        display: displayForm ? formDisplayStyle : 'none',
       },
     };
-    if (narrowSpace) {
-      styles.form.display = 'inline-block';
-    }
+
     return (
       html`
         <div id="user-info">
