@@ -62,8 +62,9 @@ export default class ChatInput extends Component {
           initialCategory: 'custom',
           showPreview: false,
           emojiSize: '30px',
-          emojisPerRow: 6,
-          position: 'top'
+          // emojisPerRow: 6,
+          position: 'right-start',
+          strategy: 'absolute',
         });
         this.emojiPicker.on('emoji', emoji => {
           this.handleEmojiSelected(emoji);
@@ -260,10 +261,12 @@ export default class ChatInput extends Component {
                 type="button"
                 style=${emojiButtonStyle}
                 onclick=${this.handleEmojiButtonClick}
+                disabled=${!inputEnabled}
               >😏</button>
 
               <button
                 onclick=${this.handleSubmitChatButton}
+                disabled=${!inputEnabled}
                 type="button"
                 id="button-submit-message"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"

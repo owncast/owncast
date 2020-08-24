@@ -15,7 +15,7 @@ export const TIMER_STREAM_DURATION_COUNTER = 1000;
 export const TEMP_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 export const MESSAGE_OFFLINE = 'Stream is offline.';
-export const MESSAGE_ONLINE = 'Stream is online';
+export const MESSAGE_ONLINE = 'Stream is online.';
 
 export const URL_OWNCAST = 'https://github.com/gabek/owncast'; // used in footer
 

@@ -2,12 +2,10 @@ import { h, Component, Fragment } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
-import UsernameForm from './components/chat/username.js';
-import Chat from './components/chat.js';
+import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-
 import { getLocalStorage, generateAvatar, generateUsername } from './utils/helpers.js';
-import { KEY_USERNAME, KEY_AVATAR } from '../utils/constants.js';
+import { KEY_USERNAME, KEY_AVATAR } from './utils/constants.js';
 
 export default class StandaloneChat extends Component {
   constructor(props, context) {
@@ -36,12 +34,9 @@ export default class StandaloneChat extends Component {
   }
 
   render(props, state) {
-    const { messagesOnly } = props;
     const { username, userAvatarImage, websocket } = state;
 
-
-    if (messagesOnly) {
-      return (
+    return (
       html`
         <${Chat}
           websocket=${websocket}
@@ -49,27 +44,7 @@ export default class StandaloneChat extends Component {
           userAvatarImage=${userAvatarImage}
           messagesOnly
         />
-      `);
-    }
-
-    // not needed for standalone, just messages only. remove later.
-    return (
-      html`
-        <${Fragment}>
-          <${UsernameForm}
-            username=${username}
-            userAvatarImage=${userAvatarImage}
-            handleUsernameChange=${this.handleUsernameChange}
-            handleChatToggle=${this.handleChatToggle}
-          />
-
-          <${Chat}
-            websocket=${websocket}
-            username=${username}
-            userAvatarImage=${userAvatarImage}
-          />
-        </${Fragment}>
-    `);
+      `
+    );
   }
-
 }
