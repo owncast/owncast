@@ -71,7 +71,7 @@ class OwncastPlayer {
 
   getVideoSource() {
     configSource = {
-      src: this.config["PrivateHLSPath"]."/stream.m3u8",
+      src: this.config["PrivateHLSPath"]+"/stream.m3u8",
       type: 'application/x-mpegURL',
     };
 
