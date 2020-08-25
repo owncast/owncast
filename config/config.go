@@ -30,14 +30,15 @@ type config struct {
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name          string            `yaml:"name" json:"name"`
-	Title         string            `yaml:"title" json:"title"`
-	Summary       string            `yaml:"summary" json:"summary"`
-	Logo          map[string]string `yaml:"logo" json:"logo"`
-	Tags          []string          `yaml:"tags" json:"tags"`
-	SocialHandles []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
-	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
-	Version       string            `json:"version"`
+	Name           string            `yaml:"name" json:"name"`
+	Title          string            `yaml:"title" json:"title"`
+	Summary        string            `yaml:"summary" json:"summary"`
+	Logo           map[string]string `yaml:"logo" json:"logo"`
+	Tags           []string          `yaml:"tags" json:"tags"`
+	SocialHandles  []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
+	ExtraInfoFile  string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
+	Version        string            `json:"version"`
+	PrivateHLSPath string            `json:"privateHLSPath"`
 }
 
 type socialHandle struct {

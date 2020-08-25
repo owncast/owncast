@@ -89,8 +89,8 @@ class Owncast {
     });
   }
   // do all these things after Vue.js has mounted, else we'll get weird DOM issues.
-  vueAppMounted() {
-    this.getConfig();
+  async vueAppMounted() {
+    await this.getConfig();
     this.messagingInterface.init();
 
     this.player = new OwncastPlayer();
@@ -100,7 +100,8 @@ class Owncast {
       onEnded: this.handlePlayerEnded,
       onError: this.handlePlayerError,
     });
-    this.player.setConfig(this.configData)
+
+    await this.player.setConfig(this.configData)
     this.player.init();
 
     this.getChatHistory();
@@ -149,21 +150,14 @@ class Owncast {
   }
 
   // fetch /config data
-  getConfig() {
-    fetch(URL_CONFIG)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok ${response.ok}`);
-      }
-      return response.json();
-    })
-    .then(json => {
-      this.setConfigData(json);
-    })
-    .catch(error => {
-      this.handleNetworkingError(`Fetch config: ${error}`);
-    });
-  }
+  async getConfig() {
+    const response = await fetch(URL_CONFIG)
+    if (!response.ok) {
+      throw new Error(`Network response was not ok ${response.ok}`);
+    }
+    const json = await response.json();
+    await this.setConfigData(json);
+  };
 
   // fetch stream status
   getStreamStatus() {

@@ -48,7 +48,7 @@ class OwncastPlayer {
     var options = VIDEO_OPTIONS
 
     // Add source from config
-    sources = {sources: [this.getVideoSource()]}
+    var sources = {sources: [this.getVideoSource()]}
     options = ({...VIDEO_OPTIONS, ...sources})
 
     this.vjsPlayer = videojs(VIDEO_ID, options);
@@ -70,8 +70,8 @@ class OwncastPlayer {
   }
 
   getVideoSource() {
-    configSource = {
-      src: this.config["PrivateHLSPath"]+"/stream.m3u8",
+    var configSource = {
+      src: this.config["privateHLSPath"]+"/stream.m3u8",
       type: 'application/x-mpegURL',
     };
 
