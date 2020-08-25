@@ -100,6 +100,7 @@ class Owncast {
       onEnded: this.handlePlayerEnded,
       onError: this.handlePlayerError,
     });
+    this.player.setConfig(this.configData)
     this.player.init();
 
     this.getChatHistory();

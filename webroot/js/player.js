@@ -1,14 +1,7 @@
 // https://docs.videojs.com/player
 
 const VIDEO_ID = 'video';
-// TODO: This directory is customizable in the config.  So we should expose this via the config API.
-const URL_STREAM = `/hls/stream.m3u8`;
 
-// Video setup
-const VIDEO_SRC = {
-  src: URL_STREAM,
-  type: 'application/x-mpegURL',
-};
 const VIDEO_OPTIONS = {
   autoplay: false,
   liveui: true, // try this
@@ -22,8 +15,7 @@ const VIDEO_OPTIONS = {
   },
   liveTracker: {
     trackingThreshold: 0,
-  },
-  sources: [VIDEO_SRC],
+  }
 };
 
 
@@ -32,6 +24,7 @@ class OwncastPlayer {
     window.VIDEOJS_NO_DYNAMIC_STYLE = true; // style override
 
     this.vjsPlayer = null;
+    this.config = null;    
 
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
@@ -52,7 +45,13 @@ class OwncastPlayer {
       return options;
     };
 
-    this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
+    options = VIDEO_OPTIONS
+
+    // Add source from config
+    sources = {sources: [getVideoSource()]}
+    options = ({...VIDEO_OPTIONS, ...sources})
+
+    this.vjsPlayer = videojs(VIDEO_ID, options);
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
   }
@@ -66,10 +65,23 @@ class OwncastPlayer {
     this.appPlayerErrorCallback = onError;
   }
 
+  setConfig(configData) {
+    this.config = configData
+  }
+
+  getVideoSource() {
+    configSource = {
+      src: this.config["publicHLSPath"],
+      type: 'application/x-mpegURL',
+    };
+
+    return configSource
+  }
+
   // play
   startPlayer() {
     this.log('Start playing');
-    const source = { ...VIDEO_SRC }
+    const source = { ...getVideoSource() }
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   };
