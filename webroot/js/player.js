@@ -45,10 +45,10 @@ class OwncastPlayer {
       return options;
     };
 
-    options = VIDEO_OPTIONS
+    var options = VIDEO_OPTIONS
 
     // Add source from config
-    sources = {sources: [getVideoSource()]}
+    sources = {sources: [this.getVideoSource()]}
     options = ({...VIDEO_OPTIONS, ...sources})
 
     this.vjsPlayer = videojs(VIDEO_ID, options);
