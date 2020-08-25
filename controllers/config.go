@@ -14,5 +14,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 	configuration := config.Config.InstanceDetails
 	configuration.Version = config.Config.VersionInfo
+	configuration.PrivateHLSPath = config.Config.GetPrivateHLSSavePath()
+	configuration.UsePeer2PeerHLS = config.Config.GetUsePeer2PeerHLS()
 	json.NewEncoder(w).Encode(configuration)
 }
