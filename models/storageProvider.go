@@ -4,9 +4,5 @@ package models
 type StorageProvider interface {
 	Setup() error
 	Save(filePath string, retryCount int) (string, error)
-	GenerateRemotePlaylist(playlist string, variant Variant) string
-
-	SegmentWritten(localFilePath string)
-	VariantPlaylistWritten(localFilePath string)
-	MasterPlaylistWritten(localFilePath string)
+	GenerateRemotePlaylist(filePath string) error
 }

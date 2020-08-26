@@ -2,9 +2,10 @@ package storageproviders
 
 import (
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
 )
 
@@ -19,23 +20,23 @@ func (s *LocalStorage) Setup() error {
 
 // Save will save a local filepath using the storage provider
 func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
-	// Move the file to the public directory
-	newPath := filepath.Join(config.Config.GetPublicHLSSavePath(), utils.GetRelativePathFromAbsolutePath(filePath))
+	newPath := ""
+
+	// This is a hack
+	if filePath == "hls/stream.m3u8" {
+		newPath = filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(filePath))
+	} else {
+		newPath = filepath.Join("webroot", filePath)
+	}
 	go utils.Move(filePath, newPath)
-
-	// Move the associated playlist as well
-	playlist := filepath.Join(filepath.Dir(filePath), "stream.m3u8")
-	newPlaylistPath := filepath.Join(config.Config.GetPublicHLSSavePath(), utils.GetRelativePathFromAbsolutePath(playlist))
-
-	go utils.Move(playlist, newPlaylistPath)
 
 	return newPath, nil
 }
 
 // GenerateRemotePlaylist will rewrite the playlist using storage provider details
-func (s *LocalStorage) GenerateRemotePlaylist(playlist string, variant models.Variant) string {
+func (s *LocalStorage) GenerateRemotePlaylist(filePath string) error {
 	// Locally generated playlist is valid
-	return playlist
+	return nil
 }
 
 // SegmentWritten is a callback when a single video segment is written by the transcoder
@@ -46,10 +47,21 @@ func (s *LocalStorage) SegmentWritten(localFilePath string) {
 // VariantPlaylistWritten is a callback when a single video variant's playlist is written
 // by the transcoder
 func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
+	s.Save(localFilePath, 0)
 }
 
 // MasterPlaylistWritten is a callback when the master playlist is written by the transcoder
 func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
-	newPath := filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(localFilePath))
-	go utils.Move(localFilePath, newPath)
+}
+
+func getVariantIndexFromPath(fullDiskPath string) (int, error) {
+	return strconv.Atoi(fullDiskPath[0:1])
+}
+
+func getRelativePathFromAbsolutePath(path string) string {
+	pathComponents := strings.Split(path, "/")
+	variant := pathComponents[len(pathComponents)-2]
+	file := pathComponents[len(pathComponents)-1]
+
+	return filepath.Join(variant, file)
 }

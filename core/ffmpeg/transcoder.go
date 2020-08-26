@@ -2,9 +2,7 @@ package ffmpeg
 
 import (
 	"fmt"
-	"io"
 	"os/exec"
-	"path"
 	"strconv"
 	"strings"
 
@@ -76,7 +74,7 @@ func (t *Transcoder) Stop() {
 }
 
 // Start will execute the transcoding process with the settings previously set.
-func (t *Transcoder) Start() io.ReadCloser {
+func (t *Transcoder) Start() {
 	command := t.getString()
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
@@ -86,7 +84,6 @@ func (t *Transcoder) Start() io.ReadCloser {
 	}
 
 	_commandExec = exec.Command("sh", "-c", command)
-	stdout, _ := _commandExec.StdoutPipe()
 
 	err := _commandExec.Start()
 	if err != nil {
@@ -94,15 +91,13 @@ func (t *Transcoder) Start() io.ReadCloser {
 		log.Panicln(err, command)
 	}
 
-	return stdout
-	// _commandExec.Wait()
+	return
 }
 
 func (t *Transcoder) getString() string {
 	hlsOptionFlags := []string{
 		"delete_segments",
 		"program_date_time",
-		"temp_file",
 	}
 
 	if t.appendToStream {
@@ -114,11 +109,12 @@ func (t *Transcoder) getString() string {
 	}
 
 	ffmpegFlags := []string{
-		"cat", t.input, "|",
+		// "cat", t.input, "|",
 		t.ffmpegPath,
 		"-hide_banner",
-		"-progress", "pipe:0",
-		"-i pipe:",
+
+		// "-progress", "pipe:1",
+		"-i ", t.input,
 		t.getVariantsString(),
 
 		// HLS Output
@@ -130,16 +126,19 @@ func (t *Transcoder) getString() string {
 
 		// Video settings
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-		// "-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		"-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
-		"-strftime 1",                                                               // Support the use of strftime in filenames
-		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s-"+t.segmentIdentifier+".ts"), // Each segment's filename
+		"-strftime 1", // Support the use of strftime in filenames
+
+		"-hls_segment_filename", "http://127.0.0.1:8089/%v/stream-" + t.segmentIdentifier + "%s.ts", // Each segment's filename
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
-		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
-		"2>&1 |tee transcoder.txt",
+		"-method PUT -http_persistent 1",
+
+		"http://127.0.0.1:8089/%v/stream.m3u8",
+		// "2>&1 transcoder.log", // Enabling this makes ffmpeg lock up.  I don't get it.
 	}
 
 	return strings.Join(ffmpegFlags, " ")

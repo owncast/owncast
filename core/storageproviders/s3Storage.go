@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/owncast/owncast/core/playlist"
@@ -45,6 +44,12 @@ var _uploader *s3manager.Uploader
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
+	if config.Config.S3.ServingEndpoint != "" {
+		s.host = config.Config.S3.ServingEndpoint
+	} else {
+		s.host = fmt.Sprintf("%s/%s", config.Config.S3.Endpoint, config.Config.S3.Bucket)
+	}
+
 	variants = make([]models.Variant, len(config.Config.GetVideoStreamQualities()))
 	for index := range variants {
 		variants[index] = models.Variant{
@@ -70,8 +75,6 @@ func (s *S3Storage) Setup() error {
 
 //Save saves the file to the s3 bucket
 func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
-	// fmt.Println("Saving", filePath)
-
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", err
@@ -96,33 +99,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 		}
 	}
 
-	// fmt.Println("Uploaded", filePath, "to", response.Location)
-
 	return response.Location, nil
-}
-
-//GenerateRemotePlaylist implements the 'GenerateRemotePlaylist' method
-func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Variant) string {
-	var newPlaylist = ""
-
-	scanner := bufio.NewScanner(strings.NewReader(playlist))
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line != "" && line[0:1] != "#" {
-			fullRemotePath := variant.GetSegmentForFilename(line)
-			if fullRemotePath == nil {
-				line = ""
-			} else if s.s3ServingEndpoint != "" {
-				line = fmt.Sprintf("%s/%s/%s", s.s3ServingEndpoint, config.PrivateHLSStoragePath, fullRemotePath.RelativeUploadPath)
-			} else {
-				line = fullRemotePath.RemoteID
-			}
-		}
-
-		newPlaylist = newPlaylist + line + "\n"
-	}
-
-	return newPlaylist
 }
 
 func (s *S3Storage) connectAWS() *session.Session {
@@ -147,59 +124,53 @@ func (s *S3Storage) connectAWS() *session.Session {
 	return sess
 }
 
+// SegmentWritten is a callback to be notified that a single video segment has been written
 func (s *S3Storage) SegmentWritten(localFilePath string) {
-	newObjectPathChannel := make(chan string, 1)
 	go func() {
-		newObjectPath, err := s.Save(localFilePath, 0)
+		_, err := s.Save(localFilePath, 0)
 
 		if err != nil {
 			log.Errorln("failed to save the file to the chunk storage.", err)
 		}
-
-		newObjectPathChannel <- newObjectPath
 	}()
-
-	newObjectPath := <-newObjectPathChannel
-
-	segment := models.Segment{
-		FullDiskPath:       localFilePath,
-		RelativeUploadPath: utils.GetRelativePathFromAbsolutePath(localFilePath),
-		RemoteID:           newObjectPath,
-	}
-	fmt.Println("Uploaded", segment.RelativeUploadPath, "as", newObjectPath)
-
-	variants[segment.VariantIndex].Segments[filepath.Base(segment.RelativeUploadPath)] = &segment
-
-	associatedVariantPlaylist := strings.ReplaceAll(localFilePath, path.Base(localFilePath), "stream.m3u8")
-	s.writeVariantPlaylist(associatedVariantPlaylist)
 }
 
 func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 }
 
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
-	err := utils.Copy(localFilePath, path.Join(config.Config.GetPublicHLSSavePath(), "stream.m3u8"))
+	err := utils.Move(localFilePath, path.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(localFilePath)))
 	if err != nil {
 		log.Errorln(err)
 	}
 }
 
-func (s *S3Storage) writeVariantPlaylist(fullPath string) error {
-	relativePath := utils.GetRelativePathFromAbsolutePath(fullPath)
-	variantIndex, err := strconv.Atoi(utils.GetIndexFromFilePath(relativePath))
-	if err != nil {
-		log.Errorln(err)
-	}
-	variant := variants[variantIndex]
-
-	playlistBytes, err := ioutil.ReadFile(fullPath)
+// func (s *S3Storage) WriteVariantPlaylist(fullPath string) error {
+func (s *S3Storage) GenerateRemotePlaylist(filePath string) error {
+	playlistBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return err
 	}
 
 	playlistString := string(playlistBytes)
-	playlistString = s.GenerateRemotePlaylist(playlistString, variant)
+	scanner := bufio.NewScanner(strings.NewReader(playlistString))
 
-	fmt.Println("Wrote", relativePath)
-	return playlist.WritePlaylist(playlistString, path.Join(config.Config.GetPublicHLSSavePath(), relativePath))
+	remoteHost := s.host
+	if s.s3ServingEndpoint != "" {
+		remoteHost = s.s3ServingEndpoint
+	}
+
+	newPlaylist := ""
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line != "" && line[0:1] != "#" {
+			line = fmt.Sprintf("%s/hls/%s", remoteHost, line)
+		}
+
+		newPlaylist = newPlaylist + line + "\n"
+	}
+	publicPath := filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(filePath))
+
+	return playlist.WritePlaylist(newPlaylist, publicPath)
 }
