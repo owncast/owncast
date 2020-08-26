@@ -8,7 +8,6 @@ import { generatePlaceholderText, getCaretPosition } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
 import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT } from '../../utils/constants.js';
 
-
 export default class ChatInput extends Component {
   constructor(props, context) {
     super(props, context);
@@ -62,7 +61,6 @@ export default class ChatInput extends Component {
           initialCategory: 'custom',
           showPreview: false,
           emojiSize: '30px',
-          // emojisPerRow: 6,
           position: 'right-start',
           strategy: 'absolute',
         });
@@ -146,7 +144,6 @@ export default class ChatInput extends Component {
       'Delete',
       'Backspace',
     ];
-    // const okCodes = [37,38,39,40,16,91,18,46,8];//left, up , right , down , shift, left window key, alt, delete, backspace
     const formField = this.formMessageInput.current;
 
     let textValue = formField.innerText.trim(); // get this only to count chars
@@ -193,7 +190,7 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeyup(event) {
     if (event.key === 'Control' || event.key === 'Shift') {
-      this.prepNewLine = false;
+     this.prepNewLine = false;
     }
   }
 
@@ -291,4 +288,4 @@ export default class ChatInput extends Component {
     `);
   }
 
-}
+  }
