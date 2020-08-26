@@ -16,7 +16,7 @@ export default class ChatInput extends Component {
     this.emojiPickerButton = createRef();
 
     this.messageCharCount = 0;
-		this.maxMessageLength = 500;
+    this.maxMessageLength = 500;
     this.maxMessageBuffer = 20;
 
     this.emojiPicker = null;
@@ -98,94 +98,107 @@ export default class ChatInput extends Component {
   }
 
   // autocomplete user names
-	autoCompleteNames() {
+  autoCompleteNames() {
     const { chatUserNames } = this.props;
-		const { inputHTML } = this.state;
-		const position = getCaretPosition(this.formMessageInput.current);
-		const at = inputHTML.lastIndexOf('@', position - 1);
-		if (at === -1) {
-			return false;
-		}
+    const { inputHTML } = this.state;
+    const position = getCaretPosition(this.formMessageInput.current);
+    const at = inputHTML.lastIndexOf('@', position - 1);
+    if (at === -1) {
+      return false;
+    }
 
-		let partial = inputHTML.substring(at + 1, position).trim();
+    let partial = inputHTML.substring(at + 1, position).trim();
 
-		if (partial === this.suggestion) {
-			partial = this.partial;
-		} else {
-			this.partial = partial;
-		}
+    if (partial === this.suggestion) {
+      partial = this.partial;
+    } else {
+      this.partial = partial;
+    }
 
-		const possibilities = chatUserNames.filter(function (username) {
-			return username.toLowerCase().startsWith(partial.toLowerCase());
-		});
+    const possibilities = chatUserNames.filter(function (username) {
+      return username.toLowerCase().startsWith(partial.toLowerCase());
+    });
 
-		if (this.completionIndex === undefined || ++this.completionIndex >= possibilities.length) {
-			this.completionIndex = 0;
-		}
+    if (this.completionIndex === undefined || ++this.completionIndex >= possibilities.length) {
+      this.completionIndex = 0;
+    }
 
-		if (possibilities.length > 0) {
-			this.suggestion = possibilities[this.completionIndex];
+    if (possibilities.length > 0) {
+      this.suggestion = possibilities[this.completionIndex];
 
       this.setState({
         inputHTML: inputHTML.substring(0, at + 1) + this.suggestion + ' ' + inputHTML.substring(position),
       })
-		}
+    }
 
-		return true;
+    return true;
   }
 
   handleMessageInputKeydown(event) {
-    const okCodes = [37,38,39,40,16,91,18,46,8];
+    const okCodes = [
+      'ArrowLeft',
+      'ArrowUp',
+      'ArrowRight',
+      'ArrowDown',
+      'Shift',
+      'Meta',
+      'Alt',
+      'Delete',
+      'Backspace',
+    ];
+    // const okCodes = [37,38,39,40,16,91,18,46,8];//left, up , right , down , shift, left window key, alt, delete, backspace
     const formField = this.formMessageInput.current;
 
     let textValue = formField.innerText.trim(); // get this only to count chars
 
     let numCharsLeft = this.maxMessageLength - textValue.length;
-		if (event.keyCode === 13) { // enter
-			if (!this.prepNewLine) {
-				this.sendMessage();
-				event.preventDefault();
-				this.prepNewLine = false;
-				return;
-			}
-		}
-		if (event.keyCode === 16 || event.keyCode === 17) { // ctrl, shift
-			this.prepNewLine = true;
-		}
-		if (event.keyCode === 9) { // tab
-			if (this.autoCompleteNames()) {
-				event.preventDefault();
+    const key = event.key;
 
-				// value could have been changed, update char count
-				textValue = formField.innerText.trim();
-				numCharsLeft = this.maxMessageLength - textValue.length;
-			}
-		}
+    if (key === 'Enter') {
+      if (!this.prepNewLine) {
+        this.sendMessage();
+        event.preventDefault();
+        this.prepNewLine = false;
+        return;
+      }
+    }
+    if (key === 'Control' || key === 'Shift') {
+      this.prepNewLine = true;
+    }
+    if (key === 'Tab') {
+      if (this.autoCompleteNames()) {
+        event.preventDefault();
+
+        // value could have been changed, update char count
+        textValue = formField.innerText.trim();
+        numCharsLeft = this.maxMessageLength - textValue.length;
+      }
+    }
 
     // text count
-		if (numCharsLeft <= this.maxMessageBuffer) {
-			this.setState({
+    if (numCharsLeft <= this.maxMessageBuffer) {
+      this.setState({
         inputWarning: `${numCharsLeft} chars left`,
       });
-			if (numCharsLeft <= 0 && !okCodes.includes(event.keyCode)) {
-				event.preventDefault(); // prevent typing more
-				return;
-			}
-		} else {
+      if (numCharsLeft <= 0 && !okCodes.includes(key)) {
+        event.preventDefault(); // prevent typing more
+        return;
+      }
+    } else {
       this.setState({
         inputWarning: '',
       });
-		}
-	}
+    }
+  }
 
-	handleMessageInputKeyup(event) {
-		if (event.keyCode === 16 || event.keyCode === 17) { // ctrl, shift
-			this.prepNewLine = false;
-		}
-	}
+  handleMessageInputKeyup(event) {
+    if (event.key === 'Control' || event.key === 'Shift') {
+      this.prepNewLine = false;
+    }
+  }
 
-	handleMessageInputBlur(event) {
-		this.prepNewLine = false;
+  handleMessageInputBlur(event) {
+    this.prepNewLine = false;
   }
 
   handlePaste(event) {

@@ -95,9 +95,9 @@ export default class Chat extends Component {
   sendUsernameChange(oldName, newName, image) {
 		const nameChange = {
 			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
-			oldName: oldName,
-			newName: newName,
-			image: image,
+			oldName,
+			newName,
+			image,
 		};
 		this.websocket.send(nameChange);
   }
@@ -106,12 +106,14 @@ export default class Chat extends Component {
     this.addMessage(message);
   }
 
-  // if incoming message has same id as existing message, don't add it
   addMessage(message) {
     const { messages: curMessages } = this.state;
+
+    // if incoming message has same id as existing message, don't add it
     const existing = curMessages.filter(function (item) {
       return item.id === message.id;
     })
+
     if (existing.length === 0 || !existing) {
       const newState = {
         messages: [...curMessages, message],

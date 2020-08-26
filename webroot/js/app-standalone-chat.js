@@ -29,10 +29,6 @@ export default class StandaloneChat extends Component {
     });
   }
 
-  handleChatToggle() {
-    return;
-  }
-
   render(props, state) {
     const { username, userAvatarImage, websocket } = state;
 

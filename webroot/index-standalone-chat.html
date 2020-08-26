@@ -8,22 +8,17 @@
     <link href="./styles/standalone-chat.css" rel="stylesheet" />
 
     <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
-
   </head>
 
   <body>
-
     <div id="messages-only"></div>
 
     <script type="module">
-      import { render, h } from 'https://unpkg.com/preact?module';
-      import htm from 'https://unpkg.com/htm?module';
-      const html = htm.bind(h);
+      import { render, html } from 'https://unpkg.com/htm/preact/standalone.module.js';
       import StandaloneChat from './js/app-standalone-chat.js';
-
-      (function () {
-        render(html`<${StandaloneChat} messagesOnly />`, document.getElementById("messages-only"));
-      })();
+      render(
+        html`<${StandaloneChat} messagesOnly />`, document.getElementById("messages-only")
+      );
     </script>
   </body>
 </html>

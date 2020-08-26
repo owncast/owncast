@@ -20,15 +20,9 @@
     <div id="video-only"></div>
 
     <script type="module">
-      import { h, render } from 'https://unpkg.com/preact?module';
-      import htm from 'https://unpkg.com/htm?module';
-      const html = htm.bind(h);
-
+      import { render, html } from 'https://unpkg.com/htm/preact/standalone.module.js';
       import VideoOnly from './js/app-video-only.js';
-
-      (function () {
-        render(html`<${VideoOnly} />`, document.getElementById("video-only"));
-      })();
+      render(html`<${VideoOnly} />`, document.getElementById("video-only"));
     </script>
   </body>
 </html>

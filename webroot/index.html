@@ -28,54 +28,47 @@
     <script src="//unpkg.com/video.js@7.9.2/dist/video.js"></script>
     <!-- markdown renderer -->
     <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@0.6.2/lite-youtube.js"></script>
+
 
     <link href="./styles/video.css" rel="stylesheet" />
     <link href="./styles/chat.css" rel="stylesheet" />
     <link href="./styles/user-content.css" rel="stylesheet" />
     <link href="./styles/app.css" rel="stylesheet" />
-
   </head>
+  <body class="bg-gray-300 text-gray-800">
+    <div id="app"></div>
 
-
-<body class="bg-gray-300 text-gray-800">
-  <div id="app"></div>
-
-  <script type="module">
-    import { render, h } from 'https://unpkg.com/preact?module';
-    import htm from 'https://unpkg.com/htm?module';
-    const html = htm.bind(h);
-    import App from './js/app.js';
-
-    (function () {
+    <script type="module">
+      import { render, html } from 'https://unpkg.com/htm/preact/standalone.module.js';
+      import App from './js/app.js';
       render(html`<${App} />`, document.getElementById("app"));
-    })();
-  </script>
+    </script>
 
+    <noscript>
+      <style>
+        .noscript {
+          text-align: center;
+          padding: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
 
-<noscript>
-  <style>
-    .noscript {
-      text-align: center;
-      padding: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .noscript a {
-      display: inline;
-      color: blue;
-      text-decoration: underline;
-    }
-  </style>
-  <div class="noscript">
-    <img src="https://owncast.online/images/logo.png" />
-    <br/>
-    <p>
-      This <a href="https://owncast.online" target="_blank">Owncast</a> stream requires Javascript to play.
-    </p>
-  </div>
-</noscript>
-</body>
+        .noscript a {
+          display: inline;
+          color: blue;
+          text-decoration: underline;
+        }
+      </style>
+      <div class="noscript">
+        <img src="https://owncast.online/images/logo.png" />
+        <br/>
+        <p>
+          This <a href="https://owncast.online" target="_blank">Owncast</a> stream requires Javascript to play.
+        </p>
+      </div>
+    </noscript>
+  </body>
 </html>

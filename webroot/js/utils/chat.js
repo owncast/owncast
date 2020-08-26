@@ -112,7 +112,10 @@ function getYoutubeIdFromURL(url) {
 }
 
 function getYoutubeEmbedFromID(id) {
-	return `<iframe class="chat-embed youtube-embed" src="//www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
+  return `
+    <div class="chat-embed youtube-embed">
+      <lite-youtube videoid="${id}" />
+    </div>`;
 }
 
 function getInstagramEmbedFromURL(url) {
