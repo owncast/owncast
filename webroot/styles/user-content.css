@@ -1,0 +1,150 @@
+.user-content .user-image {
+  min-width: var(--user-image-width);
+  width: var(--user-image-width);
+  height: var(--user-image-width);
+  max-height: var(--user-image-width);
+  background-size: calc(var(--user-image-width) - 1em);
+}
+
+.user-social-item .platform-icon {
+  --icon-width: 40px;
+  height: var(--icon-width);
+  width: var(--icon-width);
+  background-image: url(/img/social-icons.gif);
+  background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));
+  transform: scale(.65);
+}
+
+
+/*
+EXTRA CUSTOM CONTENT STYLES
+Assumes markup converted from markdown input.
+*/
+
+
+#extra-user-content ul,
+#extra-user-content ol {
+  margin: 0;
+  padding: 0;
+}
+
+#extra-user-content ol {
+  list-style: decimal;
+  margin-left: 1.5rem;
+}
+
+#extra-user-content ul {
+  list-style: unset;
+  margin-left: 1.5rem;
+}
+
+#extra-user-content h1,
+#extra-user-content h2,
+#extra-user-content h3,
+#extra-user-content h4,
+#extra-user-content h5,
+#extra-user-content h6 {
+  margin: 0;
+  padding: 0;
+  margin: 1.5rem 0 .5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+
+#extra-user-content h1 {
+  font-size: 2.1rem;
+}
+
+#extra-user-content h2 {
+  font-size: 1.8rem;
+}
+
+#extra-user-content h3 {
+  font-size: 1.5rem;
+}
+
+#extra-user-content h4 {
+  font-size: 1.2rem;
+}
+
+#extra-user-content h5 {
+  font-size: 1.25rem;
+}
+#extra-user-content h6 {
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+#extra-user-content p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+#extra-user-content a {
+  color: #0099ff;
+}
+
+#extra-user-content li {
+  line-height: 1.5rem;
+}
+
+#extra-user-content li ul,
+#extra-user-content li ul {
+  margin-left: 1.5rem;
+}
+
+
+
+#extra-user-content blockquote {
+  border-left: .25rem solid #bbc;
+  padding: 0 1rem;
+}
+#extra-user-content blockquote p {
+  margin: 1rem 0;
+}
+
+#extra-user-content pre,
+#extra-user-content code {
+  font-family: monospace;
+  font-size: .85rem;
+  background-color: #eee;
+  color: #900;
+}
+#extra-user-content pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  max-width: 80%;
+  white-space: pre-wrap;
+}
+
+#extra-user-content aside {
+  display: block;
+  float: right;
+  width: 35%;
+}
+
+#extra-user-content hr {
+  width: 100%;
+  border-top: 1px solid #666;
+  margin-bottom: 1rem;
+}
+
+#extra-user-content table {
+  border-collapse: collapse;
+  margin: 1em 1rem;
+  border: 1px solid #CCC;
+}
+
+#extra-user-content table thead {
+  background-color: #eee;
+}
+
+#extra-user-content table thead td {
+  color: #666;
+}
+
+#extra-user-content table td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #CCC;
+}

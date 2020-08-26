@@ -1,0 +1,30 @@
+/*
+The styles in this file mostly ovveride those coming from chat.css
+*/
+
+/* modify this px number if you want things to be relatively bigger or smaller */
+#video-only {
+  font-size: 16px;
+  position: relative;
+}
+
+
+#video-only #video-container {
+  background-size: 30%;
+  width: 100%;
+  height: calc((9 / 16) * 100vw);
+}
+#video-only #video-container #video {
+  transition: opacity .5s;
+  opacity: 0;
+  pointer-events: none;
+}
+#video-only .online #video-container #video {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+#video-only #stream-info {
+  height: 3rem;
+}

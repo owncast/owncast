@@ -1,3 +1,9 @@
+/*
+Overall layout styles for all of owncast app.
+
+DE[RECATE THIS LAYOUT.CSS FILE.
+*/
+
 /* variables */
 :root {
   --header-height: 3.5em;
@@ -7,25 +13,22 @@
   --user-image-width: 10em;
 }
 
-body {
-  font-size: 14px;
+html {
+  font-size:  14px;
 }
 
 a:hover {
   text-decoration: underline;
 }
-/* vuejs attribute to hide things before content ready */
-[v-cloak] { visibility: hidden; }
 
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
 
-
-.visually-hidden { 
+.visually-hidden {
   position: absolute !important;
-  height: 1px; 
+  height: 1px;
   width: 1px;
   overflow: hidden;
   clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
@@ -33,243 +36,25 @@ a:hover {
   white-space: nowrap; /* added line */
 }
 
-#app-container {
-  width: 100%;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-}
 
 header {
-  position: fixed;
-  width: 100%;
   height: var(--header-height);
-  top: 0;
-  left: 0;
   background-color: var(--header-bg-color);
-  z-index: 10;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: nowrap;
 }
 
-header h1 {
-  font-size: 1.25em;
-  font-weight: 100;
-  letter-spacing: 1.2;
-  text-transform: uppercase;
-  padding: .5em;
-  white-space: nowrap;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: row;
-  overflow: hidden;
-}
-#logo-container{
-  height: 1.75em;
-  width: 1.75em;
-  min-height: 1.75em;
-  min-width: 1.75em;
-  margin-right: .5em;
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-position: center center;
+#logo-container {
   background-size: 1.35em;
 }
-header .instance-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+
 #chat-toggle {
-  cursor: pointer;
-  text-align: center;
-  height: 100%;
-  min-width: 3em;
-  justify-content: center;
-  align-items: center;
+  min-width: 3rem;
 }
-
-footer {
-  flex-direction: row;
-  justify-content: flex-start;
-  font-size: .75em;
-  padding: 2em;
-  opacity: .5;
-}
-footer span {
-  display: inline-block;
-  margin: 0 1em;
-}
-
 
 /* ************************************************8 */
-
-#stream-info {
-  padding: .5em 2em;
-  text-align: center;
-  width: 100%;
-
-  flex-direction: row;
-  justify-content: space-between;
-  
-}
-#stream-info span {
-  font-size: .7em;
-}
-.user-content {
-  padding: 2em;
-}
-/* #user-content {
-  display: block;
-}
-#user-content-touch {
-  display: none;
-} */
-/* ************************************************8 */
-
-
-.user-content {
-  padding: 3em;
-
-  display: flex;
-  flex-direction: row;
-}
-.user-content .user-image {
-  padding: 1em;
-  margin-right: 2em;
-  min-width: var(--user-image-width);
-  width: var(--user-image-width);
-  height: var(--user-image-width);
-  max-height: var(--user-image-width);
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: calc(var(--user-image-width) - 1em);
-}
-
-/* .user-image img {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-} */
-.stream-summary {
-  margin: 1em 0;
-}
-
-h2 {
-  font-size: 3em; 
-}
-.user-content-header {
-  margin-bottom: 2em;
-}
-
-.tag-list {
-  flex-direction: row;
-  margin: 1em 0;
-}
-.tag-list li {
-  font-size: .75em;
-  text-transform: uppercase;
-  margin-right: .75em;
-  padding: .5em;
-}
-
-
-.social-list {
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-}
-.social-list .follow-label {
-  font-weight: bold;
-  font-size: .75em;
-  margin-right: .5em;
-  text-transform: uppercase;
-}
-
-.user-social-item {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-right: -.25em;
-}
-.user-social-item .platform-icon {
-  --icon-width: 40px;
-  height: var(--icon-width);
-  width: var(--icon-width);
-  background-image: url(../img/social-icons.gif);
-  background-repeat: no-repeat;
-  background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));
-  transform: scale(.65);
-}
-
-.user-social-item.use-default .platform-label {
-  font-size: .7em;
-  text-transform: uppercase;
-  display: inline-block;
-  max-width: 10em;
-}
-
-
-/* ************************************************8 */
-
-#user-options-container {
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-#user-info-display {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  cursor: pointer;
-  padding: .5em 1em;
-  overflow: hidden;
-  width: 100%;
-}
-
-#username-avatar {
-  height: 2.1em;
-  width: 2.1em;
-  margin-right: .5em;
-}
-#username-display {
-  font-weight: 600;
-  font-size: .75em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-#user-info-display:hover {
-  transition: opacity .2s;
-  opacity: .75;
-}
 
 
 #user-info-change {
   display: none;
-  justify-content: flex-end;
-  align-items: center;
-  padding: .25em;
-}
-#username-change-input {
-  font-size: .75em;
-}
-#button-update-username {
-  font-size: .65em;
-  text-transform: uppercase;
-  height: 2.5em;
-}
-#button-cancel-change {
-  cursor: pointer;
-  height: 2.5em;
-  font-size: .65em;
-}
-.user-btn {
-  margin: 0 .25em;
 }
 
 /* ************************************************8 */
@@ -277,20 +62,12 @@ h2 {
 
 #video-container {
   height: calc(var(--video-container-height));
-  width: 100%;
   margin-top: var(--header-height);
-  background-position: center center;
-  background-repeat: no-repeat;
-  
-  background-size: 30%; 
+  background-size: 30%;
 }
 
 .owncast-video-container {
   height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
 }
 .owncast-video-container .video-js {
   width: 100%;
@@ -304,7 +81,6 @@ h2 {
 }
 
 .vjs-airplay .vjs-icon-placeholder::before {
-  /* content: 'AP'; */
   content: url("../img/airplay.png");
 }
 
@@ -323,16 +99,10 @@ h2 {
 /* ************************************************8 */
 
 
-.no-chat #chat-container-wrap {
-  display: none;
-}
 .no-chat footer {
   justify-content: center;
 }
 
-.chat #chat-container-wrap {
-  display: block;
-}
 
 .chat #video-container,
 .chat #stream-info,
@@ -340,102 +110,9 @@ h2 {
   width: calc(100% - var(--right-col-width));
 }
 
-
-#chat-container {
-  position: fixed;
-  z-index: 9;
-  top: var(--header-height);
-  right: 0;
-  width: var(--right-col-width);
-
-  height: calc(100vh - var(--header-height));
-
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+#stream-info span {
+  font-size: .70rem;
 }
-.touch-screen #chat-container {
-  height: calc(100vh - var(--header-height) - 3vh);
-}
-
-
-#messages-container {
-  overflow: auto;
-  padding: 1em 0;
-}
-#message-input-container {
-  width: 100%;
-  padding: 1em;
-}
-
-#message-form {
-  flex-direction: column;
-  align-items: flex-end;
-  margin-bottom: 0;
-}
-#message-body-form {
-  font-size: 1em;
-  height: 60px;
-}
-#message-body-form:disabled{
-  opacity: .5;
-}
-#message-body-form img {
-  display: inline;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#message-body-form .emoji {
-  width: 40px;
-}
-
-#message-form-actions {
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.message-text img {
-  display: inline;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-.message-text .emoji {
-  width: 60px;
-}
-
-/* ************************************************8 */
-
-.message {
-  padding: .85em;
-  align-items: flex-start;
-}
-.message-avatar {
-  margin-right: .75em;
-}
-.message-avatar img {
-  max-width: unset;
-  height: 3.0em;
-  width: 3.0em;
-  padding: 5px;
-}
-
-.message-content {
-  font-size: .85em;
-  max-width: 85%;
-  word-wrap: break-word;
-}
-.message-content a {
-  color: #7F9CF5; /* indigo-400 */
-}
-.message-content a:hover {
-  text-decoration: underline;
-}
-
 
 /* ************************************************8 */
 
@@ -452,7 +129,7 @@ h2 {
     --right-col-width: 20em;
     --user-image-width: 6em;
   }
-  
+
   #chat-container {
     width: var(--right-col-width);
   }
@@ -504,21 +181,6 @@ h2 {
   }
 }
 
-/* try not making the video fixed position for now */
-@media (min-height: 861px) {
-  /* main {
-    position: fixed;
-    z-index: 9;
-    width: 100%;
-  }
-  #user-content {
-    margin-top: calc(var(--video-container-height) + var(--header-height) + 2em)
-  } */
-}
-
-
-
-
 
 
 
@@ -530,194 +192,3 @@ h2 {
     flex-direction: column;
   }
 }
-
-.extra-user-content {
-  padding: 1em 3em 3em 3em;
-}
-
-.extra-user-content ol {
-  list-style: decimal;
-}
-
-.extra-user-content ul {
-  list-style: unset;
-}
-
-.extra-user-content h1, .extra-user-content h2, .extra-user-content h3, .extra-user-content h4 {
-  color: #111111;
-  font-weight: 400; }
-
-.extra-user-content h1, .extra-user-content h2, .extra-user-content h3, .extra-user-content h4, .extra-user-content h5, .extra-user-content p {
-  margin-bottom: 24px;
-  padding: 0; }
-
-.extra-user-content h1 {
-  font-size: 48px; }
-
-.extra-user-content h2 {
-  font-size: 36px;
-  margin: 24px 0 6px; }
-
-.extra-user-content h3 {
-  font-size: 24px; }
-
-.extra-user-content h4 {
-  font-size: 21px; }
-
-.extra-user-content h5 {
-  font-size: 18px; }
-
-.extra-user-content a {
-  color: #0099ff;
-  margin: 0;
-  padding: 0;
-  vertical-align: baseline; }
-
-.extra-user-content ul, .extra-user-content ol {
-  padding: 0;
-  margin: 0; }
-
-.extra-user-content li {
-  line-height: 24px; }
-
-.extra-user-content li ul, .extra-user-content li ul {
-  margin-left: 24px; }
-
-.extra-user-content p, .extra-user-content ul, .extra-user-content ol {
-  font-size: 16px;
-  line-height: 24px;
-  }
-
-.extra-user-content pre {
-  padding: 0px 24px;
-  max-width: 800px;
-  white-space: pre-wrap; }
-
-.extra-user-content code {
-  font-family: Consolas, Monaco, Andale Mono, monospace;
-  line-height: 1.5;
-  font-size: 13px; }
-
-.extra-user-content aside {
-  display: block;
-  float: right;
-  width: 390px; }
-
-.extra-user-content blockquote {
-  margin: 1em 2em;
-  max-width: 476px; }
-
-.extra-user-content blockquote p {
-  color: #666;
-  max-width: 460px; }
-
-.extra-user-content hr {
-  width: 540px;
-  text-align: left;
-  margin: 0 auto 0 0;
-  color: #999; }
-
-.extra-user-content table {
-  border-collapse: collapse;
-  margin: 1em 1em;
-  border: 1px solid #CCC; }
-
-.extra-user-content table thead {
-  background-color: #EEE; }
-
-.extra-user-content table thead td {
-  color: #666; }
-
-.extra-user-content table td {
-  padding: 0.5em 1em;
-  border: 1px solid #CCC; }
-
-.message-text iframe {
-  width: 100%;
-  height: 170px;
-  border-radius: 15px;
-}
-
-.message-text .instagram-embed {
-  height: 314px;
-}
-
-.message-text code {
-  background-color:darkslategrey;
-  padding: 3px;
-}
-/* Emoji picker */
-#emoji-button {
-  position: relative;
-  top: -65px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.message-text .embedded-image {
-  width: 100%;
-  height: 170px;
-  border-radius: 15px;
-}
-
-.message-text code {
-  background-color:darkslategrey;
-  padding: 3px;
-}
-
-/* Emoji picker */
-#emoji-button {
-  position: relative;
-  top: -65px;
-  right: 10px;
-  cursor: pointer;
-}
-.message-text .embedded-image {
-  width: 100%;
-  height: 170px;
-  border-radius: 15px;
-}
-
-.message-text code {
-  background-color:darkslategrey;
-  padding: 3px;
-}
-.message-text .highlighted {
-  color: orange;
-  font-weight: 400;
-  font-size: 14px;
-
-}
-
-.message-text code {
-  background-color:darkslategrey;
-  padding: 3px;
-}
-
-/*
-The chat input has a fake placeholder that is styled below.
-It pulls the placeholder text from the div's placeholder attribute.
-But really it's just the innerHTML content.
-*/
-
-/* If the div is empty then show the placeholder */
-#message-body-form:empty:before{
-  content: attr(placeholder);
-  pointer-events: none;
-  display: block; /* For Firefox */
-
-  /* Style the div's placeholder text color */
-  color: rgba(0, 0, 0, 0.5);
-}
-
-/* When chat is enabled (contenteditable=true)  */
-#message-body-form[contenteditable=true]:before {
-  opacity: 1.0;
-}
-
-
-/* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
-#message-body-form[contenteditable=false] {
-  opacity: 0.6;
-}
-

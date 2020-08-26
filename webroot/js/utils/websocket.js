@@ -1,17 +1,25 @@
-import SOCKET_MESSAGE_TYPES from './chat/socketMessageTypes.js';
+/**
+ * These are the types of messages that we can handle with the websocket.
+ * Mostly used by `websocket.js` but if other components need to handle
+ * different types then it can import this file.
+ */
+export const SOCKET_MESSAGE_TYPES = {
+  CHAT: 'CHAT',
+  PING: 'PING',
+  NAME_CHANGE: 'NAME_CHANGE',
+  PONG: 'PONG'
+};
 
-const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
-
-const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
-
-const CALLBACKS = {
+export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
   WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
 }
 
-class Websocket {
+const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
+const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
+export default class Websocket {
   constructor() {
     this.websocket = null;
     this.websocketReconnectTimer = null;
@@ -42,7 +50,7 @@ class Websocket {
     }
   }
 
-  
+
   // Interface with other components
 
   // Outbound: Other components can pass an object to `send`.
@@ -51,7 +59,7 @@ class Websocket {
     if (!message.type || !SOCKET_MESSAGE_TYPES[message.type]) {
       console.warn(`Outbound message: Unknown socket message type: "${message.type}" sent.`);
     }
-    
+
     const messageJSON = JSON.stringify(message);
     this.websocket.send(messageJSON);
   }
@@ -114,7 +122,7 @@ class Websocket {
     } catch (e) {
       console.log(e)
     }
-    
+
     // Send PONGs
     if (model.type === SOCKET_MESSAGE_TYPES.PING) {
       this.sendPong();
@@ -133,7 +141,5 @@ class Websocket {
 
   handleNetworkingError(error) {
     console.error(`Websocket Error: ${error}`)
-  };
+  }
 }
-
-export default Websocket;

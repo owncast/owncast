@@ -1,0 +1,55 @@
+video.video-js {
+  width: 100%;
+  height: 100%;
+  display: block;
+  min-height: 100%
+}
+
+.vjs-airplay .vjs-icon-placeholder::before {
+  content: url("../img/airplay.png");
+}
+
+
+
+/* position: relative;
+width: 100%;
+height: calc((9 / 16) * 100vw);
+max-height: calc(100vh - 169px);
+min-height: 480px;
+background: #000; */
+
+/*
+YOUTUBE
+style="--ytd-watch-flexy-scrollbar-width: 15px; --ytd-watch-flexy-panel-max-height: 460px; --ytd-watch-flexy-chat-max-height: 460px;"
+
+--ytd-watch-flexy-scrollbar-width: 15px;
+--ytd-watch-flexy-panel-max-height: 460px;
+--ytd-watch-flexy-chat-max-height: 460px;
+
+--ytd-watch-flexy-width-ratio: 16;
+--ytd-watch-flexy-height-ratio: 9;
+--ytd-watch-flexy-space-below-player: 136px;
+
+--ytd-watch-flexy-non-player-height: calc(var(--ytd-watch-flexy-masthead-height) + var(--ytd-margin-6x) + var(--ytd-watch-flexy-space-below-player));
+
+--ytd-watch-flexy-non-player-width: calc(var(--ytd-watch-flexy-sidebar-width) + (3 * var(--ytd-margin-6x)));
+
+--ytd-watch-flexy-min-player-height: 240px;
+
+--ytd-watch-flexy-min-player-width: calc(var(--ytd-watch-flexy-min-player-height) * (var(--ytd-watch-flexy-width-ratio) / var(--ytd-watch-flexy-height-ratio)));
+
+--ytd-watch-flexy-max-player-height: calc(100vh -
+(var(--ytd-watch-flexy-masthead-height) + var(--ytd-margin-6x) + var(--ytd-watch-flexy-space-below-player)));
+
+--ytd-watch-flexy-max-player-width:
+  calc((100vh - (var(--ytd-watch-flexy-masthead-height) + var(--ytd-margin-6x) + var(--ytd-watch-flexy-space-below-player))) *
+(var(--ytd-watch-flexy-width-ratio) / var(--ytd-watch-flexy-height-ratio)));
+
+
+
+--ytd-watch-flexy-sidebar-width: 402px;
+--ytd-watch-flexy-sidebar-min-width: 300px;
+--ytd-watch-flexy-masthead-height: 56px;
+min-width: 0;
+
+*/

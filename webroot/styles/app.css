@@ -1,0 +1,248 @@
+/*
+Specific styles for main app layout.
+May have overrides for other components with own stylesheets.
+*/
+
+/* variables */
+:root {
+  --header-height: 3.5em;
+  --right-col-width: 24em;
+  --video-container-height: calc((9 / 16) * 100vw);
+  --header-bg-color: rgba(20,0,40,1);
+  --user-image-width: 10em;
+}
+
+html {
+  font-size: 14px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+* {
+  transition: all .25s;
+}
+
+button[disabled] {
+  opacity: .5;
+  pointer-events: none;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
+}
+
+
+header {
+  height: var(--header-height);
+  background-color: var(--header-bg-color);
+}
+
+#logo-container {
+  background-size: 1.35em;
+}
+
+#chat-toggle {
+  min-width: 3rem;
+}
+
+
+#user-info-change {
+  display: none;
+}
+
+
+#stream-info span {
+  font-size: .70rem;
+}
+
+
+/* ************************************************ */
+
+#video-container {
+  height: var(--video-container-height);
+  margin-top: var(--header-height);
+  position: relative;
+  width: 100%;
+
+  min-height: 480px;
+  background-size: 30%;
+}
+#video-container #video {
+  transition: opacity .5s;
+  opacity: 0;
+  pointer-events: none;
+}
+.online #video-container #video {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* *********** overrides when chat is off ***************************** */
+
+
+.no-chat footer {
+  justify-content: center;
+}
+
+.no-chat #chat-toggle {
+  opacity: .75;
+}
+
+.no-chat #chat-container-wrap {
+  display: none;
+}
+
+/* *********** overrides when chat is on ***************************** */
+
+.chat {
+  --content-width: calc(100vw - var(--right-col-width));
+}
+.chat #chat-container-wrap {
+  display: block;
+}
+
+.chat #video-container,
+.chat #stream-info,
+.chat #user-content {
+  width: var(--content-width);
+}
+
+.chat #video-container {
+  height: calc((9 / 16) * var(--content-width));
+}
+
+
+
+.short-wide.chat #video-container {
+  height: calc(100vh - var(--header-height) - 3rem);
+  min-height: auto;
+}
+
+.short-wide #message-input {
+  height: 3rem;
+}
+
+
+
+
+/* *********** single col layout ***************************** */
+
+.single-col {
+  --right-col-width: 0px;
+}
+.single-col main {
+  position: fixed;
+  width: 100%;
+  z-index: 40;
+}
+.single-col #chat-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+.single-col #video-container {
+  min-height: auto;
+  width: 100%;
+}
+.single-col #user-content,
+.single-col #chat-container-wrap {
+  margin-top: calc(var(--video-container-height) + var(--header-height) + 1rem);
+}
+.single-col #user-content .user-content {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.single-col.chat #user-content {
+  display: none;
+}
+.single-col #message-input-container {
+  width: 100%;
+}
+
+.single-col #message-input {
+  height: 3rem;
+}
+
+
+
+/* ************************************************8 */
+
+
+@media screen and (max-width: 860px) {
+  :root {
+    --right-col-width: 20em;
+    --user-image-width: 6em;
+  }
+}
+
+/* ************************************************8 */
+
+
+/* single col layout */
+/* @media screen and (max-width: 640px ) {
+  :root {
+    --right-col-width: 0;
+    --video-container-height: 40vh;
+  }
+  #logo-container {
+    display: none;
+  }
+  header h1 {
+    max-width: 58%;
+  }
+  #user-options-container {
+    max-width: 41%;
+  }
+
+  #chat-container {
+    width: 100%;
+    position: static;
+    height: calc(100vh - var(--header-height) - var(--video-container-height) - 3vh)
+  }
+  #messages-container {
+    min-height: unset;
+  }
+  #user-content {
+    width: 100%;
+  }
+  #stream-info {
+    width: 100%;
+  }
+  #video-container {
+    width: 100%;
+  }
+  .chat #video-container {
+    width: 100%;
+  }
+  .chat #user-content {
+    display: none;
+  }
+  .chat footer {
+    display: none;
+  }
+} */
+
+
+
+
+/* @media screen and (max-height: 860px ) {
+  :root {
+    --video-container-height: 40vh;
+  }
+  .user-content {
+    flex-direction: column;
+  }
+} */

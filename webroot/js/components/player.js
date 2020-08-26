@@ -17,7 +17,6 @@ const VIDEO_OPTIONS = {
     vhs: {
       // used to select the lowest bitrate playlist initially. This helps to decrease playback start time. This setting is false by default.
       enableLowInitialPlaylist: true,
-
     }
   },
   liveTracker: {
@@ -26,6 +25,8 @@ const VIDEO_OPTIONS = {
   sources: [VIDEO_SRC],
 };
 
+export const POSTER_DEFAULT = `/img/logo.png`;
+export const POSTER_THUMB = `/thumbnail.jpg`;
 
 class OwncastPlayer {
   constructor() {
@@ -125,27 +126,25 @@ class OwncastPlayer {
       if (window.WebKitPlaybackTargetAvailabilityEvent) {
         var videoJsButtonClass = videojs.getComponent('Button');
         var concreteButtonClass = videojs.extend(videoJsButtonClass, {
-    
-          // The `init()` method will also work for constructor logic here, but it is 
+
+          // The `init()` method will also work for constructor logic here, but it is
           // deprecated. If you provide an `init()` method, it will override the
           // `constructor()` method!
           constructor: function () {
             videoJsButtonClass.call(this, player);
-          }, // notice the comma
-    
+          },
+
           handleClick: function () {
             const videoElement = document.getElementsByTagName('video')[0];
             videoElement.webkitShowPlaybackTargetPicker();
-          }
+          },
         });
-    
+
         var concreteButtonInstance = this.vjsPlayer.controlBar.addChild(new concreteButtonClass());
         concreteButtonInstance.addClass("vjs-airplay");
       }
-    });  
+    });
   }
-  
-
 }
 
 export { OwncastPlayer };
