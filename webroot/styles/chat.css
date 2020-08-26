@@ -121,8 +121,8 @@
 }
 
 .message-text .youtube-embed {
-  width: 100%;
-  height: 12rem;
+  width: calc(var(--right-col-width) - 3.5em);
+  height: auto;
 }
 
 /* MESSAGE TEXT CONTENT */
