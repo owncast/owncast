@@ -470,7 +470,7 @@ export default class App extends Component {
             websocket=${websocket}
             username=${username}
             userAvatarImage=${userAvatarImage}
-            chatEnabled //=${chatEnabled}
+            chatEnabled=${chatEnabled}
           />
         </div>
       `

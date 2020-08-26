@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button';
 import ContentEditable from './content-editable.js';
-import { generatePlaceholderText, getCaretPosition } from '../../utils/chat.js';
+import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
 import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT } from '../../utils/constants.js';
 
@@ -199,8 +199,7 @@ export default class ChatInput extends Component {
   }
 
   handlePaste(event) {
-    event.preventDefault();
-    document.execCommand('inserttext', false, event.clipboardData.getData('text/plain'));
+    convertOnPaste(event);
   }
 
   handleSubmitChatButton(event) {
@@ -211,7 +210,7 @@ export default class ChatInput extends Component {
   sendMessage() {
     const { handleSendMessage } = this.props;
     const { hasSentFirstChatMessage, inputHTML } = this.state;
-    const message = inputHTML.trim();
+    const message = convertToText(inputHTML);
     const newStates = {
       inputWarning: '',
       inputHTML: '',

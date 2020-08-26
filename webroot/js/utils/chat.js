@@ -1,4 +1,3 @@
-import { addNewlines } from './helpers.js';
 import {
   CHAT_INITIAL_PLACEHOLDER_TEXT,
   CHAT_PLACEHOLDER_TEXT,
@@ -20,7 +19,7 @@ export function formatMessageText(message, username) {
   formattedText = linkify(formattedText, message);
   formattedText = highlightUsername(formattedText, username);
 
-  return addNewlines(formattedText);
+  return convertToMarkup(formattedText);
 }
 
 function highlightUsername(message, username) {
@@ -187,4 +186,95 @@ export function extraUserNamesFromMessageHistory(messages) {
     });
   }
   return list;
+}
+
+
+// utils from https://gist.github.com/nathansmith/86b5d4b23ed968a92fd4
+/*
+  You would call this after getting an element's
+  `.innerHTML` value, while the user is typing.
+*/
+export function convertToText(str = '') {
+  // Ensure string.
+  let value = String(str);
+
+  // Convert encoding.
+  value = value.replace(/&nbsp;/gi, ' ');
+  value = value.replace(/&amp;/gi, '&');
+
+  // Replace `<br>`.
+  value = value.replace(/<br>/gi, '\n');
+
+  // Replace `<div>` (from Chrome).
+  value = value.replace(/<div>/gi, '\n');
+
+  // Replace `<p>` (from IE).
+  value = value.replace(/<p>/gi, '\n');
+
+  // Remove extra tags.
+  value = value.replace(/<(.*?)>/g, '');
+
+  // Trim each line.
+  value = value
+    .split('\n')
+    .map((line = '') => {
+      return line.trim();
+    })
+    .join('\n');
+
+  // No more than 2x newline, per "paragraph".
+  value = value.replace(/\n\n+/g, '\n\n');
+
+  // Clean up spaces.
+  value = value.replace(/[ ]+/g, ' ');
+  value = value.trim();
+
+  // Expose string.
+  return value;
+}
+
+/*
+  You would call this when receiving a plain text
+  value back from an API, and before inserting the
+  text into the `contenteditable` area on a page.
+*/
+export function convertToMarkup(str = '') {
+  return convertToText(str).replace(/\n/g, '<br>');
+}
+
+/*
+  You would call this when a user pastes from
+  the clipboard into a `contenteditable` area.
+*/
+export function convertOnPaste( event = { preventDefault() {} }) {
+  // Prevent paste.
+  event.preventDefault();
+
+  // Set later.
+  let value = '';
+
+  // Does method exist?
+  const hasEventClipboard = !!(
+    event.clipboardData &&
+    typeof event.clipboardData === 'object' &&
+    typeof event.clipboardData.getData === 'function'
+  );
+
+  // Get clipboard data?
+  if (hasEventClipboard) {
+    value = event.clipboardData.getData('text/plain');
+  }
+
+  // Insert into temp `<textarea>`, read back out.
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = value;
+  value = textarea.innerText;
+
+  // Clean up text.
+  value = convertToText(value);
+
+  // Insert text.
+  if (typeof document.execCommand === 'function') {
+    document.execCommand('insertText', false, value);
+  }
 }
