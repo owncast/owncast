@@ -3,11 +3,9 @@ package storageproviders
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/owncast/owncast/core/playlist"
 	"github.com/owncast/owncast/utils"
@@ -20,6 +18,8 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+
+	"github.com/grafov/m3u8"
 )
 
 var variants []models.Variant
@@ -145,32 +145,24 @@ func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	}
 }
 
-// func (s *S3Storage) WriteVariantPlaylist(fullPath string) error {
+// GenerateRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
 func (s *S3Storage) GenerateRemotePlaylist(filePath string) error {
-	playlistBytes, err := ioutil.ReadFile(filePath)
+	f, err := os.Open(filePath)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	playlistString := string(playlistBytes)
-	scanner := bufio.NewScanner(strings.NewReader(playlistString))
+	p := m3u8.NewMasterPlaylist()
+	err = p.DecodeFrom(bufio.NewReader(f), false)
 
-	remoteHost := s.host
-	if s.s3ServingEndpoint != "" {
-		remoteHost = s.s3ServingEndpoint
+	for _, item := range p.Variants {
+		item.URI = filepath.Join(s.host, "hls", item.URI)
+		fmt.Println(item.URI)
 	}
 
-	newPlaylist := ""
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line != "" && line[0:1] != "#" {
-			line = fmt.Sprintf("%s/hls/%s", remoteHost, line)
-		}
-
-		newPlaylist = newPlaylist + line + "\n"
-	}
 	publicPath := filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(filePath))
+
+	newPlaylist := p.String()
 
 	return playlist.WritePlaylist(newPlaylist, publicPath)
 }
