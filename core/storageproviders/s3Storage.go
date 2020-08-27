@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/owncast/owncast/core/playlist"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -17,12 +15,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/models"
 
 	"github.com/grafov/m3u8"
 )
-
-var variants []models.Variant
 
 //S3Storage is the s3 implementation of the ChunkStorageProvider
 type S3Storage struct {
@@ -48,14 +43,6 @@ func (s *S3Storage) Setup() error {
 		s.host = config.Config.S3.ServingEndpoint
 	} else {
 		s.host = fmt.Sprintf("%s/%s", config.Config.S3.Endpoint, config.Config.S3.Bucket)
-	}
-
-	variants = make([]models.Variant, len(config.Config.GetVideoStreamQualities()))
-	for index := range variants {
-		variants[index] = models.Variant{
-			VariantIndex: index,
-			Segments:     make(map[string]*models.Segment),
-		}
 	}
 
 	s.s3Endpoint = config.Config.S3.Endpoint
@@ -122,27 +109,6 @@ func (s *S3Storage) connectAWS() *session.Session {
 		log.Panicln(err)
 	}
 	return sess
-}
-
-// SegmentWritten is a callback to be notified that a single video segment has been written
-func (s *S3Storage) SegmentWritten(localFilePath string) {
-	go func() {
-		_, err := s.Save(localFilePath, 0)
-
-		if err != nil {
-			log.Errorln("failed to save the file to the chunk storage.", err)
-		}
-	}()
-}
-
-func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
-}
-
-func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
-	err := utils.Move(localFilePath, path.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(localFilePath)))
-	if err != nil {
-		log.Errorln(err)
-	}
 }
 
 // GenerateRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
