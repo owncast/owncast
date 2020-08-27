@@ -140,14 +140,17 @@ func SetStreamAsConnected() {
 		_stats.SessionMaxViewerCount = 0
 	}
 
-	chunkPath := config.Config.GetPrivateHLSSavePath()
+	segmentPath := config.Config.GetPublicHLSSavePath()
+	if config.Config.S3.Enabled {
+		segmentPath = config.Config.GetPrivateHLSSavePath()
+	}
 
 	go func() {
 		_transcoder = ffmpeg.NewTranscoder()
 		_transcoder.Start()
 	}()
 
-	ffmpeg.StartThumbnailGenerator(chunkPath, config.Config.VideoSettings.HighestQualityStreamIndex)
+	ffmpeg.StartThumbnailGenerator(segmentPath, config.Config.VideoSettings.HighestQualityStreamIndex)
 }
 
 //SetStreamAsDisconnected sets the stream as disconnected
