@@ -241,7 +241,7 @@ export default class ChatInput extends Component {
     const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
     return (
       html`
-        <div id="message-input-container" class="fixed bottom-0 shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4">
+        <div id="message-input-container" class="fixed bottom-0 shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4 z-20">
 
           <${ContentEditable}
             id="message-input"

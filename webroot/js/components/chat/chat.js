@@ -34,8 +34,8 @@ export default class Chat extends Component {
    this.getChatHistory();
 
    if (hasTouchScreen()) {
-    setVHvar();
-    window.addEventListener("orientationchange", setVHvar);
+    // setVHvar();
+    // window.addEventListener("orientationchange", setVHvar);
     }
   }
 
@@ -200,7 +200,7 @@ export default class Chat extends Component {
             <div
               id="messages-container"
               ref=${this.scrollableMessagesContainer}
-              class="py-1 overflow-auto"
+              class="py-1 overflow-auto z-10"
             >
               ${messageList}
             </div>

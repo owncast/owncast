@@ -29,7 +29,7 @@ export default class Message extends Component {
             >
               <img src=${avatar} class="p-1" />
             </div>
-            <div class="message-content text-sm break-words">
+            <div class="message-content text-sm break-words w-full">
               <div class="message-author text-white font-bold" style=${authorTextColor}>
                 ${author}
               </div>
@@ -47,7 +47,7 @@ export default class Message extends Component {
       return (
         html`
           <div class="message message-name-change flex items-center justify-start p-3">
-            <div class="message-content flex flex-row items-center justify-center text-sm">
+            <div class="message-content flex flex-row items-center justify-center text-sm w-full">
               <div
                 class="message-avatar rounded-full mr-3 bg-gray-900"
               >

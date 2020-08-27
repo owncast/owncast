@@ -121,7 +121,7 @@
 }
 
 .message-text .youtube-embed {
-  width: calc(var(--right-col-width) - 3.5em);
+  width: 90%;
   height: auto;
 }
 

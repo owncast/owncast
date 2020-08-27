@@ -211,9 +211,6 @@ export function convertToText(str = '') {
   // Replace `<p>` (from IE).
   value = value.replace(/<p>/gi, '\n');
 
-  // Remove extra tags.
-  value = value.replace(/<(.*?)>/g, '');
-
   // Trim each line.
   value = value
     .split('\n')

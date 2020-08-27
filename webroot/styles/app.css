@@ -143,6 +143,7 @@ header {
 
 .single-col {
   --right-col-width: 0px;
+  --video-container-height: calc((9 / 16) * 100vw);
 }
 .single-col main {
   position: fixed;
@@ -154,9 +155,18 @@ header {
   width: 100%;
   height: auto;
 }
-.single-col #video-container {
+/* .single-col #video-container {
   min-height: auto;
   width: 100%;
+} */
+
+.single-col.chat #video-container,
+.single-col.no-chat #video-container,
+.single-col #video-container #video,
+.single-col.chat #video-container #video {
+  width: 100vw;
+  height: var(--video-container-height);
+  min-height: 212px;
 }
 .single-col #user-content,
 .single-col #chat-container-wrap {
