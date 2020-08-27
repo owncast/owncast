@@ -56,7 +56,7 @@ func main() {
 		config.Config.ChatDatabaseFilePath = "chat.db"
 	}
 
-	metrics.Start()
+	go metrics.Start()
 
 	// starts the core
 	if err := core.Start(); err != nil {
