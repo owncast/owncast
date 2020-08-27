@@ -60,6 +60,34 @@ func (s *S3Storage) Setup() error {
 	return nil
 }
 
+// SegmentWritten is called when a single segment of video is written
+func (s *S3Storage) SegmentWritten(localFilePath string) {
+	// Upload the segment
+	_, error := s.Save(localFilePath, 0)
+	if error != nil {
+		log.Errorln(error)
+	}
+
+	// Upload the variant playlist for this segment
+	playlist := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
+	_, error = s.Save(playlist, 0)
+	if error != nil {
+		log.Errorln(error)
+	}
+}
+
+// VariantPlaylistWritten is called when a variant hls playlist is written
+func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
+	// We are uploading the variant playlist after uploading the segment
+	// to make sure we're not refering to files in a playlist that don't
+	// yet exist.  See SegmentWritten.
+}
+
+// MasterPlaylistWritten is called when the master hls playlist is written
+func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
+	s.rewriteRemotePlaylist(localFilePath)
+}
+
 //Save saves the file to the s3 bucket
 func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	file, err := os.Open(filePath)
@@ -111,8 +139,8 @@ func (s *S3Storage) connectAWS() *session.Session {
 	return sess
 }
 
-// GenerateRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
-func (s *S3Storage) GenerateRemotePlaylist(filePath string) error {
+// rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
+func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
 	f, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
@@ -123,7 +151,6 @@ func (s *S3Storage) GenerateRemotePlaylist(filePath string) error {
 
 	for _, item := range p.Variants {
 		item.URI = filepath.Join(s.host, "hls", item.URI)
-		fmt.Println(item.URI)
 	}
 
 	publicPath := filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(filePath))

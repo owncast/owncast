@@ -1,8 +1,7 @@
 package ffmpeg
 
 import (
-	"io/ioutil"
-	"log"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -42,33 +41,33 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	}
 
 	path := r.URL.Path
-
-	log.Println("Handling file upload...", path)
-
-	body, err := ioutil.ReadAll(r.Body)
+	writePath := filepath.Join(config.Config.GetPrivateHLSSavePath(), path)
+	out, err := os.Create(writePath)
 	if err != nil {
 		panic(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	go func() {
-		writePath := filepath.Join(config.Config.GetPrivateHLSSavePath(), path)
-		out, err := os.Create(writePath)
-		if err != nil {
-			panic(err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
-			return
+	buf := make([]byte, 4*1024)
+
+	defer out.Close()
+
+	for {
+		n, err := r.Body.Read(buf)
+		if n > 0 {
+			out.Write(buf[:n])
 		}
 
-		defer out.Close()
-		out.Write(body)
 		if err != nil {
-			panic(err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
-			return
+			if err == io.EOF {
+				w.Header().Set("Status", "200 OK")
+				r.Body.Close()
+				s.fileWritten(writePath)
+			}
+			break
 		}
-
-		s.fileWritten(writePath)
-	}()
+	}
 }
 
 func (s *FileWriterReceiverService) fileWritten(path string) {

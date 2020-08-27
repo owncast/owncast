@@ -16,6 +16,21 @@ func (s *LocalStorage) Setup() error {
 	return nil
 }
 
+// SegmentWritten is called when a single segment of video is written
+func (s *LocalStorage) SegmentWritten(localFilePath string) {
+	s.Save(localFilePath, 0)
+}
+
+// VariantPlaylistWritten is called when a variant hls playlist is written
+func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
+	s.Save(localFilePath, 0)
+}
+
+// MasterPlaylistWritten is called when the master hls playlist is written
+func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
+	s.Save(localFilePath, 0)
+}
+
 // Save will save a local filepath using the storage provider
 func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	newPath := ""
@@ -29,10 +44,4 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	go utils.Move(filePath, newPath)
 
 	return newPath, nil
-}
-
-// GenerateRemotePlaylist will rewrite the playlist using storage provider details
-func (s *LocalStorage) GenerateRemotePlaylist(filePath string) error {
-	// Locally generated playlist doesn't need to be rewritten.  Noop.
-	return nil
 }
