@@ -7,7 +7,7 @@ import (
 const maxCPUAlertingThresholdPCT = 95
 const maxRAMAlertingThresholdPCT = 95
 
-const alertingError = "The %s utilization of %d%% is higher than the alerting threshold of %d%%.  This can cause issues with video generation and delivery. Please visit the documentation at https://github.com/gabek/owncast/blob/master/doc/troubleshooting.md to help troubleshoot this issue."
+const alertingError = "The %s utilization of %d%% is higher than the alerting threshold of %d%%.  This can cause issues with video generation and delivery. Please visit the documentation at http://owncast.online/docs/troubleshooting/ to help troubleshoot this issue."
 
 func handleAlerting() {
 	handleCPUAlerting()
