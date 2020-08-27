@@ -43,31 +43,16 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	path := r.URL.Path
 	writePath := filepath.Join(config.Config.GetPrivateHLSSavePath(), path)
 	out, err := os.Create(writePath)
+
+	defer out.Close()
 	if err != nil {
 		panic(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	buf := make([]byte, 4*1024)
-
-	defer out.Close()
-
-	for {
-		n, err := r.Body.Read(buf)
-		if n > 0 {
-			out.Write(buf[:n])
-		}
-
-		if err != nil {
-			if err == io.EOF {
-				w.Header().Set("Status", "200 OK")
-				r.Body.Close()
-				s.fileWritten(writePath)
-			}
-			break
-		}
-	}
+	io.Copy(out, r.Body)
+	s.fileWritten(writePath)
 }
 
 func (s *FileWriterReceiverService) fileWritten(path string) {
