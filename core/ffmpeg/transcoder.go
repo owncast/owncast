@@ -109,11 +109,9 @@ func (t *Transcoder) getString() string {
 	}
 
 	ffmpegFlags := []string{
-		// "cat", t.input, "|",
 		t.ffmpegPath,
 		"-hide_banner",
 
-		// "-progress", "pipe:1",
 		"-i ", t.input,
 		t.getVariantsString(),
 
