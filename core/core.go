@@ -43,6 +43,9 @@ func Start() error {
 		return err
 	}
 
+	// The HLS handler takes the written HLS playlists and segments
+	// and makes storage decisions.  It's rather simple right now
+	// but will play more useful when recordings come into play.
 	handler = ffmpeg.HLSHandler{}
 	handler.Storage = _storage
 	fileWriter.SetupFileWriterReceiverService(&handler)
