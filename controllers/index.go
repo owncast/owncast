@@ -33,7 +33,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Reject requests for the web UI if it's disabled.
 	if isIndexRequest && config.Config.DisableWebFeatures {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("404 - y u ask 4 this?  If this is an error let us know: https://github.com/gabek/owncast/issues"))
+		w.Write([]byte("404 - y u ask 4 this?  If this is an error let us know: https://github.com/owncast/owncast/issues"))
 		return
 	}
 
@@ -42,14 +42,17 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
-
 	if path.Ext(r.URL.Path) == ".m3u8" {
-		middleware.DisableCache(&w)
+		middleware.DisableCache(w)
 
 		clientID := utils.GenerateClientIDFromRequest(r)
 		core.SetClientActive(clientID)
+	} else {
+		// Set a cache control header of one day
+		middleware.SetCache(1, w)
 	}
+
+	http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
 }
 
 // Return a basic HTML page with server-rendered metadata from the config file
