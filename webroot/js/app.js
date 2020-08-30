@@ -259,6 +259,10 @@ export default class App extends Component {
       streamOnline: false,
       streamStatusMessage: MESSAGE_OFFLINE,
     });
+
+    if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
+      this.handlePlayerEnded();
+    }
   }
 
   // play video!
@@ -335,7 +339,6 @@ export default class App extends Component {
       windowHeight,
       windowWidth,
     } = state;
-    console.log("========sessionMaxViewerCount",sessionMaxViewerCount)
 
     const {
       version: appVersion,
