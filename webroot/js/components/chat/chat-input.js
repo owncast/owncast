@@ -2,7 +2,7 @@ import { h, Component, createRef } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
-import { EmojiButton } from 'https://cdn.skypack.dev/@joeattardi/emoji-button';
+import { EmojiButton } from 'https://cdn.skypack.dev/pin/@joeattardi/emoji-button@v4.1.0-v8psdkkxts3LNdpA0m5Q/min/@joeattardi/emoji-button.js';
 import ContentEditable from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
