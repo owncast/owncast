@@ -26,6 +26,7 @@ type Transcoder struct {
 	appendToStream       bool
 	ffmpegPath           string
 	segmentIdentifier    string
+	TranscoderCompleted  func(error)
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -84,21 +85,23 @@ func (t *Transcoder) Start() {
 	}
 
 	_commandExec = exec.Command("sh", "-c", command)
-
 	err := _commandExec.Start()
 	if err != nil {
 		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
 		log.Panicln(err, command)
 	}
 
+	err = _commandExec.Wait()
+	if t.TranscoderCompleted != nil {
+		t.TranscoderCompleted(err)
+	}
 	return
 }
 
 func (t *Transcoder) getString() string {
-	hlsOptionFlags := []string{
-		"delete_segments",
-		"program_date_time",
-	}
+	localListenerAddress := "http://127.0.0.1:" + strconv.Itoa(config.Config.GetPublicWebServerPort()+1)
+
+	hlsOptionFlags := []string{}
 
 	if t.appendToStream {
 		hlsOptionFlags = append(hlsOptionFlags, "append_list")
@@ -108,19 +111,24 @@ func (t *Transcoder) getString() string {
 		t.segmentIdentifier = shortid.MustGenerate()
 	}
 
+	hlsOptionsString := ""
+	if len(hlsOptionFlags) > 0 {
+		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
+	}
 	ffmpegFlags := []string{
 		t.ffmpegPath,
 		"-hide_banner",
-
 		"-i ", t.input,
+
 		t.getVariantsString(),
 
 		// HLS Output
 		"-f", "hls",
+
 		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
 		"-hls_list_size", strconv.Itoa(t.hlsPlaylistLength), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
-		"-hls_flags", strings.Join(hlsOptionFlags, "+"), // Specific options in HLS generation
+		hlsOptionsString,
 
 		// Video settings
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
@@ -131,12 +139,13 @@ func (t *Transcoder) getString() string {
 		"-master_pl_name", "stream.m3u8",
 		"-strftime 1", // Support the use of strftime in filenames
 
-		"-hls_segment_filename", "http://127.0.0.1:8089/%v/stream-" + t.segmentIdentifier + "%s.ts", // Each segment's filename
+		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "%s.ts", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
-		"-method PUT -http_persistent 1",
 
-		"http://127.0.0.1:8089/%v/stream.m3u8",
-		// "2>&1 transcoder.log", // Enabling this makes ffmpeg lock up.  I don't get it.
+		"-method PUT -http_persistent 1",         // HLS results sent back to us will be over PUTs
+		"-fflags +genpts",                        // Generate presentation time stamp if missing
+		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
+		"2>&1",                                   // transcoder.log", // Output to a file makes ffmpeg lock up.  I don't know why.
 	}
 
 	return strings.Join(ffmpegFlags, " ")

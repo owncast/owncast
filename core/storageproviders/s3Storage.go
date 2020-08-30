@@ -19,6 +19,10 @@ import (
 	"github.com/grafov/m3u8"
 )
 
+// If we try to upload a playlist but it is not yet on disk
+// then keep a reference to it here.
+var _queuedPlaylistUpdates = make(map[string]string, 0)
+
 //S3Storage is the s3 implementation of the ChunkStorageProvider
 type S3Storage struct {
 	sess *session.Session
@@ -69,10 +73,16 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	}
 
 	// Upload the variant playlist for this segment
+	// so the segments and the HLS playlist referencing
+	// them are in sync.
 	playlist := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
 	_, error = s.Save(playlist, 0)
 	if error != nil {
-		log.Errorln(error)
+		_queuedPlaylistUpdates[playlist] = playlist
+		if pErr, ok := error.(*os.PathError); ok {
+			log.Debugln(pErr.Path, "does not exist locally when trying to upload to S3 storage.")
+			return
+		}
 	}
 }
 
@@ -81,10 +91,19 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// We are uploading the variant playlist after uploading the segment
 	// to make sure we're not refering to files in a playlist that don't
 	// yet exist.  See SegmentWritten.
+	if _, ok := _queuedPlaylistUpdates[localFilePath]; ok {
+		_, error := s.Save(localFilePath, 0)
+		if error != nil {
+			log.Errorln(error)
+			_queuedPlaylistUpdates[localFilePath] = localFilePath
+		}
+		delete(_queuedPlaylistUpdates, localFilePath)
+	}
 }
 
 // MasterPlaylistWritten is called when the master hls playlist is written
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
+	// Rewrite the playlist to use absolute remote S3 URLs
 	s.rewriteRemotePlaylist(localFilePath)
 }
 
@@ -150,7 +169,7 @@ func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
 	err = p.DecodeFrom(bufio.NewReader(f), false)
 
 	for _, item := range p.Variants {
-		item.URI = filepath.Join(s.host, "hls", item.URI)
+		item.URI = s.host + filepath.Join("/hls", item.URI)
 	}
 
 	publicPath := filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(filePath))

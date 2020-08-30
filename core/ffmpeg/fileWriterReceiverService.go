@@ -4,33 +4,38 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"net/http"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/utils"
+	log "github.com/sirupsen/logrus"
 )
 
-const localListenerAddress = "127.0.0.1:8089"
-
+// FileWriterReceiverServiceCallback are to be fired when transcoder responses are written to disk
 type FileWriterReceiverServiceCallback interface {
 	SegmentWritten(localFilePath string)
 	VariantPlaylistWritten(localFilePath string)
 	MasterPlaylistWritten(localFilePath string)
 }
 
+// FileWriterReceiverService accepts transcoder responses via HTTP and fires the callbacks
 type FileWriterReceiverService struct {
 	callbacks FileWriterReceiverServiceCallback
 }
 
+// SetupFileWriterReceiverService will start listening for transcoder responses
 func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks FileWriterReceiverServiceCallback) {
 	s.callbacks = callbacks
 
 	httpServer := http.NewServeMux()
 	httpServer.HandleFunc("/", s.uploadHandler)
 
+	localListenerAddress := "127.0.0.1:" + strconv.Itoa(config.Config.GetPublicWebServerPort()+1)
 	go http.ListenAndServe(localListenerAddress, httpServer)
+	log.Debugln("Transcoder response listening on: " + localListenerAddress)
 }
 
 // By returning a handler, we have an elegant way of initializing path.
@@ -46,7 +51,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 
 	defer out.Close()
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -41,7 +41,7 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	} else {
 		newPath = filepath.Join("webroot", filePath)
 	}
-	go utils.Move(filePath, newPath)
+	go utils.Copy(filePath, newPath)
 
 	return newPath, nil
 }
