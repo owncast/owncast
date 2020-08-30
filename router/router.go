@@ -35,6 +35,12 @@ func Start() error {
 
 		// web config api
 		http.HandleFunc("/config", controllers.GetWebConfig)
+
+		// chat embed
+		http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
+
+		// video embed
+		http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
 	}
 
 	port := config.Config.GetPublicWebServerPort()
