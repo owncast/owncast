@@ -47,7 +47,7 @@ class OwncastPlayer {
   }
 
   init() {
-    videojs.Hls.xhr.beforeRequest = function (options) {
+    videojs.Vhs.xhr.beforeRequest = function (options) {
       const cachebuster = Math.round(new Date().getTime() / 1000);
       options.uri = `${options.uri}?cachebust=${cachebuster}`;
       return options;
