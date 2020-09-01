@@ -148,7 +148,6 @@ func handleDisconnect(conn net.Conn) {
 	conn.Close()
 	_pipe.Close()
 	_isConnected = false
-	//_transcoder.Stop()
 }
 
 // Disconnect will force disconnect the current inbound RTMP connection.

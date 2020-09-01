@@ -70,7 +70,12 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	_, error := s.Save(localFilePath, 0)
 	if error != nil {
 		log.Errorln(error)
+		return
 	}
+
+	// If a segment file was successfully uploaded then we can delete
+	// it from the local filesystem.
+	os.Remove(localFilePath)
 
 	// Upload the variant playlist for this segment
 	// so the segments and the HLS playlist referencing

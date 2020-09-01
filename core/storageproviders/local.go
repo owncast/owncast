@@ -3,7 +3,10 @@ package storageproviders
 import (
 	"path/filepath"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gabek/owncast/config"
+	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/utils"
 )
 
@@ -23,7 +26,11 @@ func (s *LocalStorage) SegmentWritten(localFilePath string) {
 
 // VariantPlaylistWritten is called when a variant hls playlist is written
 func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
-	s.Save(localFilePath, 0)
+	_, error := s.Save(localFilePath, 0)
+	if error != nil {
+		log.Errorln(error)
+		return
+	}
 }
 
 // MasterPlaylistWritten is called when the master hls playlist is written
@@ -41,7 +48,16 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	} else {
 		newPath = filepath.Join("webroot", filePath)
 	}
-	go utils.Copy(filePath, newPath)
+
+	// Move video segments to the destination directory.
+	// Copy playlists to the destination directory so they can still be referenced in
+	// the private hls working directory.
+	if filepath.Ext(filePath) == ".m3u8" {
+		go utils.Copy(filePath, newPath)
+	} else {
+		go utils.Move(filePath, newPath)
+		ffmpeg.Cleanup(filepath.Dir(newPath))
+	}
 
 	return newPath, nil
 }

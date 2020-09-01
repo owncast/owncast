@@ -16,11 +16,15 @@ import (
 	"github.com/grafov/m3u8"
 )
 
+var _cleanupTicker *time.Ticker
+
 //SetStreamAsConnected sets the stream as connected
 func SetStreamAsConnected() {
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
+
+	StopCleanupTimer()
 
 	timeSinceDisconnect := time.Since(_stats.LastDisconnectTime.Time).Minutes()
 	if timeSinceDisconnect > 15 {
@@ -44,9 +48,6 @@ func SetStreamAsConnected() {
 }
 
 //SetStreamAsDisconnected sets the stream as disconnected.
-// 1. If the HLS playlist(s) already exist then we append a disconnected state to it.
-// 2. If the HLS playlist(s) do not exist, we fire the transcoder with the offline
-// video content and have it generate the initial state.
 func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
@@ -54,7 +55,6 @@ func SetStreamAsDisconnected() {
 	offlineFilename := "offline.ts"
 	offlineFilePath := "static/" + offlineFilename
 
-	// If it does exist then splice the offline state into each variant
 	for index := range config.Config.GetVideoStreamQualities() {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.Config.GetPrivateHLSSavePath(), "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.Config.GetPrivateHLSSavePath(), "%d/%s"), index, offlineFilename)
@@ -105,5 +105,28 @@ func SetStreamAsDisconnected() {
 			}
 		}
 		_storage.Save(playlistFilePath, 0)
+	}
+
+	StartCleanupTimer()
+}
+
+// StartCleanupTimer will fire a cleanup after n minutes being disconnected
+func StartCleanupTimer() {
+	_cleanupTicker := time.NewTicker(5 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-_cleanupTicker.C:
+				resetDirectories()
+				transitionToOfflineVideoStreamContent()
+			}
+		}
+	}()
+}
+
+// StopCleanupTimer will stop the previous cleanup timer
+func StopCleanupTimer() {
+	if _cleanupTicker != nil {
+		_cleanupTicker.Stop()
 	}
 }

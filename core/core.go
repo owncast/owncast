@@ -80,16 +80,17 @@ func createInitialOfflineState() error {
 		}
 	}
 
-	TransitionToOfflineVideoStreamContent()
+	transitionToOfflineVideoStreamContent()
 
 	return nil
 }
 
-// TransitionToOfflineVideoStreamContent will overwrite the current stream with the
+// transitionToOfflineVideoStreamContent will overwrite the current stream with the
 // offline video stream state only.  No live stream HLS segments will continue to be
 // referenced.
-func TransitionToOfflineVideoStreamContent() {
+func transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
+
 	offlineFilename := "offline.ts"
 	offlineFilePath := "static/" + offlineFilename
 	_transcoder := ffmpeg.NewTranscoder()
