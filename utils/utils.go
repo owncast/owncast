@@ -53,6 +53,7 @@ func IsUserAgentABot(userAgent string) bool {
 	botStrings := []string{
 		"mastodon",
 		"pleroma",
+		"applebot",
 	}
 
 	for _, botString := range botStrings {
