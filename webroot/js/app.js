@@ -167,7 +167,6 @@ export default class App extends Component {
         });
       })
       .catch(error => {
-        this.handleNetworkingError(`Fetch extra content: ${error}`);
       });
   }
 
