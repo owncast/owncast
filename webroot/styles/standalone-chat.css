@@ -1,10 +1,29 @@
 /*
+Example/Suggested custom CSS settings to set in OBS.
+///
+html { margin: 0px; padding: 20px; background-color: rgba(0,0,0,0.5); font-size: 24px; }
+///
+This one will add some space around box, give it a semi-transparent dark background; and increase the overall to a base unit of 24px.
+
+You may change any of these settings to fit your presentation layout. Note that the overall message text color is white.
+*/
+
+/*
 The styles in this file mostly ovveride those coming from chat.css
 */
 
 /* modify this px number if you want things to be relatively bigger or smaller */
-#messages-only {
-  font-size: 16px;
+#messages-only {}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+#messages-only #messages-container {
+  height: 100%;
+  height: 100vh;
+  overflow: auto;
 }
 #messages-only .message-content {
   text-shadow: 1px 1px 0px rgba(0,0,0,0.25);
@@ -30,4 +49,11 @@ The styles in this file mostly ovveride those coming from chat.css
 }
 #messages-only .message-author {
   color: rgba(20,0,40,1);
+}
+
+#messages-only .message-text .chat-embed,
+#messages-only .message-text .instagram-embed,
+#messages-only .message-text .embedded-image,
+#messages-only .message-text .youtube-embed  {
+  max-width: 350px;
 }

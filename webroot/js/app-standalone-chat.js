@@ -31,7 +31,6 @@ export default class StandaloneChat extends Component {
 
   render(props, state) {
     const { username, userAvatarImage, websocket } = state;
-
     return (
       html`
         <${Chat}
