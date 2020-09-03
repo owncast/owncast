@@ -92,7 +92,7 @@ export default class UsernameForm extends Component {
               class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight text-xs focus:bg-white"
               maxlength="100"
               placeholder="Update username"
-              value=${username}
+              defaultValue=${username}
               onKeydown=${this.handleKeydown}
               ref=${this.textInput}
             />
