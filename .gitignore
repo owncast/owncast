@@ -25,3 +25,4 @@ hls/
 dist/
 transcoder.log
 chat.db
+.yp.key

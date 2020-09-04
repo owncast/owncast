@@ -13,6 +13,7 @@ import (
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
+	"github.com/gabek/owncast/yp"
 )
 
 var (
@@ -39,6 +40,9 @@ func Start() error {
 		log.Error("failed to create the initial offline state")
 		return err
 	}
+
+	yp := yp.YP{}
+	go yp.Register(GetConnectedAtTime)
 
 	chat.Setup(ChatListenerImpl{})
 
@@ -102,4 +106,8 @@ func resetDirectories() {
 		os.MkdirAll(path.Join(config.Config.GetPrivateHLSSavePath(), strconv.Itoa(0)), 0777)
 		os.MkdirAll(path.Join(config.Config.GetPublicHLSSavePath(), strconv.Itoa(0)), 0777)
 	}
+}
+
+func GetConnectedAtTime() utils.NullTime {
+	return _stats.LastConnectTime
 }
