@@ -29,7 +29,13 @@ export default class Websocket {
     this.rawMessageListeners = [];
 
     this.send = this.send.bind(this);
+    this.createAndConnect = this.createAndConnect.bind(this);
+    this.scheduleReconnect = this.scheduleReconnect.bind(this);
 
+    this.createAndConnect();
+  }
+
+  createAndConnect() {
     const ws = new WebSocket(URL_WEBSOCKET);
     ws.onopen = this.onOpen.bind(this);
     ws.onclose = this.onClose.bind(this);
@@ -50,14 +56,15 @@ export default class Websocket {
     }
   }
 
-
   // Interface with other components
 
   // Outbound: Other components can pass an object to `send`.
   send(message) {
     // Sanity check that what we're sending is a valid type.
     if (!message.type || !SOCKET_MESSAGE_TYPES[message.type]) {
-      console.warn(`Outbound message: Unknown socket message type: "${message.type}" sent.`);
+      console.warn(
+        `Outbound message: Unknown socket message type: "${message.type}" sent.`
+      );
     }
 
     const messageJSON = JSON.stringify(message);
@@ -80,7 +87,6 @@ export default class Websocket {
     });
   }
 
-
   notifyRawMessageListeners(message) {
     this.rawMessageListeners.forEach(function (callback) {
       callback(message);
@@ -102,13 +108,21 @@ export default class Websocket {
     this.websocket = null;
     this.notifyWebsocketDisconnectedListeners();
     this.handleNetworkingError('Websocket closed.');
-    this.websocketReconnectTimer = setTimeout(this.setupWebsocket, TIMER_WEBSOCKET_RECONNECT);
+    this.scheduleReconnect();
   }
 
   // On ws error just close the socket and let it re-connect again for now.
   onError(e) {
     this.handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
     this.websocket.close();
+    this.scheduleReconnect();
+  }
+
+  scheduleReconnect() {
+    this.websocketReconnectTimer = setTimeout(
+      this.createAndConnect,
+      TIMER_WEBSOCKET_RECONNECT
+    );
   }
 
   /*
@@ -120,7 +134,7 @@ export default class Websocket {
     try {
       var model = JSON.parse(e.data);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
 
     // Send PONGs
@@ -140,6 +154,6 @@ export default class Websocket {
   }
 
   handleNetworkingError(error) {
-    console.error(`Websocket Error: ${error}`)
+    console.error(`Websocket Error: ${error}`);
   }
 }
