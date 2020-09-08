@@ -50,7 +50,14 @@ type videoSettings struct {
 	StreamingKey              string          `yaml:"streamingKey"`
 	StreamQualities           []StreamQuality `yaml:"streamQualities"`
 	OfflineContent            string          `yaml:"offlineContent"`
-	HighestQualityStreamIndex int             `yaml"-"`
+	HighestQualityStreamIndex int             `yaml:"-"`
+}
+
+// Registration to the central Owncast YP (Yellow pages) service operating as a directory.
+type yp struct {
+	Enabled      bool   `yaml:"enabled"`
+	InstanceURL  string `yaml:"instanceURL"`  // The public URL the directory should link to
+	YPServiceURL string `yaml:"ypServiceURL"` // The base URL to the YP API to register with (optional)
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.
