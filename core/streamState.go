@@ -40,6 +40,7 @@ func SetStreamAsConnected() {
 		_transcoder = ffmpeg.NewTranscoder()
 		_transcoder.TranscoderCompleted = func(error) {
 			SetStreamAsDisconnected()
+
 		}
 		_transcoder.Start()
 	}()
@@ -54,6 +55,8 @@ func SetStreamAsDisconnected() {
 
 	offlineFilename := "offline.ts"
 	offlineFilePath := "static/" + offlineFilename
+
+	ffmpeg.StopThumbnailGenerator()
 
 	for index := range config.Config.GetVideoStreamQualities() {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.Config.GetPrivateHLSSavePath(), "%d/stream.m3u8"), index)

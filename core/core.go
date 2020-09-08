@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/gabek/owncast/core/storageproviders"
 	log "github.com/sirupsen/logrus"
@@ -97,6 +98,9 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.SetSegmentLength(10)
 	_transcoder.SetInput(offlineFilePath)
 	_transcoder.Start()
+
+	// Copy the logo to be the thumbnail
+	utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo["large"]), "webroot/thumbnail.jpg")
 }
 
 func resetDirectories() {
@@ -121,4 +125,7 @@ func resetDirectories() {
 		os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0)), 0777)
 		os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(0)), 0777)
 	}
+
+	// Remove the previous thumbnail
+	utils.Copy(config.Config.InstanceDetails.Logo["large"], "webroot/thumbnail.jpg")
 }
