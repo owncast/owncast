@@ -42,7 +42,9 @@ func Start() error {
 		return err
 	}
 
-	_yp = yp.NewYP(GetStatus)
+	if config.Config.YP.Enabled {
+		_yp = yp.NewYP(GetStatus)
+	}
 
 	chat.Setup(ChatListenerImpl{})
 

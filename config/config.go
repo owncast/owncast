@@ -138,6 +138,10 @@ func (c *config) verifySettings() error {
 		}
 	}
 
+	if c.YP.Enabled && c.YP.InstanceURL == "" {
+		return errors.New("YP is enabled but instance url is not set")
+	}
+
 	return nil
 }
 
@@ -196,6 +200,14 @@ func (c *config) GetFFMpegPath() string {
 	}
 
 	return _default.FFMpegPath
+}
+
+func (c *config) GetYPServiceHost() string {
+	if c.YP.YPServiceURL != "" {
+		return c.YP.YPServiceURL
+	}
+
+	return _default.YP.YPServiceURL
 }
 
 func (c *config) GetVideoStreamQualities() []StreamQuality {

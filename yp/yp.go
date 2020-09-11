@@ -15,7 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const pingURL = "http://localhost:8088/ping"
 const pingInterval = 4 * time.Minute
 
 var getStatus func() models.Status
@@ -23,23 +22,18 @@ var getStatus func() models.Status
 //YP is a service for handling listing in the Owncast directory.
 type YP struct {
 	timer *time.Ticker
-	key   string
 }
 
 type ypPingResponse struct {
-	Key     string `json:"key"`
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
+	Key       string `json:"key"`
+	Success   bool   `json:"success"`
+	Error     string `json:"error"`
+	ErrorCode int    `json:"errorCode"`
 }
 
 type ypPingRequest struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	URL         string   `json:"url"`
-	Logo        string   `json:"logo"`
-	NSFW        bool     `json:"nsfw"`
-	Key         string   `json:"key"`
-	Tags        []string `json:"tags"`
+	Key string `json:"key"`
+	URL string `json:"url"`
 }
 
 // NewYP creates a new instance of the YP service handler
@@ -51,7 +45,6 @@ func NewYP(getStatusFunc func() models.Status) *YP {
 // Start is run when a live stream begins to start pinging YP
 func (yp *YP) Start() {
 	yp.timer = time.NewTicker(pingInterval)
-	yp.key = yp.getSavedKey()
 
 	go func() {
 		for {
@@ -71,18 +64,14 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
-	url := config.Config.YP.YPServiceURL
+	myInstanceURL := config.Config.YP.InstanceURL
+	key := yp.getSavedKey()
 
 	log.Traceln("Pinging YP as: ", config.Config.InstanceDetails.Name)
 
 	request := ypPingRequest{
-		config.Config.InstanceDetails.Name,
-		config.Config.InstanceDetails.Summary,
-		url,
-		url + "/" + config.Config.InstanceDetails.Logo["large"],
-		false,
-		yp.key,
-		config.Config.InstanceDetails.Tags,
+		Key: key,
+		URL: myInstanceURL,
 	}
 
 	req, err := json.Marshal(request)
@@ -91,6 +80,7 @@ func (yp *YP) ping() {
 		return
 	}
 
+	pingURL := config.Config.YP.YPServiceURL + "/ping"
 	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req))
 	if err != nil {
 		log.Errorln(err)
@@ -107,12 +97,18 @@ func (yp *YP) ping() {
 	json.Unmarshal(body, &pingResponse)
 
 	if !pingResponse.Success {
-		log.Errorln("YP Ping:", pingResponse.Error)
+		log.Errorln("YP Ping error:", pingResponse.Error)
+
+		// If the error is "invalid key" then wipe our local key
+		// and allow us to re-register from scratch.
+		if pingResponse.ErrorCode == 100 {
+			os.Remove(".yp.key")
+		}
+
 		return
 	}
 
-	if pingResponse.Key != yp.key {
-		yp.key = pingResponse.Key
+	if pingResponse.Key != key {
 		yp.writeSavedKey(pingResponse.Key)
 	}
 }
