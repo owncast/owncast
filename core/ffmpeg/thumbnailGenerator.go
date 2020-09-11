@@ -40,6 +40,7 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join("webroot", "thumbnail.jpg")
+	previewGifFile := path.Join("webroot", "preview.gif")
 
 	framePath := path.Join(chunkPath, strconv.Itoa(variantIndex))
 	files, err := ioutil.ReadDir(framePath)
@@ -83,9 +84,22 @@ func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	}
 
 	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
+	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+		return err
+	}
 
-	// fmt.Println(ffmpegCmd)
+	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
+	animatedGifFlags := []string{
+		config.Config.GetFFMpegPath(),
+		"-y",                 // Overwrite file
+		"-threads 1",         // Low priority processing
+		"-i", mostRecentFile, // Input
+		"-t 1", // Output is one second in length
+		"-filter_complex", "\"[0:v] fps=8,scale=w=480:h=-1,split [a][b];[a] palettegen=stats_mode=single [p];[b][p] paletteuse=new=1\"",
+		previewGifFile,
+	}
 
+	ffmpegCmd = strings.Join(animatedGifFlags, " ")
 	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
 		return err
 	}
