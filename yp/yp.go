@@ -10,56 +10,70 @@ import (
 	"encoding/json"
 
 	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/utils"
+	"github.com/gabek/owncast/models"
 
 	log "github.com/sirupsen/logrus"
 )
 
 const pingURL = "http://localhost:8088/ping"
-const pingInterval = 1 * time.Minute
+const pingInterval = 4 * time.Minute
 
-//YP
+var getStatus func() models.Status
+
+//YP is a service for handling listing in the Owncast directory.
 type YP struct {
-	ticker            time.Ticker
-	key               string
-	getStreamingSince func() utils.NullTime
+	timer *time.Ticker
+	key   string
 }
 
 type ypPingResponse struct {
-	Key string
+	Key     string `json:"key"`
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
 }
 
 type ypPingRequest struct {
-	Name           string          `json:"name"`
-	Description    string          `json:"description"`
-	URL            string          `json:"url"`
-	Logo           string          `json:"logo"`
-	NSFW           bool            `json:"nsfw"`
-	Key            string          `json:"key"`
-	Tags           []string        `json:"tags"`
-	StreamingSince *utils.NullTime `json:"streamingSince"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	URL         string   `json:"url"`
+	Logo        string   `json:"logo"`
+	NSFW        bool     `json:"nsfw"`
+	Key         string   `json:"key"`
+	Tags        []string `json:"tags"`
 }
 
-func (yp *YP) Register(getStreamingSince func() utils.NullTime) {
-	yp.key = yp.getSavedKey()
-	yp.getStreamingSince = getStreamingSince
-	yp.ping()
+// NewYP creates a new instance of the YP service handler
+func NewYP(getStatusFunc func() models.Status) *YP {
+	getStatus = getStatusFunc
+	return &YP{}
+}
 
-	for range time.Tick(pingInterval) {
-		yp.ping()
-	}
+// Start is run when a live stream begins to start pinging YP
+func (yp *YP) Start() {
+	yp.timer = time.NewTicker(pingInterval)
+	yp.key = yp.getSavedKey()
+
+	go func() {
+		for {
+			select {
+			case <-yp.timer.C:
+				yp.ping()
+			}
+		}
+	}()
+
+	yp.ping()
+}
+
+// Stop stops the pinging of YP
+func (yp *YP) Stop() {
+	yp.timer.Stop()
 }
 
 func (yp *YP) ping() {
-	url := "http://localhost:8080/" // TODO: Get the real location
+	url := config.Config.YP.YPServiceURL
 
-	// Don't allow pinging if a live stream is not active.
-	streamingSince := yp.getStreamingSince()
-	if !streamingSince.Valid {
-		return
-	}
-
-	log.Println("Pinging YP: ", config.Config.InstanceDetails.Name)
+	log.Traceln("Pinging YP as: ", config.Config.InstanceDetails.Name)
 
 	request := ypPingRequest{
 		config.Config.InstanceDetails.Name,
@@ -69,26 +83,33 @@ func (yp *YP) ping() {
 		false,
 		yp.key,
 		config.Config.InstanceDetails.Tags,
-		&streamingSince,
 	}
 
 	req, err := json.Marshal(request)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return
 	}
 
 	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req))
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return
 	}
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	pingResponse := ypPingResponse{}
 	json.Unmarshal(body, &pingResponse)
+
+	if !pingResponse.Success {
+		log.Errorln("YP Ping:", pingResponse.Error)
+		return
+	}
 
 	if pingResponse.Key != yp.key {
 		yp.key = pingResponse.Key

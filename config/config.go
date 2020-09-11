@@ -26,6 +26,7 @@ type config struct {
 	VersionInfo          string          `yaml:"-"`
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
+	YP                   yp              `yaml:"yp"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
@@ -38,6 +39,7 @@ type InstanceDetails struct {
 	SocialHandles []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
 	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
 	Version       string            `json:"version"`
+	NSFW          bool              `yaml:"nsfw" json:"nsfw"`
 }
 
 type socialHandle struct {
