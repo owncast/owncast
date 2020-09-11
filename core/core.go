@@ -44,6 +44,8 @@ func Start() error {
 
 	if config.Config.YP.Enabled {
 		_yp = yp.NewYP(GetStatus)
+	} else {
+		yp.DisplayInstructions()
 	}
 
 	chat.Setup(ChatListenerImpl{})
