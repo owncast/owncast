@@ -19,6 +19,7 @@ vendor/
 /stats.json
 owncast
 webroot/thumbnail.jpg
+webroot/preview.gif
 webroot/hls
 webroot/static/content.md
 hls/
