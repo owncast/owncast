@@ -24,7 +24,10 @@ export function formatMessageText(message, username) {
 
 function highlightUsername(message, username) {
 	const pattern = new RegExp('@?' + username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-  return message.replace(pattern, '<span class="highlighted font-bold bg-orange-500">$&</span>');
+  return message.replace(
+    pattern,
+    '<span class="highlighted px-1 rounded font-bold bg-orange-500">$&</span>'
+  );
 }
 
 function linkify(text, rawText) {
