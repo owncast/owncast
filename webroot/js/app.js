@@ -44,7 +44,7 @@ export default class App extends Component {
     this.state = {
       websocket: new Websocket(),
       displayChat: getLocalStorage(KEY_CHAT_DISPLAYED) || true, // chat panel state
-      chatEnabled: false, // chat input box state
+      chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       userAvatarImage:
         getLocalStorage(KEY_AVATAR) ||
@@ -283,7 +283,7 @@ export default class App extends Component {
     this.setState({
       playerActive: true,
       streamOnline: true,
-      chatEnabled: true,
+      chatInputEnabled: true,
       streamStatusMessage: MESSAGE_ONLINE,
     });
   }
@@ -323,7 +323,7 @@ export default class App extends Component {
 
   disableChatInput() {
     this.setState({
-      chatEnabled: false,
+      chatInputEnabled: false,
     });
   }
 
@@ -340,7 +340,7 @@ export default class App extends Component {
 
   render(props, state) {
     const {
-      chatEnabled,
+      chatInputEnabled,
       configData,
       displayChat,
       extraUserContent,
@@ -538,7 +538,7 @@ export default class App extends Component {
           websocket=${websocket}
           username=${username}
           userAvatarImage=${userAvatarImage}
-          chatEnabled=${chatEnabled}
+          chatInputEnabled=${chatInputEnabled}
         />
       </div>
     `;

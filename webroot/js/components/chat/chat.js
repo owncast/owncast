@@ -144,18 +144,6 @@ export default class Chat extends Component {
 		this.websocket.send(message);
   }
 
-  disableChat() {
-    this.setState({
-      inputEnabled: false,
-    });
-	}
-
-	enableChat() {
-    this.setState({
-      inputEnabled: true,
-    });
-	}
-
   updateAuthorList(message) {
     const { type } = message;
     const nameList = this.state.chatUserNames;
@@ -175,7 +163,7 @@ export default class Chat extends Component {
 
 
   render(props, state) {
-    const { username, messagesOnly, chatEnabled } = props;
+    const { username, messagesOnly, chatInputEnabled } = props;
     const { messages, inputEnabled, chatUserNames } = state;
 
     const messageList = messages.map((message) => (html`<${Message} message=${message} username=${username} key=${message.id} />`));
@@ -193,25 +181,27 @@ export default class Chat extends Component {
       `);
     }
 
-    return (
-      html`
-        <section id="chat-container-wrap" class="flex flex-col">
-          <div id="chat-container" class="bg-gray-800 flex flex-col justify-end overflow-auto">
-            <div
-              id="messages-container"
-              ref=${this.scrollableMessagesContainer}
-              class="py-1 overflow-auto z-10"
-            >
-              ${messageList}
-            </div>
-            <${ChatInput}
-              chatUserNames=${chatUserNames}
-              inputEnabled=${chatEnabled && inputEnabled}
-              handleSendMessage=${this.submitChat}
-            />
+    return html`
+      <section id="chat-container-wrap" class="flex flex-col">
+        <div
+          id="chat-container"
+          class="bg-gray-800 flex flex-col justify-end overflow-auto"
+        >
+          <div
+            id="messages-container"
+            ref=${this.scrollableMessagesContainer}
+            class="py-1 overflow-auto z-10"
+          >
+            ${messageList}
           </div>
-        </section>
-    `);
+          <${ChatInput}
+            chatUserNames=${chatUserNames}
+            inputEnabled=${chatInputEnabled}
+            handleSendMessage=${this.submitChat}
+          />
+        </div>
+      </section>
+    `;
   }
 
 }
