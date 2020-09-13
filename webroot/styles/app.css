@@ -210,4 +210,8 @@ header {
   .instance-title {
     font-size: 1rem;
   }
+
+  #stream-info {
+    display: none;
+  }
 }
