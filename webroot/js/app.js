@@ -476,11 +476,12 @@ export default class App extends Component {
           >
             <span>${streamStatusMessage}</span>
             <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
-            <span
-              >${sessionMaxViewerCount} Max
-              ${pluralize('viewer', sessionMaxViewerCount)}.</span
-            >
-            <span>${overallMaxViewerCount} overall.</span>
+            <span>
+              Max ${sessionMaxViewerCount} ${" "} ${pluralize('viewer', sessionMaxViewerCount)} this stream.
+            </span>
+            <span>
+              ${overallMaxViewerCount} all time .
+            </span>
           </section>
         </main>
 
