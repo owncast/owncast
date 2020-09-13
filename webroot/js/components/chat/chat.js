@@ -27,6 +27,8 @@ export default class Chat extends Component {
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
     this.submitChat = this.submitChat.bind(this);
+
+    this.jumpToBottomPending = false;
   }
 
   componentDidMount() {
@@ -52,7 +54,7 @@ export default class Chat extends Component {
     }
     // scroll to bottom of messages list when new ones come in
     if (messages.length > prevMessages.length) {
-      jumpToBottom(this.scrollableMessagesContainer.current);
+      this.jumpToBottomPending = true;
     }
   }
 
@@ -164,21 +166,39 @@ export default class Chat extends Component {
 
   render(props, state) {
     const { username, messagesOnly, chatInputEnabled } = props;
-    const { messages, inputEnabled, chatUserNames } = state;
+    const { messages, chatUserNames } = state;
 
-    const messageList = messages.map((message) => (html`<${Message} message=${message} username=${username} key=${message.id} />`));
+    const messageList = messages.map(
+      (message) =>
+        html`<${Message}
+          message=${message}
+          username=${username}
+          key=${message.id}
+        />`
+    );
+
+    // After the render completes (based on requestAnimationFrame) then jump to bottom.
+    // This hopefully fixes the race conditions where jumpTobottom fires before the
+    // DOM element has re-drawn with its new size.
+    if (this.jumpToBottomPending) {
+      this.jumpToBottomPending = false;
+      window.requestAnimationFrame(
+        function () {
+          jumpToBottom(this.scrollableMessagesContainer.current);
+        }.bind(this)
+      );
+    }
 
     if (messagesOnly) {
-      return (
-        html`
-          <div
-            id="messages-container"
-            ref=${this.scrollableMessagesContainer}
-            class="py-1 overflow-auto"
-          >
-            ${messageList}
-          </div>
-      `);
+      return html`
+        <div
+          id="messages-container"
+          ref=${this.scrollableMessagesContainer}
+          class="py-1 overflow-auto"
+        >
+          ${messageList}
+        </div>
+      `;
     }
 
     return html`
