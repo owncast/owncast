@@ -102,6 +102,13 @@
   padding: .25rem;
 }
 
+/* Hide emoji button on small screens */
+@media screen and (max-width: 860px) {
+  #emoji-button {
+    /* Emoji library overrides this so important is needed */
+    display: none !important;
+  }
+}
 
 
 .message-text .chat-embed {
