@@ -21,20 +21,20 @@ func Start() error {
 	http.HandleFunc("/", controllers.IndexHandler)
 
 	// status of the system
-	http.HandleFunc("/status", controllers.GetStatus)
+	http.HandleFunc("/api/status", controllers.GetStatus)
 
 	// custom emoji supported in the chat
-	http.HandleFunc("/emoji", controllers.GetCustomEmoji)
+	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
 	if !config.Config.DisableWebFeatures {
 		// websocket chat server
 		go chat.Start()
 
 		// chat rest api
-		http.HandleFunc("/chat", controllers.GetChatMessages)
+		http.HandleFunc("/api/chat", controllers.GetChatMessages)
 
 		// web config api
-		http.HandleFunc("/config", controllers.GetWebConfig)
+		http.HandleFunc("/api/config", controllers.GetWebConfig)
 
 		// chat embed
 		http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
