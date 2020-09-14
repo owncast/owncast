@@ -201,12 +201,6 @@ header {
   #video-container {
     min-height: 240px;
   }
-}
-
-/* ************************************************8 */
-
-
-@media screen and (max-width: 860px) {
   .instance-title {
     font-size: 1rem;
   }

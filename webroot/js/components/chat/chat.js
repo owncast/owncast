@@ -27,7 +27,8 @@ export default class Chat extends Component {
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
     this.submitChat = this.submitChat.bind(this);
-
+    this.submitChat = this.submitChat.bind(this);
+    this.scrollToBottom = this.scrollToBottom.bind(this);
     this.jumpToBottomPending = false;
   }
 
@@ -163,6 +164,9 @@ export default class Chat extends Component {
     return [];
   }
 
+  scrollToBottom() {
+    jumpToBottom(this.scrollableMessagesContainer.current);
+  }
 
   render(props, state) {
     const { username, messagesOnly, chatInputEnabled } = props;
@@ -182,11 +186,7 @@ export default class Chat extends Component {
     // DOM element has re-drawn with its new size.
     if (this.jumpToBottomPending) {
       this.jumpToBottomPending = false;
-      window.requestAnimationFrame(
-        function () {
-          jumpToBottom(this.scrollableMessagesContainer.current);
-        }.bind(this)
-      );
+      window.requestAnimationFrame(this.scrollToBottom);
     }
 
     if (messagesOnly) {
