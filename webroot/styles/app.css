@@ -201,6 +201,11 @@ header {
   #video-container {
     min-height: 240px;
   }
-}
+  .instance-title {
+    font-size: 1rem;
+  }
 
-/* ************************************************8 */
+  #stream-info {
+    display: none;
+  }
+}
