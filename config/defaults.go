@@ -17,7 +17,7 @@ func getDefaults() config {
 	defaults.VideoSettings.OfflineContent = "static/offline.m4v"
 	defaults.InstanceDetails.ExtraInfoFile = "/static/content.md"
 	defaults.YP.Enabled = false
-	defaults.YP.YPServiceURL = "http://CHANGE.ME.ONCE.THERE.IS.A.PUBLIC.INSTANCE" // TODO: CHANGE
+	defaults.YP.YPServiceURL = "https://owncast-yp-test.gabek.vercel.app/home" // TODO: CHANGE
 
 	defaultQuality := StreamQuality{
 		IsAudioPassthrough: true,

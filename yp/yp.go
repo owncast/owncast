@@ -98,13 +98,6 @@ func (yp *YP) ping() {
 
 	if !pingResponse.Success {
 		log.Errorln("YP Ping error:", pingResponse.Error)
-
-		// If the error is "invalid key" then wipe our local key
-		// and allow us to re-register from scratch.
-		if pingResponse.ErrorCode == 100 {
-			os.Remove(".yp.key")
-		}
-
 		return
 	}
 
