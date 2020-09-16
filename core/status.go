@@ -50,4 +50,5 @@ func SetStreamAsDisconnected() {
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
 
 	ffmpeg.ShowStreamOfflineState()
+	resetDirectories()
 }
