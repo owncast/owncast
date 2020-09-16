@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -15,8 +16,9 @@ import (
 )
 
 var (
-	_stats   *models.Stats
-	_storage models.ChunkStorageProvider
+	_stats         *models.Stats
+	_storage       models.ChunkStorageProvider
+	_cleanupTicker *time.Ticker
 )
 
 //Start starts up the core processing
@@ -54,6 +56,25 @@ func createInitialOfflineState() error {
 	ffmpeg.ShowStreamOfflineState()
 
 	return nil
+}
+
+func startCleanupTimer() {
+	_cleanupTicker := time.NewTicker(5 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-_cleanupTicker.C:
+				resetDirectories()
+			}
+		}
+	}()
+}
+
+// StopCleanupTimer will stop the previous cleanup timer
+func stopCleanupTimer() {
+	if _cleanupTicker != nil {
+		_cleanupTicker.Stop()
+	}
 }
 
 func resetDirectories() {

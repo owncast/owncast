@@ -27,6 +27,8 @@ func GetStatus() models.Status {
 
 //SetStreamAsConnected sets the stream as connected
 func SetStreamAsConnected() {
+	stopCleanupTimer()
+
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
@@ -50,5 +52,5 @@ func SetStreamAsDisconnected() {
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
 
 	ffmpeg.ShowStreamOfflineState()
-	resetDirectories()
+	startCleanupTimer()
 }
