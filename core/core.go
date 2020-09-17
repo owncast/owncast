@@ -65,6 +65,7 @@ func startCleanupTimer() {
 			select {
 			case <-_cleanupTicker.C:
 				resetDirectories()
+				ffmpeg.ShowStreamOfflineState()
 			}
 		}
 	}()
