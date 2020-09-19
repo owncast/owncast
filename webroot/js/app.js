@@ -7,7 +7,7 @@ import SocialIcon from './components/social.js';
 import UsernameForm from './components/chat/username.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { secondsToHMMSS } from './utils/helpers.js';
+import { secondsToHMMSS, hasTouchScreen } from './utils/helpers.js';
 
 import {
   addNewlines,
@@ -67,6 +67,8 @@ export default class App extends Component {
       windowHeight: window.innerHeight,
     };
 
+    this.hasTouchScreen = hasTouchScreen();
+
     // timers
     this.playerRestartTimer = null;
     this.offlineTimer = null;
@@ -77,7 +79,7 @@ export default class App extends Component {
     // misc dom events
     this.handleChatPanelToggle = this.handleChatPanelToggle.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
-    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 400);
+    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 100);
 
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
     this.handleOnlineMode = this.handleOnlineMode.bind(this);
@@ -332,6 +334,7 @@ export default class App extends Component {
   }
 
   handleWindowResize() {
+    console.log("========== 1111 window.innerWidth", window.innerWidth, window.innerHeight)
     this.setState({
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
@@ -401,13 +404,14 @@ export default class App extends Component {
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE;
-    const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
+    const singleColMode = windowWidth <= WIDTH_SINGLE_COL;
     const extraAppClasses = classNames({
       chat: displayChat,
       'no-chat': !displayChat,
       'single-col': singleColMode,
       'bg-gray-800': singleColMode && displayChat,
-      'short-wide': shortHeight,
+      'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
+      'touch-screen': this.hasTouchScreen,
     });
 
     return html`

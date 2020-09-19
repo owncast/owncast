@@ -188,6 +188,13 @@ header {
   height: 3rem;
 }
 
+.single-col.touch-screen #stream-info {
+  height: 0;
+  padding: 0;
+}
+.single-col.touch-screen #stream-info span {
+  display: none;
+}
 
 
 /* ************************************************8 */
@@ -205,7 +212,4 @@ header {
     font-size: 1rem;
   }
 
-  #stream-info {
-    display: none;
-  }
 }

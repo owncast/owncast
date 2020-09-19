@@ -59,11 +59,11 @@ export default class Chat extends Component {
     }
   }
 
-  componentWillUnmount() {
-    if (hasTouchScreen()) {
-      window.removeEventListener("orientationchange", setVHvar);
-    }
-  }
+  // componentWillUnmount() {
+  //   if (hasTouchScreen()) {
+  //     window.removeEventListener("orientationchange", setVHvar);
+  //   }
+  // }
 
   setupWebSocketCallbacks() {
     this.websocket = this.props.websocket;

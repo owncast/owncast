@@ -250,7 +250,7 @@ export default class ChatInput extends Component {
             placeholderText=${placeholderText}
             innerRef=${this.formMessageInput}
             html=${inputHTML}
-            disabled=${!inputEnabled}
+            Xdisabled=${!inputEnabled}
             onChange=${this.handleContentEditableChange}
             onKeyDown=${this.handleMessageInputKeydown}
             onKeyUp=${this.handleMessageInputKeyup}
