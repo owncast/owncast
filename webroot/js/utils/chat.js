@@ -2,6 +2,7 @@ import {
   CHAT_INITIAL_PLACEHOLDER_TEXT,
   CHAT_PLACEHOLDER_TEXT,
   CHAT_PLACEHOLDER_OFFLINE,
+  CHAT_MAX_MESSAGE_LENGTH,
 } from './constants.js';
 
 export function formatMessageText(message, username) {
@@ -272,6 +273,12 @@ export function convertOnPaste( event = { preventDefault() {} }) {
 
   // Clean up text.
   value = convertToText(value);
+
+  // Limit to CHAT_MAX_MESSAGE_LENGTH
+  console.log(value.length);
+  if (value.length > CHAT_MAX_MESSAGE_LENGTH) {
+    value = value.substring(0, CHAT_MAX_MESSAGE_LENGTH);
+  }
 
   // Insert text.
   if (typeof document.execCommand === 'function') {

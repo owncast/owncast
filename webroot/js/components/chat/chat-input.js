@@ -6,7 +6,7 @@ import { EmojiButton } from 'https://cdn.skypack.dev/pin/@joeattardi/emoji-butto
 import ContentEditable from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
-import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT } from '../../utils/constants.js';
+import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT, CHAT_MAX_MESSAGE_LENGTH } from '../../utils/constants.js';
 
 export default class ChatInput extends Component {
   constructor(props, context) {
@@ -15,7 +15,6 @@ export default class ChatInput extends Component {
     this.emojiPickerButton = createRef();
 
     this.messageCharCount = 0;
-    this.maxMessageLength = 500;
     this.maxMessageBuffer = 20;
 
     this.emojiPicker = null;
@@ -148,7 +147,7 @@ export default class ChatInput extends Component {
 
     let textValue = formField.innerText.trim(); // get this only to count chars
 
-    let numCharsLeft = this.maxMessageLength - textValue.length;
+    let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
     const key = event.key;
 
     if (key === 'Enter') {
@@ -168,7 +167,7 @@ export default class ChatInput extends Component {
 
         // value could have been changed, update char count
         textValue = formField.innerText.trim();
-        numCharsLeft = this.maxMessageLength - textValue.length;
+        numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
       }
     }
 
