@@ -46,6 +46,8 @@
   opacity: 1.0;
 }
 
+#message-input::selection { background:#d7ddf4; }
+
 
 /* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
 #message-input:disabled,

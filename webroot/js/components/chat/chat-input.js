@@ -6,7 +6,13 @@ import { EmojiButton } from 'https://cdn.skypack.dev/pin/@joeattardi/emoji-butto
 import ContentEditable from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
-import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT } from '../../utils/constants.js';
+import {
+  URL_CUSTOM_EMOJIS,
+  KEY_CHAT_FIRST_MESSAGE_SENT,
+  CHAT_MAX_MESSAGE_LENGTH,
+  CHAT_OK_KEYCODES,
+  CHAT_KEY_MODIFIERS,
+} from '../../utils/constants.js';
 
 export default class ChatInput extends Component {
   constructor(props, context) {
@@ -15,15 +21,17 @@ export default class ChatInput extends Component {
     this.emojiPickerButton = createRef();
 
     this.messageCharCount = 0;
-    this.maxMessageLength = 500;
+    // this.maxMessageLength = 500;
     this.maxMessageBuffer = 20;
 
     this.emojiPicker = null;
 
     this.prepNewLine = false;
+    this.modifierKeyPressed = false; // control/meta/shift/alt
 
     this.state = {
       inputHTML: '',
+      inputText: '', // for counting
       inputWarning: '',
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
     };
@@ -133,23 +141,12 @@ export default class ChatInput extends Component {
   }
 
   handleMessageInputKeydown(event) {
-    const okCodes = [
-      'ArrowLeft',
-      'ArrowUp',
-      'ArrowRight',
-      'ArrowDown',
-      'Shift',
-      'Meta',
-      'Alt',
-      'Delete',
-      'Backspace',
-    ];
     const formField = this.formMessageInput.current;
 
     let textValue = formField.innerText.trim(); // get this only to count chars
-
-    let numCharsLeft = this.maxMessageLength - textValue.length;
-    const key = event.key;
+    const newStates = {};
+    let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
+    const key = event && event.key;
 
     if (key === 'Enter') {
       if (!this.prepNewLine) {
@@ -158,6 +155,10 @@ export default class ChatInput extends Component {
         this.prepNewLine = false;
         return;
       }
+    }
+    // allow key presses such as command/shift/meta, etc even when message length is full later.
+    if (CHAT_KEY_MODIFIERS.includes(key)) {
+      this.modifierKeyPressed = true;
     }
     if (key === 'Control' || key === 'Shift') {
       this.prepNewLine = true;
@@ -168,29 +169,35 @@ export default class ChatInput extends Component {
 
         // value could have been changed, update char count
         textValue = formField.innerText.trim();
-        numCharsLeft = this.maxMessageLength - textValue.length;
+        numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
       }
     }
 
     // text count
     if (numCharsLeft <= this.maxMessageBuffer) {
-      this.setState({
-        inputWarning: `${numCharsLeft} chars left`,
-      });
-      if (numCharsLeft <= 0 && !okCodes.includes(key)) {
-        event.preventDefault(); // prevent typing more
+      newStates.inputWarning = `${numCharsLeft} chars left`;
+      if (numCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
+        newStates.inputText = textValue;
+        this.setState(newStates);
+        if (!this.modifierKeyPressed) {
+          event.preventDefault(); // prevent typing more
+        }
         return;
       }
     } else {
-      this.setState({
-        inputWarning: '',
-      });
+      newStates.inputWarning = '';
     }
+    newStates.inputText = textValue;
+    this.setState(newStates);
   }
 
   handleMessageInputKeyup(event) {
-    if (event.key === 'Control' || event.key === 'Shift') {
+    const { key } = event;
+    if (key === 'Control' || key === 'Shift') {
      this.prepNewLine = false;
+    }
+    if (CHAT_KEY_MODIFIERS.includes(key)) {
+      this.modifierKeyPressed = false;
     }
   }
 
@@ -199,7 +206,13 @@ export default class ChatInput extends Component {
   }
 
   handlePaste(event) {
+    // don't allow paste if too much text already
+    if (CHAT_MAX_MESSAGE_LENGTH - this.state.inputText.length < 0) {
+      event.preventDefault();
+      return;
+    }
     convertOnPaste(event);
+    this.handleMessageInputKeydown(event);
   }
 
   handleSubmitChatButton(event) {
@@ -209,11 +222,15 @@ export default class ChatInput extends Component {
 
   sendMessage() {
     const { handleSendMessage } = this.props;
-    const { hasSentFirstChatMessage, inputHTML } = this.state;
+    const { hasSentFirstChatMessage, inputHTML, inputText } = this.state;
+    if (CHAT_MAX_MESSAGE_LENGTH - inputText.length < 0) {
+      return;
+    }
     const message = convertToText(inputHTML);
     const newStates = {
       inputWarning: '',
       inputHTML: '',
+      inputText: '',
     };
 
     handleSendMessage(message);
@@ -250,7 +267,7 @@ export default class ChatInput extends Component {
             placeholderText=${placeholderText}
             innerRef=${this.formMessageInput}
             html=${inputHTML}
-            Xdisabled=${!inputEnabled}
+            disabled=${!inputEnabled}
             onChange=${this.handleContentEditableChange}
             onKeyDown=${this.handleMessageInputKeydown}
             onKeyUp=${this.handleMessageInputKeyup}
