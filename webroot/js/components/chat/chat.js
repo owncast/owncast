@@ -194,7 +194,7 @@ export default class Chat extends Component {
         <div
           id="messages-container"
           ref=${this.scrollableMessagesContainer}
-          class="py-1 overflow-auto"
+          class="scrollbar-hidden py-1 overflow-auto"
         >
           ${messageList}
         </div>
@@ -205,7 +205,7 @@ export default class Chat extends Component {
       <section id="chat-container-wrap" class="flex flex-col">
         <div
           id="chat-container"
-          class="bg-gray-800 flex flex-col justify-end overflow-auto"
+          class="scrollbar-hidden bg-gray-800 flex flex-col justify-end overflow-auto"
         >
           <div
             id="messages-container"

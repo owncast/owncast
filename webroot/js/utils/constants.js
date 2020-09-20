@@ -36,7 +36,7 @@ export const CHAT_OK_KEYCODES = [
   'Shift',
   'Meta',
   'Alt',
-  'Delete',
+  // 'Delete',
   'Backspace',
 ];
 export const CHAT_KEY_MODIFIERS = [

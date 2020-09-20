@@ -20,10 +20,11 @@ a:hover {
   text-decoration: underline;
 }
 
-::-webkit-scrollbar {
+.scrollbar-hidden::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
+
 
 #app-container * {
   transition: all .25s;
@@ -184,18 +185,26 @@ header {
   width: 100%;
 }
 
-.single-col #message-input {
+/* .single-col #message-input {
   height: 3rem;
-}
+} */
 
-.single-col.touch-screen #stream-info {
+.single-col #stream-info {
   height: 0;
   padding: 0;
 }
-.single-col.touch-screen #stream-info span {
+.single-col #stream-info span {
   display: none;
 }
+/* Hide emoji button on small screens */
+.single-col #emoji-button {
+  /* Emoji library overrides this so important is needed */
+  display: none !important;
+}
 
+.single-col #message-input-wrap {
+  max-height: 3em;
+}
 
 /* ************************************************8 */
 
