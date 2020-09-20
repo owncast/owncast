@@ -28,6 +28,7 @@ export const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account nece
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
 export const CHAT_MAX_MESSAGE_LENGTH = 500;
+export const CHAT_CHAR_COUNT_BUFFER = 20;
 export const CHAT_OK_KEYCODES = [
   'ArrowLeft',
   'ArrowUp',

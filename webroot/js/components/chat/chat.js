@@ -5,7 +5,7 @@ const html = htm.bind(h);
 import Message from './message.js';
 import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
-import { setVHvar, hasTouchScreen, jumpToBottom } from '../../utils/helpers.js';
+import { jumpToBottom } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
 import { URL_CHAT_HISTORY } from '../../utils/constants.js';
 
@@ -35,11 +35,6 @@ export default class Chat extends Component {
   componentDidMount() {
    this.setupWebSocketCallbacks();
    this.getChatHistory();
-
-   if (hasTouchScreen()) {
-    // setVHvar();
-    // window.addEventListener("orientationchange", setVHvar);
-    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -58,12 +53,6 @@ export default class Chat extends Component {
       this.jumpToBottomPending = true;
     }
   }
-
-  // componentWillUnmount() {
-  //   if (hasTouchScreen()) {
-  //     window.removeEventListener("orientationchange", setVHvar);
-  //   }
-  // }
 
   setupWebSocketCallbacks() {
     this.websocket = this.props.websocket;

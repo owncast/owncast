@@ -10,6 +10,7 @@ import {
   URL_CUSTOM_EMOJIS,
   KEY_CHAT_FIRST_MESSAGE_SENT,
   CHAT_MAX_MESSAGE_LENGTH,
+  CHAT_CHAR_COUNT_BUFFER,
   CHAT_OK_KEYCODES,
   CHAT_KEY_MODIFIERS,
 } from '../../utils/constants.js';
@@ -21,8 +22,6 @@ export default class ChatInput extends Component {
     this.emojiPickerButton = createRef();
 
     this.messageCharCount = 0;
-    // this.maxMessageLength = 500;
-    this.maxMessageBuffer = 20;
 
     this.emojiPicker = null;
 
@@ -32,7 +31,6 @@ export default class ChatInput extends Component {
     this.state = {
       inputHTML: '',
       inputText: '', // for counting
-      // inputWarning: '',
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH,
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
     };
@@ -175,7 +173,7 @@ export default class ChatInput extends Component {
     }
 
     // text count
-    if (numCharsLeft <= this.maxMessageBuffer) {
+    if (numCharsLeft <= CHAT_CHAR_COUNT_BUFFER) {
       newStates.inputCharsLeft = numCharsLeft;
 
       if (numCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
@@ -256,7 +254,7 @@ export default class ChatInput extends Component {
       display: this.emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
     };
     const extraClasses = classNames({
-      'display-count': inputCharsLeft <= this.maxMessageBuffer,
+      'display-count': inputCharsLeft <= CHAT_CHAR_COUNT_BUFFER,
     });
     const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
     return (
@@ -293,7 +291,7 @@ export default class ChatInput extends Component {
                 disabled=${!inputEnabled}
               ><img src="../../../img/smiley.png" /></button>
 
-              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${this.maxMessageBuffer}</span>
+              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_CHAR_COUNT_BUFFER}</span>
             </div>
       </div>
     `);

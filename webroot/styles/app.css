@@ -199,7 +199,7 @@ header {
 /* Hide emoji button on small screens */
 .single-col #emoji-button {
   /* Emoji library overrides this so important is needed */
-  display: none !important;
+  /* display: none !important; */
 }
 
 .single-col #message-input-wrap {
