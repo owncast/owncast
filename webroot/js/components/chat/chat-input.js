@@ -63,11 +63,11 @@ export default class ChatInput extends Component {
       .then(json => {
         this.emojiPicker = new EmojiButton({
           zIndex: 100,
-          theme: 'dark',
+          theme: 'owncast', // see chat.css
           custom: json,
           initialCategory: 'custom',
           showPreview: false,
-          emojiSize: '30px',
+          emojiSize: '24px',
           position: 'right-start',
           strategy: 'absolute',
         });
