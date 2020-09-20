@@ -255,10 +255,9 @@ export default class ChatInput extends Component {
     const emojiButtonStyle = {
       display: this.emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
     };
-    // const extraClasses = classNames({
-    //   'display-count':  //remaining<=buffer
-    //   'display-emojibutton' //remaining<0
-    // })
+    const extraClasses = classNames({
+      'display-count': inputCharsLeft <= this.maxMessageBuffer,
+    });
     const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
     return (
       html`
@@ -283,7 +282,7 @@ export default class ChatInput extends Component {
               onPaste=${this.handlePaste}
             />
           </div>
-          <div id="message-form-actions" class="absolute flex flex-col w-10 justify-center items-center">
+          <div id="message-form-actions" class="absolute flex flex-col w-10 justify-end items-center">
               <button
                 ref=${this.emojiPickerButton}
                 id="emoji-button"
@@ -292,9 +291,9 @@ export default class ChatInput extends Component {
                 style=${emojiButtonStyle}
                 onclick=${this.handleEmojiButtonClick}
                 disabled=${!inputEnabled}
-              >☺</button>
+              ><img src="../../../img/smiley.png" /></button>
 
-              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span>
+              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${this.maxMessageBuffer}</span>
             </div>
       </div>
     `);
