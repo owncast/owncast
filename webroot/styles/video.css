@@ -14,7 +14,9 @@ video.video-js {
 videojs hack!!
 for some reason, there are cases where a <video class="vjs-tech"> element gets embedded twice.
 we only want the first one. the second obstructs the layout.
+Some context here:
+https://github.com/owncast/owncast/issues/165
 */
-.vjs-tech:not(:first-child) {
+video.vjs-tech:not([src]) {
   display: none;
 }

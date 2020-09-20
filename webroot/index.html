@@ -17,25 +17,34 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
+
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"/>
 
-    <link href="//unpkg.com/video.js@7.9.3/dist/video-js.css" rel="stylesheet"/>
+    <link href="//unpkg.com/video.js@7.9.3/dist/video-js.css" rel="stylesheet" />
     <link href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css" rel="stylesheet" />
-    <script src="//unpkg.com/video.js@7.9.3/dist/alt/video.core.min.js"></script>
-    <script src="//unpkg.com/@videojs/http-streaming@2.1.0/dist/videojs-http-streaming.min.js"></script>
+
+    <script src="//unpkg.com/video.js@7.9.3/dist/alt/video.core.min.js" defer></script>
+    <script src="//unpkg.com/@videojs/http-streaming@2.1.0/dist/videojs-http-streaming.min.js" defer></script>
+
     <!-- markdown renderer -->
-    <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@0.6.2/lite-youtube.js"></script>
+    <script src="//unpkg.com/showdown/dist/showdown.min.js" defer></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@0.6.2/lite-youtube.js" defer></script>
 
 
     <link href="./styles/video.css" rel="stylesheet" />
     <link href="./styles/chat.css" rel="stylesheet" />
     <link href="./styles/user-content.css" rel="stylesheet" />
     <link href="./styles/app.css" rel="stylesheet" />
+
+    <!-- Preloads -->
+    <link rel="preconnect" href="https://cdn.skypack.dev/pin/@joeattardi/emoji-button@v4.1.0-v8psdkkxts3LNdpA0m5Q/min/@joeattardi/emoji-button.js" />
+    <link rel="preconnect" href="https://unpkg.com/preact?module" />
+    <link rel="preconnect" href="https://unpkg.com/htm?module" />
+
   </head>
   <body class="scrollbar-hidden bg-gray-300 text-gray-800">
     <div id="app"></div>

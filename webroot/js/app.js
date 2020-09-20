@@ -43,7 +43,7 @@ export default class App extends Component {
 
     this.state = {
       websocket: new Websocket(),
-      displayChat: getLocalStorage(KEY_CHAT_DISPLAYED) || true, // chat panel state
+      displayChat: getLocalStorage(KEY_CHAT_DISPLAYED), // chat panel state
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       userAvatarImage:
