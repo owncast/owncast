@@ -7,7 +7,7 @@ import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 import { jumpToBottom } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
-import { URL_CHAT_HISTORY } from '../../utils/constants.js';
+import { URL_CHAT_HISTORY, MESSAGE_JUMPTOBOTTOM_BUFFER } from '../../utils/constants.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
@@ -29,7 +29,7 @@ export default class Chat extends Component {
     this.submitChat = this.submitChat.bind(this);
     this.submitChat = this.submitChat.bind(this);
     this.scrollToBottom = this.scrollToBottom.bind(this);
-    this.jumpToBottomPending = false;
+    // this.jumpToBottomPending = false;
   }
 
   componentDidMount() {
@@ -50,7 +50,12 @@ export default class Chat extends Component {
     }
     // scroll to bottom of messages list when new ones come in
     if (messages.length > prevMessages.length) {
-      this.jumpToBottomPending = true;
+
+      if (!prevMessages.length || this.checkShouldScroll()) {
+        window.requestAnimationFrame(this.scrollToBottom);
+      }
+      // this.scrollToBottom()
+      // this.jumpToBottomPending = true;
     }
   }
 
@@ -157,6 +162,13 @@ export default class Chat extends Component {
     jumpToBottom(this.scrollableMessagesContainer.current);
   }
 
+  checkShouldScroll() {
+    const { scrollTop, scrollHeight, clientHeight } = this.scrollableMessagesContainer.current;
+    const fullyScrolled = scrollHeight - clientHeight;
+
+    return scrollHeight >= clientHeight && fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
+  }
+
   render(props, state) {
     const { username, messagesOnly, chatInputEnabled } = props;
     const { messages, chatUserNames } = state;
@@ -173,10 +185,10 @@ export default class Chat extends Component {
     // After the render completes (based on requestAnimationFrame) then jump to bottom.
     // This hopefully fixes the race conditions where jumpTobottom fires before the
     // DOM element has re-drawn with its new size.
-    if (this.jumpToBottomPending) {
-      this.jumpToBottomPending = false;
-      window.requestAnimationFrame(this.scrollToBottom);
-    }
+    // if (this.jumpToBottomPending) {
+    //   this.jumpToBottomPending = false;
+    //   window.requestAnimationFrame(this.scrollToBottom);
+    // }
 
     if (messagesOnly) {
       return html`

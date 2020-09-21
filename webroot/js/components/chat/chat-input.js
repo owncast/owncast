@@ -147,8 +147,6 @@ export default class ChatInput extends Component {
     let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
     const key = event && event.key;
 
-    console.log(key, textValue.length, numCharsLeft)
-
     if (key === 'Enter') {
       if (!this.prepNewLine) {
         this.sendMessage();
