@@ -334,6 +334,7 @@ export default class App extends Component {
   }
 
   handleWindowResize() {
+    console.log("=======window.innerHeight", window.innerHeight, window.innerWidth)
     this.setState({
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
@@ -402,8 +403,10 @@ export default class App extends Component {
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
-    const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL;
+
+    const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE;
+
     const extraAppClasses = classNames({
       chat: displayChat,
       'no-chat': !displayChat,

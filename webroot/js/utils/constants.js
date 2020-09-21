@@ -51,3 +51,4 @@ export const CHAT_KEY_MODIFIERS = [
 // app styling
 export const WIDTH_SINGLE_COL = 730;
 export const HEIGHT_SHORT_WIDE = 500;
+export const HEIGHT_ULTRA_SHORT_MOBILE = 400;

@@ -34,7 +34,7 @@ export default class Chat extends Component {
 
   componentDidMount() {
    this.setupWebSocketCallbacks();
-  //  this.getChatHistory();
+   this.getChatHistory();
   }
 
   componentDidUpdate(prevProps, prevState) {

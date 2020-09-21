@@ -14,11 +14,6 @@
   width: var(--right-col-width);
 }
 
-#messages-container {
-  /* margin-bottom: 10rem; */
-  /* flex-grow: 4; */
-}
-
 #message-input-wrap {
   min-height: 2.5rem;
   max-height: 5rem;

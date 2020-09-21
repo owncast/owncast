@@ -175,6 +175,10 @@ header {
 .single-col.chat #user-content {
   display: none;
 }
+.single-col #messages-container {
+  flex-grow: 2;
+  margin-top: calc(var(--video-container-height));
+}
 .single-col #message-input-container {
   width: 100%;
 }
@@ -190,6 +194,16 @@ header {
 .single-col #message-input-wrap {
   max-height: 3em;
 }
+
+@media screen and (max-height: 500px) {
+  .single-col.touch-screen {
+    --header-height: 0px;
+  }
+  .single-col.touch-screen header {
+    display: none;
+  }
+}
+
 
 /* ************************************************8 */
 
