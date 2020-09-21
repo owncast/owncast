@@ -129,6 +129,9 @@
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
+.message-text {
+  word-break: break-word;
+}
 .message-text a {
   color: #7F9CF5; /* indigo-400 */
 }
