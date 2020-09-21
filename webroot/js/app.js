@@ -41,9 +41,11 @@ export default class App extends Component {
   constructor(props, context) {
     super(props, context);
 
+    const chatStorage = getLocalStorage(KEY_CHAT_DISPLAYED);
+
     this.state = {
       websocket: new Websocket(),
-      displayChat: getLocalStorage(KEY_CHAT_DISPLAYED), // chat panel state
+      displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       userAvatarImage:
