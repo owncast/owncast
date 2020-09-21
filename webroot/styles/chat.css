@@ -15,7 +15,8 @@
 }
 
 #messages-container {
-  margin-bottom: 10rem;
+  /* margin-bottom: 10rem; */
+  /* flex-grow: 4; */
 }
 
 #message-input-wrap {

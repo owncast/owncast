@@ -126,8 +126,6 @@ header {
   height: calc((9 / 16) * var(--content-width));
 }
 
-
-
 .short-wide.chat #video-container {
   height: calc(100vh - var(--header-height) - 3rem);
   min-height: auto;
@@ -152,15 +150,11 @@ header {
   z-index: 40;
 }
 .single-col #chat-container {
-  position: relative;
+  position: fixed;
+  bottom: 0;
   width: 100%;
   height: auto;
-  min-height: 800px;
 }
-/* .single-col #video-container {
-  min-height: auto;
-  width: 100%;
-} */
 
 .single-col.chat #video-container,
 .single-col.no-chat #video-container,
@@ -185,21 +179,12 @@ header {
   width: 100%;
 }
 
-/* .single-col #message-input {
-  height: 3rem;
-} */
-
 .single-col #stream-info {
   height: 0;
   padding: 0;
 }
 .single-col #stream-info span {
   display: none;
-}
-/* Hide emoji button on small screens */
-.single-col #emoji-button {
-  /* Emoji library overrides this so important is needed */
-  /* display: none !important; */
 }
 
 .single-col #message-input-wrap {

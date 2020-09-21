@@ -34,7 +34,7 @@ export default class Chat extends Component {
 
   componentDidMount() {
    this.setupWebSocketCallbacks();
-   this.getChatHistory();
+  //  this.getChatHistory();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -194,12 +194,12 @@ export default class Chat extends Component {
       <section id="chat-container-wrap" class="flex flex-col">
         <div
           id="chat-container"
-          class="scrollbar-hidden bg-gray-800 flex flex-col justify-end overflow-auto"
+          class="bg-gray-800 flex flex-col justify-end overflow-auto"
         >
           <div
             id="messages-container"
             ref=${this.scrollableMessagesContainer}
-            class="py-1 overflow-auto z-10"
+            class="scrollbar-hidden py-1 overflow-auto z-10"
           >
             ${messageList}
           </div>
