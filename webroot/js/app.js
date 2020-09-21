@@ -334,7 +334,6 @@ export default class App extends Component {
   }
 
   handleWindowResize() {
-    console.log("=======window.innerHeight", window.innerHeight, window.innerWidth)
     this.setState({
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
