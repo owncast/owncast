@@ -20,6 +20,7 @@ export default class Chat extends Component {
     };
 
     this.scrollableMessagesContainer = createRef();
+    this.jumpToBottomPendingId = null;
 
     this.websocket = null;
 
@@ -35,6 +36,7 @@ export default class Chat extends Component {
   componentDidMount() {
    this.setupWebSocketCallbacks();
    this.getChatHistory();
+   window.addEventListener('resize', this.scrollToBottom);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -50,13 +52,14 @@ export default class Chat extends Component {
     }
     // scroll to bottom of messages list when new ones come in
     if (messages.length > prevMessages.length) {
-
       if (!prevMessages.length || this.checkShouldScroll()) {
-        window.requestAnimationFrame(this.scrollToBottom);
+        this.prepScrollToBottom();
       }
-      // this.scrollToBottom()
-      // this.jumpToBottomPending = true;
     }
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.prepScrollToBottom);
+    window.cancelAnimationFrame(this.frameId);
   }
 
   setupWebSocketCallbacks() {
@@ -158,6 +161,9 @@ export default class Chat extends Component {
     return [];
   }
 
+  prepScrollToBottom() {
+    this.jumpToBottomPending = true;
+  }
   scrollToBottom() {
     jumpToBottom(this.scrollableMessagesContainer.current);
   }
@@ -185,10 +191,10 @@ export default class Chat extends Component {
     // After the render completes (based on requestAnimationFrame) then jump to bottom.
     // This hopefully fixes the race conditions where jumpTobottom fires before the
     // DOM element has re-drawn with its new size.
-    // if (this.jumpToBottomPending) {
-    //   this.jumpToBottomPending = false;
-    //   window.requestAnimationFrame(this.scrollToBottom);
-    // }
+    if (this.jumpToBottomPending) {
+      this.jumpToBottomPending = false;
+      this.jumpToBottomPendingId = window.requestAnimationFrame(this.scrollToBottom);
+    }
 
     if (messagesOnly) {
       return html`
