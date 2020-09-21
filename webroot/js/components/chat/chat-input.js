@@ -147,6 +147,8 @@ export default class ChatInput extends Component {
     let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
     const key = event && event.key;
 
+    console.log(key, textValue.length, numCharsLeft)
+
     if (key === 'Enter') {
       if (!this.prepNewLine) {
         this.sendMessage();
@@ -172,36 +174,38 @@ export default class ChatInput extends Component {
       }
     }
 
-    // text count
-    if (numCharsLeft <= CHAT_CHAR_COUNT_BUFFER) {
-      newStates.inputCharsLeft = numCharsLeft;
-
-      if (numCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
-        newStates.inputText = textValue;
-        this.setState(newStates);
-        if (!this.modifierKeyPressed) {
-          event.preventDefault(); // prevent typing more
-        }
-        return;
+    if (numCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
+      newStates.inputText = textValue;
+      this.setState(newStates);
+      if (!this.modifierKeyPressed) {
+        event.preventDefault(); // prevent typing more
       }
+      return;
     }
     newStates.inputText = textValue;
-    newStates.inputCharsLeft = numCharsLeft;
     this.setState(newStates);
   }
 
   handleMessageInputKeyup(event) {
+    const formField = this.formMessageInput.current;
+    const textValue = formField.innerText.trim(); // get this only to count chars
+
     const { key } = event;
+
     if (key === 'Control' || key === 'Shift') {
      this.prepNewLine = false;
     }
     if (CHAT_KEY_MODIFIERS.includes(key)) {
       this.modifierKeyPressed = false;
     }
+    this.setState({
+      inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH - textValue.length,
+    });
   }
 
   handleMessageInputBlur(event) {
     this.prepNewLine = false;
+    this.modifierKeyPressed = false;
   }
 
   handlePaste(event) {
@@ -291,7 +295,7 @@ export default class ChatInput extends Component {
                 disabled=${!inputEnabled}
               ><img src="../../../img/smiley.png" /></button>
 
-              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_CHAR_COUNT_BUFFER}</span>
+              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span>
             </div>
       </div>
     `);

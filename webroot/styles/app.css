@@ -49,6 +49,7 @@ button[disabled] {
 header {
   height: var(--header-height);
   background-color: var(--header-bg-color);
+  display: block;
 }
 
 #logo-container {
