@@ -59,7 +59,7 @@ export default class Chat extends Component {
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.prepScrollToBottom);
-    window.cancelAnimationFrame(this.frameId);
+    window.cancelAnimationFrame(this.jumpToBottomPendingId);
   }
 
   setupWebSocketCallbacks() {
