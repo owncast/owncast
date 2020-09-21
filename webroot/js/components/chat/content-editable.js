@@ -8,7 +8,7 @@ https://stackoverflow.com/questions/22677931/react-js-onchange-event-for-content
 */
 import { Component, createRef, h } from 'https://unpkg.com/preact?module';
 
-function replaceCaret(el) {
+export function replaceCaret(el) {
   // Place the caret at the end of the element
   const target = document.createTextNode('');
   el.appendChild(target);
@@ -69,8 +69,6 @@ export default class ContentEditable extends Component {
       props.innerRef !== nextProps.innerRef;
   }
 
-
-
   componentDidUpdate() {
     const el = this.getDOMElement();
     if (!el) return;
@@ -118,6 +116,7 @@ export default class ContentEditable extends Component {
           this.el.current = current
         } : innerRef || this.el,
         onInput: this.emitChange,
+        onFocus: this.props.onFocus || this.emitChange,
         onBlur: this.props.onBlur || this.emitChange,
         onKeyup: this.props.onKeyUp || this.emitChange,
         onKeydown: this.props.onKeyDown || this.emitChange,

@@ -3,7 +3,7 @@ import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 import { EmojiButton } from 'https://cdn.skypack.dev/pin/@joeattardi/emoji-button@v4.1.0-v8psdkkxts3LNdpA0m5Q/min/@joeattardi/emoji-button.js';
-import ContentEditable from './content-editable.js';
+import ContentEditable, { replaceCaret } from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage, classNames } from '../../utils/helpers.js';
 import {
@@ -100,6 +100,12 @@ export default class ChatInput extends Component {
     this.setState({
       inputHTML: inputHTML + content,
     });
+    // a hacky way add focus back into input field
+    setTimeout( () => {
+      const input = this.formMessageInput.current;
+      input.focus();
+      replaceCaret(input);
+     }, 100);
   }
 
   // autocomplete user names
