@@ -9,7 +9,7 @@ export function messageBubbleColorForString(str) {
   const saturation = 75;
   const lightness = 65;
   const alpha = 1.0;
-  const hue = parseInt(Math.abs(hash), 16) % 300;
+  const hue = parseInt(Math.abs(hash), 16) % 360;
 
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 }
