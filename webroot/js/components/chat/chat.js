@@ -14,7 +14,7 @@ export default class Chat extends Component {
     super(props, context);
 
     this.state = {
-      inputEnabled: true,
+      webSocketConnected: true,
       messages: [],
       chatUserNames: [],
     };
@@ -25,6 +25,7 @@ export default class Chat extends Component {
 
     this.getChatHistory = this.getChatHistory.bind(this);
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
+    this.websocketConnected = this.websocketConnected.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
     this.submitChat = this.submitChat.bind(this);
     this.submitChat = this.submitChat.bind(this);
@@ -64,6 +65,7 @@ export default class Chat extends Component {
     this.websocket = this.props.websocket;
     if (this.websocket) {
       this.websocket.addListener(CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED, this.receivedWebsocketMessage);
+      this.websocket.addListener(CALLBACKS.WEBSOCKET_CONNECTED, this.websocketConnected);
       this.websocket.addListener(CALLBACKS.WEBSOCKET_DISCONNECTED, this.websocketDisconnected);
     }
   }
@@ -124,11 +126,21 @@ export default class Chat extends Component {
     }
   }
 
-  websocketDisconnected() {
+  websocketConnected() {
+    console.log("=======socket connected.")
     this.setState({
-      inputEnabled: false,
+      webSocketConnected: true,
     });
   }
+
+  websocketDisconnected() {
+    console.log("=======socket not connected.")
+
+    this.setState({
+      webSocketConnected: false,
+    });
+  }
+
 
   submitChat(content) {
 		if (!content) {
@@ -178,7 +190,7 @@ export default class Chat extends Component {
 
   render(props, state) {
     const { username, messagesOnly, chatInputEnabled } = props;
-    const { messages, chatUserNames } = state;
+    const { messages, chatUserNames, webSocketConnected } = state;
 
     const messageList = messages.map(
       (message) =>
@@ -216,7 +228,7 @@ export default class Chat extends Component {
           </div>
           <${ChatInput}
             chatUserNames=${chatUserNames}
-            inputEnabled=${chatInputEnabled}
+            inputEnabled=${webSocketConnected && chatInputEnabled}
             handleSendMessage=${this.submitChat}
           />
         </div>
