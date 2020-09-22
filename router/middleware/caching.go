@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 
@@ -15,8 +16,7 @@ func DisableCache(w http.ResponseWriter) {
 	w.Header().Set("Expires", "Thu, 1 Jan 1970 00:00:00 GMT")
 }
 
-//SetCacheSeconds will set the cache control header of a response
-func SetCacheSeconds(seconds int, w http.ResponseWriter) {
+func setCacheSeconds(seconds int, w http.ResponseWriter) {
 	secondsStr := strconv.Itoa(seconds)
 	w.Header().Set("Cache-Control", "public, max-age="+secondsStr)
 }
@@ -38,4 +38,27 @@ func ProcessEtags(w http.ResponseWriter, r *http.Request) int {
 	w.Header().Set("Etag", localContentEtag)
 
 	return 0
+}
+
+// SetCachingHeaders will set the cache control header of a response
+func SetCachingHeaders(w http.ResponseWriter, r *http.Request) {
+	setCacheSeconds(getCacheDurationSecondsForPath(r.URL.Path), w)
+}
+
+func getCacheDurationSecondsForPath(filePath string) int {
+	if path.Base(filePath) == "thumbnail.jpg" {
+		// Thumbnails re-generate during live
+		return 20
+	} else if path.Ext(filePath) == ".js" || path.Ext(filePath) == ".css" {
+		// Cache javascript & CSS
+		return 60
+	} else if path.Ext(filePath) == ".ts" {
+		// Cache video segments as long as you want. They can't change.
+		// This matters most for local hosting of segments for recordings
+		// and not for live or 3rd party storage.
+		return 31557600
+	}
+
+	// Default cache length in seconds
+	return 30 * 60
 }
