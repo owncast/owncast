@@ -37,8 +37,16 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// For search engine bots and social scrapers return a special
+	// server-rendered page.
 	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
 		handleScraperMetadataPage(w, r)
+		return
+	}
+
+	// If the ETags match then return a StatusNotModified
+	if responseCode := middleware.ProcessEtags(w, r); responseCode != 0 {
+		w.WriteHeader(responseCode)
 		return
 	}
 
@@ -48,11 +56,26 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		clientID := utils.GenerateClientIDFromRequest(r)
 		core.SetClientActive(clientID)
 	} else {
-		// Set a cache control header of one day
-		middleware.SetCache(1, w)
+		// Set a cache control max-age header
+		middleware.SetCacheSeconds(getCacheDurationSecondsForPath(r.URL.Path), w)
 	}
 
 	http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
+}
+
+func getCacheDurationSecondsForPath(filePath string) int {
+	if path.Ext(filePath) == ".m3u8" {
+		return 0
+	} else if path.Base(filePath) == "thumbnail.jpg" {
+		// Thumbnails re-generate during live
+		return 20
+	} else if path.Ext(filePath) == ".js" || path.Ext(filePath) == ".css" {
+		// Cache javascript & CSS
+		return 60
+	}
+
+	// Default cache length in seconds
+	return 30 * 60
 }
 
 // Return a basic HTML page with server-rendered metadata from the config file
