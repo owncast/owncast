@@ -27,7 +27,26 @@ export const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
 export const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
-
+export const CHAT_MAX_MESSAGE_LENGTH = 500;
+export const CHAT_CHAR_COUNT_BUFFER = 20;
+export const CHAT_OK_KEYCODES = [
+  'ArrowLeft',
+  'ArrowUp',
+  'ArrowRight',
+  'ArrowDown',
+  'Shift',
+  'Meta',
+  'Alt',
+  'Delete',
+  'Backspace',
+];
+export const CHAT_KEY_MODIFIERS = [
+  'Control',
+  'Shift',
+  'Meta',
+  'Alt',
+];
+export const MESSAGE_JUMPTOBOTTOM_BUFFER = 260;
 
 // app styling
 export const WIDTH_SINGLE_COL = 730;

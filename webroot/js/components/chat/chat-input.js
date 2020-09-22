@@ -3,10 +3,17 @@ import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 import { EmojiButton } from 'https://cdn.skypack.dev/pin/@joeattardi/emoji-button@v4.1.0-v8psdkkxts3LNdpA0m5Q/min/@joeattardi/emoji-button.js';
-import ContentEditable from './content-editable.js';
+import ContentEditable, { replaceCaret } from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
-import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
-import { URL_CUSTOM_EMOJIS, KEY_CHAT_FIRST_MESSAGE_SENT } from '../../utils/constants.js';
+import { getLocalStorage, setLocalStorage, classNames } from '../../utils/helpers.js';
+import {
+  URL_CUSTOM_EMOJIS,
+  KEY_CHAT_FIRST_MESSAGE_SENT,
+  CHAT_MAX_MESSAGE_LENGTH,
+  CHAT_CHAR_COUNT_BUFFER,
+  CHAT_OK_KEYCODES,
+  CHAT_KEY_MODIFIERS,
+} from '../../utils/constants.js';
 
 export default class ChatInput extends Component {
   constructor(props, context) {
@@ -15,16 +22,16 @@ export default class ChatInput extends Component {
     this.emojiPickerButton = createRef();
 
     this.messageCharCount = 0;
-    this.maxMessageLength = 500;
-    this.maxMessageBuffer = 20;
 
     this.emojiPicker = null;
 
     this.prepNewLine = false;
+    this.modifierKeyPressed = false; // control/meta/shift/alt
 
     this.state = {
       inputHTML: '',
-      inputWarning: '',
+      inputText: '', // for counting
+      inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH,
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
     };
 
@@ -56,11 +63,11 @@ export default class ChatInput extends Component {
       .then(json => {
         this.emojiPicker = new EmojiButton({
           zIndex: 100,
-          theme: 'dark',
+          theme: 'owncast', // see chat.css
           custom: json,
           initialCategory: 'custom',
           showPreview: false,
-          emojiSize: '30px',
+          emojiSize: '24px',
           position: 'right-start',
           strategy: 'absolute',
         });
@@ -93,6 +100,12 @@ export default class ChatInput extends Component {
     this.setState({
       inputHTML: inputHTML + content,
     });
+    // a hacky way add focus back into input field
+    setTimeout( () => {
+      const input = this.formMessageInput.current;
+      input.focus();
+      replaceCaret(input);
+     }, 100);
   }
 
   // autocomplete user names
@@ -133,23 +146,12 @@ export default class ChatInput extends Component {
   }
 
   handleMessageInputKeydown(event) {
-    const okCodes = [
-      'ArrowLeft',
-      'ArrowUp',
-      'ArrowRight',
-      'ArrowDown',
-      'Shift',
-      'Meta',
-      'Alt',
-      'Delete',
-      'Backspace',
-    ];
     const formField = this.formMessageInput.current;
 
     let textValue = formField.innerText.trim(); // get this only to count chars
-
-    let numCharsLeft = this.maxMessageLength - textValue.length;
-    const key = event.key;
+    const newStates = {};
+    let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
+    const key = event && event.key;
 
     if (key === 'Enter') {
       if (!this.prepNewLine) {
@@ -158,6 +160,10 @@ export default class ChatInput extends Component {
         this.prepNewLine = false;
         return;
       }
+    }
+    // allow key presses such as command/shift/meta, etc even when message length is full later.
+    if (CHAT_KEY_MODIFIERS.includes(key)) {
+      this.modifierKeyPressed = true;
     }
     if (key === 'Control' || key === 'Shift') {
       this.prepNewLine = true;
@@ -168,38 +174,52 @@ export default class ChatInput extends Component {
 
         // value could have been changed, update char count
         textValue = formField.innerText.trim();
-        numCharsLeft = this.maxMessageLength - textValue.length;
+        numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
       }
     }
 
-    // text count
-    if (numCharsLeft <= this.maxMessageBuffer) {
-      this.setState({
-        inputWarning: `${numCharsLeft} chars left`,
-      });
-      if (numCharsLeft <= 0 && !okCodes.includes(key)) {
+    if (numCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
+      newStates.inputText = textValue;
+      this.setState(newStates);
+      if (!this.modifierKeyPressed) {
         event.preventDefault(); // prevent typing more
-        return;
       }
-    } else {
-      this.setState({
-        inputWarning: '',
-      });
+      return;
     }
+    newStates.inputText = textValue;
+    this.setState(newStates);
   }
 
   handleMessageInputKeyup(event) {
-    if (event.key === 'Control' || event.key === 'Shift') {
+    const formField = this.formMessageInput.current;
+    const textValue = formField.innerText.trim(); // get this only to count chars
+
+    const { key } = event;
+
+    if (key === 'Control' || key === 'Shift') {
      this.prepNewLine = false;
     }
+    if (CHAT_KEY_MODIFIERS.includes(key)) {
+      this.modifierKeyPressed = false;
+    }
+    this.setState({
+      inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH - textValue.length,
+    });
   }
 
   handleMessageInputBlur(event) {
     this.prepNewLine = false;
+    this.modifierKeyPressed = false;
   }
 
   handlePaste(event) {
+    // don't allow paste if too much text already
+    if (CHAT_MAX_MESSAGE_LENGTH - this.state.inputText.length < 0) {
+      event.preventDefault();
+      return;
+    }
     convertOnPaste(event);
+    this.handleMessageInputKeydown(event);
   }
 
   handleSubmitChatButton(event) {
@@ -209,11 +229,15 @@ export default class ChatInput extends Component {
 
   sendMessage() {
     const { handleSendMessage } = this.props;
-    const { hasSentFirstChatMessage, inputHTML } = this.state;
+    const { hasSentFirstChatMessage, inputHTML, inputText } = this.state;
+    if (CHAT_MAX_MESSAGE_LENGTH - inputText.length < 0) {
+      return;
+    }
     const message = convertToText(inputHTML);
     const newStates = {
-      inputWarning: '',
       inputHTML: '',
+      inputText: '',
+      inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH,
     };
 
     handleSendMessage(message);
@@ -232,57 +256,51 @@ export default class ChatInput extends Component {
   }
 
   render(props, state) {
-    const { hasSentFirstChatMessage, inputWarning, inputHTML } = state;
+    const { hasSentFirstChatMessage, inputCharsLeft, inputHTML } = state;
     const { inputEnabled } = props;
     const emojiButtonStyle = {
-      display: this.emojiPicker ? 'block' : 'none',
+      display: this.emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
     };
-
+    const extraClasses = classNames({
+      'display-count': inputCharsLeft <= CHAT_CHAR_COUNT_BUFFER,
+    });
     const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
     return (
       html`
-        <div id="message-input-container" class="fixed bottom-0 shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4 z-20">
+        <div id="message-input-container" class="relative shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4 z-20 ${extraClasses}">
 
-          <${ContentEditable}
-            id="message-input"
-            class="appearance-none block w-full bg-gray-200 text-sm	text-gray-700 border border-black-500 rounded py-2 px-2 my-2 focus:bg-white h-20 overflow-auto"
+          <div
+            id="message-input-wrap"
+            class="flex flex-row justify-end appearance-none w-full bg-gray-200 border border-black-500 rounded py-2 px-2 pr-12 my-2 overflow-auto">
+            <${ContentEditable}
+              id="message-input"
+              class="appearance-none block w-full bg-transparent text-sm text-gray-700 h-full focus:outline-none"
 
-            placeholderText=${placeholderText}
-            innerRef=${this.formMessageInput}
-            html=${inputHTML}
-            disabled=${!inputEnabled}
-            onChange=${this.handleContentEditableChange}
-            onKeyDown=${this.handleMessageInputKeydown}
-            onKeyUp=${this.handleMessageInputKeyup}
-            onBlur=${this.handleMessageInputBlur}
+              placeholderText=${placeholderText}
+              innerRef=${this.formMessageInput}
+              html=${inputHTML}
+              disabled=${!inputEnabled}
+              onChange=${this.handleContentEditableChange}
+              onKeyDown=${this.handleMessageInputKeydown}
+              onKeyUp=${this.handleMessageInputKeyup}
+              onBlur=${this.handleMessageInputBlur}
 
-            onPaste=${this.handlePaste}
-          />
-
-          <div id="message-form-actions" class="flex flex-row justify-between items-center w-full">
-            <span id="message-form-warning" class="text-red-600 text-xs">${inputWarning}</span>
-
-            <div id="message-form-actions-buttons" class="flex flex-row justify-end items-center">
+              onPaste=${this.handlePaste}
+            />
+          </div>
+          <div id="message-form-actions" class="absolute flex flex-col w-10 justify-end items-center">
               <button
                 ref=${this.emojiPickerButton}
                 id="emoji-button"
-                class="mr-2 text-2xl cursor-pointer"
+                class="text-3xl leading-3 cursor-pointer text-purple-600"
                 type="button"
                 style=${emojiButtonStyle}
                 onclick=${this.handleEmojiButtonClick}
                 disabled=${!inputEnabled}
-              >😏</button>
+              ><img src="../../../img/smiley.png" /></button>
 
-              <button
-                onclick=${this.handleSubmitChatButton}
-                disabled=${!inputEnabled}
-                type="button"
-                id="button-submit-message"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-              > Chat
-              </button>
+              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span>
             </div>
-          </div>
       </div>
     `);
   }

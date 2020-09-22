@@ -34,7 +34,7 @@ export default class Message extends Component {
                 ${author}
               </div>
               <div
-                class="message-text text-gray-300 font-normal"
+                class="message-text text-gray-300 font-normal overflow-y-hidden"
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }

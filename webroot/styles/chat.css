@@ -14,12 +14,29 @@
   width: var(--right-col-width);
 }
 
-#messages-container {
-  padding-bottom: 10rem;
+#message-input-wrap {
+  min-height: 2.5rem;
+  max-height: 5rem;
+}
+#message-form-actions {
+  right: 2rem;
+  bottom: 1.88rem;
+}
+#emoji-button {
+  height: 1.75rem;
+  width: 1.75rem;
+}
+
+#message-form-warning {
+  display: none;
+}
+.display-count #message-form-warning {
+  display: block;
 }
 
 /******************************/
 /******************************/
+
 
 #message-input img {
   display: inline;
@@ -46,6 +63,8 @@
   opacity: 1.0;
 }
 
+#message-input::selection { background:#d7ddf4; }
+
 
 /* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
 #message-input:disabled,
@@ -56,10 +75,43 @@
 /******************************/
 
 
+/******************************/
+/* EMOJI PICKER OVERRIDES */
+.emoji-picker.owncast {
+  --secondary-text-color: rgba(255,255,255,.5);
+  --category-button-color:  rgba(255,255,255,.5);
+
+  background: rgba(26,32,44,1); /* tailwind bg-gray-900 */
+  color: rgba(226,232,240,1); /* tailwind text-gray-300 */
+  border-color: black;
+  font-family: inherit;
+
+}
+.emoji-picker h2 {
+  font-family: inherit;
+}
+
 .emoji-picker__emoji {
   border-radius: 5px;
 }
 
+.emoji-picker__emojis::-webkit-scrollbar {
+  background: transparent;
+  border-radius: 8px;
+}
+.emoji-picker__emojis::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: rgba(0,0,0,.2);
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+}
+
+.emoji-picker__emojis::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,.45);
+  border-radius: 8px;
+}
+
+
+/******************************/
 
 .message-avatar {
   height: 3.0em;
@@ -77,6 +129,9 @@
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
+.message-text {
+  word-break: break-word;
+}
 .message-text a {
   color: #7F9CF5; /* indigo-400 */
 }
@@ -101,15 +156,6 @@
   background-color:darkslategrey;
   padding: .25rem;
 }
-
-/* Hide emoji button on small screens */
-@media screen and (max-width: 860px) {
-  #emoji-button {
-    /* Emoji library overrides this so important is needed */
-    display: none !important;
-  }
-}
-
 
 .message-text .chat-embed {
   width: 100%;

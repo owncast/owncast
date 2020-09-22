@@ -20,10 +20,11 @@ a:hover {
   text-decoration: underline;
 }
 
-::-webkit-scrollbar {
+.scrollbar-hidden::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
+
 
 #app-container * {
   transition: all .25s;
@@ -48,6 +49,7 @@ button[disabled] {
 header {
   height: var(--header-height);
   background-color: var(--header-bg-color);
+  display: block;
 }
 
 #logo-container {
@@ -125,8 +127,6 @@ header {
   height: calc((9 / 16) * var(--content-width));
 }
 
-
-
 .short-wide.chat #video-container {
   height: calc(100vh - var(--header-height) - 3rem);
   min-height: auto;
@@ -151,15 +151,11 @@ header {
   z-index: 40;
 }
 .single-col #chat-container {
-  position: relative;
+  position: fixed;
+  bottom: 0;
   width: 100%;
   height: auto;
-  min-height: 800px;
 }
-/* .single-col #video-container {
-  min-height: auto;
-  width: 100%;
-} */
 
 .single-col.chat #video-container,
 .single-col.no-chat #video-container,
@@ -180,14 +176,34 @@ header {
 .single-col.chat #user-content {
   display: none;
 }
+.single-col #messages-container {
+  flex-grow: 2;
+  margin-top: calc(var(--video-container-height));
+}
 .single-col #message-input-container {
   width: 100%;
 }
 
-.single-col #message-input {
-  height: 3rem;
+.single-col #stream-info {
+  height: 0;
+  padding: 0;
+}
+.single-col #stream-info span {
+  display: none;
 }
 
+.single-col #message-input-wrap {
+  max-height: 3em;
+}
+
+@media screen and (max-height: 500px) {
+  .single-col.touch-screen {
+    --header-height: 0px;
+  }
+  .single-col.touch-screen header {
+    display: none;
+  }
+}
 
 
 /* ************************************************8 */
@@ -205,7 +221,4 @@ header {
     font-size: 1rem;
   }
 
-  #stream-info {
-    display: none;
-  }
 }

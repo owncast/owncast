@@ -7,7 +7,7 @@ import SocialIcon from './components/social.js';
 import UsernameForm from './components/chat/username.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { secondsToHMMSS } from './utils/helpers.js';
+import { secondsToHMMSS, hasTouchScreen } from './utils/helpers.js';
 
 import {
   addNewlines,
@@ -69,6 +69,8 @@ export default class App extends Component {
       windowHeight: window.innerHeight,
     };
 
+    this.hasTouchScreen = hasTouchScreen();
+
     // timers
     this.playerRestartTimer = null;
     this.offlineTimer = null;
@@ -79,7 +81,7 @@ export default class App extends Component {
     // misc dom events
     this.handleChatPanelToggle = this.handleChatPanelToggle.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
-    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 400);
+    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 250);
 
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
     this.handleOnlineMode = this.handleOnlineMode.bind(this);
@@ -101,7 +103,9 @@ export default class App extends Component {
   componentDidMount() {
     this.getConfig();
     window.addEventListener('resize', this.handleWindowResize);
-
+    if (this.hasTouchScreen) {
+      window.addEventListener('orientationchange', this.handleWindowResize);
+    }
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
       onReady: this.handlePlayerReady,
@@ -120,6 +124,9 @@ export default class App extends Component {
     clearTimeout(this.disableChatTimer);
     clearInterval(this.streamDurationTimer);
     window.removeEventListener('resize', this.handleWindowResize);
+    if (this.hasTouchScreen) {
+      window.removeEventListener('orientationchange', this.handleWindowResize);
+    }
   }
 
   // fetch /config data
@@ -404,12 +411,14 @@ export default class App extends Component {
 
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
+
     const extraAppClasses = classNames({
       chat: displayChat,
       'no-chat': !displayChat,
       'single-col': singleColMode,
       'bg-gray-800': singleColMode && displayChat,
-      'short-wide': shortHeight,
+      'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
+      'touch-screen': this.hasTouchScreen,
     });
 
     return html`
