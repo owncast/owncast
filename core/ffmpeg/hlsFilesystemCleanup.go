@@ -38,7 +38,7 @@ func getSegmentFiles(dirname string) ([]os.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	list, err := f.Readdir(-1)
+	list, err := f.Readdir(-1) // -1 says to get a list of all files
 	f.Close()
 	if err != nil {
 		return nil, err
