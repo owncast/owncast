@@ -123,9 +123,11 @@ export default class Chat extends Component {
       this.setState(newState);
     }
   }
+
   websocketDisconnected() {
-    // this.websocket = null;
-    this.disableChat();
+    this.setState({
+      inputEnabled: false,
+    });
   }
 
   submitChat(content) {
