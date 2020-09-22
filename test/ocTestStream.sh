@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# A recent version of ffmpeg is required for the loop of the provided videos
+# to repeat indefinitely.
+
 if ! ([[ $1 ]] && [[ $2 ]])
 then
   echo "ocTestStream is used for sending pre-recorded content to a RTMP server."
@@ -25,4 +28,4 @@ done
 
 echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST...  ctl+c to exit"
 
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat -safe 0 -i list.txt -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -preset ultrafast -acodec libfdk_aac -b:a 192k -x264opts keyint=50 -g 25 -pix_fmt yuv420p -f flv $DESTINATION_HOST
+ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat -safe 0 -i list.txt -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -preset ultrafast -acodec aac -b:a 192k -x264opts keyint=50 -g 25 -pix_fmt yuv420p -f flv $DESTINATION_HOST
