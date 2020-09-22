@@ -1,8 +1,10 @@
+# See https://owncast.online/docs/configuration/ for more details
+
 instanceDetails:
   name: Owncast
-  title: Owncast Demo Server
+  title: Owncast
   summary: "This is brief summary of whom you are or what your stream is. You can read more about it at owncast.online.  You can edit this description in your config file."
-  
+
   logo:
     small: /img/logo128.png
     large: /img/logo256.png
@@ -10,24 +12,22 @@ instanceDetails:
   tags:
     - music
     - software
-    - animal crossing
+    - streaming
 
-  # https://github.com/gabek/owncast/blob/master/doc/configuration.md#customization
+  # https://owncast.online/docs/configuration/#external-links
   # for full list of supported social links.  All optional.
   socialHandles:
-    - platform: twitter
-      url: http://twitter.com/owncast
-    - platform: instagram
-      url: http://instagram.biz/owncast
-    - platform: facebook
-      url: http://facebook.gov/owncast
+    - platform: github
+      url: http://github.com/owncast/owncast
+    - platform: mastodon
+      url: http://mastodon.something/owncast
 
 videoSettings:
   # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
 
   # Determine the bitrate of your stream variants.
-  # See https://github.com/gabek/owncast/blob/master/doc/configuration.md#video-quality for details.
+  # See https://owncast.online/docs/configuration/#video-quality for details.
   streamQualities:
     - medium:
       videoBitrate: 800
