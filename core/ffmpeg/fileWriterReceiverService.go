@@ -1,6 +1,7 @@
 package ffmpeg
 
 import (
+	"bytes"
 	"io"
 	"os"
 	"path/filepath"
@@ -35,10 +36,9 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 
 	localListenerAddress := "127.0.0.1:" + strconv.Itoa(config.Config.GetPublicWebServerPort()+1)
 	go http.ListenAndServe(localListenerAddress, httpServer)
-	log.Debugln("Transcoder response listening on: " + localListenerAddress)
+	log.Traceln("Transcoder response listening on: " + localListenerAddress)
 }
 
-// By returning a handler, we have an elegant way of initializing path.
 func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "PUT" {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -47,17 +47,25 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 
 	path := r.URL.Path
 	writePath := filepath.Join(config.Config.GetPrivateHLSSavePath(), path)
-	out, err := os.Create(writePath)
 
-	defer out.Close()
+	var buf bytes.Buffer
+	io.Copy(&buf, r.Body)
+	data := buf.Bytes()
+	f, err := os.Create(writePath)
 	if err != nil {
-		log.Errorln(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
+		returnError(err, w, r)
 		return
 	}
 
-	io.Copy(out, r.Body)
+	defer f.Close()
+	_, err = f.Write(data)
+	if err != nil {
+		returnError(err, w, r)
+		return
+	}
+
 	s.fileWritten(writePath)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *FileWriterReceiverService) fileWritten(path string) {
@@ -70,4 +78,9 @@ func (s *FileWriterReceiverService) fileWritten(path string) {
 	} else if strings.HasSuffix(path, ".m3u8") {
 		s.callbacks.VariantPlaylistWritten(path)
 	}
+}
+
+func returnError(err error, w http.ResponseWriter, r *http.Request) {
+	log.Errorln(err)
+	http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
 }
