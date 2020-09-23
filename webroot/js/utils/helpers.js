@@ -1,3 +1,5 @@
+import { ORIENTATION_LANDSCAPE, ORIENTATION_PORTRAIT } from './constants.js';
+
 export function getLocalStorage(key) {
   try {
     return localStorage.getItem(key);
@@ -73,6 +75,21 @@ export function hasTouchScreen() {
       }
   }
   return hasTouch;
+}
+
+
+export function getOrientation(forTouch = false) {
+  // chrome mobile gives misleading matchMedia result when keyboard is up
+  if (forTouch && window.screen && window.screen.orientation) {
+    return window.screen.orientation.type.match('portrait') ?
+      ORIENTATION_PORTRAIT :
+      ORIENTATION_LANDSCAPE;
+  } else {
+    // all other cases
+    return window.matchMedia("(orientation: portrait)").matches ?
+    ORIENTATION_PORTRAIT :
+    ORIENTATION_LANDSCAPE;
+  }
 }
 
 // generate random avatar from https://robohash.org

@@ -7,7 +7,7 @@ import SocialIcon from './components/social.js';
 import UsernameForm from './components/chat/username.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { secondsToHMMSS, hasTouchScreen } from './utils/helpers.js';
+import { secondsToHMMSS, hasTouchScreen, getOrientation } from './utils/helpers.js';
 
 import {
   addNewlines,
@@ -35,6 +35,7 @@ import {
   URL_OWNCAST,
   URL_STATUS,
   WIDTH_SINGLE_COL,
+  ORIENTATION_PORTRAIT,
 } from './utils/constants.js';
 
 export default class App extends Component {
@@ -42,6 +43,7 @@ export default class App extends Component {
     super(props, context);
 
     const chatStorage = getLocalStorage(KEY_CHAT_DISPLAYED);
+    this.hasTouchScreen = hasTouchScreen();
 
     this.state = {
       websocket: new Websocket(),
@@ -67,9 +69,8 @@ export default class App extends Component {
       // dom
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      orientation: getOrientation(this.hasTouchScreen),
     };
-
-    this.hasTouchScreen = hasTouchScreen();
 
     // timers
     this.playerRestartTimer = null;
@@ -344,6 +345,7 @@ export default class App extends Component {
     this.setState({
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      orientation: getOrientation(this.hasTouchScreen),
     });
   }
 
@@ -353,6 +355,7 @@ export default class App extends Component {
       configData,
       displayChat,
       extraUserContent,
+      orientation,
       overallMaxViewerCount,
       playerActive,
       sessionMaxViewerCount,
@@ -365,6 +368,7 @@ export default class App extends Component {
       windowHeight,
       windowWidth,
     } = state;
+
 
     const {
       version: appVersion,
@@ -409,7 +413,8 @@ export default class App extends Component {
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
-    const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE;
+    const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
+    const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
     const extraAppClasses = classNames({

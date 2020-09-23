@@ -127,15 +127,12 @@ export default class Chat extends Component {
   }
 
   websocketConnected() {
-    console.log("=======socket connected.")
     this.setState({
       webSocketConnected: true,
     });
   }
 
   websocketDisconnected() {
-    console.log("=======socket not connected.")
-
     this.setState({
       webSocketConnected: false,
     });
