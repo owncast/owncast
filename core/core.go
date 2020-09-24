@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	_stats         *models.Stats
-	_storage       models.ChunkStorageProvider
-	_cleanupTicker *time.Ticker
+	_stats        *models.Stats
+	_storage      models.ChunkStorageProvider
+	_cleanupTimer *time.Timer
 )
 
 //Start starts up the core processing
@@ -59,11 +59,11 @@ func createInitialOfflineState() error {
 }
 
 func startCleanupTimer() {
-	_cleanupTicker := time.NewTicker(5 * time.Minute)
+	_cleanupTimer = time.NewTimer(5 * time.Minute)
 	go func() {
 		for {
 			select {
-			case <-_cleanupTicker.C:
+			case <-_cleanupTimer.C:
 				resetDirectories()
 				ffmpeg.ShowStreamOfflineState()
 			}
@@ -73,8 +73,8 @@ func startCleanupTimer() {
 
 // StopCleanupTimer will stop the previous cleanup timer
 func stopCleanupTimer() {
-	if _cleanupTicker != nil {
-		_cleanupTicker.Stop()
+	if _cleanupTimer != nil {
+		_cleanupTimer.Stop()
 	}
 }
 
