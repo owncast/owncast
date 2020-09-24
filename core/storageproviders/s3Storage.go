@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/owncast/owncast/core/playlist"
 	log "github.com/sirupsen/logrus"
@@ -66,6 +67,13 @@ func (s *S3Storage) Setup() error {
 
 // SegmentWritten is called when a single segment of video is written
 func (s *S3Storage) SegmentWritten(localFilePath string) {
+	// Time how long it took to save a segment of video
+	// for debugging.
+	var timestamp time.Time
+	if config.Config.EnableDebugFeatures {
+		timestamp = time.Now()
+	}
+
 	// Upload the segment
 	_, error := s.Save(localFilePath, 0)
 	if error != nil {
@@ -73,9 +81,17 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 		return
 	}
 
-	// If a segment file was successfully uploaded then we can delete
-	// it from the local filesystem.
-	os.Remove(localFilePath)
+	// If debugging warn the user about long-running save operations
+	if !timestamp.IsZero() {
+		delta := time.Now().Sub(timestamp)
+		var logFunction func(args ...interface{})
+		if delta.Seconds() > float64(config.Config.GetVideoSegmentSecondsLength())*0.9 {
+			logFunction = log.Warnln
+		} else {
+			logFunction = log.Traceln
+		}
+		logFunction("S3 save", localFilePath, ":", delta.Milliseconds(), "ms")
+	}
 
 	// Upload the variant playlist for this segment
 	// so the segments and the HLS playlist referencing
@@ -85,10 +101,14 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	if error != nil {
 		_queuedPlaylistUpdates[playlist] = playlist
 		if pErr, ok := error.(*os.PathError); ok {
-			log.Debugln(pErr.Path, "does not exist locally when trying to upload to S3 storage.")
+			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
 			return
 		}
 	}
+
+	// If a segment file was successfully uploaded then we can delete
+	// it from the local filesystem.
+	os.Remove(localFilePath)
 }
 
 // VariantPlaylistWritten is called when a variant hls playlist is written
@@ -112,7 +132,7 @@ func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	s.rewriteRemotePlaylist(localFilePath)
 }
 
-//Save saves the file to the s3 bucket
+// Save saves the file to the s3 bucket
 func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -127,14 +147,20 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 	if s.s3ACL != "" {
 		uploadInput.ACL = aws.String(s.s3ACL)
+	} else {
+		// Default ACL
+		uploadInput.ACL = aws.String("public-read")
 	}
+
 	response, err := _uploader.Upload(uploadInput)
 
 	if err != nil {
-		log.Trace("error uploading:", err.Error())
+		log.Traceln("error uploading:", err.Error())
 		if retryCount < 4 {
-			log.Trace("Retrying...")
+			log.Traceln("Retrying...")
 			return s.Save(filePath, retryCount+1)
+		} else {
+			log.Warnln("Giving up on", filePath)
 		}
 	}
 
