@@ -118,7 +118,7 @@ class OwncastPlayer {
   }
 
   log(message) {
-    console.log(`>>> Player: ${message}`);
+    // console.log(`>>> Player: ${message}`);
   }
 
   addAirplay() {
