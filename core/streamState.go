@@ -16,7 +16,7 @@ import (
 	"github.com/grafov/m3u8"
 )
 
-var _cleanupTicker *time.Ticker
+var _cleanupTimer *time.Timer
 
 //SetStreamAsConnected sets the stream as connected
 func SetStreamAsConnected() {
@@ -115,11 +115,11 @@ func SetStreamAsDisconnected() {
 
 // StartCleanupTimer will fire a cleanup after n minutes being disconnected
 func StartCleanupTimer() {
-	_cleanupTicker := time.NewTicker(5 * time.Minute)
+	_cleanupTimer = time.NewTimer(5 * time.Minute)
 	go func() {
 		for {
 			select {
-			case <-_cleanupTicker.C:
+			case <-_cleanupTimer.C:
 				resetDirectories()
 				transitionToOfflineVideoStreamContent()
 			}
@@ -129,7 +129,7 @@ func StartCleanupTimer() {
 
 // StopCleanupTimer will stop the previous cleanup timer
 func StopCleanupTimer() {
-	if _cleanupTicker != nil {
-		_cleanupTicker.Stop()
+	if _cleanupTimer != nil {
+		_cleanupTimer.Stop()
 	}
 }
