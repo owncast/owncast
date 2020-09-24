@@ -142,6 +142,7 @@ func (t *Transcoder) getString() string {
 
 		// Video settings
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+		"-pix_fmt", "yuv420p", // Force yuv420p color format
 		"-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
