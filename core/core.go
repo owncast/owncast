@@ -64,6 +64,8 @@ func startCleanupTimer() {
 		for {
 			select {
 			case <-_cleanupTimer.C:
+				// Reset the session count since the session is over
+				_stats.SessionMaxViewerCount = 0
 				resetDirectories()
 				ffmpeg.ShowStreamOfflineState()
 			}

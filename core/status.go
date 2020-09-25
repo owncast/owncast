@@ -33,11 +33,6 @@ func SetStreamAsConnected() {
 	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
 
-	timeSinceDisconnect := time.Since(_stats.LastDisconnectTime.Time).Minutes()
-	if timeSinceDisconnect > 15 {
-		_stats.SessionMaxViewerCount = 0
-	}
-
 	chunkPath := config.Config.GetPublicHLSSavePath()
 	if usingExternalStorage {
 		chunkPath = config.Config.GetPrivateHLSSavePath()
