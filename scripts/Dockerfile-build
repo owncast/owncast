@@ -1,9 +1,9 @@
-FROM golang:alpine
+# Perform a build
+FROM golang:alpine AS build
 EXPOSE 8080 1935
-RUN mkdir /app
-ADD . /app
-WORKDIR /app
-RUN apk add --no-cache ffmpeg ffmpeg-libs
+RUN mkdir /build
+ADD . /build
+WORKDIR /build
 RUN apk update && apk add --no-cache gcc build-base linux-headers
 
 ARG VERSION
@@ -15,5 +15,13 @@ ENV NAME=${NAME}
 
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflags \"-static\" -s -w -X main.GitCommit=$GIT_COMMIT -X main.BuildVersion=$VERSION -X main.BuildType=$NAME" -o owncast .
 
+# Create the image by copying the result of the build into a new alpine image
+FROM alpine
+RUN apk add --no-cache ffmpeg ffmpeg-libs
 WORKDIR /app
+COPY --from=build /build/owncast /app/owncast
+COPY --from=build /build/config.yaml /app/config.yaml
+COPY --from=build /build/webroot /app/webroot
+COPY --from=build /build/static /app/static
+
 CMD ["/app/owncast"]
