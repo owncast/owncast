@@ -88,8 +88,12 @@ func SetClientActive(clientID string) {
 	l.Lock()
 	_stats.Clients[clientID] = time.Now()
 	l.Unlock()
-	_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Clients)), float64(_stats.SessionMaxViewerCount)))
-	_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+
+	// Don't update viewer counts if a live stream session is not active.
+	if _stats.StreamConnected {
+		_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Clients)), float64(_stats.SessionMaxViewerCount)))
+		_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+	}
 }
 
 //RemoveClient removes a client from the active clients record
