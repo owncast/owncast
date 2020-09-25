@@ -26,11 +26,6 @@ func SetStreamAsConnected() {
 
 	StopCleanupTimer()
 
-	timeSinceDisconnect := time.Since(_stats.LastDisconnectTime.Time).Minutes()
-	if timeSinceDisconnect > 15 {
-		_stats.SessionMaxViewerCount = 0
-	}
-
 	segmentPath := config.Config.GetPublicHLSSavePath()
 	if config.Config.S3.Enabled {
 		segmentPath = config.Config.GetPrivateHLSSavePath()
@@ -120,6 +115,8 @@ func StartCleanupTimer() {
 		for {
 			select {
 			case <-_cleanupTimer.C:
+				// Reset the session count since the session is over
+				_stats.SessionMaxViewerCount = 0
 				resetDirectories()
 				transitionToOfflineVideoStreamContent()
 			}
