@@ -25,9 +25,3 @@ instanceDetails:
 videoSettings:
   # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
-
-  # Determine the bitrate of your stream variants.
-  # See https://owncast.online/docs/configuration/#video-quality for details.
-  streamQualities:
-    - medium:
-      videoBitrate: 800
