@@ -22,7 +22,7 @@ RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates && updat
 # Copy owncast assets
 WORKDIR /app
 COPY --from=build /build/owncast /app/owncast
-COPY --from=build /build/config.yaml /app/config.yaml
+COPY --from=build /build/config-example.yaml /app/config.yaml
 COPY --from=build /build/webroot /app/webroot
 COPY --from=build /build/static /app/static
 
