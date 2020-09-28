@@ -13,7 +13,10 @@ import (
 	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/core/rtmp"
 	"github.com/gabek/owncast/router/middleware"
+<<<<<<< HEAD
 	"github.com/gabek/owncast/yp"
+=======
+>>>>>>> Add support for ending the inbound stream. Closes #191
 )
 
 //Start starts the router for the http, ws, and rtmp
