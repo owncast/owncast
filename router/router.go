@@ -10,6 +10,7 @@ import (
 	"github.com/gabek/owncast/controllers"
 	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/core/rtmp"
+	"github.com/gabek/owncast/router/middleware"
 )
 
 //Start starts the router for the http, ws, and rtmp
@@ -42,6 +43,11 @@ func Start() error {
 		// video embed
 		http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
 	}
+
+	// Authenticated admin requests
+
+	// Disconnect inbound stream
+	http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(controllers.DisconnectInboundConnection))
 
 	port := config.Config.GetPublicWebServerPort()
 
