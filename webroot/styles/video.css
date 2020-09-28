@@ -5,6 +5,11 @@ video.video-js {
   min-height: 100%
 }
 
+/* show big play button when paused */
+.vjs-has-started.vjs-paused .vjs-big-play-button{
+  display: block;
+}
+
 .vjs-airplay .vjs-icon-placeholder::before {
   content: url("../img/airplay.png");
 }
