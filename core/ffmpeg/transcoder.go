@@ -195,7 +195,7 @@ func NewTranscoder() Transcoder {
 	transcoder.input = utils.GetTemporaryPipePath()
 	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
 
-	qualities := config.Config.VideoSettings.StreamQualities
+	qualities := config.Config.GetVideoStreamQualities()
 	for index, quality := range qualities {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
