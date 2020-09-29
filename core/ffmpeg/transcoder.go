@@ -128,6 +128,7 @@ func (t *Transcoder) getString() string {
 	ffmpegFlags := []string{
 		t.ffmpegPath,
 		"-hide_banner",
+		"-loglevel warning",
 		"-i ", t.input,
 
 		t.getVariantsString(),
@@ -156,7 +157,7 @@ func (t *Transcoder) getString() string {
 		"-method PUT -http_persistent 1",         // HLS results sent back to us will be over PUTs
 		"-fflags +genpts",                        // Generate presentation time stamp if missing
 		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
-		"2>&1",                                   // transcoder.log", // Output to a file makes ffmpeg lock up.  I don't know why.
+		"2> transcoder.log",                      // Log to a file for debugging
 	}
 
 	return strings.Join(ffmpegFlags, " ")
