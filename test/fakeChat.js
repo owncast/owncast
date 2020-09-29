@@ -18,12 +18,12 @@ var availableMessages = messages.slice();
 
 const WebSocket = require('ws');
 
-const ws = new WebSocket('ws://localhost:8080/entry', {
-  origin: 'http://localhost:8080',
+const ws = new WebSocket('wss://watch.owncast.online/entry', {
+  origin: 'http://watch.owncast.online',
 });
 
 ws.on('open', function open() {
-  setTimeout(sendMessage, 4000);
+  setTimeout(sendMessage, 15000);
 });
 
 ws.on('error', function incoming(data) {
@@ -48,12 +48,12 @@ function sendMessage() {
     id: id,
     type: 'CHAT',
     visible: true,
-    timestamp: new Date().toString(),
+    timestamp: new Date().toISOString(),
   };
 
   ws.send(JSON.stringify(testMessage));
 
-  const nextMessageTimeout = (Math.floor(Math.random() * (15 - 3)) + 3) * 1000;
+  const nextMessageTimeout = (Math.floor(Math.random() * (25 - 10)) + 10) * 1000;
   setTimeout(sendMessage, nextMessageTimeout);
 }
 
