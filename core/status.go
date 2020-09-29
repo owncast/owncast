@@ -49,6 +49,7 @@ func SetStreamAsConnected() {
 func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
+	_broadcaster = nil
 
 	if _yp != nil {
 		_yp.Stop()
