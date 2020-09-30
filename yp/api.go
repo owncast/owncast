@@ -29,7 +29,7 @@ func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 	response := ypDetailsResponse{
 		Name:                  config.Config.InstanceDetails.Name,
 		Description:           config.Config.InstanceDetails.Summary,
-		Logo:                  config.Config.InstanceDetails.Logo["large"],
+		Logo:                  config.Config.InstanceDetails.Logo.Large,
 		NSFW:                  config.Config.InstanceDetails.NSFW,
 		Tags:                  config.Config.InstanceDetails.Tags,
 		Online:                status.Online,
