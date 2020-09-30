@@ -57,6 +57,9 @@ func Start() error {
 	// Change the current streaming key in memory
 	http.HandleFunc("/api/admin/changekey", middleware.RequireAdminAuth(admin.ChangeStreamKey))
 
+	// Server config
+	http.HandleFunc("/api/admin/serverconfig", middleware.RequireAdminAuth(controllers.GetServerConfig))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Infof("Web server running on port: %d", port)

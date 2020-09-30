@@ -22,7 +22,7 @@ type config struct {
 	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
 	PrivateHLSPath       string          `yaml:"privateHLSPath"`
 	PublicHLSPath        string          `yaml:"publicHLSPath"`
-	S3                   s3              `yaml:"s3"`
+	S3                   S3              `yaml:"s3"`
 	VersionInfo          string          `yaml:"-"`
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
@@ -72,35 +72,35 @@ type StreamQuality struct {
 	// Enable passthrough to copy the video and/or audio directly from the
 	// incoming stream and disable any transcoding.  It will ignore any of
 	// the below settings.
-	IsVideoPassthrough bool `yaml:"videoPassthrough"`
-	IsAudioPassthrough bool `yaml:"audioPassthrough"`
+	IsVideoPassthrough bool `yaml:"videoPassthrough" json:"videoPassthrough"`
+	IsAudioPassthrough bool `yaml:"audioPassthrough" json:"audioPassthrough"`
 
-	VideoBitrate int `yaml:"videoBitrate"`
-	AudioBitrate int `yaml:"audioBitrate"`
+	VideoBitrate int `yaml:"videoBitrate" json:"videoBitrate"`
+	AudioBitrate int `yaml:"audioBitrate" json:"audioBitrate"`
 
 	// Set only one of these in order to keep your current aspect ratio.
 	// Or set neither to not scale the video.
-	ScaledWidth  int `yaml:"scaledWidth"`
-	ScaledHeight int `yaml:"scaledHeight"`
+	ScaledWidth  int `yaml:"scaledWidth" json:"scaledWidth,omitempty"`
+	ScaledHeight int `yaml:"scaledHeight" json:"scaledHeight,omitempty"`
 
-	Framerate     int    `yaml:"framerate"`
-	EncoderPreset string `yaml:"encoderPreset"`
+	Framerate     int    `yaml:"framerate" json:"framerate"`
+	EncoderPreset string `yaml:"encoderPreset" json:"encoderPreset"`
 }
 
 type files struct {
 	MaxNumberInPlaylist int `yaml:"maxNumberInPlaylist"`
 }
 
-//s3 is for configuring the s3 integration
-type s3 struct {
-	Enabled         bool   `yaml:"enabled"`
-	Endpoint        string `yaml:"endpoint"`
-	ServingEndpoint string `yaml:"servingEndpoint"`
-	AccessKey       string `yaml:"accessKey"`
-	Secret          string `yaml:"secret"`
-	Bucket          string `yaml:"bucket"`
-	Region          string `yaml:"region"`
-	ACL             string `yaml:"acl"`
+//S3 is for configuring the S3 integration
+type S3 struct {
+	Enabled         bool   `yaml:"enabled" json:"enabled"`
+	Endpoint        string `yaml:"endpoint" json:"endpoint,omitempty"`
+	ServingEndpoint string `yaml:"servingEndpoint" json:"servingEndpoint,omitempty"`
+	AccessKey       string `yaml:"accessKey" json:"accessKey,omitempty"`
+	Secret          string `yaml:"secret" json:"secret,omitempty"`
+	Bucket          string `yaml:"bucket" json:"bucket,omitempty"`
+	Region          string `yaml:"region" json:"region,omitempty"`
+	ACL             string `yaml:"acl" json:"acl,omitempty"`
 }
 
 func (c *config) load(filePath string) error {
