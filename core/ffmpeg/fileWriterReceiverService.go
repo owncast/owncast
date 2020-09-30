@@ -68,12 +68,29 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusOK)
 }
 
+var _inWarningState = false
+
 func (s *FileWriterReceiverService) fileWritten(path string) {
+	index := utils.GetIndexFromFilePath(path)
+
 	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
 		s.callbacks.MasterPlaylistWritten(path)
 
 	} else if strings.HasSuffix(path, ".ts") {
+		performanceMonitorKey := "segmentWritten-" + index
+		averagePerformance := utils.GetAveragePerformance(performanceMonitorKey)
+
+		utils.StartPerformanceMonitor(performanceMonitorKey)
 		s.callbacks.SegmentWritten(path)
+
+		if averagePerformance != 0 && averagePerformance > float64(float64(config.Config.GetVideoSegmentSecondsLength())) {
+			if !_inWarningState {
+				log.Warnln("slow encoding for variant", index, "if this continues you may see buffering or errors. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
+				_inWarningState = true
+			}
+		} else {
+			_inWarningState = false
+		}
 
 	} else if strings.HasSuffix(path, ".m3u8") {
 		s.callbacks.VariantPlaylistWritten(path)

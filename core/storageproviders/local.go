@@ -53,9 +53,9 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	// Copy playlists to the destination directory so they can still be referenced in
 	// the private hls working directory.
 	if filepath.Ext(filePath) == ".m3u8" {
-		go utils.Copy(filePath, newPath)
+		utils.Copy(filePath, newPath)
 	} else {
-		go utils.Move(filePath, newPath)
+		utils.Move(filePath, newPath)
 		ffmpeg.Cleanup(filepath.Dir(newPath))
 	}
 
