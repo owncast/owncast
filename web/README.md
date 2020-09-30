@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project with [TypeScript](https://www.typescriptlang.org/) using [Ant Design](https://ant.design/) UI components.
+This is a [Next.js](https://nextjs.org/) project with [TypeScript](https://www.typescriptlang.org/), [Sass](https://sass-lang.com/) styling, using [Ant Design](https://ant.design/) UI components.
 
 ## Getting Started
 
