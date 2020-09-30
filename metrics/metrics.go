@@ -7,14 +7,10 @@ import (
 // How often we poll for updates
 const metricsPollingInterval = 15 * time.Second
 
-type value struct {
-	Time  time.Time
-	Value int
-}
-
 type metrics struct {
-	CPUUtilizations []value
-	RAMUtilizations []value
+	CPUUtilizations []timestampedValue
+	RAMUtilizations []timestampedValue
+	Viewers         []timestampedValue
 }
 
 // Metrics is the shared Metrics instance
@@ -23,6 +19,7 @@ var Metrics *metrics
 // Start will begin the metrics collection and alerting
 func Start() {
 	Metrics = new(metrics)
+	startViewerCollectionMetrics()
 
 	for range time.Tick(metricsPollingInterval) {
 		handlePolling()

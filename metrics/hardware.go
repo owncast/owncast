@@ -20,7 +20,7 @@ func collectCPUUtilization() {
 		panic(err)
 	}
 
-	metricValue := value{time.Now(), int(v[0])}
+	metricValue := timestampedValue{time.Now(), int(v[0])}
 	Metrics.CPUUtilizations = append(Metrics.CPUUtilizations, metricValue)
 }
 
@@ -30,6 +30,6 @@ func collectRAMUtilization() {
 	}
 
 	memoryUsage, _ := mem.VirtualMemory()
-	metricValue := value{time.Now(), int(memoryUsage.UsedPercent)}
+	metricValue := timestampedValue{time.Now(), int(memoryUsage.UsedPercent)}
 	Metrics.RAMUtilizations = append(Metrics.RAMUtilizations, metricValue)
 }

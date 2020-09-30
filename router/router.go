@@ -63,6 +63,9 @@ func Start() error {
 	// Server config
 	http.HandleFunc("/api/admin/serverconfig", middleware.RequireAdminAuth(controllers.GetServerConfig))
 
+	// Get viewer count over time
+	http.HandleFunc("/api/admin/viewersOverTime", middleware.RequireAdminAuth(controllers.GetViewersOverTime))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Infof("Web server running on port: %d", port)
