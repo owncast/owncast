@@ -97,7 +97,7 @@ func (yp *YP) ping() {
 	json.Unmarshal(body, &pingResponse)
 
 	if !pingResponse.Success {
-		log.Errorln("YP Ping error:", pingResponse.Error)
+		log.Debugln("YP Ping error:", pingResponse.Error)
 		return
 	}
 
@@ -135,5 +135,5 @@ func (yp *YP) getSavedKey() string {
 // how they can enable the feature.
 func DisplayInstructions() {
 	text := "Your instance can be listed on the Owncast directory at http://something.something by enabling YP in your config.  Learn more at http://something.something."
-	log.Infoln(text)
+	log.Debugln(text)
 }
