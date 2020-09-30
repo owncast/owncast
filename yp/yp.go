@@ -80,7 +80,7 @@ func (yp *YP) ping() {
 		return
 	}
 
-	pingURL := config.Config.YP.YPServiceURL + "/ping"
+	pingURL := config.Config.GetYPServiceHost() + "/ping"
 	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req))
 	if err != nil {
 		log.Errorln(err)
@@ -97,7 +97,7 @@ func (yp *YP) ping() {
 	json.Unmarshal(body, &pingResponse)
 
 	if !pingResponse.Success {
-		log.Debugln("YP Ping error:", pingResponse.Error)
+		log.Debugln("YP Ping error returned from service:", pingResponse.Error)
 		return
 	}
 
