@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js](https://nextjs.org/) project with [TypeScript](https://www.typescriptlang.org/) using [Ant Design](https://ant.design/) UI components.
 
 ## Getting Started
 
@@ -12,7 +12,11 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+You can start editing a page by modifying `pages/something.js`. The page auto-updates as you edit the file.
+
+Add new pages by adding files to the `pages` directory and [routes](https://nextjs.org/docs/api-reference/next/router) will be available for this new page component.
+
+Since this project hits API endpoints you should make requests in [`componentDidMount`](https://reactjs.org/docs/react-component.html#componentdidmount), and not in [`getStaticProps`](https://nextjs.org/docs/basic-features/data-fetching), since they're not static and we don't want to fetch them at build time, but instead at runtime.
 
 ## Learn More
 
@@ -22,9 +26,3 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
