@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/utils"
@@ -25,6 +26,7 @@ type Transcoder struct {
 	segmentLengthSeconds int
 	appendToStream       bool
 	ffmpegPath           string
+	segmentIdentifier    string
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -103,6 +105,10 @@ func (t *Transcoder) getString() string {
 		hlsOptionFlags = append(hlsOptionFlags, "append_list")
 	}
 
+	if t.segmentIdentifier == "" {
+		t.segmentIdentifier = shortid.MustGenerate()
+	}
+
 	ffmpegFlags := []string{
 		"cat", t.input, "|",
 		t.ffmpegPath,
@@ -125,7 +131,7 @@ func (t *Transcoder) getString() string {
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
 		"-strftime 1",                                                               // Support the use of strftime in filenames
-		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s.ts"), // Each segment's filename
+		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s-"+string(t.segmentIdentifier)+".ts"), // Each segment's filename
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
 		"2> transcoder.log",
@@ -352,4 +358,9 @@ func (t *Transcoder) SetSegmentLength(seconds int) {
 // SetAppendToStream enables appending to the HLS stream instead of overwriting
 func (t *Transcoder) SetAppendToStream(append bool) {
 	t.appendToStream = append
+}
+
+// SetIdentifer enables appending a unique identifier to segment file name
+func (t *Transcoder) SetIdentifier(output string) {
+	t.segmentIdentifier = output
 }
