@@ -1,7 +1,6 @@
-import Head from 'next/head'
-
 import { Card, Alert, Statistic, Row, Col } from "antd";
 import { LikeOutlined } from "@ant-design/icons";
+
 const { Meta } = Card;
 
 export default function Home() {
