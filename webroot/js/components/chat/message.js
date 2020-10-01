@@ -13,7 +13,7 @@ export default class Message extends Component {
     const { type } = message;
 
     if (type === SOCKET_MESSAGE_TYPES.CHAT) {
-      const { image, author, body } = message;
+      const { image, author, body, timestamp } = message;
       const formattedMessage = formatMessageText(body, username);
       const avatar = image || generateAvatar(author);
 
@@ -35,6 +35,7 @@ export default class Message extends Component {
               </div>
               <div
                 class="message-text text-gray-300 font-normal overflow-y-hidden"
+                title=${timestamp}
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }
