@@ -13,6 +13,7 @@ import (
 	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/core/rtmp"
 	"github.com/gabek/owncast/router/middleware"
+	"github.com/gabek/owncast/yp"
 )
 
 //Start starts the router for the http, ws, and rtmp
@@ -44,6 +45,8 @@ func Start() error {
 
 		// video embed
 		http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
+
+		http.HandleFunc("/api/yp", yp.GetYPResponse)
 	}
 
 	// Authenticated admin requests

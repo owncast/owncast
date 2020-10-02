@@ -25,3 +25,9 @@ instanceDetails:
 videoSettings:
   # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
+
+yp:
+  # Enable YP to be listed in the Owncast directory and let people discover your instance.
+  enabled: false
+  # You must specify the public URL of your host that you want the directory to link to.
+  instanceURL: http://yourhost.com

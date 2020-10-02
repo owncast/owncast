@@ -13,12 +13,14 @@ import (
 	"github.com/gabek/owncast/core/ffmpeg"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
+	"github.com/gabek/owncast/yp"
 )
 
 var (
 	_stats        *models.Stats
 	_storage      models.ChunkStorageProvider
 	_cleanupTimer *time.Timer
+	_yp           *yp.YP
 )
 
 //Start starts up the core processing
@@ -38,6 +40,12 @@ func Start() error {
 	if err := createInitialOfflineState(); err != nil {
 		log.Error("failed to create the initial offline state")
 		return err
+	}
+
+	if config.Config.YP.Enabled {
+		_yp = yp.NewYP(GetStatus)
+	} else {
+		yp.DisplayInstructions()
 	}
 
 	chat.Setup(ChatListenerImpl{})

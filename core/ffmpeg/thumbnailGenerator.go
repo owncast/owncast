@@ -40,6 +40,7 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join("webroot", "thumbnail.jpg")
+	previewGifFile := path.Join("webroot", "preview.gif")
 
 	framePath := path.Join(chunkPath, strconv.Itoa(variantIndex))
 	files, err := ioutil.ReadDir(framePath)
@@ -83,12 +84,32 @@ func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	}
 
 	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
-
-	// fmt.Println(ffmpegCmd)
-
 	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
 		return err
 	}
 
+	// If YP support is enabled also create an animated GIF preview
+	if config.Config.YP.Enabled {
+		makeAnimatedGifPreview(mostRecentFile, previewGifFile)
+	}
+
 	return nil
+}
+
+func makeAnimatedGifPreview(sourceFile string, outputFile string) {
+	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
+	animatedGifFlags := []string{
+		config.Config.GetFFMpegPath(),
+		"-y",             // Overwrite file
+		"-threads 1",     // Low priority processing
+		"-i", sourceFile, // Input
+		"-t 1", // Output is one second in length
+		"-filter_complex", "\"[0:v] fps=8,scale=w=480:h=-1:flags=lanczos,split [a][b];[a] palettegen=stats_mode=full [p];[b][p] paletteuse=new=1\"",
+		outputFile,
+	}
+
+	ffmpegCmd := strings.Join(animatedGifFlags, " ")
+	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+		log.Errorln(err)
+	}
 }

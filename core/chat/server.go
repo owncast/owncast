@@ -133,7 +133,7 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		time.Sleep(7 * time.Second)
 
 		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
-		initialMessage := models.ChatMessage{"owncast-server", config.Config.InstanceDetails.Name, initialChatMessageText, config.Config.InstanceDetails.Logo["small"], "initial-message-1", "CHAT", true, time.Now()}
+		initialMessage := models.ChatMessage{"owncast-server", config.Config.InstanceDetails.Name, initialChatMessageText, config.Config.InstanceDetails.Logo.Small, "initial-message-1", "CHAT", true, time.Now()}
 		c.Write(initialMessage)
 	}()
 

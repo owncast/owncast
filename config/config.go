@@ -26,18 +26,25 @@ type config struct {
 	VersionInfo          string          `yaml:"-"`
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
+	YP                   yp              `yaml:"yp"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name          string            `yaml:"name" json:"name"`
-	Title         string            `yaml:"title" json:"title"`
-	Summary       string            `yaml:"summary" json:"summary"`
-	Logo          map[string]string `yaml:"logo" json:"logo"`
-	Tags          []string          `yaml:"tags" json:"tags"`
-	SocialHandles []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
-	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
-	Version       string            `json:"version"`
+	Name          string         `yaml:"name" json:"name"`
+	Title         string         `yaml:"title" json:"title"`
+	Summary       string         `yaml:"summary" json:"summary"`
+	Logo          logo           `yaml:"logo" json:"logo"`
+	Tags          []string       `yaml:"tags" json:"tags"`
+	SocialHandles []socialHandle `yaml:"socialHandles" json:"socialHandles"`
+	ExtraInfoFile string         `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
+	Version       string         `json:"version"`
+	NSFW          bool           `yaml:"nsfw" json:"nsfw"`
+}
+
+type logo struct {
+	Large string `yaml:"large" json:"large"`
+	Small string `yaml:"small" json:"small"`
 }
 
 type socialHandle struct {
@@ -50,7 +57,14 @@ type videoSettings struct {
 	StreamingKey              string          `yaml:"streamingKey"`
 	StreamQualities           []StreamQuality `yaml:"streamQualities"`
 	OfflineContent            string          `yaml:"offlineContent"`
-	HighestQualityStreamIndex int             `yaml"-"`
+	HighestQualityStreamIndex int             `yaml:"-"`
+}
+
+// Registration to the central Owncast YP (Yellow pages) service operating as a directory.
+type yp struct {
+	Enabled      bool   `yaml:"enabled"`
+	InstanceURL  string `yaml:"instanceURL"`  // The public URL the directory should link to
+	YPServiceURL string `yaml:"ypServiceURL"` // The base URL to the YP API to register with (optional)
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.
@@ -129,6 +143,10 @@ func (c *config) verifySettings() error {
 		}
 	}
 
+	if c.YP.Enabled && c.YP.InstanceURL == "" {
+		return errors.New("YP is enabled but instance url is not set")
+	}
+
 	return nil
 }
 
@@ -187,6 +205,14 @@ func (c *config) GetFFMpegPath() string {
 	}
 
 	return _default.FFMpegPath
+}
+
+func (c *config) GetYPServiceHost() string {
+	if c.YP.YPServiceURL != "" {
+		return c.YP.YPServiceURL
+	}
+
+	return _default.YP.YPServiceURL
 }
 
 func (c *config) GetVideoStreamQualities() []StreamQuality {
