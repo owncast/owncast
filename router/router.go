@@ -58,7 +58,10 @@ func Start() error {
 	http.HandleFunc("/api/admin/changekey", middleware.RequireAdminAuth(admin.ChangeStreamKey))
 
 	// Server config
-	http.HandleFunc("/api/admin/serverconfig", middleware.RequireAdminAuth(controllers.GetServerConfig))
+	http.HandleFunc("/api/admin/serverconfig", middleware.RequireAdminAuth(admin.GetServerConfig))
+
+	// Get viewer count over time
+	http.HandleFunc("/api/admin/viewersOverTime", middleware.RequireAdminAuth(admin.GetViewersOverTime))
 
 	port := config.Config.GetPublicWebServerPort()
 
