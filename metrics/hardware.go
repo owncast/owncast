@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 )
 
@@ -32,4 +33,16 @@ func collectRAMUtilization() {
 	memoryUsage, _ := mem.VirtualMemory()
 	metricValue := timestampedValue{time.Now(), int(memoryUsage.UsedPercent)}
 	Metrics.RAMUtilizations = append(Metrics.RAMUtilizations, metricValue)
+}
+
+func collectDiskUtilization() {
+	path := "./"
+	diskUse, _ := disk.Usage(path)
+
+	if len(Metrics.DiskUtilizations) > maxCollectionValues {
+		Metrics.DiskUtilizations = Metrics.DiskUtilizations[1:]
+	}
+
+	metricValue := timestampedValue{time.Now(), int(diskUse.UsedPercent)}
+	Metrics.DiskUtilizations = append(Metrics.DiskUtilizations, metricValue)
 }

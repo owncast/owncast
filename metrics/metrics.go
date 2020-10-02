@@ -5,21 +5,25 @@ import (
 )
 
 // How often we poll for updates
-const metricsPollingInterval = 15 * time.Second
+const metricsPollingInterval = 1 * time.Minute
 
-type metrics struct {
-	CPUUtilizations []timestampedValue
-	RAMUtilizations []timestampedValue
-	Viewers         []timestampedValue
+// CollectedMetrics stores different collected + timestamped values
+type CollectedMetrics struct {
+	CPUUtilizations  []timestampedValue `json:"cpu"`
+	RAMUtilizations  []timestampedValue `json:"memory"`
+	DiskUtilizations []timestampedValue `json:"disk"`
+
+	Viewers []timestampedValue `json:"-"`
 }
 
 // Metrics is the shared Metrics instance
-var Metrics *metrics
+var Metrics *CollectedMetrics
 
 // Start will begin the metrics collection and alerting
 func Start() {
-	Metrics = new(metrics)
-	startViewerCollectionMetrics()
+	Metrics = new(CollectedMetrics)
+	go startViewerCollectionMetrics()
+	handlePolling()
 
 	for range time.Tick(metricsPollingInterval) {
 		handlePolling()
@@ -30,6 +34,7 @@ func handlePolling() {
 	// Collect hardware stats
 	collectCPUUtilization()
 	collectRAMUtilization()
+	collectDiskUtilization()
 
 	// Alerting
 	handleAlerting()
