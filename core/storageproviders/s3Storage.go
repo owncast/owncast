@@ -127,10 +127,10 @@ func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 }
 
 // Save saves the file to the s3 bucket
-func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
+func (s *S3Storage) Save(filePath string, retryCount int) (*string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer file.Close()
 
@@ -149,16 +149,17 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	response, err := _uploader.Upload(uploadInput)
 
 	if err != nil {
-		log.Traceln("error uploading:", err.Error())
+		log.Traceln("error uploading:", filePath, err.Error())
 		if retryCount < 4 {
 			log.Traceln("Retrying...")
 			return s.Save(filePath, retryCount+1)
 		} else {
 			log.Warnln("Giving up on", filePath)
+			return nil, fmt.Errorf("Giving up on %s", filePath)
 		}
 	}
 
-	return response.Location, nil
+	return &response.Location, nil
 }
 
 func (s *S3Storage) connectAWS() *session.Session {
