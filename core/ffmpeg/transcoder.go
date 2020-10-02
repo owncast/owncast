@@ -131,7 +131,7 @@ func (t *Transcoder) getString() string {
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
 		"-strftime 1",                                                               // Support the use of strftime in filenames
-		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s-"+string(t.segmentIdentifier)+".ts"), // Each segment's filename
+		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s-"+t.segmentIdentifier+".ts"), // Each segment's filename
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
 		"2> transcoder.log",
