@@ -11,8 +11,8 @@ import (
 type ChatListenerImpl struct{}
 
 //ClientAdded is for when a client is added the system
-func (cl ChatListenerImpl) ClientAdded(clientID string) {
-	SetClientActive(clientID)
+func (cl ChatListenerImpl) ClientAdded(client models.Client) {
+	SetClientActive(client)
 }
 
 //ClientRemoved is for when a client disconnects/is removed

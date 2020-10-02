@@ -70,3 +70,12 @@ func GetMessages() []models.ChatMessage {
 
 	return getChatHistory()
 }
+
+func GetClient(clientID string) *Client {
+	for _, client := range _server.Clients {
+		if client.ClientID == clientID {
+			return client
+		}
+	}
+	return nil
+}

@@ -11,6 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -55,9 +57,13 @@ func setupStats() error {
 }
 
 func purgeStaleViewers() {
-	for clientID, lastConnectedtime := range _stats.Clients {
-		timeSinceLastActive := time.Since(lastConnectedtime).Minutes()
-		if timeSinceLastActive > 2 {
+	for clientID, client := range _stats.Clients {
+		if client.LastSeen.IsZero() {
+			continue
+		}
+
+		timeSinceLastActive := time.Since(client.LastSeen).Minutes()
+		if timeSinceLastActive > 1 {
 			RemoveClient(clientID)
 		}
 	}
@@ -80,13 +86,22 @@ func IsStreamConnected() bool {
 }
 
 //SetClientActive sets a client as active and connected
-func SetClientActive(clientID string) {
-	// if _, ok := s.clients[clientID]; !ok {
-	// 	fmt.Println("Marking client active:", clientID, s.GetViewerCount()+1, "clients connected.")
-	// }
-
+func SetClientActive(client models.Client) {
 	l.Lock()
-	_stats.Clients[clientID] = time.Now()
+	// If this clientID already exists then update it.
+	// Otherwise set a new one.
+	if existingClient, ok := _stats.Clients[client.ClientID]; ok {
+		existingClient.LastSeen = time.Now()
+		existingClient.Username = client.Username
+		existingClient.MessageCount = client.MessageCount
+		_stats.Clients[client.ClientID] = existingClient
+	} else {
+		if client.Geo == nil {
+			geo := geoip.GetGeoFromIP(client.IPAddress)
+			client.Geo = geo
+		}
+		_stats.Clients[client.ClientID] = client
+	}
 	l.Unlock()
 
 	// Don't update viewer counts if a live stream session is not active.
@@ -101,6 +116,19 @@ func RemoveClient(clientID string) {
 	log.Trace("Removing the client:", clientID)
 
 	delete(_stats.Clients, clientID)
+}
+
+func GetClients() []models.Client {
+	clients := make([]models.Client, 0)
+	for _, client := range _stats.Clients {
+		chatClient := chat.GetClient(client.ClientID)
+		if chatClient != nil {
+			clients = append(clients, chatClient.GetViewerClientFromChatClient())
+		} else {
+			clients = append(clients, client)
+		}
+	}
+	return clients
 }
 
 func saveStatsToFile() error {
@@ -125,7 +153,7 @@ func saveStatsToFile() error {
 
 func getSavedStats() (models.Stats, error) {
 	result := models.Stats{
-		Clients: make(map[string]time.Time),
+		Clients: make(map[string]models.Client),
 	}
 
 	if !utils.DoesFileExists(statsFilePath) {

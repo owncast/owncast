@@ -73,6 +73,9 @@ func Start() error {
 	// Get hardware stats
 	http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
 
+	// Connected clients
+	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(controllers.GetConnectedClients))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Infof("Web server running on port: %d", port)
