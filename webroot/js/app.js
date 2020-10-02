@@ -387,9 +387,8 @@ export default class App extends Component {
     const bgLogo = { backgroundImage: `url(${smallLogo})` };
     const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
 
-    const tagList = !tags.length
-      ? null
-      : tags.map(
+    const tagList = (tags !== null && tags.length > 0)
+      ? tags.map(
           (tag, index) => html`
             <li
               key="tag${index}"
@@ -398,17 +397,33 @@ export default class App extends Component {
               ${tag}
             </li>
           `
-        );
+        )
+      : null;
 
-    const socialIconsList = !socialHandles.length
-      ? null
-      : socialHandles.map(
-          (item, index) => html`
-            <li key="social${index}">
-              <${SocialIcon} platform=${item.platform} url=${item.url} />
-            </li>
-          `
-        );
+    const socialIconsList = (function () {
+      if (socialHandles === null || socialHandles.length === 0) {
+        return null;
+      }
+
+	     const list = socialHandles.map(
+        (item, index) => html`
+          <li key="social${index}">
+            <${SocialIcon} platform=${item.platform} url=${item.url} />
+          </li>
+        `
+      );
+	
+	    return html`<ul
+          id="social-list"
+          class="social-list flex flex-row items-center justify-start flex-wrap"
+        >
+          <span class="follow-label text-xs	font-bold mr-2 uppercase"
+            >Follow me:
+          </span>
+          ${list}
+        </ul>
+	    `;
+    })();
 
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
@@ -517,15 +532,7 @@ export default class App extends Component {
                   >${streamerName}</span
                 >
               </h2>
-              <ul
-                id="social-list"
-                class="social-list flex flex-row items-center justify-start flex-wrap"
-              >
-                <span class="follow-label text-xs	font-bold mr-2 uppercase"
-                  >Follow me:
-                </span>
-                ${socialIconsList}
-              </ul>
+              ${socialIconsList}
               <div
                 id="stream-summary"
                 class="stream-summary my-4"
