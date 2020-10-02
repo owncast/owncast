@@ -48,23 +48,25 @@ func FetchGeoForIP(ip string) {
 
 	url := "https://freegeoip.app/json/"
 
-	req, _ := http.NewRequest("GET", url, nil)
+	go func() {
+		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Add("accept", "application/json")
+		req.Header.Add("content-type", "application/json")
 
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("content-type", "application/json")
+		res, _ := http.DefaultClient.Do(req)
 
-	res, _ := http.DefaultClient.Do(req)
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
 
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+		var apiResponse geoRequestResponse
+		err := json.Unmarshal(body, &apiResponse)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
 
-	var apiResponse geoRequestResponse
-	err := json.Unmarshal(body, &apiResponse)
-	if err != nil {
-		log.Errorln(err)
-		return
-	}
+		response := GeoDetails(apiResponse)
+		geoIPCache[ip] = response
+	}()
 
-	response := GeoDetails(apiResponse)
-	geoIPCache[ip] = response
 }
