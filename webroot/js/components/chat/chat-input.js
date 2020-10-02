@@ -2,7 +2,8 @@ import { h, Component, createRef } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
-import { EmojiButton } from 'https://unpkg.com/@joeattardi/emoji-button@4.2.0/dist/index.js';
+import * as EmojiButton from '/js/vendor.bundle.js';
+
 import ContentEditable, { replaceCaret } from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage, classNames } from '../../utils/helpers.js';

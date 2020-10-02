@@ -1,0 +1,24 @@
+{
+  "name": "owncast-dependencies",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "video.js": "^7.9.3",
+    "@joeattardi/emoji-button": "^4.2.0",
+    "@justinribeiro/lite-youtube": "^0.9.0",
+    "@videojs/http-streaming": "^2.2.0",
+    "htm": "^3.0.4",
+    "preact": "^10.5.3",
+    "showdown": "^1.9.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
