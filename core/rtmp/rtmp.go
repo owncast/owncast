@@ -28,6 +28,7 @@ var (
 
 var _transcoder ffmpeg.Transcoder
 var _pipe *os.File
+var _rtmpConnection net.Conn
 
 //Start starts the rtmp service, listening on port 1935
 func Start() {
@@ -92,6 +93,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	_isConnected = true
 	core.SetStreamAsConnected()
+	_rtmpConnection = nc
 
 	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
 	_pipe = f
@@ -121,7 +123,18 @@ func handleDisconnect(conn net.Conn) {
 	_pipe.Close()
 	_isConnected = false
 	_transcoder.Stop()
+	_rtmpConnection = nil
 	core.SetStreamAsDisconnected()
+}
+
+// Disconnect will force disconnect the current inbound RTMP connection.
+func Disconnect() {
+	if _rtmpConnection == nil {
+		return
+	}
+
+	log.Infoln("Inbound stream disconnect requested.")
+	handleDisconnect(_rtmpConnection)
 }
 
 //IsConnected gets whether there is an rtmp connection or not
