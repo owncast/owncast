@@ -1,9 +1,10 @@
-package controllers
+package admin
 
 import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gabek/owncast/controllers"
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/router/middleware"
@@ -15,7 +16,7 @@ func GetInboundBroadasterDetails(w http.ResponseWriter, r *http.Request) {
 
 	broadcaster := core.GetBroadcaster()
 	if broadcaster == nil {
-		writeSimpleResponse(w, false, "no broadcaster connected")
+		controllers.WriteSimpleResponse(w, false, "no broadcaster connected")
 		return
 	}
 
