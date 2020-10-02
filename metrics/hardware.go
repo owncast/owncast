@@ -44,5 +44,5 @@ func collectDiskUtilization() {
 	}
 
 	metricValue := timestampedValue{time.Now(), int(diskUse.UsedPercent)}
-	Metrics.DiskUtilizations = append(Metrics.RAMUtilizations, metricValue)
+	Metrics.DiskUtilizations = append(Metrics.DiskUtilizations, metricValue)
 }

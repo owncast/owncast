@@ -66,6 +66,9 @@ func Start() error {
 	// Get viewer count over time
 	http.HandleFunc("/api/admin/viewersOverTime", middleware.RequireAdminAuth(admin.GetViewersOverTime))
 
+	// Get hardware stats
+	http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Infof("Web server running on port: %d", port)
