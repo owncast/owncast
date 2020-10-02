@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "@joeattardi/emoji-button": "./@joeattardi/emoji-button.js",
+    "@justinribeiro/lite-youtube": "./@justinribeiro/lite-youtube.js",
+    "@videojs/http-streaming": "./@videojs/http-streaming.js",
+    "htm": "./htm.js",
+    "preact": "./preact.js",
+    "showdown": "./showdown.js",
+    "video.js": "./videojs.js"
+  }
+}

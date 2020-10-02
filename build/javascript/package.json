@@ -13,11 +13,22 @@
     "showdown": "^1.9.1"
   },
   "devDependencies": {
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "snowpack": "^2.12.1"
+  },
+  "snowpack": {
+    "install": [
+      "video.js",
+      "@joeattardi/emoji-button",
+      "@justinribeiro/lite-youtube",
+      "@videojs/http-streaming",
+      "htm",
+      "preact",
+      "showdown"
+    ]
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm install && npx snowpack install"
   },
   "author": "",
   "license": "ISC"
