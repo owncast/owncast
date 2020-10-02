@@ -17,6 +17,7 @@ import (
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/core/ffmpeg"
+	"github.com/gabek/owncast/models"
 	"github.com/gabek/owncast/utils"
 	"github.com/nareix/joy5/format/rtmp"
 )
@@ -62,10 +63,36 @@ func Start() {
 	}
 }
 
+func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
+	data, err := getInboundDetailsFromMetadata(t.DebugFields())
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	broadcaster := models.Broadcaster{
+		RemoteAddr: remoteAddr,
+		Time:       time.Now(),
+		StreamDetails: models.InboundStreamDetails{
+			Width:          data.Width,
+			Height:         data.Height,
+			VideoBitrate:   int(data.VideoBitrate),
+			VideoCodec:     getVideoCodec(data.VideoCodec),
+			VideoFramerate: data.VideoFramerate,
+			AudioBitrate:   int(data.AudioBitrate),
+			AudioCodec:     getAudioCodec(data.AudioCodec),
+			Encoder:        data.Encoder,
+		},
+	}
+
+	core.SetBroadcaster(broadcaster)
+}
+
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
 			log.Tracef("%+v\n", t.DebugFields())
+			setCurrentBroadcasterInfo(t, nc.RemoteAddr().String())
 		}
 	}
 

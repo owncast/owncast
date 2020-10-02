@@ -49,6 +49,7 @@ func SetStreamAsConnected() {
 func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
+	_broadcaster = nil
 
 	if _yp != nil {
 		_yp.Stop()
@@ -56,4 +57,13 @@ func SetStreamAsDisconnected() {
 
 	ffmpeg.ShowStreamOfflineState()
 	startCleanupTimer()
+}
+
+// SetBroadcaster will store the current inbound broadcasting details
+func SetBroadcaster(broadcaster models.Broadcaster) {
+	_broadcaster = &broadcaster
+}
+
+func GetBroadcaster() *models.Broadcaster {
+	return _broadcaster
 }
