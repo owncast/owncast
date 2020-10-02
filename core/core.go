@@ -19,12 +19,11 @@ import (
 )
 
 var (
-	_stats        *models.Stats
-	_storage      models.StorageProvider
-	_transcoder   *ffmpeg.Transcoder
-	_cleanupTimer *time.Timer
-	_yp           *yp.YP
-	_broadcaster  *models.Broadcaster
+	_stats       *models.Stats
+	_storage     models.StorageProvider
+	_transcoder  *ffmpeg.Transcoder
+	_yp          *yp.YP
+	_broadcaster *models.Broadcaster
 )
 
 var handler ffmpeg.HLSHandler
@@ -100,7 +99,7 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.Start()
 
 	// Copy the logo to be the thumbnail
-	utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo["large"]), "webroot/thumbnail.jpg")
+	utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
 }
 
 func resetDirectories() {
@@ -127,5 +126,5 @@ func resetDirectories() {
 	}
 
 	// Remove the previous thumbnail
-	utils.Copy(config.Config.InstanceDetails.Logo["large"], "webroot/thumbnail.jpg")
+	utils.Copy(config.Config.InstanceDetails.Logo.Large, "webroot/thumbnail.jpg")
 }

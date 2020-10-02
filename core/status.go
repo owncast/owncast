@@ -19,3 +19,12 @@ func GetStatus() models.Status {
 		LastConnectTime:       _stats.LastConnectTime,
 	}
 }
+
+// SetBroadcaster will store the current inbound broadcasting details
+func SetBroadcaster(broadcaster models.Broadcaster) {
+	_broadcaster = &broadcaster
+}
+
+func GetBroadcaster() *models.Broadcaster {
+	return _broadcaster
+}
