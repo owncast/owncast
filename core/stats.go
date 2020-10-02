@@ -94,11 +94,11 @@ func SetClientActive(client models.Client) {
 		existingClient.LastSeen = time.Now()
 		existingClient.Username = client.Username
 		existingClient.MessageCount = client.MessageCount
+		existingClient.Geo = geoip.GetGeoFromIP(existingClient.IPAddress)
 		_stats.Clients[client.ClientID] = existingClient
 	} else {
 		if client.Geo == nil {
-			geo := geoip.GetGeoFromIP(client.IPAddress)
-			client.Geo = geo
+			geoip.FetchGeoForIP(client.IPAddress)
 		}
 		_stats.Clients[client.ClientID] = client
 	}

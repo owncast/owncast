@@ -29,9 +29,21 @@ type GeoDetails struct {
 	TimeZone    string `json:"timeZone"`
 }
 
+// GetGeoFromIP returns geo details associated with an IP address if we
+// have previously fetched it.
 func GetGeoFromIP(ip string) *GeoDetails {
 	if cachedGeoDetails, ok := geoIPCache[ip]; ok {
 		return &cachedGeoDetails
+	}
+
+	return nil
+}
+
+// FetchGeoForIP makes an API call to get geo details for an IP address.
+func FetchGeoForIP(ip string) {
+	// Don't re-fetch if we already have it.
+	if _, ok := geoIPCache[ip]; ok {
+		return
 	}
 
 	url := "https://freegeoip.app/json/"
@@ -50,11 +62,9 @@ func GetGeoFromIP(ip string) *GeoDetails {
 	err := json.Unmarshal(body, &apiResponse)
 	if err != nil {
 		log.Errorln(err)
-		return nil
+		return
 	}
 
 	response := GeoDetails(apiResponse)
 	geoIPCache[ip] = response
-
-	return &response
 }

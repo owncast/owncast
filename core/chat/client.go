@@ -59,9 +59,8 @@ func NewClient(ws *websocket.Conn) *Client {
 	userAgent := ws.Request().UserAgent()
 	clientID := utils.GenerateClientIDFromRequest(ws.Request())
 	socketID, _ := shortid.Generate()
-	geo := geoip.GetGeoFromIP(ipAddress)
 
-	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, geo, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
+	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
 }
 
 //GetConnection gets the connection for the client
@@ -192,6 +191,6 @@ func (c *Client) GetViewerClientFromChatClient() models.Client {
 		IPAddress:    c.IPAddress,
 		Username:     c.Username,
 		ClientID:     c.ClientID,
-		Geo:          c.Geo,
+		Geo:          geoip.GetGeoFromIP(c.IPAddress),
 	}
 }
