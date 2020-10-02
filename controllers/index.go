@@ -50,9 +50,6 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 		client := models.GenerateClientFromRequest(r)
 		core.SetClientActive(client)
-	} else {
-		// Set a cache control header of one day
-		middleware.SetCache(1, w)
 	}
 
 	// Set a cache control max-age header
