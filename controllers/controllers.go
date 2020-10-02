@@ -27,7 +27,7 @@ func badRequestHandler(w http.ResponseWriter, err error) {
 	json.NewEncoder(w).Encode(j{"error": err.Error()})
 }
 
-func writeSimpleResponse(w http.ResponseWriter, success bool, message string) {
+func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 	response := models.BaseAPIResponse{
 		Success: success,
 		Message: message,

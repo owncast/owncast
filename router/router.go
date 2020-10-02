@@ -8,6 +8,8 @@ import (
 
 	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/controllers"
+	"github.com/gabek/owncast/controllers/admin"
+
 	"github.com/gabek/owncast/core/chat"
 	"github.com/gabek/owncast/core/rtmp"
 	"github.com/gabek/owncast/router/middleware"
@@ -47,7 +49,10 @@ func Start() error {
 	// Authenticated admin requests
 
 	// Disconnect inbound stream
-	http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(controllers.DisconnectInboundConnection))
+	http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(admin.DisconnectInboundConnection))
+
+	// Change the current streaming key in memory
+	http.HandleFunc("/api/admin/changekey", middleware.RequireAdminAuth(admin.ChangeStreamKey))
 
 	port := config.Config.GetPublicWebServerPort()
 
