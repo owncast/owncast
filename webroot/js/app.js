@@ -554,7 +554,7 @@ export default class App extends Component {
           websocket=${websocket}
           username=${username}
           userAvatarImage=${userAvatarImage}
-          chatInputEnabled=${chatInputEnabled}
+          chatInputEnabled=${true||chatInputEnabled}
         />
       </div>
     `;
