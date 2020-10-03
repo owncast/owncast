@@ -80,6 +80,7 @@
 .emoji-picker.owncast {
   --secondary-text-color: rgba(255,255,255,.5);
   --category-button-color:  rgba(255,255,255,.5);
+  --hover-color: rgba(255,255,255,.25);
 
   background: rgba(26,32,44,1); /* tailwind bg-gray-900 */
   color: rgba(226,232,240,1); /* tailwind text-gray-300 */
@@ -101,13 +102,17 @@
 }
 .emoji-picker__emojis::-webkit-scrollbar-track {
   border-radius: 8px;
-  background-color: rgba(0,0,0,.2);
+  background-color: black;
   box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
 }
 
 .emoji-picker__emojis::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,.45);
+  background-color: var(--category-button-color);
   border-radius: 8px;
+}
+
+.emoji-picker__emojis {
+  scrollbar-color: var(--category-button-color)  black;
 }
 
 
