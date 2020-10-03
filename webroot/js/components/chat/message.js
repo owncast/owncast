@@ -8,6 +8,16 @@ import { generateAvatar } from '../../utils/helpers.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default class Message extends Component {
+  formatTimestamp(sentAt) {
+    sentAt = moment(sentAt);
+
+    if (moment().diff(sentAt, 'days') >= 1) {
+      return `${sentAt.format('MMM D HH:mm:ss')}`
+    }
+
+    return sentAt.format("HH:mm:ss");
+  }
+
   render(props) {
     const { message, username } = props;
     const { type } = message;
@@ -20,6 +30,7 @@ export default class Message extends Component {
       const authorColor = messageBubbleColorForString(author);
       const avatarBgColor = { backgroundColor: authorColor };
       const authorTextColor = { color: authorColor };
+
       return (
         html`
           <div class="message flex flex-row items-start p-3">
@@ -35,7 +46,7 @@ export default class Message extends Component {
               </div>
               <div
                 class="message-text text-gray-300 font-normal overflow-y-hidden"
-                title=${timestamp}
+                title=${`Sent at ${this.formatTimestamp(timestamp)}`}
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }
