@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gabek/owncast/config"
 	"github.com/gabek/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +21,7 @@ const emojiPath = "/img/emoji" // Relative to webroot
 func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	emojiList := make([]models.CustomEmoji, 0)
 
-	fullPath := filepath.Join("webroot", emojiPath)
+	fullPath := filepath.Join(config.WebRoot, emojiPath)
 	files, err := ioutil.ReadDir(fullPath)
 	if err != nil {
 		log.Errorln(err)

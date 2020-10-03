@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -30,13 +31,6 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	isIndexRequest := r.URL.Path == "/" || r.URL.Path == "/index.html"
 
-	// Reject requests for the web UI if it's disabled.
-	if isIndexRequest && config.Config.DisableWebFeatures {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("404 - y u ask 4 this?  If this is an error let us know: https://github.com/owncast/owncast/issues"))
-		return
-	}
-
 	// For search engine bots and social scrapers return a special
 	// server-rendered page.
 	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
@@ -60,7 +54,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
-	http.ServeFile(w, r, path.Join("webroot", r.URL.Path))
+	http.ServeFile(w, r, path.Join(config.WebRoot, r.URL.Path))
 }
 
 // Return a basic HTML page with server-rendered metadata from the config file
@@ -75,7 +69,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string
-	if status.Online && utils.DoesFileExists("webroot/thumbnail.jpg") {
+	if status.Online && utils.DoesFileExists(filepath.Join(config.WebRoot, "thumbnail.jpg")) {
 		thumbnail, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/thumbnail.jpg"))
 		if err != nil {
 			log.Errorln(err)

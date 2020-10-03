@@ -30,24 +30,22 @@ func Start() error {
 	// custom emoji supported in the chat
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
-	if !config.Config.DisableWebFeatures {
-		// websocket chat server
-		go chat.Start()
+	// websocket chat server
+	go chat.Start()
 
-		// chat rest api
-		http.HandleFunc("/api/chat", controllers.GetChatMessages)
+	// chat rest api
+	http.HandleFunc("/api/chat", controllers.GetChatMessages)
 
-		// web config api
-		http.HandleFunc("/api/config", controllers.GetWebConfig)
+	// web config api
+	http.HandleFunc("/api/config", controllers.GetWebConfig)
 
-		// chat embed
-		http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
+	// chat embed
+	http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
 
-		// video embed
-		http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
+	// video embed
+	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
 
-		http.HandleFunc("/api/yp", yp.GetYPResponse)
-	}
+	http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// Authenticated admin requests
 

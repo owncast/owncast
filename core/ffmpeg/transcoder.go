@@ -188,15 +188,15 @@ func NewTranscoder() Transcoder {
 	var outputPath string
 	if config.Config.S3.Enabled {
 		// Segments are not available via the local HTTP server
-		outputPath = config.Config.GetPrivateHLSSavePath()
+		outputPath = config.PrivateHLSStoragePath
 	} else {
 		// Segments are available via the local HTTP server
-		outputPath = config.Config.GetPublicHLSSavePath()
+		outputPath = config.PublicHLSStoragePath
 	}
 
 	transcoder.segmentOutputPath = outputPath
 	// Playlists are available via the local HTTP server
-	transcoder.playlistOutputPath = config.Config.GetPublicHLSSavePath()
+	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
 	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
