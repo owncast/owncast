@@ -1,25 +1,13 @@
-import {Component, h} from 'https://unpkg.com/preact?module';
+import { h, Component } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
-import {messageBubbleColorForString} from '../../utils/user-colors.js';
-import {formatMessageText} from '../../utils/chat.js';
-import {generateAvatar} from '../../utils/helpers.js';
-import {SOCKET_MESSAGE_TYPES} from '../../utils/websocket.js';
-
 const html = htm.bind(h);
 
+import { messageBubbleColorForString } from '../../utils/user-colors.js';
+import { formatMessageText, formatTimestamp } from '../../utils/chat.js';
+import { generateAvatar } from '../../utils/helpers.js';
+import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
+
 export default class Message extends Component {
-  formatTimestamp(sentAt) {
-    sentAt = new Date(sentAt);
-
-    let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
-    if (diffInDays >= -1) {
-      return `${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
-        sentAt.toLocaleTimeString();
-    }
-
-    return sentAt.toLocaleTimeString();
-  }
-
   render(props) {
     const { message, username } = props;
     const { type } = message;
@@ -47,7 +35,7 @@ export default class Message extends Component {
               </div>
               <div
                 class="message-text text-gray-300 font-normal overflow-y-hidden"
-                title=${`Sent at ${this.formatTimestamp(timestamp)}`}
+                title=${`Sent at ${formatTimestamp(timestamp)}`}
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }
