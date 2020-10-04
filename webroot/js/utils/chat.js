@@ -281,6 +281,9 @@ export function convertOnPaste( event = { preventDefault() {} }) {
 
 export function formatTimestamp(sentAt) {
   sentAt = new Date(sentAt);
+  if (isNaN(sentAt)) {
+    return '';
+  }
 
   let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
   if (diffInDays >= 1) {
