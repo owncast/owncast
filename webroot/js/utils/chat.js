@@ -283,7 +283,7 @@ export function formatTimestamp(sentAt) {
   sentAt = new Date(sentAt);
 
   let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
-  if (diffInDays >= -1) {
+  if (diffInDays >= 1) {
     return `${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
       sentAt.toLocaleTimeString();
   }
