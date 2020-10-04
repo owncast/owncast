@@ -1,10 +1,11 @@
-import { h } from 'https://unpkg.com/preact?module';
+import { h, Component } from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
+
 import { SOCIAL_PLATFORMS } from '../utils/social.js';
 import { classNames } from '../utils/helpers.js';
 
-export default function SocialIcon(props) {
+function SocialIcon(props) {
   const { platform, url } = props;
   const platformInfo = SOCIAL_PLATFORMS[platform.toLowerCase()];
   const inList = !!platformInfo;
@@ -40,3 +41,23 @@ export default function SocialIcon(props) {
       </a>
   `);
 }
+
+export default function (props) {
+  const { handles } = props;
+  if (handles == null) {
+    return null;
+  }
+
+  const list = handles.map((item, index) => html`
+    <li key="social${index}">
+      <${SocialIcon} platform=${item.platform} url=${item.url} />
+    </li>
+  `);
+
+  return html`<ul
+      id="social-list"
+      class="social-list flex flex-row items-center justify-start flex-wrap">
+    <span class="follow-label text-xs font-bold mr-2 uppercase">Follow me:</span>
+    ${list}
+  </ul>`;
+} 
