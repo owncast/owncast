@@ -3,7 +3,7 @@ import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 import { messageBubbleColorForString } from '../../utils/user-colors.js';
-import { formatMessageText } from '../../utils/chat.js';
+import { formatMessageText, formatTimestamp } from '../../utils/chat.js';
 import { generateAvatar } from '../../utils/helpers.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
@@ -13,9 +13,10 @@ export default class Message extends Component {
     const { type } = message;
 
     if (type === SOCKET_MESSAGE_TYPES.CHAT) {
-      const { image, author, body } = message;
+      const { image, author, body, timestamp } = message;
       const formattedMessage = formatMessageText(body, username);
       const avatar = image || generateAvatar(author);
+      const formattedTimestamp = formatTimestamp(timestamp);
 
       const authorColor = messageBubbleColorForString(author);
       const avatarBgColor = { backgroundColor: authorColor };
@@ -35,6 +36,7 @@ export default class Message extends Component {
               </div>
               <div
                 class="message-text text-gray-300 font-normal overflow-y-hidden"
+                title=${formattedTimestamp}
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }
