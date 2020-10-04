@@ -1,21 +1,23 @@
-import { h, Component } from 'https://unpkg.com/preact?module';
+import {Component, h} from 'https://unpkg.com/preact?module';
 import htm from 'https://unpkg.com/htm?module';
-const html = htm.bind(h);
+import {messageBubbleColorForString} from '../../utils/user-colors.js';
+import {formatMessageText} from '../../utils/chat.js';
+import {generateAvatar} from '../../utils/helpers.js';
+import {SOCKET_MESSAGE_TYPES} from '../../utils/websocket.js';
 
-import { messageBubbleColorForString } from '../../utils/user-colors.js';
-import { formatMessageText } from '../../utils/chat.js';
-import { generateAvatar } from '../../utils/helpers.js';
-import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
+const html = htm.bind(h);
 
 export default class Message extends Component {
   formatTimestamp(sentAt) {
-    sentAt = moment(sentAt);
+    sentAt = new Date(sentAt);
 
-    if (moment().diff(sentAt, 'days') >= 1) {
-      return `${sentAt.format('MMM D HH:mm:ss')}`
+    let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
+    if (diffInDays >= -1) {
+      return `${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
+        sentAt.toLocaleTimeString();
     }
 
-    return sentAt.format("HH:mm:ss");
+    return sentAt.toLocaleTimeString();
   }
 
   render(props) {
@@ -30,7 +32,6 @@ export default class Message extends Component {
       const authorColor = messageBubbleColorForString(author);
       const avatarBgColor = { backgroundColor: authorColor };
       const authorTextColor = { color: authorColor };
-
       return (
         html`
           <div class="message flex flex-row items-start p-3">
