@@ -1,4 +1,4 @@
-import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-798ad6a7.js';
+import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-37fa8da4.js';
 
 var showdown = createCommonjsModule(function (module) {
 (function(){
@@ -5038,7 +5038,7 @@ if ( module.exports) {
 }
 }).call(commonjsGlobal);
 
-//# sourceMappingURL=showdown.js.map
+
 });
 
 export default showdown;
