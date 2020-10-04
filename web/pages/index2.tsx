@@ -3,7 +3,7 @@ import { BROADCASTER, fetchData } from './utils/apis';
 
 export default function Admin() {
   const [broadcasterStatus, setBroadcasterStatus] = useState({});
-  let getStatusIntervalId = null;
+  const getStatusIntervalId = null;
 
 
   const getBroadcastStatus = async () =>  {
@@ -12,7 +12,8 @@ export default function Admin() {
       const active = !!result.broadcaster;
 
       setBroadcasterStatus({ ...result, active });
-    } catch(error) {
+    } catch (error) {
+      
       setBroadcasterStatus({ ...broadcasterStatus, message: error.message });
     };
 
@@ -22,7 +23,6 @@ export default function Admin() {
   useEffect(() => { getBroadcastStatus(); }, []);
 
 
-  console.log("============",broadcasterStatus)
   // getStatusIntervalId = setInterval(getBroadcastStatus, 15000);
   return (
     <div>

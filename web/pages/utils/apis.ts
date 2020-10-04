@@ -31,29 +31,31 @@ export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
 // export const STREAM_STATUS = '/api/status';
 
 export async function fetchData(url) {
-  const headers = new Headers();
   const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-  // headers.set('Authorization', `Basic ${encoded}`);
-  console.log({encoded}, `${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`)
 
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Basic ${encoded}`,
+      },
+      mode: 'cors',
+      credentials: 'include',
+    });
+    // waits until the request completes...
+    // console.log(response);
 
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `Basic ${encoded}`,
-      'Credentials': 'include',
-    },
-    mode: 'no-cors',
-  });
-  // waits until the request completes...
-  // console.log(response);
+    if (!response.ok) {
+      console.log(response)
+      const message = `An error has occured: ${response.status}`;
+      throw new Error(message);
+    }
 
-  if (!response.ok) {
-    const message = `An error has occured: ${response.status}`;
-    throw new Error(message);
+    const json = await response.json();
+    console.log(json)
+    return json;
+  } catch (error) {
+    console.log(error)
   }
-
-  const json = await response.json();
-  return json;
 }
 
 // fetch error cases
