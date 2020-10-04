@@ -284,9 +284,9 @@ export function formatTimestamp(sentAt) {
 
   let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
   if (diffInDays >= 1) {
-    return `${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
+    return `Sent at ${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
       sentAt.toLocaleTimeString();
   }
 
-  return sentAt.toLocaleTimeString();
+  return `Sent at ${sentAt.toLocaleTimeString()}`;
 }

@@ -16,6 +16,7 @@ export default class Message extends Component {
       const { image, author, body, timestamp } = message;
       const formattedMessage = formatMessageText(body, username);
       const avatar = image || generateAvatar(author);
+      const formattedTimestamp = formatTimestamp(timestamp);
 
       const authorColor = messageBubbleColorForString(author);
       const avatarBgColor = { backgroundColor: authorColor };
@@ -35,7 +36,7 @@ export default class Message extends Component {
               </div>
               <div
                 class="message-text text-gray-300 font-normal overflow-y-hidden"
-                title=${`Sent at ${formatTimestamp(timestamp)}`}
+                title=${formattedTimestamp}
                 dangerouslySetInnerHTML=${
                   { __html: formattedMessage }
                 }
