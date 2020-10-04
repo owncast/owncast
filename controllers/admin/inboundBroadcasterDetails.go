@@ -7,13 +7,10 @@ import (
 	"github.com/gabek/owncast/controllers"
 	"github.com/gabek/owncast/core"
 	"github.com/gabek/owncast/models"
-	"github.com/gabek/owncast/router/middleware"
 )
 
 // GetInboundBroadasterDetails gets the details of the inbound broadcaster
 func GetInboundBroadasterDetails(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
-
 	broadcaster := core.GetBroadcaster()
 	if broadcaster == nil {
 		controllers.WriteSimpleResponse(w, false, "no broadcaster connected")
