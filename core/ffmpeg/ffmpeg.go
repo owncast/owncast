@@ -1,7 +1,7 @@
 package ffmpeg
 
 import (
-	"github.com/gabek/owncast/config"
+	"github.com/owncast/owncast/config"
 )
 
 //ShowStreamOfflineState generates and shows the stream's offline state

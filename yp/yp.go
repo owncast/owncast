@@ -9,8 +9,8 @@ import (
 
 	"encoding/json"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 
 	log "github.com/sirupsen/logrus"
 )

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/gabek/owncast/utils"
+import "github.com/owncast/owncast/utils"
 
 //Status represents the status of the system
 type Status struct {

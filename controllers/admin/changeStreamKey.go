@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/controllers"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/controllers"
 
 	log "github.com/sirupsen/logrus"
 )

@@ -7,10 +7,10 @@ import (
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/metrics"
-	"github.com/gabek/owncast/router"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/router"
 )
 
 // the following are injected at build-time

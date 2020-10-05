@@ -9,8 +9,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 
-	"github.com/gabek/owncast/models"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 
 	"github.com/teris-io/shortid"
 )

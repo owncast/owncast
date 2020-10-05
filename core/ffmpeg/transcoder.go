@@ -10,8 +10,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
 )
 
 var _commandExec *exec.Cmd

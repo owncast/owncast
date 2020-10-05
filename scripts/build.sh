@@ -52,7 +52,7 @@ build() {
 
   pushd dist/${NAME} >> /dev/null
 
-  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/gabek/owncast
+  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
   mv owncast-*-${ARCH} owncast
 
   zip -r -q -8 ../owncast-$NAME-$VERSION.zip .
@@ -76,7 +76,7 @@ git tag -a "v${VERSION}" -m "Release build v${VERSION}"
 
 # On macOS open the Github page for new releases so they can be uploaded
 if test -f "/usr/bin/open"; then
-  open "https://github.com/gabek/owncast/releases/new"
+  open "https://github.com/owncast/owncast/releases/new"
   open dist
 fi
 
@@ -90,8 +90,8 @@ cd $(git rev-parse --show-toplevel)
 
 # Github Packages
 docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t owncast . -f scripts/Dockerfile-build
-docker tag $DOCKER_IMAGE docker.pkg.github.com/gabek/owncast/$DOCKER_IMAGE:$VERSION
-docker push docker.pkg.github.com/gabek/owncast/$DOCKER_IMAGE:$VERSION
+docker tag $DOCKER_IMAGE docker.pkg.github.com/owncast/owncast/$DOCKER_IMAGE:$VERSION
+docker push docker.pkg.github.com/owncast/owncast/$DOCKER_IMAGE:$VERSION
 #
 # Dockerhub
 # You must be authenticated via `docker login` with your Dockerhub credentials first.

@@ -4,7 +4,7 @@ import (
 	"crypto/subtle"
 	"net/http"
 
-	"github.com/gabek/owncast/config"
+	"github.com/owncast/owncast/config"
 	log "github.com/sirupsen/logrus"
 )
 

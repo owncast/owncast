@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/router/middleware"
+	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 //GetStatus gets the status of the server

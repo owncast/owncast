@@ -3,10 +3,10 @@ package core
 import (
 	"time"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core/ffmpeg"
-	"github.com/gabek/owncast/models"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 //GetStatus gets the status of the system

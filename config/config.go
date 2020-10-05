@@ -4,7 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
