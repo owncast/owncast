@@ -24,34 +24,25 @@
     <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"/>
+    <link href="/js/web_modules/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
 
-    <link href="//unpkg.com/video.js@7.9.3/dist/video-js.css" rel="stylesheet" />
-    <link href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css" rel="stylesheet" />
-
-    <script src="//unpkg.com/video.js@7.9.3/dist/alt/video.core.min.js" defer></script>
-    <script src="//unpkg.com/@videojs/http-streaming@2.1.0/dist/videojs-http-streaming.min.js" defer></script>
-
-    <!-- markdown renderer -->
-    <script src="//unpkg.com/showdown/dist/showdown.min.js" defer></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@0.6.2/lite-youtube.js" defer></script>
+    <link href="/js/web_modules/videojs/dist/video-js.min.css" rel="stylesheet"/>
+    <link href="/js/web_modules/@videojs/themes/fantasy/index.css" rel="stylesheet" />
 
     <link href="./styles/video.css" rel="stylesheet" />
     <link href="./styles/chat.css" rel="stylesheet" />
     <link href="./styles/user-content.css" rel="stylesheet" />
     <link href="./styles/app.css" rel="stylesheet" />
-
-    <!-- Preloads -->
-    <link rel="preconnect" href="https://unpkg.com/@joeattardi/emoji-button@4.2.0/dist/index.js" />
-    <link rel="preconnect" href="https://unpkg.com/preact?module" />
-    <link rel="preconnect" href="https://unpkg.com/htm?module" />
-
   </head>
+
   <body class="scrollbar-hidden bg-gray-300 text-gray-800">
     <div id="app"></div>
 
     <script type="module">
-      import { render, html } from 'https://unpkg.com/htm/preact/standalone.module.js';
+      import { h, render } from '/js/web_modules/preact.js';
+      import htm from '/js/web_modules/htm.js';
+      const html = htm.bind(h);
+
       import App from './js/app.js';
       render(html`<${App} />`, document.getElementById("app"));
     </script>

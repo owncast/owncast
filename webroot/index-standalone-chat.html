@@ -3,20 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="/js/web_modules/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
     <link href="./styles/chat.css" rel="stylesheet" />
     <link href="./styles/standalone-chat.css" rel="stylesheet" />
-
-    <script src="//unpkg.com/showdown/dist/showdown.min.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@0.6.2/lite-youtube.js"></script>
-
   </head>
 
   <body>
     <div id="messages-only"></div>
 
     <script type="module">
-      import { render, html } from 'https://unpkg.com/htm/preact/standalone.module.js';
+      import { h, render } from '/js/web_modules/preact.js';
+      import htm from '/js/web_modules/htm.js';
+      const html = htm.bind(h);
+
       import StandaloneChat from './js/app-standalone-chat.js';
       render(
         html`<${StandaloneChat} messagesOnly />`, document.getElementById("messages-only")

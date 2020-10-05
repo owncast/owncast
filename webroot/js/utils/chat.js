@@ -4,6 +4,7 @@ import {
   CHAT_PLACEHOLDER_OFFLINE,
 } from './constants.js';
 
+import showdown from '/js/web_modules/showdown.js';
 export function formatMessageText(message, username) {
   showdown.setFlavor('github');
   let formattedText = new showdown.Converter({
