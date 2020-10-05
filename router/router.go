@@ -6,14 +6,14 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/controllers"
-	"github.com/gabek/owncast/controllers/admin"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/controllers/admin"
 
-	"github.com/gabek/owncast/core/chat"
-	"github.com/gabek/owncast/core/rtmp"
-	"github.com/gabek/owncast/router/middleware"
-	"github.com/gabek/owncast/yp"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/yp"
 )
 
 //Start starts the router for the http, ws, and rtmp

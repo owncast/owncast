@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/controllers"
-	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/models"
 )
 
 // GetInboundBroadasterDetails gets the details of the inbound broadcaster

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/models"
-	"github.com/gabek/owncast/router/middleware"
+	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 //GetChatMessages gets all of the chat messages

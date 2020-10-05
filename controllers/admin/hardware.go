@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/metrics"
+	"github.com/owncast/owncast/metrics"
 )
 
 // GetHardwareStats will return hardware utilization over time

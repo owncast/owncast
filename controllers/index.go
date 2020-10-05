@@ -11,10 +11,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/router/middleware"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/utils"
 )
 
 type MetadataPage struct {

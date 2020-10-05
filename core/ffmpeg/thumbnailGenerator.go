@@ -10,7 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
+	"github.com/owncast/owncast/config"
 )
 
 //StartThumbnailGenerator starts generating thumbnails
