@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/models"
 )
 
 //Setup sets up the chat server

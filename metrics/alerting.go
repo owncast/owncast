@@ -6,12 +6,14 @@ import (
 
 const maxCPUAlertingThresholdPCT = 95
 const maxRAMAlertingThresholdPCT = 95
+const maxDiskAlertingThresholdPCT = 95
 
-const alertingError = "The %s utilization of %d%% is higher than the alerting threshold of %d%%.  This can cause issues with video generation and delivery. Please visit the documentation at http://owncast.online/docs/troubleshooting/ to help troubleshoot this issue."
+const alertingError = "The %s utilization of %d%% can cause issues with video generation and delivery. Please visit the documentation at http://owncast.online/docs/troubleshooting/ to help troubleshoot this issue."
 
 func handleAlerting() {
 	handleCPUAlerting()
 	handleRAMAlerting()
+	handleDiskAlerting()
 }
 
 func handleCPUAlerting() {
@@ -21,7 +23,7 @@ func handleCPUAlerting() {
 
 	avg := recentAverage(Metrics.CPUUtilizations)
 	if avg > maxCPUAlertingThresholdPCT {
-		log.Errorf(alertingError, "CPU", avg, maxCPUAlertingThresholdPCT)
+		log.Errorf(alertingError, "CPU", maxCPUAlertingThresholdPCT)
 	}
 }
 
@@ -32,10 +34,22 @@ func handleRAMAlerting() {
 
 	avg := recentAverage(Metrics.RAMUtilizations)
 	if avg > maxRAMAlertingThresholdPCT {
-		log.Errorf(alertingError, "memory", avg, maxRAMAlertingThresholdPCT)
+		log.Errorf(alertingError, "memory", maxRAMAlertingThresholdPCT)
 	}
 }
 
-func recentAverage(values []value) int {
+func handleDiskAlerting() {
+	if len(Metrics.DiskUtilizations) < 2 {
+		return
+	}
+
+	avg := recentAverage(Metrics.DiskUtilizations)
+
+	if avg > maxDiskAlertingThresholdPCT {
+		log.Errorf(alertingError, "disk", maxRAMAlertingThresholdPCT)
+	}
+}
+
+func recentAverage(values []timestampedValue) int {
 	return int((values[len(values)-1].Value + values[len(values)-2].Value) / 2)
 }

@@ -1,6 +1,7 @@
-import { h, Component } from 'https://unpkg.com/preact?module';
-import htm from 'https://unpkg.com/htm?module';
+import { h, Component } from '/js/web_modules/preact.js';
+import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
+import showdown from '/js/web_modules/showdown.js';
 
 import { OwncastPlayer } from './components/player.js';
 import SocialIcon from './components/social.js';

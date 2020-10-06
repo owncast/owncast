@@ -13,8 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 )
 
 //S3Storage is the s3 implementation of the ChunkStorageProvider
@@ -28,7 +28,7 @@ type S3Storage struct {
 	s3Bucket          string
 	s3AccessKey       string
 	s3Secret          string
- 	s3ACL             string
+	s3ACL             string
 }
 
 //Setup sets up the s3 storage for saving the video to s3
@@ -94,7 +94,7 @@ func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Varia
 			if fullRemotePath == nil {
 				line = ""
 			} else if s.s3ServingEndpoint != "" {
-				line = fmt.Sprintf("%s/%s/%s", s.s3ServingEndpoint, config.Config.GetPrivateHLSSavePath(), fullRemotePath.RelativeUploadPath)
+				line = fmt.Sprintf("%s/%s/%s", s.s3ServingEndpoint, config.PrivateHLSStoragePath, fullRemotePath.RelativeUploadPath)
 			} else {
 				line = fullRemotePath.RemoteID
 			}

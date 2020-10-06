@@ -12,10 +12,10 @@ func getDefaults() config {
 	defaults.FFMpegPath = getDefaultFFMpegPath()
 	defaults.VideoSettings.ChunkLengthInSeconds = 4
 	defaults.Files.MaxNumberInPlaylist = 5
-	defaults.PublicHLSPath = "webroot/hls"
-	defaults.PrivateHLSPath = "hls"
 	defaults.VideoSettings.OfflineContent = "static/offline.m4v"
 	defaults.InstanceDetails.ExtraInfoFile = "/static/content.md"
+	defaults.YP.Enabled = false
+	defaults.YP.YPServiceURL = "https://yp.owncast.online"
 
 	defaultQuality := StreamQuality{
 		IsAudioPassthrough: true,

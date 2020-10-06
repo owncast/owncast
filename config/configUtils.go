@@ -1,6 +1,9 @@
 package config
 
-import "sort"
+import (
+	"encoding/json"
+	"sort"
+)
 
 func findHighestQuality(qualities []StreamQuality) int {
 	type IndexedQuality struct {
@@ -31,4 +34,16 @@ func findHighestQuality(qualities []StreamQuality) int {
 	})
 
 	return indexedQualities[0].index
+}
+
+// MarshalJSON is a custom JSON marshal function for video stream qualities
+func (q *StreamQuality) MarshalJSON() ([]byte, error) {
+	type Alias StreamQuality
+	return json.Marshal(&struct {
+		Framerate int `json:"framerate"`
+		*Alias
+	}{
+		Framerate: q.GetFramerate(),
+		Alias:     (*Alias)(q),
+	})
 }

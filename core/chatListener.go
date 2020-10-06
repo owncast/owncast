@@ -3,8 +3,8 @@ package core
 import (
 	"errors"
 
-	"github.com/gabek/owncast/core/chat"
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/models"
 )
 
 //ChatListenerImpl the implementation of the chat client

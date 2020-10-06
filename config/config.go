@@ -4,7 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
@@ -15,29 +15,33 @@ var _default config
 
 type config struct {
 	ChatDatabaseFilePath string          `yaml:"chatDatabaseFile"`
-	DisableWebFeatures   bool            `yaml:"disableWebFeatures"`
 	EnableDebugFeatures  bool            `yaml:"-"`
 	FFMpegPath           string          `yaml:"ffmpegPath"`
 	Files                files           `yaml:"files"`
 	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
-	PrivateHLSPath       string          `yaml:"privateHLSPath"`
-	PublicHLSPath        string          `yaml:"publicHLSPath"`
-	S3                   s3              `yaml:"s3"`
-	VersionInfo          string          `yaml:"-"`
+	S3                   S3              `yaml:"s3"`
+	VersionInfo          string          `yaml:"-"` // For storing the version/build number
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
+	YP                   yp              `yaml:"yp"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name          string            `yaml:"name" json:"name"`
-	Title         string            `yaml:"title" json:"title"`
-	Summary       string            `yaml:"summary" json:"summary"`
-	Logo          map[string]string `yaml:"logo" json:"logo"`
-	Tags          []string          `yaml:"tags" json:"tags"`
-	SocialHandles []socialHandle    `yaml:"socialHandles" json:"socialHandles"`
-	ExtraInfoFile string            `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
-	Version       string            `json:"version"`
+	Name          string         `yaml:"name" json:"name"`
+	Title         string         `yaml:"title" json:"title"`
+	Summary       string         `yaml:"summary" json:"summary"`
+	Logo          logo           `yaml:"logo" json:"logo"`
+	Tags          []string       `yaml:"tags" json:"tags"`
+	SocialHandles []socialHandle `yaml:"socialHandles" json:"socialHandles"`
+	ExtraInfoFile string         `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
+	Version       string         `json:"version"`
+	NSFW          bool           `yaml:"nsfw" json:"nsfw"`
+}
+
+type logo struct {
+	Large string `yaml:"large" json:"large"`
+	Small string `yaml:"small" json:"small"`
 }
 
 type socialHandle struct {
@@ -50,7 +54,14 @@ type videoSettings struct {
 	StreamingKey              string          `yaml:"streamingKey"`
 	StreamQualities           []StreamQuality `yaml:"streamQualities"`
 	OfflineContent            string          `yaml:"offlineContent"`
-	HighestQualityStreamIndex int             `yaml"-"`
+	HighestQualityStreamIndex int             `yaml:"-"`
+}
+
+// Registration to the central Owncast YP (Yellow pages) service operating as a directory.
+type yp struct {
+	Enabled      bool   `yaml:"enabled"`
+	InstanceURL  string `yaml:"instanceURL"`  // The public URL the directory should link to
+	YPServiceURL string `yaml:"ypServiceURL"` // The base URL to the YP API to register with (optional)
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.
@@ -58,35 +69,35 @@ type StreamQuality struct {
 	// Enable passthrough to copy the video and/or audio directly from the
 	// incoming stream and disable any transcoding.  It will ignore any of
 	// the below settings.
-	IsVideoPassthrough bool `yaml:"videoPassthrough"`
-	IsAudioPassthrough bool `yaml:"audioPassthrough"`
+	IsVideoPassthrough bool `yaml:"videoPassthrough" json:"videoPassthrough"`
+	IsAudioPassthrough bool `yaml:"audioPassthrough" json:"audioPassthrough"`
 
-	VideoBitrate int `yaml:"videoBitrate"`
-	AudioBitrate int `yaml:"audioBitrate"`
+	VideoBitrate int `yaml:"videoBitrate" json:"videoBitrate"`
+	AudioBitrate int `yaml:"audioBitrate" json:"audioBitrate"`
 
 	// Set only one of these in order to keep your current aspect ratio.
 	// Or set neither to not scale the video.
-	ScaledWidth  int `yaml:"scaledWidth"`
-	ScaledHeight int `yaml:"scaledHeight"`
+	ScaledWidth  int `yaml:"scaledWidth" json:"scaledWidth,omitempty"`
+	ScaledHeight int `yaml:"scaledHeight" json:"scaledHeight,omitempty"`
 
-	Framerate     int    `yaml:"framerate"`
-	EncoderPreset string `yaml:"encoderPreset"`
+	Framerate     int    `yaml:"framerate" json:"framerate"`
+	EncoderPreset string `yaml:"encoderPreset" json:"encoderPreset"`
 }
 
 type files struct {
 	MaxNumberInPlaylist int `yaml:"maxNumberInPlaylist"`
 }
 
-//s3 is for configuring the s3 integration
-type s3 struct {
-	Enabled         bool   `yaml:"enabled"`
-	Endpoint        string `yaml:"endpoint"`
-	ServingEndpoint string `yaml:"servingEndpoint"`
-	AccessKey       string `yaml:"accessKey"`
-	Secret          string `yaml:"secret"`
-	Bucket          string `yaml:"bucket"`
-	Region          string `yaml:"region"`
-	ACL             string `yaml:"acl"`
+//S3 is for configuring the S3 integration
+type S3 struct {
+	Enabled         bool   `yaml:"enabled" json:"enabled"`
+	Endpoint        string `yaml:"endpoint" json:"endpoint,omitempty"`
+	ServingEndpoint string `yaml:"servingEndpoint" json:"servingEndpoint,omitempty"`
+	AccessKey       string `yaml:"accessKey" json:"accessKey,omitempty"`
+	Secret          string `yaml:"secret" json:"secret,omitempty"`
+	Bucket          string `yaml:"bucket" json:"bucket,omitempty"`
+	Region          string `yaml:"region" json:"region,omitempty"`
+	ACL             string `yaml:"acl" json:"acl,omitempty"`
 }
 
 func (c *config) load(filePath string) error {
@@ -129,6 +140,10 @@ func (c *config) verifySettings() error {
 		}
 	}
 
+	if c.YP.Enabled && c.YP.InstanceURL == "" {
+		return errors.New("YP is enabled but instance url is not set")
+	}
+
 	return nil
 }
 
@@ -138,22 +153,6 @@ func (c *config) GetVideoSegmentSecondsLength() int {
 	}
 
 	return _default.GetVideoSegmentSecondsLength()
-}
-
-func (c *config) GetPublicHLSSavePath() string {
-	if c.PublicHLSPath != "" {
-		return c.PublicHLSPath
-	}
-
-	return _default.PublicHLSPath
-}
-
-func (c *config) GetPrivateHLSSavePath() string {
-	if c.PrivateHLSPath != "" {
-		return c.PrivateHLSPath
-	}
-
-	return _default.PrivateHLSPath
 }
 
 func (c *config) GetPublicWebServerPort() int {
@@ -187,6 +186,14 @@ func (c *config) GetFFMpegPath() string {
 	}
 
 	return _default.FFMpegPath
+}
+
+func (c *config) GetYPServiceHost() string {
+	if c.YP.YPServiceURL != "" {
+		return c.YP.YPServiceURL
+	}
+
+	return _default.YP.YPServiceURL
 }
 
 func (c *config) GetVideoStreamQualities() []StreamQuality {

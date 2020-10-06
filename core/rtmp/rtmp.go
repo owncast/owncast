@@ -14,10 +14,11 @@ import (
 	"github.com/nareix/joy5/format/flv/flvio"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core"
-	"github.com/gabek/owncast/core/ffmpeg"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 	"github.com/nareix/joy5/format/rtmp"
 )
 
@@ -28,6 +29,7 @@ var (
 
 var _transcoder ffmpeg.Transcoder
 var _pipe *os.File
+var _rtmpConnection net.Conn
 
 //Start starts the rtmp service, listening on port 1935
 func Start() {
@@ -61,10 +63,36 @@ func Start() {
 	}
 }
 
+func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
+	data, err := getInboundDetailsFromMetadata(t.DebugFields())
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	broadcaster := models.Broadcaster{
+		RemoteAddr: remoteAddr,
+		Time:       time.Now(),
+		StreamDetails: models.InboundStreamDetails{
+			Width:          data.Width,
+			Height:         data.Height,
+			VideoBitrate:   int(data.VideoBitrate),
+			VideoCodec:     getVideoCodec(data.VideoCodec),
+			VideoFramerate: data.VideoFramerate,
+			AudioBitrate:   int(data.AudioBitrate),
+			AudioCodec:     getAudioCodec(data.AudioCodec),
+			Encoder:        data.Encoder,
+		},
+	}
+
+	core.SetBroadcaster(broadcaster)
+}
+
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
 			log.Tracef("%+v\n", t.DebugFields())
+			setCurrentBroadcasterInfo(t, nc.RemoteAddr().String())
 		}
 	}
 
@@ -92,6 +120,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	_isConnected = true
 	core.SetStreamAsConnected()
+	_rtmpConnection = nc
 
 	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
 	_pipe = f
@@ -121,7 +150,18 @@ func handleDisconnect(conn net.Conn) {
 	_pipe.Close()
 	_isConnected = false
 	_transcoder.Stop()
+	_rtmpConnection = nil
 	core.SetStreamAsDisconnected()
+}
+
+// Disconnect will force disconnect the current inbound RTMP connection.
+func Disconnect() {
+	if _rtmpConnection == nil {
+		return
+	}
+
+	log.Infoln("Inbound stream disconnect requested.")
+	handleDisconnect(_rtmpConnection)
 }
 
 //IsConnected gets whether there is an rtmp connection or not

@@ -1,5 +1,7 @@
 // https://docs.videojs.com/player
 
+import videojs from '/js/web_modules/videojs/dist/video.min.js';
+
 const VIDEO_ID = 'video';
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 const URL_STREAM = `/hls/stream.m3u8`;
@@ -53,13 +55,14 @@ class OwncastPlayer {
   }
 
   init() {
-    videojs.Vhs.xhr.beforeRequest = function (options) {
+    this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
+
+    this.vjsPlayer.beforeRequest = function (options) {
       const cachebuster = Math.round(new Date().getTime() / 1000);
       options.uri = `${options.uri}?cachebust=${cachebuster}`;
       return options;
     };
 
-    this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
   }
@@ -76,11 +79,11 @@ class OwncastPlayer {
   // play
   startPlayer() {
     this.log('Start playing');
-    const source = { ...VIDEO_SRC }
+    const source = { ...VIDEO_SRC };
     this.vjsPlayer.volume(localStorage.getItem('owncastVolume'));
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
-  };
+  }
 
   handleReady() {
     this.log('on Ready');
@@ -124,7 +127,7 @@ class OwncastPlayer {
 
   setPoster() {
     const cachebuster = Math.round(new Date().getTime() / 1000);
-    const poster = POSTER_THUMB + "?okhi=" + cachebuster;
+    const poster = POSTER_THUMB + '?okhi=' + cachebuster;
 
     this.vjsPlayer.poster(poster);
   }
@@ -138,7 +141,6 @@ class OwncastPlayer {
       if (window.WebKitPlaybackTargetAvailabilityEvent) {
         var videoJsButtonClass = videojs.getComponent('Button');
         var concreteButtonClass = videojs.extend(videoJsButtonClass, {
-
           // The `init()` method will also work for constructor logic here, but it is
           // deprecated. If you provide an `init()` method, it will override the
           // `constructor()` method!
@@ -152,8 +154,10 @@ class OwncastPlayer {
           },
         });
 
-        var concreteButtonInstance = this.vjsPlayer.controlBar.addChild(new concreteButtonClass());
-        concreteButtonInstance.addClass("vjs-airplay");
+        var concreteButtonInstance = this.vjsPlayer.controlBar.addChild(
+          new concreteButtonClass()
+        );
+        concreteButtonInstance.addClass('vjs-airplay');
       }
     });
   }

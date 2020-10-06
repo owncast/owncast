@@ -1,9 +1,9 @@
 package core
 
 import (
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core/playlist"
-	"github.com/gabek/owncast/core/storageproviders"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/playlist"
+	"github.com/owncast/owncast/core/storageproviders"
 )
 
 var (

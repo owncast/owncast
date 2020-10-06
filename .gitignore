@@ -19,9 +19,13 @@ vendor/
 /stats.json
 owncast
 webroot/thumbnail.jpg
+webroot/preview.gif
 webroot/hls
 webroot/static/content.md
 hls/
 dist/
 transcoder.log
 chat.db
+.yp.key
+
+!webroot/js/web_modules/**/dist

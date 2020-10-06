@@ -12,9 +12,9 @@ import (
 
 	"github.com/radovskyb/watcher"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/models"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 var (
@@ -26,7 +26,7 @@ var (
 func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 	_storage = storage
 
-	pathToMonitor := config.Config.GetPrivateHLSSavePath()
+	pathToMonitor := config.PrivateHLSStoragePath
 
 	// Create at least one structure to store the segments for the different stream variants
 	variants = make([]models.Variant, len(config.Config.VideoSettings.StreamQualities))
@@ -63,11 +63,9 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 					continue
 				}
 
-				// fmt.Println(event.Op, relativePath)
-
 				// Handle updates to the master playlist by copying it to webroot
-				if relativePath == path.Join(config.Config.GetPrivateHLSSavePath(), "stream.m3u8") {
-					utils.Copy(event.Path, path.Join(config.Config.GetPublicHLSSavePath(), "stream.m3u8"))
+				if relativePath == path.Join(config.PrivateHLSStoragePath, "stream.m3u8") {
+					utils.Copy(event.Path, path.Join(config.PublicHLSStoragePath, "stream.m3u8"))
 
 				} else if filepath.Ext(event.Path) == ".m3u8" {
 					// Handle updates to playlists, but not the master playlist
@@ -82,7 +80,7 @@ func StartVideoContentMonitor(storage models.ChunkStorageProvider) error {
 
 					newObjectPathChannel := make(chan string, 1)
 					go func() {
-						newObjectPath, err := storage.Save(path.Join(config.Config.GetPrivateHLSSavePath(), segment.RelativeUploadPath), 0)
+						newObjectPath, err := storage.Save(path.Join(config.PrivateHLSStoragePath, segment.RelativeUploadPath), 0)
 						if err != nil {
 							log.Errorln("failed to save the file to the chunk storage.", err)
 						}
@@ -155,5 +153,5 @@ func updateVariantPlaylist(fullPath string) error {
 	playlistString := string(playlistBytes)
 	playlistString = _storage.GenerateRemotePlaylist(playlistString, variant)
 
-	return WritePlaylist(playlistString, path.Join(config.Config.GetPublicHLSSavePath(), relativePath))
+	return WritePlaylist(playlistString, path.Join(config.PublicHLSStoragePath, relativePath))
 }
