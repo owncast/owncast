@@ -10,8 +10,8 @@ import (
 
 	"net/http"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,7 +46,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	}
 
 	path := r.URL.Path
-	writePath := filepath.Join(config.Config.GetPrivateHLSSavePath(), path)
+	writePath := filepath.Join(config.PrivateHLSStoragePath, path)
 
 	var buf bytes.Buffer
 	io.Copy(&buf, r.Body)

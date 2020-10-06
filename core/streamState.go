@@ -9,9 +9,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core/ffmpeg"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/utils"
 
 	"github.com/grafov/m3u8"
 )
@@ -26,9 +26,9 @@ func SetStreamAsConnected() {
 
 	StopCleanupTimer()
 
-	segmentPath := config.Config.GetPublicHLSSavePath()
+	segmentPath := config.PublicHLSStoragePath
 	if config.Config.S3.Enabled {
-		segmentPath = config.Config.GetPrivateHLSSavePath()
+		segmentPath = config.PrivateHLSStoragePath
 	}
 
 	go func() {
@@ -54,8 +54,8 @@ func SetStreamAsDisconnected() {
 	ffmpeg.StopThumbnailGenerator()
 
 	for index := range config.Config.GetVideoStreamQualities() {
-		playlistFilePath := fmt.Sprintf(filepath.Join(config.Config.GetPrivateHLSSavePath(), "%d/stream.m3u8"), index)
-		segmentFilePath := fmt.Sprintf(filepath.Join(config.Config.GetPrivateHLSSavePath(), "%d/%s"), index, offlineFilename)
+		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
+		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
 
 		utils.Copy(offlineFilePath, segmentFilePath)
 		_storage.Save(segmentFilePath, 0)

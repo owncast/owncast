@@ -5,9 +5,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core/ffmpeg"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/utils"
 )
 
 type LocalStorage struct {
@@ -44,9 +44,9 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (*string, error) {
 
 	// This is a hack
 	if filePath == "hls/stream.m3u8" {
-		newPath = filepath.Join(config.Config.GetPublicHLSSavePath(), filepath.Base(filePath))
+		newPath = filepath.Join(config.PublicHLSStoragePath, filepath.Base(filePath))
 	} else {
-		newPath = filepath.Join("webroot", filePath)
+		newPath = filepath.Join(config.WebRoot, filePath)
 	}
 
 	// Move video segments to the destination directory.

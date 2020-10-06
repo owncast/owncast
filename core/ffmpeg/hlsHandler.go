@@ -1,7 +1,7 @@
 package ffmpeg
 
 import (
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/models"
 )
 
 // HLSHandler gets told about available HLS playlists and segments

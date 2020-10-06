@@ -5,9 +5,8 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
-	"time"
 
-	"github.com/gabek/owncast/core/storageproviders"
+	"github.com/owncast/owncast/core/storageproviders"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"

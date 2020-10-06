@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/gabek/owncast/config"
+	"github.com/owncast/owncast/config"
 )
 
 // Cleanup will delete old files off disk that are no longer being referenced
