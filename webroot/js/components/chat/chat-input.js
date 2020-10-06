@@ -148,8 +148,7 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeydown(event) {
     const formField = this.formMessageInput.current;
-
-    let textValue = formField.innerText.trim(); // get this only to count chars
+    let textValue = formField.textContent; // get this only to count chars
     const newStates = {};
     let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
     const key = event && event.key;
@@ -174,7 +173,7 @@ export default class ChatInput extends Component {
         event.preventDefault();
 
         // value could have been changed, update char count
-        textValue = formField.innerText.trim();
+        textValue = formField.textContent;
         numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
       }
     }
@@ -193,7 +192,7 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeyup(event) {
     const formField = this.formMessageInput.current;
-    const textValue = formField.innerText.trim(); // get this only to count chars
+    const textValue = formField.textContent; // get this only to count chars
 
     const { key } = event;
 
