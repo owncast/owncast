@@ -60,5 +60,5 @@ func getCacheDurationSecondsForPath(filePath string) int {
 	}
 
 	// Default cache length in seconds
-	return 30 * 60
+	return 30
 }
