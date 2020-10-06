@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gabek/owncast/geoip"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/geoip"
+	"github.com/owncast/owncast/utils"
 )
 
 type ConnectedClientsResponse struct {

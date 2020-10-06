@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/core"
+	"github.com/owncast/owncast/core"
 )
 
 // GetConnectedClients returns currently connected clients

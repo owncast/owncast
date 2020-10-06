@@ -9,16 +9,9 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
-
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/router/middleware"
-	"github.com/owncast/owncast/yp"
-
-	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/rtmp"
-	"github.com/owncast/owncast/router/middleware"
-
 	"github.com/owncast/owncast/yp"
 )
 
