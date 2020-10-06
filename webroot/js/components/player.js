@@ -1,6 +1,8 @@
 // https://docs.videojs.com/player
 
 import videojs from '/js/web_modules/videojs/dist/video.min.js';
+import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
+import { PLAYER_VOLUME } from '../utils/constants.js';
 
 const VIDEO_ID = 'video';
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
@@ -81,8 +83,8 @@ class OwncastPlayer {
     this.log('Start playing');
     const source = { ...VIDEO_SRC };
 
-    if (localStorage.getItem('owncastVolume') !== null)
-      this.vjsPlayer.volume(localStorage.getItem('owncastVolume'));
+    if (getLocalStorage(PLAYER_VOLUME) !== null)
+      this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME));
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   }
@@ -101,7 +103,7 @@ class OwncastPlayer {
   }
 
   handleVolume(e) {
-    localStorage.setItem('owncastVolume', this.vjsPlayer.volume());
+    setLocalStorage(PLAYER_VOLUME, this.vjsPlayer.volume());
   }
 
   handlePlaying() {

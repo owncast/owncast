@@ -18,6 +18,7 @@ export const MESSAGE_OFFLINE = 'Stream is offline.';
 export const MESSAGE_ONLINE = 'Stream is online.';
 
 export const URL_OWNCAST = 'https://owncast.online'; // used in footer
+export const PLAYER_VOLUME = 'owncast_volume';
 
 
 export const KEY_USERNAME = 'owncast_username';
