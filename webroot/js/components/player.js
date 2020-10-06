@@ -102,8 +102,8 @@ class OwncastPlayer {
     }
   }
 
-  handleVolume(e) {
-    setLocalStorage(PLAYER_VOLUME, this.vjsPlayer.volume());
+  handleVolume() {
+    setLocalStorage(PLAYER_VOLUME, this.vjsPlayer.muted() ? 0 : this.vjsPlayer.volume());
   }
 
   handlePlaying() {
