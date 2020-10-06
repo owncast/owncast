@@ -1,38 +1,31 @@
+// This package utilizes the MaxMind GeoLite2 GeoIP database https://dev.maxmind.com/geoip/geoip2/geolite2/.
+// You must provide your own copy of this database for it to work.
+// Read more about how this works at http://owncast.online/docs/geoip
+
 package geoip
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"net"
 
+	"github.com/oschwald/geoip2-golang"
+	"github.com/owncast/owncast/config"
 	log "github.com/sirupsen/logrus"
-
-	"net/http"
 )
 
-var geoIPCache = map[string]GeoDetails{}
+var _geoIPCache = map[string]GeoDetails{}
+var _enabled = true // Try to use GeoIP support it by default.
 
-type geoRequestResponse struct {
-	CountryCode string `json:"country_code"`
-	CountryName string `json:"country_name"`
-	RegionCode  string `json:"region_code"`
-	RegionName  string `json:"region_name"`
-	City        string `json:"city"`
-	TimeZone    string `json:"time_zone"`
-}
-
+// GeoDetails stores details about a location
 type GeoDetails struct {
 	CountryCode string `json:"countryCode"`
-	CountryName string `json:"countryName"`
-	RegionCode  string `json:"regionCode"`
 	RegionName  string `json:"regionName"`
-	City        string `json:"city"`
 	TimeZone    string `json:"timeZone"`
 }
 
 // GetGeoFromIP returns geo details associated with an IP address if we
 // have previously fetched it.
 func GetGeoFromIP(ip string) *GeoDetails {
-	if cachedGeoDetails, ok := geoIPCache[ip]; ok {
+	if cachedGeoDetails, ok := _geoIPCache[ip]; ok {
 		return &cachedGeoDetails
 	}
 
@@ -41,32 +34,51 @@ func GetGeoFromIP(ip string) *GeoDetails {
 
 // FetchGeoForIP makes an API call to get geo details for an IP address.
 func FetchGeoForIP(ip string) {
-	// Don't re-fetch if we already have it.
-	if _, ok := geoIPCache[ip]; ok {
+	// If GeoIP has been disabled then don't try to access it.
+	if !_enabled {
 		return
 	}
 
-	url := "https://freegeoip.app/json/"
+	// Don't re-fetch if we already have it.
+	if _, ok := _geoIPCache[ip]; ok {
+		return
+	}
 
 	go func() {
-		req, _ := http.NewRequest("GET", url, nil)
-		req.Header.Add("accept", "application/json")
-		req.Header.Add("content-type", "application/json")
-
-		res, _ := http.DefaultClient.Do(req)
-
-		defer res.Body.Close()
-		body, _ := ioutil.ReadAll(res.Body)
-
-		var apiResponse geoRequestResponse
-		err := json.Unmarshal(body, &apiResponse)
+		db, err := geoip2.Open(config.GeoIPDatabasePath)
 		if err != nil {
-			log.Errorln(err)
+			log.Traceln("GeoIP support is disabled. visit http://owncast.online/docs/geoip to learn how to enable.", err)
+			_enabled = false
 			return
 		}
 
-		response := GeoDetails(apiResponse)
-		geoIPCache[ip] = response
+		defer db.Close()
+
+		ipObject := net.ParseIP(ip)
+
+		record, err := db.City(ipObject)
+		if err != nil {
+			log.Warnln(err)
+			return
+		}
+
+		// If no country is available then exit
+		if record.Country.IsoCode == "" {
+			return
+		}
+
+		// If we believe this IP to be anonymous then no reason to report it
+		if record.Traits.IsAnonymousProxy {
+			return
+		}
+
+		response := GeoDetails{
+			CountryCode: record.Country.IsoCode,
+			RegionName:  record.Subdivisions[0].Names["en"],
+			TimeZone:    record.Location.TimeZone,
+		}
+
+		_geoIPCache[ip] = response
 	}()
 
 }
