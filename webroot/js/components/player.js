@@ -80,7 +80,9 @@ class OwncastPlayer {
   startPlayer() {
     this.log('Start playing');
     const source = { ...VIDEO_SRC };
-    this.vjsPlayer.volume(localStorage.getItem('owncastVolume'));
+
+    if (localStorage.getItem('owncastVolume') !== null)
+      this.vjsPlayer.volume(localStorage.getItem('owncastVolume'));
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   }
