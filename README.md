@@ -14,7 +14,7 @@
     <a href="https://goth.land/">View Demo</a>
     ·
     <a href="https://owncast.online/docs/faq/">FAQ</a>
-    .
+    ·
     <a href="https://github.com/owncast/owncast/issues">Report Bug</a>
   </p>
 </p>
