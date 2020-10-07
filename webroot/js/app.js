@@ -4,7 +4,7 @@ const html = htm.bind(h);
 import showdown from '/js/web_modules/showdown.js';
 
 import { OwncastPlayer } from './components/player.js';
-import SocialIcon from './components/social.js';
+import SocialIconsList from './components/social-icons-list.js';
 import UsernameForm from './components/chat/username.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
@@ -388,9 +388,8 @@ export default class App extends Component {
     const bgLogo = { backgroundImage: `url(${smallLogo})` };
     const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
 
-    const tagList = !tags.length
-      ? null
-      : tags.map(
+    const tagList = (tags !== null && tags.length > 0)
+      ? tags.map(
           (tag, index) => html`
             <li
               key="tag${index}"
@@ -399,17 +398,8 @@ export default class App extends Component {
               ${tag}
             </li>
           `
-        );
-
-    const socialIconsList = !socialHandles.length
-      ? null
-      : socialHandles.map(
-          (item, index) => html`
-            <li key="social${index}">
-              <${SocialIcon} platform=${item.platform} url=${item.url} />
-            </li>
-          `
-        );
+        )
+      : null;
 
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
@@ -518,15 +508,7 @@ export default class App extends Component {
                   >${streamerName}</span
                 >
               </h2>
-              <ul
-                id="social-list"
-                class="social-list flex flex-row items-center justify-start flex-wrap"
-              >
-                <span class="follow-label text-xs	font-bold mr-2 uppercase"
-                  >Follow me:
-                </span>
-                ${socialIconsList}
-              </ul>
+              <${SocialIconsList} handles=${socialHandles} />
               <div
                 id="stream-summary"
                 class="stream-summary my-4"
