@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -108,4 +109,25 @@ func RenderSimpleMarkdown(raw string) string {
 	}
 
 	return buf.String()
+}
+
+// GetCacheDurationSecondsForPath will return the number of seconds to cache an item
+func GetCacheDurationSecondsForPath(filePath string) int {
+	if path.Base(filePath) == "thumbnail.jpg" {
+		// Thumbnails re-generate during live
+		return 20
+	} else if path.Ext(filePath) == ".js" || path.Ext(filePath) == ".css" {
+		// Cache javascript & CSS
+		return 60
+	} else if path.Ext(filePath) == ".ts" {
+		// Cache video segments as long as you want. They can't change.
+		// This matters most for local hosting of segments for recordings
+		// and not for live or 3rd party storage.
+		return 31557600
+	} else if path.Ext(filePath) == ".m3u8" {
+		return 0
+	}
+
+	// Default cache length in seconds
+	return 30
 }

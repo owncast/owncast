@@ -39,7 +39,7 @@ func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
 }
 
 // Save will save a local filepath using the storage provider
-func (s *LocalStorage) Save(filePath string, retryCount int) (*string, error) {
+func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	newPath := ""
 
 	// This is a hack
@@ -59,5 +59,5 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (*string, error) {
 		ffmpeg.Cleanup(filepath.Dir(newPath))
 	}
 
-	return &newPath, nil
+	return newPath, nil
 }

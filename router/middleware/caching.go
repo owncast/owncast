@@ -3,11 +3,11 @@ package middleware
 import (
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strconv"
 
 	"github.com/amalfra/etag"
+	"github.com/owncast/owncast/utils"
 )
 
 //DisableCache writes the disable cache header on the responses
@@ -42,25 +42,5 @@ func ProcessEtags(w http.ResponseWriter, r *http.Request) int {
 
 // SetCachingHeaders will set the cache control header of a response
 func SetCachingHeaders(w http.ResponseWriter, r *http.Request) {
-	setCacheSeconds(getCacheDurationSecondsForPath(r.URL.Path), w)
-}
-
-func getCacheDurationSecondsForPath(filePath string) int {
-	if path.Base(filePath) == "thumbnail.jpg" {
-		// Thumbnails re-generate during live
-		return 20
-	} else if path.Ext(filePath) == ".js" || path.Ext(filePath) == ".css" {
-		// Cache javascript & CSS
-		return 60
-	} else if path.Ext(filePath) == ".ts" {
-		// Cache video segments as long as you want. They can't change.
-		// This matters most for local hosting of segments for recordings
-		// and not for live or 3rd party storage.
-		return 31557600
-	} else if path.Ext(filePath) == ".m3u8" {
-		return 0
-	}
-
-	// Default cache length in seconds
-	return 30
+	setCacheSeconds(utils.GetCacheDurationSecondsForPath(r.URL.Path), w)
 }

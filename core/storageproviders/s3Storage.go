@@ -127,18 +127,22 @@ func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 }
 
 // Save saves the file to the s3 bucket
-func (s *S3Storage) Save(filePath string, retryCount int) (*string, error) {
+func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer file.Close()
 
+	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
+	cacheControlHeader := fmt.Sprintf("Cache-Control: max-age=%d", maxAgeSeconds)
 	uploadInput := &s3manager.UploadInput{
-		Bucket: aws.String(s.s3Bucket), // Bucket to be used
-		Key:    aws.String(filePath),   // Name of the file to be saved
-		Body:   file,                   // File
+		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
+		Key:          aws.String(filePath),   // Name of the file to be saved
+		Body:         file,                   // File
+		CacheControl: &cacheControlHeader,
 	}
+
 	if s.s3ACL != "" {
 		uploadInput.ACL = aws.String(s.s3ACL)
 	} else {
@@ -154,12 +158,12 @@ func (s *S3Storage) Save(filePath string, retryCount int) (*string, error) {
 			log.Traceln("Retrying...")
 			return s.Save(filePath, retryCount+1)
 		} else {
-			log.Warnln("Giving up on", filePath)
-			return nil, fmt.Errorf("Giving up on %s", filePath)
+			log.Warnln("Giving up on", filePath, err)
+			return "", fmt.Errorf("Giving up on %s", filePath)
 		}
 	}
 
-	return &response.Location, nil
+	return response.Location, nil
 }
 
 func (s *S3Storage) connectAWS() *session.Session {

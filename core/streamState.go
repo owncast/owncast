@@ -34,8 +34,8 @@ func SetStreamAsConnected() {
 	go func() {
 		_transcoder = ffmpeg.NewTranscoder()
 		_transcoder.TranscoderCompleted = func(error) {
-			SetStreamAsDisconnected()
 
+			SetStreamAsDisconnected()
 		}
 		_transcoder.Start()
 	}()
