@@ -13,6 +13,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 )
@@ -47,8 +48,8 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if path.Ext(r.URL.Path) == ".m3u8" {
 		middleware.DisableCache(w)
 
-		clientID := utils.GenerateClientIDFromRequest(r)
-		core.SetClientActive(clientID)
+		client := models.GenerateClientFromRequest(r)
+		core.SetClientActive(client)
 	}
 
 	// Set a cache control max-age header

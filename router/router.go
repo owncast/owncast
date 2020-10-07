@@ -9,7 +9,6 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
-
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/router/middleware"
@@ -66,6 +65,9 @@ func Start() error {
 
 	// Get hardware stats
 	http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
+
+	// Get a a detailed list of currently connected clients
+	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(controllers.GetConnectedClients))
 
 	port := config.Config.GetPublicWebServerPort()
 

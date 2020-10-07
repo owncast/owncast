@@ -79,7 +79,7 @@ func (s *server) onConnection(ws *websocket.Conn) {
 	client := NewClient(ws)
 
 	defer func() {
-		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.clientID)
+		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.ClientID)
 
 		if err := ws.Close(); err != nil {
 			s.errCh <- err
@@ -102,13 +102,13 @@ func (s *server) Listen() {
 		// add new a client
 		case c := <-s.addCh:
 			s.Clients[c.socketID] = c
-			s.listener.ClientAdded(c.clientID)
+			s.listener.ClientAdded(c.GetViewerClientFromChatClient())
 			s.sendWelcomeMessageToClient(c)
 
 		// remove a client
 		case c := <-s.delCh:
 			delete(s.Clients, c.socketID)
-			s.listener.ClientRemoved(c.clientID)
+			s.listener.ClientRemoved(c.ClientID)
 
 		// broadcast a message to all clients
 		case msg := <-s.sendAllCh:
@@ -137,4 +137,14 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		c.Write(initialMessage)
 	}()
 
+}
+
+func (s *server) getClientForClientID(clientID string) *Client {
+	for _, client := range s.Clients {
+		if client.ClientID == clientID {
+			return client
+		}
+	}
+
+	return nil
 }

@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 
+	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 
@@ -21,8 +22,12 @@ const channelBufSize = 100
 type Client struct {
 	ConnectedAt  time.Time
 	MessageCount int
+	UserAgent    string
+	IPAddress    string
+	Username     *string
+	ClientID     string            // How we identify unique viewers when counting viewer counts.
+	Geo          *geoip.GeoDetails `json:"geo"`
 
-	clientID              string // How we identify unique viewers when counting viewer counts.
 	socketID              string // How we identify a single websocket client.
 	ws                    *websocket.Conn
 	ch                    chan models.ChatMessage
@@ -50,10 +55,12 @@ func NewClient(ws *websocket.Conn) *Client {
 	pingch := make(chan models.PingMessage)
 	usernameChangeChannel := make(chan models.NameChangeEvent)
 
+	ipAddress := utils.GetIPAddressFromRequest(ws.Request())
+	userAgent := ws.Request().UserAgent()
 	clientID := utils.GenerateClientIDFromRequest(ws.Request())
 	socketID, _ := shortid.Generate()
 
-	return &Client{time.Now(), 0, clientID, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
+	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
 }
 
 //GetConnection gets the connection for the client
@@ -66,7 +73,7 @@ func (c *Client) Write(msg models.ChatMessage) {
 	case c.ch <- msg:
 	default:
 		_server.remove(c)
-		_server.err(fmt.Errorf("client %s is disconnected", c.clientID))
+		_server.err(fmt.Errorf("client %s is disconnected", c.ClientID))
 	}
 }
 
@@ -153,6 +160,7 @@ func (c *Client) userChangedName(data []byte) {
 	msg.Type = NAMECHANGE
 	msg.ID = shortid.MustGenerate()
 	_server.usernameChanged(msg)
+	c.Username = &msg.NewName
 }
 
 func (c *Client) chatMessageReceived(data []byte) {
@@ -168,7 +176,21 @@ func (c *Client) chatMessageReceived(data []byte) {
 	msg.Visible = true
 
 	c.MessageCount++
+	c.Username = &msg.Author
 
-	msg.ClientID = c.clientID
+	msg.ClientID = c.ClientID
 	_server.SendToAll(msg)
+}
+
+// GetViewerClientFromChatClient returns a general models.Client from a chat websocket client.
+func (c *Client) GetViewerClientFromChatClient() models.Client {
+	return models.Client{
+		ConnectedAt:  c.ConnectedAt,
+		MessageCount: c.MessageCount,
+		UserAgent:    c.UserAgent,
+		IPAddress:    c.IPAddress,
+		Username:     c.Username,
+		ClientID:     c.ClientID,
+		Geo:          geoip.GetGeoFromIP(c.IPAddress),
+	}
 }
