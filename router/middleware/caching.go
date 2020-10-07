@@ -57,6 +57,8 @@ func getCacheDurationSecondsForPath(filePath string) int {
 		// This matters most for local hosting of segments for recordings
 		// and not for live or 3rd party storage.
 		return 31557600
+	} else if path.Ext(filePath) == ".m3u8" {
+		return 0
 	}
 
 	// Default cache length in seconds
