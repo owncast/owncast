@@ -7,7 +7,7 @@
     "htm": "./htm.js",
     "preact": "./preact.js",
     "tailwindcss/dist/tailwind.min.css": "./tailwindcss/dist/tailwind.min.css",
-    "video.js/dist/video-js.min.css": "./videojs/dist/video-js.min.css",
-    "video.js/dist/video.min.js": "./videojs/dist/video.min.js"
+    "video.js": "./video.js/core.js",
+    "video.js/core.js": "./videojs/core.js"
   }
 }
