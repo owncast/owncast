@@ -82,7 +82,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	// Warn the user about long-running save operations
 	if averagePerformance != 0 {
 		if averagePerformance > float64(config.Config.GetVideoSegmentSecondsLength())*0.9 {
-			log.Warnln("Average upload S3 save duration", averagePerformance, "ms")
+			log.Warnln("Possible slow uploads: average upload S3 save duration", averagePerformance, "ms. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
 		}
 		log.Traceln(localFilePath, "uploaded to S3")
 	}
