@@ -6,8 +6,6 @@ import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME } from '../utils/constants.js';
 
 const VIDEO_ID = 'video';
-// TODO: This directory is customizable in the config.  So we should expose this via the config API.
-// See https://github.com/owncast/owncast/pull/121
 const URL_STREAM = `/hls/stream.m3u8`;
 
 // Video setup
