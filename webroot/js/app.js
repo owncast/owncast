@@ -3,7 +3,7 @@ import htm from 'https://unpkg.com/htm?module';
 const html = htm.bind(h);
 
 import { OwncastPlayer } from './components/player.js';
-import SocialIconsList from './components/socialIconsList.js';
+import SocialIconsList from './components/social-icons-list.js';
 import UsernameForm from './components/chat/username.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
