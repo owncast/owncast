@@ -83,8 +83,7 @@ class OwncastPlayer {
     this.log('Start playing');
     const source = { ...VIDEO_SRC };
 
-    if (getLocalStorage(PLAYER_VOLUME) !== null)
-      this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME));
+    this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME) || 1);
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   }
