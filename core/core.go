@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/owncast/owncast/core/storageproviders"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
@@ -58,12 +57,6 @@ func Start() error {
 		_yp = yp.NewYP(GetStatus)
 	} else {
 		yp.DisplayInstructions()
-	}
-
-	if config.Config.S3.Enabled {
-		_storage = &storageproviders.S3Storage{}
-	} else {
-		_storage = &storageproviders.LocalStorage{}
 	}
 
 	chat.Setup(ChatListenerImpl{})
