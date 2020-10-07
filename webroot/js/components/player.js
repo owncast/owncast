@@ -1,6 +1,8 @@
 // https://docs.videojs.com/player
 
 import videojs from '/js/web_modules/videojs/dist/video.min.js';
+import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
+import { PLAYER_VOLUME } from '../utils/constants.js';
 
 const VIDEO_ID = 'video';
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
@@ -49,6 +51,7 @@ class OwncastPlayer {
     this.startPlayer = this.startPlayer.bind(this);
     this.handleReady = this.handleReady.bind(this);
     this.handlePlaying = this.handlePlaying.bind(this);
+    this.handleVolume = this.handleVolume.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
   }
@@ -79,6 +82,8 @@ class OwncastPlayer {
   startPlayer() {
     this.log('Start playing');
     const source = { ...VIDEO_SRC };
+
+    this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME) || 1);
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   }
@@ -87,12 +92,17 @@ class OwncastPlayer {
     this.log('on Ready');
     this.vjsPlayer.on('error', this.handleError);
     this.vjsPlayer.on('playing', this.handlePlaying);
+    this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
 
     if (this.appPlayerReadyCallback) {
       // start polling
       this.appPlayerReadyCallback();
     }
+  }
+
+  handleVolume() {
+    setLocalStorage(PLAYER_VOLUME, this.vjsPlayer.muted() ? 0 : this.vjsPlayer.volume());
   }
 
   handlePlaying() {
