@@ -1,0 +1,513 @@
+openapi: 3.0.1
+info:
+  title: Owncast
+  description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.
+  version: '0.0.2'
+servers: []
+
+tags:
+  - name: Admin
+    description: Admin operations requiring authentication.
+  - name: Chat
+    description: Endpoints related to the chat interface.
+
+components:
+  schemas:
+    BasicResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    InstanceDetails:
+      type: object
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+          description: This is brief summary of whom you are or what the stream is.
+        logo:
+          type: object
+          properties:
+            large:
+              type: string
+            small:
+              type: string
+        tags:
+          type: array
+          items:
+            type: string
+        socialHandles:
+          type: array
+          items:
+            type: object
+            properties:
+              platform:
+                type: string
+                example: github
+              url:
+                type: string
+                example: http://github.com/owncast/owncast
+        extraUserInfoFileName:
+          type: string
+          description: Path to additional content about the server.
+        version:
+          type: string
+          example: Owncast v0.0.2-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
+    S3:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        endpoint:
+          type: string
+        servingEndpoint:
+          type: string
+        accessKey:
+          type: string
+        secret:
+          type: string
+        bucket:
+          type: string
+        region:
+          type: string
+        acl:
+          type: string
+      required:
+        - enabled
+    StreamQuality:
+      type: object
+      properties:
+        videoPassthrough:
+          type: boolean
+        audioPassthrough:
+          type: boolean
+        videoBitrate:
+          type: integer
+        audioBitrate:
+          type: integer
+        scaledWidth:
+          type: integer
+        scaledHeight:
+          type: integer
+        framerate:
+          type: integer
+        encoderPreset:
+          type: string
+    TimestampedValue:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        value:
+          type: integer
+
+
+  securitySchemes:
+    AdminBasicAuth:
+      type: http
+      scheme: basic
+      description: The username for admin basic auth is `admin` and the password is the stream key.
+
+  responses:
+    BasicResponse:
+      description: Operation Success/Failure Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BasicResponse"
+          examples:
+            success:
+              summary: Operation succeeded.
+              value: {"success": true, "message": "inbound stream disconnected"}
+            failure:
+              summary: Operation failed.
+              value: {"success": false, "message": "no inbound stream connected"}
+
+paths:
+
+  /api/config:
+    get:
+      summary: Information
+      description: Get the public information about the server. Adds context to the server, as well as information useful for the user interface.
+      tags: ["Server"]
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstanceDetails"
+
+  /api/status:
+    get:
+      summary: Current Status
+      description: This endpoint is used to discover when a server is broadcasting, the number of active viewers as well as other useful information for updating the user interface.
+      tags: ["Server"]
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastConnectTime:
+                    type: string
+                    nullable: true
+                    format: date-time
+                  overallMaxViewerCount:
+                    type: integer
+                  sessionMaxViewerCount:
+                    type: integer
+                  online:
+                    type: boolean
+                  viewerCount:
+                    type: integer
+                  lastDisconnectTime:
+                    type: string
+                    nullable: true
+                    format: date-time
+              examples:
+                online:
+                  value:
+                    lastConnectTime: "2020-10-03T21:36:22-05:00"
+                    lastDisconnectTime: null
+                    online: true
+                    overallMaxViewerCount: 420
+                    sessionMaxViewerCount: 12
+                    viewerCount: 7
+
+  /api/chat:
+    get:
+      summary: Historical Chat Messages
+      description: Used to get all chat messages prior to connecting to the websocket.
+      tags: ["Chat"]
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    author:
+                      type: string
+                      description: Username of the chat message poster.
+                    body:
+                      type: string
+                      description: Escaped HTML of the chat message content.
+                    image:
+                      type: string
+                      description: URL of the chat user avatar.
+                    id:
+                      type: string
+                      description: Unique ID of the chat message.
+                    visible:
+                      type: boolean
+                      description: "TODO"
+                    timestamp:
+                      type: string
+                      format: date-time
+
+  /api/yp:
+    get:
+      summary: Yellow Pages Information
+      description: Information to be used in the Yellow Pages service, a global directory of Owncast servers.
+      tags: ["Server"]
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  logo:
+                    type: string
+                  nsfw:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                  online:
+                    type: boolean
+                  viewerCount:
+                    type: integer
+                  overallMaxViewerCount:
+                    type: integer
+                  sessionMaxViewerCount:
+                    type: integer
+                  lastConnectTime:
+                    type: string
+                    nullable: true
+                    format: date-time
+
+  /api/emoji:
+    get:
+      summary: Get Custom Emoji
+      description: Get a list of custom emoji that are supported in chat.
+      tags: ["Chat"]
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the Emoji
+                    emoji:
+                      type: string
+                      description: The relative path to the Emoji image file
+              examples:
+                default:
+                  value:
+                    items:
+                      - name: nicolas_cage_party
+                        emoji: /img/emoji/nicolas_cage_party.gif
+                      - name: parrot
+                        emoji: /img/emoji/parrot.gif
+
+  /api/admin/broadcaster:
+    get:
+      summary: "Broadcaster Details"
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          description: Connected Broadcaster Details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  broadcaster:
+                    type: object
+                    properties:
+                      remoteAddr:
+                        type: string
+                      time:
+                        type: string
+                        format: date-time
+                      streamDetails:
+                        type: object
+                        properties:
+                          width:
+                            type: integer
+                          height:
+                            type: integer
+                          frameRate:
+                            type: integer
+                          videoBitrate:
+                            type: integer
+                          videoCodec:
+                            type: string
+                          audioBitrate:
+                            type: integer
+                          audioCodec:
+                            type: string
+                          encoder:
+                            type: string
+              examples:
+                connected:
+                  summary: "Broadcaster Connected"
+                  value:
+                    success: true
+                    message: ""
+                    broadcaster:
+                      remoteAddr: 127.0.0.1
+                      time: "TODO"
+                      streamDetails:
+                        width: 640
+                        height: 480
+                        frameRate: 24
+                        videoBitrate: 1500
+                        videoCodec: "todo"
+                        audioBitrate: 256
+                        audioCodec: "aac"
+                        encoder: "todo"
+                not-connected:
+                  summary: "Broadcaster Not Connected"
+                  value:
+                    success: false
+                    message: "no broadcaster connected"
+
+  /api/admin/disconnect:
+    post:
+      summary: Disconnect Broadcaster
+      description: Disconnect the active inbound stream, if one exists, and terminate the broadcast.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"
+
+
+  /api/admin/changekey:
+    post:
+      summary: Update Stream Key
+      description: Change the stream key in memory, but not in the config file.  This will require all broadcasters to be reconfigured to connect again.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+      responses:
+        '200':
+          description: Stream was disconnected.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: changed
+
+  /api/admin/serverconfig:
+    get:
+      summary: Server Configuration
+      description: Get the current configuration of the Owncast server.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  instanceDetails:
+                    $ref: "#/components/schemas/InstanceDetails"
+                  ffmpegPath:
+                    type: string
+                  webServerPort:
+                    type: integer
+                  s3:
+                    $ref: "#/components/schemas/S3"
+                  videoSettings:
+                    type: object
+                    properties:
+                      videoQualityVariants:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/StreamQuality"
+                      segmentLengthSeconds:
+                        type: integer
+                      numberOfPlaylistItems:
+                        type: integer
+
+  /api/admin/viewersOverTime:
+    get:
+      summary: Viewers Over Time
+      description: Get the tracked viewer count over the collected period.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimestampedValue"
+              examples:
+                default:
+                  value:
+                    - time: "2020-10-03T21:41:00.381996-05:00"
+                      value: 50
+                    - time: "2020-10-03T21:42:00.381996-05:00"
+                      value: 52
+
+
+
+
+  /api/admin/hardwarestats:
+    get:
+      summary: Hardware Stats
+      description: "Get the CPU, Memory and Disk utilization levels over the collected period."
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cpu:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TimestampedValue"
+                  memory:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TimestampedValue"
+                  disk:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TimestampedValue"
+              examples:
+                default:
+                  value:
+                    cpu:
+                      - time: "2020-10-03T21:41:00.381996-05:00"
+                        value: 23
+                      - time: "2020-10-03T21:42:00.381996-05:00"
+                        value: 27
+                      - time: "2020-10-03T21:43:00.381996-05:00"
+                        value: 22
+                    memory:
+                      - time: "2020-10-03T21:41:00.381996-05:00"
+                        value: 65
+                      - time: "2020-10-03T21:42:00.381996-05:00"
+                        value: 66
+                      - time: "2020-10-03T21:43:00.381996-05:00"
+                        value: 72
+                    disk:
+                      - time: "2020-10-03T21:41:00.381996-05:00"
+                        value: 11
+                      - time: "2020-10-03T21:42:00.381996-05:00"
+                        value: 11
+                      - time: "2020-10-03T21:43:00.381996-05:00"
+                        value: 11

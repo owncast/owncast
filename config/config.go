@@ -4,7 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
@@ -15,15 +15,12 @@ var _default config
 
 type config struct {
 	ChatDatabaseFilePath string          `yaml:"chatDatabaseFile"`
-	DisableWebFeatures   bool            `yaml:"disableWebFeatures"`
 	EnableDebugFeatures  bool            `yaml:"-"`
 	FFMpegPath           string          `yaml:"ffmpegPath"`
 	Files                files           `yaml:"files"`
 	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
-	PrivateHLSPath       string          `yaml:"privateHLSPath"`
-	PublicHLSPath        string          `yaml:"publicHLSPath"`
 	S3                   S3              `yaml:"s3"`
-	VersionInfo          string          `yaml:"-"`
+	VersionInfo          string          `yaml:"-"` // For storing the version/build number
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
 	YP                   yp              `yaml:"yp"`
@@ -156,22 +153,6 @@ func (c *config) GetVideoSegmentSecondsLength() int {
 	}
 
 	return _default.GetVideoSegmentSecondsLength()
-}
-
-func (c *config) GetPublicHLSSavePath() string {
-	if c.PublicHLSPath != "" {
-		return c.PublicHLSPath
-	}
-
-	return _default.PublicHLSPath
-}
-
-func (c *config) GetPrivateHLSSavePath() string {
-	if c.PrivateHLSPath != "" {
-		return c.PrivateHLSPath
-	}
-
-	return _default.PrivateHLSPath
 }
 
 func (c *config) GetPublicWebServerPort() int {

@@ -27,3 +27,5 @@ dist/
 transcoder.log
 chat.db
 .yp.key
+
+!webroot/js/web_modules/**/dist

@@ -10,8 +10,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
 )
 
 var _commandExec *exec.Cmd
@@ -188,15 +188,15 @@ func NewTranscoder() Transcoder {
 	var outputPath string
 	if config.Config.S3.Enabled {
 		// Segments are not available via the local HTTP server
-		outputPath = config.Config.GetPrivateHLSSavePath()
+		outputPath = config.PrivateHLSStoragePath
 	} else {
 		// Segments are available via the local HTTP server
-		outputPath = config.Config.GetPublicHLSSavePath()
+		outputPath = config.PublicHLSStoragePath
 	}
 
 	transcoder.segmentOutputPath = outputPath
 	// Playlists are available via the local HTTP server
-	transcoder.playlistOutputPath = config.Config.GetPublicHLSSavePath()
+	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
 	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()

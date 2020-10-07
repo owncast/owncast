@@ -4,6 +4,7 @@ import {
   CHAT_PLACEHOLDER_OFFLINE,
 } from './constants.js';
 
+import showdown from '/js/web_modules/showdown.js';
 export function formatMessageText(message, username) {
   showdown.setFlavor('github');
   let formattedText = new showdown.Converter({
@@ -277,4 +278,19 @@ export function convertOnPaste( event = { preventDefault() {} }) {
   if (typeof document.execCommand === 'function') {
     document.execCommand('insertText', false, value);
   }
+}
+
+export function formatTimestamp(sentAt) {
+  sentAt = new Date(sentAt);
+  if (isNaN(sentAt)) {
+    return '';
+  }
+
+  let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
+  if (diffInDays >= 1) {
+    return `Sent at ${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
+      sentAt.toLocaleTimeString();
+  }
+
+  return `Sent at ${sentAt.toLocaleTimeString()}`;
 }

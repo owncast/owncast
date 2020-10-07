@@ -3,17 +3,18 @@ package core
 import (
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/core/chat"
-	"github.com/gabek/owncast/core/ffmpeg"
-	"github.com/gabek/owncast/models"
-	"github.com/gabek/owncast/utils"
-	"github.com/gabek/owncast/yp"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/yp"
 )
 
 var (
@@ -56,8 +57,8 @@ func Start() error {
 
 func createInitialOfflineState() error {
 	// Provide default files
-	if !utils.DoesFileExists("webroot/thumbnail.jpg") {
-		if err := utils.Copy("static/logo.png", "webroot/thumbnail.jpg"); err != nil {
+	if !utils.DoesFileExists(filepath.Join(config.WebRoot, "thumbnail.jpg")) {
+		if err := utils.Copy("static/logo.png", filepath.Join(config.WebRoot, "thumbnail.jpg")); err != nil {
 			return err
 		}
 	}
@@ -93,22 +94,22 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe the public, web-accessible hls data directory
-	os.RemoveAll(config.Config.GetPublicHLSSavePath())
-	os.RemoveAll(config.Config.GetPrivateHLSSavePath())
-	os.MkdirAll(config.Config.GetPublicHLSSavePath(), 0777)
-	os.MkdirAll(config.Config.GetPrivateHLSSavePath(), 0777)
+	os.RemoveAll(config.PublicHLSStoragePath)
+	os.RemoveAll(config.PrivateHLSStoragePath)
+	os.MkdirAll(config.PublicHLSStoragePath, 0777)
+	os.MkdirAll(config.PrivateHLSStoragePath, 0777)
 
 	// Remove the previous thumbnail
-	os.Remove("webroot/thumbnail.jpg")
+	os.Remove(filepath.Join(config.WebRoot, "thumbnail.jpg"))
 
 	// Create private hls data dirs
 	if len(config.Config.VideoSettings.StreamQualities) != 0 {
 		for index := range config.Config.VideoSettings.StreamQualities {
-			os.MkdirAll(path.Join(config.Config.GetPrivateHLSSavePath(), strconv.Itoa(index)), 0777)
-			os.MkdirAll(path.Join(config.Config.GetPublicHLSSavePath(), strconv.Itoa(index)), 0777)
+			os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
+			os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(index)), 0777)
 		}
 	} else {
-		os.MkdirAll(path.Join(config.Config.GetPrivateHLSSavePath(), strconv.Itoa(0)), 0777)
-		os.MkdirAll(path.Join(config.Config.GetPublicHLSSavePath(), strconv.Itoa(0)), 0777)
+		os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0)), 0777)
+		os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(0)), 0777)
 	}
 }

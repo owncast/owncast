@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/models"
 	"github.com/nareix/joy5/format/flv/flvio"
 )
 

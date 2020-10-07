@@ -3,7 +3,7 @@ package metrics
 import (
 	"time"
 
-	"github.com/gabek/owncast/core"
+	"github.com/owncast/owncast/core"
 )
 
 // How often we poll for updates

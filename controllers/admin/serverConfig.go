@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/config"
+	"github.com/owncast/owncast/config"
 )
 
 // GetServerConfig gets the config details of the server

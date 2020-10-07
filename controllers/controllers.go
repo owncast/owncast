@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/models"
+	"github.com/owncast/owncast/models"
 )
 
 type j map[string]interface{}

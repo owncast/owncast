@@ -6,14 +6,14 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
-	"github.com/gabek/owncast/controllers"
-	"github.com/gabek/owncast/controllers/admin"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/controllers/admin"
 
-	"github.com/gabek/owncast/core/chat"
-	"github.com/gabek/owncast/core/rtmp"
-	"github.com/gabek/owncast/router/middleware"
-	"github.com/gabek/owncast/yp"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/yp"
 )
 
 //Start starts the router for the http, ws, and rtmp
@@ -30,24 +30,22 @@ func Start() error {
 	// custom emoji supported in the chat
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
-	if !config.Config.DisableWebFeatures {
-		// websocket chat server
-		go chat.Start()
+	// websocket chat server
+	go chat.Start()
 
-		// chat rest api
-		http.HandleFunc("/api/chat", controllers.GetChatMessages)
+	// chat rest api
+	http.HandleFunc("/api/chat", controllers.GetChatMessages)
 
-		// web config api
-		http.HandleFunc("/api/config", controllers.GetWebConfig)
+	// web config api
+	http.HandleFunc("/api/config", controllers.GetWebConfig)
 
-		// chat embed
-		http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
+	// chat embed
+	http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
 
-		// video embed
-		http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
+	// video embed
+	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
 
-		http.HandleFunc("/api/yp", yp.GetYPResponse)
-	}
+	http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// Authenticated admin requests
 
@@ -65,6 +63,9 @@ func Start() error {
 
 	// Get viewer count over time
 	http.HandleFunc("/api/admin/viewersOverTime", middleware.RequireAdminAuth(admin.GetViewersOverTime))
+
+	// Get hardware stats
+	http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
 
 	port := config.Config.GetPublicWebServerPort()
 

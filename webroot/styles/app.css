@@ -14,6 +14,7 @@ May have overrides for other components with own stylesheets.
 
 html {
   font-size: 14px;
+  scrollbar-width: none;
 }
 
 a:hover {
@@ -23,6 +24,9 @@ a:hover {
 .scrollbar-hidden::-webkit-scrollbar {
   width: 0px;
   background: transparent;
+}
+.scrollbar-hidden {
+  scrollbar-width: none; /* moz only */
 }
 
 

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gabek/owncast/metrics"
+	"github.com/owncast/owncast/metrics"
 )
 
 // GetViewersOverTime will return the number of viewers at points in time

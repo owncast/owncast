@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/gabek/owncast/utils"
+	"github.com/owncast/owncast/utils"
 )
 
 //Stats holds the stats for the system

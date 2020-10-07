@@ -10,7 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gabek/owncast/config"
+	"github.com/owncast/owncast/config"
 )
 
 //StartThumbnailGenerator starts generating thumbnails
@@ -39,8 +39,8 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 
 func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
-	outputFile := path.Join("webroot", "thumbnail.jpg")
-	previewGifFile := path.Join("webroot", "preview.gif")
+	outputFile := path.Join(config.WebRoot, "thumbnail.jpg")
+	previewGifFile := path.Join(config.WebRoot, "preview.gif")
 
 	framePath := path.Join(chunkPath, strconv.Itoa(variantIndex))
 	files, err := ioutil.ReadDir(framePath)

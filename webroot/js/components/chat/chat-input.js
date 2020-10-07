@@ -1,8 +1,9 @@
-import { h, Component, createRef } from 'https://unpkg.com/preact?module';
-import htm from 'https://unpkg.com/htm?module';
+import { h, Component, createRef } from '/js/web_modules/preact.js';
+import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
-import { EmojiButton } from 'https://unpkg.com/@joeattardi/emoji-button@4.2.0/dist/index.js';
+import { EmojiButton } from '/js/web_modules/@joeattardi/emoji-button.js';
+
 import ContentEditable, { replaceCaret } from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
 import { getLocalStorage, setLocalStorage, classNames } from '../../utils/helpers.js';
@@ -147,8 +148,7 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeydown(event) {
     const formField = this.formMessageInput.current;
-
-    let textValue = formField.innerText.trim(); // get this only to count chars
+    let textValue = formField.textContent; // get this only to count chars
     const newStates = {};
     let numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
     const key = event && event.key;
@@ -173,7 +173,7 @@ export default class ChatInput extends Component {
         event.preventDefault();
 
         // value could have been changed, update char count
-        textValue = formField.innerText.trim();
+        textValue = formField.textContent;
         numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
       }
     }
@@ -192,7 +192,7 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeyup(event) {
     const formField = this.formMessageInput.current;
-    const textValue = formField.innerText.trim(); // get this only to count chars
+    const textValue = formField.textContent; // get this only to count chars
 
     const { key } = event;
 
