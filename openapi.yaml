@@ -3,6 +3,9 @@ info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.
   version: '0.0.2'
+  x-logo:
+    url: >-
+      data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEvmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjEyOCIKICAgZXhpZjpQaXhlbFlEaW1lbnNpb249IjEyOCIKICAgZXhpZjpDb2xvclNwYWNlPSIxIgogICB0aWZmOkltYWdlV2lkdGg9IjEyOCIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMTI4IgogICB0aWZmOlJlc29sdXRpb25Vbml0PSIyIgogICB0aWZmOlhSZXNvbHV0aW9uPSI5Ni4wIgogICB0aWZmOllSZXNvbHV0aW9uPSI5Ni4wIgogICBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIgogICBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiCiAgIHhtcDpNb2RpZnlEYXRlPSIyMDIw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
 servers: []
 
 tags:
@@ -13,6 +16,58 @@ tags:
 
 components:
   schemas:
+    ClientArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Client'
+
+    Client:
+      type: object
+      description: A single representation of a client.
+      example:
+        connectedAt: '2020-10-06T23:20:44.588649-07:00'
+        messageCount: 0
+        userAgent: >-
+          Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
+        ipAddress: '::1'
+        username: null
+        clientID: 2ba20dd34f911c198df3218ddc64c740
+        geo:
+          countryCode: US
+          regionName: California
+          timeZone: America/Los_Angeles
+      properties:
+        connectedAt:
+          type: string
+          format: date-time
+        messageCount:
+          description: Number of chat messages sent by user
+          type: integer
+        userAgent:
+          description: The web client used to connect to this server
+          type: string
+        ipAddress:
+          description: The public IP address of this client
+          type: string
+        username:
+          description: The username for this client in chat if available
+          type: string
+        clientID:
+          description: The value used to identify this client
+          type: string
+        geo:
+          type: object
+          description: Optional geographic data for the client
+          properties:
+            countryCode:
+              type: string
+            regionName:
+              type: string
+            timeZone:
+              type: string
+      x-last-modified: 1602052347511
+
     BasicResponse:
       type: object
       properties:
@@ -22,11 +77,14 @@ components:
           type: string
     InstanceDetails:
       type: object
+      description: User-facing details about this server.
       properties:
         name:
           type: string
+          description: Displayed as the header in the instance details.
         title:
           type: string
+          description: Displayed in the document title and header.
         summary:
           type: string
           description: This is brief summary of whom you are or what the stream is.
@@ -39,10 +97,12 @@ components:
               type: string
         tags:
           type: array
+          description: Categories of the content this instance focuses on.
           items:
             type: string
         socialHandles:
           type: array
+          description: Links to social network urls.
           items:
             type: object
             properties:
@@ -54,12 +114,13 @@ components:
                 example: http://github.com/owncast/owncast
         extraUserInfoFileName:
           type: string
-          description: Path to additional content about the server.
+          description: Path to markdown file that has additional rich content about the server.
         version:
           type: string
           example: Owncast v0.0.2-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
     S3:
       type: object
+      description: Configuration of external storage using S3-compatible providers.
       properties:
         enabled:
           type: boolean
@@ -84,20 +145,28 @@ components:
       properties:
         videoPassthrough:
           type: boolean
+          description: If enabled video transcoding is disabled and the video is passed along in its original format.
         audioPassthrough:
           type: boolean
+          description: If enabled audio transcoding is disabled and the audio is passed along in its original format.
         videoBitrate:
           type: integer
+          description: The video quality, in kbps.
         audioBitrate:
           type: integer
+          description: The audio quality, in kbps.
         scaledWidth:
           type: integer
+          description: The resized video width.
         scaledHeight:
           type: integer
+          description: The resized video height.
         framerate:
           type: integer
+          description: The target frames per second of the video.
         encoderPreset:
           type: string
+          description: "The [H.264 preset value](https://trac.ffmpeg.org/wiki/Encode/H.264) selected for this HLS variant."
     TimestampedValue:
       type: object
       properties:
@@ -115,6 +184,26 @@ components:
       description: The username for admin basic auth is `admin` and the password is the stream key.
 
   responses:
+    ClientsResponse:
+      description: Successful response of an array of clients
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClientArray"
+          example:
+          - connectedAt: '2020-10-06T23:20:44.588649-07:00'
+            messageCount: 3
+            userAgent: >-
+              Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
+              (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
+            ipAddress: '172.217.164.110'
+            username: coolperson42
+            clientID: 2ba20dd34f911c198df3218ddc64c740
+            geo:
+              countryCode: US
+              regionName: California
+              timeZone: America/Los_Angeles
+
     BasicResponse:
       description: Operation Success/Failure Response
       content:
@@ -212,7 +301,7 @@ paths:
                       description: Unique ID of the chat message.
                     visible:
                       type: boolean
-                      description: "TODO"
+                      description: "Should chat message be visibly rendered."
                     timestamp:
                       type: string
                       format: date-time
@@ -338,16 +427,16 @@ paths:
                     message: ""
                     broadcaster:
                       remoteAddr: 127.0.0.1
-                      time: "TODO"
+                      time: "2020-10-06T23:20:44.588649-07:00"
                       streamDetails:
                         width: 640
                         height: 480
                         frameRate: 24
                         videoBitrate: 1500
-                        videoCodec: "todo"
+                        videoCodec: "mp4a"
                         audioBitrate: 256
                         audioCodec: "aac"
-                        encoder: "todo"
+                        encoder: "obs-output module (libobs version 25.0.8)"
                 not-connected:
                   summary: "Broadcaster Not Connected"
                   value:
@@ -364,6 +453,17 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/BasicResponse"
+
+  /api/admin/clients:
+    get:
+      summary: Return a list of currently connected clients
+      description: Return a list of currently connected clients with optional geo details.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/ClientsResponse"
 
 
   /api/admin/changekey:
@@ -417,12 +517,15 @@ paths:
                     $ref: "#/components/schemas/InstanceDetails"
                   ffmpegPath:
                     type: string
+                    description: The path to the copy of ffmpeg that this server is using.
                   webServerPort:
                     type: integer
+                    description: The port the public web server is listening on.
                   s3:
                     $ref: "#/components/schemas/S3"
                   videoSettings:
                     type: object
+                    description: How the different variants of video streams are configured.
                     properties:
                       videoQualityVariants:
                         type: array
@@ -430,8 +533,10 @@ paths:
                           $ref: "#/components/schemas/StreamQuality"
                       segmentLengthSeconds:
                         type: integer
+                        description: The target number of seconds each HLS video segment of video will last.
                       numberOfPlaylistItems:
                         type: integer
+                        description: The maximum number of HLS video segments we will keep referenced in the playlist.
 
   /api/admin/viewersOverTime:
     get:
