@@ -28,7 +28,7 @@ func GetIPAddressFromRequest(req *http.Request) string {
 	ipAddressString := req.RemoteAddr
 	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
 	if xForwardedFor != "" {
-		ipAddressString = xForwardedFor
+		return xForwardedFor
 	}
 
 	ip, _, err := net.SplitHostPort(ipAddressString)
