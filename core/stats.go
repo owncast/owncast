@@ -78,7 +78,7 @@ func IsStreamConnected() bool {
 	// Kind of a hack.  It takes a handful of seconds between a RTMP connection and when HLS data is available.
 	// So account for that with an artificial buffer of four segments.
 	timeSinceLastConnected := time.Since(_stats.LastConnectTime.Time).Seconds()
-	if timeSinceLastConnected < float64(config.Config.GetVideoSegmentSecondsLength()*4.0) {
+	if timeSinceLastConnected < float64(config.Config.GetVideoSegmentSecondsLength())*3.0 {
 		return false
 	}
 
