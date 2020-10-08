@@ -18,6 +18,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			SegmentLengthSeconds:  config.Config.GetVideoSegmentSecondsLength(),
 			NumberOfPlaylistItems: config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist(),
 		},
+		YP: config.Config.YP,
 		S3: config.Config.S3,
 	}
 
@@ -31,6 +32,7 @@ type serverConfigAdminResponse struct {
 	WebServerPort   int                    `json:"webServerPort"`
 	S3              config.S3              `json:"s3"`
 	VideoSettings   videoSettings          `json:"videoSettings"`
+	YP              config.YP              `json:"yp"`
 }
 
 type videoSettings struct {

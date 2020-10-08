@@ -23,7 +23,7 @@ type config struct {
 	VersionInfo          string          `yaml:"-"` // For storing the version/build number
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
-	YP                   yp              `yaml:"yp"`
+	YP                   YP              `yaml:"yp"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
@@ -57,11 +57,11 @@ type videoSettings struct {
 	HighestQualityStreamIndex int             `yaml:"-"`
 }
 
-// Registration to the central Owncast YP (Yellow pages) service operating as a directory.
-type yp struct {
-	Enabled      bool   `yaml:"enabled"`
-	InstanceURL  string `yaml:"instanceURL"`  // The public URL the directory should link to
-	YPServiceURL string `yaml:"ypServiceURL"` // The base URL to the YP API to register with (optional)
+// YP allows registration to the central Owncast YP (Yellow pages) service operating as a directory.
+type YP struct {
+	Enabled      bool   `yaml:"enabled" json:"enabled"`
+	InstanceURL  string `yaml:"instanceURL" json:"instanceUrl"` // The public URL the directory should link to
+	YPServiceURL string `yaml:"ypServiceURL" json:"-"`          // The base URL to the YP API to register with (optional)
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.

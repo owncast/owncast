@@ -118,6 +118,19 @@ components:
         version:
           type: string
           example: Owncast v0.0.2-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
+
+    YP:
+      type: object
+      description: Configuration of the instance's registration to the Owncast Directory (YP API)
+      properties:
+        enabled:
+          type: boolean
+          description: If YP support is on or off.  Must be enabled to show in the directory.
+          default: false
+        instanceUrl:
+          type: string
+          description: The public URL of this owncast server, used for registration and linking with the directory.  Must be publicly available.
+
     S3:
       type: object
       description: Configuration of external storage using S3-compatible providers.
@@ -537,6 +550,8 @@ paths:
                       numberOfPlaylistItems:
                         type: integer
                         description: The maximum number of HLS video segments we will keep referenced in the playlist.
+                  yp:
+                    $ref: "#/components/schemas/YP"
 
   /api/admin/viewersOverTime:
     get:
