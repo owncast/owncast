@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import BroadcastInfo from './components/broadcast-info';
 import HardwareInfo from './components/hardware-info';
 import ViewerInfo from './components/viewer-info';
+import ConnectedClients from './components/connected-clients';
 
 export default function HomeView(props) {
   const { broadcastActive, broadcaster, message } = props;
@@ -12,6 +13,7 @@ export default function HomeView(props) {
       <BroadcastInfo {...broadcaster} />
       <HardwareInfo />
       <ViewerInfo />
+      <ConnectedClients />
     </>
   ) : null;
 
@@ -24,7 +26,8 @@ export default function HomeView(props) {
       </p>
 
       <h2>Utilities</h2>
-      (these dont do anything yet)
+      <p>(these dont do anything yet)</p>
+      
       {disconnectButton}
       <button type="button">Change Stream Key</button>
       <button type="button">Server Config</button>

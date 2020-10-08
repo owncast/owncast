@@ -1,0 +1,39 @@
+import React, { useState, useEffect } from 'react';
+import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from '../utils/apis';
+
+export default function HardwareInfo() {
+  const [clients, setClients] = useState({});
+
+  const getInfo = async () => {
+    try {
+      const result = await fetchData(CONNECTED_CLIENTS);
+      console.log("viewers result", result)
+
+      setClients({ ...result });
+
+    } catch (error) {
+      setClients({ ...clients, message: error.message });
+    }
+  };
+  
+  useEffect(() => {
+    let getStatusIntervalId = null;
+
+    getInfo();
+    getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
+  
+    // returned function will be called on component unmount 
+    return () => {
+      clearInterval(getStatusIntervalId);
+    }
+  }, []);
+
+  return (
+    <div>
+      <h2>Connected Clients</h2>
+      <div style={{border: '1px solid purple', height: '300px', width: '100%', overflow:'auto'}}>
+        {JSON.stringify(clients)}
+      </div>
+    </div>
+  );
+}

@@ -22,6 +22,10 @@ export const SERVER_CONFIG = `${API_LOCATION}serverconfig`;
 // Get viewer count over time
 export const VIEWERS_OVER_TIME = `${API_LOCATION}viewersOverTime`;
 
+// Get currently connected clients
+export const CONNECTED_CLIENTS = `${API_LOCATION}clients`;
+
+
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
 
