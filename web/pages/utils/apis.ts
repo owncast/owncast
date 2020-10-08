@@ -1,13 +1,13 @@
+/* eslint-disable prefer-destructuring */
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_STREAMKEY = process.env.ADMIN_STREAMKEY;
+const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
-
-const IS_DEV = true;
-const ADMIN_USERNAME = 'admin';
-const ADMIN_STREAMKEY = 'abc123';
-
-const API_LOCATION = 'http://localhost:8080/api/admin/';
+const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
 
 // Current inbound broadcaster info
 export const BROADCASTER = `${API_LOCATION}broadcaster`;
+
 
 // Disconnect inbound stream
 export const DISCONNECT = `${API_LOCATION}disconnect`;
@@ -56,9 +56,5 @@ export async function fetchData(url) {
   } catch (error) {
     console.log(error)
   }
+  return {};
 }
-
-// fetch error cases
-// json.catch(error => {
-//   error.message; // 'An error has occurred: 404'
-// });
