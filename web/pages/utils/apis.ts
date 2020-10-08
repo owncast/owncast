@@ -1,13 +1,14 @@
 /* eslint-disable prefer-destructuring */
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_STREAMKEY = process.env.ADMIN_STREAMKEY;
+const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
+const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
 const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
 
+export const FETCH_INTERVAL = 15000;
+
 // Current inbound broadcaster info
 export const BROADCASTER = `${API_LOCATION}broadcaster`;
-
 
 // Disconnect inbound stream
 export const DISCONNECT = `${API_LOCATION}disconnect`;

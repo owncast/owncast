@@ -1,32 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { BROADCASTER, fetchData } from './utils/apis';
+import { BROADCASTER, fetchData, FETCH_INTERVAL } from './utils/apis';
+import Main from './home';
 
 export default function Admin() {
   const [broadcasterStatus, setBroadcasterStatus] = useState({});
-  const getStatusIntervalId = null;
+  const [count, setCount] = useState(0);
 
-
-  const getBroadcastStatus = async () =>  {
+  const getBroadcastStatus = async () => {
     try {
       const result = await fetchData(BROADCASTER);
-      const active = !!result.broadcaster;
+      const broadcastActive = !!result.broadcaster;
 
-      setBroadcasterStatus({ ...result, active });
+      console.log("====",{count, result})
+
+      setBroadcasterStatus({ ...result, broadcastActive });
+      setCount(count => count + 1);
+
     } catch (error) {
-      
       setBroadcasterStatus({ ...broadcasterStatus, message: error.message });
-    };
-
-    
+    }
   };
+  
+  useEffect(() => {
+    let getStatusIntervalId = null;
 
-  useEffect(() => { getBroadcastStatus(); }, []);
+    getBroadcastStatus();
+    getStatusIntervalId = setInterval(getBroadcastStatus, FETCH_INTERVAL);
+  
+    // returned function will be called on component unmount 
+    return () => {
+      clearInterval(getStatusIntervalId);
+    }
+  }, [])
 
-
-  // getStatusIntervalId = setInterval(getBroadcastStatus, 15000);
+  
   return (
-    <div>
-      {JSON.stringify(broadcasterStatus)}
-    </div>
+    <Main {...broadcasterStatus} />
   );
 }
