@@ -439,7 +439,7 @@ paths:
                     success: true
                     message: ""
                     broadcaster:
-                      remoteAddr: 127.0.0.1
+                      remoteAddr: 172.217.164.110
                       time: "2020-10-06T23:20:44.588649-07:00"
                       streamDetails:
                         width: 640
