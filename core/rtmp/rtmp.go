@@ -14,12 +14,12 @@ import (
 	"github.com/nareix/joy5/format/flv/flvio"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
-	"github.com/nareix/joy5/format/rtmp"
 )
 
 var (
@@ -131,10 +131,14 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	w := flv.NewMuxer(f)
 
 	for {
+		if !_isConnected {
+			break
+		}
+
 		pkt, err := c.ReadPacket()
 		if err == io.EOF {
 			handleDisconnect(nc)
-			return
+			break
 		}
 
 		if err := w.WritePacket(pkt); err != nil {
