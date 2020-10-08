@@ -11,11 +11,11 @@ import (
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
-	username := "admin"
-	password := config.Config.VideoSettings.StreamingKey
-	realm := "Owncast Authenticated Request"
-
 	return func(w http.ResponseWriter, r *http.Request) {
+		username := "admin"
+		password := config.Config.VideoSettings.StreamingKey
+		realm := "Owncast Authenticated Request"
+
 		// The following line is kind of a work around.
 		// If you want HTTP Basic Auth + Cors it requires _explicit_ origins to be provided in the
 		// Access-Control-Allow-Origin header.  So we just pull out the origin header and specify it.
