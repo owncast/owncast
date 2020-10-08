@@ -64,8 +64,6 @@ export default class App extends Component {
       // status
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
-      sessionMaxViewerCount: '',
-      overallMaxViewerCount: '',
 
       // dom
       windowWidth: window.innerWidth,
@@ -208,8 +206,6 @@ export default class App extends Component {
     }
     const {
       viewerCount,
-      sessionMaxViewerCount,
-      overallMaxViewerCount,
       online,
       lastConnectTime,
     } = status;
@@ -231,8 +227,6 @@ export default class App extends Component {
     }
     this.setState({
       viewerCount,
-      sessionMaxViewerCount,
-      overallMaxViewerCount,
       lastConnectTime,
       streamOnline: online,
     });
@@ -357,9 +351,7 @@ export default class App extends Component {
       displayChat,
       extraUserContent,
       orientation,
-      overallMaxViewerCount,
       playerActive,
-      sessionMaxViewerCount,
       streamOnline,
       streamStatusMessage,
       userAvatarImage,
@@ -483,12 +475,6 @@ export default class App extends Component {
           >
             <span>${streamStatusMessage}</span>
             <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
-            <span>
-              Max ${sessionMaxViewerCount} ${" "} ${pluralize('viewer', sessionMaxViewerCount)} this stream.
-            </span>
-            <span>
-              ${overallMaxViewerCount} all time.
-            </span>
           </section>
         </main>
 
