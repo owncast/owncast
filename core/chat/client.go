@@ -42,6 +42,7 @@ const (
 	NAMECHANGE = "NAME_CHANGE"
 	PING       = "PING"
 	PONG       = "PONG"
+	SYSTEM     = "SYSTEM"
 )
 
 //NewClient creates a new chat client
