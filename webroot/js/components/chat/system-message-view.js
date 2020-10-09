@@ -19,19 +19,14 @@ export default class SystemMessageView extends Component {
     const authorTextColor = { color: authorColor };
     return html`
       <div
-        class="message flex flex-row items-start p-3 m-2 bg-indigo-700 bg-opacity-25 rounded-lg shadow-xs"
+        class="message flex flex-row items-start p-3 m-2 bg-orange-700 bg-opacity-25 rounded-lg shadow-xs"
       >
-        <div
-          class="message-avatar rounded-full flex items-center justify-center mr-3"
-        >
-          <img src=${avatar} class="p-1" />
-        </div>
         <div class="message-content break-words w-full">
           <div
-            class="message-author text-white font-bold text-base"
+            class="message-author text-white font-bold text-lg"
             style=${authorTextColor}
           >
-            ${author}
+            <img src=${avatar} class="h-6 w-6 inline" /> ${author}
           </div>
           <div
             class="message-text text-gray-300 font-normal overflow-y-hidden"
