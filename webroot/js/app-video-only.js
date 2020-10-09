@@ -31,8 +31,6 @@ export default class VideoOnly extends Component {
       //status
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
-      sessionMaxViewerCount: '',
-      overallMaxViewerCount: '',
     };
 
     // timers
@@ -131,8 +129,6 @@ export default class VideoOnly extends Component {
     }
     const {
       viewerCount,
-      sessionMaxViewerCount,
-      overallMaxViewerCount,
       online,
     } = status;
 
@@ -153,8 +149,6 @@ export default class VideoOnly extends Component {
     }
     this.setState({
       viewerCount,
-      sessionMaxViewerCount,
-      overallMaxViewerCount,
       streamOnline: online,
     });
   }
@@ -215,8 +209,6 @@ export default class VideoOnly extends Component {
       configData,
 
       viewerCount,
-      sessionMaxViewerCount,
-      overallMaxViewerCount,
       playerActive,
       streamOnline,
       streamStatusMessage,
@@ -256,8 +248,6 @@ export default class VideoOnly extends Component {
           <section id="stream-info" aria-label="Stream status" class="flex text-center flex-row justify-between items-center font-mono py-2 px-8 bg-gray-900 text-indigo-200">
             <span>${streamStatusMessage}</span>
             <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
-            <span>Max ${pluralize('viewer', sessionMaxViewerCount)}.</span>
-            <span>${overallMaxViewerCount} overall.</span>
           </section>
         </main>
     `);
