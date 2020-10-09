@@ -3,20 +3,19 @@ import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
 import ChatMessageView from './chat-message-view.js';
+import SystemMessageView from './system-message-view.js';
 
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default class Message extends Component {
   render(props) {
-    const { message, username } = props;
+    const { message } = props;
     const { type } = message;
-    console.log(type);
+
     if (type === SOCKET_MESSAGE_TYPES.CHAT) {
-      return html`<${ChatMessageView} message=${message} />`;
+      return html`<${ChatMessageView} ...${props} />`;
     } else if (type === SOCKET_MESSAGE_TYPES.SYSTEM) {
-      return (
-        html`<${SystemMessageView} message=${message} />`
-      )
+      return html`<${SystemMessageView} ...${props} />`;
     } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
       const { oldName, newName, image } = message;
       return (
