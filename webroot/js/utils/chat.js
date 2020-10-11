@@ -4,134 +4,6 @@ import {
   CHAT_PLACEHOLDER_OFFLINE,
 } from './constants.js';
 
-import showdown from '/js/web_modules/showdown.js';
-export function formatMessageText(message, username) {
-  showdown.setFlavor('github');
-  let formattedText = new showdown.Converter({
-    emoji: true,
-    openLinksInNewWindow: true,
-    tables: false,
-    simplifiedAutoLink: false,
-    literalMidWordUnderscores: true,
-    strikethrough: true,
-    ghMentions: false,
-  }).makeHtml(message);
-
-  formattedText = linkify(formattedText, message);
-  formattedText = highlightUsername(formattedText, username);
-
-  return convertToMarkup(formattedText);
-}
-
-function highlightUsername(message, username) {
-	const pattern = new RegExp('@?' + username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-  return message.replace(
-    pattern,
-    '<span class="highlighted px-1 rounded font-bold bg-orange-500">$&</span>'
-  );
-}
-
-function linkify(text, rawText) {
-  const urls = getURLs(stripTags(rawText));
-  if (urls) {
-    urls.forEach(function (url) {
-      let linkURL = url;
-
-      // Add http prefix if none exist in the URL so it actually
-      // will work in an anchor tag.
-      if (linkURL.indexOf('http') === -1) {
-        linkURL = 'http://' + linkURL;
-      }
-
-      // Remove the protocol prefix in the display URLs just to make
-      // things look a little nicer.
-      const displayURL = url.replace(/(^\w+:|^)\/\//, '');
-      const link = `<a href="${linkURL}" target="_blank">${displayURL}</a>`;
-      text = text.replace(url, link);
-
-      if (getYoutubeIdFromURL(url)) {
-        if (isTextJustURLs(text, [url, displayURL])) {
-          text = '';
-        } else {
-          text += '<br/>';
-        }
-
-        const youtubeID = getYoutubeIdFromURL(url);
-        text += getYoutubeEmbedFromID(youtubeID);
-      } else if (url.indexOf('instagram.com/p/') > -1) {
-        if (isTextJustURLs(text, [url, displayURL])) {
-          text = '';
-        } else {
-          text += `<br/>`;
-        }
-        text += getInstagramEmbedFromURL(url);
-      } else if (isImage(url)) {
-        if (isTextJustURLs(text, [url, displayURL])) {
-          text = '';
-        } else {
-          text += `<br/>`;
-        }
-        text += getImageForURL(url);
-      }
-    }.bind(this));
-  }
-  return text;
-}
-
-function isTextJustURLs(text, urls) {
-  for (var i = 0; i < urls.length; i++) {
-    const url = urls[i];
-    if (stripTags(text) === url) {
-      return true;
-    }
-  }
-  return false;
-}
-
-
-function stripTags(str) {
-	return str.replace(/<\/?[^>]+(>|$)/g, "");
-}
-
-function getURLs(str) {
-	var exp = /((\w+:\/\/\S+)|(\w+[\.:]\w+\S+))[^\s,\.]/ig;
-	return str.match(exp);
-}
-
-function getYoutubeIdFromURL(url) {
-	try {
-		var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-		var match = url.match(regExp);
-
-		if (match && match[2].length == 11) {
-			return match[2];
-		} else {
-			return null;
-		}
-	} catch (e) {
-		console.log(e);
-		return null;
-	}
-}
-
-function getYoutubeEmbedFromID(id) {
-  return `<div class="chat-embed youtube-embed"><lite-youtube videoid="${id}" /></div>`;
-}
-
-function getInstagramEmbedFromURL(url) {
-	const urlObject = new URL(url.replace(/\/$/, ""));
-	urlObject.pathname += "/embed";
-	return `<iframe class="chat-embed instagram-embed" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
-}
-
-function isImage(url) {
-	const re = /\.(jpe?g|png|gif)$/i;
-	return re.test(url);
-}
-
-function getImageForURL(url) {
-	return `<a target="_blank" href="${url}"><img class="chat-embed embedded-image" src="${url}" /></a>`;
-}
 
 // Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
 export function getCaretPosition(editableDiv) {
@@ -235,15 +107,6 @@ export function convertToText(str = '') {
 }
 
 /*
-  You would call this when receiving a plain text
-  value back from an API, and before inserting the
-  text into the `contenteditable` area on a page.
-*/
-export function convertToMarkup(str = '') {
-  return convertToText(str).replace(/\n/g, '<br>');
-}
-
-/*
   You would call this when a user pastes from
   the clipboard into a `contenteditable` area.
 */
@@ -278,19 +141,4 @@ export function convertOnPaste( event = { preventDefault() {} }) {
   if (typeof document.execCommand === 'function') {
     document.execCommand('insertText', false, value);
   }
-}
-
-export function formatTimestamp(sentAt) {
-  sentAt = new Date(sentAt);
-  if (isNaN(sentAt)) {
-    return '';
-  }
-
-  let diffInDays = ((new Date()) - sentAt) / (24 * 3600 * 1000);
-  if (diffInDays >= 1) {
-    return `Sent at ${sentAt.toLocaleDateString('en-US', {dateStyle: 'medium'})} at ` +
-      sentAt.toLocaleTimeString();
-  }
-
-  return `Sent at ${sentAt.toLocaleTimeString()}`;
 }

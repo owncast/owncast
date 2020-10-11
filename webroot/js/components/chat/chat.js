@@ -2,6 +2,8 @@ import { h, Component, createRef } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
+import '/js/web_modules/@justinribeiro/lite-youtube.js';
+
 import Message from './message.js';
 import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';

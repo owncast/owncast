@@ -110,10 +110,17 @@ func (s *server) Listen() {
 			delete(s.Clients, c.socketID)
 			s.listener.ClientRemoved(c.ClientID)
 
-		// broadcast a message to all clients
+			// message was recieved from a client and should be sanitized, validated
+			// and distributed to other clients.
 		case msg := <-s.sendAllCh:
+			// Will turn markdown into html, sanitize user-supplied raw html
+			// and standardize this message into something safe we can send everyone else.
+			msg.RenderAndSanitizeMessageBody()
+
 			s.listener.MessageSent(msg)
 			s.sendAll(msg)
+
+			// Store in the message history
 			addMessage(msg)
 		case ping := <-s.pingCh:
 			fmt.Println("PING?", ping)
