@@ -14,7 +14,7 @@ export default function Admin() {
       console.log("====",{count, result})
 
       setBroadcasterStatus({ ...result, broadcastActive });
-      setCount(count => count + 1);
+      setCount(c => c + 1);
 
     } catch (error) {
       setBroadcasterStatus({ ...broadcasterStatus, message: error.message });
