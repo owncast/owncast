@@ -52,7 +52,6 @@ func RenderAndSanitize(raw string) string {
 func renderMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
-			// html.WithXHTML(),
 			html.WithUnsafe(),
 		),
 		goldmark.WithExtensions(

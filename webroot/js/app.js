@@ -97,7 +97,6 @@ export default class App extends Component {
     // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
-    this.getExtraUserContent = this.getExtraUserContent.bind(this);
   }
 
   componentDidMount() {
@@ -164,30 +163,9 @@ export default class App extends Component {
       });
   }
 
-  // fetch content.md
-  getExtraUserContent(path) {
-    fetch(path)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok ${response.ok}`);
-        }
-        return response.text();
-      })
-      .then((text) => {
-        this.setState({
-          extraUserContent: new showdown.Converter().makeHtml(text),
-        });
-      })
-      .catch((error) => {});
-  }
-
   setConfigData(data = {}) {
-    const { title, extraUserInfoFileName, summary } = data;
-
+    const { title, summary } = data;
     window.document.title = title;
-    if (extraUserInfoFileName) {
-      this.getExtraUserContent(extraUserInfoFileName);
-    }
 
     this.setState({
       configData: {
@@ -349,7 +327,6 @@ export default class App extends Component {
       chatInputEnabled,
       configData,
       displayChat,
-      extraUserContent,
       orientation,
       playerActive,
       streamOnline,
@@ -371,6 +348,7 @@ export default class App extends Component {
       summary,
       tags = [],
       title,
+      extraUserContent,
     } = configData;
     const {
       small: smallLogo = TEMP_IMAGE,
