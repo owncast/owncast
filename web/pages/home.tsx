@@ -8,7 +8,7 @@ import ConnectedClients from './components/connected-clients';
 export default function HomeView(props) {
   const { broadcastActive, broadcaster, message } = props;
 
-   const broadcastDetails = broadcastActive ? (
+  const broadcastDetails = broadcastActive ? (
     <>
       <BroadcastInfo {...broadcaster} />
       <HardwareInfo />
@@ -18,16 +18,16 @@ export default function HomeView(props) {
   ) : null;
 
   const disconnectButton = broadcastActive ? <button type="button">Boot (Disconnect)</button> : null;
-  
+
   return (
-    <div style={{padding: '2em'}}>
+    <div style={{ padding: '2em' }}>
       <p>
         <b>Status: {broadcastActive ? 'on' : 'off'}</b>
       </p>
 
       <h2>Utilities</h2>
       <p>(these dont do anything yet)</p>
-      
+
       {disconnectButton}
       <button type="button">Change Stream Key</button>
       <button type="button">Server Config</button>
@@ -35,7 +35,7 @@ export default function HomeView(props) {
       <br />
       <br />
 
-      {broadcastDetails}      
+      {broadcastDetails}
     </div>
   );
 }
