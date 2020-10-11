@@ -11,7 +11,9 @@
     <a href="http://owncast.online"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://goth.land/">View Demo</a>
+    <a href="https://watch.owncast.online/">View Demo</a>
+    ·
+    <a href="https://broadcast.owncast.online/">Use Our Server for Testing</a>
     ·
     <a href="https://owncast.online/docs/faq/">FAQ</a>
     ·
