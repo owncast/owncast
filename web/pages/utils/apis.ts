@@ -46,17 +46,12 @@ export async function fetchData(url) {
       mode: 'cors',
       credentials: 'include',
     });
-    // waits until the request completes...
-    // console.log(response);
-
     if (!response.ok) {
-      console.log(response)
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);
     }
 
     const json = await response.json();
-    console.log(json)
     return json;
   } catch (error) {
     console.log(error)

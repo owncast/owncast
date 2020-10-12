@@ -10,6 +10,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
     "antd": "^4.6.6",
+    "d3-scale": "^3.2.3",
+    "d3-time-format": "^3.0.0",
     "next": "9.5.3",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
