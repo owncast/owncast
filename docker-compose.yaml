@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  owncast:
+    image: gabekangas/owncast:0.0.2
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/config-example.yaml:/app/config.yaml # Adjust once you create your own config.yaml
+      - owncast_db:/db # Remove if you don't want chat persistant
+    command: /app/owncast --configFile=config.yaml --chatDatabase=/db/chat.db
+    ports:
+    - 8080:8080
+    - 1935:1935
+    labels:
+      - "traefik.enable=false"
+      - "traefik.http.routers.owncast.rule=Host(`live.your.org`)"
+      - "traefik.http.routers.owncast.entrypoints=web,websecure"
+      - "traefik.http.routers.owncast.tls.certresolver=mytlschallenge"
+  traefik:
+    image: traefik:latest
+    restart: unless-stopped
+    command: 
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
+      # CHANGE THE ADDRESS BELOW TO YOUR ADDRESS
+      - --certificatesresolvers.mytlschallenge.acme.email=postmaster@mydomain.com
+      # COMMENT OUT THE LINE BELOW TO GET LIVE CERT
+      - --certificatesresolvers.mytlschallenge.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json
+    volumes:
+      - traefik_certs:/letsencrypt/
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+    - 80:80
+    - 443:443
+    
+volumes:
+  owncast_db:
+  traefik_certs:
+  
