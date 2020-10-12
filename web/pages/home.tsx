@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import BroadcastInfo from './components/broadcast-info';
 import HardwareInfo from './components/hardware-info';
 import ViewerInfo from './components/viewer-info';
+import ServerConfig from './components/server-config';
 import ConnectedClients from './components/connected-clients';
 
 export default function HomeView(props) {
@@ -10,10 +11,11 @@ export default function HomeView(props) {
 
   const broadcastDetails = broadcastActive ? (
     <>
-      <BroadcastInfo {...broadcaster} />
-      <HardwareInfo />
+      {/* <BroadcastInfo {...broadcaster} />
+      <HardwareInfo /> */}
       <ViewerInfo />
-      <ConnectedClients />
+      {/* <ConnectedClients />
+      <ServerConfig /> */}
     </>
   ) : null;
 

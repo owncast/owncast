@@ -1,5 +1,8 @@
-import 'antd/dist/antd.css';
-import '../styles/globals.scss'
+// import 'antd/dist/antd.css';
+// import '../styles/globals.scss'
+
+import 'antd/dist/antd.dark.css';
+import 'antd/dist/antd.compact.css';
 
 import { AppProps } from 'next/app'
 

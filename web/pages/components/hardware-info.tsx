@@ -20,7 +20,7 @@ export default function HardwareInfo() {
     let getStatusIntervalId = null;
 
     getHardwareStatus();
-    getStatusIntervalId = setInterval(getHardwareStatus, FETCH_INTERVAL);
+    getStatusIntervalId = setInterval(getHardwareStatus, FETCH_INTERVAL); //runs every 1 min.
   
     // returned function will be called on component unmount 
     return () => {
@@ -31,6 +31,8 @@ export default function HardwareInfo() {
   return (
     <div>
       <h2>Hardware Info</h2>
+      <p>cpu:[], disk: [], memory: [];  value = %age.</p>
+      <p>the times should be the same for each, though milliseconds differ</p>
       <div style={{border: '1px solid blue', height: '300px', width: '100%', overflow:'auto'}}>
         {JSON.stringify(hardwareStatus)}
       </div>
