@@ -152,6 +152,8 @@
 
 
 .message-text .emoji {
+  position: relative;
+  top: -5px;
   width: 3rem;
   padding: .25rem
 }

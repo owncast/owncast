@@ -28,15 +28,15 @@ type config struct {
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name          string         `yaml:"name" json:"name"`
-	Title         string         `yaml:"title" json:"title"`
-	Summary       string         `yaml:"summary" json:"summary"`
-	Logo          logo           `yaml:"logo" json:"logo"`
-	Tags          []string       `yaml:"tags" json:"tags"`
-	SocialHandles []socialHandle `yaml:"socialHandles" json:"socialHandles"`
-	ExtraInfoFile string         `yaml:"extraUserInfoFileName" json:"extraUserInfoFileName"`
-	Version       string         `json:"version"`
-	NSFW          bool           `yaml:"nsfw" json:"nsfw"`
+	Name             string         `yaml:"name" json:"name"`
+	Title            string         `yaml:"title" json:"title"`
+	Summary          string         `yaml:"summary" json:"summary"`
+	Logo             logo           `yaml:"logo" json:"logo"`
+	Tags             []string       `yaml:"tags" json:"tags"`
+	SocialHandles    []socialHandle `yaml:"socialHandles" json:"socialHandles"`
+	Version          string         `json:"version"`
+	NSFW             bool           `yaml:"nsfw" json:"nsfw"`
+	ExtraUserContent string         `json:"extraUserContent"`
 }
 
 type logo struct {
@@ -117,6 +117,13 @@ func (c *config) load(filePath string) error {
 	}
 
 	c.VideoSettings.HighestQualityStreamIndex = findHighestQuality(c.VideoSettings.StreamQualities)
+
+	// Add custom page content to the instance details.
+	customContentMarkdownData, err := ioutil.ReadFile(ExtraInfoFile)
+	if err == nil {
+		customContentMarkdownString := string(customContentMarkdownData)
+		c.InstanceDetails.ExtraUserContent = utils.RenderSimpleMarkdown(customContentMarkdownString)
+	}
 
 	return nil
 }
@@ -223,15 +230,6 @@ func Load(filePath string, versionInfo string) error {
 	}
 
 	Config.VersionInfo = versionInfo
-
-	// Defaults
-
-	// This is relative to the webroot, not the project root.
-	// Has to be set here instead of pulled from a getter
-	// since it's serialized to JSON.
-	if Config.InstanceDetails.ExtraInfoFile == "" {
-		Config.InstanceDetails.ExtraInfoFile = _default.InstanceDetails.ExtraInfoFile
-	}
 
 	return Config.verifySettings()
 }

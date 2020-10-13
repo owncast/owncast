@@ -1,7 +1,6 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
-import showdown from '/js/web_modules/showdown.js';
 
 import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/social-icons-list.js';
@@ -97,7 +96,6 @@ export default class App extends Component {
     // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
-    this.getExtraUserContent = this.getExtraUserContent.bind(this);
   }
 
   componentDidMount() {
@@ -164,30 +162,9 @@ export default class App extends Component {
       });
   }
 
-  // fetch content.md
-  getExtraUserContent(path) {
-    fetch(path)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok ${response.ok}`);
-        }
-        return response.text();
-      })
-      .then((text) => {
-        this.setState({
-          extraUserContent: new showdown.Converter().makeHtml(text),
-        });
-      })
-      .catch((error) => {});
-  }
-
   setConfigData(data = {}) {
-    const { title, extraUserInfoFileName, summary } = data;
-
+    const { title, summary } = data;
     window.document.title = title;
-    if (extraUserInfoFileName) {
-      this.getExtraUserContent(extraUserInfoFileName);
-    }
 
     this.setState({
       configData: {
@@ -349,7 +326,6 @@ export default class App extends Component {
       chatInputEnabled,
       configData,
       displayChat,
-      extraUserContent,
       orientation,
       playerActive,
       streamOnline,
@@ -371,6 +347,7 @@ export default class App extends Component {
       summary,
       tags = [],
       title,
+      extraUserContent,
     } = configData;
     const {
       small: smallLogo = TEMP_IMAGE,

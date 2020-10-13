@@ -112,9 +112,10 @@ components:
               url:
                 type: string
                 example: http://github.com/owncast/owncast
-        extraUserInfoFileName:
+        extraUserContent:
           type: string
-          description: Path to markdown file that has additional rich content about the server.
+          description: Additional HTML content to render in the body of the web interface.
+          example: "<p>This page is <strong>super</strong> cool!"
         version:
           type: string
           example: Owncast v0.0.2-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
@@ -236,7 +237,7 @@ paths:
   /api/config:
     get:
       summary: Information
-      description: Get the public information about the server. Adds context to the server, as well as information useful for the user interface.
+      description: The client configuration. Information useful for the user interface.
       tags: ["Server"]
       responses:
         '200':
