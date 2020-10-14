@@ -115,22 +115,6 @@
   scrollbar-color: var(--category-button-color)  black;
 }
 
-
-/******************************/
-
-.message-avatar {
-  height: 3.0em;
-  width: 3.0em;
-}
-.message-avatar img {
-  max-width: unset;
-  height: 3.0em;
-  width: 3.0em;
-  padding: 5px;
-}
-
-
-
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */

@@ -14,7 +14,6 @@ import {
   classNames,
   clearLocalStorage,
   debounce,
-  generateAvatar,
   generateUsername,
   getLocalStorage,
   pluralize,
@@ -22,7 +21,6 @@ import {
 } from './utils/helpers.js';
 import {
   HEIGHT_SHORT_WIDE,
-  KEY_AVATAR,
   KEY_CHAT_DISPLAYED,
   KEY_USERNAME,
   MESSAGE_OFFLINE,
@@ -50,9 +48,6 @@ export default class App extends Component {
       displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
-      userAvatarImage:
-        getLocalStorage(KEY_AVATAR) ||
-        generateAvatar(`${this.username}${Date.now()}`),
 
       configData: {},
       extraPageContent: '',
@@ -282,10 +277,9 @@ export default class App extends Component {
 
   }
 
-  handleUsernameChange(newName, newAvatar) {
+  handleUsernameChange(newName) {
     this.setState({
       username: newName,
-      userAvatarImage: newAvatar,
     });
   }
 
@@ -330,7 +324,6 @@ export default class App extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
-      userAvatarImage,
       username,
       viewerCount,
       websocket,
@@ -415,7 +408,6 @@ export default class App extends Component {
             >
               <${UsernameForm}
                 username=${username}
-                userAvatarImage=${userAvatarImage}
                 handleUsernameChange=${this.handleUsernameChange}
               />
               <button
@@ -499,7 +491,6 @@ export default class App extends Component {
         <${Chat}
           websocket=${websocket}
           username=${username}
-          userAvatarImage=${userAvatarImage}
           chatInputEnabled=${chatInputEnabled}
         />
       </div>

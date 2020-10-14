@@ -36,7 +36,6 @@ func createTable(db *sql.DB) {
 		"id" string NOT NULL PRIMARY KEY,
 		"author" TEXT,
 		"body" TEXT,
-		"image" TEXT,
 		"messageType" TEXT,
 		"visible" INTEGER,
 		"timestamp" DATE
@@ -51,11 +50,11 @@ func createTable(db *sql.DB) {
 
 func addMessage(message models.ChatMessage) {
 	tx, err := _db.Begin()
-	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, image, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = stmt.Exec(message.ID, message.Author, message.Body, message.Image, message.MessageType, 1, message.Timestamp)
+	_, err = stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,12 +77,11 @@ func getChatHistory() []models.ChatMessage {
 		var id string
 		var author string
 		var body string
-		var image string
 		var messageType string
 		var visible int
 		var timestamp time.Time
 
-		err = rows.Scan(&id, &author, &body, &image, &messageType, &visible, &timestamp)
+		err = rows.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -92,7 +90,6 @@ func getChatHistory() []models.ChatMessage {
 		message.ID = id
 		message.Author = author
 		message.Body = body
-		message.Image = image
 		message.MessageType = messageType
 		message.Visible = visible == 1
 		message.Timestamp = timestamp

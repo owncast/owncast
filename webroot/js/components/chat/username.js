@@ -2,8 +2,8 @@ import { h, Component, createRef } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
-import { generateAvatar, setLocalStorage } from '../../utils/helpers.js';
-import { KEY_USERNAME, KEY_AVATAR } from '../../utils/constants.js';
+import { setLocalStorage } from '../../utils/helpers.js';
+import { KEY_USERNAME } from '../../utils/constants.js';
 
 export default class UsernameForm extends Component {
   constructor(props, context) {
@@ -47,11 +47,9 @@ export default class UsernameForm extends Component {
     let newName = this.textInput.current.value;
     newName = newName.trim();
     if (newName !== '' && newName !== curName) {
-      const newAvatar = generateAvatar(`${newName}${Date.now()}`);
       setLocalStorage(KEY_USERNAME, newName);
-      setLocalStorage(KEY_AVATAR, newAvatar);
       if (handleUsernameChange) {
-        handleUsernameChange(newName, newAvatar);
+        handleUsernameChange(newName);
       }
       this.handleHideForm();
     }
@@ -59,7 +57,7 @@ export default class UsernameForm extends Component {
   }
 
   render(props, state) {
-    const { username, userAvatarImage } = props;
+    const { username } = props;
     const { displayForm } = state;
 
     const narrowSpace = document.body.clientWidth < 640;
@@ -77,12 +75,6 @@ export default class UsernameForm extends Component {
       html`
         <div id="user-info">
           <div id="user-info-display" style=${styles.info} title="Click to update user name" class="flex flex-row justify-end items-center cursor-pointer py-2 px-4 overflow-hidden w-full opacity-1 transition-opacity duration-200 hover:opacity-75" onClick=${this.handleDisplayForm}>
-            <img
-              src=${userAvatarImage}
-              alt=""
-              id="username-avatar"
-              class="rounded-full bg-black bg-opacity-50 border border-solid border-gray-700 mr-2 h-8 w-8"
-            />
             <span id="username-display" class="text-indigo-600 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap">${username}</span>
           </div>
 
