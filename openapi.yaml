@@ -116,7 +116,7 @@ components:
               url:
                 type: string
                 example: http://github.com/owncast/owncast
-        extraUserContent:
+        extraPageContent:
           type: string
           description: Additional HTML content to render in the body of the web interface.
           example: "<p>This page is <strong>super</strong> cool!"
@@ -503,7 +503,39 @@ paths:
                   type: string
       responses:
         '200':
-          description: Stream was disconnected.
+          description: Key was changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: changed
+
+  /api/admin/changeExtraPageContent:
+    post:
+      summary: Change the extra page content.  Pre-release, do not use.
+      description: Change the extra page content in memory, but not on disk.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Page content was changed.
           content:
             application/json:
               schema:
