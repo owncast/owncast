@@ -1,10 +1,32 @@
-import { b as getDefaultExportFromNamespaceIfNotNamed, a as commonjsGlobal, c as createCommonjsModule } from './_commonjsHelpers-37fa8da4.js';
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function createCommonjsModule(fn, basedir, module) {
+	return module = {
+		path: basedir,
+		exports: {},
+		require: function (path, base) {
+			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+		}
+	}, fn(module, module.exports), module.exports;
+}
+
+function getDefaultExportFromNamespaceIfNotNamed (n) {
+	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
+}
+
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+}
 
 var _nodeResolve_empty = {};
 
 var _nodeResolve_empty$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    'default': _nodeResolve_empty
+	__proto__: null,
+	'default': _nodeResolve_empty
 });
 
 var minDoc = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(_nodeResolve_empty$1);
@@ -2537,7 +2559,7 @@ var vtt$1 = _interopDefault(browserIndex);
 var _construct = _interopDefault(construct);
 var _inherits$1 = _interopDefault(inherits);
 
-var version = "7.9.7";
+var version = "7.8.3";
 
 /**
  * @file create-logger.js
@@ -3563,31 +3585,31 @@ function getBoundingClientRect(el) {
  */
 
 function findPosition(el) {
-  if (!el || el && !el.offsetParent) {
+  var box;
+
+  if (el.getBoundingClientRect && el.parentNode) {
+    box = el.getBoundingClientRect();
+  }
+
+  if (!box) {
     return {
       left: 0,
-      top: 0,
-      width: 0,
-      height: 0
+      top: 0
     };
   }
 
-  var width = el.offsetWidth;
-  var height = el.offsetHeight;
-  var left = 0;
-  var top = 0;
-
-  do {
-    left += el.offsetLeft;
-    top += el.offsetTop;
-    el = el.offsetParent;
-  } while (el);
+  var docEl = document$1.documentElement;
+  var body = document$1.body;
+  var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+  var scrollLeft = window$1.pageXOffset || body.scrollLeft;
+  var left = box.left + scrollLeft - clientLeft;
+  var clientTop = docEl.clientTop || body.clientTop || 0;
+  var scrollTop = window$1.pageYOffset || body.scrollTop;
+  var top = box.top + scrollTop - clientTop; // Android sometimes returns slightly off decimal values, so need to round
 
   return {
-    left: left,
-    top: top,
-    width: width,
-    height: height
+    left: Math.round(left),
+    top: Math.round(top)
   };
 }
 /**
@@ -3620,20 +3642,21 @@ function findPosition(el) {
 
 function getPointerPosition(el, event) {
   var position = {};
-  var boxTarget = findPosition(event.target);
   var box = findPosition(el);
-  var boxW = box.width;
-  var boxH = box.height;
-  var offsetY = event.offsetY - (box.top - boxTarget.top);
-  var offsetX = event.offsetX - (box.left - boxTarget.left);
+  var boxW = el.offsetWidth;
+  var boxH = el.offsetHeight;
+  var boxY = box.top;
+  var boxX = box.left;
+  var pageY = event.pageY;
+  var pageX = event.pageX;
 
   if (event.changedTouches) {
-    offsetX = event.changedTouches[0].pageX - box.left;
-    offsetY = event.changedTouches[0].pageY + box.top;
+    pageX = event.changedTouches[0].pageX;
+    pageY = event.changedTouches[0].pageY;
   }
 
-  position.y = 1 - Math.max(0, Math.min(1, offsetY / boxH));
-  position.x = Math.max(0, Math.min(1, offsetX / boxW));
+  position.y = Math.max(0, Math.min(1, (boxY - pageY + boxH) / boxH));
+  position.x = Math.max(0, Math.min(1, (pageX - boxX) / boxW));
   return position;
 }
 /**
@@ -5701,72 +5724,6 @@ function mergeOptions() {
   return result;
 }
 
-var MapSham = /*#__PURE__*/function () {
-  function MapSham() {
-    this.map_ = {};
-  }
-
-  var _proto = MapSham.prototype;
-
-  _proto.has = function has(key) {
-    return key in this.map_;
-  };
-
-  _proto["delete"] = function _delete(key) {
-    var has = this.has(key);
-    delete this.map_[key];
-    return has;
-  };
-
-  _proto.set = function set(key, value) {
-    this.set_[key] = value;
-    return this;
-  };
-
-  _proto.forEach = function forEach(callback, thisArg) {
-    for (var key in this.map_) {
-      callback.call(thisArg, this.map_[key], key, this);
-    }
-  };
-
-  return MapSham;
-}();
-
-var Map$1 = window$1.Map ? window$1.Map : MapSham;
-
-var SetSham = /*#__PURE__*/function () {
-  function SetSham() {
-    this.set_ = {};
-  }
-
-  var _proto = SetSham.prototype;
-
-  _proto.has = function has(key) {
-    return key in this.set_;
-  };
-
-  _proto["delete"] = function _delete(key) {
-    var has = this.has(key);
-    delete this.set_[key];
-    return has;
-  };
-
-  _proto.add = function add(key) {
-    this.set_[key] = 1;
-    return this;
-  };
-
-  _proto.forEach = function forEach(callback, thisArg) {
-    for (var key in this.set_) {
-      callback.call(thisArg, key, key, this);
-    }
-  };
-
-  return SetSham;
-}();
-
-var Set = window$1.Set ? window$1.Set : SetSham;
-
 /**
  * Player Component - Base class for all UI objects
  *
@@ -5851,10 +5808,44 @@ var Component = /*#__PURE__*/function () {
     this.children_ = [];
     this.childIndex_ = {};
     this.childNameIndex_ = {};
-    this.setTimeoutIds_ = new Set();
-    this.setIntervalIds_ = new Set();
-    this.rafIds_ = new Set();
-    this.namedRafs_ = new Map$1();
+    var SetSham;
+
+    if (!window$1.Set) {
+      SetSham = /*#__PURE__*/function () {
+        function SetSham() {
+          this.set_ = {};
+        }
+
+        var _proto2 = SetSham.prototype;
+
+        _proto2.has = function has(key) {
+          return key in this.set_;
+        };
+
+        _proto2["delete"] = function _delete(key) {
+          var has = this.has(key);
+          delete this.set_[key];
+          return has;
+        };
+
+        _proto2.add = function add(key) {
+          this.set_[key] = 1;
+          return this;
+        };
+
+        _proto2.forEach = function forEach(callback, thisArg) {
+          for (var key in this.set_) {
+            callback.call(thisArg, key, key, this);
+          }
+        };
+
+        return SetSham;
+      }();
+    }
+
+    this.setTimeoutIds_ = window$1.Set ? new Set() : new SetSham();
+    this.setIntervalIds_ = window$1.Set ? new Set() : new SetSham();
+    this.rafIds_ = window$1.Set ? new Set() : new SetSham();
     this.clearingTimersOnDispose_ = false; // Add any child components in options
 
     if (options.initChildren !== false) {
@@ -7294,55 +7285,6 @@ var Component = /*#__PURE__*/function () {
     return id;
   }
   /**
-   * Request an animation frame, but only one named animation
-   * frame will be queued. Another will never be added until
-   * the previous one finishes.
-   *
-   * @param {string} name
-   *        The name to give this requestAnimationFrame
-   *
-   * @param  {Component~GenericCallback} fn
-   *         A function that will be bound to this component and executed just
-   *         before the browser's next repaint.
-   */
-  ;
-
-  _proto.requestNamedAnimationFrame = function requestNamedAnimationFrame(name, fn) {
-    var _this4 = this;
-
-    if (this.namedRafs_.has(name)) {
-      return;
-    }
-
-    this.clearTimersOnDispose_();
-    fn = bind(this, fn);
-    var id = this.requestAnimationFrame(function () {
-      fn();
-
-      if (_this4.namedRafs_.has(name)) {
-        _this4.namedRafs_["delete"](name);
-      }
-    });
-    this.namedRafs_.set(name, id);
-    return name;
-  }
-  /**
-   * Cancels a current named animation frame if it exists.
-   *
-   * @param {string} name
-   *        The name of the requestAnimationFrame to cancel.
-   */
-  ;
-
-  _proto.cancelNamedAnimationFrame = function cancelNamedAnimationFrame(name) {
-    if (!this.namedRafs_.has(name)) {
-      return;
-    }
-
-    this.cancelAnimationFrame(this.namedRafs_.get(name));
-    this.namedRafs_["delete"](name);
-  }
-  /**
    * Cancels a queued callback passed to {@link Component#requestAnimationFrame}
    * (rAF).
    *
@@ -7386,7 +7328,7 @@ var Component = /*#__PURE__*/function () {
   ;
 
   _proto.clearTimersOnDispose_ = function clearTimersOnDispose_() {
-    var _this5 = this;
+    var _this4 = this;
 
     if (this.clearingTimersOnDispose_) {
       return;
@@ -7394,18 +7336,13 @@ var Component = /*#__PURE__*/function () {
 
     this.clearingTimersOnDispose_ = true;
     this.one('dispose', function () {
-      [['namedRafs_', 'cancelNamedAnimationFrame'], ['rafIds_', 'cancelAnimationFrame'], ['setTimeoutIds_', 'clearTimeout'], ['setIntervalIds_', 'clearInterval']].forEach(function (_ref) {
+      [['rafIds_', 'cancelAnimationFrame'], ['setTimeoutIds_', 'clearTimeout'], ['setIntervalIds_', 'clearInterval']].forEach(function (_ref) {
         var idName = _ref[0],
             cancelName = _ref[1];
 
-        // for a `Set` key will actually be the value again
-        // so forEach((val, val) =>` but for maps we want to use
-        // the key.
-        _this5[idName].forEach(function (val, key) {
-          return _this5[cancelName](key);
-        });
+        _this4[idName].forEach(_this4[cancelName], _this4);
       });
-      _this5.clearingTimersOnDispose_ = false;
+      _this4.clearingTimersOnDispose_ = false;
     });
   }
   /**
@@ -9907,12 +9844,6 @@ var loadTrack = function loadTrack(src, track) {
     opts.cors = crossOrigin;
   }
 
-  var withCredentials = track.tech_.crossOrigin() === 'use-credentials';
-
-  if (withCredentials) {
-    opts.withCredentials = withCredentials;
-  }
-
   XHR(opts, bind(this, function (err, response, responseBody) {
     if (err) {
       return log.error(err, response);
@@ -11069,27 +11000,6 @@ var Tech = /*#__PURE__*/function (_Component) {
 
   _proto.reset = function reset() {}
   /**
-   * Get the value of `crossOrigin` from the tech.
-   *
-   * @abstract
-   *
-   * @see {Html5#crossOrigin}
-   */
-  ;
-
-  _proto.crossOrigin = function crossOrigin() {}
-  /**
-   * Set the value of `crossOrigin` on the tech.
-   *
-   * @abstract
-   *
-   * @param {string} crossOrigin the crossOrigin value
-   * @see {Html5#setCrossOrigin}
-   */
-  ;
-
-  _proto.setCrossOrigin = function setCrossOrigin() {}
-  /**
    * Get or set an error on the Tech.
    *
    * @param {MediaError} [err]
@@ -11127,16 +11037,6 @@ var Tech = /*#__PURE__*/function (_Component) {
 
     return createTimeRanges();
   }
-  /**
-   * Set whether we are scrubbing or not
-   *
-   * @abstract
-   *
-   * @see {Html5#setScrubbing}
-   */
-  ;
-
-  _proto.setScrubbing = function setScrubbing() {}
   /**
    * Causes a manual time update to occur if {@link Tech#manualTimeUpdatesOn} was
    * previously called.
@@ -11493,25 +11393,6 @@ var Tech = /*#__PURE__*/function (_Component) {
       return PromiseClass.reject();
     }
   }
-  /**
-   * A method to check for the value of the 'disablePictureInPicture' <video> property.
-   * Defaults to true, as it should be considered disabled if the tech does not support pip
-   *
-   * @abstract
-   */
-  ;
-
-  _proto.disablePictureInPicture = function disablePictureInPicture() {
-    return true;
-  }
-  /**
-   * A method to set or unset the 'disablePictureInPicture' <video> property.
-   *
-   * @abstract
-   */
-  ;
-
-  _proto.setDisablePictureInPicture = function setDisablePictureInPicture() {}
   /**
    * A method to set a poster from a `Tech`.
    *
@@ -12411,10 +12292,7 @@ var MimetypesKind = {
   m4a: 'audio/mp4',
   mp3: 'audio/mpeg',
   aac: 'audio/aac',
-  caf: 'audio/x-caf',
-  flac: 'audio/flac',
   oga: 'audio/ogg',
-  wav: 'audio/wav',
   m3u8: 'application/x-mpegURL',
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
@@ -13359,6 +13237,7 @@ var TextTrackDisplay = /*#__PURE__*/function (_Component) {
         cueDiv.style.fontSize = fontSize * overrides.fontPercent + 'px';
         cueDiv.style.height = 'auto';
         cueDiv.style.top = 'auto';
+        cueDiv.style.bottom = '2px';
       }
 
       if (overrides.fontFamily && overrides.fontFamily !== 'default') {
@@ -14148,7 +14027,7 @@ var TimeDisplay = /*#__PURE__*/function (_Component) {
     }
 
     this.formattedTime_ = time;
-    this.requestNamedAnimationFrame('TimeDisplay#updateTextNode_', function () {
+    this.requestAnimationFrame(function () {
       if (!_this2.contentEl_) {
         return;
       }
@@ -14977,7 +14856,7 @@ var Slider = /*#__PURE__*/function (_Component) {
     }
 
     this.progress_ = progress;
-    this.requestNamedAnimationFrame('Slider#update', function () {
+    this.requestAnimationFrame(function () {
       // Set the new bar width or height
       var sizeKey = _this2.vertical() ? 'height' : 'width'; // Convert to a percentage for css value
 
@@ -15175,7 +15054,7 @@ var LoadProgressBar = /*#__PURE__*/function (_Component) {
   _proto.update = function update(event) {
     var _this2 = this;
 
-    this.requestNamedAnimationFrame('LoadProgressBar#update', function () {
+    this.requestAnimationFrame(function () {
       var liveTracker = _this2.player_.liveTracker;
 
       var buffered = _this2.player_.buffered();
@@ -15287,7 +15166,7 @@ var TimeTooltip = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.update = function update(seekBarRect, seekBarPoint, content) {
-    var tooltipRect = findPosition(this.el_);
+    var tooltipRect = getBoundingClientRect(this.el_);
     var playerRect = getBoundingClientRect(this.player_.el());
     var seekBarPointPx = seekBarRect.width * seekBarPoint; // do nothing if either rect isn't available
     // for example, if the player isn't in the DOM for testing
@@ -15362,7 +15241,12 @@ var TimeTooltip = /*#__PURE__*/function (_Component) {
   _proto.updateTime = function updateTime(seekBarRect, seekBarPoint, time, cb) {
     var _this2 = this;
 
-    this.requestNamedAnimationFrame('TimeTooltip#updateTime', function () {
+    // If there is an existing rAF ID, cancel it so we don't over-queue.
+    if (this.rafId_) {
+      this.cancelAnimationFrame(this.rafId_);
+    }
+
+    this.rafId_ = this.requestAnimationFrame(function () {
       var content;
 
       var duration = _this2.player_.duration();
@@ -15681,7 +15565,7 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
 
     var percent = _Slider.prototype.update.call(this);
 
-    this.requestNamedAnimationFrame('SeekBar#update', function () {
+    this.requestAnimationFrame(function () {
       var currentTime = _this2.player_.ended() ? _this2.player_.duration() : _this2.getCurrentTime_();
       var liveTracker = _this2.player_.liveTracker;
 
@@ -16090,12 +15974,12 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
     }
 
     var seekBarEl = seekBar.el();
-    var seekBarRect = findPosition(seekBarEl);
+    var seekBarRect = getBoundingClientRect(seekBarEl);
     var seekBarPoint = getPointerPosition(seekBarEl, event).x; // The default skin has a gap on either side of the `SeekBar`. This means
     // that it's possible to trigger this behavior outside the boundaries of
     // the `SeekBar`. This ensures we stay within it at all times.
 
-    seekBarPoint = clamp(seekBarPoint, 0, 1);
+    seekBarPoint = clamp(0, 1, seekBarPoint);
 
     if (mouseTimeDisplay) {
       mouseTimeDisplay.update(seekBarRect, seekBarPoint);
@@ -16274,12 +16158,14 @@ var PictureInPictureToggle = /*#__PURE__*/function (_Button) {
 
     _this = _Button.call(this, player, options) || this;
 
-    _this.on(player, ['enterpictureinpicture', 'leavepictureinpicture'], _this.handlePictureInPictureChange);
+    _this.on(player, ['enterpictureinpicture', 'leavepictureinpicture'], _this.handlePictureInPictureChange); // TODO: Activate button on player loadedmetadata event.
+    // TODO: Deactivate button on player emptied event.
+    // TODO: Deactivate button if disablepictureinpicture attribute is present.
 
-    _this.on(player, ['disablepictureinpicturechanged', 'loadedmetadata'], _this.handlePictureInPictureEnabledChange); // TODO: Deactivate button on player emptied event.
 
-
-    _this.disable();
+    if (!document$1.pictureInPictureEnabled) {
+      _this.disable();
+    }
 
     return _this;
   }
@@ -16295,19 +16181,6 @@ var PictureInPictureToggle = /*#__PURE__*/function (_Button) {
 
   _proto.buildCSSClass = function buildCSSClass() {
     return "vjs-picture-in-picture-control " + _Button.prototype.buildCSSClass.call(this);
-  }
-  /**
-   * Enables or disables button based on document.pictureInPictureEnabled property value
-   * or on value returned by player.disablePictureInPicture() method.
-   */
-  ;
-
-  _proto.handlePictureInPictureEnabledChange = function handlePictureInPictureEnabledChange() {
-    if (document$1.pictureInPictureEnabled && this.player_.disablePictureInPicture() === false) {
-      this.enable();
-    } else {
-      this.disable();
-    }
   }
   /**
    * Handles enterpictureinpicture and leavepictureinpicture on the player and change control text accordingly.
@@ -16327,8 +16200,6 @@ var PictureInPictureToggle = /*#__PURE__*/function (_Button) {
     } else {
       this.controlText('Picture-in-Picture');
     }
-
-    this.handlePictureInPictureEnabledChange();
   }
   /**
    * This gets called when an `PictureInPictureToggle` is "clicked". See
@@ -21768,10 +21639,6 @@ var Html5 = /*#__PURE__*/function (_Tech) {
 
     if (typeof this.options_.preload !== 'undefined') {
       setAttribute(el, 'preload', this.options_.preload);
-    }
-
-    if (this.options_.disablePictureInPicture !== undefined) {
-      el.disablePictureInPicture = this.options_.disablePictureInPicture;
     } // Update specific tag settings, in case they were overridden
     // `autoplay` has to be *last* so that `muted` and `playsinline` are present
     // when iOS/Safari or other browsers attempt to autoplay.
@@ -21888,20 +21755,6 @@ var Html5 = /*#__PURE__*/function (_Tech) {
     });
   }
   /**
-   * Set whether we are scrubbing or not.
-   * This is used to decide whether we should use `fastSeek` or not.
-   * `fastSeek` is used to provide trick play on Safari browsers.
-   *
-   * @param {boolean} isScrubbing
-   *                  - true for we are currently scrubbing
-   *                  - false for we are no longer scrubbing
-   */
-  ;
-
-  _proto.setScrubbing = function setScrubbing(isScrubbing) {
-    this.isScrubbing_ = isScrubbing;
-  }
-  /**
    * Set current time for the `HTML5` tech.
    *
    * @param {number} seconds
@@ -21911,11 +21764,7 @@ var Html5 = /*#__PURE__*/function (_Tech) {
 
   _proto.setCurrentTime = function setCurrentTime(seconds) {
     try {
-      if (this.isScrubbing_ && this.el_.fastSeek && IS_ANY_SAFARI) {
-        this.el_.fastSeek(seconds);
-      } else {
-        this.el_.currentTime = seconds;
-      }
+      this.el_.currentTime = seconds;
     } catch (e) {
       log(e, 'Video is not ready. (Video.js)'); // this.warning(VideoJS.warnings.videoNotReady);
     }
@@ -22852,7 +22701,7 @@ Html5.resetMediaElement = function (el) {
 'muted',
 /**
  * Set the value of `defaultMuted` on the media element. `defaultMuted` indicates that the current
- * audio level should be silent, but will only effect the muted level on initial playback..
+ * audio level should be silent, but will only effect the muted level on intial playback..
  *
  * @method Html5.prototype.setDefaultMuted
  * @param {boolean} defaultMuted
@@ -22914,8 +22763,8 @@ Html5.resetMediaElement = function (el) {
 }); // Wrap native properties with a getter
 // The list is as followed
 // paused, currentTime, buffered, volume, poster, preload, error, seeking
-// seekable, ended, playbackRate, defaultPlaybackRate, disablePictureInPicture
-// played, networkState, readyState, videoWidth, videoHeight, crossOrigin
+// seekable, ended, playbackRate, defaultPlaybackRate, played, networkState
+// readyState, videoWidth, videoHeight, crossOrigin
 
 [
 /**
@@ -23077,18 +22926,6 @@ Html5.resetMediaElement = function (el) {
  */
 'defaultPlaybackRate',
 /**
- * Get the value of 'disablePictureInPicture' from the video element.
- *
- * @method Html5#disablePictureInPicture
- * @return {boolean} value
- *         - The value of `disablePictureInPicture` from the video element.
- *         - True indicates that the video can't be played in Picture-In-Picture mode
- *         - False indicates that the video can be played in Picture-In-Picture mode
- *
- * @see [Spec]{@link https://w3c.github.io/picture-in-picture/#disable-pip}
- */
-'disablePictureInPicture',
-/**
  * Get the value of `played` from the media element. `played` returns a `TimeRange`
  * object representing points in the media timeline that have been played.
  *
@@ -23177,8 +23014,7 @@ Html5.resetMediaElement = function (el) {
 }); // Wrap native properties with a setter in this format:
 // set + toTitleCase(name)
 // The list is as follows:
-// setVolume, setSrc, setPoster, setPreload, setPlaybackRate, setDefaultPlaybackRate,
-// setDisablePictureInPicture, setCrossOrigin
+// setVolume, setSrc, setPoster, setPreload, setPlaybackRate, setDefaultPlaybackRate, setCrossOrigin
 
 [
 /**
@@ -23265,17 +23101,6 @@ Html5.resetMediaElement = function (el) {
  * @see [Spec]{@link https://www.w3.org/TR/html5/embedded-content-0.html#dom-media-defaultplaybackrate}
  */
 'defaultPlaybackRate',
-/**
- * Prevents the browser from suggesting a Picture-in-Picture context menu
- * or to request Picture-in-Picture automatically in some cases.
- *
- * @method Html5#setDisablePictureInPicture
- * @param {boolean} value
- *         The true value will disable Picture-in-Picture mode.
- *
- * @see [Spec]{@link https://w3c.github.io/picture-in-picture/#disable-pip}
- */
-'disablePictureInPicture',
 /**
  * Set the value of `crossOrigin` from the media element. `crossOrigin` indicates
  * to the browser that should sent the cookies along with the requests for the
@@ -23708,9 +23533,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.hasStarted_ = false; // Init state userActive_
 
-    _this.userActive_ = false; // Init debugEnabled_
-
-    _this.debugEnabled_ = false; // if the global option object was accidentally blown away by
+    _this.userActive_ = false; // if the global option object was accidentally blown away by
     // someone, bail early with an informative error
 
     if (!_this.options_ || !_this.options_.techOrder || !_this.options_.techOrder.length) {
@@ -23805,11 +23628,6 @@ var Player = /*#__PURE__*/function (_Component) {
       Object.keys(options.plugins).forEach(function (name) {
         _this[name](options.plugins[name]);
       });
-    } // Enable debug mode to fire debugon event for all plugins.
-
-
-    if (options.debug) {
-      _this.debug(true);
     }
 
     _this.options_.playerOptions = playerOptionsCopy;
@@ -24440,7 +24258,6 @@ var Player = /*#__PURE__*/function (_Component) {
       'playsinline': this.options_.playsinline,
       'preload': this.options_.preload,
       'loop': this.options_.loop,
-      'disablePictureInPicture': this.options_.disablePictureInPicture,
       'muted': this.options_.muted,
       'poster': this.poster(),
       'language': this.language(),
@@ -24891,7 +24708,7 @@ var Player = /*#__PURE__*/function (_Component) {
         if (!this.lastSource_ || this.lastSource_.tech !== eventSrc && this.lastSource_.player !== playerSrc) {
           updateSourceCaches = function updateSourceCaches() {};
         }
-      } // update the source to the initial source right away
+      } // update the source to the intial source right away
       // in some cases this will be empty string
 
 
@@ -25807,7 +25624,6 @@ var Player = /*#__PURE__*/function (_Component) {
     }
 
     this.scrubbing_ = !!isScrubbing;
-    this.techCall_('setScrubbing', this.scrubbing_);
 
     if (isScrubbing) {
       this.addClass('vjs-scrubbing');
@@ -26182,8 +25998,8 @@ var Player = /*#__PURE__*/function (_Component) {
       var self = this;
       return new PromiseClass(function (resolve, reject) {
         function offHandler() {
-          self.off('fullscreenerror', errorHandler);
-          self.off('fullscreenchange', changeHandler);
+          self.off(self.fsApi_.fullscreenerror, errorHandler);
+          self.off(self.fsApi_.fullscreenchange, changeHandler);
         }
 
         function changeHandler() {
@@ -26267,8 +26083,8 @@ var Player = /*#__PURE__*/function (_Component) {
       var self = this;
       return new PromiseClass(function (resolve, reject) {
         function offHandler() {
-          self.off('fullscreenerror', errorHandler);
-          self.off('fullscreenchange', changeHandler);
+          self.off(self.fsApi_.fullscreenerror, errorHandler);
+          self.off(self.fsApi_.fullscreenchange, changeHandler);
         }
 
         function changeHandler() {
@@ -26383,24 +26199,6 @@ var Player = /*#__PURE__*/function (_Component) {
     this.trigger('exitFullWindow');
   }
   /**
-   * Disable Picture-in-Picture mode.
-   *
-   * @param {boolean} value
-   *                  - true will disable Picture-in-Picture mode
-   *                  - false will enable Picture-in-Picture mode
-   */
-  ;
-
-  _proto.disablePictureInPicture = function disablePictureInPicture(value) {
-    if (value === undefined) {
-      return this.techGet_('disablePictureInPicture');
-    }
-
-    this.techCall_('setDisablePictureInPicture', value);
-    this.options_.disablePictureInPicture = value;
-    this.trigger('disablepictureinpicturechanged');
-  }
-  /**
    * Check if the player is in Picture-in-Picture mode or tell the player that it
    * is or is not in Picture-in-Picture mode.
    *
@@ -26437,7 +26235,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.requestPictureInPicture = function requestPictureInPicture() {
-    if ('pictureInPictureEnabled' in document$1 && this.disablePictureInPicture() === false) {
+    if ('pictureInPictureEnabled' in document$1) {
       /**
        * This event fires when the player enters picture in picture mode
        *
@@ -26736,7 +26534,7 @@ var Player = /*#__PURE__*/function (_Component) {
         });
       }, 0);
       return;
-    } // initial sources
+    } // intial sources
 
 
     this.changingSrc_ = true;
@@ -28178,32 +27976,6 @@ var Player = /*#__PURE__*/function (_Component) {
 
     return !('flexBasis' in elem.style || 'webkitFlexBasis' in elem.style || 'mozFlexBasis' in elem.style || 'msFlexBasis' in elem.style || // IE10-specific (2012 flex spec), available for completeness
     'msFlexOrder' in elem.style);
-  }
-  /**
-   * Set debug mode to enable/disable logs at info level.
-   *
-   * @param {boolean} enabled
-   * @fires Player#debugon
-   * @fires Player#debugoff
-   */
-  ;
-
-  _proto.debug = function debug(enabled) {
-    if (enabled === undefined) {
-      return this.debugEnabled_;
-    }
-
-    if (enabled) {
-      this.trigger('debugon');
-      this.previousLogLevel_ = this.log.level;
-      this.log.level('debug');
-      this.debugEnabled_ = true;
-    } else {
-      this.trigger('debugoff');
-      this.log.level(this.previousLogLevel_);
-      this.previousLogLevel_ = undefined;
-      this.debugEnabled_ = false;
-    }
   };
 
   return Player;
@@ -28685,13 +28457,8 @@ var Plugin = /*#__PURE__*/function () {
       throw new Error('Plugin must be sub-classed; not directly instantiated.');
     }
 
-    this.player = player;
-
-    if (!this.log) {
-      this.log = this.player.log.createLogger(this.name);
-    } // Make this object evented, but remove the added `trigger` method so we
+    this.player = player; // Make this object evented, but remove the added `trigger` method so we
     // use the prototype version instead.
-
 
     evented(this);
     delete this.trigger;
@@ -29616,4 +29383,4 @@ videojs$1.defineLazyProperty = defineLazyProperty;
 
 var core = videojs$1;
 
-export { core as c, document_1 as d, window_1 as w };
+export { core as a, commonjsGlobal as b, createCommonjsModule as c, document_1 as d, getDefaultExportFromCjs as g, window_1 as w };
