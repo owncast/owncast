@@ -14,7 +14,7 @@
     "@videojs/http-streaming": "2.2.0"
   },
   "devDependencies": {
-    "snowpack": "^2.12.1"
+    "snowpack": "^2.14.0"
   },
   "snowpack": {
     "install": [
