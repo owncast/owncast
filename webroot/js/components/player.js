@@ -111,6 +111,7 @@ class OwncastPlayer {
       // start polling
       this.appPlayerPlayingCallback();
     }
+    document.getElementById('oc-custom-poster').style.visibility = 'hidden';
   }
 
   handleEnded() {
@@ -118,7 +119,7 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
-    this.setPoster();
+    this.showPoster();
   }
 
   handleError(e) {
@@ -128,11 +129,8 @@ class OwncastPlayer {
     }
   }
 
-  setPoster() {
-    const cachebuster = Math.round(new Date().getTime() / 1000);
-    const poster = POSTER_THUMB + '?okhi=' + cachebuster;
-
-    this.vjsPlayer.poster(poster);
+  showPoster() {
+    document.getElementById('oc-custom-poster').style.visibility = 'visible';
   }
 
   log(message) {

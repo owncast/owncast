@@ -37,21 +37,19 @@
 /******************************/
 /******************************/
 
-
 #message-input img {
   display: inline;
   vertical-align: middle;
-  padding: .25rem;
+  padding: 0.25rem;
 }
 
 #message-input .emoji {
   width: 2.2rem;
-  padding: .25rem;
+  padding: 0.25rem;
 }
 
-
 /* If the div is empty then show the placeholder */
-#message-input:empty:before{
+#message-input:empty:before {
   content: attr(placeholderText);
   pointer-events: none;
   display: block; /* For Firefox */
@@ -59,34 +57,33 @@
 }
 
 /* When chat is enabled (contenteditable=true)  */
-#message-input[contenteditable=true]:before {
-  opacity: 1.0;
+#message-input[contenteditable='true']:before {
+  opacity: 1;
 }
 
-#message-input::selection { background:#d7ddf4; }
-
+#message-input::selection {
+  background: #d7ddf4;
+}
 
 /* When chat is disabled (contenteditable=false) chat input div should appear disabled. */
 #message-input:disabled,
-#message-input[contenteditable=false] {
+#message-input[contenteditable='false'] {
   opacity: 0.6;
 }
 /******************************/
 /******************************/
 
-
 /******************************/
 /* EMOJI PICKER OVERRIDES */
 .emoji-picker.owncast {
-  --secondary-text-color: rgba(255,255,255,.5);
-  --category-button-color:  rgba(255,255,255,.5);
-  --hover-color: rgba(255,255,255,.25);
+  --secondary-text-color: rgba(255, 255, 255, 0.5);
+  --category-button-color: rgba(255, 255, 255, 0.5);
+  --hover-color: rgba(255, 255, 255, 0.25);
 
-  background: rgba(26,32,44,1); /* tailwind bg-gray-900 */
-  color: rgba(226,232,240,1); /* tailwind text-gray-300 */
+  background: rgba(26, 32, 44, 1); /* tailwind bg-gray-900 */
+  color: rgba(226, 232, 240, 1); /* tailwind text-gray-300 */
   border-color: black;
   font-family: inherit;
-
 }
 .emoji-picker h2 {
   font-family: inherit;
@@ -103,7 +100,7 @@
 .emoji-picker__emojis::-webkit-scrollbar-track {
   border-radius: 8px;
   background-color: black;
-  box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
 .emoji-picker__emojis::-webkit-scrollbar-thumb {
@@ -112,7 +109,7 @@
 }
 
 .emoji-picker__emojis {
-  scrollbar-color: var(--category-button-color)  black;
+  scrollbar-color: var(--category-button-color) black;
 }
 
 /* MESSAGE TEXT HTML */
@@ -122,7 +119,7 @@
   word-break: break-word;
 }
 .message-text a {
-  color: #7F9CF5; /* indigo-400 */
+  color: #7f9cf5; /* indigo-400 */
 }
 .message-text a:hover {
   text-decoration: underline;
@@ -130,33 +127,30 @@
 
 .message-text img {
   display: inline;
-  padding-left: 0 .25rem;
+  padding-left: 0 0.25rem;
 }
-
-
 
 .message-text .emoji {
   position: relative;
   top: -5px;
   width: 3rem;
-  padding: .25rem
+  padding: 0.25rem;
 }
 
 .message-text code {
   font-family: monospace;
-  background-color:darkslategrey;
-  padding: .25rem;
+  background-color: darkslategrey;
+  padding: 0.25rem;
 }
 
 .message-text .chat-embed {
   width: 100%;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 
 .message-text .instagram-embed {
   height: 24rem;
 }
-
 
 .message-text .embedded-image {
   width: 100%;
@@ -174,11 +168,23 @@
 /* MESSAGE TEXT CONTENT */
 /* MESSAGE TEXT CONTENT */
 
+/* Animation time for crossfading between poster thumbs */
+.custom-thumbnail-image {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
+.custom-thumbnail-image_hidden {
+  opacity: 0;
+}
 
-
-
-
-
-
-
+.custom-thumbnail-image_visible {
+  opacity: 1;
+}
