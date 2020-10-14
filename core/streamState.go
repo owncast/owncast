@@ -25,6 +25,9 @@ func SetStreamAsConnected() {
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
 
 	StopCleanupTimer()
+	if _yp != nil {
+		_yp.Start()
+	}
 
 	segmentPath := config.PublicHLSStoragePath
 	if config.Config.S3.Enabled {
@@ -52,6 +55,9 @@ func SetStreamAsDisconnected() {
 	offlineFilePath := "static/" + offlineFilename
 
 	ffmpeg.StopThumbnailGenerator()
+	if _yp != nil {
+		_yp.Stop()
+	}
 
 	for index := range config.Config.GetVideoStreamQualities() {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
