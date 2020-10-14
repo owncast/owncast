@@ -11,7 +11,7 @@
     "preact": "^10.5.3",
     "tailwindcss": "^1.8.10",
     "video.js": "7.8.3",
-    "@videojs/http-streaming": "2.2.0"
+    "@videojs/http-streaming": "2.2.3"
   },
   "devDependencies": {
     "snowpack": "^2.12.1"
