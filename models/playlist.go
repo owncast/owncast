@@ -5,10 +5,10 @@ type Segment struct {
 	VariantIndex       int    // The bitrate variant
 	FullDiskPath       string // Where it lives on disk
 	RelativeUploadPath string // Path it should have remotely
-	RemoteID           string
+	RemoteURL          string
 }
 
-//Variant represents a single bitrate variant and the segments that make it up
+//Variant represents a single video variant and the segments that make it up
 type Variant struct {
 	VariantIndex int
 	Segments     map[string]*Segment

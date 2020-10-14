@@ -13,36 +13,44 @@ import (
 	"github.com/owncast/owncast/config"
 )
 
+var _timer *time.Ticker
+
+func StopThumbnailGenerator() {
+	if _timer != nil {
+		_timer.Stop()
+	}
+}
+
 //StartThumbnailGenerator starts generating thumbnails
 func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.
-	ticker := time.NewTicker(20 * time.Second)
+	_timer = time.NewTicker(20 * time.Second)
 	quit := make(chan struct{})
 
 	go func() {
 		for {
 			select {
-			case <-ticker.C:
+			case <-_timer.C:
 				if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
 					log.Errorln("Unable to generate thumbnail:", err)
 				}
 			case <-quit:
 				//TODO: evaluate if this is ever stopped
 				log.Debug("thumbnail generator has stopped")
-				ticker.Stop()
+				_timer.Stop()
 				return
 			}
 		}
 	}()
 }
 
-func fireThumbnailGenerator(chunkPath string, variantIndex int) error {
+func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join(config.WebRoot, "thumbnail.jpg")
 	previewGifFile := path.Join(config.WebRoot, "preview.gif")
 
-	framePath := path.Join(chunkPath, strconv.Itoa(variantIndex))
+	framePath := path.Join(segmentPath, strconv.Itoa(variantIndex))
 	files, err := ioutil.ReadDir(framePath)
 	if err != nil {
 		return err

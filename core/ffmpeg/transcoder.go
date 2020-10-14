@@ -3,7 +3,6 @@ package ffmpeg
 import (
 	"fmt"
 	"os/exec"
-	"path"
 	"strconv"
 	"strings"
 
@@ -27,6 +26,8 @@ type Transcoder struct {
 	appendToStream       bool
 	ffmpegPath           string
 	segmentIdentifier    string
+	internalListenerPort int
+	TranscoderCompleted  func(error)
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream
@@ -91,15 +92,26 @@ func (t *Transcoder) Start() {
 		log.Panicln(err, command)
 	}
 
+	err = _commandExec.Wait()
+	if t.TranscoderCompleted != nil {
+		t.TranscoderCompleted(err)
+	}
 	return
 }
 
 func (t *Transcoder) getString() string {
-	hlsOptionFlags := []string{
-		"delete_segments",
-		"program_date_time",
-		"temp_file",
+	var port int
+	if config.Config != nil {
+		port = config.Config.GetPublicWebServerPort() + 1
+	} else if t.internalListenerPort != 0 {
+		port = t.internalListenerPort
+	} else {
+		log.Panicln("A internal port must be set for transcoder callback")
 	}
+
+	localListenerAddress := "http://127.0.0.1:" + strconv.Itoa(port)
+
+	hlsOptionFlags := []string{}
 
 	if t.appendToStream {
 		hlsOptionFlags = append(hlsOptionFlags, "append_list")
@@ -109,32 +121,43 @@ func (t *Transcoder) getString() string {
 		t.segmentIdentifier = shortid.MustGenerate()
 	}
 
+	hlsOptionsString := ""
+	if len(hlsOptionFlags) > 0 {
+		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
+	}
 	ffmpegFlags := []string{
-		"cat", t.input, "|",
 		t.ffmpegPath,
 		"-hide_banner",
-		"-i pipe:",
+		"-loglevel warning",
+		"-i ", t.input,
+
 		t.getVariantsString(),
 
 		// HLS Output
 		"-f", "hls",
+
 		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
 		"-hls_list_size", strconv.Itoa(t.hlsPlaylistLength), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
-		"-hls_flags", strings.Join(hlsOptionFlags, "+"), // Specific options in HLS generation
+		hlsOptionsString,
 
 		// Video settings
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-		// "-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
+		"-pix_fmt", "yuv420p", // Force yuv420p color format
+		"-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
-		"-strftime 1",                                                               // Support the use of strftime in filenames
-		"-hls_segment_filename", path.Join(t.segmentOutputPath, "/%v/stream-%s-"+t.segmentIdentifier+".ts"), // Each segment's filename
+		"-strftime 1", // Support the use of strftime in filenames
+
+		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "%s.ts", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
-		path.Join(t.segmentOutputPath, "/%v/stream.m3u8"), // Each variant's playlist
-		"2> transcoder.log",
+
+		"-method PUT -http_persistent 1",         // HLS results sent back to us will be over PUTs
+		"-fflags +genpts",                        // Generate presentation time stamp if missing
+		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
+		"2> transcoder.log",                      // Log to a file for debugging
 	}
 
 	return strings.Join(ffmpegFlags, " ")
@@ -180,7 +203,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config
-func NewTranscoder() Transcoder {
+func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
 	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
@@ -207,7 +230,7 @@ func NewTranscoder() Transcoder {
 		transcoder.AddVariant(variant)
 	}
 
-	return *transcoder
+	return transcoder
 }
 
 // Uses `map` https://www.ffmpeg.org/ffmpeg-all.html#Stream-specifiers-1 https://www.ffmpeg.org/ffmpeg-all.html#Advanced-options
@@ -363,4 +386,8 @@ func (t *Transcoder) SetAppendToStream(append bool) {
 // SetIdentifer enables appending a unique identifier to segment file name
 func (t *Transcoder) SetIdentifier(output string) {
 	t.segmentIdentifier = output
+}
+
+func (t *Transcoder) SetInternalHTTPPort(port int) {
+	t.internalListenerPort = port
 }

@@ -5,7 +5,6 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -18,12 +17,15 @@ import (
 )
 
 var (
-	_stats        *models.Stats
-	_storage      models.ChunkStorageProvider
-	_cleanupTimer *time.Timer
-	_yp           *yp.YP
-	_broadcaster  *models.Broadcaster
+	_stats       *models.Stats
+	_storage     models.StorageProvider
+	_transcoder  *ffmpeg.Transcoder
+	_yp          *yp.YP
+	_broadcaster *models.Broadcaster
 )
+
+var handler ffmpeg.HLSHandler
+var fileWriter = ffmpeg.FileWriterReceiverService{}
 
 //Start starts up the core processing
 func Start() error {
@@ -38,6 +40,13 @@ func Start() error {
 		log.Error("failed to setup the storage")
 		return err
 	}
+
+	// The HLS handler takes the written HLS playlists and segments
+	// and makes storage decisions.  It's rather simple right now
+	// but will play more useful when recordings come into play.
+	handler = ffmpeg.HLSHandler{}
+	handler.Storage = _storage
+	fileWriter.SetupFileWriterReceiverService(&handler)
 
 	if err := createInitialOfflineState(); err != nil {
 		log.Error("failed to create the initial offline state")
@@ -63,31 +72,26 @@ func createInitialOfflineState() error {
 		}
 	}
 
-	ffmpeg.ShowStreamOfflineState()
+	transitionToOfflineVideoStreamContent()
 
 	return nil
 }
 
-func startCleanupTimer() {
-	_cleanupTimer = time.NewTimer(5 * time.Minute)
-	go func() {
-		for {
-			select {
-			case <-_cleanupTimer.C:
-				// Reset the session count since the session is over
-				_stats.SessionMaxViewerCount = 0
-				resetDirectories()
-				ffmpeg.ShowStreamOfflineState()
-			}
-		}
-	}()
-}
+// transitionToOfflineVideoStreamContent will overwrite the current stream with the
+// offline video stream state only.  No live stream HLS segments will continue to be
+// referenced.
+func transitionToOfflineVideoStreamContent() {
+	log.Traceln("Firing transcoder with offline stream state")
 
-// StopCleanupTimer will stop the previous cleanup timer
-func stopCleanupTimer() {
-	if _cleanupTimer != nil {
-		_cleanupTimer.Stop()
-	}
+	offlineFilename := "offline.ts"
+	offlineFilePath := "static/" + offlineFilename
+	_transcoder := ffmpeg.NewTranscoder()
+	_transcoder.SetSegmentLength(10)
+	_transcoder.SetInput(offlineFilePath)
+	_transcoder.Start()
+
+	// Copy the logo to be the thumbnail
+	utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
 }
 
 func resetDirectories() {
@@ -112,4 +116,7 @@ func resetDirectories() {
 		os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0)), 0777)
 		os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(0)), 0777)
 	}
+
+	// Remove the previous thumbnail
+	utils.Copy(config.Config.InstanceDetails.Logo.Large, "webroot/thumbnail.jpg")
 }

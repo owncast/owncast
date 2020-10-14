@@ -6,19 +6,19 @@
   "dependencies": {
     "@joeattardi/emoji-button": "^4.2.0",
     "@justinribeiro/lite-youtube": "^0.9.0",
-    "@videojs/http-streaming": "^2.2.0",
     "@videojs/themes": "^1.0.0",
     "htm": "^3.0.4",
     "preact": "^10.5.3",
     "tailwindcss": "^1.8.10",
-    "video.js": "^7.9.6"
+    "video.js": "7.8.3",
+    "@videojs/http-streaming": "2.2.0"
   },
   "devDependencies": {
     "snowpack": "^2.12.1"
   },
   "snowpack": {
     "install": [
-      "video.js/dist/video.min.js",
+      "video.js/core.js",
       "@videojs/themes/fantasy/*",
       "@videojs/http-streaming/dist/videojs-http-streaming.min.js",
       "video.js/dist/video-js.min.css",
@@ -27,11 +27,14 @@
       "htm",
       "preact",
       "tailwindcss/dist/tailwind.min.css"
-    ]
+    ],
+    "alias": {
+      "video.js": "video.js/core.js"
+    }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm install && npx snowpack install && cp -R web_modules ../../webroot/js"
+    "build": "npm install && npx snowpack install && cp node_modules/video.js/dist/video-js.min.css web_modules/videojs && cp -R web_modules ../../webroot/js"
   },
   "author": "",
   "license": "ISC"

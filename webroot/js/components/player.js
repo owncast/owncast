@@ -1,11 +1,11 @@
 // https://docs.videojs.com/player
 
-import videojs from '/js/web_modules/videojs/dist/video.min.js';
+import videojs from '/js/web_modules/videojs/core.js';
+import '/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js';
 import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME } from '../utils/constants.js';
 
 const VIDEO_ID = 'video';
-// TODO: This directory is customizable in the config.  So we should expose this via the config API.
 const URL_STREAM = `/hls/stream.m3u8`;
 
 // Video setup

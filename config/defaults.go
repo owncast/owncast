@@ -1,9 +1,10 @@
 package config
 
 import (
-	"log"
 	"os/exec"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func getDefaults() config {

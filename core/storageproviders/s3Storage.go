@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
+	"path/filepath"
 
+	"github.com/owncast/owncast/core/playlist"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,8 +16,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/models"
+
+	"github.com/grafov/m3u8"
 )
+
+// If we try to upload a playlist but it is not yet on disk
+// then keep a reference to it here.
+var _queuedPlaylistUpdates = make(map[string]string, 0)
 
 //S3Storage is the s3 implementation of the ChunkStorageProvider
 type S3Storage struct {
@@ -31,9 +38,17 @@ type S3Storage struct {
 	s3ACL             string
 }
 
+var _uploader *s3manager.Uploader
+
 //Setup sets up the s3 storage for saving the video to s3
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
+
+	if config.Config.S3.ServingEndpoint != "" {
+		s.host = config.Config.S3.ServingEndpoint
+	} else {
+		s.host = fmt.Sprintf("%s/%s", config.Config.S3.Endpoint, config.Config.S3.Bucket)
+	}
 
 	s.s3Endpoint = config.Config.S3.Endpoint
 	s.s3ServingEndpoint = config.Config.S3.ServingEndpoint
@@ -45,68 +60,113 @@ func (s *S3Storage) Setup() error {
 
 	s.sess = s.connectAWS()
 
+	_uploader = s3manager.NewUploader(s.sess)
+
 	return nil
 }
 
-//Save saves the file to the s3 bucket
-func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
-	// fmt.Println("Saving", filePath)
+// SegmentWritten is called when a single segment of video is written
+func (s *S3Storage) SegmentWritten(localFilePath string) {
+	index := utils.GetIndexFromFilePath(localFilePath)
+	performanceMonitorKey := "s3upload-" + index
+	utils.StartPerformanceMonitor(performanceMonitorKey)
 
+	// Upload the segment
+	_, error := s.Save(localFilePath, 0)
+	if error != nil {
+		log.Errorln(error)
+		return
+	}
+	averagePerformance := utils.GetAveragePerformance(performanceMonitorKey)
+
+	// Warn the user about long-running save operations
+	if averagePerformance != 0 {
+		if averagePerformance > float64(config.Config.GetVideoSegmentSecondsLength())*0.9 {
+			log.Warnln("Possible slow uploads: average upload S3 save duration", averagePerformance, "ms. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
+		}
+		log.Traceln(localFilePath, "uploaded to S3")
+	}
+
+	// Upload the variant playlist for this segment
+	// so the segments and the HLS playlist referencing
+	// them are in sync.
+	playlist := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
+	_, error = s.Save(playlist, 0)
+	if error != nil {
+		_queuedPlaylistUpdates[playlist] = playlist
+		if pErr, ok := error.(*os.PathError); ok {
+			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
+			return
+		}
+	}
+
+	// If a segment file was successfully uploaded then we can delete
+	// it from the local filesystem.
+	os.Remove(localFilePath)
+}
+
+// VariantPlaylistWritten is called when a variant hls playlist is written
+func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
+	// We are uploading the variant playlist after uploading the segment
+	// to make sure we're not refering to files in a playlist that don't
+	// yet exist.  See SegmentWritten.
+	if _, ok := _queuedPlaylistUpdates[localFilePath]; ok {
+		_, error := s.Save(localFilePath, 0)
+		if error != nil {
+			log.Errorln(error)
+			_queuedPlaylistUpdates[localFilePath] = localFilePath
+		}
+		delete(_queuedPlaylistUpdates, localFilePath)
+	}
+}
+
+// MasterPlaylistWritten is called when the master hls playlist is written
+func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
+	// Rewrite the playlist to use absolute remote S3 URLs
+	s.rewriteRemotePlaylist(localFilePath)
+}
+
+// Save saves the file to the s3 bucket
+func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
 
-	uploader := s3manager.NewUploader(s.sess)
+	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
+	cacheControlHeader := fmt.Sprintf("Cache-Control: max-age=%d", maxAgeSeconds)
 	uploadInput := &s3manager.UploadInput{
-		Bucket: aws.String(s.s3Bucket), // Bucket to be used
-		Key:    aws.String(filePath),   // Name of the file to be saved
-		Body:   file,                   // File
+		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
+		Key:          aws.String(filePath),   // Name of the file to be saved
+		Body:         file,                   // File
+		CacheControl: &cacheControlHeader,
 	}
+
 	if s.s3ACL != "" {
 		uploadInput.ACL = aws.String(s.s3ACL)
+	} else {
+		// Default ACL
+		uploadInput.ACL = aws.String("public-read")
 	}
-	response, err := uploader.Upload(uploadInput)
+
+	response, err := _uploader.Upload(uploadInput)
 
 	if err != nil {
-		log.Trace("error uploading:", err.Error())
+		log.Traceln("error uploading:", filePath, err.Error())
 		if retryCount < 4 {
-			log.Trace("Retrying...")
+			log.Traceln("Retrying...")
 			return s.Save(filePath, retryCount+1)
+		} else {
+			log.Warnln("Giving up on", filePath, err)
+			return "", fmt.Errorf("Giving up on %s", filePath)
 		}
 	}
-
-	// fmt.Println("Uploaded", filePath, "to", response.Location)
 
 	return response.Location, nil
 }
 
-//GenerateRemotePlaylist implements the 'GenerateRemotePlaylist' method
-func (s *S3Storage) GenerateRemotePlaylist(playlist string, variant models.Variant) string {
-	var newPlaylist = ""
-
-	scanner := bufio.NewScanner(strings.NewReader(playlist))
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line[0:1] != "#" {
-			fullRemotePath := variant.GetSegmentForFilename(line)
-			if fullRemotePath == nil {
-				line = ""
-			} else if s.s3ServingEndpoint != "" {
-				line = fmt.Sprintf("%s/%s/%s", s.s3ServingEndpoint, config.PrivateHLSStoragePath, fullRemotePath.RelativeUploadPath)
-			} else {
-				line = fullRemotePath.RemoteID
-			}
-		}
-
-		newPlaylist = newPlaylist + line + "\n"
-	}
-
-	return newPlaylist
-}
-
-func (s S3Storage) connectAWS() *session.Session {
+func (s *S3Storage) connectAWS() *session.Session {
 	creds := credentials.NewStaticCredentials(s.s3AccessKey, s.s3Secret, "")
 	_, err := creds.Get()
 	if err != nil {
@@ -126,4 +186,25 @@ func (s S3Storage) connectAWS() *session.Session {
 		log.Panicln(err)
 	}
 	return sess
+}
+
+// rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
+func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
+	f, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+
+	p := m3u8.NewMasterPlaylist()
+	err = p.DecodeFrom(bufio.NewReader(f), false)
+
+	for _, item := range p.Variants {
+		item.URI = s.host + filepath.Join("/hls", item.URI)
+	}
+
+	publicPath := filepath.Join(config.PublicHLSStoragePath, filepath.Base(filePath))
+
+	newPlaylist := p.String()
+
+	return playlist.WritePlaylist(newPlaylist, publicPath)
 }

@@ -1,12 +1,7 @@
 package core
 
 import (
-	"time"
-
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 )
 
 //GetStatus gets the status of the system
@@ -23,40 +18,6 @@ func GetStatus() models.Status {
 		LastDisconnectTime:    _stats.LastDisconnectTime,
 		LastConnectTime:       _stats.LastConnectTime,
 	}
-}
-
-//SetStreamAsConnected sets the stream as connected
-func SetStreamAsConnected() {
-	stopCleanupTimer()
-
-	_stats.StreamConnected = true
-	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
-	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
-
-	chunkPath := config.PublicHLSStoragePath
-	if usingExternalStorage {
-		chunkPath = config.PrivateHLSStoragePath
-	}
-
-	if _yp != nil {
-		_yp.Start()
-	}
-
-	ffmpeg.StartThumbnailGenerator(chunkPath, config.Config.VideoSettings.HighestQualityStreamIndex)
-}
-
-//SetStreamAsDisconnected sets the stream as disconnected
-func SetStreamAsDisconnected() {
-	_stats.StreamConnected = false
-	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
-	_broadcaster = nil
-
-	if _yp != nil {
-		_yp.Stop()
-	}
-
-	ffmpeg.ShowStreamOfflineState()
-	startCleanupTimer()
 }
 
 // SetBroadcaster will store the current inbound broadcasting details
