@@ -7,10 +7,20 @@ version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/build/javascript" # Location of package manifests
+    open-pull-requests-limit: 3
     schedule:
       interval: "daily"
+    reviewers:
+      - "gingervitis"
+      - "mattdsteele"
+      - "gabek"
 
   - package-ecosystem: "gomod"
     directory: "/"
+    open-pull-requests-limit: 3
     schedule:
       interval: "daily"
+    reviewers:
+      - "gabek"
+      - "graywolf336"
+      - "geekgonecrazy"
