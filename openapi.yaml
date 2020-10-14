@@ -307,9 +307,6 @@ paths:
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
-                    image:
-                      type: string
-                      description: URL of the chat user avatar.
                     id:
                       type: string
                       description: Unique ID of the chat message.
