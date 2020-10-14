@@ -15,7 +15,7 @@ require (
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/oschwald/geoip2-golang v1.4.0
-	github.com/shirou/gopsutil v2.20.7+incompatible
+	github.com/shirou/gopsutil v2.20.9+incompatible
 	github.com/sirupsen/logrus v1.7.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/yuin/goldmark v1.2.1
