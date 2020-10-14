@@ -8,7 +8,6 @@ require (
 	github.com/aws/aws-sdk-go v1.34.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/grafov/m3u8 v0.11.1
-	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/mssola/user_agent v0.5.2
@@ -16,9 +15,8 @@ require (
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/oschwald/geoip2-golang v1.4.0
-	github.com/radovskyb/watcher v1.0.7
 	github.com/shirou/gopsutil v2.20.7+incompatible
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.7.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/yuin/goldmark v1.2.1
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
