@@ -43,14 +43,14 @@ export default class Chat extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { username: prevName } = prevProps;
-    const { username, userAvatarImage } = this.props;
+    const { username } = this.props;
 
     const { messages: prevMessages } = prevState;
     const { messages } = this.state;
 
     // if username updated, send a message
     if (prevName !== username) {
-      this.sendUsernameChange(prevName, username, userAvatarImage);
+      this.sendUsernameChange(prevName, username);
     }
     // scroll to bottom of messages list when new ones come in
     if (messages.length > prevMessages.length) {
@@ -94,12 +94,11 @@ export default class Chat extends Component {
     });
   }
 
-  sendUsernameChange(oldName, newName, image) {
+  sendUsernameChange(oldName, newName) {
 		const nameChange = {
 			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
 			oldName,
 			newName,
-			image,
 		};
 		this.websocket.send(nameChange);
   }
@@ -145,11 +144,10 @@ export default class Chat extends Component {
 		if (!content) {
 			return;
     }
-    const { username, userAvatarImage } = this.props;
+    const { username } = this.props;
     const message = {
       body: content,
 			author: username,
-			image: userAvatarImage,
 			type: SOCKET_MESSAGE_TYPES.CHAT,
     };
 		this.websocket.send(message);

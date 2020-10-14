@@ -92,16 +92,6 @@ export function getOrientation(forTouch = false) {
   }
 }
 
-// generate random avatar from https://robohash.org
-export function generateAvatar(hash) {
-  const avatarSource = 'https://robohash.org/';
-  const optionSize = '?size=80x80';
-  const optionSet = '&set=set2';
-  const optionBg = ''; // or &bgset=bg1 or bg2
-
-  return avatarSource + hash + optionSize + optionSet + optionBg;
-}
-
 export function generateUsername() {
   return `User ${(Math.floor(Math.random() * 42) + 1)}`;
 }

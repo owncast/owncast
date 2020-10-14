@@ -28,14 +28,6 @@ The styles in this file mostly ovveride those coming from chat.css
 #messages-only .message-content {
   text-shadow: 1px 1px 0px rgba(0,0,0,0.25);
 }
-#messages-only .message-avatar {
-  display:  none;
-  box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.25);
-}
-#messages-only .message-avatar img {
-  height: 1.8em;
-  width: 1.8em;
-}
 #messages-only .message {
   padding: .5em;
 }
