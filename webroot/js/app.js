@@ -55,7 +55,7 @@ export default class App extends Component {
         generateAvatar(`${this.username}${Date.now()}`),
 
       configData: {},
-      extraUserContent: '',
+      extraPageContent: '',
 
       playerActive: false, // player object is active
       streamOnline: false, // stream is active/online
@@ -347,7 +347,7 @@ export default class App extends Component {
       summary,
       tags = [],
       title,
-      extraUserContent,
+      extraPageContent,
     } = configData;
     const {
       small: smallLogo = TEMP_IMAGE,
@@ -485,7 +485,7 @@ export default class App extends Component {
           <div
             id="extra-user-content"
             class="extra-user-content px-8"
-            dangerouslySetInnerHTML=${{ __html: extraUserContent }}
+            dangerouslySetInnerHTML=${{ __html: extraPageContent }}
           ></div>
         </section>
 

@@ -36,7 +36,7 @@ type InstanceDetails struct {
 	SocialHandles    []socialHandle `yaml:"socialHandles" json:"socialHandles"`
 	Version          string         `json:"version"`
 	NSFW             bool           `yaml:"nsfw" json:"nsfw"`
-	ExtraUserContent string         `json:"extraUserContent"`
+	ExtraPageContent string         `json:"extraPageContent"`
 }
 
 type logo struct {
@@ -122,7 +122,7 @@ func (c *config) load(filePath string) error {
 	customContentMarkdownData, err := ioutil.ReadFile(ExtraInfoFile)
 	if err == nil {
 		customContentMarkdownString := string(customContentMarkdownData)
-		c.InstanceDetails.ExtraUserContent = utils.RenderSimpleMarkdown(customContentMarkdownString)
+		c.InstanceDetails.ExtraPageContent = utils.RenderSimpleMarkdown(customContentMarkdownString)
 	}
 
 	return nil
