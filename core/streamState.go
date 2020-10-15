@@ -24,7 +24,7 @@ func SetStreamAsConnected() {
 	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
 
-	StopCleanupTimer()
+	StopOfflineCleanupTimer()
 	if _yp != nil {
 		_yp.Start()
 	}
@@ -111,11 +111,11 @@ func SetStreamAsDisconnected() {
 		_storage.Save(playlistFilePath, 0)
 	}
 
-	StartCleanupTimer()
+	StartOfflineCleanupTimer()
 }
 
-// StartCleanupTimer will fire a cleanup after n minutes being disconnected
-func StartCleanupTimer() {
+// StartOfflineCleanupTimer will fire a cleanup after n minutes being disconnected
+func StartOfflineCleanupTimer() {
 	_cleanupTimer = time.NewTimer(5 * time.Minute)
 	go func() {
 		for {
@@ -130,8 +130,8 @@ func StartCleanupTimer() {
 	}()
 }
 
-// StopCleanupTimer will stop the previous cleanup timer
-func StopCleanupTimer() {
+// StopOfflineCleanupTimer will stop the previous cleanup timer
+func StopOfflineCleanupTimer() {
 	if _cleanupTimer != nil {
 		_cleanupTimer.Stop()
 	}
