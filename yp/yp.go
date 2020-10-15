@@ -108,12 +108,11 @@ func (yp *YP) ping() {
 
 func (yp *YP) writeSavedKey(key string) {
 	f, err := os.Create(".yp.key")
-	defer f.Close()
-
 	if err != nil {
 		log.Errorln(err)
 		return
 	}
+	defer f.Close()
 
 	_, err = f.WriteString(key)
 	if err != nil {

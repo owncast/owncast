@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
-	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -50,6 +50,9 @@ func createTable(db *sql.DB) {
 
 func addMessage(message models.ChatMessage) {
 	tx, err := _db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
 	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)

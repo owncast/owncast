@@ -64,7 +64,13 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(path.Join("static", "metadata.html")))
 
 	fullURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, r.URL.Path))
+	if err != nil {
+		log.Panicln(err)
+	}
 	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, config.Config.InstanceDetails.Logo.Large))
+	if err != nil {
+		log.Panicln(err)
+	}
 
 	status := core.GetStatus()
 
@@ -74,8 +80,10 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 		thumbnail, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/thumbnail.jpg"))
 		if err != nil {
 			log.Errorln(err)
+			thumbnailURL = imageURL.String()
+		} else {
+			thumbnailURL = thumbnail.String()
 		}
-		thumbnailURL = thumbnail.String()
 	} else {
 		thumbnailURL = imageURL.String()
 	}
