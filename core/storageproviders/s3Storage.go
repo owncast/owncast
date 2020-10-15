@@ -73,9 +73,9 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	utils.StartPerformanceMonitor(performanceMonitorKey)
 
 	// Upload the segment
-	_, error := s.Save(localFilePath, 0)
-	if error != nil {
-		log.Errorln(error)
+	_, err := s.Save(localFilePath, 0)
+	if err != nil {
+		log.Errorln(err)
 		return
 	}
 	averagePerformance := utils.GetAveragePerformance(performanceMonitorKey)
@@ -92,10 +92,10 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	// so the segments and the HLS playlist referencing
 	// them are in sync.
 	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
-	_, error = s.Save(playlistPath, 0)
-	if error != nil {
+	_, err = s.Save(playlistPath, 0)
+	if err != nil {
 		_queuedPlaylistUpdates[playlistPath] = playlistPath
-		if pErr, ok := error.(*os.PathError); ok {
+		if pErr, ok := err.(*os.PathError); ok {
 			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
 			return
 		}
@@ -108,9 +108,9 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// to make sure we're not refering to files in a playlist that don't
 	// yet exist.  See SegmentWritten.
 	if _, ok := _queuedPlaylistUpdates[localFilePath]; ok {
-		_, error := s.Save(localFilePath, 0)
-		if error != nil {
-			log.Errorln(error)
+		_, err := s.Save(localFilePath, 0)
+		if err != nil {
+			log.Errorln(err)
 			_queuedPlaylistUpdates[localFilePath] = localFilePath
 		}
 		delete(_queuedPlaylistUpdates, localFilePath)
