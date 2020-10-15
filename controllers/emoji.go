@@ -15,13 +15,13 @@ import (
 
 // Make this path configurable if somebody has a valid reason
 // to need it to be.  The config is getting a bit bloated.
-const emojiPath = "/img/emoji" // Relative to webroot
+const emojiDir = "/img/emoji" // Relative to webroot
 
 //GetCustomEmoji returns a list of custom emoji via the API
 func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	emojiList := make([]models.CustomEmoji, 0)
 
-	fullPath := filepath.Join(config.WebRoot, emojiPath)
+	fullPath := filepath.Join(config.WebRoot, emojiDir)
 	files, err := ioutil.ReadDir(fullPath)
 	if err != nil {
 		log.Errorln(err)
@@ -34,8 +34,8 @@ func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	// the server to add emoji?
 	for _, f := range files {
 		name := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-		path := filepath.Join(emojiPath, f.Name())
-		singleEmoji := models.CustomEmoji{name, path}
+		emojiPath := filepath.Join(emojiDir, f.Name())
+		singleEmoji := models.CustomEmoji{name, emojiPath}
 		emojiList = append(emojiList, singleEmoji)
 	}
 

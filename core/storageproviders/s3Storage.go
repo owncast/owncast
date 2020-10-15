@@ -91,10 +91,10 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	// Upload the variant playlist for this segment
 	// so the segments and the HLS playlist referencing
 	// them are in sync.
-	playlist := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
-	_, error = s.Save(playlist, 0)
+	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
+	_, error = s.Save(playlistPath, 0)
 	if error != nil {
-		_queuedPlaylistUpdates[playlist] = playlist
+		_queuedPlaylistUpdates[playlistPath] = playlistPath
 		if pErr, ok := error.(*os.PathError); ok {
 			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
 			return
