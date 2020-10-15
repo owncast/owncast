@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/core/playlist"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -99,10 +100,6 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 			return
 		}
 	}
-
-	// If a segment file was successfully uploaded then we can delete
-	// it from the local filesystem.
-	os.Remove(localFilePath)
 }
 
 // VariantPlaylistWritten is called when a variant hls playlist is written
@@ -162,6 +159,8 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return "", fmt.Errorf("Giving up on %s", filePath)
 		}
 	}
+
+	ffmpeg.Cleanup(filepath.Dir(filePath))
 
 	return response.Location, nil
 }
