@@ -53,7 +53,6 @@ type videoSettings struct {
 	ChunkLengthInSeconds      int             `yaml:"chunkLengthInSeconds"`
 	StreamingKey              string          `yaml:"streamingKey"`
 	StreamQualities           []StreamQuality `yaml:"streamQualities"`
-	OfflineContent            string          `yaml:"offlineContent"`
 	HighestQualityStreamIndex int             `yaml:"-"`
 }
 

@@ -13,7 +13,6 @@ func getDefaults() config {
 	defaults.FFMpegPath = getDefaultFFMpegPath()
 	defaults.VideoSettings.ChunkLengthInSeconds = 4
 	defaults.Files.MaxNumberInPlaylist = 5
-	defaults.VideoSettings.OfflineContent = "static/offline.m4v"
 	defaults.YP.Enabled = false
 	defaults.YP.YPServiceURL = "https://yp.owncast.online"
 
