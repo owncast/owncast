@@ -84,7 +84,6 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 		if averagePerformance > float64(config.Config.GetVideoSegmentSecondsLength())*0.9 {
 			log.Warnln("Possible slow uploads: average upload S3 save duration", averagePerformance, "ms. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
 		}
-		log.Traceln(localFilePath, "uploaded to S3")
 	}
 
 	// Upload the variant playlist for this segment
