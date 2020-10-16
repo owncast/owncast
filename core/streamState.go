@@ -16,7 +16,11 @@ import (
 	"github.com/grafov/m3u8"
 )
 
-var _cleanupTimer *time.Timer
+// After the stream goes offline this timer fires a full cleanup after N min.
+var _offlineCleanupTimer *time.Timer
+
+// While a stream takes place cleanup old HLS content every N min.
+var _onlineCleanupTicker *time.Ticker
 
 //SetStreamAsConnected sets the stream as connected
 func SetStreamAsConnected() {
@@ -25,6 +29,8 @@ func SetStreamAsConnected() {
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
 
 	StopOfflineCleanupTimer()
+	startOnlineCleanupTimer()
+
 	if _yp != nil {
 		_yp.Start()
 	}
@@ -112,15 +118,16 @@ func SetStreamAsDisconnected() {
 	}
 
 	StartOfflineCleanupTimer()
+	stopOnlineCleanupTimer()
 }
 
 // StartOfflineCleanupTimer will fire a cleanup after n minutes being disconnected
 func StartOfflineCleanupTimer() {
-	_cleanupTimer = time.NewTimer(5 * time.Minute)
+	_offlineCleanupTimer = time.NewTimer(5 * time.Minute)
 	go func() {
 		for {
 			select {
-			case <-_cleanupTimer.C:
+			case <-_offlineCleanupTimer.C:
 				// Reset the session count since the session is over
 				_stats.SessionMaxViewerCount = 0
 				resetDirectories()
@@ -132,7 +139,25 @@ func StartOfflineCleanupTimer() {
 
 // StopOfflineCleanupTimer will stop the previous cleanup timer
 func StopOfflineCleanupTimer() {
-	if _cleanupTimer != nil {
-		_cleanupTimer.Stop()
+	if _offlineCleanupTimer != nil {
+		_offlineCleanupTimer.Stop()
+	}
+}
+
+func startOnlineCleanupTimer() {
+	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-_onlineCleanupTicker.C:
+				ffmpeg.CleanupOldContent(config.PrivateHLSStoragePath)
+			}
+		}
+	}()
+}
+
+func stopOnlineCleanupTimer() {
+	if _onlineCleanupTicker != nil {
+		_onlineCleanupTicker.Stop()
 	}
 }

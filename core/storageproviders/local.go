@@ -2,6 +2,7 @@ package storageproviders
 
 import (
 	"path/filepath"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -13,9 +14,22 @@ import (
 type LocalStorage struct {
 }
 
+// Cleanup old public HLS content every N min from the webroot.
+var _onlineCleanupTicker *time.Ticker
+
 // Setup configures this storage provider
 func (s *LocalStorage) Setup() error {
-	// no-op
+	// NOTE: This cleanup timer will have to be disabled to support recordings in the future
+	// as all HLS segments have to be publicly available on disk to keep a recording of them.
+	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-_onlineCleanupTicker.C:
+				ffmpeg.CleanupOldContent(config.PublicHLSStoragePath)
+			}
+		}
+	}()
 	return nil
 }
 
@@ -49,15 +63,7 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 		newPath = filepath.Join(config.WebRoot, filePath)
 	}
 
-	// Move video segments to the destination directory.
-	// Copy playlists to the destination directory so they can still be referenced in
-	// the private hls working directory.
-	if filepath.Ext(filePath) == ".m3u8" {
-		utils.Copy(filePath, newPath)
-	} else {
-		utils.Move(filePath, newPath)
-		ffmpeg.Cleanup(filepath.Dir(newPath))
-	}
+	utils.Copy(filePath, newPath)
 
 	return newPath, nil
 }

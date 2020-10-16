@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/core/playlist"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -159,8 +158,6 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return "", fmt.Errorf("Giving up on %s", filePath)
 		}
 	}
-
-	ffmpeg.Cleanup(filepath.Dir(filePath))
 
 	return response.Location, nil
 }
