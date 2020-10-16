@@ -74,10 +74,10 @@ func SetStreamAsDisconnected() {
 
 		if utils.DoesFileExists(playlistFilePath) {
 			f, err := os.OpenFile(playlistFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
-			defer f.Close()
 			if err != nil {
 				log.Errorln(err)
 			}
+			defer f.Close()
 
 			playlist, _, err := m3u8.DecodeFrom(bufio.NewReader(f), true)
 			variantPlaylist := playlist.(*m3u8.MediaPlaylist)

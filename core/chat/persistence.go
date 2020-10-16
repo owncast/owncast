@@ -50,6 +50,9 @@ func createTable(db *sql.DB) {
 
 func addMessage(message models.ChatMessage) {
 	tx, err := _db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
 	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)

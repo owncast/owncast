@@ -69,9 +69,9 @@ func (v *VideoSize) getString() string {
 
 func (t *Transcoder) Stop() {
 	log.Traceln("Transcoder STOP requested.")
-	error := _commandExec.Process.Kill()
-	if error != nil {
-		log.Errorln(error)
+	err := _commandExec.Process.Kill()
+	if err != nil {
+		log.Errorln(err)
 	}
 }
 

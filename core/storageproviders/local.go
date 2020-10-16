@@ -40,9 +40,9 @@ func (s *LocalStorage) SegmentWritten(localFilePath string) {
 
 // VariantPlaylistWritten is called when a variant hls playlist is written
 func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
-	_, error := s.Save(localFilePath, 0)
-	if error != nil {
-		log.Errorln(error)
+	_, err := s.Save(localFilePath, 0)
+	if err != nil {
+		log.Errorln(err)
 		return
 	}
 }

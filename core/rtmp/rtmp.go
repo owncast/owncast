@@ -34,8 +34,8 @@ func Start() {
 	port := 1935
 	s := rtmp.NewServer()
 	var lis net.Listener
-	var error error
-	if lis, error = net.Listen("tcp", fmt.Sprintf(":%d", port)); error != nil {
+	var err error
+	if lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port)); err != nil {
 		return
 	}
 
@@ -46,8 +46,8 @@ func Start() {
 
 	s.HandleConn = HandleConn
 
-	if error != nil {
-		log.Panicln(error)
+	if err != nil {
+		log.Panicln(err)
 	}
 	log.Infof("RTMP server is listening for incoming stream on port: %d", port)
 
