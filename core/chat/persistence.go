@@ -84,7 +84,7 @@ func getChatHistory() []models.ChatMessage {
 		err = rows.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
 		if err != nil {
 			log.Debugln(err)
-			log.Error("There is an problem with the chat database.  Please delete chat.db and restart Owncast.")
+			log.Error("There is a problem with the chat database.  Please delete chat.db and restart Owncast.")
 			break
 		}
 
