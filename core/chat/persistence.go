@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
-	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -83,7 +83,9 @@ func getChatHistory() []models.ChatMessage {
 
 		err = rows.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
 		if err != nil {
-			log.Fatal(err)
+			log.Debugln(err)
+			log.Error("There is an problem with the chat database.  Please delete chat.db and restart Owncast.")
+			break
 		}
 
 		message := models.ChatMessage{}
