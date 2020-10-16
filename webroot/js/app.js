@@ -348,7 +348,10 @@ export default class App extends Component {
     } = logo;
 
     const bgLogo = { backgroundImage: `url(${smallLogo})` };
-    const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
+    const bgLogoLarge = {
+      backgroundImage: `url(${largeLogo})`,
+      backgroundSize: 'contain',
+    };
 
     const tagList = (tags !== null && tags.length > 0)
       ? tags.map(
