@@ -18,24 +18,27 @@ export default class ChatMessageView extends Component {
     const formattedTimestamp = formatTimestamp(timestamp);
 
     const isSystemMessage = message.type === SOCKET_MESSAGE_TYPES.SYSTEM;
-    const authorColor = textColorForString(author);
-    const backgroundColor = messageBubbleColorForString(author);
-    const authorTextColor = isSystemMessage ? { color: 'white' } : { color: authorColor };
+
+    const authorTextColor = isSystemMessage
+      ? { color: '#fff' }
+      : { color: textColorForString(author) };
     const backgroundStyle = isSystemMessage
       ? { backgroundColor: '#667eea' }
-      : { backgroundColor: backgroundColor };
-    const classString = isSystemMessage ? getSystemMessageClassString() : getChatMessageClassString();
+      : { backgroundColor: messageBubbleColorForString(author) };
+    const messageClassString = isSystemMessage
+      ? getSystemMessageClassString()
+      : getChatMessageClassString();
 
     return html`
       <div
         style=${backgroundStyle}
-        class=${classString}
+        class=${messageClassString}
         title=${formattedTimestamp}
       >
         <div class="message-content break-words w-full">
           <div
             style=${authorTextColor}
-            class="message-author text-white font-bold"
+            class="message-author font-bold"
           >
             ${author}
           </div>
