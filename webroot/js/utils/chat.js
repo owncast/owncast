@@ -64,7 +64,6 @@ export function extraUserNamesFromMessageHistory(messages) {
   return list;
 }
 
-
 // utils from https://gist.github.com/nathansmith/86b5d4b23ed968a92fd4
 /*
   You would call this after getting an element's
