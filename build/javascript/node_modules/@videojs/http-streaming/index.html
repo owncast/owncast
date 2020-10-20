@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>videojs-http-streaming Demo</title>
+  <link rel="icon" href="logo.svg">
+  <link href="node_modules/video.js/dist/video-js.css" rel="stylesheet">
+  <link href="node_modules/videojs-http-source-selector/dist/videojs-http-source-selector.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .info {
+      background-color: #eee;
+      border: thin solid #333;
+      border-radius: 3px;
+      padding: 0 5px;
+      margin: 20px 0;
+    }
+    label {
+      display: block;
+      width: 700px;
+      width: fit-content;
+      margin-top: 4px;
+    }
+    .options label {
+      background-color: hsl(0, 0%, 90%);
+      padding: 0.25em;
+      margin: 0.25em;
+    }
+    input[type=url], select {
+      min-width: 600px;
+    }
+    h3 {
+      margin-bottom: 5px;
+    }
+    #keysystems {
+      display: block;
+    }
+  </style>
+
+</head>
+<body>
+  <div id="player-fixture">
+  </div>
+  <label>Representations</label>
+  <select id='representations'></select>
+  <h3>Options</h3>
+
+  <div class="options">
+    <label>
+      <input id=minified type="checkbox">
+      Minified VHS (reloads player)
+    </label>
+    <label>
+      <input id=liveui type="checkbox">
+      Enable the live UI (reloads player)
+    </label>
+    <label>
+      <input id=debug type="checkbox">
+      Debug Logging
+    </label>
+    <label>
+      <input id=muted type="checkbox">
+      Muted
+    </label>
+    <label>
+      <input id=autoplay type="checkbox">
+      Autoplay
+    </label>
+    <label>
+      <input id=partial type="checkbox">
+      Handle Partial (reloads player)
+    </label>
+  </div>
+
+  <h3>Load a URL</h3>
+  <label>Url:</label>
+  <input id=url type=url>
+  <label>Type: (uses url extension if blank, usually application/x-mpegURL or application/dash+xml)</label>
+  <input id=type type=text>
+  <label>Optional Keystems JSON:</label>
+  <textarea id=keysystems cols=100 rows=5></textarea>
+  <button id=load-url type=button>Load</button>
+  <h3>Load a Source</h3>
+  <select id=load-source>
+    <optgroup label="hls">
+    </optgroup>
+    <optgroup label="dash">
+    </optgroup>
+    <optgroup label="drm">
+    </optgroup>
+    <optgroup label="live">
+    </optgroup>
+    <optgroup label="low latency live">
+    </optgroup>
+  </select>
+  <h3>Navigation</h3>
+  <ul>
+    <li><a href="test/debug.html">Run unit tests in browser.</a></li>
+    <li><a href="docs/api/">Read generated docs.</a></li>
+    <li><a href="utils/stats/">Stats</a></li>
+  </ul>
+
+  <script src="scripts/index-demo-page.js"></script>
+  <script>
+    window.startDemo(function(player) {
+      // do something with setup player
+    });
+  </script>
+  </body>
+</html>
