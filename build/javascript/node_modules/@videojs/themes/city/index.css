@@ -1,0 +1,145 @@
+.vjs-theme-city {
+  --vjs-theme-city--primary: #bf3b4d;
+  --vjs-theme-city--secondary: #fff;
+}
+
+.vjs-theme-city .vjs-control-bar {
+  height: 70px;
+  padding-top: 20px;
+  background: none;
+  background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
+}
+
+.vjs-theme-city .vjs-button > .vjs-icon-placeholder::before {
+  line-height: 50px;
+}
+
+.vjs-theme-city .vjs-play-progress::before {
+  display: none;
+}
+
+.vjs-theme-city .vjs-progress-control {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.vjs-theme-city .vjs-progress-control .vjs-progress-holder {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+}
+
+.vjs-theme-city .vjs-play-progress {
+  background-color: var(--vjs-theme-city--primary);
+}
+
+.vjs-theme-city .vjs-remaining-time {
+  order: 1;
+  line-height: 50px;
+  flex: 3;
+  text-align: left;
+}
+
+.vjs-theme-city .vjs-play-control {
+  order: 2;
+  flex: 8;
+  font-size: 1.75em;
+}
+
+.vjs-theme-city .vjs-volume-panel,
+.vjs-theme-city .vjs-picture-in-picture-control,
+.vjs-theme-city .vjs-fullscreen-control {
+  order: 3;
+  flex: 1;
+}
+
+/* Volume stuff */
+.vjs-theme-city .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal {
+  height: 100%;
+}
+
+.vjs-theme-city .vjs-mute-control {
+  display: none;
+}
+
+.vjs-theme-city .vjs-volume-panel {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  padding-top: 1.5em;
+}
+
+.vjs-theme-city .vjs-volume-panel,
+.vjs-theme-city .vjs-volume-panel:hover,
+.vjs-theme-city .vjs-volume-panel.vjs-volume-panel-horizontal:hover,
+.vjs-theme-city .vjs-volume-panel:focus .vjs-volume-control.vjs-volume-horizontal,
+.vjs-theme-city .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal,
+.vjs-theme-city .vjs-volume-panel:active .vjs-volume-control.vjs-volume-horizontal,
+.vjs-theme-city .vjs-volume-panel.vjs-volume-panel-horizontal:hover,
+.vjs-theme-city .vjs-volume-bar.vjs-slider-horizontal {
+  width: 3em;
+}
+
+.vjs-theme-city .vjs-volume-level::before {
+  font-size: 1em;
+}
+
+.vjs-theme-city .vjs-volume-panel .vjs-volume-control {
+  opacity: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.vjs-theme-city .vjs-volume-bar {
+  background-color: transparent;
+  margin: 0;
+}
+
+.vjs-theme-city .vjs-slider-horizontal .vjs-volume-level {
+  height: 100%;
+}
+
+.vjs-theme-city .vjs-volume-bar.vjs-slider-horizontal {
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 100%;
+}
+
+.vjs-theme-city .vjs-volume-bar::before {
+  content: '';
+  z-index: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0px;
+  left: 0;
+
+  border-style: solid;
+  border-width: 0 0 1.75em 3em;
+  border-color: transparent transparent rgba(255, 255, 255, 0.25) transparent;
+}
+
+.vjs-theme-city .vjs-volume-level {
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.vjs-theme-city .vjs-volume-level::before {
+  content: '';
+  z-index: 1;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  border-style: solid;
+  border-width: 0 0 1.75em 3em;
+  border-color: transparent transparent var(--vjs-theme-city--secondary) transparent;
+}
