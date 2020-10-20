@@ -1,0 +1,166 @@
+/* Because of the SVG inliner, these don't work for icons */
+.vjs-theme-forest {
+  --vjs-theme-forest--primary: #6fb04e;
+  --vjs-theme-forest--secondary: #fff;
+}
+
+/* Big play Button */
+.vjs-theme-forest:hover .vjs-big-play-button,
+.vjs-theme-forest.vjs-big-play-button:focus {
+  background-color: transparent;
+  background: svg-load('icons/play-btn.svg', fill=#6fb04e);
+}
+
+.vjs-theme-forest .vjs-big-play-button {
+  width: 88px;
+  height: 88px;
+  background: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background: svg-load('icons/play-btn.svg', fill=#fff);
+  border: none;
+  top: 50%;
+  left: 50%;
+  margin-top: -44px;
+  margin-left: -44px;
+  color: purple;
+}
+
+.vjs-theme-forest .vjs-big-play-button .vjs-icon-placeholder {
+  display: none;
+}
+
+/* Control Bar */
+.vjs-theme-forest .vjs-button > .vjs-icon-placeholder::before {
+  line-height: 1.55;
+}
+
+.vjs-theme-forest .vjs-control:not(.vjs-disabled, .vjs-time-control):hover {
+  color: var(--vjs-theme-forest--primary);
+  text-shadow: var(--vjs-theme-forest--secondary) 1px 0 10px;
+}
+
+.vjs-theme-forest .vjs-control-bar {
+  background: none;
+  margin-bottom: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+/* Play Button */
+.vjs-theme-forest .vjs-play-control {
+  font-size: 0.8em;
+}
+
+.vjs-theme-forest .vjs-play-control .vjs-icon-placeholder:before {
+  background-color: var(--vjs-theme-forest--secondary);
+  height: 1.5em;
+  width: 1.5em;
+  margin-top: 0.2em;
+  border-radius: 1em;
+  color: var(--vjs-theme-forest--primary);
+}
+
+.vjs-theme-forest .vjs-play-control:hover .vjs-icon-placeholder:before {
+  background-color: var(--vjs-theme-forest--primary);
+  color: var(--vjs-theme-forest--secondary);
+}
+
+/* Volume stuff */
+.vjs-theme-forest .vjs-mute-control {
+  display: none;
+}
+
+.vjs-theme-forest .vjs-volume-panel {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  padding-top: 0.3em;
+}
+
+.vjs-theme-forest .vjs-volume-panel,
+.vjs-theme-forest .vjs-volume-panel:hover,
+.vjs-theme-forest .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal,
+.vjs-theme-forest .vjs-volume-panel:active .vjs-volume-control.vjs-volume-horizontal,
+.vjs-theme-forest .vjs-volume-panel.vjs-volume-panel-horizontal:hover,
+.vjs-theme-forest .vjs-volume-bar.vjs-slider-horizontal {
+  width: 3em;
+}
+
+.vjs-theme-forest .vjs-volume-level::before {
+  font-size: 1em;
+}
+
+.vjs-theme-forest .vjs-volume-panel .vjs-volume-control {
+  opacity: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.vjs-theme-forest .vjs-volume-bar {
+  background-color: transparent;
+  margin: 0;
+}
+
+.vjs-theme-forest .vjs-slider-horizontal .vjs-volume-level {
+  height: 100%;
+}
+
+.vjs-theme-forest .vjs-volume-bar.vjs-slider-horizontal {
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 100%;
+}
+
+.vjs-theme-forest .vjs-volume-bar::before {
+  content: '';
+  z-index: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0px;
+  left: 0;
+
+  border-style: solid;
+  border-width: 0 0 2em 3em;
+  border-color: transparent transparent var(--vjs-theme-forest--primary) transparent;
+}
+
+.vjs-theme-forest .vjs-volume-level {
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.vjs-theme-forest .vjs-volume-level::before {
+  content: '';
+  z-index: 1;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  border-style: solid;
+  border-width: 0 0 2em 3em;
+  border-color: transparent transparent var(--vjs-theme-forest--secondary) transparent;
+}
+
+/* Progress Bar */
+.vjs-theme-forest .vjs-progress-control:hover .vjs-progress-holder {
+  font-size: 1em;
+}
+
+.vjs-theme-forest .vjs-play-progress::before {
+  display: none;
+}
+
+.vjs-theme-forest .vjs-progress-holder {
+  border-radius: 0.2em;
+  height: 0.5em;
+  margin: 0;
+}
+
+.vjs-theme-forest .vjs-play-progress,
+.vjs-theme-forest .vjs-load-progress,
+.vjs-theme-forest .vjs-load-progress div {
+  border-radius: 0.2em;
+}

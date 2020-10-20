@@ -1,0 +1,72 @@
+.vjs-theme-sea .vjs-big-play-button {
+  width: 103px;
+  height: 79px;
+  object-fit: contain;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: none;
+  margin: 0 auto;
+  line-height: 79px;
+  top: 50%;
+  left: 50%;
+  border-radius: 30px;
+  margin-top: -51.5px;
+  margin-left: -39.5px;
+}
+
+.vjs-theme-sea .vjs-control-bar {
+  height: 4em;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.vjs-theme-sea .vjs-button:hover {
+  color: #4176bc;
+  background: linear-gradient(to top, #d0ddee, #fff);
+}
+
+.vjs-theme-sea .vjs-button > .vjs-icon-placeholder::before {
+  line-height: 2.2;
+}
+
+.vjs-theme-sea .vjs-time-control {
+  line-height: 4em;
+}
+
+.vjs-theme-sea .vjs-volume-panel {
+  display: none;
+}
+
+.vjs-theme-sea .vjs-picture-in-picture-control {
+  display: none;
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-play-progress {
+  background-color: rgba(65, 118, 188, 0.9);
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-play-progress:before {
+  display: none;
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-slider {
+  background-color: rgba(65, 118, 188, 0.1);
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-load-progress div {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-progress-holder {
+  margin: 0;
+  height: 100%;
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-time-tooltip {
+  background-color: rgba(65, 118, 188, 0.5);
+  color: #fff;
+}
+
+.vjs-theme-sea .vjs-progress-control .vjs-mouse-display .vjs-time-tooltip {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #4176bc;
+}
+
