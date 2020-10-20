@@ -355,6 +355,7 @@ func (v *HLSVariant) getAudioQualityString() string {
 
 // AddVariant adds a new HLS variant to include in the output
 func (t *Transcoder) AddVariant(variant HLSVariant) {
+	variant.index = len(t.variants)
 	t.variants = append(t.variants, variant)
 }
 
