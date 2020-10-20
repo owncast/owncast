@@ -2,7 +2,7 @@ name: javascript-packages
 on:
   push:
     paths:
-      - build/javascript/package.json
+      - build/javascript/**
 
 jobs:
   run:
