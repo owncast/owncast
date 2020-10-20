@@ -1,5 +1,0 @@
-{
-  "allowCache": true,
-  "discontinuityStarts": [],
-  "segments": []
-}
