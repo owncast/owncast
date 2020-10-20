@@ -9,7 +9,7 @@
     "@videojs/themes": "^1.0.0",
     "htm": "^3.0.4",
     "preact": "^10.5.5",
-    "tailwindcss": "^1.9.4",
+    "tailwindcss": "^1.9.5",
     "video.js": "7.8.3",
     "@videojs/http-streaming": "2.2.0"
   },
