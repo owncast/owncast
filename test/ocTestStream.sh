@@ -39,6 +39,11 @@ do
   echo "file '$file'" >> list.txt
 done
 
-echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST...  ctl+c to exit"
+function finish {
+  rm list.txt
+}
+trap finish EXIT
+
+echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST.  Warning: If these files differ greatly in formats transitioning from one to another may not always work correctly...  ctl+c to exit"
 
 ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat -safe 0 -i list.txt -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -preset veryfast -acodec copy -f flv $DESTINATION_HOST
