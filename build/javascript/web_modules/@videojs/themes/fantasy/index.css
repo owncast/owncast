@@ -1,0 +1,116 @@
+.vjs-theme-fantasy {
+  --vjs-theme-fantasy--primary: #9f44b4;
+  --vjs-theme-fantasy--secondary: #fff;
+}
+
+.vjs-theme-fantasy .vjs-big-play-button {
+  width: 70px;
+  height: 70px;
+  background: none;
+  line-height: 70px;
+  font-size: 80px;
+  border: none;
+  top: 50%;
+  left: 50%;
+  margin-top: -35px;
+  margin-left: -35px;
+  color: var(--vjs-theme-fantasy--primary);
+}
+
+.vjs-theme-fantasy:hover .vjs-big-play-button,
+.vjs-theme-fantasy.vjs-big-play-button:focus {
+  background-color: transparent;
+  color: #fff;
+}
+
+.vjs-theme-fantasy .vjs-control-bar {
+  height: 54px;
+}
+
+.vjs-theme-fantasy .vjs-button > .vjs-icon-placeholder::before {
+  line-height: 54px;
+}
+
+.vjs-theme-fantasy .vjs-time-control {
+  line-height: 54px;
+}
+
+/* Play Button */
+.vjs-theme-fantasy .vjs-play-control {
+  font-size: 1.5em;
+  position: relative;
+}
+
+.vjs-theme-fantasy .vjs-volume-panel {
+  order: 4;
+}
+
+.vjs-theme-fantasy .vjs-volume-bar {
+  margin-top: 2.5em;
+}
+
+.vjs-theme-city .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal {
+  height: 100%;
+}
+
+.vjs-theme-fantasy .vjs-progress-control .vjs-progress-holder {
+  font-size: 1.5em;
+}
+
+.vjs-theme-fantasy .vjs-progress-control:hover .vjs-progress-holder {
+  font-size: 1.5em;
+}
+
+.vjs-theme-fantasy .vjs-play-control .vjs-icon-placeholder::before {
+  height: 1.3em;
+  width: 1.3em;
+  margin-top: 0.2em;
+  border-radius: 1em;
+  border: 3px solid var(--vjs-theme-fantasy--secondary);
+  top: 2px;
+  left: 9px;
+  line-height: 1.1;
+}
+
+.vjs-theme-fantasy .vjs-play-control:hover .vjs-icon-placeholder::before {
+  border: 3px solid var(--vjs-theme-fantasy--secondary);
+}
+
+.vjs-theme-fantasy .vjs-play-progress {
+  background-color: var(--vjs-theme-fantasy--primary);
+}
+
+.vjs-theme-fantasy .vjs-play-progress::before {
+  height: 0.8em;
+  width: 0.8em;
+  content: '';
+  background-color: var(--vjs-theme-fantasy--primary);
+  border: 4px solid var(--vjs-theme-fantasy--secondary);
+  border-radius: 0.8em;
+  top: -0.25em;
+}
+
+.vjs-theme-fantasy .vjs-progress-control {
+  font-size: 14px;
+}
+
+.vjs-theme-fantasy .vjs-fullscreen-control {
+  order: 6;
+}
+
+.vjs-theme-fantasy .vjs-remaining-time {
+  display: none;
+}
+
+/* Nyan version */
+.vjs-theme-fantasy.nyan .vjs-play-progress {
+  background: linear-gradient(to bottom, #fe0000 0%, #fe9a01 16.666666667%, #fe9a01 16.666666667%, #ffff00 33.332666667%, #ffff00 33.332666667%, #32ff00 49.999326667%, #32ff00 49.999326667%, #0099fe 66.6659926%, #0099fe 66.6659926%, #6633ff 83.33266%, #6633ff 83.33266%);
+}
+
+.vjs-theme-fantasy.nyan .vjs-play-progress::before {
+  height: 1.3em;
+  width: 1.3em;
+  background: svg-load('icons/nyan-cat.svg', fill=#fff) no-repeat;
+  border: none;
+  top: -0.35em;
+}
