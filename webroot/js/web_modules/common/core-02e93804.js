@@ -236,7 +236,7 @@ keyCode.isEventKey = function isEventKey(event, nameOrCode) {
       // check codes
       var foundNamedKey = codes[nameOrCode.toLowerCase()];
       if (foundNamedKey) { return foundNamedKey === keyCode; }
-
+    
       // check aliases
       var foundNamedKey = aliases[nameOrCode.toLowerCase()];
       if (foundNamedKey) { return foundNamedKey === keyCode; }
