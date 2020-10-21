@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Table } from 'antd';
+
 import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from '../utils/apis';
 
 export default function HardwareInfo() {
@@ -16,12 +18,10 @@ geo data looks like this
   const getInfo = async () => {
     try {
       const result = await fetchData(CONNECTED_CLIENTS);
-      console.log("================ result", result)
-
-      setClients({ ...result });
+      setClients(result);
 
     } catch (error) {
-      setClients({ ...clients, message: error.message });
+      console.log("==== error", error)
     }
   };
   
@@ -36,15 +36,46 @@ geo data looks like this
       clearInterval(getStatusIntervalId);
     }
   }, []);
-
+  
+  const columns = [
+    {
+      title: 'User name',
+      dataIndex: 'username',
+      key: 'username',
+      render: username => username || '-',
+      sorter: (a, b) => a.username - b.username,
+      sortDirections: ['descend', 'ascend'],  
+    },
+    {
+      title: 'Messages sent',
+      dataIndex: 'messageCount',
+      key: 'messageCount',
+      sorter: (a, b) => a.messageCount - b.messageCount,
+      sortDirections: ['descend', 'ascend'],  
+    },
+    {
+      title: 'Connected Time',
+      dataIndex: 'connectedAt',
+      key: 'connectedAt',
+      render: time => (Date.now() - (new Date(time).getTime())) / 1000 / 60,
+    },
+    {
+      title: 'User Agent',
+      dataIndex: 'userAgent',
+      key: 'userAgent', 
+    },
+    {
+      title: 'Location',
+      dataIndex: 'geo',
+      key: 'geo', 
+      render: geo => geo && `${geo.regionName}, ${geo.countryCode}`,
+    },
+  ];
+  
   return (
     <div>
       <h2>Connected Clients</h2>
-      <p>a table of info..</p>
-      <p>who's watching, how long they've been there, have they chatted? where they from?</p>
-      <div style={{border: '1px solid purple', height: '300px', width: '100%', overflow:'auto'}}>
-        {JSON.stringify(clients)}
-      </div>
+      <Table dataSource={clients} columns={columns} />;
     </div>
   );
 }
