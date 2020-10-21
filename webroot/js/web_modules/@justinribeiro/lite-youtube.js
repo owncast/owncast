@@ -193,6 +193,7 @@ class LiteYTEmbed extends HTMLElement {
                     if (this.domRefFrame.classList.contains('lyt-activated')) {
                         this.domRefFrame.classList.remove('lyt-activated');
                         this.shadowRoot.querySelector('iframe').remove();
+                        this.iframeLoaded = false;
                     }
                 }
                 break;
