@@ -118,7 +118,6 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
-    this.setPoster();
   }
 
   handleError(e) {
@@ -126,13 +125,6 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
-  }
-
-  setPoster() {
-    const cachebuster = Math.round(new Date().getTime() / 1000);
-    const poster = POSTER_THUMB + '?okhi=' + cachebuster;
-
-    this.vjsPlayer.poster(poster);
   }
 
   log(message) {

@@ -5,6 +5,7 @@ const html = htm.bind(h);
 import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/social-icons-list.js';
 import UsernameForm from './components/chat/username.js';
+import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
 import { secondsToHMMSS, hasTouchScreen, getOrientation } from './utils/helpers.js';
@@ -54,6 +55,7 @@ export default class App extends Component {
 
       playerActive: false, // player object is active
       streamOnline: false, // stream is active/online
+      isPlaying: false, // player is actively playing video
 
       // status
       streamStatusMessage: MESSAGE_OFFLINE,
@@ -191,12 +193,7 @@ export default class App extends Component {
       // stream has just flipped offline.
       this.handleOfflineMode();
     }
-    if (status.online) {
-      // only do this if video is paused, so no unnecessary img fetches
-      if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
-        this.player.setPoster();
-      }
-    }
+
     this.setState({
       viewerCount,
       lastConnectTime,
@@ -211,7 +208,9 @@ export default class App extends Component {
   }
 
   handlePlayerPlaying() {
-    // do something?
+    this.setState({
+      isPlaying: true,
+    });
   }
 
   // likely called some time after stream status has gone offline.
@@ -219,6 +218,7 @@ export default class App extends Component {
   handlePlayerEnded() {
     this.setState({
       playerActive: false,
+      isPlaying: false,
     });
   }
 
@@ -320,6 +320,7 @@ export default class App extends Component {
       chatInputEnabled,
       configData,
       displayChat,
+      isPlaying,
       orientation,
       playerActive,
       streamOnline,
@@ -368,7 +369,6 @@ export default class App extends Component {
 
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
-
     const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
@@ -381,6 +381,10 @@ export default class App extends Component {
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
       'touch-screen': this.hasTouchScreen,
     });
+
+    const poster = isPlaying ? null : html`
+      <${VideoPoster} offlineImage=${largeLogo} active=${streamOnline} />
+    `;
 
     return html`
       <div
@@ -429,7 +433,6 @@ export default class App extends Component {
           <div
             id="video-container"
             class="flex owncast-video-container bg-black w-full bg-center bg-no-repeat flex flex-col items-center justify-start"
-            style=${bgLogoLarge}
           >
             <video
               class="video-js vjs-big-play-centered display-block w-full h-full"
@@ -438,6 +441,7 @@ export default class App extends Component {
               controls
               playsinline
             ></video>
+            ${poster}
           </div>
 
           <section

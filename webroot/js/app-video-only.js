@@ -2,6 +2,7 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
+import VideoPoster from './components/video-poster.js';
 import { OwncastPlayer } from './components/player.js';
 
 import {
@@ -27,6 +28,8 @@ export default class VideoOnly extends Component {
 
       playerActive: false, // player object is active
       streamOnline: false,  // stream is active/online
+
+      isPlaying: false,
 
       //status
       streamStatusMessage: MESSAGE_OFFLINE,
@@ -141,12 +144,6 @@ export default class VideoOnly extends Component {
       // stream has just flipped offline.
       this.handleOfflineMode();
     }
-    if (status.online) {
-      // only do this if video is paused, so no unnecessary img fetches
-      if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
-        this.player.setPoster();
-      }
-    }
     this.setState({
       viewerCount,
       streamOnline: online,
@@ -160,7 +157,9 @@ export default class VideoOnly extends Component {
   }
 
   handlePlayerPlaying() {
-    // do something?
+    this.setState({
+      isPlaying: true,
+    });
   }
 
   // likely called some time after stream status has gone offline.
@@ -168,6 +167,7 @@ export default class VideoOnly extends Component {
   handlePlayerEnded() {
     this.setState({
       playerActive: false,
+      isPlaying: false,
     });
   }
 
@@ -212,29 +212,26 @@ export default class VideoOnly extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
+      isPlaying,
     } = state;
 
     const {
-      version: appVersion,
       logo = {},
-      socialHandles = [],
-      name: streamerName,
-      summary,
-      tags = [],
-      title,
     } = configData;
-    const { small: smallLogo = TEMP_IMAGE, large: largeLogo = TEMP_IMAGE } = logo;
-
-    const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
+    const { large: largeLogo = TEMP_IMAGE } = logo;
+    const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
     const mainClass = playerActive ? 'online' : '';
+
+    const poster = isPlaying ? null : html`
+      <${VideoPoster} offlineImage=${largeLogo} active=${streamOnline} />
+    `;
     return (
       html`
         <main class=${mainClass}>
           <div
             id="video-container"
             class="flex owncast-video-container bg-black w-full bg-center bg-no-repeat flex flex-col items-center justify-start"
-            style=${bgLogoLarge}
           >
             <video
               class="video-js vjs-big-play-centered display-block w-full h-full"
@@ -243,9 +240,14 @@ export default class VideoOnly extends Component {
               controls
               playsinline
             ></video>
+            ${poster}
           </div>
 
-          <section id="stream-info" aria-label="Stream status" class="flex text-center flex-row justify-between items-center font-mono py-2 px-8 bg-gray-900 text-indigo-200">
+          <section
+            id="stream-info"
+            aria-label="Stream status"
+            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid ${streamInfoClass}"
+          >
             <span>${streamStatusMessage}</span>
             <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
           </section>
