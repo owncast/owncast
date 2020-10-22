@@ -168,23 +168,3 @@
 /* MESSAGE TEXT CONTENT */
 /* MESSAGE TEXT CONTENT */
 
-/* Animation time for crossfading between poster thumbs */
-.custom-thumbnail-image {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.custom-thumbnail-image_hidden {
-  opacity: 0;
-}
-
-.custom-thumbnail-image_visible {
-  opacity: 1;
-}
