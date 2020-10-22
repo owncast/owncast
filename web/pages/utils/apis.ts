@@ -50,7 +50,6 @@ export async function fetchData(url) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);
     }
-
     const json = await response.json();
     return json;
   } catch (error) {

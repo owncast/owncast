@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BROADCASTER, fetchData, FETCH_INTERVAL } from './utils/apis';
-import Main from './home';
+import MainLayout from './components/main-layout';
+import Home from './home';
 
 export default function Admin() {
   const [broadcasterStatus, setBroadcasterStatus] = useState({});
@@ -35,6 +36,8 @@ export default function Admin() {
 
   
   return (
-    <Main {...broadcasterStatus} />
+    <MainLayout {...broadcasterStatus} >
+      <Home />
+    </MainLayout>
   );
 }

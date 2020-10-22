@@ -3,9 +3,6 @@ import { Table } from 'antd';
 
 import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from '../utils/apis';
 
-export default function HardwareInfo() {
-  const [clients, setClients] = useState({});
-
 /*
 geo data looks like this
   "geo": {
@@ -15,6 +12,8 @@ geo data looks like this
   }
 */
 
+export default function HardwareInfo() {
+  const [clients, setClients] = useState([]);
   const getInfo = async () => {
     try {
       const result = await fetchData(CONNECTED_CLIENTS);
@@ -72,6 +71,7 @@ geo data looks like this
     },
   ];
   
+  console.log({clients})
   return (
     <div>
       <h2>Connected Clients</h2>
