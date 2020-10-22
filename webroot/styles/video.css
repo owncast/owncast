@@ -30,6 +30,12 @@ video.vjs-tech:not([src]) {
 }
 
 
+#oc-custom-poster {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 /* Animation time for crossfading between poster thumbs */
 .custom-thumbnail-image {
   background-size: contain;
@@ -44,11 +50,11 @@ video.vjs-tech:not([src]) {
   transition: opacity 0.5s;
 }
 
-.custom-thumbnail-image_hidden {
+.custom-thumbnail-image.hidden {
   opacity: 0;
 }
 
-.custom-thumbnail-image_visible {
+.custom-thumbnail-image.visible {
   opacity: 1;
 }
 

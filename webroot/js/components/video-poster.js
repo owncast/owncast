@@ -75,48 +75,52 @@ export default class VideoPoster extends Component {
   }
 
   render() {
+    const { url, oldUrl, flipped } = this.state;
+    console.log({ url, oldUrl, flipped }, this.props)
     return html`
-      <div
-        id="oc-custom-poster"
-        style=${{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden',
-        }}
-      >
-        ${this.secondaryImageView(
-          !this.state.flipped ? this.state.oldUrl : this.state.url
-        )}
-        ${this.primaryImageView(
-          this.state.flipped ? this.state.oldUrl : this.state.url,
-          !this.state.flipped
-        )}
+      <div id="oc-custom-poster">
+        <${ThumbImage} url=${!flipped ? oldUrl : url } />
+        <${ThumbImage} url=${flipped ? oldUrl : url } visible=${!flipped} />
       </div>
     `;
   }
 
-  secondaryImageView(url) {
-    return html` ${this.imageLayer(url, true)} `;
-  }
+  // secondaryImageView(url) {
+  //   return html` ${this.imageLayer(url, true)} `;
+  // }
 
-  primaryImageView(url, visible) {
-    return html` ${this.imageLayer(url, visible)} `;
-  }
+  // primaryImageView(url, visible) {
+  //   return html` ${this.imageLayer(url, visible)} `;
+  // }
 
-  imageLayer(url, visible) {
-    if (!url) {
-      return null;
-    }
+  // imageLayer(url, visible) {
+  //   if (!url) {
+  //     return null;
+  //   }
 
-    return html`
-      <div
-        class="custom-thumbnail-image"
-        style=${{
-          opacity: visible ? 1.0 : 0,
-          'background-image': `url(${url})`,
-        }}
-      />
-    `;
+  //   return html`
+  //     <div
+  //       class="custom-thumbnail-image"
+  //       style=${{
+  //         opacity: visible ? 1.0 : 0,
+  //         'background-image': `url(${url})`,
+  //       }}
+  //     />
+  //   `;
+  // }
+}
+
+function ThumbImage({ url, visible }) {
+  if (!url) {
+    return null;
   }
+  return html`
+    <div
+      class="custom-thumbnail-image"
+      style=${{
+        opacity: visible ? 1.0 : 0,
+        'background-image': `url(${url})`,
+      }}
+    />
+  `;
 }
