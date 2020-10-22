@@ -1,0 +1,28 @@
+name: javascript-packages
+on:
+  push:
+    paths:
+      - openapi.yaml
+
+jobs:
+  run:
+    name: Generate API Documentation
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout repo
+          uses: actions/checkout@v2
+
+        - name: Run redoc on openapi.yaml
+          run: |
+            npx redoc-cli bundle openapi.yaml -o doc/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}
+            npm run build
+
+        - name: Commit changes
+          uses: EndBug/add-and-commit@v5
+          with:
+            author_name: Owncast
+            author_email: owncast@owncast.online
+            message: "Commit updated API documentation"
+            add: "doc/api/index.html"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
