@@ -17,13 +17,11 @@ import (
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
 
 var (
-	//IsConnected whether there is a connection or not
-	_isConnected = false
+	_hasInboundRTMPConnection = false
 )
 
 var _pipe *os.File
@@ -61,31 +59,6 @@ func Start() {
 	}
 }
 
-func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
-	data, err := getInboundDetailsFromMetadata(t.DebugFields())
-	if err != nil {
-		log.Errorln(err)
-		return
-	}
-
-	broadcaster := models.Broadcaster{
-		RemoteAddr: remoteAddr,
-		Time:       time.Now(),
-		StreamDetails: models.InboundStreamDetails{
-			Width:          data.Width,
-			Height:         data.Height,
-			VideoBitrate:   int(data.VideoBitrate),
-			VideoCodec:     getVideoCodec(data.VideoCodec),
-			VideoFramerate: data.VideoFramerate,
-			AudioBitrate:   int(data.AudioBitrate),
-			AudioCodec:     getAudioCodec(data.AudioCodec),
-			Encoder:        data.Encoder,
-		},
-	}
-
-	core.SetBroadcaster(broadcaster)
-}
-
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
@@ -94,7 +67,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		}
 	}
 
-	if _isConnected {
+	if _hasInboundRTMPConnection {
 		log.Errorln("stream already running; can not overtake an existing stream")
 		nc.Close()
 		return
@@ -113,7 +86,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	pipePath := utils.GetTemporaryPipePath()
 	syscall.Mkfifo(pipePath, 0666)
 
-	_isConnected = true
+	_hasInboundRTMPConnection = true
 	core.SetStreamAsConnected()
 	_rtmpConnection = nc
 
@@ -126,7 +99,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	w := flv.NewMuxer(f)
 
 	for {
-		if !_isConnected {
+		if !_hasInboundRTMPConnection {
 			break
 		}
 
@@ -147,7 +120,7 @@ func handleDisconnect(conn net.Conn) {
 	log.Infoln("RTMP disconnected.")
 	conn.Close()
 	_pipe.Close()
-	_isConnected = false
+	_hasInboundRTMPConnection = false
 }
 
 // Disconnect will force disconnect the current inbound RTMP connection.
@@ -158,10 +131,4 @@ func Disconnect() {
 
 	log.Infoln("Inbound stream disconnect requested.")
 	handleDisconnect(_rtmpConnection)
-}
-
-//IsConnected gets whether there is an rtmp connection or not
-//this is only a getter since it is controlled by the rtmp handler
-func IsConnected() bool {
-	return _isConnected
 }
