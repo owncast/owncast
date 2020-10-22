@@ -15,7 +15,6 @@ jobs:
         - name: Run redoc on openapi.yaml
           run: |
             npx redoc-cli bundle openapi.yaml -o doc/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}'
-            npm run build
 
         - name: Commit changes
           uses: EndBug/add-and-commit@v5

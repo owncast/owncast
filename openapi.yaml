@@ -122,7 +122,7 @@ components:
           example: "<p>This page is <strong>super</strong> cool!"
         version:
           type: string
-          example: Owncast v0.0.2-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
+          example: Owncast v0.0.3-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
 
     YP:
       type: object
