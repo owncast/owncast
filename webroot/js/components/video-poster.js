@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 import { TEMP_IMAGE } from '../utils/constants.js';
 
-const REFRESH_INTERVAL = 5000;
+const REFRESH_INTERVAL = 15000;
 const POSTER_BASE_URL = '/thumbnail.jpg';
 
 export default class VideoPoster extends Component {
