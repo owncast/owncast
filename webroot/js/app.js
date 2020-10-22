@@ -369,7 +369,6 @@ export default class App extends Component {
 
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
-    const poster = streamOnline ? '/thumbnail.jpg' : largeLogo;
     const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
@@ -438,10 +437,7 @@ export default class App extends Component {
               controls
               playsinline
             ></video>
-            <${VideoPoster}
-              src=${poster}
-              active=${!isPlaying && streamOnline}
-            />
+            <${VideoPoster} offlineImage=${largeLogo} active=${!isPlaying && streamOnline} />
           </div>
 
           <section

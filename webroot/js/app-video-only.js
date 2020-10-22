@@ -147,7 +147,7 @@ export default class VideoOnly extends Component {
     if (status.online) {
       // only do this if video is paused, so no unnecessary img fetches
       if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
-        this.player.setPoster();
+        // this.player.setPoster();
       }
     }
     this.setState({
@@ -228,7 +228,6 @@ export default class VideoOnly extends Component {
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
     const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
-    const poster = streamOnline ? '/thumbnail.jpg' : largeLogo;
 
     const mainClass = playerActive ? 'online' : '';
     return (
@@ -246,10 +245,7 @@ export default class VideoOnly extends Component {
               controls
               playsinline
             ></video>
-            <${VideoPoster}
-              src=${poster}
-              active=${!isPlaying && streamOnline}
-            />
+            <${VideoPoster} offlineImage=${largeLogo} active=${!isPlaying && streamOnline} />
           </div>
 
           <section

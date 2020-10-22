@@ -2,7 +2,10 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
-var refreshTimer;
+import { TEMP_IMAGE } from '../utils/constants.js';
+
+const REFRESH_INTERVAL = 5000;
+const POSTER_BASE_URL = '/thumbnail.jpg';
 
 export default class VideoPoster extends Component {
   constructor(props) {
@@ -11,103 +14,88 @@ export default class VideoPoster extends Component {
     this.state = {
       // flipped is the state of showing primary/secondary image views
       flipped: false,
-
-      // url is the currently displayed image url
-      url: this.props.src,
-
-      // active states if the refresh timer is active
-      active: false,
+      oldUrl: TEMP_IMAGE,
+      url: TEMP_IMAGE,
     };
-  }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.src !== prevProps.src) {
-      this.setState(
-        {
-          url: this.props.src,
-          oldUrl: this.props.src,
-          flipped: false,
-        },
-        () => {
-          if (this.props.active && !this.state.active) {
-            this.startRefreshTimer();
-          } else if (!this.props.active && this.state.active) {
-            this.stopRefreshTimer();
-          }
-        }
-      );
+    this.refreshTimer = null;
+    this.startRefreshTimer = this.startRefreshTimer.bind(this);
+    this.fire = this.fire.bind(this);
+    this.setLoaded = this.setLoaded.bind(this);
+  }
+  componentDidMount() {
+    if (this.props.active) {
+      this.fire();
+      this.startRefreshTimer();
     }
+  }
+  shouldComponentUpdate(prevProps, prevState) {
+    return this.props.active !== prevProps.active ||
+      this.props.offlineImage !== prevProps.offlineImage ||
+      this.state.url !== prevState.url ||
+      this.state.oldUrl !== prevState.oldUrl;
+  }
+  componentDidUpdate(prevProps) {
+    const { active } = this.props;
+    const { active: prevActive } = prevProps;
+
+    if (active && !prevActive) {
+      this.startRefreshTimer();
+    } else if (!active && prevActive) {
+      this.stopRefreshTimer();
+    }
+  }
+  componentWillUnmount() {
+    this.stopRefreshTimer();
   }
 
   startRefreshTimer() {
-    this.setState({ active: true });
-    clearInterval(refreshTimer);
-
-    // Download a new copy of the image every n seconds
-    const refreshInterval = 15000;
-    refreshTimer = setInterval(() => {
-      this.fire();
-    }, refreshInterval);
-
+    this.stopRefreshTimer();
     this.fire();
+    // Load a new copy of the image every n seconds
+    this.refreshTimer = setInterval(this.fire, REFRESH_INTERVAL);
   }
 
+  // load new img
   fire() {
     const cachebuster = Math.round(new Date().getTime() / 1000);
-    const cbUrl = this.props.src + '?cb=' + cachebuster;
-    const oldUrl = this.state.url;
-
-    // Download the image
+    this.loadingImage = POSTER_BASE_URL + '?cb=' + cachebuster;
     const img = new Image();
-    img.onload = () => {
-      this.setState({
-        flipped: !this.state.flipped,
-        url: cbUrl,
-        oldUrl: oldUrl,
-      });
-    };
-    img.src = cbUrl;
+    img.onload = this.setLoaded;
+    img.src = this.loadingImage;
+  }
+
+  setLoaded() {
+    const { url: currentUrl, flipped } = this.state;
+    this.setState({
+      flipped: !flipped,
+      url: this.loadingImage,
+      oldUrl: currentUrl,
+    });
   }
 
   stopRefreshTimer() {
-    clearInterval(refreshTimer);
-    this.setState({ active: false });
+    clearInterval(this.refreshTimer);
+    this.refreshTimer = null;
   }
 
   render() {
+    const { active, offlineImage } = this.props;
     const { url, oldUrl, flipped } = this.state;
-    console.log({ url, oldUrl, flipped }, this.props)
+    if (!active) {
+      return html`
+      <div id="oc-custom-poster offline">
+        <${ThumbImage} url=${offlineImage} />
+      </div>
+    `;
+    }
     return html`
       <div id="oc-custom-poster">
-        <${ThumbImage} url=${!flipped ? oldUrl : url } />
+        <${ThumbImage} url=${!flipped ? oldUrl : url } visible=${true} />
         <${ThumbImage} url=${flipped ? oldUrl : url } visible=${!flipped} />
       </div>
     `;
   }
-
-  // secondaryImageView(url) {
-  //   return html` ${this.imageLayer(url, true)} `;
-  // }
-
-  // primaryImageView(url, visible) {
-  //   return html` ${this.imageLayer(url, visible)} `;
-  // }
-
-  // imageLayer(url, visible) {
-  //   if (!url) {
-  //     return null;
-  //   }
-
-  //   return html`
-  //     <div
-  //       class="custom-thumbnail-image"
-  //       style=${{
-  //         opacity: visible ? 1.0 : 0,
-  //         'background-image': `url(${url})`,
-  //       }}
-  //     />
-  //   `;
-  // }
 }
 
 function ThumbImage({ url, visible }) {
@@ -118,8 +106,8 @@ function ThumbImage({ url, visible }) {
     <div
       class="custom-thumbnail-image"
       style=${{
-        opacity: visible ? 1.0 : 0,
-        'background-image': `url(${url})`,
+        opacity: visible ? 1 : 0,
+        backgroundImage: `url(${url})`,
       }}
     />
   `;

@@ -97,6 +97,10 @@ header {
   pointer-events: auto;
 }
 
+#app-container .custom-thumbnail-image {
+  transition: opacity 1s;
+}
+
 /* *********** overrides when chat is off ***************************** */
 
 

@@ -47,14 +47,7 @@ video.vjs-tech:not([src]) {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  transition: opacity 0.5s;
+  transition: opacity 1s;
 }
 
-.custom-thumbnail-image.hidden {
-  opacity: 0;
-}
-
-.custom-thumbnail-image.visible {
-  opacity: 1;
-}
 
