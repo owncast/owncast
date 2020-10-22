@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from '../utils/apis';
+import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from './utils/apis';
 
 export default function HardwareInfo() {
   const [hardwareStatus, setHardwareStatus] = useState({});

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 
-import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from '../utils/apis';
+import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from './utils/apis';
 
 /*
 geo data looks like this
@@ -71,7 +71,6 @@ export default function HardwareInfo() {
     },
   ];
   
-  console.log({clients})
   return (
     <div>
       <h2>Connected Clients</h2>

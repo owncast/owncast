@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {timeFormat} from 'd3-time-format';
 import { LineChart, XAxis, YAxis, Line, Tooltip } from 'recharts';
-import { VIEWERS_OVER_TIME, fetchData } from '../utils/apis';
+
+import { VIEWERS_OVER_TIME, fetchData } from './utils/apis';
 
 const FETCH_INTERVAL = 5 * 60 * 1000; // 5 mins
 
@@ -65,8 +66,6 @@ export default function ViewersOverTime() {
           />
         </LineChart>
       </div>
-
-
     </div>
   );
 }
