@@ -1,4 +1,4 @@
-package ffmpeg
+package config
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-//VerifyFFMpegPath verifies that the path exists, is a file, and is executable
-func VerifyFFMpegPath(path string) error {
+//verifyFFMpegPath verifies that the path exists, is a file, and is executable
+func verifyFFMpegPath(path string) error {
 	stat, err := os.Stat(path)
 
 	if os.IsNotExist(err) {

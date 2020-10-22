@@ -28,6 +28,14 @@ func getDefaults() config {
 }
 
 func getDefaultFFMpegPath() string {
+	// First look to see if ffmpeg is in the current working directory
+	localCopy := "./ffmpeg"
+	hasLocalCopyError := verifyFFMpegPath(localCopy)
+	if hasLocalCopyError == nil {
+		// No error, so all is good.  Use the local copy.
+		return localCopy
+	}
+
 	cmd := exec.Command("which", "ffmpeg")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
