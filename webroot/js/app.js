@@ -382,6 +382,10 @@ export default class App extends Component {
       'touch-screen': this.hasTouchScreen,
     });
 
+    const poster = isPlaying ? null : html`
+      <${VideoPoster} offlineImage=${largeLogo} active=${streamOnline} />
+    `;
+
     return html`
       <div
         id="app-container"
@@ -437,7 +441,7 @@ export default class App extends Component {
               controls
               playsinline
             ></video>
-            <${VideoPoster} offlineImage=${largeLogo} active=${!isPlaying && streamOnline} />
+            ${poster}
           </div>
 
           <section

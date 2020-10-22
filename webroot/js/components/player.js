@@ -111,7 +111,6 @@ class OwncastPlayer {
       // start polling
       this.appPlayerPlayingCallback();
     }
-    document.getElementById('oc-custom-poster').style.visibility = 'hidden';
   }
 
   handleEnded() {
@@ -119,7 +118,6 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
-    this.showPoster();
   }
 
   handleError(e) {
@@ -127,10 +125,6 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
-  }
-
-  showPoster() {
-    document.getElementById('oc-custom-poster').style.visibility = 'visible';
   }
 
   log(message) {

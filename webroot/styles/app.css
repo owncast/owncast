@@ -98,7 +98,7 @@ header {
 }
 
 #app-container .custom-thumbnail-image {
-  transition: opacity 1s;
+  transition: opacity 2s;
 }
 
 /* *********** overrides when chat is off ***************************** */

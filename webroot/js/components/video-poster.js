@@ -84,8 +84,8 @@ export default class VideoPoster extends Component {
     const { url, oldUrl, flipped } = this.state;
     if (!active) {
       return html`
-      <div id="oc-custom-poster offline">
-        <${ThumbImage} url=${offlineImage} />
+      <div id="oc-custom-poster">
+        <${ThumbImage} url=${offlineImage} visible=${true} />
       </div>
     `;
     }

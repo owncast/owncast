@@ -144,12 +144,6 @@ export default class VideoOnly extends Component {
       // stream has just flipped offline.
       this.handleOfflineMode();
     }
-    if (status.online) {
-      // only do this if video is paused, so no unnecessary img fetches
-      if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
-        // this.player.setPoster();
-      }
-    }
     this.setState({
       viewerCount,
       streamOnline: online,
@@ -227,16 +221,17 @@ export default class VideoOnly extends Component {
     const { large: largeLogo = TEMP_IMAGE } = logo;
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
-    const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
-
     const mainClass = playerActive ? 'online' : '';
+
+    const poster = isPlaying ? null : html`
+      <${VideoPoster} offlineImage=${largeLogo} active=${streamOnline} />
+    `;
     return (
       html`
         <main class=${mainClass}>
           <div
             id="video-container"
             class="flex owncast-video-container bg-black w-full bg-center bg-no-repeat flex flex-col items-center justify-start"
-            style=${bgLogoLarge}
           >
             <video
               class="video-js vjs-big-play-centered display-block w-full h-full"
@@ -245,7 +240,7 @@ export default class VideoOnly extends Component {
               controls
               playsinline
             ></video>
-            <${VideoPoster} offlineImage=${largeLogo} active=${!isPlaying && streamOnline} />
+            ${poster}
           </div>
 
           <section

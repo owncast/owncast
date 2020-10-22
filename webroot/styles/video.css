@@ -36,6 +36,7 @@ video.vjs-tech:not([src]) {
   height: 100%;
   overflow: hidden;
 }
+
 /* Animation time for crossfading between poster thumbs */
 .custom-thumbnail-image {
   background-size: contain;
@@ -47,7 +48,6 @@ video.vjs-tech:not([src]) {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  transition: opacity 1s;
+  transition: opacity 2s;
 }
-
 
