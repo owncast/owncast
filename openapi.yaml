@@ -485,7 +485,7 @@ paths:
     post:
       summary: Update Stream Key.  Pre-release, do not use.
       description: Change the stream key in memory, but not in the config file.  This will require all broadcasters to be reconfigured to connect again.
-      tags: ["Admin"]
+      tags: ["Admin", "Pre-release"]
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -517,7 +517,7 @@ paths:
     post:
       summary: Change the extra page content.  Pre-release, do not use.
       description: Change the extra page content in memory, but not on disk.
-      tags: ["Admin"]
+      tags: ["Admin", "Pre-release"]
       security:
         - AdminBasicAuth: []
       requestBody:
