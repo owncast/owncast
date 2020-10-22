@@ -2,6 +2,7 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
+import VideoPoster from './components/video-poster.js';
 import { OwncastPlayer } from './components/player.js';
 
 import {
@@ -27,6 +28,8 @@ export default class VideoOnly extends Component {
 
       playerActive: false, // player object is active
       streamOnline: false,  // stream is active/online
+
+      isPlaying: false,
 
       //status
       streamStatusMessage: MESSAGE_OFFLINE,
@@ -160,7 +163,9 @@ export default class VideoOnly extends Component {
   }
 
   handlePlayerPlaying() {
-    // do something?
+    this.setState({
+      isPlaying: true,
+    });
   }
 
   // likely called some time after stream status has gone offline.
@@ -168,6 +173,7 @@ export default class VideoOnly extends Component {
   handlePlayerEnded() {
     this.setState({
       playerActive: false,
+      isPlaying: false,
     });
   }
 
@@ -212,20 +218,17 @@ export default class VideoOnly extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
+      isPlaying,
     } = state;
 
     const {
-      version: appVersion,
       logo = {},
-      socialHandles = [],
-      name: streamerName,
-      summary,
-      tags = [],
-      title,
     } = configData;
-    const { small: smallLogo = TEMP_IMAGE, large: largeLogo = TEMP_IMAGE } = logo;
+    const { large: largeLogo = TEMP_IMAGE } = logo;
+    const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
     const bgLogoLarge = { backgroundImage: `url(${largeLogo})` };
+    const poster = streamOnline ? '/thumbnail.jpg' : largeLogo;
 
     const mainClass = playerActive ? 'online' : '';
     return (
@@ -243,9 +246,17 @@ export default class VideoOnly extends Component {
               controls
               playsinline
             ></video>
+            <${VideoPoster}
+              src=${poster}
+              active=${!isPlaying && streamOnline}
+            />
           </div>
 
-          <section id="stream-info" aria-label="Stream status" class="flex text-center flex-row justify-between items-center font-mono py-2 px-8 bg-gray-900 text-indigo-200">
+          <section
+            id="stream-info"
+            aria-label="Stream status"
+            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid ${streamInfoClass}"
+          >
             <span>${streamStatusMessage}</span>
             <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
           </section>

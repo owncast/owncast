@@ -13,6 +13,7 @@ The styles in this file mostly ovveride those coming from chat.css
   background-size: 30%;
   width: 100%;
   height: calc((9 / 16) * 100vw);
+  position: relative;
 }
 #video-only #video-container #video {
   transition: opacity .5s;
