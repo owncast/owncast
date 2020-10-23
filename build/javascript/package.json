@@ -10,7 +10,7 @@
     "htm": "^3.0.4",
     "preact": "^10.5.5",
     "tailwindcss": "^1.9.5",
-    "video.js": "7.8.3",
+    "video.js": "7.10.1",
     "@videojs/http-streaming": "2.2.0"
   },
   "devDependencies": {},
