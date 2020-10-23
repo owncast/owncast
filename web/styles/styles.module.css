@@ -36,6 +36,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  padding-right: 1rem;
 }
 
 .statusIndicatorContainer {
@@ -49,15 +50,15 @@
   font-size: 1.5rem;
 }
 .statusIcon svg {
-  fill: #ccc;
+  fill: #999;
 }
 .statusLabel {
   color: #fff;
   text-transform: uppercase;
   font-size: .75rem;
   display: inline-block;
-  margin-left: .5rem;
-  color: #ccc;
+  margin-right: .5rem;
+  color: #999;
 }
 .online .statusIcon svg {
   fill: #52c41a;

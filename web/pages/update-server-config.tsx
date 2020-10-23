@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from './utils/apis';
+import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 export default function ServerConfig() {
+  const context = useContext(BroadcastStatusContext);
+  const { broadcastActive } = context || {};
+  
+
   const [clients, setClients] = useState({});
 
   const getInfo = async () => {

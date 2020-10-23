@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {timeFormat} from 'd3-time-format';
 import { LineChart, XAxis, YAxis, Line, Tooltip } from 'recharts';
+import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 import { VIEWERS_OVER_TIME, fetchData } from './utils/apis';
 
 const FETCH_INTERVAL = 5 * 60 * 1000; // 5 mins
 
 export default function ViewersOverTime() {
+  const context = useContext(BroadcastStatusContext);
+  const { broadcastActive } = context || {};
+
   const [viewerInfo, setViewerInfo] = useState([]);
 
   const getInfo = async () => {
@@ -17,18 +21,28 @@ export default function ViewersOverTime() {
       console.log("==== error", error)
     }
   };
-  
+
   useEffect(() => {
     let getStatusIntervalId = null;
 
     getInfo();
-    getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
-  
-    // returned function will be called on component unmount 
-    return () => {
-      clearInterval(getStatusIntervalId);
+    if (broadcastActive) {
+      getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
+      // returned function will be called on component unmount 
+      return () => {
+        clearInterval(getStatusIntervalId);
+      }
     }
+    return () => [];    
   }, []);
+  
+  
+  // todo - check to see if broadcast active has changed. if so, start polling.
+
+
+  if (!viewerInfo.length) {
+    return "no info";
+  }
 
   const timeFormatter = (tick) => {return timeFormat('%H:%M:%S')(new Date(tick));};
 

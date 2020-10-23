@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table } from 'antd';
+import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from './utils/apis';
 
@@ -12,13 +13,16 @@ geo data looks like this
   }
 */
 
-export default function HardwareInfo() {
+export default function ConnectedClients() {
+  const context = useContext(BroadcastStatusContext);
+  const { broadcastActive } = context || {};
+
   const [clients, setClients] = useState([]);
   const getInfo = async () => {
     try {
       const result = await fetchData(CONNECTED_CLIENTS);
+      console.log("result",result)
       setClients(result);
-
     } catch (error) {
       console.log("==== error", error)
     }
@@ -28,14 +32,22 @@ export default function HardwareInfo() {
     let getStatusIntervalId = null;
 
     getInfo();
-    getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
-  
-    // returned function will be called on component unmount 
-    return () => {
-      clearInterval(getStatusIntervalId);
+    if (broadcastActive) {
+      getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
+      // returned function will be called on component unmount 
+      return () => {
+        clearInterval(getStatusIntervalId);
+      }
     }
+    return () => [];    
   }, []);
   
+  if (!clients.length) {
+    return "no clients";
+  }
+
+  // todo - check to see if broadcast active has changed. if so, start polling.
+
   const columns = [
     {
       title: 'User name',

@@ -17,7 +17,7 @@ const BroadcastStatusProvider = ({ children }) => {
   const getBroadcastStatus = async () => {
     try {
       const result = await fetchData(BROADCASTER);
-      const broadcastActive = !!result.broadcaster;
+      const broadcastActive = !!result.broadcaster || result.success;
       setBroadcasterStatus({ ...result, broadcastActive });
 
     } catch (error) {

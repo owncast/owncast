@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from './utils/apis';
+import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 export default function HardwareInfo() {
+  const context = useContext(BroadcastStatusContext);
+  const { broadcastActive } = context || {};
+
   const [hardwareStatus, setHardwareStatus] = useState({});
 
   const getHardwareStatus = async () => {

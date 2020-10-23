@@ -9,8 +9,10 @@ import {
   LineChartOutlined,
   CloseCircleOutlined,
   PlayCircleFilled,
+  StopFilled,
+  MinusSquareFilled,
 } from '@ant-design/icons';
-import classNames from 'classNames';
+import classNames from 'classnames';
 
 
 import OwncastLogo from './logo';
@@ -30,7 +32,9 @@ export default function MainLayout(props) {
   const { Header, Footer, Content, Sider } = Layout;
   const { SubMenu } = Menu;
 
-  const statusMessage = broadcastActive ?
+  const statusIcon = broadcastActive ?
+    <PlayCircleFilled /> : <MinusSquareFilled />;
+    const statusMessage = broadcastActive ?
     'Online' : 'Offline';
 
   const appClass = classNames({
@@ -59,7 +63,7 @@ export default function MainLayout(props) {
             <span className={adminStyles.owncastTitle}>Owncast Admin</span>
           </h1>
           <Menu.Item key="home" icon={<HomeOutlined />}>
-            <Link href="/index2">Home</Link>
+            <Link href="/">Home</Link>
           </Menu.Item>
 
           <SubMenu key="current-stream-menu" icon={<LineChartOutlined />} title="Stream Details">
@@ -96,12 +100,12 @@ export default function MainLayout(props) {
       <Layout>
         <Header className={adminStyles.header}>
           <div className={adminStyles.statusIndicatorContainer}>
-          <span className={adminStyles.statusIcon}>
-            <PlayCircleFilled />
-          </span>
             <span className={adminStyles.statusLabel}>
               {statusMessage}
             </span>
+            <span className={adminStyles.statusIcon}>
+            {statusIcon}
+          </span>
           </div>
         </Header>
         <Content className={adminStyles.contentMain}>

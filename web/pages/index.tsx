@@ -1,11 +1,19 @@
+import React from 'react';
 import { Card, Alert, Statistic, Row, Col } from "antd";
 import { LikeOutlined } from "@ant-design/icons";
 
 const { Meta } = Card;
 
-export default function Home() {
+export default function AdminHome() {
   return (
     <div>
+      <div>
+        &lt;  pick something<br />
+        Home view. pretty pictures. Rainbows. Kittens.
+      </div>
+
+      <br /><br />
+      
       <Alert
         message="These are some ant design component example I stole from their web site."
         type="success"
