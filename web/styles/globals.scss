@@ -1,16 +1,25 @@
+$owncast-purple: rgba(90,103,216,1);;
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+
+  font-size: 16px;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  color: rgba(90,103,216,1);
 }
 
 * {
   box-sizing: border-box;
+}
+
+
+.owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: $owncast-purple;
 }
