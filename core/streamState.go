@@ -11,6 +11,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/utils"
 
 	"github.com/grafov/m3u8"
@@ -62,6 +63,7 @@ func SetStreamAsDisconnected() {
 	offlineFilePath := "static/" + offlineFilename
 
 	ffmpeg.StopThumbnailGenerator()
+	rtmp.Disconnect()
 	if _yp != nil {
 		_yp.Stop()
 	}

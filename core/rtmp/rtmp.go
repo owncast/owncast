@@ -16,7 +16,7 @@ import (
 
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -27,8 +27,14 @@ var (
 var _pipe *os.File
 var _rtmpConnection net.Conn
 
+var _setStreamAsConnected func()
+var _setBroadcaster func(models.Broadcaster)
+
 //Start starts the rtmp service, listening on port 1935
-func Start() {
+func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster)) {
+	_setStreamAsConnected = setStreamAsConnected
+	_setBroadcaster = setBroadcaster
+
 	port := 1935
 	s := rtmp.NewServer()
 	var lis net.Listener
@@ -87,7 +93,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	syscall.Mkfifo(pipePath, 0666)
 
 	_hasInboundRTMPConnection = true
-	core.SetStreamAsConnected()
+	_setStreamAsConnected()
 	_rtmpConnection = nc
 
 	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
@@ -129,6 +135,6 @@ func Disconnect() {
 		return
 	}
 
-	log.Infoln("Inbound stream disconnect requested.")
+	log.Traceln("Inbound stream disconnect requested.")
 	handleDisconnect(_rtmpConnection)
 }

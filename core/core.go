@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -60,6 +61,9 @@ func Start() error {
 	}
 
 	chat.Setup(ChatListenerImpl{})
+
+	// start the rtmp server
+	go rtmp.Start(SetStreamAsConnected, SetBroadcaster)
 
 	return nil
 }

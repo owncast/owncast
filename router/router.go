@@ -10,16 +10,12 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
 )
 
 //Start starts the router for the http, ws, and rtmp
 func Start() error {
-	// start the rtmp server
-	go rtmp.Start()
-
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
 
