@@ -13,7 +13,10 @@
     "video.js": "7.8.3",
     "@videojs/http-streaming": "2.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cssnano": "^4.1.10",
+    "postcss-cli": "^8.1.0"
+  },
   "snowpack": {
     "install": [
       "video.js/core.js",
