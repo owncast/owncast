@@ -23,8 +23,8 @@ var _offlineCleanupTimer *time.Timer
 // While a stream takes place cleanup old HLS content every N min.
 var _onlineCleanupTicker *time.Ticker
 
-//SetStreamAsConnected sets the stream as connected
-func SetStreamAsConnected() {
+//setStreamAsConnected sets the stream as connected
+func setStreamAsConnected() {
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
 	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
@@ -64,6 +64,7 @@ func SetStreamAsDisconnected() {
 
 	ffmpeg.StopThumbnailGenerator()
 	rtmp.Disconnect()
+
 	if _yp != nil {
 		_yp.Stop()
 	}

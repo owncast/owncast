@@ -63,7 +63,7 @@ func Start() error {
 	chat.Setup(ChatListenerImpl{})
 
 	// start the rtmp server
-	go rtmp.Start(SetStreamAsConnected, SetBroadcaster)
+	go rtmp.Start(setStreamAsConnected, setBroadcaster)
 
 	return nil
 }
