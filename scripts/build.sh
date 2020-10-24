@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Human readable names of binary distributions
-DISTRO=(macOS linux)
+DISTRO=(macOS-64bit linux-64bit linux-32bit)
 # Operating systems for the respective distributions
-OS=(darwin linux)
+OS=(darwin linux linux)
 # Architectures for the respective distributions
-ARCH=(amd64 amd64)
+ARCH=(amd64 amd64 386)
 
 # Version
 VERSION=$1
@@ -43,7 +43,7 @@ build() {
 
   # Default files
   cp config-example.yaml dist/${NAME}/config.yaml
-  cp webroot/static/content-example.md dist/${NAME}/webroot/static/content.md
+  cp data/content-example.md dist/${NAME}/webroot/static/content.md
 
   cp -R webroot/ dist/${NAME}/webroot/
   cp -R doc/ dist/${NAME}/doc/
@@ -55,7 +55,7 @@ build() {
   CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
   mv owncast-*-${ARCH} owncast
 
-  zip -r -q -8 ../owncast-$NAME-$VERSION.zip .
+  zip -r -q -8 ../owncast-$VERSION-$NAME.zip .
   popd >> /dev/null
 
   rm -rf dist/${NAME}/
