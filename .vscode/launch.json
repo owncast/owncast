@@ -14,7 +14,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceRoot}",
-      "args": ["--enableDebugFeatures --enableVerboseLogging"]
+      "args": ["-enableDebugFeatures", "-enableVerboseLogging"]
     }
   ]
 }
