@@ -15,6 +15,7 @@ func getDefaults() config {
 	defaults.Files.MaxNumberInPlaylist = 5
 	defaults.YP.Enabled = false
 	defaults.YP.YPServiceURL = "https://yp.owncast.online"
+	defaults.DatabaseFilePath = "data/owncast.db"
 
 	defaultQuality := StreamQuality{
 		IsAudioPassthrough: true,
