@@ -14,10 +14,10 @@ var _db *sql.DB
 
 func setupPersistence() {
 	_db = data.GetDatabase()
-	createTable(_db)
+	createTable()
 }
 
-func createTable(db *sql.DB) {
+func createTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
 		"id" string NOT NULL PRIMARY KEY,
 		"author" TEXT,
