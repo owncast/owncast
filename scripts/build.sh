@@ -27,6 +27,15 @@ rm -rf ./webroot/hls/* ./hls/* ./webroot/thumbnail.jpg
 
 echo "Creating version ${VERSION} from commit ${GIT_COMMIT}"
 
+# Create production build of Tailwind CSS
+pushd build/javascript >> /dev/null
+# Install the tailwind & postcss CLIs
+npm install --quiet --no-progress
+# Run the tailwind CLI and pipe it to postcss for minification.
+# Save it to a temp directory that we will reference below.
+NODE_ENV="production" ./node_modules/.bin/tailwind build | ./node_modules/.bin/postcss >  "${TMPDIR}tailwind.min.css"
+popd
+
 mkdir -p dist
 
 build() {
@@ -46,6 +55,8 @@ build() {
   cp data/content-example.md dist/${NAME}/webroot/static/content.md
 
   cp -R webroot/ dist/${NAME}/webroot/
+  # Copy the production pruned+minified css to the build's directory.
+  cp "${TMPDIR}tailwind.min.css" ./dist/${NAME}/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
   cp -R doc/ dist/${NAME}/doc/
   cp -R static/ dist/${NAME}/static
   cp README.md dist/${NAME}
