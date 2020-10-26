@@ -44,7 +44,7 @@ export default function ViewersOverTime() {
     return "no info";
   }
 
-  const timeFormatter = (tick) => {return timeFormat('%H:%M:%S')(new Date(tick));};
+  const timeFormatter = (tick) => {return timeFormat('%H:%M')(new Date(tick));};
 
   const CustomizedTooltip = (props) => {
     const { active, payload, label } = props;

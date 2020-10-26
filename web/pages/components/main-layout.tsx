@@ -88,7 +88,7 @@ export default function MainLayout(props) {
           
           <SubMenu key="utilities-menu" icon={<SettingOutlined />} title="Utilities">
             <Menu.Item key="update-server-config">
-              <Link href="/update-server-config">Update Server Configuration</Link>
+              <Link href="/update-server-config">Server Configuration</Link>
             </Menu.Item>
             <Menu.Item key="update-stream-key">
               <Link href="/update-stream-key">Change Stream Key</Link>
