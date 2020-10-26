@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/router"
 )
@@ -29,7 +30,7 @@ func main() {
 	log.Infoln(getVersion())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
-	chatDbFile := flag.String("chatDatabase", "", "Path to the chat database file.")
+	dbFile := flag.String("database", "", "Path to the database file.")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 
@@ -50,13 +51,15 @@ func main() {
 	}
 	config.Config.EnableDebugFeatures = *enableDebugOptions
 
-	if *chatDbFile != "" {
-		config.Config.ChatDatabaseFilePath = *chatDbFile
-	} else if config.Config.ChatDatabaseFilePath == "" {
-		config.Config.ChatDatabaseFilePath = "chat.db"
+	if *dbFile != "" {
+		config.Config.DatabaseFilePath = *dbFile
+	} else if config.Config.DatabaseFilePath == "" {
+		config.Config.DatabaseFilePath = config.Config.GetDataFilePath()
 	}
 
 	go metrics.Start()
+
+	data.SetupPersistence()
 
 	// starts the core
 	if err := core.Start(); err != nil {

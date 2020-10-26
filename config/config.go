@@ -14,16 +14,16 @@ var Config *config
 var _default config
 
 type config struct {
-	ChatDatabaseFilePath string          `yaml:"chatDatabaseFile"`
-	EnableDebugFeatures  bool            `yaml:"-"`
-	FFMpegPath           string          `yaml:"ffmpegPath"`
-	Files                files           `yaml:"files"`
-	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
-	S3                   S3              `yaml:"s3"`
-	VersionInfo          string          `yaml:"-"` // For storing the version/build number
-	VideoSettings        videoSettings   `yaml:"videoSettings"`
-	WebServerPort        int             `yaml:"webServerPort"`
-	YP                   YP              `yaml:"yp"`
+	DatabaseFilePath    string          `yaml:"databaseFile"`
+	EnableDebugFeatures bool            `yaml:"-"`
+	FFMpegPath          string          `yaml:"ffmpegPath"`
+	Files               files           `yaml:"files"`
+	InstanceDetails     InstanceDetails `yaml:"instanceDetails"`
+	S3                  S3              `yaml:"s3"`
+	VersionInfo         string          `yaml:"-"` // For storing the version/build number
+	VideoSettings       videoSettings   `yaml:"videoSettings"`
+	WebServerPort       int             `yaml:"webServerPort"`
+	YP                  YP              `yaml:"yp"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
@@ -191,6 +191,14 @@ func (c *config) GetYPServiceHost() string {
 	}
 
 	return _default.YP.YPServiceURL
+}
+
+func (c *config) GetDataFilePath() string {
+	if c.DatabaseFilePath != "" {
+		return c.DatabaseFilePath
+	}
+
+	return _default.DatabaseFilePath
 }
 
 func (c *config) GetVideoStreamQualities() []StreamQuality {

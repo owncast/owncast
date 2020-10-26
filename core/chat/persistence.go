@@ -2,36 +2,22 @@ package chat
 
 import (
 	"database/sql"
-	"os"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 var _db *sql.DB
 
 func setupPersistence() {
-	file := config.Config.ChatDatabaseFilePath
-	// Create empty DB file if it doesn't exist.
-	if !utils.DoesFileExists(file) {
-		log.Traceln("Creating new chat history database at", file)
-
-		_, err := os.Create(file)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-	}
-
-	sqliteDatabase, _ := sql.Open("sqlite3", file)
-	_db = sqliteDatabase
-	createTable(sqliteDatabase)
+	_db = data.GetDatabase()
+	createTable()
 }
 
-func createTable(db *sql.DB) {
+func createTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
 		"id" string NOT NULL PRIMARY KEY,
 		"author" TEXT,

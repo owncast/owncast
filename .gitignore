@@ -30,3 +30,4 @@ chat.db
 .yp.key
 
 !webroot/js/web_modules/**/dist
+!core/data
