@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Table } from 'antd';
+import { formatDistanceToNow } from "date-fns";
 import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 import { CONNECTED_CLIENTS, fetchData, FETCH_INTERVAL } from './utils/apis';
@@ -50,36 +51,36 @@ export default function ConnectedClients() {
 
   const columns = [
     {
-      title: 'User name',
-      dataIndex: 'username',
-      key: 'username',
-      render: username => username || '-',
+      title: "User name",
+      dataIndex: "username",
+      key: "username",
+      render: (username) => username || "-",
       sorter: (a, b) => a.username - b.username,
-      sortDirections: ['descend', 'ascend'],  
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'Messages sent',
-      dataIndex: 'messageCount',
-      key: 'messageCount',
+      title: "Messages sent",
+      dataIndex: "messageCount",
+      key: "messageCount",
       sorter: (a, b) => a.messageCount - b.messageCount,
-      sortDirections: ['descend', 'ascend'],  
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'Connected Time',
-      dataIndex: 'connectedAt',
-      key: 'connectedAt',
-      render: time => (Date.now() - (new Date(time).getTime())) / 1000 / 60,
+      title: "Connected Time",
+      dataIndex: "connectedAt",
+      key: "connectedAt",
+      render: (time) => formatDistanceToNow(new Date(time)),
     },
     {
-      title: 'User Agent',
-      dataIndex: 'userAgent',
-      key: 'userAgent', 
+      title: "User Agent",
+      dataIndex: "userAgent",
+      key: "userAgent",
     },
     {
-      title: 'Location',
-      dataIndex: 'geo',
-      key: 'geo', 
-      render: geo => geo && `${geo.regionName}, ${geo.countryCode}`,
+      title: "Location",
+      dataIndex: "geo",
+      key: "geo",
+      render: (geo) => geo && `${geo.regionName}, ${geo.countryCode}`,
     },
   ];
   
