@@ -9,13 +9,24 @@ import (
 
 // GetServerConfig gets the config details of the server
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	var videoQualityVariants = make([]config.StreamQuality, 0)
+	for _, variant := range config.Config.GetVideoStreamQualities() {
+		videoQualityVariants = append(videoQualityVariants, config.StreamQuality{
+			IsAudioPassthrough: variant.IsAudioPassthrough,
+			IsVideoPassthrough: variant.IsVideoPassthrough,
+			Framerate:          variant.GetFramerate(),
+			EncoderPreset:      variant.GetEncoderPreset(),
+			VideoBitrate:       variant.VideoBitrate,
+			AudioBitrate:       variant.AudioBitrate,
+		})
+	}
 	response := serverConfigAdminResponse{
 		InstanceDetails: config.Config.InstanceDetails,
 		FFmpegPath:      config.Config.GetFFMpegPath(),
 		StreamKey:       config.Config.VideoSettings.StreamingKey,
 		WebServerPort:   config.Config.GetPublicWebServerPort(),
 		VideoSettings: videoSettings{
-			VideoQualityVariants:  config.Config.GetVideoStreamQualities(),
+			VideoQualityVariants:  videoQualityVariants,
 			SegmentLengthSeconds:  config.Config.GetVideoSegmentSecondsLength(),
 			NumberOfPlaylistItems: config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist(),
 		},
