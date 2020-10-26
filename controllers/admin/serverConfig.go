@@ -12,6 +12,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	response := serverConfigAdminResponse{
 		InstanceDetails: config.Config.InstanceDetails,
 		FFmpegPath:      config.Config.GetFFMpegPath(),
+		StreamKey:       config.Config.VideoSettings.StreamingKey,
 		WebServerPort:   config.Config.GetPublicWebServerPort(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants:  config.Config.GetVideoStreamQualities(),
@@ -29,6 +30,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 type serverConfigAdminResponse struct {
 	InstanceDetails config.InstanceDetails `json:"instanceDetails"`
 	FFmpegPath      string                 `json:"ffmpegPath"`
+	StreamKey       string                 `json:"streamKey"`
 	WebServerPort   int                    `json:"webServerPort"`
 	S3              config.S3              `json:"s3"`
 	VideoSettings   videoSettings          `json:"videoSettings"`
