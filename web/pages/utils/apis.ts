@@ -29,11 +29,10 @@ export const CONNECTED_CLIENTS = `${API_LOCATION}clients`;
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
 
-
-
-// Current Stream status (no auth)
-// use `admin/broadcaster` instead
-// export const STREAM_STATUS = '/api/status';
+// Current Stream status.
+// This is literally the same as /api/status except it supports
+// auth.
+export const STREAM_STATUS = `${API_LOCATION}status`;
 
 export async function fetchData(url) {
   const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
