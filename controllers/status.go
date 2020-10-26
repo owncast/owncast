@@ -17,3 +17,11 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(status)
 }
+
+//GetStatus gets the status of the server
+func GetAdminStatus(w http.ResponseWriter, r *http.Request) {
+	status := core.GetStatus()
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(status)
+}
