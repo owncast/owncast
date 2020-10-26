@@ -6,7 +6,7 @@ export function formatIPAddress(ipAddress: string): string {
 
   let ip = ipAddressComponents.join(':')
   ip = ip.slice(0, ip.length - 1)
-  if (ip === '[::1]') {
+  if (ip === '[::1]' || ip === '127.0.0.1') {
     return "Localhost"
   }
 
