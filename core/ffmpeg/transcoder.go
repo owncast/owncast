@@ -187,11 +187,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 	// Set a default, reasonable preset if one is not provided.
 	// "superfast" and "ultrafast" are generally not recommended since they look bad.
 	// https://trac.ffmpeg.org/wiki/Encode/H.264
-	if quality.EncoderPreset != "" {
-		variant.encoderPreset = quality.EncoderPreset
-	} else {
-		variant.encoderPreset = "veryfast"
-	}
+	variant.encoderPreset = quality.GetEncoderPreset()
 
 	variant.SetVideoBitrate(quality.VideoBitrate)
 	variant.SetAudioBitrate(strconv.Itoa(quality.AudioBitrate) + "k")

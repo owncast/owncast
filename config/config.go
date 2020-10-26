@@ -218,6 +218,15 @@ func (q *StreamQuality) GetFramerate() int {
 	return _default.VideoSettings.StreamQualities[0].Framerate
 }
 
+// GetEncoderPreset returns the preset or default
+func (q *StreamQuality) GetEncoderPreset() string {
+	if q.EncoderPreset != "" {
+		return q.EncoderPreset
+	}
+
+	return _default.VideoSettings.StreamQualities[0].EncoderPreset
+}
+
 //Load tries to load the configuration file
 func Load(filePath string, versionInfo string) error {
 	Config = new(config)
