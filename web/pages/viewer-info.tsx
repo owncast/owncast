@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {timeFormat} from 'd3-time-format';
-import { LineChart, XAxis, YAxis, Line, Tooltip } from 'recharts';
+import Chart from "./components/chart.tsx";
 import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 import { VIEWERS_OVER_TIME, fetchData } from './utils/apis';
@@ -66,19 +65,19 @@ export default function ViewersOverTime() {
     <div>
       <h2>Current Viewers</h2>
       <div className="chart-container">
-        <LineChart width={800} height={400} data={viewerInfo}>
-          <XAxis dataKey="time" tickFormatter={timeFormatter}/>
-          <YAxis dataKey="value"/>
-          <Tooltip
-            content={<CustomizedTooltip />}
-          />
+        <Chart data={viewerInfo} color="#ff84d8" unit="" />
+
+        {/* <LineChart width={800} height={400} data={viewerInfo}>
+          <XAxis dataKey="time" tickFormatter={timeFormatter} />
+          <YAxis dataKey="value" />
+          <Tooltip content={<CustomizedTooltip />} />
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#ff84d8" 
-            dot={{ stroke: 'red', strokeWidth: 2 }} 
+            stroke="#ff84d8"
+            dot={{ stroke: "red", strokeWidth: 2 }}
           />
-        </LineChart>
+        </LineChart> */}
       </div>
     </div>
   );
