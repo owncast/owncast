@@ -1,7 +1,7 @@
 {
   "name": "owncast-dependencies",
   "version": "1.0.0",
-  "description": "Dependencies for Owncast web app",
+  "description": "Javascript dependencies for Owncast web app",
   "main": "index.js",
   "dependencies": {
     "@joeattardi/emoji-button": "^4.2.0",
