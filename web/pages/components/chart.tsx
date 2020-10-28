@@ -1,27 +1,43 @@
 import { LineChart, XAxis, YAxis, Line, Tooltip, Legend } from "recharts";
 import { timeFormat } from "d3-time-format";
 
-export default function Chart({ data, color, unit }) {
-  const CustomizedTooltip = (props) => {
-    const { active, payload } = props;
-    if (active && payload && payload[0]) {
-      const time = payload[0].payload
-        ? timeFormat("%I:%M")(new Date(payload[0].payload.time), {
-            nearestTo: 1,
-          })
-        : "";
-      return (
-        <div className="custom-tooltip">
-          <p className="label">
-            <strong>{time}</strong> {payload[0].payload.value} %
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+interface ToolTipProps {
+  active?: boolean,
+  payload?: object,
+};
+const defaultProps = {
+  active: false,
+  payload: {},
+};
 
-  const timeFormatter = (tick) => {
+interface ChartProps {
+  data: number,
+  color: string,
+  unit: string,
+}
+
+function CustomizedTooltip(props: ToolTipProps) {
+  const { active, payload } = props;
+  if (active && payload && payload[0]) {
+    const time = payload[0].payload
+      ? timeFormat("%I:%M")(new Date(payload[0].payload.time), {
+          nearestTo: 1,
+        })
+      : "";
+    return (
+      <div className="custom-tooltip">
+        <p className="label">
+          <strong>{time}</strong> {payload[0].payload.value} %
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+CustomizedTooltip.defaultProps = defaultProps;
+
+export default function Chart({ data, color, unit }: ChartProps) {
+  const timeFormatter = (tick: string) => {
     return timeFormat("%I:%M")(new Date(tick), {
       nearestTo: 1,
     });

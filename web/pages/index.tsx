@@ -18,11 +18,18 @@ import {
   fetchData,
   FETCH_INTERVAL,
 } from "./utils/apis";
-import { formatIPAddress } from "./utils/format";
+import { formatIPAddress, isEmptyObject } from "./utils/format";
 
-const { Title} = Typography;
+const { Title } = Typography;
 
-function Item(title: string, value: string, prefix: Jsx.Element) {
+interface ItemProps {
+  title: string, 
+  value: string,
+  prefix: JSX.Element,
+};
+
+function Item(props: ItemProps) {
+  const { title, value, prefix } = props;
   const valueStyle = { color: "#334", fontSize: "1.8rem" };
 
   return (
@@ -36,6 +43,19 @@ function Item(title: string, value: string, prefix: Jsx.Element) {
         />
       </Card>
     </Col>
+  );
+}
+
+function Offline() {
+  return (
+    <div>
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={
+          <span>There is no stream currently active. Start one.</span>
+        }
+      />
+    </div>
   );
 }
 
@@ -61,7 +81,8 @@ export default function Stats() {
   const getConfig = async () => {
     try {
       const result = await fetchData(SERVER_CONFIG);
-      setVideoSettings(result.videoSettings.videoQualityVariants);
+      const variants = result && result.videoSettings && result.videoSettings.videoQualityVariants;
+      setVideoSettings(variants);
     } catch (error) {
       console.log(error);
     }
@@ -73,7 +94,7 @@ export default function Stats() {
     getConfig();
   }, []);
 
-  if (!stats) {
+  if (!stats || isEmptyObject(stats)) {
     return (
       <div>
         <Skeleton active />
@@ -84,10 +105,10 @@ export default function Stats() {
   }
 
   if (!broadcaster) {
-    return Offline();
+    return <Offline />;
   }
 
-  const videoQualitySettings = videoSettings.map(function (setting, index) {
+  const videoQualitySettings = videoSettings.map((setting, index) => {
     const audioSetting =
       setting.audioPassthrough || setting.audioBitrate === 0
         ? `${streamDetails.audioBitrate} kpbs (passthrough)`
@@ -95,13 +116,21 @@ export default function Stats() {
     
     return (
       <Row gutter={[16, 16]} key={index}>
-        {Item("Output", `Video variant ${index}`, "")}
-        {Item(
-          "Outbound Video Stream",
-          `${setting.videoBitrate} kbps ${setting.framerate} fps`,
-          ""
-        )}
-        {Item("Outbound Audio Stream", audioSetting, "")}
+        <Item
+          title="Output"
+          value={`Video variant ${index}`}
+          prefix={null}
+        />
+        <Item
+          title="Outbound Video Stream"
+          value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
+          prefix={null}
+        />
+         <Item
+          title="Outbound Audio Stream"
+          value={audioSetting}
+          prefix={null}
+        />
       </Row>
     );
   });
@@ -114,39 +143,45 @@ export default function Stats() {
     <div>
       <Title>Server Overview</Title>
       <Row gutter={[16, 16]}>
-        {Item(
-          `Stream started ${formatRelative(
+        <Item
+          title={`Stream started ${formatRelative(
             new Date(lastConnectTime),
             new Date()
-          )}`,
-          formatDistanceToNow(new Date(lastConnectTime)),
-          <ClockCircleOutlined />
-        )}
-
-        {Item("Viewers", viewerCount, <UserOutlined />)}
-        {Item("Peak viewer count", sessionMaxViewerCount, <UserOutlined />)}
+          )}`}
+          value={formatDistanceToNow(new Date(lastConnectTime))}
+          prefix={<ClockCircleOutlined />}
+        />
+        <Item
+          title="Viewers"
+          value={viewerCount}
+          prefix={<UserOutlined />}
+        />
+        <Item
+          title="Peak viewer count"
+          value={sessionMaxViewerCount}
+          prefix={<UserOutlined />}
+        />
       </Row>
 
       <Row gutter={[16, 16]}>
-        {Item("Input", formatIPAddress(remoteAddr), "")}
-        {Item("Inbound Video Stream", streamVideoDetailString, "")}
-        {Item("Inbound Audio Stream", streamAudioDetailString, "")}
+        <Item
+          title="Input"
+          value={formatIPAddress(remoteAddr)}
+          prefix={null}
+        />
+        <Item
+          title="Inbound Video Stream"
+          value={streamVideoDetailString}
+          prefix={null}
+        />
+        <Item
+          title="Inbound Audio Stream"
+          value={streamAudioDetailString}
+          prefix={null}
+        />
       </Row>
 
       {videoQualitySettings}
-    </div>
-  );
-}
-
-function Offline() {
-  return (
-    <div>
-      <Empty
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={
-          <span>There is no stream currently active. Start one.</span>
-        }
-      />
     </div>
   );
 }

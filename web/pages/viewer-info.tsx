@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Chart from "./components/chart.tsx";
+import { timeFormat } from "d3-time-format";
+import Chart from "./components/chart";
 import { BroadcastStatusContext } from './utils/broadcast-status-context';
 
 import { VIEWERS_OVER_TIME, fetchData } from './utils/apis';
@@ -43,7 +44,7 @@ export default function ViewersOverTime() {
     return "no info";
   }
 
-  const timeFormatter = (tick) => {return timeFormat('%H:%M')(new Date(tick));};
+  const timeFormatter = (tick) => { return timeFormat('%H:%M')(new Date(tick));};
 
   const CustomizedTooltip = (props) => {
     const { active, payload, label } = props;

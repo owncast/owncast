@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { timeFormat } from "d3-time-format";
 import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from './utils/apis';
-import Chart from './components/chart.tsx'
+import Chart from './components/chart';
 
 export default function HardwareInfo() {
-  const [hardwareStatus, setHardwareStatus] = useState({});
+  const [hardwareStatus, setHardwareStatus] = useState({
+    cpu: 0,
+    memory: 0,
+    disk: 0,
+    message: '',
+  });
 
   const getHardwareStatus = async () => {
     try {
@@ -29,7 +33,6 @@ export default function HardwareInfo() {
   }, []);
 
  
-
   if (!hardwareStatus.cpu) {
     return null;
   }
@@ -61,6 +64,4 @@ export default function HardwareInfo() {
         </div>
       </div>
     );
-  
-  
 }
