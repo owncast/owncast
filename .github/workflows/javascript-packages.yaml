@@ -23,6 +23,6 @@ jobs:
             author_name: Owncast
             author_email: owncast@owncast.online
             message: "Commit updated Javascript packages"
-            add: "build/javascript/package* webroot/js/web_modules"
+            add: "./package* ../../webroot/js/web_modules"
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
