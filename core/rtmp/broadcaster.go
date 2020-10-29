@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/nareix/joy5/format/flv/flvio"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -31,5 +30,5 @@ func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 		},
 	}
 
-	core.SetBroadcaster(broadcaster)
+	_setBroadcaster(broadcaster)
 }

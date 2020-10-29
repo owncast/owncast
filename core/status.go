@@ -20,8 +20,8 @@ func GetStatus() models.Status {
 	}
 }
 
-// SetBroadcaster will store the current inbound broadcasting details
-func SetBroadcaster(broadcaster models.Broadcaster) {
+// setBroadcaster will store the current inbound broadcasting details
+func setBroadcaster(broadcaster models.Broadcaster) {
 	_broadcaster = &broadcaster
 }
 
