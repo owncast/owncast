@@ -54,12 +54,11 @@ export default function Stats() {
 
 
   // Pull in the server config so we can show config overview.
-  const [videoSettings, setVideoSettings] = useState([]);
+  const [config, setConfig] = useState([]);
   const getConfig = async () => {
     try {
       const result = await fetchData(SERVER_CONFIG);
-      const variants = result && result.videoSettings && result.videoSettings.videoQualityVariants;
-      setVideoSettings(variants);
+      setConfig(result);
     } catch (error) {
       console.log(error);
     }
@@ -71,7 +70,7 @@ export default function Stats() {
     getConfig();
   }, []);
 
-  if (!stats || isEmptyObject(stats)) {
+  if (isEmptyObject(config) || isEmptyObject(stats)) {
     return (
       <div>
         <Skeleton active />
@@ -84,7 +83,8 @@ export default function Stats() {
   if (!broadcaster) {
     return <Offline />;
   }
-
+  
+  const videoSettings = config.videoSettings.videoQualityVariants;
   const videoQualitySettings = videoSettings.map((setting, index) => {
     const audioSetting =
       setting.audioPassthrough || setting.audioBitrate === 0
@@ -93,11 +93,6 @@ export default function Stats() {
     
     return (
       <Row gutter={[16, 16]} key={index}>
-        <StatisticItem
-          title="Output"
-          value={`Video variant ${index}`}
-          prefix={null}
-        />
         <StatisticItem
           title="Outbound Video Stream"
           value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
@@ -159,6 +154,19 @@ export default function Stats() {
       </Row>
 
       {videoQualitySettings}
+
+      <Row gutter={[16, 16]}>
+        <StatisticItem
+          title="Stream key"
+          value={config.streamKey}
+          prefix={null}
+        />
+        <StatisticItem
+          title="Directory registration enabled"
+          value={config.yp.enabled.toString()}
+          prefix={null}
+        />
+      </Row>
     </div>
   );
 }

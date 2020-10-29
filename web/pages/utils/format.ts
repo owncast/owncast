@@ -15,5 +15,5 @@ export function formatIPAddress(ipAddress: string): string {
 
 // check if obj is {}
 export function isEmptyObject(obj) {
-  return Object.keys(obj).length === 0;
+  return !obj || Object.keys(obj).length === 0;
 }
