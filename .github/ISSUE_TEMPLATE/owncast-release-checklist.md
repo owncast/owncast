@@ -17,4 +17,4 @@ The following are intended to address the test scenarios and documentation that 
 - [ ] Release notes and a changelog was written to call out the new features, changes to existing features, and user-impacting behind the scenes updates.
 - [ ] Upgrade instructions were written for migrating from the previous release.
 - [ ] The API spec `openapi.yaml` is up to date, and the current version of the release is specified in the file.
-- [ ] The API documentation was copied to the public documentation site under `/api`.
+- [ ] The API documentation was copied to the public documentation site under `/api/0.0.x` and symlinked to `/api/latest`.
