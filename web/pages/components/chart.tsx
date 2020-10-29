@@ -4,6 +4,7 @@ import { timeFormat } from "d3-time-format";
 interface ToolTipProps {
   active?: boolean,
   payload?: object,
+  unit?: string
 };
 const defaultProps = {
   active: false,
