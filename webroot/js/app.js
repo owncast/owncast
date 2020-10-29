@@ -8,7 +8,7 @@ import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { secondsToHMMSS, hasTouchScreen, getOrientation } from './utils/helpers.js';
+import { parseSecondsToDurationString, hasTouchScreen, getOrientation } from './utils/helpers.js';
 
 import {
   addNewlines,
@@ -269,7 +269,7 @@ export default class App extends Component {
     let streamDurationString = '';
     if (this.state.lastConnectTime) {
       const diff = (Date.now() - Date.parse(this.state.lastConnectTime)) / 1000;
-      streamDurationString = secondsToHMMSS(diff);
+      streamDurationString = parseSecondsToDurationString(diff);
     }
     this.setState({
       streamStatusMessage: `${MESSAGE_ONLINE} ${streamDurationString}`,
