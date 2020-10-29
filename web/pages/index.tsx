@@ -8,10 +8,11 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Statistic, Card, Row, Col, Skeleton, Empty, Typography } from "antd";
+import { Row, Skeleton, Empty, Typography } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { BroadcastStatusContext } from "./utils/broadcast-status-context";
+import StatisticItem from "./components/statistic"
 import {
   STREAM_STATUS,
   SERVER_CONFIG,
@@ -21,30 +22,6 @@ import {
 import { formatIPAddress, isEmptyObject } from "./utils/format";
 
 const { Title } = Typography;
-
-interface ItemProps {
-  title: string, 
-  value: string,
-  prefix: JSX.Element,
-};
-
-function Item(props: ItemProps) {
-  const { title, value, prefix } = props;
-  const valueStyle = { color: "#334", fontSize: "1.8rem" };
-
-  return (
-    <Col span={8}>
-      <Card>
-        <Statistic
-          title={title}
-          value={value}
-          valueStyle={valueStyle}
-          prefix={prefix}
-        />
-      </Card>
-    </Col>
-  );
-}
 
 function Offline() {
   return (
@@ -116,17 +93,17 @@ export default function Stats() {
     
     return (
       <Row gutter={[16, 16]} key={index}>
-        <Item
+        <StatisticItem
           title="Output"
           value={`Video variant ${index}`}
           prefix={null}
         />
-        <Item
+        <StatisticItem
           title="Outbound Video Stream"
           value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
           prefix={null}
         />
-         <Item
+        <StatisticItem
           title="Outbound Audio Stream"
           value={audioSetting}
           prefix={null}
@@ -143,7 +120,7 @@ export default function Stats() {
     <div>
       <Title>Server Overview</Title>
       <Row gutter={[16, 16]}>
-        <Item
+        <StatisticItem
           title={`Stream started ${formatRelative(
             new Date(lastConnectTime),
             new Date()
@@ -151,12 +128,12 @@ export default function Stats() {
           value={formatDistanceToNow(new Date(lastConnectTime))}
           prefix={<ClockCircleOutlined />}
         />
-        <Item
+        <StatisticItem
           title="Viewers"
           value={viewerCount}
           prefix={<UserOutlined />}
         />
-        <Item
+        <StatisticItem
           title="Peak viewer count"
           value={sessionMaxViewerCount}
           prefix={<UserOutlined />}
@@ -164,17 +141,17 @@ export default function Stats() {
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Item
+        <StatisticItem
           title="Input"
           value={formatIPAddress(remoteAddr)}
           prefix={null}
         />
-        <Item
+        <StatisticItem
           title="Inbound Video Stream"
           value={streamVideoDetailString}
           prefix={null}
         />
-        <Item
+        <StatisticItem
           title="Inbound Audio Stream"
           value={streamAudioDetailString}
           prefix={null}

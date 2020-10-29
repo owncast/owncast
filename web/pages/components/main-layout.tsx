@@ -67,14 +67,8 @@ export default function MainLayout(props) {
           </Menu.Item>
 
           <SubMenu key="current-stream-menu" icon={<LineChartOutlined />} title="Stream Details">
-            <Menu.Item key="broadcast-info">
-              <Link href="/broadcast-info">Broadcaster Info</Link>
-            </Menu.Item>
             <Menu.Item key="viewer-info">
               <Link href="/viewer-info">Viewers</Link>
-            </Menu.Item>
-            <Menu.Item key="connected-clients">
-              <Link href="/connected-clients">Connected Clients</Link>
             </Menu.Item>
             <Menu.Item key="hardware-info">
               <Link href="/hardware-info">Hardware</Link>

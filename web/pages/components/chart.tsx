@@ -17,17 +17,13 @@ interface ChartProps {
 }
 
 function CustomizedTooltip(props: ToolTipProps) {
-  const { active, payload } = props;
+  const { active, payload, unit } = props;
   if (active && payload && payload[0]) {
-    const time = payload[0].payload
-      ? timeFormat("%I:%M")(new Date(payload[0].payload.time), {
-          nearestTo: 1,
-        })
-      : "";
+    const time = payload[0].payload ? timeFormat("%I:%M")(new Date(payload[0].payload.time)) : "";
     return (
       <div className="custom-tooltip">
         <p className="label">
-          <strong>{time}</strong> {payload[0].payload.value} %
+          <strong>{time}</strong> {payload[0].payload.value} {unit}
         </p>
       </div>
     );
@@ -38,9 +34,7 @@ CustomizedTooltip.defaultProps = defaultProps;
 
 export default function Chart({ data, color, unit }: ChartProps) {
   const timeFormatter = (tick: string) => {
-    return timeFormat("%I:%M")(new Date(tick), {
-      nearestTo: 1,
-    });
+    return timeFormat("%I:%M")(new Date(tick));
   };
 
   return (
@@ -60,7 +54,7 @@ export default function Chart({ data, color, unit }: ChartProps) {
         unit={unit}
         domain={["dataMin", "dataMax"]}
       />
-      <Tooltip content={<CustomizedTooltip />} />
+      <Tooltip content={<CustomizedTooltip unit={unit} />} />
       <Legend />
       <Line
         type="monotone"
