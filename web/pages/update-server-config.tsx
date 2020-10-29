@@ -2,31 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Table, Typography, Input } from 'antd';
 import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from './utils/apis';
 import { isEmptyObject } from './utils/format';
+import KeyValueTable from "./components/key-value-table";
 
 const { Title } = Typography;
 const { TextArea } = Input;
 
-function KeyValueTable({ title, data }) {
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Value",
-      dataIndex: "value",
-      key: "value",
-    },
-  ];
-  
-  return (
-    <div>
-      <Title>{title}</Title>
-      <Table pagination={false} columns={columns} dataSource={data} />
-    </div>
-  );
-}
 
 function SocialHandles({ config }) {
   if (!config) {
@@ -121,114 +101,6 @@ function InstanceDetails({ config }) {
   );
 }
 
-function VideoVariants({ config }) {
-  if (!config) {
-    return null;
-  }
-
-  const videoQualityColumns = [
-    {
-      title: "Video bitrate",
-      dataIndex: "videoBitrate",
-      key: "videoBitrate",
-      render: (bitrate) =>
-        bitrate === 0 || !bitrate ? "Passthrough" : `${bitrate} kbps`,
-    },
-    {
-      title: "Framerate",
-      dataIndex: "framerate",
-      key: "framerate",
-    },
-    {
-      title: "Encoder preset",
-      dataIndex: "encoderPreset",
-      key: "framerate",
-    },
-    {
-      title: "Audio bitrate",
-      dataIndex: "audioBitrate",
-      key: "audioBitrate",
-      render: (bitrate) =>
-        bitrate === 0 || !bitrate ? "Passthrough" : `${bitrate} kbps`,
-    },
-  ];
-
-  const miscVideoSettingsColumns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Value",
-      dataIndex: "value",
-      key: "value",
-    },
-  ];
-
-  const miscVideoSettings = [
-    {
-      name: "Segment length",
-      value: config.videoSettings.segmentLengthSeconds,
-    },
-    {
-      name: "Number of segments",
-      value: config.videoSettings.numberOfPlaylistItems,
-    },
-  ];
-
-  return (
-    <div>
-      <Title>Video configuration</Title>
-      <Table
-        pagination={false}
-        columns={videoQualityColumns}
-        dataSource={config.videoSettings.videoQualityVariants}
-      />
-
-      <Table
-        pagination={false}
-        columns={miscVideoSettingsColumns}
-        dataSource={miscVideoSettings}
-      />
-    </div>
-  );
-}
-
-function Storage({ config }) {
-  if (!config) {
-    return null;
-  }
-
-  const data = [
-    {
-      name: "Enabled",
-      value: config.s3.enabled.toString(),
-    },
-    {
-      name: "Endpoint",
-      value: config.s3.endpoint,
-    },
-    {
-      name: "Access Key",
-      value: config.s3.accessKey,
-    },
-    {
-      name: "Secret",
-      value: config.s3.secret,
-    },
-    {
-      name: "Bucket",
-      value: config.s3.bucket,
-    },
-    {
-      name: "Region",
-      value: config.s3.region,
-    },
-  ];
-  return <KeyValueTable title="External Storage" data={data} />
-}
-
 function PageContent({ config }) {
   if (!config) {
     return null;
@@ -287,8 +159,6 @@ export default function ServerConfig() {
       >
         <InstanceDetails config={config} />
         <SocialHandles config={config} />
-        <VideoVariants config={config} />
-        <Storage config={config} />
         <PageContent config={config} />
 
         {JSON.stringify(config)}
