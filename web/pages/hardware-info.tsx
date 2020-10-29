@@ -45,6 +45,25 @@ export default function HardwareInfo() {
     hardwareStatus.memory[hardwareStatus.memory.length - 1]?.value;
   const currentDiskUsage =
     hardwareStatus.disk[hardwareStatus.disk.length - 1]?.value;
+  
+const series = [
+  {
+    name: "CPU",
+    color: "#FF7700",
+    data: hardwareStatus.cpu,
+  },
+  {
+    name: "Memory",
+    color: "#004777",
+    data: hardwareStatus.memory,
+  },
+  {
+    name: "Disk",
+    color: "#A9E190",
+    data: hardwareStatus.disk,
+  },
+];
+  
     return (
       <div>
         <div>
@@ -68,12 +87,7 @@ export default function HardwareInfo() {
           </Row>
 
           <div className="chart-container">
-            <h3>CPU</h3>
-            <Chart data={hardwareStatus.cpu} color="#FF7700" unit="%" />
-            <h3>Memory</h3>
-            <Chart data={hardwareStatus.memory} color="#004777" unit="%" />
-            <h3>Disk</h3>
-            <Chart data={hardwareStatus.disk} color="#A9E190" unit="%" />
+            <Chart dataCollections={series} color="#FF7700" unit="%" />
           </div>
         </div>
         <p>cpu:[], disk: [], memory: []; value = %age.</p>

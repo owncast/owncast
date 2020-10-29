@@ -14,6 +14,7 @@ interface ChartProps {
   data: number,
   color: string,
   unit: string,
+  dataCollections?: [],
 }
 
 function CustomizedTooltip(props: ToolTipProps) {
@@ -32,21 +33,30 @@ function CustomizedTooltip(props: ToolTipProps) {
 }
 CustomizedTooltip.defaultProps = defaultProps;
 
-export default function Chart({ data, color, unit }: ChartProps) {
+export default function Chart({ data, color, unit, dataCollections }: ChartProps) {
   const timeFormatter = (tick: string) => {
     return timeFormat("%I:%M")(new Date(tick));
   };
 
+  if (dataCollections) {
+    var ticks = dataCollections[0]?.data.map(function (collection) {
+      return collection?.time;
+    })
+  } else {
+    var ticks = data.map(function (item) {
+      return item?.time;
+    });
+  }
   return (
     <LineChart width={1200} height={400} data={data}>
       <XAxis
         dataKey="time"
-        // type="number"
         tickFormatter={timeFormatter}
         interval="preserveStartEnd"
         tickCount={5}
         minTickGap={15}
         domain={["dataMin", "dataMax"]}
+        ticks={ticks}
       />
       <YAxis
         dataKey="value"
@@ -63,6 +73,18 @@ export default function Chart({ data, color, unit }: ChartProps) {
         dot={null}
         strokeWidth={3}
       />
+      {dataCollections?.map((s) => (
+        <Line
+          dataKey="value"
+          data={s.data}
+          name={s.name}
+          key={s.name}
+          type="monotone"
+          stroke={s.color}
+          dot={null}
+          strokeWidth={3}
+        />
+      ))}
     </LineChart>
   );
 }
