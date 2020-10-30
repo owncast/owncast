@@ -19,6 +19,9 @@ func Start() error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
 
+	// admin static files
+	http.HandleFunc("/admin/", admin.ServeAdmin)
+
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 
