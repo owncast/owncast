@@ -40,8 +40,6 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// Success
-		log.Traceln("Authenticated request OK for", r.URL.Path, "from", r.RemoteAddr, r.UserAgent())
 		handler(w, r)
 	}
 }

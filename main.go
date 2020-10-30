@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/owncast/owncast/logging"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 
@@ -80,6 +81,7 @@ func getVersion() string {
 }
 
 func configureLogging() {
+	logging.Setup()
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})

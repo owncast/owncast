@@ -71,6 +71,12 @@ func Start() error {
 	// Get a a detailed list of currently connected clients
 	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(controllers.GetConnectedClients))
 
+	// Get all logs
+	http.HandleFunc("/api/admin/logs", middleware.RequireAdminAuth(admin.GetLogs))
+
+	// Get warning/error logs
+	http.HandleFunc("/api/admin/logs/warnings", middleware.RequireAdminAuth(admin.GetWarnings))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Infof("Web server running on port: %d", port)
