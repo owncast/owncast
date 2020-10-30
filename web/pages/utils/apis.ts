@@ -25,9 +25,14 @@ export const VIEWERS_OVER_TIME = `${API_LOCATION}viewersOverTime`;
 // Get currently connected clients
 export const CONNECTED_CLIENTS = `${API_LOCATION}clients`;
 
-
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
+
+// Get all logs
+export const LOGS_ALL = `${API_LOCATION}logs`;
+
+// Get warnings + errors
+export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 
 // Current Stream status.
 // This is literally the same as /api/status except it supports

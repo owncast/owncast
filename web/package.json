@@ -18,6 +18,7 @@
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-linkify": "^1.0.0-alpha",
     "recharts": "^1.8.5",
     "sass": "^1.26.11"
   },

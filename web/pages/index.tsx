@@ -13,9 +13,12 @@ import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { BroadcastStatusContext } from "./utils/broadcast-status-context";
 import StatisticItem from "./components/statistic"
+import LogTable from "./components/log-table";
+
 import {
   STREAM_STATUS,
   SERVER_CONFIG,
+  LOGS_WARN,
   fetchData,
   FETCH_INTERVAL,
 } from "./utils/apis";
@@ -50,11 +53,16 @@ export default function Stats() {
     } catch (error) {
       console.log(error);
     }
+
+    getConfig();
+    getLogs();
   };
 
 
   // Pull in the server config so we can show config overview.
   const [config, setConfig] = useState([]);
+  const [logs, setLogs] = useState([]);
+
   const getConfig = async () => {
     try {
       const result = await fetchData(SERVER_CONFIG);
@@ -64,10 +72,18 @@ export default function Stats() {
     }
   };
 
+  const getLogs = async () => {
+    try {
+      const result = await fetchData(LOGS_WARN);
+      setLogs(result);
+    } catch (error) {
+      console.log("==== error", error);
+    }
+  };
+
   useEffect(() => {
     setInterval(getStats, FETCH_INTERVAL);
     getStats();
-    getConfig();
   }, []);
 
   if (isEmptyObject(config) || isEmptyObject(stats)) {
@@ -107,8 +123,9 @@ export default function Stats() {
     );
   });
 
+  const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
   const { viewerCount, sessionMaxViewerCount, lastConnectTime } = stats;
-  const streamVideoDetailString = `${streamDetails.width}x${streamDetails.height} ${streamDetails.videoBitrate} kbps ${streamDetails.framerate} fps `;
+  const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
   const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`;
 
   return (
@@ -167,6 +184,8 @@ export default function Stats() {
           prefix={null}
         />
       </Row>
+
+      {logTable}
     </div>
   );
 }

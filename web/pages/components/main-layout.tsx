@@ -98,8 +98,8 @@ export default function MainLayout(props) {
             <Menu.Item key="storage">
               <Link href="/storage">Storage</Link>
             </Menu.Item>
-            <Menu.Item key="update-stream-key">
-              <Link href="/update-stream-key">Change Stream Key</Link>
+            <Menu.Item key="logs">
+              <Link href="/logs">Logs</Link>
             </Menu.Item>
           </SubMenu>
         </Menu>

@@ -9,13 +9,14 @@ interface ToolTipProps {
 const defaultProps = {
   active: false,
   payload: {},
+  unit: ""
 };
 
 interface ChartProps {
-  data: number,
+  data: [{}],
   color: string,
   unit: string,
-  dataCollections?: [],
+  dataCollections?: {},
 }
 
 function CustomizedTooltip(props: ToolTipProps) {
@@ -40,7 +41,7 @@ export default function Chart({ data, color, unit, dataCollections }: ChartProps
   };
 
   if (dataCollections) {
-    var ticks = dataCollections[0]?.data.map(function (collection) {
+    var ticks = dataCollections?[0].data.map(function (collection) {
       return collection?.time;
     })
   } else {
