@@ -25,6 +25,11 @@ components:
       items:
         $ref: '#/components/schemas/Client'
 
+    LogEntryArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/LogEntry'
+
     Client:
       type: object
       description: A single representation of a client.
@@ -193,6 +198,19 @@ components:
           format: date-time
         value:
           type: integer
+    LogEntry:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+          description: "Timestamp for this log entry"
+        level:
+          type: string
+          description: "The level of this log entry"
+        message:
+          type: string
+          description: "The log entry contents"
 
 
   securitySchemes:
@@ -221,6 +239,18 @@ components:
               countryCode: US
               regionName: California
               timeZone: America/Los_Angeles
+
+    LogsResponse:
+      description: Response of server log entries
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LogEntryArray"
+          examples:
+            success:
+              summary: Logs returned
+              value: [{"message":"Owncast v0.0.0-localdev (unknown)","level":"info","time":"2020-10-29T18:35:34.422386-07:00"},{"message":"Web server running on port: 8080","level":"info","time":"2020-10-29T18:35:35.011731-07:00"},{"message":"RTMP server is listening for incoming stream on port: 1935","level":"info","time":"2020-10-29T18:35:35.011823-07:00"}]
+
 
     BasicResponse:
       description: Operation Success/Failure Response
@@ -479,6 +509,28 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/ClientsResponse"
+
+  /api/admin/logs:
+    get:
+      summary: Return recent log entries
+      description: Returns server logs.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/LogsResponse"
+
+  /api/admin/logs/warnings:
+    get:
+      summary: Return recent warning and error logs.
+      description: Return recent warning and error logs.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/LogsResponse"
 
 
   /api/admin/changekey:
