@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "cssnano": "^4.1.10",
-    "postcss-cli": "^8.1.0"
+    "postcss-cli": "^8.2.0"
   },
   "snowpack": {
     "install": [
