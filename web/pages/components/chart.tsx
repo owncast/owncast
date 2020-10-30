@@ -41,7 +41,7 @@ export default function Chart({ data, color, unit, dataCollections }: ChartProps
   };
 
   if (dataCollections) {
-    var ticks = dataCollections?[0].data.map(function (collection) {
+    var ticks = dataCollections[0].data?.map(function (collection) {
       return collection?.time;
     })
   } else {
