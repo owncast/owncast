@@ -20,7 +20,7 @@ func Start() error {
 	http.HandleFunc("/", controllers.IndexHandler)
 
 	// admin static files
-	http.HandleFunc("/admin/", admin.ServeAdmin)
+	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
 
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
