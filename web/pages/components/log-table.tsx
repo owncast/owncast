@@ -69,6 +69,7 @@ export default function LogTable({ logs, pageSize }) {
   return (
     <div>
       <Table
+        size="middle"
         dataSource={logs}
         columns={columns}
         rowKey={(row) => row.time}

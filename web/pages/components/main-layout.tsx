@@ -69,13 +69,10 @@ export default function MainLayout(props) {
           <SubMenu
             key="current-stream-menu"
             icon={<LineChartOutlined />}
-            title="Stream Details"
+            title="Current stream"
           >
             <Menu.Item key="viewer-info">
               <Link href="/viewer-info">Viewers</Link>
-            </Menu.Item>
-            <Menu.Item key="hardware-info">
-              <Link href="/hardware-info">Hardware</Link>
             </Menu.Item>
             {broadcastActive ? (
               <Menu.Item key="disconnect-stream" icon={<CloseCircleOutlined />}>
@@ -85,9 +82,9 @@ export default function MainLayout(props) {
           </SubMenu>
 
           <SubMenu
-            key="utilities-menu"
+            key="configuration"
+            title="Configuration"
             icon={<SettingOutlined />}
-            title="Utilities"
           >
             <Menu.Item key="update-server-config">
               <Link href="/update-server-config">Server Configuration</Link>
@@ -97,6 +94,16 @@ export default function MainLayout(props) {
             </Menu.Item>
             <Menu.Item key="storage">
               <Link href="/storage">Storage</Link>
+            </Menu.Item>
+          </SubMenu>
+
+          <SubMenu
+            key="utilities-menu"
+            icon={<SettingOutlined />}
+            title="Utilities"
+          >
+            <Menu.Item key="hardware-info">
+              <Link href="/hardware-info">Hardware</Link>
             </Menu.Item>
             <Menu.Item key="logs">
               <Link href="/logs">Logs</Link>
