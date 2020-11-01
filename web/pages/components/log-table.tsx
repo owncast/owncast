@@ -2,6 +2,28 @@ import React from "react";
 import { timeFormat } from "d3-time-format";
 import { Table, } from "antd";
 import Linkify from "react-linkify";
+import { SortOrder } from "antd/lib/table/interface";
+
+function renderColumnLevel(text, entry) {
+  let color = 'black';
+
+  if (entry.level === "warning") {
+    color = "orange";
+  } else if (entry.level === 'error') {
+    color = "red";
+  }
+
+  const style = {
+    color,
+  };
+  return <div style={style}>{text}</div>;
+}
+
+function renderMessage(text, entry) {
+  return (
+    <Linkify>{text}</Linkify>
+  )
+}
 
 export default function LogTable({ logs, pageSize }) {
   const columns = [
@@ -33,8 +55,8 @@ export default function LogTable({ logs, pageSize }) {
       render: (timestamp) =>
         timeFormat("%H:%M:%S %m/%d/%Y")(new Date(timestamp)),
       sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
-      sortDirections: ["descend", "ascend"],
-      defaultSortOrder: "descend",
+      sortDirections: ["descend", "ascend"] as SortOrder[],
+      defaultSortOrder: "descend" as SortOrder,
     },
     {
       title: "Message",
@@ -57,23 +79,3 @@ export default function LogTable({ logs, pageSize }) {
   );
 }
 
-function renderColumnLevel(text, entry) {
-  let color = 'black';
-
-  if (entry.level === "warning") {
-    color = "orange";
-  } else if (entry.level === 'error') {
-    color = "red";
-  }
-
-  const style = {
-    color,
-  };
-  return <div style={style}>{text}</div>;
-}
-
-function renderMessage(text, entry) {
-  return (
-    <Linkify>{text}</Linkify>
-  )
-}

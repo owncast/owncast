@@ -5,7 +5,8 @@ interface ToolTipProps {
   active?: boolean,
   payload?: object,
   unit?: string
-};
+}
+
 const defaultProps = {
   active: false,
   payload: {},
@@ -13,11 +14,15 @@ const defaultProps = {
 };
 
 interface ChartProps {
-  data: [{}],
+  data: [{
+    time: string,
+  }],
   color: string,
   unit: string,
-  dataCollections?: {},
+  dataCollections?: any,
 }
+
+
 
 function CustomizedTooltip(props: ToolTipProps) {
   const { active, payload, unit } = props;
@@ -40,15 +45,11 @@ export default function Chart({ data, color, unit, dataCollections }: ChartProps
     return timeFormat("%I:%M")(new Date(tick));
   };
 
+  let ticks = data.map((item) => item?.time);
   if (dataCollections) {
-    var ticks = dataCollections[0].data?.map(function (collection) {
-      return collection?.time;
-    })
-  } else {
-    var ticks = data.map(function (item) {
-      return item?.time;
-    });
+    ticks = dataCollections[0].data?.map((collection) => collection?.time);
   }
+
   return (
     <LineChart width={1200} height={400} data={data}>
       <XAxis
@@ -90,3 +91,7 @@ export default function Chart({ data, color, unit, dataCollections }: ChartProps
     </LineChart>
   );
 }
+
+Chart.defaultProps = {
+  dataCollections: [],
+};
