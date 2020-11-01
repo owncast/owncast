@@ -19,13 +19,18 @@ function renderColumnLevel(text, entry) {
   return <div style={style}>{text}</div>;
 }
 
-function renderMessage(text, entry) {
+function renderMessage(text) {
   return (
     <Linkify>{text}</Linkify>
   )
 }
 
-export default function LogTable({ logs, pageSize }) {
+interface Props {
+  logs: object[],
+  pageSize: number
+}
+
+export default function LogTable({ logs, pageSize }: Props) {
   const columns = [
     {
       title: "Level",

@@ -1,12 +1,13 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Table, Typography } from 'antd';
-import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from './utils/apis';
+import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from '../utils/apis';
 
 const { Title } = Typography;
 
 
 function VideoVariants({ config }) {
-  if (!config) {
+  if (!config || !config.videoSettings) {
     return null;
   }
 
@@ -80,7 +81,7 @@ function VideoVariants({ config }) {
 }
 
 export default function VideoConfig() {  
-  const [config, setConfig] = useState();
+  const [config, setConfig] = useState({});
 
   const getInfo = async () => {
     try {

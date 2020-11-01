@@ -1,18 +1,20 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useContext } from 'react';
 import { timeFormat } from "d3-time-format";
 import { Table, Row } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { UserOutlined} from "@ant-design/icons";
+import { SortOrder } from "antd/lib/table/interface";
 import Chart from "./components/chart";
 import StatisticItem from "./components/statistic";
 
-import { BroadcastStatusContext } from './utils/broadcast-status-context';
+import { BroadcastStatusContext } from '../utils/broadcast-status-context';
 
 import {
   CONNECTED_CLIENTS,
   STREAM_STATUS, VIEWERS_OVER_TIME,
   fetchData,
-} from "./utils/apis";
+} from "../utils/apis";
 
 const FETCH_INTERVAL = 5 * 60 * 1000; // 5 mins
 
@@ -78,14 +80,14 @@ export default function ViewersOverTime() {
       key: "username",
       render: (username) => username || "-",
       sorter: (a, b) => a.username - b.username,
-      sortDirections: ["descend", "ascend"],
+      sortDirections: ["descend", "ascend"] as SortOrder[],
     },
     {
       title: "Messages sent",
       dataIndex: "messageCount",
       key: "messageCount",
       sorter: (a, b) => a.messageCount - b.messageCount,
-      sortDirections: ["descend", "ascend"],
+      sortDirections: ["descend", "ascend"] as SortOrder[],
     },
     {
       title: "Connected Time",
@@ -106,34 +108,6 @@ export default function ViewersOverTime() {
     },
   ];
 
-  const timeFormatter = (tick) => {
-    return timeFormat("%H:%M")(new Date(tick));
-  };
-
-  const CustomizedTooltip = (props) => {
-    const { active, payload, label } = props;
-    if (active) {
-      const numViewers = payload && payload[0] && payload[0].value;
-      const time = timeFormatter(label);
-      const message = `${numViewers} viewer(s) at ${time}`;
-      return (
-        <div className="custom-tooltip">
-          <p className="label">{message}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  /*
-geo data looks like this
-  "geo": {
-    "countryCode": "US",
-    "regionName": "California",
-    "timeZone": "America/Los_Angeles"
-  }
-*/
-  
   return (
     <div>
       <h2>Current Viewers</h2>

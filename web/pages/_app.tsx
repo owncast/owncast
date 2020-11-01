@@ -3,7 +3,7 @@ import 'antd/dist/antd.compact.css';
 import "../styles/globals.scss";
 
 import { AppProps } from 'next/app';
-import BroadcastStatusProvider from './utils/broadcast-status-context';
+import BroadcastStatusProvider from '../utils/broadcast-status-context';
 import MainLayout from './components/main-layout';
 
 

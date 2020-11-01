@@ -9,20 +9,23 @@ interface ToolTipProps {
 
 const defaultProps = {
   active: false,
-  payload: {},
-  unit: ""
+  payload: Object,
+  unit: "",
 };
 
-interface ChartProps {
-  data: [{
-    time: string,
-  }],
-  color: string,
-  unit: string,
-  dataCollections?: any,
+interface TimedValue {
+  time: Date;
+  value: Number;
 }
 
-
+interface ChartProps {
+  // eslint-disable-next-line react/require-default-props
+  data?: TimedValue[],
+  color: string,
+  unit: string,
+  // eslint-disable-next-line react/require-default-props
+  dataCollections?: any[],
+}
 
 function CustomizedTooltip(props: ToolTipProps) {
   const { active, payload, unit } = props;
@@ -41,13 +44,23 @@ function CustomizedTooltip(props: ToolTipProps) {
 CustomizedTooltip.defaultProps = defaultProps;
 
 export default function Chart({ data, color, unit, dataCollections }: ChartProps) {
+  if (!data && !dataCollections) {
+    return null;
+  }
+
   const timeFormatter = (tick: string) => {
     return timeFormat("%I:%M")(new Date(tick));
   };
 
-  let ticks = data.map((item) => item?.time);
-  if (dataCollections) {
-    ticks = dataCollections[0].data?.map((collection) => collection?.time);
+  let ticks
+  if (dataCollections.length > 0) {
+    ticks = dataCollections[0].data?.map(function (collection) {
+      return collection?.time;
+    })
+  } else if (data?.length > 0){
+    ticks = data?.map(function (item) {
+      return item?.time;
+    });
   }
 
   return (

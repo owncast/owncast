@@ -9,14 +9,13 @@ import {
   LineChartOutlined,
   CloseCircleOutlined,
   PlayCircleFilled,
-  StopFilled,
   MinusSquareFilled,
 } from '@ant-design/icons';
 import classNames from 'classnames';
 
 
 import OwncastLogo from './logo';
-import { BroadcastStatusContext } from '../utils/broadcast-status-context';
+import { BroadcastStatusContext } from '../../utils/broadcast-status-context';
 
 import adminStyles from '../../styles/styles.module.css';
 

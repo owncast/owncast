@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BroadcastStatusContext } from './utils/broadcast-status-context';
+import { BroadcastStatusContext } from '../utils/broadcast-status-context';
 
 
 export default function BroadcastInfo() {

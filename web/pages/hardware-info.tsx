@@ -1,16 +1,22 @@
+/* eslint-disable no-array-constructor */
 import React, { useState, useEffect } from 'react';
-import { Row, Skeleton, Empty, Typography } from "antd";
+import { Row } from "antd";
 import {LaptopOutlined, BulbOutlined, SaveOutlined} from "@ant-design/icons"
-import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from './utils/apis';
+import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from '../utils/apis';
 import Chart from './components/chart';
 import StatisticItem from "./components/statistic";
 
+interface TimedValue {
+  time: Date,
+  value: Number
+}
+
 export default function HardwareInfo() {
   const [hardwareStatus, setHardwareStatus] = useState({
-    cpu: 0,
-    memory: 0,
-    disk: 0,
-    message: '',
+    cpu: Array<TimedValue>(),
+    memory: Array<TimedValue>(),
+    disk: Array<TimedValue>(),
+    message: "",
   });
 
   const getHardwareStatus = async () => {

@@ -4,7 +4,7 @@ import LogTable from "./components/log-table"
 import {
   LOGS_ALL,
   fetchData,
-} from "./utils/apis";
+} from "../utils/apis";
 
 const FETCH_INTERVAL = 5 * 1000; // 5 sec
 

@@ -11,7 +11,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Row, Skeleton, Empty, Typography } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
-import { BroadcastStatusContext } from "./utils/broadcast-status-context";
+import { BroadcastStatusContext } from "../utils/broadcast-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 
@@ -21,8 +21,8 @@ import {
   LOGS_WARN,
   fetchData,
   FETCH_INTERVAL,
-} from "./utils/apis";
-import { formatIPAddress, isEmptyObject } from "./utils/format";
+} from "../utils/apis";
+import { formatIPAddress, isEmptyObject } from "../utils/format";
 
 const { Title } = Typography;
 
@@ -60,7 +60,22 @@ export default function Stats() {
 
 
   // Pull in the server config so we can show config overview.
-  const [config, setConfig] = useState([]);
+  const [config, setConfig] = useState({
+    streamKey: "",
+    yp: {
+      enabled: false,
+    },
+    videoSettings: {
+      videoQualityVariants: [
+        {
+          audioPassthrough: false,
+          videoBitrate: 0,
+          audioBitrate: 0,
+          framerate: 0,
+        },
+      ],
+    },
+  });
   const [logs, setLogs] = useState([]);
 
   const getConfig = async () => {
@@ -108,6 +123,7 @@ export default function Stats() {
         : `${setting.audioBitrate} kbps`;
     
     return (
+      // eslint-disable-next-line react/no-array-index-key
       <Row gutter={[16, 16]} key={index}>
         <StatisticItem
           title="Outbound Video Stream"

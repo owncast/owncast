@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
-import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from "./utils/apis";
+import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from "../utils/apis";
 import KeyValueTable from "./components/key-value-table";
 
 function Storage({ config }) {
-  if (!config) {
+  if (!config || !config.s3) {
     return null;
   }
 
@@ -46,7 +47,7 @@ function Storage({ config }) {
 }
 
 export default function ServerConfig() {
-  const [config, setConfig] = useState();
+  const [config, setConfig] = useState({});
 
   const getInfo = async () => {
     try {

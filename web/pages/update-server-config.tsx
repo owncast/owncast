@@ -1,7 +1,8 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Table, Typography, Input } from 'antd';
-import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from './utils/apis';
-import { isEmptyObject } from './utils/format';
+import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from '../utils/apis';
+import { isEmptyObject } from '../utils/format';
 import KeyValueTable from "./components/key-value-table";
 
 const { Title } = Typography;
@@ -27,20 +28,23 @@ function SocialHandles({ config }) {
     },
   ];
 
-  return (
-    <div>
-      <Title>Social Handles</Title>
-      <Table
-        pagination={false}
-        columns={columns}
-        dataSource={config.instanceDetails.socialHandles}
-      />
-    </div>
-  );
+  if (!config.instanceDetails?.socialHandles) {
+    return null;
+  }
+
+    return (
+      <div>
+        <Title>Social Handles</Title>
+        <Table
+          pagination={false}
+          columns={columns}
+          dataSource={config.instanceDetails.socialHandles}
+        />
+      </div>
+    );
 }
 
 function InstanceDetails({ config }) {
-  console.log(config)
   if (!config || isEmptyObject(config)) {
     return null;
   }
@@ -102,7 +106,7 @@ function InstanceDetails({ config }) {
 }
 
 function PageContent({ config }) {
-  if (!config) {
+  if (!config?.instanceDetails?.extraPageContent) {
     return null;
   }
   return (
@@ -117,7 +121,7 @@ function PageContent({ config }) {
 }
 
 export default function ServerConfig() {  
-  const [config, setConfig] = useState();
+  const [config, setConfig] = useState({});
 
   const getInfo = async () => {
     try {
