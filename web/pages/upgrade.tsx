@@ -11,7 +11,7 @@ export default function Logs() {
     created_at: null,
     body: "",
     assets: [],
-    
+
   });
 
   const getRelease = async () => {
@@ -58,7 +58,7 @@ function AssetTable(assets) {
       dataIndex: "name",
       key: "name",
       render: (text, entry) =>
-        `<a href="${entry.browser_download_url}">${text}</a>`,
+        <a href={entry.browser_download_url}>{text}</a>,
     },
     {
       title: "Size",
@@ -69,7 +69,7 @@ function AssetTable(assets) {
     },
   ];
 
-  return <Table dataSource={data} columns={columns} rowKey="id" />;
+  return <Table dataSource={data} columns={columns} rowKey="id" size="large" />;
 }
 
 async function fetchData(url) {

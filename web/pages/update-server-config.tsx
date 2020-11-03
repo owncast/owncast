@@ -24,7 +24,7 @@ function SocialHandles({ config }) {
       title: "URL",
       dataIndex: "url",
       key: "url",
-      render: (url) => `<a href="${url}">${url}</a>`
+      render: (url) => <a href={url}>{url}</a>
     },
   ];
 
