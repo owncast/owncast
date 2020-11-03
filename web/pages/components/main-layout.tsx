@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
+import { differenceInSeconds } from "date-fns";
 import { useRouter } from 'next/router';
 import { Layout, Menu } from 'antd';
 import {
@@ -12,7 +13,7 @@ import {
   MinusSquareFilled,
 } from '@ant-design/icons';
 import classNames from 'classnames';
-
+import {parseSecondsToDurationString} from '../../utils/format'
 
 import OwncastLogo from './logo';
 import { BroadcastStatusContext } from '../../utils/broadcast-status-context';
@@ -31,10 +32,14 @@ export default function MainLayout(props) {
   const { Header, Footer, Content, Sider } = Layout;
   const { SubMenu } = Menu;
 
+  const streamDurationString = broadcastActive ?
+    parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(context.broadcaster.time))) : ""
+
   const statusIcon = broadcastActive ?
     <PlayCircleFilled /> : <MinusSquareFilled />;
-    const statusMessage = broadcastActive ?
-    'Online' : 'Offline';
+    const statusMessage = broadcastActive
+      ? `Online ${  streamDurationString}`
+      : "Offline";
 
   const appClass = classNames({
     'owncast-layout': true,

@@ -1,6 +1,6 @@
 import React from "react";
 import { timeFormat } from "d3-time-format";
-import { Table, } from "antd";
+import { Table, Tag} from "antd";
 import Linkify from "react-linkify";
 import { SortOrder } from "antd/lib/table/interface";
 
@@ -13,10 +13,7 @@ function renderColumnLevel(text, entry) {
     color = "red";
   }
 
-  const style = {
-    color,
-  };
-  return <div style={style}>{text}</div>;
+  return <Tag color={color}>{text}</Tag>;
 }
 
 function renderMessage(text) {
