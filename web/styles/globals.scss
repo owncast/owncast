@@ -23,3 +23,12 @@ a {
 .owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: $owncast-purple;
 }
+
+// misc system overrides
+.ant-card {
+  border-radius: .5em;
+}
+
+.recharts-wrapper {
+  font-size: 12px;
+}

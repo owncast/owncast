@@ -13,7 +13,7 @@ import {
   MinusSquareFilled,
 } from '@ant-design/icons';
 import classNames from 'classnames';
-import {parseSecondsToDurationString} from '../../utils/format'
+import { parseSecondsToDurationString } from '../../utils/format'
 
 import OwncastLogo from './logo';
 import { BroadcastStatusContext } from '../../utils/broadcast-status-context';
@@ -24,7 +24,7 @@ export default function MainLayout(props) {
   const { children } = props;
 
   const context = useContext(BroadcastStatusContext);
-  const { broadcastActive } = context || {};
+  const { broadcastActive, broadcaster } = context || {};
 
   const router = useRouter();
   const { route } = router || {};
@@ -33,7 +33,7 @@ export default function MainLayout(props) {
   const { SubMenu } = Menu;
 
   const streamDurationString = broadcastActive ?
-    parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(context.broadcaster.time))) : ""
+    parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : ""
 
   const statusIcon = broadcastActive ?
     <PlayCircleFilled /> : <MinusSquareFilled />;
@@ -56,7 +56,7 @@ export default function MainLayout(props) {
       >
         <Menu
           theme="dark"
-          defaultSelectedKeys={[route.substring(1)]}
+          defaultSelectedKeys={[route.substring(1) || "home"]}
           defaultOpenKeys={["current-stream-menu", "utilities-menu"]}
           mode="inline"
         >

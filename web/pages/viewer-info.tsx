@@ -35,7 +35,6 @@ export default function ViewersOverTime() {
 
     try {
       const result = await fetchData(CONNECTED_CLIENTS);
-      console.log("result", result);
       setClients(result);
     } catch (error) {
       console.log("==== error", error);
@@ -70,7 +69,6 @@ export default function ViewersOverTime() {
   if (!viewerInfo.length) {
     return "no info";
   }
-
 
   const columns = [
     {
@@ -124,11 +122,8 @@ export default function ViewersOverTime() {
       </Row>
       <div className="chart-container">
         <Chart data={viewerInfo} color="#ff84d8" unit="" />
-
-        <div>
-          <Table dataSource={clients} columns={columns} />;
-        </div>
       </div>
+      <Table dataSource={clients} columns={columns} />;
     </div>
   );
 }
