@@ -53,7 +53,7 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 	if err != nil {
 		log.Panicln(err)
 	}
-	log.Infof("RTMP server is listening for incoming stream on port: %d", port)
+	log.Tracef("RTMP server is listening for incoming stream on port: %d", port)
 
 	for {
 		nc, err := lis.Accept()

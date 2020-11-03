@@ -65,6 +65,9 @@ func Start() error {
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)
 
+	log.Infoln("Web server is listening on port 8080, RTMP is accepting inbound streams on port 1935.")
+	log.Infoln("The web admin interface is available at /admin.")
+
 	return nil
 }
 

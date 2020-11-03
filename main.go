@@ -75,7 +75,6 @@ func main() {
 		log.Error("failed to start/run the router")
 		panic(err)
 	}
-
 }
 
 //getReleaseString gets the version string
