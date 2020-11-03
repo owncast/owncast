@@ -23,6 +23,7 @@ import {
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
+import OwncastLogo from "./components/logo"
 
 const { Title } = Typography;
 
@@ -30,7 +31,10 @@ function Offline() {
   return (
     <div>
       <Empty
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        image={<OwncastLogo />}
+        imageStyle={{
+          height: 60,
+        }}
         description={
           <span>There is no stream currently active. Start one.</span>
         }
