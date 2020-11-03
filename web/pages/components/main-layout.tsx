@@ -112,6 +112,9 @@ export default function MainLayout(props) {
             <Menu.Item key="logs">
               <Link href="/logs">Logs</Link>
             </Menu.Item>
+            <Menu.Item key="upgrade">
+              <Link href="/upgrade">Upgrade</Link>
+            </Menu.Item>
           </SubMenu>
         </Menu>
       </Sider>
