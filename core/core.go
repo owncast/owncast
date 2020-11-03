@@ -96,6 +96,9 @@ func transitionToOfflineVideoStreamContent() {
 
 	// Copy the logo to be the thumbnail
 	utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
+
+	// Delete the preview Gif
+	os.Remove(path.Join(config.WebRoot, "preview.gif"))
 }
 
 func resetDirectories() {
