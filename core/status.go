@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 )
 
@@ -17,6 +18,7 @@ func GetStatus() models.Status {
 		SessionMaxViewerCount: _stats.SessionMaxViewerCount,
 		LastDisconnectTime:    _stats.LastDisconnectTime,
 		LastConnectTime:       _stats.LastConnectTime,
+		VersionNumber:         config.Config.VersionNumber,
 	}
 }
 

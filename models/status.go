@@ -11,4 +11,6 @@ type Status struct {
 
 	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
+
+	VersionNumber string `json:"versionNumber"`
 }

@@ -21,6 +21,7 @@ type config struct {
 	InstanceDetails     InstanceDetails `yaml:"instanceDetails"`
 	S3                  S3              `yaml:"s3"`
 	VersionInfo         string          `yaml:"-"` // For storing the version/build number
+	VersionNumber       string          `yaml:"-"`
 	VideoSettings       videoSettings   `yaml:"videoSettings"`
 	WebServerPort       int             `yaml:"webServerPort"`
 	YP                  YP              `yaml:"yp"`
@@ -228,7 +229,7 @@ func (q *StreamQuality) GetEncoderPreset() string {
 }
 
 //Load tries to load the configuration file
-func Load(filePath string, versionInfo string) error {
+func Load(filePath string, versionInfo string, versionNumber string) error {
 	Config = new(config)
 	_default = getDefaults()
 
@@ -237,6 +238,6 @@ func Load(filePath string, versionInfo string) error {
 	}
 
 	Config.VersionInfo = versionInfo
-
+	Config.VersionNumber = versionNumber
 	return Config.verifySettings()
 }

@@ -28,7 +28,7 @@ var (
 func main() {
 	configureLogging()
 
-	log.Infoln(getVersion())
+	log.Infoln(getReleaseString())
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	dbFile := flag.String("database", "", "Path to the database file.")
@@ -47,7 +47,7 @@ func main() {
 		log.SetLevel(log.InfoLevel)
 	}
 
-	if err := config.Load(*configFile, getVersion()); err != nil {
+	if err := config.Load(*configFile, getReleaseString(), getVersionNumber()); err != nil {
 		panic(err)
 	}
 	config.Config.EnableDebugFeatures = *enableDebugOptions
@@ -75,9 +75,13 @@ func main() {
 
 }
 
-//getVersion gets the version string
-func getVersion() string {
+//getReleaseString gets the version string
+func getReleaseString() string {
 	return fmt.Sprintf("Owncast v%s-%s (%s)", BuildVersion, BuildType, GitCommit)
+}
+
+func getVersionNumber() string {
+	return BuildVersion
 }
 
 func configureLogging() {
