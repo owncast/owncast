@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { Table, Tag } from "antd";
-
-const API_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
+import { getGithubRelease } from "../utils/apis";
 
 export default function Logs() {
   const [release, setRelease] = useState({
@@ -16,7 +15,7 @@ export default function Logs() {
 
   const getRelease = async () => {
     try {
-      const result = await fetchData(API_URL);
+      const result = await getGithubRelease();
       setRelease(result);
     } catch (error) {
       console.log("==== error", error);
@@ -72,17 +71,3 @@ function AssetTable(assets) {
   return <Table dataSource={data} columns={columns} rowKey="id" size="large" />;
 }
 
-async function fetchData(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log(error);
-  }
-  return {};
-}

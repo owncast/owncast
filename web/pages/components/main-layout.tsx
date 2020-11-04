@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { differenceInSeconds } from "date-fns";
 import { useRouter } from 'next/router';
 import { Layout, Menu } from 'antd';
+
 import {
   SettingOutlined,
   HomeOutlined,
@@ -13,6 +14,7 @@ import {
   MinusSquareFilled,
 } from '@ant-design/icons';
 import classNames from 'classnames';
+import { upgradeVersionAvailable } from "../../utils/apis";
 import { parseSecondsToDurationString } from '../../utils/format'
 
 import OwncastLogo from './logo';
@@ -41,10 +43,28 @@ export default function MainLayout(props) {
       ? `Online ${  streamDurationString}`
       : "Offline";
 
+  const [upgradeVersion, setUpgradeVersion] = useState(null);
+  const checkForUpgrade = async () => {
+    try {
+      const result = await upgradeVersionAvailable();
+      setUpgradeVersion(result);
+    } catch (error) {
+      console.log("==== error", error);
+    }
+  };
+
+  useEffect(() => {
+    checkForUpgrade();
+  }, []);
+
   const appClass = classNames({
     'owncast-layout': true,
     [adminStyles.online]: broadcastActive,
   })
+
+  const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
+  const upgradeVersionString = upgradeVersion || '';
+
   return (
     <Layout className={appClass}>
       <Sider
@@ -112,8 +132,10 @@ export default function MainLayout(props) {
             <Menu.Item key="logs">
               <Link href="/logs">Logs</Link>
             </Menu.Item>
-            <Menu.Item key="upgrade">
-              <Link href="/upgrade">Upgrade</Link>
+            <Menu.Item key="upgrade" style={{ display: upgradeMenuItemStyle }}>
+              <Link href="/upgrade">
+                <a>Upgrade to v{upgradeVersionString}</a>
+              </Link>
             </Menu.Item>
           </SubMenu>
         </Menu>
