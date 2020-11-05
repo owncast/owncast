@@ -57,8 +57,8 @@ func NewClient(ws *websocket.Conn) *Client {
 
 	ipAddress := utils.GetIPAddressFromRequest(ws.Request())
 	userAgent := ws.Request().UserAgent()
-	clientID := utils.GenerateClientIDFromRequest(ws.Request())
 	socketID, _ := shortid.Generate()
+	clientID := socketID
 
 	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
 }

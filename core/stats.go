@@ -43,30 +43,7 @@ func setupStats() error {
 		}
 	}()
 
-	staleViewerPurgeTimer := time.NewTicker(3 * time.Second)
-	go func() {
-		for {
-			select {
-			case <-staleViewerPurgeTimer.C:
-				purgeStaleViewers()
-			}
-		}
-	}()
-
 	return nil
-}
-
-func purgeStaleViewers() {
-	for clientID, client := range _stats.Clients {
-		if client.LastSeen.IsZero() {
-			continue
-		}
-
-		timeSinceLastActive := time.Since(client.LastSeen).Minutes()
-		if timeSinceLastActive > 1 {
-			RemoveClient(clientID)
-		}
-	}
 }
 
 //IsStreamConnected checks if the stream is connected or not

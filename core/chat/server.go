@@ -108,7 +108,7 @@ func (s *server) Listen() {
 		// remove a client
 		case c := <-s.delCh:
 			delete(s.Clients, c.socketID)
-			s.listener.ClientRemoved(c.ClientID)
+			s.listener.ClientRemoved(c.socketID)
 
 			// message was recieved from a client and should be sanitized, validated
 			// and distributed to other clients.
