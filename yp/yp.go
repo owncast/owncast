@@ -18,6 +18,7 @@ import (
 const pingInterval = 4 * time.Minute
 
 var getStatus func() models.Status
+var _inErrorState = false
 
 //YP is a service for handling listing in the Owncast directory.
 type YP struct {
@@ -97,9 +98,14 @@ func (yp *YP) ping() {
 	json.Unmarshal(body, &pingResponse)
 
 	if !pingResponse.Success {
-		log.Debugln("YP Ping error returned from service:", pingResponse.Error)
+		if !_inErrorState {
+			log.Warnln("YP Ping error returned from service:", pingResponse.Error)
+		}
+		_inErrorState = true
 		return
 	}
+
+	_inErrorState = false
 
 	if pingResponse.Key != key {
 		yp.writeSavedKey(pingResponse.Key)
