@@ -123,6 +123,10 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 }
 
 func handleDisconnect(conn net.Conn) {
+	if !_hasInboundRTMPConnection {
+		return
+	}
+
 	log.Infoln("RTMP disconnected.")
 	conn.Close()
 	_pipe.Close()
