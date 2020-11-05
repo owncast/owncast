@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -66,6 +67,15 @@ func (yp *YP) Stop() {
 
 func (yp *YP) ping() {
 	myInstanceURL := config.Config.YP.InstanceURL
+	isValidInstanceURL := isUrl(myInstanceURL)
+	if myInstanceURL == "" || !isValidInstanceURL {
+		if !_inErrorState {
+			log.Warnln("YP Error: unable to use", myInstanceURL, "as a public instance URL. Fix this value in your configuration.")
+		}
+		_inErrorState = true
+		return
+	}
+
 	key := yp.getSavedKey()
 
 	log.Traceln("Pinging YP as: ", config.Config.InstanceDetails.Name)
@@ -141,4 +151,8 @@ func (yp *YP) getSavedKey() string {
 func DisplayInstructions() {
 	text := "Your instance can be listed on the Owncast directory at http://directory.owncast.online by enabling YP in your config.  Learn more at https://directory.owncast.online/get-listed."
 	log.Debugln(text)
+}
+func isUrl(str string) bool {
+	u, err := url.Parse(str)
+	return err == nil && u.Scheme != "" && u.Host != ""
 }
