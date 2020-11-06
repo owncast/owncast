@@ -419,24 +419,20 @@ paths:
                       - name: parrot
                         emoji: /img/emoji/parrot.gif
 
-  /api/admin/broadcaster:
+  /api/admin/status:
     get:
-      summary: "Broadcaster Details"
+      summary: "Server status and broadcaster"
       tags: ["Admin"]
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          description: Connected Broadcaster Details
+          description: Server status and broadcaster details
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
                   broadcaster:
                     type: object
                     properties:
@@ -464,12 +460,28 @@ paths:
                             type: string
                           encoder:
                             type: string
+                  online:
+                    type: boolean
+                    description: Is a stream currently active
+                  viewerCount:
+                    type: integer
+                    description: The current number of viewers
+                  sessionPeakViewerCount:
+                    type: integer
+                    description: The peak number of viewers this streaming session
+                  overallPeakViewerCount:
+                    type: integer
+                    description: The all-time peak number of viewers
+                  versionNumber:
+                    type: string
+                    description: The current version of the owncast software
+                  disableUpgradeChecks:
+                    type: boolean
+                    description: Turn off checking for owncast releases
               examples:
                 connected:
                   summary: "Broadcaster Connected"
                   value:
-                    success: true
-                    message: ""
                     broadcaster:
                       remoteAddr: 172.217.164.110
                       time: "2020-10-06T23:20:44.588649-07:00"
@@ -482,11 +494,13 @@ paths:
                         audioBitrate: 256
                         audioCodec: "aac"
                         encoder: "obs-output module (libobs version 25.0.8)"
-                not-connected:
-                  summary: "Broadcaster Not Connected"
-                  value:
-                    success: false
-                    message: "no broadcaster connected"
+                    online: true
+                    viewerCount: 3
+                    overallPeakViewerCount: 4
+                    sessionPeakViewerCount: 4
+                    versionNumber: "0.0.3"
+                    disableUpgradeChecks: false
+
 
   /api/admin/disconnect:
     post:
