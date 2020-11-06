@@ -19,6 +19,9 @@ func Start() error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
 
+	// admin static files
+	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
+
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 
@@ -76,7 +79,7 @@ func Start() error {
 
 	port := config.Config.GetPublicWebServerPort()
 
-	log.Infof("Web server running on port: %d", port)
+	log.Tracef("Web server running on port: %d", port)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }

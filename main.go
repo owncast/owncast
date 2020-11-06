@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
@@ -29,6 +30,8 @@ func main() {
 	configureLogging()
 
 	log.Infoln(getReleaseString())
+	// Enable bundling of admin assets
+	pkger.Include("/admin")
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	dbFile := flag.String("database", "", "Path to the database file.")
@@ -72,7 +75,6 @@ func main() {
 		log.Error("failed to start/run the router")
 		panic(err)
 	}
-
 }
 
 //getReleaseString gets the version string
