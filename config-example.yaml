@@ -26,3 +26,5 @@ videoSettings:
   # Change this value and keep it secure.  Treat it like a password to your live stream.
   streamingKey: abc123
 
+# Set to true if you don't want the service checking for future releases.
+disableUpgradeChecks: false
