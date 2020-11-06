@@ -25,7 +25,7 @@ var (
 	_broadcaster *models.Broadcaster
 )
 
-var handler ffmpeg.HLSHandler
+var handler *ffmpeg.HLSHandler = &ffmpeg.HLSHandler{}
 var fileWriter = ffmpeg.FileWriterReceiverService{}
 
 //Start starts up the core processing
@@ -45,9 +45,8 @@ func Start() error {
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now
 	// but will play more useful when recordings come into play.
-	handler = ffmpeg.HLSHandler{}
-	handler.Storage = _storage
-	fileWriter.SetupFileWriterReceiverService(&handler)
+	handler = ffmpeg.NewHLSHandler(_storage, config.Config.GetVideoSegmentSecondsLength())
+	fileWriter.SetupFileWriterReceiverService(handler)
 
 	if err := createInitialOfflineState(); err != nil {
 		log.Error("failed to create the initial offline state")
