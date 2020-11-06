@@ -7,23 +7,27 @@ import { SortOrder } from "antd/lib/table/interface";
 import Chart from "./components/chart";
 import StatisticItem from "./components/statistic";
 
-import { BroadcastStatusContext } from '../utils/broadcast-status-context';
+import { ServerStatusContext } from '../utils/server-status-context';
 
 import {
   CONNECTED_CLIENTS,
-  STREAM_STATUS, VIEWERS_OVER_TIME,
+  VIEWERS_OVER_TIME,
   fetchData,
 } from "../utils/apis";
 
 const FETCH_INTERVAL = 5 * 60 * 1000; // 5 mins
 
 export default function ViewersOverTime() {
-  const context = useContext(BroadcastStatusContext);
-  const { broadcastActive } = context || {};
+  const context = useContext(ServerStatusContext);
+  const {
+    broadcastActive,
+    viewerCount,
+    overallPeakViewerCount,
+    sessionPeakViewerCount,
+  } = context || {};
 
   const [viewerInfo, setViewerInfo] = useState([]);
   const [clients, setClients] = useState([]);
-  const [stats, setStats] = useState(null);
 
   const getInfo = async () => {
     try {
@@ -39,14 +43,6 @@ export default function ViewersOverTime() {
     } catch (error) {
       console.log("==== error", error);
     }
-
-    try {
-      const result = await fetchData(STREAM_STATUS);
-      setStats(result);
-    } catch (error) {
-      console.log(error);
-    }
-
   };
 
   useEffect(() => {
@@ -111,12 +107,17 @@ export default function ViewersOverTime() {
       <Row gutter={[16, 16]}>
         <StatisticItem
           title="Current viewers"
-          value={stats?.viewerCount ?? ""}
+          value={viewerCount.toString()}
           prefix={<UserOutlined />}
         />
         <StatisticItem
           title="Peak viewers this session"
-          value={stats?.sessionMaxViewerCount ?? ""}
+          value={sessionPeakViewerCount.toString()}
+          prefix={<UserOutlined />}
+        />
+        <StatisticItem
+          title="Peak viewers overall"
+          value={overallPeakViewerCount.toString()}
           prefix={<UserOutlined />}
         />
       </Row>

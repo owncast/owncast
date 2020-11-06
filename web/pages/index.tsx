@@ -11,12 +11,12 @@ import React, { useState, useEffect, useContext } from "react";
 import { Row, Skeleton, Result, List, Typography, Card } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
-import { BroadcastStatusContext } from "../utils/broadcast-status-context";
+import { ServerStatusContext } from "../utils/server-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 
 import {
-  STREAM_STATUS,
+  STATUS,
   SERVER_CONFIG,
   LOGS_WARN,
   fetchData,
@@ -82,7 +82,7 @@ function Offline() {
 }
 
 export default function Stats() {
-  const context = useContext(BroadcastStatusContext);
+  const context = useContext(ServerStatusContext);
   const { broadcaster } = context || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
 
@@ -90,7 +90,7 @@ export default function Stats() {
   const [stats, setStats] = useState(null);
   const getStats = async () => {
     try {
-      const result = await fetchData(STREAM_STATUS);
+      const result = await fetchData(STATUS);
       setStats(result);
     } catch (error) {
       console.log(error);
@@ -182,7 +182,7 @@ export default function Stats() {
   });
 
   const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
-  const { viewerCount, sessionMaxViewerCount, lastConnectTime } = stats;
+  const { viewerCount, sessionMaxViewerCount } = stats;
   const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
   const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`;
 
@@ -192,10 +192,10 @@ export default function Stats() {
       <Row gutter={[16, 16]}>
         <StatisticItem
           title={`Stream started ${formatRelative(
-            new Date(lastConnectTime),
+            new Date(broadcaster.time),
             new Date()
           )}`}
-          value={formatDistanceToNow(new Date(lastConnectTime))}
+          value={formatDistanceToNow(new Date(broadcaster.time))}
           prefix={<ClockCircleOutlined />}
         />
         <StatisticItem

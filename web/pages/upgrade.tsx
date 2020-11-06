@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import { Table, Tag } from "antd";
+import { Table, Typography } from "antd";
 import { getGithubRelease } from "../utils/apis";
+
+const { Title } = Typography;
 
 export default function Logs() {
   const [release, setRelease] = useState({
@@ -32,13 +34,11 @@ export default function Logs() {
 
   return (
     <div>
-      <h2>
+      <Title level={2}>
         <a href={release.html_url}>{release.name}</a>
-      </h2>
-      <h1>{release.created_at}</h1>
-      <ReactMarkdown>{release.body}</ReactMarkdown>;
-
-      <h3>Downloads</h3>
+      </Title>
+      <Title level={5}>{new Date(release.created_at).toDateString()}</Title>
+      <ReactMarkdown>{release.body}</ReactMarkdown>;<h3>Downloads</h3>
       <AssetTable {...release.assets} />
     </div>
   );
