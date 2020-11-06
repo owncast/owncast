@@ -11,7 +11,7 @@
     "preact": "^10.5.5",
     "tailwindcss": "^1.9.6",
     "video.js": "7.10.2",
-    "@videojs/http-streaming": "2.2.4"
+    "@videojs/http-streaming": "2.3.0"
   },
   "devDependencies": {
     "cssnano": "^4.1.10",
