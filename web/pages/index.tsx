@@ -8,12 +8,13 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Row, Skeleton, Result, List, Typography, Card } from "antd";
+import { Row, Skeleton, Typography } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { BroadcastStatusContext } from "../utils/broadcast-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
+import Offline from './offline-notice';
 
 import {
   STREAM_STATUS,
@@ -23,65 +24,11 @@ import {
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
-import OwncastLogo from "./components/logo"
 
 const { Title } = Typography;
 
-function Offline() {
-  const data = [
-    {
-      title: "Send some test content",
-      content: (
-        <div>
-          With any video you have around you can pass it to the test script and start streaming it.
-          <blockquote>
-            <em>./test/ocTestStream.sh yourVideo.mp4</em>
-          </blockquote>
-        </div>
-      ),
-    },
-    {
-      title: "Use your broadcasting software",
-      content: (
-        <div>
-          <a href="https://owncast.online/docs/broadcasting/">Learn how to point your existing software to your new server and start streaming your content.</a>
-        </div>
-      )
-    },
-    {
-      title: "Something else",
-    },
-  ];
-  return (
-    <div>
-      <Result
-        icon={<OwncastLogo />}
-        title="No stream is active."
-        subTitle="You should start one."
-      />
 
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 4,
-          lg: 4,
-          xl: 6,
-          xxl: 3,
-        }}
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <Card title={item.title}>{item.content}</Card>
-          </List.Item>
-        )}
-      />
-    </div>
-  );
-}
-
-export default function Stats() {
+export default function Home() {
   const context = useContext(BroadcastStatusContext);
   const { broadcaster } = context || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
@@ -158,15 +105,14 @@ export default function Stats() {
   }
   
   const videoSettings = config.videoSettings.videoQualityVariants;
-  const videoQualitySettings = videoSettings.map((setting, index) => {
+  const videoQualitySettings = videoSettings.map((setting) => {
     const audioSetting =
       setting.audioPassthrough || setting.audioBitrate === 0
         ? `${streamDetails.audioBitrate} kpbs (passthrough)`
         : `${setting.audioBitrate} kbps`;
     
     return (
-      // eslint-disable-next-line react/no-array-index-key
-      <Row gutter={[16, 16]} key={index}>
+      <Row gutter={[16, 16]} key={`setting-${setting.videoBitrate}`}>
         <StatisticItem
           title="Outbound Video Stream"
           value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
