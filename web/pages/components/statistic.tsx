@@ -6,7 +6,7 @@ interface ItemProps {
   value: string,
   prefix: JSX.Element,
   color: string,
-  progress: boolean,
+  progress?: boolean,
 };
 
 export default function StatisticItem(props: ItemProps) {
@@ -41,8 +41,8 @@ function ProgressView({title, value, prefix, color}) {
   )
 }
 
-function StatisticView({title, value, prefix}) {
-  const valueStyle = { color: "#334", fontSize: "1.8rem" };
+function StatisticView({title, value, prefix, color}) {
+  const valueStyle = { fontSize: "1.8rem" };
 
   return (
     <Statistic

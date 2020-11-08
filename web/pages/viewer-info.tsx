@@ -109,16 +109,19 @@ export default function ViewersOverTime() {
           title="Current viewers"
           value={viewerCount.toString()}
           prefix={<UserOutlined />}
+          color="#334"
         />
         <StatisticItem
           title="Peak viewers this session"
           value={sessionPeakViewerCount.toString()}
           prefix={<UserOutlined />}
+          color="#334"
         />
         <StatisticItem
           title="Peak viewers overall"
           value={overallPeakViewerCount.toString()}
           prefix={<UserOutlined />}
+          color="#334"
         />
       </Row>
       <div className="chart-container">

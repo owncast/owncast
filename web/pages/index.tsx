@@ -122,11 +122,13 @@ export default function Stats() {
           title="Outbound Video Stream"
           value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Outbound Audio Stream"
           value={audioSetting}
           prefix={null}
+          color="#334"
         />
       </Row>
     );
@@ -147,16 +149,19 @@ export default function Stats() {
           )}`}
           value={formatDistanceToNow(new Date(broadcaster.time))}
           prefix={<ClockCircleOutlined />}
+          color="#334"
         />
         <StatisticItem
           title="Viewers"
           value={viewerCount}
           prefix={<UserOutlined />}
+          color="#334"
         />
         <StatisticItem
           title="Peak viewer count"
           value={sessionMaxViewerCount}
           prefix={<UserOutlined />}
+          color="#334"
         />
       </Row>
 
@@ -165,16 +170,19 @@ export default function Stats() {
           title="Input"
           value={formatIPAddress(remoteAddr)}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Inbound Video Stream"
           value={streamVideoDetailString}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Inbound Audio Stream"
           value={streamAudioDetailString}
           prefix={null}
+          color="#334"
         />
       </Row>
 
@@ -185,11 +193,13 @@ export default function Stats() {
           title="Stream key"
           value={config.streamKey}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Directory registration enabled"
           value={config.yp.enabled.toString()}
           prefix={null}
+          color="#334"
         />
       </Row>
 
