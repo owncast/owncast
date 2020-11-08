@@ -1,5 +1,5 @@
 import { Typography, Statistic, Card, Col, Progress} from "antd";
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 interface ItemProps {
   title: string, 
@@ -16,9 +16,9 @@ export default function StatisticItem(props: ItemProps) {
   return (
     <Col span={8}>
       <Card>
-        <center>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <View {...props} />
-        </center>
+        </div>
       </Card>
     </Col>
   );
