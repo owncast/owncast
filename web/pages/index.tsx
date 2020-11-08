@@ -8,7 +8,7 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Row, Skeleton, Result, List, Typography, Card } from "antd";
+import { Row, Col, Skeleton, Result, List, Typography, Card } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
@@ -21,7 +21,6 @@ import {
   LOGS_WARN,
   fetchData,
   FETCH_INTERVAL,
-  LOGS_ALL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
 import OwncastLogo from "./components/logo"
@@ -204,7 +203,7 @@ export default function Stats() {
         title: "Send some test content",
         content: (
           <div>
-            With any video you have around you can pass it to the test script and start streaming it.
+            Test your server with any video you have around. Pass it to the test script and start streaming it.
             <blockquote>
               <em>./test/ocTestStream.sh yourVideo.mp4</em>
             </blockquote>
@@ -220,8 +219,17 @@ export default function Stats() {
         )
       },
       {
-        title: "Something else",
+        title: "Chat is disabled",
+        content: "Chat will continue to be disabled until you begin a live stream."
       },
+      {
+        title: "Embed your video onto other sites",
+        content: (
+          <div>
+            <a href="https://owncast.online/docs/embed">Learn how you can add your Owncast stream to other sites you control.</a>
+          </div>
+        )
+      }
     ];
     return (
       <div>
@@ -236,9 +244,9 @@ export default function Stats() {
             gutter: 16,
             xs: 1,
             sm: 2,
-            md: 4,
-            lg: 4,
-            xl: 6,
+            md: 2,
+            lg: 6,
+            xl: 3,
             xxl: 3,
           }}
           dataSource={data}
