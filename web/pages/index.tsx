@@ -21,65 +21,14 @@ import {
   LOGS_WARN,
   fetchData,
   FETCH_INTERVAL,
+  LOGS_ALL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
 import OwncastLogo from "./components/logo"
 
 const { Title } = Typography;
 
-function Offline() {
-  const data = [
-    {
-      title: "Send some test content",
-      content: (
-        <div>
-          With any video you have around you can pass it to the test script and start streaming it.
-          <blockquote>
-            <em>./test/ocTestStream.sh yourVideo.mp4</em>
-          </blockquote>
-        </div>
-      ),
-    },
-    {
-      title: "Use your broadcasting software",
-      content: (
-        <div>
-          <a href="https://owncast.online/docs/broadcasting/">Learn how to point your existing software to your new server and start streaming your content.</a>
-        </div>
-      )
-    },
-    {
-      title: "Something else",
-    },
-  ];
-  return (
-    <div>
-      <Result
-        icon={<OwncastLogo />}
-        title="No stream is active."
-        subTitle="You should start one."
-      />
 
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 4,
-          lg: 4,
-          xl: 6,
-          xxl: 3,
-        }}
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <Card title={item.title}>{item.content}</Card>
-          </List.Item>
-        )}
-      />
-    </div>
-  );
-}
 
 export default function Stats() {
   const context = useContext(ServerStatusContext);
@@ -153,6 +102,9 @@ export default function Stats() {
     );
   }
 
+  const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
+  console.log(logs)
+
   if (!broadcaster) {
     return <Offline />;
   }
@@ -181,7 +133,6 @@ export default function Stats() {
     );
   });
 
-  const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
   const { viewerCount, sessionMaxViewerCount } = stats;
   const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
   const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`;
@@ -246,4 +197,59 @@ export default function Stats() {
       {logTable}
     </div>
   );
+
+  function Offline() {
+    const data = [
+      {
+        title: "Send some test content",
+        content: (
+          <div>
+            With any video you have around you can pass it to the test script and start streaming it.
+            <blockquote>
+              <em>./test/ocTestStream.sh yourVideo.mp4</em>
+            </blockquote>
+          </div>
+        ),
+      },
+      {
+        title: "Use your broadcasting software",
+        content: (
+          <div>
+            <a href="https://owncast.online/docs/broadcasting/">Learn how to point your existing software to your new server and start streaming your content.</a>
+          </div>
+        )
+      },
+      {
+        title: "Something else",
+      },
+    ];
+    return (
+      <div>
+        <Result
+          icon={<OwncastLogo />}
+          title="No stream is active."
+          subTitle="You should start one."
+        />
+  
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 4,
+            lg: 4,
+            xl: 6,
+            xxl: 3,
+          }}
+          dataSource={data}
+          renderItem={(item) => (
+            <List.Item>
+              <Card title={item.title}>{item.content}</Card>
+            </List.Item>
+          )}
+        />
+        {logTable}
+      </div>
+    );
+  }
 }

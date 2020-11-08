@@ -1,8 +1,8 @@
 /* eslint-disable no-array-constructor */
-import React, { useState, useEffect } from 'react';
+import { BulbOutlined, LaptopOutlined, SaveOutlined } from "@ant-design/icons";
 import { Row } from "antd";
-import {LaptopOutlined, BulbOutlined, SaveOutlined} from "@ant-design/icons"
-import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from '../utils/apis';
+import React, { useEffect, useState } from 'react';
+import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../utils/apis';
 import Chart from './components/chart';
 import StatisticItem from "./components/statistic";
 
