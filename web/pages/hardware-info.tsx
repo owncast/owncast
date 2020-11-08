@@ -76,19 +76,25 @@ const series = [
           <h2>Hardware Info</h2>
           <Row gutter={[16, 16]}>
             <StatisticItem
-              title="CPU used"
-              value={`${currentCPUUsage} %`}
-              prefix={<LaptopOutlined />}
+              title="CPU"
+              value={`${currentCPUUsage}`}
+              prefix={<LaptopOutlined style={{color: '#FF7700' }}/>}
+              color="#FF7700"
+              progress
             />
             <StatisticItem
-              title="Memory used"
-              value={`${currentRamUsage} %`}
-              prefix={<BulbOutlined />}
+              title="RAM"
+              value={`${currentRamUsage}`}
+              prefix={<BulbOutlined style={{color: '#004777' }} />}
+              color="#004777"
+              progress
             />
             <StatisticItem
-              title="Disk used"
-              value={`${currentDiskUsage} %`}
-              prefix={<SaveOutlined />}
+              title="Disk"
+              value={`${currentDiskUsage}`}
+              prefix={<SaveOutlined  style={{color: '#A9E190' }} />}
+              color="#A9E190"
+              progress
             />
           </Row>
 
