@@ -3,8 +3,6 @@ package config
 import (
 	"os/exec"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func getDefaults() config {
@@ -40,7 +38,7 @@ func getDefaultFFMpegPath() string {
 	cmd := exec.Command("which", "ffmpeg")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Debugln("Unable to determine path to ffmpeg. Please specify it in the config file.")
+		panic("Unable to determine path to ffmpeg. Please specify it in the config file.")
 	}
 
 	path := strings.TrimSpace(string(out))
