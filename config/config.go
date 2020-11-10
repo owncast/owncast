@@ -3,6 +3,8 @@ package config
 import (
 	"errors"
 	"io/ioutil"
+	"os/exec"
+	"strings"
 
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -184,7 +186,23 @@ func (c *config) GetFFMpegPath() string {
 		return c.FFMpegPath
 	}
 
-	return _default.FFMpegPath
+	// First look to see if ffmpeg is in the current working directory
+	localCopy := "./ffmpeg"
+	hasLocalCopyError := verifyFFMpegPath(localCopy)
+	if hasLocalCopyError == nil {
+		// No error, so all is good.  Use the local copy.
+		return localCopy
+	}
+
+	cmd := exec.Command("which", "ffmpeg")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Debugln("Unable to determine path to ffmpeg. Please specify it in the config file.")
+	}
+
+	path := strings.TrimSpace(string(out))
+
+	return path
 }
 
 func (c *config) GetYPServiceHost() string {
