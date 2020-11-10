@@ -3,3 +3,6 @@ contact_links:
   - name: Owncast Rocket.Chat
     url: http://owncast.rocket.chat/
     about: Join our community chat to ask questions, join in, or follow along.
+  - name: Discussion Forum
+    url: https://github.com/owncast/owncast/discussions
+    name: For general conversation, thoughts, feedback, project logistics, and other discussion around things that aren't bugs, tasks or todos.
