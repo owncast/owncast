@@ -16,9 +16,12 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
+	// Determine if the requested path is a directory.
+	// If so, append index.html to the request.
 	path := r.URL.Path
-	if path == "/admin" || path == "/admin/" {
-		path = "/admin/index.html"
+	dirCheck, err := pkger.Stat(path)
+	if dirCheck != nil && err == nil && dirCheck.IsDir() {
+		path = filepath.Join(path, "index.html")
 	}
 
 	f, err := pkger.Open(path)
