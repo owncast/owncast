@@ -96,7 +96,6 @@ func (t *Transcoder) Start() {
 	if t.TranscoderCompleted != nil {
 		t.TranscoderCompleted(err)
 	}
-	return
 }
 
 func (t *Transcoder) getString() string {
@@ -175,7 +174,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 	}
 
 	if quality.VideoBitrate == 0 {
-		quality.VideoBitrate = 1000
+		quality.VideoBitrate = 1200
 	}
 
 	// If the video is being passed through then
