@@ -31,6 +31,7 @@ func createTable() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer stmt.Close()
 	stmt.Exec()
 }
 
