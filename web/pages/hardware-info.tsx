@@ -81,6 +81,7 @@ const series = [
               prefix={<LaptopOutlined style={{color: series[0].color }}/>}
               color={series[0].color}
               progress
+              centered
             />
             <StatisticItem
               title={series[1].name}
@@ -88,6 +89,7 @@ const series = [
               prefix={<BulbOutlined style={{color: series[1].color }} />}
               color={series[1].color}
               progress
+              centered
             />
             <StatisticItem
               title={series[2].name}
@@ -95,6 +97,7 @@ const series = [
               prefix={<SaveOutlined  style={{color: series[2].color }} />}
               color={series[2].color}
               progress
+              centered
             />
           </Row>
 

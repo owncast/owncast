@@ -7,16 +7,18 @@ interface ItemProps {
   prefix: JSX.Element,
   color: string,
   progress?: boolean,
+  centered: boolean,
 };
 
 export default function StatisticItem(props: ItemProps) {
   const { title, value, prefix } = props;
   const View = props.progress ? ProgressView : StatisticView;
+  const style = props.centered ? {display: 'flex', alignItems: 'center', justifyContent: 'center'} : {};
 
   return (
     <Col span={8}>
       <Card>
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <div style={style}>
           <View {...props} />
         </div>
       </Card>
