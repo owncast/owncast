@@ -15,12 +15,12 @@ import (
 	"mvdan.cc/xurls"
 )
 
-//GetTemporaryPipePath gets the temporary path for the streampipe.flv file
+// GetTemporaryPipePath gets the temporary path for the streampipe.flv file.
 func GetTemporaryPipePath() string {
 	return filepath.Join(os.TempDir(), "streampipe.flv")
 }
 
-//DoesFileExists checks if the file exists
+// DoesFileExists checks if the file exists.
 func DoesFileExists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
 		if os.IsNotExist(err) {
@@ -31,7 +31,7 @@ func DoesFileExists(name string) bool {
 	return true
 }
 
-//GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path
+// GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path.
 func GetRelativePathFromAbsolutePath(path string) string {
 	pathComponents := strings.Split(path, "/")
 	variant := pathComponents[len(pathComponents)-2]
@@ -47,7 +47,7 @@ func GetIndexFromFilePath(path string) string {
 	return variant
 }
 
-//Copy copies the file to destination
+// Copy copies the file to destination.
 func Copy(source, destination string) error {
 	input, err := ioutil.ReadFile(source)
 	if err != nil {
@@ -57,12 +57,12 @@ func Copy(source, destination string) error {
 	return ioutil.WriteFile(destination, input, 0644)
 }
 
-//Move moves the file to destination
+// Move moves the file to destination.
 func Move(source, destination string) error {
 	return os.Rename(source, destination)
 }
 
-// IsUserAgentABot returns if a web client user-agent is seen as a bot
+// IsUserAgentABot returns if a web client user-agent is seen as a bot.
 func IsUserAgentABot(userAgent string) bool {
 	if userAgent == "" {
 		return false
@@ -111,7 +111,7 @@ func RenderSimpleMarkdown(raw string) string {
 	return buf.String()
 }
 
-// GetCacheDurationSecondsForPath will return the number of seconds to cache an item
+// GetCacheDurationSecondsForPath will return the number of seconds to cache an item.
 func GetCacheDurationSecondsForPath(filePath string) int {
 	if path.Base(filePath) == "thumbnail.jpg" {
 		// Thumbnails re-generate during live

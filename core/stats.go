@@ -46,7 +46,7 @@ func setupStats() error {
 	return nil
 }
 
-//IsStreamConnected checks if the stream is connected or not
+// IsStreamConnected checks if the stream is connected or not.
 func IsStreamConnected() bool {
 	if !_stats.StreamConnected {
 		return false
@@ -62,7 +62,7 @@ func IsStreamConnected() bool {
 	return _stats.StreamConnected
 }
 
-//SetClientActive sets a client as active and connected
+// SetClientActive sets a client as active and connected.
 func SetClientActive(client models.Client) {
 	l.Lock()
 	// If this clientID already exists then update it.
@@ -88,7 +88,7 @@ func SetClientActive(client models.Client) {
 	}
 }
 
-//RemoveClient removes a client from the active clients record
+// RemoveClient removes a client from the active clients record.
 func RemoveClient(clientID string) {
 	log.Trace("Removing the client:", clientID)
 

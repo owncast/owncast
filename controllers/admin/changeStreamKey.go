@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ChangeStreamKey will change the stream key (in memory)
+// ChangeStreamKey will change the stream key (in memory).
 func ChangeStreamKey(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")

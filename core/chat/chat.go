@@ -7,7 +7,7 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-//Setup sets up the chat server
+// Setup sets up the chat server.
 func Setup(listener models.ChatListener) {
 	setupPersistence()
 
@@ -32,7 +32,7 @@ func Setup(listener models.ChatListener) {
 	}
 }
 
-//Start starts the chat server
+// Start starts the chat server.
 func Start() error {
 	if _server == nil {
 		return errors.New("chat server is nil")
@@ -53,7 +53,7 @@ func Start() error {
 	return errors.New("chat server failed to start")
 }
 
-//SendMessage sends a message to all
+// SendMessage sends a message to all.
 func SendMessage(message models.ChatMessage) {
 	if _server == nil {
 		return
@@ -62,7 +62,7 @@ func SendMessage(message models.ChatMessage) {
 	_server.SendToAll(message)
 }
 
-//GetMessages gets all of the messages
+// GetMessages gets all of the messages.
 func GetMessages() []models.ChatMessage {
 	if _server == nil {
 		return []models.ChatMessage{}

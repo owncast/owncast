@@ -7,7 +7,7 @@ import (
 	"github.com/owncast/owncast/config"
 )
 
-// GetServerConfig gets the config details of the server
+// GetServerConfig gets the config details of the server.
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	var videoQualityVariants = make([]config.StreamQuality, 0)
 	for _, variant := range config.Config.GetVideoStreamQualities() {

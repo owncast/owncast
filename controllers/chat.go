@@ -9,7 +9,7 @@ import (
 	"github.com/owncast/owncast/router/middleware"
 )
 
-//GetChatMessages gets all of the chat messages
+// GetChatMessages gets all of the chat messages.
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 

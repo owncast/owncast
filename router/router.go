@@ -14,7 +14,7 @@ import (
 	"github.com/owncast/owncast/yp"
 )
 
-//Start starts the router for the http, ws, and rtmp
+// Start starts the router for the http, ws, and rtmp.
 func Start() error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)

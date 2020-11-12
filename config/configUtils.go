@@ -36,7 +36,7 @@ func findHighestQuality(qualities []StreamQuality) int {
 	return indexedQualities[0].index
 }
 
-// MarshalJSON is a custom JSON marshal function for video stream qualities
+// MarshalJSON is a custom JSON marshal function for video stream qualities.
 func (q *StreamQuality) MarshalJSON() ([]byte, error) {
 	type Alias StreamQuality
 	return json.Marshal(&struct {

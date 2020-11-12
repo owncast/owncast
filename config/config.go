@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//Config contains a reference to the configuration
+// Config contains a reference to the configuration.
 var Config *config
 var _default config
 
@@ -91,7 +91,7 @@ type files struct {
 	MaxNumberInPlaylist int `yaml:"maxNumberInPlaylist"`
 }
 
-//S3 is for configuring the S3 integration
+// S3 is for configuring the S3 integration.
 type S3 struct {
 	Enabled         bool   `yaml:"enabled" json:"enabled"`
 	Endpoint        string `yaml:"endpoint" json:"endpoint,omitempty"`
@@ -229,7 +229,7 @@ func (c *config) GetVideoStreamQualities() []StreamQuality {
 	return _default.VideoSettings.StreamQualities
 }
 
-// GetFramerate returns the framerate or default
+// GetFramerate returns the framerate or default.
 func (q *StreamQuality) GetFramerate() int {
 	if q.Framerate > 0 {
 		return q.Framerate
@@ -238,7 +238,7 @@ func (q *StreamQuality) GetFramerate() int {
 	return _default.VideoSettings.StreamQualities[0].Framerate
 }
 
-// GetEncoderPreset returns the preset or default
+// GetEncoderPreset returns the preset or default.
 func (q *StreamQuality) GetEncoderPreset() string {
 	if q.EncoderPreset != "" {
 		return q.EncoderPreset
@@ -247,7 +247,7 @@ func (q *StreamQuality) GetEncoderPreset() string {
 	return _default.VideoSettings.StreamQualities[0].EncoderPreset
 }
 
-//Load tries to load the configuration file
+// Load tries to load the configuration file.
 func Load(filePath string, versionInfo string, versionNumber string) error {
 	Config = new(config)
 	_default = getDefaults()

@@ -20,7 +20,7 @@ type OCLogger struct {
 
 var Logger *OCLogger
 
-// Setup configures our custom logging destinations
+// Setup configures our custom logging destinations.
 func Setup() {
 	logger.SetOutput(os.Stdout) // Send all logs to console
 
@@ -30,7 +30,7 @@ func Setup() {
 	Logger = _logger
 }
 
-// Fire runs for every logging request
+// Fire runs for every logging request.
 func (l *OCLogger) Fire(e *logger.Entry) error {
 	// Store all log messages to return back in the logging API
 	l.mu.Lock()
@@ -44,7 +44,7 @@ func (l *OCLogger) Fire(e *logger.Entry) error {
 	return nil
 }
 
-// Levels specifies what log levels we care about
+// Levels specifies what log levels we care about.
 func (l *OCLogger) Levels() []logrus.Level {
 	return logrus.AllLevels
 }

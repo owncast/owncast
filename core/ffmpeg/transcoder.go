@@ -15,7 +15,7 @@ import (
 
 var _commandExec *exec.Cmd
 
-// Transcoder is a single instance of a video transcoder
+// Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
 	input                string
 	segmentOutputPath    string
@@ -30,7 +30,7 @@ type Transcoder struct {
 	TranscoderCompleted  func(error)
 }
 
-// HLSVariant is a combination of settings that results in a single HLS stream
+// HLSVariant is a combination of settings that results in a single HLS stream.
 type HLSVariant struct {
 	index int
 
@@ -45,13 +45,13 @@ type HLSVariant struct {
 	encoderPreset string // A collection of automatic settings for the encoder. https://trac.ffmpeg.org/wiki/Encode/H.264#crf
 }
 
-// VideoSize is the scaled size of the video output
+// VideoSize is the scaled size of the video output.
 type VideoSize struct {
 	Width  int
 	Height int
 }
 
-// getString returns a WxH formatted getString for scaling video output
+// getString returns a WxH formatted getString for scaling video output.
 func (v *VideoSize) getString() string {
 	widthString := strconv.Itoa(v.Width)
 	heightString := strconv.Itoa(v.Height)
@@ -197,7 +197,7 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 	return variant
 }
 
-// NewTranscoder will return a new Transcoder, populated by the config
+// NewTranscoder will return a new Transcoder, populated by the config.
 func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
@@ -248,7 +248,7 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 	return strings.Join(variantEncoderCommands, " ")
 }
 
-// Get the command flags for the variants
+// Get the command flags for the variants.
 func (t *Transcoder) getVariantsString() string {
 	var variantsCommandFlags = ""
 	var variantsStreamMaps = " -var_stream_map \""
@@ -267,12 +267,12 @@ func (t *Transcoder) getVariantsString() string {
 // If we'd like to keep the aspect ratio, we need to specify only one component, either width or height.
 // Some codecs require the size of width and height to be a multiple of n. You can achieve this by setting the width or height to -n.
 
-// SetVideoScalingWidth will set the scaled video width of this variant
+// SetVideoScalingWidth will set the scaled video width of this variant.
 func (v *HLSVariant) SetVideoScalingWidth(width int) {
 	v.videoSize.Width = width
 }
 
-// SetVideoScalingHeight will set the scaled video height of this variant
+// SetVideoScalingHeight will set the scaled video height of this variant.
 func (v *HLSVariant) SetVideoScalingHeight(height int) {
 	v.videoSize.Height = height
 }
@@ -284,7 +284,7 @@ func (v *HLSVariant) getScalingString() string {
 
 // Video Quality
 
-// SetVideoBitrate will set the output bitrate of this variant's video
+// SetVideoBitrate will set the output bitrate of this variant's video.
 func (v *HLSVariant) SetVideoBitrate(bitrate int) {
 	v.videoBitrate = bitrate
 }
@@ -321,19 +321,19 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 	return strings.Join(cmd, " ")
 }
 
-// SetVideoFramerate will set the output framerate of this variant's video
+// SetVideoFramerate will set the output framerate of this variant's video.
 func (v *HLSVariant) SetVideoFramerate(framerate int) {
 	v.framerate = framerate
 }
 
-// SetEncoderPreset will set the video encoder preset of this variant
+// SetEncoderPreset will set the video encoder preset of this variant.
 func (v *HLSVariant) SetEncoderPreset(preset string) {
 	v.encoderPreset = preset
 }
 
 // Audio Quality
 
-// SetAudioBitrate will set the output framerate of this variant's audio
+// SetAudioBitrate will set the output framerate of this variant's audio.
 func (v *HLSVariant) SetAudioBitrate(bitrate string) {
 	v.audioBitrate = bitrate
 }
@@ -348,38 +348,38 @@ func (v *HLSVariant) getAudioQualityString() string {
 	return fmt.Sprintf("-map a:0 -c:a:%d %s -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
 }
 
-// AddVariant adds a new HLS variant to include in the output
+// AddVariant adds a new HLS variant to include in the output.
 func (t *Transcoder) AddVariant(variant HLSVariant) {
 	variant.index = len(t.variants)
 	t.variants = append(t.variants, variant)
 }
 
-// SetInput sets the input stream on the filesystem
+// SetInput sets the input stream on the filesystem.
 func (t *Transcoder) SetInput(input string) {
 	t.input = input
 }
 
-// SetOutputPath sets the root directory that should include playlists and video segments
+// SetOutputPath sets the root directory that should include playlists and video segments.
 func (t *Transcoder) SetOutputPath(output string) {
 	t.segmentOutputPath = output
 }
 
-// SetHLSPlaylistLength will set the max number of items in a HLS variant's playlist
+// SetHLSPlaylistLength will set the max number of items in a HLS variant's playlist.
 func (t *Transcoder) SetHLSPlaylistLength(length int) {
 	t.hlsPlaylistLength = length
 }
 
-// SetSegmentLength Specifies the number of seconds each segment should be
+// SetSegmentLength Specifies the number of seconds each segment should be.
 func (t *Transcoder) SetSegmentLength(seconds int) {
 	t.segmentLengthSeconds = seconds
 }
 
-// SetAppendToStream enables appending to the HLS stream instead of overwriting
+// SetAppendToStream enables appending to the HLS stream instead of overwriting.
 func (t *Transcoder) SetAppendToStream(append bool) {
 	t.appendToStream = append
 }
 
-// SetIdentifer enables appending a unique identifier to segment file name
+// SetIdentifer enables appending a unique identifier to segment file name.
 func (t *Transcoder) SetIdentifier(output string) {
 	t.segmentIdentifier = output
 }

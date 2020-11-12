@@ -15,7 +15,7 @@ import (
 var _geoIPCache = map[string]GeoDetails{}
 var _enabled = true // Try to use GeoIP support it by default.
 
-// GeoDetails stores details about a location
+// GeoDetails stores details about a location.
 type GeoDetails struct {
 	CountryCode string `json:"countryCode"`
 	RegionName  string `json:"regionName"`

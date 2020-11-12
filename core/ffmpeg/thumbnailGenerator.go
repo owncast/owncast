@@ -21,7 +21,7 @@ func StopThumbnailGenerator() {
 	}
 }
 
-//StartThumbnailGenerator starts generating thumbnails
+// StartThumbnailGenerator starts generating thumbnails.
 func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.

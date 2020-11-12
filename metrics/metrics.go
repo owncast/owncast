@@ -4,10 +4,10 @@ import (
 	"time"
 )
 
-// How often we poll for updates
+// How often we poll for updates.
 const metricsPollingInterval = 1 * time.Minute
 
-// CollectedMetrics stores different collected + timestamped values
+// CollectedMetrics stores different collected + timestamped values.
 type CollectedMetrics struct {
 	CPUUtilizations  []timestampedValue `json:"cpu"`
 	RAMUtilizations  []timestampedValue `json:"memory"`
@@ -16,10 +16,10 @@ type CollectedMetrics struct {
 	Viewers []timestampedValue `json:"-"`
 }
 
-// Metrics is the shared Metrics instance
+// Metrics is the shared Metrics instance.
 var Metrics *CollectedMetrics
 
-// Start will begin the metrics collection and alerting
+// Start will begin the metrics collection and alerting.
 func Start() {
 	Metrics = new(CollectedMetrics)
 	go startViewerCollectionMetrics()

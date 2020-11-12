@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ChangeExtraPageContent will change the optional page content
+// ChangeExtraPageContent will change the optional page content.
 func ChangeExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")

@@ -28,7 +28,7 @@ var (
 var handler ffmpeg.HLSHandler
 var fileWriter = ffmpeg.FileWriterReceiverService{}
 
-//Start starts up the core processing
+// Start starts up the core processing.
 func Start() error {
 	resetDirectories()
 
