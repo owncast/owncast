@@ -46,9 +46,8 @@ func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error
 	var files = make(map[string][]os.FileInfo)
 
 	var directory string
-	filepath.Walk(baseDirectory, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(baseDirectory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatalf(err.Error())
 			return err
 		}
 
@@ -62,6 +61,11 @@ func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error
 
 		return nil
 	})
+
+	if err != nil {
+		log.Fatalf(err.Error())
+		return nil, err
+	}
 
 	// Sort by date so we can delete old files
 	for directory := range files {
