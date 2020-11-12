@@ -77,7 +77,6 @@ export default function LogTable({ logs, pageSize }: Props) {
         rowKey={(row) => row.time}
         pagination={{ pageSize: pageSize || 20 }}
       />
-      ;
     </div>
   );
 }

@@ -127,7 +127,7 @@ export default function ViewersOverTime() {
       <div className="chart-container">
         <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
       </div>
-      <Table dataSource={clients} columns={columns} />;
+      <Table dataSource={clients} columns={columns} />
     </div>
   );
 }
