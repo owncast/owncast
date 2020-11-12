@@ -35,7 +35,13 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 	httpServer.HandleFunc("/", s.uploadHandler)
 
 	localListenerAddress := "127.0.0.1:" + strconv.Itoa(config.Config.GetPublicWebServerPort()+1)
-	go http.ListenAndServe(localListenerAddress, httpServer)
+
+	go func() {
+		if err := http.ListenAndServe(localListenerAddress, httpServer); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	log.Traceln("Transcoder response listening on: " + localListenerAddress)
 }
 
