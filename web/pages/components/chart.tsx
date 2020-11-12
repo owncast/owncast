@@ -5,7 +5,7 @@ import styles from '../../styles/styles.module.css';
 
 interface ToolTipProps {
   active?: boolean,
-  payload?: object,
+  payload?: {name: string, payload: {value: string, time: Date}}[],
   unit?: string
 }
 
@@ -32,12 +32,17 @@ function CustomizedTooltip(props: ToolTipProps) {
   const { active, payload, unit } = props;
   if (active && payload && payload[0]) {
     const time = payload[0].payload ? timeFormat("%I:%M")(new Date(payload[0].payload.time)) : "";
+
+    const tooltipDetails = payload.map(data => {
+      return <div className="label" key={data.name}>
+        {data.payload.value}{unit} {data.name}
+        </div>
+    });
     return (
-      <div className="custom-tooltip">
-        <p className="label">
-          <strong>{time}</strong> {payload[0].payload.value} {unit}
-        </p>
-      </div>
+      <span className="custom-tooltip">
+        <strong>{time}</strong>
+        {tooltipDetails}
+      </span>
     );
   }
   return null;
