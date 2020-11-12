@@ -55,17 +55,17 @@ export default function HardwareInfo() {
 const series = [
   {
     name: "CPU",
-    color: "#FF7700",
+    color: "#B63FFF",
     data: hardwareStatus.cpu,
   },
   {
     name: "Memory",
-    color: "#004777",
+    color: "#2087E2",
     data: hardwareStatus.memory,
   },
   {
     name: "Disk",
-    color: "#A9E190",
+    color: "#FF7700",
     data: hardwareStatus.disk,
   },
 ];
@@ -76,24 +76,24 @@ const series = [
           <h2>Hardware Info</h2>
           <Row gutter={[16, 16]}>
             <StatisticItem
-              title="CPU"
+              title={series[0].name}
               value={`${currentCPUUsage}`}
-              prefix={<LaptopOutlined style={{color: '#FF7700' }}/>}
-              color="#FF7700"
+              prefix={<LaptopOutlined style={{color: series[0].color }}/>}
+              color={series[0].color}
               progress
             />
             <StatisticItem
-              title="RAM"
+              title={series[1].name}
               value={`${currentRamUsage}`}
-              prefix={<BulbOutlined style={{color: '#004777' }} />}
-              color="#004777"
+              prefix={<BulbOutlined style={{color: series[1].color }} />}
+              color={series[1].color}
               progress
             />
             <StatisticItem
-              title="Disk"
+              title={series[2].name}
               value={`${currentDiskUsage}`}
-              prefix={<SaveOutlined  style={{color: '#A9E190' }} />}
-              color="#A9E190"
+              prefix={<SaveOutlined  style={{color: series[2].color }} />}
+              color={series[2].color}
               progress
             />
           </Row>

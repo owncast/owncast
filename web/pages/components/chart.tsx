@@ -22,6 +22,7 @@ interface TimedValue {
 
 interface ChartProps {
   data?: TimedValue[],
+  title?: string,
   color: string,
   unit: string,
   dataCollections?: any[],
@@ -43,7 +44,7 @@ function CustomizedTooltip(props: ToolTipProps) {
 }
 CustomizedTooltip.defaultProps = defaultProps;
 
-export default function Chart({ data, color, unit, dataCollections }: ChartProps) {
+export default function Chart({ data, title, color, unit, dataCollections }: ChartProps) {
   if (!data && !dataCollections) {
     return null;
   }
@@ -67,6 +68,18 @@ export default function Chart({ data, color, unit, dataCollections }: ChartProps
     });
   }
 
+  const line = data ? (
+    <Line
+    type="natural"
+    dataKey="value"
+    stroke={color}
+    dot={null}
+    strokeWidth={3}
+    legendType="square"
+    name={title}
+  />
+  ) : null;
+
   return (
     <div className={styles.lineChartContainer}>
       <LineChart width={chartWidth} height={chartHeight} data={data}>
@@ -87,23 +100,18 @@ export default function Chart({ data, color, unit, dataCollections }: ChartProps
         />
         <Tooltip content={<CustomizedTooltip unit={unit} />} />
         <Legend />
-        <Line
-          type="monotone"
-          dataKey="value"
-          stroke={color}
-          dot={null}
-          strokeWidth={3}
-        />
+        {line}
         {dataCollections?.map((s) => (
           <Line
             dataKey="value"
             data={s.data}
             name={s.name}
             key={s.name}
-            type="monotone"
+            type="natural"
             stroke={s.color}
             dot={null}
             strokeWidth={3}
+            legendType="square"
           />
         ))}
       </LineChart>
