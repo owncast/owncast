@@ -7,7 +7,7 @@ import (
 	"github.com/owncast/owncast/metrics"
 )
 
-// GetHardwareStats will return hardware utilization over time
+// GetHardwareStats will return hardware utilization over time.
 func GetHardwareStats(w http.ResponseWriter, r *http.Request) {
 	m := metrics.Metrics
 

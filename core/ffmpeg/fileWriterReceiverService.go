@@ -15,19 +15,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// FileWriterReceiverServiceCallback are to be fired when transcoder responses are written to disk
+// FileWriterReceiverServiceCallback are to be fired when transcoder responses are written to disk.
 type FileWriterReceiverServiceCallback interface {
 	SegmentWritten(localFilePath string)
 	VariantPlaylistWritten(localFilePath string)
 	MasterPlaylistWritten(localFilePath string)
 }
 
-// FileWriterReceiverService accepts transcoder responses via HTTP and fires the callbacks
+// FileWriterReceiverService accepts transcoder responses via HTTP and fires the callbacks.
 type FileWriterReceiverService struct {
 	callbacks FileWriterReceiverServiceCallback
 }
 
-// SetupFileWriterReceiverService will start listening for transcoder responses
+// SetupFileWriterReceiverService will start listening for transcoder responses.
 func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks FileWriterReceiverServiceCallback) {
 	s.callbacks = callbacks
 

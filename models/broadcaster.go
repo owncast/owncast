@@ -20,7 +20,7 @@ type InboundStreamDetails struct {
 	Encoder        string `json:"encoder"`
 }
 
-// RTMPStreamMetadata is the raw metadata that comes in with a RTMP connection
+// RTMPStreamMetadata is the raw metadata that comes in with a RTMP connection.
 type RTMPStreamMetadata struct {
 	Width          int         `json:"width"`
 	Height         int         `json:"height"`

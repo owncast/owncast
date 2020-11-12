@@ -22,7 +22,7 @@ type ypDetailsResponse struct {
 	LastConnectTime utils.NullTime `json:"lastConnectTime"`
 }
 
-//GetYPResponse gets the status of the server for YP purposes
+// GetYPResponse gets the status of the server for YP purposes.
 func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 	status := getStatus()
 

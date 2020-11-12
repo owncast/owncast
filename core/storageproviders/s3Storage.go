@@ -24,7 +24,7 @@ import (
 // then keep a reference to it here.
 var _queuedPlaylistUpdates = make(map[string]string, 0)
 
-//S3Storage is the s3 implementation of the ChunkStorageProvider
+// S3Storage is the s3 implementation of the ChunkStorageProvider.
 type S3Storage struct {
 	sess *session.Session
 	host string
@@ -40,7 +40,7 @@ type S3Storage struct {
 
 var _uploader *s3manager.Uploader
 
-//Setup sets up the s3 storage for saving the video to s3
+// Setup sets up the s3 storage for saving the video to s3.
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
@@ -65,7 +65,7 @@ func (s *S3Storage) Setup() error {
 	return nil
 }
 
-// SegmentWritten is called when a single segment of video is written
+// SegmentWritten is called when a single segment of video is written.
 func (s *S3Storage) SegmentWritten(localFilePath string) {
 	index := utils.GetIndexFromFilePath(localFilePath)
 	performanceMonitorKey := "s3upload-" + index
@@ -100,7 +100,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	}
 }
 
-// VariantPlaylistWritten is called when a variant hls playlist is written
+// VariantPlaylistWritten is called when a variant hls playlist is written.
 func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// We are uploading the variant playlist after uploading the segment
 	// to make sure we're not referring to files in a playlist that don't
@@ -115,13 +115,13 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	}
 }
 
-// MasterPlaylistWritten is called when the master hls playlist is written
+// MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
 	s.rewriteRemotePlaylist(localFilePath)
 }
 
-// Save saves the file to the s3 bucket
+// Save saves the file to the s3 bucket.
 func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {

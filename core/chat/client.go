@@ -44,7 +44,7 @@ const (
 	PONG       = "PONG"
 )
 
-//NewClient creates a new chat client
+// NewClient creates a new chat client.
 func NewClient(ws *websocket.Conn) *Client {
 	if ws == nil {
 		log.Panicln("ws cannot be nil")
@@ -63,7 +63,7 @@ func NewClient(ws *websocket.Conn) *Client {
 	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
 }
 
-//GetConnection gets the connection for the client
+// GetConnection gets the connection for the client.
 func (c *Client) GetConnection() *websocket.Conn {
 	return c.ws
 }
@@ -77,18 +77,18 @@ func (c *Client) Write(msg models.ChatMessage) {
 	}
 }
 
-//Done marks the client as done
+// Done marks the client as done.
 func (c *Client) Done() {
 	c.doneCh <- true
 }
 
-// Listen Write and Read request via chanel
+// Listen Write and Read request via channel.
 func (c *Client) Listen() {
 	go c.listenWrite()
 	c.listenRead()
 }
 
-// Listen write request via chanel
+// Listen write request via channel.
 func (c *Client) listenWrite() {
 	for {
 		select {
@@ -110,7 +110,7 @@ func (c *Client) listenWrite() {
 	}
 }
 
-// Listen read request via chanel
+// Listen read request via channel.
 func (c *Client) listenRead() {
 	for {
 		select {

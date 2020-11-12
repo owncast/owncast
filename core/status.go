@@ -5,7 +5,7 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-//GetStatus gets the status of the system
+// GetStatus gets the status of the system.
 func GetStatus() models.Status {
 	if _stats == nil {
 		return models.Status{}
@@ -22,7 +22,7 @@ func GetStatus() models.Status {
 	}
 }
 
-// setBroadcaster will store the current inbound broadcasting details
+// setBroadcaster will store the current inbound broadcasting details.
 func setBroadcaster(broadcaster models.Broadcaster) {
 	_broadcaster = &broadcaster
 }

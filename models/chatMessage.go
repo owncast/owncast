@@ -12,7 +12,7 @@ import (
 	"mvdan.cc/xurls"
 )
 
-//ChatMessage represents a single chat message
+// ChatMessage represents a single chat message.
 type ChatMessage struct {
 	ClientID string `json:"-"`
 
@@ -24,7 +24,7 @@ type ChatMessage struct {
 	Timestamp   time.Time `json:"timestamp"`
 }
 
-//Valid checks to ensure the message is valid
+// Valid checks to ensure the message is valid.
 func (m ChatMessage) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""
 }

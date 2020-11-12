@@ -2,7 +2,7 @@ package playlist
 
 import "os"
 
-//WritePlaylist writes the playlist to disk
+// WritePlaylist writes the playlist to disk.
 func WritePlaylist(data string, filePath string) error {
 	f, err := os.Create(filePath)
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ServeAdmin will return admin web assets
+// ServeAdmin will return admin web assets.
 func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)

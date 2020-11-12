@@ -17,7 +17,7 @@ import (
 // to need it to be.  The config is getting a bit bloated.
 const emojiDir = "/img/emoji" // Relative to webroot
 
-//GetCustomEmoji returns a list of custom emoji via the API
+// GetCustomEmoji returns a list of custom emoji via the API.
 func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	emojiList := make([]models.CustomEmoji, 0)
 

@@ -9,7 +9,7 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-// Status gets the details of the inbound broadcaster
+// Status gets the details of the inbound broadcaster.
 func Status(w http.ResponseWriter, r *http.Request) {
 	broadcaster := core.GetBroadcaster()
 	status := core.GetStatus()

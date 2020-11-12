@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// GetLogs will return all logs
+// GetLogs will return all logs.
 func GetLogs(w http.ResponseWriter, r *http.Request) {
 	logs := logging.Logger.AllEntries()
 	response := make([]logsResponse, 0)
@@ -22,7 +22,7 @@ func GetLogs(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// GetWarnings will return only warning and error logs
+// GetWarnings will return only warning and error logs.
 func GetWarnings(w http.ResponseWriter, r *http.Request) {
 	logs := logging.Logger.WarningEntries()
 	response := make([]logsResponse, 0)

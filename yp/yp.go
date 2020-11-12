@@ -38,13 +38,13 @@ type ypPingRequest struct {
 	URL string `json:"url"`
 }
 
-// NewYP creates a new instance of the YP service handler
+// NewYP creates a new instance of the YP service handler.
 func NewYP(getStatusFunc func() models.Status) *YP {
 	getStatus = getStatusFunc
 	return &YP{}
 }
 
-// Start is run when a live stream begins to start pinging YP
+// Start is run when a live stream begins to start pinging YP.
 func (yp *YP) Start() {
 	yp.timer = time.NewTicker(pingInterval)
 
@@ -60,7 +60,7 @@ func (yp *YP) Start() {
 	yp.ping()
 }
 
-// Stop stops the pinging of YP
+// Stop stops the pinging of YP.
 func (yp *YP) Stop() {
 	yp.timer.Stop()
 }

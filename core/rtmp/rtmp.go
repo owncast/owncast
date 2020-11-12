@@ -30,7 +30,7 @@ var _rtmpConnection net.Conn
 var _setStreamAsConnected func()
 var _setBroadcaster func(models.Broadcaster)
 
-//Start starts the rtmp service, listening on port 1935
+// Start starts the rtmp service, listening on port 1935.
 func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster)) {
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster

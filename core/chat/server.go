@@ -16,7 +16,7 @@ var (
 	_server *server
 )
 
-//Server represents the server which handles the chat
+// Server represents the server which handles the chat.
 type server struct {
 	Clients map[string]*Client
 
@@ -31,27 +31,27 @@ type server struct {
 	errCh     chan error
 }
 
-//Add adds a client to the server
+// Add adds a client to the server.
 func (s *server) add(c *Client) {
 	s.addCh <- c
 }
 
-//Remove removes a client from the server
+// Remove removes a client from the server.
 func (s *server) remove(c *Client) {
 	s.delCh <- c
 }
 
-//SendToAll sends a message to all of the connected clients
+// SendToAll sends a message to all of the connected clients.
 func (s *server) SendToAll(msg models.ChatMessage) {
 	s.sendAllCh <- msg
 }
 
-//Done marks the server as done
+// Done marks the server as done.
 func (s *server) done() {
 	s.doneCh <- true
 }
 
-//Err handles an error
+// Err handles an error.
 func (s *server) err(err error) {
 	s.errCh <- err
 }

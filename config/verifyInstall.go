@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//verifyFFMpegPath verifies that the path exists, is a file, and is executable
+// verifyFFMpegPath verifies that the path exists, is a file, and is executable.
 func verifyFFMpegPath(path string) error {
 	stat, err := os.Stat(path)
 

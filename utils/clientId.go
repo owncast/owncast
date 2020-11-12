@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//GenerateClientIDFromRequest generates a client id from the provided request
+// GenerateClientIDFromRequest generates a client id from the provided request.
 func GenerateClientIDFromRequest(req *http.Request) string {
 	ipAddress := GetIPAddressFromRequest(req)
 	ipAddressComponents := strings.Split(ipAddress, ":")
@@ -23,7 +23,7 @@ func GenerateClientIDFromRequest(req *http.Request) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// GetIPAddressFromRequest returns the IP address from a http request
+// GetIPAddressFromRequest returns the IP address from a http request.
 func GetIPAddressFromRequest(req *http.Request) string {
 	ipAddressString := req.RemoteAddr
 	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
