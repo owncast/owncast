@@ -68,6 +68,6 @@ function AssetTable(assets) {
     },
   ];
 
-  return <Table dataSource={data} columns={columns} rowKey="id" size="large" />
+  return <Table dataSource={data} columns={columns} rowKey="id" size="large" pagination={false} />
 }
 
