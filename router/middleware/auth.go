@@ -36,7 +36,7 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 		if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(username)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(password)) != 1 {
 			w.Header().Set("WWW-Authenticate", `Basic realm="`+realm+`"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			log.Warnln("Failed authentication for", r.URL.Path, "from", r.RemoteAddr, r.UserAgent())
+			log.Debugln("Failed authentication for", r.URL.Path, "from", r.RemoteAddr, r.UserAgent())
 			return
 		}
 
