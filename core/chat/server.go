@@ -110,7 +110,7 @@ func (s *server) Listen() {
 			delete(s.Clients, c.socketID)
 			s.listener.ClientRemoved(c.socketID)
 
-			// message was recieved from a client and should be sanitized, validated
+			// message was received from a client and should be sanitized, validated
 			// and distributed to other clients.
 		case msg := <-s.sendAllCh:
 			// Will turn markdown into html, sanitize user-supplied raw html

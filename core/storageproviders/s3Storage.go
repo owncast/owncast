@@ -103,7 +103,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 // VariantPlaylistWritten is called when a variant hls playlist is written
 func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// We are uploading the variant playlist after uploading the segment
-	// to make sure we're not refering to files in a playlist that don't
+	// to make sure we're not referring to files in a playlist that don't
 	// yet exist.  See SegmentWritten.
 	if _, ok := _queuedPlaylistUpdates[localFilePath]; ok {
 		_, err := s.Save(localFilePath, 0)
