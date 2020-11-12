@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        go-version: [1.13.x, 1.14.x]
+        go-version: [~1.13, ^1]
         platform: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
 
@@ -22,7 +22,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - uses: actions/checkout@v2
-        
+
       - name: Build
         run: go build -o owncast *.go
 
@@ -36,6 +36,6 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t owncast .
-        
+
       - name: Run Docker image
         run: docker run -d -p 8080:8080 -p 1935:1935 owncast
