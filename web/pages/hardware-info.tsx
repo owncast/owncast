@@ -102,18 +102,6 @@ const series = [
             <Chart dataCollections={series} color="#FF7700" unit="%" />
           </div>
         </div>
-        <p>cpu:[], disk: [], memory: []; value = %age.</p>
-        <p>the times should be the same for each, though milliseconds differ</p>
-        <div
-          style={{
-            border: "1px solid blue",
-            height: "300px",
-            width: "100%",
-            overflow: "auto",
-          }}
-        >
-          {JSON.stringify(hardwareStatus)}
-        </div>
       </div>
     );
 }

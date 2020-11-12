@@ -149,24 +149,9 @@ export default function ServerConfig() {
 
   return (
     <div>
-      <h2>Server Config</h2>
-      <p>
-        Display this data all pretty, most things will be editable in the
-        future, not now.
-      </p>
-      <div
-        style={{
-          border: "1px solid pink",
-          width: "100%",
-          overflow: "auto",
-        }}
-      >
         <InstanceDetails config={config} />
         <SocialHandles config={config} />
         <PageContent config={config} />
-
-        {JSON.stringify(config)}
-      </div>
     </div>
   ); 
 }

@@ -109,20 +109,7 @@ export default function VideoConfig() {
 
   return (
     <div>
-      <h2>Server Config</h2>
-      <p>
-        Display this data all pretty, most things will be editable in the
-        future, not now.
-      </p>
-      <div
-        style={{
-          border: "1px solid pink",
-          width: "100%",
-          overflow: "auto",
-        }}
-      >
         <VideoVariants config={config} />
-      </div>
     </div>
   ); 
 }

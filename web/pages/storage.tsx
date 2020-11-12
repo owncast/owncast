@@ -12,7 +12,7 @@ function Storage({ config }) {
     return (
       <h3>
         Local storage is being used. Enable external S3 storage if you want
-        to use it.
+        to use it.  TODO: Make this message somewhat more informative.  Point to documentation or something.
       </h3>
     );
   }
@@ -74,20 +74,7 @@ export default function ServerConfig() {
 
   return (
     <div>
-      <h2>Server Config</h2>
-      <p>
-        Display this data all pretty, most things will be editable in the
-        future, not now.
-      </p>
-      <div
-        style={{
-          border: "1px solid pink",
-          width: "100%",
-          overflow: "auto",
-        }}
-      >
         <Storage config={config} />
-      </div>
     </div>
   );
 }
