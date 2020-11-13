@@ -37,16 +37,19 @@ export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
 export async function fetchData(url) {
-  const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
+  let options: RequestInit = {};
+
+  if (ADMIN_USERNAME && ADMIN_STREAMKEY) {
+    const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
+    options.headers = {
+      'Authorization': `Basic ${encoded}`
+    }
+    options.mode = 'cors';
+    options.credentials = 'include'
+  }
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Basic ${encoded}`,
-      },
-      mode: 'cors',
-      credentials: 'include',
-    });
+    const response = await fetch(url, options);
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);

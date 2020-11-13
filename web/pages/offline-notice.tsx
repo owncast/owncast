@@ -7,7 +7,7 @@ export default function Offline() {
       title: "Send some test content",
       content: (
         <div>
-          With any video you have around you can pass it to the test script and start streaming it.
+          Test your server with any video you have around. Pass it to the test script and start streaming it.
           <blockquote>
             <em>./test/ocTestStream.sh yourVideo.mp4</em>
           </blockquote>
@@ -23,8 +23,17 @@ export default function Offline() {
       )
     },
     {
-      title: "Something else",
+      title: "Chat is disabled",
+      content: "Chat will continue to be disabled until you begin a live stream."
     },
+    {
+      title: "Embed your video onto other sites",
+      content: (
+        <div>
+          <a href="https://owncast.online/docs/embed">Learn how you can add your Owncast stream to other sites you control.</a>
+        </div>
+      )
+    }
   ];
   return (
     <div>
@@ -39,9 +48,9 @@ export default function Offline() {
           gutter: 16,
           xs: 1,
           sm: 2,
-          md: 4,
-          lg: 4,
-          xl: 6,
+          md: 2,
+          lg: 6,
+          xl: 3,
           xxl: 3,
         }}
         dataSource={data}
@@ -51,6 +60,7 @@ export default function Offline() {
           </List.Item>
         )}
       />
+      {logTable}
     </div>
   );
 }

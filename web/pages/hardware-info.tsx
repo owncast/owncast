@@ -1,8 +1,8 @@
 /* eslint-disable no-array-constructor */
-import React, { useState, useEffect } from 'react';
+import { BulbOutlined, LaptopOutlined, SaveOutlined } from "@ant-design/icons";
 import { Row } from "antd";
-import {LaptopOutlined, BulbOutlined, SaveOutlined} from "@ant-design/icons"
-import { HARDWARE_STATS, fetchData, FETCH_INTERVAL } from '../utils/apis';
+import React, { useEffect, useState } from 'react';
+import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../utils/apis';
 import Chart from './components/chart';
 import StatisticItem from "./components/statistic";
 
@@ -55,17 +55,17 @@ export default function HardwareInfo() {
 const series = [
   {
     name: "CPU",
-    color: "#FF7700",
+    color: "#B63FFF",
     data: hardwareStatus.cpu,
   },
   {
     name: "Memory",
-    color: "#004777",
+    color: "#2087E2",
     data: hardwareStatus.memory,
   },
   {
     name: "Disk",
-    color: "#A9E190",
+    color: "#FF7700",
     data: hardwareStatus.disk,
   },
 ];
@@ -76,37 +76,34 @@ const series = [
           <h2>Hardware Info</h2>
           <Row gutter={[16, 16]}>
             <StatisticItem
-              title="CPU used"
-              value={`${currentCPUUsage} %`}
-              prefix={<LaptopOutlined />}
+              title={series[0].name}
+              value={`${currentCPUUsage}`}
+              prefix={<LaptopOutlined style={{color: series[0].color }}/>}
+              color={series[0].color}
+              progress
+              centered
             />
             <StatisticItem
-              title="Memory used"
-              value={`${currentRamUsage} %`}
-              prefix={<BulbOutlined />}
+              title={series[1].name}
+              value={`${currentRamUsage}`}
+              prefix={<BulbOutlined style={{color: series[1].color }} />}
+              color={series[1].color}
+              progress
+              centered
             />
             <StatisticItem
-              title="Disk used"
-              value={`${currentDiskUsage} %`}
-              prefix={<SaveOutlined />}
+              title={series[2].name}
+              value={`${currentDiskUsage}`}
+              prefix={<SaveOutlined  style={{color: series[2].color }} />}
+              color={series[2].color}
+              progress
+              centered
             />
           </Row>
 
           <div className="chart-container">
             <Chart dataCollections={series} color="#FF7700" unit="%" />
           </div>
-        </div>
-        <p>cpu:[], disk: [], memory: []; value = %age.</p>
-        <p>the times should be the same for each, though milliseconds differ</p>
-        <div
-          style={{
-            border: "1px solid blue",
-            height: "300px",
-            width: "100%",
-            overflow: "auto",
-          }}
-        >
-          {JSON.stringify(hardwareStatus)}
         </div>
       </div>
     );

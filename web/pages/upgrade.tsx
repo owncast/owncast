@@ -38,7 +38,7 @@ export default function Logs() {
         <a href={release.html_url}>{release.name}</a>
       </Title>
       <Title level={5}>{new Date(release.created_at).toDateString()}</Title>
-      <ReactMarkdown>{release.body}</ReactMarkdown>;<h3>Downloads</h3>
+      <ReactMarkdown>{release.body}</ReactMarkdown><h3>Downloads</h3>
       <AssetTable {...release.assets} />
     </div>
   );
@@ -68,6 +68,6 @@ function AssetTable(assets) {
     },
   ];
 
-  return <Table dataSource={data} columns={columns} rowKey="id" size="large" />;
+  return <Table dataSource={data} columns={columns} rowKey="id" size="large" pagination={false} />
 }
 

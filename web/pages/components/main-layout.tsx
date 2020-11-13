@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { differenceInSeconds } from "date-fns";
 import { useRouter } from 'next/router';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Popover } from 'antd';
 
 import {
   SettingOutlined,
@@ -38,6 +38,11 @@ export default function MainLayout(props) {
 
   const streamDurationString = online ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
 
+  const content = (
+    <div>
+     <img src="/thumbnail.jpg" width="200px" />
+    </div>
+  );
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : "Offline";
 
@@ -145,10 +150,12 @@ export default function MainLayout(props) {
 
       <Layout>
         <Header className={adminStyles.header}>
+        <Popover content={content} title="Thumbnail" trigger="hover">
           <div className={adminStyles.statusIndicatorContainer}>
             <span className={adminStyles.statusLabel}>{statusMessage}</span>
             <span className={adminStyles.statusIcon}>{statusIcon}</span>
           </div>
+        </Popover>
         </Header>
         <Content className={adminStyles.contentMain}>{children}</Content>
 

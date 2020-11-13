@@ -8,7 +8,11 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
+<<<<<<< HEAD
 import { Row, Skeleton, Typography } from "antd";
+=======
+import { Row, Col, Skeleton, Result, List, Typography, Card } from "antd";
+>>>>>>> 4cdf5b73baa0584a0e6b2f586c27ca53923c65c7
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
@@ -27,6 +31,10 @@ import { formatIPAddress, isEmptyObject } from "../utils/format";
 
 const { Title } = Typography;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4cdf5b73baa0584a0e6b2f586c27ca53923c65c7
 
 <<<<<<< HEAD
 export default function Home() {
@@ -105,6 +113,9 @@ export default function Stats() {
     );
   }
 
+  const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
+  console.log(logs)
+
   if (!broadcaster) {
     return <Offline />;
   }
@@ -122,17 +133,18 @@ export default function Stats() {
           title="Outbound Video Stream"
           value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Outbound Audio Stream"
           value={audioSetting}
           prefix={null}
+          color="#334"
         />
       </Row>
     );
   });
 
-  const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
   const { viewerCount, sessionMaxViewerCount } = stats;
   const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
   const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`;
@@ -148,16 +160,19 @@ export default function Stats() {
           )}`}
           value={formatDistanceToNow(new Date(broadcaster.time))}
           prefix={<ClockCircleOutlined />}
+          color="#334"
         />
         <StatisticItem
           title="Viewers"
           value={viewerCount}
           prefix={<UserOutlined />}
+          color="#334"
         />
         <StatisticItem
           title="Peak viewer count"
           value={sessionMaxViewerCount}
           prefix={<UserOutlined />}
+          color="#334"
         />
       </Row>
 
@@ -166,16 +181,19 @@ export default function Stats() {
           title="Input"
           value={formatIPAddress(remoteAddr)}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Inbound Video Stream"
           value={streamVideoDetailString}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Inbound Audio Stream"
           value={streamAudioDetailString}
           prefix={null}
+          color="#334"
         />
       </Row>
 
@@ -186,15 +204,81 @@ export default function Stats() {
           title="Stream key"
           value={config.streamKey}
           prefix={null}
+          color="#334"
         />
         <StatisticItem
           title="Directory registration enabled"
           value={config.yp.enabled.toString()}
           prefix={null}
+          color="#334"
         />
       </Row>
 
       {logTable}
     </div>
   );
+
+  function Offline() {
+    const data = [
+      {
+        title: "Send some test content",
+        content: (
+          <div>
+            Test your server with any video you have around. Pass it to the test script and start streaming it.
+            <blockquote>
+              <em>./test/ocTestStream.sh yourVideo.mp4</em>
+            </blockquote>
+          </div>
+        ),
+      },
+      {
+        title: "Use your broadcasting software",
+        content: (
+          <div>
+            <a href="https://owncast.online/docs/broadcasting/">Learn how to point your existing software to your new server and start streaming your content.</a>
+          </div>
+        )
+      },
+      {
+        title: "Chat is disabled",
+        content: "Chat will continue to be disabled until you begin a live stream."
+      },
+      {
+        title: "Embed your video onto other sites",
+        content: (
+          <div>
+            <a href="https://owncast.online/docs/embed">Learn how you can add your Owncast stream to other sites you control.</a>
+          </div>
+        )
+      }
+    ];
+    return (
+      <div>
+        <Result
+          icon={<OwncastLogo />}
+          title="No stream is active."
+          subTitle="You should start one."
+        />
+  
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 2,
+            lg: 6,
+            xl: 3,
+            xxl: 3,
+          }}
+          dataSource={data}
+          renderItem={(item) => (
+            <List.Item>
+              <Card title={item.title}>{item.content}</Card>
+            </List.Item>
+          )}
+        />
+        {logTable}
+      </div>
+    );
+  }
 }
