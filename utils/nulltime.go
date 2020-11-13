@@ -17,7 +17,7 @@ func (nt *NullTime) Scan(value interface{}) error {
 	return nil
 }
 
-// Value implements the driver Valuer interface.
+// Value implements the driver Value interface.
 func (nt NullTime) Value() (driver.Value, error) {
 	if !nt.Valid {
 		return nil, nil
@@ -31,4 +31,20 @@ func (nt NullTime) MarshalJSON() ([]byte, error) {
 	}
 	val := fmt.Sprintf("\"%s\"", nt.Time.Format(time.RFC3339))
 	return []byte(val), nil
+}
+
+func (nt NullTime) UnmarshalJSON(data []byte) error {
+	dateString := string(data)
+	if dateString == "null" {
+		return nil
+	}
+
+	dateStringWithoutQuotes := dateString[1 : len(dateString)-1]
+	parsedDateTime, err := time.Parse(time.RFC3339, dateStringWithoutQuotes)
+	if err != nil {
+		return err
+	}
+
+	nt.Time = parsedDateTime
+	return nil
 }
