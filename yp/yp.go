@@ -47,15 +47,9 @@ func NewYP(getStatusFunc func() models.Status) *YP {
 // Start is run when a live stream begins to start pinging YP.
 func (yp *YP) Start() {
 	yp.timer = time.NewTicker(pingInterval)
-
-	go func() {
-		for {
-			select {
-			case <-yp.timer.C:
-				yp.ping()
-			}
-		}
-	}()
+	for range yp.timer.C {
+		yp.ping()
+	}
 
 	yp.ping()
 }
@@ -92,7 +86,7 @@ func (yp *YP) ping() {
 	}
 
 	pingURL := config.Config.GetYPServiceHost() + "/ping"
-	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req))
+	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req)) //nolint
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -105,7 +99,10 @@ func (yp *YP) ping() {
 	}
 
 	pingResponse := ypPingResponse{}
-	json.Unmarshal(body, &pingResponse)
+	err = json.Unmarshal(body, &pingResponse)
+	if err != nil {
+		log.Errorln(err)
+	}
 
 	if !pingResponse.Success {
 		if !_inErrorState {

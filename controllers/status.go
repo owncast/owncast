@@ -15,5 +15,7 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 	status := core.GetStatus()
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(status)
+	if err := json.NewEncoder(w).Encode(status); err != nil {
+		internalErrorHandler(w, err)
+	}
 }

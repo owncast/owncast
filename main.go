@@ -31,7 +31,7 @@ func main() {
 
 	log.Infoln(getReleaseString())
 	// Enable bundling of admin assets
-	pkger.Include("/admin")
+	_ = pkger.Include("/admin")
 
 	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	dbFile := flag.String("database", "", "Path to the database file.")
@@ -67,13 +67,11 @@ func main() {
 
 	// starts the core
 	if err := core.Start(); err != nil {
-		log.Error("failed to start the core package")
-		panic(err)
+		log.Fatalln("failed to start the core package", err)
 	}
 
 	if err := router.Start(); err != nil {
-		log.Error("failed to start/run the router")
-		panic(err)
+		log.Fatalln("failed to start/run the router", err)
 	}
 }
 

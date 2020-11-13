@@ -12,5 +12,7 @@ func GetConnectedClients(w http.ResponseWriter, r *http.Request) {
 	clients := core.GetClients()
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(clients)
+	if err := json.NewEncoder(w).Encode(clients); err != nil {
+		internalErrorHandler(w, err)
+	}
 }

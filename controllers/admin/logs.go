@@ -7,6 +7,7 @@ import (
 
 	"github.com/owncast/owncast/logging"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // GetLogs will return all logs.
@@ -19,7 +20,10 @@ func GetLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Errorln(err)
+	}
 }
 
 // GetWarnings will return only warning and error logs.
@@ -32,7 +36,10 @@ func GetWarnings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Errorln(err)
+	}
 }
 
 type logsResponse struct {

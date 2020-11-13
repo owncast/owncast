@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/config"
+	log "github.com/sirupsen/logrus"
 )
 
 // GetServerConfig gets the config details of the server.
@@ -35,7 +36,10 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Errorln(err)
+	}
 }
 
 type serverConfigAdminResponse struct {

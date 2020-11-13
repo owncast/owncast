@@ -91,7 +91,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	pipePath := utils.GetTemporaryPipePath()
 	err := syscall.Mkfifo(pipePath, 0666)
-	if err != nil {
+	if err != nil && err.Error() != "file exists" {
 		log.Fatalln(err)
 	}
 

@@ -80,5 +80,4 @@ func FetchGeoForIP(ip string) {
 
 		_geoIPCache[ip] = response
 	}()
-
 }

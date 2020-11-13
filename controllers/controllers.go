@@ -15,7 +15,9 @@ func internalErrorHandler(w http.ResponseWriter, err error) {
 	}
 
 	w.WriteHeader(http.StatusInternalServerError)
-	json.NewEncoder(w).Encode(j{"error": err.Error()})
+	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {
+		internalErrorHandler(w, err)
+	}
 }
 
 func badRequestHandler(w http.ResponseWriter, err error) {
@@ -24,7 +26,9 @@ func badRequestHandler(w http.ResponseWriter, err error) {
 	}
 
 	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(j{"error": err.Error()})
+	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {
+		internalErrorHandler(w, err)
+	}
 }
 
 func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
@@ -33,5 +37,7 @@ func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 		Message: message,
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		internalErrorHandler(w, err)
+	}
 }

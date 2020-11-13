@@ -29,7 +29,12 @@ func Start() error {
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
 	// websocket chat server
-	go chat.Start()
+	go func() {
+		err := chat.Start()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
 
 	// chat rest api
 	http.HandleFunc("/api/chat", controllers.GetChatMessages)

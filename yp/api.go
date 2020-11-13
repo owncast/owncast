@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type ypDetailsResponse struct {
@@ -41,6 +42,8 @@ func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(response)
-
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Errorln(err)
+	}
 }
