@@ -90,7 +90,10 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	log.Infoln("Incoming RTMP connected.")
 
 	pipePath := utils.GetTemporaryPipePath()
-	syscall.Mkfifo(pipePath, 0666)
+	err := syscall.Mkfifo(pipePath, 0666)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	_hasInboundRTMPConnection = true
 	_setStreamAsConnected()
@@ -119,7 +122,6 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 			panic(err)
 		}
 	}
-
 }
 
 func handleDisconnect(conn net.Conn) {

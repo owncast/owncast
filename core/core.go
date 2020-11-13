@@ -99,7 +99,10 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.Start()
 
 	// Copy the logo to be the thumbnail
-	utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
+	err := utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
+	if err != nil {
+		log.Warnln(err)
+	}
 
 	// Delete the preview Gif
 	os.Remove(path.Join(config.WebRoot, "preview.gif"))
@@ -111,8 +114,15 @@ func resetDirectories() {
 	// Wipe the public, web-accessible hls data directory
 	os.RemoveAll(config.PublicHLSStoragePath)
 	os.RemoveAll(config.PrivateHLSStoragePath)
-	os.MkdirAll(config.PublicHLSStoragePath, 0777)
-	os.MkdirAll(config.PrivateHLSStoragePath, 0777)
+	err := os.MkdirAll(config.PublicHLSStoragePath, 0777)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	err = os.MkdirAll(config.PrivateHLSStoragePath, 0777)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Remove the previous thumbnail
 	os.Remove(filepath.Join(config.WebRoot, "thumbnail.jpg"))
@@ -120,14 +130,31 @@ func resetDirectories() {
 	// Create private hls data dirs
 	if len(config.Config.VideoSettings.StreamQualities) != 0 {
 		for index := range config.Config.VideoSettings.StreamQualities {
-			os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
-			os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(index)), 0777)
+			err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			err = os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(index)), 0777)
+			if err != nil {
+				log.Fatalln(err)
+			}
 		}
 	} else {
-		os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0)), 0777)
-		os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(0)), 0777)
+		err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0)), 0777)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		err = os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(0)), 0777)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	// Remove the previous thumbnail
-	utils.Copy(config.Config.InstanceDetails.Logo.Large, "webroot/thumbnail.jpg")
+	err = utils.Copy(path.Join(config.WebRoot, config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
+	if err != nil {
+		log.Warnln(err)
+	}
 }

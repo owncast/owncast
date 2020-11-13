@@ -94,13 +94,22 @@ func (c *Client) listenWrite() {
 		select {
 		// Send a PING keepalive
 		case msg := <-c.pingch:
-			websocket.JSON.Send(c.ws, msg)
+			err := websocket.JSON.Send(c.ws, msg)
+			if err != nil {
+				log.Errorln(err)
+			}
 		// send message to the client
 		case msg := <-c.ch:
 			// log.Println("Send:", msg)
-			websocket.JSON.Send(c.ws, msg)
+			err := websocket.JSON.Send(c.ws, msg)
+			if err != nil {
+				log.Errorln(err)
+			}
 		case msg := <-c.usernameChangeChannel:
-			websocket.JSON.Send(c.ws, msg)
+			err := websocket.JSON.Send(c.ws, msg)
+			if err != nil {
+				log.Errorln(err)
+			}
 		// receive done request
 		case <-c.doneCh:
 			_server.remove(c)
@@ -114,7 +123,6 @@ func (c *Client) listenWrite() {
 func (c *Client) listenRead() {
 	for {
 		select {
-
 		// receive done request
 		case <-c.doneCh:
 			_server.remove(c)

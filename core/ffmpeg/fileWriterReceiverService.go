@@ -60,14 +60,14 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 
 	f, err := os.Create(writePath)
 	if err != nil {
-		returnError(err, w, r)
+		returnError(err, w)
 		return
 	}
 
 	defer f.Close()
 	_, err = f.Write(data)
 	if err != nil {
-		returnError(err, w, r)
+		returnError(err, w)
 		return
 	}
 
@@ -82,7 +82,6 @@ func (s *FileWriterReceiverService) fileWritten(path string) {
 
 	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
 		s.callbacks.MasterPlaylistWritten(path)
-
 	} else if strings.HasSuffix(path, ".ts") {
 		performanceMonitorKey := "segmentWritten-" + index
 		averagePerformance := utils.GetAveragePerformance(performanceMonitorKey)
@@ -98,13 +97,12 @@ func (s *FileWriterReceiverService) fileWritten(path string) {
 		} else {
 			_inWarningState = false
 		}
-
 	} else if strings.HasSuffix(path, ".m3u8") {
 		s.callbacks.VariantPlaylistWritten(path)
 	}
 }
 
-func returnError(err error, w http.ResponseWriter, r *http.Request) {
+func returnError(err error, w http.ResponseWriter) {
 	log.Errorln(err)
 	http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
 }

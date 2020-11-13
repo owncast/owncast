@@ -32,7 +32,10 @@ func createTable() {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	stmt.Exec()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
 }
 
 func addMessage(message models.ChatMessage) {
@@ -48,7 +51,10 @@ func addMessage(message models.ChatMessage) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	defer stmt.Close()
 }
@@ -59,6 +65,9 @@ func getChatHistory() []models.ChatMessage {
 	// Get all messages sent within the past day
 	rows, err := _db.Query("SELECT * FROM messages WHERE visible = 1 AND messageType != 'SYSTEM' AND datetime(timestamp) >=datetime('now', '-1 Day')")
 	if err != nil {
+		log.Fatal(err)
+	}
+	if rows.Err() != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
