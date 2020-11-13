@@ -11,13 +11,13 @@ import React, { useState, useEffect, useContext } from "react";
 import { Row, Skeleton, Typography } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
-import { BroadcastStatusContext } from "../utils/broadcast-status-context";
+import { ServerStatusContext } from "../utils/server-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
 
 import {
-  STREAM_STATUS,
+  STATUS,
   SERVER_CONFIG,
   LOGS_WARN,
   fetchData,
@@ -28,8 +28,13 @@ import { formatIPAddress, isEmptyObject } from "../utils/format";
 const { Title } = Typography;
 
 
+<<<<<<< HEAD
 export default function Home() {
   const context = useContext(BroadcastStatusContext);
+=======
+export default function Stats() {
+  const context = useContext(ServerStatusContext);
+>>>>>>> ca90d28ec1d0a0f0059a4649dd00fb95b9d4fa3d
   const { broadcaster } = context || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
 
@@ -37,7 +42,7 @@ export default function Home() {
   const [stats, setStats] = useState(null);
   const getStats = async () => {
     try {
-      const result = await fetchData(STREAM_STATUS);
+      const result = await fetchData(STATUS);
       setStats(result);
     } catch (error) {
       console.log(error);
@@ -128,7 +133,7 @@ export default function Home() {
   });
 
   const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
-  const { viewerCount, sessionMaxViewerCount, lastConnectTime } = stats;
+  const { viewerCount, sessionMaxViewerCount } = stats;
   const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
   const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`;
 
@@ -138,10 +143,10 @@ export default function Home() {
       <Row gutter={[16, 16]}>
         <StatisticItem
           title={`Stream started ${formatRelative(
-            new Date(lastConnectTime),
+            new Date(broadcaster.time),
             new Date()
           )}`}
-          value={formatDistanceToNow(new Date(lastConnectTime))}
+          value={formatDistanceToNow(new Date(broadcaster.time))}
           prefix={<ClockCircleOutlined />}
         />
         <StatisticItem

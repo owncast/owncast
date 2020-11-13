@@ -18,15 +18,17 @@ import { upgradeVersionAvailable } from "../../utils/apis";
 import { parseSecondsToDurationString } from '../../utils/format'
 
 import OwncastLogo from './logo';
-import { BroadcastStatusContext } from '../../utils/broadcast-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 
 import adminStyles from '../../styles/styles.module.css';
+
+let performedUpgradeCheck = false;
 
 export default function MainLayout(props) {
   const { children } = props;
 
-  const context = useContext(BroadcastStatusContext);
-  const { broadcastActive, broadcaster } = context || {};
+  const context = useContext(ServerStatusContext);
+  const { online, broadcaster, versionNumber } = context || {};
 
   const router = useRouter();
   const { route } = router || {};
@@ -34,19 +36,15 @@ export default function MainLayout(props) {
   const { Header, Footer, Content, Sider } = Layout;
   const { SubMenu } = Menu;
 
-  const streamDurationString = broadcastActive ?
-    parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : ""
+  const streamDurationString = online ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
 
-  const statusIcon = broadcastActive ?
-    <PlayCircleFilled /> : <MinusSquareFilled />;
-    const statusMessage = broadcastActive
-      ? `Online ${  streamDurationString}`
-      : "Offline";
+  const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
+  const statusMessage = online ? `Online ${streamDurationString}` : "Offline";
 
   const [upgradeVersion, setUpgradeVersion] = useState(null);
   const checkForUpgrade = async () => {
     try {
-      const result = await upgradeVersionAvailable();
+      const result = await upgradeVersionAvailable(versionNumber);
       setUpgradeVersion(result);
     } catch (error) {
       console.log("==== error", error);
@@ -54,13 +52,17 @@ export default function MainLayout(props) {
   };
 
   useEffect(() => {
-    checkForUpgrade();
-  }, []);
+    if (!performedUpgradeCheck && !context.disableUpgradeChecks) {
+      checkForUpgrade();
+      console.log('checking')
+      performedUpgradeCheck = true
+    }
+  });
 
   const appClass = classNames({
-    'owncast-layout': true,
-    [adminStyles.online]: broadcastActive,
-  })
+    "owncast-layout": true,
+    [adminStyles.online]: online,
+  });
 
   const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
   const upgradeVersionString = upgradeVersion || '';
@@ -98,7 +100,7 @@ export default function MainLayout(props) {
             <Menu.Item key="viewer-info">
               <Link href="/viewer-info">Viewers</Link>
             </Menu.Item>
-            {broadcastActive ? (
+            {online ? (
               <Menu.Item key="disconnect-stream" icon={<CloseCircleOutlined />}>
                 <Link href="/disconnect-stream">Disconnect Stream...</Link>
               </Menu.Item>
@@ -151,7 +153,7 @@ export default function MainLayout(props) {
         <Content className={adminStyles.contentMain}>{children}</Content>
 
         <Footer style={{ textAlign: "center" }}>
-          <a href="https://owncast.online/">About Owncast</a>
+          <a href="https://owncast.online/">About Owncast v{versionNumber}</a>
         </Footer>
       </Layout>
     </Layout>

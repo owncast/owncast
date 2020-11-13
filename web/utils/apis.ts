@@ -8,7 +8,7 @@ const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
 export const FETCH_INTERVAL = 15000;
 
 // Current inbound broadcaster info
-export const BROADCASTER = `${API_LOCATION}broadcaster`;
+export const STATUS = `${API_LOCATION}status`;
 
 // Disconnect inbound stream
 export const DISCONNECT = `${API_LOCATION}disconnect`;
@@ -35,11 +35,6 @@ export const LOGS_ALL = `${API_LOCATION}logs`;
 export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
-
-// Current Stream status.
-// This is literally the same as /api/status except it supports
-// auth.
-export const STREAM_STATUS = `${API_LOCATION}status`;
 
 export async function fetchData(url) {
   const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
@@ -81,8 +76,7 @@ export async function getGithubRelease() {
 
 // Make a request to the server status API and the Github releases API
 // and return a release if it's newer than the server version.
-export async function upgradeVersionAvailable() {
-  const serverVersion = await fetchData(STREAM_STATUS)
+export async function upgradeVersionAvailable(currentVersion) {
   const recentRelease = await getGithubRelease();
   let recentReleaseVersion = recentRelease.tag_name;
 
@@ -90,7 +84,7 @@ export async function upgradeVersionAvailable() {
     recentReleaseVersion = recentReleaseVersion.substr(1)
   }
 
-  if (!upToDate(serverVersion.versionNumber, recentReleaseVersion)) {
+  if (!upToDate(currentVersion, recentReleaseVersion)) {
     return recentReleaseVersion
   }
 

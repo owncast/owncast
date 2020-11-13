@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { BroadcastStatusContext } from '../utils/broadcast-status-context';
+import { ServerStatusContext } from '../utils/server-status-context';
 
 
 export default function BroadcastInfo() {
-  const context = useContext(BroadcastStatusContext);
+  const context = useContext(ServerStatusContext);
   const { broadcaster } = context || {};
   const { remoteAddr, time, streamDetails } = broadcaster || {};
  
