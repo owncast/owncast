@@ -5,6 +5,29 @@ import { getGithubRelease } from "../utils/apis";
 
 const { Title } = Typography;
 
+function AssetTable(assets) {
+  const data = Object.values(assets);
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text, entry) =>
+        <a href={entry.browser_download_url}>{text}</a>,
+    },
+    {
+      title: "Size",
+      dataIndex: "size",
+      key: "size",
+      render: (text) => (`${(text/1024/1024).toFixed(2)} MB`),
+    },
+  ];
+
+  return <Table dataSource={data} columns={columns} rowKey="id" size="large" pagination={false} />
+}
+
+
 export default function Logs() {
   const [release, setRelease] = useState({
     html_url: "",
@@ -42,32 +65,5 @@ export default function Logs() {
       <AssetTable {...release.assets} />
     </div>
   );
-}
-
-function AssetTable(assets) {
-  const data = [];
-
-  for (const key in assets) {
-    data.push(assets[key]);
-  }
-
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text, entry) =>
-        <a href={entry.browser_download_url}>{text}</a>,
-    },
-    {
-      title: "Size",
-      dataIndex: "size",
-      key: "size",
-      render: (text, entry) =>
-        `${(text/1024/1024).toFixed(2)} MB`
-    },
-  ];
-
-  return <Table dataSource={data} columns={columns} rowKey="id" size="large" pagination={false} />
 }
 

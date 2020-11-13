@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from "react";
-import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from "../utils/apis";
+import React, { useContext } from "react";
 import KeyValueTable from "./components/key-value-table";
+import { ServerStatusContext } from '../utils/server-status-context';
 
 function Storage({ config }) {
   if (!config || !config.s3) {
@@ -47,30 +47,8 @@ function Storage({ config }) {
 }
 
 export default function ServerConfig() {
-  const [config, setConfig] = useState({});
-
-  const getInfo = async () => {
-    try {
-      const result = await fetchData(SERVER_CONFIG);
-      console.log("viewers result", result);
-
-      setConfig({ ...result });
-    } catch (error) {
-      setConfig({ ...config, message: error.message });
-    }
-  };
-
-  useEffect(() => {
-    let getStatusIntervalId = null;
-
-    getInfo();
-    getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
-
-    // returned function will be called on component unmount
-    return () => {
-      clearInterval(getStatusIntervalId);
-    };
-  }, []);
+  const serverStatusData = useContext(ServerStatusContext);
+  const { serverConfig: config } = serverStatusData || {};
 
   return (
     <div>

@@ -1,29 +1,12 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Table, Typography, Input } from 'antd';
-import { SERVER_CONFIG, fetchData, FETCH_INTERVAL } from '../utils/apis';
 import { isEmptyObject } from '../utils/format';
 import KeyValueTable from "./components/key-value-table";
+import { ServerStatusContext } from '../utils/server-status-context';
 
 const { Title } = Typography;
 const { TextArea } = Input;
-
-export const INITIAL_SERVER_CONFIG_STATE = {
-  streamKey: '',
-  yp: {
-    enabled: false,
-  },
-  videoSettings: {
-    videoQualityVariants: [
-      {
-        audioPassthrough: false,
-        videoBitrate: 0,
-        audioBitrate: 0,
-        framerate: 0,
-      },
-    ],
-  }
-};
 
 function SocialHandles({ config }) {
   if (!config) {
@@ -136,23 +119,9 @@ function PageContent({ config }) {
   );
 }
 
-export default function ServerConfig() {  
-  const [config, setConfig] = useState(INITIAL_SERVER_CONFIG_STATE);
-
-  const getInfo = async () => {
-    try {
-      const result = await fetchData(SERVER_CONFIG);
-      console.log("SERVER_CONFIG", result)
-
-      setConfig({ ...result });
-
-    } catch (error) {
-      setConfig({ ...config, message: error.message });
-    }
-  };
-  useEffect(() => {
-    getInfo();
-  }, []);  
+export default function ServerConfig() {
+  const serverStatusData = useContext(ServerStatusContext);
+  const { serverConfig: config } = serverStatusData || {};
 
   return (
     <div>

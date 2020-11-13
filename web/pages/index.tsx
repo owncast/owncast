@@ -18,47 +18,32 @@ import LogTable from "./components/log-table";
 import Offline from './offline-notice';
 
 import {
-  SERVER_CONFIG,
   LOGS_WARN,
   fetchData,
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
-import { INITIAL_SERVER_CONFIG_STATE } from "./update-server-config";
 
 const { Title } = Typography;
 
 
 export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);
-  const { broadcaster } = serverStatusData || {};
+  const { broadcaster, serverConfig: configData } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
-
-  // Pull in the server config so we can show config overview.
-  const [configData, setServerConfig] = useState(INITIAL_SERVER_CONFIG_STATE);
-  const getConfig = async () => {
-    try {
-      const result = await fetchData(SERVER_CONFIG);
-      setServerConfig(result);
-      console.log("CONFIG", result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const [logsData, setLogs] = useState([]);
   const getLogs = async () => {
     try {
       const result = await fetchData(LOGS_WARN);
       setLogs(result);
-      console.log("LOGS", result);
     } catch (error) {
       console.log("==== error", error);
     }
   };
   const getMoreStats = () => {
     getLogs();
-    getConfig();
+    // getConfig();
   }
   useEffect(() => {
     let intervalId = null;
