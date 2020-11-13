@@ -17,10 +17,6 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-const (
-	statsFilePath = "stats.json"
-)
-
 var l = sync.Mutex{}
 
 func setupStats() error {
@@ -116,7 +112,7 @@ func saveStatsToFile() error {
 		return err
 	}
 
-	f, err := os.Create(statsFilePath)
+	f, err := os.Create(config.StatsFile)
 	if err != nil {
 		return err
 	}
@@ -135,11 +131,11 @@ func getSavedStats() (models.Stats, error) {
 		Clients: make(map[string]models.Client),
 	}
 
-	if !utils.DoesFileExists(statsFilePath) {
+	if !utils.DoesFileExists(config.StatsFile) {
 		return result, nil
 	}
 
-	jsonFile, err := ioutil.ReadFile(statsFilePath)
+	jsonFile, err := ioutil.ReadFile(config.StatsFile)
 	if err != nil {
 		return result, nil
 	}

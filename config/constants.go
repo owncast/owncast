@@ -7,6 +7,7 @@ const (
 	PrivateHLSStoragePath = "hls"
 	GeoIPDatabasePath     = "data/GeoLite2-City.mmdb"
 	ExtraInfoFile         = "data/content.md"
+	StatsFile             = "data/stats.json"
 )
 
 var (
