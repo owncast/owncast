@@ -69,13 +69,7 @@ export default function Offline({ logs = [] }) {
         }
       </div>
 
-
-      {logs.length ? (
-        <>
-          <Title level={2}>Stream Logs</Title>
-          <LogTable logs={logs} pageSize={5} />
-        </>
-      ): null}
+      <LogTable logs={logs} pageSize={5} />
     </div>
   );
 }

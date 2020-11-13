@@ -82,15 +82,15 @@ function InstanceDetails({ config }) {
     },
     {
       name: "Logo",
-      value: instanceDetails.logo.large,
+      value: instanceDetails.logo?.large,
     },
     {
       name: "Tags",
-      value: instanceDetails.tags.join(", "),
+      value: instanceDetails.tags?.join(", "),
     },
     {
       name: "NSFW",
-      value: instanceDetails.nsfw.toString(),
+      value: instanceDetails.nsfw?.toString(),
     },
     {
       name: "Shows in Owncast directory",
@@ -150,9 +150,9 @@ export default function ServerConfig() {
       setConfig({ ...config, message: error.message });
     }
   };
-
-  getInfo();
-  
+  useEffect(() => {
+    getInfo();
+  }, []);  
 
   return (
     <div>

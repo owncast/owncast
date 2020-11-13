@@ -9,7 +9,7 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Row, Col, Skeleton, Result, List, Typography, Card, Statistic } from "antd";
+import { Skeleton, Typography, Card, Statistic } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
@@ -94,7 +94,7 @@ export default function Home() {
     settingTitle = (videoQualitySettings?.length > 1) ?
       `${settingTitle} ${index + 1}` : settingTitle;
     return (
-      <Card title={settingTitle} type="inner">
+      <Card title={settingTitle} type="inner" key={settingTitle}>
         <StatisticItem
           title="Outbound Video Stream"
           value={`${videoBitrate} kbps, ${framerate} fps`}
@@ -188,12 +188,7 @@ export default function Home() {
       </div>
       </div>
 
-      {logsData.length ? (
-        <>
-          <Title level={2}>Stream Logs</Title>
-          <LogTable logs={logsData} pageSize={5} />
-        </>
-      ): null}
+      <LogTable logs={logsData} pageSize={5} />
     </div>
   );
 }

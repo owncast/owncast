@@ -1,8 +1,10 @@
 import React from "react";
 import { timeFormat } from "d3-time-format";
-import { Table, Tag} from "antd";
+import { Table, Tag, Typography } from "antd";
 import Linkify from "react-linkify";
 import { SortOrder } from "antd/lib/table/interface";
+
+const { Title } = Typography;
 
 function renderColumnLevel(text, entry) {
   let color = 'black';
@@ -28,6 +30,9 @@ interface Props {
 }
 
 export default function LogTable({ logs, pageSize }: Props) {
+  if (!logs.length) {
+    return null;
+  }
   const columns = [
     {
       title: "Level",
@@ -69,7 +74,8 @@ export default function LogTable({ logs, pageSize }: Props) {
   ];
 
   return (
-    <div>
+    <div className="logs-section">
+      <Title level={2}>Logs</Title>
       <Table
         size="middle"
         dataSource={logs}
