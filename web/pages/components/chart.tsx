@@ -126,4 +126,6 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
 
 Chart.defaultProps = {
   dataCollections: [],
+  data: [],
+  title: '',
 };

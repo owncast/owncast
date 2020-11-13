@@ -1,4 +1,4 @@
-$owncast-purple: rgba(90,103,216,1);;
+$owncast-purple: rgba(90,103,216,1);
 
 html,
 body {
@@ -19,6 +19,12 @@ a {
   box-sizing: border-box;
 }
 
+pre {
+  display: block;
+  padding: 1rem;
+  margin: .5rem 0;
+  background-color: #eee;
+}
 
 .owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: $owncast-purple;

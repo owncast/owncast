@@ -8,6 +8,7 @@ const initialState = {
   broadcaster: null,
   online: false,
   viewerCount: 0,
+  sessionMaxViewerCount: 0,
   sessionPeakViewerCount: 0,
   overallPeakViewerCount: 0,
   disableUpgradeChecks: true,
@@ -25,7 +26,7 @@ const ServerStatusProvider = ({ children }) => {
       setStatus({ ...result });
 
     } catch (error) {
-      // setBroadcasterStatus({ ...broadcasterStatus, message: error.message });
+      // todo
     }
   };
   

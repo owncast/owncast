@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
 Will display an overview with the following datasources:
 1. Current broadcaster.
@@ -8,11 +9,7 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-<<<<<<< HEAD
-import { Row, Skeleton, Typography } from "antd";
-=======
-import { Row, Col, Skeleton, Result, List, Typography, Card } from "antd";
->>>>>>> 4cdf5b73baa0584a0e6b2f586c27ca53923c65c7
+import { Row, Col, Skeleton, Result, List, Typography, Card, Statistic } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
@@ -21,264 +18,182 @@ import LogTable from "./components/log-table";
 import Offline from './offline-notice';
 
 import {
-  STATUS,
   SERVER_CONFIG,
   LOGS_WARN,
   fetchData,
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
+import { INITIAL_SERVER_CONFIG_STATE } from "./update-server-config";
 
 const { Title } = Typography;
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 4cdf5b73baa0584a0e6b2f586c27ca53923c65c7
-
-<<<<<<< HEAD
 export default function Home() {
-  const context = useContext(BroadcastStatusContext);
-=======
-export default function Stats() {
-  const context = useContext(ServerStatusContext);
->>>>>>> ca90d28ec1d0a0f0059a4649dd00fb95b9d4fa3d
-  const { broadcaster } = context || {};
+  const serverStatusData = useContext(ServerStatusContext);
+  const { broadcaster } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
 
-  // Pull in the server status so we can show server overview.
-  const [stats, setStats] = useState(null);
-  const getStats = async () => {
-    try {
-      const result = await fetchData(STATUS);
-      setStats(result);
-    } catch (error) {
-      console.log(error);
-    }
-
-    getConfig();
-    getLogs();
-  };
-
-
   // Pull in the server config so we can show config overview.
-  const [config, setConfig] = useState({
-    streamKey: "",
-    yp: {
-      enabled: false,
-    },
-    videoSettings: {
-      videoQualityVariants: [
-        {
-          audioPassthrough: false,
-          videoBitrate: 0,
-          audioBitrate: 0,
-          framerate: 0,
-        },
-      ],
-    },
-  });
-  const [logs, setLogs] = useState([]);
-
+  const [configData, setServerConfig] = useState(INITIAL_SERVER_CONFIG_STATE);
   const getConfig = async () => {
     try {
       const result = await fetchData(SERVER_CONFIG);
-      setConfig(result);
+      setServerConfig(result);
+      console.log("CONFIG", result);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const [logsData, setLogs] = useState([]);
   const getLogs = async () => {
     try {
       const result = await fetchData(LOGS_WARN);
       setLogs(result);
+      console.log("LOGS", result);
     } catch (error) {
       console.log("==== error", error);
     }
   };
-
+  const getMoreStats = () => {
+    getLogs();
+    getConfig();
+  }
   useEffect(() => {
-    setInterval(getStats, FETCH_INTERVAL);
-    getStats();
+    let intervalId = null;
+    intervalId = setInterval(getMoreStats, FETCH_INTERVAL);
+    return () => {
+      clearInterval(intervalId);
+    }
   }, []);
 
-  if (isEmptyObject(config) || isEmptyObject(stats)) {
+  if (isEmptyObject(configData) || isEmptyObject(serverStatusData)) {
     return (
-      <div>
+      <>
         <Skeleton active />
         <Skeleton active />
         <Skeleton active />
-      </div>
+      </>
     );
   }
 
-  const logTable = logs.length > 0 ? <LogTable logs={logs} pageSize={5} /> : null
-  console.log(logs)
-
   if (!broadcaster) {
-    return <Offline />;
+    return <Offline logs={logsData} />;
   }
   
-  const videoSettings = config.videoSettings.videoQualityVariants;
-  const videoQualitySettings = videoSettings.map((setting) => {
+  // map out settings
+  const videoQualitySettings = configData?.videoSettings?.videoQualityVariants?.map((setting, index) => {
+    const { audioPassthrough, audioBitrate, videoBitrate, framerate } = setting;
     const audioSetting =
-      setting.audioPassthrough || setting.audioBitrate === 0
+      audioPassthrough || audioBitrate === 0
         ? `${streamDetails.audioBitrate} kpbs (passthrough)`
-        : `${setting.audioBitrate} kbps`;
+        : `${audioBitrate} kbps`;
     
+    let settingTitle = 'Outbound Stream Details';
+    settingTitle = (videoQualitySettings?.length > 1) ?
+      `${settingTitle} ${index + 1}` : settingTitle;
     return (
-      <Row gutter={[16, 16]} key={`setting-${setting.videoBitrate}`}>
+      <Card title={settingTitle} type="inner">
         <StatisticItem
           title="Outbound Video Stream"
-          value={`${setting.videoBitrate} kbps ${setting.framerate} fps`}
+          value={`${videoBitrate} kbps, ${framerate} fps`}
           prefix={null}
-          color="#334"
         />
         <StatisticItem
           title="Outbound Audio Stream"
           value={audioSetting}
           prefix={null}
-          color="#334"
         />
-      </Row>
+      </Card>
     );
   });
 
-  const { viewerCount, sessionMaxViewerCount } = stats;
+  const { viewerCount, sessionMaxViewerCount } = serverStatusData;
   const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
-  const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`;
+  const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kbps`;
+
+  const broadcastDate = new Date(broadcaster.time);
 
   return (
-    <div>
-      <Title>Server Overview</Title>
-      <Row gutter={[16, 16]}>
-        <StatisticItem
-          title={`Stream started ${formatRelative(
-            new Date(broadcaster.time),
-            new Date()
-          )}`}
-          value={formatDistanceToNow(new Date(broadcaster.time))}
-          prefix={<ClockCircleOutlined />}
-          color="#334"
-        />
-        <StatisticItem
-          title="Viewers"
-          value={viewerCount}
-          prefix={<UserOutlined />}
-          color="#334"
-        />
-        <StatisticItem
-          title="Peak viewer count"
-          value={sessionMaxViewerCount}
-          prefix={<UserOutlined />}
-          color="#334"
-        />
-      </Row>
+    <div className="home-container">
+      <Title>Stream Overview</Title>
 
-      <Row gutter={[16, 16]}>
-        <StatisticItem
-          title="Input"
-          value={formatIPAddress(remoteAddr)}
-          prefix={null}
-          color="#334"
-        />
-        <StatisticItem
-          title="Inbound Video Stream"
-          value={streamVideoDetailString}
-          prefix={null}
-          color="#334"
-        />
-        <StatisticItem
-          title="Inbound Audio Stream"
-          value={streamAudioDetailString}
-          prefix={null}
-          color="#334"
-        />
-      </Row>
+      <div className="sections-container">
 
-      {videoQualitySettings}
 
-      <Row gutter={[16, 16]}>
-        <StatisticItem
-          title="Stream key"
-          value={config.streamKey}
-          prefix={null}
-          color="#334"
-        />
-        <StatisticItem
-          title="Directory registration enabled"
-          value={config.yp.enabled.toString()}
-          prefix={null}
-          color="#334"
-        />
-      </Row>
+        <div className="section online-status-section">
+          <Card title="Stream is online" type="inner">
+            <Statistic
+              title={`Stream started ${formatRelative(
+                broadcastDate,
+                Date.now()
+              )}`}
+              value={formatDistanceToNow(broadcastDate)}
+              prefix={<ClockCircleOutlined />}
+            />
+            <Statistic
+              title="Viewers"
+              value={viewerCount}
+              prefix={<UserOutlined />}
+            />
+            <Statistic
+              title="Peak viewer count"
+              value={sessionMaxViewerCount}
+              prefix={<UserOutlined />}
+            />
+          </Card>
+          </div>
 
-      {logTable}
+        <div className="section stream-details-section">
+
+          <div className="details outbound-details">
+            {videoQualitySettings}
+          </div>
+
+          <div className="details other-details">
+            <Card title="Inbound Stream Details" type="inner">
+              <StatisticItem
+                title="Input"
+                value={formatIPAddress(remoteAddr)}
+                prefix={null}
+              />
+              <StatisticItem
+                title="Inbound Video Stream"
+                value={streamVideoDetailString}
+                prefix={null}
+              />
+              <StatisticItem
+                title="Inbound Audio Stream"
+                value={streamAudioDetailString}
+                prefix={null}
+              />
+            </Card>
+
+            <div className="server-detail">
+              <Card title="Server Config" type="inner">
+                <StatisticItem
+                  title="Stream key"
+                  value={configData.streamKey}
+                  prefix={null}
+                />
+                <StatisticItem
+                  title="Directory registration enabled"
+                  value={configData.yp.enabled.toString()}
+                  prefix={null}
+                />
+              </Card>
+            </div>
+          </div>
+      </div>
+      </div>
+
+      {logsData.length ? (
+        <>
+          <Title level={2}>Stream Logs</Title>
+          <LogTable logs={logsData} pageSize={5} />
+        </>
+      ): null}
     </div>
   );
-
-  function Offline() {
-    const data = [
-      {
-        title: "Send some test content",
-        content: (
-          <div>
-            Test your server with any video you have around. Pass it to the test script and start streaming it.
-            <blockquote>
-              <em>./test/ocTestStream.sh yourVideo.mp4</em>
-            </blockquote>
-          </div>
-        ),
-      },
-      {
-        title: "Use your broadcasting software",
-        content: (
-          <div>
-            <a href="https://owncast.online/docs/broadcasting/">Learn how to point your existing software to your new server and start streaming your content.</a>
-          </div>
-        )
-      },
-      {
-        title: "Chat is disabled",
-        content: "Chat will continue to be disabled until you begin a live stream."
-      },
-      {
-        title: "Embed your video onto other sites",
-        content: (
-          <div>
-            <a href="https://owncast.online/docs/embed">Learn how you can add your Owncast stream to other sites you control.</a>
-          </div>
-        )
-      }
-    ];
-    return (
-      <div>
-        <Result
-          icon={<OwncastLogo />}
-          title="No stream is active."
-          subTitle="You should start one."
-        />
-  
-        <List
-          grid={{
-            gutter: 16,
-            xs: 1,
-            sm: 2,
-            md: 2,
-            lg: 6,
-            xl: 3,
-            xxl: 3,
-          }}
-          dataSource={data}
-          renderItem={(item) => (
-            <List.Item>
-              <Card title={item.title}>{item.content}</Card>
-            </List.Item>
-          )}
-        />
-        {logTable}
-      </div>
-    );
-  }
 }

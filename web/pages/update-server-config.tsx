@@ -8,6 +8,22 @@ import KeyValueTable from "./components/key-value-table";
 const { Title } = Typography;
 const { TextArea } = Input;
 
+export const INITIAL_SERVER_CONFIG_STATE = {
+  streamKey: '',
+  yp: {
+    enabled: false,
+  },
+  videoSettings: {
+    videoQualityVariants: [
+      {
+        audioPassthrough: false,
+        videoBitrate: 0,
+        audioBitrate: 0,
+        framerate: 0,
+      },
+    ],
+  }
+};
 
 function SocialHandles({ config }) {
   if (!config) {
@@ -121,12 +137,12 @@ function PageContent({ config }) {
 }
 
 export default function ServerConfig() {  
-  const [config, setConfig] = useState({});
+  const [config, setConfig] = useState(INITIAL_SERVER_CONFIG_STATE);
 
   const getInfo = async () => {
     try {
       const result = await fetchData(SERVER_CONFIG);
-      console.log("viewers result", result)
+      console.log("SERVER_CONFIG", result)
 
       setConfig({ ...result });
 
@@ -134,18 +150,9 @@ export default function ServerConfig() {
       setConfig({ ...config, message: error.message });
     }
   };
-  
-  useEffect(() => {
-    let getStatusIntervalId = null;
 
-    getInfo();
-    getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
+  getInfo();
   
-    // returned function will be called on component unmount 
-    return () => {
-      clearInterval(getStatusIntervalId);
-    }
-  }, []);
 
   return (
     <div>

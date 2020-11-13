@@ -1,20 +1,28 @@
-import { Result, List, Card } from "antd";
+import { Result, Card, Typography } from "antd";
+import { MessageTwoTone, BulbTwoTone, BookTwoTone, PlaySquareTwoTone } from '@ant-design/icons';
 import OwncastLogo from "./components/logo"
+import LogTable from "./components/log-table";
 
-export default function Offline() {
+
+const { Title } = Typography;
+const { Meta } = Card;
+
+export default function Offline({ logs = [] }) {
   const data = [
     {
+      icon: <BulbTwoTone twoToneColor="#ffd33d" />,
       title: "Send some test content",
       content: (
         <div>
           Test your server with any video you have around. Pass it to the test script and start streaming it.
-          <blockquote>
-            <em>./test/ocTestStream.sh yourVideo.mp4</em>
-          </blockquote>
+          <pre>
+            <code>./test/ocTestStream.sh yourVideo.mp4</code>
+          </pre>
         </div>
       ),
     },
     {
+      icon: <BookTwoTone twoToneColor="#6f42c1" />,
       title: "Use your broadcasting software",
       content: (
         <div>
@@ -23,10 +31,12 @@ export default function Offline() {
       )
     },
     {
+      icon: <MessageTwoTone twoToneColor="#0366d6" />,
       title: "Chat is disabled",
       content: "Chat will continue to be disabled until you begin a live stream."
     },
     {
+      icon: <PlaySquareTwoTone twoToneColor="#f9826c" />,
       title: "Embed your video onto other sites",
       content: (
         <div>
@@ -35,32 +45,37 @@ export default function Offline() {
       )
     }
   ];
-  return (
-    <div>
-      <Result
-        icon={<OwncastLogo />}
-        title="No stream is active."
-        subTitle="You should start one."
-      />
 
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 2,
-          lg: 6,
-          xl: 3,
-          xxl: 3,
-        }}
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <Card title={item.title}>{item.content}</Card>
-          </List.Item>
-        )}
-      />
-      {logTable}
+  return (
+    <div className="offline-content">
+      <div className="logo-section">
+        <Result
+          icon={<OwncastLogo />}
+          title="No stream is active."
+          subTitle="You should start one."
+        />
+      </div>
+      <div className="list-section">
+        {
+          data.map(item => (
+            <Card key={item.title}>
+              <Meta
+                avatar={item.icon}
+                title={item.title}
+                description={item.content}
+              />
+            </Card>
+          ))
+        }
+      </div>
+
+
+      {logs.length ? (
+        <>
+          <Title level={2}>Stream Logs</Title>
+          <LogTable logs={logs} pageSize={5} />
+        </>
+      ): null}
     </div>
   );
 }

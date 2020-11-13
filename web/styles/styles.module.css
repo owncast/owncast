@@ -61,10 +61,10 @@
   color: #999;
 }
 .online .statusIcon svg {
-  fill: #52c41a;
+  fill: var(--online-color)
 }
 .online .statusLabel {
-  color: #52c41a;
+  color: var(--online-color)
 }
 
 
