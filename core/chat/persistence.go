@@ -44,9 +44,12 @@ func addMessage(message models.ChatMessage) {
 		log.Fatal(err)
 	}
 	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
+
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer stmt.Close()
+
 	_, err = stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp)
 	if err != nil {
 		log.Fatal(err)
@@ -55,8 +58,6 @@ func addMessage(message models.ChatMessage) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer stmt.Close()
 }
 
 func getChatHistory() []models.ChatMessage {
