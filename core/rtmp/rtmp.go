@@ -90,9 +90,11 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	log.Infoln("Incoming RTMP connected.")
 
 	pipePath := utils.GetTemporaryPipePath()
-	err := syscall.Mkfifo(pipePath, 0666)
-	if err != nil && err.Error() != "file exists" {
-		log.Fatalln(err)
+	if !utils.DoesFileExists(pipePath) {
+		err := syscall.Mkfifo(pipePath, 0666)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	_hasInboundRTMPConnection = true
