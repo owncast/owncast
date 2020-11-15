@@ -68,9 +68,6 @@ func getChatHistory() []models.ChatMessage {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if rows.Err() != nil {
-		log.Fatal(err)
-	}
 	defer rows.Close()
 
 	for rows.Next() {
@@ -97,6 +94,10 @@ func getChatHistory() []models.ChatMessage {
 		message.Timestamp = timestamp
 
 		history = append(history, message)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
 	}
 
 	return history
