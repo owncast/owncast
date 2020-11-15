@@ -39,8 +39,7 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 
 	mimeType := mime.TypeByExtension(filepath.Ext(path))
 	w.Header().Set("Content-Type", mimeType)
-	_, err = w.Write(b)
-	if err != nil {
+	if _, err = w.Write(b); err != nil {
 		log.Errorln(err)
 	}
 }
