@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
 // Status gets the details of the inbound broadcaster.
@@ -25,7 +26,10 @@ func Status(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Errorln(err)
+	}
 }
 
 type adminStatusResponse struct {

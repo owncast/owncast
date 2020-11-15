@@ -22,7 +22,7 @@ import (
 
 // If we try to upload a playlist but it is not yet on disk
 // then keep a reference to it here.
-var _queuedPlaylistUpdates = make(map[string]string, 0)
+var _queuedPlaylistUpdates = make(map[string]string)
 
 // S3Storage is the s3 implementation of the ChunkStorageProvider.
 type S3Storage struct {
@@ -118,7 +118,10 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	s.rewriteRemotePlaylist(localFilePath)
+	err := s.rewriteRemotePlaylist(localFilePath)
+	if err != nil {
+		log.Warnln(err)
+	}
 }
 
 // Save saves the file to the s3 bucket.
@@ -192,6 +195,9 @@ func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
 
 	p := m3u8.NewMasterPlaylist()
 	err = p.DecodeFrom(bufio.NewReader(f), false)
+	if err != nil {
+		log.Warnln(err)
+	}
 
 	for _, item := range p.Variants {
 		item.URI = s.host + filepath.Join("/hls", item.URI)

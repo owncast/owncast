@@ -40,11 +40,8 @@ func Start() error {
 
 	ticker := time.NewTicker(30 * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				_server.ping()
-			}
+		for range ticker.C {
+			_server.ping()
 		}
 	}()
 

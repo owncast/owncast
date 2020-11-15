@@ -32,7 +32,10 @@ func createTable() {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	stmt.Exec()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
 }
 
 func addMessage(message models.ChatMessage) {
@@ -41,16 +44,20 @@ func addMessage(message models.ChatMessage) {
 		log.Fatal(err)
 	}
 	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
+
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer stmt.Close()
+
 	_, err = stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp)
 	if err != nil {
 		log.Fatal(err)
 	}
-	tx.Commit()
-
-	defer stmt.Close()
+	err = tx.Commit()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getChatHistory() []models.ChatMessage {
@@ -87,6 +94,10 @@ func getChatHistory() []models.ChatMessage {
 		message.Timestamp = timestamp
 
 		history = append(history, message)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
 	}
 
 	return history

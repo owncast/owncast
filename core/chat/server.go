@@ -46,11 +46,6 @@ func (s *server) SendToAll(msg models.ChatMessage) {
 	s.sendAllCh <- msg
 }
 
-// Done marks the server as done.
-func (s *server) done() {
-	s.doneCh <- true
-}
-
 // Err handles an error.
 func (s *server) err(err error) {
 	s.errCh <- err
@@ -140,18 +135,7 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		time.Sleep(7 * time.Second)
 
 		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
-		initialMessage := models.ChatMessage{"owncast-server", config.Config.InstanceDetails.Name, initialChatMessageText, "initial-message-1", "SYSTEM", true, time.Now()}
+		initialMessage := models.ChatMessage{ClientID: "owncast-server", Author: config.Config.InstanceDetails.Name, Body: initialChatMessageText, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
 		c.Write(initialMessage)
 	}()
-
-}
-
-func (s *server) getClientForClientID(clientID string) *Client {
-	for _, client := range s.Clients {
-		if client.ClientID == clientID {
-			return client
-		}
-	}
-
-	return nil
 }

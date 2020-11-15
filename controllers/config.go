@@ -14,5 +14,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 	configuration := config.Config.InstanceDetails
 	configuration.Version = config.Config.VersionInfo
-	json.NewEncoder(w).Encode(configuration)
+	if err := json.NewEncoder(w).Encode(configuration); err != nil {
+		badRequestHandler(w, err)
+	}
 }

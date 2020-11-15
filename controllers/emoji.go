@@ -35,9 +35,11 @@ func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	for _, f := range files {
 		name := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
 		emojiPath := filepath.Join(emojiDir, f.Name())
-		singleEmoji := models.CustomEmoji{name, emojiPath}
+		singleEmoji := models.CustomEmoji{Name: name, Emoji: emojiPath}
 		emojiList = append(emojiList, singleEmoji)
 	}
 
-	json.NewEncoder(w).Encode(emojiList)
+	if err := json.NewEncoder(w).Encode(emojiList); err != nil {
+		internalErrorHandler(w, err)
+	}
 }

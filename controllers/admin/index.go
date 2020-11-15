@@ -27,7 +27,7 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 	f, err := pkger.Open(path)
 	if err != nil {
 		log.Warnln(err, path)
-		errorHandler(w, r, http.StatusNotFound)
+		errorHandler(w, http.StatusNotFound)
 		return
 	}
 
@@ -39,9 +39,11 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 
 	mimeType := mime.TypeByExtension(filepath.Ext(path))
 	w.Header().Set("Content-Type", mimeType)
-	w.Write(b)
+	if _, err = w.Write(b); err != nil {
+		log.Errorln(err)
+	}
 }
 
-func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+func errorHandler(w http.ResponseWriter, status int) {
 	w.WriteHeader(status)
 }

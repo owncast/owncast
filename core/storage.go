@@ -5,10 +5,6 @@ import (
 	"github.com/owncast/owncast/core/storageproviders"
 )
 
-var (
-	usingExternalStorage = false
-)
-
 func setupStorage() error {
 	handler.Storage = _storage
 

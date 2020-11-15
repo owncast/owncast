@@ -29,12 +29,9 @@ func setupStats() error {
 
 	statsSaveTimer := time.NewTicker(1 * time.Minute)
 	go func() {
-		for {
-			select {
-			case <-statsSaveTimer.C:
-				if err := saveStatsToFile(); err != nil {
-					panic(err)
-				}
+		for range statsSaveTimer.C {
+			if err := saveStatsToFile(); err != nil {
+				panic(err)
 			}
 		}
 	}()
@@ -137,12 +134,12 @@ func getSavedStats() (models.Stats, error) {
 
 	jsonFile, err := ioutil.ReadFile(config.StatsFile)
 	if err != nil {
-		return result, nil
+		return result, err
 	}
 
 	if err := json.Unmarshal(jsonFile, &result); err != nil {
-		return result, nil
+		return result, err
 	}
 
-	return result, nil
+	return result, err
 }

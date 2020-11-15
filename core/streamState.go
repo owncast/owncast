@@ -26,8 +26,8 @@ var _onlineCleanupTicker *time.Ticker
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected() {
 	_stats.StreamConnected = true
-	_stats.LastConnectTime = utils.NullTime{time.Now(), true}
-	_stats.LastDisconnectTime = utils.NullTime{time.Now(), false}
+	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
+	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
 
 	StopOfflineCleanupTimer()
 	startOnlineCleanupTimer()
@@ -44,7 +44,6 @@ func setStreamAsConnected() {
 	go func() {
 		_transcoder = ffmpeg.NewTranscoder()
 		_transcoder.TranscoderCompleted = func(error) {
-
 			SetStreamAsDisconnected()
 		}
 		_transcoder.Start()
@@ -56,7 +55,7 @@ func setStreamAsConnected() {
 // SetStreamAsDisconnected sets the stream as disconnected.
 func SetStreamAsDisconnected() {
 	_stats.StreamConnected = false
-	_stats.LastDisconnectTime = utils.NullTime{time.Now(), true}
+	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_broadcaster = nil
 
 	offlineFilename := "offline.ts"
@@ -73,9 +72,14 @@ func SetStreamAsDisconnected() {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
 
-		utils.Copy(offlineFilePath, segmentFilePath)
-		_storage.Save(segmentFilePath, 0)
-
+		err := utils.Copy(offlineFilePath, segmentFilePath)
+		if err != nil {
+			log.Warnln(err)
+		}
+		_, err = _storage.Save(segmentFilePath, 0)
+		if err != nil {
+			log.Warnln(err)
+		}
 		if utils.DoesFileExists(playlistFilePath) {
 			f, err := os.OpenFile(playlistFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
 			if err != nil {
@@ -84,13 +88,23 @@ func SetStreamAsDisconnected() {
 			defer f.Close()
 
 			playlist, _, err := m3u8.DecodeFrom(bufio.NewReader(f), true)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
 			variantPlaylist := playlist.(*m3u8.MediaPlaylist)
 			if len(variantPlaylist.Segments) > config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist() {
 				variantPlaylist.Segments = variantPlaylist.Segments[:len(variantPlaylist.Segments)]
 			}
 
 			err = variantPlaylist.Append(offlineFilename, 8.0, "")
-			variantPlaylist.SetDiscontinuity()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			err = variantPlaylist.SetDiscontinuity()
+			if err != nil {
+				log.Fatalln(err)
+			}
 			_, err = f.WriteAt(variantPlaylist.Encode().Bytes(), 0)
 			if err != nil {
 				log.Errorln(err)
@@ -118,7 +132,10 @@ func SetStreamAsDisconnected() {
 				log.Errorln(err)
 			}
 		}
-		_storage.Save(playlistFilePath, 0)
+		_, err = _storage.Save(playlistFilePath, 0)
+		if err != nil {
+			log.Warnln(err)
+		}
 	}
 
 	StartOfflineCleanupTimer()
@@ -129,14 +146,11 @@ func SetStreamAsDisconnected() {
 func StartOfflineCleanupTimer() {
 	_offlineCleanupTimer = time.NewTimer(5 * time.Minute)
 	go func() {
-		for {
-			select {
-			case <-_offlineCleanupTimer.C:
-				// Reset the session count since the session is over
-				_stats.SessionMaxViewerCount = 0
-				resetDirectories()
-				transitionToOfflineVideoStreamContent()
-			}
+		for range _offlineCleanupTimer.C {
+			// Reset the session count since the session is over
+			_stats.SessionMaxViewerCount = 0
+			resetDirectories()
+			transitionToOfflineVideoStreamContent()
 		}
 	}()
 }
@@ -151,11 +165,8 @@ func StopOfflineCleanupTimer() {
 func startOnlineCleanupTimer() {
 	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
-		for {
-			select {
-			case <-_onlineCleanupTicker.C:
-				ffmpeg.CleanupOldContent(config.PrivateHLSStoragePath)
-			}
+		for range _onlineCleanupTicker.C {
+			ffmpeg.CleanupOldContent(config.PrivateHLSStoragePath)
 		}
 	}()
 }

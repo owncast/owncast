@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"crypto/md5"
+	"crypto/md5" //nolint
 	"encoding/hex"
 	"net"
 	"net/http"
@@ -18,9 +18,8 @@ func GenerateClientIDFromRequest(req *http.Request) string {
 	clientID := strings.Join(ipAddressComponents, ":") + req.UserAgent()
 
 	// Create a MD5 hash of this ip + useragent
-	hasher := md5.New()
-	hasher.Write([]byte(clientID))
-	return hex.EncodeToString(hasher.Sum(nil))
+	b := md5.Sum([]byte(clientID)) // nolint
+	return hex.EncodeToString(b[:])
 }
 
 // GetIPAddressFromRequest returns the IP address from a http request.

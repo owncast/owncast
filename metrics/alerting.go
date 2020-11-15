@@ -51,5 +51,5 @@ func handleDiskAlerting() {
 }
 
 func recentAverage(values []timestampedValue) int {
-	return int((values[len(values)-1].Value + values[len(values)-2].Value) / 2)
+	return (values[len(values)-1].Value + values[len(values)-2].Value) / 2
 }

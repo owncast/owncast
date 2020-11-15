@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/owncast/owncast/models"
 	"github.com/nareix/joy5/format/flv/flvio"
+	"github.com/owncast/owncast/models"
 )
 
 func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMetadata, error) {
@@ -21,8 +21,8 @@ func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMet
 
 	metadataJSONString := submatchall[0]
 	var details models.RTMPStreamMetadata
-	json.Unmarshal([]byte(metadataJSONString), &details)
-	return details, nil
+	err := json.Unmarshal([]byte(metadataJSONString), &details)
+	return details, err
 }
 
 func getAudioCodec(codec interface{}) string {
