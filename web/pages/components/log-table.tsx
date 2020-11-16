@@ -30,7 +30,7 @@ interface Props {
 }
 
 export default function LogTable({ logs, pageSize }: Props) {
-  if (!logs.length) {
+  if (!logs?.length) {
     return null;
   }
   const columns = [

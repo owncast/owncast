@@ -5,7 +5,7 @@ interface StatisticItemProps {
   title?: string, 
   value?: any,
   prefix?: JSX.Element,
-  // color?: string,
+  color?: string,
   progress?: boolean,
   centered?: boolean,
 };
@@ -13,7 +13,7 @@ const defaultProps = {
   title: '', 
   value: 0,
   prefix: null,
-  // color: '',
+  color: '',
   progress: false,
   centered: false,
 };

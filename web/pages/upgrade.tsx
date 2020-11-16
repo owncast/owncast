@@ -6,7 +6,7 @@ import { getGithubRelease } from "../utils/apis";
 const { Title } = Typography;
 
 function AssetTable(assets) {
-  const data = Object.values(assets);
+  const data = Object.values(assets) as object[];
 
   const columns = [
     {
