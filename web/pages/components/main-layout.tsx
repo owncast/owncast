@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
+import Head from 'next/head'
 import { differenceInSeconds } from "date-fns";
 import { useRouter } from 'next/router';
 import { Layout, Menu, Popover } from 'antd';
@@ -74,6 +75,11 @@ export default function MainLayout(props) {
 
   return (
     <Layout className={appClass}>
+      <Head>
+        <title>Owncast Admin</title>
+        <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png"/>
+      </Head>
+      
       <Sider
         width={240}
         style={{
@@ -105,11 +111,11 @@ export default function MainLayout(props) {
             <Menu.Item key="viewer-info">
               <Link href="/viewer-info">Viewers</Link>
             </Menu.Item>
-            {online ? (
+            {/* {online ? (
               <Menu.Item key="disconnect-stream" icon={<CloseCircleOutlined />}>
                 <Link href="/disconnect-stream">Disconnect Stream...</Link>
               </Menu.Item>
-            ) : null}
+            ) : null} */}
           </SubMenu>
 
           <SubMenu
@@ -118,10 +124,10 @@ export default function MainLayout(props) {
             icon={<SettingOutlined />}
           >
             <Menu.Item key="update-server-config">
-              <Link href="/update-server-config">Server Configuration</Link>
+              <Link href="/update-server-config">Server</Link>
             </Menu.Item>
             <Menu.Item key="video-config">
-              <Link href="/video-config">Video Configuration</Link>
+              <Link href="/video-config">Video</Link>
             </Menu.Item>
             <Menu.Item key="storage">
               <Link href="/storage">Storage</Link>

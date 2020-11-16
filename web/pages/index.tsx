@@ -101,12 +101,8 @@ export default function Home() {
   const broadcastDate = new Date(broadcaster.time);
 
   return (
-    <div className="home-container">
-      <Title>Stream Overview</Title>
-
+    <div className="home-container">      
       <div className="sections-container">
-
-
         <div className="section online-status-section">
           <Card title="Stream is online" type="inner">
             <Statistic
