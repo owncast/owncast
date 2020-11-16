@@ -10,7 +10,7 @@ import {
   SettingOutlined,
   HomeOutlined,
   LineChartOutlined,
-  CloseCircleOutlined,
+  ToolOutlined,
   PlayCircleFilled,
   MinusSquareFilled,
 } from '@ant-design/icons';
@@ -90,7 +90,7 @@ export default function MainLayout(props) {
         <Menu
           theme="dark"
           defaultSelectedKeys={[route.substring(1) || "home"]}
-          defaultOpenKeys={["current-stream-menu", "utilities-menu"]}
+          defaultOpenKeys={["current-stream-menu", "utilities-menu", "configuration"]}
           mode="inline"
         >
           <h1 className={adminStyles.owncastTitleContainer}>
@@ -136,7 +136,7 @@ export default function MainLayout(props) {
 
           <SubMenu
             key="utilities-menu"
-            icon={<SettingOutlined />}
+            icon={<ToolOutlined />}
             title="Utilities"
           >
             <Menu.Item key="hardware-info">
