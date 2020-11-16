@@ -2,6 +2,10 @@
 import React, { useContext } from "react";
 import KeyValueTable from "./components/key-value-table";
 import { ServerStatusContext } from '../utils/server-status-context';
+import { Typography } from 'antd';
+import Link from 'next/link';
+
+const { Title } = Typography;
 
 function Storage({ config }) {
   if (!config || !config.s3) {
@@ -10,10 +14,19 @@ function Storage({ config }) {
 
   if (!config.s3.enabled) {
     return (
-      <h3>
-        Local storage is being used. Enable external S3 storage if you want
-        to use it.  TODO: Make this message somewhat more informative.  Point to documentation or something.
-      </h3>
+      <div>
+      <Title>External Storage</Title>
+      <p>
+        You are currently using the <Link href="/hardware-info">local storage of this Owncast server</Link> to store and distribute video.
+      </p>
+      <p>
+      Owncast can use S3-compatible external storage providers to offload the responsibility of disk and bandwidth utilization from your own server.
+      </p>
+
+      <p>
+        Visit our <a href="https://owncast.online/docs/s3/">storage documentation</a> to learn how to configure this.
+      </p>
+      </div>
     );
   }
 
