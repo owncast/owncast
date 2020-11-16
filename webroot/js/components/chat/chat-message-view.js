@@ -1,5 +1,6 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
+import Mark from '/js/web_modules/markjs/dist/mark.es6.min.js';
 const html = htm.bind(h);
 
 import {
@@ -10,11 +11,27 @@ import { convertToText } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default class ChatMessageView extends Component {
-  render() {
+  async componentDidUpdate(prevProps) {
     const { message, username } = this.props;
-    const { author, body, timestamp } = message;
+    if (prevProps.message === message && this.state.formattedMessage) {
+      return;
+    }
+    const { body } = message;
 
-    const formattedMessage = formatMessageText(body, username);
+    const formattedMessage = await formatMessageText(body, username);
+    this.setState({
+      formattedMessage
+    });
+
+  }
+  render() {
+    const { message } = this.props;
+    const { author, timestamp } = message;
+
+    const { formattedMessage } = this.state;
+    if (!formattedMessage) {
+      return;
+    }
     const formattedTimestamp = formatTimestamp(timestamp);
 
     const isSystemMessage = message.type === SOCKET_MESSAGE_TYPES.SYSTEM;
@@ -60,21 +77,25 @@ function getChatMessageClassString() {
   return 'message flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm';
 }
 
-export function formatMessageText(message, username) {
-  let formattedText = highlightUsername(message, username);
-  formattedText = getMessageWithEmbeds(formattedText);
-  return convertToMarkup(formattedText);
+export async function formatMessageText(message, username) {
+  let formattedText = getMessageWithEmbeds(message);
+  formattedText = convertToMarkup(formattedText);
+  return await highlightUsername(formattedText, username);
 }
 
 function highlightUsername(message, username) {
-  const pattern = new RegExp(
-    '@?' + username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
-    'gi'
-  );
-  return message.replace(
-    pattern,
-    '<span class="highlighted px-1 rounded font-bold bg-orange-500">$&</span>'
-  );
+  // https://github.com/julmot/mark.js/issues/115
+  const node = document.createElement('span');
+  node.innerHTML = message;
+  return new Promise(res => {
+    new Mark(node).mark(username, {
+      element: 'span',
+      className: 'highlighted px-1 rounded font-bold bg-orange-500',
+      done() {
+        res(node.innerHTML);
+      }
+    });
+  });
 }
 
 function getMessageWithEmbeds(message) {
