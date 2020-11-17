@@ -3,7 +3,8 @@
   width: var(--user-image-width);
   height: var(--user-image-width);
   max-height: var(--user-image-width);
-  background-size: calc(var(--user-image-width));
+  /* background-size: calc(var(--user-image-width) - 2em); */
+  background-size: cover;
 }
 
 .user-social-item .platform-icon {

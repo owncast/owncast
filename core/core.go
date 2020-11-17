@@ -99,7 +99,7 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.Start()
 
 	// Copy the logo to be the thumbnail
-	err := utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
+	err := utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo), "webroot/thumbnail.jpg")
 	if err != nil {
 		log.Warnln(err)
 	}
@@ -153,7 +153,7 @@ func resetDirectories() {
 	}
 
 	// Remove the previous thumbnail
-	err = utils.Copy(path.Join(config.WebRoot, config.Config.InstanceDetails.Logo.Large), "webroot/thumbnail.jpg")
+	err = utils.Copy(path.Join(config.WebRoot, config.Config.InstanceDetails.Logo), "webroot/thumbnail.jpg")
 	if err != nil {
 		log.Warnln(err)
 	}

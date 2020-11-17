@@ -5,9 +5,7 @@ instanceDetails:
   title: Owncast
   summary: "This is brief summary of whom you are or what your stream is. You can read more about it at owncast.online.  You can edit this description in your config file."
 
-  logo:
-    small: /img/logo.svg
-    large: /img/logo.svg
+  logo: /img/logo.svg
 
   tags:
     - music

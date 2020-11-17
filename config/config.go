@@ -32,10 +32,11 @@ type config struct {
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name             string         `yaml:"name" json:"name"`
-	Title            string         `yaml:"title" json:"title"`
-	Summary          string         `yaml:"summary" json:"summary"`
-	Logo             logo           `yaml:"logo" json:"logo"`
+	Name    string `yaml:"name" json:"name"`
+	Title   string `yaml:"title" json:"title"`
+	Summary string `yaml:"summary" json:"summary"`
+	// Logo             logo           `yaml:"logo" json:"logo"`
+	Logo             string         `yaml:"logo" json:"logo"`
 	Tags             []string       `yaml:"tags" json:"tags"`
 	SocialHandles    []socialHandle `yaml:"socialHandles" json:"socialHandles"`
 	Version          string         `json:"version"`
@@ -43,10 +44,10 @@ type InstanceDetails struct {
 	ExtraPageContent string         `json:"extraPageContent"`
 }
 
-type logo struct {
-	Large string `yaml:"large" json:"large"`
-	Small string `yaml:"small" json:"small"`
-}
+// type logo struct {
+// 	Large string `yaml:"large" json:"large"`
+// 	Small string `yaml:"small" json:"small"`
+// }
 
 type socialHandle struct {
 	Platform string `yaml:"platform" json:"platform"`

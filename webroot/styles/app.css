@@ -39,6 +39,7 @@ button[disabled] {
   pointer-events: none;
 }
 
+/* accessibility things */
 .visually-hidden {
   position: absolute !important;
   height: 1px;
@@ -58,6 +59,8 @@ header {
 
 #logo-container {
   background-size: 1.35em;
+  padding: 1.15rem;
+  background-image: url(/img/logo.svg);
 }
 
 #chat-toggle {

@@ -98,12 +98,8 @@ components:
           type: string
           description: This is brief summary of whom you are or what the stream is.
         logo:
-          type: object
-          properties:
-            large:
-              type: string
-            small:
-              type: string
+          type: string
+          description: Local file name of your logo image. We recommend a square image (150 x 150px) with ample padding around the important contents of the image, as it will be rendered as a circle.
         tags:
           type: array
           description: Categories of the content this instance focuses on.
