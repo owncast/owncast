@@ -26,6 +26,8 @@ import {
   KEY_USERNAME,
   MESSAGE_OFFLINE,
   MESSAGE_ONLINE,
+  ORIENTATION_PORTRAIT,
+  OWNCAST_LOGO_LOCAL,
   TEMP_IMAGE,
   TIMER_DISABLE_CHAT_AFTER_OFFLINE,
   TIMER_STATUS_UPDATE,
@@ -34,7 +36,6 @@ import {
   URL_OWNCAST,
   URL_STATUS,
   WIDTH_SINGLE_COL,
-  ORIENTATION_PORTRAIT,
 } from './utils/constants.js';
 
 export default class App extends Component {
@@ -335,7 +336,7 @@ export default class App extends Component {
 
     const {
       version: appVersion,
-      logo = {},
+      logo = TEMP_IMAGE,
       socialHandles = [],
       name: streamerName,
       summary,
@@ -343,16 +344,8 @@ export default class App extends Component {
       title,
       extraPageContent,
     } = configData;
-    const {
-      small: smallLogo = TEMP_IMAGE,
-      large: largeLogo = TEMP_IMAGE,
-    } = logo;
 
-    const bgLogo = { backgroundImage: `url(${smallLogo})` };
-    const bgLogoLarge = {
-      backgroundImage: `url(${largeLogo})`,
-      backgroundSize: 'contain',
-    };
+    const bgUserLogo = { backgroundImage: `url(${logo})` };
 
     const tagList = (tags !== null && tags.length > 0)
       ? tags.map(
@@ -383,7 +376,7 @@ export default class App extends Component {
     });
 
     const poster = isPlaying ? null : html`
-      <${VideoPoster} offlineImage=${largeLogo} active=${streamOnline} />
+      <${VideoPoster} offlineImage=${logo} active=${streamOnline} />
     `;
 
     return html`
@@ -400,10 +393,9 @@ export default class App extends Component {
             >
               <span
                 id="logo-container"
-                class="inline-block	rounded-full bg-white w-8 min-w-8 min-h-8 h-8 p-1 mr-2 bg-no-repeat bg-center"
-                style=${bgLogo}
+                class="inline-block	rounded-full bg-white w-8 min-w-8 min-h-8 h-8 mr-2 bg-no-repeat bg-center"
               >
-                <img class="logo visually-hidden" src=${smallLogo} alt="" />
+                <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
               </span>
               <span class="instance-title overflow-hidden truncate"
                 >${title}</span
@@ -458,9 +450,9 @@ export default class App extends Component {
           <div class="user-content flex flex-row p-8">
             <div
               class="user-image rounded-full bg-white p-4 mr-8 bg-no-repeat bg-center"
-              style=${bgLogoLarge}
+              style=${bgUserLogo}
             >
-              <img class="logo visually-hidden" alt="Logo" src=${largeLogo} />
+              <img class="logo visually-hidden" alt="" src=${logo} />
             </div>
             <div
               class="user-content-header border-b border-gray-500 border-solid"
