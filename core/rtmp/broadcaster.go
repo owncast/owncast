@@ -15,11 +15,6 @@ func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 		return
 	}
 
-	if data.VideoCodec == nil {
-		log.Traceln("Broadcaster flag does not include video codec, ignoring")
-		return
-	}
-
 	broadcaster := models.Broadcaster{
 		RemoteAddr: remoteAddr,
 		Time:       time.Now(),
