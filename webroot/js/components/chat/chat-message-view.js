@@ -91,6 +91,7 @@ function highlightUsername(message, username) {
     new Mark(node).mark(username, {
       element: 'span',
       className: 'highlighted px-1 rounded font-bold bg-orange-500',
+      separateWordSearch: false,
       done() {
         res(node.innerHTML);
       }
