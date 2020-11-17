@@ -89,7 +89,7 @@ func (s *FileWriterReceiverService) fileWritten(path string) {
 		utils.StartPerformanceMonitor(performanceMonitorKey)
 		s.callbacks.SegmentWritten(path)
 
-		if averagePerformance != 0 && averagePerformance > float64(config.Config.GetVideoSegmentSecondsLength()) {
+		if averagePerformance != 0 && averagePerformance > float64(config.Config.GetVideoSegmentSecondsLength())*1.1 {
 			if !_inWarningState {
 				log.Warnln("slow encoding for variant", index, "if this continues you may see buffering or errors. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
 				_inWarningState = true
