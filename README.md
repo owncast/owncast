@@ -109,7 +109,7 @@ Read [more detailed documentation about configuration of S3-compatible services]
 1. Install the [Go toolchain](https://golang.org/dl/).
 1. Clone the repo.  `git clone https://github.com/owncast/owncast`
 1. Follow the above [Getting Started](#getting-started) instructions, making sure ffmpeg exists and your config file is set.
-1. `go run main.go` on the first run will download the required packages needed for the application to build.
+1. `go run main.go pkged.go` on the first run will download the required packages needed for the application to build.
 1. It will start running the same as in the above [Usage](#usage) instructions and you can point [OBS to your localhost](#usage-with-obs) instance of it.
 
 There is also a supplied `Dockerfile` so you can spin it up from source with little effort.  [Read more about running from source](https://owncast.online/docs/building/).
