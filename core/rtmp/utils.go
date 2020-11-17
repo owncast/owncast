@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/nareix/joy5/format/flv/flvio"
 	"github.com/owncast/owncast/models"
@@ -12,6 +13,9 @@ import (
 
 func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMetadata, error) {
 	metadataComponentsString := fmt.Sprintf("%+v", metadata)
+	if !strings.Contains(metadataComponentsString, "@setDataFrame") {
+		return models.RTMPStreamMetadata{}, errors.New("Not a setDataFrame message")
+	}
 	re := regexp.MustCompile(`\{(.*?)\}`)
 	submatchall := re.FindAllString(metadataComponentsString, 1)
 
