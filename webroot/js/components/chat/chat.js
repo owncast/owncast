@@ -33,12 +33,17 @@ export default class Chat extends Component {
     this.submitChat = this.submitChat.bind(this);
     this.scrollToBottom = this.scrollToBottom.bind(this);
     this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 500);
+
+    this.messageListCallback = this.messageListCallback.bind(this);
   }
 
   componentDidMount() {
    this.setupWebSocketCallbacks();
    this.getChatHistory();
    window.addEventListener('resize', this.handleWindowResize);
+
+   this.messageListObserver = new MutationObserver(this.messageListCallback);
+   this.messageListObserver.observe(this.scrollableMessagesContainer.current, { childList: true });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -52,15 +57,15 @@ export default class Chat extends Component {
     if (prevName !== username) {
       this.sendUsernameChange(prevName, username);
     }
+
     // scroll to bottom of messages list when new ones come in
     if (messages.length > prevMessages.length) {
-      if (!prevMessages.length || this.checkShouldScroll()) {
-        this.scrollToBottom();
-      }
+      this.newMessagesReceived = true;
     }
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowResize);
+    this.messageListObserver.disconnect();
   }
 
   setupWebSocketCallbacks() {
@@ -139,7 +144,6 @@ export default class Chat extends Component {
     });
   }
 
-
   submitChat(content) {
 		if (!content) {
 			return;
@@ -177,13 +181,27 @@ export default class Chat extends Component {
   checkShouldScroll() {
     const { scrollTop, scrollHeight, clientHeight } = this.scrollableMessagesContainer.current;
     const fullyScrolled = scrollHeight - clientHeight;
-
-    return scrollHeight >= clientHeight && fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
+    const shoudlScroll = scrollHeight >= clientHeight && fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
+    return shoudlScroll;
   }
 
   handleWindowResize() {
     this.scrollToBottom();
   }
+
+  // if the messages list grows in number of child message nodes due to new messages received, scroll to bottom.
+  messageListCallback(mutations) {
+    const numMutations = mutations.length;
+    if (numMutations) {
+      const item = mutations[numMutations - 1];
+      if (item.type === 'childList' && item.addedNodes.length) {
+        if (this.newMessagesReceived || this.checkShouldScroll()) {
+          this.scrollToBottom();
+          this.newMessagesReceived = false;
+        }
+      }
+    }
+  };
 
   render(props, state) {
     const { username, messagesOnly, chatInputEnabled } = props;
