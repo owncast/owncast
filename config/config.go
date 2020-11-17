@@ -116,7 +116,7 @@ func (c *config) load(filePath string) error {
 	}
 
 	if err := yaml.Unmarshal(yamlFile, c); err != nil {
-		log.Fatalf("Unmarshal: %v", err)
+		log.Fatalf("Error reading the config file.\nHave you recently updated your version of Owncast?\nIf so there may be changes to the config.\nPlease read the change log for your version at https://owncast.online/posts/\n%v", err)
 		return err
 	}
 
