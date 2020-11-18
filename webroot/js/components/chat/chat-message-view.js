@@ -92,6 +92,10 @@ function highlightUsername(message, username) {
       element: 'span',
       className: 'highlighted px-1 rounded font-bold bg-orange-500',
       separateWordSearch: false,
+      accuracy: {
+        value: 'exactly',
+        limiters: [",", ".", "'", '?', '@'],
+      },
       done() {
         res(node.innerHTML);
       }
