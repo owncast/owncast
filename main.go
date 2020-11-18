@@ -63,7 +63,10 @@ func main() {
 
 	go metrics.Start()
 
-	data.SetupPersistence()
+	err := data.SetupPersistence()
+	if err != nil {
+		log.Fatalln("failed to open database", err)
+	}
 
 	// starts the core
 	if err := core.Start(); err != nil {
