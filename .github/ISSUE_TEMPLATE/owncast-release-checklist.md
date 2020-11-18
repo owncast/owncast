@@ -14,6 +14,8 @@ The following are intended to address the test scenarios and documentation that 
 - [ ] This release was tested as a fresh install, with no pre-existing data or configuration.
 - [ ] This release was tested as an upgrade over a previous install, keeping the data and configuration.
 - [ ] This release was tested using a Docker environment.
+- [ ] This release was tested with local storage for file distribution.
+- [ ] this release was tested with remote S3 storage for file distribution.
 - [ ] Release notes and a changelog was written to call out the new features, changes to existing features, and user-impacting behind the scenes updates.
 - [ ] Upgrade instructions were written for migrating from the previous release.
 - [ ] The API spec `openapi.yaml` is up to date, and the current version of the release is specified in the file.
