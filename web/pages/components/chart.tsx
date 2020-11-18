@@ -73,9 +73,9 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
     });
   }
 
-  const line = data ? (
+  const line = data && data?.length > 0 ? (
     <Line
-    type="natural"
+    type="basis"
     dataKey="value"
     stroke={color}
     dot={null}
@@ -112,7 +112,7 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
             data={s.data}
             name={s.name}
             key={s.name}
-            type="natural"
+            type="basis"
             stroke={s.color}
             dot={null}
             strokeWidth={3}
