@@ -6,12 +6,13 @@
   "dependencies": {
     "@joeattardi/emoji-button": "^4.5.0",
     "@justinribeiro/lite-youtube": "^0.9.1",
+    "@videojs/http-streaming": "2.3.0",
     "@videojs/themes": "^1.0.1",
     "htm": "^3.0.4",
+    "mark.js": "^8.11.1",
     "preact": "^10.5.7",
     "tailwindcss": "^1.9.6",
-    "video.js": "7.10.2",
-    "@videojs/http-streaming": "2.3.0"
+    "video.js": "7.10.2"
   },
   "devDependencies": {
     "cssnano": "^4.1.10",
@@ -27,6 +28,7 @@
       "@justinribeiro/lite-youtube",
       "htm",
       "preact",
+      "mark.js/dist/mark.es6.min.js",
       "tailwindcss/dist/tailwind.min.css"
     ],
     "alias": {
