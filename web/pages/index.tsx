@@ -72,7 +72,7 @@ export default function Home() {
     const { audioPassthrough, audioBitrate, videoBitrate, framerate } = setting;
     const audioSetting =
       audioPassthrough || audioBitrate === 0
-        ? `${streamDetails.audioBitrate} kpbs (passthrough)`
+        ? `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`
         : `${audioBitrate} kbps`;
     
     let settingTitle = 'Outbound Stream Details';
@@ -95,7 +95,7 @@ export default function Home() {
   });
 
   const { viewerCount, sessionMaxViewerCount } = serverStatusData;
-  const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.width}x${streamDetails.height}`;
+  const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.framerate}fps ${streamDetails.width}x${streamDetails.height}`;
   const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kbps`;
 
   const broadcastDate = new Date(broadcaster.time);
