@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Copy default config file
-        run: cp config-example.yaml config.yaml
+        run: cp config-default.yaml config.yaml
 
       - name: Build Docker image
         run: docker build -t owncast .
