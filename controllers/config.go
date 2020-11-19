@@ -11,6 +11,7 @@ import (
 // GetWebConfig gets the status of the server.
 func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
+	w.Header().Set("Content-Type", "application/json")
 
 	configuration := config.Config.InstanceDetails
 	configuration.Version = config.Config.VersionInfo
