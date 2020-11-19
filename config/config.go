@@ -106,7 +106,7 @@ type S3 struct {
 
 func (c *config) load(filePath string) error {
 	if !utils.DoesFileExists(filePath) {
-		log.Fatal("ERROR: valid config.yaml is required.  Copy config-example.yaml to config.yaml and edit")
+		log.Fatal("ERROR: valid config.yaml is required.  Copy config-default.yaml to config.yaml and edit")
 	}
 
 	yamlFile, err := ioutil.ReadFile(filePath)

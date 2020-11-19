@@ -1,0 +1,31 @@
+# See https://owncast.online/docs/configuration/ for more details
+
+instanceDetails:
+  name: Owncast
+  title: Owncast
+  summary: "This is brief summary of whom you are or what your stream is. You can edit this description in your config file."
+
+  logo: /img/logo.svg
+
+  tags:
+    - music
+    - software
+    - streaming
+
+  # https://owncast.online/docs/configuration/#external-links
+  # for full list of supported social links.  All optional.
+  socialHandles:
+    - platform: github
+      url: http://github.com/owncast/owncast
+
+videoSettings:
+  # Change this value and keep it secure.  Treat it like a password to your live stream.
+  streamingKey: abc123
+
+  streamQualities:
+    - medium:
+      videoBitrate: 1200
+      encoderPreset: veryfast
+
+# Set to true if you don't want the service checking for future releases.
+disableUpgradeChecks: false
