@@ -2,14 +2,21 @@
 
 npm install --silent > /dev/null
 
-git clone https://github.com/owncast/owncast
+# Check out a fresh copy of owncast if required.
+# If running under a Github workflow it will have already been cloned.
+if [ ! -d "owncast" ]; then
+  git clone https://github.com/owncast/owncast
+fi
+
 pushd owncast > /dev/null
 
 cp config-default.yaml config.yaml
 go build -o owncast main.go pkged.go
 
-curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip >> /dev/null
-unzip -f ffmpeg.zip
+if [ ! -d "ffmpeg" ]; then
+  curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip > /dev/null
+  unzip -o ffmpeg.zip > /dev/null
+fi
 
 ./owncast &
 SERVER_PID=$!
@@ -24,7 +31,6 @@ function finish {
   kill $SERVER_PID $FFMPEG_PID
 }
 trap finish EXIT
-echo "Streaming test.mp4..."
 
 sleep 15
 

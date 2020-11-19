@@ -11,6 +11,8 @@ jobs:
   Jest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          path: 'owncast'
       - name: Setup and run
         run: cd test/automated && ./run.sh
