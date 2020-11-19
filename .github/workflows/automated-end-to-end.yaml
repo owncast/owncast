@@ -1,0 +1,16 @@
+name: Automated end to end tests
+
+on:
+  push:
+    # branches:
+    #   - master
+  pull_request:
+    branches: master
+
+jobs:
+  Jest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup and run
+        run: cd test/automated && ./run.sh
