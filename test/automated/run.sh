@@ -17,7 +17,7 @@ pushd ../.. > /dev/null
 
 # If there is no existing config file then copy the default.
 if [ ! -f "config.yaml" ]; then
-  cp config-example.yaml config.yaml
+  cp config-default.yaml config.yaml
 fi
 
 # Build and run owncast from source
@@ -38,6 +38,7 @@ function finish {
 }
 trap finish EXIT
 
+echo "Waiting..."
 sleep 15
 
 # Run the tests against the instance.

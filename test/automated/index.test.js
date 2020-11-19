@@ -29,7 +29,7 @@ test('configuration is correct', (done) => {
         .then((res) => {
             expect(res.body.instanceDetails.name).toBe('Owncast');
             expect(res.body.instanceDetails.title).toBe('Owncast');
-            expect(res.body.instanceDetails.summary).toBe('This is brief summary of whom you are or what your stream is. You can read more about it at owncast.online.  You can edit this description in your config file.');
+            expect(res.body.instanceDetails.summary).toBe('This is brief summary of whom you are or what your stream is. You can edit this description in your config file.');
             expect(res.body.instanceDetails.logo).toBe('/img/logo.svg');
             expect(res.body.instanceDetails.tags).toStrictEqual(['music', 'software', 'streaming']);
 
