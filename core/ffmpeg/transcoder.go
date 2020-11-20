@@ -143,7 +143,6 @@ func (t *Transcoder) getString() string {
 		// Video settings
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 		"-pix_fmt", "yuv420p", // Force yuv420p color format
-		"-profile:v", "high", // Main – for standard definition (SD) to 640×480, High – for high definition (HD) to 1920×1080
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
 		// Filenames
@@ -239,8 +238,6 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 		variantEncoderCommands = append(variantEncoderCommands, v.getScalingString())
 	}
 
-	variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-r %d", v.framerate))
-
 	if v.encoderPreset != "" {
 		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-preset %s", v.encoderPreset))
 	}
@@ -310,11 +307,13 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 
 	cmd := []string{
 		"-map v:0",
-		fmt.Sprintf("-c:v:%d %s", v.index, encoderCodec),                                                      // Video codec used for this variant
-		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),                                                   // The average bitrate for this variant
-		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate),                                                 // The max bitrate allowed for this variant
-		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize),                                                 // How often the encoder checks the bitrate in order to meet average/max values
-		fmt.Sprintf("-g:v:%d %d", v.index, gop),                                                               // How often i-frames are encoded into the segments
+		fmt.Sprintf("-c:v:%d %s", v.index, encoderCodec),      // Video codec used for this variant
+		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),   // The average bitrate for this variant
+		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate), // The max bitrate allowed for this variant
+		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize), // How often the encoder checks the bitrate in order to meet average/max values
+		fmt.Sprintf("-g:v:%d %d", v.index, gop),               // How often i-frames are encoded into the segments
+		fmt.Sprintf("-profile:v:%d %s", v.index, "high"),      // Encoding profile
+		fmt.Sprintf("-r:v:%d %d", v.index, v.framerate),
 		fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0:min-keyint=%d:keyint=%d\"", v.index, gop, gop), // How often i-frames are encoded into the segments
 	}
 

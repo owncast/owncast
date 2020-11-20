@@ -232,6 +232,10 @@ func (c *config) GetVideoStreamQualities() []StreamQuality {
 
 // GetFramerate returns the framerate or default.
 func (q *StreamQuality) GetFramerate() int {
+	if q.IsVideoPassthrough {
+		return 0
+	}
+
 	if q.Framerate > 0 {
 		return q.Framerate
 	}
@@ -241,11 +245,27 @@ func (q *StreamQuality) GetFramerate() int {
 
 // GetEncoderPreset returns the preset or default.
 func (q *StreamQuality) GetEncoderPreset() string {
+	if q.IsVideoPassthrough {
+		return ""
+	}
+
 	if q.EncoderPreset != "" {
 		return q.EncoderPreset
 	}
 
 	return _default.VideoSettings.StreamQualities[0].EncoderPreset
+}
+
+func (q *StreamQuality) GetIsAudioPassthrough() bool {
+	if q.IsAudioPassthrough {
+		return true
+	}
+
+	if q.AudioBitrate == 0 {
+		return true
+	}
+
+	return false
 }
 
 // Load tries to load the configuration file.

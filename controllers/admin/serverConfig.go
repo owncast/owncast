@@ -13,7 +13,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	var videoQualityVariants = make([]config.StreamQuality, 0)
 	for _, variant := range config.Config.GetVideoStreamQualities() {
 		videoQualityVariants = append(videoQualityVariants, config.StreamQuality{
-			IsAudioPassthrough: variant.IsAudioPassthrough,
+			IsAudioPassthrough: variant.GetIsAudioPassthrough(),
 			IsVideoPassthrough: variant.IsVideoPassthrough,
 			Framerate:          variant.GetFramerate(),
 			EncoderPreset:      variant.GetEncoderPreset(),
