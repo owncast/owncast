@@ -63,7 +63,7 @@ func main() {
 
 	go metrics.Start()
 
-	err := data.SetupPersistence()
+	err := data.SetupPersistence(config.Config.DatabaseFilePath)
 	if err != nil {
 		log.Fatalln("failed to open database", err)
 	}
