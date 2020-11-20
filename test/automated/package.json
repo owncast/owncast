@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "supertest": "^6.0.1"
+    "supertest": "^6.0.1",
+    "websocket": "^1.0.32"
   },
   "devDependencies": {
     "jest": "^26.6.3"

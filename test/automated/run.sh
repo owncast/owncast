@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TEMP_DB=$(mktemp)
+
 # Install the node test framework
 npm install --silent > /dev/null
 
@@ -22,7 +24,7 @@ fi
 
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
-./owncast &
+./owncast -database $TEMP_DB &
 SERVER_PID=$!
 
 popd > /dev/null
@@ -34,6 +36,7 @@ ffmpeg -hide_banner -loglevel panic -re -i test.mp4 -vcodec libx264 -profile:v m
 FFMPEG_PID=$!
 
 function finish {
+  rm $TEMP_DB
   kill $SERVER_PID $FFMPEG_PID
 }
 trap finish EXIT
