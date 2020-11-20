@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -24,9 +23,7 @@ func GetDatabase() *sql.DB {
 	return _db
 }
 
-func SetupPersistence() error {
-	file := config.Config.DatabaseFilePath
-
+func SetupPersistence(file string) error {
 	// Create empty DB file if it doesn't exist.
 	if !utils.DoesFileExists(file) {
 		log.Traceln("Creating new database at", file)
