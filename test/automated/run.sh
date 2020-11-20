@@ -17,14 +17,9 @@ fi
 
 pushd ../.. > /dev/null
 
-# If there is no existing config file then copy the default.
-if [ ! -f "config.yaml" ]; then
-  cp config-default.yaml config.yaml
-fi
-
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
-./owncast -database $TEMP_DB &
+./owncast -database $TEMP_DB -configFile config-default.yaml &
 SERVER_PID=$!
 
 popd > /dev/null
