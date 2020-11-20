@@ -98,8 +98,12 @@ function InstanceDetails({ config }) {
 
   return (
     <>
+    <p>
       <KeyValueTable title="Server details" data={data} />
+    </p>
+    <p>
       <KeyValueTable title="Server configuration" data={configData} />
+    </p>
     </>
   );
 }
@@ -125,9 +129,15 @@ export default function ServerConfig() {
 
   return (
     <div>
+      <p>
         <InstanceDetails config={config} />
+        </p>
+        <p>
         <SocialHandles config={config} />
+        </p>
         <PageContent config={config} />
+        <br/>
+        <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
     </div>
   ); 
 }

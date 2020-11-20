@@ -13,28 +13,37 @@ function VideoVariants({ config }) {
 
   const videoQualityColumns = [
     {
+      title: "#",
+      dataIndex: "key",
+      key: "key"
+    },
+    {
       title: "Video bitrate",
       dataIndex: "videoBitrate",
       key: "videoBitrate",
       render: (bitrate) =>
-        bitrate === 0 || !bitrate ? "Passthrough" : `${bitrate} kbps`,
+        !bitrate ? "Same as source" : `${bitrate} kbps`,
     },
     {
       title: "Framerate",
       dataIndex: "framerate",
       key: "framerate",
+      render: (framerate) =>
+        !framerate ? "Same as source" : `${framerate} fps`,
     },
     {
       title: "Encoder preset",
       dataIndex: "encoderPreset",
       key: "framerate",
+      render: (preset) =>
+        !preset ? "n/a" : preset,
     },
     {
       title: "Audio bitrate",
       dataIndex: "audioBitrate",
       key: "audioBitrate",
       render: (bitrate) =>
-        bitrate === 0 || !bitrate ? "Passthrough" : `${bitrate} kbps`,
+        !bitrate ? "Same as source" : `${bitrate} kbps`,
     },
   ];
 
@@ -55,12 +64,21 @@ function VideoVariants({ config }) {
     {
       name: "Segment length",
       value: config.videoSettings.segmentLengthSeconds,
+      key: "segmentLength"
     },
     {
       name: "Number of segments",
       value: config.videoSettings.numberOfPlaylistItems,
+      key: "numberOfSegments"
     },
   ];
+
+  const videoQualityVariantData = config.videoSettings.videoQualityVariants.map(function(variant, index) {
+    return {
+      key: index,
+      ...variant
+    }
+  });
 
   return (
     <div>
@@ -68,14 +86,17 @@ function VideoVariants({ config }) {
       <Table
         pagination={false}
         columns={videoQualityColumns}
-        dataSource={config.videoSettings.videoQualityVariants}
+        dataSource={videoQualityVariantData}
       />
 
       <Table
         pagination={false}
         columns={miscVideoSettingsColumns}
         dataSource={miscVideoSettings}
+        rowKey={row => row.name}
       />
+      <br/>
+      <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
     </div>
   );
 }

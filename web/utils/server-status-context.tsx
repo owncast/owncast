@@ -12,6 +12,7 @@ export const initialServerConfigState = {
     videoQualityVariants: [
       {
         audioPassthrough: false,
+        videoPassthrough: false,
         videoBitrate: 0,
         audioBitrate: 0,
         framerate: 0,

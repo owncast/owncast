@@ -69,11 +69,15 @@ export default function Home() {
   
   // map out settings
   const videoQualitySettings = configData?.videoSettings?.videoQualityVariants?.map((setting, index) => {
-    const { audioPassthrough, audioBitrate, videoBitrate, framerate } = setting;
+    const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
     const audioSetting =
       audioPassthrough || audioBitrate === 0
         ? `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`
         : `${audioBitrate} kbps`;
+    const videoSetting =
+      videoPassthrough || videoBitrate === 0
+        ? `${streamDetails.videoBitrate} kbps ${streamDetails.framerate}fps ${streamDetails.width}x${streamDetails.height}`
+        : `${videoBitrate} kbps ${framerate}fps`;
     
     let settingTitle = 'Outbound Stream Details';
     settingTitle = (videoQualitySettings?.length > 1) ?
@@ -82,7 +86,7 @@ export default function Home() {
       <Card title={settingTitle} type="inner" key={settingTitle}>
         <StatisticItem
           title="Outbound Video Stream"
-          value={`${videoBitrate} kbps, ${framerate} fps`}
+          value={videoSetting}
           prefix={null}
         />
         <StatisticItem
