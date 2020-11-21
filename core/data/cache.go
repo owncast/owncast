@@ -2,15 +2,15 @@ package data
 
 import "errors"
 
-func (ds *Datastore) GetCachedValue(key string) (ConfigEntry, error) {
+func (ds *Datastore) GetCachedValue(key string) ([]byte, error) {
 	// Check for a cached value
 	if val, ok := ds.cache[key]; ok {
 		return val, nil
 	}
 
-	return ConfigEntry{}, errors.New(key + " not found in cache")
+	return nil, errors.New(key + " not found in cache")
 }
 
-func (ds *Datastore) SetCachedValue(key string, e ConfigEntry) {
-	ds.cache[key] = e
+func (ds *Datastore) SetCachedValue(key string, b []byte) {
+	ds.cache[key] = b
 }
