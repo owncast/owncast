@@ -8,10 +8,12 @@ import (
 var _datastore *Datastore
 
 func TestMain(m *testing.M) {
-	SetupPersistence("test.db")
-	config := Datastore{}
-	config.Setup()
-	_datastore = &config
+	dbFile := "../../test/test.db"
+
+	SetupPersistence(dbFile)
+	datastore := Datastore{}
+	datastore.Setup()
+	_datastore = &datastore
 	m.Run()
 }
 
@@ -82,9 +84,8 @@ func TestCustomType(t *testing.T) {
 
 	// Test an example struct with a slice
 	testStruct := TestStruct{
-		Test:            "Test string 123 in test struct",
-		TestSlice:       []string{"test string 1", "test string 2"},
-		privateProperty: "this is private",
+		Test:      "Test string 123 in test struct",
+		TestSlice: []string{"test string 1", "test string 2"},
 	}
 
 	// Save config entry to the database
@@ -109,9 +110,6 @@ func TestCustomType(t *testing.T) {
 	if testResult.TestSlice[0] != testStruct.TestSlice[0] {
 		t.Error("expected", testStruct.TestSlice[0], "but test returned", testResult.TestSlice[0])
 	}
-	// if testResult.privateProperty != testStruct.privateProperty {
-	// 	t.Error("expected", testStruct.privateProperty, "but test returned", testResult.privateProperty)
-	// }
 }
 
 // Custom type for testing

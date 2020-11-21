@@ -5,28 +5,30 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"log"
-	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type Datastore struct {
 	db    *sql.DB
-	cache map[string]ConfigEntry
+	cache map[string][]byte
 }
 
 // Get will query the database for the key and return the entry
 func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 	cachedValue, err := ds.GetCachedValue(key)
-	if err != nil {
-		return cachedValue, nil
+	if err == nil {
+		return ConfigEntry{
+			Key:   key,
+			Value: cachedValue,
+		}, nil
 	}
 
 	var resultKey string
 	var resultValue []byte
 
 	row := ds.db.QueryRow("SELECT key, value FROM datastore WHERE key = ? LIMIT 1", key)
-	if err = row.Scan(&resultKey, &resultValue); err != nil {
+	if err := row.Scan(&resultKey, &resultValue); err != nil {
 		return ConfigEntry{}, err
 	}
 
@@ -61,26 +63,18 @@ func (ds *Datastore) Save(e ConfigEntry) error {
 		return err
 	}
 
-	ds.SetCachedValue(e.Key, e)
-
 	if err = tx.Commit(); err != nil {
 		log.Fatalln(err)
 	}
+
+	ds.SetCachedValue(e.Key, dataGob.Bytes())
 
 	return nil
 }
 
 func (ds *Datastore) Setup() {
-	file := "test.db"
-	_, err := os.Create(file)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	ds.cache = make(map[string]ConfigEntry)
+	ds.cache = make(map[string][]byte)
 	ds.db = GetDatabase()
-	// sqliteDatabase, _ := sql.Open("sqlite3", file)
-	// ds.db = sqliteDatabase
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS datastore (
 		"key" string NOT NULL PRIMARY KEY,
