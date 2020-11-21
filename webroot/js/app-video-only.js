@@ -5,6 +5,13 @@ const html = htm.bind(h);
 import VideoPoster from './components/video-poster.js';
 import { OwncastPlayer } from './components/player.js';
 
+// We count viewers by concurrent websocket connections.
+// So for now let's make a connection just so it can
+// be counted.
+// https://github.com/owncast/owncast/discussions/374
+import Websocket from './utils/websocket.js';
+const websocket = new Websocket();
+
 import {
   addNewlines,
   pluralize,
