@@ -33,7 +33,7 @@ func setStreamAsConnected() {
 	startOnlineCleanupTimer()
 
 	if _yp != nil {
-		_yp.Start()
+		go _yp.Start()
 	}
 
 	segmentPath := config.PublicHLSStoragePath
