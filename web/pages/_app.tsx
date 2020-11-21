@@ -1,4 +1,4 @@
-import 'antd/dist/antd.compact.css';
+import 'antd/dist/antd.css';
 import '../styles/colors.scss';
 import '../styles/globals.scss';
 

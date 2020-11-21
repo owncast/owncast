@@ -38,3 +38,7 @@ pre {
 .recharts-wrapper {
   font-size: 12px;
 }
+
+@media (prefers-color-scheme: dark) {
+  @import "~antd/dist/antd.dark";
+}
