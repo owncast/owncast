@@ -5,12 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 
 	"encoding/json"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 
 	log "github.com/sirupsen/logrus"
@@ -20,6 +20,8 @@ const pingInterval = 4 * time.Minute
 
 var getStatus func() models.Status
 var _inErrorState = false
+
+var datastore *data.Datastore
 
 //YP is a service for handling listing in the Owncast directory.
 type YP struct {
@@ -46,6 +48,7 @@ func NewYP(getStatusFunc func() models.Status) *YP {
 
 // Start is run when a live stream begins to start pinging YP.
 func (yp *YP) Start() {
+	datastore = data.GetStore()
 	yp.timer = time.NewTicker(pingInterval)
 	for range yp.timer.C {
 		yp.ping()
@@ -72,7 +75,7 @@ func (yp *YP) ping() {
 
 	key := yp.getSavedKey()
 
-	log.Traceln("Pinging YP as: ", config.Config.InstanceDetails.Name)
+	log.Traceln("Pinging YP as: ", config.Config.InstanceDetails.Name, "with key", key)
 
 	request := ypPingRequest{
 		Key: key,
@@ -120,27 +123,19 @@ func (yp *YP) ping() {
 }
 
 func (yp *YP) writeSavedKey(key string) {
-	f, err := os.Create(".yp.key")
-	if err != nil {
-		log.Errorln(err)
-		return
-	}
-	defer f.Close()
-
-	_, err = f.WriteString(key)
-	if err != nil {
-		log.Errorln(err)
-		return
+	if err := datastore.SetString("yp-key", key); err != nil {
+		log.Warnln(err)
 	}
 }
 
 func (yp *YP) getSavedKey() string {
-	fileBytes, err := ioutil.ReadFile(".yp.key")
+	key, err := datastore.GetString("yp-key")
 	if err != nil {
+		log.Warnln(err)
 		return ""
 	}
 
-	return string(fileBytes)
+	return key
 }
 
 // DisplayInstructions will let the user know they are not in the directory by default and

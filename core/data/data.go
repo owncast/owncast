@@ -18,9 +18,16 @@ const (
 )
 
 var _db *sql.DB
+var _datastore *Datastore
 
+// GetDatabase will return the shared instance of the actual database.
 func GetDatabase() *sql.DB {
 	return _db
+}
+
+// GetStore will return the shared instance of the read/write datastore.
+func GetStore() *Datastore {
+	return _datastore
 }
 
 func SetupPersistence(file string) error {
@@ -76,6 +83,9 @@ func SetupPersistence(file string) error {
 	}
 
 	_db = db
+	_datastore = &Datastore{}
+	_datastore.Setup()
+
 	return nil
 }
 

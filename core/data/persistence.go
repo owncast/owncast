@@ -14,7 +14,7 @@ type Datastore struct {
 	cache map[string][]byte
 }
 
-// Get will query the database for the key and return the entry
+// Get will query the database for the key and return the entry.
 func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 	cachedValue, err := ds.GetCachedValue(key)
 	if err == nil {
@@ -52,16 +52,30 @@ func (ds *Datastore) Save(e ConfigEntry) error {
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare("INSERT INTO datastore(key, value) values(?, ?)")
+	var stmt *sql.Stmt
+	var count int
+	row := ds.db.QueryRow("SELECT COUNT(*) FROM datastore WHERE key = ? LIMIT 1", e.Key)
+	if err := row.Scan(&count); err != nil {
+		return err
+	}
+
+	if count == 0 {
+		stmt, err = tx.Prepare("INSERT INTO datastore(key, value) values(?, ?)")
+		if err != nil {
+			return err
+		}
+		_, err = stmt.Exec(e.Key, dataGob.Bytes())
+	} else {
+		stmt, err = tx.Prepare("UPDATE datastore SET value=? WHERE key=?")
+		if err != nil {
+			return err
+		}
+		_, err = stmt.Exec(dataGob.Bytes(), e.Key)
+	}
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-
-	_, err = stmt.Exec(e.Key, dataGob.Bytes())
-	if err != nil {
-		return err
-	}
 
 	if err = tx.Commit(); err != nil {
 		log.Fatalln(err)
