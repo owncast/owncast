@@ -35,3 +35,4 @@ chat.db
 
 !webroot/js/web_modules/**/dist
 !core/data
+test/test.db
