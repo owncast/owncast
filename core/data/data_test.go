@@ -5,15 +5,10 @@ import (
 	"testing"
 )
 
-var _datastore *Datastore
-
 func TestMain(m *testing.M) {
 	dbFile := "../../test/test.db"
 
 	SetupPersistence(dbFile)
-	datastore := Datastore{}
-	datastore.Setup()
-	_datastore = &datastore
 	m.Run()
 }
 
