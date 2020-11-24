@@ -7,7 +7,7 @@ import (
 )
 
 // How often we poll for updates.
-const viewerMetricsPollingInterval = 5 * time.Minute
+const viewerMetricsPollingInterval = 2 * time.Minute
 
 func startViewerCollectionMetrics() {
 	collectViewerCount()
