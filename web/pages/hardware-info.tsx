@@ -74,7 +74,7 @@ const series = [
       <div>
         <div>
           <h2>Hardware Info</h2>
-          <Row gutter={[16, 16]}>
+          <Row gutter={[16, 16]} justify="space-around">
             <StatisticItem
               title={series[0].name}
               value={`${currentCPUUsage}`}

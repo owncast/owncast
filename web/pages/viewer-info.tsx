@@ -104,7 +104,7 @@ export default function ViewersOverTime() {
   return (
     <div>
       <h2>Current Viewers</h2>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} justify="space-around">
         <StatisticItem
           title="Current viewers"
           value={viewerCount.toString()}
