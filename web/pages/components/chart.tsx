@@ -75,6 +75,7 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
 
   const line = data && data?.length > 0 ? (
     <Line
+    key="line"
     type="basis"
     dataKey="value"
     stroke={color}
@@ -82,12 +83,13 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
     strokeWidth={3}
     legendType="square"
     name={title}
+    data={data}
   />
   ) : null;
 
   return (
     <div className={styles.lineChartContainer}>
-      <LineChart width={chartWidth} height={chartHeight} data={data}>
+      <LineChart width={chartWidth} height={chartHeight}>
         <XAxis
           dataKey="time"
           tickFormatter={timeFormatter}
