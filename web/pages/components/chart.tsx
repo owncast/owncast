@@ -21,6 +21,16 @@ interface ChartProps {
   dataCollections?: any[],
 }
 
+function createGraphDataset(dataArray) {
+  var dataValues = {};
+  dataArray.forEach(item => {
+    const dateObject = new Date(item.time);
+    const dateString = dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDay() + ' ' + dateObject.getHours() + ':' + dateObject.getMinutes();
+    dataValues[dateString] = item.value;
+  })
+  return dataValues;
+}
+
 export default function Chart({ data, title, color, unit, dataCollections }: ChartProps) {
   var renderData = [];
 
@@ -28,13 +38,13 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
     renderData.push({
       name: title,
       color: color,
-      data: createGraphDatasetFromObject(data)
+      data: createGraphDataset(data)
     });
   }
 
   dataCollections.forEach(collection => {
     renderData.push(
-      {name: collection.name, data: createGraphDatasetFromObject(collection.data), color: collection.color}
+      {name: collection.name, data: createGraphDataset(collection.data), color: collection.color}
     )
   });
 
@@ -57,13 +67,3 @@ Chart.defaultProps = {
   data: [],
   title: '',
 };
-
-function createGraphDatasetFromObject(dataArray) {
-  var dataValues = {};
-  dataArray.forEach(item => {
-    const dateObject = new Date(item.time);
-    const dateString = dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDay() + ' ' + dateObject.getHours() + ':' + dateObject.getMinutes();
-    dataValues[dateString] = item.value;
-  })
-  return dataValues;
-}
