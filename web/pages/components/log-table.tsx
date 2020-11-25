@@ -1,5 +1,4 @@
 import React from "react";
-import { timeFormat } from "d3-time-format";
 import { Table, Tag, Typography } from "antd";
 import Linkify from "react-linkify";
 import { SortOrder } from "antd/lib/table/interface";
@@ -59,8 +58,10 @@ export default function LogTable({ logs, pageSize }: Props) {
       title: "Timestamp",
       dataIndex: "time",
       key: "time",
-      render: (timestamp) =>
-        timeFormat("%H:%M:%S %m/%d/%Y")(new Date(timestamp)),
+      render: (timestamp) => {
+        const dateObject = new Date(timestamp);
+        return dateObject.getHours() + ":" + dateObject.getMinutes() + ":" + dateObject.getSeconds() + ' ' + dateObject.getFullYear() + "-" + (dateObject.getMonth() + 1) + "-" + dateObject.getDate();
+      },
       sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
       sortDirections: ["descend", "ascend"] as SortOrder[],
       defaultSortOrder: "descend" as SortOrder,

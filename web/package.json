@@ -10,17 +10,16 @@
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
     "antd": "^4.6.6",
+    "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
-    "d3-scale": "^3.2.3",
-    "d3-time-format": "^3.0.0",
     "date-fns": "^2.16.1",
     "next": "^10.0.0",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
+    "react-chartkick": "^0.4.1",
     "react-dom": "16.13.1",
     "react-linkify": "^1.0.0-alpha",
     "react-markdown": "^5.0.2",
-    "recharts": "^1.8.5",
     "sass": "^1.26.11"
   },
   "devDependencies": {
