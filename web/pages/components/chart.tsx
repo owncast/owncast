@@ -1,5 +1,5 @@
-import styles from '../../styles/styles.module.css';
 import { LineChart } from 'react-chartkick'
+import styles from '../../styles/styles.module.css';
 import 'chart.js'
 
 const defaultProps = {
@@ -22,22 +22,22 @@ interface ChartProps {
 }
 
 function createGraphDataset(dataArray) {
-  var dataValues = {};
+  const dataValues = {};
   dataArray.forEach(item => {
     const dateObject = new Date(item.time);
-    const dateString = dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDay() + ' ' + dateObject.getHours() + ':' + dateObject.getMinutes();
+    const dateString = `${dateObject.getFullYear()  }-${  dateObject.getMonth()  }-${  dateObject.getDay()  } ${  dateObject.getHours()  }:${  dateObject.getMinutes()}`;
     dataValues[dateString] = item.value;
   })
   return dataValues;
 }
 
 export default function Chart({ data, title, color, unit, dataCollections }: ChartProps) {
-  var renderData = [];
+  const renderData = [];
 
   if (data && data.length > 0) {
     renderData.push({
       name: title,
-      color: color,
+      color,
       data: createGraphDataset(data)
     });
   }
@@ -54,7 +54,7 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
     xtitle="Time"
     ytitle={title}
     suffix={unit}
-    legend={"bottom"}
+    legend="bottom"
     color={color}
     data={renderData}
     download={title}
