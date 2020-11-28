@@ -22,6 +22,6 @@ require (
 	github.com/yuin/goldmark v1.2.1
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
-	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v2 v2.4.0
 	mvdan.cc/xurls v1.1.0
 )
