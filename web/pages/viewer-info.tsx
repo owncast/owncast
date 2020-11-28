@@ -15,12 +15,12 @@ import {
   fetchData,
 } from "../utils/apis";
 
-const FETCH_INTERVAL = 5 * 60 * 1000; // 5 mins
+const FETCH_INTERVAL = 60 * 1000; // 1 min
 
 export default function ViewersOverTime() {
   const context = useContext(ServerStatusContext);
   const {
-    broadcastActive,
+    online,
     viewerCount,
     overallPeakViewerCount,
     sessionPeakViewerCount,
@@ -49,7 +49,7 @@ export default function ViewersOverTime() {
     let getStatusIntervalId = null;
 
     getInfo();
-    if (broadcastActive) {
+    if (online) {
       getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
       // returned function will be called on component unmount
       return () => {
@@ -58,7 +58,7 @@ export default function ViewersOverTime() {
     }
 
     return () => [];
-  }, []);
+  }, [online]);
 
   // todo - check to see if broadcast active has changed. if so, start polling.
 
@@ -103,7 +103,6 @@ export default function ViewersOverTime() {
 
   return (
     <div>
-      <h2>Current Viewers</h2>
       <Row gutter={[16, 16]} justify="space-around">
         <StatisticItem
           title="Current viewers"
@@ -124,7 +123,7 @@ export default function ViewersOverTime() {
       <div className="chart-container">
         <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
       </div>
-      <Table dataSource={clients} columns={columns} />
+      <Table dataSource={clients} columns={columns} rowKey={(row) => row.userAgent} />
     </div>
   );
 }

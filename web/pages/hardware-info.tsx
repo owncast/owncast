@@ -73,7 +73,6 @@ const series = [
     return (
       <div>
         <div>
-          <h2>Hardware Info</h2>
           <Row gutter={[16, 16]} justify="space-around">
             <StatisticItem
               title={series[0].name}
@@ -102,7 +101,7 @@ const series = [
           </Row>
 
           <div className="chart-container">
-            <Chart dataCollections={series} color="#FF7700" unit="%" />
+            <Chart title="% used" dataCollections={series} color="#FF7700" unit="%" />
           </div>
         </div>
       </div>
