@@ -1,20 +1,33 @@
 .home-container {
   max-width: 1000px;
 
+  .statistics-list {
+    li {
+      margin-left: -.5em;
+    }
+  }
+
   .section {
     margin: 1rem 0;
+
+    .ant-statistic-content {
+      font-size: 1rem;
+    }
   }
 
   .online-status-section {
     > .ant-card {
-      box-shadow: 0px 1px 1px 0px rgba(0, 22, 40, 0.1);
+      box-shadow: 0px 1px 10px 2px rgba(0, 22, 40, 0.1);
     }
 
     .ant-card-head {
-      background-color: var(--owncast-purple);
+      background-color: #40b246;
       border-color: #ccc;
       color:#fff;
-      
+      @media (prefers-color-scheme: dark) {
+        background-color: #2a762e;
+        border-bottom-color: black;
+      }
     }
     .ant-card-head-title {
       font-size: .88rem;
@@ -32,7 +45,7 @@
         text-align: center;
         margin: 0 1rem;
       }
-    }  
+    }
   }
 
 
@@ -52,6 +65,11 @@
       .ant-card-head {
         background-color: #ccd;
         color: black;
+        @media (prefers-color-scheme: dark) {
+          background-color: #000;
+          color: #ccd;
+        }
+
       }
     }
     .server-detail {
@@ -62,7 +80,7 @@
         align-items: flex-start;
 
         .ant-card {
-          width: 49%;
+          width: 45%;
           text-align: center;
         }
       }

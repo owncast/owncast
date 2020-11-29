@@ -1,4 +1,4 @@
-import { Typography, Statistic, Card, Col, Progress} from "antd";
+import { Typography, Statistic, Card, Progress} from "antd";
 const { Text } = Typography;
 
 interface StatisticItemProps {
@@ -8,6 +8,7 @@ interface StatisticItemProps {
   color?: string,
   progress?: boolean,
   centered?: boolean,
+  formatter?: any,
 };
 const defaultProps = {
   title: '', 
@@ -16,6 +17,7 @@ const defaultProps = {
   color: '',
   progress: false,
   centered: false,
+  formatter: null,
 };
 
 
@@ -43,14 +45,15 @@ function ProgressView({ title, value, prefix, color }: StatisticItemProps) {
 }
 ProgressView.defaultProps = defaultProps;
 
-function StatisticView({ title, value, prefix }: StatisticItemProps) {
+function StatisticView({ title, value, prefix, formatter }: StatisticItemProps) {
   return (
     <Statistic
       title={title}
       value={value}
       prefix={prefix}
-  />
-  )
+      formatter={formatter}
+   />
+  );
 }
 StatisticView.defaultProps = defaultProps;
 

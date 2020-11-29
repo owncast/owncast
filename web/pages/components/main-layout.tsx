@@ -21,7 +21,7 @@ import { parseSecondsToDurationString } from '../../utils/format'
 import OwncastLogo from './logo';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
-import adminStyles from '../../styles/styles.module.css';
+import adminStyles from '../../styles/styles.module.scss';
 
 let performedUpgradeCheck = false;
 

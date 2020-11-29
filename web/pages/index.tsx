@@ -14,7 +14,7 @@ GW: to do:
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Skeleton, Typography, Card, Statistic } from "antd";
+import { Skeleton, Card, Statistic } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
@@ -28,6 +28,16 @@ import {
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
+
+function streamDetailsFormatter(streamDetails) {
+  return (
+    <ul className="statistics-list">
+      <li>{streamDetails.videoCodec} @ {streamDetails.videoBitrate} kbps</li>
+      <li>{streamDetails.framerate} fps</li>
+      <li>{streamDetails.width} x {streamDetails.height}</li>
+    </ul>
+  );
+}
 
 export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);
@@ -45,7 +55,6 @@ export default function Home() {
   };
   const getMoreStats = () => {
     getLogs();
-    // getConfig();
   }
   useEffect(() => {
     let intervalId = null;
@@ -74,12 +83,12 @@ export default function Home() {
     const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
     const audioSetting =
       audioPassthrough || audioBitrate === 0
-        ? `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kpbs`
+        ? `${streamDetails.audioCodec}, ${streamDetails.audioBitrate} kbps`
         : `${audioBitrate} kbps`;
     const videoSetting =
       videoPassthrough || videoBitrate === 0
-        ? `${streamDetails.videoBitrate} kbps ${streamDetails.framerate}fps ${streamDetails.width}x${streamDetails.height}`
-        : `${videoBitrate} kbps ${framerate}fps`;
+        ? `${streamDetails.videoBitrate} kbps, ${streamDetails.framerate} fps ${streamDetails.width} x ${streamDetails.height}`
+        : `${videoBitrate} kbps, ${framerate} fps`;
     
     let settingTitle = 'Outbound Stream Details';
     settingTitle = (videoQualitySettings?.length > 1) ?
@@ -100,9 +109,11 @@ export default function Home() {
     );
   });
 
+
+  // inbound
   const { viewerCount, sessionMaxViewerCount } = serverStatusData;
-  const streamVideoDetailString = `${streamDetails.videoCodec} ${streamDetails.videoBitrate} kbps ${streamDetails.framerate}fps ${streamDetails.width}x${streamDetails.height}`;
-  const streamAudioDetailString = `${streamDetails.audioCodec} ${streamDetails.audioBitrate} kbps`;
+
+  const streamAudioDetailString = `${streamDetails.audioCodec}, ${streamDetails.audioBitrate} kbps`;
 
   const broadcastDate = new Date(broadcaster.time);
 
@@ -147,7 +158,8 @@ export default function Home() {
               />
               <StatisticItem
                 title="Inbound Video Stream"
-                value={streamVideoDetailString}
+                value={streamDetails}
+                formatter={streamDetailsFormatter}
                 prefix={null}
               />
               <StatisticItem

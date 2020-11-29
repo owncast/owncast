@@ -4,7 +4,7 @@ import { Table, Typography, Input } from 'antd';
 import { isEmptyObject } from '../utils/format';
 import KeyValueTable from "./components/key-value-table";
 import { ServerStatusContext } from '../utils/server-status-context';
-import adminStyles from '../styles/styles.module.css';
+import adminStyles from '../styles/styles.module.scss';
 
 const { Title } = Typography;
 const { TextArea } = Input;

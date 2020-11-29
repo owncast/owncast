@@ -1,5 +1,5 @@
 import { LineChart } from 'react-chartkick'
-import styles from '../../styles/styles.module.css';
+import styles from '../../styles/styles.module.scss';
 import 'chart.js';
 
 const defaultProps = {
