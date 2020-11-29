@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext } from 'react';
 import { Table, Typography, Input } from 'antd';
 import { isEmptyObject } from '../utils/format';

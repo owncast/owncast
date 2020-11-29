@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
 Will display an overview with the following datasources:
 1. Current broadcaster.

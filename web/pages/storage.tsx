@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext } from "react";
 import KeyValueTable from "./components/key-value-table";
 import { ServerStatusContext } from '../utils/server-status-context';

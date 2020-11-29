@@ -2,12 +2,6 @@ import { LineChart } from 'react-chartkick'
 import styles from '../../styles/styles.module.scss';
 import 'chart.js';
 
-const defaultProps = {
-  active: false,
-  payload: Object,
-  unit: '',
-};
-
 interface TimedValue {
   time: Date;
   value: number;

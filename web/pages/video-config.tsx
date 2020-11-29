@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext } from 'react';
 import { Table, Typography } from 'antd';
 import { ServerStatusContext } from '../utils/server-status-context';

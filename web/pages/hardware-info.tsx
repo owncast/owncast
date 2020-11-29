@@ -1,4 +1,3 @@
-/* eslint-disable no-array-constructor */
 import { BulbOutlined, LaptopOutlined, SaveOutlined } from "@ant-design/icons";
 import { Row } from "antd";
 import React, { useEffect, useState } from 'react';

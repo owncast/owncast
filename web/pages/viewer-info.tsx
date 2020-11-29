@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useContext } from 'react';
 import { Table, Row } from "antd";
 import { formatDistanceToNow } from "date-fns";
