@@ -35,10 +35,6 @@ pre {
   border-radius: .5em;
 }
 
-.recharts-wrapper {
-  font-size: 12px;
-}
-
 @media (prefers-color-scheme: dark) {
   @import "~antd/dist/antd.dark";
   pre {

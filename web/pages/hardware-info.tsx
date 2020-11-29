@@ -100,9 +100,7 @@ const series = [
             />
           </Row>
 
-          <div className="chart-container">
-            <Chart title="% used" dataCollections={series} color="#FF7700" unit="%" />
-          </div>
+          <Chart title="% used" dataCollections={series} color="#FF7700" unit="%" />
         </div>
       </div>
     );

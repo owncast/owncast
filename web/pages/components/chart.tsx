@@ -1,6 +1,6 @@
 import { LineChart } from 'react-chartkick'
 import styles from '../../styles/styles.module.css';
-import 'chart.js'
+import 'chart.js';
 
 const defaultProps = {
   active: false,
@@ -49,17 +49,18 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
   });
 
   return (
-    <LineChart
-    className={styles.lineChartContainer}
-    xtitle="Time"
-    ytitle={title}
-    suffix={unit}
-    legend="bottom"
-    color={color}
-    data={renderData}
-    download={title}
-    />
-  )
+    <div className={styles.lineChartContainer}>
+      <LineChart
+        xtitle="Time"
+        ytitle={title}
+        suffix={unit}
+        legend="bottom"
+        color={color}
+        data={renderData}
+        download={title}
+      />
+    </div>
+  );
 }
 
 Chart.defaultProps = {
