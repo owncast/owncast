@@ -8,9 +8,7 @@ Will display an overview with the following datasources:
 TODO: Link each overview value to the sub-page that focuses on it.
 
 GW: to do:
-- Hardware + Viewer count views-  top 3 boxes - restyle
 - Home  - more box shadoe?
-- maybe not have "current stream" nav section
 - maybe make outbound/inbound smaller (since it's fixed info for current stream)
 - reformat "Inbound Video Stream" section.
 */
@@ -30,9 +28,6 @@ import {
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
-
-const { Title } = Typography;
-
 
 export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);

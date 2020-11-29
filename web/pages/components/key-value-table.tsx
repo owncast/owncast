@@ -17,9 +17,9 @@ export default function KeyValueTable({ title, data }) {
   ];
 
   return (
-    <div>
-      <Title>{title}</Title>
-      <Table pagination={false} columns={columns} dataSource={data} />
-    </div>
+    <>
+      <Title level={2}>{title}</Title>
+      <Table pagination={false} columns={columns} dataSource={data} rowKey="name" />
+    </>
   );
 }

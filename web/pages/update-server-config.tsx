@@ -4,6 +4,7 @@ import { Table, Typography, Input } from 'antd';
 import { isEmptyObject } from '../utils/format';
 import KeyValueTable from "./components/key-value-table";
 import { ServerStatusContext } from '../utils/server-status-context';
+import adminStyles from '../styles/styles.module.css';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -32,12 +33,13 @@ function SocialHandles({ config }) {
   }
 
     return (
-      <div>
-        <Title>Social Handles</Title>
+      <div className={adminStyles.configSection}>
+        <Title level={2}>Social Handles</Title>
         <Table
           pagination={false}
           columns={columns}
           dataSource={config.instanceDetails.socialHandles}
+          rowKey="platform"
         />
       </div>
     );
@@ -98,12 +100,12 @@ function InstanceDetails({ config }) {
 
   return (
     <>
-    <p>
-      <KeyValueTable title="Server details" data={data} />
-    </p>
-    <p>
-      <KeyValueTable title="Server configuration" data={configData} />
-    </p>
+      <div className={adminStyles.configSection}>
+        <KeyValueTable title="Server details" data={data} />
+      </div>
+      <div className={adminStyles.configSection}>
+        <KeyValueTable title="Server configuration" data={configData} />
+      </div>
     </>
   );
 }
@@ -113,8 +115,8 @@ function PageContent({ config }) {
     return null;
   }
   return (
-    <div>
-      <Title>Page content</Title>
+    <div className={adminStyles.configSection}>
+      <Title level={2}>Page content</Title>
       <TextArea
         disabled rows={4}
         value={config.instanceDetails.extraPageContent}
@@ -128,17 +130,13 @@ export default function ServerConfig() {
   const { serverConfig: config } = serverStatusData || {};
 
   return (
-    <div>
-      <p>
-        <InstanceDetails config={config} />
-        </p>
-        <p>
-        <SocialHandles config={config} />
-        </p>
-        <PageContent config={config} />
-        <br/>
-        <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
-    </div>
+    <>
+      <InstanceDetails config={config} />
+      <SocialHandles config={config} />
+      <PageContent config={config} />
+      
+      <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
+    </>
   ); 
 }
 
