@@ -99,20 +99,13 @@ export default function MainLayout(props) {
             <Link href="/">Home</Link>
           </Menu.Item>
 
-          <SubMenu
-            key="current-stream-menu"
+          <Menu.Item
+            key="viewer-info"
             icon={<LineChartOutlined />}
             title="Current stream"
           >
-            <Menu.Item key="viewer-info">
-              <Link href="/viewer-info">Viewers</Link>
-            </Menu.Item>
-            {/* {online ? (
-              <Menu.Item key="disconnect-stream" icon={<CloseCircleOutlined />}>
-                <Link href="/disconnect-stream">Disconnect Stream...</Link>
-              </Menu.Item>
-            ) : null} */}
-          </SubMenu>
+            <Link href="/viewer-info">Viewers</Link>
+          </Menu.Item>
 
           <SubMenu
             key="configuration"

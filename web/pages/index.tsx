@@ -8,14 +8,10 @@ Will display an overview with the following datasources:
 TODO: Link each overview value to the sub-page that focuses on it.
 
 GW: to do:
-- fix side nav on long pages
 - Hardware + Viewer count views-  top 3 boxes - restyle
-- "Current stream" - rename to "latest" stream?
 - Home  - more box shadoe?
-- "Viewers" section - not "current viewers"
 - maybe not have "current stream" nav section
-- put viewers table info on Home
-  - maybe make outbound/inbound smaller (since it's fixed info for current stream)
+- maybe make outbound/inbound smaller (since it's fixed info for current stream)
 - reformat "Inbound Video Stream" section.
 */
 
