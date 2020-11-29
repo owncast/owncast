@@ -39,6 +39,17 @@
   padding-right: 1rem;
 }
 
+.sideNav {
+  position: fixed;
+  height: 100vh;
+  overflow: auto;
+  z-index: 10;
+}
+
+.layoutMain {
+  margin-left: 240px;
+}
+
 .statusIndicatorContainer {
   display: flex;
   flex-direction: row;

@@ -81,10 +81,7 @@ export default function MainLayout(props) {
       
       <Sider
         width={240}
-        style={{
-          overflow: "auto",
-          height: "100vh",
-        }}
+        className={adminStyles.sideNav}
       >
         <Menu
           theme="dark"
@@ -153,7 +150,7 @@ export default function MainLayout(props) {
         </Menu>
       </Sider>
 
-      <Layout>
+      <Layout className={adminStyles.layoutMain}>
         <Header className={adminStyles.header}>
         <Popover content={content} title="Thumbnail" trigger="hover">
           <div className={adminStyles.statusIndicatorContainer}>
