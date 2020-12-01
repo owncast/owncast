@@ -30,6 +30,10 @@ func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMet
 }
 
 func getAudioCodec(codec interface{}) string {
+	if codec == nil {
+		return "No audio"
+	}
+
 	var codecID float64
 	if assertedCodecID, ok := codec.(float64); ok {
 		codecID = assertedCodecID

@@ -27,6 +27,7 @@ type Transcoder struct {
 	ffmpegPath           string
 	segmentIdentifier    string
 	internalListenerPort int
+	videoOnly            bool // If true ignore any audio, if any
 	TranscoderCompleted  func(error)
 }
 
@@ -80,6 +81,9 @@ func (t *Transcoder) Start() {
 	command := t.getString()
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
+	if t.videoOnly {
+		log.Tracef("Transcoder requested to operate on video only, ignoring audio.")
+	}
 
 	if config.Config.EnableDebugFeatures {
 		log.Println(command)
@@ -252,7 +256,14 @@ func (t *Transcoder) getVariantsString() string {
 
 	for _, variant := range t.variants {
 		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
-		variantsStreamMaps = variantsStreamMaps + fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
+		singleVariantMap := ""
+		if t.videoOnly {
+			singleVariantMap = fmt.Sprintf("v:%d ", variant.index)
+		} else {
+			singleVariantMap = fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
+		}
+
+		variantsStreamMaps = variantsStreamMaps + singleVariantMap
 	}
 	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
 
@@ -339,12 +350,12 @@ func (v *HLSVariant) SetAudioBitrate(bitrate string) {
 
 func (v *HLSVariant) getAudioQualityString() string {
 	if v.isAudioPassthrough {
-		return fmt.Sprintf("-map a:0 -c:a:%d copy", v.index)
+		return fmt.Sprintf("-map a:0? -c:a:%d copy", v.index)
 	}
 
 	// libfdk_aac is not a part of every ffmpeg install, so use "aac" instead
 	encoderCodec := "aac"
-	return fmt.Sprintf("-map a:0 -c:a:%d %s -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
+	return fmt.Sprintf("-map a:0? -c:a:%d %s -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
 }
 
 // AddVariant adds a new HLS variant to include in the output.
@@ -385,4 +396,9 @@ func (t *Transcoder) SetIdentifier(output string) {
 
 func (t *Transcoder) SetInternalHTTPPort(port int) {
 	t.internalListenerPort = port
+}
+
+// SetVideoOnly will ignore any audio streams, if any.
+func (t *Transcoder) SetVideoOnly(videoOnly bool) {
+	t.videoOnly = videoOnly
 }

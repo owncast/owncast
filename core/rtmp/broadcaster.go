@@ -27,6 +27,7 @@ func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 			AudioBitrate:   int(data.AudioBitrate),
 			AudioCodec:     getAudioCodec(data.AudioCodec),
 			Encoder:        data.Encoder,
+			VideoOnly:      data.AudioCodec == nil,
 		},
 	}
 
