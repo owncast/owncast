@@ -42,3 +42,9 @@ videoSettings:
 
 # Set to true if you don't want the service checking for future releases.
 disableUpgradeChecks: false
+
+# Off by default.  You can optionally list yourself in the Owncast directory.
+# Make sure your instanceURL is the public URL to your Owncast instance.
+yp:
+  enabled: true
+  instanceURL: https://stream.myserver.org
