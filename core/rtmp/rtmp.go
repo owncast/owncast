@@ -70,6 +70,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		if t.Type == flvio.TAG_AMF0 {
 			log.Tracef("%+v\n", t.DebugFields())
 			setCurrentBroadcasterInfo(t, nc.RemoteAddr().String())
+			_setStreamAsConnected()
 		}
 	}
 
@@ -98,7 +99,6 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	_hasInboundRTMPConnection = true
-	_setStreamAsConnected()
 	_rtmpConnection = nc
 
 	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)

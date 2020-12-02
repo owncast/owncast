@@ -18,6 +18,7 @@ type InboundStreamDetails struct {
 	AudioBitrate   int     `json:"audioBitrate"`
 	AudioCodec     string  `json:"audioCodec"`
 	Encoder        string  `json:"encoder"`
+	VideoOnly      bool    `json:"-"`
 }
 
 // RTMPStreamMetadata is the raw metadata that comes in with a RTMP connection.
