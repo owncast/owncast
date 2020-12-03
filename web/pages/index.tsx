@@ -26,8 +26,8 @@ import { formatIPAddress, isEmptyObject } from "../utils/format";
 function streamDetailsFormatter(streamDetails) {
   return (
     <ul className="statistics-list">
-      <li>{streamDetails.videoCodec} @ {streamDetails.videoBitrate} kbps</li>
-      <li>{streamDetails.framerate} fps</li>
+      <li>{streamDetails.videoCodec || 'Unknown'} @ {streamDetails.videoBitrate || 'Unknown'} kbps</li>
+      <li>{streamDetails.framerate || 'Unknown'} fps</li>
       <li>{streamDetails.width} x {streamDetails.height}</li>
     </ul>
   );
@@ -37,6 +37,7 @@ export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);
   const { broadcaster, serverConfig: configData } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
+
   const encoder = streamDetails?.encoder || "Unknown encoder";
 
   const [logsData, setLogs] = useState([]);
@@ -76,14 +77,14 @@ export default function Home() {
   // map out settings
   const videoQualitySettings = configData?.videoSettings?.videoQualityVariants?.map((setting, index) => {
     const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
-    const audioSetting =
-      audioPassthrough || audioBitrate === 0
-        ? `${streamDetails.audioCodec}, ${streamDetails.audioBitrate} kbps`
-        : `${audioBitrate} kbps`;
-    const videoSetting =
-      videoPassthrough || videoBitrate === 0
-        ? `${streamDetails.videoBitrate} kbps, ${streamDetails.framerate} fps ${streamDetails.width} x ${streamDetails.height}`
-        : `${videoBitrate} kbps, ${framerate} fps`;
+
+    const audioSetting = audioPassthrough
+        ? `${streamDetails.audioCodec || 'Unknown'}, ${streamDetails.audioBitrate} kbps`
+        : `${audioBitrate || 'Unknown'} kbps`;
+
+    const videoSetting = videoPassthrough
+        ? `${streamDetails.videoBitrate || 'Unknown'} kbps, ${streamDetails.framerate} fps ${streamDetails.width} x ${streamDetails.height}`
+        : `${videoBitrate || 'Unknown'} kbps, ${framerate} fps`;
     
     let settingTitle = 'Outbound Stream Details';
     settingTitle = (videoQualitySettings?.length > 1) ?
@@ -108,7 +109,7 @@ export default function Home() {
   // inbound
   const { viewerCount, sessionMaxViewerCount } = serverStatusData;
 
-  const streamAudioDetailString = `${streamDetails.audioCodec}, ${streamDetails.audioBitrate} kbps`;
+  const streamAudioDetailString = `${streamDetails.audioCodec}, ${streamDetails.audioBitrate || 'Unknown'} kbps`;
 
   const broadcastDate = new Date(broadcaster.time);
 
