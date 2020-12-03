@@ -37,6 +37,7 @@ export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);
   const { broadcaster, serverConfig: configData } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
+  const encoder = streamDetails?.encoder || "Unknown encoder";
 
   const [logsData, setLogs] = useState([]);
   const getLogs = async () => {
@@ -147,7 +148,7 @@ export default function Home() {
             <Card title="Inbound Stream Details" type="inner">
               <StatisticItem
                 title="Input"
-                value={formatIPAddress(remoteAddr)}
+                value={`${encoder} ${formatIPAddress(remoteAddr)}`}
                 prefix={null}
               />
               <StatisticItem
