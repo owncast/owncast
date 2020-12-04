@@ -1,10 +1,8 @@
-import { Result, Card, Typography } from "antd";
+import { Result, Card } from "antd";
 import { MessageTwoTone, BulbTwoTone, BookTwoTone, PlaySquareTwoTone } from '@ant-design/icons';
 import OwncastLogo from "./components/logo"
 import LogTable from "./components/log-table";
 
-
-const { Title } = Typography;
 const { Meta } = Card;
 
 export default function Offline({ logs = [] }) {
@@ -47,29 +45,31 @@ export default function Offline({ logs = [] }) {
   ];
 
   return (
-    <div className="offline-content">
-      <div className="logo-section">
-        <Result
-          icon={<OwncastLogo />}
-          title="No stream is active."
-          subTitle="You should start one."
-        />
-      </div>
-      <div className="list-section">
-        {
-          data.map(item => (
-            <Card key={item.title}>
-              <Meta
-                avatar={item.icon}
-                title={item.title}
-                description={item.content}
-              />
-            </Card>
-          ))
-        }
-      </div>
+    <>
+      <div className="offline-content">
+        <div className="logo-section">
+          <Result
+            icon={<OwncastLogo />}
+            title="No stream is active."
+            subTitle="You should start one."
+          />
+        </div>
+        <div className="list-section">
+          {
+            data.map(item => (
+              <Card key={item.title}>
+                <Meta
+                  avatar={item.icon}
+                  title={item.title}
+                  description={item.content}
+                />
+              </Card>
+            ))
+          }
+        </div>
 
+      </div>
       <LogTable logs={logs} pageSize={5} />
-    </div>
+    </>
   );
 }

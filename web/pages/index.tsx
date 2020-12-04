@@ -180,9 +180,8 @@ export default function Home() {
               </Card>
             </div>
           </div>
+        </div>
       </div>
-      </div>
-
       <LogTable logs={logsData} pageSize={5} />
     </div>
   );
