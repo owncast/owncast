@@ -19,7 +19,7 @@ export default class Message extends Component {
         html`
           <div class="message message-name-change flex items-center justify-start p-3">
             <div class="message-content flex flex-row items-center justify-center text-sm w-full">
-              <div class="text-white text-center opacity-50 break-words">
+              <div class="text-white text-center opacity-50 overflow-hidden break-words">
                 <span class="font-bold">${oldName}</span> is now known as <span class="font-bold">${newName}</span>.
               </div>
             </div>

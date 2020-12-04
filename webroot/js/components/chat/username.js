@@ -82,7 +82,7 @@ export default class UsernameForm extends Component {
             <input type="text"
               id="username-change-input"
               class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight text-xs focus:bg-white"
-              maxlength="100"
+              maxlength="60"
               placeholder="Update username"
               defaultValue=${username}
               onKeydown=${this.handleKeydown}
