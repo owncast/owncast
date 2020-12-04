@@ -112,6 +112,10 @@
   scrollbar-color: var(--category-button-color) black;
 }
 
+.emoji-picker__search {
+  color: rgba(26, 32, 44, 1);
+}
+
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
 /* MESSAGE TEXT HTML */
