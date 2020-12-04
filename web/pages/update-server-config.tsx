@@ -66,7 +66,7 @@ function InstanceDetails({ config }) {
     },
     {
       name: "Logo",
-      value: instanceDetails.logo?.large,
+      value: instanceDetails.logo,
     },
     {
       name: "Tags",
