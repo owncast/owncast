@@ -24,6 +24,7 @@ export default class Chat extends Component {
     this.scrollableMessagesContainer = createRef();
 
     this.websocket = null;
+    this.receivedFirstMessages = false;
 
     this.getChatHistory = this.getChatHistory.bind(this);
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
@@ -181,8 +182,8 @@ export default class Chat extends Component {
   checkShouldScroll() {
     const { scrollTop, scrollHeight, clientHeight } = this.scrollableMessagesContainer.current;
     const fullyScrolled = scrollHeight - clientHeight;
-    const shoudlScroll = scrollHeight >= clientHeight && fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
-    return shoudlScroll;
+    const shouldScroll = scrollHeight >= clientHeight && fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
+    return shouldScroll;
   }
 
   handleWindowResize() {
@@ -195,8 +196,13 @@ export default class Chat extends Component {
     if (numMutations) {
       const item = mutations[numMutations - 1];
       if (item.type === 'childList' && item.addedNodes.length) {
-        if (this.newMessagesReceived || this.checkShouldScroll()) {
-          this.scrollToBottom();
+        if (this.newMessagesReceived) {
+          if (!this.receivedFirstMessages) {
+            this.scrollToBottom();
+            this.receivedFirstMessages = true;
+          } else if (this.checkShouldScroll()) {
+            this.scrollToBottom();
+          }
           this.newMessagesReceived = false;
         }
       }
