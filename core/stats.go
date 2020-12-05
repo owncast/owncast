@@ -141,5 +141,11 @@ func getSavedStats() (models.Stats, error) {
 		return result, err
 	}
 
+	// If the stats were saved > 5min ago then ignore the
+	// peak session count value, since the session is over.
+	if !result.LastDisconnectTime.Valid || time.Since(result.LastDisconnectTime.Time).Minutes() > 5 {
+		result.SessionMaxViewerCount = 0
+	}
+
 	return result, err
 }
