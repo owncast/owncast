@@ -29,6 +29,14 @@ func GetGeoFromIP(ip string) *GeoDetails {
 		return &cachedGeoDetails
 	}
 
+	if ip == "::1" || ip == "127.0.0.1" {
+		return &GeoDetails{
+			CountryCode: "N/A",
+			RegionName:  "Localhost",
+			TimeZone:    "",
+		}
+	}
+
 	return nil
 }
 
@@ -72,9 +80,16 @@ func FetchGeoForIP(ip string) {
 			return
 		}
 
+		var regionName = "Unknown"
+		if len(record.Subdivisions) > 0 {
+			if region, ok := record.Subdivisions[0].Names["en"]; ok {
+				regionName = region
+			}
+		}
+
 		response := GeoDetails{
 			CountryCode: record.Country.IsoCode,
-			RegionName:  record.Subdivisions[0].Names["en"],
+			RegionName:  regionName,
 			TimeZone:    record.Location.TimeZone,
 		}
 
