@@ -96,7 +96,7 @@ export default function ViewersOverTime() {
       title: "Location",
       dataIndex: "geo",
       key: "geo",
-      render: (geo) => geo && `${geo.regionName}, ${geo.countryCode}`,
+      render: (geo) => geo ? `${geo.regionName}, ${geo.countryCode}` : '-',
     },
   ];
 
