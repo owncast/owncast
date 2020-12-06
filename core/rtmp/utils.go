@@ -13,8 +13,8 @@ import (
 
 func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMetadata, error) {
 	metadataComponentsString := fmt.Sprintf("%+v", metadata)
-	if !strings.Contains(metadataComponentsString, "@setDataFrame") {
-		return models.RTMPStreamMetadata{}, errors.New("Not a setDataFrame message")
+	if !strings.Contains(metadataComponentsString, "onMetaData") {
+		return models.RTMPStreamMetadata{}, errors.New("Not a onMetaData message")
 	}
 	re := regexp.MustCompile(`\{(.*?)\}`)
 	submatchall := re.FindAllString(metadataComponentsString, 1)
