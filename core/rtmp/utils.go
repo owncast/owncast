@@ -54,6 +54,10 @@ func getAudioCodec(codec interface{}) string {
 }
 
 func getVideoCodec(codec interface{}) string {
+	if codec == nil {
+		return "Unknown"
+	}
+
 	var codecID float64
 	if assertedCodecID, ok := codec.(float64); ok {
 		codecID = assertedCodecID

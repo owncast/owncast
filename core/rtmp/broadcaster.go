@@ -11,8 +11,7 @@ import (
 func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 	data, err := getInboundDetailsFromMetadata(t.DebugFields())
 	if err != nil {
-		log.Errorln(err)
-		return
+		log.Traceln("RTMP meadata:", err)
 	}
 
 	broadcaster := models.Broadcaster{
