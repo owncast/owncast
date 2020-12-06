@@ -56,16 +56,13 @@ export default class Chat extends Component {
     const { webSocketConnected, messages, chatUserNames, newMessagesReceived } = this.state;
     const {webSocketConnected: nextSocket, messages: nextMessages, chatUserNames: nextUserNames, newMessagesReceived: nextMessagesReceived } = nextState;
 
-    if (
+    return (
       username !== nextUserName ||
       chatInputEnabled !== nextChatEnabled ||
       webSocketConnected !== nextSocket ||
       messages.length !== nextMessages.length ||
       chatUserNames.length !== nextUserNames.length || newMessagesReceived !== nextMessagesReceived
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 
 
