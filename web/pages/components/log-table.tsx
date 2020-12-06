@@ -2,6 +2,7 @@ import React from "react";
 import { Table, Tag, Typography } from "antd";
 import Linkify from "react-linkify";
 import { SortOrder } from "antd/lib/table/interface";
+import format from 'date-fns/format'
 
 const { Title } = Typography;
 
@@ -60,7 +61,7 @@ export default function LogTable({ logs, pageSize }: Props) {
       key: "time",
       render: (timestamp) => {
         const dateObject = new Date(timestamp);
-        return dateObject.getHours() + ":" + dateObject.getMinutes() + ":" + dateObject.getSeconds() + ' ' + dateObject.getFullYear() + "-" + (dateObject.getMonth() + 1) + "-" + dateObject.getDate();
+        return format(dateObject, 'p P');
       },
       sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
       sortDirections: ["descend", "ascend"] as SortOrder[],
