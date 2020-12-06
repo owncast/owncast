@@ -19,6 +19,7 @@ export default class Chat extends Component {
       webSocketConnected: true,
       messages: [],
       chatUserNames: [],
+      newMessagesReceived: false,
     };
 
     this.scrollableMessagesContainer = createRef();
@@ -34,18 +35,39 @@ export default class Chat extends Component {
     this.submitChat = this.submitChat.bind(this);
     this.scrollToBottom = this.scrollToBottom.bind(this);
     this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 500);
-
+    this.handleNetworkingError = this.handleNetworkingError.bind(this);
     this.messageListCallback = this.messageListCallback.bind(this);
   }
 
   componentDidMount() {
    this.setupWebSocketCallbacks();
    this.getChatHistory();
+
    window.addEventListener('resize', this.handleWindowResize);
 
    this.messageListObserver = new MutationObserver(this.messageListCallback);
    this.messageListObserver.observe(this.scrollableMessagesContainer.current, { childList: true });
   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { username, chatInputEnabled } = this.props;
+    const { username: nextUserName, chatInputEnabled: nextChatEnabled } = nextProps;
+
+    const { webSocketConnected, messages, chatUserNames, newMessagesReceived } = this.state;
+    const {webSocketConnected: nextSocket, messages: nextMessages, chatUserNames: nextUserNames, newMessagesReceived: nextMessagesReceived } = nextState;
+
+    if (
+      username !== nextUserName ||
+      chatInputEnabled !== nextChatEnabled ||
+      webSocketConnected !== nextSocket ||
+      messages.length !== nextMessages.length ||
+      chatUserNames.length !== nextUserNames.length || newMessagesReceived !== nextMessagesReceived
+    ) {
+      return true;
+    }
+    return false;
+  }
+
 
   componentDidUpdate(prevProps, prevState) {
     const { username: prevName } = prevProps;
@@ -61,7 +83,9 @@ export default class Chat extends Component {
 
     // scroll to bottom of messages list when new ones come in
     if (messages.length > prevMessages.length) {
-      this.newMessagesReceived = true;
+      this.setState({
+        newMessagesReceived: true,
+      });
     }
   }
   componentWillUnmount() {
@@ -96,7 +120,7 @@ export default class Chat extends Component {
       });
     })
     .catch(error => {
-      // this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
+      this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
     });
   }
 
@@ -111,6 +135,11 @@ export default class Chat extends Component {
 
   receivedWebsocketMessage(message) {
     this.addMessage(message);
+  }
+
+  handleNetworkingError(error) {
+    // todo: something more useful
+    console.log(error);
   }
 
   addMessage(message) {
@@ -196,14 +225,16 @@ export default class Chat extends Component {
     if (numMutations) {
       const item = mutations[numMutations - 1];
       if (item.type === 'childList' && item.addedNodes.length) {
-        if (this.newMessagesReceived) {
+        if (this.state.newMessagesReceived) {
           if (!this.receivedFirstMessages) {
             this.scrollToBottom();
             this.receivedFirstMessages = true;
           } else if (this.checkShouldScroll()) {
             this.scrollToBottom();
           }
-          this.newMessagesReceived = false;
+          this.setState({
+            newMessagesReceived: false,
+          });
         }
       }
     }
