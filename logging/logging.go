@@ -4,6 +4,7 @@ package logging
 // Modeled after https://github.com/sirupsen/logrus/blob/master/hooks/test/test.go
 
 import (
+	"math"
 	"os"
 	"sync"
 
@@ -53,11 +54,13 @@ func (l *OCLogger) Levels() []logrus.Level {
 func (l *OCLogger) AllEntries() []*logrus.Entry {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
+
 	// Make a copy so the returned value won't race with future log requests
-	entries := make([]*logrus.Entry, len(l.Entries))
-	for i := 0; i < len(l.Entries); i++ {
+	logCount := int(math.Min(float64(len(l.Entries)), 800.0))
+	entries := make([]*logrus.Entry, logCount)
+	for i := 0; i < len(entries); i++ {
 		// Make a copy, for safety
-		entries[i] = &l.Entries[i]
+		entries[len(entries)-logCount:][i] = &l.Entries[i]
 	}
 
 	return entries
@@ -67,12 +70,14 @@ func (l *OCLogger) AllEntries() []*logrus.Entry {
 func (l *OCLogger) WarningEntries() []*logrus.Entry {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
+
 	// Make a copy so the returned value won't race with future log requests
-	entries := make([]*logrus.Entry, 0)
-	for i := 0; i < len(l.Entries); i++ {
+	logCount := int(math.Min(float64(len(l.Entries)), 100.0))
+	entries := make([]*logrus.Entry, logCount)
+	for i := 0; i < len(entries); i++ {
 		if l.Entries[i].Level <= logrus.WarnLevel {
 			// Make a copy, for safety
-			entries = append(entries, &l.Entries[i])
+			entries[len(entries)-logCount:][i] = &l.Entries[i]
 		}
 	}
 

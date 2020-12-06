@@ -32,7 +32,10 @@ func GetWarnings(w http.ResponseWriter, r *http.Request) {
 	response := make([]logsResponse, 0)
 
 	for i := 0; i < len(logs); i++ {
-		response = append(response, fromEntry(logs[i]))
+		logEntry := logs[i]
+		if logEntry != nil {
+			response = append(response, fromEntry(logEntry))
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
