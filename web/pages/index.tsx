@@ -52,9 +52,13 @@ export default function Home() {
   const getMoreStats = () => {
     getLogs();
   }
+
   useEffect(() => {
+    getMoreStats();
+
     let intervalId = null;
     intervalId = setInterval(getMoreStats, FETCH_INTERVAL);
+
     return () => {
       clearInterval(intervalId);
     }
@@ -90,7 +94,7 @@ export default function Home() {
     settingTitle = (videoQualitySettings?.length > 1) ?
       `${settingTitle} ${index + 1}` : settingTitle;
     return (
-      <Card title={settingTitle} type="inner" key={settingTitle}>
+      <Card title={settingTitle} type="inner" key={`${settingTitle}${index}`}>
         <StatisticItem
           title="Outbound Video Stream"
           value={videoSetting}
