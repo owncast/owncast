@@ -15,8 +15,9 @@ import (
 const maxLogEntries = 500
 
 type OCLogger struct {
-	Entries []logrus.Entry
-	mu      sync.RWMutex
+	Entries  []logrus.Entry
+	Warnings []logrus.Entry
+	mu       sync.RWMutex
 }
 
 var Logger *OCLogger
@@ -37,10 +38,18 @@ func (l *OCLogger) Fire(e *logger.Entry) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
+	// Append to log entries
 	if len(l.Entries) > maxLogEntries {
 		l.Entries = l.Entries[1:]
 	}
 	l.Entries = append(l.Entries, *e)
+
+	if e.Level <= logger.WarnLevel {
+		if len(l.Warnings) > maxLogEntries {
+			l.Warnings = l.Warnings[1:]
+		}
+		l.Warnings = append(l.Warnings, *e)
+	}
 
 	return nil
 }
@@ -56,7 +65,7 @@ func (l *OCLogger) AllEntries() []*logrus.Entry {
 	defer l.mu.RUnlock()
 
 	// Make a copy so the returned value won't race with future log requests
-	logCount := int(math.Min(float64(len(l.Entries)), 800.0))
+	logCount := int(math.Min(float64(len(l.Entries)), maxLogEntries))
 	entries := make([]*logrus.Entry, logCount)
 	for i := 0; i < len(entries); i++ {
 		// Make a copy, for safety
@@ -72,13 +81,11 @@ func (l *OCLogger) WarningEntries() []*logrus.Entry {
 	defer l.mu.RUnlock()
 
 	// Make a copy so the returned value won't race with future log requests
-	logCount := int(math.Min(float64(len(l.Entries)), 100.0))
+	logCount := int(math.Min(float64(len(l.Warnings)), maxLogEntries))
 	entries := make([]*logrus.Entry, logCount)
 	for i := 0; i < len(entries); i++ {
-		if l.Entries[i].Level <= logrus.WarnLevel {
-			// Make a copy, for safety
-			entries[len(entries)-logCount:][i] = &l.Entries[i]
-		}
+		// Make a copy, for safety
+		entries[len(entries)-logCount:][i] = &l.Warnings[i]
 	}
 
 	return entries
