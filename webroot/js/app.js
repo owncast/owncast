@@ -490,7 +490,7 @@ export default class App extends Component {
         <${Chat}
           websocket=${websocket}
           username=${username}
-          chatInputEnabled=${true || chatInputEnabled}
+          chatInputEnabled=${chatInputEnabled}
         />
       </div>
     `;
