@@ -11,26 +11,39 @@ import { convertToText } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default class ChatMessageView extends Component {
-  async componentDidUpdate(prevProps) {
-    const { message, username } = this.props;
-    if (prevProps.message === message && this.state.formattedMessage) {
-      return;
-    }
-    const { body } = message;
-
-    const formattedMessage = await formatMessageText(body, username);
-    this.setState({
-      formattedMessage
-    });
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      formattedMessage: '',
+    };
   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { formattedMessage } = this.state;
+    const { formattedMessage: nextFormattedMessage } = nextState;
+
+    return (formattedMessage !== nextFormattedMessage);
+  }
+
+  async componentDidMount() {
+    const { message, username } = this.props;
+    if (message && username) {
+      const { body } = message;
+      const formattedMessage = await formatMessageText(body, username);
+      this.setState({
+        formattedMessage,
+      });
+    }
+  }
+
+
   render() {
     const { message } = this.props;
     const { author, timestamp } = message;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
-      return;
+      return null;
     }
     const formattedTimestamp = formatTimestamp(timestamp);
 
