@@ -4,9 +4,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const maxCPUAlertingThresholdPCT = 95
-const maxRAMAlertingThresholdPCT = 95
-const maxDiskAlertingThresholdPCT = 95
+const maxCPUAlertingThresholdPCT = 80
+const maxRAMAlertingThresholdPCT = 80
+const maxDiskAlertingThresholdPCT = 90
 
 const alertingError = "The %s utilization of %d%% can cause issues with video generation and delivery. Please visit the documentation at http://owncast.online/docs/troubleshooting/ to help troubleshoot this issue."
 
