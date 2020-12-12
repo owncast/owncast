@@ -76,25 +76,23 @@ export default class UsernameForm extends Component {
     const { username } = props;
     const { displayForm } = state;
 
-    const narrowSpace = document.body.clientWidth < 640;
-    const formDisplayStyle = narrowSpace ? 'inline-block' : 'flex';
     const styles = {
       info: {
         display: displayForm ? 'none' : 'flex',
       },
       form: {
-        display: displayForm ? formDisplayStyle : 'none',
+        display: displayForm ? 'flex' : 'none',
       },
     };
 
     return (
       html`
-        <div id="user-info">
+        <div id="user-info" class="whitespace-nowrap">
           <div id="user-info-display" style=${styles.info} title="Click to update user name" class="flex flex-row justify-end items-center cursor-pointer py-2 px-4 overflow-hidden w-full opacity-1 transition-opacity duration-200 hover:opacity-75" onClick=${this.handleDisplayForm}>
             <span id="username-display" class="text-indigo-600 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap">${username}</span>
           </div>
 
-          <div id="user-info-change" class="flex flex-no-wrap p-1 items-center justify-end" style=${styles.form}>
+          <div id="user-info-change" class="flex flex-row flex-no-wrap p-1 items-center justify-end" style=${styles.form}>
             <input type="text"
               id="username-change-input"
               class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight text-xs focus:bg-white"
