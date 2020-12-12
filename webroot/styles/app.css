@@ -202,10 +202,10 @@ header {
 }
 
 @media screen and (max-height: 500px) {
-  .single-col.touch-screen {
+  .single-col.touch-screen:not(.touch-keyboard-active) {
     --header-height: 0px;
   }
-  .single-col.touch-screen header {
+  .single-col.touch-screen:not(.touch-keyboard-active) header {
     display: none;
   }
 }

@@ -50,6 +50,7 @@ export default class App extends Component {
       displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
+      touchKeyboardActive: false,
 
       configData: {},
       extraPageContent: '',
@@ -78,6 +79,8 @@ export default class App extends Component {
     // misc dom events
     this.handleChatPanelToggle = this.handleChatPanelToggle.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
+    this.handleFormFocus = this.handleFormFocus.bind(this);
+    this.handleFormBlur = this.handleFormBlur.bind(this);
     this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 250);
 
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
@@ -284,6 +287,22 @@ export default class App extends Component {
     });
   }
 
+  handleFormFocus() {
+    if (this.hasTouchScreen) {
+      this.setState({
+        touchKeyboardActive: true,
+      });
+    }
+  }
+
+  handleFormBlur() {
+    if (this.hasTouchScreen) {
+      this.setState({
+        touchKeyboardActive: false,
+      });
+    }
+  }
+
   handleChatPanelToggle() {
     const { displayChat: curDisplayed } = this.state;
 
@@ -326,6 +345,7 @@ export default class App extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
+      touchKeyboardActive,
       username,
       viewerCount,
       websocket,
@@ -373,6 +393,7 @@ export default class App extends Component {
       'bg-gray-800': singleColMode && displayChat,
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
       'touch-screen': this.hasTouchScreen,
+      'touch-keyboard-active': touchKeyboardActive,
     });
 
     const poster = isPlaying ? null : html`
@@ -407,7 +428,9 @@ export default class App extends Component {
             >
               <${UsernameForm}
                 username=${username}
-                handleUsernameChange=${this.handleUsernameChange}
+                onUsernameChange=${this.handleUsernameChange}
+                onFocus=${this.handleFormFocus}
+                onBlur=${this.handleFormBlur}
               />
               <button
                 type="button"

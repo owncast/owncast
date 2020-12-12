@@ -11,6 +11,7 @@ export default class UsernameForm extends Component {
 
     this.state = {
       displayForm: false,
+      isFocused: false,
     };
 
     this.textInput = createRef();
@@ -19,6 +20,8 @@ export default class UsernameForm extends Component {
     this.handleDisplayForm = this.handleDisplayForm.bind(this);
     this.handleHideForm = this.handleHideForm.bind(this);
     this.handleUpdateUsername = this.handleUpdateUsername.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
   }
 
   handleDisplayForm() {
@@ -43,18 +46,31 @@ export default class UsernameForm extends Component {
   }
 
   handleUpdateUsername() {
-    const { username: curName, handleUsernameChange } = this.props;
+    const { username: curName, onUsernameChange } = this.props;
     let newName = this.textInput.current.value;
     newName = newName.trim();
     if (newName !== '' && newName !== curName) {
       setLocalStorage(KEY_USERNAME, newName);
-      if (handleUsernameChange) {
-        handleUsernameChange(newName);
+      if (onUsernameChange) {
+        onUsernameChange(newName);
       }
       this.handleHideForm();
     }
-
   }
+
+  handleFocus() {
+    const { onFocus } = this.props;
+    if (onFocus) {
+      onFocus();
+    }
+  }
+
+  handleBlur() {
+    const { onBlur } = this.props;
+    if (onBlur) {
+      onBlur();
+    }
+ }
 
   render(props, state) {
     const { username } = props;
@@ -86,6 +102,8 @@ export default class UsernameForm extends Component {
               placeholder="Update username"
               defaultValue=${username}
               onKeydown=${this.handleKeydown}
+              onFocus=${this.handleFocus}
+              onBlur=${this.handleBlur}
               ref=${this.textInput}
             />
             <button id="button-update-username" onClick=${this.handleUpdateUsername}  type="button" class="bg-blue-500 hover:bg-blue-700 text-white text-xs uppercase p-1 mx-1 rounded cursor-pointer user-btn">Update</button>
