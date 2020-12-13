@@ -111,7 +111,7 @@ export default function Home() {
 
 
   // inbound
-  const { viewerCount, sessionMaxViewerCount } = serverStatusData;
+  const { viewerCount, sessionPeakViewerCount } = serverStatusData;
 
   const streamAudioDetailString = `${streamDetails.audioCodec}, ${streamDetails.audioBitrate || 'Unknown'} kbps`;
 
@@ -137,7 +137,7 @@ export default function Home() {
             />
             <Statistic
               title="Peak viewer count"
-              value={sessionMaxViewerCount}
+              value={sessionPeakViewerCount}
               prefix={<UserOutlined />}
             />
           </Card>
