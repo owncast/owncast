@@ -100,12 +100,9 @@ echo "Building Docker image ${DOCKER_IMAGE}..."
 # Change to the root directory of the repository
 cd $(git rev-parse --show-toplevel)
 
-# Github Packages
-docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t owncast . -f scripts/Dockerfile-build
-docker tag $DOCKER_IMAGE docker.pkg.github.com/owncast/owncast/$DOCKER_IMAGE:$VERSION
-docker push docker.pkg.github.com/owncast/owncast/$DOCKER_IMAGE:$VERSION
-#
+# Docker build
+docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t gabekangas/owncast:$VERSION -t gabekangas/owncast:latest -t owncast . -f build/release/Dockerfile-build
+
 # Dockerhub
 # You must be authenticated via `docker login` with your Dockerhub credentials first.
-docker tag owncast gabekangas/owncast:$VERSION
 docker push gabekangas/owncast
