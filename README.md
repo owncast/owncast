@@ -83,8 +83,8 @@ OBS, Streamlabs, Restream and many others have been used with Owncast.  [Read mo
 
 Two ways of storing and distributing the video are supported.
 
-1. [Locally](#local-file-distribution) via the built-in web server.
-2. [S3-compatible storage](#s3-compatible-storage).
+1. Locally via the Owncast server.
+2. [S3-compatible storage](https://owncast.online/docs/s3/).
 
 ### Local file distribution
 
@@ -102,9 +102,8 @@ Read [more detailed documentation about configuration of S3-compatible services]
 1. Ensure you have the gcc compiler configured.
 1. Install the [Go toolchain](https://golang.org/dl/).
 1. Clone the repo.  `git clone https://github.com/owncast/owncast`
-1. Follow the above [Getting Started](#getting-started) instructions, making sure ffmpeg exists and your config file is set.
-1. `go run main.go pkged.go` on the first run will download the required packages needed for the application to build.
-1. It will start running the same as in the above [Usage](#usage) instructions and you can point [OBS to your localhost](#usage-with-obs) instance of it.
+1. `go run main.go pkged.go` will run from source.
+1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
 There is also a supplied `Dockerfile` so you can spin it up from source with little effort.  [Read more about running from source](https://owncast.online/docs/building/).
 
