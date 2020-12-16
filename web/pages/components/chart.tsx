@@ -19,8 +19,7 @@ function createGraphDataset(dataArray) {
   const dataValues = {};
   dataArray.forEach(item => {
     const dateObject = new Date(item.time);
-    const dateString = `${dateObject.getFullYear()  }-${  dateObject.getMonth()  }-${  dateObject.getDay()  } ${  dateObject.getHours()  }:${  dateObject.getMinutes()}`;
-    dataValues[dateString] = item.value;
+    dataValues[dateObject] = item.value;
   })
   return dataValues;
 }
