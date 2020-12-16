@@ -7,8 +7,8 @@ config:
     maxErrorRate: 1
 
   phases:
-    - duration: 30
-      arrivalRate: 10
+    - duration: 100
+      arrivalRate: 15
   ws:
     subprotocols:
       - json
@@ -21,4 +21,4 @@ scenarios:
     flow:
     - function: "createTestMessageObject"
     - send: "{{ data }}"
-    - think: 5
+    - think: 10
