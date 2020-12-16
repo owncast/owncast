@@ -3,6 +3,7 @@ package config
 func getDefaults() config {
 	defaults := config{}
 	defaults.WebServerPort = 8080
+	defaults.RTMPServerPort = 1935
 	defaults.VideoSettings.ChunkLengthInSeconds = 4
 	defaults.Files.MaxNumberInPlaylist = 5
 	defaults.YP.Enabled = false
