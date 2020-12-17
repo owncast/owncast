@@ -1,6 +1,7 @@
 import { LineChart } from 'react-chartkick'
 import styles from '../../styles/styles.module.scss';
 import 'chart.js';
+import format from 'date-fns/format'
 
 interface TimedValue {
   time: Date;
@@ -19,7 +20,7 @@ function createGraphDataset(dataArray) {
   const dataValues = {};
   dataArray.forEach(item => {
     const dateObject = new Date(item.time);
-    const dateString = `${dateObject.getFullYear()  }-${  dateObject.getMonth()  }-${  dateObject.getDay()  } ${  dateObject.getHours()  }:${  dateObject.getMinutes()}`;
+    const dateString = format(dateObject, 'p P');
     dataValues[dateString] = item.value;
   })
   return dataValues;

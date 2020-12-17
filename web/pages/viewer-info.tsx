@@ -120,7 +120,7 @@ export default function ViewersOverTime() {
         />
       </Row>
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
-      <Table dataSource={clients} columns={columns} rowKey={(row) => row.userAgent} />
+      <Table dataSource={clients} columns={columns} rowKey={(row) => row.clientID} />
     </div>
   );
 }
