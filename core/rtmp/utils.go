@@ -11,6 +11,8 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
+const unknownString = "Unknown"
+
 func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMetadata, error) {
 	metadataComponentsString := fmt.Sprintf("%+v", metadata)
 	if !strings.Contains(metadataComponentsString, "onMetaData") {
@@ -50,12 +52,12 @@ func getAudioCodec(codec interface{}) string {
 		return "Speex"
 	}
 
-	return "Unknown"
+	return unknownString
 }
 
 func getVideoCodec(codec interface{}) string {
 	if codec == nil {
-		return "Unknown"
+		return unknownString
 	}
 
 	var codecID float64
@@ -72,5 +74,5 @@ func getVideoCodec(codec interface{}) string {
 		return "H.265"
 	}
 
-	return "Unknown"
+	return unknownString
 }
