@@ -22,6 +22,9 @@ func Start() error {
 	// admin static files
 	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
 
+	// webfinger
+	http.HandleFunc("/.well-known/webfinger", controllers.GetWebfinger)
+
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 

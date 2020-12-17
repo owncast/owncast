@@ -1,5 +1,9 @@
 # See https://owncast.online/docs/configuration/ for more details
 
+federation:
+  site: https://stream.myserver.org
+  username: owncast
+
 instanceDetails:
   name: Owncast
   title: Owncast
