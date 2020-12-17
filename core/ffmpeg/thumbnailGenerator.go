@@ -36,7 +36,6 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 					log.Errorln("Unable to generate thumbnail:", err)
 				}
 			case <-quit:
-				//TODO: evaluate if this is ever stopped
 				log.Debug("thumbnail generator has stopped")
 				_timer.Stop()
 				return
