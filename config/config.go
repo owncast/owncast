@@ -26,6 +26,7 @@ type config struct {
 	VersionNumber        string          `yaml:"-"`
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
 	WebServerPort        int             `yaml:"webServerPort"`
+	RTMPServerPort       int             `yaml:"rtmpServerPort"`
 	DisableUpgradeChecks bool            `yaml:"disableUpgradeChecks"`
 	YP                   YP              `yaml:"yp"`
 }
@@ -172,6 +173,14 @@ func (c *config) GetPublicWebServerPort() int {
 	}
 
 	return _default.WebServerPort
+}
+
+func (c *config) GetRTMPServerPort() int {
+	if c.RTMPServerPort != 0 {
+		return c.RTMPServerPort
+	}
+
+	return _default.RTMPServerPort
 }
 
 func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
