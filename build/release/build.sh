@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Human readable names of binary distributions
-DISTRO=(macOS-64bit linux-64bit linux-32bit)
+DISTRO=(macOS-64bit linux-64bit linux-32bit linux-arm7)
 # Operating systems for the respective distributions
-OS=(darwin linux linux)
+OS=(darwin linux linux linux)
 # Architectures for the respective distributions
-ARCH=(amd64 amd64 386)
+ARCH=(amd64 amd64 386 arm-7)
 
 # Version
 VERSION=$1
