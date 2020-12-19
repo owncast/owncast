@@ -2,12 +2,12 @@ version: '2'
 
 services:
   owncast:
-    image: gabekangas/owncast:0.0.2
+    image: gabekangas/owncast:0.0.3
     restart: unless-stopped
     volumes:
       - ${PWD}/config-example.yaml:/app/config.yaml # Adjust once you create your own config.yaml
       - owncast_db:/db # Remove if you don't want chat persistant
-    command: /app/owncast --configFile=config.yaml --chatDatabase=/db/chat.db
+    command: /app/owncast -configFile=config.yaml -database=/db/chat.db
     ports:
     - 8080:8080
     - 1935:1935
