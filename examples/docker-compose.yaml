@@ -2,7 +2,7 @@ version: '2'
 
 services:
   owncast:
-    image: gabekangas/owncast:0.0.3
+    image: gabekangas/owncast:latest
     restart: unless-stopped
     volumes:
       - ${PWD}/config-example.yaml:/app/config.yaml # Adjust once you create your own config.yaml
