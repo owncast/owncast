@@ -40,7 +40,7 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 	var lis net.Listener
 	var err error
 	if lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port)); err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	s.LogEvent = func(c *rtmp.Conn, nc net.Conn, e int) {
