@@ -26,6 +26,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		FFmpegPath:      config.Config.GetFFMpegPath(),
 		StreamKey:       config.Config.VideoSettings.StreamingKey,
 		WebServerPort:   config.Config.GetPublicWebServerPort(),
+		RTMPServerPort:  config.Config.GetRTMPServerPort(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants:  videoQualityVariants,
 			SegmentLengthSeconds:  config.Config.GetVideoSegmentSecondsLength(),
@@ -47,6 +48,7 @@ type serverConfigAdminResponse struct {
 	FFmpegPath      string                 `json:"ffmpegPath"`
 	StreamKey       string                 `json:"streamKey"`
 	WebServerPort   int                    `json:"webServerPort"`
+	RTMPServerPort  int                    `json:"rtmpServerPort"`
 	S3              config.S3              `json:"s3"`
 	VideoSettings   videoSettings          `json:"videoSettings"`
 	YP              config.YP              `json:"yp"`
