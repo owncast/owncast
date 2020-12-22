@@ -44,6 +44,7 @@ export default class App extends Component {
 
     const chatStorage = getLocalStorage(KEY_CHAT_DISPLAYED);
     this.hasTouchScreen = hasTouchScreen();
+    this.windowBlurred = false;
 
     this.state = {
       websocket: new Websocket(),
@@ -81,6 +82,8 @@ export default class App extends Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleFormFocus = this.handleFormFocus.bind(this);
     this.handleFormBlur = this.handleFormBlur.bind(this);
+    this.handleWindowBlur = this.handleWindowBlur.bind(this);
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
     this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 250);
 
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
@@ -102,6 +105,8 @@ export default class App extends Component {
   componentDidMount() {
     this.getConfig();
     window.addEventListener('resize', this.handleWindowResize);
+    window.addEventListener('blur', this.handleWindowBlur);
+    window.addEventListener('focus', this.handleWindowFocus);
     if (this.hasTouchScreen) {
       window.addEventListener('orientationchange', this.handleWindowResize);
     }
@@ -123,6 +128,8 @@ export default class App extends Component {
     clearTimeout(this.disableChatTimer);
     clearInterval(this.streamDurationTimer);
     window.removeEventListener('resize', this.handleWindowResize);
+    window.removeEventListener('blur', this.handleWindowBlur);
+    window.removeEventListener('focus', this.handleWindowFocus);
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
     }
@@ -248,6 +255,10 @@ export default class App extends Component {
     if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
       this.handlePlayerEnded();
     }
+
+    if (this.windowBlurred) {
+      document.title = ` 🔴 ${this.state.configData && this.state.configData.title}`;
+    }
   }
 
   // play video!
@@ -267,6 +278,10 @@ export default class App extends Component {
       chatInputEnabled: true,
       streamStatusMessage: MESSAGE_ONLINE,
     });
+
+    if (this.windowBlurred) {
+      document.title = ` 🟢 ${this.state.configData && this.state.configData.title}`;
+    }
   }
 
   setCurrentStreamDuration() {
@@ -333,6 +348,15 @@ export default class App extends Component {
       windowHeight: window.innerHeight,
       orientation: getOrientation(this.hasTouchScreen),
     });
+  }
+
+  handleWindowBlur() {
+    this.windowBlurred = true;
+  }
+
+  handleWindowFocus() {
+    this.windowBlurred = false;
+    window.document.title = this.state.configData && this.state.configData.title;
   }
 
   render(props, state) {
@@ -512,7 +536,7 @@ export default class App extends Component {
         <${Chat}
           websocket=${websocket}
           username=${username}
-          chatInputEnabled=${true||chatInputEnabled}
+          chatInputEnabled=${chatInputEnabled}
           instanceTitle=${title}
         />
       </div>
