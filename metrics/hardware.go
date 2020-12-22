@@ -6,6 +6,8 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Max number of metrics we want to keep.
@@ -18,7 +20,8 @@ func collectCPUUtilization() {
 
 	v, err := cpu.Percent(0, false)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return
 	}
 
 	metricValue := timestampedValue{time.Now(), int(v[0])}

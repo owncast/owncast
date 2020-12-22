@@ -72,7 +72,7 @@ func (c *Client) Write(msg models.ChatMessage) {
 	select {
 	case c.ch <- msg:
 	default:
-		_server.remove(c)
+		_server.removeClient(c)
 		_server.err(fmt.Errorf("client %s is disconnected", c.ClientID))
 	}
 }
@@ -96,26 +96,31 @@ func (c *Client) listenWrite() {
 		case msg := <-c.pingch:
 			err := websocket.JSON.Send(c.ws, msg)
 			if err != nil {
-				log.Errorln(err)
+				c.handleClientSocketError(err)
 			}
 		// send message to the client
 		case msg := <-c.ch:
 			err := websocket.JSON.Send(c.ws, msg)
 			if err != nil {
-				log.Errorln(err)
+				c.handleClientSocketError(err)
 			}
 		case msg := <-c.usernameChangeChannel:
 			err := websocket.JSON.Send(c.ws, msg)
 			if err != nil {
-				log.Errorln(err)
+				c.handleClientSocketError(err)
 			}
 		// receive done request
 		case <-c.doneCh:
-			_server.remove(c)
+			_server.removeClient(c)
 			c.doneCh <- true // for listenRead method
 			return
 		}
 	}
+}
+
+func (c *Client) handleClientSocketError(err error) {
+	log.Errorln("Websocket client error: ", err.Error())
+	_server.removeClient(c)
 }
 
 // Listen read request via channel.
@@ -136,7 +141,7 @@ func (c *Client) listenRead() {
 				if err == io.EOF {
 					c.doneCh <- true
 				} else {
-					log.Errorln(err)
+					c.handleClientSocketError(err)
 				}
 				return
 			}

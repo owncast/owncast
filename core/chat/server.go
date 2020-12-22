@@ -3,6 +3,7 @@ package chat
 import (
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -15,6 +16,8 @@ import (
 var (
 	_server *server
 )
+
+var l = sync.Mutex{}
 
 // Server represents the server which handles the chat.
 type server struct {
@@ -74,7 +77,7 @@ func (s *server) onConnection(ws *websocket.Conn) {
 	client := NewClient(ws)
 
 	defer func() {
-		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(client.ConnectedAt), client.MessageCount, client.ClientID)
+		s.removeClient(client)
 
 		if err := ws.Close(); err != nil {
 			s.errCh <- err
@@ -96,18 +99,20 @@ func (s *server) Listen() {
 		select {
 		// add new a client
 		case c := <-s.addCh:
+			l.Lock()
 			s.Clients[c.socketID] = c
+			l.Unlock()
+
 			s.listener.ClientAdded(c.GetViewerClientFromChatClient())
 			s.sendWelcomeMessageToClient(c)
 
 		// remove a client
 		case c := <-s.delCh:
-			delete(s.Clients, c.socketID)
-			s.listener.ClientRemoved(c.socketID)
-
+			s.removeClient(c)
+		case msg := <-s.sendAllCh:
 			// message was received from a client and should be sanitized, validated
 			// and distributed to other clients.
-		case msg := <-s.sendAllCh:
+			//
 			// Will turn markdown into html, sanitize user-supplied raw html
 			// and standardize this message into something safe we can send everyone else.
 			msg.RenderAndSanitizeMessageBody()
@@ -127,6 +132,19 @@ func (s *server) Listen() {
 			return
 		}
 	}
+}
+
+func (s *server) removeClient(c *Client) {
+	l.Lock()
+
+	if _, ok := s.Clients[c.socketID]; ok {
+		delete(s.Clients, c.socketID)
+
+		s.listener.ClientRemoved(c.socketID)
+
+		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(c.ConnectedAt), c.MessageCount, c.ClientID)
+	}
+	l.Unlock()
 }
 
 func (s *server) sendWelcomeMessageToClient(c *Client) {
