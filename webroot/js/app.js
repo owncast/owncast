@@ -381,7 +381,6 @@ export default class App extends Component {
       : null;
 
     const mainClass = playerActive ? 'online' : '';
-    const streamInfoClass = streamOnline ? 'online' : ''; // need?
     const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
@@ -462,10 +461,10 @@ export default class App extends Component {
           <section
             id="stream-info"
             aria-label="Stream status"
-            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid ${streamInfoClass}"
+            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
           >
             <span>${streamStatusMessage}</span>
-            <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
+            <span id="stream-viewer-count">${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
           </section>
         </main>
 
@@ -513,7 +512,7 @@ export default class App extends Component {
         <${Chat}
           websocket=${websocket}
           username=${username}
-          chatInputEnabled=${chatInputEnabled}
+          chatInputEnabled=${true||chatInputEnabled}
         />
       </div>
     `;

@@ -75,6 +75,12 @@ header {
 #stream-info span {
   font-size: .70rem;
 }
+#stream-viewer-count {
+  display: none;
+}
+.online #stream-viewer-count {
+  display: inline;
+}
 
 
 /* ************************************************ */
