@@ -193,7 +193,11 @@ func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
 
 func (c *config) GetFFMpegPath() string {
 	if c.FFMpegPath != "" {
-		return c.FFMpegPath
+		if err := verifyFFMpegPath(c.FFMpegPath); err == nil {
+			return c.FFMpegPath
+		} else {
+			log.Errorln(c.FFMpegPath, "is an invalid path to ffmpeg.  Will try to use a copy in your path, if possible.")
+		}
 	}
 
 	// First look to see if ffmpeg is in the current working directory
