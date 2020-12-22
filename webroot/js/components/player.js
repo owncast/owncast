@@ -85,7 +85,11 @@ class OwncastPlayer {
 
     this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME) || 1);
     this.vjsPlayer.src(source);
-    // this.vjsPlayer.play();
+    this.vjsPlayer.play().catch(() => {
+      // Autoplay was prevented. Start playback without sound.
+      this.vjsPlayer.muted(true);
+      this.vjsPlayer.play();
+    });
   }
 
   handleReady() {
