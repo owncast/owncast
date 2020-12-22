@@ -372,7 +372,7 @@ export default class App extends Component {
           (tag, index) => html`
             <li
               key="tag${index}"
-              class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 p-2 whitespace-no-wrap"
+              class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
             >
               ${tag}
             </li>
@@ -491,7 +491,7 @@ export default class App extends Component {
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
-              <ul id="tag-list" class="tag-list flex flex-row my-4">
+              <ul id="tag-list" class="tag-list flex flex-row flex-wrap my-4">
                 ${tagList}
               </ul>
             </div>
