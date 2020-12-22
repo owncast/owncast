@@ -1,4 +1,4 @@
-// x, y pixel psitions of /img/social.gif image.
+// x, y pixel positions of /img/platform-logos.gif image.
 export const SOCIAL_PLATFORMS = {
   default: {
     name: "default",

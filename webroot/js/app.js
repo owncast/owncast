@@ -3,7 +3,7 @@ import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
 import { OwncastPlayer } from './components/player.js';
-import SocialIconsList from './components/social-icons-list.js';
+import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
