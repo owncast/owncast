@@ -513,6 +513,7 @@ export default class App extends Component {
           websocket=${websocket}
           username=${username}
           chatInputEnabled=${true||chatInputEnabled}
+          instanceTitle=${title}
         />
       </div>
     `;
