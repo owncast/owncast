@@ -223,7 +223,6 @@ export default class VideoOnly extends Component {
     } = state;
 
     const { logo = TEMP_IMAGE } = configData;
-    const streamInfoClass = streamOnline ? 'online' : ''; // need?
 
     const mainClass = playerActive ? 'online' : '';
 
@@ -250,10 +249,10 @@ export default class VideoOnly extends Component {
           <section
             id="stream-info"
             aria-label="Stream status"
-            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid ${streamInfoClass}"
+            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
           >
             <span>${streamStatusMessage}</span>
-            <span>${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
+            <span id="stream-viewer-count">${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
           </section>
         </main>
     `);

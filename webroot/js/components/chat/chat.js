@@ -16,10 +16,10 @@ export default class Chat extends Component {
     super(props, context);
 
     this.state = {
-      webSocketConnected: true,
-      messages: [],
       chatUserNames: [],
+      messages: [],
       newMessagesReceived: false,
+      webSocketConnected: true,
     };
 
     this.scrollableMessagesContainer = createRef();
@@ -27,16 +27,20 @@ export default class Chat extends Component {
     this.websocket = null;
     this.receivedFirstMessages = false;
 
+    this.windowBlurred = false;
+    this.numMessagesSinceBlur = 0;
+
     this.getChatHistory = this.getChatHistory.bind(this);
+    this.handleNetworkingError = this.handleNetworkingError.bind(this);
+    this.handleWindowBlur = this.handleWindowBlur.bind(this);
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
+    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 500);
+    this.messageListCallback = this.messageListCallback.bind(this);
     this.receivedWebsocketMessage = this.receivedWebsocketMessage.bind(this);
+    this.scrollToBottom = this.scrollToBottom.bind(this);
+    this.submitChat = this.submitChat.bind(this);
     this.websocketConnected = this.websocketConnected.bind(this);
     this.websocketDisconnected = this.websocketDisconnected.bind(this);
-    this.submitChat = this.submitChat.bind(this);
-    this.submitChat = this.submitChat.bind(this);
-    this.scrollToBottom = this.scrollToBottom.bind(this);
-    this.handleWindowResize = debounce(this.handleWindowResize.bind(this), 500);
-    this.handleNetworkingError = this.handleNetworkingError.bind(this);
-    this.messageListCallback = this.messageListCallback.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +48,11 @@ export default class Chat extends Component {
    this.getChatHistory();
 
    window.addEventListener('resize', this.handleWindowResize);
+
+   if (!this.props.messagesOnly) {
+    window.addEventListener('blur', this.handleWindowBlur);
+    window.addEventListener('focus', this.handleWindowFocus);
+   }
 
    this.messageListObserver = new MutationObserver(this.messageListCallback);
    this.messageListObserver.observe(this.scrollableMessagesContainer.current, { childList: true });
@@ -87,6 +96,10 @@ export default class Chat extends Component {
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowResize);
+    if (!this.props.messagesOnly) {
+      window.removeEventListener('blur', this.handleWindowBlur);
+      window.removeEventListener('focus', this.handleWindowFocus);
+     }
     this.messageListObserver.disconnect();
   }
 
@@ -141,6 +154,7 @@ export default class Chat extends Component {
 
   addMessage(message) {
     const { messages: curMessages } = this.state;
+    const { messagesOnly } = this.props;
 
     // if incoming message has same id as existing message, don't add it
     const existing = curMessages.filter(function (item) {
@@ -156,6 +170,11 @@ export default class Chat extends Component {
         newState.chatUserNames = [...updatedChatUserNames];
       }
       this.setState(newState);
+    }
+
+    // if window is blurred and we get a new message, add 1 to title
+    if (!messagesOnly && message.type === 'CHAT' && this.windowBlurred) {
+      this.numMessagesSinceBlur += 1;
     }
   }
 
@@ -216,6 +235,16 @@ export default class Chat extends Component {
     this.scrollToBottom();
   }
 
+  handleWindowBlur() {
+    this.windowBlurred = true;
+  }
+
+  handleWindowFocus() {
+    this.windowBlurred = false;
+    this.numMessagesSinceBlur = 0;
+    window.document.title = this.props.instanceTitle;
+  }
+
   // if the messages list grows in number of child message nodes due to new messages received, scroll to bottom.
   messageListCallback(mutations) {
     const numMutations = mutations.length;
@@ -234,8 +263,17 @@ export default class Chat extends Component {
           });
         }
       }
+      // update document title if window blurred
+      if (this.numMessagesSinceBlur && !this.props.messagesOnly && this.windowBlurred) {
+        this.updateDocumentTitle();
+      }
     }
   };
+
+  updateDocumentTitle() {
+    const num = this.numMessagesSinceBlur > 10 ? '10+' : this.numMessagesSinceBlur;
+    window.document.title = `${num} 💬 :: ${this.props.instanceTitle}`;
+  }
 
   render(props, state) {
     const { username, messagesOnly, chatInputEnabled } = props;

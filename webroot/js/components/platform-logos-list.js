@@ -2,7 +2,7 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
-import { SOCIAL_PLATFORMS } from '../utils/social.js';
+import { SOCIAL_PLATFORMS } from '../utils/platforms.js';
 import { classNames } from '../utils/helpers.js';
 
 function SocialIcon(props) {
@@ -60,4 +60,4 @@ export default function (props) {
     <span class="follow-label text-xs font-bold mr-2 uppercase">Follow me:</span>
     ${list}
   </ul>`;
-} 
+}
