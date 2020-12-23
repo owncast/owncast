@@ -1,5 +1,5 @@
 import { Result, Card } from "antd";
-import { MessageTwoTone, BulbTwoTone, BookTwoTone, PlaySquareTwoTone } from '@ant-design/icons';
+import { MessageTwoTone, QuestionCircleTwoTone, BookTwoTone, PlaySquareTwoTone } from '@ant-design/icons';
 import OwncastLogo from "./components/logo"
 import LogTable from "./components/log-table";
 
@@ -7,18 +7,6 @@ const { Meta } = Card;
 
 export default function Offline({ logs = [] }) {
   const data = [
-    {
-      icon: <BulbTwoTone twoToneColor="#ffd33d" />,
-      title: "Send some test content",
-      content: (
-        <div>
-          Test your server with any video you have around. Pass it to the test script and start streaming it.
-          <pre>
-            <code>./test/ocTestStream.sh yourVideo.mp4</code>
-          </pre>
-        </div>
-      ),
-    },
     {
       icon: <BookTwoTone twoToneColor="#6f42c1" />,
       title: "Use your broadcasting software",
@@ -41,6 +29,17 @@ export default function Offline({ logs = [] }) {
           <a href="https://owncast.online/docs/embed">Learn how you can add your Owncast stream to other sites you control.</a>
         </div>
       )
+    },
+    {
+      icon: <QuestionCircleTwoTone twoToneColor="#ffd33d" />,
+      title: "Need some help?",
+      content: (
+        <div>
+          Take a look at our <a target="_blank" href="https://owncast.online/docs/troubleshooting">troubleshooting steps </a>
+          to see if there's any common problems you're running into.  If you still have questions <a target="_blank" href="https://github.com/owncast/owncast/issues/new/choose">
+            let us know how we can help</a>.
+        </div>
+      ),
     }
   ];
 
