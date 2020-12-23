@@ -1,0 +1,20 @@
+.chat-messages {
+  .ant-table-small .ant-table-selection-column {
+    width: 20px;
+    min-width: 20px;
+  }
+  .ant-table-tbody > tr > td {
+    transition: background 0.15s;
+  }
+  .ant-table-cell {
+    font-size: 12px;
+
+    &.name-col {
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
+.ant-table-filter-dropdown {
+  max-width: 250px;
+}

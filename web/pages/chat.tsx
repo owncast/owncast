@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Typography } from "antd";
+import { Table, Typography, Tooltip, Switch } from "antd";
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
@@ -79,12 +79,14 @@ export default function Chat() {
       title: 'Time',
       dataIndex: 'timestamp',
       key: 'timestamp',
+      className: 'timestamp-col',
       defaultSortOrder: 'descend',
       render: (timestamp) => {
         const dateObject = new Date(timestamp);
-        return format(dateObject, 'P pp');
+        return format(dateObject, 'PP pp');
       },
       sorter: (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+      width: 80,
     },
     {
       title: 'User',
@@ -92,29 +94,50 @@ export default function Chat() {
       key: 'author',
       className: 'name-col',
       filters: nameFilters,
-      onFilter: (value, record) => record.name.indexOf(value) === 0,
-      sorter: (a, b) => a.name.toUppercase() - b.name.toUppercase(),
+      onFilter: (value, record) => record.author === value,
+      sorter: (a, b) => a.author.localeCompare(b.author),
       sortDirections: ['ascend', 'descend'],  
+      ellipsis: true,
+      render: author => (
+        <Tooltip placement="topLeft" title={author}>
+          {author}
+        </Tooltip>
+      ),
+      width: 80,
     },
     {
       title: 'Message',
       dataIndex: 'body',
       key: 'body',
       className: 'message-col',
+      width: 230,
     },
     {
-      title: 'Show/Hide',
+      title: 'Show/ Hide',
       dataIndex: 'visible',
       key: 'visible',
+      filters: [{ text: 'visible', value: true }, { text: 'hidden', value: false }],
+      onFilter: (value, record) => record.visible === value,
+      render: visible => (
+        <Switch
+          size="small"
+          onChange={checked => {
+            console.log(`switch to ${checked}`);
+          }}
+          defaultChecked={visible}
+        />
+      ),
+      width: 60,
     },
   ];
 
   
   return (
-    <div className="chat-message">
+    <div className="chat-messages">
       <Title level={2}>Chat Messages</Title>
       <Table
         size="small"
+        className="messages-table"
         pagination={{ pageSize: 100 }} 
         scroll={{ y: 540 }}
         rowClassName={record => !record.visible ? 'hidden' : ''}
