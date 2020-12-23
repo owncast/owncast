@@ -34,10 +34,14 @@ export const LOGS_ALL = `${API_LOCATION}logs`;
 // Get warnings + errors
 export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 
+// Chat history
+export const CHAT_HISTORY = `${NEXT_PUBLIC_API_HOST}api/chat`;
+
+
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
 export async function fetchData(url) {
-  let options: RequestInit = {};
+  const options: RequestInit = {};
 
   if (ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
@@ -50,6 +54,21 @@ export async function fetchData(url) {
 
   try {
     const response = await fetch(url, options);
+    if (!response.ok) {
+      const message = `An error has occured: ${response.status}`;
+      throw new Error(message);
+    }
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    console.log(error)
+  }
+  return {};
+}
+
+export async function fetchDataFromMain(url) {
+  try {
+    const response = await fetch(url);
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);

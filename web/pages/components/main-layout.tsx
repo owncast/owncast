@@ -128,6 +128,9 @@ export default function MainLayout(props) {
             icon={<ToolOutlined />}
             title="Utilities"
           >
+            <Menu.Item key="chat">
+              <Link href="/chat">Chat Moderation</Link>
+            </Menu.Item>
             <Menu.Item key="hardware-info">
               <Link href="/hardware-info">Hardware</Link>
             </Menu.Item>
