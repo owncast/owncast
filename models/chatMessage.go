@@ -24,6 +24,13 @@ type ChatMessage struct {
 	Timestamp   time.Time `json:"timestamp"`
 }
 
+type MessageVisibilityUpdate struct {
+	ClientID string `json:"-"`
+
+	ID      string `json:"id"`
+	Visible bool   `json:"visible"`
+}
+
 // Valid checks to ensure the message is valid.
 func (m ChatMessage) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""

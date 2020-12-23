@@ -60,6 +60,28 @@ func addMessage(message models.ChatMessage) {
 	}
 }
 
+func updateMessageVisibility(payload models.MessageVisibilityUpdate) {
+	tx, err := _db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id=?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(payload.Visible, payload.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = tx.Commit()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func getChatHistory() []models.ChatMessage {
 	history := make([]models.ChatMessage, 0)
 
