@@ -61,6 +61,15 @@ func Start() error {
 	// Change the current streaming key in memory
 	http.HandleFunc("/api/admin/changekey", middleware.RequireAdminAuth(admin.ChangeStreamKey))
 
+	// Change the current streaming name in memory
+	http.HandleFunc("/api/admin/changename", middleware.RequireAdminAuth(admin.ChangeStreamName))
+
+	// Change the current streaming name in memory
+	http.HandleFunc("/api/admin/changetitle", middleware.RequireAdminAuth(admin.ChangeStreamTitle))
+
+	// Change the current streaming name in memory
+	http.HandleFunc("/api/admin/changetags", middleware.RequireAdminAuth(admin.ChangeStreamTags))
+
 	// Change the extra page content in memory
 	http.HandleFunc("/api/admin/changeextrapagecontent", middleware.RequireAdminAuth(admin.ChangeExtraPageContent))
 
