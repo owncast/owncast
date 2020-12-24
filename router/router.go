@@ -82,6 +82,9 @@ func Start() error {
 	// Get warning/error logs
 	http.HandleFunc("/api/admin/logs/warnings", middleware.RequireAdminAuth(admin.GetWarnings))
 
+	// Update chat message visibilty
+	http.HandleFunc("/api/admin/chat/updatemessagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Tracef("Web server running on port: %d", port)
