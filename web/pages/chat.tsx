@@ -5,7 +5,8 @@ import format from 'date-fns/format'
 
 import {
   CHAT_HISTORY,
-  fetchDataFromMain,
+  UPDATE_CHAT_MESSGAE_VIZ,
+  fetchData,
 } from "../utils/apis";
 
 const { Title } = Typography;
@@ -21,8 +22,13 @@ interface Message {
   visible: boolean;
 }
 
+interface MessageToggleProps {
+  isVisible: boolean;
+  message: Message;
+  setMessage: (message: Message) => {},
+};
 
-function createUserNameFilters(messages) {
+function createUserNameFilters(messages: Message[]) {
   const filtered = messages.reduce((acc, curItem) => {
     const curAuthor = curItem.author;
     if (!acc.some(item => item.text === curAuthor)) {
@@ -46,23 +52,58 @@ function createUserNameFilters(messages) {
   });
 }
 
+function MessageToggle({ isVisible, message, setMessage }: MessageToggleProps) {
+  const { id: messageId } = message;
+
+  const updateChatMessage = async () => {
+    const result = await fetchData(UPDATE_CHAT_MESSGAE_VIZ, {
+      auth: true,
+      method: 'POST',
+      data: {
+        visible: !isVisible,
+        id: messageId,
+      },
+    });
+
+    if (result.success && result.message === "changed") {
+      setMessage({
+        ...message,
+        visible: !isVisible,
+      });
+    }
+  }
+
+  return (
+    <Switch
+      size="small"
+      onChange={updateChatMessage}
+      defaultChecked={isVisible}
+    />
+  );
+}
+
 export default function Chat() {
   const [messages, setMessages] = useState([]);
 
   const getInfo = async () => {
     try {
-      const result = await fetchDataFromMain(CHAT_HISTORY);
+      const result = await fetchData(CHAT_HISTORY, { auth: false });
       setMessages(result);
     } catch (error) {
       console.log("==== error", error);
     }
   };
 
+  const updateMessage = message => {
+    const messageIndex = messages.findIndex(m => m.id === message.id);
+    messages.splice(messageIndex, 1, message)
+    setMessages([...messages]);
+  };
+
   useEffect(() => {
     getInfo();
   }, []);
 
-  
   const nameFilters = createUserNameFilters(messages);
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -118,13 +159,11 @@ export default function Chat() {
       key: 'visible',
       filters: [{ text: 'visible', value: true }, { text: 'hidden', value: false }],
       onFilter: (value, record) => record.visible === value,
-      render: visible => (
-        <Switch
-          size="small"
-          onChange={checked => {
-            console.log(`switch to ${checked}`);
-          }}
-          defaultChecked={visible}
+      render: (visible, record) => (
+        <MessageToggle
+          isVisible={visible}
+          message={record}
+          setMessage={updateMessage}
         />
       ),
       width: 60,
