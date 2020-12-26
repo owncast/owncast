@@ -17,7 +17,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		messages := core.GetAllChatMessages()
+		messages := core.GetAllChatMessages(true)
 
 		err := json.NewEncoder(w).Encode(messages)
 		if err != nil {

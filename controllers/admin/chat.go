@@ -9,7 +9,9 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -50,7 +52,7 @@ func updateMessageVisibility(_db *sql.DB, request messageVisibilityUpdateRequest
 	}
 	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?)")
 
-	strIDList := "(" + strings.Join(request.IDArray, ",") + ")"
+	strIDList := strings.Join(request.IDArray, ",")
 
 	if err != nil {
 		log.Fatal(err)
@@ -64,5 +66,17 @@ func updateMessageVisibility(_db *sql.DB, request messageVisibilityUpdateRequest
 	err = tx.Commit()
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+// GetChatMessages returns all of the chat messages, unfiltered.
+func GetChatMessages(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+	w.Header().Set("Content-Type", "application/json")
+
+	messages := core.GetAllChatMessages(false)
+
+	if err := json.NewEncoder(w).Encode(messages); err != nil {
+		log.Errorln(err)
 	}
 }

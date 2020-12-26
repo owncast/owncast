@@ -60,12 +60,12 @@ func SendMessage(message models.ChatMessage) {
 }
 
 // GetMessages gets all of the messages.
-func GetMessages() []models.ChatMessage {
+func GetMessages(filtered bool) []models.ChatMessage {
 	if _server == nil {
 		return []models.ChatMessage{}
 	}
 
-	return getChatHistory()
+	return getChatHistory(filtered)
 }
 
 func GetClient(clientID string) *Client {

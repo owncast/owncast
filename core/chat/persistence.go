@@ -60,11 +60,16 @@ func addMessage(message models.ChatMessage) {
 	}
 }
 
-func getChatHistory() []models.ChatMessage {
+func getChatHistory(filtered bool) []models.ChatMessage {
 	history := make([]models.ChatMessage, 0)
 
 	// Get all messages sent within the past day
-	rows, err := _db.Query("SELECT * FROM messages WHERE messageType != 'SYSTEM' AND datetime(timestamp) >=datetime('now', '-1 Day')")
+	var query = "SELECT * FROM messages WHERE messageType != 'SYSTEM' AND datetime(timestamp) >=datetime('now', '-1 Day')"
+	if filtered {
+		query = query + " AND visible = 1"
+	}
+
+	rows, err := _db.Query(query)
 	if err != nil {
 		log.Fatal(err)
 	}
