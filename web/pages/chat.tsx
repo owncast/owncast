@@ -107,6 +107,7 @@ export default function Chat() {
         return null;
       });
       setMessages(updatedList);
+      setSelectedRows([]);
     } else {
       setBulkOutcome(<ExclamationCircleFilled />);
       resetBulkOutcome();
