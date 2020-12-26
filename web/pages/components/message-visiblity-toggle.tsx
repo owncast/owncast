@@ -1,5 +1,4 @@
 // Wrapper for AntDesign Switch that makes an api call, then displays a confirmation icon upon 
-// TODO: make it more generic, maybe. This one is currently just for message visiblity updates.
 
 import React, { useState, useEffect } from "react";
 import { Switch } from "antd";
@@ -11,11 +10,11 @@ import { OUTCOME_TIMEOUT } from "../chat";
 interface MessageToggleProps {
   isVisible: boolean;
   message: MessageType;
-  setMessage: (message: MessageType) => {},
+  setMessage: (message: MessageType) => void,
 };
 
 
-export default function ToggleSwitch({ isVisible, message, setMessage }: MessageToggleProps) {
+export default function MessageVisiblityToggle({ isVisible, message, setMessage }: MessageToggleProps) {
   let outcomeTimeout = null;
   const [outcome, setOutcome] = useState(0);
 

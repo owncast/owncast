@@ -5,7 +5,7 @@ import { RowSelectionType } from "antd/es/table/interface";
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
-import ToggleSwitch from './components/toggle';
+import MessageVisiblityToggle from './components/message-visiblity-toggle';
 
 import { CHAT_HISTORY, fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
 import { MessageType } from '../types/chat';
@@ -161,7 +161,7 @@ export default function Chat() {
       filters: [{ text: 'visible', value: true }, { text: 'hidden', value: false }],
       onFilter: (value, record) => record.visible === value,
       render: (visible, record) => (
-        <ToggleSwitch
+        <MessageVisiblityToggle
           isVisible={visible}
           message={record}
           setMessage={updateMessage}
