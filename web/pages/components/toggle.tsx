@@ -40,7 +40,7 @@ export default function ToggleSwitch({ isVisible, message, setMessage }: Message
       method: 'POST',
       data: {
         visible: !isVisible,
-        id: messageId,
+        idArray: [messageId],
       },
     });
 
