@@ -39,7 +39,7 @@ type InstanceDetails struct {
 	// Logo             logo           `yaml:"logo" json:"logo"`
 	Logo             string         `yaml:"logo" json:"logo"`
 	Tags             []string       `yaml:"tags" json:"tags"`
-	SocialHandles    []socialHandle `yaml:"socialHandles" json:"socialHandles"`
+	SocialHandles    []SocialHandle `yaml:"socialHandles" json:"socialHandles"`
 	Version          string         `json:"version"`
 	NSFW             bool           `yaml:"nsfw" json:"nsfw"`
 	ExtraPageContent string         `json:"extraPageContent"`
@@ -50,7 +50,7 @@ type InstanceDetails struct {
 // 	Small string `yaml:"small" json:"small"`
 // }
 
-type socialHandle struct {
+type SocialHandle struct {
 	Platform string `yaml:"platform" json:"platform"`
 	URL      string `yaml:"url" json:"url"`
 	Icon     string `yaml:"icon" json:"icon"`

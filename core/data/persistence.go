@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/gob"
+	"fmt"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -12,6 +13,26 @@ import (
 type Datastore struct {
 	db    *sql.DB
 	cache map[string][]byte
+}
+
+func (ds *Datastore) warmCache() {
+	fmt.Println("Warming config value cache")
+
+	res, err := ds.db.Query("SELECT key, value FROM datastore")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer res.Close()
+
+	for res.Next() {
+		var rowKey string
+		var rowValue []byte
+		if err := res.Scan(&rowKey, &rowValue); err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Println(rowKey)
+		ds.cache[rowKey] = rowValue
+	}
 }
 
 // Get will query the database for the key and return the entry.
@@ -104,6 +125,24 @@ func (ds *Datastore) Setup() {
 
 	_, err = stmt.Exec()
 	if err != nil {
+		log.Fatalln(err)
+	}
+
+	ds.Reset()
+	ds.warmCache()
+}
+
+// Reset will delete all config entries in the datastore and start over.
+func (ds *Datastore) Reset() {
+	sql := "DELETE FROM datastore"
+	stmt, err := ds.db.Prepare(sql)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(); err != nil {
 		log.Fatalln(err)
 	}
 }
