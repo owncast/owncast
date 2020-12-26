@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Table, Typography, Tooltip, Switch, Button, Result } from "antd";
+import { Table, Typography, Tooltip, Switch, Button } from "antd";
+import { CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import { RowSelectionType } from "antd/es/table/interface";
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
 import ToggleSwitch from './components/toggle';
 
-import { CHAT_HISTORY, fetchData } from "../utils/apis";
+import { CHAT_HISTORY, fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
 import { MessageType } from '../types/chat';
 
 
@@ -35,10 +36,15 @@ function createUserNameFilters(messages: MessageType[]) {
     return 0;
   });
 }
+export const OUTCOME_TIMEOUT = 3000;
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [selectedRowKeys, setSelectedRows] = useState([]);
+  const [bulkVisibility, setBulkVisibility] = useState(false);
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [bulkOutcome, setBulkOutcome] = useState(null);
+  let outcomeTimeout = null;
 
   const getInfo = async () => {
     try {
@@ -51,13 +57,15 @@ export default function Chat() {
 
   const updateMessage = message => {
     const messageIndex = messages.findIndex(m => m.id === message.id);
-    console.log("====update?", message, messages[messageIndex])
     messages.splice(messageIndex, 1, message)
     setMessages([...messages]);
   };
 
   useEffect(() => {
     getInfo();
+    return () => {
+      clearTimeout(outcomeTimeout);
+    };
   }, []);
 
   const nameFilters = createUserNameFilters(messages);
@@ -68,6 +76,44 @@ export default function Chat() {
       setSelectedRows(selectedKeys);
     },
   };
+
+  const handleBulkToggle = checked => {
+    setBulkVisibility(checked);
+  };
+  const resetBulkOutcome = () => {
+    outcomeTimeout = setTimeout(() => { setBulkOutcome(null)}, OUTCOME_TIMEOUT);
+  };
+  const handleSubmitBulk = async () => {
+    setBulkProcessing(true);
+    const result = await fetchData(UPDATE_CHAT_MESSGAE_VIZ, {
+      auth: true,
+      method: 'POST',
+      data: {
+        visible: bulkVisibility,
+        idArray: selectedRowKeys,
+      },
+    });
+
+    if (result.success && result.message === "changed") {
+      setBulkOutcome(<CheckCircleFilled />);
+      resetBulkOutcome();
+
+      // update messages
+      const updatedList = [...messages];
+      selectedRowKeys.map(key => {
+        const messageIndex = updatedList.findIndex(m => m.id === key);
+        const newMessage = {...messages[messageIndex], visible: bulkVisibility };
+        updatedList.splice(messageIndex, 1, newMessage);
+        return null;
+      });
+      setMessages(updatedList);
+    } else {
+      setBulkOutcome(<ExclamationCircleFilled />);
+      resetBulkOutcome();
+    }
+    setBulkProcessing(false);
+    
+  }
 
 
   const chatColumns: ColumnsType<MessageType> = [
@@ -109,7 +155,7 @@ export default function Chat() {
       width: 230,
     },
     {
-      title: 'Show/ Hide',
+      title: 'Show / Hide',
       dataIndex: 'visible',
       key: 'visible',
       filters: [{ text: 'visible', value: true }, { text: 'hidden', value: false }],
@@ -129,16 +175,29 @@ export default function Chat() {
   return (
     <div className="chat-messages">
       <Title level={2}>Chat Messages</Title>
-      <p>click things and stuff</p>
-      <Button
-        type="primary"
-        // onClick={}
-        disabled={!selectedRowKeys.length}
-        loading={false}
-      >
-        Bulk toggle
-      </Button>
-      <Switch />
+      <div className="bulk-editor">
+        <span className="label">Check multiple messages to change their visibility to: </span>
+        
+        <Switch
+          className="toggler"
+          disabled={!selectedRowKeys.length}
+          checkedChildren="show"
+          unCheckedChildren="hide"
+          onChange={handleBulkToggle}
+          checked={bulkVisibility}
+        />
+
+        <Button
+          type="primary"
+          size="small"
+          loading={bulkProcessing}
+          disabled={!selectedRowKeys.length}
+          icon={bulkOutcome}
+          onClick={handleSubmitBulk}
+        >
+          Go
+        </Button>
+      </div>
       <Table
         size="small"
         className="messages-table"

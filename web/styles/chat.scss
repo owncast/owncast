@@ -14,6 +14,26 @@
       overflow: hidden;
     }
   }
+
+  .bulk-editor {
+    margin: .5rem 0;
+    padding: .5rem;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+
+    .label {
+      font-size: .75rem;
+      color: #666;
+    }
+
+    .toggler {
+      margin: 0 1rem 0 .5rem;
+    }
+
+  }
 }
 .ant-table-filter-dropdown {
   max-width: 250px;

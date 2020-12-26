@@ -6,6 +6,7 @@ import { Switch } from "antd";
 import { CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../../utils/apis";
 import { MessageType } from '../../types/chat';
+import { OUTCOME_TIMEOUT } from "../chat";
 
 interface MessageToggleProps {
   isVisible: boolean;
@@ -13,7 +14,6 @@ interface MessageToggleProps {
   setMessage: (message: MessageType) => {},
 };
 
-const OUTCOME_TIMEOUT = 3000;
 
 export default function ToggleSwitch({ isVisible, message, setMessage }: MessageToggleProps) {
   let outcomeTimeout = null;
