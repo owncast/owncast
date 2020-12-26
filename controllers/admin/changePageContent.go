@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -27,10 +26,14 @@ func ChangeExtraPageContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Config.InstanceDetails.ExtraPageContent = utils.RenderSimpleMarkdown(request.Key)
+	if err := data.SetExtraPageBodyContent(request.Content); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
 type changeExtraPageContentRequest struct {
-	Key string `json:"content"`
+	Content string `json:"content"`
 }
