@@ -3,10 +3,14 @@ import { Table, Typography, Input } from 'antd';
 import { isEmptyObject } from '../utils/format';
 import KeyValueTable from "./components/key-value-table";
 import { ServerStatusContext } from '../utils/server-status-context';
+
+import PublicFacingDetails from './components/config/public-facing-details';
+
 import adminStyles from '../styles/styles.module.scss';
 
 const { Title } = Typography;
 const { TextArea } = Input;
+
 
 function SocialHandles({ config }) {
   if (!config) {
@@ -130,6 +134,8 @@ export default function ServerConfig() {
 
   return (
     <>
+      <PublicFacingDetails />
+
       <InstanceDetails config={config} />
       <SocialHandles config={config} />
       <PageContent config={config} />
