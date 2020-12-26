@@ -6,12 +6,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 
+// UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
@@ -37,8 +39,8 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 }
 
 type messageVisibilityUpdateRequest struct {
-	ID      string `json:"id"`
-	Visible bool   `json:"visible"`
+	IDArray []string `json:"idArray"`
+	Visible bool     `json:"visible"`
 }
 
 func updateMessageVisibility(_db *sql.DB, request messageVisibilityUpdateRequest) {
@@ -46,14 +48,16 @@ func updateMessageVisibility(_db *sql.DB, request messageVisibilityUpdateRequest
 	if err != nil {
 		log.Fatal(err)
 	}
-	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id=?")
+	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?)")
+
+	strIDList := "(" + strings.Join(request.IDArray, ",") + ")"
 
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(request.Visible, request.ID)
+	_, err = stmt.Exec(request.Visible, strIDList)
 	if err != nil {
 		log.Fatal(err)
 	}
