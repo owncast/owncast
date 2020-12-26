@@ -1,34 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Table, Typography, Tooltip, Switch } from "antd";
+import { Table, Typography, Tooltip, Switch, Button, Result } from "antd";
+import { RowSelectionType } from "antd/es/table/interface";
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
-import {
-  CHAT_HISTORY,
-  UPDATE_CHAT_MESSGAE_VIZ,
-  fetchData,
-} from "../utils/apis";
+import ToggleSwitch from './components/toggle';
+
+import { CHAT_HISTORY, fetchData } from "../utils/apis";
+import { MessageType } from '../types/chat';
+
 
 const { Title } = Typography;
 
-interface Message {
-  key: string;
-  author: string;
-  body: string;
-  id: string;
-  name: string;
-  timestamp: string;
-  type: string;
-  visible: boolean;
-}
-
-interface MessageToggleProps {
-  isVisible: boolean;
-  message: Message;
-  setMessage: (message: Message) => {},
-};
-
-function createUserNameFilters(messages: Message[]) {
+function createUserNameFilters(messages: MessageType[]) {
   const filtered = messages.reduce((acc, curItem) => {
     const curAuthor = curItem.author;
     if (!acc.some(item => item.text === curAuthor)) {
@@ -52,38 +36,9 @@ function createUserNameFilters(messages: Message[]) {
   });
 }
 
-function MessageToggle({ isVisible, message, setMessage }: MessageToggleProps) {
-  const { id: messageId } = message;
-
-  const updateChatMessage = async () => {
-    const result = await fetchData(UPDATE_CHAT_MESSGAE_VIZ, {
-      auth: true,
-      method: 'POST',
-      data: {
-        visible: !isVisible,
-        id: messageId,
-      },
-    });
-
-    if (result.success && result.message === "changed") {
-      setMessage({
-        ...message,
-        visible: !isVisible,
-      });
-    }
-  }
-
-  return (
-    <Switch
-      size="small"
-      onChange={updateChatMessage}
-      defaultChecked={isVisible}
-    />
-  );
-}
-
 export default function Chat() {
   const [messages, setMessages] = useState([]);
+  const [selectedRowKeys, setSelectedRows] = useState([]);
 
   const getInfo = async () => {
     try {
@@ -96,6 +51,7 @@ export default function Chat() {
 
   const updateMessage = message => {
     const messageIndex = messages.findIndex(m => m.id === message.id);
+    console.log("====update?", message, messages[messageIndex])
     messages.splice(messageIndex, 1, message)
     setMessages([...messages]);
   };
@@ -105,17 +61,16 @@ export default function Chat() {
   }, []);
 
   const nameFilters = createUserNameFilters(messages);
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  
+  const rowSelection: RowSelectionType = {
+    selectedRowKeys,
+    onChange: selectedKeys => {
+      setSelectedRows(selectedKeys);
     },
-    getCheckboxProps: record => ({
-      disabled: record.name === 'Disabled User', // Column configuration not to be checked
-      name: record.name,
-    }),
   };
 
-  const chatColumns:  ColumnsType<Message> = [
+
+  const chatColumns: ColumnsType<MessageType> = [
     {
       title: 'Time',
       dataIndex: 'timestamp',
@@ -160,7 +115,7 @@ export default function Chat() {
       filters: [{ text: 'visible', value: true }, { text: 'hidden', value: false }],
       onFilter: (value, record) => record.visible === value,
       render: (visible, record) => (
-        <MessageToggle
+        <ToggleSwitch
           isVisible={visible}
           message={record}
           setMessage={updateMessage}
@@ -174,6 +129,16 @@ export default function Chat() {
   return (
     <div className="chat-messages">
       <Title level={2}>Chat Messages</Title>
+      <p>click things and stuff</p>
+      <Button
+        type="primary"
+        // onClick={}
+        disabled={!selectedRowKeys.length}
+        loading={false}
+      >
+        Bulk toggle
+      </Button>
+      <Switch />
       <Table
         size="small"
         className="messages-table"
@@ -183,12 +148,7 @@ export default function Chat() {
         dataSource={messages}
         columns={chatColumns}
         rowKey={(row) => row.id}
-
-        rowSelection={{
-          type: "checkbox",
-          ...rowSelection,
-        }}
-
+        rowSelection={rowSelection}
       />
   </div>)
 }

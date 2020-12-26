@@ -18,3 +18,15 @@
 .ant-table-filter-dropdown {
   max-width: 250px;
 }
+
+.toggle-switch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+
+  .outcome-icon {
+    margin-right: .5rem;
+  }
+}
