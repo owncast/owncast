@@ -42,7 +42,6 @@ const (
 	NAMECHANGE = "NAME_CHANGE"
 	PING       = "PING"
 	PONG       = "PONG"
-	UPDATE     = "UPDATE"
 )
 
 // NewClient creates a new chat client.

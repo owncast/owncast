@@ -161,9 +161,8 @@ export default class Chat extends Component {
       return item.id === message.id;
     })
 
-    // If the message already exists and this is an update event
-    // then update it.
-    if (existing && message.type === 'UPDATE') {
+    // If the message already exists this is an update event.
+    if (existing) {
       // UPDATE EXISTING MESSAGE HERE
       console.log("Update message", existing, message)
 

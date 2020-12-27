@@ -17,7 +17,6 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 			log.Errorln(err)
 			continue
 		}
-		message.MessageType = "UPDATE"
 		_server.sendAll(message)
 	}
 
