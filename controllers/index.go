@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -40,6 +41,13 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// If the ETags match then return a StatusNotModified
 	if responseCode := middleware.ProcessEtags(w, r); responseCode != 0 {
 		w.WriteHeader(responseCode)
+		return
+	}
+
+	// If this is a directory listing request then return a 404
+	info, err := os.Stat(path.Join(config.WebRoot, r.URL.Path))
+	if err != nil || (info.IsDir() && !isIndexRequest) {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
