@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Table, Typography, Tooltip, Switch, Button } from "antd";
-import { CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
+import { Table, Typography, Tooltip, Button } from "antd";
+import { CheckCircleFilled, ExclamationCircleFilled, StopOutlined } from "@ant-design/icons";
+import classNames from 'classnames';
 import { RowSelectionType } from "antd/es/table/interface";
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
-import MessageVisiblityToggle from './components/message-visiblity-toggle';
-
 import { CHAT_HISTORY, fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
 import { MessageType } from '../types/chat';
-
 
 const { Title } = Typography;
 
@@ -41,9 +39,9 @@ export const OUTCOME_TIMEOUT = 3000;
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [selectedRowKeys, setSelectedRows] = useState([]);
-  const [bulkVisibility, setBulkVisibility] = useState(false);
   const [bulkProcessing, setBulkProcessing] = useState(false);
   const [bulkOutcome, setBulkOutcome] = useState(null);
+  const [bulkAction, setBulkAction] = useState('');
   let outcomeTimeout = null;
 
   const getInfo = async () => {
@@ -53,12 +51,6 @@ export default function Chat() {
     } catch (error) {
       console.log("==== error", error);
     }
-  };
-
-  const updateMessage = message => {
-    const messageIndex = messages.findIndex(m => m.id === message.id);
-    messages.splice(messageIndex, 1, message)
-    setMessages([...messages]);
   };
 
   useEffect(() => {
@@ -77,13 +69,14 @@ export default function Chat() {
     },
   };
 
-  const handleBulkToggle = checked => {
-    setBulkVisibility(checked);
-  };
+
   const resetBulkOutcome = () => {
-    outcomeTimeout = setTimeout(() => { setBulkOutcome(null)}, OUTCOME_TIMEOUT);
+    outcomeTimeout = setTimeout(() => {
+      setBulkOutcome(null);
+      setBulkAction('');
+    }, OUTCOME_TIMEOUT);
   };
-  const handleSubmitBulk = async () => {
+  const handleSubmitBulk = async (bulkVisibility) => {
     setBulkProcessing(true);
     const result = await fetchData(UPDATE_CHAT_MESSGAE_VIZ, {
       auth: true,
@@ -113,9 +106,15 @@ export default function Chat() {
       resetBulkOutcome();
     }
     setBulkProcessing(false);
-    
   }
-
+  const handleSubmitBulkShow = () => {
+    setBulkAction('show');
+    handleSubmitBulk(true);
+  }
+  const handleSubmitBulkHide = () => {
+    setBulkAction('hide');
+    handleSubmitBulk(false);
+  }
 
   const chatColumns: ColumnsType<MessageType> = [
     {
@@ -129,7 +128,7 @@ export default function Chat() {
         return format(dateObject, 'PP pp');
       },
       sorter: (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-      width: 80,
+      width: 90,
     },
     {
       title: 'User',
@@ -146,57 +145,61 @@ export default function Chat() {
           {author}
         </Tooltip>
       ),
-      width: 80,
+      width: 110,
     },
     {
       title: 'Message',
       dataIndex: 'body',
       key: 'body',
       className: 'message-col',
-      width: 230,
+      width: 320,
     },
     {
-      title: 'Show / Hide',
+      title: '',
       dataIndex: 'visible',
       key: 'visible',
-      filters: [{ text: 'visible', value: true }, { text: 'hidden', value: false }],
+      className: 'toggle-col',
+      filters: [{ text: 'Visible messages', value: true }, { text: 'Hidden messages', value: false }],
       onFilter: (value, record) => record.visible === value,
-      render: (visible, record) => (
-        <MessageVisiblityToggle
-          isVisible={visible}
-          message={record}
-          setMessage={updateMessage}
-        />
-      ),
-      width: 60,
+      render: visible => visible ? null : <StopOutlined />,
+      width: 30,
     },
   ];
 
+  const bulkDivClasses = classNames({
+    'bulk-editor': true,
+    active: selectedRowKeys.length,
+  });
   
   return (
     <div className="chat-messages">
       <Title level={2}>Chat Messages</Title>
-      <div className="bulk-editor">
+      <div className={bulkDivClasses}>
         <span className="label">Check multiple messages to change their visibility to: </span>
-        
-        <Switch
-          className="toggler"
-          disabled={!selectedRowKeys.length}
-          checkedChildren="show"
-          unCheckedChildren="hide"
-          onChange={handleBulkToggle}
-          checked={bulkVisibility}
-        />
 
         <Button
           type="primary"
           size="small"
-          loading={bulkProcessing}
-          disabled={!selectedRowKeys.length}
-          icon={bulkOutcome}
-          onClick={handleSubmitBulk}
+          shape="round"
+          className="button"
+          loading={bulkAction === 'show' && bulkProcessing}
+          icon={bulkAction === 'show' && bulkOutcome}
+          disabled={!selectedRowKeys.length || (bulkAction && bulkAction !== 'show')}
+          onClick={handleSubmitBulkShow}
         >
-          Go
+          Show
+        </Button>
+        <Button
+          type="primary"
+          size="small"
+          shape="round"
+          className="button"
+          loading={bulkAction === 'hide' && bulkProcessing}
+          icon={bulkAction === 'hide' && bulkOutcome}
+          disabled={!selectedRowKeys.length || (bulkAction && bulkAction !== 'hide')}
+          onClick={handleSubmitBulkHide}
+        >
+          Hide
         </Button>
       </div>
       <Table

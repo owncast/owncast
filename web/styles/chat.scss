@@ -6,12 +6,23 @@
   .ant-table-tbody > tr > td {
     transition: background 0.15s;
   }
+  .ant-table-row.hidden {
+    .ant-table-cell {
+      color: #444450; 
+    }
+
+  }
   .ant-table-cell {
     font-size: 12px;
 
     &.name-col {
       text-overflow: ellipsis;
       overflow: hidden;
+    }
+    &.toggle-col {
+      label {
+        font-size: 11px;
+      }
     }
   }
 
@@ -23,14 +34,23 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
+    border-radius: 4px;
+
+    &.active {
+      .label {
+        color: #ccc;
+      }
+    }
 
     .label {
       font-size: .75rem;
       color: #666;
+      margin-right: .5rem;
     }
 
-    .toggler {
-      margin: 0 1rem 0 .5rem;
+    button {
+      margin: 0 .2rem;
+      font-size: .75rem;
     }
 
   }
