@@ -13,6 +13,7 @@ import {
   ToolOutlined,
   PlayCircleFilled,
   MinusSquareFilled,
+  MessageOutlined,
 } from '@ant-design/icons';
 import classNames from 'classnames';
 import { upgradeVersionAvailable } from "../../utils/apis";
@@ -107,6 +108,14 @@ export default function MainLayout(props) {
             <Link href="/viewer-info">Viewers</Link>
           </Menu.Item>
 
+          <Menu.Item
+            key="chat"
+            icon={<MessageOutlined />}
+            title="Chat utilities"
+          >
+            <Link href="/chat">Chat</Link>
+          </Menu.Item>
+          
           <SubMenu
             key="configuration"
             title="Configuration"
@@ -128,9 +137,6 @@ export default function MainLayout(props) {
             icon={<ToolOutlined />}
             title="Utilities"
           >
-            <Menu.Item key="chat">
-              <Link href="/chat">Chat Moderation</Link>
-            </Menu.Item>
             <Menu.Item key="hardware-info">
               <Link href="/hardware-info">Hardware</Link>
             </Menu.Item>
