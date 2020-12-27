@@ -1,6 +1,6 @@
 package config
 
-func getDefaults() config {
+func GetDefaults() config {
 	defaults := config{}
 	defaults.WebServerPort = 8080
 	defaults.RTMPServerPort = 1935

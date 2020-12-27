@@ -30,7 +30,7 @@ func (ds *Datastore) warmCache() {
 		if err := res.Scan(&rowKey, &rowValue); err != nil {
 			log.Fatalln(err)
 		}
-		fmt.Println(rowKey)
+		fmt.Println(rowKey, rowValue)
 		ds.cache[rowKey] = rowValue
 	}
 }
@@ -128,8 +128,9 @@ func (ds *Datastore) Setup() {
 		log.Fatalln(err)
 	}
 
-	ds.Reset()
-	ds.warmCache()
+	if !HasPopulatedDefaults() {
+		PopulateDefaults()
+	}
 }
 
 // Reset will delete all config entries in the datastore and start over.
@@ -145,4 +146,6 @@ func (ds *Datastore) Reset() {
 	if _, err = stmt.Exec(); err != nil {
 		log.Fatalln(err)
 	}
+
+	PopulateDefaults()
 }
