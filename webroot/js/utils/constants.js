@@ -48,7 +48,7 @@ export const CHAT_KEY_MODIFIERS = [
   'Meta',
   'Alt',
 ];
-export const MESSAGE_JUMPTOBOTTOM_BUFFER = 260;
+export const MESSAGE_JUMPTOBOTTOM_BUFFER = 300;
 
 // app styling
 export const WIDTH_SINGLE_COL = 730;
