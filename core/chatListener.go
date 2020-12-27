@@ -21,11 +21,11 @@ func (cl ChatListenerImpl) ClientRemoved(clientID string) {
 }
 
 // MessageSent is for when a message is sent.
-func (cl ChatListenerImpl) MessageSent(message models.ChatMessage) {
+func (cl ChatListenerImpl) MessageSent(message models.ChatEvent) {
 }
 
 // SendMessageToChat sends a message to the chat server.
-func SendMessageToChat(message models.ChatMessage) error {
+func SendMessageToChat(message models.ChatEvent) error {
 	if !message.Valid() {
 		return errors.New("invalid chat message; id, author, and body are required")
 	}
@@ -36,6 +36,6 @@ func SendMessageToChat(message models.ChatMessage) error {
 }
 
 // GetAllChatMessages gets all of the chat messages.
-func GetAllChatMessages(filtered bool) []models.ChatMessage {
+func GetAllChatMessages(filtered bool) []models.ChatEvent {
 	return chat.GetMessages(filtered)
 }

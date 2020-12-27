@@ -24,7 +24,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 			log.Errorln(err)
 		}
 	case http.MethodPost:
-		var message models.ChatMessage
+		var message models.ChatEvent
 		if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 			internalErrorHandler(w, err)
 			return

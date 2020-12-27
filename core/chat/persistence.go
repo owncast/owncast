@@ -2,6 +2,7 @@ package chat
 
 import (
 	"database/sql"
+	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -38,7 +39,7 @@ func createTable() {
 	}
 }
 
-func addMessage(message models.ChatMessage) {
+func addMessage(message models.ChatEvent) {
 	tx, err := _db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -60,8 +61,8 @@ func addMessage(message models.ChatMessage) {
 	}
 }
 
-func getChatHistory(filtered bool) []models.ChatMessage {
-	history := make([]models.ChatMessage, 0)
+func getChatHistory(filtered bool) []models.ChatEvent {
+	history := make([]models.ChatEvent, 0)
 
 	// Get all messages sent within the past day
 	var query = "SELECT * FROM messages WHERE messageType != 'SYSTEM' AND datetime(timestamp) >=datetime('now', '-1 Day')"
@@ -90,7 +91,7 @@ func getChatHistory(filtered bool) []models.ChatMessage {
 			break
 		}
 
-		message := models.ChatMessage{}
+		message := models.ChatEvent{}
 		message.ID = id
 		message.Author = author
 		message.Body = body
@@ -106,4 +107,32 @@ func getChatHistory(filtered bool) []models.ChatMessage {
 	}
 
 	return history
+}
+
+func saveMessageVisibility(messageIDs []string, visible bool) error {
+	tx, err := _db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?)")
+
+	strIDList := strings.Join(messageIDs, ",")
+
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(visible, strIDList); err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	return nil
 }

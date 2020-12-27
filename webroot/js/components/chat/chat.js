@@ -144,7 +144,7 @@ export default class Chat extends Component {
   }
 
   receivedWebsocketMessage(message) {
-    this.addMessage(message);
+    this.handleMessage(message);
   }
 
   handleNetworkingError(error) {
@@ -152,16 +152,26 @@ export default class Chat extends Component {
     console.log(error);
   }
 
-  addMessage(message) {
+  handleMessage(message) {
     const { messages: curMessages } = this.state;
     const { messagesOnly } = this.props;
 
-    // if incoming message has same id as existing message, don't add it
+    // Does this message exist?
     const existing = curMessages.filter(function (item) {
       return item.id === message.id;
     })
 
-    if (existing.length === 0 || !existing) {
+    // If the message already exists and this is an update event
+    // then update it.
+    if (existing && message.type === 'UPDATE') {
+      // UPDATE EXISTING MESSAGE HERE
+      console.log("Update message", existing, message)
+
+      // RE-RENDER MESSAGES HERE
+      return
+    }
+
+    else if (existing.length === 0 || !existing) {
       const newState = {
         messages: [...curMessages, message],
       };
@@ -279,7 +289,7 @@ export default class Chat extends Component {
     const { username, messagesOnly, chatInputEnabled } = props;
     const { messages, chatUserNames, webSocketConnected } = state;
 
-    const messageList = messages.map(
+    const messageList = messages.filter(message => message.visible).map(
       (message) =>
         html`<${Message}
           message=${message}
