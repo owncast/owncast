@@ -24,6 +24,16 @@
         font-size: 11px;
       }
     }
+
+    .message-contents {
+      overflow: hidden;
+      img {
+        position: relative;
+        margin-top: -5px;
+        width: 3rem;
+        padding: 0.25rem;
+      }
+    }
   }
 
   .bulk-editor {

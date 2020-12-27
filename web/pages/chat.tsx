@@ -153,6 +153,13 @@ export default function Chat() {
       key: 'body',
       className: 'message-col',
       width: 320,
+      render: body => (
+        <div
+          className="message-contents"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
+      )
     },
     {
       title: '',
