@@ -5,6 +5,7 @@ import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 
 export const initialServerConfigState = {
   streamKey: '',
+  instanceDetails: {},
   yp: {
     enabled: false,
   },
@@ -36,6 +37,8 @@ const initialServerStatusState = {
 export const ServerStatusContext = React.createContext({
   ...initialServerStatusState,
   serverConfig: initialServerConfigState,
+
+  setConfigField: () => {},
 });
 
 const ServerStatusProvider = ({ children }) => {
@@ -60,6 +63,14 @@ const ServerStatusProvider = ({ children }) => {
     }
   };
 
+  const setConfigField = ({ fieldName, value }) => {
+    const updatedConfig = {
+      ...config,
+      [fieldName]: value,
+    };
+    setConfig(updatedConfig);
+  }
+
   
   useEffect(() => {
     let getStatusIntervalId = null;
@@ -78,6 +89,8 @@ const ServerStatusProvider = ({ children }) => {
   const providerValue = {
       ...status,
       serverConfig: config,
+
+      setConfigField,
   };
   return (
     <ServerStatusContext.Provider value={providerValue}>
