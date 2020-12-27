@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
-import { Typography, Input } from 'antd';
+import { Typography, Input, Form } from 'antd';
+
+import TextField from './form-textfield';
 
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
@@ -18,16 +20,18 @@ export default function PublicFacingDetails() {
     <>
       <Title level={2}>Edit your public facing instance details</Title>
       <div className="config-public-details-container">
-        <div className="text-fields" role="form">
-            Server Name
-            <Input placeholder="Owncast" value={name} />
-
-
+        <div className="text-fields">
+          <Form name="text-fields" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+            <TextField
+              label="name"
+              value={name}
+            />
+          </Form>
         </div>
         <div className="misc-optionals">
-          add social handles
+          add social handles comp
           <br/>
-          add tags 
+          add tags comp
           
         </div>
       </div>      
