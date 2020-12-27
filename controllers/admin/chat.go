@@ -34,7 +34,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	// _db := data.GetDatabase()
 	// updateMessageVisibility(_db, request)
 
-	if err := chat.SetMessagesVisability(request.IDArray, request.Visible); err != nil {
+	if err := chat.SetMessagesVisibility(request.IDArray, request.Visible); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

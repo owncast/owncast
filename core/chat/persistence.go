@@ -136,3 +136,30 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 
 	return nil
 }
+
+func getMessageById(messageID string) (models.ChatEvent, error) {
+	var query = "SELECT * FROM messages WHERE id = ?"
+	row := _db.QueryRow(query, messageID)
+
+	var id string
+	var author string
+	var body string
+	var messageType string
+	var visible int
+	var timestamp time.Time
+
+	err := row.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
+	if err != nil {
+		log.Errorln(err)
+		return models.ChatEvent{}, err
+	}
+
+	return models.ChatEvent{
+		ID:          id,
+		Author:      author,
+		Body:        body,
+		MessageType: messageType,
+		Visible:     visible == 1,
+		Timestamp:   timestamp,
+	}, nil
+}
