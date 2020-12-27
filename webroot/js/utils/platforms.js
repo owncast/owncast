@@ -2,71 +2,98 @@
 export const SOCIAL_PLATFORMS = {
   default: {
     name: "default",
-    imgPos: [0,0], // [row,col]
+    icon: '/img/socialhandles/default.svg',
+    color: '#000000',
   },
 
   facebook: {
     name: "Facebook",
-    imgPos: [0,1],
+    icon: '/img/socialhandles/facebook.svg',
+    color: '#1877F2'
   },
   twitter: {
     name: "Twitter",
-    imgPos: [0,2],
+    icon: '/img/socialhandles/twitter.svg',
+    color: '#1DA1F2',
   },
   instagram: {
     name: "Instagram",
-    imgPos: [0,3],
+    icon: '/img/socialhandles/instagram.svg',
+    color: '#E4405F',
   },
   snapchat: {
     name: "Snapchat",
-    imgPos: [0,4],
+    icon: '/img/socialhandles/snapchat.svg',
+    color: '#FFFC00',
   },
   tiktok: {
     name: "TikTok",
-    imgPos: [0,5],
+    icon: '/img/socialhandles/tiktok.svg',
+    color: '#000000'
   },
   soundcloud: {
     name: "Soundcloud",
-    imgPos: [0,6],
+    icon: '/img/socialhandles/soundcloud.svg',
+    color: '#FF3300',
   },
   bandcamp: {
     name: "Bandcamp",
-    imgPos: [0,7],
+    icon: '/img/socialhandles/bandcamp.svg',
+    color: '#408294',
   },
   patreon: {
     name: "Patreon",
-    imgPos: [0,1],
+    icon: '/img/socialhandles/patreon.svg',
+    color: '#F96854',
   },
   youtube: {
     name: "YouTube",
-    imgPos: [0,9 ],
+    icon: '/img/socialhandles/youtube.svg',
+    color: '#FF0000',
   },
   spotify: {
     name: "Spotify",
-    imgPos: [0,10],
+    icon: '/img/socialhandles/spotify.svg',
+    color: '#1ED760',
   },
   twitch: {
     name: "Twitch",
-    imgPos: [0,11],
+    icon: '/img/socialhandles/twitch.svg',
+    color: '#9146FF',
   },
   paypal: {
     name: "Paypal",
-    imgPos: [0,12],
+    icon: '/img/socialhandles/paypal.svg',
+    color: '#00457C',
   },
   github: {
     name: "Github",
-    imgPos: [0,13],
+    icon: '/img/socialhandles/github.svg',
+    color: '#181717',
   },
   linkedin: {
     name: "LinkedIn",
-    imgPos: [0,14],
+    icon: '/img/socialhandles/linkedin.svg',
+    color: '#0077B5',
   },
   discord: {
     name: "Discord",
-    imgPos: [0,15],
+    icon: '/img/socialhandles/discord.svg',
+    color: '#7289DA'
   },
   mastodon: {
     name: "Mastodon",
-    imgPos: [0,16],
+    icon: '/img/socialhandles/mastodon.svg',
+    mastodon: '#3088D4',
+  },
+  gitlab: {
+    name: "Gitlab",
+    icon: '/img/socialhandles/gitlab.svg',
+    color: '#FCA121',
+  },
+  kofi: {
+    name: "Ko-Fi",
+    icon: '/img/socialhandles/ko-fi.svg',
+    color: '#F16061',
   },
 };
