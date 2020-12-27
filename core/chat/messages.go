@@ -1,6 +1,8 @@
 package chat
 
-import log "github.com/sirupsen/logrus"
+import (
+	log "github.com/sirupsen/logrus"
+)
 
 func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 	// Save new message visibility
@@ -18,6 +20,7 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 			continue
 		}
 		message.MessageType = VISIBILITYUPDATE
+		message.Visible = visibility
 		_server.sendAll(message)
 	}
 
