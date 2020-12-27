@@ -114,9 +114,8 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?)")
 
-	strIDList := strings.Join(messageIDs, ",")
+	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
 
 	if err != nil {
 		log.Fatal(err)
@@ -124,7 +123,14 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	}
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(visible, strIDList); err != nil {
+	args := make([]interface{}, len(messageIDs)+1)
+	args[0] = visible
+	for i, id := range messageIDs {
+		args[i+1] = id
+	}
+
+	_, err = stmt.Exec(args...)
+	if err != nil {
 		log.Fatal(err)
 		return err
 	}

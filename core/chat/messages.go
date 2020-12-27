@@ -7,6 +7,7 @@ import (
 func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 	// Save new message visibility
 	if err := saveMessageVisibility(messageIDs, visibility); err != nil {
+		log.Errorln(err)
 		return err
 	}
 
@@ -20,7 +21,6 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 			continue
 		}
 		message.MessageType = VISIBILITYUPDATE
-		message.Visible = visibility
 		_server.sendAll(message)
 	}
 
