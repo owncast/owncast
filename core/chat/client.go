@@ -38,11 +38,11 @@ type Client struct {
 }
 
 const (
-	CHAT       = "CHAT"
-	NAMECHANGE = "NAME_CHANGE"
-	PING       = "PING"
-	PONG       = "PONG"
-	UPDATE     = "UPDATE"
+	CHAT             = "CHAT"
+	NAMECHANGE       = "NAME_CHANGE"
+	PING             = "PING"
+	PONG             = "PONG"
+	VISIBILITYUPDATE = "VISIBILITY-UPDATE"
 )
 
 // NewClient creates a new chat client.
