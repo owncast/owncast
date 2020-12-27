@@ -168,7 +168,7 @@ export default function Chat() {
       className: 'toggle-col',
       filters: [{ text: 'Visible messages', value: true }, { text: 'Hidden messages', value: false }],
       onFilter: (value, record) => record.visible === value,
-      render: visible => visible ? null : <StopOutlined />,
+      render: visible => visible ? null : <StopOutlined title="This message is hidden" />,
       width: 30,
     },
   ];

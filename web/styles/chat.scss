@@ -26,7 +26,8 @@
     }
 
     .message-contents {
-      overflow: hidden;
+      overflow: auto;
+      max-height: 200px; 
       img {
         position: relative;
         margin-top: -5px;
