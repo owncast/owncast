@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,11 +23,15 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	response := serverConfigAdminResponse{
-		InstanceDetails: config.Config.InstanceDetails,
-		FFmpegPath:      config.Config.GetFFMpegPath(),
-		StreamKey:       config.Config.VideoSettings.StreamingKey,
-		WebServerPort:   config.Config.GetPublicWebServerPort(),
-		RTMPServerPort:  config.Config.GetRTMPServerPort(),
+		InstanceDetails: config.InstanceDetails{
+			Name:    data.GetServerName(),
+			Summary: data.GetServerSummery(),
+			Tags:    data.GetServerMetadataTags(),
+		},
+		FFmpegPath:     config.Config.GetFFMpegPath(),
+		StreamKey:      data.GetStreamKey(),
+		WebServerPort:  data.GetHTTPPortNumber(),
+		RTMPServerPort: data.GetRTMPPortNumber(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants:  videoQualityVariants,
 			SegmentLengthSeconds:  config.Config.GetVideoSegmentSecondsLength(),

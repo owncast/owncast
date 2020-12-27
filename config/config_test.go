@@ -3,7 +3,7 @@ package config
 import "testing"
 
 func TestDefaults(t *testing.T) {
-	_default = getDefaults()
+	_default = GetDefaults()
 
 	encoderPreset := "veryfast"
 	framerate := 24

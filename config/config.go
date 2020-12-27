@@ -287,7 +287,7 @@ func (q *StreamQuality) GetIsAudioPassthrough() bool {
 // Load tries to load the configuration file.
 func Load(filePath string, versionInfo string, versionNumber string) error {
 	Config = new(config)
-	_default = getDefaults()
+	_default = GetDefaults()
 
 	if err := Config.load(filePath); err != nil {
 		return err

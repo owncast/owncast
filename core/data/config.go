@@ -1,6 +1,7 @@
 package data
 
 import (
+	"strings"
 	"time"
 
 	"github.com/owncast/owncast/config"
@@ -102,14 +103,14 @@ func SetServerSummery(description string) error {
 	return _datastore.SetString(SERVER_SUMMERY_KEY, description)
 }
 
-func GetServerName() (string, error) {
+func GetServerName() string {
 	name, err := _datastore.GetString(SERVER_NAME_KEY)
 	if err != nil {
 		log.Errorln(err)
-		return "", err
+		return ""
 	}
 
-	return name, nil
+	return name
 }
 
 func SetServerName(name string) error {
@@ -130,32 +131,32 @@ func SetServerURL(url string) error {
 	return _datastore.SetString(SERVER_URL_KEY, url)
 }
 
-func GetHTTPPortNumber() float32 {
+func GetHTTPPortNumber() int {
 	port, err := _datastore.GetNumber(HTTP_PORT_NUMBER_KEY)
 	if err != nil {
 		log.Errorln(err)
 		return 8080
 	}
 
-	return port
+	return int(port)
 }
 
-func SetHTTPPortNumber(port float32) error {
-	return _datastore.SetNumber(HTTP_PORT_NUMBER_KEY, port)
+func SetHTTPPortNumber(port int) error {
+	return _datastore.SetNumber(HTTP_PORT_NUMBER_KEY, float32(port))
 }
 
-func GetRTMPPortNumber() float32 {
+func GetRTMPPortNumber() int {
 	port, err := _datastore.GetNumber(RTMP_PORT_NUMBER_KEY)
 	if err != nil {
 		log.Errorln(err)
 		return 8080
 	}
 
-	return port
+	return int(port)
 }
 
-func SetRTMPPortNumber(port float32) error {
-	return _datastore.SetNumber(RTMP_PORT_NUMBER_KEY, port)
+func SetRTMPPortNumber(port int) error {
+	return _datastore.SetNumber(RTMP_PORT_NUMBER_KEY, float32(port))
 }
 
 func GetDisableUpgradeChecks() bool {
@@ -172,17 +173,18 @@ func SetDisableUpgradeChecks(disable bool) error {
 	return _datastore.SetBool(DISABLE_UPGRADE_CHECKS_KEY, disable)
 }
 
-func GetServerMetadataTags() string {
+func GetServerMetadataTags() []string {
 	tagsString, err := _datastore.GetString(SERVER_METADATA_TAGS_KEY)
 	if err != nil {
 		log.Errorln(err)
-		return ""
+		return []string{}
 	}
 
-	return tagsString
+	return strings.Split(tagsString, ",")
 }
 
-func SetServerMetadataTags(tagString string) error {
+func SetServerMetadataTags(tags []string) error {
+	tagString := strings.Join(tags, ",")
 	return _datastore.SetString(SERVER_METADATA_TAGS_KEY, tagString)
 }
 
