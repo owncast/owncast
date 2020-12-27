@@ -48,7 +48,7 @@ export default function Chat() {
 
   const getInfo = async () => {
     try {
-      const result = await fetchData(CHAT_HISTORY, { auth: false });
+      const result = await fetchData(CHAT_HISTORY, { auth: true });
       setMessages(result);
     } catch (error) {
       console.log("==== error", error);

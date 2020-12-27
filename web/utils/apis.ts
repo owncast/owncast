@@ -35,7 +35,7 @@ export const LOGS_ALL = `${API_LOCATION}logs`;
 export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 
 // Get chat history
-export const CHAT_HISTORY = `${NEXT_PUBLIC_API_HOST}api/chat`;
+export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/admin/chat/updatemessagevisibility`;
