@@ -22,6 +22,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Tags:             data.GetServerMetadataTags(),
 		Version:          config.Config.VersionInfo,
 		ExtraPageContent: data.GetExtraPageBodyContent(),
+		StreamTitle:      data.GetStreamTitle(),
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {

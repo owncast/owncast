@@ -116,6 +116,9 @@ func Start() error {
 	// Server summary
 	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.ChangeServerSummary))
 
+	// Logo path
+	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.ChangeLogoPath))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Tracef("Web server running on port: %d", port)
