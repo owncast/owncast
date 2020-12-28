@@ -24,9 +24,12 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	response := serverConfigAdminResponse{
 		InstanceDetails: config.InstanceDetails{
-			Name:    data.GetServerName(),
-			Summary: data.GetServerSummary(),
-			Tags:    data.GetServerMetadataTags(),
+			Title:            data.GetServerTitle(),
+			Name:             data.GetServerName(),
+			Summary:          data.GetServerSummary(),
+			Tags:             data.GetServerMetadataTags(),
+			ExtraPageContent: data.GetExtraPageBodyContent(),
+			StreamTitle:      data.GetStreamTitle(),
 		},
 		FFmpegPath:     config.Config.GetFFMpegPath(),
 		StreamKey:      data.GetStreamKey(),

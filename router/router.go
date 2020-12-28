@@ -152,6 +152,8 @@ func Start() error {
 
 	// Connected clients
 	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetConnectedClients))
+	// Logo path
+	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.ChangeLogoPath))
 
 	port := config.Config.GetPublicWebServerPort()
 

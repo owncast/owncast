@@ -41,7 +41,9 @@ func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 		Success: success,
 		Message: message,
 	}
+
 	w.Header().Set("Content-Type", "application/json")
+
 	if success {
 		w.WriteHeader(http.StatusOK)
 	} else {

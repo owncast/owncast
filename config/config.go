@@ -43,6 +43,7 @@ type InstanceDetails struct {
 	Version          string         `json:"version"`
 	NSFW             bool           `yaml:"nsfw" json:"nsfw"`
 	ExtraPageContent string         `json:"extraPageContent"`
+	StreamTitle      string         `json:"streamTitle"` // What's going on with the current stream
 }
 
 // type logo struct {
