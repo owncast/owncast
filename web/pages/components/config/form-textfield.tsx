@@ -16,49 +16,98 @@ update vals to state, andthru api.
 
 
 */
-import React from 'react';
-import { Form, Input } from 'antd';
+import React, { useState, useContext } from 'react';
+import { Form, Input, Tooltip } from 'antd';
+import { FormItemProps } from 'antd/es/form';
 
+import { InfoCircleOutlined } from '@ant-design/icons';
 
-interface TextFieldProps {
-  onSubmit: (value: string) => void;
-  label: string;
-  defaultValue: string;
-  value: string;
-  helpInfo: string;
-  maxLength: number;
-  type: string;
-}
+import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH } from './defaults';
 
-// // do i need this?
-// export const initialProps: TextFieldProps = {
-// }
+import { TextFieldProps } from '../../../types/config-section';
+import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
+import { ServerStatusContext } from '../../../utils/server-status-context';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
-export const TEXTFIELD_TYPE_PASSWORD = 'password'; //Input.Password
+export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
 export const TEXTFIELD_TYPE_NUMBER = 'numeric';
 
 export default function TextField(props: TextFieldProps) {
+  const [submitStatus, setSubmitStatus] = useState<FormItemProps['validateStatus']>('');
+  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const serverStatusData = useContext(ServerStatusContext);
+  const { setConfigField } = serverStatusData || {};
+
+
   const {
-    label,
-    defaultValue,
-    value,
-    onSubmit,
-    helpInfo,
-    maxLength,
-    type,
+    fieldName,
   } = props;
-  
-  return (
+
+  const {
+    apiPath = '',
+    defaultValue = '', // if empty
+    configPath = '',
+    maxLength = TEXT_MAXLENGTH,
+    placeholder = '',
+    label = '',
+    tip = '',
+  } = TEXTFIELD_DEFAULTS[fieldName] || {};
+
+  const postUpdateToAPI = async (postValue: any) => {
+    setSubmitStatus('validating');
+    const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
+      data: { value: postValue },
+      method: 'POST',
+      auth: true,
+    });
+    if (result.success) {
+      setConfigField({ fieldName, value: postValue, path: configPath });
+      setSubmitStatus('success');
+    } else {
+      setSubmitStatus('warning');
+      setSubmitStatusMessage(`There was an error: ${result.message}`);
+    }
+  };
+
+  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    if (newValue !== '') {
+      postUpdateToAPI(newValue);
+    }
+  }
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    if (newValue !== '') {
+      console.log("blur post..", newValue)
+      postUpdateToAPI(newValue);
+    } else {
+      // event.target.value = value;
+    }
+  }
+
+   return (
     <div className="textfield">
       <Form.Item
         label={label}
+        name={fieldName}
         hasFeedback
-        validateStatus="error"
-        help="Should be combination of numbers & alphabets"
+        validateStatus={submitStatus}
+        help={submitStatusMessage}
       >
-       <Input placeholder="Owncast" value={value} />
+       <Input
+          className="field"
+          allowClear
+          placeholder={placeholder}
+          maxLength={maxLength}
+          onPressEnter={handleEnter}
+          // onBlur={handleBlur}
+        />
       </Form.Item>
+      <div className="info">
+        <Tooltip title={tip}>
+          <InfoCircleOutlined />
+        </Tooltip>
+      </div>
     </div>
   ); 
 }

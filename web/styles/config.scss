@@ -4,4 +4,24 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
+
+  .text-fields {
+    margin-right: 1rem;
+  }
+}
+
+.textfield {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  .field {
+    width: 20rem;
+
+  }
+  .info {
+    transform: translateY(.35rem);
+    margin-left: .5rem;
+  }
 }

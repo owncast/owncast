@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
+import { UpdateArgs } from '../types/config-section';
 
 export const initialServerConfigState = {
   streamKey: '',
@@ -63,11 +64,20 @@ const ServerStatusProvider = ({ children }) => {
     }
   };
 
-  const setConfigField = ({ fieldName, value }) => {
-    const updatedConfig = {
+  const setConfigField = ({ fieldName, value, path }: UpdateArgs) => {
+    const updatedConfig = path ? 
+    {
+      ...config,
+      [path]: {
+        ...config[path],
+        [fieldName]: value,
+      },
+    } :
+    {
       ...config,
       [fieldName]: value,
     };
+
     setConfig(updatedConfig);
   }
 

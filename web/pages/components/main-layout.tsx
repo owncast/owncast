@@ -41,15 +41,29 @@ export default function MainLayout(props) {
   const { Header, Footer, Content, Sider } = Layout;
   const { SubMenu } = Menu;
 
+  // status indicator items
   const streamDurationString = online ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
-
-  const content = (
-    <div>
-     <img src="/thumbnail.jpg" width="200px" />
-    </div>
-  );
+  const currentThumbnail = online ? (
+     <img src="/thumbnail.jpg" className={adminStyles.onlineCurrentThumb} alt="current thumbnail" />
+  ) : null;
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : "Offline";
+  const statusIndicator = (    
+    <div className={adminStyles.statusIndicatorContainer}>
+      <span className={adminStyles.statusLabel}>{statusMessage}</span>
+      <span className={adminStyles.statusIcon}>{statusIcon}</span>
+    </div>
+  );
+  const statusIndicatorWithThumb = online ? (
+    <Popover
+      content={currentThumbnail}
+      title="Thumbnail"
+      trigger="hover"
+    >
+      {statusIndicator}
+    </Popover>
+  ) : statusIndicator;
+  // ///////////////
 
   const [upgradeVersion, setUpgradeVersion] = useState(null);
   const checkForUpgrade = async () => {
@@ -176,12 +190,7 @@ export default function MainLayout(props) {
 
       <Layout className={adminStyles.layoutMain}>
         <Header className={adminStyles.header}>
-        <Popover content={content} title="Thumbnail" trigger="hover">
-          <div className={adminStyles.statusIndicatorContainer}>
-            <span className={adminStyles.statusLabel}>{statusMessage}</span>
-            <span className={adminStyles.statusIcon}>{statusIcon}</span>
-          </div>
-        </Popover>
+          {statusIndicatorWithThumb}
         </Header>
         <Content className={adminStyles.contentMain}>{children}</Content>
 

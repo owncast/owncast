@@ -19,6 +19,9 @@ export const STREAMKEY_CHANGE = `${API_LOCATION}changekey`;
 // Current server config
 export const SERVER_CONFIG = `${API_LOCATION}serverconfig`;
 
+// Base url to update config settings
+export const SERVER_CONFIG_UPDATE_URL = `${API_LOCATION}config`;
+
 // Get viewer count over time
 export const VIEWERS_OVER_TIME = `${API_LOCATION}viewersOverTime`;
 
@@ -67,6 +70,12 @@ interface FetchOptions {
 };
 
 export async function fetchData(url: string, options?: FetchOptions) {
+// TEMP
+export const TEMP_UPDATER_API = LOGS_ALL;
+
+const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
+
+export async function fetchData(url: string, options?: object) {
   const {
     data,
     method = 'GET',
@@ -104,6 +113,7 @@ export async function fetchData(url: string, options?: FetchOptions) {
   }
   return {};
 }
+
 
 export async function getGithubRelease() {
   try {
