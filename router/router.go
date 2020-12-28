@@ -97,6 +97,22 @@ func Start() error {
 
 	// Update chat message visibilty
 	http.HandleFunc("/api/admin/chat/updatemessagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
+	// Update config values
+
+	// Change the current streaming key in memory
+	http.HandleFunc("/api/admin/changekey", middleware.RequireAdminAuth(admin.ChangeStreamKey))
+
+	// Change the extra page content in memory
+	http.HandleFunc("/api/admin/changeextrapagecontent", middleware.RequireAdminAuth(admin.ChangeExtraPageContent))
+
+	// Stream title
+	http.HandleFunc("/api/admin/config/streamtitle", middleware.RequireAdminAuth(admin.ChangeStreamTitle))
+
+	// Server name
+	http.HandleFunc("/api/admin/config/name", middleware.RequireAdminAuth(admin.ChangeServerName))
+
+	// Server summary
+	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.ChangeServerSummary))
 
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))

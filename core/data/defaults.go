@@ -7,7 +7,7 @@ import (
 
 // Determine if the defaults have been inserted into the database
 func HasPopulatedDefaults() bool {
-	return false
+	// return false
 
 	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_DEFAULTS")
 	if err != nil {
@@ -24,7 +24,7 @@ func PopulateDefaults() {
 	SetRTMPPortNumber(defaults.RTMPServerPort)
 	SetLogoPath(defaults.InstanceDetails.Logo)
 	SetServerMetadataTags([]string{"owncast", "streaming"})
-	SetServerSummery("Welcome to your new Owncast server!  This description can be changed in the admin")
+	SetServerSummary("Welcome to your new Owncast server!  This description can be changed in the admin")
 	SetServerName("Owncast")
 	SetStreamKey(defaults.VideoSettings.StreamingKey)
 	SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")

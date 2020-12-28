@@ -12,7 +12,7 @@ const EXTRA_CONTENT_KEY = "extra_page_content"
 const STREAM_TITLE_KEY = "stream_title"
 const STREAM_KEY_KEY = "stream_key"
 const LOGO_PATH_KEY = "logo_path"
-const SERVER_SUMMERY_KEY = "server_summery"
+const SERVER_SUMMARY_KEY = "server_summary"
 const SERVER_NAME_KEY = "server_name"
 const SERVER_URL_KEY = "server_url"
 const HTTP_PORT_NUMBER_KEY = "http_port_number"
@@ -89,18 +89,18 @@ func SetLogoPath(key string) error {
 	return _datastore.SetString(LOGO_PATH_KEY, key)
 }
 
-func GetServerSummery() string {
-	summery, err := _datastore.GetString(SERVER_SUMMERY_KEY)
+func GetServerSummary() string {
+	summary, err := _datastore.GetString(SERVER_SUMMARY_KEY)
 	if err != nil {
 		log.Errorln(err)
 		return ""
 	}
 
-	return summery
+	return summary
 }
 
-func SetServerSummery(description string) error {
-	return _datastore.SetString(SERVER_SUMMERY_KEY, description)
+func SetServerSummary(summary string) error {
+	return _datastore.SetString(SERVER_SUMMARY_KEY, summary)
 }
 
 func GetServerName() string {
