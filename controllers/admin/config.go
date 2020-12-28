@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 type ConfigValue struct {
@@ -13,6 +14,8 @@ type ConfigValue struct {
 }
 
 func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+
 	if !requirePOST(w, r) {
 		return
 	}
@@ -31,6 +34,8 @@ func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
 }
 
 func ChangeServerName(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+
 	if !requirePOST(w, r) {
 		return
 	}
@@ -48,7 +53,29 @@ func ChangeServerName(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+func ChangeServerTitle(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetServerTitle(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
 func ChangeServerSummary(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+
 	if !requirePOST(w, r) {
 		return
 	}

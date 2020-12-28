@@ -10,6 +10,7 @@ import (
 
 const EXTRA_CONTENT_KEY = "extra_page_content"
 const STREAM_TITLE_KEY = "stream_title"
+const SERVER_TITLE_KEY = "server_title"
 const STREAM_KEY_KEY = "stream_key"
 const LOGO_PATH_KEY = "logo_path"
 const SERVER_SUMMARY_KEY = "server_summary"
@@ -55,6 +56,22 @@ func GetStreamTitle() string {
 // SetStreamTitle will set the name of the current stream.
 func SetStreamTitle(title string) error {
 	return _datastore.SetString(STREAM_TITLE_KEY, title)
+}
+
+// GetServerTitle will return the title of the server.
+func GetServerTitle() string {
+	title, err := _datastore.GetString(SERVER_TITLE_KEY)
+	if err != nil {
+		log.Errorln(err)
+		return ""
+	}
+
+	return title
+}
+
+// SetServerTitle will set the title of the server.
+func SetServerTitle(title string) error {
+	return _datastore.SetString(SERVER_TITLE_KEY, title)
 }
 
 // GetStreamKey will return the inbound streaming password.
