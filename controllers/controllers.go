@@ -36,7 +36,12 @@ func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 		Success: success,
 		Message: message,
 	}
-	w.WriteHeader(http.StatusOK)
+	if success {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		internalErrorHandler(w, err)
 	}

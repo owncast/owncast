@@ -25,7 +25,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	response := serverConfigAdminResponse{
 		InstanceDetails: config.InstanceDetails{
 			Name:    data.GetServerName(),
-			Summary: data.GetServerSummery(),
+			Summary: data.GetServerSummary(),
 			Tags:    data.GetServerMetadataTags(),
 		},
 		FFmpegPath:     config.Config.GetFFMpegPath(),

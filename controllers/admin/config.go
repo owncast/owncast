@@ -9,7 +9,7 @@ import (
 )
 
 type ConfigValue struct {
-	Value interface{}
+	Value interface{} `json:"value"`
 }
 
 func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +23,42 @@ func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetStreamTitle(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
+func ChangeServerName(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetServerName(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
+func ChangeServerSummary(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetServerSummary(configValue.Value.(string)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
