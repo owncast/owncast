@@ -1,3 +1,5 @@
+import { RequestInit } from 'node_modules/typescript/lib/lib.dom.d';
+
 /* eslint-disable prefer-destructuring */
 const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
 const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
@@ -43,7 +45,13 @@ export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/admin/chat/up
 
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
-export async function fetchData(url: string, options?: object) {
+interface FetchOptions {
+  data?: any;
+  method?: string;
+  auth?: boolean;
+};
+
+export async function fetchData(url: string, options?: FetchOptions) {
   const {
     data,
     method = 'GET',
