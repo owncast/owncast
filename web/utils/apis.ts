@@ -1,5 +1,3 @@
-import { RequestInit } from 'node_modules/typescript/lib/lib.dom.d';
-
 /* eslint-disable prefer-destructuring */
 const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
 const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
