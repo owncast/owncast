@@ -1,11 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import { Typography, Form, Input } from 'antd';
+import { Typography, Form } from 'antd';
 
-import TextField from './form-textfield';
+import TextField, { TEXTFIELD_TYPE_TEXTAREA } from './form-textfield';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
-
-import { UpdateArgs } from '../../../types/config-section';
 
 const { Title } = Typography;
 
@@ -13,16 +11,23 @@ export default function PublicFacingDetails() {
   const [form] = Form.useForm();
 
   const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig, setConfigField } = serverStatusData || {};
+  const { serverConfig } = serverStatusData || {};
 
-  const { instanceDetails = {},  } = serverConfig;
-
-  const { name, summary, title } = instanceDetails;
+  const { instanceDetails = {} } = serverConfig;
   
   useEffect(() => {
     form.setFieldsValue({...instanceDetails});
   }, [instanceDetails]);
-  
+
+
+  const handleResetValue = (fieldName: string) => {
+    form.setFieldsValue({ [fieldName]: instanceDetails[fieldName]});
+  }
+
+  const extraProps = {
+    handleResetValue,
+    initialValues: instanceDetails,
+  };
 
   return (
     <>
@@ -34,8 +39,10 @@ export default function PublicFacingDetails() {
             form={form}
             layout="vertical"
           >
-            <TextField fieldName="name" />
-            <TextField fieldName="summary" />
+            <TextField fieldName="name" {...extraProps} />
+            <TextField fieldName="summary" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
+            <TextField fieldName="title" {...extraProps} />
+            <TextField fieldName="streamTitle" {...extraProps} />
           </Form>
         </div>
         <div className="misc-optionals">

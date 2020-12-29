@@ -3,7 +3,7 @@
 export interface TextFieldProps {
   onUpdate: ({ fieldName, value }: UpdateArgs) => void;
   fieldName: string;
-  value: string;
+  initialValue: string;
   type: string;
 }
 

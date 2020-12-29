@@ -9,19 +9,37 @@
     margin-right: 1rem;
   }
 }
+.textfield-container {
+  // width: 28rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: relative;
+}
 
 .textfield {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  justify-content: flex-end;
 
   .field {
-    width: 20rem;
+    width: 18rem;
 
   }
   .info {
-    transform: translateY(.35rem);
-    margin-left: .5rem;
+    margin-right: .75rem;
   }
+  .ant-form-item-label label {
+    font-weight: bold;
+    color: var(--owncast-purple);
+  }
+  .ant-form-item-explain {
+    width: 70%;
+  }
+}
+.submit-button {
+  position: absolute;
+  right: 0;
+  bottom: 1em;
 }

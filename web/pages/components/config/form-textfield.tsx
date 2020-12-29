@@ -14,10 +14,19 @@ save to local state/context.
 read vals from there.
 update vals to state, andthru api.
 
+TODO
+- no on blur
+- no onEnter
+- if values chnage, then show "submit" button next to it
+  - on blur hide submit button. on submit success, hide button, blur out?
+  - esc key to reset + blur?
+
+- if field clears, repop with orig value, if no orig vlaue, pop with default
+
 
 */
 import React, { useState, useContext } from 'react';
-import { Form, Input, Tooltip } from 'antd';
+import { Button, Form, Input, InputNumber, Tooltip } from 'antd';
 import { FormItemProps } from 'antd/es/form';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -31,27 +40,44 @@ import { ServerStatusContext } from '../../../utils/server-status-context';
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
 export const TEXTFIELD_TYPE_NUMBER = 'numeric';
+export const TEXTFIELD_TYPE_TEXTAREA = 'textarea';
+
 
 export default function TextField(props: TextFieldProps) {
   const [submitStatus, setSubmitStatus] = useState<FormItemProps['validateStatus']>('');
   const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const [hasChanged, setHasChanged] = useState(false);
+  const [fieldValueForSubmit, setFieldValueForSubmit] = useState('');
+
+  let resetTimer = null;
+
   const serverStatusData = useContext(ServerStatusContext);
   const { setConfigField } = serverStatusData || {};
-
-
+  
   const {
     fieldName,
+    type,
+    initialValues = {},
+    handleResetValue,
   } = props;
 
+  const initialValue = initialValues[fieldName] || '';
+  
   const {
     apiPath = '',
-    defaultValue = '', // if empty
     configPath = '',
     maxLength = TEXT_MAXLENGTH,
-    placeholder = '',
+    // placeholder = '',
     label = '',
     tip = '',
   } = TEXTFIELD_DEFAULTS[fieldName] || {};
+
+  const resetStates = () => {
+    setSubmitStatus('');
+    setHasChanged(false);
+    clearTimeout(resetTimer);
+    resetTimer = null;
+  }
 
   const postUpdateToAPI = async (postValue: any) => {
     setSubmitStatus('validating');
@@ -63,51 +89,85 @@ export default function TextField(props: TextFieldProps) {
     if (result.success) {
       setConfigField({ fieldName, value: postValue, path: configPath });
       setSubmitStatus('success');
+      resetTimer = setTimeout(resetStates, 3000);
     } else {
       setSubmitStatus('warning');
       setSubmitStatusMessage(`There was an error: ${result.message}`);
     }
   };
 
-  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    const newValue = event.target.value;
-    if (newValue !== '') {
-      postUpdateToAPI(newValue);
-    }
-  }
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const newValue = event.target.value;
-    if (newValue !== '') {
-      console.log("blur post..", newValue)
-      postUpdateToAPI(newValue);
+  const handleChange = e => {
+    const val = e.target.value;
+    if (val === '' || val === initialValue) {
+      setHasChanged(false);
     } else {
-      // event.target.value = value;
+      resetStates();
+      setHasChanged(true);
+      setFieldValueForSubmit(val);
+    }
+  };
+
+  const handleBlur = e => {
+    const val = e.target.value;
+    if (val === '') {
+      handleResetValue(fieldName);
+      // todo: find a way to reset to initial value
+    }
+  };
+
+  // how to get current value of input
+  const handleSubmit = () => {
+    if (fieldValueForSubmit !== '' && fieldValueForSubmit !== initialValue) {
+      postUpdateToAPI(fieldValueForSubmit);
     }
   }
 
+  let Field = Input;
+  let fieldProps = {};
+  if (type === TEXTFIELD_TYPE_TEXTAREA) {
+    Field = Input.TextArea;
+    fieldProps = {
+      autoSize: true,
+    };
+  } else if (type === TEXTFIELD_TYPE_PASSWORD) {
+    Field = Input.Password;
+    fieldProps = {
+      visibilityToggle: true,
+    };
+  } else if (type === TEXTFIELD_TYPE_NUMBER) {
+    Field = InputNumber;
+  }
+
    return (
-    <div className="textfield">
-      <Form.Item
-        label={label}
-        name={fieldName}
-        hasFeedback
-        validateStatus={submitStatus}
-        help={submitStatusMessage}
-      >
-       <Input
-          className="field"
-          allowClear
-          placeholder={placeholder}
-          maxLength={maxLength}
-          onPressEnter={handleEnter}
-          // onBlur={handleBlur}
-        />
-      </Form.Item>
-      <div className="info">
-        <Tooltip title={tip}>
-          <InfoCircleOutlined />
-        </Tooltip>
+    <div className="textfield-container">
+      <div className="textfield">
+       <span className="info">
+          <Tooltip title={tip}>
+            <InfoCircleOutlined />
+          </Tooltip>
+        </span>
+        <Form.Item
+          label={label}
+          name={fieldName}
+          hasFeedback
+          validateStatus={submitStatus}
+          help={submitStatusMessage}
+        >
+        <Field
+            className="field"
+            allowClear
+            placeholder={initialValue}
+            maxLength={maxLength}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            {...fieldProps}
+          />
+        </Form.Item>
+   
       </div>
+
+      { hasChanged ? <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>Update</Button> : null }
+
     </div>
   ); 
 }
