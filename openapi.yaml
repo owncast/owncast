@@ -257,10 +257,10 @@ components:
           examples:
             success:
               summary: Operation succeeded.
-              value: {"success": true, "message": "inbound stream disconnected"}
+              value: {"success": true, "message": "context specific success message"}
             failure:
               summary: Operation failed.
-              value: {"success": false, "message": "no inbound stream connected"}
+              value: {"success": false, "message": "context specific failure message"}
 
 paths:
 
@@ -648,6 +648,65 @@ paths:
                         description: The maximum number of HLS video segments we will keep referenced in the playlist.
                   yp:
                     $ref: "#/components/schemas/YP"
+              
+  /api/admin/chat/messages:
+    get:
+      summary: Chat messages, unfiltered.
+      description: Get a list of all chat messages with no filters applied.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    author:
+                      type: string
+                      description: Username of the chat message poster.
+                    body:
+                      type: string
+                      description: Escaped HTML of the chat message content.
+                    id:
+                      type: string
+                      description: Unique ID of the chat message.
+                    visible:
+                      type: boolean
+                      description: "Should chat message be visibly rendered."
+                    timestamp:
+                      type: string
+                      format: date-time
+
+
+  /api/admin/chat/updatemessagevisibility:
+    post:
+      summary: Update the visibility of chat messages.
+      description: Pass an array of IDs you want to change the chat visibility of.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visible:
+                  type: boolean
+                  description: Are these messages visible in "Get the CPU, Memory and Disk utilization levels over the collected period."
+                idArray:
+                  type: array
+                  items:
+                    type: string
+                    description: IDs of the chat messages you wish to change the visibility of.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"
 
   /api/admin/viewersOverTime:
     get:

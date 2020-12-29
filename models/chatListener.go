@@ -4,5 +4,5 @@ package models
 type ChatListener interface {
 	ClientAdded(client Client)
 	ClientRemoved(clientID string)
-	MessageSent(message ChatMessage)
+	MessageSent(message ChatEvent)
 }

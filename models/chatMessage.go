@@ -12,26 +12,26 @@ import (
 	"mvdan.cc/xurls"
 )
 
-// ChatMessage represents a single chat message.
-type ChatMessage struct {
+// ChatEvent represents a single chat message.
+type ChatEvent struct {
 	ClientID string `json:"-"`
 
-	Author      string    `json:"author"`
-	Body        string    `json:"body"`
+	Author      string    `json:"author,omitempty"`
+	Body        string    `json:"body,omitempty"`
 	ID          string    `json:"id"`
 	MessageType string    `json:"type"`
 	Visible     bool      `json:"visible"`
-	Timestamp   time.Time `json:"timestamp"`
+	Timestamp   time.Time `json:"timestamp,omitempty"`
 }
 
 // Valid checks to ensure the message is valid.
-func (m ChatMessage) Valid() bool {
+func (m ChatEvent) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""
 }
 
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
-func (m *ChatMessage) RenderAndSanitizeMessageBody() {
+func (m *ChatEvent) RenderAndSanitizeMessageBody() {
 	raw := m.Body
 
 	// Set the new, sanitized and rendered message body

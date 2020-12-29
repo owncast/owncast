@@ -30,7 +30,7 @@ type Client struct {
 
 	socketID              string // How we identify a single websocket client.
 	ws                    *websocket.Conn
-	ch                    chan models.ChatMessage
+	ch                    chan models.ChatEvent
 	pingch                chan models.PingMessage
 	usernameChangeChannel chan models.NameChangeEvent
 
@@ -38,10 +38,11 @@ type Client struct {
 }
 
 const (
-	CHAT       = "CHAT"
-	NAMECHANGE = "NAME_CHANGE"
-	PING       = "PING"
-	PONG       = "PONG"
+	CHAT             = "CHAT"
+	NAMECHANGE       = "NAME_CHANGE"
+	PING             = "PING"
+	PONG             = "PONG"
+	VISIBILITYUPDATE = "VISIBILITY-UPDATE"
 )
 
 // NewClient creates a new chat client.
@@ -50,7 +51,7 @@ func NewClient(ws *websocket.Conn) *Client {
 		log.Panicln("ws cannot be nil")
 	}
 
-	ch := make(chan models.ChatMessage, channelBufSize)
+	ch := make(chan models.ChatEvent, channelBufSize)
 	doneCh := make(chan bool)
 	pingch := make(chan models.PingMessage)
 	usernameChangeChannel := make(chan models.NameChangeEvent)
@@ -68,7 +69,7 @@ func (c *Client) GetConnection() *websocket.Conn {
 	return c.ws
 }
 
-func (c *Client) Write(msg models.ChatMessage) {
+func (c *Client) Write(msg models.ChatEvent) {
 	select {
 	case c.ch <- msg:
 	default:
@@ -176,7 +177,7 @@ func (c *Client) userChangedName(data []byte) {
 }
 
 func (c *Client) chatMessageReceived(data []byte) {
-	var msg models.ChatMessage
+	var msg models.ChatEvent
 	err := json.Unmarshal(data, &msg)
 	if err != nil {
 		log.Errorln(err)

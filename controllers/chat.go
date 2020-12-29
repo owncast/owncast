@@ -17,14 +17,14 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		messages := core.GetAllChatMessages()
+		messages := core.GetAllChatMessages(true)
 
 		err := json.NewEncoder(w).Encode(messages)
 		if err != nil {
 			log.Errorln(err)
 		}
 	case http.MethodPost:
-		var message models.ChatMessage
+		var message models.ChatEvent
 		if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 			internalErrorHandler(w, err)
 			return

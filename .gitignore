@@ -25,7 +25,6 @@ webroot/static/content.md
 hls/
 dist/
 data/
-admin/
 transcoder.log
 chat.db
 .yp.key

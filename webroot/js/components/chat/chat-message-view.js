@@ -39,7 +39,7 @@ export default class ChatMessageView extends Component {
 
   render() {
     const { message } = this.props;
-    const { author, timestamp } = message;
+    const { author, timestamp, visible } = message;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
