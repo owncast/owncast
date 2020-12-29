@@ -607,6 +607,104 @@ paths:
                     type: string
                     example: changed
 
+  /api/admin/changetitle:
+    post:
+      summary: Update Stream Title.  Pre-release, do not use.
+      description: Change the stream title in memory, but not in the config file.
+      tags: ["Admin", "Pre-release"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: Title was changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: changed
+
+  /api/admin/changename:
+    post:
+      summary: Update Stream Name.  Pre-release, do not use.
+      description: Change the stream name in memory, but not in the config file.
+      tags: ["Admin", "Pre-release"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Name was changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: changed
+
+  /api/admin/changetags:
+    post:
+      summary: Update Stream Tags.  Pre-release, do not use.
+      description: Change the stream tags in memory, but not in the config file.
+      tags: ["Admin", "Pre-release"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Tags were changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: changed
+
   /api/admin/serverconfig:
     get:
       summary: Server Configuration
