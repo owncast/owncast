@@ -13,6 +13,7 @@ import {
   ToolOutlined,
   PlayCircleFilled,
   MinusSquareFilled,
+  QuestionCircleOutlined
 } from '@ant-design/icons';
 import classNames from 'classnames';
 import { upgradeVersionAvailable } from "../../utils/apis";
@@ -140,6 +141,13 @@ export default function MainLayout(props) {
               </Link>
             </Menu.Item>
           </SubMenu>
+          <Menu.Item
+            key="help"
+            icon={<QuestionCircleOutlined />}
+            title="Help"
+          >
+            <Link href="/help">Help</Link>
+          </Menu.Item>
         </Menu>
       </Sider>
 
