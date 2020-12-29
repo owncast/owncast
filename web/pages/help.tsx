@@ -1,28 +1,21 @@
-import { Button, Card, Col, Divider, Row } from 'antd'
+import { Button, Card, Col, Divider, Result, Row } from 'antd'
 import Meta from 'antd/lib/card/Meta'
 import Title from 'antd/lib/typography/Title'
 import {
     AlertOutlined,
-    AlertTwoTone,
     ApiTwoTone,
     BookOutlined,
     BugTwoTone,
     CameraTwoTone,
     DatabaseTwoTone,
-    DislikeTwoTone,
     EditTwoTone,
-    FireFilled,
-    FireOutlined,
     Html5TwoTone,
     LinkOutlined,
-    QuestionCircleFilled,
     QuestionCircleTwoTone,
     SettingTwoTone,
     SlidersTwoTone,
-    VideoCameraTwoTone
-} from '@ant-design/icons';
+} from '@ant-design/icons'
 import React from 'react'
-import Text from 'antd/lib/typography/Text';
 
 interface Props { }
 
@@ -125,12 +118,12 @@ export default function Help(props: Props) {
             <Title style={{textAlign: 'center'}}>How can we help you?</Title>
             <Row gutter={[16, 16]} justify="space-around" align="middle">
                 <Col span={12} style={{textAlign: 'center'}}>
-                    <AlertOutlined style={{ fontSize: '64px' }}/>
+                    <Result status="500" />
                     <Title level={2}>Troubleshooting</Title>
                     <Button href="https://owncast.online/docs/troubleshooting/" icon={<LinkOutlined/>} type="primary">Read Troubleshoting</Button>
                 </Col>
                 <Col span={12} style={{textAlign: 'center'}}>
-                    <BookOutlined style={{ fontSize: '64px' }}/>
+                    <Result status="404" />
                     <Title level={2}>Documentation</Title>
                     <Button href="https://owncast.online/docs/faq/" icon={<LinkOutlined/>} type="primary">Read the Docs</Button>
                 </Col>
