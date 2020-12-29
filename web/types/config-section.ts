@@ -1,9 +1,9 @@
 // TS types for elements on the Config pages
 
 export interface TextFieldProps {
-  onUpdate: ({ fieldName, value }: UpdateArgs) => void;
+  handleResetValue: ({ fieldName }) => void;
   fieldName: string;
-  initialValue: string;
+  initialValues: any;
   type: string;
 }
 

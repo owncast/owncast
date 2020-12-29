@@ -14,15 +14,6 @@ save to local state/context.
 read vals from there.
 update vals to state, andthru api.
 
-TODO
-- no on blur
-- no onEnter
-- if values chnage, then show "submit" button next to it
-  - on blur hide submit button. on submit success, hide button, blur out?
-  - esc key to reset + blur?
-
-- if field clears, repop with orig value, if no orig vlaue, pop with default
-
 
 */
 import React, { useState, useContext } from 'react';

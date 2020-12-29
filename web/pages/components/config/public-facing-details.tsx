@@ -45,7 +45,7 @@ export default function PublicFacingDetails() {
             <TextField fieldName="streamTitle" {...extraProps} />
           </Form>
         </div>
-        <div className="misc-optionals">
+        <div className="misc-fields">
           add social handles comp
           <br/>
           add tags comp
