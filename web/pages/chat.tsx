@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Table, Typography, Tooltip, Button } from "antd";
 import { CheckCircleFilled, ExclamationCircleFilled, StopOutlined } from "@ant-design/icons";
 import classNames from 'classnames';
-import { RowSelectionType } from "antd/es/table/interface";
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
 import { CHAT_HISTORY, fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
 import { MessageType } from '../types/chat';
+import { isEmptyObject } from "../utils/format";
 
 const { Title } = Typography;
 
@@ -47,7 +47,11 @@ export default function Chat() {
   const getInfo = async () => {
     try {
       const result = await fetchData(CHAT_HISTORY, { auth: true });
-      setMessages(result);
+      if (isEmptyObject(result)) {
+        setMessages([]);
+      } else {
+        setMessages(result);
+      }
     } catch (error) {
       console.log("==== error", error);
     }
@@ -62,9 +66,9 @@ export default function Chat() {
 
   const nameFilters = createUserNameFilters(messages);
   
-  const rowSelection: RowSelectionType = {
+  const rowSelection = {
     selectedRowKeys,
-    onChange: selectedKeys => {
+    onChange: (selectedKeys: string[]) => {
       setSelectedRows(selectedKeys);
     },
   };

@@ -15,8 +15,9 @@ export function formatIPAddress(ipAddress: string): string {
 
 // check if obj is {}
 export function isEmptyObject(obj) {
-  return !obj || Object.keys(obj).length === 0;
+  return !obj || (Object.keys(obj).length === 0 && obj.constructor === Object);
 }
+
 
 export function parseSecondsToDurationString(seconds = 0) {
   const finiteSeconds = Number.isFinite(+seconds) ? Math.abs(seconds) : 0;
