@@ -110,7 +110,7 @@ export default function Help(props: Props) {
                     release.
                 </div>
             )
-        }
+        }   
     ]
 
     return (
@@ -120,12 +120,12 @@ export default function Help(props: Props) {
                 <Col span={12} style={{textAlign: 'center'}}>
                     <Result status="500" />
                     <Title level={2}>Troubleshooting</Title>
-                    <Button href="https://owncast.online/docs/troubleshooting/" icon={<LinkOutlined/>} type="primary">Read Troubleshoting</Button>
+                    <Button target="_blank" rel="noopener noreferrer" href="https://owncast.online/docs/troubleshooting/" icon={<LinkOutlined/>} type="primary">Read Troubleshoting</Button>
                 </Col>
                 <Col span={12} style={{textAlign: 'center'}}>
                     <Result status="404" />
                     <Title level={2}>Documentation</Title>
-                    <Button href="https://owncast.online/" icon={<LinkOutlined/>} type="primary">Read the Docs</Button>
+                    <Button target="_blank" rel="noopener noreferrer" href="https://owncast.online/" icon={<LinkOutlined/>} type="primary">Read the Docs</Button>
                 </Col>
             </Row>
             <Divider />
