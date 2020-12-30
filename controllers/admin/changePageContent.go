@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/utils"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -26,7 +27,7 @@ func ChangeExtraPageContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Config.InstanceDetails.ExtraPageContent = request.Key
+	config.Config.InstanceDetails.ExtraPageContent = utils.RenderSimpleMarkdown(request.Key)
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
