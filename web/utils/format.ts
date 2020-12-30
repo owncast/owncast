@@ -15,7 +15,11 @@ export function formatIPAddress(ipAddress: string): string {
 
 // check if obj is {}
 export function isEmptyObject(obj) {
-  return !obj || Object.keys(obj).length === 0;
+  return !obj || (Object.keys(obj).length === 0 && obj.constructor === Object);
+}
+
+export function padLeft(text, pad, size) {
+  return String(pad.repeat(size) + text).slice(-size);
 }
 
 export function parseSecondsToDurationString(seconds = 0) {
@@ -34,8 +38,4 @@ export function parseSecondsToDurationString(seconds = 0) {
   const secsString = padLeft(`${secs}`, '0', 2);
 
   return daysString + hoursString + minString + secsString;
-}
-
-export function padLeft(text, pad, size) {
-  return String(pad.repeat(size) + text).slice(-size);
 }

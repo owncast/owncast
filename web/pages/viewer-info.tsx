@@ -86,6 +86,8 @@ export default function ViewersOverTime() {
       dataIndex: "connectedAt",
       key: "connectedAt",
       render: (time) => formatDistanceToNow(new Date(time)),
+      sorter: (a, b) => new Date(a.connectedAt).getTime() - new Date(b.connectedAt).getTime(),
+      sortDirections: ["descend", "ascend"] as SortOrder[],
     },
     {
       title: "User Agent",
