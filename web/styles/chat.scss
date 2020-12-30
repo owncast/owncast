@@ -1,0 +1,83 @@
+.chat-messages {
+  .ant-table-small .ant-table-selection-column {
+    width: 20px;
+    min-width: 20px;
+  }
+  .ant-table-tbody > tr > td {
+    transition: background 0.15s;
+  }
+  .ant-table-row.hidden {
+    .ant-table-cell {
+      color: #444450; 
+    }
+
+  }
+  .ant-table-cell {
+    font-size: 12px;
+
+    &.name-col {
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    &.toggle-col {
+      label {
+        font-size: 11px;
+      }
+    }
+
+    .message-contents {
+      overflow: auto;
+      max-height: 200px; 
+      img {
+        position: relative;
+        margin-top: -5px;
+        width: 3rem;
+        padding: 0.25rem;
+      }
+    }
+  }
+
+  .bulk-editor {
+    margin: .5rem 0;
+    padding: .5rem;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 4px;
+
+    &.active {
+      .label {
+        color: #ccc;
+      }
+    }
+
+    .label {
+      font-size: .75rem;
+      color: #666;
+      margin-right: .5rem;
+    }
+
+    button {
+      margin: 0 .2rem;
+      font-size: .75rem;
+    }
+
+  }
+}
+.ant-table-filter-dropdown {
+  max-width: 250px;
+}
+
+.toggle-switch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+
+  .outcome-icon {
+    margin-right: .5rem;
+  }
+}

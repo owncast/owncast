@@ -34,22 +34,47 @@ export const LOGS_ALL = `${API_LOCATION}logs`;
 // Get warnings + errors
 export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 
+// Get chat history
+export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
+
+// Get chat history
+export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/admin/chat/updatemessagevisibility`;
+
+
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
-export async function fetchData(url) {
-  let options: RequestInit = {};
+interface FetchOptions {
+  data?: any;
+  method?: string;
+  auth?: boolean;
+};
 
-  if (ADMIN_USERNAME && ADMIN_STREAMKEY) {
+export async function fetchData(url: string, options?: FetchOptions) {
+  const {
+    data,
+    method = 'GET',
+    auth = true,
+  } = options || {};
+
+  const requestOptions: RequestInit = {
+    method,
+  };
+
+  if (data) {
+    requestOptions.body = JSON.stringify(data)
+  }
+
+  if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-    options.headers = {
+    requestOptions.headers = {
       'Authorization': `Basic ${encoded}`
     }
-    options.mode = 'cors';
-    options.credentials = 'include'
+    requestOptions.mode = 'cors';
+    requestOptions.credentials = 'include';
   }
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, requestOptions);
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);

@@ -1,7 +1,7 @@
 import { LineChart } from 'react-chartkick'
-import styles from '../../styles/styles.module.scss';
 import 'chart.js';
-import format from 'date-fns/format'
+import format from 'date-fns/format';
+import styles from '../../styles/styles.module.scss';
 
 interface TimedValue {
   time: Date;
