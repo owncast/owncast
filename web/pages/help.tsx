@@ -71,7 +71,7 @@ export default function Help(props: Props) {
             title: "I want to offload my video to an external storage provider",
             content: (
                 <div>
-                    <a href="https://owncast.online/docs/encoding/"  target="_blank" rel="noopener noreferrer"><LinkOutlined/> Learn more</a>
+                    <a href="https://owncast.online/docs/s3/"  target="_blank" rel="noopener noreferrer"><LinkOutlined/> Learn more</a>
                 </div>
             )
         },
@@ -84,7 +84,7 @@ export default function Help(props: Props) {
             content: (
                 <div>
                     If you found a bug, then report it in our 
-                    <a href="https://owncast.online/docs/encoding/" target="_blank" rel="noopener noreferrer"> Github Issues</a>
+                    <a href="https://github.com/owncast/owncast/" target="_blank" rel="noopener noreferrer"> Github Issues</a>
                 </div>
             )
         },
@@ -94,7 +94,7 @@ export default function Help(props: Props) {
             content: (
                 <div>
                     Most general questions are answered in our 
-                    <a href="https://owncast.online/docs/encoding/" target="_blank" rel="noopener noreferrer"> FAQ</a>
+                    <a href="https://owncast.online/docs/faq/" target="_blank" rel="noopener noreferrer"> FAQ</a>
                 </div>
             )
         },
@@ -125,7 +125,7 @@ export default function Help(props: Props) {
                 <Col span={12} style={{textAlign: 'center'}}>
                     <Result status="404" />
                     <Title level={2}>Documentation</Title>
-                    <Button href="https://owncast.online/docs/faq/" icon={<LinkOutlined/>} type="primary">Read the Docs</Button>
+                    <Button href="https://owncast.online/" icon={<LinkOutlined/>} type="primary">Read the Docs</Button>
                 </Col>
             </Row>
             <Divider />
