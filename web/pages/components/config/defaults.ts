@@ -58,22 +58,42 @@ export const TEXTFIELD_DEFAULTS = {
     label: 'Stream Title',
     tip: 'A brief blurb about what your stream is about.',
   },
-  streamKey: {
-    apiPath: '/key',
-    defaultValue: DEFAULT_NAME,
-    maxLength: TEXT_MAXLENGTH,
-    placeholder: DEFAULT_NAME,
-    configPath: 'instanceDetails',
-    label: 'Stream Key',
-    tip: 'Secret stream key',
-  },
 
-  pageContent: {
+  extraPageContent: {
     apiPath: '/pagecontent',
     placeholder: '',
     configPath: 'instanceDetails',
     label: 'Stream Key',
     tip: 'Custom markup about yourself',
-  }
+  },
+
+
+  streamKey: {
+    apiPath: '/key',
+    defaultValue: DEFAULT_NAME,
+    maxLength: TEXT_MAXLENGTH,
+    placeholder: DEFAULT_NAME,
+    configPath: '',
+    label: 'Stream Key',
+    tip: 'Secret stream key',
+  },
+  ffmpegPath: {
+    // apiPath: '/key',
+    defaultValue: DEFAULT_NAME,
+    maxLength: TEXT_MAXLENGTH,
+    placeholder: DEFAULT_NAME,
+    configPath: '',
+    label: 'FFmpeg Path',
+    tip: 'Absolute file path of the FFMPEG application on your server',
+  },
+  webServerPort: {
+    apiPath: '/port',
+    defaultValue: '',
+    maxLength: 6,
+    placeholder: DEFAULT_NAME,
+    configPath: '',
+    label: 'Server port',
+    tip: 'What port are you serving Owncast from? Default is :8080',
+  },
 }
 

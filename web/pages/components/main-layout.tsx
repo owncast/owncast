@@ -138,14 +138,17 @@ export default function MainLayout(props) {
             title="Configuration"
             icon={<SettingOutlined />}
           >
-            <Menu.Item key="update-server-config">
-              <Link href="/update-server-config">Server</Link>
+            <Menu.Item key="config-public-details">
+              <Link href="/config-public-details">Public Details</Link>
             </Menu.Item>
-            <Menu.Item key="video-config">
-              <Link href="/video-config">Video</Link>
+            <Menu.Item key="config-server-details">
+              <Link href="/config-server-details">Server Details</Link>
             </Menu.Item>
-            <Menu.Item key="storage">
-              <Link href="/storage">Storage</Link>
+            <Menu.Item key="config-video">
+              <Link href="/config-video">Video Setup</Link>
+            </Menu.Item>
+            <Menu.Item key="config-storage">
+              <Link href="/config-storage">Storage</Link>
             </Menu.Item>
           </SubMenu>
 

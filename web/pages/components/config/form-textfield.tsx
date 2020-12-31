@@ -80,15 +80,15 @@ export default function TextField(props: TextFieldProps) {
     if (result.success) {
       setConfigField({ fieldName, value: postValue, path: configPath });
       setSubmitStatus('success');
-      resetTimer = setTimeout(resetStates, 3000);
     } else {
-      setSubmitStatus('warning');
+      setSubmitStatus('error');
       setSubmitStatusMessage(`There was an error: ${result.message}`);
     }
+    resetTimer = setTimeout(resetStates, 3000);
   };
 
   const handleChange = e => {
-    const val = e.target.value;
+    const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
     if (val === '' || val === initialValue) {
       setHasChanged(false);
     } else {
@@ -102,7 +102,6 @@ export default function TextField(props: TextFieldProps) {
     const val = e.target.value;
     if (val === '') {
       handleResetValue(fieldName);
-      // todo: find a way to reset to initial value
     }
   };
 
@@ -140,7 +139,7 @@ export default function TextField(props: TextFieldProps) {
         <Form.Item
           label={label}
           name={fieldName}
-          hasFeedback
+          // hasFeedback
           validateStatus={submitStatus}
           help={submitStatusMessage}
         >

@@ -47,6 +47,12 @@
   .info {
     margin-right: .75rem;
   }
+  .ant-form-item {
+    margin-bottom: 16px;
+    &.ant-form-item-with-help {
+      margin-bottom: 16px;
+    }
+  }
   .ant-form-item-label label {
     font-weight: bold;
     color: var(--owncast-purple);
@@ -58,5 +64,18 @@
 .submit-button {
   position: absolute;
   right: 0;
-  bottom: 1em;
+  bottom: .5em;
+}
+.tag {
+  background-color: white;
+  border-color: gray;
+  .tag-delete {
+    padding: 0 0 0 .3rem;
+    margin-top: -4px;
+  }
+}
+.tag-current-tags {
+  .tag {
+    margin: .25rem ;
+  }
 }

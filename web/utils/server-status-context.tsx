@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { any } from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { UpdateArgs } from '../types/config-section';
 
 export const initialServerConfigState = {
   streamKey: '',
-  instanceDetails: {},
+  instanceDetails: {
+    tags: [],
+  },
   yp: {
     enabled: false,
   },
@@ -39,7 +41,7 @@ export const ServerStatusContext = React.createContext({
   ...initialServerStatusState,
   serverConfig: initialServerConfigState,
 
-  setConfigField: () => {},
+  setConfigField: any,
 });
 
 const ServerStatusProvider = ({ children }) => {

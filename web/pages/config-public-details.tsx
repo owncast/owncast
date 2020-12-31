@@ -1,9 +1,11 @@
 import React, { useContext, useEffect } from 'react';
 import { Typography, Form } from 'antd';
 
-import TextField, { TEXTFIELD_TYPE_TEXTAREA } from './form-textfield';
+import TextField, { TEXTFIELD_TYPE_TEXTAREA } from './components/config/form-textfield';
 
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import EditInstanceTags from './components/config/tags';
+
+import { ServerStatusContext } from '../utils/server-status-context';
 
 const { Title } = Typography;
 
@@ -14,6 +16,7 @@ export default function PublicFacingDetails() {
   const { serverConfig } = serverStatusData || {};
 
   const { instanceDetails = {} } = serverConfig;
+  console.log(serverConfig)
   
   useEffect(() => {
     form.setFieldsValue({...instanceDetails});
@@ -46,13 +49,16 @@ export default function PublicFacingDetails() {
           </Form>
         </div>
         <div className="misc-fields">
-          add social handles comp
+          {/* add social handles comp
           <br/>
-          add tags comp
+          add tags comp */}
+          <EditInstanceTags />
+          
           
         </div>
       </div>      
     </>
   ); 
 }
+
 
