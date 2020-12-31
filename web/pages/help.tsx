@@ -117,12 +117,12 @@ export default function Help(props: Props) {
         <div>
             <Title style={{textAlign: 'center'}}>How can we help you?</Title>
             <Row gutter={[16, 16]} justify="space-around" align="middle">
-                <Col span={12} style={{textAlign: 'center'}}>
+                <Col xs={24} lg={12} style={{textAlign: 'center'}}>
                     <Result status="500" />
                     <Title level={2}>Troubleshooting</Title>
                     <Button target="_blank" rel="noopener noreferrer" href="https://owncast.online/docs/troubleshooting/" icon={<LinkOutlined/>} type="primary">Read Troubleshoting</Button>
                 </Col>
-                <Col span={12} style={{textAlign: 'center'}}>
+                <Col xs={24} lg={12} style={{textAlign: 'center'}}>
                     <Result status="404" />
                     <Title level={2}>Documentation</Title>
                     <Button target="_blank" rel="noopener noreferrer" href="https://owncast.online/" icon={<LinkOutlined/>} type="primary">Read the Docs</Button>
@@ -133,7 +133,7 @@ export default function Help(props: Props) {
             <Row gutter={[16, 16]}>
                 {
                     questions.map(question => (
-                        <Col span={12}>
+                        <Col xs={24} lg={12}>
                             <Card key={question.title}>
                                 <Meta
                                     avatar={question.icon}
@@ -150,7 +150,7 @@ export default function Help(props: Props) {
             <Row gutter={[16, 16]}>
                 {
                     otherResources.map(question => (
-                        <Col span={12}>
+                        <Col xs={24} lg={12}>
                             <Card key={question.title}>
                                 <Meta
                                     avatar={question.icon}
