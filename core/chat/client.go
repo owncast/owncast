@@ -69,12 +69,7 @@ func NewClient(ws *websocket.Conn) *Client {
 	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh, rateLimiter}
 }
 
-// GetConnection gets the connection for the client.
-func (c *Client) GetConnection() *websocket.Conn {
-	return c.ws
-}
-
-func (c *Client) Write(msg models.ChatEvent) {
+func (c *Client) write(msg models.ChatEvent) {
 	select {
 	case c.ch <- msg:
 	default:
@@ -83,13 +78,8 @@ func (c *Client) Write(msg models.ChatEvent) {
 	}
 }
 
-// Done marks the client as done.
-func (c *Client) Done() {
-	c.doneCh <- true
-}
-
 // Listen Write and Read request via channel.
-func (c *Client) Listen() {
+func (c *Client) listen() {
 	go c.listenWrite()
 	c.listenRead()
 }
