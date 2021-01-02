@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
 
-import { CHAT_HISTORY, fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
+import { CHAT_HISTORY, fetchData, FETCH_INTERVAL, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
 import { MessageType } from '../types/chat';
 import { isEmptyObject } from "../utils/format";
 
@@ -43,6 +43,7 @@ export default function Chat() {
   const [bulkOutcome, setBulkOutcome] = useState(null);
   const [bulkAction, setBulkAction] = useState('');
   let outcomeTimeout = null;
+  let chatReloadInterval = null;
 
   const getInfo = async () => {
     try {
@@ -59,8 +60,14 @@ export default function Chat() {
 
   useEffect(() => {
     getInfo();
+
+    chatReloadInterval = setInterval(() => {
+      getInfo();
+    }, FETCH_INTERVAL);
+
     return () => {
       clearTimeout(outcomeTimeout);
+      clearTimeout(chatReloadInterval);
     };
   }, []);
 
