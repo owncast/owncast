@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -34,7 +35,7 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 	httpServer := http.NewServeMux()
 	httpServer.HandleFunc("/", s.uploadHandler)
 
-	localListenerAddress := "127.0.0.1:" + strconv.Itoa(config.Config.GetPublicWebServerPort()+1)
+	localListenerAddress := "127.0.0.1:" + strconv.Itoa(data.GetHTTPPortNumber()+1)
 
 	go func() {
 		if err := http.ListenAndServe(localListenerAddress, httpServer); err != nil {

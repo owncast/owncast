@@ -16,40 +16,33 @@ var Config *config
 var _default config
 
 type config struct {
-	DatabaseFilePath     string          `yaml:"databaseFile"`
-	EnableDebugFeatures  bool            `yaml:"-"`
-	FFMpegPath           string          `yaml:"ffmpegPath"`
-	Files                files           `yaml:"files"`
-	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
-	S3                   S3              `yaml:"s3"`
-	VersionInfo          string          `yaml:"-"` // For storing the version/build number
-	VersionNumber        string          `yaml:"-"`
-	VideoSettings        videoSettings   `yaml:"videoSettings"`
-	WebServerPort        int             `yaml:"webServerPort"`
-	RTMPServerPort       int             `yaml:"rtmpServerPort"`
-	DisableUpgradeChecks bool            `yaml:"disableUpgradeChecks"`
-	YP                   YP              `yaml:"yp"`
+	DatabaseFilePath    string `yaml:"databaseFile"`
+	EnableDebugFeatures bool   `yaml:"-"`
+	FFMpegPath          string
+	Files               files           `yaml:"files"`
+	InstanceDetails     InstanceDetails `yaml:"instanceDetails"`
+	S3                  S3              `yaml:"s3"`
+	VersionInfo         string          `yaml:"-"` // For storing the version/build number
+	VersionNumber       string          `yaml:"-"`
+	VideoSettings       videoSettings   `yaml:"videoSettings"`
+	WebServerPort       int
+	RTMPServerPort      int
+	YP                  YP `yaml:"yp"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name    string `yaml:"name" json:"name"`
-	Title   string `yaml:"title" json:"title"`
-	Summary string `yaml:"summary" json:"summary"`
-	// Logo             logo           `yaml:"logo" json:"logo"`
-	Logo             string         `yaml:"logo" json:"logo"`
-	Tags             []string       `yaml:"tags" json:"tags"`
-	SocialHandles    []SocialHandle `yaml:"socialHandles" json:"socialHandles"`
+	Name             string         `json:"name"`
+	Title            string         `json:"title"`
+	Summary          string         `json:"summary"`
+	Logo             string         `json:"logo"`
+	Tags             []string       `json:"tags"`
+	SocialHandles    []SocialHandle `json:"socialHandles"`
 	Version          string         `json:"version"`
-	NSFW             bool           `yaml:"nsfw" json:"nsfw"`
+	NSFW             bool           `json:"nsfw"`
 	ExtraPageContent string         `json:"extraPageContent"`
 	StreamTitle      string         `json:"streamTitle"` // What's going on with the current stream
 }
-
-// type logo struct {
-// 	Large string `yaml:"large" json:"large"`
-// 	Small string `yaml:"small" json:"small"`
-// }
 
 type SocialHandle struct {
 	Platform string `yaml:"platform" json:"platform"`
@@ -66,9 +59,9 @@ type videoSettings struct {
 
 // YP allows registration to the central Owncast YP (Yellow pages) service operating as a directory.
 type YP struct {
-	Enabled      bool   `yaml:"enabled" json:"enabled"`
-	InstanceURL  string `yaml:"instanceURL" json:"instanceUrl"` // The public URL the directory should link to
-	YPServiceURL string `yaml:"ypServiceURL" json:"-"`          // The base URL to the YP API to register with (optional)
+	Enabled      bool   `json:"enabled"`
+	InstanceURL  string `json:"instanceUrl"` // The public URL the directory should link to
+	YPServiceURL string `json:"-"`           // The base URL to the YP API to register with (optional)
 }
 
 // StreamQuality defines the specifics of a single HLS stream variant.
@@ -125,13 +118,6 @@ func (c *config) load(filePath string) error {
 
 	c.VideoSettings.HighestQualityStreamIndex = findHighestQuality(c.VideoSettings.StreamQualities)
 
-	// Add custom page content to the instance details.
-	customContentMarkdownData, err := ioutil.ReadFile(ExtraInfoFile)
-	if err == nil {
-		customContentMarkdownString := string(customContentMarkdownData)
-		c.InstanceDetails.ExtraPageContent = utils.RenderSimpleMarkdown(customContentMarkdownString)
-	}
-
 	return nil
 }
 
@@ -154,10 +140,6 @@ func (c *config) verifySettings() error {
 		}
 	}
 
-	if c.YP.Enabled && c.YP.InstanceURL == "" {
-		return errors.New("YP is enabled but instance url is not set")
-	}
-
 	return nil
 }
 
@@ -167,22 +149,6 @@ func (c *config) GetVideoSegmentSecondsLength() int {
 	}
 
 	return _default.GetVideoSegmentSecondsLength()
-}
-
-func (c *config) GetPublicWebServerPort() int {
-	if c.WebServerPort != 0 {
-		return c.WebServerPort
-	}
-
-	return _default.WebServerPort
-}
-
-func (c *config) GetRTMPServerPort() int {
-	if c.RTMPServerPort != 0 {
-		return c.RTMPServerPort
-	}
-
-	return _default.RTMPServerPort
 }
 
 func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
@@ -243,6 +209,10 @@ func (c *config) GetVideoStreamQualities() []StreamQuality {
 	if len(c.VideoSettings.StreamQualities) > 0 {
 		return c.VideoSettings.StreamQualities
 	}
+	// type logo struct {
+	// 	Large string `yaml:"large" json:"large"`
+	// 	Small string `yaml:"small" json:"small"`
+	// }
 
 	return _default.VideoSettings.StreamQualities
 }
