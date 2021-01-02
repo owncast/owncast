@@ -21,6 +21,7 @@ require (
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/yuin/goldmark v1.3.1
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	mvdan.cc/xurls v1.1.0
