@@ -91,7 +91,7 @@ export default function (props) {
   const list = handles.map((item, index) => html`
     <li key="social${index}">
       <${SocialIcon} platform=${item.platform} icon=${item.icon}
-                     url=${item.url} color=${item.color}/>
+                     url=${item.url}/>
     </li>
   `);
 
