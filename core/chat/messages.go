@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"github.com/owncast/owncast/core/webhooks"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,6 +23,8 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 		}
 		message.MessageType = VISIBILITYUPDATE
 		_server.sendAll(message)
+
+		go webhooks.SendChatEvent(message)
 	}
 
 	return nil
