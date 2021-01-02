@@ -107,6 +107,24 @@ func Start() error {
 	// Server tags
 	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.ChangeTags))
 
+	// ffmpeg
+	http.HandleFunc("/api/admin/config/ffmpegpath", middleware.RequireAdminAuth(admin.ChangeFfmpegPath))
+
+	// Server http port
+	http.HandleFunc("/api/admin/config/webserverport", middleware.RequireAdminAuth(admin.ChangeWebServerPort))
+
+	// Server rtmp port
+	http.HandleFunc("/api/admin/config/rtmpserverport", middleware.RequireAdminAuth(admin.ChangeRTMPServerPort))
+
+	// Is server marked as NSFW
+	http.HandleFunc("/api/admin/config/nsfw", middleware.RequireAdminAuth(admin.ChangeNSFW))
+
+	// directory enabled
+	http.HandleFunc("/api/admin/config/directoryenabled", middleware.RequireAdminAuth(admin.ChangeDirectoryEnabled))
+
+	// server url
+	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Tracef("Web server running on port: %d", port)
