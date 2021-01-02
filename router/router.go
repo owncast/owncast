@@ -140,6 +140,9 @@ func Start() error {
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.ChangeLogoPath))
 
+	// Server tags
+	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.ChangeTags))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Tracef("Web server running on port: %d", port)

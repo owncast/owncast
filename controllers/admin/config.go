@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"net/http"
+	"reflect"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
@@ -10,6 +11,29 @@ import (
 
 type ConfigValue struct {
 	Value interface{} `json:"value"`
+}
+
+func ChangeTags(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValues, success := getValuesFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	var tagStrings []string
+	for _, tag := range configValues {
+		tagStrings = append(tagStrings, tag.Value.(string))
+	}
+
+	if err := data.SetServerMetadataTags(tagStrings); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
 func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
@@ -156,4 +180,23 @@ func getValueFromRequest(w http.ResponseWriter, r *http.Request) (ConfigValue, b
 	}
 
 	return configValue, true
+}
+
+func getValuesFromRequest(w http.ResponseWriter, r *http.Request) ([]ConfigValue, bool) {
+	var values []ConfigValue
+
+	decoder := json.NewDecoder(r.Body)
+	var configValue ConfigValue
+	if err := decoder.Decode(&configValue); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to parse array of values")
+		return values, false
+	}
+
+	object := reflect.ValueOf(configValue.Value)
+
+	for i := 0; i < object.Len(); i++ {
+		values = append(values, ConfigValue{Value: object.Index(i).Interface()})
+	}
+
+	return values, true
 }
