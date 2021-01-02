@@ -10,6 +10,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/models"
@@ -65,8 +66,8 @@ func Start() error {
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)
 
-	port := config.Config.GetPublicWebServerPort()
-	rtmpPort := config.Config.GetRTMPServerPort()
+	port := data.GetHTTPPortNumber()
+	rtmpPort := data.GetRTMPPortNumber()
 	log.Infof("Web server is listening on port %d, RTMP is accepting inbound streams on port %d.", port, rtmpPort)
 	log.Infoln("The web admin interface is available at /admin.")
 

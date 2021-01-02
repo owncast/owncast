@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -22,7 +22,7 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
 		VersionNumber:          status.VersionNumber,
-		DisableUpgradeChecks:   config.Config.DisableUpgradeChecks,
+		DisableUpgradeChecks:   data.GetDisableUpgradeChecks(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -10,6 +10,7 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -105,7 +106,7 @@ func (t *Transcoder) Start() {
 func (t *Transcoder) getString() string {
 	var port int
 	if config.Config != nil {
-		port = config.Config.GetPublicWebServerPort() + 1
+		port = data.GetHTTPPortNumber() + 1
 	} else if t.internalListenerPort != 0 {
 		port = t.internalListenerPort
 	} else {

@@ -6,10 +6,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
 )
@@ -125,7 +125,10 @@ func Start() error {
 	// server url
 	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
 
-	port := config.Config.GetPublicWebServerPort()
+	// disable server upgrade checks
+	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.ChangeDisableUpgradeChecks))
+
+	port := data.GetHTTPPortNumber()
 
 	log.Tracef("Web server running on port: %d", port)
 

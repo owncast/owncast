@@ -16,6 +16,7 @@ import (
 
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -35,7 +36,7 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
-	port := config.Config.GetRTMPServerPort()
+	port := data.GetRTMPPortNumber()
 	s := rtmp.NewServer()
 	var lis net.Listener
 	var err error
