@@ -22,7 +22,7 @@ import { FormItemProps } from 'antd/es/form';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH } from './defaults';
+import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH, RESET_TIMEOUT } from './constants';
 
 import { TextFieldProps } from '../../../types/config-section';
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
@@ -84,7 +84,7 @@ export default function TextField(props: TextFieldProps) {
       setSubmitStatus('error');
       setSubmitStatusMessage(`There was an error: ${result.message}`);
     }
-    resetTimer = setTimeout(resetStates, 3000);
+    resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
   const handleChange = e => {
@@ -139,7 +139,7 @@ export default function TextField(props: TextFieldProps) {
         <Form.Item
           label={label}
           name={fieldName}
-          // hasFeedback
+          hasFeedback
           validateStatus={submitStatus}
           help={submitStatusMessage}
         >

@@ -1,4 +1,6 @@
 // DEFAULT VALUES
+import React from 'react';
+import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 
 export const DEFAULT_NAME = 'Owncast User';
 export const DEFAULT_TITLE = 'Owncast Server';
@@ -6,8 +8,22 @@ export const DEFAULT_SUMMARY = '';
 
 export const TEXT_MAXLENGTH = 255;
 
+export const RESET_TIMEOUT = 3000;
+
+export const SUCCESS_STATES = {
+  success: {
+    icon: <CheckCircleFilled style={{ color: 'green' }} />,
+    message: 'Success!',
+  },
+  error: {
+    icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
+    message: 'An error occurred.',
+  },
+};
+
 
 // Creating this so that it'll be easier to change values in one place, rather than looking for places to change it in a sea of JSX.
+
 // key is the input's `fieldName`
 
 export const TEXTFIELD_DEFAULTS = {
@@ -95,5 +111,16 @@ export const TEXTFIELD_DEFAULTS = {
     label: 'Server port',
     tip: 'What port are you serving Owncast from? Default is :8080',
   },
+
+  // 
+  tags: {
+    apiPath: '/tags',
+    defaultValue: '',
+    maxLength: 24,
+    placeholder: 'Add a new tag',
+    configPath: 'instanceDetails',
+    label: '',
+    tip: '',
+  }
 }
 

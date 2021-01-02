@@ -66,16 +66,51 @@
   right: 0;
   bottom: .5em;
 }
-.tag {
-  background-color: white;
-  border-color: gray;
-  .tag-delete {
-    padding: 0 0 0 .3rem;
-    margin-top: -4px;
-  }
-}
+
+
 .tag-current-tags {
-  .tag {
-    margin: .25rem ;
+  .ant-tag {
+    margin: .1rem;
+    font-size: .85rem;
+    border-radius: 10em;
+    padding: .25em 1em;
+    background-color: rgba(255,255,255,.5);
+
+    .ant-tag-close-icon {
+      transform: translateY(-1px);
+      margin-left: .3rem;
+      padding: 2px;
+      border-radius: 5rem;
+      border: 1px solid #eee;
+      &:hover {
+        border-color: #e03;
+        svg {
+          fill: black;
+          transition: fill .3s;
+        }
+      }
+    }
   }
 }
+.add-new-tag-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+
+  .new-tag-input {
+    width: 16em;
+  }
+}
+.add-new-status {
+  margin: 1em 0;
+  min-height: 1.25em;
+  font-size: .75rem;
+  &.success {
+    color: var(--ant-success);
+  }
+  &.error {
+    color: var(--ant-error);
+  }
+}
+
