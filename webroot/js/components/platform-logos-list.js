@@ -6,17 +6,15 @@ import {classNames} from '../utils/helpers.js';
 const html = htm.bind(h);
 
 function SocialIcon(props) {
-  const {platform, icon, url, color} = props;
+  const {platform, icon, url} = props;
   const platformInfo = SOCIAL_PLATFORMS[platform.toLowerCase()];
   const inList = !!platformInfo;
   const iconSupplied = !!icon
   const name = inList ? platformInfo.name : platform;
-  const colorSupplied = !!color
 
   const finalIcon = iconSupplied ? icon : (inList ? platformInfo.icon : '/img/socialhandles/default.svg')
-  const finalColor = colorSupplied ? color : (inList ? platformInfo?.color ? platformInfo.color : '#000000' : '#000000');
 
-  const style = `-webkit-mask-image: ${finalIcon}; mask-image: url(${finalIcon}); background-color: ${finalColor};`
+  const style = `background-image: url(${finalIcon});`
 
   const itemClass = classNames({
     "user-social-item": true,
