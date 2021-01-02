@@ -25,6 +25,8 @@ const SOCIAL_HANDLES_KEY = "social_handles"
 const PEAK_VIEWERS_SESSION_KEY = "peak_viewers_session"
 const PEAK_VIEWERS_OVERALL_KEY = "peak_viewers_overall"
 const LAST_DISCONNECT_TIME_KEY = "last_disconnect_time"
+const FFMPEG_PATH_KEY = "ffmpeg_path"
+const NSFW_KEY = "nsfw"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -284,4 +286,12 @@ func GetLastDisconnectTime() (time.Time, error) {
 func SetLastDisconnectTime(disconnectTime time.Time) error {
 	var configEntry = ConfigEntry{Key: LAST_DISCONNECT_TIME_KEY, Value: disconnectTime}
 	return _datastore.Save(configEntry)
+}
+
+func SetNSFW(isNSFW bool) error {
+	return _datastore.SetBool(NSFW_KEY, isNSFW)
+}
+
+func SetFfmpegPath(path string) error {
+	return _datastore.SetString(FFMPEG_PATH_KEY, path)
 }
