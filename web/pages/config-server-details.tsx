@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { Typography, Form } from 'antd';
 
-import TextField, { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_TEXTAREA } from './components/config/form-textfield';
+import TextField, { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './components/config/form-textfield';
 
 import { ServerStatusContext } from '../utils/server-status-context';
 import { TEXTFIELD_DEFAULTS } from './components/config/constants';

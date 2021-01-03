@@ -1,21 +1,4 @@
-/*
-- auto saves ,ajax call (submit when blur or onEnter)
-- set default text
-- show error state/confirm states
-- show info
-- label
-- min/max length
 
-- populate with curren val (from local sstate)
-
-load page, 
-get all config vals, 
-save to local state/context.
-read vals from there.
-update vals to state, andthru api.
-
-
-*/
 import React, { useState, useContext } from 'react';
 import { Button, Form, Input, InputNumber } from 'antd';
 import { FormItemProps } from 'antd/es/form';
@@ -51,6 +34,8 @@ export default function TextField(props: TextFieldProps) {
     handleResetValue,
     initialValues = {},
     onSubmit,
+    onBlur,
+    onChange,
     type,
   } = props;
 
@@ -92,6 +77,10 @@ export default function TextField(props: TextFieldProps) {
       setHasChanged(true);
       setFieldValueForSubmit(val);
     }
+    // if an extra onChange handler was sent in as a prop, let's run that too.
+    if (onChange) {
+      onChange();
+    }
   };
 
   // if you blur a required field with an empty value, restore its original value
@@ -100,12 +89,16 @@ export default function TextField(props: TextFieldProps) {
     if (required && val === '') {
       handleResetValue(fieldName);
     }
+
+    // if an extra onBlur handler was sent in as a prop, let's run that too.
+    if (onBlur) {
+      onBlur();
+    }
   };
 
   // how to get current value of input
   const handleSubmit = async () => {
     if ((required && fieldValueForSubmit !== '') || fieldValueForSubmit !== initialValue) {
-      // postUpdateToAPI(fieldValueForSubmit);
       setSubmitStatus('validating');
 
       await postConfigUpdateToAPI({

@@ -1,7 +1,7 @@
 // TS types for elements on the Config pages
 
 export interface TextFieldProps {
-  handleResetValue?: (fieldName) => void;
+  handleResetValue?: (fieldName: string) => void;
   fieldName: string;
   initialValues?: any;
   type?: string;
@@ -27,8 +27,8 @@ export interface UpdateArgs {
 export interface ApiPostArgs {
   apiPath: string,
   data: object,
-  onSuccess?: (arg: any) => {},
-  onError?: (arg: any) => {},
+  onSuccess?: (arg: any) => void,
+  onError?: (arg: any) => void,
 }
 
 export interface ConfigDirectoryFields {
