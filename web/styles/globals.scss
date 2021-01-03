@@ -25,9 +25,22 @@ pre {
   margin: .5rem 0;
   background-color: #eee;
 }
+code {
+  color: var(--owncast-purple);
+}
 
 .owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: $owncast-purple;
+}
+
+
+
+@media (prefers-color-scheme: dark) {
+  @import "~antd/dist/antd.dark";
+  pre {
+    background-color: rgb(44, 44, 44);
+    color:lightgrey;
+  }
 }
 
 
@@ -35,6 +48,17 @@ pre {
 // GENERAL ANT FORM OVERRIDES
 .ant-card {
   border-radius: .5em;
+}
+.ant-input-affix-wrapper {
+  border-radius: 5px;
+  background-color: rgba(0,0,0,.1);
+  @media (prefers-color-scheme: dark) {
+    border-radius: 5px;
+    background-color: rgba(255,255,255,.1);
+  }
+  textarea {
+    border-radius: 5px;
+  }
 }
 .ant-btn-primary:hover, .ant-btn-primary:focus {
   background-color: white;
@@ -50,13 +74,4 @@ pre {
 .ant-btn {
   transition-delay: 0s;
   transition-duration: 0.15s;
-}
-
-
-@media (prefers-color-scheme: dark) {
-  @import "~antd/dist/antd.dark";
-  pre {
-    background-color: rgb(44, 44, 44);
-    color:lightgrey;
-  }
 }

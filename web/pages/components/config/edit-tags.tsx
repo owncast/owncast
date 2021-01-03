@@ -12,7 +12,7 @@ export default function EditInstanceTags() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [submitStatusMessage, setSubmitStatusMessage] = useState('');
   const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig, setConfigField } = serverStatusData || {};
+  const { serverConfig, setFieldInConfigState } = serverStatusData || {};
 
   const { instanceDetails } = serverConfig;
   const { tags = [] } = instanceDetails;
@@ -47,7 +47,7 @@ export default function EditInstanceTags() {
       apiPath,
       data: { value: postValue },
       onSuccess: () => {
-        setConfigField({ fieldName: 'tags', value: postValue, path: configPath });
+        setFieldInConfigState({ fieldName: 'tags', value: postValue, path: configPath });
         setSubmitStatus('success');
         setSubmitStatusMessage('Tags updated.');
         setNewTagInput('');

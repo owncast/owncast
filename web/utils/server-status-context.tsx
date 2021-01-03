@@ -53,7 +53,7 @@ export const ServerStatusContext = React.createContext({
   ...initialServerStatusState,
   serverConfig: initialServerConfigState,
 
-  setConfigField: any,
+  setFieldInConfigState: any,
 });
 
 const ServerStatusProvider = ({ children }) => {
@@ -78,7 +78,7 @@ const ServerStatusProvider = ({ children }) => {
     }
   };
 
-  const setConfigField = ({ fieldName, value, path }: UpdateArgs) => {
+  const setFieldInConfigState = ({ fieldName, value, path }: UpdateArgs) => {
     const updatedConfig = path ? 
     {
       ...config,
@@ -114,7 +114,7 @@ const ServerStatusProvider = ({ children }) => {
       ...status,
       serverConfig: config,
 
-      setConfigField,
+      setFieldInConfigState,
   };
   return (
     <ServerStatusContext.Provider value={providerValue}>

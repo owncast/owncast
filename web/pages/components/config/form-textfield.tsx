@@ -17,15 +17,14 @@ update vals to state, andthru api.
 
 */
 import React, { useState, useContext } from 'react';
-import { Button, Form, Input, InputNumber, Tooltip } from 'antd';
+import { Button, Form, Input, InputNumber } from 'antd';
 import { FormItemProps } from 'antd/es/form';
-
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { TextFieldProps } from '../../../types/config-section';
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import InfoTip from '../info-tip';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -42,7 +41,7 @@ export default function TextField(props: TextFieldProps) {
   let resetTimer = null;
 
   const serverStatusData = useContext(ServerStatusContext);
-  const { setConfigField } = serverStatusData || {};
+  const { setFieldInConfigState } = serverStatusData || {};
   
   const {
     configPath = '',
@@ -107,7 +106,7 @@ export default function TextField(props: TextFieldProps) {
         apiPath,
         data: { value: fieldValueForSubmit },
         onSuccess: () => {
-          setConfigField({ fieldName, value: fieldValueForSubmit, path: configPath });
+          setFieldInConfigState({ fieldName, value: fieldValueForSubmit, path: configPath });
           setSubmitStatus('success');
         },
         onError: (message: string) => {
@@ -144,11 +143,7 @@ export default function TextField(props: TextFieldProps) {
    return (
     <div className="textfield-container">
       <div className="textfield">
-       <span className="info">
-          <Tooltip title={tip}>
-            <InfoCircleOutlined />
-          </Tooltip>
-        </span>
+       <InfoTip tip={tip} />
         <Form.Item
           label={label}
           name={fieldName}

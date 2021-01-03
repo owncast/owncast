@@ -7,17 +7,22 @@
   .text-fields {
     margin-right: 2rem;
   }
-
   .misc-fields {
-    // border: 1px solid var(--owncast-purple);
-    padding: 2em;
+    width: 25em;
+  }
+  .tag-editor-container,
+  .config-directory-details-form {
+    border-radius: 1em;
+    background-color: rgba(128,0,255,.15);
+    padding: 1.5em;
+    margin-bottom: 1em;
   }
 }
 
 
 .status-message {
   margin: 1rem 0;
-  min-height: 1.25em;
+  min-height: 1.4em;
   font-size: .75rem;
   &.success {
     color: var(--ant-success);
@@ -46,7 +51,7 @@
     width: 18rem;
 
   }
-  .info {
+  .info-tip {
     margin-right: .75rem;
   }
   .ant-form-item {
@@ -86,7 +91,12 @@
     font-weight: bold;
     color: var(--owncast-purple);
   }
-  .info { margin-left: .5rem }
+  .info-tip {
+    margin-left: .5rem;
+    svg {
+      fill: white;
+    }
+  }
   .ant-form-item {
     margin: 0 .75rem 0 0;
   }

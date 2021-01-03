@@ -42,7 +42,7 @@ export default function EditYPDetails() {
       
       <p>Would you like to appear in the <a href="https://directory.owncast.online" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>?</p>
 
-      <p><em>NOTE: You will need to have a URL specified in the <code>Instance URL</code> field to be able to use this.</em></p>
+      <p style={{ backgroundColor: 'black', fontSize: '.75rem', padding: '5px' }}><em>NOTE: You will need to have a URL specified in the <code>Instance URL</code> field to be able to use this.</em></p>
 
       <div className="config-yp-container">
         <Form

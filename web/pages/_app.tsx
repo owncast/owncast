@@ -2,7 +2,6 @@ import 'antd/dist/antd.css';
 import '../styles/colors.scss';
 import '../styles/globals.scss';
 
-// GW: I can't override ant design styles through components using NextJS's built-in CSS modules. So I'll just import styles here for now and figure out enabling SASS modules later.
 import '../styles/home.scss';
 import '../styles/chat.scss';
 import '../styles/config.scss';

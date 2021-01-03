@@ -1,13 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { Form, Switch, Tooltip } from 'antd';
+import { Form, Switch } from 'antd';
 import { FormItemProps } from 'antd/es/form';
-
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { TEXTFIELD_DEFAULTS, RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
 
 import { ToggleSwitchProps } from '../../../types/config-section';
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import InfoTip from '../info-tip';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -22,7 +21,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
   let resetTimer = null;
 
   const serverStatusData = useContext(ServerStatusContext);
-  const { setConfigField } = serverStatusData || {};
+  const { setFieldInConfigState } = serverStatusData || {};
   
   const {
     fieldName,
@@ -53,7 +52,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
       apiPath,
       data: { value: checked },
       onSuccess: () => {
-        setConfigField({ fieldName, value: checked, path: configPath });
+        setFieldInConfigState({ fieldName, value: checked, path: configPath });
         setSubmitStatus('success');
       },
       onError: (message: string) => {
@@ -69,14 +68,6 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
     message: newStatusMessage = '',
   } = SUCCESS_STATES[submitStatus] || {};
 
-  const tipComponent = tip ? (
-    <span className="info">
-      <Tooltip title={tip}>
-        <InfoCircleOutlined />
-      </Tooltip>
-    </span>
-  ) : null;
- 
   return (
     <div className="toggleswitch-container">
       <div className="toggleswitch">
@@ -95,8 +86,8 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
           />
         </Form.Item>
 
-        <span className="label">{label}</span>
-        {tipComponent}
+        <span className="label">{label} <InfoTip tip={tip} /></span>
+        
       </div>
       <div className={`status-message ${submitStatus || ''}`}>
         {newStatusIcon} {newStatusMessage} {submitStatusMessage}

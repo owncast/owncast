@@ -24,7 +24,6 @@ export const SUCCESS_STATES = {
 };
 
 
-
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const {
     apiPath,
@@ -38,9 +37,9 @@ export async function postConfigUpdateToAPI(args: ApiPostArgs) {
     auth: true,
   });
   if (result.success && onSuccess) {
-    onSuccess();
+    onSuccess(result.message);
   } else if (onError) {
-    onError();
+    onError(result.message);
   }
 }
 
@@ -96,7 +95,7 @@ export const TEXTFIELD_DEFAULTS = {
       maxLength: 255,
       placeholder: '/img/mylogo.png',
       label: 'Logo',
-      tip: 'Path to your logo from website root',
+      tip: 'Path to your logo from website root. We recommend that you use a square image that is at least 256x256. (upload functionality coming soon)',
     },
   
     extraPageContent: {
@@ -113,8 +112,6 @@ export const TEXTFIELD_DEFAULTS = {
       tip: "Turn this ON if you plan to steam explicit or adult content. You may want to respectfully set this flag so that unexpecting eyes won't accidentally see it from the Directory.",
     },  
 
-
-    // 
     tags: {
       apiPath: '/tags',
       defaultValue: '',

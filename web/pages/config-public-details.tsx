@@ -88,7 +88,7 @@ export default function PublicFacingDetails() {
           <br/>
           add tags comp */}
           <EditInstanceTags />
-          <br/><br/>
+
           <EditDirectoryDetails />          
         </div>
       </div>      
