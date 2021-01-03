@@ -111,6 +111,34 @@ func RenderSimpleMarkdown(raw string) string {
 	return buf.String()
 }
 
+func RenderPageContentMarkdown(raw string) string {
+	markdown := goldmark.New(
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		),
+		goldmark.WithExtensions(
+			extension.GFM,
+			extension.NewLinkify(
+				extension.WithLinkifyAllowedProtocols([][]byte{
+					[]byte("http:"),
+					[]byte("https:"),
+				}),
+				extension.WithLinkifyURLRegexp(
+					xurls.Strict,
+				),
+			),
+		),
+	)
+
+	trimmed := strings.TrimSpace(raw)
+	var buf bytes.Buffer
+	if err := markdown.Convert([]byte(trimmed), &buf); err != nil {
+		panic(err)
+	}
+
+	return buf.String()
+}
+
 // GetCacheDurationSecondsForPath will return the number of seconds to cache an item.
 func GetCacheDurationSecondsForPath(filePath string) int {
 	if path.Base(filePath) == "thumbnail.jpg" {
