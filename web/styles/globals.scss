@@ -45,7 +45,6 @@ code {
 
 
 // GENERAL ANT FORM OVERRIDES
-// GENERAL ANT FORM OVERRIDES
 .ant-card {
   border-radius: .5em;
 }
@@ -74,4 +73,41 @@ code {
 .ant-btn {
   transition-delay: 0s;
   transition-duration: 0.15s;
+}
+
+// markdown editor overrides
+@media (prefers-color-scheme: dark) {
+  .rc-md-editor {
+    // Set the background color of the preview container
+    .editor-container {
+      background-color: black;
+    }
+
+    // Custom CSS for formatting the preview text
+    .markdown-editor-preview-pane {
+      color:lightgrey;
+      a {
+        color: $owncast-purple;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+    }
+
+    // Custom CSS class used to format the text of the editor
+    .markdown-editor-pane {
+      color:lightgrey !important;
+    }
+
+    // Set the background color of the editor text input
+    textarea {
+      background-color: rgb(44,44,44) !important;
+    }
+
+    // Hide extra toolbar buttons.
+    .button-type-undo, .button-type-redo, .button-type-clear, .button-type-image, .button-type-wrap, .button-type-quote, .button-type-strikethrough, .button-type-code-inline, .button-type-code-block {
+      display: none !important;
+    }
+  }  
 }
