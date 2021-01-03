@@ -62,7 +62,7 @@ func (s *server) sendAll(msg models.ChatEvent) {
 }
 
 func (s *server) ping() {
-	ping := models.PingMessage{MessageType: PING}
+	ping := models.PingMessage{MessageType: models.PING}
 	for _, c := range s.Clients {
 		c.pingch <- ping
 	}

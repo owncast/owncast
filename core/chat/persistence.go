@@ -80,7 +80,7 @@ func getChatHistory(filtered bool) []models.ChatEvent {
 		var id string
 		var author string
 		var body string
-		var messageType string
+		var messageType models.ChatMessageType
 		var visible int
 		var timestamp time.Time
 
@@ -150,7 +150,7 @@ func getMessageById(messageID string) (models.ChatEvent, error) {
 	var id string
 	var author string
 	var body string
-	var messageType string
+	var messageType models.ChatMessageType
 	var visible int
 	var timestamp time.Time
 

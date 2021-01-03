@@ -4,25 +4,16 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-// TODO: relocate to shared location that we and chat package can use
-const (
-	CHAT             = "CHAT"
-	NAMECHANGE       = "NAME_CHANGE"
-	PING             = "PING"
-	PONG             = "PONG"
-	VISIBILITYUPDATE = "VISIBILITY-UPDATE"
-)
-
 func SendChatEvent(chatEvent models.ChatEvent) {
 	webhookEvent := WebhookEvent{}
 
 	// TODO: handle errors here instead of returning
 	switch chatEvent.MessageType {
-	case CHAT:
+	case models.MessageSent:
 		webhookEvent.Type = MessageSent
-	case NAMECHANGE:
+	case models.UserNameChanged:
 		webhookEvent.Type = UserNameChanged
-	case VISIBILITYUPDATE:
+	case models.VisibiltyToggled:
 		webhookEvent.Type = VisibiltyToggled
 	}
 
