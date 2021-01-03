@@ -18,7 +18,7 @@ var availableMessages = messages.slice();
 
 const WebSocket = require('ws');
 
-const ws = new WebSocket('wss://watch.owncast.online/entry', {
+const ws = new WebSocket('ws://localhost:8080/entry', {
   origin: 'http://watch.owncast.online',
 });
 
@@ -53,7 +53,7 @@ function sendMessage() {
 
   ws.send(JSON.stringify(testMessage));
 
-  const nextMessageTimeout = (Math.floor(Math.random() * (25 - 10)) + 10) * 1000;
+  const nextMessageTimeout = (Math.floor(Math.random() * (25 - 10)) + 10) * 100;
   setTimeout(sendMessage, nextMessageTimeout);
 }
 

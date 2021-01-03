@@ -57,13 +57,15 @@ class OwncastPlayer {
   }
 
   init() {
-    this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
-
-    this.vjsPlayer.beforeRequest = function (options) {
-      const cachebuster = Math.round(new Date().getTime() / 1000);
-      options.uri = `${options.uri}?cachebust=${cachebuster}`;
+    videojs.Vhs.xhr.beforeRequest = options => {
+      if (options.uri.match('m3u8')) {
+        const cachebuster = Math.round(new Date().getTime() / 1000);
+        options.uri = `${options.uri}?cachebust=${cachebuster}`;
+      }
       return options;
     };
+
+    this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
 
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);

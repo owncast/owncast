@@ -57,7 +57,7 @@ func (s *server) err(err error) {
 
 func (s *server) sendAll(msg models.ChatEvent) {
 	for _, c := range s.Clients {
-		c.Write(msg)
+		c.write(msg)
 	}
 }
 
@@ -88,7 +88,7 @@ func (s *server) onConnection(ws *websocket.Conn) {
 	}()
 
 	s.add(client)
-	client.Listen()
+	client.listen()
 }
 
 // Listen and serve.
@@ -160,6 +160,6 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 
 		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
 		initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: config.Config.InstanceDetails.Name, Body: initialChatMessageText, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
-		c.Write(initialMessage)
+		c.write(initialMessage)
 	}()
 }

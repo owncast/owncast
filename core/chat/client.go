@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/utils"
 
 	"github.com/teris-io/shortid"
+	"golang.org/x/time/rate"
 )
 
 const channelBufSize = 100
@@ -35,6 +36,8 @@ type Client struct {
 	usernameChangeChannel chan models.NameChangeEvent
 
 	doneCh chan bool
+
+	rateLimiter *rate.Limiter
 }
 
 // NewClient creates a new chat client.
@@ -53,15 +56,12 @@ func NewClient(ws *websocket.Conn) *Client {
 	socketID, _ := shortid.Generate()
 	clientID := socketID
 
-	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh}
+	rateLimiter := rate.NewLimiter(0.6, 5)
+
+	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh, rateLimiter}
 }
 
-// GetConnection gets the connection for the client.
-func (c *Client) GetConnection() *websocket.Conn {
-	return c.ws
-}
-
-func (c *Client) Write(msg models.ChatEvent) {
+func (c *Client) write(msg models.ChatEvent) {
 	select {
 	case c.ch <- msg:
 	default:
@@ -70,13 +70,8 @@ func (c *Client) Write(msg models.ChatEvent) {
 	}
 }
 
-// Done marks the client as done.
-func (c *Client) Done() {
-	c.doneCh <- true
-}
-
 // Listen Write and Read request via channel.
-func (c *Client) Listen() {
+func (c *Client) listen() {
 	go c.listenWrite()
 	c.listenRead()
 }
@@ -116,6 +111,15 @@ func (c *Client) handleClientSocketError(err error) {
 	_server.removeClient(c)
 }
 
+func (c *Client) passesRateLimit() bool {
+	if !c.rateLimiter.Allow() {
+		log.Warnln("Client", c.ClientID, "has exceeded the messaging rate limiting thresholds.")
+		return false
+	}
+
+	return true
+}
+
 // Listen read request via channel.
 func (c *Client) listenRead() {
 	for {
@@ -146,6 +150,10 @@ func (c *Client) listenRead() {
 			}
 
 			messageType := messageTypeCheck["type"].(string)
+
+			if !c.passesRateLimit() {
+				continue
+			}
 
 			if messageType == string(models.MessageSent) {
 				c.chatMessageReceived(data)
