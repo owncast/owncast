@@ -40,7 +40,10 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			SegmentLengthSeconds:  config.Config.GetVideoSegmentSecondsLength(),
 			NumberOfPlaylistItems: config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist(),
 		},
-		YP: config.Config.YP,
+		YP: config.YP{
+			Enabled:     data.GetDirectoryEnabled(),
+			InstanceURL: data.GetServerURL(),
+		},
 		S3: config.Config.S3,
 	}
 
