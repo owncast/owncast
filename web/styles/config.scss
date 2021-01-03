@@ -1,16 +1,3 @@
-
-.ant-btn-primary:hover, .ant-btn-primary:focus {
-  background-color: white;
-  color: #40a9ff;
-}
-.ant-btn-primary:focus {
-  box-shadow: 0px 1px 3px 2px rgba(90,103,216, .25)
-}
-.ant-input-affix-wrapper,
-.ant-btn {
-  transition-delay: 0s;
-  transition-duration: 0.15s;
-}
 .config-public-details-container {
   display: flex;
   flex-direction: row;
@@ -22,19 +9,34 @@
   }
 
   .misc-fields {
-    border: 1px solid var(--owncast-purple);
+    // border: 1px solid var(--owncast-purple);
     padding: 2em;
-
   }
 }
+
+
+.status-message {
+  margin: 1rem 0;
+  min-height: 1.25em;
+  font-size: .75rem;
+  &.success {
+    color: var(--ant-success);
+  }
+  &.error {
+    color: var(--ant-error);
+  }
+}
+
+// form-textfield
+// form-textfield
 .textfield-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-end;
   position: relative;
+  width: 314px;
 }
-
 .textfield {
   display: flex;
   flex-direction: row;
@@ -68,6 +70,30 @@
 }
 
 
+// form-toggleswitch
+// form-toggleswitch
+.toggleswitch-container {
+  .status-message {
+    margin-top: .25rem;
+  }
+}
+.toggleswitch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  .label {
+    font-weight: bold;
+    color: var(--owncast-purple);
+  }
+  .info { margin-left: .5rem }
+  .ant-form-item {
+    margin: 0 .75rem 0 0;
+  }
+}
+
+// TAGS STUFF
+// TAGS STUFF
 .tag-current-tags {
   .ant-tag {
     margin: .1rem;
@@ -100,17 +126,6 @@
 
   .new-tag-input {
     width: 16em;
-  }
-}
-.add-new-status {
-  margin: 1em 0;
-  min-height: 1.25em;
-  font-size: .75rem;
-  &.success {
-    color: var(--ant-success);
-  }
-  &.error {
-    color: var(--ant-error);
   }
 }
 

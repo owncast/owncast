@@ -3,9 +3,11 @@ import { Typography, Form } from 'antd';
 
 import TextField, { TEXTFIELD_TYPE_TEXTAREA } from './components/config/form-textfield';
 
-import EditInstanceTags from './components/config/tags';
+import EditInstanceTags from './components/config/edit-tags';
+import EditDirectoryDetails from './components/config/edit-directory';
 
 import { ServerStatusContext } from '../utils/server-status-context';
+import { TEXTFIELD_DEFAULTS, postConfigUpdateToAPI } from './components/config/constants';
 
 const { Title } = Typography;
 
@@ -15,25 +17,50 @@ export default function PublicFacingDetails() {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
 
-  const { instanceDetails = {} } = serverConfig;
-  console.log(serverConfig)
-  
+  const { instanceDetails, yp } = serverConfig;
+  const { instanceDetails: instanceDetailsDefaults, yp: ypDefaults } = TEXTFIELD_DEFAULTS;
+
+  const initialValues = {
+    ...instanceDetails,
+    ...yp,
+  };
+
+  const defaultFields = {
+    ...instanceDetailsDefaults,
+    ...ypDefaults,
+  };
+
   useEffect(() => {
-    form.setFieldsValue({...instanceDetails});
+    form.setFieldsValue(initialValues);
   }, [instanceDetails]);
 
-
   const handleResetValue = (fieldName: string) => {
-    form.setFieldsValue({ [fieldName]: instanceDetails[fieldName]});
+    const defaultValue = defaultFields[fieldName] && defaultFields[fieldName].defaultValue || '';
+
+    form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
+  }
+
+  // if instanceUrl is empty, we should also turn OFF the `enabled` field of directory.
+  const handleSubmitInstanceUrl = () => {
+    if (form.getFieldValue('instanceUrl') === '') {
+      if (yp.enabled === true) {
+        const { apiPath } = TEXTFIELD_DEFAULTS.yp.enabled;
+        postConfigUpdateToAPI({
+          apiPath,
+          data: { value: false },
+        });
+      }
+    }
   }
 
   const extraProps = {
     handleResetValue,
-    initialValues: instanceDetails,
+    initialValues,
+    configPath: 'instanceDetails',
   };
 
   return (
-    <>
+    <div className="config-public-details-form">
       <Title level={2}>Edit your public facing instance details</Title>
 
       <div className="config-public-details-container">
@@ -42,10 +69,18 @@ export default function PublicFacingDetails() {
             form={form}
             layout="vertical"
           >
-            <TextField fieldName="name" {...extraProps} />
-            <TextField fieldName="summary" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
+            <TextField
+              fieldName="instanceUrl"
+              {...extraProps}
+              configPath="yp"
+              onSubmit={handleSubmitInstanceUrl}
+            />
+
             <TextField fieldName="title" {...extraProps} />
             <TextField fieldName="streamTitle" {...extraProps} />
+            <TextField fieldName="name" {...extraProps} />
+            <TextField fieldName="summary" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
+            <TextField fieldName="logo" {...extraProps} />
           </Form>
         </div>
         <div className="misc-fields">
@@ -53,11 +88,11 @@ export default function PublicFacingDetails() {
           <br/>
           add tags comp */}
           <EditInstanceTags />
-          
-          
+          <br/><br/>
+          <EditDirectoryDetails />          
         </div>
       </div>      
-    </>
+    </div>
   ); 
 }
 

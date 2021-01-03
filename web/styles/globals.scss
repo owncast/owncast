@@ -30,10 +30,28 @@ pre {
   background-color: $owncast-purple;
 }
 
-// misc system overrides
+
+// GENERAL ANT FORM OVERRIDES
+// GENERAL ANT FORM OVERRIDES
 .ant-card {
   border-radius: .5em;
 }
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  background-color: white;
+  color: #40a9ff;
+}
+.ant-btn.ant-btn-primary:focus {
+  border: 1px solid var(--owncast-purple);
+  @media (prefers-color-scheme: dark) {
+    border-color: white;
+  }
+}
+.ant-input-affix-wrapper,
+.ant-btn {
+  transition-delay: 0s;
+  transition-duration: 0.15s;
+}
+
 
 @media (prefers-color-scheme: dark) {
   @import "~antd/dist/antd.dark";

@@ -4,6 +4,7 @@ import { Typography, Form } from 'antd';
 import TextField, { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_TEXTAREA } from './components/config/form-textfield';
 
 import { ServerStatusContext } from '../utils/server-status-context';
+import { TEXTFIELD_DEFAULTS } from './components/config/constants';
 
 const { Title } = Typography;
 
@@ -13,27 +14,30 @@ export default function ConfigServerDetails() {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
 
-  const { ffmpegPath, streamKey, webServerPort } = serverConfig;
+  const { ffmpegPath, streamKey, webServerPort, rtmpServerPort } = serverConfig;
 
-  const streamDetails = {
-    ffmpegPath, streamKey, webServerPort
+  const initialValues = {
+    ffmpegPath,
+    streamKey,
+    webServerPort,
+    rtmpServerPort,
   };
   
   useEffect(() => {
-    form.setFieldsValue({...streamDetails});
+    form.setFieldsValue(initialValues);
   }, [serverStatusData]);
 
-
   const handleResetValue = (fieldName: string) => {
-    form.setFieldsValue({ [fieldName]: streamDetails[fieldName]});
+    const defaultValue = TEXTFIELD_DEFAULTS[fieldName] && TEXTFIELD_DEFAULTS[fieldName].defaultValue || '';
+
+    form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
   }
 
   const extraProps = {
     handleResetValue,
-    initialValues: streamDetails,
+    initialValues,
+    configPath: '',
   };
-
-  console.log(streamDetails)
   return (
     <>
       <Title level={2}>Edit your Server&apos;s details</Title>
@@ -46,6 +50,7 @@ export default function ConfigServerDetails() {
           <TextField fieldName="streamKey" type={TEXTFIELD_TYPE_PASSWORD} {...extraProps} />
           <TextField fieldName="ffmpegPath" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
           <TextField fieldName="webServerPort" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
+          <TextField fieldName="rtmpServerPort" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
         </Form>
       </div>      
     </>

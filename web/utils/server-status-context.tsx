@@ -2,15 +2,27 @@ import React, { useState, useEffect } from 'react';
 import PropTypes, { any } from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
-import { UpdateArgs } from '../types/config-section';
+import { ConfigDetails, UpdateArgs } from '../types/config-section';
 
-export const initialServerConfigState = {
+export const initialServerConfigState: ConfigDetails = {
   streamKey: '',
   instanceDetails: {
+    extraPageContent: '',
+    logo: '',
+    name: '',
+    nsfw: false,
+    streamTitle: '',
+    summary: '',
     tags: [],
+    title: '',
   },
+  ffmpegPath: '',
+  rtmpServerPort: '',
+  webServerPort: '',
+  s3: {},
   yp: {
     enabled: false,
+    instanceUrl: '',
   },
   videoSettings: {
     videoQualityVariants: [

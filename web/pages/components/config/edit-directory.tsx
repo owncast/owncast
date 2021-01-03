@@ -1,4 +1,4 @@
-// rename to "directory"
+// Note: references to "yp" in the app are likely related to Owncast Directory
 import React, { useContext, useEffect } from 'react';
 import { Typography, Form } from 'antd';
 
