@@ -30,6 +30,7 @@ export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
 export const TEXTFIELD_TYPE_NUMBER = 'numeric';
 export const TEXTFIELD_TYPE_TEXTAREA = 'textarea';
+export const TEXTFIELD_TYPE_URL = 'url';
 
 
 export default function TextField(props: TextFieldProps) {
@@ -79,9 +80,14 @@ export default function TextField(props: TextFieldProps) {
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = (e: any) => {
     const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
-    if ((required && (val === '' || val === null)) || val === initialValue) {
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/ValidityState
+    const hasValidity = type !== TEXTFIELD_TYPE_NUMBER && e.target.validity.valid;
+
+    if ((required && (val === '' || val === null)) || val === initialValue || !hasValidity) {
       setHasChanged(false);
     } else {
+      // show submit button
       resetStates();
       setHasChanged(true);
       setFieldValueForSubmit(val);
@@ -138,6 +144,20 @@ export default function TextField(props: TextFieldProps) {
     };
   } else if (type === TEXTFIELD_TYPE_NUMBER) {
     Field = InputNumber;
+    fieldProps = {
+      type: 'number',
+      min: 0,
+      max: (10**maxLength) - 1,
+      onKeyDown: (e: React.KeyboardEvent) => {
+        if (e.target.value.length > maxLength - 1 )
+        e.preventDefault()
+        return false;
+      }
+    };
+  } else if (type === TEXTFIELD_TYPE_URL) {
+    fieldProps = {
+      type: 'url',
+    };
   }
 
    return (

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { Typography, Form } from 'antd';
 
-import TextField, { TEXTFIELD_TYPE_TEXTAREA } from './components/config/form-textfield';
+import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './components/config/form-textfield';
 
 import EditInstanceTags from './components/config/edit-tags';
 import EditDirectoryDetails from './components/config/edit-directory';
@@ -73,6 +73,7 @@ export default function PublicFacingDetails() {
               fieldName="instanceUrl"
               {...extraProps}
               configPath="yp"
+              type={TEXTFIELD_TYPE_URL}
               onSubmit={handleSubmitInstanceUrl}
             />
 

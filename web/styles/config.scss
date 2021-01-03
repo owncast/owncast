@@ -50,6 +50,10 @@
   .field {
     width: 18rem;
 
+    &.ant-input-number {
+      width: 8em;
+    }
+
   }
   .info-tip {
     margin-right: .75rem;

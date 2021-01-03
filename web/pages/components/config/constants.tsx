@@ -184,6 +184,27 @@ export const TEXTFIELD_DEFAULTS = {
       label: 'Display in the Owncast Directory?',
       tip: 'Turn this ON if you want to show up in the Owncast directory at https://directory.owncast.online.',
     }
+  },
+
+  videoSettings: {
+    numberOfPlaylistItems: {
+      apiPath: '/webserverport', // tbd
+      defaultValue: 4,
+      maxLength: 6,
+      placeholder: '4',
+      label: 'Segment Length',
+      tip: '',
+      required: true,
+    },
+    segmentLengthSeconds: {
+      apiPath: '/webserverport', // tbd
+      defaultValue: 5,
+      maxLength: 6,
+      placeholder: '5',
+      label: 'Number of segments',
+      tip: '',
+      required: true,
+    },
   }
 }
 

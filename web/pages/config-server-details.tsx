@@ -48,7 +48,7 @@ export default function ConfigServerDetails() {
           layout="vertical"
         >
           <TextField fieldName="streamKey" type={TEXTFIELD_TYPE_PASSWORD} {...extraProps} />
-          <TextField fieldName="ffmpegPath" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
+          <TextField fieldName="ffmpegPath" {...extraProps} />
           <TextField fieldName="webServerPort" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
           <TextField fieldName="rtmpServerPort" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
         </Form>

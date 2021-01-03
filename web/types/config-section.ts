@@ -70,5 +70,5 @@ export interface ConfigDetails {
   streamKey: string;
   webServerPort: string;
   yp: ConfigDirectoryFields;
-  videoSettings: VideoSettingsFields; // tbd
+  videoSettings: VideoSettingsFields;
 }
