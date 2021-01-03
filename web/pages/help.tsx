@@ -104,9 +104,9 @@ export default function Help(props: Props) {
             content: (
                 <div>
                     You can view the API documentation for either the 
-                    <a href="https://owncast.online/api/latest" target="_blank" rel="noopener noreferrer"> latest</a>
+                    <a href="https://owncast.online/api/latest" target="_blank" rel="noopener noreferrer">&nbsp;latest&nbsp;</a>
                     or 
-                    <a href="https://owncast.online/api/development" target="_blank" rel="noopener noreferrer"> development</a>
+                    <a href="https://owncast.online/api/development" target="_blank" rel="noopener noreferrer">&nbsp;development&nbsp;</a>
                     release.
                 </div>
             )
