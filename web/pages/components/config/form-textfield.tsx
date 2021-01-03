@@ -22,10 +22,9 @@ import { FormItemProps } from 'antd/es/form';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH, RESET_TIMEOUT } from './constants';
+import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { TextFieldProps } from '../../../types/config-section';
-import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
@@ -78,23 +77,6 @@ export default function TextField(props: TextFieldProps) {
     resetTimer = null;
   }
 
-  const postUpdateToAPI = async (postValue: any) => {
-    setSubmitStatus('validating');
-    const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
-      data: { value: postValue },
-      method: 'POST',
-      auth: true,
-    });
-    if (result.success) {
-      setConfigField({ fieldName, value: postValue, path: configPath });
-      setSubmitStatus('success');
-    } else {
-      setSubmitStatus('error');
-      setSubmitStatusMessage(`There was an error: ${result.message}`);
-    }
-    resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-  };
-
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = (e: any) => {
     const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
@@ -116,9 +98,25 @@ export default function TextField(props: TextFieldProps) {
   };
 
   // how to get current value of input
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if ((required && fieldValueForSubmit !== '') || fieldValueForSubmit !== initialValue) {
-      postUpdateToAPI(fieldValueForSubmit);
+      // postUpdateToAPI(fieldValueForSubmit);
+      setSubmitStatus('validating');
+
+      await postConfigUpdateToAPI({
+        apiPath,
+        data: { value: fieldValueForSubmit },
+        onSuccess: () => {
+          setConfigField({ fieldName, value: fieldValueForSubmit, path: configPath });
+          setSubmitStatus('success');
+        },
+        onError: (message: string) => {
+          setSubmitStatus('error');
+          setSubmitStatusMessage(`There was an error: ${message}`);
+        },
+      });
+      resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+
       // if an extra onSubmit handler was sent in as a prop, let's run that too.
       if (onSubmit) {
         onSubmit();
@@ -160,7 +158,7 @@ export default function TextField(props: TextFieldProps) {
           required={required}
         >
         <Field
-            className="field"
+            className={`field field-${fieldName}`}
             allowClear
             placeholder={placeholder}
             maxLength={maxLength}

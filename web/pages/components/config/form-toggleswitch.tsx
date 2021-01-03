@@ -4,10 +4,9 @@ import { FormItemProps } from 'antd/es/form';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { TEXTFIELD_DEFAULTS, RESET_TIMEOUT, SUCCESS_STATES } from './constants';
+import { TEXTFIELD_DEFAULTS, RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
 
 import { ToggleSwitchProps } from '../../../types/config-section';
-import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
@@ -48,26 +47,21 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
     resetTimer = null;
   }
 
-  const postUpdateToAPI = async (postValue: any) => {
+  const handleChange = async checked => {
     setSubmitStatus('validating');
-    const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
-      data: { value: postValue },
-      method: 'POST',
-      auth: true,
+    await postConfigUpdateToAPI({
+      apiPath,
+      data: { value: checked },
+      onSuccess: () => {
+        setConfigField({ fieldName, value: checked, path: configPath });
+        setSubmitStatus('success');
+      },
+      onError: (message: string) => {
+        setSubmitStatus('error');
+        setSubmitStatusMessage(`There was an error: ${message}`);
+      },
     });
-
-    if (result.success) {
-      setConfigField({ fieldName, value: postValue, path: configPath });
-      setSubmitStatus('success');
-    } else {
-      setSubmitStatus('error');
-      setSubmitStatusMessage(`There was an error: ${result.message}`);
-    }
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-  };
-
-  const handleChange = checked => {
-    postUpdateToAPI(checked);
   }
 
   const {
@@ -91,7 +85,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
           validateStatus={submitStatus}
         >
           <Switch
-            className="switch"
+            className={`switch field-${fieldName}`}
             loading={submitStatus === 'validating'}
             onChange={handleChange}
             checked={initialValue}

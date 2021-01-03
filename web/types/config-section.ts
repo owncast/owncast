@@ -27,8 +27,8 @@ export interface UpdateArgs {
 export interface ApiPostArgs {
   apiPath: string,
   data: object,
-  onSuccess?: () => {},
-  onError?: () => {},
+  onSuccess?: (arg: any) => {},
+  onError?: (arg: any) => {},
 }
 
 export interface ConfigDirectoryFields {

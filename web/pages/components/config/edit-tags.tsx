@@ -3,8 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Tag, Input } from 'antd';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
-import { TEXTFIELD_DEFAULTS, RESET_TIMEOUT, SUCCESS_STATES } from './constants';
+import { TEXTFIELD_DEFAULTS, RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
 
 const { Title } = Typography;
 
@@ -44,22 +43,22 @@ export default function EditInstanceTags() {
 
   // posts all the tags at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
-    const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
+    await postConfigUpdateToAPI({
+      apiPath,
       data: { value: postValue },
-      method: 'POST',
-      auth: true,
+      onSuccess: () => {
+        setConfigField({ fieldName: 'tags', value: postValue, path: configPath });
+        setSubmitStatus('success');
+        setSubmitStatusMessage('Tags updated.');
+        setNewTagInput('');
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+      },
+      onError: (message: string) => {
+        setSubmitStatus('error');
+        setSubmitStatusMessage(message);
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+      },
     });
-
-    if (result.success) {
-      setConfigField({ fieldName: 'tags', value: postValue, path: configPath });
-      setSubmitStatus('success');
-      setSubmitStatusMessage('Tags updated.');
-      setNewTagInput('');
-    } else {
-      setSubmitStatus('error');
-      setSubmitStatusMessage(result.message);
-    }
-    resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
   const handleInputChange = e => {

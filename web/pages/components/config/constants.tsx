@@ -128,7 +128,7 @@ export const TEXTFIELD_DEFAULTS = {
 
   streamKey: {
     apiPath: '/key',
-    defaultValue: DEFAULT_NAME,
+    defaultValue: 'abc123',
     maxLength: TEXT_MAXLENGTH,
     placeholder: 'abc123',
     label: 'Stream Key',
@@ -138,7 +138,7 @@ export const TEXTFIELD_DEFAULTS = {
 
   ffmpegPath: {
     apiPath: '/ffmpegpath',
-    defaultValue: DEFAULT_NAME,
+    defaultValue: '',
     maxLength: TEXT_MAXLENGTH,
     placeholder: '/usr/local/bin/ffmpeg',
     label: 'FFmpeg Path',
@@ -148,7 +148,7 @@ export const TEXTFIELD_DEFAULTS = {
 
   webServerPort: {
     apiPath: '/webserverport',
-    defaultValue: '',
+    defaultValue: '8080',
     maxLength: 6,
     placeholder: '8080',
     label: 'Owncast Server port',
@@ -159,7 +159,7 @@ export const TEXTFIELD_DEFAULTS = {
     apiPath: '/rtmpserverport',
     defaultValue: '1935',
     maxLength: 6,
-    placeholder: DEFAULT_NAME,
+    placeholder: '1935',
     label: 'RTMP port',
     tip: 'What port are you receiving RTMP?',
     required: true,
