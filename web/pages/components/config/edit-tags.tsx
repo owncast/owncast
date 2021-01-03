@@ -11,19 +11,21 @@ const { Title } = Typography;
 export default function EditInstanceTags() {
   const [newTagInput, setNewTagInput] = useState('');
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [submitDetails, setSubmitDetails] = useState('');
+  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setConfigField } = serverStatusData || {};
 
   const { instanceDetails } = serverConfig;
   const { tags = [] } = instanceDetails;
 
+  const configPath = 'instanceDetails';
+
   const {
     apiPath,
     maxLength,
     placeholder,
-    configPath,
-  } = TEXTFIELD_DEFAULTS.tags || {};
+  } = TEXTFIELD_DEFAULTS[configPath].tags || {};
+
 
   let resetTimer = null;
 
@@ -35,38 +37,34 @@ export default function EditInstanceTags() {
 
   const resetStates = () => {
     setSubmitStatus(null);
-    setSubmitDetails('');
+    setSubmitStatusMessage('');
     resetTimer = null;
     clearTimeout(resetTimer);
   }
 
   // posts all the tags at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
-    // const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
-    //   data: { value: postValue },
-    //   method: 'POST',
-    //   auth: true,
-    // });
+    const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
+      data: { value: postValue },
+      method: 'POST',
+      auth: true,
+    });
 
-    const result = {
-      success: true,
-      message: 'success yay'
-    }
     if (result.success) {
       setConfigField({ fieldName: 'tags', value: postValue, path: configPath });
       setSubmitStatus('success');
-      setSubmitDetails('Tags updated.');
+      setSubmitStatusMessage('Tags updated.');
       setNewTagInput('');
     } else {
       setSubmitStatus('error');
-      setSubmitDetails(result.message);
+      setSubmitStatusMessage(result.message);
     }
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
   const handleInputChange = e => {
-    if (submitDetails !== '') {
-      setSubmitDetails('');
+    if (submitStatusMessage !== '') {
+      setSubmitStatusMessage('');
     }
     setNewTagInput(e.target.value);
   };
@@ -76,11 +74,11 @@ export default function EditInstanceTags() {
     resetStates();
     const newTag = newTagInput.trim();
     if (newTag === '') {
-      setSubmitDetails('Please enter a tag');
+      setSubmitStatusMessage('Please enter a tag');
       return;
     } 
     if (tags.some(tag => tag.toLowerCase() === newTag.toLowerCase())) {
-      setSubmitDetails('This tag is already used!');
+      setSubmitStatusMessage('This tag is already used!');
       return;
     }
 
@@ -116,8 +114,8 @@ export default function EditInstanceTags() {
           );
         })}
       </div>
-      <div className={`add-new-status ${submitStatus || ''}`}>
-        {newStatusIcon} {newStatusMessage} {submitDetails}
+      <div className={`status-message ${submitStatus || ''}`}>
+        {newStatusIcon} {newStatusMessage} {submitStatusMessage}
       </div>
       <div className="add-new-tag-section">
         <Input
@@ -130,7 +128,6 @@ export default function EditInstanceTags() {
           placeholder={placeholder}
           allowClear
         />
-        
       </div>
     </div>
   );

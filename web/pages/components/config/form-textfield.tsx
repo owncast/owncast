@@ -46,23 +46,31 @@ export default function TextField(props: TextFieldProps) {
   const { setConfigField } = serverStatusData || {};
   
   const {
+    configPath = '',
+    disabled = false,
     fieldName,
-    type,
-    initialValues = {},
     handleResetValue,
+    initialValues = {},
+    onSubmit,
+    type,
   } = props;
 
+  // Keep track of what the initial value is
+  // Note: we're not using `initialValue` as a prop, because we expect this component to be controlled by a parent Ant <Form> which is doing a form.setFieldsValue() upstream.
   const initialValue = initialValues[fieldName] || '';
   
+  // Get other static info we know about this field.
+  const defaultDetails =  TEXTFIELD_DEFAULTS[configPath] || TEXTFIELD_DEFAULTS;
   const {
     apiPath = '',
-    configPath = '',
     maxLength = TEXT_MAXLENGTH,
-    // placeholder = '',
+    placeholder = '',
     label = '',
     tip = '',
-  } = TEXTFIELD_DEFAULTS[fieldName] || {};
+    required = false,
+  } = defaultDetails[fieldName] || {};
 
+  // Clear out any validation states and messaging
   const resetStates = () => {
     setSubmitStatus('');
     setHasChanged(false);
@@ -87,9 +95,10 @@ export default function TextField(props: TextFieldProps) {
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
-  const handleChange = e => {
+  // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
+  const handleChange = (e: any) => {
     const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
-    if (val === '' || val === initialValue) {
+    if ((required && (val === '' || val === null)) || val === initialValue) {
       setHasChanged(false);
     } else {
       resetStates();
@@ -98,21 +107,27 @@ export default function TextField(props: TextFieldProps) {
     }
   };
 
+  // if you blur a required field with an empty value, restore its original value
   const handleBlur = e => {
     const val = e.target.value;
-    if (val === '') {
+    if (required && val === '') {
       handleResetValue(fieldName);
     }
   };
 
   // how to get current value of input
   const handleSubmit = () => {
-    if (fieldValueForSubmit !== '' && fieldValueForSubmit !== initialValue) {
+    if ((required && fieldValueForSubmit !== '') || fieldValueForSubmit !== initialValue) {
       postUpdateToAPI(fieldValueForSubmit);
+      // if an extra onSubmit handler was sent in as a prop, let's run that too.
+      if (onSubmit) {
+        onSubmit();
+      }
     }
   }
 
-  let Field = Input;
+  // display the appropriate Ant text field
+  let Field = Input as typeof Input | typeof InputNumber | typeof Input.TextArea | typeof Input.Password;
   let fieldProps = {};
   if (type === TEXTFIELD_TYPE_TEXTAREA) {
     Field = Input.TextArea;
@@ -142,14 +157,16 @@ export default function TextField(props: TextFieldProps) {
           hasFeedback
           validateStatus={submitStatus}
           help={submitStatusMessage}
+          required={required}
         >
         <Field
             className="field"
             allowClear
-            placeholder={initialValue}
+            placeholder={placeholder}
             maxLength={maxLength}
             onChange={handleChange}
             onBlur={handleBlur}
+            disabled={disabled}
             {...fieldProps}
           />
         </Form.Item>
