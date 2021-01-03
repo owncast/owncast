@@ -47,6 +47,21 @@ export interface ConfigInstanceDetailsFields {
   title: string;
 }
 
+export interface VideoVariant {
+  audioBitrate: number;
+  audioPassthrough: number;
+  encoderPreset: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast';
+  framerate: number;
+  videoBitrate: number;
+  videoPassthrough: boolean;
+}
+export interface VideoSettingsFields {
+  numberOfPlaylistItems: number;
+  segmentLengthSeconds: number;
+  videoQualityVariants: VideoVariant[],
+}
+
+
 export interface ConfigDetails {
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
@@ -55,5 +70,5 @@ export interface ConfigDetails {
   streamKey: string;
   webServerPort: string;
   yp: ConfigDirectoryFields;
-  videoSettings: any; // tbd
+  videoSettings: VideoSettingsFields; // tbd
 }

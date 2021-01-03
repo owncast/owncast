@@ -1,4 +1,4 @@
-import { LineChart } from 'react-chartkick'
+import { LineChart } from 'react-chartkick';
 import 'chart.js';
 import format from 'date-fns/format';
 import styles from '../../styles/styles.module.scss';

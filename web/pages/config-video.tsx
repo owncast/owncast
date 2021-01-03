@@ -9,6 +9,7 @@ function VideoVariants({ config }) {
   if (!config || !config.videoSettings) {
     return null;
   }
+  console.log(config.videoSettings)
 
   const videoQualityColumns = [
     {
