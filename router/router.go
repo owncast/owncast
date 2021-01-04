@@ -105,6 +105,14 @@ func Start() error {
 
 	// Create a single webhook
 	http.HandleFunc("/api/admin/webhooks/create", middleware.RequireAdminAuth(admin.CreateWebhook))
+	// Get all access tokens
+	http.HandleFunc("/api/admin/accesstokens", middleware.RequireAdminAuth(admin.GetAccessTokens))
+
+	// Delete a single access token
+	http.HandleFunc("/api/admin/deleteaccesstoken", middleware.RequireAdminAuth(admin.DeleteAccessToken))
+
+	// Create a single access token
+	http.HandleFunc("/api/admin/createaccesstoken", middleware.RequireAdminAuth(admin.CreateAccessToken))
 
 	port := config.Config.GetPublicWebServerPort()
 
