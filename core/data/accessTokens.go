@@ -169,3 +169,26 @@ func GetAccessTokens() ([]models.AccessToken, error) {
 
 	return tokens, nil
 }
+
+func SetAccessTokenAsUsed(token string) error {
+	tx, err := _db.Begin()
+	if err != nil {
+		return err
+	}
+	stmt, err := tx.Prepare("UPDATE access_tokens SET last_used = CURRENT_TIMESTAMP WHERE token = ?")
+
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(token); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}

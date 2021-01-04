@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"crypto/subtle"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -52,8 +51,6 @@ func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
 		token := strings.Join(authHeader, "")
 
-		fmt.Println(token)
-
 		if len(authHeader) == 0 || token == "" {
 			log.Warnln("invalid access token")
 			w.WriteHeader(http.StatusUnauthorized)
@@ -73,5 +70,9 @@ func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc
 		}
 
 		handler(w, r)
+
+		if err := data.SetAccessTokenAsUsed(token); err != nil {
+			log.Debugln(token, "not found when updating last_used timestamp")
+		}
 	})
 }
