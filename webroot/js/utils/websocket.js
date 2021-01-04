@@ -1,3 +1,4 @@
+import { URL_WEBSOCKET } from './constants.js';
 /**
  * These are the types of messages that we can handle with the websocket.
  * Mostly used by `websocket.js` but if other components need to handle
@@ -17,7 +18,6 @@ export const CALLBACKS = {
   WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
 }
 
-const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
 export default class Websocket {
