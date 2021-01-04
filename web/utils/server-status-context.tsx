@@ -25,6 +25,8 @@ export const initialServerConfigState: ConfigDetails = {
     instanceUrl: '',
   },
   videoSettings: {
+    numberOfPlaylistItems: 5,
+    segmentLengthSeconds: 4,
     videoQualityVariants: [
       {
         audioPassthrough: false,
@@ -32,6 +34,7 @@ export const initialServerConfigState: ConfigDetails = {
         videoBitrate: 0,
         audioBitrate: 0,
         framerate: 0,
+        encoderPreset: 'veryfast',
       },
     ],
   }
@@ -93,7 +96,7 @@ const ServerStatusProvider = ({ children }) => {
     };
 
     setConfig(updatedConfig);
-  }
+  };
 
   
   useEffect(() => {
@@ -108,7 +111,7 @@ const ServerStatusProvider = ({ children }) => {
     return () => {
       clearInterval(getStatusIntervalId);
     }
-  }, [])
+  }, []);
 
   const providerValue = {
       ...status,

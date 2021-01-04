@@ -39,7 +39,7 @@ export default function ConfigServerDetails() {
     configPath: '',
   };
   return (
-    <>
+    <div className="config-server-details-form">
       <Title level={2}>Edit your Server&apos;s details</Title>
 
       <div className="config-public-details-container">
@@ -53,7 +53,7 @@ export default function ConfigServerDetails() {
           <TextField fieldName="rtmpServerPort" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
         </Form>
       </div>      
-    </>
+    </div>
   ); 
 }
 

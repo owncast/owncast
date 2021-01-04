@@ -80,16 +80,16 @@ code {
   .rc-md-editor {
     // Set the background color of the preview container
     .editor-container {
-      background-color: black;
+      background-color: #E2E8F0;
+      color: rgba(45,55,72,1);
     }
 
     // Custom CSS for formatting the preview text
     .markdown-editor-preview-pane {
-      color:lightgrey;
+      // color:lightgrey;
       a {
         color: $owncast-purple;
       }
-
       h1 {
         font-size: 2em;
       }
@@ -97,12 +97,15 @@ code {
 
     // Custom CSS class used to format the text of the editor
     .markdown-editor-pane {
-      color:lightgrey !important;
+      color: white !important;
+      background-color: black;
+      font-family: monospace;
     }
 
     // Set the background color of the editor text input
     textarea {
       background-color: rgb(44,44,44) !important;
+      color:lightgrey !important;
     }
 
     // Hide extra toolbar buttons.

@@ -9,6 +9,8 @@ export interface TextFieldProps {
   required?: boolean;
   disabled?: boolean;
   onSubmit?: () => void;
+  onBlur?: () => void;
+  onChange?: () => void;
 }
 
 export interface ToggleSwitchProps {
@@ -49,7 +51,7 @@ export interface ConfigInstanceDetailsFields {
 
 export interface VideoVariant {
   audioBitrate: number;
-  audioPassthrough: number;
+  audioPassthrough: false | number;
   encoderPreset: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast';
   framerate: number;
   videoBitrate: number;

@@ -150,6 +150,9 @@ export default function MainLayout(props) {
             <Menu.Item key="config-storage">
               <Link href="/config-storage">Storage</Link>
             </Menu.Item>
+            <Menu.Item key="config-page-content">
+              <Link href="/config-page-content">Custom page content</Link>
+            </Menu.Item>
           </SubMenu>
 
           <SubMenu

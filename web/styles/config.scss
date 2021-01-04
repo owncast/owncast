@@ -143,3 +143,16 @@
   }
 }
 
+.config-page-content-form {
+  .page-content-actions {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    .status-message  {
+      margin-left: 1em;
+    }
+  }
+}

@@ -60,7 +60,7 @@ export default function TextField(props: TextFieldProps) {
     setHasChanged(false);
     clearTimeout(resetTimer);
     resetTimer = null;
-  }
+  };
 
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = (e: any) => {
