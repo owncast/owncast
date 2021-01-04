@@ -59,7 +59,7 @@ export default function Help(props: Props) {
         },
         {
             icon: <SlidersTwoTone style={{ fontSize: '24px' }} />,
-            title: "I want to tweak my encoding",
+            title: "I want to tweak my encoding quality or performance",
             content: (
                 <div>
                     <a href="https://owncast.online/docs/encoding/"  target="_blank" rel="noopener noreferrer"><LinkOutlined/> Learn more</a>
@@ -83,8 +83,8 @@ export default function Help(props: Props) {
             title: "I found a bug",
             content: (
                 <div>
-                    If you found a bug, then report it in our 
-                    <a href="https://github.com/owncast/owncast/" target="_blank" rel="noopener noreferrer"> Github Issues</a>
+                    If you found a bug, then please 
+                    <a href="https://github.com/owncast/owncast/issues/new/choose" target="_blank" rel="noopener noreferrer"> let us know</a>
                 </div>
             )
         },
@@ -94,7 +94,7 @@ export default function Help(props: Props) {
             content: (
                 <div>
                     Most general questions are answered in our 
-                    <a href="https://owncast.online/docs/faq/" target="_blank" rel="noopener noreferrer"> FAQ</a>
+                    <a href="https://owncast.online/docs/faq/" target="_blank" rel="noopener noreferrer"> FAQ</a> or exist in our <a href="https://github.com/owncast/owncast/discussions">discussions</a>
                 </div>
             )
         },

@@ -2,6 +2,7 @@ import { Result, Card } from "antd";
 import { MessageTwoTone, QuestionCircleTwoTone, BookTwoTone, PlaySquareTwoTone } from '@ant-design/icons';
 import OwncastLogo from "./components/logo"
 import LogTable from "./components/log-table";
+import Link from 'next/link';
 
 const { Meta } = Card;
 
@@ -32,12 +33,10 @@ export default function Offline({ logs = [] }) {
     },
     {
       icon: <QuestionCircleTwoTone twoToneColor="#ffd33d" />,
-      title: "Need some help?",
+      title: "Not sure what to do next?",
       content: (
         <div>
-          Take a look at our <a target="_blank" href="https://owncast.online/docs/troubleshooting">troubleshooting steps </a>
-          to see if there's any common problems you're running into.  If you still have questions <a target="_blank" href="https://github.com/owncast/owncast/issues/new/choose">
-            let us know how we can help</a>.
+          If you're having issues or would like to know how to customize and configure your Owncast server visit <Link href="/help">the help page.</Link>
         </div>
       ),
     }
