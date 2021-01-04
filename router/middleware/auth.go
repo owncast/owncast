@@ -2,9 +2,12 @@ package middleware
 
 import (
 	"crypto/subtle"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -42,4 +45,33 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 
 		handler(w, r)
 	}
+}
+
+func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
+		token := strings.Join(authHeader, "")
+
+		fmt.Println(token)
+
+		if len(authHeader) == 0 || token == "" {
+			log.Warnln("invalid access token")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("invalid access token"))
+			return
+		}
+
+		if accepted, err := data.DoesTokenSupportScope(token, scope); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		} else if !accepted {
+			log.Warnln("invalid access token")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("invalid access token"))
+			return
+		}
+
+		handler(w, r)
+	})
 }
