@@ -3,10 +3,9 @@
 import videojs from '/js/web_modules/videojs/core.js';
 import '/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js';
 import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
-import { PLAYER_VOLUME } from '../utils/constants.js';
+import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
 
 const VIDEO_ID = 'video';
-const URL_STREAM = `/hls/stream.m3u8`;
 
 // Video setup
 const VIDEO_SRC = {
