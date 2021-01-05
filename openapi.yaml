@@ -953,12 +953,12 @@ paths:
                   schema:
                     type: object
                     properties:
-                      success:
-                        type: boolean
-                        example: true
-                      message:
+                      name:
                         type: string
-                        example: Created auth token
+                        example: your new token
+                      token:
+                        type: string
+                        example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
 
   /api/admin/deleteaccesstoken:
       post:

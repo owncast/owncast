@@ -46,7 +46,11 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "created "+request.Name)
+	controllers.WriteResponse(w, models.AccessToken{
+		Token:  token,
+		Name:   request.Name,
+		Scopes: request.Scopes,
+	})
 }
 
 // GetAccessTokens will return all 3rd party access tokens.
