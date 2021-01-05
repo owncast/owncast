@@ -12,7 +12,61 @@ import {
     CREATE_ACCESS_TOKEN,
 } from "../utils/apis";
 
-export default function Logs() {
+const scopeMapping = {
+    'CAN_SEND_SYSTEM_MESSAGES': 'system chat',
+    'CAN_SEND_MESSAGES': 'user chat',
+};
+
+function convertScopeStringToRenderString(scope) {
+    if (!scope || !scopeMapping[scope]) {
+        return "unknown";
+    }
+
+    return scopeMapping[scope].toUpperCase();
+}
+
+function NewTokenModal(props) {
+    var selectedScopes = [];
+
+    const scopes = [
+        {
+            value: 'CAN_SEND_SYSTEM_MESSAGES',
+            label: 'Can send system chat messages',
+            description: 'Can send chat messages as the offical system user.'
+        },
+        {
+            value: 'CAN_SEND_MESSAGES',
+            label: 'Can send user chat messages',
+            description: 'Can send chat messages as any user name.'
+        },
+    ]
+
+    function onChange(checkedValues) {
+        selectedScopes = checkedValues
+    }
+
+    function saveToken() {
+        props.onOk(name, selectedScopes)
+    }
+
+    const [name, setName] = useState('');
+
+    return (
+        <Modal title="Create New Access token" visible={props.visible} onOk={saveToken} onCancel={props.onCancel}>
+            <p><Input value={name} placeholder="Access token name/description" onChange={(input) => setName(input.currentTarget.value)} /></p>
+
+            <p>
+                Select the permissions this access token will have.  It cannot be edited after it's created.
+            </p>
+            <Checkbox.Group options={scopes} onChange={onChange} />
+        </Modal>
+    )
+}
+
+export default function AccessTokens() {
+    const [tokens, setTokens] = useState([]);
+    const [isTokenModalVisible, setIsTokenModalVisible] = useState(false);
+
     const columns = [
         {
             title: '',
@@ -65,8 +119,6 @@ export default function Logs() {
         },
     ];
 
-    const [tokens, setTokens] = useState([]);
-
     const getAccessTokens = async () => {
         try {
             const result = await fetchData(ACCESS_TOKENS);
@@ -78,10 +130,6 @@ export default function Logs() {
 
     useEffect(() => {
         getAccessTokens();
-
-        // returned function will be called on component unmount
-        return () => {
-        };
     }, []);
 
     async function handleDeleteToken(token) {
@@ -107,8 +155,6 @@ export default function Logs() {
         alert(error);
     }
 
-    const [isTokenModalVisible, setIsTokenModalVisible] = useState(false);
-
     const showCreateTokenModal = () => {
         setIsTokenModalVisible(true);
     };
@@ -121,7 +167,6 @@ export default function Logs() {
     const handleTokenModalCancel = () => {
         setIsTokenModalVisible(false);
     };
-
 
     return (
         <div>
@@ -139,55 +184,4 @@ export default function Logs() {
             <NewTokenModal visible={isTokenModalVisible} onOk={handleTokenModalSaveButton} onCancel={handleTokenModalCancel} />
         </div>
     );
-}
-
-const scopeMapping = {
-    'CAN_SEND_SYSTEM_MESSAGES': 'system chat',
-    'CAN_SEND_MESSAGES': 'user chat',
-};
-
-function convertScopeStringToRenderString(scope) {
-    if (!scopeMapping[scope]) {
-        return "unknown";
-    }
-
-    return scopeMapping[scope].toUpperCase();
-}
-
-function NewTokenModal(props) {
-    var selectedScopes = [];
-
-    const scopes = [
-        {
-            value: 'CAN_SEND_SYSTEM_MESSAGES',
-            label: 'Can send system chat messages',
-            description: 'Can send chat messages as the offical system user.'
-        },
-        {
-            value: 'CAN_SEND_MESSAGES',
-            label: 'Can send user chat messages',
-            description: 'Can send chat messages as any user name.'
-        },
-    ]
-
-    function onChange(checkedValues) {
-        selectedScopes = checkedValues
-    }
-
-    function saveToken() {
-        props.onOk(name, selectedScopes)
-    }
-
-    const [name, setName] = useState('');
-
-    return (
-        <Modal title="Create New Access token" visible={props.visible} onOk={saveToken} onCancel={props.onCancel}>
-            <p><Input value={name} placeholder="Access token name/description" onChange={(input) => setName(input.currentTarget.value)} /></p>
-
-            <p>
-                Select the permissions this access token will have.  It cannot be edited after it's created.
-            </p>
-            <Checkbox.Group options={scopes} onChange={onChange} />
-        </Modal>
-    )
 }
