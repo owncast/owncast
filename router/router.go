@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
 )
@@ -113,6 +114,9 @@ func Start() error {
 
 	// Create a single access token
 	http.HandleFunc("/api/admin/createaccesstoken", middleware.RequireAdminAuth(admin.CreateAccessToken))
+
+	// Send a system message to chat
+	http.HandleFunc("/api/admin/sendsystemmessage", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
 	port := config.Config.GetPublicWebServerPort()
 

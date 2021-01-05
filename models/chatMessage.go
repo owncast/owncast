@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/teris-io/shortid"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
@@ -28,6 +29,13 @@ type ChatEvent struct {
 // Valid checks to ensure the message is valid.
 func (m ChatEvent) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""
+}
+
+func (m ChatEvent) SetDefaults() {
+	id, _ := shortid.Generate()
+	m.ID = id
+	m.Timestamp = time.Now()
+	m.Visible = true
 }
 
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize

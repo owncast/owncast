@@ -2,7 +2,6 @@ package data
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -114,8 +113,6 @@ func DoesTokenSupportScope(token string, scope string) (bool, error) {
 
 	var count = 0
 	err := row.Scan(&count)
-
-	fmt.Println(count, err)
 
 	return count > 0, err
 }
