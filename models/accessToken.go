@@ -3,13 +3,13 @@ package models
 import "time"
 
 const (
-	ScopeCanSendMessages       = "CAN_SEND_MESSAGES"
+	ScopeCanSendUserMessages   = "CAN_SEND_MESSAGES"
 	ScopeCanSendSystemMessages = "CAN_SEND_SYSTEM_MESSAGES"
 )
 
 // For a scope to be seen as "valid" it must live in this slice.
 var validAccessTokenScopes = []string{
-	ScopeCanSendMessages,
+	ScopeCanSendUserMessages,
 	ScopeCanSendSystemMessages,
 }
 

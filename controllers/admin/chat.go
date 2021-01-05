@@ -83,3 +83,29 @@ func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
+
+// SendUserMessage will send a message to chat on behalf of a user.
+func SendUserMessage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var message models.ChatEvent
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+		controllers.InternalErrorHandler(w, err)
+		return
+	}
+
+	message.MessageType = "CHAT"
+	message.ClientID = "external-request"
+	message.ID = shortid.MustGenerate()
+	message.Visible = true
+
+	message.SetDefaults()
+	message.RenderAndSanitizeMessageBody()
+
+	if err := core.SendMessageToChat(message); err != nil {
+		controllers.BadRequestHandler(w, err)
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "sent")
+}

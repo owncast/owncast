@@ -118,6 +118,9 @@ func Start() error {
 	// Send a system message to chat
 	http.HandleFunc("/api/admin/sendsystemmessage", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
+	// Send a user message to chat
+	http.HandleFunc("/api/admin/sendsystemmessage", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendUserMessage))
+
 	port := config.Config.GetPublicWebServerPort()
 
 	log.Tracef("Web server running on port: %d", port)
