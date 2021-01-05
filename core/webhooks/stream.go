@@ -1,5 +1,7 @@
 package webhooks
 
-func SendStreamStatusEvent(eventType EventType) {
+import "github.com/owncast/owncast/models"
+
+func SendStreamStatusEvent(eventType models.EventType) {
 	SendEventToWebhooks(WebhookEvent{Type: eventType})
 }

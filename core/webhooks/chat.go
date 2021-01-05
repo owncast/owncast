@@ -10,11 +10,11 @@ func SendChatEvent(chatEvent models.ChatEvent) {
 	// TODO: handle errors here instead of returning
 	switch chatEvent.MessageType {
 	case models.MessageSent:
-		webhookEvent.Type = MessageSent
+		webhookEvent.Type = models.MessageSent
 	case models.UserNameChanged:
-		webhookEvent.Type = UserNameChanged
+		webhookEvent.Type = models.UserNameChanged
 	case models.VisibiltyToggled:
-		webhookEvent.Type = VisibiltyToggled
+		webhookEvent.Type = models.VisibiltyToggled
 	}
 
 	webhookEvent.EventData = &WebhookChatMessage{
@@ -31,7 +31,7 @@ func SendChatEvent(chatEvent models.ChatEvent) {
 
 func SendChatEventUsernameChanged(event models.NameChangeEvent) {
 	webhookEvent := WebhookEvent{
-		Type:      UserNameChanged,
+		Type:      models.UserNameChanged,
 		EventData: event,
 	}
 

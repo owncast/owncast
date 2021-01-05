@@ -26,23 +26,23 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		var message models.ChatEvent
 		if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
-			internalErrorHandler(w, err)
+			InternalErrorHandler(w, err)
 			return
 		}
 
 		if err := core.SendMessageToChat(message); err != nil {
-			badRequestHandler(w, err)
+			BadRequestHandler(w, err)
 			return
 		}
 
 		if err := json.NewEncoder(w).Encode(j{"success": true}); err != nil {
-			internalErrorHandler(w, err)
+			InternalErrorHandler(w, err)
 			return
 		}
 	default:
 		w.WriteHeader(http.StatusNotImplemented)
 		if err := json.NewEncoder(w).Encode(j{"error": "method not implemented (PRs are accepted)"}); err != nil {
-			internalErrorHandler(w, err)
+			InternalErrorHandler(w, err)
 		}
 	}
 }

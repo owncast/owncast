@@ -3,34 +3,19 @@ package webhooks
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 )
-
-type EventType string
-
-const (
-	MessageSent      EventType = "messageSent"
-	UserJoined       EventType = "userJoined"
-	UserNameChanged  EventType = "usernameChanged"
-	VisibiltyToggled EventType = "visibilityToggle"
-	StreamStarted    EventType = "streamStarted"
-	StreamStopped    EventType = "streamStopped"
-)
-
-func (e EventType) toString() string {
-	return fmt.Sprintf("%s", e)
-}
 
 type WebhookEvent struct {
-	Type      EventType   `json:"type"` // messageSent | userJoined | userNameChange
-	EventData interface{} `json:"eventData,omitempty"`
+	Type      models.EventType `json:"type"` // messageSent | userJoined | userNameChange
+	EventData interface{}      `json:"eventData,omitempty"`
 }
 
 type WebhookChatMessage struct {
@@ -43,12 +28,14 @@ type WebhookChatMessage struct {
 }
 
 func SendEventToWebhooks(payload WebhookEvent) {
-	for _, webhook := range config.Config.Webhooks {
+	webhooks := data.GetWebhooksForEvent(payload.Type)
+
+	for _, webhook := range webhooks {
 		log.Debugf("Checking Webhook %s to send event: %s", webhook.Url, payload.Type)
 
-		eventsAccepted := strings.Join(webhook.Events, ",")
+		eventsAccepted := strings.Join(interface{}(webhook.Events).([]string), ",")
 
-		if strings.Contains(eventsAccepted, payload.Type.toString()) || eventsAccepted == "" {
+		if strings.Contains(eventsAccepted, payload.Type) || eventsAccepted == "" {
 			log.Debugf("Event sent to Webhook %s", webhook.Url)
 			if err := sendWebhook(webhook.Url, payload); err != nil {
 				log.Infof("Event: %s failed to send to webhook: %s  Error: %s", payload.Type, webhook.Url, err)

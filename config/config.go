@@ -29,7 +29,6 @@ type config struct {
 	RTMPServerPort       int             `yaml:"rtmpServerPort"`
 	DisableUpgradeChecks bool            `yaml:"disableUpgradeChecks"`
 	YP                   YP              `yaml:"yp"`
-	Webhooks             []Webhook       `yaml:"webhooks"`
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
@@ -61,11 +60,6 @@ type videoSettings struct {
 	StreamingKey              string          `yaml:"streamingKey"`
 	StreamQualities           []StreamQuality `yaml:"streamQualities"`
 	HighestQualityStreamIndex int             `yaml:"-"`
-}
-
-type Webhook struct {
-	Url    string   `yaml:"url"`
-	Events []string `yaml:"events"`
 }
 
 // YP allows registration to the central Owncast YP (Yellow pages) service operating as a directory.

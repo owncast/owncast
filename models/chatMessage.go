@@ -16,13 +16,13 @@ import (
 type ChatEvent struct {
 	ClientID string `json:"-"`
 
-	Author      string          `json:"author,omitempty"`
-	Body        string          `json:"body,omitempty"`
-	RawBody     string          `json:"-"`
-	ID          string          `json:"id"`
-	MessageType ChatMessageType `json:"type"`
-	Visible     bool            `json:"visible"`
-	Timestamp   time.Time       `json:"timestamp,omitempty"`
+	Author      string    `json:"author,omitempty"`
+	Body        string    `json:"body,omitempty"`
+	RawBody     string    `json:"-"`
+	ID          string    `json:"id"`
+	MessageType EventType `json:"type"`
+	Visible     bool      `json:"visible"`
+	Timestamp   time.Time `json:"timestamp,omitempty"`
 }
 
 // Valid checks to ensure the message is valid.
