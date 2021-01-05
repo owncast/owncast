@@ -53,19 +53,19 @@ func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc
 
 		if len(authHeader) == 0 || token == "" {
 			log.Warnln("invalid access token")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("invalid access token"))
+			w.WriteHeader(http.StatusUnauthorized)  //nolint
+			w.Write([]byte("invalid access token")) //nolint
 			return
 		}
 
 		if accepted, err := data.DoesTokenSupportScope(token, scope); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			w.WriteHeader(http.StatusInternalServerError) //nolint
+			w.Write([]byte(err.Error()))                  //nolint
 			return
 		} else if !accepted {
 			log.Warnln("invalid access token")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("invalid access token"))
+			w.WriteHeader(http.StatusUnauthorized)  //nolint
+			w.Write([]byte("invalid access token")) //nolint
 			return
 		}
 

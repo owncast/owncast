@@ -17,7 +17,7 @@ import (
 
 // UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}

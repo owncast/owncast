@@ -78,7 +78,7 @@ func DeleteToken(token string) error {
 	}
 
 	if rowsDeleted, _ := result.RowsAffected(); rowsDeleted == 0 {
-		tx.Rollback()
+		tx.Rollback() //nolint
 		return errors.New(token + " not found")
 	}
 
@@ -91,7 +91,7 @@ func DeleteToken(token string) error {
 
 func DoesTokenSupportScope(token string, scope string) (bool, error) {
 	// This will split the scopes from comma separated to individual rows
-	// so we can efficiantly find if a token supports a single scope.
+	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
 	// backends we need to support other methods.
 	var query = `SELECT count(*) FROM (
@@ -137,9 +137,8 @@ func GetAccessTokens() ([]models.AccessToken, error) {
 		var lastUsedString string
 
 		if err := rows.Scan(&token, &name, &scopes, &timestampString, &lastUsedString); err != nil {
-			log.Error("There is a problem with the database.", err)
+			log.Error("There is a problem reading the database.", err)
 			return tokens, err
-			break
 		}
 
 		timestamp, err := time.Parse(time.RFC3339, timestampString)

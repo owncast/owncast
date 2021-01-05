@@ -62,7 +62,7 @@ func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
 
 // DeleteAccessToken will return a single 3rd party access token.
 func DeleteAccessToken(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
