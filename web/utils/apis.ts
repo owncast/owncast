@@ -40,6 +40,14 @@ export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/admin/chat/updatemessagevisibility`;
 
+// Get all access tokens
+export const ACCESS_TOKENS = `${API_LOCATION}accesstokens`;
+
+// Delete a single access token
+export const DELETE_ACCESS_TOKEN = `${API_LOCATION}deleteaccesstoken`;
+
+// Create a new access token
+export const CREATE_ACCESS_TOKEN = `${API_LOCATION}createaccesstoken`;
 
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
