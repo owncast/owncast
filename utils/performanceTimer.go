@@ -2,8 +2,11 @@ package utils
 
 import (
 	"sort"
+	"sync"
 	"time"
 )
+
+var l = sync.Mutex{}
 
 // The "start" timestamp of a timing event.
 var _pointsInTime = make(map[string]time.Time)
@@ -13,10 +16,12 @@ var _durationStorage = make(map[string][]float64)
 
 // StartPerformanceMonitor will keep track of the start time of this event.
 func StartPerformanceMonitor(key string) {
+	l.Lock()
 	if len(_durationStorage[key]) > 20 {
 		_durationStorage[key] = removeHighValue(_durationStorage[key])
 	}
 	_pointsInTime[key] = time.Now()
+	l.Unlock()
 }
 
 // GetAveragePerformance will return the average durations for the event.
@@ -26,12 +31,15 @@ func GetAveragePerformance(key string) float64 {
 		return 0
 	}
 
+	l.Lock()
 	delta := time.Since(timestamp).Seconds()
 	_durationStorage[key] = append(_durationStorage[key], delta)
 	if len(_durationStorage[key]) < 8 {
 		return 0
 	}
 	_durationStorage[key] = removeHighValue(_durationStorage[key])
+	l.Unlock()
+
 	return avg(_durationStorage[key])
 }
 
