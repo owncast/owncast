@@ -32,13 +32,14 @@ func GetAveragePerformance(key string) float64 {
 	}
 
 	l.Lock()
+	defer l.Unlock()
+
 	delta := time.Since(timestamp).Seconds()
 	_durationStorage[key] = append(_durationStorage[key], delta)
 	if len(_durationStorage[key]) < 8 {
 		return 0
 	}
 	_durationStorage[key] = removeHighValue(_durationStorage[key])
-	l.Unlock()
 
 	return avg(_durationStorage[key])
 }
