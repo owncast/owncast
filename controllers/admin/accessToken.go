@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
@@ -47,9 +48,11 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	controllers.WriteResponse(w, models.AccessToken{
-		Token:  token,
-		Name:   request.Name,
-		Scopes: request.Scopes,
+		Token:     token,
+		Name:      request.Name,
+		Scopes:    request.Scopes,
+		Timestamp: time.Now(),
+		LastUsed:  nil,
 	})
 }
 

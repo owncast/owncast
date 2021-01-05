@@ -17,7 +17,7 @@ func createAccessTokensTable() {
 		"name" string,
 		"scopes" TEXT,
 		"timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP
+		"last_used" DATETIME
 	);`
 
 	stmt, err := _db.Prepare(createTableSQL)
@@ -134,7 +134,7 @@ func GetAccessTokens() ([]models.AccessToken, error) {
 		var name string
 		var scopes string
 		var timestampString string
-		var lastUsedString string
+		var lastUsedString *string
 
 		if err := rows.Scan(&token, &name, &scopes, &timestampString, &lastUsedString); err != nil {
 			log.Error("There is a problem reading the database.", err)
@@ -146,7 +146,11 @@ func GetAccessTokens() ([]models.AccessToken, error) {
 			return tokens, err
 		}
 
-		lastUsed, _ := time.Parse(time.RFC3339, lastUsedString)
+		var lastUsed *time.Time = nil
+		if lastUsedString != nil {
+			lastUsedTime, _ := time.Parse(time.RFC3339, *lastUsedString)
+			lastUsed = &lastUsedTime
+		}
 
 		singleToken := models.AccessToken{
 			Name:      name,

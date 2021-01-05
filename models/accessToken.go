@@ -14,11 +14,11 @@ var validAccessTokenScopes = []string{
 }
 
 type AccessToken struct {
-	Token     string    `json:"token"`
-	Name      string    `json:"name"`
-	Scopes    []string  `json:"scopes"`
-	Timestamp time.Time `json:"timestamp"`
-	LastUsed  time.Time `json:"lastUsed"`
+	Token     string     `json:"token"`
+	Name      string     `json:"name"`
+	Scopes    []string   `json:"scopes"`
+	Timestamp time.Time  `json:"timestamp"`
+	LastUsed  *time.Time `json:"lastUsed"`
 }
 
 // HasValidScopes will verify that all the scopes provided are valid.
