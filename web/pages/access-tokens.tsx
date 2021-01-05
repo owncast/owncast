@@ -112,8 +112,11 @@ export default function AccessTokens() {
             title: 'Last Used',
             dataIndex: 'lastUsed',
             key: 'lastUsed',
-            render: (timestamp) => {
-                const dateObject = new Date(timestamp);
+            render: (lastUsed) => {
+                if (!lastUsed) {
+                    return 'Never';
+                }
+                const dateObject = new Date(lastUsed);
                 return format(dateObject, 'P p');
             },
         },
@@ -130,7 +133,7 @@ export default function AccessTokens() {
 
     useEffect(() => {
         getAccessTokens();
-    }, []);
+    }, [tokens]);
 
     async function handleDeleteToken(token) {
         try {
@@ -143,8 +146,9 @@ export default function AccessTokens() {
 
     async function handleSaveToken(name: string, scopes: string[]) {
         try {
-            const result = await fetchData(CREATE_ACCESS_TOKEN, { method: 'POST', data: { name: name, scopes: scopes } });
-            getAccessTokens();
+            const newToken = await fetchData(CREATE_ACCESS_TOKEN, { method: 'POST', data: { name: name, scopes: scopes } });
+            tokens.push(newToken);
+            setTokens(tokens);
         } catch (error) {
             handleError(error);
         }
