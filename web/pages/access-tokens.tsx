@@ -178,7 +178,7 @@ function NewTokenModal(props) {
         props.onOk(name, selectedScopes)
     }
 
-    const [name, setName] = useState([]);
+    const [name, setName] = useState('');
 
     return (
         <Modal title="Create New Access token" visible={props.visible} onOk={saveToken} onCancel={props.onCancel}>
