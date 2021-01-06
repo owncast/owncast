@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,6 +28,8 @@ const PEAK_VIEWERS_OVERALL_KEY = "peak_viewers_overall"
 const LAST_DISCONNECT_TIME_KEY = "last_disconnect_time"
 const FFMPEG_PATH_KEY = "ffmpeg_path"
 const NSFW_KEY = "nsfw"
+const S3_STORAGE_ENABLED = "s3_storage_enabled"
+const S3_STORAGE_CONFIG_KEY = "s3_storage_config"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -219,8 +222,8 @@ func SetDirectoryEnabled(enabled bool) error {
 	return _datastore.SetBool(DIRECTORY_ENABLED_KEY, enabled)
 }
 
-func GetSocialHandles() []config.SocialHandle {
-	var socialHandles []config.SocialHandle
+func GetSocialHandles() []models.SocialHandle {
+	var socialHandles []models.SocialHandle
 
 	configEntry, err := _datastore.Get(SOCIAL_HANDLES_KEY)
 	if err != nil {
@@ -236,7 +239,7 @@ func GetSocialHandles() []config.SocialHandle {
 	return socialHandles
 }
 
-func SetSocialHandles(socialHandles []config.SocialHandle) error {
+func SetSocialHandles(socialHandles []models.SocialHandle) error {
 	var configEntry = ConfigEntry{Key: SOCIAL_HANDLES_KEY, Value: socialHandles}
 	return _datastore.Save(configEntry)
 }
@@ -300,4 +303,32 @@ func GetNSFW() bool {
 
 func SetFfmpegPath(path string) error {
 	return _datastore.SetString(FFMPEG_PATH_KEY, path)
+}
+
+func GetS3Config() models.S3 {
+	config, err := _datastore.Get(S3_STORAGE_CONFIG_KEY)
+	if err != nil {
+		return models.S3{Enabled: false}
+	}
+
+	return config.Value.(models.S3)
+}
+
+func SetS3Config(config models.S3) error {
+	var configEntry = ConfigEntry{Key: S3_STORAGE_CONFIG_KEY, Value: config}
+	return _datastore.Save(configEntry)
+}
+
+func GetS3StorageEnabled() bool {
+	enabled, err := _datastore.GetBool(S3_STORAGE_ENABLED)
+	if err != nil {
+		log.Errorln(err)
+		return false
+	}
+
+	return enabled
+}
+
+func SetS3StorageEnabled(enabled bool) error {
+	return _datastore.SetBool(S3_STORAGE_ENABLED, enabled)
 }

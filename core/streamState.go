@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/webhooks"
@@ -39,7 +40,9 @@ func setStreamAsConnected() {
 	}
 
 	segmentPath := config.PublicHLSStoragePath
-	if config.Config.S3.Enabled {
+	s3Config := data.GetS3Config()
+
+	if s3Config.Enabled {
 		segmentPath = config.PrivateHLSStoragePath
 	}
 

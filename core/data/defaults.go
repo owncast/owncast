@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -28,7 +29,7 @@ func PopulateDefaults() {
 	SetServerName("Owncast")
 	SetStreamKey(defaults.VideoSettings.StreamingKey)
 	SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
-	SetSocialHandles([]config.SocialHandle{
+	SetSocialHandles([]models.SocialHandle{
 		{
 			Platform: "github",
 			URL:      "https://github.com/owncast/owncast",
