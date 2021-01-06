@@ -26,6 +26,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Version:          config.Config.VersionInfo,
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),
+		SocialHandles:    data.GetSocialHandles(),
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {
