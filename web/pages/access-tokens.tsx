@@ -133,7 +133,7 @@ export default function AccessTokens() {
 
     useEffect(() => {
         getAccessTokens();
-    }, [tokens]);
+    }, []);
 
     async function handleDeleteToken(token) {
         try {
@@ -147,8 +147,7 @@ export default function AccessTokens() {
     async function handleSaveToken(name: string, scopes: string[]) {
         try {
             const newToken = await fetchData(CREATE_ACCESS_TOKEN, { method: 'POST', data: { name: name, scopes: scopes } });
-            tokens.push(newToken);
-            setTokens(tokens);
+            setTokens(tokens.concat(newToken));
         } catch (error) {
             handleError(error);
         }
