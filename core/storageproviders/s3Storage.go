@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/playlist"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -44,19 +45,20 @@ var _uploader *s3manager.Uploader
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
-	if config.Config.S3.ServingEndpoint != "" {
-		s.host = config.Config.S3.ServingEndpoint
+	s3Config := data.GetS3Config()
+	if s3Config.ServingEndpoint != "" {
+		s.host = s3Config.ServingEndpoint
 	} else {
-		s.host = fmt.Sprintf("%s/%s", config.Config.S3.Endpoint, config.Config.S3.Bucket)
+		s.host = fmt.Sprintf("%s/%s", s3Config.Endpoint, s3Config.Bucket)
 	}
 
-	s.s3Endpoint = config.Config.S3.Endpoint
-	s.s3ServingEndpoint = config.Config.S3.ServingEndpoint
-	s.s3Region = config.Config.S3.Region
-	s.s3Bucket = config.Config.S3.Bucket
-	s.s3AccessKey = config.Config.S3.AccessKey
-	s.s3Secret = config.Config.S3.Secret
-	s.s3ACL = config.Config.S3.ACL
+	s.s3Endpoint = s3Config.Endpoint
+	s.s3ServingEndpoint = s3Config.ServingEndpoint
+	s.s3Region = s3Config.Region
+	s.s3Bucket = s3Config.Bucket
+	s.s3AccessKey = s3Config.AccessKey
+	s.s3Secret = s3Config.Secret
+	s.s3ACL = s3Config.ACL
 
 	s.sess = s.connectAWS()
 

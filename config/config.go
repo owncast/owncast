@@ -21,7 +21,6 @@ type config struct {
 	FFMpegPath           string
 	Files                files           `yaml:"files"`
 	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
-	S3                   S3              `yaml:"s3"`
 	VersionInfo          string          `yaml:"-"` // For storing the version/build number
 	VersionNumber        string          `yaml:"-"`
 	VideoSettings        videoSettings   `yaml:"videoSettings"`
@@ -33,22 +32,15 @@ type config struct {
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name             string         `json:"name"`
-	Title            string         `json:"title"`
-	Summary          string         `json:"summary"`
-	Logo             string         `json:"logo"`
-	Tags             []string       `json:"tags"`
-	SocialHandles    []SocialHandle `json:"socialHandles"`
-	Version          string         `json:"version"`
-	NSFW             bool           `json:"nsfw"`
-	ExtraPageContent string         `json:"extraPageContent"`
-	StreamTitle      string         `json:"streamTitle"` // What's going on with the current stream
-}
-
-type SocialHandle struct {
-	Platform string `yaml:"platform" json:"platform"`
-	URL      string `yaml:"url" json:"url"`
-	Icon     string `yaml:"icon" json:"icon"`
+	Name             string   `json:"name"`
+	Title            string   `json:"title"`
+	Summary          string   `json:"summary"`
+	Logo             string   `json:"logo"`
+	Tags             []string `json:"tags"`
+	Version          string   `json:"version"`
+	NSFW             bool     `json:"nsfw"`
+	ExtraPageContent string   `json:"extraPageContent"`
+	StreamTitle      string   `json:"streamTitle"` // What's going on with the current stream
 }
 
 type videoSettings struct {
@@ -125,20 +117,6 @@ func (c *config) load(filePath string) error {
 func (c *config) verifySettings() error {
 	if c.VideoSettings.StreamingKey == "" {
 		return errors.New("No stream key set. Please set one in your config file.")
-	}
-
-	if c.S3.Enabled {
-		if c.S3.AccessKey == "" || c.S3.Secret == "" {
-			return errors.New("s3 support requires an access key and secret")
-		}
-
-		if c.S3.Region == "" || c.S3.Endpoint == "" {
-			return errors.New("s3 support requires a region and endpoint")
-		}
-
-		if c.S3.Bucket == "" {
-			return errors.New("s3 support requires a bucket created for storing public video segments")
-		}
 	}
 
 	return nil

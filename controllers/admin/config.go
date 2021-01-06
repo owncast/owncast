@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 )
 
 type ConfigValue struct {
@@ -291,6 +292,38 @@ func ChangeDisableUpgradeChecks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	controllers.WriteSimpleResponse(w, true, "disable upgrade checks changed")
+}
+
+func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var newS3Config models.S3
+	if err := decoder.Decode(&newS3Config); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update s3 config with provided values")
+		return
+	}
+
+	if newS3Config.Enabled {
+		if newS3Config.AccessKey == "" || newS3Config.Secret == "" {
+			controllers.WriteSimpleResponse(w, false, "s3 support requires an access key and secret")
+			return
+		}
+
+		if newS3Config.Region == "" || newS3Config.Endpoint == "" {
+			controllers.WriteSimpleResponse(w, false, "s3 support requires a region and endpoint")
+			return
+		}
+
+		if newS3Config.Bucket == "" {
+			controllers.WriteSimpleResponse(w, false, "s3 support requires a bucket created for storing public video segments")
+			return
+		}
+	}
+
+	data.SetS3Config(newS3Config)
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

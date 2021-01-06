@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,6 +31,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Tags:             data.GetServerMetadataTags(),
 			ExtraPageContent: data.GetExtraPageBodyContent(),
 			StreamTitle:      data.GetStreamTitle(),
+			Logo:             data.GetLogoPath(),
 		},
 		FFmpegPath:     config.Config.GetFFMpegPath(),
 		StreamKey:      data.GetStreamKey(),
@@ -44,7 +46,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Enabled:     data.GetDirectoryEnabled(),
 			InstanceURL: data.GetServerURL(),
 		},
-		S3: config.Config.S3,
+		S3: data.GetS3Config(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -60,7 +62,7 @@ type serverConfigAdminResponse struct {
 	StreamKey       string                 `json:"streamKey"`
 	WebServerPort   int                    `json:"webServerPort"`
 	RTMPServerPort  int                    `json:"rtmpServerPort"`
-	S3              config.S3              `json:"s3"`
+	S3              models.S3              `json:"s3"`
 	VideoSettings   videoSettings          `json:"videoSettings"`
 	YP              config.YP              `json:"yp"`
 }
