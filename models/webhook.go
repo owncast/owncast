@@ -7,7 +7,7 @@ type Webhook struct {
 	Url       string      `json:"url"`
 	Events    []EventType `json:"events"`
 	Timestamp time.Time   `json:"timestamp"`
-	LastUsed  time.Time   `json:"lastUsed"`
+	LastUsed  *time.Time  `json:"lastUsed"`
 }
 
 // For an event to be seen as "valid" it must live in this slice.

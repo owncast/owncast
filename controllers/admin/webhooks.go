@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
@@ -34,12 +35,19 @@ func CreateWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.InsertWebhook(request.Url, request.Events); err != nil {
+	newWebhookId, err := data.InsertWebhook(request.Url, request.Events)
+	if err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "created")
+	controllers.WriteResponse(w, models.Webhook{
+		ID:        newWebhookId,
+		Url:       request.Url,
+		Events:    request.Events,
+		Timestamp: time.Now(),
+		LastUsed:  nil,
+	})
 }
 
 // GetWebhooks will return all webhooks.
