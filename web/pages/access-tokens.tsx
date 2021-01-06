@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography } from 'antd';
+import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
 import { DeleteOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 const { Title, Paragraph, Text } = Typography;
 
@@ -12,34 +12,34 @@ import {
     CREATE_ACCESS_TOKEN,
 } from "../utils/apis";
 
-const scopeMapping = {
-    'CAN_SEND_SYSTEM_MESSAGES': 'system chat',
-    'CAN_SEND_MESSAGES': 'user chat',
+const availableScopes = {
+    'CAN_SEND_SYSTEM_MESSAGES': { name: 'System messages', description: 'You can send official messages on behalf of the system', color: 'purple' },
+    'CAN_SEND_MESSAGES': { name: 'User chat messages', description: 'You can send messages on behalf of a username', color: 'green' },
 };
 
-function convertScopeStringToRenderString(scope) {
-    if (!scope || !scopeMapping[scope]) {
-        return "unknown";
+function convertScopeStringToTag(scopeString) {
+    if (!scopeString || !availableScopes[scopeString]) {
+        return null;
     }
 
-    return scopeMapping[scope].toUpperCase();
+    const scope = availableScopes[scopeString];
+
+    return (
+        <Tooltip key={scopeString} title={scope.description}>
+            <Tag color={scope.color} >
+                {scope.name}
+            </Tag>
+        </Tooltip>
+    );
 }
 
 function NewTokenModal(props) {
     var selectedScopes = [];
 
-    const scopes = [
-        {
-            value: 'CAN_SEND_SYSTEM_MESSAGES',
-            label: 'Can send system chat messages',
-            description: 'Can send chat messages as the offical system user.'
-        },
-        {
-            value: 'CAN_SEND_MESSAGES',
-            label: 'Can send user chat messages',
-            description: 'Can send chat messages as any user name.'
-        },
-    ]
+
+    const scopes = Object.keys(availableScopes).map(function (key) {
+        return { value: key, label: availableScopes[key].description }
+    });
 
     function onChange(checkedValues) {
         selectedScopes = checkedValues
@@ -97,13 +97,7 @@ export default function AccessTokens() {
             render: scopes => (
                 <>
                     {scopes.map(scope => {
-                        const color = 'purple';
-
-                        return (
-                            <Tag color={color} key={scope}>
-                                {convertScopeStringToRenderString(scope)}
-                            </Tag>
-                        );
+                        return convertScopeStringToTag(scope);
                     })}
                 </>
             ),
