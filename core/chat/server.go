@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/websocket"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 )
 
@@ -61,7 +62,7 @@ func (s *server) sendAll(msg models.ChatEvent) {
 }
 
 func (s *server) ping() {
-	ping := models.PingMessage{MessageType: PING}
+	ping := models.PingMessage{MessageType: models.PING}
 	for _, c := range s.Clients {
 		c.pingch <- ping
 	}
@@ -71,6 +72,8 @@ func (s *server) usernameChanged(msg models.NameChangeEvent) {
 	for _, c := range s.Clients {
 		c.usernameChangeChannel <- msg
 	}
+
+	go webhooks.SendChatEventUsernameChanged(msg)
 }
 
 func (s *server) onConnection(ws *websocket.Conn) {
@@ -123,6 +126,9 @@ func (s *server) Listen() {
 
 				// Store in the message history
 				addMessage(msg)
+
+				// Send webhooks
+				go webhooks.SendChatEvent(msg)
 			}
 		case ping := <-s.pingCh:
 			fmt.Println("PING?", ping)
