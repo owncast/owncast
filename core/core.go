@@ -33,6 +33,8 @@ var fileWriter = ffmpeg.FileWriterReceiverService{}
 func Start() error {
 	resetDirectories()
 
+	data.MigrateConfigFile()
+
 	if err := setupStats(); err != nil {
 		log.Error("failed to setup the stats")
 		return err
@@ -101,7 +103,8 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.Start()
 
 	// Copy the logo to be the thumbnail
-	err := utils.Copy(filepath.Join("webroot", config.Config.InstanceDetails.Logo), "webroot/thumbnail.jpg")
+	logo := data.GetLogoPath()
+	err := utils.Copy(filepath.Join("webroot", logo), "webroot/thumbnail.jpg")
 	if err != nil {
 		log.Warnln(err)
 	}
@@ -155,7 +158,8 @@ func resetDirectories() {
 	}
 
 	// Remove the previous thumbnail
-	err = utils.Copy(path.Join(config.WebRoot, config.Config.InstanceDetails.Logo), "webroot/thumbnail.jpg")
+	logo := data.GetLogoPath()
+	err = utils.Copy(path.Join(config.WebRoot, logo), "webroot/thumbnail.jpg")
 	if err != nil {
 		log.Warnln(err)
 	}

@@ -6,7 +6,9 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
+
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
@@ -32,15 +34,16 @@ type config struct {
 
 // InstanceDetails defines the user-visible information about this particular instance.
 type InstanceDetails struct {
-	Name             string   `json:"name"`
-	Title            string   `json:"title"`
-	Summary          string   `json:"summary"`
-	Logo             string   `json:"logo"`
-	Tags             []string `json:"tags"`
-	Version          string   `json:"version"`
-	NSFW             bool     `json:"nsfw"`
-	ExtraPageContent string   `json:"extraPageContent"`
-	StreamTitle      string   `json:"streamTitle"` // What's going on with the current stream
+	Name             string                `json:"name"`
+	Title            string                `json:"title"`
+	Summary          string                `json:"summary"`
+	Logo             string                `json:"logo"`
+	Tags             []string              `json:"tags"`
+	Version          string                `json:"version"`
+	NSFW             bool                  `json:"nsfw"`
+	ExtraPageContent string                `json:"extraPageContent"`
+	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
+	SocialHandles    []models.SocialHandle `json:"socialHandles"`
 }
 
 type videoSettings struct {
@@ -95,7 +98,7 @@ type S3 struct {
 
 func (c *config) load(filePath string) error {
 	if !utils.DoesFileExists(filePath) {
-		log.Fatal("ERROR: valid config.yaml is required.  Copy config-default.yaml to config.yaml and edit")
+		return nil
 	}
 
 	yamlFile, err := ioutil.ReadFile(filePath)

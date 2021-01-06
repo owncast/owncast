@@ -8,12 +8,12 @@ import (
 	"net"
 
 	"github.com/oschwald/geoip2-golang"
-	"github.com/owncast/owncast/config"
 	log "github.com/sirupsen/logrus"
 )
 
 var _geoIPCache = map[string]GeoDetails{}
 var _enabled = true // Try to use GeoIP support it by default.
+var geoIPDatabasePath = "data/GeoLite2-City.mmdb"
 
 // GeoDetails stores details about a location.
 type GeoDetails struct {
@@ -53,7 +53,7 @@ func FetchGeoForIP(ip string) {
 	}
 
 	go func() {
-		db, err := geoip2.Open(config.GeoIPDatabasePath)
+		db, err := geoip2.Open(geoIPDatabasePath)
 		if err != nil {
 			log.Traceln("GeoIP support is disabled. visit http://owncast.online/docs/geoip to learn how to enable.", err)
 			_enabled = false

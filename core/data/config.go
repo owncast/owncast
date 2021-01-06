@@ -157,9 +157,12 @@ func GetHTTPPortNumber() int {
 	port, err := _datastore.GetNumber(HTTP_PORT_NUMBER_KEY)
 	if err != nil {
 		log.Errorln(HTTP_PORT_NUMBER_KEY, err)
-		return 8080
+		return config.GetDefaults().WebServerPort
 	}
 
+	if port == 0 {
+		return config.GetDefaults().WebServerPort
+	}
 	return int(port)
 }
 
@@ -171,7 +174,11 @@ func GetRTMPPortNumber() int {
 	port, err := _datastore.GetNumber(RTMP_PORT_NUMBER_KEY)
 	if err != nil {
 		log.Errorln(RTMP_PORT_NUMBER_KEY, err)
-		return 8080
+		return config.GetDefaults().RTMPServerPort
+	}
+
+	if port == 0 {
+		return config.GetDefaults().RTMPServerPort
 	}
 
 	return int(port)
@@ -231,7 +238,7 @@ func GetSocialHandles() []models.SocialHandle {
 		return socialHandles
 	}
 
-	if err := configEntry.getObject(socialHandles); err != nil {
+	if err := configEntry.getObject(&socialHandles); err != nil {
 		log.Errorln(err)
 		return socialHandles
 	}

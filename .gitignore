@@ -32,7 +32,7 @@ data/
 transcoder.log
 chat.db
 .yp.key
-
+backup/
 !webroot/js/web_modules/**/dist
 !core/data
 test/test.db

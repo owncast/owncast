@@ -19,6 +19,8 @@ func HasPopulatedDefaults() bool {
 }
 
 func PopulateDefaults() {
+	return
+
 	defaults := config.GetDefaults()
 
 	SetHTTPPortNumber(defaults.WebServerPort)
