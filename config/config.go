@@ -16,18 +16,19 @@ var Config *config
 var _default config
 
 type config struct {
-	DatabaseFilePath    string `yaml:"databaseFile"`
-	EnableDebugFeatures bool   `yaml:"-"`
-	FFMpegPath          string
-	Files               files           `yaml:"files"`
-	InstanceDetails     InstanceDetails `yaml:"instanceDetails"`
-	S3                  S3              `yaml:"s3"`
-	VersionInfo         string          `yaml:"-"` // For storing the version/build number
-	VersionNumber       string          `yaml:"-"`
-	VideoSettings       videoSettings   `yaml:"videoSettings"`
-	WebServerPort       int
-	RTMPServerPort      int
-	YP                  YP `yaml:"yp"`
+	DatabaseFilePath     string `yaml:"databaseFile"`
+	EnableDebugFeatures  bool   `yaml:"-"`
+	FFMpegPath           string
+	Files                files           `yaml:"files"`
+	InstanceDetails      InstanceDetails `yaml:"instanceDetails"`
+	S3                   S3              `yaml:"s3"`
+	VersionInfo          string          `yaml:"-"` // For storing the version/build number
+	VersionNumber        string          `yaml:"-"`
+	VideoSettings        videoSettings   `yaml:"videoSettings"`
+	WebServerPort        int
+	RTMPServerPort       int
+	YP                   YP `yaml:"yp"`
+	DisableUpgradeChecks bool
 }
 
 // InstanceDetails defines the user-visible information about this particular instance.
