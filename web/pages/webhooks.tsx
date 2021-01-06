@@ -15,12 +15,12 @@ import {
 } from "../utils/apis";
 
 const availableEvents = {
-    'CHAT': { name: 'Chat messages', description: 'When a user sends a chat message' },
-    'USER_JOINED': { name: 'User joined', description: 'When a user joins the chat'},
-    'NAME_CHANGE': { name: 'User name changed', description: 'When a user changes their name'},
-    'VISIBILITY-UPDATE': { name: 'Message visibility changed', description: 'When a message visibility changes, likely due to moderation'},
-    'STREAM_STARTED': {name: 'Stream started', description: 'When a stream starts'},
-    'STREAM_STOPPED': {name: 'Stream stopped', description: 'When a stream stops'}
+    'CHAT': { name: 'Chat messages', description: 'When a user sends a chat message', color: 'purple' },
+    'USER_JOINED': { name: 'User joined', description: 'When a user joins the chat', color: 'green'},
+    'NAME_CHANGE': { name: 'User name changed', description: 'When a user changes their name', color: 'blue'},
+    'VISIBILITY-UPDATE': { name: 'Message visibility changed', description: 'When a message visibility changes, likely due to moderation', color: 'red'},
+    'STREAM_STARTED': {name: 'Stream started', description: 'When a stream starts', color: 'orange'},
+    'STREAM_STOPPED': {name: 'Stream stopped', description: 'When a stream stops', color: 'cyan'}
 
 };
 
@@ -30,11 +30,10 @@ function convertEventStringToTag(eventString) {
     }
 
     const event = availableEvents[eventString];
-    const color = 'purple';
 
     return (
         <Tooltip key={eventString} title={event.description}>
-            <Tag color={color} >
+            <Tag color={event.color} >
                 {event.name}
             </Tag>
         </Tooltip>
