@@ -32,7 +32,7 @@ const NSFW_KEY = "nsfw"
 func GetExtraPageBodyContent() string {
 	content, err := _datastore.GetString(EXTRA_CONTENT_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(EXTRA_CONTENT_KEY, err)
 		return ""
 	}
 
@@ -48,7 +48,7 @@ func SetExtraPageBodyContent(content string) error {
 func GetStreamTitle() string {
 	title, err := _datastore.GetString(STREAM_TITLE_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(STREAM_TITLE_KEY, err)
 		return ""
 	}
 
@@ -64,7 +64,7 @@ func SetStreamTitle(title string) error {
 func GetServerTitle() string {
 	title, err := _datastore.GetString(SERVER_TITLE_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(SERVER_TITLE_KEY, err)
 		return ""
 	}
 
@@ -80,7 +80,7 @@ func SetServerTitle(title string) error {
 func GetStreamKey() string {
 	title, err := _datastore.GetString(STREAM_KEY_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(STREAM_KEY_KEY, err)
 		return ""
 	}
 
@@ -96,7 +96,7 @@ func SetStreamKey(key string) error {
 func GetLogoPath() string {
 	title, err := _datastore.GetString(LOGO_PATH_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(LOGO_PATH_KEY, err)
 		return ""
 	}
 
@@ -111,7 +111,7 @@ func SetLogoPath(key string) error {
 func GetServerSummary() string {
 	summary, err := _datastore.GetString(SERVER_SUMMARY_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(SERVER_SUMMARY_KEY, err)
 		return ""
 	}
 
@@ -125,7 +125,7 @@ func SetServerSummary(summary string) error {
 func GetServerName() string {
 	name, err := _datastore.GetString(SERVER_NAME_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(SERVER_NAME_KEY, err)
 		return ""
 	}
 
@@ -139,7 +139,7 @@ func SetServerName(name string) error {
 func GetServerURL() string {
 	url, err := _datastore.GetString(SERVER_URL_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(SERVER_URL_KEY, err)
 		return ""
 	}
 
@@ -153,7 +153,7 @@ func SetServerURL(url string) error {
 func GetHTTPPortNumber() int {
 	port, err := _datastore.GetNumber(HTTP_PORT_NUMBER_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(HTTP_PORT_NUMBER_KEY, err)
 		return 8080
 	}
 
@@ -167,7 +167,7 @@ func SetHTTPPortNumber(port int) error {
 func GetRTMPPortNumber() int {
 	port, err := _datastore.GetNumber(RTMP_PORT_NUMBER_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(RTMP_PORT_NUMBER_KEY, err)
 		return 8080
 	}
 
@@ -181,8 +181,7 @@ func SetRTMPPortNumber(port int) error {
 func GetDisableUpgradeChecks() bool {
 	disable, err := _datastore.GetBool(DISABLE_UPGRADE_CHECKS_KEY)
 	if err != nil {
-		log.Errorln(err)
-		return false
+		return config.GetDefaults().DisableUpgradeChecks
 	}
 
 	return disable
@@ -195,7 +194,7 @@ func SetDisableUpgradeChecks(disable bool) error {
 func GetServerMetadataTags() []string {
 	tagsString, err := _datastore.GetString(SERVER_METADATA_TAGS_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(SERVER_METADATA_TAGS_KEY, err)
 		return []string{}
 	}
 
@@ -210,8 +209,7 @@ func SetServerMetadataTags(tags []string) error {
 func GetDirectoryEnabled() bool {
 	enabled, err := _datastore.GetBool(DIRECTORY_ENABLED_KEY)
 	if err != nil {
-		log.Errorln(err)
-		return false
+		return config.GetDefaults().YP.Enabled
 	}
 
 	return enabled
@@ -226,7 +224,7 @@ func GetSocialHandles() []config.SocialHandle {
 
 	configEntry, err := _datastore.Get(SOCIAL_HANDLES_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(SOCIAL_HANDLES_KEY, err)
 		return socialHandles
 	}
 
@@ -246,7 +244,7 @@ func SetSocialHandles(socialHandles []config.SocialHandle) error {
 func GetPeakSessionViewerCount() int {
 	count, err := _datastore.GetNumber(PEAK_VIEWERS_SESSION_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(PEAK_VIEWERS_SESSION_KEY, err)
 		return 0
 	}
 	return int(count)
@@ -259,7 +257,7 @@ func SetPeakSessionViewerCount(count int) error {
 func GetPeakOverallViewerCount() int {
 	count, err := _datastore.GetNumber(PEAK_VIEWERS_OVERALL_KEY)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln(PEAK_VIEWERS_OVERALL_KEY, err)
 		return 0
 	}
 	return int(count)

@@ -9,6 +9,7 @@ func GetDefaults() config {
 	defaults.YP.Enabled = false
 	defaults.YP.YPServiceURL = "https://yp.owncast.online"
 	defaults.DatabaseFilePath = "data/owncast.db"
+	defaults.DisableUpgradeChecks = false
 
 	defaultQuality := StreamQuality{
 		IsAudioPassthrough: true,
