@@ -326,6 +326,32 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	data.SetS3Config(newS3Config)
 }
 
+func SetVideoSegmentDurationSeconds(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	data.SetVideoSegmentLengthDuration(configValue.Value.(float32))
+}
+
+func SetVideoSegmentsInPlaylist(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	data.SetVideoSegmentsInPlaylist(configValue.Value.(float32))
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != "POST" {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
