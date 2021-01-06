@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -31,15 +30,9 @@ func SendEventToWebhooks(payload WebhookEvent) {
 	webhooks := data.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
-		log.Debugf("Checking Webhook %s to send event: %s", webhook.Url, payload.Type)
-
-		eventsAccepted := strings.Join(webhook.Events, ",")
-
-		if strings.Contains(eventsAccepted, payload.Type) || eventsAccepted == "" {
-			log.Debugf("Event sent to Webhook %s", webhook.Url)
-			if err := sendWebhook(webhook.Url, payload); err != nil {
-				log.Infof("Event: %s failed to send to webhook: %s  Error: %s", payload.Type, webhook.Url, err)
-			}
+		log.Debugf("Event %s sent to Webhook %s", payload.Type, webhook.Url)
+		if err := sendWebhook(webhook.Url, payload); err != nil {
+			log.Infof("Event: %s failed to send to webhook: %s  Error: %s", payload.Type, webhook.Url, err)
 		}
 	}
 }
