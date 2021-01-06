@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -28,11 +28,11 @@ func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 	status := getStatus()
 
 	response := ypDetailsResponse{
-		Name:                  config.Config.InstanceDetails.Name,
-		Description:           config.Config.InstanceDetails.Summary,
-		Logo:                  config.Config.InstanceDetails.Logo,
-		NSFW:                  config.Config.InstanceDetails.NSFW,
-		Tags:                  config.Config.InstanceDetails.Tags,
+		Name:                  data.GetServerName(),
+		Description:           data.GetServerSummary(),
+		Logo:                  data.GetLogoPath(),
+		NSFW:                  data.GetNSFW(),
+		Tags:                  data.GetServerMetadataTags(),
 		Online:                status.Online,
 		ViewerCount:           status.ViewerCount,
 		OverallMaxViewerCount: status.OverallMaxViewerCount,

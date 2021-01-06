@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 )
@@ -169,8 +169,8 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		// Add an artificial delay so people notice this message come in.
 		time.Sleep(7 * time.Second)
 
-		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
-		initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: config.Config.InstanceDetails.Name, Body: initialChatMessageText, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
+		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", data.GetServerTitle(), data.GetServerSummary())
+		initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: data.GetServerName(), Body: initialChatMessageText, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
 		c.write(initialMessage)
 	}()
 }

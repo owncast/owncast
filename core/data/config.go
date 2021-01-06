@@ -290,6 +290,14 @@ func SetNSFW(isNSFW bool) error {
 	return _datastore.SetBool(NSFW_KEY, isNSFW)
 }
 
+func GetNSFW() bool {
+	nsfw, err := _datastore.GetBool(NSFW_KEY)
+	if err != nil {
+		return false
+	}
+	return nsfw
+}
+
 func SetFfmpegPath(path string) error {
 	return _datastore.SetString(FFMPEG_PATH_KEY, path)
 }
