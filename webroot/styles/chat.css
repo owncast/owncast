@@ -3,7 +3,7 @@
 #chat-container {
   position: fixed;
   z-index: 9;
-  top: var(--header-height);
+  bottom: 0;
   right: 0;
   width: var(--right-col-width);
 
