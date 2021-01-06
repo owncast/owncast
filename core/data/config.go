@@ -30,6 +30,8 @@ const FFMPEG_PATH_KEY = "ffmpeg_path"
 const NSFW_KEY = "nsfw"
 const S3_STORAGE_ENABLED = "s3_storage_enabled"
 const S3_STORAGE_CONFIG_KEY = "s3_storage_config"
+const VIDEO_SEGMENT_LENGTH_SECONDS = "video_segment_length_seconds"
+const VIDEO_SEGMENTS_IN_PLAYLIST = "video_segments_in_seconds"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -338,4 +340,30 @@ func GetS3StorageEnabled() bool {
 
 func SetS3StorageEnabled(enabled bool) error {
 	return _datastore.SetBool(S3_STORAGE_ENABLED, enabled)
+}
+
+func GetVideoSegmentLengthDuration() float32 {
+	seconds, err := _datastore.GetNumber(VIDEO_SEGMENT_LENGTH_SECONDS)
+	if err != nil || seconds == 0 {
+		return 4
+	}
+
+	return seconds
+}
+
+func SetVideoSegmentLengthDuration(seconds float32) error {
+	return _datastore.SetNumber(VIDEO_SEGMENT_LENGTH_SECONDS, seconds)
+}
+
+func GetVideoSegmentsInPlaylist() float32 {
+	count, err := _datastore.GetNumber(VIDEO_SEGMENTS_IN_PLAYLIST)
+	if err != nil || count == 0 {
+		return 20
+	}
+
+	return count
+}
+
+func SetVideoSegmentsInPlaylist(count float32) error {
+	return _datastore.SetNumber(VIDEO_SEGMENTS_IN_PLAYLIST, count)
 }

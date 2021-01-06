@@ -128,6 +128,12 @@ func Start() error {
 	// disable server upgrade checks
 	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.ChangeDisableUpgradeChecks))
 
+	// set the length of video segments
+	http.HandleFunc("/api/admin/config/video/segmentlength", middleware.RequireAdminAuth(admin.SetVideoSegmentDurationSeconds))
+
+	// set the number of video segments in a playlist
+	http.HandleFunc("/api/admin/config/video/segmentcount", middleware.RequireAdminAuth(admin.SetVideoSegmentsInPlaylist))
+
 	port := data.GetHTTPPortNumber()
 
 	log.Tracef("Web server running on port: %d", port)
