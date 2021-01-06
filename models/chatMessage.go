@@ -31,7 +31,7 @@ func (m ChatEvent) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""
 }
 
-func (m ChatEvent) SetDefaults() {
+func (m *ChatEvent) SetDefaults() {
 	id, _ := shortid.Generate()
 	m.ID = id
 	m.Timestamp = time.Now()
