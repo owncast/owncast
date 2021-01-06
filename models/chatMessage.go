@@ -18,8 +18,9 @@ type ChatEvent struct {
 
 	Author      string    `json:"author,omitempty"`
 	Body        string    `json:"body,omitempty"`
+	RawBody     string    `json:"-"`
 	ID          string    `json:"id"`
-	MessageType string    `json:"type"`
+	MessageType EventType `json:"type"`
 	Visible     bool      `json:"visible"`
 	Timestamp   time.Time `json:"timestamp,omitempty"`
 }
@@ -32,10 +33,10 @@ func (m ChatEvent) Valid() bool {
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func (m *ChatEvent) RenderAndSanitizeMessageBody() {
-	raw := m.Body
+	m.RawBody = m.Body
 
 	// Set the new, sanitized and rendered message body
-	m.Body = RenderAndSanitize(raw)
+	m.Body = RenderAndSanitize(m.RawBody)
 }
 
 // RenderAndSanitize will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
