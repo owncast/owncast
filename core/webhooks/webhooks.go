@@ -33,7 +33,7 @@ func SendEventToWebhooks(payload WebhookEvent) {
 	for _, webhook := range webhooks {
 		log.Debugf("Checking Webhook %s to send event: %s", webhook.Url, payload.Type)
 
-		eventsAccepted := strings.Join(interface{}(webhook.Events).([]string), ",")
+		eventsAccepted := strings.Join(webhook.Events, ",")
 
 		if strings.Contains(eventsAccepted, payload.Type) || eventsAccepted == "" {
 			log.Debugf("Event sent to Webhook %s", webhook.Url)
