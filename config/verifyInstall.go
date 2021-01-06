@@ -12,8 +12,8 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-// verifyFFMpegPath verifies that the path exists, is a file, and is executable.
-func verifyFFMpegPath(path string) error {
+// VerifyFFMpegPath verifies that the path exists, is a file, and is executable.
+func VerifyFFMpegPath(path string) error {
 	stat, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
