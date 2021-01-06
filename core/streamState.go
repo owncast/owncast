@@ -12,6 +12,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 
 	"github.com/grafov/m3u8"
@@ -54,6 +56,8 @@ func setStreamAsConnected() {
 	}()
 
 	ffmpeg.StartThumbnailGenerator(segmentPath, config.Config.VideoSettings.HighestQualityStreamIndex)
+
+	go webhooks.SendStreamStatusEvent(models.StreamStarted)
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
@@ -144,6 +148,8 @@ func SetStreamAsDisconnected() {
 
 	StartOfflineCleanupTimer()
 	stopOnlineCleanupTimer()
+
+	go webhooks.SendStreamStatusEvent(models.StreamStopped)
 }
 
 // StartOfflineCleanupTimer will fire a cleanup after n minutes being disconnected.

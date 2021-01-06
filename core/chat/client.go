@@ -40,14 +40,6 @@ type Client struct {
 	rateLimiter *rate.Limiter
 }
 
-const (
-	CHAT             = "CHAT"
-	NAMECHANGE       = "NAME_CHANGE"
-	PING             = "PING"
-	PONG             = "PONG"
-	VISIBILITYUPDATE = "VISIBILITY-UPDATE"
-)
-
 // NewClient creates a new chat client.
 func NewClient(ws *websocket.Conn) *Client {
 	if ws == nil {
@@ -157,15 +149,15 @@ func (c *Client) listenRead() {
 				log.Errorln(err)
 			}
 
-			messageType := messageTypeCheck["type"]
+			messageType := messageTypeCheck["type"].(string)
 
 			if !c.passesRateLimit() {
 				continue
 			}
 
-			if messageType == CHAT {
+			if messageType == string(models.MessageSent) {
 				c.chatMessageReceived(data)
-			} else if messageType == NAMECHANGE {
+			} else if messageType == string(models.UserNameChanged) {
 				c.userChangedName(data)
 			}
 		}
@@ -178,7 +170,7 @@ func (c *Client) userChangedName(data []byte) {
 	if err != nil {
 		log.Errorln(err)
 	}
-	msg.Type = NAMECHANGE
+	msg.Type = models.UserNameChanged
 	msg.ID = shortid.MustGenerate()
 	_server.usernameChanged(msg)
 	c.Username = &msg.NewName
