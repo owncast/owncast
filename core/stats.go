@@ -1,10 +1,7 @@
 package core
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"math"
-	"os"
 	"sync"
 	"time"
 
@@ -12,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -20,11 +18,7 @@ import (
 var l = sync.Mutex{}
 
 func setupStats() error {
-	s, err := getSavedStats()
-	if err != nil {
-		return err
-	}
-
+	s := getSavedStats()
 	_stats = &s
 
 	statsSaveTimer := time.NewTicker(1 * time.Minute)
@@ -104,41 +98,20 @@ func GetClients() []models.Client {
 }
 
 func saveStatsToFile() error {
-	jsonData, err := json.Marshal(_stats)
-	if err != nil {
-		return err
-	}
-
-	f, err := os.Create(config.StatsFile)
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-
-	if _, err := f.Write(jsonData); err != nil {
-		return err
-	}
+	data.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount)
+	data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount)
+	data.SetLastDisconnectTime(_stats.LastConnectTime.Time)
 
 	return nil
 }
 
-func getSavedStats() (models.Stats, error) {
+func getSavedStats() models.Stats {
+	savedLastDisconnectTime, savedLastDisconnectTimeErr := data.GetLastDisconnectTime()
 	result := models.Stats{
-		Clients: make(map[string]models.Client),
-	}
-
-	if !utils.DoesFileExists(config.StatsFile) {
-		return result, nil
-	}
-
-	jsonFile, err := ioutil.ReadFile(config.StatsFile)
-	if err != nil {
-		return result, err
-	}
-
-	if err := json.Unmarshal(jsonFile, &result); err != nil {
-		return result, err
+		Clients:               make(map[string]models.Client),
+		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
+		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
+		LastDisconnectTime:    utils.NullTime{Time: savedLastDisconnectTime, Valid: savedLastDisconnectTimeErr == nil},
 	}
 
 	// If the stats were saved > 5min ago then ignore the
@@ -147,5 +120,5 @@ func getSavedStats() (models.Stats, error) {
 		result.SessionMaxViewerCount = 0
 	}
 
-	return result, err
+	return result
 }
