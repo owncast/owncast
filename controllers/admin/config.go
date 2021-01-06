@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
 )
@@ -187,6 +188,12 @@ func ChangeFfmpegPath(w http.ResponseWriter, r *http.Request) {
 
 	configValue, success := getValueFromRequest(w, r)
 	if !success {
+		return
+	}
+
+	path := configValue.Value.(string)
+	if err := config.VerifyFFMpegPath(path); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
