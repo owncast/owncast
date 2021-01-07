@@ -49,6 +49,15 @@ export const DELETE_ACCESS_TOKEN = `${API_LOCATION}deleteaccesstoken`;
 // Create a new access token
 export const CREATE_ACCESS_TOKEN = `${API_LOCATION}createaccesstoken`;
 
+// Get webhooks
+export const WEBHOOKS = `${API_LOCATION}webhooks`;
+
+// Delete a single webhook
+export const DELETE_WEBHOOK = `${API_LOCATION}webhooks/delete`;
+
+// Create a single webhook
+export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
+
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
 interface FetchOptions {
