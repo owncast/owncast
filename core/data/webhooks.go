@@ -111,9 +111,9 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 		SELECT url, event 
 		  FROM split 
 		 WHERE event <> ''
-	  ) AS webhook WHERE event IS "?"`
+	  ) AS webhook WHERE event IS "` + event + `"`
 
-	rows, err := _db.Query(query, event)
+	rows, err := _db.Query(query)
 
 	if err != nil {
 		log.Fatal(err)
@@ -121,31 +121,17 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	defer rows.Close()
 
 	for rows.Next() {
-		var id int
 		var url string
-		var events string
-		var timestamp time.Time
-		var lastUsedString *string
 
-		err = rows.Scan(&id, &url, &events, &timestamp, &lastUsedString)
+		err = rows.Scan(&url, &event)
 		if err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the database.")
 			break
 		}
 
-		var lastUsed *time.Time = nil
-		if lastUsedString != nil {
-			lastUsedTime, _ := time.Parse(time.RFC3339, *lastUsedString)
-			lastUsed = &lastUsedTime
-		}
-
 		singleWebhook := models.Webhook{
-			ID:        id,
-			Url:       url,
-			Events:    strings.Split(events, ","),
-			Timestamp: timestamp,
-			LastUsed:  lastUsed,
+			Url: url,
 		}
 
 		webhooks = append(webhooks, singleWebhook)
@@ -169,7 +155,7 @@ func GetWebhooks() ([]models.Webhook, error) {
 		var url string
 		var events string
 		var timestampString string
-		var lastUsedString string
+		var lastUsedString *string
 
 		if err := rows.Scan(&id, &url, &events, &timestampString, &lastUsedString); err != nil {
 			log.Error("There is a problem reading the database.", err)
@@ -181,14 +167,18 @@ func GetWebhooks() ([]models.Webhook, error) {
 			return webhooks, err
 		}
 
-		lastUsed, _ := time.Parse(time.RFC3339, lastUsedString)
+		var lastUsed *time.Time = nil
+		if lastUsedString != nil {
+			lastUsedTime, _ := time.Parse(time.RFC3339, *lastUsedString)
+			lastUsed = &lastUsedTime
+		}
 
 		singleWebhook := models.Webhook{
 			ID:        id,
 			Url:       url,
 			Events:    strings.Split(events, ","),
 			Timestamp: timestamp,
-			LastUsed:  &lastUsed,
+			LastUsed:  lastUsed,
 		}
 
 		webhooks = append(webhooks, singleWebhook)
