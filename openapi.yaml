@@ -17,6 +17,8 @@ tags:
     description: Admin operations requiring authentication.
   - name: Chat
     description: Endpoints related to the chat interface.
+  - name: Integrations
+    description: APIs built to allow 3rd parties to interact with an Owncast server.
 
 components:
   schemas:
@@ -214,6 +216,10 @@ components:
       type: http
       scheme: basic
       description: The username for admin basic auth is `admin` and the password is the stream key.
+    AccessToken:
+      type: http
+      scheme: bearer
+      description: 3rd party integration auth where a service user must provide an access token.
 
   responses:
     ClientsResponse:
@@ -884,3 +890,123 @@ paths:
                         value: 11
                       - time: "2020-10-03T21:43:00.381996-05:00"
                         value: 11
+
+  /api/admin/sendsystemmessage:
+      post:
+        summary: Send a System chat message
+        description: Change the stream key in memory, but not in the config file.  This will require all broadcasters to be reconfigured to connect again.
+        tags: ["Integration"]
+        security:
+          - AccessToken: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  body:
+                    type: string
+                    description: The message text that will be sent as the system user.
+        responses:
+          '200':
+            description: Message was sent.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: sent
+
+  /api/admin/createaccesstoken:
+        post:
+          summary: Create an access token.
+          description: Create a single access token that has access to the access scopes provided.
+          tags: ["Integration"]
+          security:
+            - AdminBasicAuth: []
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The human-readable name to give this access token.
+                    scopes:
+                      type: array
+                      items:
+                        type: string
+
+          responses:
+            '200':
+              description: Token was created.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: your new token
+                      token:
+                        type: string
+                        example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
+
+  /api/admin/deleteaccesstoken:
+      post:
+        summary: Delete an access token.
+        description: Delete a single access token.
+        tags: ["Integration"]
+        security:
+          - AdminBasicAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: The token to delete
+
+        responses:
+          '200':
+            description: Token was deleted.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: deleted token
+
+  /api/admin/accesstokens:
+      get:
+        summary: Return all access tokens.
+        description: Return all of the available access tokens.
+        tags: ["Integration"]
+        security:
+          - AdminBasicAuth: []
+        responses:
+          '200':
+            description: Tokens are returned
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: string
+                    

@@ -30,12 +30,3 @@ func HasValidEvents(events []EventType) bool {
 	}
 	return true
 }
-
-func findItemInSlice(slice []EventType, value EventType) bool {
-	for _, item := range slice {
-		if item == value {
-			return true
-		}
-	}
-	return false
-}

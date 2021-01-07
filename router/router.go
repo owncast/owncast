@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
 )
@@ -105,6 +106,20 @@ func Start() error {
 
 	// Create a single webhook
 	http.HandleFunc("/api/admin/webhooks/create", middleware.RequireAdminAuth(admin.CreateWebhook))
+	// Get all access tokens
+	http.HandleFunc("/api/admin/accesstokens", middleware.RequireAdminAuth(admin.GetAccessTokens))
+
+	// Delete a single access token
+	http.HandleFunc("/api/admin/deleteaccesstoken", middleware.RequireAdminAuth(admin.DeleteAccessToken))
+
+	// Create a single access token
+	http.HandleFunc("/api/admin/createaccesstoken", middleware.RequireAdminAuth(admin.CreateAccessToken))
+
+	// Send a system message to chat
+	http.HandleFunc("/api/admin/sendsystemmessage", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendSystemMessage))
+
+	// Send a user message to chat
+	http.HandleFunc("/api/admin/sendusermessage", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendUserMessage))
 
 	port := config.Config.GetPublicWebServerPort()
 
