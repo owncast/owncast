@@ -40,6 +40,14 @@ export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/admin/chat/updatemessagevisibility`;
 
+// Get webhooks
+export const WEBHOOKS = `${API_LOCATION}webhooks`;
+
+// Delete a single webhook
+export const DELETE_WEBHOOK = `${API_LOCATION}webhooks/delete`;
+
+// Create a single webhook
+export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
 
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
