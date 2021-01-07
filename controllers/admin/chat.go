@@ -94,7 +94,7 @@ func SendUserMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	message.MessageType = "CHAT"
+	message.MessageType = models.MessageSent
 	message.ClientID = "external-request"
 	message.ID = shortid.MustGenerate()
 	message.Visible = true
