@@ -67,7 +67,7 @@ func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	message.MessageType = "SYSTEM"
+	message.MessageType = models.SystemMessageSent
 	message.Author = config.Config.InstanceDetails.Name
 	message.ClientID = "owncast-server"
 	message.ID = shortid.MustGenerate()
