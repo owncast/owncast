@@ -10,6 +10,12 @@
   height: calc(100vh - var(--header-height));
 }
 
+@media screen and (max-width: 729px) {
+  #chat-container {
+    top: var(--header-height);
+  }
+}
+
 #message-input-container {
   width: var(--right-col-width);
 }
