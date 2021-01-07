@@ -125,6 +125,7 @@ func (s *server) Listen() {
 				s.sendAll(msg)
 
 				// Store in the message history
+				msg.SetDefaults()
 				addMessage(msg)
 
 				// Send webhooks

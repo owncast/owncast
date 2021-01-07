@@ -12,7 +12,7 @@ import (
 
 // ChangeStreamKey will change the stream key (in memory).
 func ChangeStreamKey(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}

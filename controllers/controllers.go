@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
 type j map[string]interface{}
@@ -13,6 +14,8 @@ func InternalErrorHandler(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
 	}
+
+	log.Errorln(err)
 
 	w.WriteHeader(http.StatusInternalServerError)
 	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {
@@ -24,6 +27,8 @@ func BadRequestHandler(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
 	}
+
+	log.Debugln(err)
 
 	w.WriteHeader(http.StatusBadRequest)
 	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {

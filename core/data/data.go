@@ -81,6 +81,7 @@ func SetupPersistence() error {
 	_db = db
 
 	createWebhooksTable()
+	createAccessTokensTable()
 
 	return nil
 }

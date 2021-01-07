@@ -183,10 +183,7 @@ func (c *Client) chatMessageReceived(data []byte) {
 		log.Errorln(err)
 	}
 
-	id, _ := shortid.Generate()
-	msg.ID = id
-	msg.Timestamp = time.Now()
-	msg.Visible = true
+	msg.SetDefaults()
 
 	c.MessageCount++
 	c.Username = &msg.Author
