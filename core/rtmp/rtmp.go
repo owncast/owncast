@@ -15,7 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nareix/joy5/format/rtmp"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -82,7 +81,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	streamingKeyComponents := strings.Split(c.URL.Path, "/")
 	streamingKey := streamingKeyComponents[len(streamingKeyComponents)-1]
-	if streamingKey != config.Config.VideoSettings.StreamingKey {
+	if streamingKey != data.GetStreamKey() {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
 		nc.Close()
 		return

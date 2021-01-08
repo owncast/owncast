@@ -63,7 +63,11 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
-	myInstanceURL := config.Config.YP.InstanceURL
+	myInstanceURL := data.GetServerURL()
+	if myInstanceURL == "" {
+		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
+		return
+	}
 	isValidInstanceURL := isUrl(myInstanceURL)
 	if myInstanceURL == "" || !isValidInstanceURL {
 		if !_inErrorState {
@@ -75,7 +79,7 @@ func (yp *YP) ping() {
 
 	key := yp.getSavedKey()
 
-	log.Traceln("Pinging YP as: ", config.Config.InstanceDetails.Name, "with key", key)
+	log.Traceln("Pinging YP as: ", data.GetServerName(), "with key", key)
 
 	request := ypPingRequest{
 		Key: key,
@@ -88,7 +92,7 @@ func (yp *YP) ping() {
 		return
 	}
 
-	pingURL := config.Config.GetYPServiceHost() + "/ping"
+	pingURL := config.GetDefaults().YP.YPServiceURL + "/ping"
 	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req)) //nolint
 	if err != nil {
 		log.Errorln(err)

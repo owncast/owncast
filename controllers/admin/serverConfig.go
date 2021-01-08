@@ -13,7 +13,7 @@ import (
 // GetServerConfig gets the config details of the server.
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	var videoQualityVariants = make([]config.StreamQuality, 0)
-	for _, variant := range config.Config.GetVideoStreamQualities() {
+	for _, variant := range data.GetStreamOutputVariants() {
 		videoQualityVariants = append(videoQualityVariants, config.StreamQuality{
 			IsAudioPassthrough: variant.GetIsAudioPassthrough(),
 			IsVideoPassthrough: variant.IsVideoPassthrough,
@@ -33,14 +33,14 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			StreamTitle:      data.GetStreamTitle(),
 			Logo:             data.GetLogoPath(),
 		},
-		FFmpegPath:     config.Config.GetFFMpegPath(),
+		FFmpegPath:     data.GetFfMpegPath(),
 		StreamKey:      data.GetStreamKey(),
 		WebServerPort:  data.GetHTTPPortNumber(),
 		RTMPServerPort: data.GetRTMPPortNumber(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants:  videoQualityVariants,
-			SegmentLengthSeconds:  config.Config.GetVideoSegmentSecondsLength(),
-			NumberOfPlaylistItems: config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist(),
+			SegmentLengthSeconds:  int(data.GetVideoSegmentLengthDuration()),
+			NumberOfPlaylistItems: int(data.GetVideoSegmentsInPlaylist()),
 		},
 		YP: config.YP{
 			Enabled:     data.GetDirectoryEnabled(),

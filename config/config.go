@@ -1,10 +1,7 @@
 package config
 
 import (
-	"errors"
 	"io/ioutil"
-	"os/exec"
-	"strings"
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -14,8 +11,15 @@ import (
 )
 
 // Config contains a reference to the configuration.
-var Config *config
 var _default config
+
+var DatabaseFilePath = "data/owncast.db"
+var EnableDebugFeatures = false
+var VersionInfo = "v0.0.0"
+var VersionNumber = "0.0.0"
+var WebServerPort = 8080
+var RTMPServerPort = 1935
+var HighestQualityStreamIndex = 0
 
 type config struct {
 	DatabaseFilePath     string `yaml:"databaseFile"`
@@ -47,10 +51,9 @@ type InstanceDetails struct {
 }
 
 type videoSettings struct {
-	ChunkLengthInSeconds      int             `yaml:"chunkLengthInSeconds"`
-	StreamingKey              string          `yaml:"streamingKey"`
-	StreamQualities           []StreamQuality `yaml:"streamQualities"`
-	HighestQualityStreamIndex int             `yaml:"-"`
+	ChunkLengthInSeconds int                          `yaml:"chunkLengthInSeconds"`
+	StreamingKey         string                       `yaml:"streamingKey"`
+	StreamQualities      []models.StreamOutputVariant `yaml:"streamQualities"`
 }
 
 // YP allows registration to the central Owncast YP (Yellow pages) service operating as a directory.
@@ -112,15 +115,7 @@ func (c *config) load(filePath string) error {
 		return err
 	}
 
-	c.VideoSettings.HighestQualityStreamIndex = findHighestQuality(c.VideoSettings.StreamQualities)
-
-	return nil
-}
-
-func (c *config) verifySettings() error {
-	if c.VideoSettings.StreamingKey == "" {
-		return errors.New("No stream key set. Please set one in your config file.")
-	}
+	// c.VideoSettings.HighestQualityStreamIndex = findHighestQuality(c.VideoSettings.StreamQualities)
 
 	return nil
 }
@@ -141,36 +136,6 @@ func (c *config) GetMaxNumberOfReferencedSegmentsInPlaylist() int {
 	return _default.GetMaxNumberOfReferencedSegmentsInPlaylist()
 }
 
-func (c *config) GetFFMpegPath() string {
-	if c.FFMpegPath != "" {
-		if err := VerifyFFMpegPath(c.FFMpegPath); err == nil {
-			return c.FFMpegPath
-		} else {
-			log.Errorln(c.FFMpegPath, "is an invalid path to ffmpeg.  Will try to use a copy in your path, if possible.")
-		}
-	}
-
-	// First look to see if ffmpeg is in the current working directory
-	localCopy := "./ffmpeg"
-	hasLocalCopyError := VerifyFFMpegPath(localCopy)
-	if hasLocalCopyError == nil {
-		// No error, so all is good.  Use the local copy.
-		return localCopy
-	}
-
-	cmd := exec.Command("which", "ffmpeg")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatalln("Unable to determine path to ffmpeg. Please specify it in the config file.")
-	}
-
-	path := strings.TrimSpace(string(out))
-	if err := verifyFFMpegPath(path); err != nil {
-		log.Warnln(err)
-	}
-	return path
-}
-
 func (c *config) GetYPServiceHost() string {
 	if c.YP.YPServiceURL != "" {
 		return c.YP.YPServiceURL
@@ -187,66 +152,16 @@ func (c *config) GetDataFilePath() string {
 	return _default.DatabaseFilePath
 }
 
-func (c *config) GetVideoStreamQualities() []StreamQuality {
-	if len(c.VideoSettings.StreamQualities) > 0 {
-		return c.VideoSettings.StreamQualities
-	}
-	// type logo struct {
-	// 	Large string `yaml:"large" json:"large"`
-	// 	Small string `yaml:"small" json:"small"`
-	// }
-
-	return _default.VideoSettings.StreamQualities
-}
-
-// GetFramerate returns the framerate or default.
-func (q *StreamQuality) GetFramerate() int {
-	if q.IsVideoPassthrough {
-		return 0
-	}
-
-	if q.Framerate > 0 {
-		return q.Framerate
-	}
-
-	return _default.VideoSettings.StreamQualities[0].Framerate
-}
-
-// GetEncoderPreset returns the preset or default.
-func (q *StreamQuality) GetEncoderPreset() string {
-	if q.IsVideoPassthrough {
-		return ""
-	}
-
-	if q.EncoderPreset != "" {
-		return q.EncoderPreset
-	}
-
-	return _default.VideoSettings.StreamQualities[0].EncoderPreset
-}
-
-func (q *StreamQuality) GetIsAudioPassthrough() bool {
-	if q.IsAudioPassthrough {
-		return true
-	}
-
-	if q.AudioBitrate == 0 {
-		return true
-	}
-
-	return false
-}
-
 // Load tries to load the configuration file.
-func Load(filePath string, versionInfo string, versionNumber string) error {
-	Config = new(config)
-	_default = GetDefaults()
+// func Load(filePath string, versionInfo string, versionNumber string) error {
+// 	Config = new(config)
+// 	_default = GetDefaults()
 
-	if err := Config.load(filePath); err != nil {
-		return err
-	}
+// 	if err := Config.load(filePath); err != nil {
+// 		return err
+// 	}
 
-	Config.VersionInfo = versionInfo
-	Config.VersionNumber = versionNumber
-	return Config.verifySettings()
-}
+// 	Config.VersionInfo = versionInfo
+// 	Config.VersionNumber = versionNumber
+// 	return Config.verifySettings()
+// }

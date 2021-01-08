@@ -23,7 +23,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Summary:          data.GetServerSummary(),
 		Logo:             data.GetLogoPath(),
 		Tags:             data.GetServerMetadataTags(),
-		Version:          config.Config.VersionInfo,
+		Version:          config.VersionInfo,
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),
 		SocialHandles:    data.GetSocialHandles(),

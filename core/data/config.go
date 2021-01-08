@@ -1,6 +1,11 @@
 package data
 
 import (
+	"errors"
+	"fmt"
+	"os"
+	"os/exec"
+	"sort"
 	"strings"
 	"time"
 
@@ -28,10 +33,11 @@ const PEAK_VIEWERS_OVERALL_KEY = "peak_viewers_overall"
 const LAST_DISCONNECT_TIME_KEY = "last_disconnect_time"
 const FFMPEG_PATH_KEY = "ffmpeg_path"
 const NSFW_KEY = "nsfw"
-const S3_STORAGE_ENABLED = "s3_storage_enabled"
+const S3_STORAGE_ENABLED_KEY = "s3_storage_enabled"
 const S3_STORAGE_CONFIG_KEY = "s3_storage_config"
-const VIDEO_SEGMENT_LENGTH_SECONDS = "video_segment_length_seconds"
-const VIDEO_SEGMENTS_IN_PLAYLIST = "video_segments_in_seconds"
+const VIDEO_SEGMENT_LENGTH_SECONDS_KEY = "video_segment_length_seconds"
+const VIDEO_SEGMENTS_IN_PLAYLIST_KEY = "video_segments_in_seconds"
+const VIDEO_STREAM_OUTPUT_VARIANTS_KEY = "video_stream_output_variants"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -314,6 +320,32 @@ func SetFfmpegPath(path string) error {
 	return _datastore.SetString(FFMPEG_PATH_KEY, path)
 }
 
+func GetFfMpegPath() string {
+	ffmpegPath, err := _datastore.GetString(FFMPEG_PATH_KEY)
+
+	if ffmpegPath == "" || err != nil {
+		log.Errorln(ffmpegPath, "is an invalid path to ffmpeg.  Will try to use a copy in your path, if possible.")
+	}
+
+	// First look to see if ffmpeg is in the current working directory
+	localCopy := "./ffmpeg"
+	hasLocalCopyError := VerifyFFMpegPath(localCopy)
+	if hasLocalCopyError == nil {
+		// No error, so all is good.  Use the local copy.
+		return localCopy
+	}
+
+	cmd := exec.Command("which", "ffmpeg")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalln("Unable to determine path to ffmpeg. Please specify it in the config file.")
+	}
+
+	path := strings.TrimSpace(string(out))
+
+	return path
+}
+
 func GetS3Config() models.S3 {
 	config, err := _datastore.Get(S3_STORAGE_CONFIG_KEY)
 	if err != nil {
@@ -329,7 +361,7 @@ func SetS3Config(config models.S3) error {
 }
 
 func GetS3StorageEnabled() bool {
-	enabled, err := _datastore.GetBool(S3_STORAGE_ENABLED)
+	enabled, err := _datastore.GetBool(S3_STORAGE_ENABLED_KEY)
 	if err != nil {
 		log.Errorln(err)
 		return false
@@ -339,11 +371,11 @@ func GetS3StorageEnabled() bool {
 }
 
 func SetS3StorageEnabled(enabled bool) error {
-	return _datastore.SetBool(S3_STORAGE_ENABLED, enabled)
+	return _datastore.SetBool(S3_STORAGE_ENABLED_KEY, enabled)
 }
 
 func GetVideoSegmentLengthDuration() float32 {
-	seconds, err := _datastore.GetNumber(VIDEO_SEGMENT_LENGTH_SECONDS)
+	seconds, err := _datastore.GetNumber(VIDEO_SEGMENT_LENGTH_SECONDS_KEY)
 	if err != nil || seconds == 0 {
 		return 4
 	}
@@ -352,11 +384,11 @@ func GetVideoSegmentLengthDuration() float32 {
 }
 
 func SetVideoSegmentLengthDuration(seconds float32) error {
-	return _datastore.SetNumber(VIDEO_SEGMENT_LENGTH_SECONDS, seconds)
+	return _datastore.SetNumber(VIDEO_SEGMENT_LENGTH_SECONDS_KEY, seconds)
 }
 
 func GetVideoSegmentsInPlaylist() float32 {
-	count, err := _datastore.GetNumber(VIDEO_SEGMENTS_IN_PLAYLIST)
+	count, err := _datastore.GetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY)
 	if err != nil || count == 0 {
 		return 20
 	}
@@ -364,6 +396,86 @@ func GetVideoSegmentsInPlaylist() float32 {
 	return count
 }
 
-func SetVideoSegmentsInPlaylist(count float32) error {
-	return _datastore.SetNumber(VIDEO_SEGMENTS_IN_PLAYLIST, count)
+func SetStreamOutputVariants(count float32) error {
+	return _datastore.SetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY, count)
+}
+
+func GetStreamOutputVariants() []models.StreamOutputVariant {
+	variants, err := _datastore.Get(VIDEO_STREAM_OUTPUT_VARIANTS_KEY)
+	if err != nil || len(variants.Value.([]models.StreamOutputVariant)) == 0 {
+		return config.GetDefaults().VideoSettings.StreamQualities
+	}
+
+	return variants.Value.([]models.StreamOutputVariant)
+}
+
+func SetVideoOutputVariants(variants []models.StreamOutputVariant) error {
+	var configEntry = ConfigEntry{Key: VIDEO_STREAM_OUTPUT_VARIANTS_KEY, Value: variants}
+	return _datastore.Save(configEntry)
+}
+
+func VerifySettings() error {
+	if GetStreamKey() == "" {
+		return errors.New("No stream key set. Please set one in your config file.")
+	}
+
+	return nil
+}
+
+// VerifyFFMpegPath verifies that the path exists, is a file, and is executable.
+func VerifyFFMpegPath(path string) error {
+	stat, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		return errors.New("ffmpeg path does not exist")
+	}
+
+	if err != nil {
+		return fmt.Errorf("error while verifying the ffmpeg path: %s", err.Error())
+	}
+
+	if stat.IsDir() {
+		return errors.New("ffmpeg path can not be a folder")
+	}
+
+	mode := stat.Mode()
+	//source: https://stackoverflow.com/a/60128480
+	if mode&0111 == 0 {
+		return errors.New("ffmpeg path is not executable")
+	}
+
+	return nil
+}
+
+func FindHighestVideoQualityIndex() int {
+	type IndexedQuality struct {
+		index   int
+		quality models.StreamOutputVariant
+	}
+
+	qualities := GetStreamOutputVariants()
+
+	if len(qualities) < 2 {
+		return 0
+	}
+
+	indexedQualities := make([]IndexedQuality, 0)
+	for index, quality := range qualities {
+		indexedQuality := IndexedQuality{index, quality}
+		indexedQualities = append(indexedQualities, indexedQuality)
+	}
+
+	sort.Slice(indexedQualities, func(a, b int) bool {
+		if indexedQualities[a].quality.IsVideoPassthrough && !indexedQualities[b].quality.IsVideoPassthrough {
+			return true
+		}
+
+		if !indexedQualities[a].quality.IsVideoPassthrough && indexedQualities[b].quality.IsVideoPassthrough {
+			return false
+		}
+
+		return indexedQualities[a].quality.VideoBitrate > indexedQualities[b].quality.VideoBitrate
+	})
+
+	return indexedQualities[0].index
 }
