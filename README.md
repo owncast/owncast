@@ -107,6 +107,17 @@ Read [more detailed documentation about configuration of S3-compatible services]
 
 There is also a supplied `Dockerfile` so you can spin it up from source with little effort.  [Read more about running from source](https://owncast.online/docs/building/).
 
+
+### Bundling in latest admin from source
+
+The admin ui is built at: https://github.com/owncast/owncast-admin it is bundled into the final binary using pkger.
+
+To bundle in the latest admin UI:
+
+1. Install pkger. `go install github.com/markbates/pkger/cmd/...`
+1. From the owncast directory run the packager script: `./build/admin/bundleAdmin.sh`
+1. Compile or run like above. `go run main.go pkged.go`
+
 <!-- LICENSE -->
 ## License
 
