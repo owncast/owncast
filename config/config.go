@@ -215,7 +215,9 @@ func (c *config) GetFFMpegPath() string {
 	}
 
 	path := strings.TrimSpace(string(out))
-
+	if err := verifyFFMpegPath(path); err != nil {
+		log.Warnln(err)
+	}
 	return path
 }
 
