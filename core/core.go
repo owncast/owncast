@@ -35,6 +35,11 @@ func Start() error {
 
 	data.MigrateConfigFile()
 
+	if err := data.VerifySettings(); err != nil {
+		log.Error(err)
+		return err
+	}
+
 	if err := setupStats(); err != nil {
 		log.Error("failed to setup the stats")
 		return err
@@ -57,7 +62,7 @@ func Start() error {
 		return err
 	}
 
-	if config.Config.YP.Enabled {
+	if data.GetDirectoryEnabled() {
 		_yp = yp.NewYP(GetStatus)
 	} else {
 		yp.DisplayInstructions()
@@ -133,8 +138,8 @@ func resetDirectories() {
 	os.Remove(filepath.Join(config.WebRoot, "thumbnail.jpg"))
 
 	// Create private hls data dirs
-	if len(config.Config.VideoSettings.StreamQualities) != 0 {
-		for index := range config.Config.VideoSettings.StreamQualities {
+	if len(data.GetStreamOutputVariants()) != 0 {
+		for index := range data.GetStreamOutputVariants() {
 			err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
 			if err != nil {
 				log.Fatalln(err)

@@ -58,9 +58,8 @@ func setStreamAsConnected() {
 		_transcoder.Start()
 	}()
 
-	ffmpeg.StartThumbnailGenerator(segmentPath, config.Config.VideoSettings.HighestQualityStreamIndex)
-
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
+	ffmpeg.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex())
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
@@ -79,7 +78,7 @@ func SetStreamAsDisconnected() {
 		_yp.Stop()
 	}
 
-	for index := range config.Config.GetVideoStreamQualities() {
+	for index := range data.GetStreamOutputVariants() {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
 
@@ -104,7 +103,7 @@ func SetStreamAsDisconnected() {
 			}
 
 			variantPlaylist := playlist.(*m3u8.MediaPlaylist)
-			if len(variantPlaylist.Segments) > config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist() {
+			if len(variantPlaylist.Segments) > int(data.GetVideoSegmentsInPlaylist()) {
 				variantPlaylist.Segments = variantPlaylist.Segments[:len(variantPlaylist.Segments)]
 			}
 

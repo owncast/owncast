@@ -18,7 +18,7 @@ func GetStatus() models.Status {
 		SessionMaxViewerCount: _stats.SessionMaxViewerCount,
 		LastDisconnectTime:    _stats.LastDisconnectTime,
 		LastConnectTime:       _stats.LastConnectTime,
-		VersionNumber:         config.Config.VersionNumber,
+		VersionNumber:         config.VersionNumber,
 	}
 }
 

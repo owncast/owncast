@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,7 +14,7 @@ import (
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "admin"
-		password := config.Config.VideoSettings.StreamingKey
+		password := data.GetStreamKey()
 		realm := "Owncast Authenticated Request"
 
 		// The following line is kind of a work around.

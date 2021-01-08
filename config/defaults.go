@@ -1,5 +1,7 @@
 package config
 
+import "github.com/owncast/owncast/models"
+
 func GetDefaults() config {
 	defaults := config{}
 	defaults.WebServerPort = 8080
@@ -11,13 +13,13 @@ func GetDefaults() config {
 	defaults.DatabaseFilePath = "data/owncast.db"
 	defaults.DisableUpgradeChecks = false
 
-	defaultQuality := StreamQuality{
+	defaultQuality := models.StreamOutputVariant{
 		IsAudioPassthrough: true,
 		VideoBitrate:       1200,
 		EncoderPreset:      "veryfast",
 		Framerate:          24,
 	}
-	defaults.VideoSettings.StreamQualities = []StreamQuality{defaultQuality}
+	defaults.VideoSettings.StreamQualities = []models.StreamOutputVariant{defaultQuality}
 
 	return defaults
 }

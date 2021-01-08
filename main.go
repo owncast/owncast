@@ -33,7 +33,7 @@ func main() {
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
-	configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
+	// configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
 	dbFile := flag.String("database", "", "Path to the database file.")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
@@ -50,20 +50,15 @@ func main() {
 		log.SetLevel(log.InfoLevel)
 	}
 
-	if err := config.Load(*configFile, getReleaseString(), getVersionNumber()); err != nil {
-		panic(err)
-	}
-	config.Config.EnableDebugFeatures = *enableDebugOptions
+	config.EnableDebugFeatures = *enableDebugOptions
 
 	if *dbFile != "" {
-		config.Config.DatabaseFilePath = *dbFile
-	} else if config.Config.DatabaseFilePath == "" {
-		config.Config.DatabaseFilePath = config.Config.GetDataFilePath()
+		config.DatabaseFilePath = *dbFile
 	}
 
 	go metrics.Start()
 
-	err := data.SetupPersistence(config.Config.DatabaseFilePath)
+	err := data.SetupPersistence(config.DatabaseFilePath)
 	if err != nil {
 		log.Fatalln("failed to open database", err)
 	}

@@ -11,6 +11,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -86,7 +87,7 @@ func (t *Transcoder) Start() {
 		log.Tracef("Transcoder requested to operate on video only, ignoring audio.")
 	}
 
-	if config.Config.EnableDebugFeatures {
+	if config.EnableDebugFeatures {
 		log.Println(command)
 	}
 
@@ -104,15 +105,7 @@ func (t *Transcoder) Start() {
 }
 
 func (t *Transcoder) getString() string {
-	var port int
-	if config.Config != nil {
-		port = data.GetHTTPPortNumber() + 1
-	} else if t.internalListenerPort != 0 {
-		port = t.internalListenerPort
-	} else {
-		log.Panicln("A internal port must be set for transcoder callback")
-	}
-
+	var port = data.GetHTTPPortNumber() + 1
 	localListenerAddress := "http://127.0.0.1:" + strconv.Itoa(port)
 
 	hlsOptionFlags := []string{}
@@ -166,7 +159,7 @@ func (t *Transcoder) getString() string {
 	return strings.Join(ffmpegFlags, " ")
 }
 
-func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVariant {
+func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) HLSVariant {
 	variant := HLSVariant{}
 	variant.index = index
 	variant.isAudioPassthrough = quality.IsAudioPassthrough
@@ -204,8 +197,8 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 // NewTranscoder will return a new Transcoder, populated by the config.
 func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
-	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
-	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
+	transcoder.ffmpegPath = data.GetFfMpegPath()
+	transcoder.hlsPlaylistLength = int(data.GetVideoSegmentsInPlaylist())
 
 	var outputPath string
 	if data.GetS3Config().Enabled {
@@ -221,9 +214,9 @@ func NewTranscoder() *Transcoder {
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
+	transcoder.segmentLengthSeconds = int(data.GetVideoSegmentLengthDuration())
 
-	qualities := config.Config.GetVideoStreamQualities()
+	qualities := data.GetStreamOutputVariants()
 	for index, quality := range qualities {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)

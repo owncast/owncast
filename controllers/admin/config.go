@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
@@ -193,7 +192,7 @@ func ChangeFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := configValue.Value.(string)
-	if err := config.VerifyFFMpegPath(path); err != nil {
+	if err := data.VerifyFFMpegPath(path); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -349,7 +348,7 @@ func SetVideoSegmentsInPlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetVideoSegmentsInPlaylist(configValue.Value.(float32))
+	data.SetStreamOutputVariants(configValue.Value.(float32))
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
