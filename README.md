@@ -114,7 +114,7 @@ The admin ui is built at: https://github.com/owncast/owncast-admin it is bundled
 
 To bundle in the latest admin UI:
 
-1. Install pkger. `go install github.com/markbates/pkger/cmd/...
+1. Install pkger. `go install github.com/markbates/pkger/cmd/...`
 1. From the owncast directory run the packager script: `./build/admin/bundleAdmin.sh`
 1. Compile or run like above. `go run main.go pkged.go`
 
