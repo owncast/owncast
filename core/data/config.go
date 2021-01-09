@@ -323,8 +323,10 @@ func SetFfmpegPath(path string) error {
 func GetFfMpegPath() string {
 	ffmpegPath, err := _datastore.GetString(FFMPEG_PATH_KEY)
 
-	if ffmpegPath == "" || err != nil {
-		log.Errorln(ffmpegPath, "is an invalid path to ffmpeg.  Will try to use a copy in your path, if possible.")
+	if err != nil {
+		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
+	} else if ffmpegPath == "" {
+		log.Warnln("there is no path to ffmpeg set.  will try to use a copy in your path, if possible")
 	}
 
 	// First look to see if ffmpeg is in the current working directory
