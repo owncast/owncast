@@ -53,6 +53,7 @@ type InstanceDetails struct {
 type socialHandle struct {
 	Platform string `yaml:"platform" json:"platform"`
 	URL      string `yaml:"url" json:"url"`
+	Icon     string `yaml:"icon" json:"icon"`
 }
 
 type videoSettings struct {

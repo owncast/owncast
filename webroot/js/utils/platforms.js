@@ -2,71 +2,79 @@
 export const SOCIAL_PLATFORMS = {
   default: {
     name: "default",
-    imgPos: [0,0], // [row,col]
+    icon: '/img/socialhandles/default.svg',
   },
 
   facebook: {
     name: "Facebook",
-    imgPos: [0,1],
+    icon: '/img/socialhandles/facebook.svg',
   },
   twitter: {
     name: "Twitter",
-    imgPos: [0,2],
+    icon: '/img/socialhandles/twitter.svg',
   },
   instagram: {
     name: "Instagram",
-    imgPos: [0,3],
+    icon: '/img/socialhandles/instagram.svg',
   },
   snapchat: {
     name: "Snapchat",
-    imgPos: [0,4],
+    icon: '/img/socialhandles/snapchat.svg',
   },
   tiktok: {
     name: "TikTok",
-    imgPos: [0,5],
+    icon: '/img/socialhandles/tiktok.svg',
   },
   soundcloud: {
     name: "Soundcloud",
-    imgPos: [0,6],
+    icon: '/img/socialhandles/soundcloud.svg',
   },
   bandcamp: {
     name: "Bandcamp",
-    imgPos: [0,7],
+    icon: '/img/socialhandles/bandcamp.svg',
   },
   patreon: {
     name: "Patreon",
-    imgPos: [0,1],
+    icon: '/img/socialhandles/patreon.svg',
   },
   youtube: {
     name: "YouTube",
-    imgPos: [0,9 ],
+    icon: '/img/socialhandles/youtube.svg',
   },
   spotify: {
     name: "Spotify",
-    imgPos: [0,10],
+    icon: '/img/socialhandles/spotify.svg',
   },
   twitch: {
     name: "Twitch",
-    imgPos: [0,11],
+    icon: '/img/socialhandles/twitch.svg',
   },
   paypal: {
     name: "Paypal",
-    imgPos: [0,12],
+    icon: '/img/socialhandles/paypal.svg',
   },
   github: {
     name: "Github",
-    imgPos: [0,13],
+    icon: '/img/socialhandles/github.svg',
   },
   linkedin: {
     name: "LinkedIn",
-    imgPos: [0,14],
+    icon: '/img/socialhandles/linkedin.svg',
   },
   discord: {
     name: "Discord",
-    imgPos: [0,15],
+    icon: '/img/socialhandles/discord.svg',
   },
   mastodon: {
     name: "Mastodon",
-    imgPos: [0,16],
+    icon: '/img/socialhandles/mastodon.svg',
+  },
+  gitlab: {
+    name: "Gitlab",
+    icon: '/img/socialhandles/gitlab.svg',
+  },
+  kofi: {
+    name: "Ko-Fi",
+    icon: '/img/socialhandles/ko-fi.svg',
   },
 };
