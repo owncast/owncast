@@ -44,7 +44,37 @@ services:
     - 443:443
     - 1935:1935
 
+  # optionally serving your chunks yourself.
+  minio:
+    image: minio/minio
+    volumes:
+      - minio_data:/data
+    secrets:
+      - access_key
+      - secret_key
+    environment:
+      - MINIO_ACCESS_KEY_FILE=access_key
+      - MINIO_SECRET_KEY_FILE=secret_key
+    command: server /data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`s3-storage.your.org`)"
+      - "traefik.http.routers.minio.service=minio"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.http.routers.minio.entryPoints=websecure"
+      - "traefik.http.routers.minio.tls=true"
+      - "traefik.http.routers.minio.middlewares=livecors"
+      - "traefik.http.routers.minio.tls.certresolver=mytlschallenge"
+      - "traefik.http.middlewares.livecors.headers.accesscontrolallowmethods=GET,OPTIONS"
+      - "traefik.http.middlewares.livecors.headers.allowedhosts=https://s3-storage.your.org"
+
 volumes:
   owncast_db:
   traefik_certs:
+  minio_data:
 
+secrets:
+  secret_key:
+    file: minio_secret.key
+  access_key:
+    file: minio_access.key
