@@ -71,6 +71,10 @@ code {
     background-color: rgb(44,44,44) !important;
     color:lightgrey !important;
   }
+.ant-btn {
+  transition-duration: .15s;
+  transition-delay: 0s;
+}
 
   // Hide extra toolbar buttons.
   .button-type-undo, .button-type-redo, .button-type-clear, .button-type-image, .button-type-wrap, .button-type-quote, .button-type-strikethrough, .button-type-code-inline, .button-type-code-block {
