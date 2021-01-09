@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -15,6 +16,7 @@ import (
 
 const (
 	schemaVersion = 0
+	backupFile    = "owncast/owncastdb.bak"
 )
 
 var _db *sql.DB
@@ -85,6 +87,13 @@ func SetupPersistence(file string) error {
 	_db = db
 	_datastore = &Datastore{}
 	_datastore.Setup()
+
+	dbBackupTicker := time.NewTicker(1 * time.Hour)
+	go func() {
+		for range dbBackupTicker.C {
+			utils.Backup(_db, backupFile)
+		}
+	}()
 
 	return nil
 }
