@@ -95,7 +95,7 @@ export default function PageContentEditor() {
           }}
         />
         <div className="page-content-actions">
-          { hasChanged ? <Button type="primary" size="small" onClick={handleSave}>Save</Button> : null }
+          { hasChanged ? <Button type="primary" onClick={handleSave}>Save</Button> : null }
           <div className={`status-message ${submitStatus || ''}`}>
             {newStatusIcon} {newStatusMessage} {submitStatusMessage}
           </div>

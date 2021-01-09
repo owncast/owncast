@@ -31,7 +31,7 @@ export default function TextField(props: TextFieldProps) {
     configPath = '',
     disabled = false,
     fieldName,
-    handleResetValue,
+    handleResetValue = () => {},
     initialValues = {},
     onSubmit,
     onBlur,
@@ -67,7 +67,7 @@ export default function TextField(props: TextFieldProps) {
     const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
 
     // https://developer.mozilla.org/en-US/docs/Web/API/ValidityState
-    const hasValidity = type !== TEXTFIELD_TYPE_NUMBER && e.target.validity.valid;
+    const hasValidity = (type !== TEXTFIELD_TYPE_NUMBER && e.target.validity.valid) || type === TEXTFIELD_TYPE_NUMBER ;
 
     if ((required && (val === '' || val === null)) || val === initialValue || !hasValidity) {
       setHasChanged(false);
@@ -139,7 +139,7 @@ export default function TextField(props: TextFieldProps) {
     Field = InputNumber;
     fieldProps = {
       type: 'number',
-      min: 0,
+      min: 1,
       max: (10**maxLength) - 1,
       onKeyDown: (e: React.KeyboardEvent) => {
         if (e.target.value.length > maxLength - 1 )
@@ -154,7 +154,7 @@ export default function TextField(props: TextFieldProps) {
   }
 
    return (
-    <div className="textfield-container">
+    <div className={`textfield-container type-${type}`}>
       <div className="textfield">
        <InfoTip tip={tip} />
         <Form.Item

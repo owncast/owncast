@@ -13,7 +13,7 @@
   .tag-editor-container,
   .config-directory-details-form {
     border-radius: 1em;
-    background-color: rgba(128,0,255,.15);
+    background-color: rgba(128,99,255,.1);
     padding: 1.5em;
     margin-bottom: 1em;
   }
@@ -41,6 +41,15 @@
   justify-content: flex-end;
   position: relative;
   width: 314px;
+
+  // &.type-numeric {
+  //   .ant-form-item-control {
+  //     flex-direction: row;
+  //     .ant-form-item-control-input {
+  //       margin-right: .75rem;
+  //     }
+  //   }
+  // }
 }
 .textfield {
   display: flex;
@@ -77,6 +86,17 @@
   right: 0;
   bottom: .5em;
 }
+// .ant-form-horizontal {
+//   .textfield-container.type-numeric {
+//     width: auto;
+
+//     .submit-button {
+//       bottom: unset;
+//       top: 0;
+//       right: unset;
+//     }
+//   }
+// }
 
 
 // form-toggleswitch
@@ -154,5 +174,16 @@
     .status-message  {
       margin-left: 1em;
     }
+  }
+}
+
+.config-video-variants {
+  .config-video-misc {
+    margin: 2rem 0;
+    // .ant-form {
+    //   display: flex;
+    //   flex-direction: row;
+    //   align-items: flex-start;
+    // }
   }
 }

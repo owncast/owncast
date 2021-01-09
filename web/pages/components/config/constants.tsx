@@ -187,23 +187,29 @@ export const TEXTFIELD_DEFAULTS = {
   },
 
   videoSettings: {
+    // number slider
     numberOfPlaylistItems: {
       apiPath: '/webserverport', // tbd
       defaultValue: 4,
-      maxLength: 6,
+      maxLength: 3,
       placeholder: '4',
       label: 'Segment Length',
       tip: '',
       required: true,
+      minValue: 1,
+      maxValue: 10,
     },
+    // number slider
     segmentLengthSeconds: {
       apiPath: '/webserverport', // tbd
       defaultValue: 5,
-      maxLength: 6,
+      maxLength: 3,
       placeholder: '5',
       label: 'Number of segments',
       tip: '',
       required: true,
+      minValue: 1,
+      maxValue: 10,
     },
   }
 }

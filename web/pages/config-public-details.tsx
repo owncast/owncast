@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { Typography, Form } from 'antd';
+import Link from 'next/link';
 
 import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './components/config/form-textfield';
 
@@ -18,27 +19,21 @@ export default function PublicFacingDetails() {
   const { serverConfig } = serverStatusData || {};
 
   const { instanceDetails, yp } = serverConfig;
-  const { instanceDetails: instanceDetailsDefaults, yp: ypDefaults } = TEXTFIELD_DEFAULTS;
 
   const initialValues = {
     ...instanceDetails,
     ...yp,
   };
 
-  const defaultFields = {
-    ...instanceDetailsDefaults,
-    ...ypDefaults,
-  };
-
   useEffect(() => {
     form.setFieldsValue(initialValues);
   }, [instanceDetails]);
 
-  const handleResetValue = (fieldName: string) => {
-    const defaultValue = defaultFields[fieldName] && defaultFields[fieldName].defaultValue || '';
+  // const handleResetValue = (fieldName: string) => {
+  //   const defaultValue = defaultFields[fieldName] && defaultFields[fieldName].defaultValue || '';
 
-    form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
-  }
+  //   form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
+  // }
 
   // if instanceUrl is empty, we should also turn OFF the `enabled` field of directory.
   const handleSubmitInstanceUrl = () => {
@@ -54,7 +49,7 @@ export default function PublicFacingDetails() {
   }
 
   const extraProps = {
-    handleResetValue,
+    // handleResetValue,
     initialValues,
     configPath: 'instanceDetails',
   };
@@ -83,6 +78,9 @@ export default function PublicFacingDetails() {
             <TextField fieldName="summary" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
             <TextField fieldName="logo" {...extraProps} />
           </Form>
+          <Link href="/admin/config-page-content">
+              <a>this page!</a>
+            </Link>
         </div>
         <div className="misc-fields">
           {/* add social handles comp

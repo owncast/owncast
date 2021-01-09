@@ -1,3 +1,5 @@
+@import "~antd/dist/antd.dark";
+
 $owncast-purple: rgba(90,103,216,1);
 
 html,
@@ -7,6 +9,8 @@ body {
   font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 
   font-size: 16px;
+
+  // background-color: #1f1f21;
 }
 
 a {
@@ -25,6 +29,11 @@ pre {
   margin: .5rem 0;
   background-color: #eee;
 }
+// pre {
+//   background-color: rgb(44, 44, 44);
+//   color:lightgrey;
+// }
+
 code {
   color: var(--owncast-purple);
 }
@@ -34,14 +43,7 @@ code {
 }
 
 
-
-@media (prefers-color-scheme: dark) {
-  @import "~antd/dist/antd.dark";
-  pre {
-    background-color: rgb(44, 44, 44);
-    color:lightgrey;
-  }
-}
+  
 
 
 // GENERAL ANT FORM OVERRIDES
@@ -50,13 +52,13 @@ code {
 }
 .ant-input-affix-wrapper {
   border-radius: 5px;
-  background-color: rgba(0,0,0,.1);
-  @media (prefers-color-scheme: dark) {
-    border-radius: 5px;
-    background-color: rgba(255,255,255,.1);
-  }
+  background-color: rgba(255,255,255,.1);
+
   textarea {
     border-radius: 5px;
+  }
+  input {
+    background-color: transparent;
   }
 }
 .ant-btn-primary:hover, .ant-btn-primary:focus {
@@ -64,10 +66,8 @@ code {
   color: #40a9ff;
 }
 .ant-btn.ant-btn-primary:focus {
-  border: 1px solid var(--owncast-purple);
-  @media (prefers-color-scheme: dark) {
-    border-color: white;
-  }
+  border-color: white;
+
 }
 .ant-input-affix-wrapper,
 .ant-btn {
@@ -76,41 +76,40 @@ code {
 }
 
 // markdown editor overrides
-@media (prefers-color-scheme: dark) {
-  .rc-md-editor {
-    // Set the background color of the preview container
-    .editor-container {
-      background-color: #E2E8F0;
-      color: rgba(45,55,72,1);
-    }
 
-    // Custom CSS for formatting the preview text
-    .markdown-editor-preview-pane {
-      // color:lightgrey;
-      a {
-        color: $owncast-purple;
-      }
-      h1 {
-        font-size: 2em;
-      }
-    }
+.rc-md-editor {
+  // Set the background color of the preview container
+  .editor-container {
+    background-color: #E2E8F0;
+    color: rgba(45,55,72,1);
+  }
 
-    // Custom CSS class used to format the text of the editor
-    .markdown-editor-pane {
-      color: white !important;
-      background-color: black;
-      font-family: monospace;
+  // Custom CSS for formatting the preview text
+  .markdown-editor-preview-pane {
+    // color:lightgrey;
+    a {
+      color: $owncast-purple;
     }
+    h1 {
+      font-size: 2em;
+    }
+  }
 
-    // Set the background color of the editor text input
-    textarea {
-      background-color: rgb(44,44,44) !important;
-      color:lightgrey !important;
-    }
+  // Custom CSS class used to format the text of the editor
+  .markdown-editor-pane {
+    color: white !important;
+    background-color: black;
+    font-family: monospace;
+  }
 
-    // Hide extra toolbar buttons.
-    .button-type-undo, .button-type-redo, .button-type-clear, .button-type-image, .button-type-wrap, .button-type-quote, .button-type-strikethrough, .button-type-code-inline, .button-type-code-block {
-      display: none !important;
-    }
-  }  
+  // Set the background color of the editor text input
+  textarea {
+    background-color: rgb(44,44,44) !important;
+    color:lightgrey !important;
+  }
+
+  // Hide extra toolbar buttons.
+  .button-type-undo, .button-type-redo, .button-type-clear, .button-type-image, .button-type-wrap, .button-type-quote, .button-type-strikethrough, .button-type-code-inline, .button-type-code-block {
+    display: none !important;
+  }
 }

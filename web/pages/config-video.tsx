@@ -1,113 +1,62 @@
-import React, { useContext } from 'react';
-import { Table, Typography } from 'antd';
+import React, { useContext, useEffect } from 'react';
+import { Typography, Form, Slider } from 'antd';
 import { ServerStatusContext } from '../utils/server-status-context';
+
+import VideoVariantsTable from './components/config/video-variants-table';
+import TextField, { TEXTFIELD_TYPE_NUMBER } from './components/config/form-textfield';
+import { TEXTFIELD_DEFAULTS } from './components/config/constants';
 
 const { Title } = Typography;
 
-
-function VideoVariants({ config }) {
-  if (!config || !config.videoSettings) {
-    return null;
-  }
-  console.log(config.videoSettings)
-
-  const videoQualityColumns = [
-    {
-      title: "#",
-      dataIndex: "key",
-      key: "key"
-    },
-    {
-      title: "Video bitrate",
-      dataIndex: "videoBitrate",
-      key: "videoBitrate",
-      render: (bitrate) =>
-        !bitrate ? "Same as source" : `${bitrate} kbps`,
-    },
-    {
-      title: "Framerate",
-      dataIndex: "framerate",
-      key: "framerate",
-      render: (framerate) =>
-        !framerate ? "Same as source" : `${framerate} fps`,
-    },
-    {
-      title: "Encoder preset",
-      dataIndex: "encoderPreset",
-      key: "framerate",
-      render: (preset) =>
-        !preset ? "n/a" : preset,
-    },
-    {
-      title: "Audio bitrate",
-      dataIndex: "audioBitrate",
-      key: "audioBitrate",
-      render: (bitrate) =>
-        !bitrate ? "Same as source" : `${bitrate} kbps`,
-    },
-  ];
-
-  const miscVideoSettingsColumns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Value",
-      dataIndex: "value",
-      key: "value",
-    },
-  ];
-
-  const miscVideoSettings = [
-    {
-      name: "Segment length",
-      value: config.videoSettings.segmentLengthSeconds,
-      key: "segmentLength"
-    },
-    {
-      name: "Number of segments",
-      value: config.videoSettings.numberOfPlaylistItems,
-      key: "numberOfSegments"
-    },
-  ];
-
-  const videoQualityVariantData = config.videoSettings.videoQualityVariants.map(function(variant, index) {
-    return {
-      key: index,
-      ...variant
-    }
-  });
-
-  return (
-    <div>
-      <Title>Video configuration</Title>
-      <Table
-        pagination={false}
-        columns={videoQualityColumns}
-        dataSource={videoQualityVariantData}
-      />
-
-      <Table
-        pagination={false}
-        columns={miscVideoSettingsColumns}
-        dataSource={miscVideoSettings}
-        rowKey={row => row.name}
-      />
-      <br/>
-      <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
-    </div>
-  );
-}
-
-export default function VideoConfig() {  
+export default function VideoConfig() {
+  const [form] = Form.useForm();
   const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig: config } = serverStatusData || {};
+  // const { serverConfig } = serverStatusData || {};
+  // const { videoSettings } = serverConfig || {};
+  // const { numberOfPlaylistItems, segmentLengthSeconds } = videoSettings || {};
+
+  const videoSettings = serverStatusData?.serverConfig?.videoSettings;
+  const { numberOfPlaylistItems, segmentLengthSeconds } = videoSettings || {};
+  const initialValues = {
+    numberOfPlaylistItems,
+    segmentLengthSeconds,
+  };
+
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  }, [serverStatusData]);
+
+  const handleResetValue = (fieldName: string) => {
+    const defaultValue = TEXTFIELD_DEFAULTS.videoSettings[fieldName] && TEXTFIELD_DEFAULTS.videoSettings[fieldName].defaultValue || '';
+
+    form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
+  }
+
+  const extraProps = {
+    handleResetValue,
+    initialValues: videoSettings,
+    configPath: 'videoSettings',
+  };
 
   return (
-    <div>
-        <VideoVariants config={config} />
+    <div className="config-video-variants">
+      <Title level={2}>Video configuration</Title>
+      <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
+
+        <div className="config-video-misc">
+          <Slider defaultValue={37} />
+
+          <Slider  tooltipVisible step={10} defaultValue={37} />
+
+          <Form
+            form={form}
+            layout="vertical"
+          >
+            <TextField fieldName="numberOfPlaylistItems" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
+            <TextField fieldName="segmentLengthSeconds" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
+          </Form>
+        </div>  
+        <VideoVariantsTable />
     </div>
   ); 
 }

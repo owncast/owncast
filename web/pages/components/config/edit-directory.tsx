@@ -35,7 +35,6 @@ export default function EditYPDetails() {
     disabled: !hasInstanceUrl,
   };
 
-  // TODO: DISABLE THIS SECTION UNTIL instanceURL is populated
   return (
     <div className="config-directory-details-form">
       <Title level={3}>Owncast Directory Settings</Title>

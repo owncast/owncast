@@ -31,7 +31,7 @@ export default function ConfigServerDetails() {
     const defaultValue = TEXTFIELD_DEFAULTS[fieldName] && TEXTFIELD_DEFAULTS[fieldName].defaultValue || '';
 
     form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
-  }
+  };
 
   const extraProps = {
     handleResetValue,
