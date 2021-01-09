@@ -32,7 +32,6 @@ func verifyFFMpegPath(path string) error {
 		return errors.New("ffmpeg path is not executable")
 	}
 
-	suggestedVersion := "v4.1.5"
 	cmd := exec.Command(path)
 	out, err := cmd.CombinedOutput()
 
@@ -45,8 +44,8 @@ func verifyFFMpegPath(path string) error {
 	responseComponents := strings.Split(response, " ")
 	fullVersionString := responseComponents[2]
 	versionString := "v" + strings.Split(fullVersionString, "-")[0]
-	if !semver.IsValid(versionString) || semver.Compare(versionString, suggestedVersion) == -1 {
-		return fmt.Errorf("your %s version of ffmpeg at %s may be older than the suggested version of %s. you may experience issues with video.", versionString, path, suggestedVersion)
+	if !semver.IsValid(versionString) || semver.Compare(versionString, FfmpegSuggestedVersion) == -1 {
+		return fmt.Errorf("your %s version of ffmpeg at %s may be older than the suggested version of %s. you may experience issues with video.", versionString, path, FfmpegSuggestedVersion)
 	}
 
 	return nil
