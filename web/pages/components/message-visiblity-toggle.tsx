@@ -5,6 +5,7 @@ import { EyeOutlined, EyeInvisibleOutlined, CheckCircleFilled, ExclamationCircle
 import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../../utils/apis";
 import { MessageType } from '../../types/chat';
 import { OUTCOME_TIMEOUT } from "../chat";
+import { isEmptyObject } from "../../utils/format";
 
 interface MessageToggleProps {
   isVisible: boolean;
@@ -14,10 +15,14 @@ interface MessageToggleProps {
 
 
 export default function MessageVisiblityToggle({ isVisible, message, setMessage }: MessageToggleProps) {
+  if (!message || isEmptyObject(message)) {
+    return null;
+  }
+
   let outcomeTimeout = null;
   const [outcome, setOutcome] = useState(0);
 
-  const { id: messageId } = message;
+  const { id: messageId } = message || {};
 
   const resetOutcome = () => {
     outcomeTimeout = setTimeout(() => { setOutcome(0)}, OUTCOME_TIMEOUT);
