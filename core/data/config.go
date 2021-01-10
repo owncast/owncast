@@ -106,7 +106,7 @@ func GetLogoPath() string {
 	logo, err := _datastore.GetString(LOGO_PATH_KEY)
 	if err != nil {
 		log.Errorln(LOGO_PATH_KEY, err)
-		return config.GetDefaults().InstanceDetails.Logo
+		return config.GetDefaults().Logo
 	}
 
 	if logo == "" {
