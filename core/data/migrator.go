@@ -64,6 +64,8 @@ func MigrateConfigFile() {
 	if err := utils.Move(filePath, "backup/config.old"); err != nil {
 		log.Warnln(err)
 	}
+
+	log.Infoln("Your old config file can be found in the backup directory for reference. For all future configuration use the web admin.")
 }
 
 type configFile struct {
