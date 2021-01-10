@@ -21,9 +21,9 @@ var (
 	// GitCommit is the commit which this version of owncast is running.
 	GitCommit = "unknown"
 	// BuildVersion is the version.
-	BuildVersion = "0.0.0"
+	BuildVersion = config.CurrentBuildString
 	// BuildType is the type of build.
-	BuildType = "localdev"
+	BuildType = "dev"
 )
 
 func main() {

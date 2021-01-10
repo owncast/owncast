@@ -44,7 +44,7 @@ func GetExtraPageBodyContent() string {
 	content, err := _datastore.GetString(EXTRA_CONTENT_KEY)
 	if err != nil {
 		log.Errorln(EXTRA_CONTENT_KEY, err)
-		return ""
+		return config.GetDefaults().PageBodyContent
 	}
 
 	return content
@@ -59,7 +59,6 @@ func SetExtraPageBodyContent(content string) error {
 func GetStreamTitle() string {
 	title, err := _datastore.GetString(STREAM_TITLE_KEY)
 	if err != nil {
-		log.Errorln(STREAM_TITLE_KEY, err)
 		return ""
 	}
 
@@ -75,8 +74,7 @@ func SetStreamTitle(title string) error {
 func GetServerTitle() string {
 	title, err := _datastore.GetString(SERVER_TITLE_KEY)
 	if err != nil {
-		log.Errorln(SERVER_TITLE_KEY, err)
-		return ""
+		return config.GetDefaults().Title
 	}
 
 	return title
@@ -89,13 +87,13 @@ func SetServerTitle(title string) error {
 
 // GetStreamKey will return the inbound streaming password.
 func GetStreamKey() string {
-	title, err := _datastore.GetString(STREAM_KEY_KEY)
+	key, err := _datastore.GetString(STREAM_KEY_KEY)
 	if err != nil {
 		log.Errorln(STREAM_KEY_KEY, err)
 		return ""
 	}
 
-	return title
+	return key
 }
 
 // SetStreamKey will set the inbound streaming password.
@@ -105,18 +103,22 @@ func SetStreamKey(key string) error {
 
 // GetLogoPath will return the path for the logo, relative to webroot.
 func GetLogoPath() string {
-	title, err := _datastore.GetString(LOGO_PATH_KEY)
+	logo, err := _datastore.GetString(LOGO_PATH_KEY)
 	if err != nil {
 		log.Errorln(LOGO_PATH_KEY, err)
-		return ""
+		return config.GetDefaults().InstanceDetails.Logo
 	}
 
-	return title
+	if logo == "" {
+		return config.GetDefaults().Logo
+	}
+
+	return logo
 }
 
 // SetLogoPath will set the path for the logo, relative to webroot.
-func SetLogoPath(key string) error {
-	return _datastore.SetString(LOGO_PATH_KEY, key)
+func SetLogoPath(logo string) error {
+	return _datastore.SetString(LOGO_PATH_KEY, logo)
 }
 
 func GetServerSummary() string {
@@ -227,7 +229,7 @@ func SetServerMetadataTags(tags []string) error {
 func GetDirectoryEnabled() bool {
 	enabled, err := _datastore.GetBool(DIRECTORY_ENABLED_KEY)
 	if err != nil {
-		return config.GetDefaults().YP.Enabled
+		return config.GetDefaults().YPEnabled
 	}
 
 	return enabled
@@ -262,7 +264,6 @@ func SetSocialHandles(socialHandles []models.SocialHandle) error {
 func GetPeakSessionViewerCount() int {
 	count, err := _datastore.GetNumber(PEAK_VIEWERS_SESSION_KEY)
 	if err != nil {
-		log.Errorln(PEAK_VIEWERS_SESSION_KEY, err)
 		return 0
 	}
 	return int(count)
@@ -275,7 +276,6 @@ func SetPeakSessionViewerCount(count int) error {
 func GetPeakOverallViewerCount() int {
 	count, err := _datastore.GetNumber(PEAK_VIEWERS_OVERALL_KEY)
 	if err != nil {
-		log.Errorln(PEAK_VIEWERS_OVERALL_KEY, err)
 		return 0
 	}
 	return int(count)
@@ -405,7 +405,7 @@ func SetStreamOutputVariants(count float32) error {
 func GetStreamOutputVariants() []models.StreamOutputVariant {
 	variants, err := _datastore.Get(VIDEO_STREAM_OUTPUT_VARIANTS_KEY)
 	if err != nil || len(variants.Value.([]models.StreamOutputVariant)) == 0 {
-		return config.GetDefaults().VideoSettings.StreamQualities
+		return config.GetDefaults().StreamVariants
 	}
 
 	return variants.Value.([]models.StreamOutputVariant)

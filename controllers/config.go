@@ -19,7 +19,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 	configuration := config.InstanceDetails{
 		Name:             data.GetServerName(),
-		Title:            data.GetStreamTitle(),
+		Title:            data.GetServerTitle(),
 		Summary:          data.GetServerSummary(),
 		Logo:             data.GetLogoPath(),
 		Tags:             data.GetServerMetadataTags(),

@@ -15,8 +15,8 @@ var _default config
 
 var DatabaseFilePath = "data/owncast.db"
 var EnableDebugFeatures = false
-var VersionInfo = "v0.0.0"
-var VersionNumber = "0.0.0"
+var VersionInfo = "v" + CurrentBuildString
+var VersionNumber = CurrentBuildString
 var WebServerPort = 8080
 var RTMPServerPort = 1935
 var HighestQualityStreamIndex = 0

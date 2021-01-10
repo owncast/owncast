@@ -19,17 +19,20 @@ func HasPopulatedDefaults() bool {
 }
 
 func PopulateDefaults() {
-	return
-
 	defaults := config.GetDefaults()
 
+	// if HasPopulatedDefaults() {
+	// 	return
+	// }
+
+	SetStreamKey(defaults.StreamKey)
 	SetHTTPPortNumber(defaults.WebServerPort)
 	SetRTMPPortNumber(defaults.RTMPServerPort)
 	SetLogoPath(defaults.InstanceDetails.Logo)
 	SetServerMetadataTags([]string{"owncast", "streaming"})
 	SetServerSummary("Welcome to your new Owncast server!  This description can be changed in the admin")
 	SetServerName("Owncast")
-	SetStreamKey(defaults.VideoSettings.StreamingKey)
+	SetStreamKey(defaults.StreamKey)
 	SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
 	SetSocialHandles([]models.SocialHandle{
 		{

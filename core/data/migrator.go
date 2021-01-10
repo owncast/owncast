@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -48,12 +49,22 @@ func MigrateConfigFile() {
 	SetRTMPPortNumber(oldConfig.RTMPServerPort)
 	SetDisableUpgradeChecks(oldConfig.DisableUpgradeChecks)
 
-	if err := os.Mkdir("backup", 0755); err != nil {
-		log.Errorln("Unable to create backup directory", err)
-		return
+	// Migrate the old content.md file
+	content, err := ioutil.ReadFile(config.ExtraInfoFile)
+	if err == nil && len(content) > 0 {
+		SetExtraPageBodyContent(string(content))
 	}
 
-	utils.Move(filePath, "backup/config.old")
+	if !utils.DoesFileExists(config.BackupDirectory) {
+		if err := os.Mkdir(config.BackupDirectory, 0700); err != nil {
+			log.Errorln("Unable to create backup directory", err)
+			return
+		}
+	}
+
+	if err := utils.Move(filePath, "backup/config.old"); err != nil {
+		log.Warnln(err)
+	}
 }
 
 type configFile struct {
