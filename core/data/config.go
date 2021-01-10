@@ -152,7 +152,6 @@ func SetServerName(name string) error {
 func GetServerURL() string {
 	url, err := _datastore.GetString(SERVER_URL_KEY)
 	if err != nil {
-		log.Errorln(SERVER_URL_KEY, err)
 		return ""
 	}
 
@@ -351,12 +350,17 @@ func GetFfMpegPath() string {
 }
 
 func GetS3Config() models.S3 {
-	config, err := _datastore.Get(S3_STORAGE_CONFIG_KEY)
+	configEntry, err := _datastore.Get(S3_STORAGE_CONFIG_KEY)
 	if err != nil {
 		return models.S3{Enabled: false}
 	}
 
-	return config.Value.(models.S3)
+	var s3Config models.S3
+	if err := configEntry.getObject(&s3Config); err != nil {
+		return models.S3{Enabled: false}
+	}
+
+	return s3Config
 }
 
 func SetS3Config(config models.S3) error {
@@ -400,20 +404,29 @@ func GetVideoSegmentsInPlaylist() float32 {
 	return count
 }
 
-func SetStreamOutputVariants(count float32) error {
+func SetVideoSegmentsInPlaylist(count float32) error {
 	return _datastore.SetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY, count)
 }
 
 func GetStreamOutputVariants() []models.StreamOutputVariant {
-	variants, err := _datastore.Get(VIDEO_STREAM_OUTPUT_VARIANTS_KEY)
-	if err != nil || len(variants.Value.([]models.StreamOutputVariant)) == 0 {
+	configEntry, err := _datastore.Get(VIDEO_STREAM_OUTPUT_VARIANTS_KEY)
+	if err != nil {
 		return config.GetDefaults().StreamVariants
 	}
 
-	return variants.Value.([]models.StreamOutputVariant)
+	var streamOutputVariants []models.StreamOutputVariant
+	if err := configEntry.getObject(&streamOutputVariants); err != nil {
+		return config.GetDefaults().StreamVariants
+	}
+
+	if len(streamOutputVariants) == 0 {
+		return config.GetDefaults().StreamVariants
+	}
+
+	return streamOutputVariants
 }
 
-func SetVideoOutputVariants(variants []models.StreamOutputVariant) error {
+func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
 	var configEntry = ConfigEntry{Key: VIDEO_STREAM_OUTPUT_VARIANTS_KEY, Value: variants}
 	return _datastore.Save(configEntry)
 }

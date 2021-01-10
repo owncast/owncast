@@ -348,7 +348,25 @@ func SetVideoSegmentsInPlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetStreamOutputVariants(configValue.Value.(float32))
+	data.SetVideoSegmentsInPlaylist(configValue.Value.(float32))
+}
+
+func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var videoVariants []models.StreamOutputVariant
+	if err := decoder.Decode(&videoVariants); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
+		return
+	}
+
+	if err := data.SetStreamOutputVariants(videoVariants); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
+		return
+	}
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

@@ -134,6 +134,12 @@ func Start() error {
 	// set the number of video segments in a playlist
 	http.HandleFunc("/api/admin/config/video/segmentcount", middleware.RequireAdminAuth(admin.SetVideoSegmentsInPlaylist))
 
+	// set an array of video output configurations
+	http.HandleFunc("/api/admin/config/video/streamoutputvariants", middleware.RequireAdminAuth(admin.SetStreamOutputVariants))
+
+	// set s3 configuration
+	http.HandleFunc("/api/admin/config/s3", middleware.RequireAdminAuth(admin.SetS3Configuration))
+
 	port := data.GetHTTPPortNumber()
 
 	log.Tracef("Web server running on port: %d", port)
