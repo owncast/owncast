@@ -23,7 +23,7 @@ func Backup(db *sql.DB, backupFile string) {
 	}
 
 	// Create a new backup file
-	f, err := os.Create(backupFile)
+	f, err := os.OpenFile(backupFile, os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		handleError(err)
 		return

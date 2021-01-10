@@ -33,6 +33,7 @@ var fileWriter = ffmpeg.FileWriterReceiverService{}
 func Start() error {
 	resetDirectories()
 
+	data.PopulateDefaults()
 	data.MigrateConfigFile()
 
 	if err := data.VerifySettings(); err != nil {
