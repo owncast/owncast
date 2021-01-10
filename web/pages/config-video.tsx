@@ -44,10 +44,6 @@ export default function VideoConfig() {
       <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
 
         <div className="config-video-misc">
-          <Slider defaultValue={37} />
-
-          <Slider  tooltipVisible step={10} defaultValue={37} />
-
           <Form
             form={form}
             layout="vertical"
@@ -56,6 +52,7 @@ export default function VideoConfig() {
             <TextField fieldName="segmentLengthSeconds" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
           </Form>
         </div>  
+
         <VideoVariantsTable />
     </div>
   ); 

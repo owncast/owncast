@@ -3,6 +3,7 @@ import PropTypes, { any } from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { ConfigDetails, UpdateArgs } from '../types/config-section';
+import { DEFAULT_VARIANT_STATE } from '../pages/components/config/constants';
 
 export const initialServerConfigState: ConfigDetails = {
   streamKey: '',
@@ -27,16 +28,7 @@ export const initialServerConfigState: ConfigDetails = {
   videoSettings: {
     numberOfPlaylistItems: 5,
     segmentLengthSeconds: 4,
-    videoQualityVariants: [
-      {
-        audioPassthrough: false,
-        videoPassthrough: false,
-        videoBitrate: 0,
-        audioBitrate: 0,
-        framerate: 0,
-        encoderPreset: 'veryfast',
-      },
-    ],
+    videoQualityVariants: [DEFAULT_VARIANT_STATE],
   }
 };
 

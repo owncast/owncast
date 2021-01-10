@@ -2,7 +2,7 @@
 import React from 'react';
 import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
-import { ApiPostArgs } from '../../../types/config-section';
+import { ApiPostArgs, VideoVariant } from '../../../types/config-section';
 
 export const DEFAULT_NAME = 'Owncast User';
 export const DEFAULT_TITLE = 'Owncast Server';
@@ -214,3 +214,60 @@ export const TEXTFIELD_DEFAULTS = {
   }
 }
 
+export const ENCODER_PRESETS = [
+  'fast',
+  'faster',
+  'veryfast',
+  'superfast',
+  'ultrafast',
+];
+
+export const DEFAULT_VARIANT_STATE:VideoVariant = {
+  framerate: 24,
+  videoPassthrough: false,
+  videoBitrate: 800,
+  audioPassthrough: true, // if false, then CAN set audiobitrate
+  audioBitrate: 0,
+  encoderPreset: 'veryfast',
+};
+
+export const VIDEO_VARIANT_DEFAULTS = {
+  framerate: {
+    label: 'Frame rate',
+    min: 10,
+    max: 80,
+    defaultValue: 24,
+    unit: 'fps',
+    incrementBy: 1,
+    tip: 'You prob wont need to touch this unless youre a hardcore gamer and need all the bitties',
+  },
+  videoBitrate: {
+    label: 'Video Bitrate',
+    min: 600,
+    max: 1200,
+    defaultValue: 800,
+    unit: 'kbps',
+    incrementBy: 100,
+    tip: 'This is importatnt yo',
+  },
+  audioBitrate: {
+    label: 'Audio Bitrate',
+    min: 600,
+    max: 1200,
+    defaultValue: 800,
+    unit: 'kbps',
+    incrementBy: 100,
+    tip: 'nothing to see here'
+  },
+  encoderPreset: {
+    label: 'Encoder Preset',
+    defaultValue: ENCODER_PRESETS[2],
+    tip: 'Info and stuff.'
+  },
+  videoPassthrough: {
+    tip: 'If No is selected, then you should set your desired Video Bitrate.'
+  },
+  audioPassthrough: {
+    tip: 'If No is selected, then you should set your desired Audio Bitrate.'
+  },
+};

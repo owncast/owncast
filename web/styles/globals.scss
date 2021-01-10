@@ -27,12 +27,9 @@ pre {
   display: block;
   padding: 1rem;
   margin: .5rem 0;
-  background-color: #eee;
+  background-color: rgb(44, 44, 44);
+  color:lightgrey;
 }
-// pre {
-//   background-color: rgb(44, 44, 44);
-//   color:lightgrey;
-// }
 
 code {
   color: var(--owncast-purple);
@@ -41,12 +38,6 @@ code {
 .owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: $owncast-purple;
 }
-
-// 07050d
-
-// 020103
-
-
 // GENERAL ANT FORM OVERRIDES
 .ant-layout,
 .ant-layout-footer,
@@ -92,6 +83,17 @@ code {
 .ant-table-thead > tr > th,
 .ant-table-small .ant-table-thead > tr > th {
   background-color: #000;
+}
+.ant-modal-content {
+  border-radius: 6px;
+}
+.ant-modal-header {
+  background-color: #1c173d;
+  border-radius: 6px 6px 0 0;
+}
+.ant-modal-title {
+  font-weight: bold;
+  font-size: 1.5em;
 }
 
 // markdown editor overrides

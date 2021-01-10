@@ -49,13 +49,18 @@ export interface ConfigInstanceDetailsFields {
   title: string;
 }
 
+
+export type PRESETS = 'fast' | 'faster' | 'veryfast' | 'superfast' | 'ultrafast';
+
 export interface VideoVariant {
-  audioBitrate: number;
-  audioPassthrough: false | number;
-  encoderPreset: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast';
+  key?: number; // unique identifier generated on client side just for ant table rendering
+  encoderPreset: PRESETS,
   framerate: number;
-  videoBitrate: number;
+
+  audioPassthrough: boolean;
+  audioBitrate: number;
   videoPassthrough: boolean;
+  videoBitrate: number;
 }
 export interface VideoSettingsFields {
   numberOfPlaylistItems: number;
