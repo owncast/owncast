@@ -12,7 +12,7 @@ function SocialIcon(props) {
   const iconSupplied = !!icon
   const name = inList ? platformInfo.name : platform;
 
-  const finalIcon = iconSupplied ? icon : (inList ? platformInfo.icon : '/img/socialhandles/default.svg')
+  const finalIcon = iconSupplied ? icon : (inList ? platformInfo.icon : '/img/platformlogos/default.svg')
 
   const style = `background-image: url(${finalIcon});`
 

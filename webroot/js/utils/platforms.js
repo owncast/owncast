@@ -1,83 +1,83 @@
 export const SOCIAL_PLATFORMS = {
   default: {
     name: "default",
-    icon: '/img/socialhandles/default.svg',
+    icon: '/img/platformlogos/default.svg',
   },
 
   facebook: {
     name: "Facebook",
-    icon: '/img/socialhandles/facebook.svg',
+    icon: '/img/platformlogos/facebook.svg',
   },
   twitter: {
     name: "Twitter",
-    icon: '/img/socialhandles/twitter.svg',
+    icon: '/img/platformlogos/twitter.svg',
   },
   instagram: {
     name: "Instagram",
-    icon: '/img/socialhandles/instagram.svg',
+    icon: '/img/platformlogos/instagram.svg',
   },
   snapchat: {
     name: "Snapchat",
-    icon: '/img/socialhandles/snapchat.svg',
+    icon: '/img/platformlogos/snapchat.svg',
   },
   tiktok: {
     name: "TikTok",
-    icon: '/img/socialhandles/tiktok.svg',
+    icon: '/img/platformlogos/tiktok.svg',
   },
   soundcloud: {
     name: "Soundcloud",
-    icon: '/img/socialhandles/soundcloud.svg',
+    icon: '/img/platformlogos/soundcloud.svg',
   },
   bandcamp: {
     name: "Bandcamp",
-    icon: '/img/socialhandles/bandcamp.svg',
+    icon: '/img/platformlogos/bandcamp.svg',
   },
   patreon: {
     name: "Patreon",
-    icon: '/img/socialhandles/patreon.svg',
+    icon: '/img/platformlogos/patreon.svg',
   },
   youtube: {
     name: "YouTube",
-    icon: '/img/socialhandles/youtube.svg',
+    icon: '/img/platformlogos/youtube.svg',
   },
   spotify: {
     name: "Spotify",
-    icon: '/img/socialhandles/spotify.svg',
+    icon: '/img/platformlogos/spotify.svg',
   },
   twitch: {
     name: "Twitch",
-    icon: '/img/socialhandles/twitch.svg',
+    icon: '/img/platformlogos/twitch.svg',
   },
   paypal: {
     name: "Paypal",
-    icon: '/img/socialhandles/paypal.svg',
+    icon: '/img/platformlogos/paypal.svg',
   },
   github: {
     name: "Github",
-    icon: '/img/socialhandles/github.svg',
+    icon: '/img/platformlogos/github.svg',
   },
   linkedin: {
     name: "LinkedIn",
-    icon: '/img/socialhandles/linkedin.svg',
+    icon: '/img/platformlogos/linkedin.svg',
   },
   discord: {
     name: "Discord",
-    icon: '/img/socialhandles/discord.svg',
+    icon: '/img/platformlogos/discord.svg',
   },
   mastodon: {
     name: "Mastodon",
-    icon: '/img/socialhandles/mastodon.svg',
+    icon: '/img/platformlogos/mastodon.svg',
   },
   gitlab: {
     name: "Gitlab",
-    icon: '/img/socialhandles/gitlab.svg',
+    icon: '/img/platformlogos/gitlab.svg',
   },
   kofi: {
     name: "Ko-Fi",
-    icon: '/img/socialhandles/ko-fi.svg',
+    icon: '/img/platformlogos/ko-fi.svg',
   },
   keyoxide: {
     name: "Key Oxide",
-    icon: '/img/socialhandles/keyoxide.png',
+    icon: '/img/platformlogos/keyoxide.png',
   },
 };
