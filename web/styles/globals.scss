@@ -10,7 +10,7 @@ body {
 
   font-size: 16px;
 
-  // background-color: #1f1f21;
+  background-color: #1f1f21;
 }
 
 a {
@@ -42,11 +42,26 @@ code {
   background-color: $owncast-purple;
 }
 
+// 07050d
 
-  
+// 020103
 
 
 // GENERAL ANT FORM OVERRIDES
+.ant-layout,
+.ant-layout-footer,
+.ant-menu,
+.ant-menu.ant-menu-dark {
+  background-color: transparent;
+}
+.ant-layout-header,
+.ant-layout-sider {
+  background-color: #07050d;
+}
+.ant-menu-dark .ant-menu-inline.ant-menu-sub {
+  // background-color: rgba(255,255,255,.05);
+  background-color: #15102a;
+}
 .ant-card {
   border-radius: .5em;
 }
@@ -73,6 +88,10 @@ code {
 .ant-btn {
   transition-delay: 0s;
   transition-duration: 0.15s;
+}
+.ant-table-thead > tr > th,
+.ant-table-small .ant-table-thead > tr > th {
+  background-color: #000;
 }
 
 // markdown editor overrides

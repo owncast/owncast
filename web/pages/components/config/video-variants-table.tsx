@@ -58,7 +58,7 @@ export default function CurrentVariantsTable() {
   ];
 
 
-  const videoQualityVariantData = videoQualityVariants.map((variant, index) => ({ key: index, ...variant }));
+  const videoQualityVariantData = videoQualityVariants.map((variant, index) => ({ key: index + 1, ...variant }));
 
   return (
     <>
