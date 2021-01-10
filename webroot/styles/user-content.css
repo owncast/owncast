@@ -3,17 +3,18 @@
   width: var(--user-image-width);
   height: var(--user-image-width);
   max-height: var(--user-image-width);
-  /* background-size: calc(var(--user-image-width) - 2em); */
   background-size: cover;
 }
 
+.user-social-item {
+  margin-right: .85rem;
+}
+
 .user-social-item .platform-icon {
-  --icon-width: 40px;
+  --icon-width: 28px;
   height: var(--icon-width);
   width: var(--icon-width);
-  /*background-image: url(/img/platform-logos.gif); -->
-  background-position: calc(var(--imgCol) * var(--icon-width)) calc(var(--imgRow) * var(--icon-width));*/
-  transform: scale(.70);
+  background-size: cover;
 }
 
 

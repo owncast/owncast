@@ -1,4 +1,3 @@
-// x, y pixel positions of /img/platform-logos.gif image.
 export const SOCIAL_PLATFORMS = {
   default: {
     name: "default",
@@ -76,5 +75,9 @@ export const SOCIAL_PLATFORMS = {
   kofi: {
     name: "Ko-Fi",
     icon: '/img/socialhandles/ko-fi.svg',
+  },
+  keyoxide: {
+    name: "Key Oxide",
+    icon: '/img/socialhandles/keyoxide.png',
   },
 };
