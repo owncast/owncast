@@ -68,12 +68,19 @@ export default class ChatInput extends Component {
           custom: json,
           initialCategory: 'custom',
           showPreview: false,
+          autoHide: false,
+          autoFocusSearch: false,
+          showAnimation: false,
           emojiSize: '24px',
           position: 'right-start',
           strategy: 'absolute',
         });
         this.emojiPicker.on('emoji', emoji => {
           this.handleEmojiSelected(emoji);
+        });
+        this.emojiPicker.on('hidden', () => {
+          this.formMessageInput.current.focus();
+          replaceCaret(this.formMessageInput.current);
         });
       })
       .catch(error => {
