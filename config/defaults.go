@@ -11,8 +11,6 @@ type Defaults struct {
 	PageBodyContent string
 
 	DatabaseFilePath string
-	Files            files
-	InstanceDetails  InstanceDetails
 	WebServerPort    int
 	RTMPServerPort   int
 	StreamKey        string
