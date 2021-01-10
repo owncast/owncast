@@ -16,7 +16,7 @@ import (
 
 const (
 	schemaVersion = 0
-	backupFile    = "owncast/owncastdb.bak"
+	backupFile    = "backup/owncastdb.bak"
 )
 
 var _db *sql.DB
@@ -100,6 +100,7 @@ func SetupPersistence(file string) error {
 
 func migrateDatabase(db *sql.DB, from, to int) error {
 	log.Printf("Migrating database from version %d to %d\n", from, to)
+	utils.Backup(db, fmt.Sprintf("backup/owncast-v%d.bak", from))
 	for v := from; v < to; v++ {
 		switch v {
 		case 0:

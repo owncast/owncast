@@ -12,7 +12,7 @@ import (
 )
 
 func Backup(db *sql.DB, backupFile string) {
-	log.Traceln("Backing up database")
+	log.Traceln("Backing up database to", backupFile)
 
 	// Dump the entire database as plain text sql
 	var b bytes.Buffer
