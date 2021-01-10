@@ -1,7 +1,6 @@
 package data
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -15,11 +14,11 @@ import (
 func MigrateConfigFile() {
 	filePath := "config.yaml"
 
-	fmt.Println("Migrating", filePath)
-
 	if !utils.DoesFileExists(filePath) {
 		return
 	}
+
+	log.Infoln("Migrating", filePath, "to new datastore")
 
 	var oldConfig configFile
 

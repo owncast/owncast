@@ -8,8 +8,6 @@ import (
 
 // Determine if the defaults have been inserted into the database
 func HasPopulatedDefaults() bool {
-	// return false
-
 	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_DEFAULTS")
 	if err != nil {
 		log.Errorln(err)
@@ -21,9 +19,9 @@ func HasPopulatedDefaults() bool {
 func PopulateDefaults() {
 	defaults := config.GetDefaults()
 
-	// if HasPopulatedDefaults() {
-	// 	return
-	// }
+	if HasPopulatedDefaults() {
+		return
+	}
 
 	SetStreamKey(defaults.StreamKey)
 	SetHTTPPortNumber(defaults.WebServerPort)

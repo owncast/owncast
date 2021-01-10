@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/gob"
-	"fmt"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
 )
 
 type Datastore struct {
@@ -16,11 +15,11 @@ type Datastore struct {
 }
 
 func (ds *Datastore) warmCache() {
-	fmt.Println("Warming config value cache")
+	log.Traceln("Warming config value cache")
 
 	res, err := ds.db.Query("SELECT key, value FROM datastore")
-	if err != nil {
-		log.Fatalln(err)
+	if err != nil || res.Err() != nil {
+		log.Errorln("error warming config cache", err, res.Err())
 	}
 	defer res.Close()
 
@@ -28,9 +27,8 @@ func (ds *Datastore) warmCache() {
 		var rowKey string
 		var rowValue []byte
 		if err := res.Scan(&rowKey, &rowValue); err != nil {
-			log.Fatalln(err)
+			log.Errorln("error pre-caching config row", err)
 		}
-		fmt.Println(rowKey, rowValue)
 		ds.cache[rowKey] = rowValue
 	}
 }
