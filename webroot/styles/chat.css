@@ -75,6 +75,9 @@
 
 /******************************/
 /* EMOJI PICKER OVERRIDES */
+.emoji-picker__wrapper {
+  margin-top: -30px !important;
+}
 .emoji-picker.owncast {
   --secondary-text-color: rgba(255, 255, 255, 0.5);
   --category-button-color: rgba(255, 255, 255, 0.5);
