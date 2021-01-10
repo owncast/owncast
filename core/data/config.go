@@ -326,7 +326,7 @@ func GetFfMpegPath() string {
 	if err != nil {
 		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 	} else if ffmpegPath == "" {
-		log.Warnln("there is no path to ffmpeg set.  will try to use a copy in your path, if possible")
+		log.Debugln("there is no path to ffmpeg set.  will try to use a copy in your path, if possible")
 	}
 
 	// First look to see if ffmpeg is in the current working directory
