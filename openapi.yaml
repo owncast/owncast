@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development master branch.
-  version: '0.0.5'
+  version: '0.0.6-development'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -186,6 +186,7 @@ components:
         encoderPreset:
           type: string
           description: "The [H.264 preset value](https://trac.ffmpeg.org/wiki/Encode/H.264) selected for this HLS variant."
+    
     TimestampedValue:
       type: object
       properties:
@@ -194,6 +195,18 @@ components:
           format: date-time
         value:
           type: integer
+
+    ConfigValue:
+      description: A wrapper object used to set values in many config endpoints.
+      type: object
+      properties:
+        value:
+          oneOf:
+            - type: string
+            - type: integer
+            - type: object
+            - type: boolean
+
     LogEntry:
       type: object
       properties:
@@ -542,169 +555,6 @@ paths:
         '200':
           $ref: "#/components/responses/LogsResponse"
 
-
-  /api/admin/changekey:
-    post:
-      summary: Update Stream Key.  Pre-release, do not use.
-      description: Change the stream key in memory, but not in the config file.  This will require all broadcasters to be reconfigured to connect again.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                key:
-                  type: string
-      responses:
-        '200':
-          description: Key was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changeExtraPageContent:
-    post:
-      summary: Change the extra page content.  Pre-release, do not use.
-      description: Change the extra page content in memory, but not on disk.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                content:
-                  type: string
-      responses:
-        '200':
-          description: Page content was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changetitle:
-    post:
-      summary: Update Stream Title.  Pre-release, do not use.
-      description: Change the stream title in memory, but not in the config file.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-      responses:
-        '200':
-          description: Title was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changename:
-    post:
-      summary: Update Stream Name.  Pre-release, do not use.
-      description: Change the stream name in memory, but not in the config file.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-      responses:
-        '200':
-          description: Name was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changetags:
-    post:
-      summary: Update Stream Tags.  Pre-release, do not use.
-      description: Change the stream tags in memory, but not in the config file.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tags:
-                  type: array
-                  items:
-                    type: string
-      responses:
-        '200':
-          description: Tags were changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
   /api/admin/serverconfig:
     get:
       summary: Server Configuration
@@ -805,6 +655,358 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/BasicResponse"
+
+  /api/admin/config/key:
+    post:
+      summary: Set the stream key.
+      description: Set the stream key.  Also used as the admin password.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+
+  /api/admin/config/pagecontent:
+    post:
+      summary: Set the custom page content.
+      description: Set the custom page content using markdown.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              "# Welcome to my cool server!<br><br>I _hope_ you enjoy it."
+
+  /api/admin/config/streamtitle:
+    post:
+      summary: Set the stream title.
+      description: Set the title of the currently streaming content.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: Streaming my favorite game, Desert Bus.
+
+  /api/admin/config/servertitle:
+    post:
+      summary: Set the server title.
+      description: Set the title of the server instance.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"   
+            example:
+              value: Streamland Live
+
+  /api/admin/config/name:
+    post:
+      summary: Set the server name.
+      description: Set the name associated with your server.  Often is your name, username or identity.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+
+  /api/admin/config/serversummary:
+    post:
+      summary: Set the server summary.
+      description: Set the summary of your server's streaming content.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: The best in Desert Bus Streaming  
+
+  /api/admin/config/logo:
+    post:
+      summary: Set the server logo.
+      description: Set the logo for your server.  Path is relative to webroot.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"    
+            example:
+              value: "/img/mylogo.png"
+
+  /api/admin/config/tags:
+    post:
+      summary: Set the server tags.
+      description: Set the tags displayed for your server and the categories you can show up in on the directory.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"   
+            example:
+              value:
+                - games
+                - music
+                - streaming             
+
+  /api/admin/config/ffmpegpath:
+    post:
+      summary: Set the ffmpeg binary path
+      description: Set the path for a specific copy of ffmpeg on your system.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"  
+            example:
+              value: "/home/owncast/ffmpeg"
+
+  /api/admin/config/webserverport:
+    post:
+      summary: Set the owncast web port.
+      description: Set the port the owncast web server should listen on.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"    
+            example:
+              value: 8080
+
+  /api/admin/config/rtmpserverport:
+    post:
+      summary: Set the inbound rtmp server port.
+      description: Set the port where owncast service will listen for inbound broadcasts.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: 1935
+
+  /api/admin/config/nsfw:
+    post:
+      summary: Mark if your stream is not safe for work
+      description: Mark if your stream can be consitered not safe for work.  Used in different contexts, including the directory for filtering purposes.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: false
+
+  /api/admin/config/directoryenabled:
+    post:
+      summary: Set if this server supports the Owncast directory.
+      description: If set to true the server will attempt to register itself with the [Owncast Directory](https://directory.owncast.online).  Off by default.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: true
+
+  /api/admin/config/serverurl:
+    post:
+      summary: Set the public url of this owncast server.
+      description: Set the public url of this owncast server.  Used for the directory and optional integrations.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"  
+            example:
+              value: https://live.mycoolserver.biz
+
+  /api/admin/config/disableupgradechecks:
+    post:
+      summary: Disable checking for future versions of Owncast.
+      description: Turning this on will stop the admin from checking and alerting you to new releases of Owncast.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+
+  /api/admin/config/video/segmentlength:
+    post:
+      summary: The length of a single segment of video.
+      description: Sets the length of a single segment of video in seconds.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"    
+            example:
+              value: 4
+
+  /api/admin/config/video/segmentcount:
+    post:
+      summary: Set the number of video segments available.
+      description: Sets the number of segments available for your stream. More will likely increase latancy, but also improve stability and reduce buffering.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: 5
+
+  /api/admin/config/video/streamoutputvariants:
+    post:
+      summary: Set the configuration of your stream output.
+      description: Sets the detailed configuration for all of the stream variants you support.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            example:
+              - framerate: 30
+                videoPassthrough: false
+                videoBitrate: 1800
+                encoderPreset: veryfast
+                audioPassthrough: true
+              - framerate: 24
+                videoPassthrough: false
+                videoBitrate: 1000
+                encoderPreset: superfast
+                audioPassthrough: true                                                               
+
+  /api/admin/config/s3:
+      post:
+        summary: Set your storage configration. 
+        description: Sets your S3 storage provider configuration details to enable external storage.
+        tags: ["Admin"]
+        security:
+          - AdminBasicAuth: []
+        responses:
+          '200':
+            $ref: "#/components/responses/BasicResponse"      
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigValue"
+              example:
+                enabled: true
+                endpoint: https://s3.us-west-000.backblazeb2.com
+                accessKey: e1ac500y7000500047156bd060
+                secret: "H8FH8eSxM2K/S42CUg5K000Tt4WY2fI"
+                bucket: "video"
+                region: us-west-000
+
 
   /api/admin/viewersOverTime:
     get:
