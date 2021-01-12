@@ -34,7 +34,9 @@ func Start() error {
 	resetDirectories()
 
 	data.PopulateDefaults()
+	// Once a couple versions pass we can remove the old data migrators.
 	data.MigrateConfigFile()
+	data.MigrateStatsFile()
 
 	if err := data.VerifySettings(); err != nil {
 		log.Error(err)

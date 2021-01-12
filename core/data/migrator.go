@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 
@@ -10,6 +11,36 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
+
+func MigrateStatsFile() {
+	oldStats := models.Stats{
+		Clients: make(map[string]models.Client),
+	}
+
+	if !utils.DoesFileExists(config.StatsFile) {
+		return
+	}
+
+	log.Infoln("Migrating", config.StatsFile, "to new datastore")
+
+	jsonFile, err := ioutil.ReadFile(config.StatsFile)
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	if err := json.Unmarshal(jsonFile, &oldStats); err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	SetPeakSessionViewerCount(oldStats.SessionMaxViewerCount)
+	SetPeakOverallViewerCount(oldStats.OverallMaxViewerCount)
+
+	if err := utils.Move(config.StatsFile, "backup/stats.old"); err != nil {
+		log.Warnln(err)
+	}
+}
 
 func MigrateConfigFile() {
 	filePath := "config.yaml"
