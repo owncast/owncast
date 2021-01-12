@@ -11,14 +11,27 @@ ARCH=(amd64 amd64 386 arm-7)
 VERSION=$1
 SHOULD_RELEASE=$2
 
+# Build info
+GIT_COMMIT=$(git rev-list -1 HEAD)
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 if [[ -z "${VERSION}" ]]; then
   echo "Version must be specified when running build"
   exit
 fi
 
+BUILD_TEMP_DIRECTORY="$(mktemp -d)"
+cd $BUILD_TEMP_DIRECTORY
+
+echo "Cloning owncast into $BUILD_TEMP_DIRECTORY..."
+git clone --depth 1 https://github.com/owncast/owncast 2> /dev/null
+cd owncast
+
+echo "Changing to branch: $GIT_BRANCH"
+git checkout $GIT_BRANCH
+
 [[ -z "${VERSION}" ]] && VERSION='unknownver' || VERSION="${VERSION}"
-GIT_COMMIT=$(git rev-list -1 HEAD)
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 # Change to the root directory of the repository
 cd $(git rev-parse --show-toplevel)
 
@@ -77,9 +90,12 @@ for i in "${!DISTRO[@]}"; do
   build ${DISTRO[$i]} ${OS[$i]} ${ARCH[$i]} $VERSION $GIT_COMMIT
 done
 
+echo "Build archives are available in $BUILD_TEMP_DIRECTORY/owncast/dist"
+ls -alh "$BUILD_TEMP_DIRECTORY/owncast/dist"
+
 # Use the second argument "release" to create an actual release.
 if [ "$SHOULD_RELEASE" != "release" ]; then
-  echo "Not creating a release."
+  echo "Not uploading a release."
   exit
 fi
 
