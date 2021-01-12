@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"golang.org/x/mod/semver"
 )
 
@@ -37,14 +39,26 @@ func verifyFFMpegPath(path string) error {
 
 	response := string(out)
 	if response == "" {
-		fmt.Println(err)
 		return fmt.Errorf("unable to determine the version of your ffmpeg installation at %s. you may experience issues with video.", path)
 	}
 
 	responseComponents := strings.Split(response, " ")
+	if len(responseComponents) < 3 {
+		log.Debugf("unable to determine the version of your ffmpeg installation at %s. you may experience issues with video.", path)
+		return nil
+	}
+
 	fullVersionString := responseComponents[2]
+
 	versionString := "v" + strings.Split(fullVersionString, "-")[0]
-	if !semver.IsValid(versionString) || semver.Compare(versionString, FfmpegSuggestedVersion) == -1 {
+
+	// Some builds of ffmpeg have wierd build numbers that we can't parse
+	if !semver.IsValid(versionString) {
+		log.Debugf("unable to determine if ffmpeg version %s is recent enough. if you experience issues with video you may want to look into updating", fullVersionString)
+		return nil
+	}
+
+	if semver.Compare(versionString, FfmpegSuggestedVersion) == -1 {
 		return fmt.Errorf("your %s version of ffmpeg at %s may be older than the suggested version of %s. you may experience issues with video.", versionString, path, FfmpegSuggestedVersion)
 	}
 
