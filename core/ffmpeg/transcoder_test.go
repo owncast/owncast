@@ -12,7 +12,7 @@ func TestFFmpegCommand(t *testing.T) {
 	transcoder.SetOutputPath("fakeOutput")
 	transcoder.SetHLSPlaylistLength(10)
 	transcoder.SetIdentifier("jdofFGg")
-	transcoder.SetInternalHTTPPort(8123)
+	transcoder.SetInternalHTTPPort("8123")
 
 	variant := HLSVariant{}
 	variant.videoBitrate = 1200

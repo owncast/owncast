@@ -17,3 +17,5 @@ var WebServerPortOverride = 8080
 var RTMPServerPortOverride = 1935
 
 var HighestQualityStreamIndex = 0
+
+var InternalHLSListenerPort = "8927"

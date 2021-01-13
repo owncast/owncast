@@ -3,15 +3,14 @@ package ffmpeg
 import (
 	"bytes"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"net/http"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -35,15 +34,23 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 	httpServer := http.NewServeMux()
 	httpServer.HandleFunc("/", s.uploadHandler)
 
-	localListenerAddress := "127.0.0.1:" + strconv.Itoa(data.GetHTTPPortNumber()+1)
+	localListenerAddress := "127.0.0.1:0"
 
 	go func() {
-		if err := http.ListenAndServe(localListenerAddress, httpServer); err != nil {
-			log.Fatal(err)
+		listener, err := net.Listen("tcp", localListenerAddress)
+		if err != nil {
+			log.Fatalln("Unable to start internal video writing service", err)
+		}
+
+		listenerPort := strings.Split(listener.Addr().String(), ":")[1]
+		config.InternalHLSListenerPort = listenerPort
+		log.Traceln("Transcoder response service listening on: " + listenerPort)
+
+		if err := http.Serve(listener, httpServer); err != nil {
+			panic(err)
 		}
 	}()
 
-	log.Traceln("Transcoder response listening on: " + localListenerAddress)
 }
 
 func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http.Request) {
