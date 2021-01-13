@@ -28,7 +28,7 @@ type Transcoder struct {
 	appendToStream       bool
 	ffmpegPath           string
 	segmentIdentifier    string
-	internalListenerPort int
+	internalListenerPort string
 	videoOnly            bool // If true ignore any audio, if any
 	TranscoderCompleted  func(error)
 }
@@ -105,8 +105,8 @@ func (t *Transcoder) Start() {
 }
 
 func (t *Transcoder) getString() string {
-	var port = data.GetHTTPPortNumber() + 1
-	localListenerAddress := "http://127.0.0.1:" + strconv.Itoa(port)
+	var port = t.internalListenerPort
+	localListenerAddress := "http://127.0.0.1:" + port
 
 	hlsOptionFlags := []string{}
 
@@ -199,6 +199,7 @@ func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = data.GetFfMpegPath()
 	transcoder.hlsPlaylistLength = int(data.GetVideoSegmentsInPlaylist())
+	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
 	var outputPath string
 	if data.GetS3Config().Enabled {
@@ -388,7 +389,7 @@ func (t *Transcoder) SetIdentifier(output string) {
 	t.segmentIdentifier = output
 }
 
-func (t *Transcoder) SetInternalHTTPPort(port int) {
+func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
 }
 
