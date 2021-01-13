@@ -38,7 +38,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm install && npx snowpack install && cp node_modules/video.js/dist/video-js.min.css web_modules/videojs && cp -R web_modules ../../webroot/js"
+    "build": "npm install && npx snowpack@2.18.4 install && cp node_modules/video.js/dist/video-js.min.css web_modules/videojs && cp -R web_modules ../../webroot/js"
   },
   "author": "Owncast",
   "license": "ISC"
