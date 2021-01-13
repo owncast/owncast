@@ -4,13 +4,17 @@
     min-width: 20px;
   }
   .ant-table-tbody > tr > td {
-    transition: background 0.15s;
+    transition: background-color 0.15s;
   }
   .ant-table-row.hidden {
     .ant-table-cell {
-      color: #444450; 
+      color: rgba(0,0,0,.25)
     }
-
+    @media (prefers-color-scheme: dark) {
+      .ant-table-cell {
+        color: rgba(255,255,255,.25)
+      }
+    }
   }
   .ant-table-cell {
     font-size: 12px;
@@ -43,16 +47,23 @@
   .bulk-editor {
     margin: .5rem 0;
     padding: .5rem;
-    border: 1px solid #333;
+    border: 1px solid #ccc;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
     border-radius: 4px;
+    opacity: .5;
 
     &.active {
+      opacity: 1;
       .label {
-        color: #ccc;
+        color: #000;
+      }
+      @media (prefers-color-scheme: dark) {
+        .label {
+          color: #fff;
+        }
       }
     }
 
@@ -79,8 +90,33 @@
   align-items: center;
   flex-wrap: nowrap;
   justify-content: flex-end;
+  transition: opacity .15s;
 
   .outcome-icon {
     margin-right: .5rem;
+  }
+  &.hidden {
+    opacity: .25;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .ant-btn {
+    .anticon {
+      opacity: .5;
+    }
+    &:hover {
+      .anticon {
+        opacity: 1;
+      }
+    }
+  }
+  .ant-btn-text:hover {
+    background-color: rgba(0,0,0,.1)
+  }
+  @media (prefers-color-scheme: dark) {
+    .ant-btn-text:hover {
+      background-color: rgba(255,255,255,.3)
+    }
   }
 }

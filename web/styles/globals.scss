@@ -34,6 +34,10 @@ pre {
 .ant-card {
   border-radius: .5em;
 }
+.ant-btn {
+  transition-duration: .15s;
+  transition-delay: 0s;
+}
 
 @media (prefers-color-scheme: dark) {
   @import "~antd/dist/antd.dark";

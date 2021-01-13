@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Typography, Tooltip, Button } from "antd";
-import { CheckCircleFilled, ExclamationCircleFilled, StopOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format'
@@ -8,6 +8,7 @@ import format from 'date-fns/format'
 import { CHAT_HISTORY, fetchData, FETCH_INTERVAL, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
 import { MessageType } from '../types/chat';
 import { isEmptyObject } from "../utils/format";
+import MessageVisiblityToggle from "./components/message-visiblity-toggle";
 
 const { Title } = Typography;
 
@@ -80,6 +81,11 @@ export default function Chat() {
     },
   };
 
+  const updateMessage = message => {		
+    const messageIndex = messages.findIndex(m => m.id === message.id);	
+    messages.splice(messageIndex, 1, message)		
+    setMessages([...messages]);		
+  };
 
   const resetBulkOutcome = () => {
     outcomeTimeout = setTimeout(() => {
@@ -179,7 +185,13 @@ export default function Chat() {
       className: 'toggle-col',
       filters: [{ text: 'Visible messages', value: true }, { text: 'Hidden messages', value: false }],
       onFilter: (value, record) => record.visible === value,
-      render: visible => visible ? null : <StopOutlined title="This message is hidden" />,
+      render: (visible, record) => (
+        <MessageVisiblityToggle
+          isVisible={visible}
+          message={record}
+          setMessage={updateMessage}
+        />
+      ),
       width: 30,
     },
   ];
@@ -234,5 +246,4 @@ export default function Chat() {
       />
   </div>)
 }
-
 
