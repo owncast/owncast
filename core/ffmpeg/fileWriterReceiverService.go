@@ -47,10 +47,9 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 		log.Traceln("Transcoder response service listening on: " + listenerPort)
 
 		if err := http.Serve(listener, httpServer); err != nil {
-			panic(err)
+			log.Fatalln("Unable to start internal video writing service", err)
 		}
 	}()
-
 }
 
 func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http.Request) {
