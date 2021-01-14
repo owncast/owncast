@@ -3,7 +3,7 @@ import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
 import { setLocalStorage } from '../../utils/helpers.js';
-import { KEY_USERNAME } from '../../utils/constants.js';
+import { KEY_USERNAME, KEY_CUSTOM_USERNAME_SET } from '../../utils/constants.js';
 
 export default class UsernameForm extends Component {
   constructor(props, context) {
@@ -51,6 +51,8 @@ export default class UsernameForm extends Component {
     newName = newName.trim();
     if (newName !== '' && newName !== curName) {
       setLocalStorage(KEY_USERNAME, newName);
+      // So we know that the user has set a custom name
+      setLocalStorage(KEY_CUSTOM_USERNAME_SET, true);
       if (onUsernameChange) {
         onUsernameChange(newName);
       }

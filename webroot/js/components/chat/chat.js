@@ -7,9 +7,9 @@ import '/js/web_modules/@justinribeiro/lite-youtube.js';
 import Message from './message.js';
 import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
-import { jumpToBottom, debounce } from '../../utils/helpers.js';
+import { jumpToBottom, debounce, getLocalStorage } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
-import { URL_CHAT_HISTORY, MESSAGE_JUMPTOBOTTOM_BUFFER } from '../../utils/constants.js';
+import { URL_CHAT_HISTORY, MESSAGE_JUMPTOBOTTOM_BUFFER, KEY_CUSTOM_USERNAME_SET } from '../../utils/constants.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
@@ -126,7 +126,7 @@ export default class Chat extends Component {
       // extra user names
       const chatUserNames = extraUserNamesFromMessageHistory(data);
       this.setState({
-        messages: data,
+        messages: this.state.messages.concat(data),
         chatUserNames,
       });
     })
@@ -136,6 +136,8 @@ export default class Chat extends Component {
   }
 
   sendUsernameChange(oldName, newName) {
+    clearTimeout(this.sendUserJoinedEvent);
+
 		const nameChange = {
 			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
 			oldName,
@@ -215,6 +217,11 @@ export default class Chat extends Component {
     this.setState({
       webSocketConnected: true,
     });
+
+    const hasPreviouslySetCustomUsername = getLocalStorage(KEY_CUSTOM_USERNAME_SET);
+    if (hasPreviouslySetCustomUsername) {
+      this.sendJoinedMessage();
+    }
   }
 
   websocketDisconnected() {
@@ -234,6 +241,20 @@ export default class Chat extends Component {
 			type: SOCKET_MESSAGE_TYPES.CHAT,
     };
 		this.websocket.send(message);
+  }
+
+  sendJoinedMessage() {
+    const { username } = this.props;
+    const message = {
+			username: username,
+			type: SOCKET_MESSAGE_TYPES.USER_JOINED,
+    };
+
+    // Artificial delay so people who join and immediately
+    // leave don't get counted.
+    this.sendUserJoinedEvent = setTimeout(function() {
+      this.websocket.send(message);
+    }.bind(this), 5000);
   }
 
   updateAuthorList(message) {

@@ -24,6 +24,19 @@ export default function Message(props) {
         </div>
       `
     );
+  } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
+    const { username } = message;
+    return (
+      html`
+          <div class="message message-user-joined flex items-center justify-start p-3">
+            <div class="message-content flex flex-row items-center justify-center text-sm w-full">
+              <div class="text-white text-center opacity-50 overflow-hidden break-words">
+                <span class="font-bold">${username}</span> joined the chat.
+              </div>
+            </div>
+          </div>
+        `
+    );
   } else {
     console.log("Unknown message type:", type);
   }
