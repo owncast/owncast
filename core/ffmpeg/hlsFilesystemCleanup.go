@@ -19,7 +19,8 @@ func CleanupOldContent(baseDirectory string) {
 
 	files, err := getAllFilesRecursive(baseDirectory)
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln("Unable to cleanup old video files", err)
+		return
 	}
 
 	// Delete old private HLS files on disk
