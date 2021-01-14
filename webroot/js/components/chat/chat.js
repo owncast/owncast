@@ -234,6 +234,7 @@ export default class Chat extends Component {
 		if (!content) {
 			return;
     }
+    
     const { username } = this.props;
     const message = {
       body: content,

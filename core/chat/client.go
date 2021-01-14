@@ -163,11 +163,11 @@ func (c *Client) listenRead() {
 				continue
 			}
 
-			if messageType == string(models.MessageSent) {
+			if messageType == models.MessageSent {
 				c.chatMessageReceived(data)
-			} else if messageType == string(models.UserNameChanged) {
+			} else if messageType == models.UserNameChanged {
 				c.userChangedName(data)
-			} else if messageType == string(models.UserJoined) {
+			} else if messageType == models.UserJoined {
 				c.userJoined(data)
 			}
 		}

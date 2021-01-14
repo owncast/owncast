@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-// NameChangeEvent represents a user changing their name in chat.
+// UserJoinedEvent represents a user joining the chat.
 type UserJoinedEvent struct {
 	Username  string    `json:"username"`
 	Type      EventType `json:"type"`
