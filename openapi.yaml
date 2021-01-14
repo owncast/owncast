@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development master branch.
-  version: '0.0.5'
+  version: "0.0.6-development"
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -25,23 +25,23 @@ components:
     ClientArray:
       type: array
       items:
-        $ref: '#/components/schemas/Client'
+        $ref: "#/components/schemas/Client"
 
     LogEntryArray:
       type: array
       items:
-        $ref: '#/components/schemas/LogEntry'
+        $ref: "#/components/schemas/LogEntry"
 
     Client:
       type: object
       description: A single representation of a client.
       example:
-        connectedAt: '2020-10-06T23:20:44.588649-07:00'
+        connectedAt: "2020-10-06T23:20:44.588649-07:00"
         messageCount: 0
         userAgent: >-
           Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
-        ipAddress: '::1'
+        ipAddress: "::1"
         username: null
         clientID: 2ba20dd34f911c198df3218ddc64c740
         geo:
@@ -209,7 +209,28 @@ components:
         message:
           type: string
           description: "The log entry contents"
-
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of this webhook.
+        url:
+          type: string
+          description: The URL that events will be sent to.
+        events:
+          type: array
+          items:
+            type: string
+            description: The events that will be sent to this webhook.
+        timestamp:
+          type: string
+          format: date-time
+          description: When this webhook was created.
+        lastUsed:
+          type: string
+          format: date-time
+          description: When this webhook was last used.
 
   securitySchemes:
     AdminBasicAuth:
@@ -229,18 +250,18 @@ components:
           schema:
             $ref: "#/components/schemas/ClientArray"
           example:
-          - connectedAt: '2020-10-06T23:20:44.588649-07:00'
-            messageCount: 3
-            userAgent: >-
-              Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
-              (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
-            ipAddress: '172.217.164.110'
-            username: coolperson42
-            clientID: 2ba20dd34f911c198df3218ddc64c740
-            geo:
-              countryCode: US
-              regionName: California
-              timeZone: America/Los_Angeles
+            - connectedAt: "2020-10-06T23:20:44.588649-07:00"
+              messageCount: 3
+              userAgent: >-
+                Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
+                (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
+              ipAddress: "172.217.164.110"
+              username: coolperson42
+              clientID: 2ba20dd34f911c198df3218ddc64c740
+              geo:
+                countryCode: US
+                regionName: California
+                timeZone: America/Los_Angeles
 
     LogsResponse:
       description: Response of server log entries
@@ -251,8 +272,24 @@ components:
           examples:
             success:
               summary: Logs returned
-              value: [{"message":"Owncast v0.0.0-localdev (unknown)","level":"info","time":"2020-10-29T18:35:34.422386-07:00"},{"message":"Web server running on port: 8080","level":"info","time":"2020-10-29T18:35:35.011731-07:00"},{"message":"RTMP server is listening for incoming stream on port: 1935","level":"info","time":"2020-10-29T18:35:35.011823-07:00"}]
-
+              value:
+                [
+                  {
+                    "message": "Owncast v0.0.0-localdev (unknown)",
+                    "level": "info",
+                    "time": "2020-10-29T18:35:34.422386-07:00",
+                  },
+                  {
+                    "message": "Web server running on port: 8080",
+                    "level": "info",
+                    "time": "2020-10-29T18:35:35.011731-07:00",
+                  },
+                  {
+                    "message": "RTMP server is listening for incoming stream on port: 1935",
+                    "level": "info",
+                    "time": "2020-10-29T18:35:35.011823-07:00",
+                  },
+                ]
 
     BasicResponse:
       description: Operation Success/Failure Response
@@ -263,20 +300,27 @@ components:
           examples:
             success:
               summary: Operation succeeded.
-              value: {"success": true, "message": "context specific success message"}
+              value:
+                {
+                  "success": true,
+                  "message": "context specific success message",
+                }
             failure:
               summary: Operation failed.
-              value: {"success": false, "message": "context specific failure message"}
+              value:
+                {
+                  "success": false,
+                  "message": "context specific failure message",
+                }
 
 paths:
-
   /api/config:
     get:
       summary: Information
       description: The client configuration. Information useful for the user interface.
       tags: ["Server"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -289,7 +333,7 @@ paths:
       description: This endpoint is used to discover when a server is broadcasting, the number of active viewers as well as other useful information for updating the user interface.
       tags: ["Server"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -328,7 +372,7 @@ paths:
       description: Used to get all chat messages prior to connecting to the websocket.
       tags: ["Chat"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -359,7 +403,7 @@ paths:
       description: Information to be used in the Yellow Pages service, a global directory of Owncast servers.
       tags: ["Server"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -397,7 +441,7 @@ paths:
       description: Get a list of custom emoji that are supported in chat.
       tags: ["Chat"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -428,7 +472,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: Server status and broadcaster details
           content:
             application/json:
@@ -503,7 +547,6 @@ paths:
                     versionNumber: "0.0.3"
                     disableUpgradeChecks: false
 
-
   /api/admin/disconnect:
     post:
       summary: Disconnect Broadcaster
@@ -512,7 +555,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/BasicResponse"
 
   /api/admin/clients:
@@ -523,7 +566,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/ClientsResponse"
 
   /api/admin/logs:
@@ -534,7 +577,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/LogsResponse"
 
   /api/admin/logs/warnings:
@@ -545,9 +588,8 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/LogsResponse"
-
 
   /api/admin/changekey:
     post:
@@ -567,7 +609,7 @@ paths:
                 key:
                   type: string
       responses:
-        '200':
+        "200":
           description: Key was changed.
           content:
             application/json:
@@ -599,7 +641,7 @@ paths:
                 content:
                   type: string
       responses:
-        '200':
+        "200":
           description: Page content was changed.
           content:
             application/json:
@@ -631,7 +673,7 @@ paths:
                 title:
                   type: string
       responses:
-        '200':
+        "200":
           description: Title was changed.
           content:
             application/json:
@@ -663,7 +705,7 @@ paths:
                 name:
                   type: string
       responses:
-        '200':
+        "200":
           description: Name was changed.
           content:
             application/json:
@@ -697,7 +739,7 @@ paths:
                   items:
                     type: string
       responses:
-        '200':
+        "200":
           description: Tags were changed.
           content:
             application/json:
@@ -719,7 +761,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -752,7 +794,7 @@ paths:
                         description: The maximum number of HLS video segments we will keep referenced in the playlist.
                   yp:
                     $ref: "#/components/schemas/YP"
-              
+
   /api/admin/chat/messages:
     get:
       summary: Chat messages, unfiltered.
@@ -761,7 +803,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -786,7 +828,6 @@ paths:
                       type: string
                       format: date-time
 
-
   /api/admin/chat/updatemessagevisibility:
     post:
       summary: Update the visibility of chat messages.
@@ -809,7 +850,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/BasicResponse"
 
   /api/admin/viewersOverTime:
@@ -820,7 +861,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -836,9 +877,6 @@ paths:
                     - time: "2020-10-03T21:42:00.381996-05:00"
                       value: 52
 
-
-
-
   /api/admin/hardwarestats:
     get:
       summary: Hardware Stats
@@ -847,7 +885,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -891,122 +929,230 @@ paths:
                       - time: "2020-10-03T21:43:00.381996-05:00"
                         value: 11
 
-  /api/admin/sendsystemmessage:
-      post:
-        summary: Send a System chat message
-        description: Change the stream key in memory, but not in the config file.  This will require all broadcasters to be reconfigured to connect again.
-        tags: ["Integration"]
-        security:
-          - AccessToken: []
-        requestBody:
-          required: true
+  /api/integrations/chat/user:
+    post:
+      summary: Send a user chat message.
+      description: Send a chat message on behalf of a user.  Could be a bot name or a real user.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  description: The user you want to send this message as.
+                body:
+                  type: string
+                  description: The message text that will be sent as the user.
+      responses:
+        "200":
+          description: Message was sent.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  body:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
                     type: string
-                    description: The message text that will be sent as the system user.
-        responses:
-          '200':
-            description: Message was sent.
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      example: true
-                    message:
-                      type: string
-                      example: sent
+                    example: sent
 
-  /api/admin/createaccesstoken:
-        post:
-          summary: Create an access token.
-          description: Create a single access token that has access to the access scopes provided.
-          tags: ["Integration"]
-          security:
-            - AdminBasicAuth: []
-          requestBody:
-            required: true
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      description: The human-readable name to give this access token.
-                    scopes:
-                      type: array
-                      items:
-                        type: string
-
-          responses:
-            '200':
-              description: Token was created.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                        example: your new token
-                      token:
-                        type: string
-                        example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
-
-  /api/admin/deleteaccesstoken:
-      post:
-        summary: Delete an access token.
-        description: Delete a single access token.
-        tags: ["Integration"]
-        security:
-          - AdminBasicAuth: []
-        requestBody:
-          required: true
+  /api/integrations/chat/system:
+    post:
+      summary: Send a system chat message.
+      description: Send a chat message on behalf of the system/server.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  description: The message text that will be sent as the system user.
+      responses:
+        "200":
+          description: Message was sent.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
                     type: string
-                    description: The token to delete
+                    example: sent
 
-        responses:
-          '200':
-            description: Token was deleted.
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      example: true
-                    message:
-                      type: string
-                      example: deleted token
-
-  /api/admin/accesstokens:
-      get:
-        summary: Return all access tokens.
-        description: Return all of the available access tokens.
-        tags: ["Integration"]
-        security:
-          - AdminBasicAuth: []
-        responses:
-          '200':
-            description: Tokens are returned
-            content:
-              application/json:
-                schema:
+  /api/admin/accesstokens/create:
+    post:
+      summary: Create an access token.
+      description: Create a single access token that has access to the access scopes provided.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The human-readable name to give this access token.
+                scopes:
                   type: array
                   items:
                     type: string
-                    
+
+      responses:
+        "200":
+          description: Token was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: your new token
+                  token:
+                    type: string
+                    example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
+
+  /api/admin/accesstokens/delete:
+    post:
+      summary: Delete an access token.
+      description: Delete a single access token.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: The token to delete
+
+      responses:
+        "200":
+          description: Token was deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: deleted token
+
+  /api/admin/accesstokens:
+    get:
+      summary: Return all access tokens.
+      description: Return all of the available access tokens.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        "200":
+          description: Tokens are returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/admin/webhooks:
+    get:
+      summary: Return all webhooks.
+      description: Return all of the configured webhooks for external events.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        "200":
+          description: Webhooks are returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+
+  /api/admin/webhooks/delete:
+    post:
+      summary: Delete a single webhook.
+      description: Delete a single webhook by its ID.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The webhook id to delete
+      responses:
+        "200":
+          description: Webhook is deleted
+
+  /api/admin/webhooks/create:
+    post:
+      summary: Create a webhook.
+      description: Create a single webhook that acts on the requested events.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The url to post the events to.
+                events:
+                  description: The events to be notified about.
+                  type: array
+                  items:
+                    type: string
+
+      responses:
+        "200":
+          description: Token was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: your new token
+                  token:
+                    type: string
+                    example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
