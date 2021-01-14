@@ -27,6 +27,7 @@ const RTMP_PORT_NUMBER_KEY = "rtmp_port_number"
 const DISABLE_UPGRADE_CHECKS_KEY = "disable_upgrade_checks"
 const SERVER_METADATA_TAGS_KEY = "server_metadata_tags"
 const DIRECTORY_ENABLED_KEY = "directory_enabled"
+const DIRECTORY_REGISTRATION_KEY_KEY = "directory_registration_key"
 const SOCIAL_HANDLES_KEY = "social_handles"
 const PEAK_VIEWERS_SESSION_KEY = "peak_viewers_session"
 const PEAK_VIEWERS_OVERALL_KEY = "peak_viewers_overall"
@@ -236,6 +237,15 @@ func GetDirectoryEnabled() bool {
 
 func SetDirectoryEnabled(enabled bool) error {
 	return _datastore.SetBool(DIRECTORY_ENABLED_KEY, enabled)
+}
+
+func SetDirectoryRegistrationKey(key string) error {
+	return _datastore.SetString(DIRECTORY_REGISTRATION_KEY_KEY, key)
+}
+
+func GetDirectoryRegistrationKey() string {
+	key, _ := _datastore.GetString(DIRECTORY_REGISTRATION_KEY_KEY)
+	return key
 }
 
 func GetSocialHandles() []models.SocialHandle {

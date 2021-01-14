@@ -21,8 +21,6 @@ const pingInterval = 4 * time.Minute
 var getStatus func() models.Status
 var _inErrorState = false
 
-var datastore *data.Datastore
-
 //YP is a service for handling listing in the Owncast directory.
 type YP struct {
 	timer *time.Ticker
@@ -48,7 +46,6 @@ func NewYP(getStatusFunc func() models.Status) *YP {
 
 // Start is run when a live stream begins to start pinging YP.
 func (yp *YP) Start() {
-	datastore = data.GetStore()
 	yp.timer = time.NewTicker(pingInterval)
 	for range yp.timer.C {
 		yp.ping()
@@ -77,7 +74,7 @@ func (yp *YP) ping() {
 		return
 	}
 
-	key := yp.getSavedKey()
+	key := data.GetDirectoryRegistrationKey()
 
 	log.Traceln("Pinging YP as: ", data.GetServerName(), "with key", key)
 
@@ -122,24 +119,8 @@ func (yp *YP) ping() {
 	_inErrorState = false
 
 	if pingResponse.Key != key {
-		yp.writeSavedKey(pingResponse.Key)
+		data.SetDirectoryRegistrationKey(key)
 	}
-}
-
-func (yp *YP) writeSavedKey(key string) {
-	if err := datastore.SetString("yp-key", key); err != nil {
-		log.Warnln(err)
-	}
-}
-
-func (yp *YP) getSavedKey() string {
-	key, err := datastore.GetString("yp-key")
-	if err != nil {
-		log.Warnln(err)
-		return ""
-	}
-
-	return key
 }
 
 // DisplayInstructions will let the user know they are not in the directory by default and

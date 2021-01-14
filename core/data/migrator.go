@@ -12,7 +12,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func MigrateStatsFile() {
+func RunMigrations() {
+	migrateConfigFile()
+	migrateStatsFile()
+	migrateYPKey()
+}
+
+func migrateStatsFile() {
 	oldStats := models.Stats{
 		Clients: make(map[string]models.Client),
 	}
@@ -42,7 +48,32 @@ func MigrateStatsFile() {
 	}
 }
 
-func MigrateConfigFile() {
+func migrateYPKey() {
+	filePath := ".yp.key"
+
+	if !utils.DoesFileExists(filePath) {
+		return
+	}
+
+	log.Infoln("Migrating", filePath, "to new datastore")
+
+	keyFile, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Errorln("Unable to migrate", keyFile, "there may be issues registering with the directory")
+	}
+
+	if err := SetDirectoryRegistrationKey(string(keyFile)); err != nil {
+		log.Errorln("Unable to migrate", keyFile, "there may be issues registering with the directory")
+		return
+	}
+
+	if err := utils.Move(filePath, "backup/yp.key.old"); err != nil {
+		log.Warnln(err)
+	}
+
+}
+
+func migrateConfigFile() {
 	filePath := "config.yaml"
 
 	if !utils.DoesFileExists(filePath) {
