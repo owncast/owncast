@@ -44,10 +44,10 @@ export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/admin/chat/up
 export const ACCESS_TOKENS = `${API_LOCATION}accesstokens`;
 
 // Delete a single access token
-export const DELETE_ACCESS_TOKEN = `${API_LOCATION}deleteaccesstoken`;
+export const DELETE_ACCESS_TOKEN = `${API_LOCATION}accesstokens/delete`;
 
 // Create a new access token
-export const CREATE_ACCESS_TOKEN = `${API_LOCATION}createaccesstoken`;
+export const CREATE_ACCESS_TOKEN = `${API_LOCATION}accesstokens/create`;
 
 // Get webhooks
 export const WEBHOOKS = `${API_LOCATION}webhooks`;
