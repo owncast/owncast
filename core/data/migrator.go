@@ -13,6 +13,13 @@ import (
 )
 
 func RunMigrations() {
+	if !utils.DoesFileExists(config.BackupDirectory) {
+		if err := os.Mkdir(config.BackupDirectory, 0700); err != nil {
+			log.Errorln("Unable to create backup directory", err)
+			return
+		}
+	}
+
 	migrateConfigFile()
 	migrateStatsFile()
 	migrateYPKey()
@@ -114,13 +121,6 @@ func migrateConfigFile() {
 	content, err := ioutil.ReadFile(config.ExtraInfoFile)
 	if err == nil && len(content) > 0 {
 		SetExtraPageBodyContent(string(content))
-	}
-
-	if !utils.DoesFileExists(config.BackupDirectory) {
-		if err := os.Mkdir(config.BackupDirectory, 0700); err != nil {
-			log.Errorln("Unable to create backup directory", err)
-			return
-		}
 	}
 
 	if err := utils.Move(filePath, "backup/config.old"); err != nil {
