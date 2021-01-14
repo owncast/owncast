@@ -14,7 +14,9 @@ import {
   PlayCircleFilled,
   MinusSquareFilled,
   QuestionCircleOutlined,
-  MessageOutlined
+  MessageOutlined,
+  ExperimentOutlined,
+
 } from '@ant-design/icons';
 import classNames from 'classnames';
 import { upgradeVersionAvailable } from "../../utils/apis";
@@ -148,6 +150,18 @@ export default function MainLayout(props) {
               <Link href="/upgrade">
                 <a>Upgrade to v{upgradeVersionString}</a>
               </Link>
+            </Menu.Item>
+          </SubMenu>
+          <SubMenu
+            key="integrations-menu"
+            icon={<ExperimentOutlined />}
+            title="Integrations"
+          >
+            <Menu.Item key="webhooks">
+              <Link href="/webhooks">Webhooks</Link>
+            </Menu.Item>
+            <Menu.Item key="access-tokens">
+              <Link href="/access-tokens">Access Tokens</Link>
             </Menu.Item>
           </SubMenu>
           <Menu.Item
