@@ -114,8 +114,19 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 			break
 		}
 
+		// If we don't get a readable packet in 10 seconds give up and disconnect
+		_rtmpConnection.SetReadDeadline(time.Now().Add(10 * time.Second))
 		pkt, err := c.ReadPacket()
+
+		// Broadcaster disconnected
 		if err == io.EOF {
+			handleDisconnect(nc)
+			break
+		}
+
+		// Read timeout.  Disconnect.
+		if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
+			log.Debugln("Timeout reading the inbound stream from the broadcaster.  Assuming that they disconnected and ending the stream.")
 			handleDisconnect(nc)
 			break
 		}
