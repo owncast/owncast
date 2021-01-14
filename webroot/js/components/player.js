@@ -1,7 +1,7 @@
 // https://docs.videojs.com/player
 
-import videojs from '/js/web_modules/videojs/core.js';
-import '/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js';
+import videojs from '../web_modules/videojs/core.js';
+import '../web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js';
 import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
 

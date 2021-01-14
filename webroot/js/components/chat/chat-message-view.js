@@ -1,6 +1,6 @@
-import { h, Component } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
-import Mark from '/js/web_modules/markjs/dist/mark.es6.min.js';
+import { h, Component } from '../../web_modules/preact.js';
+import htm from '../../web_modules/htm.js';
+import Mark from '../../web_modules/markjs/dist/mark.es6.min.js';
 const html = htm.bind(h);
 
 import {

@@ -1,5 +1,5 @@
-import { h, Component, createRef } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
+import { h, Component, createRef } from '../../web_modules/preact.js';
+import htm from '../../web_modules/htm.js';
 const html = htm.bind(h);
 
 import { setLocalStorage } from '../../utils/helpers.js';

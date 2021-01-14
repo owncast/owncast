@@ -6,7 +6,7 @@ and here:
 https://stackoverflow.com/questions/22677931/react-js-onchange-event-for-contenteditable/27255103#27255103
 
 */
-import { h, Component, createRef } from '/js/web_modules/preact.js';
+import { h, Component, createRef } from '../../web_modules/preact.js';
 
 export function replaceCaret(el) {
   // Place the caret at the end of the element

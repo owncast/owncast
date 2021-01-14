@@ -1,8 +1,8 @@
-import { h, Component, createRef } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
+import { h, Component, createRef } from '../../web_modules/preact.js';
+import htm from '../../web_modules/htm.js';
 const html = htm.bind(h);
 
-import '/js/web_modules/@justinribeiro/lite-youtube.js';
+import '../../web_modules/@justinribeiro/lite-youtube.js';
 
 import Message from './message.js';
 import ChatInput from './chat-input.js';

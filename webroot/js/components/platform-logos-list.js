@@ -1,5 +1,5 @@
-import {h} from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
+import {h} from '../web_modules/preact.js';
+import htm from '../web_modules/htm.js';
 import {SOCIAL_PLATFORMS} from '../utils/platforms.js';
 import {classNames} from '../utils/helpers.js';
 

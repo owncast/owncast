@@ -1,5 +1,5 @@
-import { h } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
+import { h } from '../../web_modules/preact.js';
+import htm from '../../web_modules/htm.js';
 const html = htm.bind(h);
 
 import ChatMessageView from './chat-message-view.js';

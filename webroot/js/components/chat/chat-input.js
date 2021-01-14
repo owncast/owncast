@@ -1,8 +1,8 @@
-import { h, Component, createRef } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
+import { h, Component, createRef } from '../../web_modules/preact.js';
+import htm from '../../web_modules/htm.js';
 const html = htm.bind(h);
 
-import { EmojiButton } from '/js/web_modules/@joeattardi/emoji-button.js';
+import { EmojiButton } from '../../web_modules/@joeattardi/emoji-button.js';
 
 import ContentEditable, { replaceCaret } from './content-editable.js';
 import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
@@ -65,7 +65,13 @@ export default class ChatInput extends Component {
         this.emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
-          custom: json,
+          custom: json.map(emoji => {
+            return {
+
+              "name": emoji.name,
+              "emoji": emoji.emoji = `${location.protocol === 'https:' ? 'https' : 'http'}://${location.host}${location.pathname}` + emoji.emoji.slice(1)
+            }
+          }), // converting absolute paths returned from API to relative paths
           initialCategory: 'custom',
           showPreview: false,
           autoHide: false,
@@ -98,9 +104,8 @@ export default class ChatInput extends Component {
     const { inputHTML } = this.state;
     let content = '';
     if (emoji.url) {
-      const url = location.protocol + "//" + location.host + "/" + emoji.url;
-      const name = url.split('\\').pop().split('/').pop();
-      content = "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + url + "\"/>";
+      const name = emoji.url.split('\\').pop().split('/').pop();
+      content = "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + emoji.url + "\"/>";
     } else {
       content = emoji.emoji;
     }
@@ -304,7 +309,7 @@ export default class ChatInput extends Component {
                 style=${emojiButtonStyle}
                 onclick=${this.handleEmojiButtonClick}
                 disabled=${!inputEnabled}
-              ><img src="../../../img/smiley.png" /></button>
+              ><img src="${location.pathname}img/smiley.png" /></button>
 
               <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span>
             </div>

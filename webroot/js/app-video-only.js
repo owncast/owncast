@@ -1,5 +1,5 @@
-import { h, Component } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
+import { h, Component } from './web_modules/preact.js';
+import htm from './web_modules/htm.js';
 const html = htm.bind(h);
 
 import VideoPoster from './components/video-poster.js';

@@ -60,7 +60,7 @@ header {
 #logo-container {
   background-size: 1.35em;
   padding: 1.15rem;
-  background-image: url(/img/logo.svg);
+  background-image: url(../img/logo.svg);
 }
 
 #chat-toggle {
