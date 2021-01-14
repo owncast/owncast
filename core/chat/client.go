@@ -34,6 +34,7 @@ type Client struct {
 	ch                    chan models.ChatEvent
 	pingch                chan models.PingMessage
 	usernameChangeChannel chan models.NameChangeEvent
+	userJoinedChannel     chan models.UserJoinedEvent
 
 	doneCh chan bool
 
@@ -50,6 +51,7 @@ func NewClient(ws *websocket.Conn) *Client {
 	doneCh := make(chan bool)
 	pingch := make(chan models.PingMessage)
 	usernameChangeChannel := make(chan models.NameChangeEvent)
+	userJoinedChannel := make(chan models.UserJoinedEvent)
 
 	ipAddress := utils.GetIPAddressFromRequest(ws.Request())
 	userAgent := ws.Request().UserAgent()
@@ -58,7 +60,7 @@ func NewClient(ws *websocket.Conn) *Client {
 
 	rateLimiter := rate.NewLimiter(0.6, 5)
 
-	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh, rateLimiter}
+	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, userJoinedChannel, doneCh, rateLimiter}
 }
 
 func (c *Client) write(msg models.ChatEvent) {
@@ -97,6 +99,12 @@ func (c *Client) listenWrite() {
 			if err != nil {
 				c.handleClientSocketError(err)
 			}
+		case msg := <-c.userJoinedChannel:
+			err := websocket.JSON.Send(c.ws, msg)
+			if err != nil {
+				c.handleClientSocketError(err)
+			}
+
 		// receive done request
 		case <-c.doneCh:
 			_server.removeClient(c)
@@ -159,9 +167,24 @@ func (c *Client) listenRead() {
 				c.chatMessageReceived(data)
 			} else if messageType == string(models.UserNameChanged) {
 				c.userChangedName(data)
+			} else if messageType == string(models.UserJoined) {
+				c.userJoined(data)
 			}
 		}
 	}
+}
+
+func (c *Client) userJoined(data []byte) {
+	var msg models.UserJoinedEvent
+	if err := json.Unmarshal(data, &msg); err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	msg.ID = shortid.MustGenerate()
+	msg.Type = models.UserJoined
+	msg.Timestamp = time.Now()
+	_server.userJoined(msg)
 }
 
 func (c *Client) userChangedName(data []byte) {

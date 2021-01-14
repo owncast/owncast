@@ -76,6 +76,14 @@ func (s *server) usernameChanged(msg models.NameChangeEvent) {
 	go webhooks.SendChatEventUsernameChanged(msg)
 }
 
+func (s *server) userJoined(msg models.UserJoinedEvent) {
+	for _, c := range s.Clients {
+		c.userJoinedChannel <- msg
+	}
+
+	go webhooks.SendChatEventUserJoined(msg)
+}
+
 func (s *server) onConnection(ws *websocket.Conn) {
 	client := NewClient(ws)
 

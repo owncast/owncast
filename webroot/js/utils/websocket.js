@@ -9,7 +9,8 @@ export const SOCKET_MESSAGE_TYPES = {
   PING: 'PING',
   NAME_CHANGE: 'NAME_CHANGE',
   PONG: 'PONG',
-  SYSTEM: 'SYSTEM'
+  SYSTEM: 'SYSTEM',
+  USER_JOINED: 'USER_JOINED'
 };
 
 export const CALLBACKS = {
