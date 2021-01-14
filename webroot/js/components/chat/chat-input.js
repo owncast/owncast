@@ -65,13 +65,7 @@ export default class ChatInput extends Component {
         this.emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
-          custom: json.map(emoji => {
-            return {
-
-              "name": emoji.name,
-              "emoji": emoji.emoji = `${location.protocol === 'https:' ? 'https' : 'http'}://${location.host}${location.pathname}` + emoji.emoji.slice(1)
-            }
-          }), // converting absolute paths returned from API to relative paths
+          custom: json,
           initialCategory: 'custom',
           showPreview: false,
           autoHide: false,
@@ -104,8 +98,11 @@ export default class ChatInput extends Component {
     const { inputHTML } = this.state;
     let content = '';
     if (emoji.url) {
-      const name = emoji.url.split('\\').pop().split('/').pop();
-      content = "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + emoji.url + "\"/>";
+      const img = document.createElement('img');
+      img.src = emoji.url;
+      img.alt = emoji.name;
+      img.classList.add('emoji');
+      content = img.outerHTML;
     } else {
       content = emoji.emoji;
     }

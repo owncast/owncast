@@ -15,7 +15,7 @@ import (
 
 // Make this path configurable if somebody has a valid reason
 // to need it to be.  The config is getting a bit bloated.
-const emojiDir = "/img/emoji" // Relative to webroot
+const emojiDir = "./img/emoji" // Relative to webroot
 
 // GetCustomEmoji returns a list of custom emoji via the API.
 func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
