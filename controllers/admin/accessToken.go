@@ -47,6 +47,7 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	controllers.WriteResponse(w, models.AccessToken{
 		Token:     token,
 		Name:      request.Name,
@@ -58,6 +59,8 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 
 // GetAccessTokens will return all 3rd party access tokens.
 func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	tokens, err := data.GetAccessTokens()
 	if err != nil {
 		controllers.InternalErrorHandler(w, err)
@@ -69,6 +72,8 @@ func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
 
 // DeleteAccessToken will return a single 3rd party access token.
 func DeleteAccessToken(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return

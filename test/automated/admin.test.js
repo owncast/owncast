@@ -42,7 +42,7 @@ test('admin configuration is correct', (done) => {
 test('correct number of log entries exist', (done) => {
     request.get('/api/admin/logs').auth('admin', 'abc123').expect(200)
         .then((res) => {
-            expect(res.body).toHaveLength(4);
+            expect(res.body).toHaveLength(8);
             done();
         });
 });
