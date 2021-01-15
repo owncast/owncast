@@ -93,7 +93,7 @@ func migrateConfigFile() {
 
 	yamlFile, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Errorln("config file err   #%v ", err)
+		log.Errorln("config file err", err)
 		return
 	}
 
