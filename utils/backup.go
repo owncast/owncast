@@ -5,11 +5,56 @@ import (
 	"bytes"
 	"compress/gzip"
 	"database/sql"
+	"errors"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/schollz/sqlite3dump"
 	log "github.com/sirupsen/logrus"
 )
+
+func Restore(backupFile string, databaseFile string) error {
+	log.Printf("Restoring database backup %s to %s", backupFile, databaseFile)
+
+	data, err := ioutil.ReadFile(backupFile)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to read backup file", err))
+	}
+
+	gz, err := gzip.NewReader(bytes.NewBuffer(data))
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to read backup file", err))
+	}
+	defer gz.Close()
+
+	var b bytes.Buffer
+	if _, err := io.Copy(&b, gz); err != nil {
+		return errors.New(fmt.Sprintf("Unable to read backup file", err))
+	}
+
+	defer gz.Close()
+
+	rawSql := b.String()
+
+	if _, err := os.Create(databaseFile); err != nil {
+		return errors.New("Unable to write restored database")
+	}
+
+	// Create a new database by executing the raw SQL
+	db, err := sql.Open("sqlite3", databaseFile)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(rawSql)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
@@ -21,9 +66,10 @@ func Backup(db *sql.DB, backupFile string) {
 		handleError(err)
 		return
 	}
+	out.Flush()
 
 	// Create a new backup file
-	f, err := os.OpenFile(backupFile, os.O_RDWR|os.O_CREATE, 0600)
+	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		handleError(err)
 		return

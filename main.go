@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/router"
+	"github.com/owncast/owncast/utils"
 )
 
 // the following are injected at build-time.
@@ -37,8 +38,23 @@ func main() {
 	dbFile := flag.String("database", "", "Path to the database file.")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
-
+	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
 	flag.Parse()
+
+	// Allows a user to restore a specific database backup
+	if *restoreDatabaseFile != "" {
+		databaseFile := config.DatabaseFilePath
+		if *dbFile != "" {
+			databaseFile = *dbFile
+		}
+
+		if err := utils.Restore(*restoreDatabaseFile, databaseFile); err != nil {
+			log.Fatalln(err)
+		}
+
+		log.Println("Database has been restored.  Restart Owncast.")
+		log.Exit(0)
+	}
 
 	if *enableDebugOptions {
 		logrus.SetReportCaller(true)
