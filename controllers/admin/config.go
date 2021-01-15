@@ -335,7 +335,12 @@ func SetVideoSegmentDurationSeconds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetVideoSegmentLengthDuration(configValue.Value.(float32))
+	if err := data.SetVideoSegmentLengthDuration(configValue.Value.(float64)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "segment length changed")
 }
 
 func SetVideoSegmentsInPlaylist(w http.ResponseWriter, r *http.Request) {
@@ -348,7 +353,13 @@ func SetVideoSegmentsInPlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetVideoSegmentsInPlaylist(configValue.Value.(float32))
+	if err := data.SetVideoSegmentsInPlaylist(configValue.Value.(float64)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "segment count changed")
+
 }
 
 func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {

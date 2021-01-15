@@ -3,14 +3,12 @@ package data
 import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	log "github.com/sirupsen/logrus"
 )
 
 // Determine if the defaults have been inserted into the database
 func HasPopulatedDefaults() bool {
 	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_DEFAULTS")
 	if err != nil {
-		log.Errorln(err)
 		return false
 	}
 	return hasPopulated

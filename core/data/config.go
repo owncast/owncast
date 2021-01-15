@@ -177,7 +177,7 @@ func GetHTTPPortNumber() int {
 }
 
 func SetHTTPPortNumber(port int) error {
-	return _datastore.SetNumber(HTTP_PORT_NUMBER_KEY, float32(port))
+	return _datastore.SetNumber(HTTP_PORT_NUMBER_KEY, float64(port))
 }
 
 func GetRTMPPortNumber() int {
@@ -195,7 +195,7 @@ func GetRTMPPortNumber() int {
 }
 
 func SetRTMPPortNumber(port int) error {
-	return _datastore.SetNumber(RTMP_PORT_NUMBER_KEY, float32(port))
+	return _datastore.SetNumber(RTMP_PORT_NUMBER_KEY, float64(port))
 }
 
 func GetDisableUpgradeChecks() bool {
@@ -279,7 +279,7 @@ func GetPeakSessionViewerCount() int {
 }
 
 func SetPeakSessionViewerCount(count int) error {
-	return _datastore.SetNumber(PEAK_VIEWERS_SESSION_KEY, float32(count))
+	return _datastore.SetNumber(PEAK_VIEWERS_SESSION_KEY, float64(count))
 }
 
 func GetPeakOverallViewerCount() int {
@@ -291,7 +291,7 @@ func GetPeakOverallViewerCount() int {
 }
 
 func SetPeakOverallViewerCount(count int) error {
-	return _datastore.SetNumber(PEAK_VIEWERS_OVERALL_KEY, float32(count))
+	return _datastore.SetNumber(PEAK_VIEWERS_OVERALL_KEY, float64(count))
 }
 
 func GetLastDisconnectTime() (time.Time, error) {
@@ -392,7 +392,7 @@ func SetS3StorageEnabled(enabled bool) error {
 	return _datastore.SetBool(S3_STORAGE_ENABLED_KEY, enabled)
 }
 
-func GetVideoSegmentLengthDuration() float32 {
+func GetVideoSegmentLengthDuration() float64 {
 	seconds, err := _datastore.GetNumber(VIDEO_SEGMENT_LENGTH_SECONDS_KEY)
 	if err != nil || seconds == 0 {
 		return 4
@@ -401,11 +401,11 @@ func GetVideoSegmentLengthDuration() float32 {
 	return seconds
 }
 
-func SetVideoSegmentLengthDuration(seconds float32) error {
+func SetVideoSegmentLengthDuration(seconds float64) error {
 	return _datastore.SetNumber(VIDEO_SEGMENT_LENGTH_SECONDS_KEY, seconds)
 }
 
-func GetVideoSegmentsInPlaylist() float32 {
+func GetVideoSegmentsInPlaylist() float64 {
 	count, err := _datastore.GetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY)
 	if err != nil || count == 0 {
 		return 20
@@ -414,7 +414,7 @@ func GetVideoSegmentsInPlaylist() float32 {
 	return count
 }
 
-func SetVideoSegmentsInPlaylist(count float32) error {
+func SetVideoSegmentsInPlaylist(count float64) error {
 	return _datastore.SetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY, count)
 }
 

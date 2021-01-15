@@ -13,7 +13,7 @@ func (ds *Datastore) SetString(key string, value string) error {
 	return ds.Save(configEntry)
 }
 
-func (ds *Datastore) GetNumber(key string) (float32, error) {
+func (ds *Datastore) GetNumber(key string) (float64, error) {
 	configEntry, err := ds.Get(key)
 	if err != nil {
 		return 0, err
@@ -21,7 +21,7 @@ func (ds *Datastore) GetNumber(key string) (float32, error) {
 	return configEntry.getNumber()
 }
 
-func (ds *Datastore) SetNumber(key string, value float32) error {
+func (ds *Datastore) SetNumber(key string, value float64) error {
 	configEntry := ConfigEntry{key, value}
 	return ds.Save(configEntry)
 }

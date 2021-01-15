@@ -19,9 +19,9 @@ func (c *ConfigEntry) getString() (string, error) {
 	return result, err
 }
 
-func (c *ConfigEntry) getNumber() (float32, error) {
+func (c *ConfigEntry) getNumber() (float64, error) {
 	decoder := c.getDecoder()
-	var result float32
+	var result float64
 	err := decoder.Decode(&result)
 	return result, err
 }
