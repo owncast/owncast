@@ -306,7 +306,7 @@ export default class ChatInput extends Component {
                 style=${emojiButtonStyle}
                 onclick=${this.handleEmojiButtonClick}
                 disabled=${!inputEnabled}
-              ><img src="${location.pathname}img/smiley.png" /></button>
+              ><img src="img/smiley.png" /></button>
 
               <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span>
             </div>
