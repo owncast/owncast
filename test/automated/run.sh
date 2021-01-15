@@ -19,7 +19,7 @@ pushd ../.. > /dev/null
 
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
-./owncast -database $TEMP_DB -configFile config-default.yaml &
+./owncast -database $TEMP_DB &
 SERVER_PID=$!
 
 popd > /dev/null

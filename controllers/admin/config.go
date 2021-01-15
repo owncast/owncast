@@ -378,6 +378,9 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
 		return
 	}
+
+	controllers.WriteSimpleResponse(w, true, "stream output variants updated")
+
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
