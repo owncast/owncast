@@ -1,44 +1,17 @@
-import React, { useContext, useEffect } from 'react';
-import { Typography, Form, Slider } from 'antd';
+import React, { useContext } from 'react';
+import { Typography } from 'antd';
 import { ServerStatusContext } from '../utils/server-status-context';
 
 import VideoVariantsTable from './components/config/video-variants-table';
-import TextField, { TEXTFIELD_TYPE_NUMBER } from './components/config/form-textfield';
-import { TEXTFIELD_DEFAULTS } from './components/config/constants';
 import VideoSegmentsEditor from './components/config/video-segments-editor';
 
 const { Title } = Typography;
 
 export default function VideoConfig() {
   // const [form] = Form.useForm();
-  const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig } = serverStatusData || {};
-  const { videoSettings } = serverConfig || {};
-  // const { numberOfPlaylistItems, segmentLengthSeconds } = videoSettings || {};
-
-  // const videoSettings = serverStatusData?.serverConfig?.videoSettings;
-  // const { numberOfPlaylistItems, segmentLengthSeconds } = videoSettings || {};
-  // const initialValues = {
-  //   numberOfPlaylistItems,
-  //   segmentLengthSeconds,
-  // };
-
-  // useEffect(() => {
-  //   form.setFieldsValue(initialValues);
-  // }, [serverStatusData]);
-
-  // const handleResetValue = (fieldName: string) => {
-  //   const defaultValue = TEXTFIELD_DEFAULTS.videoSettings[fieldName] && TEXTFIELD_DEFAULTS.videoSettings[fieldName].defaultValue || '';
-
-  //   form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
-  // }
-
-  // const extraProps = {
-  //   handleResetValue,
-  //   initialValues: videoSettings,
-  //   configPath: 'videoSettings',
-  // };
-
+  // const serverStatusData = useContext(ServerStatusContext);
+  // const { serverConfig } = serverStatusData || {};
+  // const { videoSettings } = serverConfig || {};
   return (
     <div className="config-video-variants">
       <Title level={2}>Video configuration</Title>
@@ -51,15 +24,6 @@ export default function VideoConfig() {
         <VideoSegmentsEditor />
 
         <br /><br />
-        {/* <div className="config-video-misc">
-          <Form
-            form={form}
-            layout="vertical"
-          >
-            <TextField fieldName="numberOfPlaylistItems" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
-            <TextField fieldName="segmentLengthSeconds" type={TEXTFIELD_TYPE_NUMBER} {...extraProps} />
-          </Form>
-        </div>   */}
 
         <VideoVariantsTable />
     </div>

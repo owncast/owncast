@@ -88,7 +88,6 @@ const ServerStatusProvider = ({ children }) => {
       ...config,
       [fieldName]: value,
     };
-
     setConfig(updatedConfig);
   };
 

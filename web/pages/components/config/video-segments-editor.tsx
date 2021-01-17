@@ -106,8 +106,8 @@ export default function VideoSegmentsEditor() {
     return null;
   }
 
-  const selectedOption = findSelectedOption(videoSettings);
 
+  const selectedOption = findSelectedOption(videoSettings);
   const resetStates = () => {
     setSubmitStatus(null);
     setSubmitStatusMessage('');
@@ -175,7 +175,7 @@ export default function VideoSegmentsEditor() {
           min={0}
           max={SLIDER_OPTIONS.length - 1}
           marks={SLIDER_MARKS}
-          defaultValue={DEFAULT_OPTION}
+          defaultValue={selectedOption}
           value={selectedOption}
         />
       </div>

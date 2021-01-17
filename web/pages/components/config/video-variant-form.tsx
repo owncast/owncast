@@ -49,7 +49,17 @@ interface VideoVariantFormProps {
   dataState: VideoVariant;
   onUpdateField: FieldUpdaterFunc;
 }
+/*
+CPU Usage slider
+{
+    'ultrafast': 'lowest cpu, lowest quality',
+    'superfast': 'lower cpu, lower quality',
+    'veryfast': 'medium cpu, medium quality',
+    'faster': 'higher cpu, higher quality',
+    'fast': 'highest cpu, highest quality'
+}
 
+*/
 export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, onUpdateField }: VideoVariantFormProps) {
 
   const handleFramerateChange = (value: number) => {
