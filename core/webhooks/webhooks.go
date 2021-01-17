@@ -59,7 +59,9 @@ func sendWebhook(url string, payload WebhookEvent) error {
 
 	defer resp.Body.Close()
 
-	data.SetWebhookAsUsed(url)
+	if err := data.SetWebhookAsUsed(url); err != nil {
+		log.Warnln(err)
+	}
 
 	return nil
 }
