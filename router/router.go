@@ -158,8 +158,8 @@ func Start() error {
 	// directory enabled
 	http.HandleFunc("/api/admin/config/directoryenabled", middleware.RequireAdminAuth(admin.ChangeDirectoryEnabled))
 
-	// server url
-	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
+	// social handles
+	http.HandleFunc("/api/admin/config/socialhandles", middleware.RequireAdminAuth(admin.SetSocialHandles))
 
 	// disable server upgrade checks
 	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.ChangeDisableUpgradeChecks))

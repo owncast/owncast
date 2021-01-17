@@ -8,15 +8,35 @@ const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const logo = '/img/' + randomString();
 const tags = [randomString(), randomString(), randomString()];
-const segmentConfig = {numberOfSegments: randomNumber(), secondsPerSegment: randomNumber()};
-const streamOutputVariants = [
+
+const segmentConfig = {
+    numberOfSegments: randomNumber() + 1,
+    secondsPerSegment: randomNumber() + 1
+};
+
+const streamOutputVariants = 
     {
         videoBitrate: randomNumber() * 100,
         framerate: randomNumber() * 10,
         encoderPreset: 'fast',
         scaledHeight: randomNumber() * 100,
         scaledWidth: randomNumber() * 100,
-    }];
+    };
+const socialHandles = [
+    {
+        url: 'http://facebook.org/' + randomString(),
+        platform: randomString()
+    }
+];
+
+const s3Config = {
+    enabled: true,
+    endpoint: 'http://' + randomString(),
+    accessKey: randomString(),
+    secret: randomString(),
+    bucket: randomString(),
+    region: randomString()
+};
 
 test('set server name', async (done) => {
     const res = await sendConfigChangeRequest('name', serverName);
@@ -54,12 +74,22 @@ test('set tags', async (done) => {
 });
 
 test('set segment configuration', async (done) => {
-    await sendConfigChangeRequest('video/segmentconfig', segmentConfig);
+    const res = await sendConfigChangeRequest('video/segmentconfig', segmentConfig);
     done();
 });
 
 test('set video stream output variants', async (done) => {
-    const res = await sendConfigChangeRequest('video/streamoutputvariants', streamOutputVariants);
+    const res = await sendConfigChangeRequest('video/streamoutputvariants', [streamOutputVariants]);
+    done();
+});
+
+test('set social handles', async (done) => {
+    const res = await sendConfigChangeRequest('socialhandles', socialHandles);
+    done();
+});
+
+test('set s3 configuration', async (done) => {
+    const res = await sendConfigChangeRequest('s3', s3Config);
     done();
 });
 
@@ -70,7 +100,7 @@ test('verify updated config values', async (done) => {
     expect(res.body.summary).toBe(serverSummary);
     expect(res.body.extraPageContent).toBe(pageContent);
     expect(res.body.logo).toBe(logo);
-
+    expect(res.body.socialHandles).toStrictEqual(socialHandles);
     done();
 });
 
@@ -101,11 +131,19 @@ test('admin configuration is correct', (done) => {
             expect(res.body.videoSettings.segmentLengthSeconds).toBe(segmentConfig.secondsPerSegment);
             expect(res.body.videoSettings.numberOfPlaylistItems).toBe(segmentConfig.numberOfSegments);
 
-            expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants[0].framerate);
-            expect(res.body.videoSettings.videoQualityVariants[0].encoderPreset).toBe(streamOutputVariants[0].encoderPreset);
+            expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants.framerate);
+            expect(res.body.videoSettings.videoQualityVariants[0].encoderPreset).toBe(streamOutputVariants.encoderPreset);
 
             expect(res.body.yp.enabled).toBe(false);
             expect(res.body.streamKey).toBe('abc123');
+            
+            expect(res.body.s3.enabled).toBe(s3Config.enabled);
+            expect(res.body.s3.endpoint).toBe(s3Config.endpoint);
+            expect(res.body.s3.accessKey).toBe(s3Config.accessKey);
+            expect(res.body.s3.secret).toBe(s3Config.secret);
+            expect(res.body.s3.bucket).toBe(s3Config.bucket);
+            expect(res.body.s3.region).toBe(s3Config.region);
+
             done();
         });
 });
@@ -115,8 +153,7 @@ test('frontend configuration is correct', (done) => {
         .then((res) => {
             expect(res.body.title).toBe(serverTitle);
             expect(res.body.logo).toBe(logo);
-            expect(res.body.socialHandles[0].platform).toBe('github');
-            expect(res.body.socialHandles[0].url).toBe('https://github.com/owncast/owncast');
+            expect(res.body.socialHandles).toStrictEqual(socialHandles);
             done();
         });
 });

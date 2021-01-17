@@ -1018,17 +1018,20 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
             example:
-              - framerate: 30
-                videoPassthrough: false
-                videoBitrate: 1800
-                encoderPreset: veryfast
-                audioPassthrough: true
-              - framerate: 24
-                videoPassthrough: false
-                videoBitrate: 1000
-                encoderPreset: superfast
-                audioPassthrough: true                                                               
+              value:
+                - framerate: 30
+                  videoPassthrough: false
+                  videoBitrate: 1800
+                  encoderPreset: veryfast
+                  audioPassthrough: true
+                - framerate: 24
+                  videoPassthrough: false
+                  videoBitrate: 1000
+                  encoderPreset: superfast
+                  audioPassthrough: true                                                               
 
   /api/admin/config/s3:
       post:
@@ -1046,14 +1049,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConfigValue"
               example:
-                enabled: true
-                endpoint: https://s3.us-west-000.backblazeb2.com
-                accessKey: e1ac500y7000500047156bd060
-                secret: "H8FH8eSxM2K/S42CUg5K000Tt4WY2fI"
-                bucket: "video"
-                region: us-west-000
+                value:
+                  enabled: true
+                  endpoint: https://s3.us-west-000.backblazeb2.com
+                  accessKey: e1ac500y7000500047156bd060
+                  secret: "H8FH8eSxM2K/S42CUg5K000Tt4WY2fI"
+                  bucket: "video"
+                  region: us-west-000
 
-
+  /api/admin/config/socialhandles:
+      post:
+        summary: Set your social handles.
+        description: Sets the external links to social networks and profiles.
+        tags: ["Admin"]
+        security:
+          - AdminBasicAuth: []
+        responses:
+          '200':
+            $ref: "#/components/responses/BasicResponse"      
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigValue"
+              example:
+                value:
+                  - platform: github
+                    url: https://github.com/owncast/owncast
+                  - platform: mastodon
+                    url: https://mastodon.social/@gabek
+                  
   /api/admin/viewersOverTime:
     get:
       summary: Viewers Over Time

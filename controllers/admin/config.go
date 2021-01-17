@@ -328,6 +328,8 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data.SetS3Config(newS3Config.Value)
+	controllers.WriteSimpleResponse(w, true, "storage configuration changed")
+
 }
 
 func SetVideoSegmentConfig(w http.ResponseWriter, r *http.Request) {
@@ -361,7 +363,7 @@ func SetVideoSegmentConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "segment count changed")
+	controllers.WriteSimpleResponse(w, true, "segment configuration changed")
 }
 
 func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
@@ -386,6 +388,30 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	}
 
 	controllers.WriteSimpleResponse(w, true, "stream output variants updated")
+}
+
+func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	type socialHandlesRequest struct {
+		Value []models.SocialHandle `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var socialHandles socialHandlesRequest
+	if err := decoder.Decode(&socialHandles); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
+		return
+	}
+
+	if err := data.SetSocialHandles(socialHandles.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "social handles updated")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
