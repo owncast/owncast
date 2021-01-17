@@ -34,15 +34,14 @@ function convertScopeStringToTag(scopeString) {
 }
 
 function NewTokenModal(props) {
-    var selectedScopes = [];
-
+    const [selectedScopes, setSelectedScopes] = useState([]);
 
     const scopes = Object.keys(availableScopes).map(function (key) {
         return { value: key, label: availableScopes[key].description }
     });
 
     function onChange(checkedValues) {
-        selectedScopes = checkedValues
+        setSelectedScopes(checkedValues);
     }
 
     function saveToken() {
@@ -51,8 +50,12 @@ function NewTokenModal(props) {
 
     const [name, setName] = useState('');
 
+    const okButtonProps = {
+        disabled: selectedScopes.length === 0 || name === ''
+    };
+
     return (
-        <Modal title="Create New Access token" visible={props.visible} onOk={saveToken} onCancel={props.onCancel}>
+        <Modal title="Create New Access token" visible={props.visible} onOk={saveToken} onCancel={props.onCancel} okButtonProps={okButtonProps}>
             <p><Input value={name} placeholder="Access token name/description" onChange={(input) => setName(input.currentTarget.value)} /></p>
 
             <p>

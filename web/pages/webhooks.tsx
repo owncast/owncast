@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip, Select } from 'antd';
 import { DeleteOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
+import {isValidUrl} from '../utils/urls';
 
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
@@ -41,8 +42,8 @@ function convertEventStringToTag(eventString) {
 }
 
 function NewWebhookModal(props) {
-    var selectedEvents = [];
-    const [name, setName] = useState('');
+    const [selectedEvents, setSelectedEvents] = useState([]);
+    const [webhookUrl, setWebhookUrl] = useState('');
 
     const events = Object.keys(availableEvents).map(function (key) {
         return { value: key, label: availableEvents[key].description }
@@ -50,16 +51,20 @@ function NewWebhookModal(props) {
 
 
     function onChange(checkedValues) {
-        selectedEvents = checkedValues
+        setSelectedEvents(checkedValues);
     }
 
     function save() {
-        props.onOk(name, selectedEvents)
+        props.onOk(webhookUrl, selectedEvents)
     }
 
+    const okButtonProps = {
+        disabled: selectedEvents.length === 0 || !isValidUrl(webhookUrl)
+    };
+
     return (
-        <Modal title="Create New Webhook" visible={props.visible} onOk={save} onCancel={props.onCancel}>
-            <div><Input value={name} placeholder="https://myserver.com/webhook" onChange={(input) => setName(input.currentTarget.value)} /></div>
+        <Modal title="Create New Webhook" visible={props.visible} onOk={save} onCancel={props.onCancel} okButtonProps={okButtonProps}>
+            <div><Input value={webhookUrl} placeholder="https://myserver.com/webhook" onChange={(input) => setWebhookUrl(input.currentTarget.value)} /></div>
 
             <p>
                 Select the events that will be sent to this webhook.
