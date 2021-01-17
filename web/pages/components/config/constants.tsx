@@ -23,6 +23,8 @@ export const SUCCESS_STATES = {
   },
 };
 
+// CONFIG API ENDPOINTS
+export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const {

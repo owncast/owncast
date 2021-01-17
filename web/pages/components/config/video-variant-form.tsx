@@ -1,6 +1,7 @@
+// This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
 import { Slider, Select, Switch, Divider, Collapse } from 'antd';
-import { PRESETS, VideoVariant } from '../../../types/config-section';
+import { FieldUpdaterFunc, PRESET, VideoVariant } from '../../../types/config-section';
 import { ENCODER_PRESETS, DEFAULT_VARIANT_STATE } from './constants';
 import InfoTip from '../info-tip';
 
@@ -46,29 +47,31 @@ const VIDEO_VARIANT_DEFAULTS = {
 
 interface VideoVariantFormProps {
   dataState: VideoVariant;
-  onUpdateField: () => void;
+  onUpdateField: FieldUpdaterFunc;
 }
 
 export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, onUpdateField }: VideoVariantFormProps) {
+  console.log("======form", dataState)
+
   // const [dataState, setDataState] = useState(initialValues);
 
   const handleFramerateChange = (value: number) => {
-    onUpdateField({ fieldname: 'framerate', value });
+    onUpdateField({ fieldName: 'framerate', value });
   };
   const handleVideoBitrateChange = (value: number) => {
-    onUpdateField({ fieldname: 'videoBitrate', value });
+    onUpdateField({ fieldName: 'videoBitrate', value });
   };
   const handleAudioBitrateChange = (value: number) => {
-    onUpdateField({ fieldname: 'audioBitrate', value });
+    onUpdateField({ fieldName: 'audioBitrate', value });
   };
-  const handleEncoderPresetChange = (value: PRESETS) => {
-    onUpdateField({ fieldname: 'encoderPreset', value });
+  const handleEncoderPresetChange = (value: PRESET) => {
+    onUpdateField({ fieldName: 'encoderPreset', value });
   };
   const handleAudioPassChange = (value: boolean) => {
-    onUpdateField({ fieldname: 'audioPassthrough', value });
+    onUpdateField({ fieldName: 'audioPassthrough', value });
   };
   const handleVideoPassChange = (value: boolean) => {
-    onUpdateField({ fieldname: 'videoPassthrough', value });
+    onUpdateField({ fieldName: 'videoPassthrough', value });
   };
 
 
@@ -109,7 +112,10 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
           Encoder Preset:
         </p>
         <div className="form-component">
-          <Select defaultValue={encoderDefaults.defaultValue} style={{ width: 200 }} onChange={handleEncoderPresetChange}>
+          <Select
+            defaultValue={dataState.encoderPreset}
+            value={dataState.encoderPreset}
+            style={{ width: 200 }} onChange={handleEncoderPresetChange}>
             {
               ENCODER_PRESETS.map(preset => (
                 <Option
@@ -135,6 +141,7 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
           <div className="form-component">
             <Switch
               defaultChecked={dataState.videoPassthrough}
+              checked={dataState.videoPassthrough}
               onChange={handleVideoPassChange}
               checkedChildren="Yes"
               unCheckedChildren="No"
@@ -154,6 +161,7 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
             tipFormatter={value => `${value} ${videoBRUnit}`}
             disabled={dataState.videoPassthrough === true}
             defaultValue={dataState.videoBitrate}
+            value={dataState.videoBitrate}
             onChange={handleVideoBitrateChange}
             step={videoBitrateDefaults.incrementBy}
             min={videoBRMin}
@@ -188,6 +196,7 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
                 // tooltipVisible
                 tipFormatter={value => `${value} ${framerateUnit}`}
                 defaultValue={dataState.framerate}
+                value={dataState.framerate}
                 onChange={handleFramerateChange}
                 step={framerateDefaults.incrementBy}
                 min={framerateMin}
@@ -213,6 +222,7 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
             <div className="form-component">
               <Switch
                 defaultChecked={dataState.audioPassthrough}
+                checked={dataState.audioPassthrough}
                 onChange={handleAudioPassChange}
                 checkedChildren="Yes"
                 unCheckedChildren="No"
@@ -233,6 +243,7 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
                 tipFormatter={value => `${value} ${audioBRUnit}`}
                 disabled={dataState.audioPassthrough === true}
                 defaultValue={dataState.audioBitrate}
+                value={dataState.audioBitrate}
                 onChange={handleAudioBitrateChange}
                 step={audioBitrateDefaults.incrementBy}
                 min={audioBRMin}
@@ -246,8 +257,6 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
               {selectedAudioBRnote ? <span className="selected-value-note">{selectedAudioBRnote}</span> : null }
             </div>
           </div>
-
-
         </Panel>
       </Collapse>
 

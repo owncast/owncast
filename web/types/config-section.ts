@@ -20,9 +20,11 @@ export interface ToggleSwitchProps {
   disabled?: boolean;
 }
 
+export type FieldUpdaterFunc = (args: UpdateArgs) => void;
+
 export interface UpdateArgs {
   fieldName: string;
-  value: string;
+  value: any;
   path?: string;
 }
 
@@ -50,11 +52,11 @@ export interface ConfigInstanceDetailsFields {
 }
 
 
-export type PRESETS = 'fast' | 'faster' | 'veryfast' | 'superfast' | 'ultrafast';
+export type PRESET = 'fast' | 'faster' | 'veryfast' | 'superfast' | 'ultrafast';
 
 export interface VideoVariant {
   key?: number; // unique identifier generated on client side just for ant table rendering
-  encoderPreset: PRESETS,
+  encoderPreset: PRESET,
   framerate: number;
 
   audioPassthrough: boolean;

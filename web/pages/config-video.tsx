@@ -43,6 +43,9 @@ export default function VideoConfig() {
       <Title level={2}>Video configuration</Title>
       <Title level={5}>Learn more about configuring Owncast <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a></Title>
 
+        <div style={{ wordBreak: 'break-word'}}>
+          {JSON.stringify(videoSettings)}
+        </div>
         <div className="config-video-misc">
           <Form
             form={form}
