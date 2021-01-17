@@ -19,8 +19,8 @@ test('create webhook', async (done) => {
     done();
 });
 
-test('check webhooks', (done) => {
-    request.get('/api/admin/webhooks')
+test('check webhooks', async (done) => {
+    await request.get('/api/admin/webhooks')
         .auth('admin', 'abc123').expect(200)
         .then((res) => {
             expect(res.body).toHaveLength(1);
@@ -39,8 +39,8 @@ test('delete webhook', async (done) => {
     done();
 });
 
-test('check that webhook was deleted', (done) => {
-    request.get('/api/admin/webhooks')
+test('check that webhook was deleted', async (done) => {
+    await request.get('/api/admin/webhooks')
         .auth('admin', 'abc123').expect(200)
         .then((res) => {
             expect(res.body).toHaveLength(0);
@@ -64,8 +64,8 @@ test('create access token', async (done) => {
     done();
 });
 
-test('check access tokens', (done) => {
-    request.get('/api/admin/accesstokens')
+test('check access tokens', async (done) => {
+    await request.get('/api/admin/accesstokens')
         .auth('admin', 'abc123').expect(200)
         .then((res) => {
             expect(res.body).toHaveLength(1);
@@ -90,8 +90,8 @@ test('delete access token', async (done) => {
     done();
 });
 
-test('check token delete was successful', (done) => {
-    request.get('/api/admin/accesstokens')
+test('check token delete was successful', async (done) => {
+    await request.get('/api/admin/accesstokens')
         .auth('admin', 'abc123').expect(200)
         .then((res) => {
             expect(res.body).toHaveLength(0);
