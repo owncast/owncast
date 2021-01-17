@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
 type ConfigValue struct {
@@ -298,49 +299,35 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type s3ConfigurationRequest struct {
+		Value models.S3 `json:"value"`
+	}
+
 	decoder := json.NewDecoder(r.Body)
-	var newS3Config models.S3
+	var newS3Config s3ConfigurationRequest
 	if err := decoder.Decode(&newS3Config); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update s3 config with provided values")
 		return
 	}
 
-	if newS3Config.Enabled {
-		if newS3Config.AccessKey == "" || newS3Config.Secret == "" {
+	if newS3Config.Value.Enabled {
+		if newS3Config.Value.AccessKey == "" || newS3Config.Value.Secret == "" {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires an access key and secret")
 			return
 		}
 
-		if newS3Config.Region == "" || newS3Config.Endpoint == "" {
+		if newS3Config.Value.Region == "" || newS3Config.Value.Endpoint == "" {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires a region and endpoint")
 			return
 		}
 
-		if newS3Config.Bucket == "" {
+		if newS3Config.Value.Bucket == "" {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires a bucket created for storing public video segments")
 			return
 		}
 	}
 
-	data.SetS3Config(newS3Config)
-}
-
-func SetVideoSegmentDurationSeconds(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
-		return
-	}
-
-	configValue, success := getValueFromRequest(w, r)
-	if !success {
-		return
-	}
-
-	if err := data.SetVideoSegmentLengthDuration(configValue.Value.(float64)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	controllers.WriteSimpleResponse(w, true, "segment length changed")
+	data.SetS3Config(newS3Config.Value)
 }
 
 func SetVideoSegmentConfig(w http.ResponseWriter, r *http.Request) {
@@ -349,29 +336,32 @@ func SetVideoSegmentConfig(w http.ResponseWriter, r *http.Request) {
 		SecondsPerSegment int `json:"secondsPerSegment"`
 	}
 
+	type hlsSegmentConfigRequest struct {
+		Value hlsSegmentConfig `json:"value"`
+	}
+
 	if !requirePOST(w, r) {
 		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var segmentConfig hlsSegmentConfig
+	var segmentConfig hlsSegmentConfigRequest
 	if err := decoder.Decode(&segmentConfig); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update video segment config with provided values")
 		return
 	}
 
-	if err := data.SetVideoSegmentsInPlaylist(float64(segmentConfig.NumberOfSegments)); err != nil {
+	if err := data.SetVideoSegmentsInPlaylist(float64(segmentConfig.Value.NumberOfSegments)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	if err := data.SetVideoSegmentLengthDuration(float64(segmentConfig.SecondsPerSegment)); err != nil {
+	if err := data.SetVideoSegmentLengthDuration(float64(segmentConfig.Value.SecondsPerSegment)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "segment count changed")
-
 }
 
 func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
@@ -379,20 +369,23 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type streamOutputVariantRequest struct {
+		Value []models.StreamOutputVariant `json:"value"`
+	}
+
 	decoder := json.NewDecoder(r.Body)
-	var videoVariants []models.StreamOutputVariant
+	var videoVariants streamOutputVariantRequest
 	if err := decoder.Decode(&videoVariants); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
 		return
 	}
 
-	if err := data.SetStreamOutputVariants(videoVariants); err != nil {
+	if err := data.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
 		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "stream output variants updated")
-
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
@@ -408,6 +401,7 @@ func getValueFromRequest(w http.ResponseWriter, r *http.Request) (ConfigValue, b
 	decoder := json.NewDecoder(r.Body)
 	var configValue ConfigValue
 	if err := decoder.Decode(&configValue); err != nil {
+		log.Warnln(err)
 		controllers.WriteSimpleResponse(w, false, "unable to parse new value")
 		return configValue, false
 	}

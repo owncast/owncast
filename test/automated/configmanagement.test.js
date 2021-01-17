@@ -9,7 +9,6 @@ const pageContent = `<p>${randomString()}</p>`;
 const logo = '/img/' + randomString();
 const tags = [randomString(), randomString(), randomString()];
 const segmentConfig = {numberOfSegments: randomNumber(), secondsPerSegment: randomNumber()};
-const segmentCount = randomNumber();
 const streamOutputVariants = [
     {
         videoBitrate: randomNumber() * 100,
@@ -17,8 +16,7 @@ const streamOutputVariants = [
         encoderPreset: 'fast',
         scaledHeight: randomNumber() * 100,
         scaledWidth: randomNumber() * 100,
-    }
-];
+    }];
 
 test('set server name', async (done) => {
     const res = await sendConfigChangeRequest('name', serverName);
@@ -56,14 +54,12 @@ test('set tags', async (done) => {
 });
 
 test('set segment configuration', async (done) => {
-    await request.post('/api/admin/config/video/segmentconfig')
-    .auth('admin', 'abc123')
-    .send(segmentConfig).expect(200);
+    await sendConfigChangeRequest('video/segmentconfig', segmentConfig);
     done();
 });
 
 test('set video stream output variants', async (done) => {
-    const res = await sendConfigChangePayload('video/streamoutputvariants', streamOutputVariants);
+    const res = await sendConfigChangeRequest('video/streamoutputvariants', streamOutputVariants);
     done();
 });
 

@@ -164,9 +164,6 @@ func Start() error {
 	// disable server upgrade checks
 	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.ChangeDisableUpgradeChecks))
 
-	// set the length of video segments
-	http.HandleFunc("/api/admin/config/video/segmentlength", middleware.RequireAdminAuth(admin.SetVideoSegmentDurationSeconds))
-
 	// set the number of video segments and duration per segment in a playlist
 	http.HandleFunc("/api/admin/config/video/segmentconfig", middleware.RequireAdminAuth(admin.SetVideoSegmentConfig))
 
