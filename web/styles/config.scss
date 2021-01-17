@@ -272,6 +272,17 @@
     text-align: center;
   }
 }
+.variants-table {
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .delete-button {
+    margin-left: .5em;
+    opacity: .8;
+  }
+}
 .segment-tip {
   width: 10em;
   text-align: center;

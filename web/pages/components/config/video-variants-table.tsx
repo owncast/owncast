@@ -4,6 +4,7 @@
 import React, { useContext, useState } from 'react';
 import { Typography, Table, Modal, Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import { DeleteOutlined } from '@ant-design/icons';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { UpdateArgs, VideoVariant } from '../../../types/config-section';
 import VideoVariantForm from './video-variant-form';
@@ -85,7 +86,15 @@ export default function CurrentVariantsTable() {
       postData.splice(editId, 1, modalDataState);
     }
     postUpdateToAPI(postData);
-  }
+  };
+
+  const handleDeleteVariant = index => {
+    const postData = [
+      ...videoQualityVariants,
+    ];
+    postData.splice(index, 1);
+    postUpdateToAPI(postData)
+  };
 
   const handleUpdateField = ({ fieldName, value }: UpdateArgs) => {
     setModalDataState({
@@ -124,18 +133,30 @@ export default function CurrentVariantsTable() {
       title: '',
       dataIndex: '',
       key: 'edit',
-      render: (data: VideoVariant) => (
-        <Button type="primary" size="small" onClick={() => {
-          const index = data.key - 1;
-          setEditId(index);
-          setModalDataState(videoQualityVariants[index]);
-          setDisplayModal(true);
-        }}>
-          Edit
-        </Button>
-      ),
-    },
-  ];
+      render: (data: VideoVariant) => {
+        const index = data.key - 1;
+        return (
+          <span className="actions">
+            <Button type="primary" size="small" onClick={() => {
+              setEditId(index);
+              setModalDataState(videoQualityVariants[index]);
+              setDisplayModal(true);
+            }}>
+              Edit
+            </Button>
+            <Button
+              className="delete-button"
+              icon={<DeleteOutlined />}
+              size="small"
+              disabled={index === 0}
+              onClick={() => {
+                handleDeleteVariant(index);
+              }}
+            />              
+          </span>
+        )},
+      },
+    ];
 
   const statusMessage = (
     <div className={`status-message ${submitStatus || ''}`}>
@@ -152,6 +173,7 @@ export default function CurrentVariantsTable() {
       {statusMessage}
 
       <Table
+        className="variants-table"
         pagination={false}
         size="small"
         columns={videoQualityColumns}
