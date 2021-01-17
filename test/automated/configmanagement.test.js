@@ -8,7 +8,7 @@ const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const logo = '/img/' + randomString();
 const tags = [randomString(), randomString(), randomString()];
-const segmentLength = randomNumber();
+const segmentConfig = {numberOfSegments: randomNumber(), secondsPerSegment: randomNumber()};
 const segmentCount = randomNumber();
 const streamOutputVariants = [
     {
@@ -55,13 +55,10 @@ test('set tags', async (done) => {
     done();
 });
 
-test('set segment duration', async (done) => {
-    const res = await sendConfigChangeRequest('video/segmentlength', segmentLength);
-    done();
-});
-
-test('set segment count', async (done) => {
-    const res = await sendConfigChangeRequest('video/segmentcount', segmentCount);
+test('set segment configuration', async (done) => {
+    await request.post('/api/admin/config/video/segmentconfig')
+    .auth('admin', 'abc123')
+    .send(segmentConfig).expect(200);
     done();
 });
 
@@ -105,8 +102,8 @@ test('admin configuration is correct', (done) => {
             expect(res.body.instanceDetails.logo).toBe(logo);
             expect(res.body.instanceDetails.tags).toStrictEqual(tags);
 
-            expect(res.body.videoSettings.segmentLengthSeconds).toBe(segmentLength);
-            expect(res.body.videoSettings.numberOfPlaylistItems).toBe(segmentCount);
+            expect(res.body.videoSettings.segmentLengthSeconds).toBe(segmentConfig.secondsPerSegment);
+            expect(res.body.videoSettings.numberOfPlaylistItems).toBe(segmentConfig.numberOfSegments);
 
             expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants[0].framerate);
             expect(res.body.videoSettings.videoQualityVariants[0].encoderPreset).toBe(streamOutputVariants[0].encoderPreset);

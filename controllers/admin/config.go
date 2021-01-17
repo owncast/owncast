@@ -343,17 +343,29 @@ func SetVideoSegmentDurationSeconds(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "segment length changed")
 }
 
-func SetVideoSegmentsInPlaylist(w http.ResponseWriter, r *http.Request) {
+func SetVideoSegmentConfig(w http.ResponseWriter, r *http.Request) {
+	type hlsSegmentConfig struct {
+		NumberOfSegments  int `json:"numberOfSegments"`
+		SecondsPerSegment int `json:"secondsPerSegment"`
+	}
+
 	if !requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
-	if !success {
+	decoder := json.NewDecoder(r.Body)
+	var segmentConfig hlsSegmentConfig
+	if err := decoder.Decode(&segmentConfig); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update video segment config with provided values")
 		return
 	}
 
-	if err := data.SetVideoSegmentsInPlaylist(configValue.Value.(float64)); err != nil {
+	if err := data.SetVideoSegmentsInPlaylist(float64(segmentConfig.NumberOfSegments)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	if err := data.SetVideoSegmentLengthDuration(float64(segmentConfig.SecondsPerSegment)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

@@ -167,8 +167,8 @@ func Start() error {
 	// set the length of video segments
 	http.HandleFunc("/api/admin/config/video/segmentlength", middleware.RequireAdminAuth(admin.SetVideoSegmentDurationSeconds))
 
-	// set the number of video segments in a playlist
-	http.HandleFunc("/api/admin/config/video/segmentcount", middleware.RequireAdminAuth(admin.SetVideoSegmentsInPlaylist))
+	// set the number of video segments and duration per segment in a playlist
+	http.HandleFunc("/api/admin/config/video/segmentconfig", middleware.RequireAdminAuth(admin.SetVideoSegmentConfig))
 
 	// set an array of video output configurations
 	http.HandleFunc("/api/admin/config/video/streamoutputvariants", middleware.RequireAdminAuth(admin.SetStreamOutputVariants))

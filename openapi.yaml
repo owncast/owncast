@@ -631,6 +631,9 @@ paths:
                   webServerPort:
                     type: integer
                     description: The port the public web server is listening on.
+                  rtmpServerPort:
+                    type: integer
+                    description: The port the inbound RTMP broadcast should be sent to.
                   s3:
                     $ref: "#/components/schemas/S3"
                   videoSettings:
@@ -975,10 +978,10 @@ paths:
             schema:
               $ref: "#/components/schemas/ConfigValue"
 
-  /api/admin/config/video/segmentlength:
+  /api/admin/config/video/segmentconfig:
     post:
-      summary: The length of a single segment of video.
-      description: Sets the length of a single segment of video in seconds.
+      summary: Set the number and length of a single segment of video.
+      description: Sets the number and length of a single segment of video in seconds.
       tags: ["Admin"]
       security:
         - AdminBasicAuth: []
@@ -989,27 +992,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"    
-            example:
-              value: 4
-
-  /api/admin/config/video/segmentcount:
-    post:
-      summary: Set the number of video segments available.
-      description: Sets the number of segments available for your stream. More will likely increase latancy, but also improve stability and reduce buffering.
-      tags: ["Admin"]
-      security:
-        - AdminBasicAuth: []
-      responses:
-        '200':
-          $ref: "#/components/responses/BasicResponse"      
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ConfigValue"
-            example:
-              value: 5
+              type: object
+              properties:
+                numberOfSegments:
+                  description: The number of video segments in an HLS playlist.
+                  type: integer
+                secondsPerSegment:
+                  description: The duration, in seconds, of a single segment of HLS video.
+                  type: integer
+              example:
+                numberOfSegments: 4
+                secondsPerSegment: 3
+ 
 
   /api/admin/config/video/streamoutputvariants:
     post:
