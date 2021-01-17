@@ -1,3 +1,5 @@
+// TODO: add a notication after updating info that changes will take place either on a new stream or server restart. may be different for each field.
+
 import React, { useState, useEffect } from 'react';
 import PropTypes, { any } from 'prop-types';
 

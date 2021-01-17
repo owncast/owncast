@@ -1,6 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+// Updating a variant will post ALL the variants in an array as an update to the API.
+
+// todo : add DELETE option
+import React, { useContext, useState } from 'react';
 import { Typography, Table, Modal, Button } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { UpdateArgs, VideoVariant } from '../../../types/config-section';
@@ -10,7 +12,6 @@ import { API_VIDEO_VARIANTS, DEFAULT_VARIANT_STATE, SUCCESS_STATES, RESET_TIMEOU
 const { Title } = Typography;
 
 export default function CurrentVariantsTable() {
-  const serverStatusData = useContext(ServerStatusContext);
   const [displayModal, setDisplayModal] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(0);
@@ -21,6 +22,7 @@ export default function CurrentVariantsTable() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [submitStatusMessage, setSubmitStatusMessage] = useState('');
 
+  const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { videoSettings } = serverConfig || {};
   const { videoQualityVariants } = videoSettings || {};
@@ -82,13 +84,10 @@ export default function CurrentVariantsTable() {
     } else {
       postData.splice(editId, 1, modalDataState);
     }
-    console.log("==== submit postData", postData)
-
     postUpdateToAPI(postData);
   }
 
   const handleUpdateField = ({ fieldName, value }: UpdateArgs) => {
-    console.log("===update field", fieldName, value)
     setModalDataState({
       ...modalDataState,
       [fieldName]: value,
@@ -146,7 +145,6 @@ export default function CurrentVariantsTable() {
 
   const videoQualityVariantData = videoQualityVariants.map((variant, index) => ({ key: index + 1, ...variant }));
 
-  // console.log("=========", { modalDataState })
   return (
     <>
       <Title level={3}>Current Variants</Title>

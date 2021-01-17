@@ -19,6 +19,20 @@
   }
 }
 
+.module-container {
+  border-radius: 1em;
+  background-color: rgba(128,99,255,.1);
+  padding: 1.5em;
+  margin-bottom: 1em;
+}
+
+.ant-slider-with-marks {
+  margin-right: 2em;
+}
+.ant-slider-mark-text {
+  font-size: .85em;
+  white-space: nowrap;
+}
 
 .status-message {
   margin: 1rem 0;
@@ -226,13 +240,6 @@
     }
     .form-component {
       width: 60%;
-      .ant-slider-with-marks {
-        margin-right: 2em;
-      }
-      .ant-slider-mark-text {
-        font-size: .85em;
-        white-space: nowrap;
-      }
       
       .selected-value-note {
         font-size: .85em;
@@ -254,4 +261,20 @@
   .ant-collapse-content {
     background-color: rgba(0,0,0,.1);
   }
+}
+
+.config-video-segements-conatiner {
+  .segment-slider {
+    width: 90%;
+    margin: auto;
+  }
+  .status-message {
+    text-align: center;
+  }
+}
+.segment-tip {
+  width: 10em;
+  text-align: center;
+  margin: auto;
+  display: inline-block;
 }

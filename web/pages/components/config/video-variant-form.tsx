@@ -51,9 +51,6 @@ interface VideoVariantFormProps {
 }
 
 export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, onUpdateField }: VideoVariantFormProps) {
-  console.log("======form", dataState)
-
-  // const [dataState, setDataState] = useState(initialValues);
 
   const handleFramerateChange = (value: number) => {
     onUpdateField({ fieldName: 'framerate', value });
