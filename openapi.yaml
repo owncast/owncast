@@ -644,9 +644,9 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/StreamQuality"
-                      latancyLevel:
+                      latencyLevel:
                         type: integer
-                        description: The level of latancy selected for streaming.  Lower latancy can create more buffering.
+                        description: The level of latency selected for streaming.  Lower latency can create more buffering.
                   yp:
                     $ref: "#/components/schemas/YP"
 
@@ -975,10 +975,10 @@ paths:
             schema:
               $ref: "#/components/schemas/ConfigValue"
 
-  /api/admin/config/video/streamlatancylevel:
+  /api/admin/config/video/streamlatencylevel:
     post:
-      summary: Set the latancy level for the stream.
-      description: Sets the latancy level that determines how much video is buffered between the server and viewer.  Less latancy can end up with more buffering.
+      summary: Set the latency level for the stream.
+      description: Sets the latency level that determines how much video is buffered between the server and viewer.  Less latency can end up with more buffering.
       tags: ["Admin"]
       security:
         - AdminBasicAuth: []
@@ -992,7 +992,7 @@ paths:
               type: object
               properties:
                 value:
-                  description: The latancy level
+                  description: The latency level
                   type: integer
               example:
                 value: 4

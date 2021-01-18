@@ -36,7 +36,7 @@ const FFMPEG_PATH_KEY = "ffmpeg_path"
 const NSFW_KEY = "nsfw"
 const S3_STORAGE_ENABLED_KEY = "s3_storage_enabled"
 const S3_STORAGE_CONFIG_KEY = "s3_storage_config"
-const VIDEO_LATANCY_LEVEL = "video_latancy_level"
+const VIDEO_LATENCY_LEVEL = "video_latency_level"
 const VIDEO_STREAM_OUTPUT_VARIANTS_KEY = "video_stream_output_variants"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -391,17 +391,17 @@ func SetS3StorageEnabled(enabled bool) error {
 	return _datastore.SetBool(S3_STORAGE_ENABLED_KEY, enabled)
 }
 
-func GetStreamLatancyLevel() models.LatancyLevel {
-	level, err := _datastore.GetNumber(VIDEO_LATANCY_LEVEL)
+func GetStreamLatencyLevel() models.LatencyLevel {
+	level, err := _datastore.GetNumber(VIDEO_LATENCY_LEVEL)
 	if err != nil || level == 0 {
 		level = 4
 	}
 
-	return models.GetLatancyLevel(int(level))
+	return models.GetLatencyLevel(int(level))
 }
 
-func SetStreamLatancyLevel(level float64) error {
-	return _datastore.SetNumber(VIDEO_LATANCY_LEVEL, level)
+func SetStreamLatencyLevel(level float64) error {
+	return _datastore.SetNumber(VIDEO_LATENCY_LEVEL, level)
 }
 
 func GetStreamOutputVariants() []models.StreamOutputVariant {

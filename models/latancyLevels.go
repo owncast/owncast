@@ -1,13 +1,13 @@
 package models
 
-type LatancyLevel struct {
+type LatencyLevel struct {
 	Level             int
 	SecondsPerSegment int
 	SegmentCount      int
 }
 
-func GetLatancyConfigs() map[int]LatancyLevel {
-	return map[int]LatancyLevel{
+func GetLatencyConfigs() map[int]LatencyLevel {
+	return map[int]LatencyLevel{
 		1: {Level: 1, SecondsPerSegment: 1, SegmentCount: 2},
 		2: {Level: 2, SecondsPerSegment: 2, SegmentCount: 2},
 		3: {Level: 3, SecondsPerSegment: 4, SegmentCount: 3},
@@ -16,6 +16,6 @@ func GetLatancyConfigs() map[int]LatancyLevel {
 	}
 }
 
-func GetLatancyLevel(index int) LatancyLevel {
-	return GetLatancyConfigs()[index]
+func GetLatencyLevel(index int) LatencyLevel {
+	return GetLatencyConfigs()[index]
 }

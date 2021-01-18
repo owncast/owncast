@@ -165,7 +165,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.ChangeDisableUpgradeChecks))
 
 	// set the number of video segments and duration per segment in a playlist
-	http.HandleFunc("/api/admin/config/video/streamlatancylevel", middleware.RequireAdminAuth(admin.SetStreamLatancyLevel))
+	http.HandleFunc("/api/admin/config/video/streamlatencylevel", middleware.RequireAdminAuth(admin.SetStreamLatencyLevel))
 
 	// set an array of video output configurations
 	http.HandleFunc("/api/admin/config/video/streamoutputvariants", middleware.RequireAdminAuth(admin.SetStreamOutputVariants))

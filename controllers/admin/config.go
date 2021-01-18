@@ -294,7 +294,7 @@ func ChangeDisableUpgradeChecks(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "disable upgrade checks changed")
 }
 
-func SetStreamLatancyLevel(w http.ResponseWriter, r *http.Request) {
+func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -304,12 +304,12 @@ func SetStreamLatancyLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetStreamLatancyLevel(configValue.Value.(float64)); err != nil {
-		controllers.WriteSimpleResponse(w, false, "error setting stream latancy "+err.Error())
+	if err := data.SetStreamLatencyLevel(configValue.Value.(float64)); err != nil {
+		controllers.WriteSimpleResponse(w, false, "error setting stream latency "+err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "set stream latancy")
+	controllers.WriteSimpleResponse(w, true, "set stream latency")
 }
 
 func SetS3Configuration(w http.ResponseWriter, r *http.Request) {

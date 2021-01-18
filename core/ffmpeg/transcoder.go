@@ -198,7 +198,7 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = data.GetFfMpegPath()
-	transcoder.hlsPlaylistLength = int(data.GetStreamLatancyLevel().SegmentCount)
+	transcoder.hlsPlaylistLength = int(data.GetStreamLatencyLevel().SegmentCount)
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
 	var outputPath string
@@ -215,7 +215,7 @@ func NewTranscoder() *Transcoder {
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = int(data.GetStreamLatancyLevel().SecondsPerSegment)
+	transcoder.segmentLengthSeconds = int(data.GetStreamLatencyLevel().SecondsPerSegment)
 
 	qualities := data.GetStreamOutputVariants()
 	for index, quality := range qualities {

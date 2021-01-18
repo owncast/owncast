@@ -8,7 +8,7 @@ const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const logo = '/img/' + randomString();
 const tags = [randomString(), randomString(), randomString()];
-const latancyLevel = Math.floor((Math.random() * 5) + 1);
+const latencyLevel = Math.floor((Math.random() * 5) + 1);
 
 const streamOutputVariants = 
     {
@@ -69,8 +69,8 @@ test('set tags', async (done) => {
     done();
 });
 
-test('set latancy level', async (done) => {
-    const res = await sendConfigChangeRequest('video/streamlatancylevel', latancyLevel);
+test('set latency level', async (done) => {
+    const res = await sendConfigChangeRequest('video/streamlatencylevel', latencyLevel);
     done();
 });
 
@@ -124,7 +124,7 @@ test('admin configuration is correct', (done) => {
             expect(res.body.instanceDetails.logo).toBe(logo);
             expect(res.body.instanceDetails.tags).toStrictEqual(tags);
 
-            expect(res.body.videoSettings.latancyLevel).toBe(latancyLevel);
+            expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
             expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants.framerate);
             expect(res.body.videoSettings.videoQualityVariants[0].encoderPreset).toBe(streamOutputVariants.encoderPreset);
 
