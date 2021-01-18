@@ -36,8 +36,7 @@ const FFMPEG_PATH_KEY = "ffmpeg_path"
 const NSFW_KEY = "nsfw"
 const S3_STORAGE_ENABLED_KEY = "s3_storage_enabled"
 const S3_STORAGE_CONFIG_KEY = "s3_storage_config"
-const VIDEO_SEGMENT_LENGTH_SECONDS_KEY = "video_segment_length_seconds"
-const VIDEO_SEGMENTS_IN_PLAYLIST_KEY = "video_segments_in_seconds"
+const VIDEO_LATANCY_LEVEL = "video_latancy_level"
 const VIDEO_STREAM_OUTPUT_VARIANTS_KEY = "video_stream_output_variants"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -392,30 +391,17 @@ func SetS3StorageEnabled(enabled bool) error {
 	return _datastore.SetBool(S3_STORAGE_ENABLED_KEY, enabled)
 }
 
-func GetVideoSegmentLengthDuration() float64 {
-	seconds, err := _datastore.GetNumber(VIDEO_SEGMENT_LENGTH_SECONDS_KEY)
-	if err != nil || seconds == 0 {
-		return 4
+func GetStreamLatancyLevel() models.LatancyLevel {
+	level, err := _datastore.GetNumber(VIDEO_LATANCY_LEVEL)
+	if err != nil || level == 0 {
+		level = 4
 	}
 
-	return seconds
+	return models.GetLatancyLevel(int(level))
 }
 
-func SetVideoSegmentLengthDuration(seconds float64) error {
-	return _datastore.SetNumber(VIDEO_SEGMENT_LENGTH_SECONDS_KEY, seconds)
-}
-
-func GetVideoSegmentsInPlaylist() float64 {
-	count, err := _datastore.GetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY)
-	if err != nil || count == 0 {
-		return 20
-	}
-
-	return count
-}
-
-func SetVideoSegmentsInPlaylist(count float64) error {
-	return _datastore.SetNumber(VIDEO_SEGMENTS_IN_PLAYLIST_KEY, count)
+func SetStreamLatancyLevel(level float64) error {
+	return _datastore.SetNumber(VIDEO_LATANCY_LEVEL, level)
 }
 
 func GetStreamOutputVariants() []models.StreamOutputVariant {

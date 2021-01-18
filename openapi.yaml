@@ -644,12 +644,9 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/StreamQuality"
-                      segmentLengthSeconds:
+                      latancyLevel:
                         type: integer
-                        description: The target number of seconds each HLS video segment of video will last.
-                      numberOfPlaylistItems:
-                        type: integer
-                        description: The maximum number of HLS video segments we will keep referenced in the playlist.
+                        description: The level of latancy selected for streaming.  Lower latancy can create more buffering.
                   yp:
                     $ref: "#/components/schemas/YP"
 
@@ -978,10 +975,10 @@ paths:
             schema:
               $ref: "#/components/schemas/ConfigValue"
 
-  /api/admin/config/video/segmentconfig:
+  /api/admin/config/video/streamlatancylevel:
     post:
-      summary: Set the number and length of a single segment of video.
-      description: Sets the number and length of a single segment of video in seconds.
+      summary: Set the latancy level for the stream.
+      description: Sets the latancy level that determines how much video is buffered between the server and viewer.  Less latancy can end up with more buffering.
       tags: ["Admin"]
       security:
         - AdminBasicAuth: []
@@ -994,15 +991,11 @@ paths:
             schema:
               type: object
               properties:
-                numberOfSegments:
-                  description: The number of video segments in an HLS playlist.
-                  type: integer
-                secondsPerSegment:
-                  description: The duration, in seconds, of a single segment of HLS video.
+                value:
+                  description: The latancy level
                   type: integer
               example:
-                numberOfSegments: 4
-                secondsPerSegment: 3
+                value: 4
  
 
   /api/admin/config/video/streamoutputvariants:

@@ -37,9 +37,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		WebServerPort:  data.GetHTTPPortNumber(),
 		RTMPServerPort: data.GetRTMPPortNumber(),
 		VideoSettings: videoSettings{
-			VideoQualityVariants:  videoQualityVariants,
-			SegmentLengthSeconds:  int(data.GetVideoSegmentLengthDuration()),
-			NumberOfPlaylistItems: int(data.GetVideoSegmentsInPlaylist()),
+			VideoQualityVariants: videoQualityVariants,
+			LatancyLevel:         data.GetStreamLatancyLevel().Level,
 		},
 		YP: yp{
 			Enabled:     data.GetDirectoryEnabled(),
@@ -63,13 +62,13 @@ type serverConfigAdminResponse struct {
 	RTMPServerPort  int               `json:"rtmpServerPort"`
 	S3              models.S3         `json:"s3"`
 	VideoSettings   videoSettings     `json:"videoSettings"`
+	LatancyLevel    int               `json:"latancyLevel"`
 	YP              yp                `json:"yp"`
 }
 
 type videoSettings struct {
-	VideoQualityVariants  []models.StreamOutputVariant `json:"videoQualityVariants"`
-	SegmentLengthSeconds  int                          `json:"segmentLengthSeconds"`
-	NumberOfPlaylistItems int                          `json:"numberOfPlaylistItems"`
+	VideoQualityVariants []models.StreamOutputVariant `json:"videoQualityVariants"`
+	LatancyLevel         int                          `json:"latancyLevel"`
 }
 
 type webConfigResponse struct {

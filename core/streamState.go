@@ -103,7 +103,7 @@ func SetStreamAsDisconnected() {
 			}
 
 			variantPlaylist := playlist.(*m3u8.MediaPlaylist)
-			if len(variantPlaylist.Segments) > int(data.GetVideoSegmentsInPlaylist()) {
+			if len(variantPlaylist.Segments) > int(data.GetStreamLatancyLevel().SegmentCount) {
 				variantPlaylist.Segments = variantPlaylist.Segments[:len(variantPlaylist.Segments)]
 			}
 

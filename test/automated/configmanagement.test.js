@@ -8,11 +8,7 @@ const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const logo = '/img/' + randomString();
 const tags = [randomString(), randomString(), randomString()];
-
-const segmentConfig = {
-    numberOfSegments: randomNumber() + 1,
-    secondsPerSegment: randomNumber() + 1
-};
+const latancyLevel = Math.floor((Math.random() * 5) + 1);
 
 const streamOutputVariants = 
     {
@@ -73,8 +69,8 @@ test('set tags', async (done) => {
     done();
 });
 
-test('set segment configuration', async (done) => {
-    const res = await sendConfigChangeRequest('video/segmentconfig', segmentConfig);
+test('set latancy level', async (done) => {
+    const res = await sendConfigChangeRequest('video/streamlatancylevel', latancyLevel);
     done();
 });
 
@@ -128,9 +124,7 @@ test('admin configuration is correct', (done) => {
             expect(res.body.instanceDetails.logo).toBe(logo);
             expect(res.body.instanceDetails.tags).toStrictEqual(tags);
 
-            expect(res.body.videoSettings.segmentLengthSeconds).toBe(segmentConfig.secondsPerSegment);
-            expect(res.body.videoSettings.numberOfPlaylistItems).toBe(segmentConfig.numberOfSegments);
-
+            expect(res.body.videoSettings.latancyLevel).toBe(latancyLevel);
             expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants.framerate);
             expect(res.body.videoSettings.videoQualityVariants[0].encoderPreset).toBe(streamOutputVariants.encoderPreset);
 

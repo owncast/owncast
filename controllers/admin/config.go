@@ -294,6 +294,24 @@ func ChangeDisableUpgradeChecks(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "disable upgrade checks changed")
 }
 
+func SetStreamLatancyLevel(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetStreamLatancyLevel(configValue.Value.(float64)); err != nil {
+		controllers.WriteSimpleResponse(w, false, "error setting stream latancy "+err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "set stream latancy")
+}
+
 func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -330,40 +348,6 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	data.SetS3Config(newS3Config.Value)
 	controllers.WriteSimpleResponse(w, true, "storage configuration changed")
 
-}
-
-func SetVideoSegmentConfig(w http.ResponseWriter, r *http.Request) {
-	type hlsSegmentConfig struct {
-		NumberOfSegments  int `json:"numberOfSegments"`
-		SecondsPerSegment int `json:"secondsPerSegment"`
-	}
-
-	type hlsSegmentConfigRequest struct {
-		Value hlsSegmentConfig `json:"value"`
-	}
-
-	if !requirePOST(w, r) {
-		return
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	var segmentConfig hlsSegmentConfigRequest
-	if err := decoder.Decode(&segmentConfig); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to update video segment config with provided values")
-		return
-	}
-
-	if err := data.SetVideoSegmentsInPlaylist(float64(segmentConfig.Value.NumberOfSegments)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	if err := data.SetVideoSegmentLengthDuration(float64(segmentConfig.Value.SecondsPerSegment)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	controllers.WriteSimpleResponse(w, true, "segment configuration changed")
 }
 
 func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
