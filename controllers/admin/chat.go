@@ -23,9 +23,9 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request messageVisibilityUpdateRequest // creates an empty struc
+	var request messageVisibilityUpdateRequest
 
-	err := decoder.Decode(&request) // decode the json into `request`
+	err := decoder.Decode(&request)
 	if err != nil {
 		log.Errorln(err)
 		controllers.WriteSimpleResponse(w, false, "")

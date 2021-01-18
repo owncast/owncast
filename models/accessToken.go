@@ -5,6 +5,7 @@ import "time"
 const (
 	ScopeCanSendUserMessages   = "CAN_SEND_MESSAGES"
 	ScopeCanSendSystemMessages = "CAN_SEND_SYSTEM_MESSAGES"
+	ScopeHasAdminAccess        = "HAS_ADMIN_ACCESS"
 )
 
 // For a scope to be seen as "valid" it must live in this slice.

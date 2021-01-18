@@ -840,7 +840,7 @@ paths:
               properties:
                 visible:
                   type: boolean
-                  description: Are these messages visible in "Get the CPU, Memory and Disk utilization levels over the collected period."
+                  description: Are these messages visible.
                 idArray:
                   type: array
                   items:
@@ -1156,3 +1156,73 @@ paths:
                   token:
                     type: string
                     example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
+
+
+  /api/integrations/clients:
+    get:
+      summary: Return a list of currently connected clients
+      description: Return a list of currently connected clients with optional geo details.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientsResponse"
+
+  /api/integrations/chat:
+      get:
+        summary: Historical Chat Messages
+        description: Used to get all chat messages prior to connecting to the websocket.
+        tags: ["Integrations"]
+        security:
+          - AccessToken: []
+        responses:
+          "200":
+            description: ""
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      author:
+                        type: string
+                        description: Username of the chat message poster.
+                      body:
+                        type: string
+                        description: Escaped HTML of the chat message content.
+                      id:
+                        type: string
+                        description: Unique ID of the chat message.
+                      visible:
+                        type: boolean
+                        description: "Should chat message be visibly rendered."
+                      timestamp:
+                        type: string
+                        format: date-time
+
+  /api/integrations/chat/updatemessagevisibility:
+    post:
+      summary: Update the visibility of chat messages.
+      description: Pass an array of IDs you want to change the chat visibility of.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visible:
+                  type: boolean
+                  description: Are these messages visible.
+                idArray:
+                  type: array
+                  items:
+                    type: string
+                    description: IDs of the chat messages you wish to change the visibility of.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/BasicResponse"
