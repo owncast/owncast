@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography } from 'antd';
 
 import VideoVariantsTable from './components/config/video-variants-table';
-import VideoLatency from './components/config/video-segments-editor';
+import VideoLatency from './components/config/video-latency';
 
 const { Title } = Typography;
 
