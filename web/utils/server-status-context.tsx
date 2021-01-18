@@ -28,8 +28,7 @@ export const initialServerConfigState: ConfigDetails = {
     instanceUrl: '',
   },
   videoSettings: {
-    numberOfPlaylistItems: 5,
-    segmentLengthSeconds: 4,
+    latencyLevel: 4,
     videoQualityVariants: [DEFAULT_VARIANT_STATE],
   }
 };

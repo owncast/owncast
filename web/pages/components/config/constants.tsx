@@ -25,7 +25,7 @@ export const SUCCESS_STATES = {
 
 // CONFIG API ENDPOINTS
 export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
-export const API_VIDEO_SEGMENTS = '/video/segmentconfig';
+export const API_VIDEO_SEGMENTS = '/video/streamlatencylevel';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const {

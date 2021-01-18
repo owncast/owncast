@@ -65,8 +65,7 @@ export interface VideoVariant {
   videoBitrate: number;
 }
 export interface VideoSettingsFields {
-  numberOfPlaylistItems: number;
-  segmentLengthSeconds: number;
+  latencyLevel: number;
   videoQualityVariants: VideoVariant[],
 }
 

@@ -1,69 +1,26 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Slider, } from 'antd';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { API_VIDEO_SEGMENTS, SUCCESS_STATES, RESET_TIMEOUT,postConfigUpdateToAPI } from './constants';
 
 const { Title } = Typography;
 
-// numberOfSegments
-// secondsPerSegment
-/*
-
-2 segments, 2 seconds
-3 segments, 3 seconds
-3 segments, 4 seconds
-4 segments, 4 seconds <- default
-8 segments, 4 seconds
-10 segments, 4 seconds
-
-Lowest latancy, less reliability 
--> Highest latancy, higher reliability
-*/
-const DEFAULT_OPTION = 3;
-
-const SLIDER_OPTIONS = [
-  {
-    numberOfSegments: 2,
-    secondsPerSegment: 2,
-  },
-  {
-    numberOfSegments: 3,
-    secondsPerSegment: 3,
-  },
-  {
-    numberOfSegments: 3,
-    secondsPerSegment: 4,
-  },
-  {
-    numberOfSegments: 4,
-    secondsPerSegment: 4,
-  },
-  {
-    numberOfSegments: 8,
-    secondsPerSegment: 4,
-  },
-  {
-    numberOfSegments: 10,
-    secondsPerSegment: 4,
-  },
-];
-
 const SLIDER_MARKS = {
-  0: '1',
-  1: '2',
-  2: '3',
-  3: '4',
-  4: '5',
-  5: '6',
+  1: '1 - low',
+  2: '2',
+  3: '3',
+  4: '4',
+  5: '5',
+  6: '6 - high',
 };
 
 const SLIDER_COMMENTS = {
-  0: 'Lowest latency, but least reliability',
-  1: 'Low latency, some reliability',
-  2: 'Lower latency, some reliability',
-  3: 'Optimal latency and reliability (Default)',
-  4: 'High latency, better reliability',
-  5: 'Highest latency, higher reliability',
+  1: 'Lowest latency, but least reliability',
+  2: 'Low latency, some reliability',
+  3: 'Lower latency, some reliability',
+  4: 'Optimal latency and reliability (Default)',
+  5: 'High latency, better reliability',
+  6: 'Highest latency, higher reliability',
 };
 
 interface SegmentToolTipProps {
@@ -76,25 +33,10 @@ function SegmentToolTip({ value }: SegmentToolTipProps) {
   );
 }
 
-function findSelectedOption(videoSettings) {
-  const { numberOfSegments, secondsPerSegment } = videoSettings;
-  let selected = DEFAULT_OPTION;
-  SLIDER_OPTIONS.map((option, index) => {
-    if (
-      (option.numberOfSegments === numberOfSegments &&
-      option.secondsPerSegment === secondsPerSegment) ||
-      option.numberOfSegments === numberOfSegments
-    ) {
-      selected = index;
-    }
-    return option;
-  });
-  return selected;
-}
-
-export default function VideoSegmentsEditor() {
+export default function VideoLatency() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
@@ -106,8 +48,10 @@ export default function VideoSegmentsEditor() {
     return null;
   }
 
+  useEffect(() => {
+    setSelectedOption(videoSettings.latencyLevel);
+  }, [videoSettings]);
 
-  const selectedOption = findSelectedOption(videoSettings);
   const resetStates = () => {
     setSubmitStatus(null);
     setSubmitStatusMessage('');
@@ -122,14 +66,9 @@ export default function VideoSegmentsEditor() {
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({
-          fieldName: 'numberOfSegments', 
-          value: postValue.numberOfSegments, 
+          fieldName: 'latencyLevel', 
+          value: postValue, 
           path: 'videoSettings'
-        });
-        setFieldInConfigState({
-          fieldName: 'secondsPerSegment',
-          value: postValue.secondsPerSegment,
-          path: 'videoSettings',
         });
 
         setSubmitStatus('success');
@@ -155,14 +94,13 @@ export default function VideoSegmentsEditor() {
     </div>
   );
   
-  const handleSegmentChange = value => {
-    const postData = SLIDER_OPTIONS[value];
-    postUpdateToAPI(postData);
+  const handleChange = value => {
+    postUpdateToAPI(value);
   };
 
   return (
     <div className="module-container config-video-segements-conatiner">
-      <Title level={3}>Video Tolerance</Title>
+      <Title level={3}>Video Latency</Title>
       <p>
         There are trade-offs when cosidering video latency and reliability. Blah blah .. better wording here needed.
       </p>
@@ -171,9 +109,9 @@ export default function VideoSegmentsEditor() {
         <Slider 
           tooltipVisible
           tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
-          onChange={handleSegmentChange}
-          min={0}
-          max={SLIDER_OPTIONS.length - 1}
+          onChange={handleChange}
+          min={1}
+          max={6}
           marks={SLIDER_MARKS}
           defaultValue={selectedOption}
           value={selectedOption}
