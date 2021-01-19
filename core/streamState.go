@@ -48,10 +48,6 @@ func setStreamAsConnected() {
 
 	go func() {
 		_transcoder = ffmpeg.NewTranscoder()
-		if _broadcaster != nil {
-			_transcoder.SetVideoOnly(_broadcaster.StreamDetails.VideoOnly)
-		}
-
 		_transcoder.TranscoderCompleted = func(error) {
 			SetStreamAsDisconnected()
 		}

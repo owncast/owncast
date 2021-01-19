@@ -29,7 +29,6 @@ type Transcoder struct {
 	ffmpegPath           string
 	segmentIdentifier    string
 	internalListenerPort string
-	videoOnly            bool // If true ignore any audio, if any
 	TranscoderCompleted  func(error)
 }
 
@@ -83,9 +82,6 @@ func (t *Transcoder) Start() {
 	command := t.getString()
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
-	if t.videoOnly {
-		log.Tracef("Transcoder requested to operate on video only, ignoring audio.")
-	}
 
 	if config.EnableDebugFeatures {
 		log.Println(command)
@@ -252,12 +248,7 @@ func (t *Transcoder) getVariantsString() string {
 	for _, variant := range t.variants {
 		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
 		singleVariantMap := ""
-		if t.videoOnly {
-			singleVariantMap = fmt.Sprintf("v:%d ", variant.index)
-		} else {
-			singleVariantMap = fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
-		}
-
+		singleVariantMap = fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
 		variantsStreamMaps = variantsStreamMaps + singleVariantMap
 	}
 	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
@@ -391,9 +382,4 @@ func (t *Transcoder) SetIdentifier(output string) {
 
 func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
-}
-
-// SetVideoOnly will ignore any audio streams, if any.
-func (t *Transcoder) SetVideoOnly(videoOnly bool) {
-	t.videoOnly = videoOnly
 }
