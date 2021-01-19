@@ -47,3 +47,13 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		BadRequestHandler(w, err)
 	}
 }
+
+func GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+	w.Header().Set("Content-Type", "application/json")
+
+	platforms := models.GetAllSocialHandles()
+	if err := json.NewEncoder(w).Encode(platforms); err != nil {
+		internalErrorHandler(w, err)
+	}
+}
