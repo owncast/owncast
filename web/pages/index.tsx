@@ -172,11 +172,6 @@ export default function Home() {
             <div className="server-detail">
               <Card title="Server Config" type="inner">
                 <StatisticItem
-                  title="Stream key"
-                  value={configData.streamKey}
-                  prefix={null}
-                />
-                <StatisticItem
                   title="Directory registration enabled"
                   value={configData.yp.enabled.toString()}
                   prefix={null}
