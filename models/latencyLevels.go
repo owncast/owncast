@@ -1,9 +1,9 @@
 package models
 
 type LatencyLevel struct {
-	Level             int
-	SecondsPerSegment int
-	SegmentCount      int
+	Level             int `json:"level"`
+	SecondsPerSegment int `json:"-"`
+	SegmentCount      int `json:"-"`
 }
 
 func GetLatencyConfigs() map[int]LatencyLevel {

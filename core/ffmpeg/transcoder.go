@@ -29,7 +29,11 @@ type Transcoder struct {
 	ffmpegPath           string
 	segmentIdentifier    string
 	internalListenerPort string
-	TranscoderCompleted  func(error)
+
+	currentStreamOutputSettings []models.StreamOutputVariant
+	currentLatencyLevel         models.LatencyLevel
+
+	TranscoderCompleted func(error)
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream.
@@ -197,6 +201,9 @@ func NewTranscoder() *Transcoder {
 	transcoder.hlsPlaylistLength = int(data.GetStreamLatencyLevel().SegmentCount)
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
+	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
+	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
+
 	var outputPath string
 	if data.GetS3Config().Enabled {
 		// Segments are not available via the local HTTP server
@@ -211,10 +218,9 @@ func NewTranscoder() *Transcoder {
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = int(data.GetStreamLatencyLevel().SecondsPerSegment)
+	transcoder.segmentLengthSeconds = transcoder.currentLatencyLevel.SecondsPerSegment
 
-	qualities := data.GetStreamOutputVariants()
-	for index, quality := range qualities {
+	for index, quality := range transcoder.currentStreamOutputSettings {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
 	}

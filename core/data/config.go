@@ -460,13 +460,11 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-func FindHighestVideoQualityIndex() int {
+func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	type IndexedQuality struct {
 		index   int
 		quality models.StreamOutputVariant
 	}
-
-	qualities := GetStreamOutputVariants()
 
 	if len(qualities) < 2 {
 		return 0

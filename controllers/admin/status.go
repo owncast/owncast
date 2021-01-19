@@ -14,9 +14,11 @@ import (
 func Status(w http.ResponseWriter, r *http.Request) {
 	broadcaster := core.GetBroadcaster()
 	status := core.GetStatus()
+	currentBroadcast := core.GetCurrentBroadcast()
 
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,
+		CurrentBroadcast:       currentBroadcast,
 		Online:                 status.Online,
 		ViewerCount:            status.ViewerCount,
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
@@ -33,11 +35,12 @@ func Status(w http.ResponseWriter, r *http.Request) {
 }
 
 type adminStatusResponse struct {
-	Broadcaster            *models.Broadcaster `json:"broadcaster"`
-	Online                 bool                `json:"online"`
-	ViewerCount            int                 `json:"viewerCount"`
-	OverallPeakViewerCount int                 `json:"overallPeakViewerCount"`
-	SessionPeakViewerCount int                 `json:"sessionPeakViewerCount"`
+	Broadcaster            *models.Broadcaster      `json:"broadcaster"`
+	CurrentBroadcast       *models.CurrentBroadcast `json:"currentBroadcast"`
+	Online                 bool                     `json:"online"`
+	ViewerCount            int                      `json:"viewerCount"`
+	OverallPeakViewerCount int                      `json:"overallPeakViewerCount"`
+	SessionPeakViewerCount int                      `json:"sessionPeakViewerCount"`
 
 	VersionNumber        string `json:"versionNumber"`
 	DisableUpgradeChecks bool   `json:"disableUpgradeChecks"`

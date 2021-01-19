@@ -26,11 +26,18 @@ var _offlineCleanupTimer *time.Timer
 // While a stream takes place cleanup old HLS content every N min.
 var _onlineCleanupTicker *time.Ticker
 
+var _currentBroadcast *models.CurrentBroadcast
+
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected() {
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
+
+	_currentBroadcast = &models.CurrentBroadcast{
+		LatencyLevel:   data.GetStreamLatencyLevel(),
+		OutputSettings: data.GetStreamOutputVariants(),
+	}
 
 	StopOfflineCleanupTimer()
 	startOnlineCleanupTimer()
@@ -50,12 +57,14 @@ func setStreamAsConnected() {
 		_transcoder = ffmpeg.NewTranscoder()
 		_transcoder.TranscoderCompleted = func(error) {
 			SetStreamAsDisconnected()
+			_transcoder = nil
+			_currentBroadcast = nil
 		}
 		_transcoder.Start()
 	}()
 
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
-	ffmpeg.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex())
+	ffmpeg.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
