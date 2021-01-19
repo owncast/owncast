@@ -123,6 +123,7 @@ test('admin configuration is correct', (done) => {
             expect(res.body.instanceDetails.summary).toBe(serverSummary);
             expect(res.body.instanceDetails.logo).toBe(logo);
             expect(res.body.instanceDetails.tags).toStrictEqual(tags);
+            expect(res.body.instanceDetails.socialHandles).toStrictEqual(socialHandles);
 
             expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
             expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants.framerate);
