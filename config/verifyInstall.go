@@ -35,10 +35,7 @@ func verifyFFMpegPath(path string) error {
 	}
 
 	cmd := exec.Command(path)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("unable to determine the version of your ffmpeg installation at %s. you may experience issues with video.", path)
-	}
+	out, _ := cmd.CombinedOutput()
 
 	response := string(out)
 	if response == "" {
