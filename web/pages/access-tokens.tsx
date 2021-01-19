@@ -15,6 +15,7 @@ import {
 const availableScopes = {
     'CAN_SEND_SYSTEM_MESSAGES': { name: 'System messages', description: 'You can send official messages on behalf of the system', color: 'purple' },
     'CAN_SEND_MESSAGES': { name: 'User chat messages', description: 'You can send messages on behalf of a username', color: 'green' },
+    'HAS_ADMIN_ACCESS': { name: 'Has admin access', description: 'Can perform administrative actions such as moderation, get server statuses, etc', color: 'red' },
 };
 
 function convertScopeStringToTag(scopeString) {
