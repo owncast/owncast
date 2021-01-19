@@ -79,7 +79,7 @@ export default function Home() {
   }
   
   // map out settings
-  const videoQualitySettings = configData?.videoSettings?.videoQualityVariants?.map((setting, index) => {
+  const videoQualitySettings = serverStatusData?.currentBroadcast?.outputSettings?.map((setting, index) => {
     const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
 
     const audioSetting = audioPassthrough
@@ -108,7 +108,6 @@ export default function Home() {
       </Card>
     );
   });
-
 
   // inbound
   const { viewerCount, sessionPeakViewerCount } = serverStatusData;
