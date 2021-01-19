@@ -31,6 +31,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			ExtraPageContent: data.GetExtraPageBodyContent(),
 			StreamTitle:      data.GetStreamTitle(),
 			Logo:             data.GetLogoPath(),
+			SocialHandles:    data.GetSocialHandles(),
 		},
 		FFmpegPath:     data.GetFfMpegPath(),
 		StreamKey:      data.GetStreamKey(),
