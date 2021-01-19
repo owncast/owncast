@@ -177,7 +177,7 @@ export default function AccessTokens() {
                 They should be kept secure and never included in client code, instead they should be kept on a server that you control.
             </Paragraph>
             <Paragraph>
-                Read more about how to use these tokens at _some documentation here_.
+                Read more about how to use these tokens, with examples, at <a href="https://owncast.online/docs/integrations/">our documentation</a>.
             </Paragraph>
 
             <Table rowKey="token" columns={columns} dataSource={tokens} pagination={false} />

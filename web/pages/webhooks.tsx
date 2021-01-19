@@ -175,7 +175,7 @@ export default function Webhooks() {
                 A webhook is a callback made to an external API in response to an event.  These are endpoints that live outside of Owncast and run code who wants to be made aware of events that take place on your server.
             </Paragraph>
             <Paragraph>
-                Read more about how to use webhooks at _some documentation here_.
+                Read more about how to use webhooks, with examples, at <a href="https://owncast.online/docs/integrations/">our documentation</a>.
             </Paragraph>
 
             <Table rowKey="id" columns={columns} dataSource={webhooks} pagination={false} />
