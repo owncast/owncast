@@ -14,6 +14,7 @@ export const initialServerConfigState: ConfigDetails = {
     logo: '',
     name: '',
     nsfw: false,
+    socialHandles: [],
     streamTitle: '',
     summary: '',
     tags: [],

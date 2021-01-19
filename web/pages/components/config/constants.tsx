@@ -19,13 +19,14 @@ export const SUCCESS_STATES = {
   },
   error: {
     icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
-    message: 'An error occurred.',
+    message: 'An error occurred.',  
   },
 };
 
 // CONFIG API ENDPOINTS
 export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_VIDEO_SEGMENTS = '/video/streamlatencylevel';
+export const API_SOCIAL_HANDLES = '/socialhandles';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const {

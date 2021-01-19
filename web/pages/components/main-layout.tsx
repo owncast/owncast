@@ -144,6 +144,9 @@ export default function MainLayout(props) {
             <Menu.Item key="config-page-content">
               <Link href="/config-page-content">Custom page content</Link>
             </Menu.Item>
+            <Menu.Item key="config-social-links">
+              <Link href="/config-social-links">Social links</Link>
+            </Menu.Item>
             <Menu.Item key="config-server-details">
               <Link href="/config-server-details">Server Details</Link>
             </Menu.Item>

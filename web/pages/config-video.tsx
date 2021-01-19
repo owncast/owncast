@@ -6,7 +6,7 @@ import VideoLatency from './components/config/video-latency';
 
 const { Title } = Typography;
 
-export default function VideoConfig() {
+export default function ConfigVideoSettings() {
   return (
     <div className="config-video-variants">
       <Title level={2}>Video configuration</Title>

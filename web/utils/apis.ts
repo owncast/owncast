@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
 const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
-const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
+export const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
 
@@ -60,6 +60,9 @@ export const DELETE_WEBHOOK = `${API_LOCATION}webhooks/delete`;
 
 // Create a single webhook
 export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
+// hard coded social icons list
+export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
+
 
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 

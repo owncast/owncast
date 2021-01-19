@@ -45,6 +45,7 @@ export interface ConfigInstanceDetailsFields {
   logo: string;
   name: string;
   nsfw: boolean;
+  socialHandles: SocialHandleItem[],
   streamTitle: string;
   summary: string;
   tags: string[];
@@ -53,6 +54,12 @@ export interface ConfigInstanceDetailsFields {
 
 
 export type PRESET = 'fast' | 'faster' | 'veryfast' | 'superfast' | 'ultrafast';
+
+export interface SocialHandleItem {
+  icon: string;
+  platform: string;
+  key: string;
+}
 
 export interface VideoVariant {
   key?: number; // unique identifier generated on client side just for ant table rendering
