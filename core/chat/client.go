@@ -184,6 +184,9 @@ func (c *Client) userJoined(data []byte) {
 	msg.ID = shortid.MustGenerate()
 	msg.Type = models.UserJoined
 	msg.Timestamp = time.Now()
+
+	c.Username = &msg.Username
+
 	_server.userJoined(msg)
 }
 
