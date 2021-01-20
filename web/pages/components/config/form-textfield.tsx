@@ -33,6 +33,7 @@ export default function TextField(props: TextFieldProps) {
     fieldName,
     handleResetValue = () => {},
     initialValues = {},
+    placeholder,
     onSubmit,
     onBlur,
     onChange,
@@ -48,7 +49,6 @@ export default function TextField(props: TextFieldProps) {
   const {
     apiPath = '',
     maxLength = TEXT_MAXLENGTH,
-    placeholder = '',
     label = '',
     tip = '',
     required = false,

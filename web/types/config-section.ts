@@ -4,6 +4,7 @@ export interface TextFieldProps {
   handleResetValue?: (fieldName: string) => void;
   fieldName: string;
   initialValues?: any;
+  placeholder?: string;
   type?: string;
   configPath?: string;
   required?: boolean;

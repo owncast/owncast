@@ -8,13 +8,15 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Skeleton, Card, Statistic } from "antd";
+import { Skeleton, Card, Statistic, Form } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
+import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './components/config/form-textfield';
+import { TEXTFIELD_DEFAULTS, postConfigUpdateToAPI } from './components/config/constants';
 
 import {
   LOGS_WARN,
@@ -77,19 +79,19 @@ export default function Home() {
   if (!broadcaster) {
     return <Offline logs={logsData} />;
   }
-  
+
   // map out settings
   const videoQualitySettings = serverStatusData?.currentBroadcast?.outputSettings?.map((setting, index) => {
     const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
 
     const audioSetting = audioPassthrough
-        ? `${streamDetails.audioCodec || 'Unknown'}, ${streamDetails.audioBitrate} kbps`
-        : `${audioBitrate || 'Unknown'} kbps`;
+      ? `${streamDetails.audioCodec || 'Unknown'}, ${streamDetails.audioBitrate} kbps`
+      : `${audioBitrate || 'Unknown'} kbps`;
 
     const videoSetting = videoPassthrough
-        ? `${streamDetails.videoBitrate || 'Unknown'} kbps, ${streamDetails.framerate} fps ${streamDetails.width} x ${streamDetails.height}`
-        : `${videoBitrate || 'Unknown'} kbps, ${framerate} fps`;
-    
+      ? `${streamDetails.videoBitrate || 'Unknown'} kbps, ${streamDetails.framerate} fps ${streamDetails.width} x ${streamDetails.height}`
+      : `${videoBitrate || 'Unknown'} kbps, ${framerate} fps`;
+
     let settingTitle = 'Outbound Stream Details';
     settingTitle = (videoQualitySettings?.length > 1) ?
       `${settingTitle} ${index + 1}` : settingTitle;
@@ -117,7 +119,7 @@ export default function Home() {
   const broadcastDate = new Date(broadcaster.time);
 
   return (
-    <div className="home-container">      
+    <div className="home-container">
       <div className="sections-container">
         <div className="section online-status-section">
           <Card title="Stream is online" type="inner">
@@ -140,7 +142,15 @@ export default function Home() {
               prefix={<UserOutlined />}
             />
           </Card>
-          </div>
+        </div>
+
+        <div className="section online-details-section">
+          <Card title="Stream description">
+            <Form>
+              <TextField fieldName="streamTitle" configPath="streamtitle" placeholder="What you're streaming right now" />
+            </Form>
+          </Card>
+        </div>
 
         <div className="section stream-details-section">
 
