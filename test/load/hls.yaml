@@ -1,0 +1,17 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+      - duration: 3600
+        arrivalRate: 500
+  plugins:
+    hls: {}
+
+scenarios:
+  - name: Test the actual HLS video stream
+    flow:
+    - get:
+        url: "/hls/0/stream.m3u8"
+        hls:
+          concurrency: 4
+          streamSelector:
+            index: all
