@@ -176,6 +176,8 @@ func Start() error {
 	// set s3 configuration
 	http.HandleFunc("/api/admin/config/s3", middleware.RequireAdminAuth(admin.SetS3Configuration))
 
+	// set server url
+	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
 	port := data.GetHTTPPortNumber()
 
 	log.Tracef("Web server running on port: %d", port)
