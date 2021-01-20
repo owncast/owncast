@@ -20,7 +20,7 @@ type webConfigResponse struct {
 	Version          string                `json:"version"`
 	NSFW             bool                  `json:"nsfw"`
 	ExtraPageContent string                `json:"extraPageContent"`
-	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
+	StreamTitle      string                `json:"streamTitle,omitempty"` // What's going on with the current stream
 	SocialHandles    []models.SocialHandle `json:"socialHandles"`
 }
 
