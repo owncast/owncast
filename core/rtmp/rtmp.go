@@ -8,7 +8,6 @@ import (
 	"strings"
 	"syscall"
 	"time"
-	"unsafe"
 
 	"github.com/nareix/joy5/format/flv"
 	"github.com/nareix/joy5/format/flv/flvio"
@@ -45,7 +44,7 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 
 	s.LogEvent = func(c *rtmp.Conn, nc net.Conn, e int) {
 		es := rtmp.EventString[e]
-		log.Traceln(unsafe.Pointer(c), nc.LocalAddr(), nc.RemoteAddr(), es)
+		log.Traceln("RTMP", nc.LocalAddr(), nc.RemoteAddr(), es)
 	}
 
 	s.HandleConn = HandleConn
