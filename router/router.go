@@ -178,6 +178,7 @@ func Start() error {
 
 	// set server url
 	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
+
 	port := data.GetHTTPPortNumber()
 
 	log.Tracef("Web server running on port: %d", port)

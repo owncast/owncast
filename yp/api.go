@@ -12,6 +12,7 @@ import (
 type ypDetailsResponse struct {
 	Name                  string   `json:"name"`
 	Description           string   `json:"description"`
+	StreamTitle           string   `json:"streamTitle,omitempty"`
 	Logo                  string   `json:"logo"`
 	NSFW                  bool     `json:"nsfw"`
 	Tags                  []string `json:"tags"`
@@ -32,9 +33,15 @@ func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 
 	status := getStatus()
 
+	streamTitle := ""
+	if status.Online {
+		streamTitle = data.GetStreamTitle()
+	}
+
 	response := ypDetailsResponse{
 		Name:                  data.GetServerName(),
 		Description:           data.GetServerSummary(),
+		StreamTitle:           streamTitle,
 		Logo:                  data.GetLogoPath(),
 		NSFW:                  data.GetNSFW(),
 		Tags:                  data.GetServerMetadataTags(),
