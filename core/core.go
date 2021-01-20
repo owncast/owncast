@@ -11,8 +11,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/ffmpeg"
 	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -21,13 +21,13 @@ import (
 var (
 	_stats       *models.Stats
 	_storage     models.StorageProvider
-	_transcoder  *ffmpeg.Transcoder
+	_transcoder  *transcoder.Transcoder
 	_yp          *yp.YP
 	_broadcaster *models.Broadcaster
 )
 
-var handler ffmpeg.HLSHandler
-var fileWriter = ffmpeg.FileWriterReceiverService{}
+var handler transcoder.HLSHandler
+var fileWriter = transcoder.FileWriterReceiverService{}
 
 // Start starts up the core processing.
 func Start() error {
@@ -55,7 +55,7 @@ func Start() error {
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now
 	// but will play more useful when recordings come into play.
-	handler = ffmpeg.HLSHandler{}
+	handler = transcoder.HLSHandler{}
 	handler.Storage = _storage
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
@@ -104,7 +104,7 @@ func transitionToOfflineVideoStreamContent() {
 
 	offlineFilename := "offline.ts"
 	offlineFilePath := "static/" + offlineFilename
-	_transcoder := ffmpeg.NewTranscoder()
+	_transcoder := transcoder.NewTranscoder()
 	_transcoder.SetSegmentLength(10)
 	_transcoder.SetInput(offlineFilePath)
 	_transcoder.Start()

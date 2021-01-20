@@ -1,4 +1,4 @@
-package ffmpeg
+package transcoder
 
 import (
 	log "github.com/sirupsen/logrus"

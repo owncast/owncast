@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -24,7 +24,7 @@ func (s *LocalStorage) Setup() error {
 	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
 		for range _onlineCleanupTicker.C {
-			ffmpeg.CleanupOldContent(config.PublicHLSStoragePath)
+			transcoder.CleanupOldContent(config.PublicHLSStoragePath)
 		}
 	}()
 	return nil
