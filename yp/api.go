@@ -25,6 +25,11 @@ type ypDetailsResponse struct {
 
 // GetYPResponse gets the status of the server for YP purposes.
 func GetYPResponse(w http.ResponseWriter, r *http.Request) {
+	if !data.GetDirectoryEnabled() {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	status := getStatus()
 
 	response := ypDetailsResponse{
