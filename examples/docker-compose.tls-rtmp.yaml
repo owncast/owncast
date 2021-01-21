@@ -10,20 +10,26 @@ services:
     command: /app/owncast -configFile=config.yaml -database=/db/chat.db
     ports:
     - 8080:8080
-    - 1935:1935
     labels:
       - "traefik.enable=false"
       - "traefik.http.routers.owncast.rule=Host(`live.your.org`)"
       - "traefik.http.routers.owncast.entrypoints=web,websecure"
       - "traefik.http.routers.owncast.tls.certresolver=mytlschallenge"
+      - "traefik.tcp.routers.rtmpcast.entrypoints=rtmp"
+      - "traefik.tcp.routers.rtmpcast.rule=HostSNI(`live.your.org`)"
+      - "traefik.tcp.routers.rtmpcast.service=rtmpcast"
+      - "traefik.tcp.routers.rtmpcast.tls=true"
+      - "traefik.tcp.routers.rtmpcast.tls.certresolver=mytlschallenge"
+      - "traefik.tcp.services.rtmpcast.loadbalancer.server.port=1935"
   traefik:
     image: traefik:latest
     restart: unless-stopped
-    command: 
+    command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      - --entrypoints.rtmp.address=:1935
       - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
       # CHANGE THE ADDRESS BELOW TO YOUR ADDRESS
       - --certificatesresolvers.mytlschallenge.acme.email=postmaster@mydomain.com
@@ -36,7 +42,8 @@ services:
     ports:
     - 80:80
     - 443:443
-    
+    - 1935:1935
+
 volumes:
   owncast_db:
   traefik_certs:
