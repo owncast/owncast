@@ -11,9 +11,14 @@ func GetStatus() models.Status {
 		return models.Status{}
 	}
 
+	viewerCount := 0
+	if IsStreamConnected() {
+		viewerCount = len(_stats.Clients)
+	}
+
 	return models.Status{
 		Online:                IsStreamConnected(),
-		ViewerCount:           len(_stats.Clients),
+		ViewerCount:           viewerCount,
 		OverallMaxViewerCount: _stats.OverallMaxViewerCount,
 		SessionMaxViewerCount: _stats.SessionMaxViewerCount,
 		LastDisconnectTime:    _stats.LastDisconnectTime,
