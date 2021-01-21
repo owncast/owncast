@@ -36,6 +36,7 @@ function convertScopeStringToTag(scopeString) {
 
 function NewTokenModal(props) {
     const [selectedScopes, setSelectedScopes] = useState([]);
+    const [name, setName] = useState('');
 
     const scopes = Object.keys(availableScopes).map(function (key) {
         return { value: key, label: availableScopes[key].description }
@@ -46,14 +47,20 @@ function NewTokenModal(props) {
     }
 
     function saveToken() {
-        props.onOk(name, selectedScopes)
-    }
+        props.onOk(name, selectedScopes);
 
-    const [name, setName] = useState('');
+        // Clear the modal
+        setSelectedScopes([]);
+        setName('');
+    }
 
     const okButtonProps = {
         disabled: selectedScopes.length === 0 || name === ''
     };
+
+    function selectAll() {
+        setSelectedScopes(Object.keys(availableScopes));
+    }
 
     return (
         <Modal title="Create New Access token" visible={props.visible} onOk={saveToken} onCancel={props.onCancel} okButtonProps={okButtonProps}>
@@ -62,7 +69,8 @@ function NewTokenModal(props) {
             <p>
                 Select the permissions this access token will have.  It cannot be edited after it's created.
             </p>
-            <Checkbox.Group options={scopes} onChange={onChange} />
+            <Checkbox.Group options={scopes} value={selectedScopes} onChange={onChange} />
+            <Button onClick={selectAll}>Select all</Button>
         </Modal>
     )
 }
@@ -91,7 +99,7 @@ export default function AccessTokens() {
             dataIndex: 'token',
             key: 'token',
             render: (text, record) => (
-               <Input.Password size="small" bordered={false} value={text}/>
+                <Input.Password size="small" bordered={false} value={text} />
             )
         },
         {

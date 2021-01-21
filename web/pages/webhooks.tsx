@@ -54,12 +54,20 @@ function NewWebhookModal(props) {
         setSelectedEvents(checkedValues);
     }
 
+    function selectAll() {
+        setSelectedEvents(Object.keys(availableEvents));
+    }
+
     function save() {
         props.onOk(webhookUrl, selectedEvents)
+        
+        // Reset the modal
+        setWebhookUrl('');
+        setSelectedEvents(null);
     }
 
     const okButtonProps = {
-        disabled: selectedEvents.length === 0 || !isValidUrl(webhookUrl)
+        disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl)
     };
 
     return (
@@ -69,7 +77,8 @@ function NewWebhookModal(props) {
             <p>
                 Select the events that will be sent to this webhook.
             </p>
-            <Checkbox.Group options={events} onChange={onChange} />
+            <Checkbox.Group options={events} value={selectedEvents} onChange={onChange} />
+            <Button onClick={selectAll}>Select all</Button>
         </Modal>
     )
 }
