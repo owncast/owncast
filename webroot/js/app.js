@@ -52,6 +52,7 @@ export default class App extends Component {
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       touchKeyboardActive: false,
+      chatInputFocussed: false,
 
       configData: {},
       extraPageContent: '',
@@ -91,6 +92,8 @@ export default class App extends Component {
     this.disableChatInput = this.disableChatInput.bind(this);
     this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
+    this.handleKeyPressed = this.handleKeyPressed.bind(this);
+
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
@@ -110,6 +113,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.addEventListener('orientationchange', this.handleWindowResize);
     }
+    window.addEventListener('keypress', this.handleKeyPressed);
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
       onReady: this.handlePlayerReady,
@@ -306,6 +310,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       this.setState({
         touchKeyboardActive: true,
+        chatInputFocussed: true
       });
     }
   }
@@ -314,6 +319,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       this.setState({
         touchKeyboardActive: false,
+        chatInputFocussed: false
       });
     }
   }
@@ -357,6 +363,22 @@ export default class App extends Component {
   handleWindowFocus() {
     this.windowBlurred = false;
     window.document.title = this.state.configData && this.state.configData.title;
+  }
+
+  handleKeyPressed(e) {
+    if (e.code === 'Space' && !this.state.chatInputFocussed) {
+      if(this.state.isPlaying) {
+        this.setState({
+          isPlaying: false,
+        });
+        this.player.vjsPlayer.pause();
+      } else {
+        this.setState({
+          isPlaying: true,
+        });
+        this.player.vjsPlayer.play();
+      }
+    }
   }
 
   render(props, state) {
