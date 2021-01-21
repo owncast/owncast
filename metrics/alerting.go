@@ -23,7 +23,7 @@ func handleCPUAlerting() {
 
 	avg := recentAverage(Metrics.CPUUtilizations)
 	if avg > maxCPUAlertingThresholdPCT {
-		log.Errorf(alertingError, "CPU", maxCPUAlertingThresholdPCT)
+		log.Warnf(alertingError, "CPU", maxCPUAlertingThresholdPCT)
 	}
 }
 
@@ -34,7 +34,7 @@ func handleRAMAlerting() {
 
 	avg := recentAverage(Metrics.RAMUtilizations)
 	if avg > maxRAMAlertingThresholdPCT {
-		log.Errorf(alertingError, "memory", maxRAMAlertingThresholdPCT)
+		log.Warnf(alertingError, "memory", maxRAMAlertingThresholdPCT)
 	}
 }
 
@@ -46,7 +46,7 @@ func handleDiskAlerting() {
 	avg := recentAverage(Metrics.DiskUtilizations)
 
 	if avg > maxDiskAlertingThresholdPCT {
-		log.Errorf(alertingError, "disk", maxRAMAlertingThresholdPCT)
+		log.Warnf(alertingError, "disk", maxRAMAlertingThresholdPCT)
 	}
 }
 
