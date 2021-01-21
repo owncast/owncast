@@ -49,6 +49,7 @@ func Start() error {
 	// video embed
 	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
 
+	// return the YP protocol data
 	http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// list of all social platforms
@@ -178,6 +179,9 @@ func Start() error {
 
 	// set server url
 	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
+
+	// reset the YP registration
+	http.HandleFunc("/api/admin/yp/reset", middleware.RequireAdminAuth(admin.ResetYPRegistration))
 
 	port := data.GetHTTPPortNumber()
 
