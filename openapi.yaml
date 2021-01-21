@@ -575,6 +575,17 @@ paths:
         "200":
           $ref: "#/components/responses/BasicResponse"
 
+  /api/admin/yp/reset:
+    post:
+      summary: Reset your YP registration key.
+      description: Used when there is a problem with your registration to the Owncast Directory via the YP APIs.  This will reset your local registration key.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"
+
   /api/admin/clients:
     get:
       summary: Return a list of currently connected clients
