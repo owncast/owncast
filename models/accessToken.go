@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	log "github.com/sirupsen/logrus"
+)
 
 const (
 	ScopeCanSendUserMessages   = "CAN_SEND_MESSAGES"
@@ -12,6 +16,7 @@ const (
 var validAccessTokenScopes = []string{
 	ScopeCanSendUserMessages,
 	ScopeCanSendSystemMessages,
+	ScopeHasAdminAccess,
 }
 
 type AccessToken struct {
@@ -27,6 +32,7 @@ type AccessToken struct {
 func HasValidScopes(scopes []string) bool {
 	for _, scope := range scopes {
 		if !findItemInSlice(validAccessTokenScopes, scope) {
+			log.Errorln("Invalid scope", scope)
 			return false
 		}
 	}
