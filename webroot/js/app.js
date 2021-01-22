@@ -52,7 +52,6 @@ export default class App extends Component {
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       touchKeyboardActive: false,
-      chatInputFocussed: false,
 
       configData: {},
       extraPageContent: '',
@@ -309,8 +308,7 @@ export default class App extends Component {
   handleFormFocus() {
     if (this.hasTouchScreen) {
       this.setState({
-        touchKeyboardActive: true,
-        chatInputFocussed: true
+        touchKeyboardActive: true
       });
     }
   }
@@ -318,8 +316,7 @@ export default class App extends Component {
   handleFormBlur() {
     if (this.hasTouchScreen) {
       this.setState({
-        touchKeyboardActive: false,
-        chatInputFocussed: false
+        touchKeyboardActive: false
       });
     }
   }
@@ -365,19 +362,24 @@ export default class App extends Component {
     window.document.title = this.state.configData && this.state.configData.title;
   }
 
+  handleSpaceBarPressed(e) {
+    e.preventDefault();
+    if(this.state.isPlaying) {
+      this.setState({
+        isPlaying: false,
+      });
+      this.player.vjsPlayer.pause();
+    } else {
+      this.setState({
+        isPlaying: true,
+      });
+      this.player.vjsPlayer.play();
+    }
+  }
+
   handleKeyPressed(e) {
-    if (e.code === 'Space' && !this.state.chatInputFocussed) {
-      if(this.state.isPlaying) {
-        this.setState({
-          isPlaying: false,
-        });
-        this.player.vjsPlayer.pause();
-      } else {
-        this.setState({
-          isPlaying: true,
-        });
-        this.player.vjsPlayer.play();
-      }
+    if (e.code === 'Space' && e.target === document.body) {
+      this.handleSpaceBarPressed(e);
     }
   }
 
@@ -565,4 +567,3 @@ export default class App extends Component {
     `;
   }
 }
-
