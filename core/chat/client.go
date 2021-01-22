@@ -115,7 +115,7 @@ func (c *Client) listenWrite() {
 }
 
 func (c *Client) handleClientSocketError(err error) {
-	log.Errorln("Websocket client error: ", err.Error())
+	log.Warnln("Websocket client error: ", err.Error())
 	_server.removeClient(c)
 }
 
