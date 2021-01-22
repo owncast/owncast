@@ -126,7 +126,7 @@ func (s *server) Listen() {
 			fmt.Println("PING?", ping)
 
 		case err := <-s.errCh:
-			log.Trace("Error:", err.Error())
+			log.Trace("Error: ", err.Error())
 
 		case <-s.doneCh:
 			return
