@@ -54,6 +54,6 @@ func GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 
 	platforms := models.GetAllSocialHandles()
 	if err := json.NewEncoder(w).Encode(platforms); err != nil {
-		internalErrorHandler(w, err)
+		InternalErrorHandler(w, err)
 	}
 }
