@@ -308,7 +308,7 @@ export default class App extends Component {
   handleFormFocus() {
     if (this.hasTouchScreen) {
       this.setState({
-        touchKeyboardActive: true
+        touchKeyboardActive: true,
       });
     }
   }
@@ -316,7 +316,7 @@ export default class App extends Component {
   handleFormBlur() {
     if (this.hasTouchScreen) {
       this.setState({
-        touchKeyboardActive: false
+        touchKeyboardActive: false,
       });
     }
   }
@@ -567,3 +567,4 @@ export default class App extends Component {
     `;
   }
 }
+
