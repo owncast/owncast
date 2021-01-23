@@ -378,7 +378,7 @@ export default class App extends Component {
   }
 
   handleKeyPressed(e) {
-    if (e.code === 'Space' && e.target === document.body) {
+    if (e.code === 'Space' && e.target === document.body && this.state.streamOnline) {
       this.handleSpaceBarPressed(e);
     }
   }
