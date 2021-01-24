@@ -1,66 +1,36 @@
-import React, { useState } from 'react';
-import { PlusOutlined } from "@ant-design/icons";
-import { Select, Divider, Input } from "antd";
-import classNames from 'classnames';
+import React from 'react';
+import { Select } from "antd";
 import { SocialHandleDropdownItem } from "../../../types/config-section";
 import { NEXT_PUBLIC_API_HOST } from '../../../utils/apis';
+import { OTHER_SOCIAL_HANDLE_OPTION } from './constants';
 
 
 interface DropdownProps {
   iconList: SocialHandleDropdownItem[];
-  selectedOption?: string;
-}
-interface DropdownOptionProps extends SocialHandleDropdownItem {
-  isSelected: boolean;
+  selectedOption: string;
+  onSelected: any;
 }
 
-// Add "Other" item which creates a text field
-// Add fixed custom ones - "url", "donate", "follow", "rss"
+export default function SocialDropdown({ iconList, selectedOption, onSelected }: DropdownProps) {
 
-function dropdownRender(menu) {
-  console.log({menu})
-  return 'hi';
-}
-
-export default function SocialDropdown({ iconList, selectedOption }: DropdownProps) {
-  const [name, setName] = useState('');
-
-  const handleNameChange = event => {
-    setName(event.target.value);
+  const handleSelected = value => {
+    if (onSelected) {
+      onSelected(value);
+    }
   };
-
-  const handleAddItem = () => {
-    console.log('addItem');
-    // const { items, name } = this.state;
-    // this.setState({
-    //   items: [...items, name || `New item ${index++}`],
-    //   name: '',
-    // });
-  };
-
-
+  const inititalSelected = selectedOption === '' ? null : selectedOption;
   return (
     <div className="social-dropdown-container">
+      <p className="">If you are looking for a platform name not on this list, please select Other and type in your own name. A logo will not be provided.</p>
+      <p className="">If you DO have a logo, drop it in to the <code>/webroot/img/platformicons</code> directory and update the <code>/socialHandle.go</code> list. Then restart the server and it will show up in the list.</p>
+      
       <Select
         style={{ width: 240 }}
         className="social-dropdown"
         placeholder="Social platform..."
-        // defaultValue
-        dropdownRender={menu => (
-          <>
-            {menu}
-            <Divider style={{ margin: '4px 0' }} />
-            <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
-              <Input style={{ flex: 'auto' }} value="" onChange={handleNameChange} />
-              <a
-                style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }}
-                onClick={handleAddItem}
-              >
-                <PlusOutlined /> Add item
-              </a>
-            </div>
-          </>
-        )}
+        defaultValue={inititalSelected}
+        value={inititalSelected}
+        onSelect={handleSelected}
       >
         {iconList.map(item => {
           const { platform, icon, key } =  item;
@@ -74,8 +44,10 @@ export default function SocialDropdown({ iconList, selectedOption }: DropdownPro
           );
         })
       }
+        <Select.Option className="social-option" key={`platform-${OTHER_SOCIAL_HANDLE_OPTION}`} value={OTHER_SOCIAL_HANDLE_OPTION}>
+          Other...
+        </Select.Option>
       </Select>
-
     </div>
   );
 }

@@ -239,3 +239,5 @@ export const DEFAULT_SOCIAL_HANDLE:SocialHandle = {
   url: '',
   platform: '',
 };
+
+export const OTHER_SOCIAL_HANDLE_OPTION = 'OTHER_SOCIAL_HANDLE_OPTION';
