@@ -7,6 +7,7 @@ import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../utils
 import { ServerStatusContext } from '../utils/server-status-context';
 import { API_SOCIAL_HANDLES, postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES, DEFAULT_SOCIAL_HANDLE, OTHER_SOCIAL_HANDLE_OPTION } from './components/config/constants';
 import { SocialHandle } from '../types/config-section';
+import {isValidUrl} from '../utils/urls';
 
 const { Title } = Typography;
 
@@ -221,6 +222,11 @@ export default function ConfigSocialLinks() {
     </div>
   );
 
+  const okButtonProps = {
+    disabled: !isValidUrl(modalDataState.url)
+};
+
+
   return (
     <div className="config-social-links">
       <Title level={2}>Social Links</Title>
@@ -243,6 +249,7 @@ export default function ConfigSocialLinks() {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         confirmLoading={modalProcessing}
+        okButtonProps={okButtonProps}
       >
         <SocialDropdown
           iconList={availableIconsList}
