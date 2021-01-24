@@ -2,7 +2,7 @@
 import React from 'react';
 import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
-import { ApiPostArgs, VideoVariant } from '../../../types/config-section';
+import { ApiPostArgs, VideoVariant, SocialHandle } from '../../../types/config-section';
 
 export const DEFAULT_NAME = 'Owncast User';
 export const DEFAULT_TITLE = 'Owncast Server';
@@ -233,4 +233,9 @@ export const DEFAULT_VARIANT_STATE:VideoVariant = {
   audioPassthrough: true, // if false, then CAN set audiobitrate
   audioBitrate: 0,
   encoderPreset: 'veryfast',
+};
+
+export const DEFAULT_SOCIAL_HANDLE:SocialHandle = {
+  url: '',
+  platform: '',
 };

@@ -21,6 +21,13 @@ export interface ToggleSwitchProps {
   disabled?: boolean;
 }
 
+// for dropdown
+export interface SocialHandleDropdownItem {
+  icon: string;
+  platform: string;
+  key: string;
+}
+
 export type FieldUpdaterFunc = (args: UpdateArgs) => void;
 
 export interface UpdateArgs {
@@ -46,7 +53,7 @@ export interface ConfigInstanceDetailsFields {
   logo: string;
   name: string;
   nsfw: boolean;
-  socialHandles: SocialHandleItem[],
+  socialHandles: SocialHandle[],
   streamTitle: string;
   summary: string;
   tags: string[];
@@ -56,10 +63,10 @@ export interface ConfigInstanceDetailsFields {
 
 export type PRESET = 'fast' | 'faster' | 'veryfast' | 'superfast' | 'ultrafast';
 
-export interface SocialHandleItem {
-  icon: string;
+// from data
+export interface SocialHandle {
   platform: string;
-  key: string;
+  url: string;
 }
 
 export interface VideoVariant {

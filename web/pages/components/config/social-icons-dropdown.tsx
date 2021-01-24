@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { PlusOutlined } from "@ant-design/icons";
 import { Select, Divider, Input } from "antd";
 import classNames from 'classnames';
-import { SocialHandleItem } from "../../../types/config-section";
+import { SocialHandleDropdownItem } from "../../../types/config-section";
 import { NEXT_PUBLIC_API_HOST } from '../../../utils/apis';
 
 
 interface DropdownProps {
-  iconList: SocialHandleItem[];
+  iconList: SocialHandleDropdownItem[];
   selectedOption?: string;
 }
-interface DropdownOptionProps extends SocialHandleItem {
+interface DropdownOptionProps extends SocialHandleDropdownItem {
   isSelected: boolean;
 }
 
