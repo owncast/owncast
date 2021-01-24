@@ -104,7 +104,9 @@ export default class App extends Component {
 
   componentDidMount() {
     this.getConfig();
-    window.addEventListener('resize', this.handleWindowResize);
+    if (!this.hasTouchScreen) {
+      window.addEventListener('resize', this.handleWindowResize);
+    }
     window.addEventListener('blur', this.handleWindowBlur);
     window.addEventListener('focus', this.handleWindowFocus);
     if (this.hasTouchScreen) {
