@@ -63,6 +63,8 @@ export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
 // hard coded social icons list
 export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
 
+export const TEMP_UPDATER_API = LOGS_ALL;
+
 
 const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
@@ -71,12 +73,6 @@ interface FetchOptions {
   method?: string;
   auth?: boolean;
 };
-
-export async function fetchData(url: string, options?: FetchOptions) {
-// TEMP
-export const TEMP_UPDATER_API = LOGS_ALL;
-
-const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
 
 export async function fetchData(url: string, options?: object) {
   const {
