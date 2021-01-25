@@ -89,22 +89,22 @@ func Start() error {
 	// Update config values
 
 	// Change the current streaming key in memory
-	http.HandleFunc("/api/admin/config/key", middleware.RequireAdminAuth(admin.ChangeStreamKey))
+	http.HandleFunc("/api/admin/config/key", middleware.RequireAdminAuth(admin.SetStreamKey))
 
 	// Change the extra page content in memory
-	http.HandleFunc("/api/admin/config/pagecontent", middleware.RequireAdminAuth(admin.ChangeExtraPageContent))
+	http.HandleFunc("/api/admin/config/pagecontent", middleware.RequireAdminAuth(admin.SetExtraPageContent))
 
 	// Stream title
-	http.HandleFunc("/api/admin/config/streamtitle", middleware.RequireAdminAuth(admin.ChangeStreamTitle))
+	http.HandleFunc("/api/admin/config/streamtitle", middleware.RequireAdminAuth(admin.SetStreamTitle))
 
 	// Server title
-	http.HandleFunc("/api/admin/config/servertitle", middleware.RequireAdminAuth(admin.ChangeServerTitle))
+	http.HandleFunc("/api/admin/config/servertitle", middleware.RequireAdminAuth(admin.SetServerTitle))
 
 	// Server name
-	http.HandleFunc("/api/admin/config/name", middleware.RequireAdminAuth(admin.ChangeServerName))
+	http.HandleFunc("/api/admin/config/name", middleware.RequireAdminAuth(admin.SetServerName))
 
 	// Server summary
-	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.ChangeServerSummary))
+	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.SetServerSummary))
 
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
@@ -142,31 +142,31 @@ func Start() error {
 	// Connected clients
 	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetConnectedClients))
 	// Logo path
-	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.ChangeLogoPath))
+	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogoPath))
 
 	// Server tags
-	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.ChangeTags))
+	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.SetTags))
 
 	// ffmpeg
-	http.HandleFunc("/api/admin/config/ffmpegpath", middleware.RequireAdminAuth(admin.ChangeFfmpegPath))
+	http.HandleFunc("/api/admin/config/ffmpegpath", middleware.RequireAdminAuth(admin.SetFfmpegPath))
 
 	// Server http port
-	http.HandleFunc("/api/admin/config/webserverport", middleware.RequireAdminAuth(admin.ChangeWebServerPort))
+	http.HandleFunc("/api/admin/config/webserverport", middleware.RequireAdminAuth(admin.SetWebServerPort))
 
 	// Server rtmp port
-	http.HandleFunc("/api/admin/config/rtmpserverport", middleware.RequireAdminAuth(admin.ChangeRTMPServerPort))
+	http.HandleFunc("/api/admin/config/rtmpserverport", middleware.RequireAdminAuth(admin.SetRTMPServerPort))
 
 	// Is server marked as NSFW
-	http.HandleFunc("/api/admin/config/nsfw", middleware.RequireAdminAuth(admin.ChangeNSFW))
+	http.HandleFunc("/api/admin/config/nsfw", middleware.RequireAdminAuth(admin.SetNSFW))
 
 	// directory enabled
-	http.HandleFunc("/api/admin/config/directoryenabled", middleware.RequireAdminAuth(admin.ChangeDirectoryEnabled))
+	http.HandleFunc("/api/admin/config/directoryenabled", middleware.RequireAdminAuth(admin.SetDirectoryEnabled))
 
 	// social handles
 	http.HandleFunc("/api/admin/config/socialhandles", middleware.RequireAdminAuth(admin.SetSocialHandles))
 
 	// disable server upgrade checks
-	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.ChangeDisableUpgradeChecks))
+	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.SetDisableUpgradeChecks))
 
 	// set the number of video segments and duration per segment in a playlist
 	http.HandleFunc("/api/admin/config/video/streamlatencylevel", middleware.RequireAdminAuth(admin.SetStreamLatencyLevel))
@@ -178,7 +178,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/s3", middleware.RequireAdminAuth(admin.SetS3Configuration))
 
 	// set server url
-	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.ChangeServerURL))
+	http.HandleFunc("/api/admin/config/serverurl", middleware.RequireAdminAuth(admin.SetServerURL))
 
 	// reset the YP registration
 	http.HandleFunc("/api/admin/yp/reset", middleware.RequireAdminAuth(admin.ResetYPRegistration))

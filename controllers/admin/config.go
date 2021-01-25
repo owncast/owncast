@@ -15,7 +15,7 @@ type ConfigValue struct {
 	Value interface{} `json:"value"`
 }
 
-func ChangeTags(w http.ResponseWriter, r *http.Request) {
+func SetTags(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -38,7 +38,7 @@ func ChangeTags(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
+func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -56,7 +56,7 @@ func ChangeStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeServerName(w http.ResponseWriter, r *http.Request) {
+func SetServerName(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -74,7 +74,7 @@ func ChangeServerName(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeServerTitle(w http.ResponseWriter, r *http.Request) {
+func SetServerTitle(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -92,7 +92,7 @@ func ChangeServerTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeServerSummary(w http.ResponseWriter, r *http.Request) {
+func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -110,7 +110,7 @@ func ChangeServerSummary(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeExtraPageContent(w http.ResponseWriter, r *http.Request) {
+func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -128,7 +128,7 @@ func ChangeExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeStreamKey(w http.ResponseWriter, r *http.Request) {
+func SetStreamKey(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -146,7 +146,7 @@ func ChangeStreamKey(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeLogoPath(w http.ResponseWriter, r *http.Request) {
+func SetLogoPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -164,7 +164,7 @@ func ChangeLogoPath(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeNSFW(w http.ResponseWriter, r *http.Request) {
+func SetNSFW(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -182,7 +182,7 @@ func ChangeNSFW(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeFfmpegPath(w http.ResponseWriter, r *http.Request) {
+func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -206,7 +206,7 @@ func ChangeFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ChangeWebServerPort(w http.ResponseWriter, r *http.Request) {
+func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -224,7 +224,7 @@ func ChangeWebServerPort(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "http port set")
 }
 
-func ChangeRTMPServerPort(w http.ResponseWriter, r *http.Request) {
+func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -242,7 +242,7 @@ func ChangeRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "rtmp port set")
 }
 
-func ChangeServerURL(w http.ResponseWriter, r *http.Request) {
+func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -260,7 +260,7 @@ func ChangeServerURL(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "server url set")
 }
 
-func ChangeDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
+func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -277,7 +277,7 @@ func ChangeDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "directory state changed")
 }
 
-func ChangeDisableUpgradeChecks(w http.ResponseWriter, r *http.Request) {
+func SetDisableUpgradeChecks(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
