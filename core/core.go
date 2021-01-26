@@ -64,9 +64,9 @@ func Start() error {
 		return err
 	}
 
-	if data.GetDirectoryEnabled() {
-		_yp = yp.NewYP(GetStatus)
-	} else {
+	_yp = yp.NewYP(GetStatus)
+
+	if !data.GetDirectoryEnabled() {
 		yp.DisplayInstructions()
 	}
 
