@@ -105,7 +105,7 @@ function _assertThisInitialized(self) {
 
 var assertThisInitialized = _assertThisInitialized;
 
-var _typeof_1 = createCommonjsModule(function (module) {
+createCommonjsModule(function (module) {
 function _typeof(obj) {
   "@babel/helpers - typeof";
 
@@ -125,7 +125,7 @@ function _typeof(obj) {
 module.exports = _typeof;
 });
 
-var getPrototypeOf = createCommonjsModule(function (module) {
+createCommonjsModule(function (module) {
 function _getPrototypeOf(o) {
   module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
     return o.__proto__ || Object.getPrototypeOf(o);
