@@ -39,6 +39,8 @@ func main() {
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
+	newStreamKey := flag.String("streamkey", "", "Set your stream key/admin password")
+
 	flag.Parse()
 
 	// Allows a user to restore a specific database backup
@@ -79,6 +81,16 @@ func main() {
 		log.Fatalln("failed to open database", err)
 	}
 
+	if *newStreamKey != "" {
+		if err := data.SetStreamKey(*newStreamKey); err != nil {
+			log.Errorln("Error setting your stream key.", err)
+		} else {
+			log.Infoln("Stream key changed to", *newStreamKey)
+		}
+
+		log.Exit(0)
+	}
+
 	// starts the core
 	if err := core.Start(); err != nil {
 		log.Fatalln("failed to start the core package", err)
@@ -87,6 +99,7 @@ func main() {
 	if err := router.Start(); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
+
 }
 
 // getReleaseString gets the version string.
