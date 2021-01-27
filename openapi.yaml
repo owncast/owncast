@@ -1155,6 +1155,25 @@ paths:
                       - time: "2020-10-03T21:43:00.381996-05:00"
                         value: 11
 
+  /api/integrations/streamtitle:
+    post:
+      summary: Set the stream title.
+      description: Set the title of the currently streaming content.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: Streaming my favorite game, Desert Bus.
+
+
   /api/integrations/chat/user:
     post:
       summary: Send a user chat message.
