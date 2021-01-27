@@ -91,6 +91,8 @@ export default class App extends Component {
     this.disableChatInput = this.disableChatInput.bind(this);
     this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
+    this.handleKeyPressed = this.handleKeyPressed.bind(this);
+
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
@@ -112,6 +114,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.addEventListener('orientationchange', this.handleWindowResize);
     }
+    window.addEventListener('keypress', this.handleKeyPressed);
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
       onReady: this.handlePlayerReady,
@@ -132,6 +135,7 @@ export default class App extends Component {
     window.removeEventListener('resize', this.handleWindowResize);
     window.removeEventListener('blur', this.handleWindowBlur);
     window.removeEventListener('focus', this.handleWindowFocus);
+    window.removeEventListener('keypress', this.handleKeyPressed);
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
     }
@@ -359,6 +363,27 @@ export default class App extends Component {
   handleWindowFocus() {
     this.windowBlurred = false;
     window.document.title = this.state.configData && this.state.configData.title;
+  }
+
+  handleSpaceBarPressed(e) {
+    e.preventDefault();
+    if(this.state.isPlaying) {
+      this.setState({
+        isPlaying: false,
+      });
+      this.player.vjsPlayer.pause();
+    } else {
+      this.setState({
+        isPlaying: true,
+      });
+      this.player.vjsPlayer.play();
+    }
+  }
+
+  handleKeyPressed(e) {
+    if (e.code === 'Space' && e.target === document.body && this.state.streamOnline) {
+      this.handleSpaceBarPressed(e);
+    }
   }
 
   render(props, state) {
