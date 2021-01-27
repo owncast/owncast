@@ -37,6 +37,20 @@ export default function Message(props) {
           </div>
         `
     );
+  } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {
+    const { author, body } = message;
+    const formattedMessage = `${body}`
+    return (
+      html`
+          <div class="message message-user-joined flex items-center justify-start p-3">
+            <div class="message-content flex flex-row items-center justify-center text-sm w-full">
+              <div class="text-white text-center opacity-50 overflow-hidden break-words">
+                <span dangerouslySetInnerHTML=${{ __html: formattedMessage }}></span>
+              </div>
+            </div>
+          </div>
+        `
+    );
   } else {
     console.log("Unknown message type:", type);
   }

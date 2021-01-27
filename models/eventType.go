@@ -12,4 +12,5 @@ const (
 	StreamStarted     EventType = "STREAM_STARTED"
 	StreamStopped     EventType = "STREAM_STOPPED"
 	SystemMessageSent EventType = "SYSTEM"
+	ChatActionSent    EventType = "CHAT_ACTION" // Generic chat action that can be used for anything that doesn't need specific handling or formatting.
 )

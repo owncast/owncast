@@ -996,6 +996,46 @@ paths:
                     type: string
                     example: sent
 
+  /api/integrations/chat/action:
+    post:
+      summary: Send a chat action.
+      description: Send an action that took place to the chat.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - "body"
+              properties:
+                body:
+                  type: string
+                  description: The message text that will be sent as the system user.
+                  example: "rolled a 15 on the dice"
+                author:
+                  type: string
+                  description: An optional user name that performed the action.
+                  example: "JohnSmith"
+      responses:
+        "200":
+          description: Message was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: sent
+
+
   /api/admin/accesstokens/create:
     post:
       summary: Create an access token.

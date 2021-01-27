@@ -4,6 +4,8 @@ package admin
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/owncast/owncast/config"
@@ -94,6 +96,11 @@ func SendUserMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !message.Valid() {
+		controllers.BadRequestHandler(w, errors.New("invalid chat message; id, author, and body are required"))
+		return
+	}
+
 	message.MessageType = models.MessageSent
 	message.ClientID = "external-request"
 	message.ID = shortid.MustGenerate()
@@ -101,6 +108,35 @@ func SendUserMessage(w http.ResponseWriter, r *http.Request) {
 
 	message.SetDefaults()
 	message.RenderAndSanitizeMessageBody()
+
+	if err := core.SendMessageToChat(message); err != nil {
+		controllers.BadRequestHandler(w, err)
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "sent")
+}
+
+// SendChatAction will send a generic chat action.
+func SendChatAction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var message models.ChatEvent
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+		controllers.InternalErrorHandler(w, err)
+		return
+	}
+
+	message.MessageType = models.ChatActionSent
+	message.ClientID = "external-request"
+	message.ID = shortid.MustGenerate()
+	message.Visible = true
+
+	if message.Author != "" {
+		message.Body = fmt.Sprintf("%s %s", message.Author, message.Body)
+	}
+
+	message.SetDefaults()
 
 	if err := core.SendMessageToChat(message); err != nil {
 		controllers.BadRequestHandler(w, err)
