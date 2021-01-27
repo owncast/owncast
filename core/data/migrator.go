@@ -117,6 +117,9 @@ func migrateConfigFile() {
 	SetRTMPPortNumber(oldConfig.RTMPServerPort)
 	SetDisableUpgradeChecks(oldConfig.DisableUpgradeChecks)
 
+	// Migrate storage config
+	SetS3Config(models.S3(oldConfig.Storage))
+
 	// Migrate the old content.md file
 	content, err := ioutil.ReadFile(config.ExtraInfoFile)
 	if err == nil && len(content) > 0 {
@@ -143,6 +146,7 @@ type configFile struct {
 	RTMPServerPort       int
 	YP                   yp `yaml:"yp"`
 	DisableUpgradeChecks bool
+	Storage              s3 `yaml:"s3"`
 }
 
 // instanceDetails defines the user-visible information about this particular instance.
