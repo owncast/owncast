@@ -27,59 +27,77 @@ Each form input (or group of inputs) you make, you should
 
 There are also a variety of other local states to manage the display of error/success messaging.
 
+## Notes about `form-textfield`
+- The text field is intentionally designed to make it difficult for the user to submit bad data.
+- If you make a change on a field, a Submit buttton will show up that you have to click to update. That will be the only way you can update it.
+- If you clear out a field that is marked as Required, then exit/blur the field, it will repopulate with its original value. 
+
+
+
 ## Using Ant's `<Form>` with `form-textfield`.
-You may see that a couple of pages (currently Public Details and Server Details page), is mainly a grouping of similar Text fields. 
+You may see that a couple of pages (currently **Public Details** and **Server Details** page), is mainly a grouping of similar Text fields. 
 
-`const [form] = Form.useForm();`
-`form.setFieldsValue(initialValues);`
+These are utilizing the `<Form>` component, and these calls:
+- `const [form] = Form.useForm();`
+- `form.setFieldsValue(initialValues);`
+
+It seems that a `<Form>` requires its child inputs to be in a `<Form.Item>`, to help manage overall validation on the form before submission.
+
+The `form-textfield` component was created to be used with this Form. It wraps with a `<Form.Item>`, which I believe handles the local state change updates of the value.
+
+## Current Refactoring:
+While `Form` + `Form.Item` provides many useful UI features that I'd like to utilize, it's turning out to be too restricting for our uses cases.
+
+I am refactoring `form-textfield` so that it does not rely on `<Form.Item>`.  But it will require some extra handling and styling of things like error states and success messaging.
+
+### UI things
+I'm in the middle of refactoring somes tyles and layout, and regorganizing some CSS. See TODO list below.
 
 
-A special `TextField` component was created to be used with form.
-
-
+---
 ## Potential Optimizations
 
-Looking back at the pages with `<Form>` + `form-textfield`, t
+- There might be some patterns that could be overly engineered!
 
-This pattern might be overly engineered.
-
-There are also a few patterns across all the form groups that repeat quite a bit. Perhaps these patterns could be consolidated into a custom hook that could handle all the steps.
-
-TODO: explain how to use <Form> and how the custom `form-xxxx` components work together.
-
-
-## Misc notes
-- `instanceDetails` needs to be filled out before `yp.enabled` can be turned on.
+- There are also a few patterns across all the form groups that repeat quite a bit. Perhaps these patterns could be consolidated into a custom hook that could handle all the steps.
 
 
 
-## Config data structure (with default values)
+## Current `serverConfig` data structure (with default values)
+Each of these fields has its own end point for updating.
 ```
 {
   streamKey: '',
   instanceDetails: {
-    tags: [],
+    extraPageContent: '',
+    logo: '',
+    name: '',
     nsfw: false,
+    socialHandles: [],
+    streamTitle: '',
+    summary: '',
+    tags: [],
+    title: '',
   },
+  ffmpegPath: '',
+  rtmpServerPort: '',
+  webServerPort: '',
+  s3: {},
   yp: {
     enabled: false,
-    instance: '',
+    instanceUrl: '',
   },
   videoSettings: {
-    videoQualityVariants: [
-      {
-        audioPassthrough: false,
-        videoPassthrough: false,
-        videoBitrate: 0,
-        audioBitrate: 0,
-        framerate: 0,
-      },
-    ],
+    latencyLevel: 4,
+    videoQualityVariants: [],
   }
 };
+
+// `yp.instanceUrl` needs to be filled out before `yp.enabled` can be turned on.
 ```
 
-TODO:
+
+## Ginger's TODO list:
 - fill out readme for how to use form fields and about data flow w/ ant and react
 
 - cleanup 
@@ -95,8 +113,7 @@ TODO:
   - things could use smaller font?
 - maybe convert common form pattern to custom hook?
 
-
-Possibly over engineered
+Design, color ideas
 
 https://uxcandy.co/demo/label_pro/preview/demo_2/pages/forms/form-elements.html
 

@@ -7,7 +7,7 @@ import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../../..
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { API_SOCIAL_HANDLES, postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES, DEFAULT_SOCIAL_HANDLE, OTHER_SOCIAL_HANDLE_OPTION } from './constants';
 import { SocialHandle } from '../../../types/config-section';
-import {isValidUrl} from '../../../utils/urls';
+import { isValidUrl } from '../../../utils/urls';
 
 import configStyles from '../../../styles/config-pages.module.scss';
 
