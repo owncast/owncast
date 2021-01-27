@@ -55,7 +55,24 @@ function Storage({ config }) {
       value: config.s3.region,
     },
   ];
-  return <KeyValueTable title="External Storage" data={data} />;
+
+  const advanced = [
+    {
+      name: "ACL",
+      value: config.s3.acl
+    },
+    {
+      name: "Serving Endpoint",
+      value: config.s3.servingEndpoint
+    },
+  ];
+
+  return (
+    <>
+      <KeyValueTable title="External Storage" data={data} />
+      <KeyValueTable title="Advanced options" data={advanced} />
+    </>
+  );
 }
 
 export default function ServerConfig() {
