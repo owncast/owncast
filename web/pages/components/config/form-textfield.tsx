@@ -155,10 +155,9 @@ export default function TextField(props: TextFieldProps) {
 
    return (
     <div className={`textfield-container type-${type}`}>
+      <div className="textfield-label">{label}</div>
       <div className="textfield">
-       <InfoTip tip={tip} />
         <Form.Item
-          label={label}
           name={fieldName}
           hasFeedback
           validateStatus={submitStatus}
@@ -176,8 +175,8 @@ export default function TextField(props: TextFieldProps) {
             {...fieldProps}
           />
         </Form.Item>
-   
       </div>
+      <InfoTip tip={tip} />
 
       { hasChanged ? <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>Update</Button> : null }
 

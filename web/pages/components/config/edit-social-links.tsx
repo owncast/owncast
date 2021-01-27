@@ -2,16 +2,18 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
-import SocialDropdown from './components/config/social-icons-dropdown';
-import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../utils/apis';
-import { ServerStatusContext } from '../utils/server-status-context';
-import { API_SOCIAL_HANDLES, postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES, DEFAULT_SOCIAL_HANDLE, OTHER_SOCIAL_HANDLE_OPTION } from './components/config/constants';
-import { SocialHandle } from '../types/config-section';
-import {isValidUrl} from '../utils/urls';
+import SocialDropdown from './social-icons-dropdown';
+import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../../../utils/apis';
+import { ServerStatusContext } from '../../../utils/server-status-context';
+import { API_SOCIAL_HANDLES, postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES, DEFAULT_SOCIAL_HANDLE, OTHER_SOCIAL_HANDLE_OPTION } from './constants';
+import { SocialHandle } from '../../../types/config-section';
+import {isValidUrl} from '../../../utils/urls';
+
+import configStyles from '../../../styles/config-pages.module.scss';
 
 const { Title } = Typography;
 
-export default function ConfigSocialLinks() {
+export default function EditSocialLinks() {
   const [availableIconsList, setAvailableIconsList] = useState([]);
   const [currentSocialHandles, setCurrentSocialHandles] = useState([]);
 
@@ -228,14 +230,14 @@ export default function ConfigSocialLinks() {
 
 
   return (
-    <div className="config-social-links">
+    <div className={configStyles.socialLinksEditor}>
       <Title level={2}>Social Links</Title>
       <p>Add all your social media handles and links to your other profiles here.</p>
 
       {statusMessage}
 
       <Table
-        className="variants-table"
+        className="dataTable"
         pagination={false}
         size="small"
         rowKey={record => record.url}

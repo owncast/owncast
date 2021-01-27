@@ -4,11 +4,10 @@ import Link from 'next/link';
 
 import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './components/config/form-textfield';
 
-import EditInstanceTags from './components/config/edit-tags';
-import EditDirectoryDetails from './components/config/edit-directory';
-
 import { ServerStatusContext } from '../utils/server-status-context';
 import { TEXTFIELD_DEFAULTS, postConfigUpdateToAPI } from './components/config/constants';
+
+import configStyles from '../styles/config-pages.module.scss';
 
 const { Title } = Typography;
 
@@ -29,11 +28,6 @@ export default function PublicFacingDetails() {
     form.setFieldsValue(initialValues);
   }, [instanceDetails]);
 
-  // const handleResetValue = (fieldName: string) => {
-  //   const defaultValue = defaultFields[fieldName] && defaultFields[fieldName].defaultValue || '';
-
-  //   form.setFieldsValue({ [fieldName]: initialValues[fieldName] || defaultValue });
-  // }
 
   // if instanceUrl is empty, we should also turn OFF the `enabled` field of directory.
   const handleSubmitInstanceUrl = () => {
@@ -49,17 +43,16 @@ export default function PublicFacingDetails() {
   }
 
   const extraProps = {
-    // handleResetValue,
     initialValues,
     configPath: 'instanceDetails',
   };
 
   return (
-    <div className="config-public-details-form">
+    <>
       <Title level={2}>Edit your public facing instance details</Title>
 
-      <div className="config-public-details-container">
-        <div className="text-fields">
+      <div className={configStyles.publicDetailsContainer}>
+        <div className={configStyles.textFieldsSection}>
           <Form
             form={form}
             layout="vertical"
@@ -78,20 +71,13 @@ export default function PublicFacingDetails() {
             <TextField fieldName="summary" type={TEXTFIELD_TYPE_TEXTAREA} {...extraProps} />
             <TextField fieldName="logo" {...extraProps} />
           </Form>
-          <Link href="/admin/config-page-content">
-              <a>this page!</a>
-            </Link>
-        </div>
-        <div className="misc-fields">
-          {/* add social handles comp
-          <br/>
-          add tags comp */}
-          <EditInstanceTags />
 
-          <EditDirectoryDetails />          
+          <Link href="/admin/config-page-content">
+            <a>Edit your extra page content here.</a>
+          </Link>
         </div>
       </div>      
-    </div>
+    </>
   ); 
 }
 

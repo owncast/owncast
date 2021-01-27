@@ -1,6 +1,7 @@
 import 'antd/dist/antd.css';
 import '../styles/colors.scss';
 import '../styles/globals.scss';
+import '../styles/ant-overrides.scss';
 
 import '../styles/home.scss';
 import '../styles/chat.scss';

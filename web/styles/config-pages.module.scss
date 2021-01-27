@@ -1,0 +1,33 @@
+.publicDetailsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  .textFieldsSection {
+    margin-right: 2rem;
+  }
+}
+
+
+
+.socialLinksEditor {
+  width: 20rem;
+  margin: 2em 0;
+}
+
+
+
+.tag-editor-container,
+.config-directory-details-form {
+  border-radius: 1em;
+  background-color: rgba(128,99,255,.1);
+  padding: 1.5em;
+  margin-bottom: 1em;
+}
+
+//////////////////////////////
+// common?
+.dataTable {
+
+}

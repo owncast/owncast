@@ -1,0 +1,95 @@
+// GENERAL ANT OVERRIDES
+.ant-layout,
+.ant-layout-footer,
+.ant-menu,
+.ant-menu.ant-menu-dark {
+  background-color: transparent;
+}
+.owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: var(--owncast-purple);
+}
+
+// LAYOUT
+.ant-layout-header,
+.ant-layout-sider {
+  background-color: #07050d;
+}
+
+// MENU
+.ant-menu-dark .ant-menu-inline.ant-menu-sub {
+  // background-color: rgba(255,255,255,.05);
+  background-color: #140028;
+}
+
+// CARD
+.ant-card {
+  border-radius: .5em;
+}
+
+// INPUT
+.ant-input-affix-wrapper {
+  border-radius: 5px;
+  background-color: rgba(255,255,255,.1);
+
+  textarea {
+    border-radius: 5px;
+  }
+  input {
+    background-color: transparent;
+  }
+}
+
+// BUTTON
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  background-color: white;
+  color: #40a9ff;
+}
+.ant-btn.ant-btn-primary:focus {
+  border-color: white;
+
+}
+.ant-input-affix-wrapper,
+.ant-btn {
+  transition-delay: 0s;
+  transition-duration: 0.15s;
+}
+
+// TABLE 
+.ant-table-thead > tr > th,
+.ant-table-small .ant-table-thead > tr > th {
+  background-color: #000;
+}
+
+// MODAL
+.ant-modal-content {
+  border-radius: 6px;
+}
+.ant-modal-header {
+  background-color: #1c173d;
+  border-radius: 6px 6px 0 0;
+}
+.ant-modal-title {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+.ant-modal-body {
+  background-color: #33333c;
+}
+.ant-modal-footer {
+  background-color: #222229;
+}
+
+// SELECT
+.ant-select-dropdown {
+  background-color: #334;
+}
+
+
+// SLIDER
+.ant-slider-with-marks {
+  margin-right: 2em;
+}
+.ant-slider-mark-text {
+  font-size: .85em;
+  white-space: nowrap;
+}

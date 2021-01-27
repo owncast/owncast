@@ -74,7 +74,7 @@ interface FetchOptions {
   auth?: boolean;
 };
 
-export async function fetchData(url: string, options?: object) {
+export async function fetchData(url: string, options?: FetchOptions) {
   const {
     data,
     method = 'GET',
@@ -129,23 +129,6 @@ export async function getGithubRelease() {
   return {};
 }
 
-// Make a request to the server status API and the Github releases API
-// and return a release if it's newer than the server version.
-export async function upgradeVersionAvailable(currentVersion) {
-  const recentRelease = await getGithubRelease();
-  let recentReleaseVersion = recentRelease.tag_name;
-
-  if (recentReleaseVersion.substr(0, 1) === 'v') {
-    recentReleaseVersion = recentReleaseVersion.substr(1)
-  }
-
-  if (!upToDate(currentVersion, recentReleaseVersion)) {
-    return recentReleaseVersion
-  }
-
-  return null;
-}
-
 // Stolen from https://gist.github.com/prenagha/98bbb03e27163bc2f5e4
 const VPAT = /^\d+(\.\d+){0,2}$/;
 function upToDate(local, remote) {
@@ -171,6 +154,22 @@ function upToDate(local, remote) {
         }
         return true;
     } 
-        return local >= remote;
-    
+    return local >= remote;
+}
+
+// Make a request to the server status API and the Github releases API
+// and return a release if it's newer than the server version.
+export async function upgradeVersionAvailable(currentVersion) {
+  const recentRelease = await getGithubRelease();
+  let recentReleaseVersion = recentRelease.tag_name;
+
+  if (recentReleaseVersion.substr(0, 1) === 'v') {
+    recentReleaseVersion = recentReleaseVersion.substr(1)
+  }
+
+  if (!upToDate(currentVersion, recentReleaseVersion)) {
+    return recentReleaseVersion
+  }
+
+  return null;
 }
