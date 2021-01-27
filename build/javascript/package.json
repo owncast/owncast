@@ -10,7 +10,7 @@
     "@videojs/themes": "^1.0.1",
     "htm": "^3.0.4",
     "mark.js": "^8.11.1",
-    "preact": "10.5.10",
+    "preact": "10.5.12",
     "tailwindcss": "^1.9.6",
     "video.js": "7.10.2"
   },
