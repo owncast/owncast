@@ -121,7 +121,7 @@ func (c *Client) handleClientSocketError(err error) {
 
 func (c *Client) passesRateLimit() bool {
 	if !c.rateLimiter.Allow() {
-		log.Warnln("Client", c.ClientID, "has exceeded the messaging rate limiting thresholds.")
+		log.Debugln("Client", c.ClientID, "has exceeded the messaging rate limiting thresholds.")
 		return false
 	}
 
