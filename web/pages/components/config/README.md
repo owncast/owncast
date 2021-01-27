@@ -98,23 +98,21 @@ Each of these fields has its own end point for updating.
 
 
 ## Ginger's TODO list:
-- fill out readme for how to use form fields and about data flow w/ ant and react
 
 - cleanup 
   - more consitent constants
   - cleanup types
   - cleanup style sheets..? make style module for each config page? (but what about ant deisgn overrides?)
 - redesign
-  - label+form layout - put them into a table, table of rows
-  - change Encpder preset into slider
+  - label+form layout - put them into a table, table of rows?, includes responsive to stacked layout
+  - change Encoder preset into slider
   - page headers - diff color? 
   - fix social handles icon in table
-  - consolidate things into 1 page?
   - things could use smaller font?
+  - Design, color ideas
+
+    https://uxcandy.co/demo/label_pro/preview/demo_2/pages/forms/form-elements.html
+
+    https://www.bootstrapdash.com/demo/corona/jquery/template/modern-vertical/pages/forms/basic_elements.html
 - maybe convert common form pattern to custom hook?
 
-Design, color ideas
-
-https://uxcandy.co/demo/label_pro/preview/demo_2/pages/forms/form-elements.html
-
-https://www.bootstrapdash.com/demo/corona/jquery/template/modern-vertical/pages/forms/basic_elements.html
