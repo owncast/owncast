@@ -27,28 +27,37 @@ Each form input (or group of inputs) you make, you should
 
 There are also a variety of other local states to manage the display of error/success messaging.
 
-## Notes about `form-textfield`
+## Notes about `form-textfield` and `form-togglefield`
 - The text field is intentionally designed to make it difficult for the user to submit bad data.
 - If you make a change on a field, a Submit buttton will show up that you have to click to update. That will be the only way you can update it.
 - If you clear out a field that is marked as Required, then exit/blur the field, it will repopulate with its original value. 
 
+- Both of these elements are specifically meant to be used with updating `serverConfig` fields, since each field requires its own endpoint.
+
+- Give these fields a bunch of props, and they will display labelling, some helpful UI around tips, validation messaging, as well as submit the update for you.
+
+- (currently undergoing re-styling and TS cleanup)
+
+- NOTE: you don't have to use these components. Some form groups may require a customized UX flow where you're better off using the Ant components straight up.
 
 
 ## Using Ant's `<Form>` with `form-textfield`.
-You may see that a couple of pages (currently **Public Details** and **Server Details** page), is mainly a grouping of similar Text fields. 
+UPDATE: No more `<Form>` use!
 
-These are utilizing the `<Form>` component, and these calls:
-- `const [form] = Form.useForm();`
-- `form.setFieldsValue(initialValues);`
+~~You may see that a couple of pages (currently **Public Details** and **Server Details** page), is mainly a grouping of similar Text fields.~~
 
-It seems that a `<Form>` requires its child inputs to be in a `<Form.Item>`, to help manage overall validation on the form before submission.
+~~These are utilizing the `<Form>` component, and these calls:~~
+~~- `const [form] = Form.useForm();`~~
+~~- `form.setFieldsValue(initialValues);`~~
 
-The `form-textfield` component was created to be used with this Form. It wraps with a `<Form.Item>`, which I believe handles the local state change updates of the value.
+~~It seems that a `<Form>` requires its child inputs to be in a `<Form.Item>`, to help manage overall validation on the form before submission.~~
+
+~~The `form-textfield` component was created to be used with this Form. It wraps with a `<Form.Item>`, which I believe handles the local state change updates of the value.~~
 
 ## Current Refactoring:
-While `Form` + `Form.Item` provides many useful UI features that I'd like to utilize, it's turning out to be too restricting for our uses cases.
+~~While `Form` + `Form.Item` provides many useful UI features that I'd like to utilize, it's turning out to be too restricting for our uses cases.~~
 
-I am refactoring `form-textfield` so that it does not rely on `<Form.Item>`.  But it will require some extra handling and styling of things like error states and success messaging.
+~~I am refactoring `form-textfield` so that it does not rely on `<Form.Item>`.  But it will require some extra handling and styling of things like error states and success messaging.~~
 
 ### UI things
 I'm in the middle of refactoring somes tyles and layout, and regorganizing some CSS. See TODO list below.
