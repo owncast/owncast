@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import MarkdownIt from 'markdown-it';
 
 import { ServerStatusContext } from '../utils/server-status-context';
-import { TEXTFIELD_DEFAULTS, postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES} from './components/config/constants';
+import { postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES, API_CUSTOM_CONTENT} from './components/config/constants';
 
 import 'react-markdown-editor-lite/lib/index.css';
 
@@ -29,7 +29,6 @@ export default function PageContentEditor() {
     const { instanceDetails } = serverConfig;
     const { extraPageContent: initialContent } = instanceDetails;
   
-    const { apiPath } = TEXTFIELD_DEFAULTS.instanceDetails.extraPageContent;
 
     let resetTimer = null;
 
@@ -54,10 +53,10 @@ export default function PageContentEditor() {
     async function handleSave() {
       setSubmitStatus('validating');
       await postConfigUpdateToAPI({
-        apiPath,
+        apiPath: API_CUSTOM_CONTENT,
         data: { value: content },
         onSuccess: () => {
-          setFieldInConfigState({ fieldName: 'extraPageContent', value: content, path: apiPath });
+          setFieldInConfigState({ fieldName: 'extraPageContent', value: content, path: 'instanceDetails' });
           setSubmitStatus('success');
         },
         onError: (message: string) => {

@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Tag, Input } from 'antd';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import { TEXTFIELD_DEFAULTS, RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
+import { FIELD_PROPS_TAGS, RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
 
 const { Title } = Typography;
 
@@ -17,14 +17,12 @@ export default function EditInstanceTags() {
   const { instanceDetails } = serverConfig;
   const { tags = [] } = instanceDetails;
 
-  const configPath = 'instanceDetails';
-
   const {
     apiPath,
     maxLength,
     placeholder,
-  } = TEXTFIELD_DEFAULTS[configPath].tags || {};
-
+    configPath,
+  } = FIELD_PROPS_TAGS;
 
   let resetTimer = null;
 

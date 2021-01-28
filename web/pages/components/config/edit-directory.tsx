@@ -1,15 +1,16 @@
 // Note: references to "yp" in the app are likely related to Owncast Directory
-import React, { useContext, useEffect } from 'react';
-import { Typography, Form } from 'antd';
+import React, { useState, useContext, useEffect } from 'react';
+import { Typography } from 'antd';
 
 import ToggleSwitch from './form-toggleswitch';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import { FIELD_PROPS_NSFW, FIELD_PROPS_YP } from './constants';
 
 const { Title } = Typography;
 
 export default function EditYPDetails() {
-  const [form] = Form.useForm();
+  const [formDataValues, setFormDataValues] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
@@ -18,23 +19,19 @@ export default function EditYPDetails() {
   const { nsfw } = instanceDetails;
   const { enabled, instanceUrl } = yp;
 
-  const initialValues = {
-    ...yp,
-    enabled,
-    nsfw,
-  };
-
-  const hasInstanceUrl = instanceUrl !== '';
   
   useEffect(() => {
-    form.setFieldsValue(initialValues);
-  }, [yp]);
+    setFormDataValues({
+      ...yp,
+      enabled,
+      nsfw,
+    });
+  }, [yp, instanceDetails]);
 
-  const extraProps = {
-    initialValues,
-    disabled: !hasInstanceUrl,
-  };
-
+  const hasInstanceUrl = instanceUrl !== '';
+  if (!formDataValues) {
+    return null;
+  }
   return (
     <div className="config-directory-details-form">
       <Title level={3}>Owncast Directory Settings</Title>
@@ -44,13 +41,18 @@ export default function EditYPDetails() {
       <p style={{ backgroundColor: 'black', fontSize: '.75rem', padding: '5px' }}><em>NOTE: You will need to have a URL specified in the <code>Instance URL</code> field to be able to use this.</em></p>
 
       <div className="config-yp-container">
-        <Form
-          form={form}
-          layout="vertical"
-        >
-          <ToggleSwitch fieldName="enabled" configPath="yp" {...extraProps}/>
-          <ToggleSwitch fieldName="nsfw" configPath="instanceDetails" {...extraProps} />
-        </Form>
+        <ToggleSwitch
+          fieldName="enabled"
+          {...FIELD_PROPS_YP}
+          checked={formDataValues.enabled}
+          disabled={!hasInstanceUrl}
+        />
+        <ToggleSwitch
+          fieldName="nsfw"
+          {...FIELD_PROPS_NSFW}
+          checked={formDataValues.nsfw}
+          disabled={!hasInstanceUrl}
+        />
       </div>      
     </div>
   ); 

@@ -16,7 +16,6 @@ import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
 import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './components/config/form-textfield';
-import { TEXTFIELD_DEFAULTS, postConfigUpdateToAPI } from './components/config/constants';
 
 import {
   LOGS_WARN,

@@ -8,7 +8,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { UpdateArgs, VideoVariant } from '../../../types/config-section';
 import VideoVariantForm from './video-variant-form';
-import { API_VIDEO_VARIANTS, DEFAULT_VARIANT_STATE, SUCCESS_STATES, RESET_TIMEOUT,postConfigUpdateToAPI } from './constants';
+import { API_VIDEO_VARIANTS, DEFAULT_VARIANT_STATE, SUCCESS_STATES, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 const { Title } = Typography;
 

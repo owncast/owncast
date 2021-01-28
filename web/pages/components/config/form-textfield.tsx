@@ -1,9 +1,9 @@
 
 import React, { useState, useContext } from 'react';
-import { Button, Form, Input, InputNumber } from 'antd';
+import { Button, Input, InputNumber } from 'antd';
 import { FormItemProps } from 'antd/es/form';
 
-import { TEXTFIELD_DEFAULTS, TEXT_MAXLENGTH, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
+import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { TextFieldProps } from '../../../types/config-section';
 import { ServerStatusContext } from '../../../utils/server-status-context';
@@ -22,37 +22,29 @@ export default function TextField(props: TextFieldProps) {
   const [hasChanged, setHasChanged] = useState(false);
   const [fieldValueForSubmit, setFieldValueForSubmit] = useState('');
 
-  let resetTimer = null;
-
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
-  
+
+  let resetTimer = null;
+
   const {
+    apiPath,
     configPath = '',
     disabled = false,
     fieldName,
-    handleResetValue = () => {},
-    initialValues = {},
-    placeholder,
-    onSubmit,
+    initialValue,
+    label,
+    maxLength,
     onBlur,
     onChange,
+    onSubmit,
+    placeholder,
+    required,
+    tip,
     type,
+    value,
   } = props;
 
-  // Keep track of what the initial value is
-  // Note: we're not using `initialValue` as a prop, because we expect this component to be controlled by a parent Ant <Form> which is doing a form.setFieldsValue() upstream.
-  const initialValue = initialValues[fieldName] || '';
-  
-  // Get other static info we know about this field.
-  const defaultDetails =  TEXTFIELD_DEFAULTS[configPath] || TEXTFIELD_DEFAULTS;
-  const {
-    apiPath = '',
-    maxLength = TEXT_MAXLENGTH,
-    label = '',
-    tip = '',
-    required = false,
-  } = defaultDetails[fieldName] || {};
 
   // Clear out any validation states and messaging
   const resetStates = () => {
@@ -79,17 +71,19 @@ export default function TextField(props: TextFieldProps) {
     }
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
-      onChange();
+      onChange(fieldName, val);
     }
   };
 
-  // if you blur a required field with an empty value, restore its original value
+  // if you blur a required field with an empty value, restore its original value in state (parent's state), if an onChange from parent is available.
   const handleBlur = e => {
+    if (!onChange) {
+      return;
+    }
     const val = e.target.value;
     if (required && val === '') {
-      handleResetValue(fieldName);
+      onChange(fieldName, initialValue);
     }
-
     // if an extra onBlur handler was sent in as a prop, let's run that too.
     if (onBlur) {
       onBlur();
@@ -153,30 +147,29 @@ export default function TextField(props: TextFieldProps) {
     };
   }
 
+  const fieldId = `field-${fieldName}`;
+
    return (
     <div className={`textfield-container type-${type}`}>
-      <div className="textfield-label">{label}</div>
+      { required ? <span className="required-label">*</span> : null }
+      <label htmlFor={fieldId} className="textfield-label">{label}</label>
       <div className="textfield">
-        <Form.Item
-          name={fieldName}
-          hasFeedback
-          validateStatus={submitStatus}
-          help={submitStatusMessage}
-          required={required}
-        >
         <Field
-            className={`field field-${fieldName}`}
-            allowClear
-            placeholder={placeholder}
-            maxLength={maxLength}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            disabled={disabled}
-            {...fieldProps}
-          />
-        </Form.Item>
+          id={fieldId}
+          className={`field ${fieldId}`}
+          {...fieldProps}
+          allowClear
+          placeholder={placeholder}
+          maxLength={maxLength}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disabled={disabled}
+          value={value}
+        />
       </div>
       <InfoTip tip={tip} />
+      {submitStatus}
+      {submitStatusMessage}
 
       { hasChanged ? <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>Update</Button> : null }
 
