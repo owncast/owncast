@@ -32,6 +32,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			StreamTitle:      data.GetStreamTitle(),
 			Logo:             data.GetLogoPath(),
 			SocialHandles:    data.GetSocialHandles(),
+			NSFW:             data.GetNSFW(),
 		},
 		FFmpegPath:     data.GetFfMpegPath(),
 		StreamKey:      data.GetStreamKey(),
