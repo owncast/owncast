@@ -15,7 +15,8 @@ import { ServerStatusContext } from "../utils/server-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
-import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './components/config/form-textfield';
+import TextField from './components/config/form-textfield';
+import { API_STREAM_TITLE, postConfigUpdateToAPI, TEXTFIELD_PROPS_STREAM_TITLE } from './components/config/constants';
 
 import {
   LOGS_WARN,
@@ -40,6 +41,7 @@ export default function Home() {
   const { remoteAddr, streamDetails } = broadcaster || {};
 
   const encoder = streamDetails?.encoder || "Unknown encoder";
+  const [streamTitle, setStreamTitle] = useState(configData.instanceDetails.streamTitle);
 
   const [logsData, setLogs] = useState([]);
   const getLogs = async () => {
@@ -59,7 +61,7 @@ export default function Home() {
 
     let intervalId = null;
     intervalId = setInterval(getMoreStats, FETCH_INTERVAL);
-
+    
     return () => {
       clearInterval(intervalId);
     }
@@ -74,6 +76,11 @@ export default function Home() {
       </>
     );
   }
+
+  const handleStreamTitleChanged = (fieldName: string, value: string) => {
+    setStreamTitle(value);
+  }
+
 
   if (!broadcaster) {
     return <Offline logs={logsData} />;
@@ -145,9 +152,13 @@ export default function Home() {
 
         <div className="section online-details-section">
           <Card title="Stream description">
-            <Form>
-              <TextField fieldName="streamTitle" configPath="streamtitle" placeholder="What you're streaming right now" />
-            </Form>
+            <TextField
+              fieldName="streamTitle"
+              {...TEXTFIELD_PROPS_STREAM_TITLE}
+              value={streamTitle}
+              initialValue={streamTitle}
+              onChange={handleStreamTitleChanged}
+            />
           </Card>
         </div>
 
