@@ -4,10 +4,19 @@ import { FormItemProps } from 'antd/es/form';
 
 import { RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
 
-import { ToggleSwitchProps } from '../../../types/config-section';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import InfoTip from '../info-tip';
 
+interface ToggleSwitchProps {
+  apiPath: string;
+  fieldName: string;
+
+  checked?: boolean;
+  configPath?: string;
+  disabled?: boolean;
+  label?: string;
+  tip?: string;
+}
 
 export default function ToggleSwitch(props: ToggleSwitchProps) {
   const [submitStatus, setSubmitStatus] = useState<FormItemProps['validateStatus']>('');
@@ -34,7 +43,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
     resetTimer = null;
   }
 
-  const handleChange = async isChecked => {
+  const handleChange = async (isChecked: boolean) => {
     setSubmitStatus('validating');
     await postConfigUpdateToAPI({
       apiPath,
@@ -64,6 +73,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
           loading={submitStatus === 'validating'}
           onChange={handleChange}
           defaultChecked={checked}
+          checked={checked}
           checkedChildren="ON"  
           unCheckedChildren="OFF"
           disabled={disabled}
@@ -77,3 +87,11 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
     </div>
   ); 
 }
+
+ToggleSwitch.defaultProps = {
+  checked: false,
+  configPath: '',
+  disabled: false,
+  label: '',
+  tip: '',
+};

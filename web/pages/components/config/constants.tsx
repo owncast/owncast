@@ -4,10 +4,6 @@ import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../../../types/config-section';
 
-export const DEFAULT_NAME = 'Owncast User';
-export const DEFAULT_TITLE = 'Owncast Server';
-export const DEFAULT_SUMMARY = '';
-
 export const TEXT_MAXLENGTH = 255;
 
 export const RESET_TIMEOUT = 3000;

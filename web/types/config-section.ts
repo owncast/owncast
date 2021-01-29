@@ -1,24 +1,33 @@
 // TS types for elements on the Config pages
 
 export interface TextFieldProps {
-  handleResetValue?: (fieldName: string) => void;
+  apiPath: string;
   fieldName: string;
-  initialValues?: any;
-  placeholder?: string;
-  type?: string;
+
   configPath?: string;
-  required?: boolean;
   disabled?: boolean;
+  initialValue?: string;
+  label?: string;
+  maxLength?: number;
+  placeholder?: string;
+  required?: boolean;
+  tip?: string;
+  type?: string;
+  value?: string;
   onSubmit?: () => void;
   onBlur?: () => void;
   onChange?: () => void;
 }
 
 export interface ToggleSwitchProps {
+  apiPath: string;
   fieldName: string;
-  initialValues?: any;
+
+  checked?: boolean;
   configPath?: string;
   disabled?: boolean;
+  label?: string;
+  tip?: string;
 }
 
 // for dropdown

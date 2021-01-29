@@ -1,11 +1,10 @@
-
 import React, { useState, useContext } from 'react';
 import { Button, Input, InputNumber } from 'antd';
 import { FormItemProps } from 'antd/es/form';
 
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
-import { TextFieldProps } from '../../../types/config-section';
+import { FieldUpdaterFunc } from '../../../types/config-section';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import InfoTip from '../info-tip';
 
@@ -14,6 +13,25 @@ export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
 export const TEXTFIELD_TYPE_NUMBER = 'numeric';
 export const TEXTFIELD_TYPE_TEXTAREA = 'textarea';
 export const TEXTFIELD_TYPE_URL = 'url';
+
+interface TextFieldProps {
+  apiPath: string;
+  fieldName: string;
+
+  configPath?: string;
+  disabled?: boolean;
+  initialValue?: string;
+  label?: string;
+  maxLength?: number;
+  placeholder?: string;
+  required?: boolean;
+  tip?: string;
+  type?: string;
+  value?: string | number;
+  onSubmit?: () => void;
+  onBlur?: () => void;
+  onChange?: FieldUpdaterFunc;
+}
 
 
 export default function TextField(props: TextFieldProps) {
@@ -45,7 +63,6 @@ export default function TextField(props: TextFieldProps) {
     value,
   } = props;
 
-
   // Clear out any validation states and messaging
   const resetStates = () => {
     setSubmitStatus('');
@@ -71,7 +88,7 @@ export default function TextField(props: TextFieldProps) {
     }
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
-      onChange(fieldName, val);
+      onChange({ fieldName, value: val });
     }
   };
 
@@ -82,7 +99,7 @@ export default function TextField(props: TextFieldProps) {
     }
     const val = e.target.value;
     if (required && val === '') {
-      onChange(fieldName, initialValue);
+      onChange({ fieldName, value: initialValue });
     }
     // if an extra onBlur handler was sent in as a prop, let's run that too.
     if (onBlur) {
@@ -176,3 +193,19 @@ export default function TextField(props: TextFieldProps) {
     </div>
   ); 
 }
+
+TextField.defaultProps = {
+  configPath: '',
+  disabled: false,
+  initialValue: '',
+  label: '',
+  maxLength: null,
+  placeholder: '',
+  required: false,
+  tip: '',
+  type: TEXTFIELD_TYPE_TEXT,
+  value: '',
+  onSubmit: () => {},
+  onBlur: () => {},
+  onChange: () => {},
+};

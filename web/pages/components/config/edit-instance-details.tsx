@@ -5,6 +5,7 @@ import { ServerStatusContext } from '../../../utils/server-status-context';
 import { postConfigUpdateToAPI, TEXTFIELD_PROPS_USERNAME, TEXTFIELD_PROPS_INSTANCE_URL, TEXTFIELD_PROPS_SERVER_TITLE, TEXTFIELD_PROPS_STREAM_TITLE, TEXTFIELD_PROPS_SERVER_SUMMARY, TEXTFIELD_PROPS_LOGO, API_YP_SWITCH } from './constants';
 
 import configStyles from '../../../styles/config-pages.module.scss';
+import { UpdateArgs } from '../../../types/config-section';
 
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
@@ -36,7 +37,7 @@ export default function EditInstanceDetails() {
     }
   }
 
-  const handleFieldChange = (fieldName: string, value: string) => {
+  const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
     setFormDataValues({
       ...formDataValues,
       [fieldName]: value,
