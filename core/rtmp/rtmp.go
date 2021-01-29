@@ -87,7 +87,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	log.Infoln("Incoming RTMP connected.")
+	log.Infoln("Inbound stream connected.")
 	_setStreamAsConnected()
 
 	pipePath := utils.GetTemporaryPipePath()
@@ -104,7 +104,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
 	_pipe = f
 	if err != nil {
-		panic(err)
+		log.Fatalln("unable to open", pipePath, "and will exit")
 	}
 
 	w := flv.NewMuxer(f)
@@ -118,23 +118,26 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		if err := _rtmpConnection.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
 			log.Warnln(err)
 		}
+
 		pkt, err := c.ReadPacket()
 
 		// Broadcaster disconnected
 		if err == io.EOF {
 			handleDisconnect(nc)
-			break
+			return
 		}
 
 		// Read timeout.  Disconnect.
 		if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
 			log.Debugln("Timeout reading the inbound stream from the broadcaster.  Assuming that they disconnected and ending the stream.")
 			handleDisconnect(nc)
-			break
+			return
 		}
 
 		if err := w.WritePacket(pkt); err != nil {
-			panic(err)
+			log.Errorln("unable to write rtmp packet", err)
+			handleDisconnect(nc)
+			return
 		}
 	}
 }
@@ -144,7 +147,7 @@ func handleDisconnect(conn net.Conn) {
 		return
 	}
 
-	log.Infoln("RTMP disconnected.")
+	log.Infoln("Inbound stream disconnected.")
 	conn.Close()
 	_pipe.Close()
 	_hasInboundRTMPConnection = false
