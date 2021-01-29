@@ -114,8 +114,10 @@ func (s *server) Listen() {
 			s.Clients[c.socketID] = c
 			l.Unlock()
 
-			s.listener.ClientAdded(c.GetViewerClientFromChatClient())
-			s.sendWelcomeMessageToClient(c)
+			if !c.Ignore {
+				s.listener.ClientAdded(c.GetViewerClientFromChatClient())
+				s.sendWelcomeMessageToClient(c)
+			}
 
 		// remove a client
 		case c := <-s.delCh:

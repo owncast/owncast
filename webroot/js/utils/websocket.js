@@ -14,6 +14,8 @@ export const SOCKET_MESSAGE_TYPES = {
   CHAT_ACTION: 'CHAT_ACTION'
 };
 
+const IGNORE_CLIENT_FLAG = 'IGNORE_CLIENT';
+
 export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
@@ -23,7 +25,7 @@ export const CALLBACKS = {
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
 export default class Websocket {
-  constructor() {
+  constructor(ignoreClient) {
     this.websocket = null;
     this.websocketReconnectTimer = null;
 
@@ -35,11 +37,14 @@ export default class Websocket {
     this.createAndConnect = this.createAndConnect.bind(this);
     this.scheduleReconnect = this.scheduleReconnect.bind(this);
 
+    this.ignoreClient = ignoreClient;
+
     this.createAndConnect();
   }
 
   createAndConnect() {
-    const ws = new WebSocket(URL_WEBSOCKET);
+    const extraFlags = this.ignoreClient ? [IGNORE_CLIENT_FLAG] : [];
+    const ws = new WebSocket(URL_WEBSOCKET, extraFlags);
     ws.onopen = this.onOpen.bind(this);
     ws.onclose = this.onClose.bind(this);
     ws.onerror = this.onError.bind(this);

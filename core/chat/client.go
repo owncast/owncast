@@ -28,6 +28,7 @@ type Client struct {
 	Username     *string
 	ClientID     string            // How we identify unique viewers when counting viewer counts.
 	Geo          *geoip.GeoDetails `json:"geo"`
+	Ignore       bool              // If set to true this will not be treated as a viewer
 
 	socketID              string // How we identify a single websocket client.
 	ws                    *websocket.Conn
@@ -47,6 +48,13 @@ func NewClient(ws *websocket.Conn) *Client {
 		log.Panicln("ws cannot be nil")
 	}
 
+	var ignoreClient = false
+	for _, extraData := range ws.Config().Protocol {
+		if extraData == "IGNORE_CLIENT" {
+			ignoreClient = true
+		}
+	}
+
 	ch := make(chan models.ChatEvent, channelBufSize)
 	doneCh := make(chan bool)
 	pingch := make(chan models.PingMessage)
@@ -60,7 +68,7 @@ func NewClient(ws *websocket.Conn) *Client {
 
 	rateLimiter := rate.NewLimiter(0.6, 5)
 
-	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, userJoinedChannel, doneCh, rateLimiter}
+	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, ignoreClient, socketID, ws, ch, pingch, usernameChangeChannel, userJoinedChannel, doneCh, rateLimiter}
 }
 
 func (c *Client) write(msg models.ChatEvent) {

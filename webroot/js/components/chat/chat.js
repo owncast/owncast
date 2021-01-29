@@ -219,7 +219,7 @@ export default class Chat extends Component {
     });
 
     const hasPreviouslySetCustomUsername = getLocalStorage(KEY_CUSTOM_USERNAME_SET);
-    if (hasPreviouslySetCustomUsername) {
+    if (hasPreviouslySetCustomUsername && !this.props.ignoreClient) {
       this.sendJoinedMessage();
     }
   }
