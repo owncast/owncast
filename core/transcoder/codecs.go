@@ -7,37 +7,101 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ./ffmpeg -hwaccel qsv -c:v h264_qsv -i ~/Videos/BigBuckBunny.mp4 -vf hwdownload,format=nv12 -pix_fmt yuv420p -c:v h264_qsv test.mp4
-
-// ffmpeg -y -loglevel debug -init_hw_device qsv=hw -filter_hw_device hw -hwaccel qsv -hwaccel_output_format qsv \
-//-i simpsons.mp4 -vf 'format=qsv,hwupload=extra_hw_frames=64'  \
-//-c:v h264_qsv \
-//-bf 3 -b:v 15M -maxrate:v 15M -bufsize:v 2M -r:v 30 -c:a copy -f mp4 trolled.mp4
-
-type QuickSync struct {
-	BaseCodec
+type Libx264Codec struct {
 }
 
-func (c *QuickSync) Name() string {
-	return "Intel QuickSync"
+func (c *Libx264Codec) Name() string {
+	return "libx264"
 }
 
-type Nvenc struct {
-	BaseCodec
+func (c *Libx264Codec) GlobalFlags() string {
+	return ""
 }
 
-func (c *Nvenc) Name() string {
-	return "NVENC"
+func (c *Libx264Codec) PixelFormat() string {
+	return "yuv420p"
+}
+
+func (c *Libx264Codec) ExtraArguments() string {
+	return strings.Join([]string{
+		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+	}, " ")
+}
+
+type OmxCodec struct {
+}
+
+func (c *OmxCodec) Name() string {
+	return "h264_omx"
+}
+
+func (c *OmxCodec) GlobalFlags() string {
+	return ""
+}
+
+func (c *OmxCodec) PixelFormat() string {
+	return "yuv420p"
+}
+
+func (c *OmxCodec) ExtraArguments() string {
+	return strings.Join([]string{
+		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+	}, " ")
+}
+
+type VaapiCodec struct {
+}
+
+func (c *VaapiCodec) Name() string {
+	return "h264_vaapi"
+}
+
+func (c *VaapiCodec) GlobalFlags() string {
+	flags := []string{
+		"-hwaccel vaapi",
+		"-hwaccel_output_format vaapi",
+		"-vaapi_device /dev/dri/renderD128",
+	}
+
+	return strings.Join(flags, " ")
+}
+
+func (c *VaapiCodec) PixelFormat() string {
+	return "vaapi_vld"
+}
+
+func (c *VaapiCodec) ExtraArguments() string {
+	return ""
+}
+
+type NvencCodec struct {
+}
+
+func (c *NvencCodec) Name() string {
+	return "h264_nvenc"
+}
+
+func (c *NvencCodec) GlobalFlags() string {
+	flags := []string{
+		"-hwaccel cuda",
+	}
+
+	return strings.Join(flags, " ")
+}
+
+func (c *NvencCodec) PixelFormat() string {
+	return "yuv420p"
+}
+
+func (c *NvencCodec) ExtraArguments() string {
+	return ""
 }
 
 type Codec interface {
 	Name() string
-	ToString() string
-}
-
-type BaseCodec struct {
-	Bitrate int
-	Quality string
+	GlobalFlags() string
+	PixelFormat() string
+	ExtraArguments() string
 }
 
 func GetCodecs(ffmpegPath string) []string {
