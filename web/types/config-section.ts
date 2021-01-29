@@ -1,34 +1,5 @@
 // TS types for elements on the Config pages
 
-export interface TextFieldProps {
-  apiPath: string;
-  fieldName: string;
-
-  configPath?: string;
-  disabled?: boolean;
-  initialValue?: string;
-  label?: string;
-  maxLength?: number;
-  placeholder?: string;
-  required?: boolean;
-  tip?: string;
-  type?: string;
-  value?: string;
-  onSubmit?: () => void;
-  onBlur?: () => void;
-  onChange?: () => void;
-}
-
-export interface ToggleSwitchProps {
-  apiPath: string;
-  fieldName: string;
-
-  checked?: boolean;
-  configPath?: string;
-  disabled?: boolean;
-  label?: string;
-  tip?: string;
-}
 
 // for dropdown
 export interface SocialHandleDropdownItem {
