@@ -5,6 +5,7 @@ import { ServerStatusContext } from '../../../utils/server-status-context';
 import { TEXTFIELD_PROPS_FFMPEG, TEXTFIELD_PROPS_RTMP_PORT, TEXTFIELD_PROPS_STREAM_KEY, TEXTFIELD_PROPS_WEB_PORT,  } from './constants';
 
 import configStyles from '../../../styles/config-pages.module.scss';
+import { UpdateArgs } from '../../../types/config-section';
 
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
@@ -23,7 +24,7 @@ export default function EditInstanceDetails() {
     return null;
   }
 
-  const handleFieldChange = (fieldName: string, value: string) => {
+  const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
     setFormDataValues({
       ...formDataValues,
       [fieldName]: value,
@@ -41,7 +42,6 @@ export default function EditInstanceDetails() {
           type={TEXTFIELD_TYPE_PASSWORD}
           onChange={handleFieldChange}
         />
-        
         <TextField
           fieldName="ffmpegPath"
           {...TEXTFIELD_PROPS_FFMPEG}

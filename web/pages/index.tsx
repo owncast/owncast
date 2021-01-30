@@ -8,7 +8,7 @@ TODO: Link each overview value to the sub-page that focuses on it.
 */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Skeleton, Card, Statistic, Form } from "antd";
+import { Skeleton, Card, Statistic } from "antd";
 import { UserOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { formatDistanceToNow, formatRelative } from "date-fns";
 import { ServerStatusContext } from "../utils/server-status-context";
@@ -24,6 +24,7 @@ import {
   FETCH_INTERVAL,
 } from "../utils/apis";
 import { formatIPAddress, isEmptyObject } from "../utils/format";
+import { UpdateArgs } from "../types/config-section";
 
 function streamDetailsFormatter(streamDetails) {
   return (
@@ -39,9 +40,10 @@ export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);
   const { broadcaster, serverConfig: configData } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
+  const { instanceDetails } = configData;
 
   const encoder = streamDetails?.encoder || "Unknown encoder";
-  const [streamTitle, setStreamTitle] = useState(configData.instanceDetails.streamTitle);
+  const [streamTitle, setStreamTitle] = useState('');
 
   const [logsData, setLogs] = useState([]);
   const getLogs = async () => {
@@ -55,6 +57,10 @@ export default function Home() {
   const getMoreStats = () => {
     getLogs();
   }
+
+  useEffect(() => {
+    setStreamTitle(instanceDetails.streamTitle);
+  }, [instanceDetails]);
 
   useEffect(() => {
     getMoreStats();
@@ -77,7 +83,7 @@ export default function Home() {
     );
   }
 
-  const handleStreamTitleChanged = (fieldName: string, value: string) => {
+  const handleStreamTitleChanged = ({ value }: UpdateArgs) => {
     setStreamTitle(value);
   }
 
@@ -156,7 +162,7 @@ export default function Home() {
               fieldName="streamTitle"
               {...TEXTFIELD_PROPS_STREAM_TITLE}
               value={streamTitle}
-              initialValue={streamTitle}
+              initialValue={instanceDetails.streamTitle}
               onChange={handleStreamTitleChanged}
             />
           </Card>

@@ -11,8 +11,8 @@ export interface SocialHandleDropdownItem {
 export type FieldUpdaterFunc = (args: UpdateArgs) => void;
 
 export interface UpdateArgs {
-  fieldName: string;
   value: any;
+  fieldName?: string;
   path?: string;
 }
 
