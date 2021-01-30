@@ -4,6 +4,8 @@ import { Typography, Tag, Input } from 'antd';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { FIELD_PROPS_TAGS, RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
+import TextField from './form-textfield-nosubmit';
+import { UpdateArgs } from '../../../types/config-section';
 
 const { Title } = Typography;
 
@@ -59,11 +61,11 @@ export default function EditInstanceTags() {
     });
   };
 
-  const handleInputChange = e => {
+  const handleInputChange = ({ value }: UpdateArgs) => {
     if (submitStatusMessage !== '') {
       setSubmitStatusMessage('');
     }
-    setNewTagInput(e.target.value);
+    setNewTagInput(value);
   };
 
   // send to api and do stuff
@@ -115,7 +117,18 @@ export default function EditInstanceTags() {
         {newStatusIcon} {newStatusMessage} {submitStatusMessage}
       </div>
       <div className="add-new-tag-section">
-        <Input
+        <TextField
+          fieldName="tag-input"
+          value={newTagInput}
+          className="new-tag-input"
+          onChange={handleInputChange}
+          onPressEnter={handleSubmitNewTag}
+          maxLength={maxLength}
+          placeholder={placeholder}
+
+          message={`${newStatusIcon} ${newStatusMessage} ${submitStatusMessage}`}
+        />
+        {/* <Input
           type="text"
           className="new-tag-input"
           value={newTagInput}
@@ -124,7 +137,7 @@ export default function EditInstanceTags() {
           maxLength={maxLength}
           placeholder={placeholder}
           allowClear
-        />
+        /> */}
       </div>
     </div>
   );

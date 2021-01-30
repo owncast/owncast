@@ -16,7 +16,7 @@ import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
 import TextField from './components/config/form-textfield';
-import { API_STREAM_TITLE, postConfigUpdateToAPI, TEXTFIELD_PROPS_STREAM_TITLE } from './components/config/constants';
+import { TEXTFIELD_PROPS_STREAM_TITLE } from './components/config/constants';
 
 import {
   LOGS_WARN,
