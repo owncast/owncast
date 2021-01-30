@@ -13,7 +13,7 @@ var EnableDebugFeatures = false
 var VersionInfo = "v" + CurrentBuildString
 var VersionNumber = CurrentBuildString
 
-var WebServerPortOverride = 8080
+var WebServerPort = 8080
 var RTMPServerPortOverride = 1935
 
 var HighestQualityStreamIndex = 0

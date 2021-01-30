@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 
 	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
@@ -40,6 +41,7 @@ func main() {
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
 	newStreamKey := flag.String("streamkey", "", "Set your stream key/admin password")
+	webServerPortOverride := flag.String("webserverport", "", "Force the web server to listen on a specific port")
 
 	flag.Parse()
 
@@ -94,6 +96,19 @@ func main() {
 	// starts the core
 	if err := core.Start(); err != nil {
 		log.Fatalln("failed to start the core package", err)
+	}
+
+	// Set the web server port
+	if *webServerPortOverride != "" {
+		portNumber, err := strconv.Atoi(*webServerPortOverride)
+		if err != nil {
+			log.Warnln(err)
+			return
+		}
+
+		config.WebServerPort = portNumber
+	} else {
+		config.WebServerPort = data.GetHTTPPortNumber()
 	}
 
 	if err := router.Start(); err != nil {

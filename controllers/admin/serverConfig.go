@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
@@ -36,7 +37,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		},
 		FFmpegPath:     data.GetFfMpegPath(),
 		StreamKey:      data.GetStreamKey(),
-		WebServerPort:  data.GetHTTPPortNumber(),
+		WebServerPort:  config.WebServerPort,
 		RTMPServerPort: data.GetRTMPPortNumber(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
