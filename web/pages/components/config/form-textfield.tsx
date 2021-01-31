@@ -111,28 +111,41 @@ export default function TextField(props: TextFieldProps) {
 
   return (
     <div className={`textfield-container type-${type}`}>
-      {required ? <span className="required-label">*</span> : null}
-      <label htmlFor={fieldId} className="textfield-label">
-        {label}
-      </label>
-      <div className="textfield">
-        <Field
-          id={fieldId}
-          className={`field ${className} ${fieldId}`}
-          {...fieldProps}
-          allowClear
-          placeholder={placeholder}
-          maxLength={maxLength}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onPressEnter={handlePressEnter}
-          disabled={disabled}
-          value={value}
-        />
+      {label ? (
+        <div className="label-side">
+          <label htmlFor={fieldId} className="textfield-label">
+            {required ? <span className="required-label">* </span> : null}
+            {label}:
+          </label>
+        </div>
+      ) : null}
+
+      <div className="input-side">
+        <div className="input-group">
+          <Field
+            id={fieldId}
+            className={`field ${className} ${fieldId}`}
+            {...fieldProps}
+            allowClear
+            placeholder={placeholder}
+            maxLength={maxLength}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onPressEnter={handlePressEnter}
+            disabled={disabled}
+            value={value}
+          />
+          
+        </div>
+        <div className="status-container">
+          {status ? <span className="status-icon">{statusIcon}</span> : null}
+          {status ? <span className="status-message">{statusMessage}</span> : null}
+        </div>
+        <p className="tip">
+          <InfoTip tip={tip} />
+        </p>
       </div>
-      <InfoTip tip={tip} />
-      {status ? statusMessage : null}
-      {status ? statusIcon : null}
+      
     </div>
   );
 }

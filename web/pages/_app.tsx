@@ -6,6 +6,7 @@ import '../styles/ant-overrides.scss';
 import '../styles/home.scss';
 import '../styles/chat.scss';
 import '../styles/config.scss';
+import '../styles/config-formfields.scss';
 
 import { AppProps } from 'next/app';
 import ServerStatusProvider from '../utils/server-status-context';

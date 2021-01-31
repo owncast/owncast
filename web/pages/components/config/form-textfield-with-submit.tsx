@@ -30,7 +30,6 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
   const [fieldStatus, setFieldStatus] = useState<StatusState>(null);
 
   const [hasChanged, setHasChanged] = useState(false);
-  const [fieldValueForSubmit, setFieldValueForSubmit] = useState<string | number>('');
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
@@ -44,16 +43,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     ...textFieldProps // rest of props
   } = props;
 
-  const {
-    fieldName,
-    required,
-    status,
-    // type,
-    value,
-    onChange,
-    // onBlur,
-    onSubmit,
-  } = textFieldProps;
+  const { fieldName, required, status, value, onChange, onSubmit } = textFieldProps;
 
   // Clear out any validation states and messaging
   const resetStates = () => {
@@ -73,7 +63,6 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
       // show submit button
       resetStates();
       setHasChanged(true);
-      setFieldValueForSubmit(value);
     }
   }, [value]);
 
@@ -93,24 +82,18 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
 
   // how to get current value of input
   const handleSubmit = async () => {
-    if ((required && fieldValueForSubmit !== '') || fieldValueForSubmit !== initialValue) {
+    if ((required && value !== '') || value !== initialValue) {
       setFieldStatus(createInputStatus(STATUS_PROCESSING));
-
-      // setSubmitStatus('validating');
 
       await postConfigUpdateToAPI({
         apiPath,
-        data: { value: fieldValueForSubmit },
+        data: { value },
         onSuccess: () => {
-          setFieldInConfigState({ fieldName, value: fieldValueForSubmit, path: configPath });
+          setFieldInConfigState({ fieldName, value, path: configPath });
           setFieldStatus(createInputStatus(STATUS_SUCCESS));
-          // setSubmitStatus('success');
         },
         onError: (message: string) => {
           setFieldStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
-
-          // setSubmitStatus('error');
-          // setSubmitStatusMessage(`There was an error: ${message}`);
         },
       });
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
@@ -133,9 +116,11 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
       />
 
       {hasChanged ? (
-        <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
-          Update
-        </Button>
+        <div className="update-button-container">
+          <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
+            Update
+          </Button>
+        </div>
       ) : null}
     </div>
   );

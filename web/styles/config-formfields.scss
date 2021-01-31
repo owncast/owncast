@@ -1,0 +1,85 @@
+.textfield-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+
+
+  .label-side {
+    padding-right: 1em;
+    text-align: right;
+    width: 12rem;
+    margin: .2em 0;
+  }
+  .textfield-label {
+    font-weight: 400;
+    font-size: .85rem;
+    color: var(--owncast-purple);
+  }
+  .required-label {
+    color: var(--ant-error);
+  }
+
+
+  .input-side {
+    max-width: 500px;
+    width: 100%;
+  }
+
+
+  .input-group,
+  .status-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .status-container {
+    margin: 0 .25em;
+    min-height: 1.5em;
+    font-size: .75em;
+
+    .status-icon {
+      display: inline-block;
+      margin-right: .5em;
+    }
+  }
+  
+  .tip {
+    margin: .5em .5em;
+    font-size: .75rem;
+    color: rgba(255,255,255,.75);
+  }
+
+  @media (max-width: 800px) {
+    // flex-direction: column;
+    flex-wrap: wrap;
+    .label-side {
+      text-align: left;
+    }
+  }
+}
+
+.status-message {
+  // margin: 1rem 0;
+  // min-height: 1.4em;
+  // font-size: .75rem;
+  &.success {
+    color: var(--ant-success);
+  }
+  &.error {
+    color: var(--ant-error);
+  }
+}
+
+
+.textfield-with-submit-container {
+  display: flex;
+  flex-direction: row;
+  .update-button-container {
+    display: inline-block;
+    margin: .25em;
+  }
+}
