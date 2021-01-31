@@ -5,7 +5,13 @@ import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import TextField, { TextFieldProps } from './form-textfield';
-import { createInputStatus, StatusState, STATUS_ERROR, STATUS_PROCESSING, STATUS_SUCCESS } from '../../../utils/input-statuses';
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+} from '../../../utils/input-statuses';
 import { UpdateArgs } from '../../../types/config-section';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
@@ -114,11 +120,11 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
         onSubmit();
       }
     }
-  }
+  };
 
   return (
     <div className="textfield-with-submit-container">
-      <TextField 
+      <TextField
         {...textFieldProps}
         status={status || fieldStatus}
         onSubmit={null}
@@ -126,9 +132,13 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
         onChange={handleChange}
       />
 
-      { hasChanged ? <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>Update</Button> : null }
+      {hasChanged ? (
+        <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
+          Update
+        </Button>
+      ) : null}
     </div>
-  ); 
+  );
 }
 
 TextFieldWithSubmit.defaultProps = {

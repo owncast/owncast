@@ -15,7 +15,7 @@ export const SUCCESS_STATES = {
   },
   error: {
     icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
-    message: 'An error occurred.',  
+    message: 'An error occurred.',
   },
 };
 
@@ -39,14 +39,8 @@ export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 
-
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
-  const {
-    apiPath,
-    data,
-    onSuccess,
-    onError,
-  } = args;
+  const { apiPath, data, onSuccess, onError } = args;
   const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
     data,
     method: 'POST',
@@ -58,7 +52,6 @@ export async function postConfigUpdateToAPI(args: ApiPostArgs) {
     onError(result.message);
   }
 }
-
 
 // Some default props to help build out a TextField
 export const TEXTFIELD_PROPS_USERNAME = {
@@ -95,7 +88,8 @@ export const TEXTFIELD_PROPS_LOGO = {
   maxLength: 255,
   placeholder: '/img/mylogo.png',
   label: 'Logo',
-  tip: 'Path to your logo from website root. We recommend that you use a square image that is at least 256x256. (upload functionality coming soon)',
+  tip:
+    'Path to your logo from website root. We recommend that you use a square image that is at least 256x256. (upload functionality coming soon)',
 };
 export const TEXTFIELD_PROPS_STREAM_KEY = {
   apiPath: API_STREAM_KEY,
@@ -163,17 +157,19 @@ export const FIELD_PROPS_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'NSFW?',
-  tip: "Turn this ON if you plan to steam explicit or adult content. You may want to respectfully set this flag so that unexpecting eyes won't accidentally see it from the Directory.",
+  tip:
+    "Turn this ON if you plan to steam explicit or adult content. You may want to respectfully set this flag so that unexpecting eyes won't accidentally see it from the Directory.",
 };
 
 export const FIELD_PROPS_YP = {
   apiPath: API_YP_SWITCH,
   configPath: 'yp',
   label: 'Display in the Owncast Directory?',
-  tip: 'Turn this ON if you want to show up in the Owncast directory at https://directory.owncast.online.',
+  tip:
+    'Turn this ON if you want to show up in the Owncast directory at https://directory.owncast.online.',
 };
 
-export const DEFAULT_VARIANT_STATE:VideoVariant = {
+export const DEFAULT_VARIANT_STATE: VideoVariant = {
   framerate: 24,
   videoPassthrough: false,
   videoBitrate: 800,
@@ -182,7 +178,7 @@ export const DEFAULT_VARIANT_STATE:VideoVariant = {
   cpuUsageLevel: 3,
 };
 
-export const DEFAULT_SOCIAL_HANDLE:SocialHandle = {
+export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
   url: '',
   platform: '',
 };

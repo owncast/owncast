@@ -26,22 +26,14 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
-  
-  const {
-    apiPath,
-    checked,
-    configPath = '',
-    disabled = false,
-    fieldName,
-    label,
-    tip,
-  } = props;
+
+  const { apiPath, checked, configPath = '', disabled = false, fieldName, label, tip } = props;
 
   const resetStates = () => {
     setSubmitStatus('');
     clearTimeout(resetTimer);
     resetTimer = null;
-  }
+  };
 
   const handleChange = async (isChecked: boolean) => {
     setSubmitStatus('validating');
@@ -58,12 +50,10 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
       },
     });
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-  }
+  };
 
-  const {
-    icon: newStatusIcon = null,
-    message: newStatusMessage = '',
-  } = SUCCESS_STATES[submitStatus] || {};
+  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
+    SUCCESS_STATES[submitStatus] || {};
 
   return (
     <div className="toggleswitch-container">
@@ -74,18 +64,20 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
           onChange={handleChange}
           defaultChecked={checked}
           checked={checked}
-          checkedChildren="ON"  
+          checkedChildren="ON"
           unCheckedChildren="OFF"
           disabled={disabled}
         />
-        <span className="label">{label} <InfoTip tip={tip} /></span>
+        <span className="label">
+          {label} <InfoTip tip={tip} />
+        </span>
         {submitStatus}
       </div>
       <div className={`status-message ${submitStatus || ''}`}>
         {newStatusIcon} {newStatusMessage} {submitStatusMessage}
       </div>
     </div>
-  ); 
+  );
 }
 
 ToggleSwitch.defaultProps = {

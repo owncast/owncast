@@ -1,9 +1,8 @@
 import React from 'react';
-import { Select } from "antd";
-import { SocialHandleDropdownItem } from "../../../types/config-section";
+import { Select } from 'antd';
+import { SocialHandleDropdownItem } from '../../../types/config-section';
 import { NEXT_PUBLIC_API_HOST } from '../../../utils/apis';
 import { OTHER_SOCIAL_HANDLE_OPTION } from './constants';
-
 
 interface DropdownProps {
   iconList: SocialHandleDropdownItem[];
@@ -12,7 +11,6 @@ interface DropdownProps {
 }
 
 export default function SocialDropdown({ iconList, selectedOption, onSelected }: DropdownProps) {
-
   const handleSelected = value => {
     if (onSelected) {
       onSelected(value);
@@ -21,9 +19,16 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
   const inititalSelected = selectedOption === '' ? null : selectedOption;
   return (
     <div className="social-dropdown-container">
-      <p className="">If you are looking for a platform name not on this list, please select Other and type in your own name. A logo will not be provided.</p>
-      <p className="">If you DO have a logo, drop it in to the <code>/webroot/img/platformicons</code> directory and update the <code>/socialHandle.go</code> list. Then restart the server and it will show up in the list.</p>
-      
+      <p className="">
+        If you are looking for a platform name not on this list, please select Other and type in
+        your own name. A logo will not be provided.
+      </p>
+      <p className="">
+        If you DO have a logo, drop it in to the <code>/webroot/img/platformicons</code> directory
+        and update the <code>/socialHandle.go</code> list. Then restart the server and it will show
+        up in the list.
+      </p>
+
       <Select
         style={{ width: 240 }}
         className="social-dropdown"
@@ -33,7 +38,7 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
         onSelect={handleSelected}
       >
         {iconList.map(item => {
-          const { platform, icon, key } =  item;
+          const { platform, icon, key } = item;
           return (
             <Select.Option className="social-option" key={`platform-${key}`} value={key}>
               <span className="option-icon">
@@ -42,9 +47,12 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
               <span className="option-label">{platform}</span>
             </Select.Option>
           );
-        })
-      }
-        <Select.Option className="social-option" key={`platform-${OTHER_SOCIAL_HANDLE_OPTION}`} value={OTHER_SOCIAL_HANDLE_OPTION}>
+        })}
+        <Select.Option
+          className="social-option"
+          key={`platform-${OTHER_SOCIAL_HANDLE_OPTION}`}
+          value={OTHER_SOCIAL_HANDLE_OPTION}
+        >
           Other...
         </Select.Option>
       </Select>

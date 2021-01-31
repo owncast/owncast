@@ -15,15 +15,12 @@ export default function PublicFacingDetails() {
       <div className={configStyles.publicDetailsContainer}>
         <div className={configStyles.textFieldsSection}>
           <EditInstanceDetails />
-          
 
           <Link href="/admin/config-page-content">
             <a>Edit your extra page content here.</a>
           </Link>
         </div>
-      </div>      
+      </div>
     </>
-  ); 
+  );
 }
-
-

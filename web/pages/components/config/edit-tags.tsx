@@ -6,7 +6,14 @@ import { ServerStatusContext } from '../../../utils/server-status-context';
 import { FIELD_PROPS_TAGS, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 import TextField from './form-textfield';
 import { UpdateArgs } from '../../../types/config-section';
-import { createInputStatus, StatusState, STATUS_ERROR, STATUS_PROCESSING, STATUS_SUCCESS, STATUS_WARNING } from '../../../utils/input-statuses';
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+  STATUS_WARNING,
+} from '../../../utils/input-statuses';
 
 const { Title } = Typography;
 
@@ -21,19 +28,14 @@ export default function EditInstanceTags() {
   const { instanceDetails } = serverConfig;
   const { tags = [] } = instanceDetails;
 
-  const {
-    apiPath,
-    maxLength,
-    placeholder,
-    configPath,
-  } = FIELD_PROPS_TAGS;
+  const { apiPath, maxLength, placeholder, configPath } = FIELD_PROPS_TAGS;
 
   let resetTimer = null;
 
   useEffect(() => {
     return () => {
       clearTimeout(resetTimer);
-    }  
+    };
   }, []);
 
   const resetStates = () => {
@@ -42,7 +44,7 @@ export default function EditInstanceTags() {
     setFieldStatus(null);
     resetTimer = null;
     clearTimeout(resetTimer);
-  }
+  };
 
   // posts all the tags at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
@@ -89,7 +91,7 @@ export default function EditInstanceTags() {
 
       // setSubmitStatusMessage('Please enter a tag');
       return;
-    } 
+    }
     if (tags.some(tag => tag.toLowerCase() === newTag.toLowerCase())) {
       setFieldStatus(createInputStatus(STATUS_WARNING, 'This tag is already used!'));
 
@@ -106,7 +108,7 @@ export default function EditInstanceTags() {
     const updatedTags = [...tags];
     updatedTags.splice(index, 1);
     postUpdateToAPI(updatedTags);
-  }
+  };
 
   // const {
   //   icon: newStatusIcon = null,
@@ -115,7 +117,6 @@ export default function EditInstanceTags() {
 
   return (
     <div className="tag-editor-container">
-
       <Title level={3}>Add Tags</Title>
       <p>This is a great way to categorize your Owncast server on the Directory!</p>
 
@@ -125,7 +126,9 @@ export default function EditInstanceTags() {
             handleDeleteTag(index);
           };
           return (
-            <Tag closable onClose={handleClose} key={`tag-${tag}-${index}`}>{tag}</Tag>
+            <Tag closable onClose={handleClose} key={`tag-${tag}-${index}`}>
+              {tag}
+            </Tag>
           );
         })}
       </div>
