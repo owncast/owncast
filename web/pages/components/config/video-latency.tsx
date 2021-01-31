@@ -1,7 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Typography, Slider, } from 'antd';
+import { Typography, Slider } from 'antd';
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import { API_VIDEO_SEGMENTS, SUCCESS_STATES, RESET_TIMEOUT,postConfigUpdateToAPI } from './constants';
+import {
+  API_VIDEO_SEGMENTS,
+  SUCCESS_STATES,
+  RESET_TIMEOUT,
+  postConfigUpdateToAPI,
+} from './constants';
 
 const { Title } = Typography;
 
@@ -28,9 +33,7 @@ interface SegmentToolTipProps {
 }
 
 function SegmentToolTip({ value }: SegmentToolTipProps) {
-  return (
-    <span className="segment-tip">{value}</span>
-  );
+  return <span className="segment-tip">{value}</span>;
 }
 
 export default function VideoLatency() {
@@ -57,8 +60,8 @@ export default function VideoLatency() {
     setSubmitStatusMessage('');
     resetTimer = null;
     clearTimeout(resetTimer);
-  }
-  
+  };
+
   // posts all the variants at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
     await postConfigUpdateToAPI({
@@ -66,9 +69,9 @@ export default function VideoLatency() {
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({
-          fieldName: 'latencyLevel', 
-          value: postValue, 
-          path: 'videoSettings'
+          fieldName: 'latencyLevel',
+          value: postValue,
+          path: 'videoSettings',
         });
 
         setSubmitStatus('success');
@@ -83,17 +86,15 @@ export default function VideoLatency() {
     });
   };
 
-  const {
-    icon: newStatusIcon = null,
-    message: newStatusMessage = '',
-  } = SUCCESS_STATES[submitStatus] || {};
-  
+  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
+    SUCCESS_STATES[submitStatus] || {};
+
   const statusMessage = (
     <div className={`status-message ${submitStatus || ''}`}>
       {newStatusIcon} {newStatusMessage} {submitStatusMessage}
     </div>
   );
-  
+
   const handleChange = value => {
     postUpdateToAPI(value);
   };
@@ -102,11 +103,13 @@ export default function VideoLatency() {
     <div className="module-container config-video-segements-conatiner">
       <Title level={3}>Latency Buffer</Title>
       <p>
-        There are trade-offs when cosidering video latency and reliability. Blah blah .. better wording here needed.
+        There are trade-offs when cosidering video latency and reliability. Blah blah .. better
+        wording here needed.
       </p>
-      <br /><br />
+      <br />
+      <br />
       <div className="segment-slider">
-        <Slider 
+        <Slider
           tooltipVisible
           tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
           onChange={handleChange}

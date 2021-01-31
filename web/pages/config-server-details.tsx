@@ -11,10 +11,7 @@ export default function ConfigServerDetails() {
 
       <div className="config-server-details-container">
         <EditServerDetails />
-        
-      </div>      
+      </div>
     </div>
-  ); 
+  );
 }
-
-

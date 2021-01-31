@@ -6,7 +6,12 @@ import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield
 import TextFieldWithSubmit from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import { TEXTFIELD_PROPS_FFMPEG, TEXTFIELD_PROPS_RTMP_PORT, TEXTFIELD_PROPS_STREAM_KEY, TEXTFIELD_PROPS_WEB_PORT,  } from './constants';
+import {
+  TEXTFIELD_PROPS_FFMPEG,
+  TEXTFIELD_PROPS_RTMP_PORT,
+  TEXTFIELD_PROPS_STREAM_KEY,
+  TEXTFIELD_PROPS_WEB_PORT,
+} from './constants';
 
 import configStyles from '../../../styles/config-pages.module.scss';
 import { UpdateArgs } from '../../../types/config-section';
@@ -18,13 +23,16 @@ export default function EditInstanceDetails() {
 
   const { streamKey, ffmpegPath, rtmpServerPort, webServerPort } = serverConfig;
 
-  const [copyIsVisible, setCopyVisible]  = useState(false);
+  const [copyIsVisible, setCopyVisible] = useState(false);
 
   const COPY_TOOLTIP_TIMEOUT = 3000;
 
   useEffect(() => {
     setFormDataValues({
-      streamKey, ffmpegPath, rtmpServerPort, webServerPort
+      streamKey,
+      ffmpegPath,
+      rtmpServerPort,
+      webServerPort,
     });
   }, [serverConfig]);
 
@@ -37,26 +45,25 @@ export default function EditInstanceDetails() {
       ...formDataValues,
       [fieldName]: value,
     });
-  }
+  };
 
-  function generateStreamKey () {
+  function generateStreamKey() {
     let key = '';
-    for (let i = 0; i < 3; i+=1) {
+    for (let i = 0; i < 3; i += 1) {
       key += Math.random().toString(36).substring(2);
     }
 
     handleFieldChange({ fieldName: 'streamKey', value: key });
   }
 
-  function copyStreamKey () {
-    navigator.clipboard.writeText(formDataValues.streamKey)
-      .then(() => {
-        setCopyVisible(true);
-        setTimeout(() => setCopyVisible(false), COPY_TOOLTIP_TIMEOUT);
-      });
+  function copyStreamKey() {
+    navigator.clipboard.writeText(formDataValues.streamKey).then(() => {
+      setCopyVisible(true);
+      setTimeout(() => setCopyVisible(false), COPY_TOOLTIP_TIMEOUT);
+    });
   }
 
-  return (  
+  return (
     <div className={configStyles.publicDetailsContainer}>
       <div className={configStyles.textFieldsSection}>
         <TextFieldWithSubmit
@@ -68,25 +75,14 @@ export default function EditInstanceDetails() {
           onChange={handleFieldChange}
         />
         <div>
-          <span style={{fontSize: '0.75em', color: '#ff7777', marginRight: '0.5em'}}>
-            Save this key somewhere safe,
-            you will need it to stream or login to the admin dashboard!
+          <span style={{ fontSize: '0.75em', color: '#ff7777', marginRight: '0.5em' }}>
+            Save this key somewhere safe, you will need it to stream or login to the admin
+            dashboard!
           </span>
-          <Tooltip className="copy-tooltip"
-                   title="Copied!"
-                   trigger=""
-                   visible={copyIsVisible}>
-            <Button type="primary"
-                    icon={<CopyOutlined />}
-                    size="small"
-                    onClick={copyStreamKey}
-            />
+          <Tooltip className="copy-tooltip" title="Copied!" trigger="" visible={copyIsVisible}>
+            <Button type="primary" icon={<CopyOutlined />} size="small" onClick={copyStreamKey} />
           </Tooltip>
-          <Button type="primary"
-                  icon={<RedoOutlined />}
-                  size="small"
-                  onClick={generateStreamKey}
-          />
+          <Button type="primary" icon={<RedoOutlined />} size="small" onClick={generateStreamKey} />
         </div>
         <TextFieldWithSubmit
           fieldName="ffmpegPath"
@@ -112,8 +108,6 @@ export default function EditInstanceDetails() {
           onChange={handleFieldChange}
         />
       </div>
-    </div>      
-  ); 
+    </div>
+  );
 }
-
-

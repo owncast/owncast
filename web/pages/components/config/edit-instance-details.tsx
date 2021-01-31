@@ -1,8 +1,20 @@
 import React, { useState, useContext, useEffect } from 'react';
-import TextFieldWithSubmit, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './form-textfield-with-submit';
+import TextFieldWithSubmit, {
+  TEXTFIELD_TYPE_TEXTAREA,
+  TEXTFIELD_TYPE_URL,
+} from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import { postConfigUpdateToAPI, TEXTFIELD_PROPS_USERNAME, TEXTFIELD_PROPS_INSTANCE_URL, TEXTFIELD_PROPS_SERVER_TITLE, TEXTFIELD_PROPS_STREAM_TITLE, TEXTFIELD_PROPS_SERVER_SUMMARY, TEXTFIELD_PROPS_LOGO, API_YP_SWITCH } from './constants';
+import {
+  postConfigUpdateToAPI,
+  TEXTFIELD_PROPS_USERNAME,
+  TEXTFIELD_PROPS_INSTANCE_URL,
+  TEXTFIELD_PROPS_SERVER_TITLE,
+  TEXTFIELD_PROPS_STREAM_TITLE,
+  TEXTFIELD_PROPS_SERVER_SUMMARY,
+  TEXTFIELD_PROPS_LOGO,
+  API_YP_SWITCH,
+} from './constants';
 
 import configStyles from '../../../styles/config-pages.module.scss';
 import { UpdateArgs } from '../../../types/config-section';
@@ -35,16 +47,16 @@ export default function EditInstanceDetails() {
         });
       }
     }
-  }
+  };
 
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
     setFormDataValues({
       ...formDataValues,
       [fieldName]: value,
     });
-  }
+  };
 
-  return (  
+  return (
     <div className={configStyles.publicDetailsContainer}>
       <div className={configStyles.textFieldsSection}>
         <TextFieldWithSubmit
@@ -56,7 +68,7 @@ export default function EditInstanceDetails() {
           onChange={handleFieldChange}
           onSubmit={handleSubmitInstanceUrl}
         />
-        
+
         <TextFieldWithSubmit
           fieldName="title"
           {...TEXTFIELD_PROPS_SERVER_TITLE}
@@ -94,8 +106,6 @@ export default function EditInstanceDetails() {
           onChange={handleFieldChange}
         />
       </div>
-    </div>      
-  ); 
+    </div>
+  );
 }
-
-

@@ -19,7 +19,6 @@ export default function EditYPDetails() {
   const { nsfw } = instanceDetails;
   const { enabled, instanceUrl } = yp;
 
-  
   useEffect(() => {
     setFormDataValues({
       ...yp,
@@ -35,10 +34,21 @@ export default function EditYPDetails() {
   return (
     <div className="config-directory-details-form">
       <Title level={3}>Owncast Directory Settings</Title>
-      
-      <p>Would you like to appear in the <a href="https://directory.owncast.online" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>?</p>
 
-      <p style={{ backgroundColor: 'black', fontSize: '.75rem', padding: '5px' }}><em>NOTE: You will need to have a URL specified in the <code>Instance URL</code> field to be able to use this.</em></p>
+      <p>
+        Would you like to appear in the{' '}
+        <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
+          <strong>Owncast Directory</strong>
+        </a>
+        ?
+      </p>
+
+      <p style={{ backgroundColor: 'black', fontSize: '.75rem', padding: '5px' }}>
+        <em>
+          NOTE: You will need to have a URL specified in the <code>Instance URL</code> field to be
+          able to use this.
+        </em>
+      </p>
 
       <div className="config-yp-container">
         <ToggleSwitch
@@ -53,9 +63,7 @@ export default function EditYPDetails() {
           checked={formDataValues.nsfw}
           disabled={!hasInstanceUrl}
         />
-      </div>      
+      </div>
     </div>
-  ); 
+  );
 }
-
-

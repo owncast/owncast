@@ -12,7 +12,7 @@ export const TEXTFIELD_TYPE_URL = 'url';
 
 export interface TextFieldProps {
   fieldName: string;
-  
+
   onSubmit?: () => void;
   onPressEnter?: () => void;
 
@@ -29,7 +29,6 @@ export interface TextFieldProps {
   onBlur?: FieldUpdaterFunc;
   onChange?: FieldUpdaterFunc;
 }
-
 
 export default function TextField(props: TextFieldProps) {
   const {
@@ -70,11 +69,14 @@ export default function TextField(props: TextFieldProps) {
     if (onPressEnter) {
       onPressEnter();
     }
-  }
-  
+  };
 
   // display the appropriate Ant text field
-  let Field = Input as typeof Input | typeof InputNumber | typeof Input.TextArea | typeof Input.Password;
+  let Field = Input as
+    | typeof Input
+    | typeof InputNumber
+    | typeof Input.TextArea
+    | typeof Input.Password;
   let fieldProps = {};
   if (type === TEXTFIELD_TYPE_TEXTAREA) {
     Field = Input.TextArea;
@@ -91,12 +93,11 @@ export default function TextField(props: TextFieldProps) {
     fieldProps = {
       type: 'number',
       min: 1,
-      max: (10**maxLength) - 1,
+      max: 10 ** maxLength - 1,
       onKeyDown: (e: React.KeyboardEvent) => {
-        if (e.target.value.length > maxLength - 1 )
-        e.preventDefault();
+        if (e.target.value.length > maxLength - 1) e.preventDefault();
         return false;
-      }
+      },
     };
   } else if (type === TEXTFIELD_TYPE_URL) {
     fieldProps = {
@@ -110,8 +111,10 @@ export default function TextField(props: TextFieldProps) {
 
   return (
     <div className={`textfield-container type-${type}`}>
-      { required ? <span className="required-label">*</span> : null }
-      <label htmlFor={fieldId} className="textfield-label">{label}</label>
+      {required ? <span className="required-label">*</span> : null}
+      <label htmlFor={fieldId} className="textfield-label">
+        {label}
+      </label>
       <div className="textfield">
         <Field
           id={fieldId}
@@ -128,10 +131,10 @@ export default function TextField(props: TextFieldProps) {
         />
       </div>
       <InfoTip tip={tip} />
-      { status ? statusMessage : null }
-      { status ? statusIcon : null }
+      {status ? statusMessage : null}
+      {status ? statusIcon : null}
     </div>
-  ); 
+  );
 }
 
 TextField.defaultProps = {

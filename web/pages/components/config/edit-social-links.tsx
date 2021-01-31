@@ -5,7 +5,14 @@ import { DeleteOutlined } from '@ant-design/icons';
 import SocialDropdown from './social-icons-dropdown';
 import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../../../utils/apis';
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import { API_SOCIAL_HANDLES, postConfigUpdateToAPI, RESET_TIMEOUT, SUCCESS_STATES, DEFAULT_SOCIAL_HANDLE, OTHER_SOCIAL_HANDLE_OPTION } from './constants';
+import {
+  API_SOCIAL_HANDLES,
+  postConfigUpdateToAPI,
+  RESET_TIMEOUT,
+  SUCCESS_STATES,
+  DEFAULT_SOCIAL_HANDLE,
+  OTHER_SOCIAL_HANDLE_OPTION,
+} from './constants';
 import { SocialHandle } from '../../../types/config-section';
 import { isValidUrl } from '../../../utils/urls';
 
@@ -21,7 +28,7 @@ export default function EditSocialLinks() {
   const [displayOther, setDisplayOther] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(-1);
-  
+
   // current data inside modal
   const [modalDataState, setModalDataState] = useState(DEFAULT_SOCIAL_HANDLE);
 
@@ -44,15 +51,15 @@ export default function EditSocialLinks() {
         ...result[item],
       }));
       setAvailableIconsList(list);
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
       //  do nothing
     }
   };
 
-  const selectedOther = modalDataState.platform !== '' && !availableIconsList.find(item => item.key === modalDataState.platform);
-
+  const selectedOther =
+    modalDataState.platform !== '' &&
+    !availableIconsList.find(item => item.key === modalDataState.platform);
 
   useEffect(() => {
     getAvailableIcons();
@@ -63,7 +70,6 @@ export default function EditSocialLinks() {
       setCurrentSocialHandles(initialSocialHandles);
     }
   }, [instanceDetails]);
-
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -76,7 +82,7 @@ export default function EditSocialLinks() {
     setEditId(-1);
     setDisplayOther(false);
     setModalProcessing(false);
-    setModalDataState({...DEFAULT_SOCIAL_HANDLE});
+    setModalDataState({ ...DEFAULT_SOCIAL_HANDLE });
   };
 
   const handleModalCancel = () => {
@@ -106,7 +112,6 @@ export default function EditSocialLinks() {
     const { value } = event.target;
     updateModalState('url', value);
   };
-  
 
   // posts all the variants at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
@@ -114,7 +119,11 @@ export default function EditSocialLinks() {
       apiPath: API_SOCIAL_HANDLES,
       data: { value: postValue },
       onSuccess: () => {
-        setFieldInConfigState({ fieldName: 'socialHandles', value: postValue, path: 'instanceDetails' });
+        setFieldInConfigState({
+          fieldName: 'socialHandles',
+          value: postValue,
+          path: 'instanceDetails',
+        });
 
         // close modal
         setModalProcessing(false);
@@ -132,15 +141,12 @@ export default function EditSocialLinks() {
     });
   };
 
-
   // on Ok, send all of dataState to api
   // show loading
   // close modal when api is done
   const handleModalOk = () => {
-    setModalProcessing(true);    
-    const postData = currentSocialHandles.length ? [
-      ...currentSocialHandles,
-    ]: [];
+    setModalProcessing(true);
+    const postData = currentSocialHandles.length ? [...currentSocialHandles] : [];
     if (editId === -1) {
       postData.push(modalDataState);
     } else {
@@ -150,23 +156,21 @@ export default function EditSocialLinks() {
   };
 
   const handleDeleteItem = index => {
-    const postData = [
-      ...currentSocialHandles,
-    ];
+    const postData = [...currentSocialHandles];
     postData.splice(index, 1);
     postUpdateToAPI(postData);
   };
 
-  const socialHandlesColumns: ColumnsType<SocialHandle>  = [
+  const socialHandlesColumns: ColumnsType<SocialHandle> = [
     {
-      title: "#",
-      dataIndex: "key",
-      key: "key"
+      title: '#',
+      dataIndex: 'key',
+      key: 'key',
     },
     {
-      title: "Platform",
-      dataIndex: "platform",
-      key: "platform",
+      title: 'Platform',
+      dataIndex: 'platform',
+      key: 'platform',
       render: (platform: string) => {
         const platformInfo = availableIconsList.find(item => item.key === platform);
         if (!platformInfo) {
@@ -185,9 +189,9 @@ export default function EditSocialLinks() {
     },
 
     {
-      title: "Url Link",
-      dataIndex: "url",
-      key: "url",
+      title: 'Url Link',
+      dataIndex: 'url',
+      key: 'url',
     },
     {
       title: '',
@@ -196,28 +200,31 @@ export default function EditSocialLinks() {
       render: (data, record, index) => {
         return (
           <span className="actions">
-            <Button type="primary" size="small" onClick={() => {
-              setEditId(index);
-              setModalDataState({...currentSocialHandles[index]});
-              setDisplayModal(true);
-            }}>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                setEditId(index);
+                setModalDataState({ ...currentSocialHandles[index] });
+                setDisplayModal(true);
+              }}
+            >
               Edit
             </Button>
             <Button
               className="delete-button"
               icon={<DeleteOutlined />}
               size="small"
-              onClick={() =>  handleDeleteItem(index)}
-            />              
+              onClick={() => handleDeleteItem(index)}
+            />
           </span>
-        )},
+        );
       },
-    ];
-  
-  const {
-    icon: newStatusIcon = null,
-    message: newStatusMessage = '',
-  } = SUCCESS_STATES[submitStatus] || {};
+    },
+  ];
+
+  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
+    SUCCESS_STATES[submitStatus] || {};
   const statusMessage = (
     <div className={`status-message ${submitStatus || ''}`}>
       {newStatusIcon} {newStatusMessage} {submitStatusMessage}
@@ -225,9 +232,8 @@ export default function EditSocialLinks() {
   );
 
   const okButtonProps = {
-    disabled: !isValidUrl(modalDataState.url)
-};
-
+    disabled: !isValidUrl(modalDataState.url),
+  };
 
   return (
     <div className={configStyles.socialLinksEditor}>
@@ -258,21 +264,17 @@ export default function EditSocialLinks() {
           selectedOption={selectedOther ? OTHER_SOCIAL_HANDLE_OPTION : modalDataState.platform}
           onSelected={handleDropdownSelect}
         />
-        {
-          displayOther
-            ? (
-            <>
-              <Input
-                placeholder="Other"
-                defaultValue={modalDataState.platform}
-                onChange={handleOtherNameChange}
-              />
-              <br/>
-            </>
-            ) : null
-        }
-        <br/>
-
+        {displayOther ? (
+          <>
+            <Input
+              placeholder="Other"
+              defaultValue={modalDataState.platform}
+              onChange={handleOtherNameChange}
+            />
+            <br />
+          </>
+        ) : null}
+        <br />
         URL
         <Input
           placeholder="Url to page"
@@ -280,17 +282,18 @@ export default function EditSocialLinks() {
           value={modalDataState.url}
           onChange={handleUrlChange}
         />
-
         {statusMessage}
       </Modal>
       <br />
-      <Button type="primary" onClick={() => {
+      <Button
+        type="primary"
+        onClick={() => {
           resetModal();
           setDisplayModal(true);
-        }}>
+        }}
+      >
         Add a new social link
       </Button>
     </div>
-  ); 
+  );
 }
-

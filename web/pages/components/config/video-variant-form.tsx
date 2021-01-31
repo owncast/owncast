@@ -32,13 +32,13 @@ const VIDEO_VARIANT_DEFAULTS = {
     defaultValue: 800,
     unit: 'kbps',
     incrementBy: 100,
-    tip: 'nothing to see here'
+    tip: 'nothing to see here',
   },
   videoPassthrough: {
-    tip: 'If No is selected, then you should set your desired Video Bitrate.'
+    tip: 'If No is selected, then you should set your desired Video Bitrate.',
   },
   audioPassthrough: {
-    tip: 'If No is selected, then you should set your desired Audio Bitrate.'
+    tip: 'If No is selected, then you should set your desired Audio Bitrate.',
   },
 };
 
@@ -47,8 +47,10 @@ interface VideoVariantFormProps {
   onUpdateField: FieldUpdaterFunc;
 }
 
-export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, onUpdateField }: VideoVariantFormProps) {
-
+export default function VideoVariantForm({
+  dataState = DEFAULT_VARIANT_STATE,
+  onUpdateField,
+}: VideoVariantFormProps) {
   const handleFramerateChange = (value: number) => {
     onUpdateField({ fieldName: 'framerate', value });
   };
@@ -65,8 +67,8 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
     onUpdateField({ fieldName: 'videoPassthrough', value });
   };
   const handleVideoCpuUsageLevelChange = (value: number) => {
-    onUpdateField({ fieldName: 'cpuUsageLevel', value })
-  }
+    onUpdateField({ fieldName: 'cpuUsageLevel', value });
+  };
 
   const framerateDefaults = VIDEO_VARIANT_DEFAULTS.framerate;
   const framerateMin = framerateDefaults.min;
@@ -91,24 +93,27 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
   return (
     <div className="variant-form">
       <div className="section-intro">
-        Say a thing here about how this all works.
-
-        Read more <a href="https://owncast.online/docs/configuration/">here</a>.
-        <br /><br />
+        Say a thing here about how this all works. Read more{' '}
+        <a href="https://owncast.online/docs/configuration/">here</a>.
+        <br />
+        <br />
       </div>
 
       {/* ENCODER PRESET FIELD */}
       <div className="field">
         <div className="form-component">
-          <CPUUsageSelector defaultValue={dataState.cpuUsageLevel} onChange={handleVideoCpuUsageLevelChange} />
-          {selectedPresetNote ? <span className="selected-value-note">{selectedPresetNote}</span> : null }
+          <CPUUsageSelector
+            defaultValue={dataState.cpuUsageLevel}
+            onChange={handleVideoCpuUsageLevelChange}
+          />
+          {selectedPresetNote ? (
+            <span className="selected-value-note">{selectedPresetNote}</span>
+          ) : null}
         </div>
       </div>
 
-
-
       {/* VIDEO PASSTHROUGH FIELD */}
-      <div style={{ display: 'none'}}>
+      <div style={{ display: 'none' }}>
         <div className="field">
           <p className="label">
             <InfoTip tip={VIDEO_VARIANT_DEFAULTS.videoPassthrough.tip} />
@@ -147,19 +152,20 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
               [videoBRMax]: `${videoBRMax} ${videoBRUnit}`,
             }}
           />
-          {selectedVideoBRnote ? <span className="selected-value-note">{selectedVideoBRnote}</span> : null }
-
+          {selectedVideoBRnote ? (
+            <span className="selected-value-note">{selectedVideoBRnote}</span>
+          ) : null}
         </div>
       </div>
 
+      <br />
+      <br />
+      <br />
+      <br />
 
-      <br /><br /><br /><br />
-      
       <Collapse>
         <Panel header="Advanced Settings" key="1">
-          <div className="section-intro">
-            Touch if you dare.
-          </div>
+          <div className="section-intro">Touch if you dare.</div>
 
           {/* FRAME RATE FIELD */}
           <div className="field">
@@ -182,8 +188,9 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
                   [framerateMax]: `${framerateMax} ${framerateUnit}`,
                 }}
               />
-              {selectedFramerateNote ? <span className="selected-value-note">{selectedFramerateNote}</span> : null }
-
+              {selectedFramerateNote ? (
+                <span className="selected-value-note">{selectedFramerateNote}</span>
+              ) : null}
             </div>
           </div>
 
@@ -203,7 +210,7 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
                 checkedChildren="Yes"
                 unCheckedChildren="No"
               />
-              {dataState.audioPassthrough ? <span className="note">Same as source</span>: null}
+              {dataState.audioPassthrough ? <span className="note">Same as source</span> : null}
             </div>
           </div>
 
@@ -230,13 +237,13 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
                 }}
               />
 
-              {selectedAudioBRnote ? <span className="selected-value-note">{selectedAudioBRnote}</span> : null }
+              {selectedAudioBRnote ? (
+                <span className="selected-value-note">{selectedAudioBRnote}</span>
+              ) : null}
             </div>
           </div>
         </Panel>
       </Collapse>
-
     </div>
   );
-
 }

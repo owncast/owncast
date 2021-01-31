@@ -8,7 +8,13 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { UpdateArgs, VideoVariant } from '../../../types/config-section';
 import VideoVariantForm from './video-variant-form';
-import { API_VIDEO_VARIANTS, DEFAULT_VARIANT_STATE, SUCCESS_STATES, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
+import {
+  API_VIDEO_VARIANTS,
+  DEFAULT_VARIANT_STATE,
+  SUCCESS_STATES,
+  RESET_TIMEOUT,
+  postConfigUpdateToAPI,
+} from './constants';
 
 const { Title } = Typography;
 
@@ -19,7 +25,7 @@ export default function CurrentVariantsTable() {
 
   // current data inside modal
   const [modalDataState, setModalDataState] = useState(DEFAULT_VARIANT_STATE);
-  
+
   const [submitStatus, setSubmitStatus] = useState(null);
   const [submitStatusMessage, setSubmitStatusMessage] = useState('');
 
@@ -39,13 +45,13 @@ export default function CurrentVariantsTable() {
     setSubmitStatusMessage('');
     resetTimer = null;
     clearTimeout(resetTimer);
-  }
+  };
 
   const handleModalCancel = () => {
     setDisplayModal(false);
     setEditId(-1);
     setModalDataState(DEFAULT_VARIANT_STATE);
-  }
+  };
 
   // posts all the variants at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
@@ -53,7 +59,11 @@ export default function CurrentVariantsTable() {
       apiPath: API_VIDEO_VARIANTS,
       data: { value: postValue },
       onSuccess: () => {
-        setFieldInConfigState({ fieldName: 'videoQualityVariants', value: postValue, path: 'videoSettings' });
+        setFieldInConfigState({
+          fieldName: 'videoQualityVariants',
+          value: postValue,
+          path: 'videoSettings',
+        });
 
         // close modal
         setModalProcessing(false);
@@ -76,10 +86,8 @@ export default function CurrentVariantsTable() {
   // close modal when api is done
   const handleModalOk = () => {
     setModalProcessing(true);
-    
-    const postData = [
-      ...videoQualityVariants,
-    ];
+
+    const postData = [...videoQualityVariants];
     if (editId === -1) {
       postData.push(modalDataState);
     } else {
@@ -89,11 +97,9 @@ export default function CurrentVariantsTable() {
   };
 
   const handleDeleteVariant = index => {
-    const postData = [
-      ...videoQualityVariants,
-    ];
+    const postData = [...videoQualityVariants];
     postData.splice(index, 1);
-    postUpdateToAPI(postData)
+    postUpdateToAPI(postData);
   };
 
   const handleUpdateField = ({ fieldName, value }: UpdateArgs) => {
@@ -101,41 +107,37 @@ export default function CurrentVariantsTable() {
       ...modalDataState,
       [fieldName]: value,
     });
-  }
+  };
 
-  const {
-    icon: newStatusIcon = null,
-    message: newStatusMessage = '',
-  } = SUCCESS_STATES[submitStatus] || {};
-  
+  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
+    SUCCESS_STATES[submitStatus] || {};
+
   const cpuUsageLevelLabelMap = {
     1: 'lowest',
     2: 'low',
     3: 'medium',
     4: 'high',
-    5: 'highest'
+    5: 'highest',
   };
 
-  const videoQualityColumns: ColumnsType<VideoVariant>  = [
+  const videoQualityColumns: ColumnsType<VideoVariant> = [
     {
-      title: "#",
-      dataIndex: "key",
-      key: "key"
+      title: '#',
+      dataIndex: 'key',
+      key: 'key',
     },
     {
-      title: "Video bitrate",
-      dataIndex: "videoBitrate",
-      key: "videoBitrate",
-      render: (bitrate: number) =>
-        !bitrate ? "Same as source" : `${bitrate} kbps`,
+      title: 'Video bitrate',
+      dataIndex: 'videoBitrate',
+      key: 'videoBitrate',
+      render: (bitrate: number) => (!bitrate ? 'Same as source' : `${bitrate} kbps`),
     },
 
     {
-      title: "CPU Usage",
-      dataIndex: "cpuUsageLevel",
-      key: "cpuUsageLevel",
-      render: (level: string) =>
-        !level ? "n/a" : cpuUsageLevelLabelMap[level],
+      title: 'CPU Usage',
+      dataIndex: 'cpuUsageLevel',
+      key: 'cpuUsageLevel',
+      render: (level: string) => (!level ? 'n/a' : cpuUsageLevelLabelMap[level]),
     },
     {
       title: '',
@@ -145,11 +147,15 @@ export default function CurrentVariantsTable() {
         const index = data.key - 1;
         return (
           <span className="actions">
-            <Button type="primary" size="small" onClick={() => {
-              setEditId(index);
-              setModalDataState(videoQualityVariants[index]);
-              setDisplayModal(true);
-            }}>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                setEditId(index);
+                setModalDataState(videoQualityVariants[index]);
+                setDisplayModal(true);
+              }}
+            >
               Edit
             </Button>
             <Button
@@ -160,11 +166,12 @@ export default function CurrentVariantsTable() {
               onClick={() => {
                 handleDeleteVariant(index);
               }}
-            />              
+            />
           </span>
-        )},
+        );
       },
-    ];
+    },
+  ];
 
   const statusMessage = (
     <div className={`status-message ${submitStatus || ''}`}>
@@ -172,12 +179,15 @@ export default function CurrentVariantsTable() {
     </div>
   );
 
-  const videoQualityVariantData = videoQualityVariants.map((variant, index) => ({ key: index + 1, ...variant }));
+  const videoQualityVariantData = videoQualityVariants.map((variant, index) => ({
+    key: index + 1,
+    ...variant,
+  }));
 
   return (
     <>
       <Title level={3}>Current Variants</Title>
-      
+
       {statusMessage}
 
       <Table
@@ -195,22 +205,21 @@ export default function CurrentVariantsTable() {
         onCancel={handleModalCancel}
         confirmLoading={modalProcessing}
       >
-        <VideoVariantForm
-          dataState={{...modalDataState}}
-          onUpdateField={handleUpdateField}
-        />
-        
+        <VideoVariantForm dataState={{ ...modalDataState }} onUpdateField={handleUpdateField} />
+
         {statusMessage}
       </Modal>
       <br />
-      <Button type="primary" onClick={() => {
+      <Button
+        type="primary"
+        onClick={() => {
           setEditId(-1);
           setModalDataState(DEFAULT_VARIANT_STATE);
           setDisplayModal(true);
-        }}>
+        }}
+      >
         Add a new variant
       </Button>
-
     </>
   );
 }

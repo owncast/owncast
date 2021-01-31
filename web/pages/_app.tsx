@@ -11,7 +11,6 @@ import { AppProps } from 'next/app';
 import ServerStatusProvider from '../utils/server-status-context';
 import MainLayout from './components/main-layout';
 
-
 function App({ Component, pageProps }: AppProps) {
   return (
     <ServerStatusProvider>
@@ -19,8 +18,7 @@ function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </MainLayout>
     </ServerStatusProvider>
-    
-  )
+  );
 }
 
 export default App;
