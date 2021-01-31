@@ -1,4 +1,9 @@
-import { CheckCircleFilled, ExclamationCircleFilled, LoadingOutlined, WarningOutlined } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  ExclamationCircleFilled,
+  LoadingOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 
 export const STATUS_RESET_TIMEOUT = 3000;
 
@@ -8,14 +13,15 @@ export const STATUS_PROCESSING = 'proessing';
 export const STATUS_SUCCESS = 'success';
 export const STATUS_WARNING = 'warning';
 
-export type InputStatusTypes = 
-  typeof STATUS_ERROR | 
-  typeof STATUS_INVALID | 
-  typeof STATUS_PROCESSING | 
-  typeof STATUS_SUCCESS | 
-  typeof STATUS_WARNING;
+export type InputStatusTypes =
+  | typeof STATUS_ERROR
+  | typeof STATUS_INVALID
+  | typeof STATUS_PROCESSING
+  | typeof STATUS_SUCCESS
+  | typeof STATUS_WARNING;
 
 export type StatusState = {
+  type: InputStatusTypes;
   icon: any; // Element type of sorts?
   message: string;
 };
@@ -27,11 +33,11 @@ export const INPUT_STATES = {
   },
   [STATUS_ERROR]: {
     icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
-    message: 'An error occurred.',  
+    message: 'An error occurred.',
   },
   [STATUS_INVALID]: {
     icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
-    message: 'An error occurred.',  
+    message: 'An error occurred.',
   },
   [STATUS_PROCESSING]: {
     icon: <LoadingOutlined />,
@@ -39,7 +45,7 @@ export const INPUT_STATES = {
   },
   [STATUS_WARNING]: {
     icon: <WarningOutlined style={{ color: '#fc0' }} />,
-    message: '',  
+    message: '',
   },
 };
 
@@ -48,10 +54,11 @@ export function createInputStatus(type: InputStatusTypes, message?: string): Sta
   if (!type || !INPUT_STATES[type]) {
     return null;
   }
-  if (message === null) {
+  if (!message) {
     return INPUT_STATES[type];
   }
   return {
+    type,
     icon: INPUT_STATES[type].icon,
     message,
   };

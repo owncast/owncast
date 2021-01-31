@@ -27,72 +27,62 @@
 }
 
 
-.status-message {
-  margin: 1rem 0;
-  min-height: 1.4em;
-  font-size: .75rem;
-  &.success {
-    color: var(--ant-success);
-  }
-  &.error {
-    color: var(--ant-error);
-  }
-}
+
 
 // form-textfield
 // form-textfield
-.textfield-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  position: relative;
-  width: 314px;
+// .textfield-container {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   justify-content: flex-end;
+//   position: relative;
+//   width: 314px;
 
-  // &.type-numeric {
-  //   .ant-form-item-control {
-  //     flex-direction: row;
-  //     .ant-form-item-control-input {
-  //       margin-right: .75rem;
-  //     }
-  //   }
-  // }
-}
-.textfield {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+//   // &.type-numeric {
+//   //   .ant-form-item-control {
+//   //     flex-direction: row;
+//   //     .ant-form-item-control-input {
+//   //       margin-right: .75rem;
+//   //     }
+//   //   }
+//   // }
+// }
+// .textfield {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: flex-start;
 
-  .field {
-    width: 18rem;
+//   .field {
+//     width: 18rem;
 
-    &.ant-input-number {
-      width: 8em;
-    }
+//     &.ant-input-number {
+//       width: 8em;
+//     }
 
-  }
-  .info-tip {
-    margin-right: .75rem;
-  }
-  .ant-form-item {
-    margin-bottom: 16px;
-    &.ant-form-item-with-help {
-      margin-bottom: 16px;
-    }
-  }
-  .ant-form-item-label label {
-    font-weight: bold;
-    color: var(--owncast-purple);
-  }
-  .ant-form-item-explain {
-    width: 70%;
-  }
-}
-.submit-button {
-  position: absolute;
-  right: 0;
-  bottom: .5em;
-}
+//   }
+//   .info-tip {
+//     margin-right: .75rem;
+//   }
+//   .ant-form-item {
+//     margin-bottom: 16px;
+//     &.ant-form-item-with-help {
+//       margin-bottom: 16px;
+//     }
+//   }
+//   .ant-form-item-label label {
+//     font-weight: bold;
+//     color: var(--owncast-purple);
+//   }
+//   .ant-form-item-explain {
+//     width: 70%;
+//   }
+// }
+// .submit-button {
+//   position: absolute;
+//   right: 0;
+//   bottom: .5em;
+// }
 // .ant-form-horizontal {
 //   .textfield-container.type-numeric {
 //     width: auto;

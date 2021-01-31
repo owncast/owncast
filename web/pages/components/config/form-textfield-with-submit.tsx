@@ -30,7 +30,6 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
   const [fieldStatus, setFieldStatus] = useState<StatusState>(null);
 
   const [hasChanged, setHasChanged] = useState(false);
-  // const [fieldValueForSubmit, setFieldValueForSubmit] = useState<string | number>('');
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
@@ -64,7 +63,6 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
       // show submit button
       resetStates();
       setHasChanged(true);
-      // setFieldValueForSubmit(value);
     }
   }, [value]);
 
@@ -118,9 +116,11 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
       />
 
       {hasChanged ? (
-        <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
-          Update
-        </Button>
+        <div className="update-button-container">
+          <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
+            Update
+          </Button>
+        </div>
       ) : null}
     </div>
   );
