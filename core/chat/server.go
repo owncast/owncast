@@ -117,11 +117,13 @@ func (s *server) Listen() {
 			// and standardize this message into something safe we can send everyone else.
 			msg.RenderAndSanitizeMessageBody()
 
-			s.listener.MessageSent(msg)
-			s.sendAll(msg)
+			if !msg.Empty() {
+				s.listener.MessageSent(msg)
+				s.sendAll(msg)
 
-			// Store in the message history
-			addMessage(msg)
+				// Store in the message history
+				addMessage(msg)
+			}
 		case ping := <-s.pingCh:
 			fmt.Println("PING?", ping)
 
