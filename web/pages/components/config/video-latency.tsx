@@ -100,7 +100,7 @@ export default function VideoLatency() {
 
   return (
     <div className="module-container config-video-segements-conatiner">
-      <Title level={3}>Video Latency</Title>
+      <Title level={3}>Latency Buffer</Title>
       <p>
         There are trade-offs when cosidering video latency and reliability. Blah blah .. better wording here needed.
       </p>

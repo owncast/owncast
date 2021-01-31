@@ -108,6 +108,14 @@ export default function CurrentVariantsTable() {
     message: newStatusMessage = '',
   } = SUCCESS_STATES[submitStatus] || {};
   
+  const cpuUsageLevelLabelMap = {
+    1: 'lowest',
+    2: 'low',
+    3: 'medium',
+    4: 'high',
+    5: 'highest'
+  };
+
   const videoQualityColumns: ColumnsType<VideoVariant>  = [
     {
       title: "#",
@@ -123,11 +131,11 @@ export default function CurrentVariantsTable() {
     },
 
     {
-      title: "Encoder preset",
-      dataIndex: "encoderPreset",
-      key: "encoderPreset",
-      render: (preset: string) =>
-        !preset ? "n/a" : preset,
+      title: "CPU Usage",
+      dataIndex: "cpuUsageLevel",
+      key: "cpuUsageLevel",
+      render: (level: string) =>
+        !level ? "n/a" : cpuUsageLevelLabelMap[level],
     },
     {
       title: '',

@@ -173,21 +173,13 @@ export const FIELD_PROPS_YP = {
   tip: 'Turn this ON if you want to show up in the Owncast directory at https://directory.owncast.online.',
 };
 
-export const ENCODER_PRESETS = [
-  'fast',
-  'faster',
-  'veryfast',
-  'superfast',
-  'ultrafast',
-];
-
 export const DEFAULT_VARIANT_STATE:VideoVariant = {
   framerate: 24,
   videoPassthrough: false,
   videoBitrate: 800,
   audioPassthrough: true, // if false, then CAN set audiobitrate
   audioBitrate: 0,
-  encoderPreset: 'veryfast',
+  cpuUsageLevel: 3,
 };
 
 export const DEFAULT_SOCIAL_HANDLE:SocialHandle = {

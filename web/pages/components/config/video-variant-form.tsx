@@ -1,9 +1,10 @@
 // This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
 import { Slider, Select, Switch, Divider, Collapse } from 'antd';
-import { FieldUpdaterFunc, PRESET, VideoVariant } from '../../../types/config-section';
-import { ENCODER_PRESETS, DEFAULT_VARIANT_STATE } from './constants';
+import { FieldUpdaterFunc, CpuUsageLevel, VideoVariant } from '../../../types/config-section';
+import { DEFAULT_VARIANT_STATE } from './constants';
 import InfoTip from '../info-tip';
+import CPUUsageSelector from './cpu-usage';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -33,10 +34,6 @@ const VIDEO_VARIANT_DEFAULTS = {
     incrementBy: 100,
     tip: 'nothing to see here'
   },
-  encoderPreset: {
-    defaultValue: ENCODER_PRESETS[2],
-    tip: 'Info and stuff.'
-  },
   videoPassthrough: {
     tip: 'If No is selected, then you should set your desired Video Bitrate.'
   },
@@ -49,17 +46,7 @@ interface VideoVariantFormProps {
   dataState: VideoVariant;
   onUpdateField: FieldUpdaterFunc;
 }
-/*
-CPU Usage slider
-{
-    'ultrafast': 'lowest cpu, lowest quality',
-    'superfast': 'lower cpu, lower quality',
-    'veryfast': 'medium cpu, medium quality',
-    'faster': 'higher cpu, higher quality',
-    'fast': 'highest cpu, highest quality'
-}
 
-*/
 export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, onUpdateField }: VideoVariantFormProps) {
 
   const handleFramerateChange = (value: number) => {
@@ -71,23 +58,21 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
   const handleAudioBitrateChange = (value: number) => {
     onUpdateField({ fieldName: 'audioBitrate', value });
   };
-  const handleEncoderPresetChange = (value: PRESET) => {
-    onUpdateField({ fieldName: 'encoderPreset', value });
-  };
   const handleAudioPassChange = (value: boolean) => {
     onUpdateField({ fieldName: 'audioPassthrough', value });
   };
   const handleVideoPassChange = (value: boolean) => {
     onUpdateField({ fieldName: 'videoPassthrough', value });
   };
-
+  const handleVideoCpuUsageLevelChange = (value: number) => {
+    onUpdateField({ fieldName: 'cpuUsageLevel', value })
+  }
 
   const framerateDefaults = VIDEO_VARIANT_DEFAULTS.framerate;
   const framerateMin = framerateDefaults.min;
   const framerateMax = framerateDefaults.max;
   const framerateUnit = framerateDefaults.unit;
 
-  const encoderDefaults = VIDEO_VARIANT_DEFAULTS.encoderPreset;
   const videoBitrateDefaults = VIDEO_VARIANT_DEFAULTS.videoBitrate;
   const videoBRMin = videoBitrateDefaults.min;
   const videoBRMax = videoBitrateDefaults.max;
@@ -114,24 +99,8 @@ export default function VideoVariantForm({ dataState = DEFAULT_VARIANT_STATE, on
 
       {/* ENCODER PRESET FIELD */}
       <div className="field">
-        <p className="label">
-          <InfoTip tip={encoderDefaults.tip} />
-          Encoder Preset:
-        </p>
         <div className="form-component">
-          <Select
-            defaultValue={dataState.encoderPreset}
-            value={dataState.encoderPreset}
-            style={{ width: 200 }} onChange={handleEncoderPresetChange}>
-            {
-              ENCODER_PRESETS.map(preset => (
-                <Option
-                  key={`option-${preset}`}
-                  value={preset}
-                >{preset}</Option>
-              ))
-            }
-          </Select>
+          <CPUUsageSelector defaultValue={dataState.cpuUsageLevel} onChange={handleVideoCpuUsageLevelChange} />
           {selectedPresetNote ? <span className="selected-value-note">{selectedPresetNote}</span> : null }
         </div>
       </div>

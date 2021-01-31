@@ -41,7 +41,7 @@ export interface ConfigInstanceDetailsFields {
 }
 
 
-export type PRESET = 'fast' | 'faster' | 'veryfast' | 'superfast' | 'ultrafast';
+export type CpuUsageLevel = 1 | 2 | 3 | 4 | 5;
 
 // from data
 export interface SocialHandle {
@@ -51,7 +51,7 @@ export interface SocialHandle {
 
 export interface VideoVariant {
   key?: number; // unique identifier generated on client side just for ant table rendering
-  encoderPreset: PRESET,
+  cpuUsageLevel: CpuUsageLevel,
   framerate: number;
 
   audioPassthrough: boolean;
@@ -62,6 +62,7 @@ export interface VideoVariant {
 export interface VideoSettingsFields {
   latencyLevel: number;
   videoQualityVariants: VideoVariant[],
+  cpuUsageLevel: CpuUsageLevel,
 }
 
 

@@ -30,6 +30,7 @@ export const initialServerConfigState: ConfigDetails = {
   },
   videoSettings: {
     latencyLevel: 4,
+    cpuUsageLevel: 3,
     videoQualityVariants: [DEFAULT_VARIANT_STATE],
   }
 };
