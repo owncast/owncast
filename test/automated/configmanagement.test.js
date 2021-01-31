@@ -14,7 +14,7 @@ const streamOutputVariants =
     {
         videoBitrate: randomNumber() * 100,
         framerate: randomNumber() * 10,
-        encoderPreset: 'fast',
+        cpuUsageLevel: 2,
         scaledHeight: randomNumber() * 100,
         scaledWidth: randomNumber() * 100,
     };
@@ -127,7 +127,7 @@ test('admin configuration is correct', (done) => {
 
             expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
             expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(streamOutputVariants.framerate);
-            expect(res.body.videoSettings.videoQualityVariants[0].encoderPreset).toBe(streamOutputVariants.encoderPreset);
+            expect(res.body.videoSettings.videoQualityVariants[0].cpuUsageLevel).toBe(streamOutputVariants.cpuUsageLevel);
 
             expect(res.body.yp.enabled).toBe(false);
             expect(res.body.streamKey).toBe('abc123');

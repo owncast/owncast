@@ -19,7 +19,8 @@ type StreamOutputVariant struct {
 	ScaledHeight int `yaml:"scaledHeight" json:"scaledHeight,omitempty"`
 
 	Framerate     int    `yaml:"framerate" json:"framerate"`
-	EncoderPreset string `yaml:"encoderPreset" json:"encoderPreset"`
+	EncoderPreset string `yaml:"encoderPreset" json:"encoderPreset"` // Remove after migration is no longer used
+	CpuUsageLevel int    `json:"cpuUsageLevel"`
 }
 
 // GetFramerate returns the framerate or default.
@@ -46,6 +47,18 @@ func (q *StreamOutputVariant) GetEncoderPreset() string {
 	}
 
 	return "veryfast"
+}
+
+func (q *StreamOutputVariant) GetCpuUsageLevel() int {
+	presetMapping := map[string]int{
+		"ultrafast": 1,
+		"superfast": 2,
+		"veryfast":  3,
+		"faster":    4,
+		"fast":      5,
+	}
+
+	return presetMapping[q.GetEncoderPreset()]
 }
 
 func (q *StreamOutputVariant) GetIsAudioPassthrough() bool {
