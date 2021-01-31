@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useContext, useState, useEffect } from 'react';
-import { Typography, Tag, Input } from 'antd';
+import { Typography, Tag } from 'antd';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { FIELD_PROPS_TAGS, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
@@ -18,10 +18,9 @@ import {
 const { Title } = Typography;
 
 export default function EditInstanceTags() {
-  const [newTagInput, setNewTagInput] = useState('');
+  const [newTagInput, setNewTagInput] = useState<string | number>('');
   const [fieldStatus, setFieldStatus] = useState<StatusState>(null);
-  // const [submitStatus, setSubmitStatus] = useState(null);
-  // const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
 
@@ -39,8 +38,6 @@ export default function EditInstanceTags() {
   }, []);
 
   const resetStates = () => {
-    // setSubmitStatus(null);
-    // setSubmitStatusMessage('');
     setFieldStatus(null);
     resetTimer = null;
     clearTimeout(resetTimer);
@@ -56,17 +53,11 @@ export default function EditInstanceTags() {
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 'tags', value: postValue, path: configPath });
         setFieldStatus(createInputStatus(STATUS_SUCCESS, 'Tags updated.'));
-
-        // setSubmitStatus('success');
-        // setSubmitStatusMessage('Tags updated.');
         setNewTagInput('');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {
         setFieldStatus(createInputStatus(STATUS_ERROR, message));
-
-        // setSubmitStatus('error');
-        // setSubmitStatusMessage(message);
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
@@ -76,9 +67,6 @@ export default function EditInstanceTags() {
     if (!fieldStatus) {
       setFieldStatus(null);
     }
-    // if (submitStatusMessage !== '') {
-    //   setSubmitStatusMessage('');
-    // }
     setNewTagInput(value);
   };
 
@@ -88,14 +76,10 @@ export default function EditInstanceTags() {
     const newTag = newTagInput.trim();
     if (newTag === '') {
       setFieldStatus(createInputStatus(STATUS_WARNING, 'Please enter a tag'));
-
-      // setSubmitStatusMessage('Please enter a tag');
       return;
     }
     if (tags.some(tag => tag.toLowerCase() === newTag.toLowerCase())) {
       setFieldStatus(createInputStatus(STATUS_WARNING, 'This tag is already used!'));
-
-      // setSubmitStatusMessage('This tag is already used!');
       return;
     }
 
@@ -109,11 +93,6 @@ export default function EditInstanceTags() {
     updatedTags.splice(index, 1);
     postUpdateToAPI(updatedTags);
   };
-
-  // const {
-  //   icon: newStatusIcon = null,
-  //   message: newStatusMessage = '',
-  // } = fieldStatus || {};
 
   return (
     <div className="tag-editor-container">
@@ -132,9 +111,7 @@ export default function EditInstanceTags() {
           );
         })}
       </div>
-      {/* <div className={`status-message ${submitStatus || ''}`}>
-        {newStatusIcon} {newStatusMessage} {submitStatusMessage}
-      </div> */}
+
       <div className="add-new-tag-section">
         <TextField
           fieldName="tag-input"
@@ -145,7 +122,6 @@ export default function EditInstanceTags() {
           maxLength={maxLength}
           placeholder={placeholder}
           status={fieldStatus}
-          // message={`${newStatusIcon} ${newStatusMessage} ${submitStatusMessage}`}
         />
       </div>
     </div>
