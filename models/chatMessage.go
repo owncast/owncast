@@ -111,5 +111,9 @@ func sanitize(raw string) string {
 	// Allow emphasis
 	p.AllowElements("em")
 
+	// Allow code blocks
+	p.AllowElements("code")
+	p.AllowElements("pre")
+
 	return p.Sanitize(raw)
 }
