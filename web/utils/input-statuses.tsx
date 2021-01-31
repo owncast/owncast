@@ -44,7 +44,7 @@ export const INPUT_STATES = {
 };
 
 // Don't like any of the default messages in INPUT_STATES? Create a state with custom message by providing an icon style with your message.
-export function createInputStatus(type: InputStatusTypes, message: string): StatusState {
+export function createInputStatus(type: InputStatusTypes, message?: string): StatusState {
   if (!type || !INPUT_STATES[type]) {
     return null;
   }

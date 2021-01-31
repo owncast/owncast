@@ -1,8 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Input, Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 
-import TextField, { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield';
+import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield-nosubmit';
+import TextFieldWithSubmit from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { TEXTFIELD_PROPS_FFMPEG, TEXTFIELD_PROPS_RTMP_PORT, TEXTFIELD_PROPS_STREAM_KEY, TEXTFIELD_PROPS_WEB_PORT,  } from './constants';
@@ -58,7 +59,7 @@ export default function EditInstanceDetails() {
   return (  
     <div className={configStyles.publicDetailsContainer}>
       <div className={configStyles.textFieldsSection}>
-        <TextField
+        <TextFieldWithSubmit
           fieldName="streamKey"
           {...TEXTFIELD_PROPS_STREAM_KEY}
           value={formDataValues.streamKey}
@@ -87,14 +88,14 @@ export default function EditInstanceDetails() {
                   onClick={generateStreamKey}
           />
         </div>
-        <TextField
+        <TextFieldWithSubmit
           fieldName="ffmpegPath"
           {...TEXTFIELD_PROPS_FFMPEG}
           value={formDataValues.ffmpegPath}
           initialValue={ffmpegPath}
           onChange={handleFieldChange}
         />
-        <TextField
+        <TextFieldWithSubmit
           fieldName="webServerPort"
           {...TEXTFIELD_PROPS_WEB_PORT}
           value={formDataValues.webServerPort}
@@ -102,7 +103,7 @@ export default function EditInstanceDetails() {
           type={TEXTFIELD_TYPE_NUMBER}
           onChange={handleFieldChange}
         />
-        <TextField
+        <TextFieldWithSubmit
           fieldName="rtmpServerPort"
           {...TEXTFIELD_PROPS_RTMP_PORT}
           value={formDataValues.rtmpServerPort}
