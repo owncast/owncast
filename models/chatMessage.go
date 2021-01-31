@@ -38,6 +38,10 @@ func (m *ChatEvent) RenderAndSanitizeMessageBody() {
 	m.Body = RenderAndSanitize(raw)
 }
 
+func (m *ChatEvent) Empty() bool {
+	return m.Body == ""
+}
+
 // RenderAndSanitize will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func RenderAndSanitize(raw string) string {
