@@ -15,8 +15,8 @@ import { ServerStatusContext } from "../utils/server-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
-import TextField from './components/config/form-textfield';
-import { API_STREAM_TITLE, postConfigUpdateToAPI, TEXTFIELD_PROPS_STREAM_TITLE } from './components/config/constants';
+import TextFieldWithSubmit from './components/config/form-textfield-with-submit';
+import { TEXTFIELD_PROPS_STREAM_TITLE } from './components/config/constants';
 
 import {
   LOGS_WARN,
@@ -158,7 +158,7 @@ export default function Home() {
 
         <div className="section online-details-section">
           <Card title="Stream description">
-            <TextField
+            <TextFieldWithSubmit
               fieldName="streamTitle"
               {...TEXTFIELD_PROPS_STREAM_TITLE}
               value={streamTitle}

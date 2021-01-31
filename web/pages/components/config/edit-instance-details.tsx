@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import TextField, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './form-textfield';
+import TextFieldWithSubmit, { TEXTFIELD_TYPE_TEXTAREA, TEXTFIELD_TYPE_URL } from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { postConfigUpdateToAPI, TEXTFIELD_PROPS_USERNAME, TEXTFIELD_PROPS_INSTANCE_URL, TEXTFIELD_PROPS_SERVER_TITLE, TEXTFIELD_PROPS_STREAM_TITLE, TEXTFIELD_PROPS_SERVER_SUMMARY, TEXTFIELD_PROPS_LOGO, API_YP_SWITCH } from './constants';
@@ -47,7 +47,7 @@ export default function EditInstanceDetails() {
   return (  
     <div className={configStyles.publicDetailsContainer}>
       <div className={configStyles.textFieldsSection}>
-        <TextField
+        <TextFieldWithSubmit
           fieldName="instanceUrl"
           {...TEXTFIELD_PROPS_INSTANCE_URL}
           value={formDataValues.instanceUrl}
@@ -57,28 +57,28 @@ export default function EditInstanceDetails() {
           onSubmit={handleSubmitInstanceUrl}
         />
         
-        <TextField
+        <TextFieldWithSubmit
           fieldName="title"
           {...TEXTFIELD_PROPS_SERVER_TITLE}
           value={formDataValues.title}
           initialValue={instanceDetails.title}
           onChange={handleFieldChange}
         />
-        <TextField
+        <TextFieldWithSubmit
           fieldName="streamTitle"
           {...TEXTFIELD_PROPS_STREAM_TITLE}
           value={formDataValues.streamTitle}
           initialValue={instanceDetails.streamTitle}
           onChange={handleFieldChange}
         />
-        <TextField
+        <TextFieldWithSubmit
           fieldName="name"
           {...TEXTFIELD_PROPS_USERNAME}
           value={formDataValues.name}
           initialValue={instanceDetails.name}
           onChange={handleFieldChange}
         />
-        <TextField
+        <TextFieldWithSubmit
           fieldName="summary"
           {...TEXTFIELD_PROPS_SERVER_SUMMARY}
           type={TEXTFIELD_TYPE_TEXTAREA}
@@ -86,7 +86,7 @@ export default function EditInstanceDetails() {
           initialValue={instanceDetails.summary}
           onChange={handleFieldChange}
         />
-        <TextField
+        <TextFieldWithSubmit
           fieldName="logo"
           {...TEXTFIELD_PROPS_LOGO}
           value={formDataValues.logo}
