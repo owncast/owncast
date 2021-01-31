@@ -42,7 +42,7 @@ export default function MainLayout(props) {
   const { SubMenu } = Menu;
 
   // status indicator items
-  const streamDurationString = online ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
+  const streamDurationString = broadcaster ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
   const currentThumbnail = online ? (
      <img src="/thumbnail.jpg" className={adminStyles.onlineCurrentThumb} alt="current thumbnail" />
   ) : null;
