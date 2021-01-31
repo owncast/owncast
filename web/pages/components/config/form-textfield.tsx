@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Button, Input, InputNumber } from 'antd';
 import { FormItemProps } from 'antd/es/form';
 
@@ -38,7 +38,7 @@ export default function TextField(props: TextFieldProps) {
   const [submitStatus, setSubmitStatus] = useState<FormItemProps['validateStatus']>('');
   const [submitStatusMessage, setSubmitStatusMessage] = useState('');
   const [hasChanged, setHasChanged] = useState(false);
-  const [fieldValueForSubmit, setFieldValueForSubmit] = useState('');
+  const [fieldValueForSubmit, setFieldValueForSubmit] = useState<string | number>('');
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
@@ -71,21 +71,24 @@ export default function TextField(props: TextFieldProps) {
     resetTimer = null;
   };
 
-  // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
-  const handleChange = (e: any) => {
-    const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
-
+  useEffect(() => {
+    // TODO: Add native validity checks here, somehow
     // https://developer.mozilla.org/en-US/docs/Web/API/ValidityState
-    const hasValidity = (type !== TEXTFIELD_TYPE_NUMBER && e.target.validity.valid) || type === TEXTFIELD_TYPE_NUMBER ;
-
-    if ((required && (val === '' || val === null)) || val === initialValue || !hasValidity) {
+    // const hasValidity = (type !== TEXTFIELD_TYPE_NUMBER && e.target.validity.valid) || type === TEXTFIELD_TYPE_NUMBER ;
+    if ((required && (value === '' || value === null)) || value === initialValue) {
       setHasChanged(false);
     } else {
       // show submit button
       resetStates();
       setHasChanged(true);
-      setFieldValueForSubmit(val);
+      setFieldValueForSubmit(value);
     }
+  }, [value]);
+
+  // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
+  const handleChange = (e: any) => {
+    const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
+
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
       onChange({ fieldName, value: val });
