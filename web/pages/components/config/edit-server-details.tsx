@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, Tooltip } from 'antd';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 
-import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield-nosubmit';
+import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield';
 import TextFieldWithSubmit from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
