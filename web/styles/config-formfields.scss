@@ -85,7 +85,7 @@
     width: 100%;
     display: block;
     &.empty {
-      display: inline-block;
+      display: none;
       visibility: visible;
     }
   }

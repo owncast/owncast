@@ -340,4 +340,14 @@
   .button-container {
     margin: 1em 0;
   }
+  .advanced-section {
+    margin: 1em 0;
+  }
+}
+
+.field-container {
+  padding: .85em 0 .5em;
+  &:nth-child(even) {
+    background-color: rgba(0,0,0,.25);
+  }
 }

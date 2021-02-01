@@ -28,14 +28,14 @@ function checkSaveable(formValues: any, currentValues: any) {
   const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl } = formValues;
   // if fields are filled out and different from what's in store, then return true
   if (enabled) {
-    if (endpoint !== '' && accessKey !== '' && secret !== '' && bucket !== '' && region !== '') {
+    if (!!endpoint && !!accessKey && !!secret && !!bucket && !!region) {
       if (
         endpoint !== currentValues.endpoint ||
         accessKey !== currentValues.accessKey ||
-        secret !== currentValues.bucket ||
+        secret !== currentValues.secret ||
         region !== currentValues.region ||
-        servingEndpoint !== currentValues.servingEndpoint ||
-        acl !== currentValues.acl
+        (!!currentValues.servingEndpoint && servingEndpoint !== currentValues.servingEndpoint) ||
+        (!!currentValues.acl && acl !== currentValues.acl)
       ) {
         return true;
       }
@@ -188,10 +188,8 @@ function EditStorage() {
           />
         </div>
 
-        <Collapse>
+        <Collapse className="advanced-section">
           <Panel header="Advanced Settings" key="1">
-            <Title level={4}>Advanced</Title>
-
             <div className="field-container">
               <TextField
                 {...S3_TEXT_FIELDS_INFO.acl}
@@ -211,7 +209,7 @@ function EditStorage() {
       </div>
 
       <div className="button-container">
-        <Button onClick={handleSave} disabled={!isSaveable}>
+        <Button type="primary" onClick={handleSave} disabled={!isSaveable}>
           Save
         </Button>
         <InputStatusInfo status={submitStatus} />
