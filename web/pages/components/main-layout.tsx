@@ -24,6 +24,8 @@ import { parseSecondsToDurationString } from '../../utils/format'
 
 import OwncastLogo from './logo';
 import { ServerStatusContext } from '../../utils/server-status-context';
+import TextFieldWithSubmit from './config/form-textfield-with-submit';
+import { TEXTFIELD_PROPS_STREAM_TITLE } from './config/constants';
 
 import adminStyles from '../../styles/styles.module.scss';
 
@@ -33,7 +35,10 @@ export default function MainLayout(props) {
   const { children } = props;
 
   const context = useContext(ServerStatusContext);
-  const { online, broadcaster, versionNumber } = context || {};
+  const { serverConfig, online, broadcaster, versionNumber } = context || {};
+  const { instanceDetails } = serverConfig;
+
+  const [streamTitle, setStreamTitle] = useState('');
 
   const router = useRouter();
   const { route } = router || {};
@@ -44,11 +49,11 @@ export default function MainLayout(props) {
   // status indicator items
   const streamDurationString = broadcaster ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
   const currentThumbnail = online ? (
-     <img src="/thumbnail.jpg" className={adminStyles.onlineCurrentThumb} alt="current thumbnail" />
+    <img src="/thumbnail.jpg" className={adminStyles.onlineCurrentThumb} alt="current thumbnail" />
   ) : null;
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : "Offline";
-  const statusIndicator = (    
+  const statusIndicator = (
     <div className={adminStyles.statusIndicatorContainer}>
       <span className={adminStyles.statusLabel}>{statusMessage}</span>
       <span className={adminStyles.statusIcon}>{statusIcon}</span>
@@ -82,6 +87,15 @@ export default function MainLayout(props) {
     }
   });
 
+  useEffect(() => {
+    setStreamTitle(instanceDetails.streamTitle);
+  }, [instanceDetails]);
+
+  const handleStreamTitleChanged = ({ value }: UpdateArgs) => {
+    setStreamTitle(value);
+  }
+
+
   const appClass = classNames({
     "owncast-layout": true,
     [adminStyles.online]: online,
@@ -94,9 +108,9 @@ export default function MainLayout(props) {
     <Layout className={appClass}>
       <Head>
         <title>Owncast Admin</title>
-        <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png"/>
+        <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png" />
       </Head>
-      
+
       <Sider
         width={240}
         className={adminStyles.sideNav}
@@ -132,7 +146,7 @@ export default function MainLayout(props) {
           >
             <Link href="/chat">Chat</Link>
           </Menu.Item>
-          
+
           <SubMenu
             key="configuration"
             title="Configuration"
@@ -148,7 +162,7 @@ export default function MainLayout(props) {
             <Menu.Item key="config-page-content">
               <Link href="/config-page-content">Custom page content</Link>
             </Menu.Item>
-            
+
             <Menu.Item key="config-server-details">
               <Link href="/config-server-details">Server Details</Link>
             </Menu.Item>
@@ -201,6 +215,17 @@ export default function MainLayout(props) {
 
       <Layout className={adminStyles.layoutMain}>
         <Header className={adminStyles.header}>
+          <div className={adminStyles.globalStreamTitleContainer}>
+          <TextFieldWithSubmit
+            maxLength={100}
+            className={adminStyles.globalStreamTitleInput}
+            fieldName="streamTitle"
+            placeholder="What you're streaming right now"
+            value={streamTitle}
+            initialValue={instanceDetails.streamTitle}
+            onChange={handleStreamTitleChanged}
+          />
+</div>
           {statusIndicatorWithThumb}
         </Header>
         <Content className={adminStyles.contentMain}>{children}</Content>

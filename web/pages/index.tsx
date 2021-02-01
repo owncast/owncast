@@ -15,8 +15,6 @@ import { ServerStatusContext } from "../utils/server-status-context";
 import StatisticItem from "./components/statistic"
 import LogTable from "./components/log-table";
 import Offline from './offline-notice';
-import TextFieldWithSubmit from './components/config/form-textfield-with-submit';
-import { TEXTFIELD_PROPS_STREAM_TITLE } from './components/config/constants';
 
 import {
   LOGS_WARN,
@@ -40,10 +38,8 @@ export default function Home() {
   const serverStatusData = useContext(ServerStatusContext);
   const { broadcaster, serverConfig: configData } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
-  const { instanceDetails } = configData;
 
   const encoder = streamDetails?.encoder || "Unknown encoder";
-  const [streamTitle, setStreamTitle] = useState('');
 
   const [logsData, setLogs] = useState([]);
   const getLogs = async () => {
@@ -57,10 +53,6 @@ export default function Home() {
   const getMoreStats = () => {
     getLogs();
   }
-
-  useEffect(() => {
-    setStreamTitle(instanceDetails.streamTitle);
-  }, [instanceDetails]);
 
   useEffect(() => {
     getMoreStats();
@@ -82,11 +74,6 @@ export default function Home() {
       </>
     );
   }
-
-  const handleStreamTitleChanged = ({ value }: UpdateArgs) => {
-    setStreamTitle(value);
-  }
-
 
   if (!broadcaster) {
     return <Offline logs={logsData} />;
@@ -152,18 +139,6 @@ export default function Home() {
               title="Peak viewer count"
               value={sessionPeakViewerCount}
               prefix={<UserOutlined />}
-            />
-          </Card>
-        </div>
-
-        <div className="section online-details-section">
-          <Card title="Stream description">
-            <TextFieldWithSubmit
-              fieldName="streamTitle"
-              {...TEXTFIELD_PROPS_STREAM_TITLE}
-              value={streamTitle}
-              initialValue={instanceDetails.streamTitle}
-              onChange={handleStreamTitleChanged}
             />
           </Card>
         </div>
