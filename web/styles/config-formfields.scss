@@ -1,5 +1,6 @@
 // Base styles for form-textfield, form-textfield-with-submit, and helper components.
 
+/* STATUS-CONTAINER BASE */
 .status-container {
   &.status-success {
     color: var(--ant-success);
@@ -25,12 +26,15 @@
   }
 }
 
+
+/* TIP CONTAINER BASE */
 .field-tip {
   font-size: .7em;
-  color: rgba(255,255,255,.7)
+  color: rgba(255,255,255,.5)
 }
 
 
+/* TEXTFIELD-CONTAINER BASE */
 .textfield-container {
   display: flex;
   flex-direction: row;
@@ -99,7 +103,7 @@
   }
 }
 
-
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
 .textfield-with-submit-container {
   display: flex;
   flex-direction: column;
@@ -139,6 +143,9 @@
       }
       .status-container {
         margin: .5em;
+        &.empty {
+          display: none;
+        }
       }
     }
     .update-button-container {

@@ -28,7 +28,7 @@ interface TextFieldWithSubmitProps extends TextFieldProps {
 }
 
 export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
-  const [fieldStatus, setFieldStatus] = useState<StatusState>(null);
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const [hasChanged, setHasChanged] = useState(false);
 
@@ -48,7 +48,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
 
   // Clear out any validation states and messaging
   const resetStates = () => {
-    setFieldStatus(null);
+    setSubmitStatus(null);
     setHasChanged(false);
     clearTimeout(resetTimer);
     resetTimer = null;
@@ -84,17 +84,17 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
   // how to get current value of input
   const handleSubmit = async () => {
     if ((required && value !== '') || value !== initialValue) {
-      setFieldStatus(createInputStatus(STATUS_PROCESSING));
+      setSubmitStatus(createInputStatus(STATUS_PROCESSING));
 
       await postConfigUpdateToAPI({
         apiPath,
         data: { value },
         onSuccess: () => {
           setFieldInConfigState({ fieldName, value, path: configPath });
-          setFieldStatus(createInputStatus(STATUS_SUCCESS));
+          setSubmitStatus(createInputStatus(STATUS_SUCCESS));
         },
         onError: (message: string) => {
-          setFieldStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
+          setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
         },
       });
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
@@ -115,7 +115,6 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
       <div className="textfield-component">
         <TextField
           {...textFieldProps}
-          status={status || fieldStatus}
           onSubmit={null}
           onBlur={handleBlur}
           onChange={handleChange}
@@ -125,7 +124,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
         <p className="label-spacer" />
         <div className="lower-content">
           <div className="field-tip">{tip}</div>
-          <InputStatusInfo status={status || fieldStatus} />
+          <InputStatusInfo status={status || submitStatus} />
           <div className="update-button-container">
             <Button
               type="primary"
