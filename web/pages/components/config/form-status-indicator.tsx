@@ -3,10 +3,10 @@ import classNames from 'classnames';
 
 import { StatusState } from '../../../utils/input-statuses';
 
-interface InputStatusInfoProps {
+interface FormStatusIndicatorProps {
   status: StatusState;
 }
-export default function InputStatusInfo({ status }: InputStatusInfoProps) {
+export default function FormStatusIndicator({ status }: FormStatusIndicatorProps) {
   const { type, icon, message } = status || {};
   const classes = classNames({
     'status-container': true,

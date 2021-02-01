@@ -4,7 +4,7 @@ import { Input, InputNumber } from 'antd';
 import { FieldUpdaterFunc } from '../../../types/config-section';
 // import InfoTip from '../info-tip';
 import { StatusState } from '../../../utils/input-statuses';
-import InputStatusInfo from './input-status-info';
+import FormStatusIndicator from './form-status-indicator';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -143,7 +143,7 @@ export default function TextField(props: TextFieldProps) {
             value={value}
           />
         </div>
-        <InputStatusInfo status={status} />
+        <FormStatusIndicator status={status} />
         <p className="field-tip">
           {tip}
           {/* <InfoTip tip={tip} /> */}

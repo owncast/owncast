@@ -16,7 +16,7 @@ import { SocialHandle, UpdateArgs } from '../../../types/config-section';
 import { isValidUrl } from '../../../utils/urls';
 import TextField from './form-textfield';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../../utils/input-statuses';
-import InputStatusInfo from './input-status-info';
+import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
 
@@ -229,7 +229,7 @@ export default function EditSocialLinks() {
       <Title level={2}>Social Links</Title>
       <p>Add all your social media handles and links to your other profiles here.</p>
 
-      <InputStatusInfo status={submitStatus} />
+      <FormStatusIndicator status={submitStatus} />
 
       <Table
         className="dataTable"
@@ -271,7 +271,7 @@ export default function EditSocialLinks() {
           value={modalDataState.url}
           onChange={handleUrlChange}
         />
-        <InputStatusInfo status={submitStatus} />
+        <FormStatusIndicator status={submitStatus} />
       </Modal>
       <br />
       <Button

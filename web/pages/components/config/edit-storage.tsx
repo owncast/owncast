@@ -17,7 +17,7 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import TextField from './form-textfield';
-import InputStatusInfo from './input-status-info';
+import FormStatusIndicator from './form-status-indicator';
 
 const { Panel } = Collapse;
 
@@ -211,7 +211,7 @@ export default function EditStorage() {
         <Button type="primary" onClick={handleSave} disabled={!isSaveable}>
           Save
         </Button>
-        <InputStatusInfo status={submitStatus} />
+        <FormStatusIndicator status={submitStatus} />
       </div>
     </div>
   );

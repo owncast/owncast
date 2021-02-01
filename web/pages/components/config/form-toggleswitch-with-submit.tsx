@@ -7,7 +7,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
-import InputStatusInfo from './input-status-info';
+import FormStatusIndicator from './form-status-indicator';
 
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
@@ -76,7 +76,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
           {label} <InfoTip tip={tip} />
         </span>
       </div>
-      <InputStatusInfo status={submitStatus} />
+      <FormStatusIndicator status={submitStatus} />
     </div>
   );
 }

@@ -13,7 +13,7 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import { UpdateArgs } from '../../../types/config-section';
-import InputStatusInfo from './input-status-info';
+import FormStatusIndicator from './form-status-indicator';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -124,7 +124,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
         <p className="label-spacer" />
         <div className="lower-content">
           <div className="field-tip">{tip}</div>
-          <InputStatusInfo status={status || submitStatus} />
+          <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
             <Button
               type="primary"

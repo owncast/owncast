@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Typography, Button } from 'antd';
-import { FormItemProps } from 'antd/lib/form';
 import dynamic from 'next/dynamic';
 import MarkdownIt from 'markdown-it';
 
@@ -8,11 +7,17 @@ import { ServerStatusContext } from '../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
-  SUCCESS_STATES,
   API_CUSTOM_CONTENT,
 } from './components/config/constants';
-
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+} from '../utils/input-statuses';
 import 'react-markdown-editor-lite/lib/index.css';
+import FormStatusIndicator from './components/config/form-status-indicator';
 
 const { Title } = Typography;
 
@@ -24,8 +29,7 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
 
 export default function PageContentEditor() {
   const [content, setContent] = useState('');
-  const [submitStatus, setSubmitStatus] = useState<FormItemProps['validateStatus']>('');
-  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);
 
   const serverStatusData = useContext(ServerStatusContext);
@@ -47,7 +51,7 @@ export default function PageContentEditor() {
 
   // Clear out any validation states and messaging
   const resetStates = () => {
-    setSubmitStatus('');
+    setSubmitStatus(null);
     setHasChanged(false);
     clearTimeout(resetTimer);
     resetTimer = null;
@@ -55,21 +59,20 @@ export default function PageContentEditor() {
 
   // posts all the tags at once as an array obj
   async function handleSave() {
-    setSubmitStatus('validating');
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
     await postConfigUpdateToAPI({
       apiPath: API_CUSTOM_CONTENT,
       data: { value: content },
-      onSuccess: () => {
+      onSuccess: (message: string) => {
         setFieldInConfigState({
           fieldName: 'extraPageContent',
           value: content,
           path: 'instanceDetails',
         });
-        setSubmitStatus('success');
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, message));
       },
       onError: (message: string) => {
-        setSubmitStatus('error');
-        setSubmitStatusMessage(`There was an error: ${message}`);
+        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
       },
     });
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
@@ -78,9 +81,6 @@ export default function PageContentEditor() {
   useEffect(() => {
     setContent(initialContent);
   }, [instanceDetails]);
-
-  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
-    SUCCESS_STATES[submitStatus] || {};
 
   return (
     <div className="config-page-content-form">
@@ -107,9 +107,8 @@ export default function PageContentEditor() {
             Save
           </Button>
         ) : null}
-        <div className={`status-message ${submitStatus || ''}`}>
-          {newStatusIcon} {newStatusMessage} {submitStatusMessage}
-        </div>
+        <FormStatusIndicator status={submitStatus} />
+
       </div>
     </div>
   );
