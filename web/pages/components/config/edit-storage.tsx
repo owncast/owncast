@@ -18,6 +18,7 @@ import {
 } from '../../../utils/input-statuses';
 import TextField from './form-textfield';
 import FormStatusIndicator from './form-status-indicator';
+import {isValidUrl} from '../../../utils/urls';
 
 const { Panel } = Collapse;
 
@@ -27,7 +28,7 @@ function checkSaveable(formValues: any, currentValues: any) {
   const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl } = formValues;
   // if fields are filled out and different from what's in store, then return true
   if (enabled) {
-    if (!!endpoint && !!accessKey && !!secret && !!bucket && !!region) {
+    if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
       if (
         endpoint !== currentValues.endpoint ||
         accessKey !== currentValues.accessKey ||
@@ -188,7 +189,7 @@ export default function EditStorage() {
         </div>
 
         <Collapse className="advanced-section">
-          <Panel header="Advanced Settings" key="1">
+          <Panel header="Optional Settings" key="1">
             <div className="field-container">
               <TextField
                 {...S3_TEXT_FIELDS_INFO.acl}
