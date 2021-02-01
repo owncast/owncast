@@ -1,11 +1,5 @@
 name: Build admin app
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches: master
-
+on: [push, pull_request]
 jobs:
   run:
     name: npm run build
