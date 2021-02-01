@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -158,4 +159,19 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 
 	// Default cache length in seconds
 	return 30
+}
+
+func IsValidUrl(urlToTest string) bool {
+	_, err := url.ParseRequestURI(urlToTest)
+	if err != nil {
+		return false
+	}
+
+	u, err := url.Parse(urlToTest)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return false
+	}
+
+	return true
+
 }

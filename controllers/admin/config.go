@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -329,12 +330,18 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if newS3Config.Value.Enabled {
+		if newS3Config.Value.Endpoint == "" || !utils.IsValidUrl((newS3Config.Value.Endpoint)) {
+			controllers.WriteSimpleResponse(w, false, "s3 support requires an endpoint")
+			return
+
+		}
+
 		if newS3Config.Value.AccessKey == "" || newS3Config.Value.Secret == "" {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires an access key and secret")
 			return
 		}
 
-		if newS3Config.Value.Region == "" || newS3Config.Value.Endpoint == "" {
+		if newS3Config.Value.Region == "" {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires a region and endpoint")
 			return
 		}
