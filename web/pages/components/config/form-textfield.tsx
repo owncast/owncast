@@ -1,8 +1,10 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Input, InputNumber } from 'antd';
 import { FieldUpdaterFunc } from '../../../types/config-section';
-import InfoTip from '../info-tip';
+// import InfoTip from '../info-tip';
 import { StatusState } from '../../../utils/input-statuses';
+import InputStatusInfo from './input-status-info';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -107,15 +109,20 @@ export default function TextField(props: TextFieldProps) {
 
   const fieldId = `field-${fieldName}`;
 
-  const { icon: statusIcon, message: statusMessage } = status || {};
+  const { type: statusType } = status || {};
 
+  const containerClass = classNames({
+    'textfield-container': true,
+    [`type-${type}`]: true,
+    required,
+    [`status-${statusType}`]: status,
+  });
   return (
-    <div className={`textfield-container type-${type}`}>
+    <div className={containerClass}>
       {label ? (
         <div className="label-side">
           <label htmlFor={fieldId} className="textfield-label">
-            {required ? <span className="required-label">* </span> : null}
-            {label}:
+            {label}
           </label>
         </div>
       ) : null}
@@ -135,17 +142,13 @@ export default function TextField(props: TextFieldProps) {
             disabled={disabled}
             value={value}
           />
-          
         </div>
-        <div className="status-container">
-          {status ? <span className="status-icon">{statusIcon}</span> : null}
-          {status ? <span className="status-message">{statusMessage}</span> : null}
-        </div>
-        <p className="tip">
-          <InfoTip tip={tip} />
+        <InputStatusInfo status={status} />
+        <p className="field-tip">
+          {tip}
+          {/* <InfoTip tip={tip} /> */}
         </p>
       </div>
-      
     </div>
   );
 }

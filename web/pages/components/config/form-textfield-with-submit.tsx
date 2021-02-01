@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Button } from 'antd';
-
+import classNames from 'classnames';
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
@@ -13,6 +13,7 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import { UpdateArgs } from '../../../types/config-section';
+import InputStatusInfo from './input-status-info';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -43,7 +44,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     ...textFieldProps // rest of props
   } = props;
 
-  const { fieldName, required, status, value, onChange, onSubmit } = textFieldProps;
+  const { fieldName, required, tip, status, value, onChange, onSubmit } = textFieldProps;
 
   // Clear out any validation states and messaging
   const resetStates = () => {
@@ -105,23 +106,39 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     }
   };
 
+  const textfieldContainerClass = classNames({
+    'textfield-with-submit-container': true,
+    submittable: hasChanged,
+  });
   return (
-    <div className="textfield-with-submit-container">
-      <TextField
-        {...textFieldProps}
-        status={status || fieldStatus}
-        onSubmit={null}
-        onBlur={handleBlur}
-        onChange={handleChange}
-      />
-
-      {hasChanged ? (
-        <div className="update-button-container">
-          <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
-            Update
-          </Button>
+    <div className={textfieldContainerClass}>
+      <div className="textfield-component">
+        <TextField
+          {...textFieldProps}
+          status={status || fieldStatus}
+          onSubmit={null}
+          onBlur={handleBlur}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="textfield-container lower-container">
+        <p className="label-spacer" />
+        <div className="lower-content">
+          <div className="field-tip">{tip}</div>
+          <InputStatusInfo status={status || fieldStatus} />
+          <div className="update-button-container">
+            <Button
+              type="primary"
+              size="small"
+              className="submit-button"
+              onClick={handleSubmit}
+              disabled={!hasChanged}
+            >
+              Update
+            </Button>
+          </div>
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }

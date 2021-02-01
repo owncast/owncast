@@ -16,7 +16,6 @@ import {
   API_YP_SWITCH,
 } from './constants';
 
-import configStyles from '../../../styles/config-pages.module.scss';
 import { UpdateArgs } from '../../../types/config-section';
 
 export default function EditInstanceDetails() {
@@ -57,8 +56,8 @@ export default function EditInstanceDetails() {
   };
 
   return (
-    <div className={configStyles.publicDetailsContainer}>
-      <div className={configStyles.textFieldsSection}>
+    <div className={`publicDetailsContainer`}>
+      <div className={`textFieldsSection`}>
         <TextFieldWithSubmit
           fieldName="instanceUrl"
           {...TEXTFIELD_PROPS_INSTANCE_URL}

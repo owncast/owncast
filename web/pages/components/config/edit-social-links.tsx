@@ -16,8 +16,6 @@ import {
 import { SocialHandle } from '../../../types/config-section';
 import { isValidUrl } from '../../../utils/urls';
 
-import configStyles from '../../../styles/config-pages.module.scss';
-
 const { Title } = Typography;
 
 export default function EditSocialLinks() {
@@ -236,7 +234,7 @@ export default function EditSocialLinks() {
   };
 
   return (
-    <div className={configStyles.socialLinksEditor}>
+    <div className={`socialLinksEditor`}>
       <Title level={2}>Social Links</Title>
       <p>Add all your social media handles and links to your other profiles here.</p>
 

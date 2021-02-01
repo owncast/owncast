@@ -13,7 +13,6 @@ import {
   TEXTFIELD_PROPS_WEB_PORT,
 } from './constants';
 
-import configStyles from '../../../styles/config-pages.module.scss';
 import { UpdateArgs } from '../../../types/config-section';
 
 export default function EditInstanceDetails() {
@@ -64,8 +63,8 @@ export default function EditInstanceDetails() {
   }
 
   return (
-    <div className={configStyles.publicDetailsContainer}>
-      <div className={configStyles.textFieldsSection}>
+    <div className={`publicDetailsContainer`}>
+      <div className={`textFieldsSection`}>
         <TextFieldWithSubmit
           fieldName="streamKey"
           {...TEXTFIELD_PROPS_STREAM_KEY}
