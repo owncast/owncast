@@ -1,35 +1,79 @@
+// Base styles for form-textfield, form-textfield-with-submit, and helper components.
+
+/* STATUS-CONTAINER BASE */
+.status-container {
+  &.status-success {
+    color: var(--ant-success);
+  }
+  &.status-error {
+    color: var(--ant-error);
+  }
+  &.status-warning {
+    color: var(--ant-warning);
+  }
+
+  &.empty {
+    display: none;
+  }
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: .75rem;
+  .status-icon {
+    display: inline-block;
+    margin-right: .5em;
+  }
+}
+
+
+/* TIP CONTAINER BASE */
+.field-tip {
+  font-size: .7em;
+  color: rgba(255,255,255,.5)
+}
+
+
+/* TEXTFIELD-CONTAINER BASE */
 .textfield-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
-
-
+  max-width: 600px;
   .label-side {
-    padding-right: 1em;
+    padding-right: .75em;
     text-align: right;
-    width: 12rem;
+    width: 12em;
     margin: .2em 0;
   }
   .textfield-label {
     font-weight: 400;
-    font-size: .85rem;
+    font-size: .85em;
     color: var(--owncast-purple);
-  }
-  .required-label {
-    color: var(--ant-error);
-  }
 
+    &::after {
+      content: ':';
+    }
+  }
+  &.required {
+    .textfield-label {
+      &::before {
+        content: '*';
+        display: inline-block;
+        margin-right: .25em;
+        color: var(--ant-error);
+      }
+    }
+  }
 
   .input-side {
     max-width: 500px;
     width: 100%;
   }
 
-
-  .input-group,
-  .status-container {
+  .input-group {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -37,49 +81,118 @@
   }
 
   .status-container {
-    margin: 0 .25em;
-    min-height: 1.5em;
-    font-size: .75em;
-
-    .status-icon {
-      display: inline-block;
-      margin-right: .5em;
+    margin: .25em;
+    width: 100%;
+    display: block;
+    &.empty {
+      display: none;
+      visibility: visible;
     }
   }
   
-  .tip {
+  .field-tip {
     margin: .5em .5em;
-    font-size: .75rem;
-    color: rgba(255,255,255,.75);
   }
 
   @media (max-width: 800px) {
-    // flex-direction: column;
     flex-wrap: wrap;
     .label-side {
+      width: 100%;
       text-align: left;
     }
   }
 }
 
-.status-message {
-  // margin: 1rem 0;
-  // min-height: 1.4em;
-  // font-size: .75rem;
-  &.success {
-    color: var(--ant-success);
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
+.textfield-with-submit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1em;
+
+  .textfield-component {
+    width: 100%;
+    .textfield-container {
+      .field-tip,
+      .status-container {
+        display: none;
+      }
+    }
   }
-  &.error {
-    color: var(--ant-error);
+
+  // for lack of a better name
+  .lower-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    .label-spacer {
+      width: 12em;
+    }
+    .lower-content {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-end;
+      width: 100%;
+
+      .field-tip {
+        margin-right: 1em;
+        width: 100%;
+      }
+      .status-container {
+        margin: .5em;
+        &.empty {
+          display: none;
+        }
+      }
+    }
+    .update-button-container {
+      visibility: hidden;
+      margin: .25em 0;
+    }
+  }
+
+  &.submittable {
+    .lower-container {
+      .update-button-container {
+        visibility: visible;
+      }
+    }
+  }
+
+
+  @media (max-width: 800px) {
+    .label-spacer {
+      display: none;
+    }
   }
 }
 
+/* TOGGLE SWITCH-WITH-SUBMIT-CONTAINER BASE */
+.toggleswitch-container {
+  .status-container {
+    margin-top: .25rem;
+  }
 
-.textfield-with-submit-container {
-  display: flex;
-  flex-direction: row;
-  .update-button-container {
-    display: inline-block;
-    margin: .25em;
+  .toggleswitch {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    .label {
+      font-weight: bold;
+      color: var(--owncast-purple);
+    }
+    .info-tip {
+      margin-left: .5rem;
+      svg {
+        fill: white;
+      }
+    }
+    .ant-form-item {
+      margin: 0 .75rem 0 0;
+    }
   }
 }

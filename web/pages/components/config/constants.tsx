@@ -184,3 +184,69 @@ export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
 };
 
 export const OTHER_SOCIAL_HANDLE_OPTION = 'OTHER_SOCIAL_HANDLE_OPTION';
+
+
+export const TEXTFIELD_PROPS_S3_COMMON = {
+  maxLength: 255,
+}
+
+
+// export const FIELD_PROPS_CUSTOM_CONTENT = {
+//   apiPath: API_CUSTOM_CONTENT,
+//   configPath: 'instanceDetails',
+//   placeholder: '',
+//   label: 'Extra page content',
+//   tip: 'Custom markup about yourself',
+// };
+
+export const S3_TEXT_FIELDS_INFO = {
+  accessKey: {
+    fieldName: 'accessKey',
+    label: 'Access Key',
+    maxLength: 255,
+    placeholder: 'access key 123',
+    tip: '',
+  },
+  acl: {
+    fieldName: 'acl',
+    label: 'ACL',
+    maxLength: 255,
+    placeholder: 'acl thing',
+    tip: '',
+  },
+  bucket: {
+    fieldName: 'bucket',
+    label: 'Bucket',
+    maxLength: 255,
+    placeholder: 'bucket 123',
+    tip: '',
+  },
+  endpoint: {
+    fieldName: 'endpoint',
+    label: 'Endpoint',
+    maxLength: 255,
+    placeholder: 'endpoint 123',
+    tip: 'This field has a some info',
+  },
+  region: {
+    fieldName: 'region',
+    label: 'Region',
+    maxLength: 255,
+    placeholder: 'region 123',
+    tip: '',
+  },
+  secret: {
+    fieldName: 'secret',
+    label: 'Secret key',
+    maxLength: 255,
+    placeholder: 'secret key 123',
+    tip: '',
+  },
+  servingEndpoint: {
+    fieldName: 'servingEndpoint',
+    label: 'Serving Endpoint',
+    maxLength: 255,
+    placeholder: 'servingEndpoint 123',
+    tip: '',
+  },
+};

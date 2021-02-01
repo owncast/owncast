@@ -13,7 +13,6 @@ import {
   TEXTFIELD_PROPS_WEB_PORT,
 } from './constants';
 
-import configStyles from '../../../styles/config-pages.module.scss';
 import { UpdateArgs } from '../../../types/config-section';
 
 export default function EditInstanceDetails() {
@@ -64,50 +63,52 @@ export default function EditInstanceDetails() {
   }
 
   return (
-    <div className={configStyles.publicDetailsContainer}>
-      <div className={configStyles.textFieldsSection}>
-        <TextFieldWithSubmit
-          fieldName="streamKey"
-          {...TEXTFIELD_PROPS_STREAM_KEY}
-          value={formDataValues.streamKey}
-          initialValue={streamKey}
-          type={TEXTFIELD_TYPE_PASSWORD}
-          onChange={handleFieldChange}
-        />
-        <div>
-          <span style={{ fontSize: '0.75em', color: '#ff7777', marginRight: '0.5em' }}>
-            Save this key somewhere safe, you will need it to stream or login to the admin
-            dashboard!
-          </span>
-          <Tooltip className="copy-tooltip" title="Copied!" trigger="" visible={copyIsVisible}>
-            <Button type="primary" icon={<CopyOutlined />} size="small" onClick={copyStreamKey} />
-          </Tooltip>
-          <Button type="primary" icon={<RedoOutlined />} size="small" onClick={generateStreamKey} />
+    <div className="edit-public-details-container">
+      <div className="field-container field-streamkey-container">
+        <div className="left-side">
+          <TextFieldWithSubmit
+            fieldName="streamKey"
+            {...TEXTFIELD_PROPS_STREAM_KEY}
+            value={formDataValues.streamKey}
+            initialValue={streamKey}
+            type={TEXTFIELD_TYPE_PASSWORD}
+            onChange={handleFieldChange}
+          />
+          <div className="streamkey-actions">
+            <Tooltip className="copy-tooltip" title="Copied!" trigger="" visible={copyIsVisible}>
+              <Button icon={<CopyOutlined />} size="small" onClick={copyStreamKey} />
+            </Tooltip>
+            <Button icon={<RedoOutlined />} size="small" onClick={generateStreamKey} />
+          </div>
         </div>
-        <TextFieldWithSubmit
-          fieldName="ffmpegPath"
-          {...TEXTFIELD_PROPS_FFMPEG}
-          value={formDataValues.ffmpegPath}
-          initialValue={ffmpegPath}
-          onChange={handleFieldChange}
-        />
-        <TextFieldWithSubmit
-          fieldName="webServerPort"
-          {...TEXTFIELD_PROPS_WEB_PORT}
-          value={formDataValues.webServerPort}
-          initialValue={webServerPort}
-          type={TEXTFIELD_TYPE_NUMBER}
-          onChange={handleFieldChange}
-        />
-        <TextFieldWithSubmit
-          fieldName="rtmpServerPort"
-          {...TEXTFIELD_PROPS_RTMP_PORT}
-          value={formDataValues.rtmpServerPort}
-          initialValue={rtmpServerPort}
-          type={TEXTFIELD_TYPE_NUMBER}
-          onChange={handleFieldChange}
-        />
+        <div className="streamkey-notice">
+          Save this key somewhere safe, you will need it to stream or login to the admin
+          dashboard!
+        </div>
       </div>
+      <TextFieldWithSubmit
+        fieldName="ffmpegPath"
+        {...TEXTFIELD_PROPS_FFMPEG}
+        value={formDataValues.ffmpegPath}
+        initialValue={ffmpegPath}
+        onChange={handleFieldChange}
+      />
+      <TextFieldWithSubmit
+        fieldName="webServerPort"
+        {...TEXTFIELD_PROPS_WEB_PORT}
+        value={formDataValues.webServerPort}
+        initialValue={webServerPort}
+        type={TEXTFIELD_TYPE_NUMBER}
+        onChange={handleFieldChange}
+      />
+      <TextFieldWithSubmit
+        fieldName="rtmpServerPort"
+        {...TEXTFIELD_PROPS_RTMP_PORT}
+        value={formDataValues.rtmpServerPort}
+        initialValue={rtmpServerPort}
+        type={TEXTFIELD_TYPE_NUMBER}
+        onChange={handleFieldChange}
+      />
     </div>
   );
 }

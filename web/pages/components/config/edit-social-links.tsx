@@ -9,14 +9,14 @@ import {
   API_SOCIAL_HANDLES,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
-  SUCCESS_STATES,
   DEFAULT_SOCIAL_HANDLE,
   OTHER_SOCIAL_HANDLE_OPTION,
 } from './constants';
-import { SocialHandle } from '../../../types/config-section';
+import { SocialHandle, UpdateArgs } from '../../../types/config-section';
 import { isValidUrl } from '../../../utils/urls';
-
-import configStyles from '../../../styles/config-pages.module.scss';
+import TextField from './form-textfield';
+import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../../utils/input-statuses';
+import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
 
@@ -33,7 +33,6 @@ export default function EditSocialLinks() {
   const [modalDataState, setModalDataState] = useState(DEFAULT_SOCIAL_HANDLE);
 
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
@@ -73,7 +72,6 @@ export default function EditSocialLinks() {
 
   const resetStates = () => {
     setSubmitStatus(null);
-    setSubmitStatusMessage('');
     resetTimer = null;
     clearTimeout(resetTimer);
   };
@@ -108,8 +106,8 @@ export default function EditSocialLinks() {
     const { value } = event.target;
     updateModalState('platform', value);
   };
-  const handleUrlChange = event => {
-    const { value } = event.target;
+
+  const handleUrlChange = ({ value }: UpdateArgs) => {
     updateModalState('url', value);
   };
 
@@ -129,13 +127,12 @@ export default function EditSocialLinks() {
         setModalProcessing(false);
         handleModalCancel();
 
-        setSubmitStatus('success');
-        setSubmitStatusMessage('Social Handles updated.');
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS));
+
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {
-        setSubmitStatus('error');
-        setSubmitStatusMessage(message);
+        setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
@@ -223,24 +220,16 @@ export default function EditSocialLinks() {
     },
   ];
 
-  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
-    SUCCESS_STATES[submitStatus] || {};
-  const statusMessage = (
-    <div className={`status-message ${submitStatus || ''}`}>
-      {newStatusIcon} {newStatusMessage} {submitStatusMessage}
-    </div>
-  );
-
   const okButtonProps = {
     disabled: !isValidUrl(modalDataState.url),
   };
 
   return (
-    <div className={configStyles.socialLinksEditor}>
+    <div className="social-links-edit-container">
       <Title level={2}>Social Links</Title>
       <p>Add all your social media handles and links to your other profiles here.</p>
 
-      {statusMessage}
+      <FormStatusIndicator status={submitStatus} />
 
       <Table
         className="dataTable"
@@ -275,14 +264,14 @@ export default function EditSocialLinks() {
           </>
         ) : null}
         <br />
-        URL
-        <Input
+        <TextField
+          fieldName="social-url"
+          label="URL"
           placeholder="Url to page"
-          defaultValue={modalDataState.url}
           value={modalDataState.url}
           onChange={handleUrlChange}
         />
-        {statusMessage}
+        <FormStatusIndicator status={submitStatus} />
       </Modal>
       <br />
       <Button

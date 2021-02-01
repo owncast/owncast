@@ -13,12 +13,7 @@ export const STATUS_PROCESSING = 'proessing';
 export const STATUS_SUCCESS = 'success';
 export const STATUS_WARNING = 'warning';
 
-export type InputStatusTypes =
-  | typeof STATUS_ERROR
-  | typeof STATUS_INVALID
-  | typeof STATUS_PROCESSING
-  | typeof STATUS_SUCCESS
-  | typeof STATUS_WARNING;
+export type InputStatusTypes = 'error' | 'invalid' | 'proessing' | 'success' | 'warning';
 
 export type StatusState = {
   type: InputStatusTypes;
@@ -28,22 +23,27 @@ export type StatusState = {
 
 export const INPUT_STATES = {
   [STATUS_SUCCESS]: {
+    type: STATUS_SUCCESS,
     icon: <CheckCircleFilled style={{ color: 'green' }} />,
     message: 'Success!',
   },
   [STATUS_ERROR]: {
+    type: STATUS_ERROR,
     icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
     message: 'An error occurred.',
   },
   [STATUS_INVALID]: {
+    type: STATUS_INVALID,
     icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
     message: 'An error occurred.',
   },
   [STATUS_PROCESSING]: {
+    type: STATUS_PROCESSING,
     icon: <LoadingOutlined />,
     message: '',
   },
   [STATUS_WARNING]: {
+    type: STATUS_WARNING,
     icon: <WarningOutlined style={{ color: '#fc0' }} />,
     message: '',
   },

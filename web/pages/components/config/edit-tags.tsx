@@ -19,7 +19,7 @@ const { Title } = Typography;
 
 export default function EditInstanceTags() {
   const [newTagInput, setNewTagInput] = useState<string | number>('');
-  const [fieldStatus, setFieldStatus] = useState<StatusState>(null);
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
@@ -38,34 +38,34 @@ export default function EditInstanceTags() {
   }, []);
 
   const resetStates = () => {
-    setFieldStatus(null);
+    setSubmitStatus(null);
     resetTimer = null;
     clearTimeout(resetTimer);
   };
 
   // posts all the tags at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
-    setFieldStatus(createInputStatus(STATUS_PROCESSING));
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
 
     await postConfigUpdateToAPI({
       apiPath,
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 'tags', value: postValue, path: configPath });
-        setFieldStatus(createInputStatus(STATUS_SUCCESS, 'Tags updated.'));
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Tags updated.'));
         setNewTagInput('');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {
-        setFieldStatus(createInputStatus(STATUS_ERROR, message));
+        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
   };
 
   const handleInputChange = ({ value }: UpdateArgs) => {
-    if (!fieldStatus) {
-      setFieldStatus(null);
+    if (!submitStatus) {
+      setSubmitStatus(null);
     }
     setNewTagInput(value);
   };
@@ -75,11 +75,11 @@ export default function EditInstanceTags() {
     resetStates();
     const newTag = newTagInput.trim();
     if (newTag === '') {
-      setFieldStatus(createInputStatus(STATUS_WARNING, 'Please enter a tag'));
+      setSubmitStatus(createInputStatus(STATUS_WARNING, 'Please enter a tag'));
       return;
     }
     if (tags.some(tag => tag.toLowerCase() === newTag.toLowerCase())) {
-      setFieldStatus(createInputStatus(STATUS_WARNING, 'This tag is already used!'));
+      setSubmitStatus(createInputStatus(STATUS_WARNING, 'This tag is already used!'));
       return;
     }
 
@@ -121,7 +121,7 @@ export default function EditInstanceTags() {
           onPressEnter={handleSubmitNewTag}
           maxLength={maxLength}
           placeholder={placeholder}
-          status={fieldStatus}
+          status={submitStatus}
         />
       </div>
     </div>

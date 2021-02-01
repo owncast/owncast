@@ -1,8 +1,15 @@
 import React, { useState, useContext } from 'react';
 import { Switch } from 'antd';
-import { FormItemProps } from 'antd/es/form';
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+} from '../../../utils/input-statuses';
+import FormStatusIndicator from './form-status-indicator';
 
-import { RESET_TIMEOUT, SUCCESS_STATES, postConfigUpdateToAPI } from './constants';
+import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import InfoTip from '../info-tip';
@@ -19,8 +26,7 @@ interface ToggleSwitchProps {
 }
 
 export default function ToggleSwitch(props: ToggleSwitchProps) {
-  const [submitStatus, setSubmitStatus] = useState<FormItemProps['validateStatus']>('');
-  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   let resetTimer = null;
 
@@ -30,37 +36,35 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
   const { apiPath, checked, configPath = '', disabled = false, fieldName, label, tip } = props;
 
   const resetStates = () => {
-    setSubmitStatus('');
+    setSubmitStatus(null);
     clearTimeout(resetTimer);
     resetTimer = null;
   };
 
   const handleChange = async (isChecked: boolean) => {
-    setSubmitStatus('validating');
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
+
     await postConfigUpdateToAPI({
       apiPath,
       data: { value: isChecked },
       onSuccess: () => {
         setFieldInConfigState({ fieldName, value: isChecked, path: configPath });
-        setSubmitStatus('success');
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS));
       },
       onError: (message: string) => {
-        setSubmitStatus('error');
-        setSubmitStatusMessage(`There was an error: ${message}`);
+        setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
       },
     });
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
-  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
-    SUCCESS_STATES[submitStatus] || {};
-
+  const loading = submitStatus !== null && submitStatus.type === STATUS_PROCESSING;
   return (
     <div className="toggleswitch-container">
       <div className="toggleswitch">
         <Switch
           className={`switch field-${fieldName}`}
-          loading={submitStatus === 'validating'}
+          loading={loading}
           onChange={handleChange}
           defaultChecked={checked}
           checked={checked}
@@ -71,11 +75,8 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
         <span className="label">
           {label} <InfoTip tip={tip} />
         </span>
-        {submitStatus}
       </div>
-      <div className={`status-message ${submitStatus || ''}`}>
-        {newStatusIcon} {newStatusMessage} {submitStatusMessage}
-      </div>
+      <FormStatusIndicator status={submitStatus} />
     </div>
   );
 }

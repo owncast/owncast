@@ -98,30 +98,30 @@
 
 // form-toggleswitch
 // form-toggleswitch
-.toggleswitch-container {
-  .status-message {
-    margin-top: .25rem;
-  }
-}
-.toggleswitch {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  .label {
-    font-weight: bold;
-    color: var(--owncast-purple);
-  }
-  .info-tip {
-    margin-left: .5rem;
-    svg {
-      fill: white;
-    }
-  }
-  .ant-form-item {
-    margin: 0 .75rem 0 0;
-  }
-}
+// .toggleswitch-container {
+//   .status-message {
+//     margin-top: .25rem;
+//   }
+// }
+// .toggleswitch {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: flex-start;
+//   .label {
+//     font-weight: bold;
+//     color: var(--owncast-purple);
+//   }
+//   .info-tip {
+//     margin-left: .5rem;
+//     svg {
+//       fill: white;
+//     }
+//   }
+//   .ant-form-item {
+//     margin: 0 .75rem 0 0;
+//   }
+// }
 
 // TAGS STUFF
 // TAGS STUFF
@@ -321,3 +321,62 @@
 //     }
 //   }
 // }
+
+
+
+
+// EDIT STORAGE
+.edit-storage-container {
+  .form-fields {
+    display: none;
+    margin-bottom: 1em;
+  }
+  &.enabled {
+    .form-fields {
+      display: block;
+    }
+  }
+
+  .button-container {
+    margin: 1em 0;
+  }
+  .advanced-section {
+    margin: 1em 0;
+  }
+}
+
+.field-container {
+  padding: .85em 0 .5em;
+  &:nth-child(even) {
+    background-color: rgba(0,0,0,.25);
+  }
+}
+
+
+
+.field-streamkey-container {
+  .left-side {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;  
+  }
+  .textfield-with-submit-container {
+    margin-bottom: 0;
+    .textfield-container {
+     max-width: 400px;
+    }
+  }
+
+  .streamkey-actions {
+    max-width: 90px;
+    button {
+      margin: .25em;
+    }
+  }
+  .streamkey-notice {
+    font-size: 0.75em;
+    color: var(--ant-error);
+    margin-left: 12em;
+    margin-bottom: 1em;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Button } from 'antd';
-
+import classNames from 'classnames';
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
@@ -13,6 +13,7 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import { UpdateArgs } from '../../../types/config-section';
+import FormStatusIndicator from './form-status-indicator';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -27,7 +28,7 @@ interface TextFieldWithSubmitProps extends TextFieldProps {
 }
 
 export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
-  const [fieldStatus, setFieldStatus] = useState<StatusState>(null);
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const [hasChanged, setHasChanged] = useState(false);
 
@@ -43,11 +44,11 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     ...textFieldProps // rest of props
   } = props;
 
-  const { fieldName, required, status, value, onChange, onSubmit } = textFieldProps;
+  const { fieldName, required, tip, status, value, onChange, onSubmit } = textFieldProps;
 
   // Clear out any validation states and messaging
   const resetStates = () => {
-    setFieldStatus(null);
+    setSubmitStatus(null);
     setHasChanged(false);
     clearTimeout(resetTimer);
     resetTimer = null;
@@ -83,17 +84,17 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
   // how to get current value of input
   const handleSubmit = async () => {
     if ((required && value !== '') || value !== initialValue) {
-      setFieldStatus(createInputStatus(STATUS_PROCESSING));
+      setSubmitStatus(createInputStatus(STATUS_PROCESSING));
 
       await postConfigUpdateToAPI({
         apiPath,
         data: { value },
         onSuccess: () => {
           setFieldInConfigState({ fieldName, value, path: configPath });
-          setFieldStatus(createInputStatus(STATUS_SUCCESS));
+          setSubmitStatus(createInputStatus(STATUS_SUCCESS));
         },
         onError: (message: string) => {
-          setFieldStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
+          setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
         },
       });
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
@@ -105,23 +106,38 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     }
   };
 
+  const textfieldContainerClass = classNames({
+    'textfield-with-submit-container': true,
+    submittable: hasChanged,
+  });
   return (
-    <div className="textfield-with-submit-container">
-      <TextField
-        {...textFieldProps}
-        status={status || fieldStatus}
-        onSubmit={null}
-        onBlur={handleBlur}
-        onChange={handleChange}
-      />
-
-      {hasChanged ? (
-        <div className="update-button-container">
-          <Button type="primary" size="small" className="submit-button" onClick={handleSubmit}>
-            Update
-          </Button>
+    <div className={textfieldContainerClass}>
+      <div className="textfield-component">
+        <TextField
+          {...textFieldProps}
+          onSubmit={null}
+          onBlur={handleBlur}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="textfield-container lower-container">
+        <p className="label-spacer" />
+        <div className="lower-content">
+          <div className="field-tip">{tip}</div>
+          <FormStatusIndicator status={status || submitStatus} />
+          <div className="update-button-container">
+            <Button
+              type="primary"
+              size="small"
+              className="submit-button"
+              onClick={handleSubmit}
+              disabled={!hasChanged}
+            >
+              Update
+            </Button>
+          </div>
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }

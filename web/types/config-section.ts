@@ -63,11 +63,22 @@ export interface VideoSettingsFields {
   cpuUsageLevel: CpuUsageLevel;
 }
 
+export interface S3Field {
+  acl?: string;
+  accessKey: string;
+  bucket: string;
+  enabled: boolean;
+  endpoint: string;
+  region: string;
+  secret: string;
+  servingEndpoint?: string;
+}
+
 export interface ConfigDetails {
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
   rtmpServerPort: string;
-  s3: any; // tbd
+  s3: S3Field;
   streamKey: string;
   webServerPort: string;
   yp: ConfigDirectoryFields;
