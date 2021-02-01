@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
-import KeyValueTable from "./components/key-value-table";
+import React, { useContext, useState, useEffect } from 'react';
 import { ServerStatusContext } from '../utils/server-status-context';
-import { Typography } from 'antd';
-import Link from 'next/link';
-
+import { Typography, Switch, Input, Button } from 'antd';
+import {
+  postConfigUpdateToAPI,
+  API_S3_INFO,
+} from './components/config/constants';
 const { Title } = Typography;
 
 function Storage({ config }) {
@@ -11,66 +12,89 @@ function Storage({ config }) {
     return null;
   }
 
-  if (!config.s3.enabled) {
-    return (
-      <div>
-      <Title>External Storage</Title>
-      <p>
-        You are currently using the <Link href="/hardware-info">local storage of this Owncast server</Link> to store and distribute video.
-      </p>
-      <p>
-      Owncast can use S3-compatible external storage providers to offload the responsibility of disk and bandwidth utilization from your own server.
-      </p>
+  const [endpoint, setEndpoint] = useState(config.s3.endpoint);
+  const [accessKey, setAccessKey] = useState(config.s3.accessKey);
+  const [secret, setSecret] = useState(config.s3.secret);
+  const [bucket, setBucket] = useState(config.s3.bucket);
+  const [region, setRegion] = useState(config.s3.region);
+  const [acl, setAcl] = useState(config.s3.acl);
+  const [servingEndpoint, setServingEndpoint] = useState(config.s3.servingEndpoint);
+  const [enabled, setEnabled] = useState(config.s3.enabled);
 
-      <p>
-        Visit our <a href="https://owncast.online/docs/s3/">storage documentation</a> to learn how to configure this.
-      </p>
-      </div>
-    );
+  function storageEnabledChanged(storageEnabled) {
+    setEnabled(storageEnabled);
   }
 
-  const data = [
-    {
-      name: "Enabled",
-      value: config.s3.enabled.toString(),
-    },
-    {
-      name: "Endpoint",
-      value: config.s3.endpoint,
-    },
-    {
-      name: "Access Key",
-      value: config.s3.accessKey,
-    },
-    {
-      name: "Secret",
-      value: config.s3.secret,
-    },
-    {
-      name: "Bucket",
-      value: config.s3.bucket,
-    },
-    {
-      name: "Region",
-      value: config.s3.region,
-    },
-  ];
+  function endpointChanged(e) {
+    setEndpoint(e.target.value)
+  }
 
-  const advanced = [
-    {
-      name: "ACL",
-      value: config.s3.acl
-    },
-    {
-      name: "Serving Endpoint",
-      value: config.s3.servingEndpoint
-    },
-  ];
+  function accessKeyChanged(e) {
+    setAccessKey(e.target.value)
+  }
+
+  function secretChanged(e) {
+    setSecret(e.target.value)
+  }
+
+  function bucketChanged(e) {
+    setBucket(e.target.value)
+  }
+
+  function regionChanged(e) {
+    setRegion(e.target.value)
+  }
+
+  function aclChanged(e) {
+    setAcl(e.target.value)
+  }
+
+  function servingEndpointChanged(e) {
+    setServingEndpoint(e.target.value)
+  }
+
+  async function save() {
+    const payload = {
+      value: {
+        enabled: enabled,
+        endpoint: endpoint,
+        accessKey: accessKey,
+        secret: secret,
+        bucket: bucket,
+        region: region,
+        acl: acl,
+        servingEndpoint: servingEndpoint,
+      }
+    };
+
+    try {
+      await postConfigUpdateToAPI({apiPath: API_S3_INFO, data: payload});
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  const table = enabled ? (
+    <>
+    <br></br>
+    endpoint <Input defaultValue={endpoint} value={endpoint} onChange={endpointChanged} />
+    access key<Input label="Access key" defaultValue={accessKey} value={accessKey} onChange={accessKeyChanged} />
+    secret <Input label="Secret" defaultValue={secret} value={secret} onChange={secretChanged} />
+    bucket <Input label="Bucket" defaultValue={bucket} value={bucket} onChange={bucketChanged} />
+    region <Input label="Region" defaultValue={region} value={region} onChange={regionChanged} />
+    advanced<br></br>
+    acl <Input label="ACL" defaultValue={acl} value={acl} onChange={aclChanged} />
+    serving endpoint <Input label="Serving endpoint" defaultValue={servingEndpoint} value={servingEndpoint} onChange={servingEndpointChanged} />
+    <Button onClick={save}>Save</Button>
+    </>
+  ): null;
 
   return (
     <>
-      <KeyValueTable title="External Storage" data={data} />
-      <KeyValueTable title="Advanced options" data={advanced} />
+      <Title level={2}>Storage</Title>
+      Enabled: 
+      <Switch checked={enabled} onChange={storageEnabledChanged} />
+      { table }
     </>
   );
 }
