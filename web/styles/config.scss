@@ -355,6 +355,10 @@
 
 
 .field-streamkey-container {
+  margin-bottom: 1.5em;
+  .field-tip {
+    color: var(--ant-warning);
+  }
   .left-side {
     display: flex;
     flex-direction: row;
@@ -362,21 +366,15 @@
   }
   .textfield-with-submit-container {
     margin-bottom: 0;
-    .textfield-container {
-     max-width: 400px;
-    }
   }
 
   .streamkey-actions {
-    max-width: 90px;
+    white-space: nowrap;
     button {
       margin: .25em;
     }
-  }
-  .streamkey-notice {
-    font-size: 0.75em;
-    color: var(--ant-error);
-    margin-left: 12em;
-    margin-bottom: 1em;
+    @media (max-width: 800px) {
+      margin-top: 2em;
+    }
   }
 }

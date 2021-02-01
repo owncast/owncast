@@ -75,15 +75,17 @@ export default function EditInstanceDetails() {
             onChange={handleFieldChange}
           />
           <div className="streamkey-actions">
-            <Tooltip className="copy-tooltip" title="Copied!" trigger="" visible={copyIsVisible}>
+            <Tooltip title="Generate a stream key">
+              <Button icon={<RedoOutlined />} size="small" onClick={generateStreamKey} />
+            </Tooltip>
+
+            <Tooltip
+              className="copy-tooltip"
+              title={copyIsVisible ? 'Copied!' : 'Copy to clipboard'}
+            >
               <Button icon={<CopyOutlined />} size="small" onClick={copyStreamKey} />
             </Tooltip>
-            <Button icon={<RedoOutlined />} size="small" onClick={generateStreamKey} />
           </div>
-        </div>
-        <div className="streamkey-notice">
-          Save this key somewhere safe, you will need it to stream or login to the admin
-          dashboard!
         </div>
       </div>
       <TextFieldWithSubmit

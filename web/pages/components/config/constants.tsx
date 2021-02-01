@@ -97,7 +97,7 @@ export const TEXTFIELD_PROPS_STREAM_KEY = {
   maxLength: TEXT_MAXLENGTH,
   placeholder: 'abc123',
   label: 'Stream Key',
-  tip: 'Secret stream key',
+  tip: 'Save this key somewhere safe, you will need it to stream or login to the admin dashboard!',
   required: true,
 };
 export const TEXTFIELD_PROPS_FFMPEG = {
