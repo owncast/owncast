@@ -23,7 +23,16 @@ export const initialServerConfigState: ConfigDetails = {
   ffmpegPath: '',
   rtmpServerPort: '',
   webServerPort: '',
-  s3: {},
+  s3: {
+    accessKey: '',
+    acl: '',
+    bucket: '',
+    enabled: false,
+    endpoint: '',
+    region: '',
+    secret: '',
+    servingEndpoint: '',
+  },
   yp: {
     enabled: false,
     instanceUrl: '',
@@ -32,7 +41,7 @@ export const initialServerConfigState: ConfigDetails = {
     latencyLevel: 4,
     cpuUsageLevel: 3,
     videoQualityVariants: [DEFAULT_VARIANT_STATE],
-  }
+  },
 };
 
 const initialServerStatusState = {
@@ -51,7 +60,9 @@ export const ServerStatusContext = React.createContext({
   ...initialServerStatusState,
   serverConfig: initialServerConfigState,
 
-  setFieldInConfigState: (args: UpdateArgs) => { return args },
+  setFieldInConfigState: (args: UpdateArgs) => {
+    return args;
+  },
 });
 
 const ServerStatusProvider = ({ children }) => {
@@ -62,7 +73,6 @@ const ServerStatusProvider = ({ children }) => {
     try {
       const result = await fetchData(STATUS);
       setStatus({ ...result });
-
     } catch (error) {
       // todo
     }
@@ -77,22 +87,21 @@ const ServerStatusProvider = ({ children }) => {
   };
 
   const setFieldInConfigState = ({ fieldName, value, path }: UpdateArgs) => {
-    const updatedConfig = path ? 
-    {
-      ...config,
-      [path]: {
-        ...config[path],
-        [fieldName]: value,
-      },
-    } :
-    {
-      ...config,
-      [fieldName]: value,
-    };
+    const updatedConfig = path
+      ? {
+          ...config,
+          [path]: {
+            ...config[path],
+            [fieldName]: value,
+          },
+        }
+      : {
+          ...config,
+          [fieldName]: value,
+        };
     setConfig(updatedConfig);
   };
 
-  
   useEffect(() => {
     let getStatusIntervalId = null;
 
@@ -101,24 +110,22 @@ const ServerStatusProvider = ({ children }) => {
 
     getConfig();
 
-    // returned function will be called on component unmount 
+    // returned function will be called on component unmount
     return () => {
       clearInterval(getStatusIntervalId);
-    }
+    };
   }, []);
 
   const providerValue = {
-      ...status,
-      serverConfig: config,
+    ...status,
+    serverConfig: config,
 
-      setFieldInConfigState,
+    setFieldInConfigState,
   };
   return (
-    <ServerStatusContext.Provider value={providerValue}>
-      {children}
-    </ServerStatusContext.Provider>
+    <ServerStatusContext.Provider value={providerValue}>{children}</ServerStatusContext.Provider>
   );
-}
+};
 
 ServerStatusProvider.propTypes = {
   children: PropTypes.element.isRequired,

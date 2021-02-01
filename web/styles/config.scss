@@ -98,30 +98,30 @@
 
 // form-toggleswitch
 // form-toggleswitch
-.toggleswitch-container {
-  .status-message {
-    margin-top: .25rem;
-  }
-}
-.toggleswitch {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  .label {
-    font-weight: bold;
-    color: var(--owncast-purple);
-  }
-  .info-tip {
-    margin-left: .5rem;
-    svg {
-      fill: white;
-    }
-  }
-  .ant-form-item {
-    margin: 0 .75rem 0 0;
-  }
-}
+// .toggleswitch-container {
+//   .status-message {
+//     margin-top: .25rem;
+//   }
+// }
+// .toggleswitch {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: flex-start;
+//   .label {
+//     font-weight: bold;
+//     color: var(--owncast-purple);
+//   }
+//   .info-tip {
+//     margin-left: .5rem;
+//     svg {
+//       fill: white;
+//     }
+//   }
+//   .ant-form-item {
+//     margin: 0 .75rem 0 0;
+//   }
+// }
 
 // TAGS STUFF
 // TAGS STUFF
@@ -321,3 +321,23 @@
 //     }
 //   }
 // }
+
+
+
+
+// EDIT STORAGE
+.edit-storage-container {
+  .form-fields {
+    display: none;
+    margin-bottom: 1em;
+  }
+  &.enabled {
+    .form-fields {
+      display: block;
+    }
+  }
+
+  .button-container {
+    margin: 1em 0;
+  }
+}

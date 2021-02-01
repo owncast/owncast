@@ -1,111 +1,230 @@
+import { Typography, Switch, Button, Collapse } from 'antd';
+import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
+import { UpdateArgs } from '../types/config-section';
 import { ServerStatusContext } from '../utils/server-status-context';
-import { Typography, Switch, Input, Button } from 'antd';
 import {
   postConfigUpdateToAPI,
   API_S3_INFO,
+  RESET_TIMEOUT,
+  S3_TEXT_FIELDS_INFO,
 } from './components/config/constants';
-const { Title } = Typography;
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+} from '../utils/input-statuses';
+import TextField from './components/config/form-textfield';
+import InputStatusInfo from './components/config/input-status-info';
 
-function Storage({ config }) {
-  if (!config || !config.s3) {
+const { Title } = Typography;
+const { Panel } = Collapse;
+
+// we could probably add more detailed checks here
+// `currentValues` is what's currently in the global store and in the db
+function checkSaveable(formValues: any, currentValues: any) {
+  const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl } = formValues;
+  // if fields are filled out and different from what's in store, then return true
+  if (enabled) {
+    if (endpoint !== '' && accessKey !== '' && secret !== '' && bucket !== '' && region !== '') {
+      if (
+        endpoint !== currentValues.endpoint ||
+        accessKey !== currentValues.accessKey ||
+        secret !== currentValues.bucket ||
+        region !== currentValues.region ||
+        servingEndpoint !== currentValues.servingEndpoint ||
+        acl !== currentValues.acl
+      ) {
+        return true;
+      }
+    }
+  } else if (enabled !== currentValues.enabled) {
+    return true;
+  }
+  return false;
+}
+
+function EditStorage() {
+  const [formDataValues, setFormDataValues] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
+
+  const [shouldDisplayForm, setShouldDisplayForm] = useState(false);
+  const serverStatusData = useContext(ServerStatusContext);
+  const { serverConfig, setFieldInConfigState } = serverStatusData || {};
+
+  const { s3 } = serverConfig;
+  const {
+    accessKey = '',
+    acl = '',
+    bucket = '',
+    enabled = false,
+    endpoint = '',
+    region = '',
+    secret = '',
+    servingEndpoint = '',
+  } = s3;
+
+  useEffect(() => {
+    setFormDataValues({
+      accessKey,
+      acl,
+      bucket,
+      enabled,
+      endpoint,
+      region,
+      secret,
+      servingEndpoint,
+    });
+    setShouldDisplayForm(enabled);
+  }, [s3]);
+
+  if (!formDataValues) {
     return null;
   }
 
-  const [endpoint, setEndpoint] = useState(config.s3.endpoint);
-  const [accessKey, setAccessKey] = useState(config.s3.accessKey);
-  const [secret, setSecret] = useState(config.s3.secret);
-  const [bucket, setBucket] = useState(config.s3.bucket);
-  const [region, setRegion] = useState(config.s3.region);
-  const [acl, setAcl] = useState(config.s3.acl);
-  const [servingEndpoint, setServingEndpoint] = useState(config.s3.servingEndpoint);
-  const [enabled, setEnabled] = useState(config.s3.enabled);
+  let resetTimer = null;
+  const resetStates = () => {
+    setSubmitStatus(null);
+    resetTimer = null;
+    clearTimeout(resetTimer);
+  };
 
-  function storageEnabledChanged(storageEnabled) {
-    setEnabled(storageEnabled);
-  }
+  // update individual values in state
+  const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
+    setFormDataValues({
+      ...formDataValues,
+      [fieldName]: value,
+    });
+  };
 
-  function endpointChanged(e) {
-    setEndpoint(e.target.value)
-  }
+  // posts the whole state
+  const handleSave = async () => {
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
+    const postValue = formDataValues;
 
-  function accessKeyChanged(e) {
-    setAccessKey(e.target.value)
-  }
+    await postConfigUpdateToAPI({
+      apiPath: API_S3_INFO,
+      data: { value: postValue },
+      onSuccess: () => {
+        setFieldInConfigState({ fieldName: 's3', value: postValue, path: '' });
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+      },
+      onError: (message: string) => {
+        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+      },
+    });
+  };
 
-  function secretChanged(e) {
-    setSecret(e.target.value)
-  }
+  // toggle switch.
+  const handleSwitchChange = (storageEnabled: boolean) => {
+    setShouldDisplayForm(storageEnabled);
+    handleFieldChange({ fieldName: 'enabled', value: storageEnabled });
 
-  function bucketChanged(e) {
-    setBucket(e.target.value)
-  }
+    // if current data in current store says s3 is enabled,
+    // we should save this state
+    // if (!storageEnabled && s3.enabled) {
+    //   handleSave();
+    // }
+  };
 
-  function regionChanged(e) {
-    setRegion(e.target.value)
-  }
+  const containerClass = classNames({
+    'edit-storage-container': true,
+    enabled: shouldDisplayForm,
+  });
 
-  function aclChanged(e) {
-    setAcl(e.target.value)
-  }
-
-  function servingEndpointChanged(e) {
-    setServingEndpoint(e.target.value)
-  }
-
-  async function save() {
-    const payload = {
-      value: {
-        enabled: enabled,
-        endpoint: endpoint,
-        accessKey: accessKey,
-        secret: secret,
-        bucket: bucket,
-        region: region,
-        acl: acl,
-        servingEndpoint: servingEndpoint,
-      }
-    };
-
-    try {
-      await postConfigUpdateToAPI({apiPath: API_S3_INFO, data: payload});
-    } catch(e) {
-      console.error(e);
-    }
-  }
-
-  const table = enabled ? (
-    <>
-    <br></br>
-    endpoint <Input defaultValue={endpoint} value={endpoint} onChange={endpointChanged} />
-    access key<Input label="Access key" defaultValue={accessKey} value={accessKey} onChange={accessKeyChanged} />
-    secret <Input label="Secret" defaultValue={secret} value={secret} onChange={secretChanged} />
-    bucket <Input label="Bucket" defaultValue={bucket} value={bucket} onChange={bucketChanged} />
-    region <Input label="Region" defaultValue={region} value={region} onChange={regionChanged} />
-    advanced<br></br>
-    acl <Input label="ACL" defaultValue={acl} value={acl} onChange={aclChanged} />
-    serving endpoint <Input label="Serving endpoint" defaultValue={servingEndpoint} value={servingEndpoint} onChange={servingEndpointChanged} />
-    <Button onClick={save}>Save</Button>
-    </>
-  ): null;
+  const isSaveable = checkSaveable(formDataValues, s3);
 
   return (
-    <>
-      <Title level={2}>Storage</Title>
-      Enabled: 
-      <Switch checked={enabled} onChange={storageEnabledChanged} />
-      { table }
-    </>
+    <div className={containerClass}>
+      <div className="enable-switch">
+        <Switch
+          checked={formDataValues.enabled}
+          defaultChecked={formDataValues.enabled}
+          onChange={handleSwitchChange}
+          checkedChildren="ON"
+          unCheckedChildren="OFF"
+        />{' '}
+        Enabled
+      </div>
+
+      <div className="form-fields">
+        <div className="field-container">
+          <TextField
+            {...S3_TEXT_FIELDS_INFO.endpoint}
+            value={formDataValues.endpoint}
+            onChange={handleFieldChange}
+          />
+        </div>
+        <div className="field-container">
+          <TextField
+            {...S3_TEXT_FIELDS_INFO.accessKey}
+            value={formDataValues.accessKey}
+            onChange={handleFieldChange}
+          />
+        </div>
+        <div className="field-container">
+          <TextField
+            {...S3_TEXT_FIELDS_INFO.secret}
+            value={formDataValues.secret}
+            onChange={handleFieldChange}
+          />
+        </div>
+        <div className="field-container">
+          <TextField
+            {...S3_TEXT_FIELDS_INFO.bucket}
+            value={formDataValues.bucket}
+            onChange={handleFieldChange}
+          />
+        </div>
+        <div className="field-container">
+          <TextField
+            {...S3_TEXT_FIELDS_INFO.region}
+            value={formDataValues.region}
+            onChange={handleFieldChange}
+          />
+        </div>
+
+        <Collapse>
+          <Panel header="Advanced Settings" key="1">
+            <Title level={4}>Advanced</Title>
+
+            <div className="field-container">
+              <TextField
+                {...S3_TEXT_FIELDS_INFO.acl}
+                value={formDataValues.acl}
+                onChange={handleFieldChange}
+              />
+            </div>
+            <div className="field-container">
+              <TextField
+                {...S3_TEXT_FIELDS_INFO.servingEndpoint}
+                value={formDataValues.servingEndpoint}
+                onChange={handleFieldChange}
+              />
+            </div>
+          </Panel>
+        </Collapse>
+      </div>
+
+      <div className="button-container">
+        <Button onClick={handleSave} disabled={!isSaveable}>
+          Save
+        </Button>
+        <InputStatusInfo status={submitStatus} />
+      </div>
+    </div>
   );
 }
 
-export default function ServerConfig() {
-  const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig: config } = serverStatusData || {};
-
+export default function ConfigStorageInfo() {
   return (
-    <div>
-        <Storage config={config} />
-    </div>
+    <>
+      <Title level={2}>Storage</Title>
+      <EditStorage />
+    </>
   );
 }

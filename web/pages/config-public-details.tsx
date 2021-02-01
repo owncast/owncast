@@ -11,14 +11,12 @@ export default function PublicFacingDetails() {
     <>
       <Title level={2}>Edit your public facing instance details</Title>
 
-      <div className={`publicDetailsContainer`}>
-        <div className={`textFieldsSection`}>
-          <EditInstanceDetails />
+      <div className="edit-public-details-container">
+        <EditInstanceDetails />
 
-          <Link href="/admin/config-page-content">
-            <a>Edit your extra page content here.</a>
-          </Link>
-        </div>
+        <Link href="/admin/config-page-content">
+          <a>Edit your extra page content here.</a>
+        </Link>
       </div>
     </>
   );
