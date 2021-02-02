@@ -197,7 +197,7 @@ export default function VideoVariantForm({
           <Divider />
 
           {/* AUDIO PASSTHROUGH FIELD */}
-          <div className="field">
+          {/* <div className="field">
             <p className="label">
               <InfoTip tip={VIDEO_VARIANT_DEFAULTS.audioPassthrough.tip} />
               Use Audio Passthrough?
@@ -212,10 +212,10 @@ export default function VideoVariantForm({
               />
               {dataState.audioPassthrough ? <span className="note">Same as source</span> : null}
             </div>
-          </div>
+          </div> */}
 
           {/* AUDIO BITRATE FIELD */}
-          <div className={`field ${dataState.audioPassthrough ? 'disabled' : ''}`}>
+          {/* <div className={`field ${dataState.audioPassthrough ? 'disabled' : ''}`}>
             <p className="label">
               <InfoTip tip={VIDEO_VARIANT_DEFAULTS.audioBitrate.tip} />
               Audio Bitrate:
@@ -241,7 +241,7 @@ export default function VideoVariantForm({
                 <span className="selected-value-note">{selectedAudioBRnote}</span>
               ) : null}
             </div>
-          </div>
+          </div> */}
         </Panel>
       </Collapse>
     </div>
