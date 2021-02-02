@@ -199,6 +199,7 @@ export default class App extends Component {
       viewerCount,
       online,
       lastConnectTime,
+      streamTitle,
     } = status;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
@@ -215,6 +216,7 @@ export default class App extends Component {
       viewerCount,
       lastConnectTime,
       streamOnline: online,
+      streamTitle,
     });
   }
 
@@ -282,6 +284,7 @@ export default class App extends Component {
       playerActive: true,
       streamOnline: true,
       chatInputEnabled: true,
+      streamTitle: '',
       streamStatusMessage: MESSAGE_ONLINE,
     });
 
@@ -396,6 +399,7 @@ export default class App extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
+      streamTitle,
       touchKeyboardActive,
       username,
       viewerCount,
@@ -413,7 +417,6 @@ export default class App extends Component {
       summary,
       tags = [],
       title,
-      streamTitle,
       extraPageContent,
     } = configData;
 

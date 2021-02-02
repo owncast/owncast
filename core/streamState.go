@@ -171,12 +171,12 @@ func StartOfflineCleanupTimer() {
 		for range _offlineCleanupTimer.C {
 			// Reset the session count since the session is over
 			_stats.SessionMaxViewerCount = 0
+			// Clear the stream title
+			data.SetStreamTitle("")
+			// Set video to offline state
 			resetDirectories()
 			transitionToOfflineVideoStreamContent()
 		}
-
-		// Clear the stream title
-		data.SetStreamTitle("")
 	}()
 }
 

@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
 
@@ -24,6 +25,7 @@ func GetStatus() models.Status {
 		LastDisconnectTime:    _stats.LastDisconnectTime,
 		LastConnectTime:       _stats.LastConnectTime,
 		VersionNumber:         config.VersionNumber,
+		StreamTitle:           data.GetStreamTitle(),
 	}
 }
 
