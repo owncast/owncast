@@ -37,6 +37,9 @@ func Start() error {
 	// Once a couple versions pass we can remove the old data migrators.
 	data.RunMigrations()
 
+	// Set an empty stream title at launch
+	data.SetStreamTitle("")
+
 	if err := data.VerifySettings(); err != nil {
 		log.Error(err)
 		return err
