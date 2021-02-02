@@ -47,16 +47,12 @@ func Start() error {
 		return err
 	}
 
-	if err := setupStorage(); err != nil {
-		log.Error("failed to setup the storage")
-		return err
-	}
-
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now
 	// but will play more useful when recordings come into play.
 	handler = transcoder.HLSHandler{}
-	handler.Storage = _storage
+	setupStorage()
+	// handler.Storage = _storage
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
 	if err := createInitialOfflineState(); err != nil {

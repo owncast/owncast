@@ -6,7 +6,6 @@ import (
 )
 
 func setupStorage() error {
-	handler.Storage = _storage
 	s3Config := data.GetS3Config()
 
 	if s3Config.Enabled {
@@ -18,6 +17,8 @@ func setupStorage() error {
 	if err := _storage.Setup(); err != nil {
 		return err
 	}
+
+	handler.Storage = _storage
 
 	return nil
 }

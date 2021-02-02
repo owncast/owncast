@@ -30,6 +30,7 @@ var _currentBroadcast *models.CurrentBroadcast
 
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected() {
+
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
@@ -48,6 +49,10 @@ func setStreamAsConnected() {
 
 	segmentPath := config.PublicHLSStoragePath
 	s3Config := data.GetS3Config()
+
+	if err := setupStorage(); err != nil {
+		log.Fatalln("failed to setup the storage", err)
+	}
 
 	if s3Config.Enabled {
 		segmentPath = config.PrivateHLSStoragePath
