@@ -65,7 +65,7 @@ func getChatHistory(filtered bool) []models.ChatEvent {
 	history := make([]models.ChatEvent, 0)
 
 	// Get all messages sent within the past 5hrs, max 50
-	var query = "SELECT * FROM messages WHERE messageType != 'SYSTEM' AND datetime(timestamp) >=datetime('now', '-5 Hour')"
+	var query = "SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour')"
 	if filtered {
 		query = query + " AND visible = 1 LIMIT 50"
 	}
