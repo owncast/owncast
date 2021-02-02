@@ -174,6 +174,9 @@ func StartOfflineCleanupTimer() {
 			resetDirectories()
 			transitionToOfflineVideoStreamContent()
 		}
+
+		// Clear the stream title
+		data.SetStreamTitle("")
 	}()
 }
 
