@@ -1,4 +1,4 @@
-import { Switch, Button, Collapse } from 'antd';
+import { Switch, Button, Collapse, Alert } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
 import { UpdateArgs } from '../../../types/config-section';
@@ -18,7 +18,7 @@ import {
 } from '../../../utils/input-statuses';
 import TextField from './form-textfield';
 import FormStatusIndicator from './form-status-indicator';
-import {isValidUrl} from '../../../utils/urls';
+import { isValidUrl } from '../../../utils/urls';
 
 const { Panel } = Collapse;
 
@@ -52,6 +52,7 @@ function checkSaveable(formValues: any, currentValues: any) {
 export default function EditStorage() {
   const [formDataValues, setFormDataValues] = useState(null);
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
+  const [saved, setSaved] = useState<Boolean>(false);
 
   const [shouldDisplayForm, setShouldDisplayForm] = useState(false);
   const serverStatusData = useContext(ServerStatusContext);
@@ -114,6 +115,7 @@ export default function EditStorage() {
         setFieldInConfigState({ fieldName: 's3', value: postValue, path: '' });
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        setSaved(true);
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -138,6 +140,14 @@ export default function EditStorage() {
     'edit-storage-container': true,
     enabled: shouldDisplayForm,
   });
+
+  const saveWarning = saved ? (<Alert
+    showIcon
+    message="Storage changes"
+    description="Your storage settings will take effect on your next stream.  If you're currently streaming you'll continue to use the storage configuration previously set."
+    type="warning"
+  />
+  ) : null;
 
   const isSaveable = checkSaveable(formDataValues, s3);
 
@@ -210,6 +220,8 @@ export default function EditStorage() {
           </Panel>
         </Collapse>
       </div>
+
+      {saveWarning}
 
       <div className="button-container">
         <Button type="primary" onClick={handleSave} disabled={!isSaveable}>
