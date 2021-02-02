@@ -54,6 +54,7 @@ const initialServerStatusState = {
   overallPeakViewerCount: 0,
   disableUpgradeChecks: true,
   versionNumber: '0.0.0',
+  streamTitle: '',
 };
 
 export const ServerStatusContext = React.createContext({

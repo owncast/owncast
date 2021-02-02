@@ -35,10 +35,10 @@ export default function MainLayout(props) {
   const { children } = props;
 
   const context = useContext(ServerStatusContext);
-  const { serverConfig, online, broadcaster, versionNumber } = context || {};
+  const { serverConfig, online, broadcaster, versionNumber, streamTitle } = context || {};
   const { instanceDetails } = serverConfig;
 
-  const [streamTitle, setStreamTitle] = useState('');
+  const [currentStreamTitle, setCurrentStreamTitle] = useState(streamTitle);
 
   const router = useRouter();
   const { route } = router || {};
@@ -88,11 +88,11 @@ export default function MainLayout(props) {
   });
 
   useEffect(() => {
-    setStreamTitle(instanceDetails.streamTitle);
-  }, [instanceDetails]);
+    setCurrentStreamTitle(streamTitle);
+  }, [streamTitle]);
 
   const handleStreamTitleChanged = ({ value }: UpdateArgs) => {
-    setStreamTitle(value);
+    setCurrentStreamTitle(value);
   }
 
 
@@ -217,11 +217,12 @@ export default function MainLayout(props) {
         <Header className={adminStyles.header}>
           <div className={adminStyles.globalStreamTitleContainer}>
           <TextFieldWithSubmit
+            apiPath="/streamtitle"
             maxLength={100}
             className={adminStyles.globalStreamTitleInput}
             fieldName="streamTitle"
             placeholder="What you're streaming right now"
-            value={streamTitle}
+            value={currentStreamTitle}
             initialValue={instanceDetails.streamTitle}
             onChange={handleStreamTitleChanged}
           />
