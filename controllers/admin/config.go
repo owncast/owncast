@@ -2,10 +2,12 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -49,12 +51,28 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetStreamTitle(configValue.Value.(string)); err != nil {
+	value := configValue.Value.(string)
+
+	if err := data.SetStreamTitle(value); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
-
+	if value != "" {
+		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value))
+	}
 	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
+func sendSystemChatAction(messageText string) {
+	message := models.ChatEvent{}
+	message.Body = messageText
+	message.MessageType = models.ChatActionSent
+	message.ClientID = "internal-server"
+	message.SetDefaults()
+
+	if err := core.SendMessageToChat(message); err != nil {
+		log.Errorln(err)
+	}
 }
 
 func SetServerName(w http.ResponseWriter, r *http.Request) {
