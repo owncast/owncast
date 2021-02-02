@@ -27,6 +27,9 @@ const { Panel } = Collapse;
 function checkSaveable(formValues: any, currentValues: any) {
   const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl } = formValues;
   // if fields are filled out and different from what's in store, then return true
+  if (!enabled || enabled !== currentValues.enabled) {
+    return true;
+  }
   if (enabled) {
     if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
       if (
