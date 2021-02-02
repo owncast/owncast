@@ -30,6 +30,10 @@ func SendMessageToChat(message models.ChatEvent) error {
 }
 
 // GetAllChatMessages gets all of the chat messages.
-func GetAllChatMessages(filtered bool) []models.ChatEvent {
-	return chat.GetMessages(filtered)
+func GetAllChatMessages() []models.ChatEvent {
+	return chat.GetMessages()
+}
+
+func GetModerationChatMessages() []models.ChatEvent {
+	return chat.GetModerationChatMessages()
 }

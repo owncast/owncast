@@ -51,7 +51,7 @@ type messageVisibilityUpdateRequest struct {
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	messages := core.GetAllChatMessages(false)
+	messages := core.GetModerationChatMessages()
 
 	if err := json.NewEncoder(w).Encode(messages); err != nil {
 		log.Errorln(err)

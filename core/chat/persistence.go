@@ -61,15 +61,8 @@ func addMessage(message models.ChatEvent) {
 	}
 }
 
-func getChatHistory(filtered bool) []models.ChatEvent {
+func getChat(query string) []models.ChatEvent {
 	history := make([]models.ChatEvent, 0)
-
-	// Get all messages sent within the past 5hrs, max 50
-	var query = "SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour')"
-	if filtered {
-		query = query + " AND visible = 1 LIMIT 50"
-	}
-
 	rows, err := _db.Query(query)
 	if err != nil {
 		log.Fatal(err)
@@ -107,6 +100,17 @@ func getChatHistory(filtered bool) []models.ChatEvent {
 	}
 
 	return history
+}
+
+func getChatModerationHistory() []models.ChatEvent {
+	var query = "SELECT * FROM messages WHERE messageType == 'CHAT' AND datetime(timestamp) >=datetime('now', '-5 Hour')"
+	return getChat(query)
+}
+
+func getChatHistory() []models.ChatEvent {
+	// Get all messages sent within the past 5hrs, max 50
+	var query = "SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND visible = 1 LIMIT 50"
+	return getChat(query)
 }
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {

@@ -27,7 +27,7 @@ sleep 5
 
 # Start streaming the test file over RTMP to
 # the local owncast instance.
-ffmpeg -hide_banner -loglevel panic -re -i test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
+ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
 FFMPEG_PID=$!
 
 function finish {

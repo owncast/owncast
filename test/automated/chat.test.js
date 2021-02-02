@@ -37,7 +37,7 @@ test('can send a chat message', (done) => {
 });
 
 test('can fetch chat messages', (done) => {
-    request.get('/api/chat').expect(200)
+    request.get('/api/admin/chat/messages').auth('admin', 'abc123').expect(200)
         .then((res) => {
             expect(res.body[0].author).toBe(testMessage.author);
             expect(res.body[0].body).toBe(messageMarkdown);
