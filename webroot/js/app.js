@@ -477,7 +477,7 @@ export default class App extends Component {
                 <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
               </span>
               <span class="instance-title overflow-hidden truncate"
-                >${title}</span
+                >${streamTitle || title}</span
               >
             </h1>
             <div
