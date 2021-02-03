@@ -160,7 +160,7 @@ export default function MainLayout(props) {
             </Menu.Item>
 
             <Menu.Item key="config-page-content">
-              <Link href="/config-page-content">Custom page content</Link>
+              <Link href="/config-page-content">Page Content</Link>
             </Menu.Item>
 
             <Menu.Item key="config-server-details">
