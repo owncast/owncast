@@ -54,19 +54,11 @@ export async function postConfigUpdateToAPI(args: ApiPostArgs) {
 }
 
 // Some default props to help build out a TextField
-export const TEXTFIELD_PROPS_USERNAME = {
-  apiPath: API_USERNAME,
-  configPath: 'instanceDetails',
-  maxLength: TEXT_MAXLENGTH,
-  placeholder: 'username',
-  label: 'User name',
-  tip: 'Who are you? What name do you want viewers to know you?',
-};
 export const TEXTFIELD_PROPS_SERVER_TITLE = {
   apiPath: API_SERVER_TITLE,
   maxLength: TEXT_MAXLENGTH,
   placeholder: 'Owncast site name', // like "gothland"
-  label: 'Server Name',
+  label: 'Name',
   tip: 'The name of your Owncast server',
 };
 export const TEXTFIELD_PROPS_STREAM_TITLE = {
@@ -79,9 +71,9 @@ export const TEXTFIELD_PROPS_STREAM_TITLE = {
 export const TEXTFIELD_PROPS_SERVER_SUMMARY = {
   apiPath: API_SERVER_SUMMARY,
   maxLength: 500,
-  placeholder: 'Summary',
-  label: 'Summary',
-  tip: 'A brief blurb about what your stream is about.',
+  placeholder: '',
+  label: 'About',
+  tip: 'A brief blurb about you, your server, or what your stream is about.',
 };
 export const TEXTFIELD_PROPS_LOGO = {
   apiPath: API_LOGO,
@@ -133,7 +125,7 @@ export const TEXTFIELD_PROPS_INSTANCE_URL = {
   maxLength: 255,
   placeholder: 'https://owncast.mysite.com',
   label: 'Instance URL',
-  tip: 'Please provide the url to your Owncast site if you enable this Directory setting.',
+  tip: 'The full url to your Owncast server.',
 };
 // MISC FIELDS
 export const FIELD_PROPS_TAGS = {

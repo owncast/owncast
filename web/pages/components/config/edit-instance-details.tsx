@@ -7,10 +7,8 @@ import TextFieldWithSubmit, {
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
-  TEXTFIELD_PROPS_USERNAME,
   TEXTFIELD_PROPS_INSTANCE_URL,
   TEXTFIELD_PROPS_SERVER_TITLE,
-  TEXTFIELD_PROPS_STREAM_TITLE,
   TEXTFIELD_PROPS_SERVER_SUMMARY,
   TEXTFIELD_PROPS_LOGO,
   API_YP_SWITCH,
@@ -73,20 +71,6 @@ export default function EditInstanceDetails() {
           {...TEXTFIELD_PROPS_SERVER_TITLE}
           value={formDataValues.title}
           initialValue={instanceDetails.title}
-          onChange={handleFieldChange}
-        />
-        <TextFieldWithSubmit
-          fieldName="streamTitle"
-          {...TEXTFIELD_PROPS_STREAM_TITLE}
-          value={formDataValues.streamTitle}
-          initialValue={instanceDetails.streamTitle}
-          onChange={handleFieldChange}
-        />
-        <TextFieldWithSubmit
-          fieldName="name"
-          {...TEXTFIELD_PROPS_USERNAME}
-          value={formDataValues.name}
-          initialValue={instanceDetails.name}
           onChange={handleFieldChange}
         />
         <TextFieldWithSubmit
