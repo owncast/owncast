@@ -177,8 +177,8 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { title, streamTitle, summary } = data;
-    window.document.title = title;
+    const { name, summary } = data;
+    window.document.title = name;
 
     this.setState({
       configData: {
@@ -413,10 +413,9 @@ export default class App extends Component {
       version: appVersion,
       logo = TEMP_IMAGE,
       socialHandles = [],
-      name: streamerName,
       summary,
       tags = [],
-      title,
+      name,
       extraPageContent,
     } = configData;
 
@@ -477,7 +476,7 @@ export default class App extends Component {
                 <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
               </span>
               <span class="instance-title overflow-hidden truncate"
-                >${streamTitle || title}</span
+                >${streamTitle || name}</span
               >
             </h1>
             <div
@@ -540,7 +539,7 @@ export default class App extends Component {
             >
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600"
-                  >${streamerName}</span
+                  >${name}</span
                 >
               </h2>
               <h3 class="font-semibold text-3xl">
@@ -575,7 +574,7 @@ export default class App extends Component {
           websocket=${websocket}
           username=${username}
           chatInputEnabled=${chatInputEnabled}
-          instanceTitle=${title}
+          instanceTitle=${name}
         />
       </div>
     `;

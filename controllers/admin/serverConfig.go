@@ -26,7 +26,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	response := serverConfigAdminResponse{
 		InstanceDetails: webConfigResponse{
-			Title:            data.GetServerTitle(),
 			Name:             data.GetServerName(),
 			Summary:          data.GetServerSummary(),
 			Tags:             data.GetServerMetadataTags(),
@@ -77,7 +76,6 @@ type videoSettings struct {
 
 type webConfigResponse struct {
 	Name             string                `json:"name"`
-	Title            string                `json:"title"`
 	Summary          string                `json:"summary"`
 	Logo             string                `json:"logo"`
 	Tags             []string              `json:"tags"`

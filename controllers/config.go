@@ -13,7 +13,6 @@ import (
 
 type webConfigResponse struct {
 	Name             string                `json:"name"`
-	Title            string                `json:"title"`
 	Summary          string                `json:"summary"`
 	Logo             string                `json:"logo"`
 	Tags             []string              `json:"tags"`
@@ -33,7 +32,6 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 	configuration := webConfigResponse{
 		Name:             data.GetServerName(),
-		Title:            data.GetServerTitle(),
 		Summary:          data.GetServerSummary(),
 		Logo:             data.GetLogoPath(),
 		Tags:             data.GetServerMetadataTags(),

@@ -171,7 +171,7 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		// Add an artificial delay so people notice this message come in.
 		time.Sleep(7 * time.Second)
 
-		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", data.GetServerTitle(), data.GetServerSummary())
+		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", data.GetServerName(), data.GetServerSummary())
 		initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: data.GetServerName(), Body: initialChatMessageText, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
 		c.write(initialMessage)
 	}()

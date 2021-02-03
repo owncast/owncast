@@ -2,7 +2,6 @@ var request = require('supertest');
 request = request('http://127.0.0.1:8080');
 
 const serverName = randomString();
-const serverTitle = randomString();
 const streamTitle = randomString();
 const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
@@ -39,10 +38,6 @@ test('set server name', async (done) => {
     done();
 });
 
-test('set server title', async (done) => {
-    const res = await sendConfigChangeRequest('servertitle', serverTitle);
-    done();
-});
 
 test('set stream title', async (done) => {
     const res = await sendConfigChangeRequest('streamtitle', streamTitle);
@@ -119,7 +114,6 @@ test('admin configuration is correct', (done) => {
     request.get('/api/admin/serverconfig').auth('admin', 'abc123').expect(200)
         .then((res) => {
             expect(res.body.instanceDetails.name).toBe(serverName);
-            expect(res.body.instanceDetails.title).toBe(serverTitle);
             expect(res.body.instanceDetails.summary).toBe(serverSummary);
             expect(res.body.instanceDetails.logo).toBe(logo);
             expect(res.body.instanceDetails.tags).toStrictEqual(tags);
@@ -146,7 +140,7 @@ test('admin configuration is correct', (done) => {
 test('frontend configuration is correct', (done) => {
     request.get('/api/config').expect(200)
         .then((res) => {
-            expect(res.body.title).toBe(serverTitle);
+            expect(res.body.name).toBe(serverName);
             expect(res.body.logo).toBe(logo);
             expect(res.body.socialHandles).toStrictEqual(socialHandles);
             done();

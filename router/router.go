@@ -97,9 +97,6 @@ func Start() error {
 	// Stream title
 	http.HandleFunc("/api/admin/config/streamtitle", middleware.RequireAdminAuth(admin.SetStreamTitle))
 
-	// Server title
-	http.HandleFunc("/api/admin/config/servertitle", middleware.RequireAdminAuth(admin.SetServerTitle))
-
 	// Server name
 	http.HandleFunc("/api/admin/config/name", middleware.RequireAdminAuth(admin.SetServerName))
 

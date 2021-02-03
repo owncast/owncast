@@ -93,9 +93,6 @@ components:
         name:
           type: string
           description: Displayed as the header in the instance details.
-        title:
-          type: string
-          description: Displayed in the document title and header.
         summary:
           type: string
           description: This is brief summary of whom you are or what the stream is.
@@ -766,24 +763,6 @@ paths:
               $ref: "#/components/schemas/ConfigValue"
             example:
               value: Streaming my favorite game, Desert Bus.
-
-  /api/admin/config/servertitle:
-    post:
-      summary: Set the server title.
-      description: Set the title of the server instance.
-      tags: ["Admin"]
-      security:
-        - AdminBasicAuth: []
-      responses:
-        '200':
-          $ref: "#/components/responses/BasicResponse"      
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ConfigValue"   
-            example:
-              value: Streamland Live
 
   /api/admin/config/name:
     post:

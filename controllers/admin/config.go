@@ -93,24 +93,6 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func SetServerTitle(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
-		return
-	}
-
-	configValue, success := getValueFromRequest(w, r)
-	if !success {
-		return
-	}
-
-	if err := data.SetServerTitle(configValue.Value.(string)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	controllers.WriteSimpleResponse(w, true, "changed")
-}
-
 func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return

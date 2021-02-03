@@ -70,21 +70,6 @@ func SetStreamTitle(title string) error {
 	return _datastore.SetString(STREAM_TITLE_KEY, title)
 }
 
-// GetServerTitle will return the title of the server.
-func GetServerTitle() string {
-	title, err := _datastore.GetString(SERVER_TITLE_KEY)
-	if err != nil {
-		return config.GetDefaults().Title
-	}
-
-	return title
-}
-
-// SetServerTitle will set the title of the server.
-func SetServerTitle(title string) error {
-	return _datastore.SetString(SERVER_TITLE_KEY, title)
-}
-
 // GetStreamKey will return the inbound streaming password.
 func GetStreamKey() string {
 	key, err := _datastore.GetString(STREAM_KEY_KEY)

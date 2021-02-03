@@ -102,7 +102,6 @@ func migrateConfigFile() {
 		return
 	}
 
-	SetServerTitle(oldConfig.InstanceDetails.Title)
 	SetServerName(oldConfig.InstanceDetails.Name)
 	SetServerSummary(oldConfig.InstanceDetails.Summary)
 	SetServerMetadataTags(oldConfig.InstanceDetails.Tags)
