@@ -42,6 +42,11 @@ export default function EditSocialLinks() {
 
   let resetTimer = null;
 
+  const PLACEHOLDERS = {
+    'mastodon': 'https://mastodon.social/@username',
+    'twitter': 'https://twitter.com/username'
+  }
+
   const getAvailableIcons = async () => {
     try {
       const result = await fetchData(SOCIAL_PLATFORMS_LIST, { auth: false });
@@ -267,7 +272,7 @@ export default function EditSocialLinks() {
         <TextField
           fieldName="social-url"
           label="URL"
-          placeholder="Url to page"
+          placeholder={PLACEHOLDERS[modalDataState.platform] || 'Url to page'}
           value={modalDataState.url}
           onChange={handleUrlChange}
         />
