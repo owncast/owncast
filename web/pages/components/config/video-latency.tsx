@@ -11,12 +11,12 @@ import {
 const { Title } = Typography;
 
 const SLIDER_MARKS = {
-  1: '1 - low',
-  2: '2',
-  3: '3',
-  4: '4',
-  5: '5',
-  6: '6 - high',
+  1: 'low',
+  2: '',
+  3: '',
+  4: '',
+  5: '',
+  6: 'high',
 };
 
 const SLIDER_COMMENTS = {
@@ -110,7 +110,6 @@ export default function VideoLatency() {
       <br />
       <div className="segment-slider">
         <Slider
-          tooltipVisible
           tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
           onChange={handleChange}
           min={1}

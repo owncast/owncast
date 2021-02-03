@@ -12,7 +12,7 @@ const { Panel } = Collapse;
 const VIDEO_VARIANT_DEFAULTS = {
   framerate: {
     min: 10,
-    max: 80,
+    max: 90,
     defaultValue: 24,
     unit: 'fps',
     incrementBy: 1,
@@ -20,8 +20,8 @@ const VIDEO_VARIANT_DEFAULTS = {
   },
   videoBitrate: {
     min: 600,
-    max: 1200,
-    defaultValue: 800,
+    max: 6000,
+    defaultValue: 1200,
     unit: 'kbps',
     incrementBy: 100,
     tip: 'This is importatnt yo',
@@ -138,7 +138,6 @@ export default function VideoVariantForm({
         </p>
         <div className="form-component">
           <Slider
-            // tooltipVisible={dataState.videoPassthrough !== true}
             tipFormatter={value => `${value} ${videoBRUnit}`}
             disabled={dataState.videoPassthrough === true}
             defaultValue={dataState.videoBitrate}

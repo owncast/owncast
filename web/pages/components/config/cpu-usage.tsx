@@ -12,6 +12,14 @@ const SLIDER_MARKS = {
   5: 'highest',
 };
 
+const TOOLTIPS = {
+  1: 'lowest',
+  2: 'low',
+  3: 'medium',
+  4: 'high',
+  5: 'highest',
+};
+
 export default function CPUUsageSelector({ defaultValue, onChange }) {
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -40,6 +48,7 @@ export default function CPUUsageSelector({ defaultValue, onChange }) {
       <br />
       <div className="segment-slider">
         <Slider
+          tipFormatter={value => TOOLTIPS[value] }
           onChange={handleChange}
           min={1}
           max={Object.keys(SLIDER_MARKS).length}
