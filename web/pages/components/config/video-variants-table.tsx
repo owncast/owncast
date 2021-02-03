@@ -162,7 +162,7 @@ export default function CurrentVariantsTable() {
               className="delete-button"
               icon={<DeleteOutlined />}
               size="small"
-              disabled={index === 0}
+              disabled={videoQualityVariants.length === 1}
               onClick={() => {
                 handleDeleteVariant(index);
               }}
