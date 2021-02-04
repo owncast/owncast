@@ -365,7 +365,7 @@ export default class App extends Component {
 
   handleWindowFocus() {
     this.windowBlurred = false;
-    window.document.title = this.state.configData && this.state.configData.title;
+    window.document.title = this.state.configData && this.state.configData.name;
   }
 
   handleSpaceBarPressed(e) {
