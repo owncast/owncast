@@ -153,10 +153,10 @@ export default function MainLayout(props) {
             icon={<SettingOutlined />}
           >
             <Menu.Item key="config-public-details">
-              <Link href="/config-public-details">Public Details</Link>
+              <Link href="/config-public-details">General</Link>
             </Menu.Item>
             <Menu.Item key="config-social-items">
-              <Link href="/config-social-items">Social items</Link>
+              <Link href="/config-social-items">Social Links</Link>
             </Menu.Item>
 
             <Menu.Item key="config-page-content">
@@ -164,10 +164,10 @@ export default function MainLayout(props) {
             </Menu.Item>
 
             <Menu.Item key="config-server-details">
-              <Link href="/config-server-details">Server Details</Link>
+              <Link href="/config-server-details">Server Setup</Link>
             </Menu.Item>
             <Menu.Item key="config-video">
-              <Link href="/config-video">Video Setup</Link>
+              <Link href="/config-video">Video Configuration</Link>
             </Menu.Item>
             <Menu.Item key="config-storage">
               <Link href="/config-storage">Storage</Link>
