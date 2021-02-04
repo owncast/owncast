@@ -1,5 +1,5 @@
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { Tooltip } from "antd";
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 interface InfoTipProps {
   tip: string | null;
