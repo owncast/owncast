@@ -278,23 +278,6 @@ func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "directory state changed")
 }
 
-func SetDisableUpgradeChecks(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
-		return
-	}
-
-	configValue, success := getValueFromRequest(w, r)
-	if !success {
-		return
-	}
-
-	if err := data.SetDisableUpgradeChecks(configValue.Value.(bool)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-	controllers.WriteSimpleResponse(w, true, "disable upgrade checks changed")
-}
-
 func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return

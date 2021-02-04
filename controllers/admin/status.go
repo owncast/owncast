@@ -24,7 +24,6 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
 		VersionNumber:          status.VersionNumber,
-		DisableUpgradeChecks:   data.GetDisableUpgradeChecks(),
 		StreamTitle:            data.GetStreamTitle(),
 	}
 
@@ -44,5 +43,4 @@ type adminStatusResponse struct {
 	SessionPeakViewerCount int                      `json:"sessionPeakViewerCount"`
 	StreamTitle            string                   `json:"streamTitle"`
 	VersionNumber          string                   `json:"versionNumber"`
-	DisableUpgradeChecks   bool                     `json:"disableUpgradeChecks"`
 }

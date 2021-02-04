@@ -114,7 +114,6 @@ func migrateConfigFile() {
 	SetFfmpegPath(oldConfig.FFMpegPath)
 	SetHTTPPortNumber(oldConfig.WebServerPort)
 	SetRTMPPortNumber(oldConfig.RTMPServerPort)
-	SetDisableUpgradeChecks(oldConfig.DisableUpgradeChecks)
 
 	// Migrate video variants
 	variants := []models.StreamOutputVariant{}
@@ -172,19 +171,18 @@ func migrateConfigFile() {
 }
 
 type configFile struct {
-	DatabaseFilePath     string `yaml:"databaseFile"`
-	EnableDebugFeatures  bool   `yaml:"-"`
-	FFMpegPath           string
-	Files                files           `yaml:"files"`
-	InstanceDetails      instanceDetails `yaml:"instanceDetails"`
-	VersionInfo          string          `yaml:"-"` // For storing the version/build number
-	VersionNumber        string          `yaml:"-"`
-	VideoSettings        videoSettings   `yaml:"videoSettings"`
-	WebServerPort        int
-	RTMPServerPort       int
-	YP                   yp `yaml:"yp"`
-	DisableUpgradeChecks bool
-	Storage              s3 `yaml:"s3"`
+	DatabaseFilePath    string `yaml:"databaseFile"`
+	EnableDebugFeatures bool   `yaml:"-"`
+	FFMpegPath          string
+	Files               files           `yaml:"files"`
+	InstanceDetails     instanceDetails `yaml:"instanceDetails"`
+	VersionInfo         string          `yaml:"-"` // For storing the version/build number
+	VersionNumber       string          `yaml:"-"`
+	VideoSettings       videoSettings   `yaml:"videoSettings"`
+	WebServerPort       int
+	RTMPServerPort      int
+	YP                  yp `yaml:"yp"`
+	Storage             s3 `yaml:"s3"`
 }
 
 // instanceDetails defines the user-visible information about this particular instance.

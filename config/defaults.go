@@ -18,8 +18,6 @@ type Defaults struct {
 	YPEnabled bool
 	YPServer  string
 
-	DisableUpgradeChecks bool
-
 	SegmentLengthSeconds int
 	SegmentsInPlaylist   int
 	StreamVariants       []models.StreamOutputVariant
@@ -43,10 +41,9 @@ func GetDefaults() Defaults {
 		YPEnabled: false,
 		YPServer:  "https://yp.owncast.online",
 
-		WebServerPort:        8080,
-		RTMPServerPort:       1935,
-		StreamKey:            "abc123",
-		DisableUpgradeChecks: false,
+		WebServerPort:  8080,
+		RTMPServerPort: 1935,
+		StreamKey:      "abc123",
 
 		SegmentLengthSeconds: 4,
 		SegmentsInPlaylist:   4,

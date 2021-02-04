@@ -531,9 +531,6 @@ paths:
                   versionNumber:
                     type: string
                     description: The current version of the owncast software
-                  disableUpgradeChecks:
-                    type: boolean
-                    description: Turn off checking for owncast releases
               examples:
                 connected:
                   summary: "Broadcaster Connected"
@@ -555,7 +552,6 @@ paths:
                     overallPeakViewerCount: 4
                     sessionPeakViewerCount: 4
                     versionNumber: "0.0.3"
-                    disableUpgradeChecks: false
 
   /api/admin/disconnect:
     post:
@@ -944,22 +940,6 @@ paths:
               $ref: "#/components/schemas/ConfigValue"  
             example:
               value: https://live.mycoolserver.biz
-
-  /api/admin/config/disableupgradechecks:
-    post:
-      summary: Disable checking for future versions of Owncast.
-      description: Turning this on will stop the admin from checking and alerting you to new releases of Owncast.
-      tags: ["Admin"]
-      security:
-        - AdminBasicAuth: []
-      responses:
-        '200':
-          $ref: "#/components/responses/BasicResponse"      
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ConfigValue"
 
   /api/admin/config/video/streamlatencylevel:
     post:

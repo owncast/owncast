@@ -182,19 +182,6 @@ func SetRTMPPortNumber(port int) error {
 	return _datastore.SetNumber(RTMP_PORT_NUMBER_KEY, float64(port))
 }
 
-func GetDisableUpgradeChecks() bool {
-	disable, err := _datastore.GetBool(DISABLE_UPGRADE_CHECKS_KEY)
-	if err != nil {
-		return config.GetDefaults().DisableUpgradeChecks
-	}
-
-	return disable
-}
-
-func SetDisableUpgradeChecks(disable bool) error {
-	return _datastore.SetBool(DISABLE_UPGRADE_CHECKS_KEY, disable)
-}
-
 func GetServerMetadataTags() []string {
 	tagsString, err := _datastore.GetString(SERVER_METADATA_TAGS_KEY)
 	if err != nil {

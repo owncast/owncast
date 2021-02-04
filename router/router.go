@@ -165,9 +165,6 @@ func Start() error {
 	// social handles
 	http.HandleFunc("/api/admin/config/socialhandles", middleware.RequireAdminAuth(admin.SetSocialHandles))
 
-	// disable server upgrade checks
-	http.HandleFunc("/api/admin/config/disableupgradechecks", middleware.RequireAdminAuth(admin.SetDisableUpgradeChecks))
-
 	// set the number of video segments and duration per segment in a playlist
 	http.HandleFunc("/api/admin/config/video/streamlatencylevel", middleware.RequireAdminAuth(admin.SetStreamLatencyLevel))
 
