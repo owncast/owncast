@@ -1,4 +1,4 @@
-import { Switch, Button, Collapse, Alert } from 'antd';
+import { Switch, Button, Collapse } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
 import { UpdateArgs } from '../../../types/config-section';
@@ -32,7 +32,7 @@ function checkSaveable(formValues: any, currentValues: any) {
   if (enabled) {
     if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
       if (
-        enabled !== currentValues.enabled || 
+        enabled !== currentValues.enabled ||
         endpoint !== currentValues.endpoint ||
         accessKey !== currentValues.accessKey ||
         secret !== currentValues.secret ||
@@ -52,13 +52,12 @@ function checkSaveable(formValues: any, currentValues: any) {
 export default function EditStorage() {
   const [formDataValues, setFormDataValues] = useState(null);
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
-  const [saved, setSaved] = useState<Boolean>(false);
 
   const [shouldDisplayForm, setShouldDisplayForm] = useState(false);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
 
-  const {message, setMessage} = useContext(AlertMessageContext);
+  const { setMessage: setAlertMessage } = useContext(AlertMessageContext);
 
   const { s3 } = serverConfig;
   const {
@@ -117,8 +116,9 @@ export default function EditStorage() {
         setFieldInConfigState({ fieldName: 's3', value: postValue, path: '' });
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-        setSaved(true);
-        setMessage('Changing your storage configuration will take place the next time you start a new stream.');
+        setAlertMessage(
+          'Changing your storage configuration will take place the next time you start a new stream.',
+        );
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -131,12 +131,6 @@ export default function EditStorage() {
   const handleSwitchChange = (storageEnabled: boolean) => {
     setShouldDisplayForm(storageEnabled);
     handleFieldChange({ fieldName: 'enabled', value: storageEnabled });
-
-    // if current data in current store says s3 is enabled,
-    // we should save this state
-    // if (!storageEnabled && s3.enabled) {
-    //   handleSave();
-    // }
   };
 
   const containerClass = classNames({

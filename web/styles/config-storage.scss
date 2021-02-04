@@ -1,0 +1,49 @@
+// styles for Storage config section 
+
+
+.edit-storage-container {
+  .form-fields {
+    display: none;
+    margin-bottom: 1em;
+  }
+  &.enabled {
+    .form-fields {
+      display: block;
+    }
+  }
+
+  .button-container {
+    margin: 1em 0;
+  }
+  .advanced-section {
+    margin: 1em 0;
+  }
+}
+
+
+// Do something special for the stream key field
+.field-streamkey-container {
+  margin-bottom: 1.5em;
+  .field-tip {
+    color: var(--ant-warning);
+  }
+  .left-side {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;  
+  }
+
+  .textfield-with-submit-container {
+    margin-bottom: 0;
+  }
+
+  .streamkey-actions {
+    white-space: nowrap;
+    button {
+      margin: .25em;
+    }
+    @media (max-width: 800px) {
+      margin-top: 2em;
+    }
+  }
+}

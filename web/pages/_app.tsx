@@ -3,10 +3,18 @@ import '../styles/colors.scss';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
 
+import '../styles/form-textfields.scss';
+import '../styles/form-toggleswitch.scss';
+import '../styles/form-misc-elements.scss';
+import '../styles/config-socialhandles.scss';
+import '../styles/config-storage.scss';
+import '../styles/config-tags.scss';
+import '../styles/config-video-variants.scss';
+
+
 import '../styles/home.scss';
 import '../styles/chat.scss';
 import '../styles/config.scss';
-import '../styles/config-formfields.scss';
 
 import { AppProps } from 'next/app';
 import ServerStatusProvider from '../utils/server-status-context';

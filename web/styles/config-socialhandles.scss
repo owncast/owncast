@@ -1,0 +1,25 @@
+// styles for social handles editing section
+
+.social-option,
+.social-dropdown {
+  .ant-select-item-option-content,
+  .ant-select-selection-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: .25em;
+    line-height: normal;
+
+    .option-icon {
+      height: 1.5em;
+      width: 1.5em;
+      line-height: normal;
+    }
+    .option-label {
+      display: inline-block;
+      margin-left: 1em;
+      line-height: normal;
+    }
+  }
+}

@@ -1,37 +1,4 @@
-// Base styles for form-textfield, form-textfield-with-submit, and helper components.
-
-/* STATUS-CONTAINER BASE */
-.status-container {
-  &.status-success {
-    color: var(--ant-success);
-  }
-  &.status-error {
-    color: var(--ant-error);
-  }
-  &.status-warning {
-    color: var(--ant-warning);
-  }
-
-  &.empty {
-    display: none;
-  }
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  font-size: .75rem;
-  .status-icon {
-    display: inline-block;
-    margin-right: .5em;
-  }
-}
-
-
-/* TIP CONTAINER BASE */
-.field-tip {
-  font-size: .7em;
-  color: rgba(255,255,255,.5)
-}
+// Base styles for form-textfield, form-textfield-with-submit
 
 
 /* TEXTFIELD-CONTAINER BASE */
@@ -104,6 +71,8 @@
 }
 
 /* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
 .textfield-with-submit-container {
   display: flex;
   flex-direction: column;
@@ -166,33 +135,6 @@
   @media (max-width: 800px) {
     .label-spacer {
       display: none;
-    }
-  }
-}
-
-/* TOGGLE SWITCH-WITH-SUBMIT-CONTAINER BASE */
-.toggleswitch-container {
-  .status-container {
-    margin-top: .25rem;
-  }
-
-  .toggleswitch {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    .label {
-      font-weight: bold;
-      color: var(--owncast-purple);
-    }
-    .info-tip {
-      margin-left: .5rem;
-      svg {
-        fill: white;
-      }
-    }
-    .ant-form-item {
-      margin: 0 .75rem 0 0;
     }
   }
 }

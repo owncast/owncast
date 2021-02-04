@@ -1,12 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Slider } from 'antd';
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import { API_VIDEO_SEGMENTS, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 import {
-  API_VIDEO_SEGMENTS,
-  SUCCESS_STATES,
-  RESET_TIMEOUT,
-  postConfigUpdateToAPI,
-} from './constants';
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+} from '../../../utils/input-statuses';
+import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
 
@@ -37,8 +40,10 @@ function SegmentToolTip({ value }: SegmentToolTipProps) {
 }
 
 export default function VideoLatency() {
-  const [submitStatus, setSubmitStatus] = useState(null);
-  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
+
+  // const [submitStatus, setSubmitStatus] = useState(null);
+  // const [submitStatusMessage, setSubmitStatusMessage] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
@@ -57,13 +62,15 @@ export default function VideoLatency() {
 
   const resetStates = () => {
     setSubmitStatus(null);
-    setSubmitStatusMessage('');
+    // setSubmitStatusMessage('');
     resetTimer = null;
     clearTimeout(resetTimer);
   };
 
   // posts all the variants at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
+
     await postConfigUpdateToAPI({
       apiPath: API_VIDEO_SEGMENTS,
       data: { value: postValue },
@@ -73,34 +80,28 @@ export default function VideoLatency() {
           value: postValue,
           path: 'videoSettings',
         });
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Variants updated.'));
 
-        setSubmitStatus('success');
-        setSubmitStatusMessage('Variants updated.');
+        // setSubmitStatus('success');
+        // setSubmitStatusMessage('Variants updated.');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {
-        setSubmitStatus('error');
-        setSubmitStatusMessage(message);
+        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
+
+        // setSubmitStatus('error');
+        // setSubmitStatusMessage(message);
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
   };
-
-  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
-    SUCCESS_STATES[submitStatus] || {};
-
-  const statusMessage = (
-    <div className={`status-message ${submitStatus || ''}`}>
-      {newStatusIcon} {newStatusMessage} {submitStatusMessage}
-    </div>
-  );
 
   const handleChange = value => {
     postUpdateToAPI(value);
   };
 
   return (
-    <div className="module-container config-video-segements-conatiner">
+    <div className="config-video-segements-conatiner">
       <Title level={3}>Latency Buffer</Title>
       <p>
         There are trade-offs when cosidering video latency and reliability. Blah blah .. better
@@ -108,7 +109,7 @@ export default function VideoLatency() {
       </p>
       <br />
       <br />
-      <div className="segment-slider">
+      <div className="segment-slider-container">
         <Slider
           tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
           onChange={handleChange}
@@ -119,7 +120,7 @@ export default function VideoLatency() {
           value={selectedOption}
         />
       </div>
-      {statusMessage}
+      <FormStatusIndicator status={submitStatus} />
     </div>
   );
 }
