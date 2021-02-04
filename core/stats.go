@@ -41,7 +41,8 @@ func IsStreamConnected() bool {
 	// Kind of a hack.  It takes a handful of seconds between a RTMP connection and when HLS data is available.
 	// So account for that with an artificial buffer of four segments.
 	timeSinceLastConnected := time.Since(_stats.LastConnectTime.Time).Seconds()
-	if timeSinceLastConnected < float64(data.GetStreamLatencyLevel().SecondsPerSegment)*2.3 {
+	waitTime := math.Max(float64(data.GetStreamLatencyLevel().SecondsPerSegment)*3.0, 7)
+	if timeSinceLastConnected < waitTime {
 		return false
 	}
 

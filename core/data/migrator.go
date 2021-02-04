@@ -143,14 +143,16 @@ func migrateConfigFile() {
 	oldSegmentLength := oldConfig.VideoSettings.ChunkLengthInSeconds
 	oldNumberOfSegments := oldConfig.Files.MaxNumberInPlaylist
 
-	if oldSegmentLength == 1 && oldNumberOfSegments == 2 {
+	if oldSegmentLength == 2 && oldNumberOfSegments == 2 {
 		level = 1
-	} else if oldSegmentLength == 2 && oldNumberOfSegments == 2 {
+	} else if oldSegmentLength == 2 && oldNumberOfSegments == 3 {
 		level = 2
-	} else if oldSegmentLength == 4 && oldNumberOfSegments == 3 {
+	} else if oldSegmentLength == 3 && oldNumberOfSegments == 3 {
 		level = 3
-	} else if oldSegmentLength > 4 || oldNumberOfSegments > 4 {
-		level = 4
+	} else if oldSegmentLength == 5 && oldNumberOfSegments == 5 {
+		level = 5
+	} else if oldSegmentLength > 5 || oldNumberOfSegments > 5 {
+		level = 6
 	}
 	SetStreamLatencyLevel(float64(level))
 

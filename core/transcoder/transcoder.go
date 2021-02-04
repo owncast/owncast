@@ -23,8 +23,6 @@ type Transcoder struct {
 	segmentOutputPath    string
 	playlistOutputPath   string
 	variants             []HLSVariant
-	hlsPlaylistLength    int
-	segmentLengthSeconds int
 	appendToStream       bool
 	ffmpegPath           string
 	segmentIdentifier    string
@@ -133,8 +131,8 @@ func (t *Transcoder) getString() string {
 		// HLS Output
 		"-f", "hls",
 
-		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
-		"-hls_list_size", strconv.Itoa(t.hlsPlaylistLength), // Max # in variant playlist
+		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
+		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		hlsOptionsString,
 
@@ -198,7 +196,6 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 func NewTranscoder() *Transcoder {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = data.GetFfMpegPath()
-	transcoder.hlsPlaylistLength = int(data.GetStreamLatencyLevel().SegmentCount)
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
 	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
@@ -218,7 +215,6 @@ func NewTranscoder() *Transcoder {
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = transcoder.currentLatencyLevel.SecondsPerSegment
 
 	for index, quality := range transcoder.currentStreamOutputSettings {
 		variant := getVariantFromConfigQuality(quality, index)
@@ -298,7 +294,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 
 	// -1 to work around segments being generated slightly larger than expected.
 	// https://trac.ffmpeg.org/ticket/6915?replyto=58#comment:57
-	gop := (t.segmentLengthSeconds * v.framerate) - 1
+	gop := (t.currentLatencyLevel.SecondsPerSegment * v.framerate) - 1
 
 	// For limiting the output bitrate
 	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
@@ -364,16 +360,6 @@ func (t *Transcoder) SetInput(input string) {
 // SetOutputPath sets the root directory that should include playlists and video segments.
 func (t *Transcoder) SetOutputPath(output string) {
 	t.segmentOutputPath = output
-}
-
-// SetHLSPlaylistLength will set the max number of items in a HLS variant's playlist.
-func (t *Transcoder) SetHLSPlaylistLength(length int) {
-	t.hlsPlaylistLength = length
-}
-
-// SetSegmentLength Specifies the number of seconds each segment should be.
-func (t *Transcoder) SetSegmentLength(seconds int) {
-	t.segmentLengthSeconds = seconds
 }
 
 // SetAppendToStream enables appending to the HLS stream instead of overwriting.

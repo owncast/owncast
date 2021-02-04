@@ -104,7 +104,6 @@ func transitionToOfflineVideoStreamContent() {
 	offlineFilename := "offline.ts"
 	offlineFilePath := "static/" + offlineFilename
 	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetSegmentLength(10)
 	_transcoder.SetInput(offlineFilePath)
 	_transcoder.Start()
 
