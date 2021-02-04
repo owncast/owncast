@@ -65,8 +65,7 @@ export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms
 
 export const TEMP_UPDATER_API = LOGS_ALL;
 
-
-const GITHUB_RELEASE_URL = "https://api.github.com/repos/owncast/owncast/releases/latest";
+const GITHUB_RELEASE_URL = 'https://api.github.com/repos/owncast/owncast/releases/latest';
 
 interface FetchOptions {
   data?: any;
@@ -86,14 +85,14 @@ export async function fetchData(url: string, options?: FetchOptions) {
   };
 
   if (data) {
-    requestOptions.body = JSON.stringify(data)
+    requestOptions.body = JSON.stringify(data);
   }
 
   if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
     requestOptions.headers = {
-      'Authorization': `Basic ${encoded}`
-    }
+      Authorization: `Basic ${encoded}`,
+    };
     requestOptions.mode = 'cors';
     requestOptions.credentials = 'include';
   }
@@ -107,8 +106,9 @@ export async function fetchData(url: string, options?: FetchOptions) {
     const json = await response.json();
     return json;
   } catch (error) {
-    console.log(error)
-    throw new Error(error)
+    return error;
+    // console.log(error)
+    // throw new Error(error)
   }
   return {};
 }

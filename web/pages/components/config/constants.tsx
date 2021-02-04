@@ -177,19 +177,9 @@ export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
 
 export const OTHER_SOCIAL_HANDLE_OPTION = 'OTHER_SOCIAL_HANDLE_OPTION';
 
-
 export const TEXTFIELD_PROPS_S3_COMMON = {
   maxLength: 255,
-}
-
-
-// export const FIELD_PROPS_CUSTOM_CONTENT = {
-//   apiPath: API_CUSTOM_CONTENT,
-//   configPath: 'instanceDetails',
-//   placeholder: '',
-//   label: 'Extra page content',
-//   tip: 'Custom markup about yourself',
-// };
+};
 
 export const S3_TEXT_FIELDS_INFO = {
   accessKey: {
@@ -239,6 +229,7 @@ export const S3_TEXT_FIELDS_INFO = {
     label: 'Serving Endpoint',
     maxLength: 255,
     placeholder: 'http://cdn.ss3.provider.endpoint.com',
-    tip: 'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.'
+    tip:
+      'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
   },
 };
