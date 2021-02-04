@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import EditInstanceDetails from './components/config/edit-instance-details';
 import EditDirectoryDetails from './components/config/edit-directory';
+import EditInstanceTags from './components/config/edit-tags';
 
 const { Title } = Typography;
 
@@ -14,11 +15,8 @@ export default function PublicFacingDetails() {
 
       <div className="edit-public-details-container">
         <EditInstanceDetails />
+        <EditInstanceTags />
         <EditDirectoryDetails />
-
-        <Link href="/admin/config-page-content">
-          <a>Edit your extra page content here.</a>
-        </Link>
       </div>
     </>
   );

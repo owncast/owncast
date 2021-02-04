@@ -231,7 +231,6 @@ export default function EditSocialLinks() {
 
   return (
     <div className="social-links-edit-container">
-      <Title level={2}>Social Links</Title>
       <p>Add all your social media handles and links to your other profiles here.</p>
 
       <FormStatusIndicator status={submitStatus} />
