@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Slider } from 'antd';
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import { AlertMessageContext } from '../../../utils/alert-message-context';
 import { API_VIDEO_SEGMENTS, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
 import {
   createInputStatus,
@@ -47,6 +48,7 @@ export default function VideoLatency() {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
+  const { setMessage } = useContext(AlertMessageContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { videoSettings } = serverConfig || {};
 
@@ -80,11 +82,14 @@ export default function VideoLatency() {
           value: postValue,
           path: 'videoSettings',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Variants updated.'));
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Latency buffer level updated.'));
 
         // setSubmitStatus('success');
         // setSubmitStatusMessage('Variants updated.');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        if (serverStatusData.online) {
+          setMessage('Your latency buffer setting will take effect the next time you begin a live stream.')
+        }
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -104,11 +109,8 @@ export default function VideoLatency() {
     <div className="config-video-segements-conatiner">
       <Title level={3}>Latency Buffer</Title>
       <p>
-        There are trade-offs when cosidering video latency and reliability. Blah blah .. better
-        wording here needed.
+        While it's natural to want to keep your latency as low as possible, you may experience reduced error tolerance and stability in some environments the lower you go.
       </p>
-      <br />
-      <br />
       <div className="segment-slider-container">
         <Slider
           tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
