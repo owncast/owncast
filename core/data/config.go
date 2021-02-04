@@ -160,8 +160,8 @@ func GetHTTPPortNumber() int {
 	return int(port)
 }
 
-func SetHTTPPortNumber(port int) error {
-	return _datastore.SetNumber(HTTP_PORT_NUMBER_KEY, float64(port))
+func SetHTTPPortNumber(port float64) error {
+	return _datastore.SetNumber(HTTP_PORT_NUMBER_KEY, port)
 }
 
 func GetRTMPPortNumber() int {
@@ -178,7 +178,7 @@ func GetRTMPPortNumber() int {
 	return int(port)
 }
 
-func SetRTMPPortNumber(port int) error {
+func SetRTMPPortNumber(port float64) error {
 	return _datastore.SetNumber(RTMP_PORT_NUMBER_KEY, float64(port))
 }
 

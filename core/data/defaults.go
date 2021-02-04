@@ -22,8 +22,8 @@ func PopulateDefaults() {
 	}
 
 	SetStreamKey(defaults.StreamKey)
-	SetHTTPPortNumber(defaults.WebServerPort)
-	SetRTMPPortNumber(defaults.RTMPServerPort)
+	SetHTTPPortNumber(float64(defaults.WebServerPort))
+	SetRTMPPortNumber(float64(defaults.RTMPServerPort))
 	SetLogoPath(defaults.Logo)
 	SetServerMetadataTags([]string{"owncast", "streaming"})
 	SetServerSummary("Welcome to your new Owncast server!  This description can be changed in the admin")

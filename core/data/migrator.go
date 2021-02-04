@@ -112,8 +112,8 @@ func migrateConfigFile() {
 	SetDirectoryEnabled(oldConfig.YP.Enabled)
 	SetSocialHandles(oldConfig.InstanceDetails.SocialHandles)
 	SetFfmpegPath(oldConfig.FFMpegPath)
-	SetHTTPPortNumber(oldConfig.WebServerPort)
-	SetRTMPPortNumber(oldConfig.RTMPServerPort)
+	SetHTTPPortNumber(float64(oldConfig.WebServerPort))
+	SetRTMPPortNumber(float64(oldConfig.RTMPServerPort))
 
 	// Migrate video variants
 	variants := []models.StreamOutputVariant{}

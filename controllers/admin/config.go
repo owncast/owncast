@@ -217,7 +217,7 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetHTTPPortNumber(configValue.Value.(int)); err != nil {
+	if err := data.SetHTTPPortNumber(configValue.Value.(float64)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -235,7 +235,7 @@ func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetRTMPPortNumber(configValue.Value.(int)); err != nil {
+	if err := data.SetRTMPPortNumber(configValue.Value.(float64)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
