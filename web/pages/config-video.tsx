@@ -15,12 +15,14 @@ export default function ConfigVideoSettings() {
         <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a>
       </p>
 
-      <VideoLatency />
-
-      <br />
-      <br />
-
+    <p>
       <VideoVariantsTable />
+    </p>
+
+    <p>
+      <VideoLatency />
+    </p>
+    
     </div>
   );
 }
