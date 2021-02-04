@@ -83,9 +83,11 @@ export default function CurrentVariantsTable() {
         setSubmitStatusMessage('Variants updated.');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
-        setMessage(
-          'Updating your video configuration will take effect the next time you begin a new stream.',
-        );
+        if (serverStatusData.online) {
+          setMessage(
+            'Updating your video configuration will take effect the next time you begin a new stream.',
+          );
+        }
       },
       onError: (message: string) => {
         setSubmitStatus('error');
@@ -187,7 +189,7 @@ export default function CurrentVariantsTable() {
 
   return (
     <>
-      <Title level={3}>Current Variants</Title>
+      <Title level={3}>Stream output</Title>
 
       {statusMessage}
 

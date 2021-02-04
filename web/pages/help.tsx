@@ -89,7 +89,7 @@ export default function Help(props: Props) {
       title: 'I want to offload my video to an external storage provider',
       content: (
         <div>
-          <a href="https://owncast.online/docs/s3/" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/docs/storage/" target="_blank" rel="noopener noreferrer">
             <LinkOutlined /> Learn more
           </a>
         </div>
@@ -131,22 +131,13 @@ export default function Help(props: Props) {
     },
     {
       icon: <ApiTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to use the API',
+      title: 'I want to build add-ons for my Owncast server',
       content: (
         <div>
-          You can view the API documentation for either the
-          <a href="https://owncast.online/api/latest" target="_blank" rel="noopener noreferrer">
-            &nbsp;latest&nbsp;
+          You can build your own bots, overlays, tools and add-ons with our
+          <a href="https://owncast.online/thirdparty" target="_blank" rel="noopener noreferrer">
+            &nbsp;developer APIs.&nbsp;
           </a>
-          or
-          <a
-            href="https://owncast.online/api/development"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            &nbsp;development&nbsp;
-          </a>
-          release.
         </div>
       ),
     },
@@ -166,7 +157,7 @@ export default function Help(props: Props) {
             icon={<LinkOutlined />}
             type="primary"
           >
-            Read Troubleshoting
+            Fix your problems
           </Button>
         </Col>
         <Col xs={24} lg={12} style={{ textAlign: 'center' }}>
@@ -175,7 +166,7 @@ export default function Help(props: Props) {
           <Button
             target="_blank"
             rel="noopener noreferrer"
-            href="https://owncast.online/"
+            href="https://owncast.online/docs"
             icon={<LinkOutlined />}
             type="primary"
           >

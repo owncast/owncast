@@ -84,11 +84,10 @@ export default function PageContentEditor() {
 
   return (
     <div className="config-page-content-form">
-      <Title level={2}>Edit custom content</Title>
+      <Title level={2}>Page Content</Title>
 
       <p>
-        Add some content about your site with the Markdown editor below. This content shows up at
-        the bottom half of your Owncast page.
+        Edit the content of your page by using simple <a href="https://www.markdownguide.org/basic-syntax/">Markdown syntax</a>.
       </p>
 
       <MdEditor
@@ -101,6 +100,7 @@ export default function PageContentEditor() {
           markdownClass: 'markdown-editor-pane',
         }}
       />
+      
       <div className="page-content-actions">
         {hasChanged ? (
           <Button type="primary" onClick={handleSave}>

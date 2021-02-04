@@ -106,8 +106,8 @@ export const TEXTFIELD_PROPS_WEB_PORT = {
   configPath: '',
   maxLength: 6,
   placeholder: '8080',
-  label: 'Owncast Server port',
-  tip: 'What port are you serving Owncast from? Default is :8080',
+  label: 'Owncast port',
+  tip: 'What port is your Owncast web server listening? Default is 8080',
   required: true,
 };
 export const TEXTFIELD_PROPS_RTMP_PORT = {
@@ -116,7 +116,7 @@ export const TEXTFIELD_PROPS_RTMP_PORT = {
   maxLength: 6,
   placeholder: '1935',
   label: 'RTMP port',
-  tip: 'What port are you receiving RTMP?',
+  tip: 'What port should accept inbound broadcasts? Default is 1935',
   required: true,
 };
 export const TEXTFIELD_PROPS_INSTANCE_URL = {

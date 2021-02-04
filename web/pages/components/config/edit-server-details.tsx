@@ -54,6 +54,16 @@ export default function EditInstanceDetails() {
     setMessage('Updating server settings requires a restart of your Owncast server.');
   };
 
+  const showStreamKeyChangeMessage = () => {
+    setMessage('Changing your stream key will log you out of the admin and block you from streaming until you change the key in your broadcasting software.');
+  };
+
+  const showFfmpegChangeMessage = () => {
+    if (serverStatusData.online) {
+      setMessage('The updated ffmpeg path will be used when starting your next live stream.');
+    }
+  };
+
   function generateStreamKey() {
     let key = '';
     for (let i = 0; i < 3; i += 1) {
@@ -81,6 +91,7 @@ export default function EditInstanceDetails() {
             initialValue={streamKey}
             type={TEXTFIELD_TYPE_PASSWORD}
             onChange={handleFieldChange}
+            onSubmit={showStreamKeyChangeMessage}
           />
           <div className="streamkey-actions">
             <Tooltip title="Generate a stream key">
@@ -102,6 +113,7 @@ export default function EditInstanceDetails() {
         value={formDataValues.ffmpegPath}
         initialValue={ffmpegPath}
         onChange={handleFieldChange}
+        onSubmit={showFfmpegChangeMessage}
       />
       <TextFieldWithSubmit
         fieldName="webServerPort"

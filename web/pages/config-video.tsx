@@ -11,14 +11,14 @@ export default function ConfigVideoSettings() {
     <div className="config-video-variants">
       <Title level={2}>Video configuration</Title>
       <p>
-        Learn more about configuring Owncast{' '}
-        <a href="https://owncast.online/docs/configuration">by visiting the documentation.</a>
+        Before changing your video configuration <a href="https://owncast.online/docs/encoding">visit the video documentation</a>{' '}
+        to learn how it impacts your stream performance.
       </p>
 
     <p>
       <VideoVariantsTable />
     </p>
-
+    <br/><hr/><br/>
     <p>
       <VideoLatency />
     </p>
