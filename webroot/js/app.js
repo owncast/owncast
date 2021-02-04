@@ -265,7 +265,7 @@ export default class App extends Component {
     }
 
     if (this.windowBlurred) {
-      document.title = ` 🔴 ${this.state.configData && this.state.configData.title}`;
+      document.title = ` 🔴 ${this.state.configData && this.state.configData.name}`;
     }
   }
 
@@ -289,7 +289,7 @@ export default class App extends Component {
     });
 
     if (this.windowBlurred) {
-      document.title = ` 🟢 ${this.state.configData && this.state.configData.title}`;
+      document.title = ` 🟢 ${this.state.configData && this.state.configData.name}`;
     }
   }
 
