@@ -6,6 +6,8 @@ import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield
 import TextFieldWithSubmit from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import { AlertMessageContext } from '../../../utils/alert-message-context';
+
 import {
   TEXTFIELD_PROPS_FFMPEG,
   TEXTFIELD_PROPS_RTMP_PORT,
@@ -18,6 +20,8 @@ import { UpdateArgs } from '../../../types/config-section';
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
   const serverStatusData = useContext(ServerStatusContext);
+  const { setMessage } = useContext(AlertMessageContext);
+
   const { serverConfig } = serverStatusData || {};
 
   const { streamKey, ffmpegPath, rtmpServerPort, webServerPort } = serverConfig;
@@ -45,6 +49,10 @@ export default function EditInstanceDetails() {
       [fieldName]: value,
     });
   };
+
+  const showConfigurationRestartMessage = () => {
+    setMessage('Updating server settings requires a restart of your Owncast server.')
+  }
 
   function generateStreamKey() {
     let key = '';
@@ -102,6 +110,7 @@ export default function EditInstanceDetails() {
         initialValue={webServerPort}
         type={TEXTFIELD_TYPE_NUMBER}
         onChange={handleFieldChange}
+        onSubmit={showConfigurationRestartMessage}
       />
       <TextFieldWithSubmit
         fieldName="rtmpServerPort"
@@ -110,6 +119,7 @@ export default function EditInstanceDetails() {
         initialValue={rtmpServerPort}
         type={TEXTFIELD_TYPE_NUMBER}
         onChange={handleFieldChange}
+        onSubmit={showConfigurationRestartMessage}
       />
     </div>
   );

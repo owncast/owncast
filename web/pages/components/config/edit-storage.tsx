@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
 import { UpdateArgs } from '../../../types/config-section';
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import { AlertMessageContext } from '../../../utils/alert-message-context';
+
 import {
   postConfigUpdateToAPI,
   API_S3_INFO,
@@ -55,6 +57,8 @@ export default function EditStorage() {
   const [shouldDisplayForm, setShouldDisplayForm] = useState(false);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
+
+  const {message, setMessage} = useContext(AlertMessageContext);
 
   const { s3 } = serverConfig;
   const {
@@ -114,6 +118,7 @@ export default function EditStorage() {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setSaved(true);
+        setMessage('Changing your storage configuration will take place the next time you start a new stream.');
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -138,14 +143,6 @@ export default function EditStorage() {
     'edit-storage-container': true,
     enabled: shouldDisplayForm,
   });
-
-  const saveWarning = saved ? (<Alert
-    showIcon
-    message="Storage changes"
-    description="Your storage settings will take effect on your next stream.  If you're currently streaming you'll continue to use the storage configuration previously set."
-    type="warning"
-  />
-  ) : null;
 
   const isSaveable = checkSaveable(formDataValues, s3);
 
@@ -218,8 +215,6 @@ export default function EditStorage() {
           </Panel>
         </Collapse>
       </div>
-
-      {saveWarning}
 
       <div className="button-container">
         <Button type="primary" onClick={handleSave} disabled={!isSaveable}>

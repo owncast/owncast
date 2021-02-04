@@ -10,14 +10,18 @@ import '../styles/config-formfields.scss';
 
 import { AppProps } from 'next/app';
 import ServerStatusProvider from '../utils/server-status-context';
+import AlertMessageProvider from '../utils/alert-message-context';
+
 import MainLayout from './components/main-layout';
 
 function App({ Component, pageProps }: AppProps) {
   return (
     <ServerStatusProvider>
-      <MainLayout>
-        <Component {...pageProps} />
-      </MainLayout>
+      <AlertMessageProvider>
+        <MainLayout>
+          <Component {...pageProps} />
+        </MainLayout>
+      </AlertMessageProvider>
     </ServerStatusProvider>
   );
 }

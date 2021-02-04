@@ -6,7 +6,9 @@ import { Typography, Table, Modal, Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
 import { ServerStatusContext } from '../../../utils/server-status-context';
+import { AlertMessageContext } from '../../../utils/alert-message-context';
 import { UpdateArgs, VideoVariant } from '../../../types/config-section';
+
 import VideoVariantForm from './video-variant-form';
 import {
   API_VIDEO_VARIANTS,
@@ -22,6 +24,7 @@ export default function CurrentVariantsTable() {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(0);
+  const {setMessage} = useContext(AlertMessageContext);
 
   // current data inside modal
   const [modalDataState, setModalDataState] = useState(DEFAULT_VARIANT_STATE);
@@ -72,6 +75,8 @@ export default function CurrentVariantsTable() {
         setSubmitStatus('success');
         setSubmitStatusMessage('Variants updated.');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+
+        setMessage('Updating your video configuration will take effect the next time you begin a new stream.');
       },
       onError: (message: string) => {
         setSubmitStatus('error');

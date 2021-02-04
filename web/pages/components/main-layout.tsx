@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head'
 import { differenceInSeconds } from "date-fns";
 import { useRouter } from 'next/router';
-import { Layout, Menu, Popover } from 'antd';
+import { Layout, Menu, Popover, Alert } from 'antd';
 
 import {
   SettingOutlined,
@@ -24,6 +24,8 @@ import { parseSecondsToDurationString } from '../../utils/format'
 
 import OwncastLogo from './logo';
 import { ServerStatusContext } from '../../utils/server-status-context';
+import { AlertMessageContext } from '../../utils/alert-message-context';
+
 import TextFieldWithSubmit from './config/form-textfield-with-submit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from './config/constants';
 
@@ -40,6 +42,8 @@ export default function MainLayout(props) {
 
   const [currentStreamTitle, setCurrentStreamTitle] = useState(streamTitle);
 
+  const alertMessage = useContext(AlertMessageContext);
+  
   const router = useRouter();
   const { route } = router || {};
 
@@ -104,6 +108,17 @@ export default function MainLayout(props) {
   const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
   const upgradeVersionString = upgradeVersion || '';
 
+  const clearAlertMessage = () => {
+    alertMessage.setMessage(null);
+  }
+
+  const headerAlertMessage = alertMessage.message ? ( <Alert
+    message={alertMessage.message}
+    afterClose={clearAlertMessage}
+    banner
+    closable
+  />): null;
+  
   return (
     <Layout className={appClass}>
       <Head>
@@ -229,6 +244,9 @@ export default function MainLayout(props) {
 </div>
           {statusIndicatorWithThumb}
         </Header>
+
+        {headerAlertMessage}
+        
         <Content className={adminStyles.contentMain}>{children}</Content>
 
         <Footer style={{ textAlign: "center" }}>
