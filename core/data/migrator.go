@@ -116,6 +116,45 @@ func migrateConfigFile() {
 	SetRTMPPortNumber(oldConfig.RTMPServerPort)
 	SetDisableUpgradeChecks(oldConfig.DisableUpgradeChecks)
 
+	// Migrate video variants
+	variants := []models.StreamOutputVariant{}
+	for _, variant := range oldConfig.VideoSettings.StreamQualities {
+		migratedVariant := models.StreamOutputVariant{}
+		migratedVariant.IsAudioPassthrough = true
+		migratedVariant.IsVideoPassthrough = variant.IsVideoPassthrough
+		migratedVariant.Framerate = variant.Framerate
+		migratedVariant.VideoBitrate = variant.VideoBitrate
+		migratedVariant.ScaledHeight = variant.ScaledHeight
+		migratedVariant.ScaledWidth = variant.ScaledWidth
+
+		presetMapping := map[string]int{
+			"ultrafast": 1,
+			"superfast": 2,
+			"veryfast":  3,
+			"faster":    4,
+			"fast":      5,
+		}
+		migratedVariant.CpuUsageLevel = presetMapping[variant.EncoderPreset]
+		variants = append(variants, migratedVariant)
+	}
+	SetStreamOutputVariants(variants)
+
+	// Migrate latency level
+	level := 4
+	oldSegmentLength := oldConfig.VideoSettings.ChunkLengthInSeconds
+	oldNumberOfSegments := oldConfig.Files.MaxNumberInPlaylist
+
+	if oldSegmentLength == 1 && oldNumberOfSegments == 2 {
+		level = 1
+	} else if oldSegmentLength == 2 && oldNumberOfSegments == 2 {
+		level = 2
+	} else if oldSegmentLength == 4 && oldNumberOfSegments == 3 {
+		level = 3
+	} else if oldSegmentLength > 4 || oldNumberOfSegments > 4 {
+		level = 4
+	}
+	SetStreamLatencyLevel(float64(level))
+
 	// Migrate storage config
 	SetS3Config(models.S3(oldConfig.Storage))
 
