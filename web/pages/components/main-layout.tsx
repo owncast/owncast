@@ -81,7 +81,7 @@ export default function MainLayout(props) {
   };
 
   useEffect(() => {
-    if (!performedUpgradeCheck && !context.disableUpgradeChecks) {
+    if (!performedUpgradeCheck) {
       checkForUpgrade();
       performedUpgradeCheck = true
     }

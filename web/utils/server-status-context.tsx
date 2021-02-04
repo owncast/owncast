@@ -52,7 +52,6 @@ const initialServerStatusState = {
   sessionMaxViewerCount: 0,
   sessionPeakViewerCount: 0,
   overallPeakViewerCount: 0,
-  disableUpgradeChecks: true,
   versionNumber: '0.0.0',
   streamTitle: '',
 };
