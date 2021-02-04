@@ -28,7 +28,7 @@ export const API_NSFW_SWITCH = '/nsfw';
 export const API_RTMP_PORT = '/rtmpserverport';
 export const API_S3_INFO = '/s3';
 export const API_SERVER_SUMMARY = '/serversummary';
-export const API_SERVER_TITLE = '/servertitle';
+export const API_SERVER_NAME = '/name';
 export const API_SOCIAL_HANDLES = '/socialhandles';
 export const API_STREAM_KEY = '/key';
 export const API_STREAM_TITLE = '/streamtitle';
@@ -54,8 +54,8 @@ export async function postConfigUpdateToAPI(args: ApiPostArgs) {
 }
 
 // Some default props to help build out a TextField
-export const TEXTFIELD_PROPS_SERVER_TITLE = {
-  apiPath: API_SERVER_TITLE,
+export const TEXTFIELD_PROPS_SERVER_NAME = {
+  apiPath: API_SERVER_NAME,
   maxLength: TEXT_MAXLENGTH,
   placeholder: 'Owncast site name', // like "gothland"
   label: 'Name',

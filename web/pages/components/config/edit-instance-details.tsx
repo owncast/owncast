@@ -8,7 +8,7 @@ import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
   TEXTFIELD_PROPS_INSTANCE_URL,
-  TEXTFIELD_PROPS_SERVER_TITLE,
+  TEXTFIELD_PROPS_SERVER_NAME,
   TEXTFIELD_PROPS_SERVER_SUMMARY,
   TEXTFIELD_PROPS_LOGO,
   API_YP_SWITCH,
@@ -67,10 +67,10 @@ export default function EditInstanceDetails() {
         />
 
         <TextFieldWithSubmit
-          fieldName="title"
-          {...TEXTFIELD_PROPS_SERVER_TITLE}
-          value={formDataValues.title}
-          initialValue={instanceDetails.title}
+          fieldName="name"
+          {...TEXTFIELD_PROPS_SERVER_NAME}
+          value={formDataValues.name}
+          initialValue={instanceDetails.name}
           onChange={handleFieldChange}
         />
         <TextFieldWithSubmit
