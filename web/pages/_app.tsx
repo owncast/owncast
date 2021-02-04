@@ -1,7 +1,11 @@
+// order matters!
 import 'antd/dist/antd.css';
 import '../styles/colors.scss';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
+import '../styles/markdown-editor.scss';
+
+import '../styles/main-layout.scss';
 
 import '../styles/form-textfields.scss';
 import '../styles/form-toggleswitch.scss';
@@ -10,7 +14,6 @@ import '../styles/config-socialhandles.scss';
 import '../styles/config-storage.scss';
 import '../styles/config-tags.scss';
 import '../styles/config-video-variants.scss';
-
 
 import '../styles/home.scss';
 import '../styles/chat.scss';

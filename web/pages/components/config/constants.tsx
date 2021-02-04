@@ -63,7 +63,7 @@ export const TEXTFIELD_PROPS_SERVER_TITLE = {
 };
 export const TEXTFIELD_PROPS_STREAM_TITLE = {
   apiPath: API_STREAM_TITLE,
-  maxLength: TEXT_MAXLENGTH,
+  maxLength: 100,
   placeholder: 'Doing cool things...',
   label: 'Stream Title',
   tip: 'What is your stream about today?',
