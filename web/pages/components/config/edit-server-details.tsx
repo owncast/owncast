@@ -51,8 +51,8 @@ export default function EditInstanceDetails() {
   };
 
   const showConfigurationRestartMessage = () => {
-    setMessage('Updating server settings requires a restart of your Owncast server.')
-  }
+    setMessage('Updating server settings requires a restart of your Owncast server.');
+  };
 
   function generateStreamKey() {
     let key = '';

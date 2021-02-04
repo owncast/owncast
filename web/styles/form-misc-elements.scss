@@ -1,0 +1,64 @@
+/* Base styles for misc helper components around forms */
+
+/* STATUS-CONTAINER BASE */
+.status-container {
+  &.status-success {
+    color: var(--ant-success);
+  }
+  &.status-error {
+    color: var(--ant-error);
+  }
+  &.status-warning {
+    color: var(--ant-warning);
+  }
+
+  &.empty {
+    display: none;
+  }
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: .75rem;
+  .status-icon {
+    display: inline-block;
+    margin-right: .5em;
+  }
+}
+
+
+/* TIP CONTAINER BASE */
+.field-tip {
+  font-size: .7em;
+  color: rgba(255,255,255,.5)
+}
+
+
+/* 
+Ideal for wrapping each Textfield on a page with many text fields in a row. This div will alternate colors and look like a table.
+*/
+.field-container {
+  padding: .85em 0 .5em;
+  &:nth-child(even) {
+    background-color: rgba(0,0,0,.25);
+  }
+}
+
+
+/* SEGMENT SLIDER */
+.segment-slider-container {
+  width: 90%;
+  margin: auto;
+  padding: 1em 2em .75em;
+  background-color: black;
+  border-radius: 1em;
+}
+
+
+.segment-tip {
+  width: 10em;
+  text-align: center;
+  margin: auto;
+  display: inline-block;
+}
+

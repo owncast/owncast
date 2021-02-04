@@ -1,6 +1,5 @@
 // Updating a variant will post ALL the variants in an array as an update to the API.
 
-// todo : add DELETE option
 import React, { useContext, useState } from 'react';
 import { Typography, Table, Modal, Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -20,11 +19,19 @@ import {
 
 const { Title } = Typography;
 
+const CPU_USAGE_LEVEL_MAP = {
+  1: 'lowest',
+  2: 'low',
+  3: 'medium',
+  4: 'high',
+  5: 'highest',
+};
+
 export default function CurrentVariantsTable() {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(0);
-  const {setMessage} = useContext(AlertMessageContext);
+  const { setMessage } = useContext(AlertMessageContext);
 
   // current data inside modal
   const [modalDataState, setModalDataState] = useState(DEFAULT_VARIANT_STATE);
@@ -76,7 +83,9 @@ export default function CurrentVariantsTable() {
         setSubmitStatusMessage('Variants updated.');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
-        setMessage('Updating your video configuration will take effect the next time you begin a new stream.');
+        setMessage(
+          'Updating your video configuration will take effect the next time you begin a new stream.',
+        );
       },
       onError: (message: string) => {
         setSubmitStatus('error');
@@ -117,14 +126,6 @@ export default function CurrentVariantsTable() {
   const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
     SUCCESS_STATES[submitStatus] || {};
 
-  const cpuUsageLevelLabelMap = {
-    1: 'lowest',
-    2: 'low',
-    3: 'medium',
-    4: 'high',
-    5: 'highest',
-  };
-
   const videoQualityColumns: ColumnsType<VideoVariant> = [
     {
       title: 'Video bitrate',
@@ -137,7 +138,7 @@ export default function CurrentVariantsTable() {
       title: 'CPU Usage',
       dataIndex: 'cpuUsageLevel',
       key: 'cpuUsageLevel',
-      render: (level: string) => (!level ? 'n/a' : cpuUsageLevelLabelMap[level]),
+      render: (level: string) => (!level ? 'n/a' : CPU_USAGE_LEVEL_MAP[level]),
     },
     {
       title: '',

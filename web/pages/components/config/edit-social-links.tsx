@@ -157,7 +157,7 @@ export default function EditSocialLinks() {
     postUpdateToAPI(postData);
   };
 
-  const handleDeleteItem = index => {
+  const handleDeleteItem = (index: number) => {
     const postData = [...currentSocialHandles];
     postData.splice(index, 1);
     postUpdateToAPI(postData);

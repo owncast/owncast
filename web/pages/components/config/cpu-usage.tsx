@@ -41,14 +41,14 @@ export default function CPUUsageSelector({ defaultValue, onChange }) {
   };
 
   return (
-    <div className="module-container config-video-segements-conatiner">
+    <div className="config-video-segements-conatiner">
       <Title level={3}>CPU Usage</Title>
       <p>There are trade-offs when considering CPU usage blah blah more wording here.</p>
       <br />
       <br />
-      <div className="segment-slider">
+      <div className="segment-slider-container">
         <Slider
-          tipFormatter={value => TOOLTIPS[value] }
+          tipFormatter={value => TOOLTIPS[value]}
           onChange={handleChange}
           min={1}
           max={Object.keys(SLIDER_MARKS).length}

@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
-import Head from 'next/head'
-import { differenceInSeconds } from "date-fns";
+import Head from 'next/head';
+import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
 import { Layout, Menu, Popover, Alert } from 'antd';
 
@@ -16,11 +16,10 @@ import {
   QuestionCircleOutlined,
   MessageOutlined,
   ExperimentOutlined,
-
 } from '@ant-design/icons';
 import classNames from 'classnames';
-import { upgradeVersionAvailable } from "../../utils/apis";
-import { parseSecondsToDurationString } from '../../utils/format'
+import { upgradeVersionAvailable } from '../../utils/apis';
+import { parseSecondsToDurationString } from '../../utils/format';
 
 import OwncastLogo from './logo';
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -29,7 +28,7 @@ import { AlertMessageContext } from '../../utils/alert-message-context';
 import TextFieldWithSubmit from './config/form-textfield-with-submit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from './config/constants';
 
-import adminStyles from '../../styles/styles.module.scss';
+import { UpdateArgs } from '../../types/config-section';
 
 let performedUpgradeCheck = false;
 
@@ -37,42 +36,18 @@ export default function MainLayout(props) {
   const { children } = props;
 
   const context = useContext(ServerStatusContext);
-  const { serverConfig, online, broadcaster, versionNumber, streamTitle } = context || {};
+  const { serverConfig, online, broadcaster, versionNumber } = context || {};
   const { instanceDetails } = serverConfig;
 
-  const [currentStreamTitle, setCurrentStreamTitle] = useState(streamTitle);
+  const [currentStreamTitle, setCurrentStreamTitle] = useState('');
 
   const alertMessage = useContext(AlertMessageContext);
-  
+
   const router = useRouter();
   const { route } = router || {};
 
   const { Header, Footer, Content, Sider } = Layout;
   const { SubMenu } = Menu;
-
-  // status indicator items
-  const streamDurationString = broadcaster ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time))) : "";
-  const currentThumbnail = online ? (
-    <img src="/thumbnail.jpg" className={adminStyles.onlineCurrentThumb} alt="current thumbnail" />
-  ) : null;
-  const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
-  const statusMessage = online ? `Online ${streamDurationString}` : "Offline";
-  const statusIndicator = (
-    <div className={adminStyles.statusIndicatorContainer}>
-      <span className={adminStyles.statusLabel}>{statusMessage}</span>
-      <span className={adminStyles.statusIcon}>{statusIcon}</span>
-    </div>
-  );
-  const statusIndicatorWithThumb = online ? (
-    <Popover
-      content={currentThumbnail}
-      title="Thumbnail"
-      trigger="hover"
-    >
-      {statusIndicator}
-    </Popover>
-  ) : statusIndicator;
-  // ///////////////
 
   const [upgradeVersion, setUpgradeVersion] = useState(null);
   const checkForUpgrade = async () => {
@@ -80,29 +55,28 @@ export default function MainLayout(props) {
       const result = await upgradeVersionAvailable(versionNumber);
       setUpgradeVersion(result);
     } catch (error) {
-      console.log("==== error", error);
+      console.log('==== error', error);
     }
   };
 
   useEffect(() => {
     if (!performedUpgradeCheck) {
       checkForUpgrade();
-      performedUpgradeCheck = true
+      performedUpgradeCheck = true;
     }
   });
 
   useEffect(() => {
-    setCurrentStreamTitle(streamTitle);
-  }, [streamTitle]);
+    setCurrentStreamTitle(instanceDetails.streamTitle);
+  }, [instanceDetails]);
 
   const handleStreamTitleChanged = ({ value }: UpdateArgs) => {
     setCurrentStreamTitle(value);
-  }
-
+  };
 
   const appClass = classNames({
-    "owncast-layout": true,
-    [adminStyles.online]: online,
+    'app-container': true,
+    online,
   });
 
   const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
@@ -110,15 +84,36 @@ export default function MainLayout(props) {
 
   const clearAlertMessage = () => {
     alertMessage.setMessage(null);
-  }
+  };
 
-  const headerAlertMessage = alertMessage.message ? ( <Alert
-    message={alertMessage.message}
-    afterClose={clearAlertMessage}
-    banner
-    closable
-  />): null;
-  
+  const headerAlertMessage = alertMessage.message ? (
+    <Alert message={alertMessage.message} afterClose={clearAlertMessage} banner closable />
+  ) : null;
+
+  // status indicator items
+  const streamDurationString = broadcaster
+    ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time)))
+    : '';
+  const currentThumbnail = online ? (
+    <img src="/thumbnail.jpg" className="online-thumbnail" alt="current thumbnail" />
+  ) : null;
+  const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
+  const statusMessage = online ? `Online ${streamDurationString}` : 'Offline';
+
+  const statusIndicator = (
+    <div className="online-status-indicator">
+      <span className="status-label">{statusMessage}</span>
+      <span className="status-icon">{statusIcon}</span>
+    </div>
+  );
+  const statusIndicatorWithThumb = online ? (
+    <Popover content={currentThumbnail} title="Thumbnail" trigger="hover">
+      {statusIndicator}
+    </Popover>
+  ) : (
+    statusIndicator
+  );
+
   return (
     <Layout className={appClass}>
       <Head>
@@ -126,47 +121,32 @@ export default function MainLayout(props) {
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png" />
       </Head>
 
-      <Sider
-        width={240}
-        className={adminStyles.sideNav}
-      >
+      <Sider width={240} className="side-nav">
         <Menu
           theme="dark"
-          defaultSelectedKeys={[route.substring(1) || "home"]}
-          defaultOpenKeys={["current-stream-menu", "utilities-menu", "configuration"]}
+          defaultSelectedKeys={[route.substring(1) || 'home']}
+          defaultOpenKeys={['current-stream-menu', 'utilities-menu', 'configuration']}
           mode="inline"
         >
-          <h1 className={adminStyles.owncastTitleContainer}>
-            <span className={adminStyles.logoContainer}>
+          <h1 className="owncast-title">
+            <span className="logo-container">
               <OwncastLogo />
             </span>
-            <span className={adminStyles.owncastTitle}>Owncast Admin</span>
+            <span className="title-label">Owncast Admin</span>
           </h1>
           <Menu.Item key="home" icon={<HomeOutlined />}>
             <Link href="/">Home</Link>
           </Menu.Item>
 
-          <Menu.Item
-            key="viewer-info"
-            icon={<LineChartOutlined />}
-            title="Current stream"
-          >
+          <Menu.Item key="viewer-info" icon={<LineChartOutlined />} title="Current stream">
             <Link href="/viewer-info">Viewers</Link>
           </Menu.Item>
 
-          <Menu.Item
-            key="chat"
-            icon={<MessageOutlined />}
-            title="Chat utilities"
-          >
+          <Menu.Item key="chat" icon={<MessageOutlined />} title="Chat utilities">
             <Link href="/chat">Chat</Link>
           </Menu.Item>
 
-          <SubMenu
-            key="configuration"
-            title="Configuration"
-            icon={<SettingOutlined />}
-          >
+          <SubMenu key="configuration" title="Configuration" icon={<SettingOutlined />}>
             <Menu.Item key="config-public-details">
               <Link href="/config-public-details">General</Link>
             </Menu.Item>
@@ -189,11 +169,7 @@ export default function MainLayout(props) {
             </Menu.Item>
           </SubMenu>
 
-          <SubMenu
-            key="utilities-menu"
-            icon={<ToolOutlined />}
-            title="Utilities"
-          >
+          <SubMenu key="utilities-menu" icon={<ToolOutlined />} title="Utilities">
             <Menu.Item key="hardware-info">
               <Link href="/hardware-info">Hardware</Link>
             </Menu.Item>
@@ -206,11 +182,7 @@ export default function MainLayout(props) {
               </Link>
             </Menu.Item>
           </SubMenu>
-          <SubMenu
-            key="integrations-menu"
-            icon={<ExperimentOutlined />}
-            title="Integrations"
-          >
+          <SubMenu key="integrations-menu" icon={<ExperimentOutlined />} title="Integrations">
             <Menu.Item key="webhooks">
               <Link href="/webhooks">Webhooks</Link>
             </Menu.Item>
@@ -218,38 +190,33 @@ export default function MainLayout(props) {
               <Link href="/access-tokens">Access Tokens</Link>
             </Menu.Item>
           </SubMenu>
-          <Menu.Item
-            key="help"
-            icon={<QuestionCircleOutlined />}
-            title="Help"
-          >
+          <Menu.Item key="help" icon={<QuestionCircleOutlined />} title="Help">
             <Link href="/help">Help</Link>
           </Menu.Item>
         </Menu>
       </Sider>
 
-      <Layout className={adminStyles.layoutMain}>
-        <Header className={adminStyles.header}>
-          <div className={adminStyles.globalStreamTitleContainer}>
-          <TextFieldWithSubmit
-            apiPath="/streamtitle"
-            maxLength={100}
-            className={adminStyles.globalStreamTitleInput}
-            fieldName="streamTitle"
-            placeholder="What you're streaming right now"
-            value={currentStreamTitle}
-            initialValue={instanceDetails.streamTitle}
-            onChange={handleStreamTitleChanged}
-          />
-</div>
+      <Layout className="layout-main">
+        <Header className="layout-header">
+          <div className="global-stream-title-container">
+            <TextFieldWithSubmit
+              fieldName="streamTitle"
+              {...TEXTFIELD_PROPS_STREAM_TITLE}
+              placeholder="What you're streaming right now"
+              value={currentStreamTitle}
+              initialValue={instanceDetails.streamTitle}
+              onChange={handleStreamTitleChanged}
+            />
+          </div>
+
           {statusIndicatorWithThumb}
         </Header>
 
         {headerAlertMessage}
-        
-        <Content className={adminStyles.contentMain}>{children}</Content>
 
-        <Footer style={{ textAlign: "center" }}>
+        <Content className="main-content-container">{children}</Content>
+
+        <Footer className="footer-container">
           <a href="https://owncast.online/">About Owncast v{versionNumber}</a>
         </Footer>
       </Layout>

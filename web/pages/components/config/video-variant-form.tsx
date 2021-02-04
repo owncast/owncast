@@ -1,12 +1,11 @@
 // This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
-import { Slider, Select, Switch, Divider, Collapse } from 'antd';
-import { FieldUpdaterFunc, CpuUsageLevel, VideoVariant } from '../../../types/config-section';
+import { Slider, Switch, Collapse } from 'antd';
+import { FieldUpdaterFunc, VideoVariant } from '../../../types/config-section';
 import { DEFAULT_VARIANT_STATE } from './constants';
 import InfoTip from '../info-tip';
 import CPUUsageSelector from './cpu-usage';
 
-const { Option } = Select;
 const { Panel } = Collapse;
 
 const VIDEO_VARIANT_DEFAULTS = {
@@ -57,12 +56,6 @@ export default function VideoVariantForm({
   const handleVideoBitrateChange = (value: number) => {
     onUpdateField({ fieldName: 'videoBitrate', value });
   };
-  const handleAudioBitrateChange = (value: number) => {
-    onUpdateField({ fieldName: 'audioBitrate', value });
-  };
-  const handleAudioPassChange = (value: boolean) => {
-    onUpdateField({ fieldName: 'audioPassthrough', value });
-  };
   const handleVideoPassChange = (value: boolean) => {
     onUpdateField({ fieldName: 'videoPassthrough', value });
   };
@@ -80,18 +73,12 @@ export default function VideoVariantForm({
   const videoBRMax = videoBitrateDefaults.max;
   const videoBRUnit = videoBitrateDefaults.unit;
 
-  const audioBitrateDefaults = VIDEO_VARIANT_DEFAULTS.audioBitrate;
-  const audioBRMin = audioBitrateDefaults.min;
-  const audioBRMax = audioBitrateDefaults.max;
-  const audioBRUnit = audioBitrateDefaults.unit;
-
   const selectedVideoBRnote = `Selected: ${dataState.videoBitrate}${videoBRUnit} - it sucks`;
-  const selectedAudioBRnote = `Selected: ${dataState.audioBitrate}${audioBRUnit} - too slow`;
   const selectedFramerateNote = `Selected: ${dataState.framerate}${framerateUnit} - whoa there`;
   const selectedPresetNote = '';
 
   return (
-    <div className="variant-form">
+    <div className="config-variant-form">
       <div className="section-intro">
         Say a thing here about how this all works. Read more{' '}
         <a href="https://owncast.online/docs/configuration/">here</a>.
@@ -130,6 +117,7 @@ export default function VideoVariantForm({
           </div>
         </div>
       </div>
+
       {/* VIDEO BITRATE FIELD */}
       <div className={`field ${dataState.videoPassthrough ? 'disabled' : ''}`}>
         <p className="label">
@@ -192,55 +180,6 @@ export default function VideoVariantForm({
               ) : null}
             </div>
           </div>
-
-          <Divider />
-
-          {/* AUDIO PASSTHROUGH FIELD */}
-          {/* <div className="field">
-            <p className="label">
-              <InfoTip tip={VIDEO_VARIANT_DEFAULTS.audioPassthrough.tip} />
-              Use Audio Passthrough?
-            </p>
-            <div className="form-component">
-              <Switch
-                defaultChecked={dataState.audioPassthrough}
-                checked={dataState.audioPassthrough}
-                onChange={handleAudioPassChange}
-                checkedChildren="Yes"
-                unCheckedChildren="No"
-              />
-              {dataState.audioPassthrough ? <span className="note">Same as source</span> : null}
-            </div>
-          </div> */}
-
-          {/* AUDIO BITRATE FIELD */}
-          {/* <div className={`field ${dataState.audioPassthrough ? 'disabled' : ''}`}>
-            <p className="label">
-              <InfoTip tip={VIDEO_VARIANT_DEFAULTS.audioBitrate.tip} />
-              Audio Bitrate:
-            </p>
-            <div className="form-component">
-              <Slider
-                // tooltipVisible={dataState.audioPassthrough !== true}
-                tipFormatter={value => `${value} ${audioBRUnit}`}
-                disabled={dataState.audioPassthrough === true}
-                defaultValue={dataState.audioBitrate}
-                value={dataState.audioBitrate}
-                onChange={handleAudioBitrateChange}
-                step={audioBitrateDefaults.incrementBy}
-                min={audioBRMin}
-                max={audioBRMax}
-                marks={{
-                  [audioBRMin]: `${audioBRMin} ${audioBRUnit}`,
-                  [audioBRMax]: `${audioBRMax} ${audioBRUnit}`,
-                }}
-              />
-
-              {selectedAudioBRnote ? (
-                <span className="selected-value-note">{selectedAudioBRnote}</span>
-              ) : null}
-            </div>
-          </div> */}
         </Panel>
       </Collapse>
     </div>

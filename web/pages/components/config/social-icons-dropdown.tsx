@@ -11,7 +11,7 @@ interface DropdownProps {
 }
 
 export default function SocialDropdown({ iconList, selectedOption, onSelected }: DropdownProps) {
-  const handleSelected = value => {
+  const handleSelected = (value: string) => {
     if (onSelected) {
       onSelected(value);
     }
