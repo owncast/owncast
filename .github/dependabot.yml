@@ -12,7 +12,6 @@ updates:
       interval: "daily"
     reviewers:
       - "gingervitis"
-      - "mattdsteele"
       - "gabek"
 
   - package-ecosystem: "gomod"
@@ -22,5 +21,3 @@ updates:
       interval: "daily"
     reviewers:
       - "gabek"
-      - "graywolf336"
-      - "geekgonecrazy"
