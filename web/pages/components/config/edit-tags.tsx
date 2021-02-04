@@ -18,7 +18,7 @@ import {
 const { Title } = Typography;
 
 export default function EditInstanceTags() {
-  const [newTagInput, setNewTagInput] = useState<string | number>('');
+  const [newTagInput, setNewTagInput] = useState<string>('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const serverStatusData = useContext(ServerStatusContext);
