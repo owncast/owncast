@@ -16,8 +16,10 @@ shutdown () {
 trap shutdown INT TERM ABRT EXIT
 
 echo "Cloning owncast admin into $INSTALL_TEMP_DIRECTORY..."
-git clone --depth 1 https://github.com/owncast/owncast-admin 2> /dev/null
+git clone https://github.com/owncast/owncast-admin 2> /dev/null
 cd owncast-admin
+# TODO: Remove once 0.0.6 is merged into master
+git checkout 0.0.6
 
 echo "Installing npm modules for the owncast admin..."
 npm --silent install 2> /dev/null
