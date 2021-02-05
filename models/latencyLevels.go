@@ -8,12 +8,12 @@ type LatencyLevel struct {
 
 func GetLatencyConfigs() map[int]LatencyLevel {
 	return map[int]LatencyLevel{
-		1: {Level: 1, SecondsPerSegment: 2, SegmentCount: 2},
-		2: {Level: 2, SecondsPerSegment: 2, SegmentCount: 3},
+		1: {Level: 1, SecondsPerSegment: 1, SegmentCount: 2},
+		2: {Level: 2, SecondsPerSegment: 2, SegmentCount: 2},
 		3: {Level: 3, SecondsPerSegment: 3, SegmentCount: 3},
-		4: {Level: 4, SecondsPerSegment: 4, SegmentCount: 4},
-		5: {Level: 5, SecondsPerSegment: 5, SegmentCount: 5},
-		6: {Level: 6, SecondsPerSegment: 7, SegmentCount: 10},
+		4: {Level: 4, SecondsPerSegment: 3, SegmentCount: 4}, // Default
+		5: {Level: 5, SecondsPerSegment: 4, SegmentCount: 5},
+		6: {Level: 6, SecondsPerSegment: 6, SegmentCount: 10},
 	}
 }
 
