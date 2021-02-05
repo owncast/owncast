@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"path/filepath"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core"
@@ -157,7 +158,14 @@ func SetLogoPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetLogoPath(configValue.Value.(string)); err != nil {
+	imgPath := configValue.Value.(string)
+	fullPath := filepath.Join("webroot", imgPath)
+	if !utils.DoesFileExists(fullPath) {
+		controllers.WriteSimpleResponse(w, false, fmt.Sprintf("%s does not exist", fullPath))
+		return
+	}
+
+	if err := data.SetLogoPath(imgPath); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
