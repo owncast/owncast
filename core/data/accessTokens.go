@@ -121,7 +121,7 @@ func DoesTokenSupportScope(token string, scope string) (bool, error) {
 }
 
 // GetAccessTokens will return all access tokens.
-func GetAccessTokens() ([]models.AccessToken, error) {
+func GetAccessTokens() ([]models.AccessToken, error) { //nolint
 	tokens := make([]models.AccessToken, 0)
 
 	// Get all messages sent within the past day

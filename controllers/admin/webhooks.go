@@ -16,7 +16,7 @@ type deleteWebhookRequest struct {
 }
 
 type createWebhookRequest struct {
-	Url    string             `json:"url"`
+	URL    string             `json:"url"`
 	Events []models.EventType `json:"events"`
 }
 
@@ -35,15 +35,15 @@ func CreateWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWebhookId, err := data.InsertWebhook(request.Url, request.Events)
+	newWebhookID, err := data.InsertWebhook(request.URL, request.Events)
 	if err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}
 
 	controllers.WriteResponse(w, models.Webhook{
-		ID:        newWebhookId,
-		Url:       request.Url,
+		ID:        newWebhookID,
+		Url:       request.URL,
 		Events:    request.Events,
 		Timestamp: time.Now(),
 		LastUsed:  nil,
@@ -61,7 +61,7 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteResponse(w, webhooks)
 }
 
-// Delete webhook will delete a single webhook.
+// DeleteWebhook will delete a single webhook.
 func DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")

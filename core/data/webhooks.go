@@ -143,7 +143,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 }
 
 // GetWebhooks will return all the webhooks.
-func GetWebhooks() ([]models.Webhook, error) {
+func GetWebhooks() ([]models.Webhook, error) { //nolint
 	webhooks := make([]models.Webhook, 0)
 
 	var query = "SELECT * FROM webhooks"

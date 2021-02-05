@@ -5,7 +5,7 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-// HasPopulatedDefaults will determine if the defaults have been inserted into the database
+// HasPopulatedDefaults will determine if the defaults have been inserted into the database.
 func HasPopulatedDefaults() bool {
 	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_DEFAULTS")
 	if err != nil {
@@ -22,16 +22,16 @@ func PopulateDefaults() {
 		return
 	}
 
-	SetStreamKey(defaults.StreamKey)
-	SetHTTPPortNumber(float64(defaults.WebServerPort))
-	SetRTMPPortNumber(float64(defaults.RTMPServerPort))
-	SetLogoPath(defaults.Logo)
-	SetServerMetadataTags([]string{"owncast", "streaming"})
-	SetServerSummary("Welcome to your new Owncast server!  This description can be changed in the admin")
-	SetServerName("Owncast")
-	SetStreamKey(defaults.StreamKey)
-	SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
-	SetSocialHandles([]models.SocialHandle{
+	_ = SetStreamKey(defaults.StreamKey)
+	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
+	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
+	_ = SetLogoPath(defaults.Logo)
+	_ = SetServerMetadataTags([]string{"owncast", "streaming"})
+	_ = SetServerSummary("Welcome to your new Owncast server!  This description can be changed in the admin")
+	_ = SetServerName("Owncast")
+	_ = SetStreamKey(defaults.StreamKey)
+	_ = SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
+	_ = SetSocialHandles([]models.SocialHandle{
 		{
 			Platform: "github",
 			URL:      "https://github.com/owncast/owncast",
@@ -39,6 +39,5 @@ func PopulateDefaults() {
 	})
 
 	_datastore.warmCache()
-	_datastore.SetBool("HAS_POPULATED_DEFAULTS", true)
-
+	_ = _datastore.SetBool("HAS_POPULATED_DEFAULTS", true)
 }

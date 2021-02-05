@@ -48,8 +48,8 @@ func migrateStatsFile() {
 		return
 	}
 
-	SetPeakSessionViewerCount(oldStats.SessionMaxViewerCount)
-	SetPeakOverallViewerCount(oldStats.OverallMaxViewerCount)
+	_ = SetPeakSessionViewerCount(oldStats.SessionMaxViewerCount)
+	_ = SetPeakOverallViewerCount(oldStats.OverallMaxViewerCount)
 
 	if err := utils.Move(config.StatsFile, "backup/stats.old"); err != nil {
 		log.Warnln(err)
@@ -78,7 +78,6 @@ func migrateYPKey() {
 	if err := utils.Move(filePath, "backup/yp.key.old"); err != nil {
 		log.Warnln(err)
 	}
-
 }
 
 func migrateConfigFile() {
@@ -103,18 +102,18 @@ func migrateConfigFile() {
 		return
 	}
 
-	SetServerName(oldConfig.InstanceDetails.Name)
-	SetServerSummary(oldConfig.InstanceDetails.Summary)
-	SetServerMetadataTags(oldConfig.InstanceDetails.Tags)
-	SetStreamKey(oldConfig.VideoSettings.StreamingKey)
-	SetLogoPath(oldConfig.InstanceDetails.Logo)
-	SetNSFW(oldConfig.InstanceDetails.NSFW)
-	SetServerURL(oldConfig.YP.InstanceURL)
-	SetDirectoryEnabled(oldConfig.YP.Enabled)
-	SetSocialHandles(oldConfig.InstanceDetails.SocialHandles)
-	SetFfmpegPath(oldConfig.FFMpegPath)
-	SetHTTPPortNumber(float64(oldConfig.WebServerPort))
-	SetRTMPPortNumber(float64(oldConfig.RTMPServerPort))
+	_ = SetServerName(oldConfig.InstanceDetails.Name)
+	_ = SetServerSummary(oldConfig.InstanceDetails.Summary)
+	_ = SetServerMetadataTags(oldConfig.InstanceDetails.Tags)
+	_ = SetStreamKey(oldConfig.VideoSettings.StreamingKey)
+	_ = SetLogoPath(oldConfig.InstanceDetails.Logo)
+	_ = SetNSFW(oldConfig.InstanceDetails.NSFW)
+	_ = SetServerURL(oldConfig.YP.InstanceURL)
+	_ = SetDirectoryEnabled(oldConfig.YP.Enabled)
+	_ = SetSocialHandles(oldConfig.InstanceDetails.SocialHandles)
+	_ = SetFfmpegPath(oldConfig.FFMpegPath)
+	_ = SetHTTPPortNumber(float64(oldConfig.WebServerPort))
+	_ = SetRTMPPortNumber(float64(oldConfig.RTMPServerPort))
 
 	// Migrate video variants
 	variants := []models.StreamOutputVariant{}
@@ -137,7 +136,7 @@ func migrateConfigFile() {
 		migratedVariant.CpuUsageLevel = presetMapping[variant.EncoderPreset]
 		variants = append(variants, migratedVariant)
 	}
-	SetStreamOutputVariants(variants)
+	_ = SetStreamOutputVariants(variants)
 
 	// Migrate latency level
 	level := 4
@@ -157,15 +156,15 @@ func migrateConfigFile() {
 		level = 6
 	}
 
-	SetStreamLatencyLevel(float64(level))
+	_ = SetStreamLatencyLevel(float64(level))
 
 	// Migrate storage config
-	SetS3Config(models.S3(oldConfig.Storage))
+	_ = SetS3Config(models.S3(oldConfig.Storage))
 
 	// Migrate the old content.md file
 	content, err := ioutil.ReadFile(config.ExtraInfoFile)
 	if err == nil && len(content) > 0 {
-		SetExtraPageBodyContent(string(content))
+		_ = SetExtraPageBodyContent(string(content))
 	}
 
 	if err := utils.Move(filePath, "backup/config.old"); err != nil {

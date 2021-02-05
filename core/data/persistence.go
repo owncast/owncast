@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/gob"
 
-	// sqlite requires a blank import
+	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 )

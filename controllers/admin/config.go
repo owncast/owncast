@@ -14,11 +14,12 @@ import (
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
-
+// ConfigValue is a container object that holds a value, is encoded, and saved to the database.
 type ConfigValue struct {
 	Value interface{} `json:"value"`
 }
 
+// SetTags will handle the web config request to set tags.
 func SetTags(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -42,6 +43,7 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetStreamTitle will handle the web config request to set the current stream title.
 func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -76,6 +78,7 @@ func sendSystemChatAction(messageText string) {
 	}
 }
 
+// SetServerName will handle the web config request to set the server's name.
 func SetServerName(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -94,6 +97,7 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetServerSummary will handle the web config request to set the about/summary text.
 func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -112,6 +116,7 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetExtraPageContent will handle the web config request to set the page markdown content.
 func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -130,6 +135,7 @@ func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetStreamKey will handle the web config request to set the server stream key.
 func SetStreamKey(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -148,6 +154,7 @@ func SetStreamKey(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetLogoPath will handle the web config request to validate and set the logo path.
 func SetLogoPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -173,6 +180,7 @@ func SetLogoPath(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetNSFW will handle the web config request to set the NSFW flag.
 func SetNSFW(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -191,6 +199,7 @@ func SetNSFW(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetFfmpegPath will handle the web config request to validate and set an updated copy of ffmpg.
 func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -215,6 +224,7 @@ func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetWebServerPort will handle the web config request to set the server's HTTP port.
 func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -233,6 +243,7 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "http port set")
 }
 
+// SetRTMPServerPort will handle the web config request to set the inbound RTMP port.
 func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -251,6 +262,7 @@ func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "rtmp port set")
 }
 
+// SetServerURL will handle the web config request to set the full server URL.
 func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -269,6 +281,7 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "server url set")
 }
 
+// SetDirectoryEnabled will handle the web config request to enable or disable directory registration.
 func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -286,6 +299,7 @@ func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "directory state changed")
 }
 
+// SetStreamLatencyLevel will handle the web config request to set the stream latency level.
 func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -304,6 +318,7 @@ func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "set stream latency")
 }
 
+// SetS3Configuration will handle the web config request to set the storage configuration.
 func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -348,6 +363,7 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// SetStreamOutputVariants will handle the web config request to set the video output stream variants.
 func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -392,6 +408,7 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "stream output variants updated")
 }
 
+// SetSocialHandles will handle the web config request to set the external social profile links.
 func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
