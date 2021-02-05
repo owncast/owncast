@@ -5,7 +5,7 @@ const serverName = randomString();
 const streamTitle = randomString();
 const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
-const logo = '/img/' + randomString();
+const logo = '/img/smiley.png';
 const tags = [randomString(), randomString(), randomString()];
 const latencyLevel = Math.floor((Math.random() * 5) + 1);
 
