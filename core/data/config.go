@@ -2,9 +2,6 @@ package data
 
 import (
 	"errors"
-	"fmt"
-	"os"
-	"os/exec"
 	"sort"
 	"strings"
 	"time"
@@ -301,32 +298,10 @@ func SetFfmpegPath(path string) error {
 }
 
 func GetFfMpegPath() string {
-	ffmpegPath, err := _datastore.GetString(FFMPEG_PATH_KEY)
-
-	if ffmpegPath != "" {
-		if err := VerifyFFMpegPath(ffmpegPath); err == nil {
-			return ffmpegPath
-		} else {
-			log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
-		}
-	}
-
-	// First look to see if ffmpeg is in the current working directory
-	localCopy := "./ffmpeg"
-	hasLocalCopyError := VerifyFFMpegPath(localCopy)
-	if hasLocalCopyError == nil {
-		// No error, so all is good.  Use the local copy.
-		return localCopy
-	}
-
-	cmd := exec.Command("which", "ffmpeg")
-	out, err := cmd.CombinedOutput()
+	path, err := _datastore.GetString(FFMPEG_PATH_KEY)
 	if err != nil {
-		log.Fatalln("Unable to determine path to ffmpeg. Please specify it in the config file.")
+		return ""
 	}
-
-	path := strings.TrimSpace(string(out))
-
 	return path
 }
 
@@ -402,31 +377,6 @@ func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
 func VerifySettings() error {
 	if GetStreamKey() == "" {
 		return errors.New("No stream key set. Please set one in your config file.")
-	}
-
-	return nil
-}
-
-// VerifyFFMpegPath verifies that the path exists, is a file, and is executable.
-func VerifyFFMpegPath(path string) error {
-	stat, err := os.Stat(path)
-
-	if os.IsNotExist(err) {
-		return errors.New("ffmpeg path does not exist")
-	}
-
-	if err != nil {
-		return fmt.Errorf("error while verifying the ffmpeg path: %s", err.Error())
-	}
-
-	if stat.IsDir() {
-		return errors.New("ffmpeg path can not be a folder")
-	}
-
-	mode := stat.Mode()
-	//source: https://stackoverflow.com/a/60128480
-	if mode&0111 == 0 {
-		return errors.New("ffmpeg path is not executable")
 	}
 
 	return nil

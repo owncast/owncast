@@ -194,7 +194,7 @@ func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := configValue.Value.(string)
-	if err := data.VerifyFFMpegPath(path); err != nil {
+	if err := utils.VerifyFFMpegPath(path); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
