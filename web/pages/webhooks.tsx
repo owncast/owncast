@@ -114,18 +114,6 @@ export default function Webhooks() {
                 </>
             ),
         },
-        {
-            title: 'Last Used',
-            dataIndex: 'lastUsed',
-            key: 'lastUsed',
-            render: (lastUsed) => {
-                if (!lastUsed) {
-                    return 'Never';
-                }
-                const dateObject = new Date(lastUsed);
-                return format(dateObject, 'P p');
-            },
-        },
     ];
 
     const getWebhooks = async () => {
