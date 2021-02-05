@@ -5,7 +5,7 @@ request = request('http://127.0.0.1:8080');
 const WebSocket = require('ws');
 var ws;
 
-const id = Math.random().toString(36).substring(7);
+const testMessageId = Math.random().toString(36).substring(7);
 const username = 'user' + Math.floor(Math.random() * 100);
 const message = Math.floor(Math.random() * 100) + ' test 123';
 const messageRaw = message + ' *and some markdown too*';
@@ -15,7 +15,7 @@ const date = new Date().toISOString();
 const testMessage = {
     author: username,
     body: messageRaw,
-    id: id,
+    id: testMessageId,
     type: 'CHAT',
     visible: true,
     timestamp: date,
@@ -39,10 +39,14 @@ test('can send a chat message', (done) => {
 test('can fetch chat messages', (done) => {
     request.get('/api/admin/chat/messages').auth('admin', 'abc123').expect(200)
         .then((res) => {
-            expect(res.body[0].author).toBe(testMessage.author);
-            expect(res.body[0].body).toBe(messageMarkdown);
-            expect(res.body[0].date).toBe(testMessage.date);
-            expect(res.body[0].type).toBe(testMessage.type);
+            const message = res.body.filter(function(msg) {
+                return msg.id = testMessageId;
+            })[0];
+
+            expect(message.author).toBe(testMessage.author);
+            expect(message.body).toBe(messageMarkdown);
+            expect(message.date).toBe(testMessage.date);
+            expect(message.type).toBe(testMessage.type);
 
             done();
         });

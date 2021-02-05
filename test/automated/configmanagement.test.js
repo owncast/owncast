@@ -12,7 +12,7 @@ const latencyLevel = Math.floor((Math.random() * 5) + 1);
 const streamOutputVariants = 
     {
         videoBitrate: randomNumber() * 100,
-        framerate: randomNumber() * 10,
+        framerate: 42,
         cpuUsageLevel: 2,
         scaledHeight: randomNumber() * 100,
         scaledWidth: randomNumber() * 100,
@@ -155,8 +155,7 @@ async function sendConfigChangeRequest(endpoint, value) {
         .send({"value": value}).expect(200);
 
     expect(res.body.success).toBe(true);
-
-    return res
+    return res    
 }
 
 async function sendConfigChangePayload(endpoint, payload) {
