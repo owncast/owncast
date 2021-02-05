@@ -1,0 +1,3 @@
+# Ignore artifacts:
+build/javascript
+webroot/js/web_modules
