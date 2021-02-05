@@ -32,6 +32,7 @@ func createWebhooksTable() {
 	}
 }
 
+// InsertWebhook will add a new webhook to the database.
 func InsertWebhook(url string, events []models.EventType) (int, error) {
 	log.Println("Adding new webhook:", url)
 
@@ -57,14 +58,15 @@ func InsertWebhook(url string, events []models.EventType) (int, error) {
 		return 0, err
 	}
 
-	newId, err := insertResult.LastInsertId()
+	newID, err := insertResult.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
 
-	return int(newId), err
+	return int(newID), err
 }
 
+// DeleteWebhook will delete a webhook from the database.
 func DeleteWebhook(id int) error {
 	log.Println("Deleting webhook:", id)
 
@@ -96,6 +98,7 @@ func DeleteWebhook(id int) error {
 	return nil
 }
 
+// GetWebhooksForEvent will return all of the webhooks that want to be notified about an event type.
 func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	webhooks := make([]models.Webhook, 0)
 
@@ -139,6 +142,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	return webhooks
 }
 
+// GetWebhooks will return all the webhooks.
 func GetWebhooks() ([]models.Webhook, error) {
 	webhooks := make([]models.Webhook, 0)
 
@@ -191,6 +195,7 @@ func GetWebhooks() ([]models.Webhook, error) {
 	return webhooks, nil
 }
 
+// SetWebhookAsUsed will update the last used time for a webhook.
 func SetWebhookAsUsed(id string) error {
 	tx, err := _db.Begin()
 	if err != nil {

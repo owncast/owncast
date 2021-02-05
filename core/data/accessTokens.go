@@ -31,6 +31,7 @@ func createAccessTokensTable() {
 	}
 }
 
+// InsertToken will add a new token to the database.
 func InsertToken(token string, name string, scopes []string) error {
 	log.Println("Adding new access token:", name)
 
@@ -58,6 +59,7 @@ func InsertToken(token string, name string, scopes []string) error {
 	return nil
 }
 
+// DeleteToken will delete a token from the database.
 func DeleteToken(token string) error {
 	log.Println("Deleting access token:", token)
 
@@ -89,6 +91,7 @@ func DeleteToken(token string) error {
 	return nil
 }
 
+// DoesTokenSupportScope will determine if a specific token has access to perform a scoped action.
 func DoesTokenSupportScope(token string, scope string) (bool, error) {
 	// This will split the scopes from comma separated to individual rows
 	// so we can efficiently find if a token supports a single scope.
@@ -117,6 +120,7 @@ func DoesTokenSupportScope(token string, scope string) (bool, error) {
 	return count > 0, err
 }
 
+// GetAccessTokens will return all access tokens.
 func GetAccessTokens() ([]models.AccessToken, error) {
 	tokens := make([]models.AccessToken, 0)
 
@@ -170,6 +174,7 @@ func GetAccessTokens() ([]models.AccessToken, error) {
 	return tokens, nil
 }
 
+// SetAccessTokenAsUsed will update the last used timestamp for a token.
 func SetAccessTokenAsUsed(token string) error {
 	tx, err := _db.Begin()
 	if err != nil {

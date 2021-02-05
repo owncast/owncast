@@ -5,7 +5,7 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-// Determine if the defaults have been inserted into the database
+// HasPopulatedDefaults will determine if the defaults have been inserted into the database
 func HasPopulatedDefaults() bool {
 	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_DEFAULTS")
 	if err != nil {
@@ -14,6 +14,7 @@ func HasPopulatedDefaults() bool {
 	return hasPopulated
 }
 
+// PopulateDefaults will set default values in the database.
 func PopulateDefaults() {
 	defaults := config.GetDefaults()
 

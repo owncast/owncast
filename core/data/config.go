@@ -293,10 +293,12 @@ func GetNSFW() bool {
 	return nsfw
 }
 
+// SetFfmpegPath will set the custom ffmpeg path.
 func SetFfmpegPath(path string) error {
 	return _datastore.SetString(FFMPEG_PATH_KEY, path)
 }
 
+// GetFfMpegPath will return the ffmpeg path
 func GetFfMpegPath() string {
 	path, err := _datastore.GetString(FFMPEG_PATH_KEY)
 	if err != nil {
@@ -305,6 +307,7 @@ func GetFfMpegPath() string {
 	return path
 }
 
+// GetS3Config will return the external storage configuration.
 func GetS3Config() models.S3 {
 	configEntry, err := _datastore.Get(S3_STORAGE_CONFIG_KEY)
 	if err != nil {
@@ -319,11 +322,13 @@ func GetS3Config() models.S3 {
 	return s3Config
 }
 
+// SetS3Config will set the external storage configuration.
 func SetS3Config(config models.S3) error {
 	var configEntry = ConfigEntry{Key: S3_STORAGE_CONFIG_KEY, Value: config}
 	return _datastore.Save(configEntry)
 }
 
+// GetS3StorageEnabled will return if exernal storage is enabled.
 func GetS3StorageEnabled() bool {
 	enabled, err := _datastore.GetBool(S3_STORAGE_ENABLED_KEY)
 	if err != nil {
@@ -334,10 +339,12 @@ func GetS3StorageEnabled() bool {
 	return enabled
 }
 
+// SetS3StorageEnabled will enable or disable external storage.
 func SetS3StorageEnabled(enabled bool) error {
 	return _datastore.SetBool(S3_STORAGE_ENABLED_KEY, enabled)
 }
 
+// GetStreamLatencyLevel will return the stream latency level.
 func GetStreamLatencyLevel() models.LatencyLevel {
 	level, err := _datastore.GetNumber(VIDEO_LATENCY_LEVEL)
 	if err != nil || level == 0 {
@@ -347,10 +354,12 @@ func GetStreamLatencyLevel() models.LatencyLevel {
 	return models.GetLatencyLevel(int(level))
 }
 
+// SetStreamLatencyLevel will set the stream latency level.
 func SetStreamLatencyLevel(level float64) error {
 	return _datastore.SetNumber(VIDEO_LATENCY_LEVEL, level)
 }
 
+// GetStreamOutputVariants will return all of the stream output variants.
 func GetStreamOutputVariants() []models.StreamOutputVariant {
 	configEntry, err := _datastore.Get(VIDEO_STREAM_OUTPUT_VARIANTS_KEY)
 	if err != nil {
@@ -369,11 +378,13 @@ func GetStreamOutputVariants() []models.StreamOutputVariant {
 	return streamOutputVariants
 }
 
+// SetStreamOutputVariants will set the stream output variants.
 func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
 	var configEntry = ConfigEntry{Key: VIDEO_STREAM_OUTPUT_VARIANTS_KEY, Value: variants}
 	return _datastore.Save(configEntry)
 }
 
+// VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
 	if GetStreamKey() == "" {
 		return errors.New("No stream key set. Please set one in your config file.")
@@ -382,6 +393,7 @@ func VerifySettings() error {
 	return nil
 }
 
+// FindHighestVideoQualityIndex will return the highest quality from a slice of variants.
 func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	type IndexedQuality struct {
 		index   int

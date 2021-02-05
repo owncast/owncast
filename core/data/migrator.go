@@ -12,6 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// RunMigrations will start the migration process from the config file.
 func RunMigrations() {
 	if !utils.DoesFileExists(config.BackupDirectory) {
 		if err := os.Mkdir(config.BackupDirectory, 0700); err != nil {

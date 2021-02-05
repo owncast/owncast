@@ -1,5 +1,6 @@
 package data
 
+// GetString will return the string value for a key.
 func (ds *Datastore) GetString(key string) (string, error) {
 	configEntry, err := ds.Get(key)
 	if err != nil {
@@ -8,11 +9,13 @@ func (ds *Datastore) GetString(key string) (string, error) {
 	return configEntry.getString()
 }
 
+// SetString will set the string value for a key.
 func (ds *Datastore) SetString(key string, value string) error {
 	configEntry := ConfigEntry{key, value}
 	return ds.Save(configEntry)
 }
 
+// GetNumber will return the numeric value for a key.
 func (ds *Datastore) GetNumber(key string) (float64, error) {
 	configEntry, err := ds.Get(key)
 	if err != nil {
@@ -21,11 +24,13 @@ func (ds *Datastore) GetNumber(key string) (float64, error) {
 	return configEntry.getNumber()
 }
 
+// SetNumber will set the numeric value for a key.
 func (ds *Datastore) SetNumber(key string, value float64) error {
 	configEntry := ConfigEntry{key, value}
 	return ds.Save(configEntry)
 }
 
+// GetBool will return the boolean value for a key.
 func (ds *Datastore) GetBool(key string) (bool, error) {
 	configEntry, err := ds.Get(key)
 	if err != nil {
@@ -34,6 +39,7 @@ func (ds *Datastore) GetBool(key string) (bool, error) {
 	return configEntry.getBool()
 }
 
+// SetBool will set the boolean value for a key.
 func (ds *Datastore) SetBool(key string, value bool) error {
 	configEntry := ConfigEntry{key, value}
 	return ds.Save(configEntry)

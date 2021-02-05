@@ -5,10 +5,12 @@ import (
 	"database/sql"
 	"encoding/gob"
 
+	// sqlite requires a blank import
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 )
 
+// Datastore is the global key/value store for configuration values.
 type Datastore struct {
 	db    *sql.DB
 	cache map[string][]byte
@@ -105,6 +107,7 @@ func (ds *Datastore) Save(e ConfigEntry) error {
 	return nil
 }
 
+// Setup will create the datastore table and perform initial initialization.
 func (ds *Datastore) Setup() {
 	ds.cache = make(map[string][]byte)
 	ds.db = GetDatabase()

@@ -32,6 +32,7 @@ func GetStore() *Datastore {
 	return _datastore
 }
 
+// SetupPersistence will open the datastore and make it available.
 func SetupPersistence(file string) error {
 	// Create empty DB file if it doesn't exist.
 	if !utils.DoesFileExists(file) {
