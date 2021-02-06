@@ -15,21 +15,21 @@ import FormStatusIndicator from './form-status-indicator';
 const { Title } = Typography;
 
 const SLIDER_MARKS = {
-  1: 'low',
+  1: 'Low',
   2: '',
   3: '',
   4: '',
   5: '',
-  6: 'high',
+  6: 'High',
 };
 
 const SLIDER_COMMENTS = {
-  1: 'Lowest latency, but least reliability',
-  2: 'Low latency, some reliability',
-  3: 'Lower latency, some reliability',
-  4: 'Optimal latency and reliability (Default)',
-  5: 'High latency, better reliability',
-  6: 'Highest latency, higher reliability',
+  1: 'Lowest latency, lowest error tolerance',
+  2: 'Low latency, low error tolerance',
+  3: 'Lower latency, lower error tolerance',
+  4: 'Medium latency, medium error tolerance (Default)',
+  5: 'Higher latency, higher error tolerance',
+  6: 'Highest latency, highest error tolerance',
 };
 
 interface SegmentToolTipProps {
@@ -110,6 +110,9 @@ export default function VideoLatency() {
       <Title level={3}>Latency Buffer</Title>
       <p>
         While it's natural to want to keep your latency as low as possible, you may experience reduced error tolerance and stability in some environments the lower you go.
+      </p>
+        For interactive live streams you may want to experiment with a lower latency, for non-interactive broadcasts you may want to increase it.  <a href="https://owncast.online/docs/encoding#latency-buffer">Read to learn more.</a>
+      <p>
       </p>
       <div className="segment-slider-container">
         <Slider
