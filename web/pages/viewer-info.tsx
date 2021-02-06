@@ -96,24 +96,26 @@ export default function ViewersOverTime() {
   return (
     <div>
       <Row gutter={[16, 16]} justify="space-around">
+        {online && (
+          <StatisticItem
+            title="Current viewers"
+            value={viewerCount.toString()}
+            prefix={<UserOutlined />}
+          />
+        )}
         <StatisticItem
-          title="Current viewers"
-          value={viewerCount.toString()}
-          prefix={<UserOutlined />}
-        />
-        <StatisticItem
-          title="Peak viewers this session"
+          title={online ? 'Max viewers this session' : 'Max viewers last session'}
           value={sessionPeakViewerCount.toString()}
           prefix={<UserOutlined />}
         />
         <StatisticItem
-          title="Peak viewers overall"
+          title="All-time max viewers"
           value={overallPeakViewerCount.toString()}
           prefix={<UserOutlined />}
         />
       </Row>
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
-      <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />
+      {online && <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />}
     </div>
   );
 }
