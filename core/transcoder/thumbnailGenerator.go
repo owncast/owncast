@@ -12,6 +12,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 )
 
 var _timer *time.Ticker
@@ -79,9 +80,10 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	}
 
 	mostRecentFile := path.Join(framePath, names[0])
+	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 
 	thumbnailCmdFlags := []string{
-		data.GetFfMpegPath(),
+		ffmpegPath,
 		"-y",                 // Overwrite file
 		"-threads 1",         // Low priority processing
 		"-t 1",               // Pull from frame 1
