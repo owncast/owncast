@@ -1,0 +1,23 @@
+name: linter
+
+# This action works with pull requests and pushes
+on:
+  pull_request:
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 9.8.0
+      - name: Install
+        run: npm install
+      - name: Run ESLint on changed files
+        uses: tj-actions/eslint-changed-files@v4
+        with:
+          config-path: '.eslintrc.js'
+          ignore-path: '.eslintignore'
+          extensions: 'ts,tsx,js,jsx'
+          extra-args: '--max-warnings=0'
