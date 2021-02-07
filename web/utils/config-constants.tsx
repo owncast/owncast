@@ -1,8 +1,8 @@
 // DEFAULT VALUES
 import React from 'react';
 import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
-import { fetchData, SERVER_CONFIG_UPDATE_URL } from '../../../utils/apis';
-import { ApiPostArgs, VideoVariant, SocialHandle } from '../../../types/config-section';
+import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
+import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
 
 export const TEXT_MAXLENGTH = 255;
 

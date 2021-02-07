@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { ConfigDetails, UpdateArgs } from '../types/config-section';
-import { DEFAULT_VARIANT_STATE } from '../pages/components/config/constants';
+import { DEFAULT_VARIANT_STATE } from './config-constants';
 
 export const initialServerConfigState: ConfigDetails = {
   streamKey: '',
@@ -47,6 +47,7 @@ export const initialServerConfigState: ConfigDetails = {
 const initialServerStatusState = {
   broadcastActive: false,
   broadcaster: null,
+  currentBroadcast: null,
   online: false,
   viewerCount: 0,
   sessionMaxViewerCount: 0,
@@ -60,9 +61,8 @@ export const ServerStatusContext = React.createContext({
   ...initialServerStatusState,
   serverConfig: initialServerConfigState,
 
-  setFieldInConfigState: (args: UpdateArgs) => {
-    return args;
-  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setFieldInConfigState: (args: UpdateArgs) => null,
 });
 
 const ServerStatusProvider = ({ children }) => {

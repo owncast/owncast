@@ -4,7 +4,7 @@ import TextFieldWithSubmit, {
   TEXTFIELD_TYPE_URL,
 } from './form-textfield-with-submit';
 
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
   TEXTFIELD_PROPS_INSTANCE_URL,
@@ -12,9 +12,9 @@ import {
   TEXTFIELD_PROPS_SERVER_SUMMARY,
   TEXTFIELD_PROPS_LOGO,
   API_YP_SWITCH,
-} from './constants';
+} from '../../utils/config-constants';
 
-import { UpdateArgs } from '../../../types/config-section';
+import { UpdateArgs } from '../../types/config-section';
 
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);

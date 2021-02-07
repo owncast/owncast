@@ -6,12 +6,12 @@ import {
   STATUS_ERROR,
   STATUS_PROCESSING,
   STATUS_SUCCESS,
-} from '../../../utils/input-statuses';
+} from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
 
-import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
+import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constants';
 
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import InfoTip from '../info-tip';
 
 interface ToggleSwitchProps {

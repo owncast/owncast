@@ -3,8 +3,8 @@ import { Table, Row } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
 import { UserOutlined } from '@ant-design/icons';
 import { SortOrder } from 'antd/lib/table/interface';
-import Chart from './components/chart';
-import StatisticItem from './components/statistic';
+import Chart from '../components/chart';
+import StatisticItem from '../components/statistic';
 
 import { ServerStatusContext } from '../utils/server-status-context';
 

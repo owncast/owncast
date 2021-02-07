@@ -4,9 +4,9 @@ import React, { useContext, useState } from 'react';
 import { Typography, Table, Modal, Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
-import { ServerStatusContext } from '../../../utils/server-status-context';
-import { AlertMessageContext } from '../../../utils/alert-message-context';
-import { UpdateArgs, VideoVariant } from '../../../types/config-section';
+import { ServerStatusContext } from '../../utils/server-status-context';
+import { AlertMessageContext } from '../../utils/alert-message-context';
+import { UpdateArgs, VideoVariant } from '../../types/config-section';
 
 import VideoVariantForm from './video-variant-form';
 import {
@@ -15,7 +15,7 @@ import {
   SUCCESS_STATES,
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
-} from './constants';
+} from '../../utils/config-constants';
 
 const { Title } = Typography;
 

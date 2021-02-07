@@ -5,17 +5,17 @@ import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield';
 import TextFieldWithSubmit from './form-textfield-with-submit';
 
-import { ServerStatusContext } from '../../../utils/server-status-context';
-import { AlertMessageContext } from '../../../utils/alert-message-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
+import { AlertMessageContext } from '../../utils/alert-message-context';
 
 import {
   TEXTFIELD_PROPS_FFMPEG,
   TEXTFIELD_PROPS_RTMP_PORT,
   TEXTFIELD_PROPS_STREAM_KEY,
   TEXTFIELD_PROPS_WEB_PORT,
-} from './constants';
+} from '../../utils/config-constants';
 
-import { UpdateArgs } from '../../../types/config-section';
+import { UpdateArgs } from '../../types/config-section';
 
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
@@ -55,7 +55,9 @@ export default function EditInstanceDetails() {
   };
 
   const showStreamKeyChangeMessage = () => {
-    setMessage('Changing your stream key will log you out of the admin and block you from streaming until you change the key in your broadcasting software.');
+    setMessage(
+      'Changing your stream key will log you out of the admin and block you from streaming until you change the key in your broadcasting software.',
+    );
   };
 
   const showFfmpegChangeMessage = () => {

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Slider } from 'antd';
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 
 const { Title } = Typography;
 

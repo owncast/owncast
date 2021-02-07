@@ -3,19 +3,19 @@ import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
 import SocialDropdown from './social-icons-dropdown';
-import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../../../utils/apis';
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../../utils/apis';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   API_SOCIAL_HANDLES,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   DEFAULT_SOCIAL_HANDLE,
   OTHER_SOCIAL_HANDLE_OPTION,
-} from './constants';
-import { SocialHandle, UpdateArgs } from '../../../types/config-section';
-import { isValidUrl } from '../../../utils/urls';
+} from '../../utils/config-constants';
+import { SocialHandle, UpdateArgs } from '../../types/config-section';
+import { isValidUrl } from '../../utils/urls';
 import TextField from './form-textfield';
-import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../../utils/input-statuses';
+import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
@@ -43,9 +43,9 @@ export default function EditSocialLinks() {
   let resetTimer = null;
 
   const PLACEHOLDERS = {
-    'mastodon': 'https://mastodon.social/@username',
-    'twitter': 'https://twitter.com/username'
-  }
+    mastodon: 'https://mastodon.social/@username',
+    twitter: 'https://twitter.com/username',
+  };
 
   const getAvailableIcons = async () => {
     try {

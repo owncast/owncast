@@ -1,8 +1,8 @@
 // This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
 import { Slider, Switch, Collapse } from 'antd';
-import { FieldUpdaterFunc, VideoVariant } from '../../../types/config-section';
-import { DEFAULT_VARIANT_STATE } from './constants';
+import { FieldUpdaterFunc, VideoVariant } from '../../types/config-section';
+import { DEFAULT_VARIANT_STATE } from '../../utils/config-constants';
 import InfoTip from '../info-tip';
 import CPUUsageSelector from './cpu-usage';
 

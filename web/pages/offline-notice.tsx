@@ -6,8 +6,8 @@ import {
   BookTwoTone,
   PlaySquareTwoTone,
 } from '@ant-design/icons';
-import OwncastLogo from './components/logo';
-import LogTable from './components/log-table';
+import OwncastLogo from '../components/logo';
+import LogTable from '../components/log-table';
 
 const { Meta } = Card;
 
