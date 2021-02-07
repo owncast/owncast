@@ -1,8 +1,8 @@
 import React from 'react';
 import { Select } from 'antd';
-import { SocialHandleDropdownItem } from '../../../types/config-section';
-import { NEXT_PUBLIC_API_HOST } from '../../../utils/apis';
-import { OTHER_SOCIAL_HANDLE_OPTION } from './constants';
+import { SocialHandleDropdownItem } from '../../types/config-section';
+import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
+import { OTHER_SOCIAL_HANDLE_OPTION } from '../../utils/config-constants';
 
 interface DropdownProps {
   iconList: SocialHandleDropdownItem[];

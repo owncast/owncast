@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Table, Typography, Tooltip, Button } from "antd";
-import { CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
+import React, { useState, useEffect } from 'react';
+import { Table, Typography, Tooltip, Button } from 'antd';
+import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
-import format from 'date-fns/format'
+import format from 'date-fns/format';
 
-import { CHAT_HISTORY, fetchData, FETCH_INTERVAL, UPDATE_CHAT_MESSGAE_VIZ } from "../utils/apis";
+import { CHAT_HISTORY, fetchData, FETCH_INTERVAL, UPDATE_CHAT_MESSGAE_VIZ } from '../utils/apis';
 import { MessageType } from '../types/chat';
-import { isEmptyObject } from "../utils/format";
-import MessageVisiblityToggle from "./components/message-visiblity-toggle";
+import { isEmptyObject } from '../utils/format';
+import MessageVisiblityToggle from '../components/message-visiblity-toggle';
 
 const { Title } = Typography;
 
@@ -55,7 +55,7 @@ export default function Chat() {
         setMessages(result);
       }
     } catch (error) {
-      console.log("==== error", error);
+      console.log('==== error', error);
     }
   };
 
@@ -73,7 +73,7 @@ export default function Chat() {
   }, []);
 
   const nameFilters = createUserNameFilters(messages);
-  
+
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedKeys: string[]) => {
@@ -81,10 +81,10 @@ export default function Chat() {
     },
   };
 
-  const updateMessage = message => {		
-    const messageIndex = messages.findIndex(m => m.id === message.id);	
-    messages.splice(messageIndex, 1, message)		
-    setMessages([...messages]);		
+  const updateMessage = message => {
+    const messageIndex = messages.findIndex(m => m.id === message.id);
+    messages.splice(messageIndex, 1, message);
+    setMessages([...messages]);
   };
 
   const resetBulkOutcome = () => {
@@ -93,7 +93,7 @@ export default function Chat() {
       setBulkAction('');
     }, OUTCOME_TIMEOUT);
   };
-  const handleSubmitBulk = async (bulkVisibility) => {
+  const handleSubmitBulk = async bulkVisibility => {
     setBulkProcessing(true);
     const result = await fetchData(UPDATE_CHAT_MESSGAE_VIZ, {
       auth: true,
@@ -104,7 +104,7 @@ export default function Chat() {
       },
     });
 
-    if (result.success && result.message === "changed") {
+    if (result.success && result.message === 'changed') {
       setBulkOutcome(<CheckCircleFilled />);
       resetBulkOutcome();
 
@@ -112,7 +112,7 @@ export default function Chat() {
       const updatedList = [...messages];
       selectedRowKeys.map(key => {
         const messageIndex = updatedList.findIndex(m => m.id === key);
-        const newMessage = {...messages[messageIndex], visible: bulkVisibility };
+        const newMessage = { ...messages[messageIndex], visible: bulkVisibility };
         updatedList.splice(messageIndex, 1, newMessage);
         return null;
       });
@@ -123,15 +123,15 @@ export default function Chat() {
       resetBulkOutcome();
     }
     setBulkProcessing(false);
-  }
+  };
   const handleSubmitBulkShow = () => {
     setBulkAction('show');
     handleSubmitBulk(true);
-  }
+  };
   const handleSubmitBulkHide = () => {
     setBulkAction('hide');
     handleSubmitBulk(false);
-  }
+  };
 
   const chatColumns: ColumnsType<MessageType> = [
     {
@@ -140,7 +140,7 @@ export default function Chat() {
       key: 'timestamp',
       className: 'timestamp-col',
       defaultSortOrder: 'descend',
-      render: (timestamp) => {
+      render: timestamp => {
         const dateObject = new Date(timestamp);
         return format(dateObject, 'PP pp');
       },
@@ -155,7 +155,7 @@ export default function Chat() {
       filters: nameFilters,
       onFilter: (value, record) => record.author === value,
       sorter: (a, b) => a.author.localeCompare(b.author),
-      sortDirections: ['ascend', 'descend'],  
+      sortDirections: ['ascend', 'descend'],
       ellipsis: true,
       render: author => (
         <Tooltip placement="topLeft" title={author}>
@@ -176,21 +176,20 @@ export default function Chat() {
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: body }}
         />
-      )
+      ),
     },
     {
       title: '',
       dataIndex: 'visible',
       key: 'visible',
       className: 'toggle-col',
-      filters: [{ text: 'Visible messages', value: true }, { text: 'Hidden messages', value: false }],
+      filters: [
+        { text: 'Visible messages', value: true },
+        { text: 'Hidden messages', value: false },
+      ],
       onFilter: (value, record) => record.visible === value,
       render: (visible, record) => (
-        <MessageVisiblityToggle
-          isVisible={visible}
-          message={record}
-          setMessage={updateMessage}
-        />
+        <MessageVisiblityToggle isVisible={visible} message={record} setMessage={updateMessage} />
       ),
       width: 30,
     },
@@ -200,7 +199,7 @@ export default function Chat() {
     'bulk-editor': true,
     active: selectedRowKeys.length,
   });
-  
+
   return (
     <div className="chat-messages">
       <Title level={2}>Chat Messages</Title>
@@ -236,14 +235,14 @@ export default function Chat() {
       <Table
         size="small"
         className="messages-table"
-        pagination={{ pageSize: 100 }} 
+        pagination={{ pageSize: 100 }}
         scroll={{ y: 540 }}
-        rowClassName={record => !record.visible ? 'hidden' : ''}
+        rowClassName={record => (!record.visible ? 'hidden' : '')}
         dataSource={messages}
         columns={chatColumns}
-        rowKey={(row) => row.id}
+        rowKey={row => row.id}
         rowSelection={rowSelection}
       />
-  </div>)
+    </div>
+  );
 }
-

@@ -2,10 +2,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Tag } from 'antd';
 
-import { ServerStatusContext } from '../../../utils/server-status-context';
-import { FIELD_PROPS_TAGS, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
+import { ServerStatusContext } from '../../utils/server-status-context';
+import {
+  FIELD_PROPS_TAGS,
+  RESET_TIMEOUT,
+  postConfigUpdateToAPI,
+} from '../../utils/config-constants';
 import TextField from './form-textfield';
-import { UpdateArgs } from '../../../types/config-section';
+import { UpdateArgs } from '../../types/config-section';
 import {
   createInputStatus,
   StatusState,
@@ -13,7 +17,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
   STATUS_WARNING,
-} from '../../../utils/input-statuses';
+} from '../../utils/input-statuses';
 
 const { Title } = Typography;
 

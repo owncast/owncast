@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Button } from 'antd';
 import classNames from 'classnames';
-import { RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
+import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constants';
 
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import TextField, { TextFieldProps } from './form-textfield';
 import {
   createInputStatus,
@@ -11,8 +11,8 @@ import {
   STATUS_ERROR,
   STATUS_PROCESSING,
   STATUS_SUCCESS,
-} from '../../../utils/input-statuses';
-import { UpdateArgs } from '../../../types/config-section';
+} from '../../utils/input-statuses';
+import { UpdateArgs } from '../../types/config-section';
 import FormStatusIndicator from './form-status-indicator';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';

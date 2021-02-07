@@ -8,7 +8,7 @@ import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   API_CUSTOM_CONTENT,
-} from './components/config/constants';
+} from '../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
@@ -17,7 +17,7 @@ import {
   STATUS_SUCCESS,
 } from '../utils/input-statuses';
 import 'react-markdown-editor-lite/lib/index.css';
-import FormStatusIndicator from './components/config/form-status-indicator';
+import FormStatusIndicator from '../components/config/form-status-indicator';
 
 const { Title } = Typography;
 
@@ -87,7 +87,8 @@ export default function PageContentEditor() {
       <Title level={2}>Page Content</Title>
 
       <p>
-        Edit the content of your page by using simple <a href="https://www.markdownguide.org/basic-syntax/">Markdown syntax</a>.
+        Edit the content of your page by using simple{' '}
+        <a href="https://www.markdownguide.org/basic-syntax/">Markdown syntax</a>.
       </p>
 
       <MdEditor
@@ -100,7 +101,7 @@ export default function PageContentEditor() {
           markdownClass: 'markdown-editor-pane',
         }}
       />
-      
+
       <div className="page-content-actions">
         {hasChanged ? (
           <Button type="primary" onClick={handleSave}>
@@ -108,7 +109,6 @@ export default function PageContentEditor() {
           </Button>
         ) : null}
         <FormStatusIndicator status={submitStatus} />
-
       </div>
     </div>
   );

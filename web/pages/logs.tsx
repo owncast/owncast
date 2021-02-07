@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
-import LogTable from "./components/log-table";
+import React, { useState, useEffect } from 'react';
+import LogTable from '../components/log-table';
 
-import {
-  LOGS_ALL,
-  fetchData,
-} from "../utils/apis";
+import { LOGS_ALL, fetchData } from '../utils/apis';
 
 const FETCH_INTERVAL = 5 * 1000; // 5 sec
 
@@ -16,7 +13,7 @@ export default function Logs() {
       const result = await fetchData(LOGS_ALL);
       setLogs(result);
     } catch (error) {
-      console.log("==== error", error);
+      console.log('==== error', error);
     }
   };
 
@@ -33,6 +30,5 @@ export default function Logs() {
     };
   }, []);
 
-  return <LogTable logs={logs} pageSize={20}/>;  
+  return <LogTable logs={logs} pageSize={20} />;
 }
-

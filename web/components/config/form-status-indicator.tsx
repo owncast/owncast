@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { StatusState } from '../../../utils/input-statuses';
+import { StatusState } from '../../utils/input-statuses';
 
 interface FormStatusIndicatorProps {
   status: StatusState;

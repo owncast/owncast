@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 
 export const AlertMessageContext = React.createContext({
   message: null,
-  setMessage: (text?: string) => {
-    return text;
-  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setMessage: (text?: string) => null,
 });
 
 const AlertMessageProvider = ({ children }) => {

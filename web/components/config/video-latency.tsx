@@ -1,15 +1,19 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Slider } from 'antd';
-import { ServerStatusContext } from '../../../utils/server-status-context';
-import { AlertMessageContext } from '../../../utils/alert-message-context';
-import { API_VIDEO_SEGMENTS, RESET_TIMEOUT, postConfigUpdateToAPI } from './constants';
+import { ServerStatusContext } from '../../utils/server-status-context';
+import { AlertMessageContext } from '../../utils/alert-message-context';
+import {
+  API_VIDEO_SEGMENTS,
+  RESET_TIMEOUT,
+  postConfigUpdateToAPI,
+} from '../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
   STATUS_PROCESSING,
   STATUS_SUCCESS,
-} from '../../../utils/input-statuses';
+} from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
@@ -88,7 +92,9 @@ export default function VideoLatency() {
         // setSubmitStatusMessage('Variants updated.');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {
-          setMessage('Your latency buffer setting will take effect the next time you begin a live stream.')
+          setMessage(
+            'Your latency buffer setting will take effect the next time you begin a live stream.',
+          );
         }
       },
       onError: (message: string) => {
@@ -109,11 +115,13 @@ export default function VideoLatency() {
     <div className="config-video-segements-conatiner">
       <Title level={3}>Latency Buffer</Title>
       <p>
-        While it's natural to want to keep your latency as low as possible, you may experience reduced error tolerance and stability in some environments the lower you go.
+        While it's natural to want to keep your latency as low as possible, you may experience
+        reduced error tolerance and stability in some environments the lower you go.
       </p>
-        For interactive live streams you may want to experiment with a lower latency, for non-interactive broadcasts you may want to increase it.  <a href="https://owncast.online/docs/encoding#latency-buffer">Read to learn more.</a>
-      <p>
-      </p>
+      For interactive live streams you may want to experiment with a lower latency, for
+      non-interactive broadcasts you may want to increase it.{' '}
+      <a href="https://owncast.online/docs/encoding#latency-buffer">Read to learn more.</a>
+      <p></p>
       <div className="segment-slider-container">
         <Slider
           tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}

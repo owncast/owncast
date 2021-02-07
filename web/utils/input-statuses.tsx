@@ -15,13 +15,16 @@ export const STATUS_WARNING = 'warning';
 
 export type InputStatusTypes = 'error' | 'invalid' | 'proessing' | 'success' | 'warning';
 
-export type StatusState = {
+export interface StatusState {
   type: InputStatusTypes;
   icon: any; // Element type of sorts?
   message: string;
-};
+}
+interface InputStates {
+  [key: string]: StatusState;
+}
 
-export const INPUT_STATES = {
+export const INPUT_STATES: InputStates = {
   [STATUS_SUCCESS]: {
     type: STATUS_SUCCESS,
     icon: <CheckCircleFilled style={{ color: 'green' }} />,

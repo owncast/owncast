@@ -1,9 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Input, InputNumber } from 'antd';
-import { FieldUpdaterFunc } from '../../../types/config-section';
+import { FieldUpdaterFunc } from '../../types/config-section';
 // import InfoTip from '../info-tip';
-import { StatusState } from '../../../utils/input-statuses';
+import { StatusState } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
@@ -96,10 +96,6 @@ export default function TextField(props: TextFieldProps) {
       type: 'number',
       min: 1,
       max: 10 ** maxLength - 1,
-      onKeyDown: (e: React.KeyboardEvent) => {
-        if (e.target.value.length > maxLength - 1) e.preventDefault();
-        return false;
-      },
     };
   } else if (type === TEXTFIELD_TYPE_URL) {
     fieldProps = {
@@ -140,7 +136,7 @@ export default function TextField(props: TextFieldProps) {
             onBlur={handleBlur}
             onPressEnter={handlePressEnter}
             disabled={disabled}
-            value={value}
+            value={value as number | (readonly string[] & number)}
           />
         </div>
         <FormStatusIndicator status={status} />
@@ -159,7 +155,7 @@ TextField.defaultProps = {
   disabled: false,
   // initialValue: '',
   label: '',
-  maxLength: null,
+  maxLength: 255,
 
   placeholder: '',
   required: false,

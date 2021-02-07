@@ -18,17 +18,17 @@ import {
   ExperimentOutlined,
 } from '@ant-design/icons';
 import classNames from 'classnames';
-import { upgradeVersionAvailable } from '../../utils/apis';
-import { parseSecondsToDurationString } from '../../utils/format';
+import { upgradeVersionAvailable } from '../utils/apis';
+import { parseSecondsToDurationString } from '../utils/format';
 
 import OwncastLogo from './logo';
-import { ServerStatusContext } from '../../utils/server-status-context';
-import { AlertMessageContext } from '../../utils/alert-message-context';
+import { ServerStatusContext } from '../utils/server-status-context';
+import { AlertMessageContext } from '../utils/alert-message-context';
 
 import TextFieldWithSubmit from './config/form-textfield-with-submit';
-import { TEXTFIELD_PROPS_STREAM_TITLE } from './config/constants';
+import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 
-import { UpdateArgs } from '../../types/config-section';
+import { UpdateArgs } from '../types/config-section';
 
 let performedUpgradeCheck = false;
 
