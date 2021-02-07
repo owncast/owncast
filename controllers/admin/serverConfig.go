@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,7 +36,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			SocialHandles:    data.GetSocialHandles(),
 			NSFW:             data.GetNSFW(),
 		},
-		FFmpegPath:     data.GetFfMpegPath(),
+		FFmpegPath:     utils.ValidatedFfmpegPath(data.GetFfMpegPath()),
 		StreamKey:      data.GetStreamKey(),
 		WebServerPort:  config.WebServerPort,
 		RTMPServerPort: data.GetRTMPPortNumber(),
