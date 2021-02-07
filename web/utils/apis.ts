@@ -63,6 +63,8 @@ export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
 // hard coded social icons list
 export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
 
+export const API_YP_RESET = `${API_LOCATION}yp/reset`;
+
 export const TEMP_UPDATER_API = LOGS_ALL;
 
 const GITHUB_RELEASE_URL = 'https://api.github.com/repos/owncast/owncast/releases/latest';
@@ -71,14 +73,10 @@ interface FetchOptions {
   data?: any;
   method?: string;
   auth?: boolean;
-};
+}
 
 export async function fetchData(url: string, options?: FetchOptions) {
-  const {
-    data,
-    method = 'GET',
-    auth = true,
-  } = options || {};
+  const { data, method = 'GET', auth = true } = options || {};
 
   const requestOptions: RequestInit = {
     method,
@@ -114,7 +112,6 @@ export async function fetchData(url: string, options?: FetchOptions) {
   return {};
 }
 
-
 export async function getGithubRelease() {
   try {
     const response = await fetch(GITHUB_RELEASE_URL);
@@ -133,29 +130,25 @@ export async function getGithubRelease() {
 // Stolen from https://gist.github.com/prenagha/98bbb03e27163bc2f5e4
 const VPAT = /^\d+(\.\d+){0,2}$/;
 function upToDate(local, remote) {
-    if (!local || !remote || local.length === 0 || remote.length === 0)
-        return false;
-    if (local === remote)
-        return true;
-    if (VPAT.test(local) && VPAT.test(remote)) {
-        const lparts = local.split('.');
-        while(lparts.length < 3)
-            lparts.push("0");
-        const rparts = remote.split('.');
-        while (rparts.length < 3)
-            rparts.push("0");
-        // eslint-disable-next-line no-plusplus
-        for (let i=0; i<3; i++) {
-            const l = parseInt(lparts[i], 10);
-            const r = parseInt(rparts[i], 10);
-            if (l === r)
-                // eslint-disable-next-line no-continue
-                continue;
-            return l > r;
-        }
-        return true;
-    } 
-    return local >= remote;
+  if (!local || !remote || local.length === 0 || remote.length === 0) return false;
+  if (local === remote) return true;
+  if (VPAT.test(local) && VPAT.test(remote)) {
+    const lparts = local.split('.');
+    while (lparts.length < 3) lparts.push('0');
+    const rparts = remote.split('.');
+    while (rparts.length < 3) rparts.push('0');
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < 3; i++) {
+      const l = parseInt(lparts[i], 10);
+      const r = parseInt(rparts[i], 10);
+      if (l === r)
+        // eslint-disable-next-line no-continue
+        continue;
+      return l > r;
+    }
+    return true;
+  }
+  return local >= remote;
 }
 
 // Make a request to the server status API and the Github releases API
@@ -165,11 +158,11 @@ export async function upgradeVersionAvailable(currentVersion) {
   let recentReleaseVersion = recentRelease.tag_name;
 
   if (recentReleaseVersion.substr(0, 1) === 'v') {
-    recentReleaseVersion = recentReleaseVersion.substr(1)
+    recentReleaseVersion = recentReleaseVersion.substr(1);
   }
 
   if (!upToDate(currentVersion, recentReleaseVersion)) {
-    return recentReleaseVersion
+    return recentReleaseVersion;
   }
 
   return null;
