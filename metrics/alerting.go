@@ -1,14 +1,22 @@
 package metrics
 
 import (
+	"time"
+
 	log "github.com/sirupsen/logrus"
 )
 
-const maxCPUAlertingThresholdPCT = 80
-const maxRAMAlertingThresholdPCT = 80
+const maxCPUAlertingThresholdPCT = 85
+const maxRAMAlertingThresholdPCT = 85
 const maxDiskAlertingThresholdPCT = 90
 
-const alertingError = "The %s utilization of %d%% can cause issues with video generation and delivery. Please visit the documentation at http://owncast.online/docs/troubleshooting/ to help troubleshoot this issue."
+var inCpuAlertingState = false
+var inRamAlertingState = false
+var inDiskAlertingState = false
+
+var errorResetDuration = time.Minute * 5
+
+const alertingError = "The %s utilization of %d%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
 
 func handleAlerting() {
 	handleCPUAlerting()
@@ -22,8 +30,15 @@ func handleCPUAlerting() {
 	}
 
 	avg := recentAverage(Metrics.CPUUtilizations)
-	if avg > maxCPUAlertingThresholdPCT {
+	if avg > maxCPUAlertingThresholdPCT && !inCpuAlertingState {
 		log.Warnf(alertingError, "CPU", maxCPUAlertingThresholdPCT)
+		inCpuAlertingState = true
+
+		resetTimer := time.NewTimer(errorResetDuration)
+		go func() {
+			<-resetTimer.C
+			inCpuAlertingState = false
+		}()
 	}
 }
 
@@ -33,8 +48,15 @@ func handleRAMAlerting() {
 	}
 
 	avg := recentAverage(Metrics.RAMUtilizations)
-	if avg > maxRAMAlertingThresholdPCT {
+	if avg > maxRAMAlertingThresholdPCT && !inRamAlertingState {
 		log.Warnf(alertingError, "memory", maxRAMAlertingThresholdPCT)
+		inRamAlertingState = true
+
+		resetTimer := time.NewTimer(errorResetDuration)
+		go func() {
+			<-resetTimer.C
+			inRamAlertingState = false
+		}()
 	}
 }
 
@@ -45,8 +67,15 @@ func handleDiskAlerting() {
 
 	avg := recentAverage(Metrics.DiskUtilizations)
 
-	if avg > maxDiskAlertingThresholdPCT {
+	if avg > maxDiskAlertingThresholdPCT && !inDiskAlertingState {
 		log.Warnf(alertingError, "disk", maxRAMAlertingThresholdPCT)
+		inDiskAlertingState = true
+
+		resetTimer := time.NewTimer(errorResetDuration)
+		go func() {
+			<-resetTimer.C
+			inDiskAlertingState = false
+		}()
 	}
 }
 

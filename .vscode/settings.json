@@ -5,6 +5,7 @@
         "Ffmpeg",
         "RTMP",
         "Traceln",
+        "Warnf",
         "Warnln",
         "mattn",
         "nolint",
