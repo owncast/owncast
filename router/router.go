@@ -55,6 +55,9 @@ func Start() error {
 	// list of all social platforms
 	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
 
+	// return the logo
+	http.HandleFunc("/logo", controllers.GetLogo)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster

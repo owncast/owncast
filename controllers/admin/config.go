@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"path/filepath"
+	"reflect"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core"
@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
+
 // ConfigValue is a container object that holds a value, is encoded, and saved to the database.
 type ConfigValue struct {
 	Value interface{} `json:"value"`
@@ -166,7 +167,7 @@ func SetLogoPath(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imgPath := configValue.Value.(string)
-	fullPath := filepath.Join("webroot", imgPath)
+	fullPath := filepath.Join("data", imgPath)
 	if !utils.DoesFileExists(fullPath) {
 		controllers.WriteSimpleResponse(w, false, fmt.Sprintf("%s does not exist", fullPath))
 		return

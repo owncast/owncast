@@ -33,9 +33,10 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	configuration := webConfigResponse{
 		Name:             data.GetServerName(),
 		Summary:          data.GetServerSummary(),
-		Logo:             data.GetLogoPath(),
+		Logo:             "/logo",
 		Tags:             data.GetServerMetadataTags(),
 		Version:          config.VersionInfo,
+		NSFW:             data.GetNSFW(),
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),
 		SocialHandles:    data.GetSocialHandles(),

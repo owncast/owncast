@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
@@ -106,7 +107,6 @@ func migrateConfigFile() {
 	_ = SetServerSummary(oldConfig.InstanceDetails.Summary)
 	_ = SetServerMetadataTags(oldConfig.InstanceDetails.Tags)
 	_ = SetStreamKey(oldConfig.VideoSettings.StreamingKey)
-	_ = SetLogoPath(oldConfig.InstanceDetails.Logo)
 	_ = SetNSFW(oldConfig.InstanceDetails.NSFW)
 	_ = SetServerURL(oldConfig.YP.InstanceURL)
 	_ = SetDirectoryEnabled(oldConfig.YP.Enabled)
@@ -114,6 +114,19 @@ func migrateConfigFile() {
 	_ = SetFfmpegPath(oldConfig.FFMpegPath)
 	_ = SetHTTPPortNumber(float64(oldConfig.WebServerPort))
 	_ = SetRTMPPortNumber(float64(oldConfig.RTMPServerPort))
+
+	// Migrate logo
+	if logo := oldConfig.InstanceDetails.Logo; logo != "" {
+		filename := filepath.Base(logo)
+		newPath := filepath.Join("data", filename)
+		err := utils.Copy(filepath.Join("webroot", logo), newPath)
+		log.Traceln("Copying logo from", logo, "to", newPath)
+		if err != nil {
+			log.Errorln("Error moving logo", logo, err)
+		} else {
+			_ = SetLogoPath(filename)
+		}
+	}
 
 	// Migrate video variants
 	variants := []models.StreamOutputVariant{}
