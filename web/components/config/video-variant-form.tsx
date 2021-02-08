@@ -79,18 +79,18 @@ export default function VideoVariantForm({
   };
   const handleScaledWidthChanged = (args: UpdateArgs) => {
     const value = Number(args.value);
-    if (!isNaN(value)) {
+    if (isNaN(value)) {
       return;
     }
-    onUpdateField({ fieldName: 'scaledWidth', value: value });
+    onUpdateField({ fieldName: 'scaledWidth', value: value || '' });
   };
   const handleScaledHeightChanged = (args: UpdateArgs) => {
     const value = Number(args.value);
-    if (!isNaN(value)) {
+    if (isNaN(value)) {
       return;
     }
 
-    onUpdateField({ fieldName: 'scaledHeight', value: value });
+    onUpdateField({ fieldName: 'scaledHeight', value: value || '' });
   };
   const framerateDefaults = VIDEO_VARIANT_DEFAULTS.framerate;
   const framerateMin = framerateDefaults.min;
