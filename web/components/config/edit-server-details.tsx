@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip, Collapse, Popconfirm } from 'antd';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
+const { Panel } = Collapse;
 
 import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield';
 import TextFieldWithSubmit from './form-textfield-with-submit';
@@ -14,6 +15,7 @@ import {
   TEXTFIELD_PROPS_STREAM_KEY,
   TEXTFIELD_PROPS_WEB_PORT,
 } from '../../utils/config-constants';
+import { fetchData, API_YP_RESET } from '../../utils/apis';
 
 import { UpdateArgs } from '../../types/config-section';
 
@@ -24,7 +26,7 @@ export default function EditInstanceDetails() {
 
   const { serverConfig } = serverStatusData || {};
 
-  const { streamKey, ffmpegPath, rtmpServerPort, webServerPort } = serverConfig;
+  const { streamKey, ffmpegPath, rtmpServerPort, webServerPort, yp } = serverConfig;
 
   const [copyIsVisible, setCopyVisible] = useState(false);
 
@@ -65,6 +67,41 @@ export default function EditInstanceDetails() {
       setMessage('The updated ffmpeg path will be used when starting your next live stream.');
     }
   };
+
+  const resetDirectoryRegistration = async () => {
+    try {
+      await fetchData(API_YP_RESET);
+      setMessage('');
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  function ResetYP() {
+    // TODO: Uncomment this after it's styled.
+    // if (yp.enabled) {
+    return (
+      <div className="field-container">
+        Reset Directory:
+        <Popconfirm
+          placement="topLeft"
+          title={'Are you sure you want to reset your connection to the Owncast directory?'}
+          onConfirm={resetDirectoryRegistration}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button>Reset Directory Connection</Button>
+        </Popconfirm>
+        <p>
+          If you are experiencing issues with your listing on the Owncast Directory and were asked
+          to "reset" your connection to the service, you can do that here. The next time you go live
+          it will try and re-register your server with the directory from scratch.
+        </p>
+      </div>
+    );
+    // }
+    // return null;
+  }
 
   function generateStreamKey() {
     let key = '';
@@ -135,6 +172,13 @@ export default function EditInstanceDetails() {
         onChange={handleFieldChange}
         onSubmit={showConfigurationRestartMessage}
       />
+      <Collapse>
+        <Panel header="Advanced Settings" key="1">
+          <div className="form-fields">
+            <ResetYP />
+          </div>
+        </Panel>
+      </Collapse>
     </div>
   );
 }

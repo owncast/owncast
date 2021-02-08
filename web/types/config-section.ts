@@ -56,6 +56,9 @@ export interface VideoVariant {
   audioBitrate: number;
   videoPassthrough: boolean;
   videoBitrate: number;
+
+  scaledWidth: number;
+  scaledHeight: number;
 }
 export interface VideoSettingsFields {
   latencyLevel: number;

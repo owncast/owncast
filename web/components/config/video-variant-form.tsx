@@ -1,7 +1,8 @@
 // This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
 import { Slider, Switch, Collapse } from 'antd';
-import { FieldUpdaterFunc, VideoVariant } from '../../types/config-section';
+import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
+import TextField from './form-textfield';
 import { DEFAULT_VARIANT_STATE } from '../../utils/config-constants';
 import InfoTip from '../info-tip';
 import CPUUsageSelector from './cpu-usage';
@@ -39,6 +40,20 @@ const VIDEO_VARIANT_DEFAULTS = {
   audioPassthrough: {
     tip: 'If No is selected, then you should set your desired Audio Bitrate.',
   },
+  scaledWidth: {
+    fieldName: 'scaledWidth',
+    label: 'Resized Width',
+    maxLength: 4,
+    placeholder: '1080',
+    tip: "Optionally resize this content's width.",
+  },
+  scaledHeight: {
+    fieldName: 'scaledHeight',
+    label: 'Resized Height',
+    maxLength: 4,
+    placeholder: '720',
+    tip: "Optionally resize this content's height.",
+  },
 };
 
 interface VideoVariantFormProps {
@@ -62,7 +77,21 @@ export default function VideoVariantForm({
   const handleVideoCpuUsageLevelChange = (value: number) => {
     onUpdateField({ fieldName: 'cpuUsageLevel', value });
   };
+  const handleScaledWidthChanged = (args: UpdateArgs) => {
+    const value = Number(args.value);
+    if (!isNaN(value)) {
+      return;
+    }
+    onUpdateField({ fieldName: 'scaledWidth', value: value });
+  };
+  const handleScaledHeightChanged = (args: UpdateArgs) => {
+    const value = Number(args.value);
+    if (!isNaN(value)) {
+      return;
+    }
 
+    onUpdateField({ fieldName: 'scaledHeight', value: value });
+  };
   const framerateDefaults = VIDEO_VARIANT_DEFAULTS.framerate;
   const framerateMin = framerateDefaults.min;
   const framerateMax = framerateDefaults.max;
@@ -145,14 +174,29 @@ export default function VideoVariantForm({
         </div>
       </div>
 
-      <br />
-      <br />
-      <br />
-      <br />
-
       <Collapse>
         <Panel header="Advanced Settings" key="1">
-          <div className="section-intro">Touch if you dare.</div>
+          <div className="section-intro">
+            Resizing your content will take additional resources on your server. If you wish to
+            optionally resize your output for this stream variant then you should either set the
+            width <strong>or</strong> the height to keep your aspect ratio.
+          </div>
+          <div className="field">
+            <TextField
+              type="number"
+              {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
+              value={dataState.scaledWidth}
+              onChange={handleScaledWidthChanged}
+            />
+          </div>
+          <div className="field">
+            <TextField
+              type="number"
+              {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
+              value={dataState.scaledHeight}
+              onChange={handleScaledHeightChanged}
+            />
+          </div>
 
           {/* FRAME RATE FIELD */}
           <div className="field">

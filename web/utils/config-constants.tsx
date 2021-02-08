@@ -168,6 +168,8 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
   audioPassthrough: true, // if false, then CAN set audiobitrate
   audioBitrate: 0,
   cpuUsageLevel: 3,
+  scaledHeight: null,
+  scaledWidth: null,
 };
 
 export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
