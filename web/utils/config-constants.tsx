@@ -81,7 +81,7 @@ export const TEXTFIELD_PROPS_LOGO = {
   placeholder: '/img/mylogo.png',
   label: 'Logo',
   tip:
-    'Path to your logo from website root. We recommend that you use a square image that is at least 256x256. (upload functionality coming soon)',
+    'Name of your logo in the data directory. We recommend that you use a square image that is at least 256x256.',
 };
 export const TEXTFIELD_PROPS_STREAM_KEY = {
   apiPath: API_STREAM_KEY,
