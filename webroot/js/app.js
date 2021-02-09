@@ -476,7 +476,7 @@ export default class App extends Component {
                 <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
               </span>
               <span class="instance-title overflow-hidden truncate"
-                >${streamTitle || name}</span
+                >${(streamOnline && streamTitle) ? streamTitle : name}</span
               >
             </h1>
             <div
@@ -543,7 +543,7 @@ export default class App extends Component {
                 >
               </h2>
               <h3 class="font-semibold text-3xl">
-                ${streamTitle}
+                ${streamOnline && streamTitle}
               </h3>
               <${SocialIconsList} handles=${socialHandles} />
               <div
