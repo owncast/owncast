@@ -17,8 +17,6 @@ import { isValidUrl } from '../utils/urls';
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
 
-import format from 'date-fns/format';
-
 import { fetchData, DELETE_WEBHOOK, CREATE_WEBHOOK, WEBHOOKS } from '../utils/apis';
 
 const availableEvents = {
@@ -194,9 +192,9 @@ export default function Webhooks() {
     <div>
       <Title>Webhooks</Title>
       <Paragraph>
-        A webhook is a callback made to an external API in response to an event. These are endpoints
-        that live outside of Owncast and run code who wants to be made aware of events that take
-        place on your server.
+        A webhook is a callback made to an external API in response to an event that takes place
+        within Owncast. This can be used to build chat bots or sending automatic notifications that
+        you've started streaming.
       </Paragraph>
       <Paragraph>
         Read more about how to use webhooks, with examples, at{' '}
