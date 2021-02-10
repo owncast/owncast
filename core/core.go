@@ -106,7 +106,7 @@ func transitionToOfflineVideoStreamContent() {
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()
-	err := utils.Copy(filepath.Join("webroot", logo), "webroot/thumbnail.jpg")
+	err := utils.Copy(filepath.Join("data", logo), "webroot/thumbnail.jpg")
 	if err != nil {
 		log.Warnln(err)
 	}
@@ -161,7 +161,7 @@ func resetDirectories() {
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()
-	err = utils.Copy(path.Join(config.WebRoot, logo), "webroot/thumbnail.jpg")
+	err = utils.Copy(path.Join("data", logo), "webroot/thumbnail.jpg")
 	if err != nil {
 		log.Warnln(err)
 	}
