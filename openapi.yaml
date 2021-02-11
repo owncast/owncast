@@ -1331,7 +1331,7 @@ paths:
     get:
       summary: Return all webhooks.
       description: Return all of the configured webhooks for external events.
-      tags: ["Integrations"]
+      tags: ["Admin"]
       security:
         - AdminBasicAuth: []
       responses:
@@ -1346,7 +1346,7 @@ paths:
     post:
       summary: Delete a single webhook.
       description: Delete a single webhook by its ID.
-      tags: ["Integrations"]
+      tags: ["Admin"]
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -1367,7 +1367,7 @@ paths:
     post:
       summary: Create a webhook.
       description: Create a single webhook that acts on the requested events.
-      tags: ["Integrations"]
+      tags: ["Admin"]
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -1416,7 +1416,7 @@ paths:
   /api/integrations/chat:
       get:
         summary: Historical Chat Messages
-        description: Used to get all chat messages prior to connecting to the websocket.
+        description: Used to get the backlog of chat messages.
         tags: ["Integrations"]
         security:
           - AccessToken: []
