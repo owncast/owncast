@@ -6,7 +6,7 @@
   "dependencies": {
     "@joeattardi/emoji-button": "^4.6.0",
     "@justinribeiro/lite-youtube": "^0.9.1",
-    "@videojs/http-streaming": "2.5.0",
+    "@videojs/http-streaming": "2.6.0",
     "@videojs/themes": "^1.0.1",
     "htm": "^3.0.4",
     "mark.js": "^8.11.1",
