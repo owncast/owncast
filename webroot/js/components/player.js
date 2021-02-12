@@ -53,10 +53,16 @@ class OwncastPlayer {
     this.handleVolume = this.handleVolume.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.addQualitySelector = this.addQualitySelector.bind(this);
+
+    this.qualitySelectionMenu = null;
   }
 
   init() {
-    videojs.Vhs.xhr.beforeRequest = options => {
+    this.addAirplay();
+    this.addQualitySelector();
+
+    videojs.Vhs.xhr.beforeRequest = (options) => {
       if (options.uri.match('m3u8')) {
         const cachebuster = Math.round(new Date().getTime() / 1000);
         options.uri = `${options.uri}?cachebust=${cachebuster}`;
@@ -66,7 +72,6 @@ class OwncastPlayer {
 
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
 
-    this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
   }
 
@@ -103,7 +108,10 @@ class OwncastPlayer {
   }
 
   handleVolume() {
-    setLocalStorage(PLAYER_VOLUME, this.vjsPlayer.muted() ? 0 : this.vjsPlayer.volume());
+    setLocalStorage(
+      PLAYER_VOLUME,
+      this.vjsPlayer.muted() ? 0 : this.vjsPlayer.volume()
+    );
   }
 
   handlePlaying() {
@@ -130,6 +138,58 @@ class OwncastPlayer {
 
   log(message) {
     // console.log(`>>> Player: ${message}`);
+  }
+
+  async addQualitySelector() {
+    const qualities = ['High', 'Medium', 'Low'];
+
+    videojs.hookOnce(
+      'setup',
+      function (player) {
+        var MenuItem = videojs.getComponent('MenuItem');
+
+        var MenuButtonClass = videojs.getComponent('MenuButton');
+        var MenuButton = videojs.extend(MenuButtonClass, {
+          // The `init()` method will also work for constructor logic here, but it is
+          // deprecated. If you provide an `init()` method, it will override the
+          // `constructor()` method!
+          constructor: function () {
+            MenuButtonClass.call(this, player);
+          },
+
+          handleClick: function () {},
+
+          createItems: function () {
+            const defaultAutoItem = new MenuItem(player, {
+              selectable: true,
+              label: 'Auto',
+            });
+            defaultAutoItem.on('click', function () {
+              alert('AUTO!');
+            });
+
+            const items = qualities.map(function (item) {
+              var newMenuItem = new MenuItem(player, {
+                selectable: true,
+                label: item,
+              });
+
+              newMenuItem.on('click', function () {
+                alert(item);
+              });
+
+              return newMenuItem;
+            });
+
+            return [defaultAutoItem, ...items];
+          },
+        });
+
+        var menuButton = new MenuButton();
+        menuButton.addClass('vjs-quality-selector');
+        player.controlBar.addChild(menuButton);
+      }.bind(this)
+    );
   }
 
   addAirplay() {
