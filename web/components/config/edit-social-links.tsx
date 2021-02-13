@@ -165,35 +165,28 @@ export default function EditSocialLinks() {
 
   const socialHandlesColumns: ColumnsType<SocialHandle> = [
     {
-      title: '#',
-      dataIndex: 'key',
-      key: 'key',
-    },
-    {
-      title: 'Platform',
-      dataIndex: 'platform',
-      key: 'platform',
-      render: (platform: string) => {
+      title: 'Social Link',
+      dataIndex: '',
+      key: 'combo',
+      render: (data, record) => {
+        const { platform, url } = record;
         const platformInfo = availableIconsList.find(item => item.key === platform);
         if (!platformInfo) {
           return platform;
         }
         const { icon, platform: platformName } = platformInfo;
         return (
-          <>
+          <div className="social-handle-cell">
             <span className="option-icon">
               <img src={`${NEXT_PUBLIC_API_HOST}${icon}`} alt="" className="option-icon" />
             </span>
-            <span className="option-label">{platformName}</span>
-          </>
+            <p className="option-label">
+              <strong>{platformName}</strong>
+              <span>{url}</span>
+            </p>
+          </div>
         );
       },
-    },
-
-    {
-      title: 'Url Link',
-      dataIndex: 'url',
-      key: 'url',
     },
     {
       title: '',
@@ -201,7 +194,7 @@ export default function EditSocialLinks() {
       key: 'edit',
       render: (data, record, index) => {
         return (
-          <span className="actions">
+          <div className="actions">
             <Button
               type="primary"
               size="small"
@@ -219,7 +212,7 @@ export default function EditSocialLinks() {
               size="small"
               onClick={() => handleDeleteItem(index)}
             />
-          </span>
+          </div>
         );
       },
     },
@@ -231,12 +224,17 @@ export default function EditSocialLinks() {
 
   return (
     <div className="social-links-edit-container">
-      <p>Add all your social media handles and links to your other profiles here.</p>
+      <Title level={3} className="section-title">
+        Your Social Handles
+      </Title>
+      <p className="description">
+        Add all your social media handles and links to your other profiles here.
+      </p>
 
       <FormStatusIndicator status={submitStatus} />
 
       <Table
-        className="dataTable"
+        className="social-handles-table"
         pagination={false}
         size="small"
         rowKey={record => record.url}

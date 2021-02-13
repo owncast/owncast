@@ -1,23 +1,10 @@
 // DEFAULT VALUES
-import React from 'react';
-import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
 
 export const TEXT_MAXLENGTH = 255;
 
 export const RESET_TIMEOUT = 3000;
-
-export const SUCCESS_STATES = {
-  success: {
-    icon: <CheckCircleFilled style={{ color: 'green' }} />,
-    message: 'Success!',
-  },
-  error: {
-    icon: <ExclamationCircleFilled style={{ color: 'red' }} />,
-    message: 'An error occurred.',
-  },
-};
 
 // CONFIG API ENDPOINTS
 export const API_CUSTOM_CONTENT = '/pagecontent';

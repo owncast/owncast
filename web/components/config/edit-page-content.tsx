@@ -1,33 +1,34 @@
+// EDIT CUSTOM DETAILS ON YOUR PAGE
 import React, { useState, useEffect, useContext } from 'react';
 import { Typography, Button } from 'antd';
 import dynamic from 'next/dynamic';
 import MarkdownIt from 'markdown-it';
 
-import { ServerStatusContext } from '../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   API_CUSTOM_CONTENT,
-} from '../utils/config-constants';
+} from '../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
   STATUS_PROCESSING,
   STATUS_SUCCESS,
-} from '../utils/input-statuses';
-import 'react-markdown-editor-lite/lib/index.css';
-import FormStatusIndicator from '../components/config/form-status-indicator';
+} from '../../utils/input-statuses';
+import FormStatusIndicator from './form-status-indicator';
 
-const { Title } = Typography;
+import 'react-markdown-editor-lite/lib/index.css';
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
-
 const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
   ssr: false,
 });
 
-export default function PageContentEditor() {
+const { Title } = Typography;
+
+export default function EditPageContent() {
   const [content, setContent] = useState('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);
@@ -83,10 +84,12 @@ export default function PageContentEditor() {
   }, [instanceDetails]);
 
   return (
-    <div className="config-page-content-form">
-      <Title level={2}>Page Content</Title>
+    <div className="edit-page-content">
+      <Title level={3} className="section-title">
+        Custom Page Content
+      </Title>
 
-      <p>
+      <p className="description">
         Edit the content of your page by using simple{' '}
         <a href="https://www.markdownguide.org/basic-syntax/">Markdown syntax</a>.
       </p>

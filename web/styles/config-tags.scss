@@ -6,19 +6,24 @@
     font-size: .85rem;
     border-radius: 10em;
     padding: .25em 1em;
-    background-color: rgba(255,255,255,.5);
+    &:hover {
+      opacity: 1;
+    }
 
     .ant-tag-close-icon {
       transform: translateY(-1px);
       margin-left: .3rem;
       padding: 2px;
       border-radius: 5rem;
-      border: 1px solid #eee;
+      color: black;
+      border: 1px solid #000;
+      transition-duration: var(--ant-transition-duration);
       &:hover {
-        border-color: #e03;
+        border-color: #5a67d8;
+        background-color: white;
         svg {
           fill: black;
-          transition: fill .3s;
+          transition: fill var(--ant-transition-duration);
         }
       }
     }
@@ -30,8 +35,5 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-
-  .new-tag-input {
-    width: 16em;
-  }
+  margin-top: 2em;
 }

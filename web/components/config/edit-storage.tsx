@@ -21,6 +21,7 @@ import {
 import TextField from './form-textfield';
 import FormStatusIndicator from './form-status-indicator';
 import { isValidUrl } from '../../utils/urls';
+// import ToggleSwitch from './form-toggleswitch-with-submit';
 
 const { Panel } = Collapse;
 
@@ -135,6 +136,7 @@ export default function EditStorage() {
 
   const containerClass = classNames({
     'edit-storage-container': true,
+    'form-module': true,
     enabled: shouldDisplayForm,
   });
 
@@ -143,6 +145,12 @@ export default function EditStorage() {
   return (
     <div className={containerClass}>
       <div className="enable-switch">
+        {/* <ToggleSwitch
+          fieldName="enabled"
+          label="Storage Enabled"
+          checked={formDataValues.enabled}
+          onChange={handleSwitchChange}
+        /> */}
         <Switch
           checked={formDataValues.enabled}
           defaultChecked={formDataValues.enabled}

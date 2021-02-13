@@ -12,10 +12,17 @@ import VideoVariantForm from './video-variant-form';
 import {
   API_VIDEO_VARIANTS,
   DEFAULT_VARIANT_STATE,
-  SUCCESS_STATES,
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
 } from '../../utils/config-constants';
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_PROCESSING,
+  STATUS_SUCCESS,
+} from '../../utils/input-statuses';
+import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
 
@@ -36,8 +43,7 @@ export default function CurrentVariantsTable() {
   // current data inside modal
   const [modalDataState, setModalDataState] = useState(DEFAULT_VARIANT_STATE);
 
-  const [submitStatus, setSubmitStatus] = useState(null);
-  const [submitStatusMessage, setSubmitStatusMessage] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
@@ -52,7 +58,6 @@ export default function CurrentVariantsTable() {
 
   const resetStates = () => {
     setSubmitStatus(null);
-    setSubmitStatusMessage('');
     resetTimer = null;
     clearTimeout(resetTimer);
   };
@@ -65,6 +70,8 @@ export default function CurrentVariantsTable() {
 
   // posts all the variants at once as an array obj
   const postUpdateToAPI = async (postValue: any) => {
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
+
     await postConfigUpdateToAPI({
       apiPath: API_VIDEO_VARIANTS,
       data: { value: postValue },
@@ -79,8 +86,7 @@ export default function CurrentVariantsTable() {
         setModalProcessing(false);
         handleModalCancel();
 
-        setSubmitStatus('success');
-        setSubmitStatusMessage('Variants updated.');
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Variants updated'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
         if (serverStatusData.online) {
@@ -90,8 +96,7 @@ export default function CurrentVariantsTable() {
         }
       },
       onError: (message: string) => {
-        setSubmitStatus('error');
-        setSubmitStatusMessage(message);
+        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
@@ -112,7 +117,7 @@ export default function CurrentVariantsTable() {
     postUpdateToAPI(postData);
   };
 
-  const handleDeleteVariant = index => {
+  const handleDeleteVariant = (index: number) => {
     const postData = [...videoQualityVariants];
     postData.splice(index, 1);
     postUpdateToAPI(postData);
@@ -124,9 +129,6 @@ export default function CurrentVariantsTable() {
       [fieldName]: value,
     });
   };
-
-  const { icon: newStatusIcon = null, message: newStatusMessage = '' } =
-    SUCCESS_STATES[submitStatus] || {};
 
   const videoQualityColumns: ColumnsType<VideoVariant> = [
     {
@@ -176,12 +178,6 @@ export default function CurrentVariantsTable() {
     },
   ];
 
-  const statusMessage = (
-    <div className={`status-message ${submitStatus || ''}`}>
-      {newStatusIcon} {newStatusMessage} {submitStatusMessage}
-    </div>
-  );
-
   const videoQualityVariantData = videoQualityVariants.map((variant, index) => ({
     key: index + 1,
     ...variant,
@@ -189,9 +185,11 @@ export default function CurrentVariantsTable() {
 
   return (
     <>
-      <Title level={3}>Stream output</Title>
+      <Title level={3} className="section-title">
+        Stream output
+      </Title>
 
-      {statusMessage}
+      <FormStatusIndicator status={submitStatus} />
 
       <Table
         className="variants-table"
@@ -207,10 +205,11 @@ export default function CurrentVariantsTable() {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         confirmLoading={modalProcessing}
+        width={900}
       >
         <VideoVariantForm dataState={{ ...modalDataState }} onUpdateField={handleUpdateField} />
 
-        {statusMessage}
+        <FormStatusIndicator status={submitStatus} />
       </Modal>
       <br />
       <Button

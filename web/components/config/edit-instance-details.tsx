@@ -1,4 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { Typography } from 'antd';
+
 import TextFieldWithSubmit, {
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
@@ -12,9 +14,14 @@ import {
   TEXTFIELD_PROPS_SERVER_SUMMARY,
   TEXTFIELD_PROPS_LOGO,
   API_YP_SWITCH,
+  FIELD_PROPS_YP,
+  FIELD_PROPS_NSFW,
 } from '../../utils/config-constants';
 
 import { UpdateArgs } from '../../types/config-section';
+import ToggleSwitch from './form-toggleswitch-with-submit';
+
+const { Title } = Typography;
 
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
@@ -22,6 +29,7 @@ export default function EditInstanceDetails() {
   const { serverConfig } = serverStatusData || {};
 
   const { instanceDetails, yp } = serverConfig;
+  const { instanceUrl } = yp;
 
   useEffect(() => {
     setFormDataValues({
@@ -53,40 +61,74 @@ export default function EditInstanceDetails() {
     });
   };
 
-  return (
-    <div className={`publicDetailsContainer`}>
-      <div className={`textFieldsSection`}>
-        <TextFieldWithSubmit
-          fieldName="instanceUrl"
-          {...TEXTFIELD_PROPS_INSTANCE_URL}
-          value={formDataValues.instanceUrl}
-          initialValue={yp.instanceUrl}
-          type={TEXTFIELD_TYPE_URL}
-          onChange={handleFieldChange}
-          onSubmit={handleSubmitInstanceUrl}
-        />
+  const hasInstanceUrl = instanceUrl !== '';
 
-        <TextFieldWithSubmit
-          fieldName="name"
-          {...TEXTFIELD_PROPS_SERVER_NAME}
-          value={formDataValues.name}
-          initialValue={instanceDetails.name}
-          onChange={handleFieldChange}
+  return (
+    <div className="edit-general-settings">
+      <Title level={3} className="section-title">
+        Configure Instance Details
+      </Title>
+      <br />
+
+      <TextFieldWithSubmit
+        fieldName="instanceUrl"
+        {...TEXTFIELD_PROPS_INSTANCE_URL}
+        value={formDataValues.instanceUrl}
+        initialValue={yp.instanceUrl}
+        type={TEXTFIELD_TYPE_URL}
+        onChange={handleFieldChange}
+        onSubmit={handleSubmitInstanceUrl}
+      />
+
+      <TextFieldWithSubmit
+        fieldName="name"
+        {...TEXTFIELD_PROPS_SERVER_NAME}
+        value={formDataValues.name}
+        initialValue={instanceDetails.name}
+        onChange={handleFieldChange}
+      />
+      <TextFieldWithSubmit
+        fieldName="summary"
+        {...TEXTFIELD_PROPS_SERVER_SUMMARY}
+        type={TEXTFIELD_TYPE_TEXTAREA}
+        value={formDataValues.summary}
+        initialValue={instanceDetails.summary}
+        onChange={handleFieldChange}
+      />
+      <TextFieldWithSubmit
+        fieldName="logo"
+        {...TEXTFIELD_PROPS_LOGO}
+        value={formDataValues.logo}
+        initialValue={instanceDetails.logo}
+        onChange={handleFieldChange}
+      />
+
+      <br />
+
+      <Title level={3} className="section-title">
+        Owncast Directory Settings
+      </Title>
+      <p className="description">
+        Would you like to appear in the{' '}
+        <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
+          <strong>Owncast Directory</strong>
+        </a>
+        ?
+      </p>
+      <div className="config-yp-container">
+        <ToggleSwitch
+          fieldName="enabled"
+          useSubmit
+          {...FIELD_PROPS_YP}
+          checked={formDataValues.enabled}
+          disabled={!hasInstanceUrl}
         />
-        <TextFieldWithSubmit
-          fieldName="summary"
-          {...TEXTFIELD_PROPS_SERVER_SUMMARY}
-          type={TEXTFIELD_TYPE_TEXTAREA}
-          value={formDataValues.summary}
-          initialValue={instanceDetails.summary}
-          onChange={handleFieldChange}
-        />
-        <TextFieldWithSubmit
-          fieldName="logo"
-          {...TEXTFIELD_PROPS_LOGO}
-          value={formDataValues.logo}
-          initialValue={instanceDetails.logo}
-          onChange={handleFieldChange}
+        <ToggleSwitch
+          fieldName="nsfw"
+          useSubmit
+          {...FIELD_PROPS_NSFW}
+          checked={formDataValues.nsfw}
+          disabled={!hasInstanceUrl}
         />
       </div>
     </div>

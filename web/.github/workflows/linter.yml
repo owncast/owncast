@@ -20,4 +20,3 @@ jobs:
           config-path: '.eslintrc.js'
           ignore-path: '.eslintignore'
           extensions: 'ts,tsx,js,jsx'
-          extra-args: '--max-warnings=0'

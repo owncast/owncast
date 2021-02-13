@@ -23,3 +23,35 @@
     }
   }
 }
+
+.social-links-edit-container {
+  .social-handles-table {
+    .social-handle-cell {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      color: rgba(255,255,255,.85);
+
+      .option-icon {        
+        height: 2em;
+        width: 2em;
+        line-height: normal;
+      }
+      .option-label {
+        display: flex;
+        flex-direction: column;
+        margin: 0 0 0 1em;
+        line-height: 2;
+        font-size: .85em;
+      }
+    }
+    .actions {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-evenly;
+      width: 6em;
+    }
+  }
+}

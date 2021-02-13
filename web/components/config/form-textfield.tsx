@@ -108,6 +108,7 @@ export default function TextField(props: TextFieldProps) {
   const { type: statusType } = status || {};
 
   const containerClass = classNames({
+    'formfield-container': true,
     'textfield-container': true,
     [`type-${type}`]: true,
     required,
@@ -117,7 +118,7 @@ export default function TextField(props: TextFieldProps) {
     <div className={containerClass}>
       {label ? (
         <div className="label-side">
-          <label htmlFor={fieldId} className="textfield-label">
+          <label htmlFor={fieldId} className="formfield-label">
             {label}
           </label>
         </div>
@@ -140,10 +141,7 @@ export default function TextField(props: TextFieldProps) {
           />
         </div>
         <FormStatusIndicator status={status} />
-        <p className="field-tip">
-          {tip}
-          {/* <InfoTip tip={tip} /> */}
-        </p>
+        <p className="field-tip">{tip}</p>
       </div>
     </div>
   );
@@ -151,9 +149,7 @@ export default function TextField(props: TextFieldProps) {
 
 TextField.defaultProps = {
   className: '',
-  // configPath: '',
   disabled: false,
-  // initialValue: '',
   label: '',
   maxLength: 255,
 
