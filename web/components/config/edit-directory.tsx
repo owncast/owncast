@@ -33,9 +33,11 @@ export default function EditYPDetails() {
   }
   return (
     <div className="config-directory-details-form">
-      <Title level={3}>Owncast Directory Settings</Title>
+      <Title level={3} className="section-title">
+        Owncast Directory Settings
+      </Title>
 
-      <p>
+      <p className="description">
         Would you like to appear in the{' '}
         <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
           <strong>Owncast Directory</strong>

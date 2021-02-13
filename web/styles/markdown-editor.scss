@@ -5,17 +5,24 @@
   display: block !important;
 }
 .rc-md-editor {
+  border-color: black !important;
+  border: 1px solid black;
+  background-color: black !important;
+  .rc-md-navigation {
+    background-color: black;
+    border-color: black;
+  }
   // Set the background color of the preview container
   .editor-container {
-    background-color: #E2E8F0;
     color: rgba(45,55,72,1);
+    background-color: rgba(226,232,240, 1) !important;
+
   }
 
   // Custom CSS for formatting the preview text
   .markdown-editor-preview-pane {
-    // color:lightgrey;
     a {
-      color: var(--owncast-purple);;
+      color: var(--owncast-purple);
     }
     h1 {
       font-size: 2em;
@@ -24,20 +31,20 @@
 
   // Custom CSS class used to format the text of the editor
   .markdown-editor-pane {
-    color: white !important;
+    color: rgba(255,255,255,.85) !important;
+    border-color: black  !important;
     background-color: black;
     font-family: monospace;
   }
 
+
+
   // Set the background color of the editor text input
   textarea {
-    background-color: rgb(44,44,44) !important;
-    color:lightgrey !important;
+    background-color: #223 !important;
+    color: rgba(255,255,255,.5)  !important;
   }
-.ant-btn {
-  transition-duration: .15s;
-  transition-delay: 0s;
-}
+
 
   // Hide extra toolbar buttons.
   .button-type-undo, .button-type-redo, .button-type-clear, .button-type-image, .button-type-wrap, .button-type-quote, .button-type-strikethrough, .button-type-code-inline, .button-type-code-block {

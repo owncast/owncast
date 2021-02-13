@@ -19,8 +19,11 @@ const TOOLTIPS = {
   4: 'high',
   5: 'highest',
 };
-
-export default function CPUUsageSelector({ defaultValue, onChange }) {
+interface Props {
+  defaultValue: number;
+  onChange: (arg: number) => void;
+}
+export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
@@ -42,10 +45,14 @@ export default function CPUUsageSelector({ defaultValue, onChange }) {
 
   return (
     <div className="config-video-segements-conatiner">
-      <Title level={3}>CPU Usage</Title>
-      <p>There are trade-offs when considering CPU usage blah blah more wording here.</p>
+      <Title level={3} className="section-title">
+        CPU Usage
+      </Title>
+      <p className="description">
+        There are trade-offs when considering CPU usage blah blah more wording here.
+      </p>
       <br />
-      <br />
+
       <div className="segment-slider-container">
         <Slider
           tipFormatter={value => TOOLTIPS[value]}

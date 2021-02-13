@@ -1,14 +1,35 @@
+// rename to variables.scss
+
 :root {
-  --owncast-purple: rgba(90,103,216,1);
+
+  --default-text-color: #fff;
+
+  --owncast-purple: rgba(90,103,216,1); //5a67d8
   --owncast-purple-highlight: #ccd;
 
   --online-color: #73dd3f;
 
   --owncast-dark1: #1f1f21;
 
-
   --ant-error: #ff4d4f;
   --ant-success: #52c41a;
   --ant-warning: #faad14;
+  --ant-transition-duration: .15s;
 
+
+  --container-bg-color: #1A1C24;
+  --container-bg-color-alt: #251c49;
+  --container-border-radius: 2px;
+
+  --code-purple: #82aaff;
+
+  --nav-bg-color: #1A1C24;
+  --nav-text: #6a76ba;
+  --nav-selected-text: #c48dff;
+
+  --form-focused: #8d71ff;
+
+  --textfield-border: #373640;
+  --textfield-bg: #100f0f;
+ 
 }

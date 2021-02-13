@@ -1,8 +1,14 @@
-// Base styles for form-textfield, form-textfield-with-submit
+/* 
+Base styles for 
+- form-textfield, 
+- form-textfield-with-submit
+- form-toggleswitch
 
+  Both text and toggle use this class for base layout.
+*/
+.formfield-container {
+  --form-label-container-width: 15em;
 
-/* TEXTFIELD-CONTAINER BASE */
-.textfield-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -10,14 +16,14 @@
   width: 100%;
   max-width: 600px;
   .label-side {
-    padding-right: .75em;
+    padding-right: 1.25em;
     text-align: right;
-    width: 12em;
+    width: var(--form-label-container-width);
     margin: .2em 0;
   }
-  .textfield-label {
-    font-weight: 400;
-    font-size: .85em;
+  .formfield-label {
+    font-weight: 500;
+    font-size: 1em;
     color: var(--owncast-purple);
 
     &::after {
@@ -25,7 +31,7 @@
     }
   }
   &.required {
-    .textfield-label {
+    .formfield-label {
       &::before {
         content: '*';
         display: inline-block;
@@ -97,7 +103,7 @@
     justify-content: flex-start;
 
     .label-spacer {
-      width: 12em;
+      width: var(--form-label-container-width); 
     }
     .lower-content {
       display: flex;
@@ -135,6 +141,29 @@
   @media (max-width: 800px) {
     .label-spacer {
       display: none;
+    }
+  }
+}
+
+
+/* TOGGLE SWITCH CONTAINER BASE */
+.toggleswitch-container {
+  margin: 2em 0 1em;
+
+  .label-side { 
+    margin-top: 0;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    
+    .status-container {
+      width: auto;
+      margin: 0 0 0 1em;
+      display: inline-block;
     }
   }
 }

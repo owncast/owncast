@@ -5,6 +5,11 @@
     height: 100vh;
     overflow: auto;
     z-index: 10;
+    background-color: var(--nav-bg-color);
+  }
+
+  .menu-container {
+    border-color: transparent;
   }
 
   h1.owncast-title {
@@ -40,6 +45,7 @@
     flex-direction: row;
     justify-content: flex-end;
     padding-right: 1rem;
+    background-color: var(--nav-bg-color);
   }
 
 

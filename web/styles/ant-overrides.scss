@@ -1,52 +1,231 @@
 // GENERAL ANT OVERRIDES
+
+
+// RESET BG, TEXT COLORS
 .ant-layout,
-.ant-layout-footer,
-.ant-menu,
-.ant-menu.ant-menu-dark {
-  background-color: transparent;
-}
-.owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
-  background-color: var(--owncast-purple);
-}
-
-// LAYOUT
 .ant-layout-header,
-.ant-layout-sider {
-  background-color: #07050d;
+.ant-layout-sider,
+.ant-layout-footer,
+.ant-card,
+.ant-collapse,
+.ant-collapse-content,
+.ant-table,
+.ant-table-thead > tr > th,
+.ant-table-small .ant-table-thead > tr > th,
+th.ant-table-column-sort,
+td.ant-table-column-sort,
+.ant-table-tbody > tr.ant-table-row:hover > td,
+.ant-table-thead th.ant-table-column-sort,
+.ant-menu,
+.ant-menu-submenu > .ant-menu,
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: transparent;
+  color: var(--default-text-color)
 }
 
-// MENU
-.ant-menu-dark .ant-menu-inline.ant-menu-sub {
-  // background-color: rgba(255,255,255,.05);
-  background-color: #140028;
+
+h1.ant-typography, 
+h2.ant-typography, 
+h3.ant-typography, 
+h4.ant-typography, 
+h5.ant-typography, 
+.ant-typography,
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5 {
+  color: var(--default-text-color);
+  font-weight: 500;
 }
 
-// CARD
+.ant-typography.ant-typography-secondary {
+  color: rgba(255,255,255,.85);
+  font-weight: 400;
+}
+
+.ant-progress-text,
+.ant-progress-circle .ant-progress-text {
+  color: var(--default-text-color);
+}
+
+
+
+// ANT MENU
+// menu base
+.ant-menu-item {
+  transition-duration: var(--ant-transition-duration);
+
+  .anticon {
+    transition-duration: var(--ant-transition-duration);
+    color: var(--nav-text); 
+  }
+
+  a {
+    transition-duration: var(--ant-transition-duration);
+    color: var(--nav-text);
+
+    &:hover {
+      color: white;
+    }
+  }
+  &:hover {
+    background-color: rgba(0,0,0,.15);
+
+    .anticon {
+      color: white;
+    }
+  }
+}
+// menu item selected
+.ant-menu-item-selected,
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: black;
+  a {
+    color: var(--nav-selected-text);
+  }
+  .anticon {
+    color: var(--nav-selected-text);
+  }
+
+  // the right border color
+  &:after {
+    border-color: var(--nav-selected-text);
+    transition-duration: var(--ant-transition-duration);
+  }
+}
+// submenu items
+.ant-menu-submenu {
+  &> .ant-menu {
+    border-left: 1px solid rgba(255,255,255,.4);
+    background-color: rgba(0,0,0,.15);
+  }
+  .ant-menu-submenu-title {
+    transition-duration: var(--ant-transition-duration);
+    color: var(--nav-text);
+    
+    .anticon {
+      color: var(--nav-text);
+    }
+    .ant-menu-submenu-arrow {
+      &:before,
+      &:after {
+        transition-duration: var(--ant-transition-duration);
+        background-image: linear-gradient(to right, var(--nav-text), var(--nav-text));
+      }
+    }
+  }
+  &:hover {
+    .ant-menu-submenu-title {
+      color: white;
+      .anticon {
+        color: white;
+      }
+      .ant-menu-submenu-arrow {
+        &:before,
+        &:after {
+          background-image: linear-gradient(to right, white, white);
+        }
+      }
+    }
+  }
+}
+
+
+// ANT RESULT
+.ant-result-title {
+  color: var(--default-text-color);
+}
+.ant-result-subtitle {
+  color: var(--default-text-color);
+}
+
+
+// ANT CARD
 .ant-card {
-  border-radius: .5em;
+  border-radius: var(--container-border-radius);
+  background-color: var(--container-bg-color);
+  color: var(--default-text-color);
+}
+.ant-card-bordered {
+  border-color: rgba(255,255,255,.25);
+}
+.ant-card-meta-title,
+.ant-card-meta-description {
+  color: white;
 }
 
-// INPUT
-.ant-input-affix-wrapper {
-  // border-radius: 5px;
-  // background-color: rgba(255,255,255,.1);
 
+
+// ANT INPUT
+.ant-input-affix-wrapper,
+.ant-input-number {
+  background-color: var(--textfield-bg);
+  border-color: var(--textfield-border);
+  input,
   textarea {
-    // border-radius: 5px;
+    background-color: transparent;
+    color: rgba(255,255,255,.85);
+    border-color: rgba(0,0,0,1);
+    &::placeholder {
+      color: var(--textfield-border);
+    }
+    &:-webkit-autofill {
+      background-color: transparent;
+    }
   }
-  input {
-    // background-color: transparent;
+}
+.ant-input-number:hover,
+.ant-input-affix-wrapper:hover {
+  border-color: var(--owncast-purple-highlight);
+  input,
+  textarea {
+    border-color: var(--owncast-purple-highlight);
   }
+}
+.ant-input-number:focus,
+.ant-input-affix-wrapper:focus, 
+.ant-input-affix-wrapper-focused {
+  border-color: var(--owncast-purple);
+  input,
+  textarea {
+    color: white;
+    border-color: var(--owncast-purple);
+  }
+}
+.ant-input-textarea-clear-icon,
+.ant-input-clear-icon {
+  color: rgba(255,255,255,.5);
+}
+textarea.ant-input {
+  padding-right: 25px;
 }
 
-// BUTTON
-.ant-btn-primary:hover, .ant-btn-primary:focus {
-  background-color: white;
-  color: #40a9ff;
+
+
+
+// ANT BUTTON
+.ant-btn-primary {
+  background-color: var(--owncast-purple);
+  border-color: var(--owncast-purple);
 }
-.ant-btn.ant-btn-primary:focus {
+.ant-btn-primary:hover, 
+.ant-btn-primary:focus {
+  background-color: var(--form-focused);
+  border-color: var(--form-focused);
+}
+.ant-btn.ant-btn-primary:hover {
   border-color: white;
+}
+.ant-btn-primary[disabled] {
+  background-color: rgba(255,255,255,.2);
+  border-color: rgba(255,255,255,.2);
+  color: white;
 
+  &:hover {
+    background-color: rgba(255,255,255,.2);
+    border-color: rgba(255,255,255,.2);
+  }
 }
 .ant-input-affix-wrapper,
 .ant-btn {
@@ -54,29 +233,72 @@
   transition-duration: 0.15s;
 }
 
-// TABLE 
+// ANT TABLE 
 .ant-table-thead > tr > th,
 .ant-table-small .ant-table-thead > tr > th {
-  background-color: #000;
+  transition-duration: var(--ant-transition-duration);
+  background-color: #112;
+  font-weight: 500;
+  color: var(--owncast-purple);
 }
+
+.ant-table-tbody > tr > td,
+.ant-table-thead > tr > th,
+.ant-table-small .ant-table-thead > tr > th {
+  border-color: var(--textfield-border);
+}
+.ant-table-tbody > tr > td {
+  transition-duration: var(--ant-transition-duration);
+  background-color: var(--textfield-bg);
+}
+.ant-table-tbody > tr:nth-child(odd) > td {
+  background-color: var(--textfield-bg);
+}
+.ant-empty {
+  color: white;
+  opacity: .75;
+}
+.ant-table-empty .ant-table-tbody > tr.ant-table-placeholder {
+  &:hover > td {
+    background-color: transparent;
+  }
+}
+.ant-table-thead th.ant-table-column-has-sorters:hover {
+  background-color: var(--textfield-border);
+  .ant-table-filter-trigger-container {
+    background-color: var(--textfield-border);
+  }
+}
+
 
 // MODAL
 .ant-modal-content {
-  border-radius: 6px;
+  border-radius: var(--container-border-radius);
+  border: 1px solid var(--owncast-purple-highlight);
 }
 .ant-modal-header {
-  background-color: #1c173d;
-  border-radius: 6px 6px 0 0;
+  border-radius: var(--container-border-radius) var(--container-border-radius) 0 0;
+}
+.ant-modal-close-x {
+  color: white;
 }
 .ant-modal-title {
-  font-weight: bold;
-  font-size: 1.5em;
+  font-weight: 500;
+  font-size: 1.25em;
+  color: var(--nav-selected-text);
 }
 .ant-modal-body {
-  background-color: #33333c;
+  background-color: var(--nav-bg-color);
+  color: var(--default-text-color);
 }
+.ant-modal-header,
 .ant-modal-footer {
-  background-color: #222229;
+  background-color: black;
+}
+.ant-modal-content,
+.ant-modal-header,
+.ant-modal-footer {
+  border-color: #333;
 }
 
 // SELECT
@@ -86,10 +308,59 @@
 
 
 // SLIDER
-.ant-slider-with-marks {
-  margin-right: 2em;
-}
+// .ant-slider-with-marks {
+//   margin-right: 2em;
+// }
 .ant-slider-mark-text {
   font-size: .85em;
   white-space: nowrap;
 }
+
+// ANT SWITCH
+.ant-switch {
+  background-color: #666;
+}
+.ant-switch-checked {
+  background-color: var(--ant-success);
+  .ant-switch-inner {
+    color: white;
+  }
+}
+
+
+// ANT COLLAPSE
+.ant-collapse {
+  border-color: transparent;
+  &> .ant-collapse-item,
+  .ant-collapse-content {
+    border-color: transparent;
+    &> .ant-collapse-header {
+      border-color: transparent;
+      background-color: var(--textfield-bg);
+      color: var(--nav-text);
+      font-weight: 500;
+    }
+  }
+}
+.ant-collapse-content {
+  background-color: #181231;
+}
+
+
+
+// ANT POPOVER
+.ant-popover {
+
+}
+.ant-popover-inner {
+  background-color: black;
+}
+.ant-popover-message,
+.ant-popover-inner-content {
+  color: var(--default-text-color);
+
+}
+.ant-popover-placement-topLeft > .ant-popover-content > .ant-popover-arrow {
+  border-color: black;
+}
+

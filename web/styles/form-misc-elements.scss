@@ -29,7 +29,7 @@
 
 /* TIP CONTAINER BASE */
 .field-tip {
-  font-size: .7em;
+  font-size: .8em;
   color: rgba(255,255,255,.5)
 }
 
@@ -39,9 +39,9 @@ Ideal for wrapping each Textfield on a page with many text fields in a row. This
 */
 .field-container {
   padding: .85em 0 .5em;
-  &:nth-child(even) {
-    background-color: rgba(0,0,0,.25);
-  }
+  // &:nth-child(even) {
+  //   background-color: rgba(0,0,0,.25);
+  // }
 }
 
 
@@ -50,8 +50,27 @@ Ideal for wrapping each Textfield on a page with many text fields in a row. This
   width: 90%;
   margin: auto;
   padding: 1em 2em .75em;
-  background-color: black;
+  background-color: var(--textfield-border);
   border-radius: 1em;
+  .ant-slider-rail {
+    background-color: black;
+  }
+  .ant-slider-track {
+    background-color: var(--nav-text);
+  }
+  .ant-slider-mark-text,
+  .ant-slider-mark-text-active {
+    color: white;
+    opacity: .5;
+  }
+  .ant-slider-mark-text-active {
+    opacity: 1;
+  }
+  .status-container {
+    width: 100%;
+    margin: .5em auto;
+    text-align: center;
+  }
 }
 
 

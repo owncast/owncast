@@ -19,11 +19,11 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
   const inititalSelected = selectedOption === '' ? null : selectedOption;
   return (
     <div className="social-dropdown-container">
-      <p className="">
+      <p className="description">
         If you are looking for a platform name not on this list, please select Other and type in
         your own name. A logo will not be provided.
       </p>
-      <p className="">
+      <p className="description">
         If you DO have a logo, drop it in to the <code>/webroot/img/platformicons</code> directory
         and update the <code>/socialHandle.go</code> list. Then restart the server and it will show
         up in the list.

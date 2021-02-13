@@ -49,7 +49,7 @@ export default function MainLayout(props) {
   const { Header, Footer, Content, Sider } = Layout;
   const { SubMenu } = Menu;
 
-  const [upgradeVersion, setUpgradeVersion] = useState(null);
+  const [upgradeVersion, setUpgradeVersion] = useState('');
   const checkForUpgrade = async () => {
     try {
       const result = await upgradeVersionAvailable(versionNumber);
@@ -80,7 +80,8 @@ export default function MainLayout(props) {
   });
 
   const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
-  const upgradeVersionString = upgradeVersion || '';
+  const upgradeVersionString = `${upgradeVersion}` || '';
+  const upgradeMessage = `Upgrade to v${upgradeVersionString}`;
 
   const clearAlertMessage = () => {
     alertMessage.setMessage(null);
@@ -123,10 +124,10 @@ export default function MainLayout(props) {
 
       <Sider width={240} className="side-nav">
         <Menu
-          theme="dark"
           defaultSelectedKeys={[route.substring(1) || 'home']}
           defaultOpenKeys={['current-stream-menu', 'utilities-menu', 'configuration']}
           mode="inline"
+          className="menu-container"
         >
           <h1 className="owncast-title">
             <span className="logo-container">
@@ -150,13 +151,6 @@ export default function MainLayout(props) {
             <Menu.Item key="config-public-details">
               <Link href="/config-public-details">General</Link>
             </Menu.Item>
-            <Menu.Item key="config-social-items">
-              <Link href="/config-social-items">Social Links</Link>
-            </Menu.Item>
-
-            <Menu.Item key="config-page-content">
-              <Link href="/config-page-content">Page Content</Link>
-            </Menu.Item>
 
             <Menu.Item key="config-server-details">
               <Link href="/config-server-details">Server Setup</Link>
@@ -177,9 +171,7 @@ export default function MainLayout(props) {
               <Link href="/logs">Logs</Link>
             </Menu.Item>
             <Menu.Item key="upgrade" style={{ display: upgradeMenuItemStyle }}>
-              <Link href="/upgrade">
-                <a>Upgrade to v{upgradeVersionString}</a>
-              </Link>
+              <Link href="/upgrade">{upgradeMessage}</Link>
             </Menu.Item>
           </SubMenu>
           <SubMenu key="integrations-menu" icon={<ExperimentOutlined />} title="Integrations">

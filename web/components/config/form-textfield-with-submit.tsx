@@ -120,7 +120,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
           onChange={handleChange}
         />
       </div>
-      <div className="textfield-container lower-container">
+      <div className="formfield-container lower-container">
         <p className="label-spacer" />
         <div className="lower-content">
           <div className="field-tip">{tip}</div>
