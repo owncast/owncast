@@ -23,7 +23,7 @@
     "sass": "^1.26.11"
   },
   "devDependencies": {
-    "@types/chart.js": "^2.9.28",
+    "@types/chart.js": "^2.9.30",
     "@types/classnames": "^2.2.11",
     "@types/node": "^14.11.2",
     "@types/prop-types": "^15.7.3",
