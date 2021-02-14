@@ -2,7 +2,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Typography } from 'antd';
 
-import ToggleSwitch from './form-toggleswitch-with-submit';
+import ToggleSwitch from './form-toggleswitch';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { FIELD_PROPS_NSFW, FIELD_PROPS_YP } from '../../utils/config-constants';

@@ -6,7 +6,6 @@ import TextField from './form-textfield';
 import { DEFAULT_VARIANT_STATE } from '../../utils/config-constants';
 import InfoTip from '../info-tip';
 import CPUUsageSelector from './cpu-usage';
-// import ToggleSwitch from './form-toggleswitch-with-submit';
 
 const { Panel } = Collapse;
 

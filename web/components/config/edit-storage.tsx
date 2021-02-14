@@ -1,4 +1,4 @@
-import { Switch, Button, Collapse } from 'antd';
+import { Button, Collapse } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
 import { UpdateArgs } from '../../types/config-section';
@@ -21,8 +21,7 @@ import {
 import TextField from './form-textfield';
 import FormStatusIndicator from './form-status-indicator';
 import { isValidUrl } from '../../utils/urls';
-import ToggleSwitch from './form-toggleswitch-with-submit';
-// import ToggleSwitch from './form-toggleswitch-with-submit';
+import ToggleSwitch from './form-toggleswitch';
 
 const { Panel } = Collapse;
 

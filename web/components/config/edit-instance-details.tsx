@@ -19,7 +19,7 @@ import {
 } from '../../utils/config-constants';
 
 import { UpdateArgs } from '../../types/config-section';
-import ToggleSwitch from './form-toggleswitch-with-submit';
+import ToggleSwitch from './form-toggleswitch';
 
 const { Title } = Typography;
 
