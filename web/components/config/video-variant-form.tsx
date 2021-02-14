@@ -11,11 +11,11 @@ const { Panel } = Collapse;
 
 const VIDEO_VARIANT_DEFAULTS = {
   framerate: {
-    min: 10,
-    max: 90,
+    min: 24,
+    max: 120,
     defaultValue: 24,
     unit: 'fps',
-    incrementBy: 1,
+    incrementBy: null,
     tip: 'You prob wont need to touch this unless youre a hardcore gamer and need all the bitties',
   },
   videoBitrate: {
@@ -97,14 +97,55 @@ export default function VideoVariantForm({
   const framerateMin = framerateDefaults.min;
   const framerateMax = framerateDefaults.max;
   const framerateUnit = framerateDefaults.unit;
+  const framerateMarks = {
+    [framerateMin]: `${framerateMin} ${framerateUnit}`,
+    30: '',
+    60: '',
+    [framerateMax]: `${framerateMax} ${framerateUnit}`,
+  };
 
   const videoBitrateDefaults = VIDEO_VARIANT_DEFAULTS.videoBitrate;
   const videoBRMin = videoBitrateDefaults.min;
   const videoBRMax = videoBitrateDefaults.max;
   const videoBRUnit = videoBitrateDefaults.unit;
+  const videoBRMarks = {
+    [videoBRMin]: `${videoBRMin} ${videoBRUnit}`,
+    3000: 3000,
+    4500: 4500,
+    [videoBRMax]: `${videoBRMax} ${videoBRUnit}`,
+  };
 
-  const selectedVideoBRnote = `Selected: ${dataState.videoBitrate}${videoBRUnit} - it sucks`;
-  const selectedFramerateNote = `Selected: ${dataState.framerate}${framerateUnit} - whoa there`;
+  const selectedVideoBRnote = () => {
+    let note = `Selected: ${dataState.videoBitrate}${videoBRUnit}`;
+    if (dataState.videoBitrate < 3000) {
+      note = `${note} - Good for low bandwidth environments.`;
+    } else if (dataState.videoBitrate < 4500) {
+      note = `${note} - Good for most bandwidth environments.`;
+    } else {
+      note = `${note} - Good for high bandwidth environments.`;
+    }
+    return note;
+  };
+  const selectedFramerateNote = () => {
+    let note = `Selected: ${dataState.framerate}${framerateUnit}`;
+    switch (dataState.framerate) {
+      case 24:
+        note = `${note} - Good for film, presentations, music, low power/bandwidth servers.`;
+        break;
+      case 30:
+        note = `${note} - Good for slow/casual games, chat, general purpose.`;
+        break;
+      case 60:
+        note = `${note} - Good for fast/action games, sports, HD video.`;
+        break;
+      case 120:
+        note = `${note} - Experimental, use at your own risk!`;
+        break;
+      default:
+        note = '';
+    }
+    return note;
+  };
   const selectedPresetNote = '';
 
   return (
@@ -162,14 +203,9 @@ export default function VideoVariantForm({
                 step={videoBitrateDefaults.incrementBy}
                 min={videoBRMin}
                 max={videoBRMax}
-                marks={{
-                  [videoBRMin]: `${videoBRMin} ${videoBRUnit}`,
-                  [videoBRMax]: `${videoBRMax} ${videoBRUnit}`,
-                }}
+                marks={videoBRMarks}
               />
-              {selectedVideoBRnote && (
-                <span className="selected-value-note">{selectedVideoBRnote}</span>
-              )}
+              <span className="selected-value-note">{selectedVideoBRnote()}</span>
             </div>
           </div>
         </div>
@@ -213,14 +249,9 @@ export default function VideoVariantForm({
                   step={framerateDefaults.incrementBy}
                   min={framerateMin}
                   max={framerateMax}
-                  marks={{
-                    [framerateMin]: `${framerateMin} ${framerateUnit}`,
-                    [framerateMax]: `${framerateMax} ${framerateUnit}`,
-                  }}
+                  marks={framerateMarks}
                 />
-                {selectedFramerateNote ? (
-                  <span className="selected-value-note">{selectedFramerateNote}</span>
-                ) : null}
+                <span className="selected-value-note">{selectedFramerateNote()}</span>
               </div>
             </div>
           </Panel>
