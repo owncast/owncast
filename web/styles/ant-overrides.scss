@@ -35,14 +35,27 @@ h5.ant-typography,
 .ant-typography h3,
 .ant-typography h4,
 .ant-typography h5 {
-  color: var(--default-text-color);
+  color: var(--white);
   font-weight: 500;
 }
-
 .ant-typography.ant-typography-secondary {
-  color: rgba(255,255,255,.85);
+  color: var(--white);
   font-weight: 400;
 }
+.ant-typography {
+  a {
+    color: var(--owncast-purple);
+  }
+}
+.ant-typography h1,
+h1.ant-typography {
+  color: var(--white);
+}
+.ant-typography h2,
+h2.ant-typography{
+  color: var(--pink);
+}
+
 
 .ant-progress-text,
 .ant-progress-circle .ant-progress-text {
@@ -66,21 +79,26 @@ h5.ant-typography,
     color: var(--nav-text);
 
     &:hover {
-      color: white;
+      color: var(--white);
     }
   }
   &:hover {
-    background-color: rgba(0,0,0,.15);
-
+    background-color: var(--black-50);
+    color: var(--white);
     .anticon {
-      color: white;
+      color: var(--white);
     }
   }
 }
+.ant-menu-item:active, 
+.ant-menu-submenu-title:active {
+  background-color: var(--black-50);
+}
+
 // menu item selected
 .ant-menu-item-selected,
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
-  background-color: black;
+  background-color: var(--black);
   a {
     color: var(--nav-selected-text);
   }
@@ -97,8 +115,8 @@ h5.ant-typography,
 // submenu items
 .ant-menu-submenu {
   &> .ant-menu {
-    border-left: 1px solid rgba(255,255,255,.4);
-    background-color: rgba(0,0,0,.15);
+    border-left: 1px solid var(--white-50);
+    background-color: var(--black-35);
   }
   .ant-menu-submenu-title {
     transition-duration: var(--ant-transition-duration);
@@ -117,14 +135,14 @@ h5.ant-typography,
   }
   &:hover {
     .ant-menu-submenu-title {
-      color: white;
+      color: var(--white);
       .anticon {
-        color: white;
+        color: var(--white);
       }
       .ant-menu-submenu-arrow {
         &:before,
         &:after {
-          background-image: linear-gradient(to right, white, white);
+          background-image: linear-gradient(to right, var(--white), var(--white));
         }
       }
     }
@@ -137,7 +155,7 @@ h5.ant-typography,
   color: var(--default-text-color);
 }
 .ant-result-subtitle {
-  color: var(--default-text-color);
+  color: var(--white-75);
 }
 
 
@@ -148,13 +166,21 @@ h5.ant-typography,
   color: var(--default-text-color);
 }
 .ant-card-bordered {
-  border-color: rgba(255,255,255,.25);
+  border-color: var(--white-25);
 }
-.ant-card-meta-title,
+.ant-card-meta-title {
+  color: var(--white);
+}
 .ant-card-meta-description {
-  color: white;
+  color: var(--white-75);
 }
-
+.ant-card {
+  .ant-statistic,
+  .ant-statistic-title,
+  .ant-statistic-content {
+    color: var(--default-text-color);
+  }
+}
 
 
 // ANT INPUT
@@ -165,10 +191,10 @@ h5.ant-typography,
   input,
   textarea {
     background-color: transparent;
-    color: rgba(255,255,255,.85);
-    border-color: rgba(0,0,0,1);
+    color: var(--white-88);
+    border-color: var(--black);
     &::placeholder {
-      color: var(--textfield-border);
+      color: var(--owncast-purple-50);
     }
     &:-webkit-autofill {
       background-color: transparent;
@@ -177,10 +203,10 @@ h5.ant-typography,
 }
 .ant-input-number:hover,
 .ant-input-affix-wrapper:hover {
-  border-color: var(--owncast-purple-highlight);
+  border-color: var(--owncast-purple);
   input,
   textarea {
-    border-color: var(--owncast-purple-highlight);
+    border-color: var(--owncast-purple);
   }
 }
 .ant-input-number:focus,
@@ -189,13 +215,13 @@ h5.ant-typography,
   border-color: var(--owncast-purple);
   input,
   textarea {
-    color: white;
+    color: var(--white);
     border-color: var(--owncast-purple);
   }
 }
 .ant-input-textarea-clear-icon,
 .ant-input-clear-icon {
-  color: rgba(255,255,255,.5);
+  color: var(--white-55);
 }
 textarea.ant-input {
   padding-right: 25px;
@@ -211,20 +237,20 @@ textarea.ant-input {
 }
 .ant-btn-primary:hover, 
 .ant-btn-primary:focus {
-  background-color: var(--form-focused);
-  border-color: var(--form-focused);
+  background-color: var(--button-focused);
+  border-color: var(--button-focused);
 }
 .ant-btn.ant-btn-primary:hover {
-  border-color: white;
+  border-color: var(--white);
 }
 .ant-btn-primary[disabled] {
-  background-color: rgba(255,255,255,.2);
-  border-color: rgba(255,255,255,.2);
-  color: white;
+  background-color: var(--white-25);
+  border-color: var(--white-25);
+  color: var(--white-50);
 
   &:hover {
-    background-color: rgba(255,255,255,.2);
-    border-color: rgba(255,255,255,.2);
+    background-color: var(--white-35);
+    border-color: var(--white-35);
   }
 }
 .ant-input-affix-wrapper,
@@ -233,30 +259,31 @@ textarea.ant-input {
   transition-duration: 0.15s;
 }
 
+
 // ANT TABLE 
 .ant-table-thead > tr > th,
 .ant-table-small .ant-table-thead > tr > th {
   transition-duration: var(--ant-transition-duration);
-  background-color: #112;
+  background-color: var(--purple-dark);
   font-weight: 500;
-  color: var(--owncast-purple);
+  color: var(--white);
 }
 
 .ant-table-tbody > tr > td,
 .ant-table-thead > tr > th,
 .ant-table-small .ant-table-thead > tr > th {
-  border-color: var(--textfield-border);
+  border-color: var(--white-15);
 }
 .ant-table-tbody > tr > td {
   transition-duration: var(--ant-transition-duration);
-  background-color: var(--textfield-bg);
+  background-color: #141417;
+  color: var(--white-75);
 }
 .ant-table-tbody > tr:nth-child(odd) > td {
-  background-color: var(--textfield-bg);
+  background-color: #222325;
 }
 .ant-empty {
-  color: white;
-  opacity: .75;
+  color: var(--white-75);
 }
 .ant-table-empty .ant-table-tbody > tr.ant-table-placeholder {
   &:hover > td {
@@ -269,18 +296,23 @@ textarea.ant-input {
     background-color: var(--textfield-border);
   }
 }
+.ant-table-thead th.ant-table-column-sort {
+  background-color: var(--owncast-purple-25);
+  opacity: .75;
+}
 
 
 // MODAL
 .ant-modal-content {
   border-radius: var(--container-border-radius);
-  border: 1px solid var(--owncast-purple-highlight);
+  border: 1px solid var(--owncast-purple);
+  background-color: var(--black);
 }
 .ant-modal-header {
   border-radius: var(--container-border-radius) var(--container-border-radius) 0 0;
 }
 .ant-modal-close-x {
-  color: white;
+  color: var(--white);
 }
 .ant-modal-title {
   font-weight: 500;
@@ -288,22 +320,22 @@ textarea.ant-input {
   color: var(--nav-selected-text);
 }
 .ant-modal-body {
-  background-color: var(--nav-bg-color);
+  background-color: var(--gray);
   color: var(--default-text-color);
 }
 .ant-modal-header,
 .ant-modal-footer {
-  background-color: black;
+  background: var(--black);
 }
 .ant-modal-content,
 .ant-modal-header,
 .ant-modal-footer {
-  border-color: #333;
+  border-color: var(--gray);
 }
 
 // SELECT
 .ant-select-dropdown {
-  background-color: #334;
+  background-color: var(--gray);
 }
 
 
@@ -318,12 +350,12 @@ textarea.ant-input {
 
 // ANT SWITCH
 .ant-switch {
-  background-color: #666;
+  background-color: var(--gray-medium);
 }
 .ant-switch-checked {
   background-color: var(--ant-success);
   .ant-switch-inner {
-    color: white;
+    color: var(--white);
   }
 }
 
@@ -335,15 +367,16 @@ textarea.ant-input {
   .ant-collapse-content {
     border-color: transparent;
     &> .ant-collapse-header {
+      border-radius: var(--container-border-radius);
       border-color: transparent;
-      background-color: var(--textfield-bg);
-      color: var(--nav-text);
+      background-color: var(--purple-dark);
+      color: var(--white);
       font-weight: 500;
     }
   }
 }
 .ant-collapse-content {
-  background-color: #181231;
+  background-color: var(--black-35); //#181231;
 }
 
 
@@ -353,7 +386,7 @@ textarea.ant-input {
 
 }
 .ant-popover-inner {
-  background-color: black;
+  background-color: var(--black);
 }
 .ant-popover-message,
 .ant-popover-inner-content {
@@ -361,6 +394,31 @@ textarea.ant-input {
 
 }
 .ant-popover-placement-topLeft > .ant-popover-content > .ant-popover-arrow {
-  border-color: black;
+  border-color: var(--black);
 }
 
+
+
+
+// ANT TAGS
+
+.ant-tag-orange {
+  background: #fa8c16;
+  color: #fff7e6;
+  border-color: #ffd591;
+}
+
+
+// ANT PAGINATOR
+.ant-pagination-item-active {
+  color: var(--white);
+  background-color: var(--default-link-color);
+  border-color: var(--default-link-color);
+  a {
+    color: var(--white);
+    &:hover {
+      color: var(--white);
+      opacity: .75;
+    }
+  }
+}

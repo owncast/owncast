@@ -8,11 +8,11 @@
   }
   .ant-table-row.hidden {
     .ant-table-cell {
-      color: rgba(0,0,0,.25)
+      color: var(--black-35)
     }
     @media (prefers-color-scheme: dark) {
       .ant-table-cell {
-        color: rgba(255,255,255,.25)
+        color: var(--white-25);
       }
     }
   }
@@ -47,29 +47,21 @@
   .bulk-editor {
     margin: .5rem 0;
     padding: .5rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--textfield-border);
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
     border-radius: 4px;
-    opacity: .5;
-
     &.active {
-      opacity: 1;
       .label {
-        color: #000;
-      }
-      @media (prefers-color-scheme: dark) {
-        .label {
-          color: #fff;
-        }
+        color: var(--black);
       }
     }
 
     .label {
       font-size: .75rem;
-      color: #666;
+      color: var(--white-50);
       margin-right: .5rem;
     }
 
@@ -112,11 +104,6 @@
     }
   }
   .ant-btn-text:hover {
-    background-color: rgba(0,0,0,.1)
-  }
-  @media (prefers-color-scheme: dark) {
-    .ant-btn-text:hover {
-      background-color: rgba(255,255,255,.3)
-    }
+    background-color: var(--black-35)
   }
 }

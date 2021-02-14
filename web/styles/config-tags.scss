@@ -15,12 +15,12 @@
       margin-left: .3rem;
       padding: 2px;
       border-radius: 5rem;
-      color: black;
-      border: 1px solid #000;
+      color: var(--black);
+      border: 1px solid var(--black);
       transition-duration: var(--ant-transition-duration);
       &:hover {
-        border-color: #5a67d8;
-        background-color: white;
+        border-color: var(--owncast-purple);
+        background-color: var(--white);
         svg {
           fill: black;
           transition: fill var(--ant-transition-duration);

@@ -30,7 +30,7 @@
 /* TIP CONTAINER BASE */
 .field-tip {
   font-size: .8em;
-  color: rgba(255,255,255,.5)
+  color: var(--white-50);
 }
 
 
@@ -50,17 +50,17 @@ Ideal for wrapping each Textfield on a page with many text fields in a row. This
   width: 90%;
   margin: auto;
   padding: 1em 2em .75em;
-  background-color: var(--textfield-border);
+  background-color: var(--black-35);
   border-radius: 1em;
   .ant-slider-rail {
-    background-color: black;
+    background-color: var(--black);
   }
   .ant-slider-track {
     background-color: var(--nav-text);
   }
   .ant-slider-mark-text,
   .ant-slider-mark-text-active {
-    color: white;
+    color: var(--white);
     opacity: .5;
   }
   .ant-slider-mark-text-active {
