@@ -196,7 +196,6 @@ export default function EditSocialLinks() {
         return (
           <div className="actions">
             <Button
-              type="primary"
               size="small"
               onClick={() => {
                 setEditId(index);

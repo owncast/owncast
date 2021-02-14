@@ -253,6 +253,17 @@ textarea.ant-input {
 
 
 // ANT BUTTON
+.ant-btn {
+  background-color: var(--purple-dark);
+  border-color: var(--white-25);
+  color: var(--white-75);
+  &:hover,
+  &:focus {
+    background-color: var(--owncast-purple);
+    border-color: var(--owncast-purple);
+    color: var(--white);
+  }
+}
 .ant-btn-primary {
   background-color: var(--owncast-purple);
   border-color: var(--owncast-purple);
