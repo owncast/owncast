@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
-import { DeleteOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-const { Title, Paragraph, Text } = Typography;
+import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
 
 import { fetchData, ACCESS_TOKENS, DELETE_ACCESS_TOKEN, CREATE_ACCESS_TOKEN } from '../utils/apis';
+
+const { Title, Paragraph } = Typography;
 
 const availableScopes = {
   CAN_SEND_SYSTEM_MESSAGES: {
@@ -87,9 +88,12 @@ function NewTokenModal(props) {
         Select the permissions this access token will have. It cannot be edited after it's created.
       </p>
       <Checkbox.Group options={scopes} value={selectedScopes} onChange={onChange} />
-      <Button type="text" size="small" onClick={selectAll}>
-        Select all
-      </Button>
+
+      <p>
+        <Button type="primary" onClick={selectAll}>
+          Select all
+        </Button>
+      </p>
     </Modal>
   );
 }
@@ -162,7 +166,7 @@ export default function AccessTokens() {
     try {
       const result = await fetchData(DELETE_ACCESS_TOKEN, {
         method: 'POST',
-        data: { token: token },
+        data: { token },
       });
       getAccessTokens();
     } catch (error) {
@@ -174,7 +178,7 @@ export default function AccessTokens() {
     try {
       const newToken = await fetchData(CREATE_ACCESS_TOKEN, {
         method: 'POST',
-        data: { name: name, scopes: scopes },
+        data: { name, scopes },
       });
       setTokens(tokens.concat(newToken));
     } catch (error) {

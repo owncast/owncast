@@ -39,9 +39,6 @@ Ideal for wrapping each Textfield on a page with many text fields in a row. This
 */
 .field-container {
   padding: .85em 0 .5em;
-  // &:nth-child(even) {
-  //   background-color: rgba(0,0,0,.25);
-  // }
 }
 
 
@@ -50,7 +47,7 @@ Ideal for wrapping each Textfield on a page with many text fields in a row. This
   width: 90%;
   margin: auto;
   padding: 1em 2em .75em;
-  background-color: var(--black-35);
+  background-color: var(--owncast-purple-25);
   border-radius: 1em;
   .ant-slider-rail {
     background-color: var(--black);

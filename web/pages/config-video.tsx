@@ -9,9 +9,7 @@ const { Title } = Typography;
 export default function ConfigVideoSettings() {
   return (
     <div className="config-video-variants">
-      <Title level={2} className="page-title">
-        Video configuration
-      </Title>
+      <Title>Video configuration</Title>
       <p className="description">
         Before changing your video configuration{' '}
         <a href="https://owncast.online/docs/encoding">visit the video documentation</a> to learn

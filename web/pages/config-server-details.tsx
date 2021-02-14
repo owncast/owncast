@@ -7,7 +7,7 @@ const { Title } = Typography;
 export default function ConfigServerDetails() {
   return (
     <div className="config-server-details-form">
-      <Title level={2} className="page-title">
+      <Title>
         Server Settings
       </Title>
       <p className="description">

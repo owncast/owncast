@@ -11,9 +11,7 @@ const { Title } = Typography;
 export default function PublicFacingDetails() {
   return (
     <div className="config-public-details-page">
-      <Title level={2} className="page-title">
-        General Settings
-      </Title>
+      <Title>General Settings</Title>
       <p className="description">
         The following are displayed on your site to describe your stream and its content.{' '}
         <a href="https://owncast.online/docs/website/">Learn more.</a>

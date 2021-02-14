@@ -104,13 +104,13 @@ export default function EditPageContent() {
           markdownClass: 'markdown-editor-pane',
         }}
       />
-
+      <br />
       <div className="page-content-actions">
-        {hasChanged ? (
+        {hasChanged && (
           <Button type="primary" onClick={handleSave}>
             Save
           </Button>
-        ) : null}
+        )}
         <FormStatusIndicator status={submitStatus} />
       </div>
     </div>

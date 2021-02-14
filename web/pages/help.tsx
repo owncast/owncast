@@ -2,9 +2,7 @@ import { Button, Card, Col, Divider, Result, Row } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import Title from 'antd/lib/typography/Title';
 import {
-  AlertOutlined,
   ApiTwoTone,
-  BookOutlined,
   BugTwoTone,
   CameraTwoTone,
   DatabaseTwoTone,
@@ -17,9 +15,10 @@ import {
 } from '@ant-design/icons';
 import React from 'react';
 
-interface Props {}
 
-export default function Help(props: Props) {
+
+
+export default function Help() {
   const questions = [
     {
       icon: <SettingTwoTone style={{ fontSize: '24px' }} />,
@@ -144,7 +143,7 @@ export default function Help(props: Props) {
   ];
 
   return (
-    <div>
+    <div className="help-page">
       <Title style={{ textAlign: 'center' }}>How can we help you?</Title>
       <Row gutter={[16, 16]} justify="space-around" align="middle">
         <Col xs={24} lg={12} style={{ textAlign: 'center' }}>

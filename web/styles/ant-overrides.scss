@@ -36,25 +36,36 @@ h5.ant-typography,
 .ant-typography h4,
 .ant-typography h5 {
   color: var(--white);
-  font-weight: 500;
+  font-weight: 400;
+  margin: .5em 0;
 }
 .ant-typography.ant-typography-secondary {
   color: var(--white);
   font-weight: 400;
 }
 .ant-typography {
+  font-weight: 300;
+  color: var(--white-75);
   a {
     color: var(--owncast-purple);
   }
 }
+
 .ant-typography h1,
 h1.ant-typography {
-  color: var(--white);
-}
-.ant-typography h2,
-h2.ant-typography{
+  font-size: 1.75em;
   color: var(--pink);
 }
+.ant-typography h2,
+h2.ant-typography {
+  font-size: 1.5em;
+}
+
+.ant-typography h3,
+h3.ant-typography {
+  font-size: 1.25em;
+}
+
 
 
 .ant-progress-text,
@@ -184,6 +195,15 @@ h2.ant-typography{
 
 
 // ANT INPUT
+input.ant-input,
+textarea.ant-input {
+  background-color: var(--textfield-bg);
+  color: var(--white-88);
+  border-color: var(--black);
+  &::placeholder {
+    color: var(--owncast-purple-50);
+  }
+}
 .ant-input-affix-wrapper,
 .ant-input-number {
   background-color: var(--textfield-bg);
@@ -201,6 +221,7 @@ h2.ant-typography{
     }
   }
 }
+.ant-input:hover,
 .ant-input-number:hover,
 .ant-input-affix-wrapper:hover {
   border-color: var(--owncast-purple);
@@ -209,6 +230,7 @@ h2.ant-typography{
     border-color: var(--owncast-purple);
   }
 }
+.ant-input,
 .ant-input-number:focus,
 .ant-input-affix-wrapper:focus, 
 .ant-input-affix-wrapper-focused {
@@ -420,5 +442,17 @@ textarea.ant-input {
       color: var(--white);
       opacity: .75;
     }
+  }
+}
+
+
+// ANT CHECKBOX
+.ant-checkbox-wrapper {
+  color: var(--white-75);
+  margin: .5em 0;
+}
+.ant-checkbox-group {
+  .ant-checkbox-group-item {
+    display: block;
   }
 }

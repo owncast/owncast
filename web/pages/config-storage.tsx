@@ -7,7 +7,7 @@ const { Title } = Typography;
 export default function ConfigStorageInfo() {
   return (
     <>
-      <Title level={2} className="page-title">
+      <Title>
         Storage
       </Title>
       <p className="description">

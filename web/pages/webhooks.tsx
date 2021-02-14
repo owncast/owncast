@@ -1,23 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  Tag,
-  Space,
-  Button,
-  Modal,
-  Checkbox,
-  Input,
-  Typography,
-  Tooltip,
-  Select,
-} from 'antd';
-import { DeleteOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
+import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { isValidUrl } from '../utils/urls';
 
-const { Title, Paragraph, Text } = Typography;
-const { Option } = Select;
-
 import { fetchData, DELETE_WEBHOOK, CREATE_WEBHOOK, WEBHOOKS } from '../utils/apis';
+
+const { Title, Paragraph } = Typography;
 
 const availableEvents = {
   CHAT: { name: 'Chat messages', description: 'When a user sends a chat message', color: 'purple' },
@@ -96,9 +84,12 @@ function NewWebhookModal(props) {
 
       <p>Select the events that will be sent to this webhook.</p>
       <Checkbox.Group options={events} value={selectedEvents} onChange={onChange} />
-      <Button type="text" size="small" onClick={selectAll}>
-        Select all
-      </Button>
+
+      <p>
+        <Button type="primary" onClick={selectAll}>
+          Select all
+        </Button>
+      </p>
     </Modal>
   );
 }

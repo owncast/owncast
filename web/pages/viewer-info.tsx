@@ -114,6 +114,7 @@ export default function ViewersOverTime() {
           prefix={<UserOutlined />}
         />
       </Row>
+
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
       {online && <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />}
     </div>
