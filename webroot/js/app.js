@@ -13,6 +13,7 @@ import {
   hasTouchScreen,
   getOrientation,
 } from './utils/helpers.js';
+import ExternalActionModal from './components/external-action-modal.js';
 
 import {
   addNewlines,
@@ -592,6 +593,7 @@ export default class App extends Component {
           chatInputEnabled=${chatInputEnabled && !chatDisabled}
           instanceTitle=${name}
         />
+        <${ExternalActionModal} />
       </div>
     `;
   }
