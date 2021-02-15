@@ -105,7 +105,7 @@ export default function EditInstanceDetails() {
       />
       {instanceDetails.logo && (
         <img
-          src={`${NEXT_PUBLIC_API_HOST}${instanceDetails.logo}`}
+          src={`${NEXT_PUBLIC_API_HOST}/logo`}
           alt="uploaded logo"
           className="logo-preview"
         />
