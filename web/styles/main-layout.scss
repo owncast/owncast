@@ -1,5 +1,4 @@
 .app-container {
-  
   .side-nav {
     position: fixed;
     height: 100vh;
@@ -21,7 +20,7 @@
 
     .logo-container {
       background-color: var(--white);
-      padding: .35rem;
+      padding: 0.35rem;
       border-radius: 9999px;
     }
 
@@ -33,7 +32,7 @@
       font-weight: 200;
       text-transform: uppercase;
       line-height: normal;
-      letter-spacing: .05em;
+      letter-spacing: 0.05em;
     }
   }
 
@@ -48,7 +47,6 @@
     background-color: var(--nav-bg-color);
   }
 
-
   .main-content-container {
     padding: 2em 3em 3em;
   }
@@ -56,8 +54,6 @@
   .footer-container {
     text-align: center;
   }
-
-
 
   .online-status-indicator {
     display: flex;
@@ -72,9 +68,9 @@
     .status-label {
       color: var(--white);
       text-transform: uppercase;
-      font-size: .75rem;
+      font-size: 0.75rem;
       display: inline-block;
-      margin-right: .5rem;
+      margin-right: 0.5rem;
       color: var(--offline-color);
     }
     .status-icon {
@@ -98,7 +94,6 @@
     }
   }
 }
-
 
 // stream title form field in header
 .global-stream-title-container {
@@ -149,10 +144,9 @@
       }
       .update-button-container {
         margin: 0;
-        margin-left: .5em;
+        margin-left: 0.5em;
         line-height: 1;
       }
-    } 
-  }  
+    }
+  }
 }
-
