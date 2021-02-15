@@ -104,11 +104,7 @@ export default function EditInstanceDetails() {
         onChange={handleFieldChange}
       />
       {instanceDetails.logo && (
-        <img
-          src={`${NEXT_PUBLIC_API_HOST}/logo`}
-          alt="uploaded logo"
-          className="logo-preview"
-        />
+        <img src={`${NEXT_PUBLIC_API_HOST}/logo`} alt="uploaded logo" className="logo-preview" />
       )}
       <br />
 
