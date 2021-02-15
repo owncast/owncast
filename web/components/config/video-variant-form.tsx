@@ -16,7 +16,7 @@ const VIDEO_VARIANT_DEFAULTS = {
     defaultValue: 24,
     unit: 'fps',
     incrementBy: null,
-    tip: 'You prob wont need to touch this unless youre a hardcore gamer and need all the bitties',
+    tip: 'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
   },
   videoBitrate: {
     min: 600,
@@ -24,7 +24,7 @@ const VIDEO_VARIANT_DEFAULTS = {
     defaultValue: 1200,
     unit: 'kbps',
     incrementBy: 100,
-    tip: 'This is importatnt yo',
+    tip: 'The overall quality of your stream is generally impacted most by bitrate.',
   },
   audioBitrate: {
     min: 600,
@@ -117,9 +117,9 @@ export default function VideoVariantForm({
 
   const selectedVideoBRnote = () => {
     let note = `Selected: ${dataState.videoBitrate}${videoBRUnit}`;
-    if (dataState.videoBitrate < 3000) {
+    if (dataState.videoBitrate < 2000) {
       note = `${note} - Good for low bandwidth environments.`;
-    } else if (dataState.videoBitrate < 4500) {
+    } else if (dataState.videoBitrate < 3500) {
       note = `${note} - Good for most bandwidth environments.`;
     } else {
       note = `${note} - Good for high bandwidth environments.`;
@@ -150,9 +150,7 @@ export default function VideoVariantForm({
   return (
     <div className="config-variant-form">
       <p className="description">
-        Say a thing here about how this all works. Read more{' '}
-        <a href="https://owncast.online/docs/configuration/">here</a>. Click the OK button below to
-        save your information.
+        <a href="https://owncast.online/docs/video">Learn more</a> about how each of these settings can impact the performance of your server.
       </p>
 
       <Row gutter={16}>
@@ -163,6 +161,7 @@ export default function VideoVariantForm({
               defaultValue={dataState.cpuUsageLevel}
               onChange={handleVideoCpuUsageLevelChange}
             />
+            <p className="read-more-subtext"><a href="https://owncast.online/docs/video/#cpu-usage">Read more about CPU usage.</a></p>
           </div>
 
           {/* VIDEO PASSTHROUGH FIELD - currently disabled */}
@@ -180,9 +179,8 @@ export default function VideoVariantForm({
         <Col sm={24} md={12}>
           {/* VIDEO BITRATE FIELD */}
           <div
-            className={`form-module bitrate-container ${
-              dataState.videoPassthrough ? 'disabled' : ''
-            }`}
+            className={`form-module bitrate-container ${dataState.videoPassthrough ? 'disabled' : ''
+              }`}
           >
             <Typography.Title level={3}>Video Bitrate</Typography.Title>
             <p className="description">{VIDEO_VARIANT_DEFAULTS.videoBitrate.tip}</p>
@@ -200,6 +198,7 @@ export default function VideoVariantForm({
               />
               <p className="selected-value-note">{selectedVideoBRnote()}</p>
             </div>
+            <p className="read-more-subtext"><a href="https://owncast.online/docs/video/#bitrate">Read more about bitrates.</a></p>
           </div>
         </Col>
       </Row>
@@ -207,8 +206,9 @@ export default function VideoVariantForm({
         <Panel header="Advanced Settings" key="1">
           <p className="description">
             Resizing your content will take additional resources on your server. If you wish to
-            optionally resize your output for this stream variant then you should either set the
-            width <strong>or</strong> the height to keep your aspect ratio.
+            optionally resize your content for this stream output then you should either set the
+            width <strong>or</strong> the height to keep your aspect ratio.{' '}
+            <a href="https://owncast.online/docs/video/#resolution">Read more about resolutions.</a>
           </p>
 
           <TextField
@@ -241,6 +241,7 @@ export default function VideoVariantForm({
               />
               <p className="selected-value-note">{selectedFramerateNote()}</p>
             </div>
+            <p className="read-more-subtext"><a href="https://owncast.online/docs/video/#framerate">Read more about framerates.</a></p>
           </div>
         </Panel>
       </Collapse>
