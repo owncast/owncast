@@ -140,14 +140,20 @@ class OwncastPlayer {
     // console.log(`>>> Player: ${message}`);
   }
 
-  async addQualitySelector() {
-    const qualities = ['High', 'Medium', 'Low'];
-
+  async addQualitySelector() {    
     videojs.hookOnce(
       'setup',
-      function (player) {
+      async function (player) {
+        var qualities = [];
+        
+        try {
+          const response = await fetch("/api/video/variants");
+          qualities = await response.json();
+        } catch(e) {
+          console.log(e);
+        }
+    
         var MenuItem = videojs.getComponent('MenuItem');
-
         var MenuButtonClass = videojs.getComponent('MenuButton');
         var MenuButton = videojs.extend(MenuButtonClass, {
           // The `init()` method will also work for constructor logic here, but it is
@@ -157,25 +163,39 @@ class OwncastPlayer {
             MenuButtonClass.call(this, player);
           },
 
-          handleClick: function () {},
+          handleClick: function () {
+          },
 
           createItems: function () {
             const defaultAutoItem = new MenuItem(player, {
               selectable: true,
               label: 'Auto',
             });
+
             defaultAutoItem.on('click', function () {
-              alert('AUTO!');
+              // Re-enable all representations.
+              player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
+                rep.enabled(true);
+              });
+              defaultAutoItem.selected(true);
             });
+
+            defaultAutoItem.selected(true);
 
             const items = qualities.map(function (item) {
               var newMenuItem = new MenuItem(player, {
                 selectable: true,
-                label: item,
+                label: item.name,
               });
 
               newMenuItem.on('click', function () {
-                alert(item);
+                console.log('Forcing', item.name);
+                // Only enable this single, selected representation.
+                player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
+                  rep.enabled(index === item.index);
+                });
+
+                newMenuItem.selected(true);
               });
 
               return newMenuItem;
@@ -187,7 +207,7 @@ class OwncastPlayer {
 
         var menuButton = new MenuButton();
         menuButton.addClass('vjs-quality-selector');
-        player.controlBar.addChild(menuButton);
+        player.controlBar.addChild(menuButton, {}, player.controlBar.children_.length -2 );
       }.bind(this)
     );
   }
