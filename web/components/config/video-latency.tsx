@@ -120,7 +120,7 @@ export default function VideoLatency() {
 
       <div className="segment-slider-container">
         <Slider
-          tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
+          tooltipVisible={false}
           onChange={handleChange}
           min={1}
           max={6}
@@ -128,6 +128,7 @@ export default function VideoLatency() {
           defaultValue={selectedOption}
           value={selectedOption}
         />
+        <p className="selected-value-note">{SLIDER_COMMENTS[selectedOption]}</p>
         <FormStatusIndicator status={submitStatus} />
       </div>
     </div>

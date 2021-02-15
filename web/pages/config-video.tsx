@@ -17,12 +17,12 @@ export default function ConfigVideoSettings() {
       </p>
 
       <Row gutter={16}>
-        <Col lg={12}>
+        <Col xl={12}>
           <div className="form-module variants-table-module">
             <VideoVariantsTable />
           </div>
         </Col>
-        <Col lg={12}>
+        <Col xl={12}>
           <div className="form-module latency-module">
             <VideoLatency />
           </div>
