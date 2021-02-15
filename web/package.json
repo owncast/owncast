@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint --ext .js,.ts,.tsx types/ pages/ components/"
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
