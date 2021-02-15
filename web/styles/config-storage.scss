@@ -22,29 +22,37 @@
 }
 
 
-// Do something special for the stream key field
-.field-streamkey-container {
-  margin-bottom: 1.5em;
-  .field-tip {
-    color: var(--ant-warning);
-  }
-  .left-side {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;  
+.edit-server-details-container {
+  
+  // Do something special for the stream key field
+  .field-streamkey-container {
+    margin-bottom: 1.5em;
+    .field-tip {
+      color: var(--ant-warning);
+    }
+    .left-side {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;  
+    }
+
+    .textfield-with-submit-container {
+      margin-bottom: 0;
+    }
+
+    .streamkey-actions {
+      white-space: nowrap;
+      button {
+        margin: .25em;
+      }
+      @media (max-width: 800px) {
+        margin-top: 2em;
+      }
+    }
   }
 
-  .textfield-with-submit-container {
-    margin-bottom: 0;
+  .advanced-settings {
+    max-width: 800px;
   }
 
-  .streamkey-actions {
-    white-space: nowrap;
-    button {
-      margin: .25em;
-    }
-    @media (max-width: 800px) {
-      margin-top: 2em;
-    }
-  }
 }

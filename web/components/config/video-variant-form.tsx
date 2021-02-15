@@ -230,7 +230,6 @@ export default function VideoVariantForm({
             <p className="description">{VIDEO_VARIANT_DEFAULTS.framerate.tip}</p>
             <div className="segment-slider-container">
               <Slider
-                // tooltipVisible
                 tipFormatter={value => `${value} ${framerateUnit}`}
                 defaultValue={dataState.framerate}
                 value={dataState.framerate}

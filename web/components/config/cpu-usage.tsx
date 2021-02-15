@@ -51,7 +51,6 @@ export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
       </p>
       <div className="segment-slider-container">
         <Slider
-          tooltipVisible={false}
           tipFormatter={value => TOOLTIPS[value]}
           onChange={handleChange}
           min={1}
