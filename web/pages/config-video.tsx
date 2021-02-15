@@ -16,13 +16,13 @@ export default function ConfigVideoSettings() {
         how it impacts your stream performance.
       </p>
 
-      <Row gutter={16}>
-        <Col xl={12}>
+      <Row gutter={[16, 16]}>
+        <Col md={24} lg={12}>
           <div className="form-module variants-table-module">
             <VideoVariantsTable />
           </div>
         </Col>
-        <Col xl={12}>
+        <Col md={24} lg={12}>
           <div className="form-module latency-module">
             <VideoLatency />
           </div>

@@ -84,7 +84,7 @@
       }
     }
   }
-  .online {
+  &.online {
     .online-status-indicator {
       .status-icon {
         svg {
@@ -92,6 +92,7 @@
         }
       }
       .status-label {
+        white-space: nowrap;
         color: var(--online-color);
       }
     }
@@ -111,8 +112,21 @@
     align-items: center;
     margin-bottom: 0;
 
+    .ant-input-affix-wrapper {
+      border-color: var(--owncast-purple-50);
+    }
+    input.ant-input {
+      &::placeholder {
+        color: var(--owncast-purple);
+        text-align: center;
+      }
+    }
+
     .input-side {
       width: 400px;
+      @media (max-width: 800px) {
+        width: auto;
+      }
     }
 
     .label-side {

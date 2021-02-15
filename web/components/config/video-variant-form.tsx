@@ -156,7 +156,7 @@ export default function VideoVariantForm({
       </p>
 
       <Row gutter={16}>
-        <Col xs={12} xl={12}>
+        <Col sm={24} md={12}>
           {/* ENCODER PRESET FIELD */}
           <div className="form-module cpu-usage-container">
             <CPUUsageSelector
@@ -177,7 +177,7 @@ export default function VideoVariantForm({
           </div>
         </Col>
 
-        <Col xs={12} xl={12}>
+        <Col sm={24} md={12}>
           {/* VIDEO BITRATE FIELD */}
           <div
             className={`form-module bitrate-container ${

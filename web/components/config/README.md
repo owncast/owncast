@@ -42,3 +42,5 @@ There are also a variety of other local states to manage the display of error/su
 
 
 
+segment-slider-container
+selected-value-note

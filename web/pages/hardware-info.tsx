@@ -1,5 +1,5 @@
 import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
-import { Row } from 'antd';
+import { Row, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../utils/apis';
 import Chart from '../components/chart';
@@ -67,6 +67,8 @@ export default function HardwareInfo() {
 
   return (
     <div>
+      <Typography.Title>Hardware Info</Typography.Title>
+      <br />
       <div>
         <Row gutter={[16, 16]} justify="space-around">
           <StatisticItem

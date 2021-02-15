@@ -202,7 +202,7 @@ export default function Chat() {
 
   return (
     <div className="chat-messages">
-      <Title level={2}>Chat Messages</Title>
+      <Title>Chat Messages</Title>
       <p>Manage the messages from viewers that show up on your stream.</p>
       <div className={bulkDivClasses}>
         <span className="label">Check multiple messages to change their visibility to: </span>

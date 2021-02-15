@@ -1,24 +1,13 @@
-/*
-Will display an overview with the following datasources:
-1. Current broadcaster.
-2. Viewer count.
-3. Video settings.
-
-TODO: Link each overview value to the sub-page that focuses on it.
-*/
-
 import React, { useState, useEffect, useContext } from 'react';
-import { Skeleton, Card, Statistic } from 'antd';
+import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import { ServerStatusContext } from '../utils/server-status-context';
-import StatisticItem from '../components/statistic';
 import LogTable from '../components/log-table';
 import Offline from './offline-notice';
 
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../utils/format';
-import { UpdateArgs } from '../types/config-section';
 
 function streamDetailsFormatter(streamDetails) {
   return (
@@ -80,31 +69,34 @@ export default function Home() {
   }
 
   // map out settings
-  const videoQualitySettings = serverStatusData?.currentBroadcast?.outputSettings?.map(
-    (setting, index) => {
-      const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
+  const videoQualitySettings = serverStatusData?.currentBroadcast?.outputSettings?.map(setting => {
+    const { audioPassthrough, videoPassthrough, audioBitrate, videoBitrate, framerate } = setting;
 
-      const audioSetting = audioPassthrough
-        ? `${streamDetails.audioCodec || 'Unknown'}, ${streamDetails.audioBitrate} kbps`
-        : `${audioBitrate || 'Unknown'} kbps`;
+    const audioSetting = audioPassthrough
+      ? `${streamDetails.audioCodec || 'Unknown'}, ${streamDetails.audioBitrate} kbps`
+      : `${audioBitrate || 'Unknown'} kbps`;
 
-      const videoSetting = videoPassthrough
-        ? `${streamDetails.videoBitrate || 'Unknown'} kbps, ${streamDetails.framerate} fps ${
-            streamDetails.width
-          } x ${streamDetails.height}`
-        : `${videoBitrate || 'Unknown'} kbps, ${framerate} fps`;
+    const videoSetting = videoPassthrough
+      ? `${streamDetails.videoBitrate || 'Unknown'} kbps, ${streamDetails.framerate} fps ${
+          streamDetails.width
+        } x ${streamDetails.height}`
+      : `${videoBitrate || 'Unknown'} kbps, ${framerate} fps`;
 
-      let settingTitle = 'Outbound Stream Details';
-      settingTitle =
-        videoQualitySettings?.length > 1 ? `${settingTitle} ${index + 1}` : settingTitle;
-      return (
-        <Card title={settingTitle} type="inner" key={`${settingTitle}${index}`}>
-          <StatisticItem title="Outbound Video Stream" value={videoSetting} prefix={null} />
-          <StatisticItem title="Outbound Audio Stream" value={audioSetting} prefix={null} />
-        </Card>
-      );
-    },
-  );
+    return (
+      <div className="stream-details-item-container">
+        <Statistic
+          className="stream-details-item"
+          title="Outbound Video Stream"
+          value={videoSetting}
+        />
+        <Statistic
+          className="stream-details-item"
+          title="Outbound Audio Stream"
+          value={audioSetting}
+        />
+      </div>
+    );
+  });
 
   // inbound
   const { viewerCount, sessionPeakViewerCount } = serverStatusData;
@@ -118,57 +110,60 @@ export default function Home() {
   return (
     <div className="home-container">
       <div className="sections-container">
-        <div className="section online-status-section">
-          <Card title="Stream is online" type="inner">
-            <Statistic
-              title={`Stream started ${formatRelative(broadcastDate, Date.now())}`}
-              value={formatDistanceToNow(broadcastDate)}
-              prefix={<ClockCircleOutlined />}
-            />
-            <Statistic title="Viewers" value={viewerCount} prefix={<UserOutlined />} />
-            <Statistic
-              title="Peak viewer count"
-              value={sessionPeakViewerCount}
-              prefix={<UserOutlined />}
-            />
+        <div className="online-status-section">
+          <Card size="small" type="inner" className="online-details-card">
+            <Row gutter={[16, 16]} align="middle">
+              <Col span={8} sm={24} md={8}>
+                <Statistic
+                  title={`Stream started ${formatRelative(broadcastDate, Date.now())}`}
+                  value={formatDistanceToNow(broadcastDate)}
+                  prefix={<ClockCircleOutlined />}
+                />
+              </Col>
+              <Col span={8} sm={24} md={8}>
+                <Statistic title="Viewers" value={viewerCount} prefix={<UserOutlined />} />
+              </Col>
+              <Col span={8} sm={24} md={8}>
+                <Statistic
+                  title="Peak viewer count"
+                  value={sessionPeakViewerCount}
+                  prefix={<UserOutlined />}
+                />
+              </Col>
+            </Row>
           </Card>
         </div>
 
-        <div className="section stream-details-section">
-          <div className="details outbound-details">{videoQualitySettings}</div>
+        <Row gutter={[16, 16]} className="section stream-details-section">
+          <Col className="outbound-details" span={12} sm={24} md={24} lg={12}>
+            <Card size="small" title="Outbound Stream Details" type="inner">
+              {videoQualitySettings}
+            </Card>
+          </Col>
 
-          <div className="details other-details">
-            <Card title="Inbound Stream Details" type="inner">
-              <StatisticItem
+          <Col className="inbound-details" span={12} sm={24} md={24} lg={12}>
+            <Card size="small" title="Inbound Stream Details" type="inner">
+              <Statistic
+                className="stream-details-item"
                 title="Input"
                 value={`${encoder} ${formatIPAddress(remoteAddr)}`}
-                prefix={null}
               />
-              <StatisticItem
+              <Statistic
+                className="stream-details-item"
                 title="Inbound Video Stream"
                 value={streamDetails}
                 formatter={streamDetailsFormatter}
-                prefix={null}
               />
-              <StatisticItem
+              <Statistic
+                className="stream-details-item"
                 title="Inbound Audio Stream"
                 value={streamAudioDetailString}
-                prefix={null}
               />
             </Card>
-
-            <div className="server-detail">
-              <Card title="Server Config" type="inner">
-                <StatisticItem
-                  title="Directory registration enabled"
-                  value={configData.yp.enabled.toString()}
-                  prefix={null}
-                />
-              </Card>
-            </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
+      <br />
       <LogTable logs={logsData} pageSize={5} />
     </div>
   );

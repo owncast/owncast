@@ -221,6 +221,19 @@ export default function EditSocialLinks() {
     disabled: !isValidUrl(modalDataState.url),
   };
 
+  const otherField = (
+    <div className="other-field-container formfield-container">
+      <div className="label-side" />
+      <div className="input-side">
+        <Input
+          placeholder="Other platform name"
+          defaultValue={modalDataState.platform}
+          onChange={handleOtherNameChange}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="social-links-edit-container">
       <Title level={3} className="section-title">
@@ -249,30 +262,23 @@ export default function EditSocialLinks() {
         confirmLoading={modalProcessing}
         okButtonProps={okButtonProps}
       >
-        <SocialDropdown
-          iconList={availableIconsList}
-          selectedOption={selectedOther ? OTHER_SOCIAL_HANDLE_OPTION : modalDataState.platform}
-          onSelected={handleDropdownSelect}
-        />
-        {displayOther ? (
-          <>
-            <Input
-              placeholder="Other"
-              defaultValue={modalDataState.platform}
-              onChange={handleOtherNameChange}
-            />
-            <br />
-          </>
-        ) : null}
-        <br />
-        <TextField
-          fieldName="social-url"
-          label="URL"
-          placeholder={PLACEHOLDERS[modalDataState.platform] || 'Url to page'}
-          value={modalDataState.url}
-          onChange={handleUrlChange}
-        />
-        <FormStatusIndicator status={submitStatus} />
+        <div className="social-handle-modal-content">
+          <SocialDropdown
+            iconList={availableIconsList}
+            selectedOption={selectedOther ? OTHER_SOCIAL_HANDLE_OPTION : modalDataState.platform}
+            onSelected={handleDropdownSelect}
+          />
+          {displayOther && otherField}
+          <br />
+          <TextField
+            fieldName="social-url"
+            label="URL"
+            placeholder={PLACEHOLDERS[modalDataState.platform] || 'Url to page'}
+            value={modalDataState.url}
+            onChange={handleUrlChange}
+          />
+          <FormStatusIndicator status={submitStatus} />
+        </div>
       </Modal>
       <br />
       <Button

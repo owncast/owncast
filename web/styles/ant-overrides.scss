@@ -9,6 +9,9 @@
 .ant-card,
 .ant-collapse,
 .ant-collapse-content,
+.ant-statistic,
+.ant-statistic-title,
+.ant-statistic-content,
 .ant-table,
 .ant-table-thead > tr > th,
 .ant-table-small .ant-table-thead > tr > th,
@@ -187,12 +190,10 @@ h3.ant-typography {
 .ant-card-meta-description {
   color: var(--white-75);
 }
-.ant-card {
-  .ant-statistic,
-  .ant-statistic-title,
-  .ant-statistic-content {
-    color: var(--default-text-color);
-  }
+.ant-card-type-inner .ant-card-head {
+  background-color: var(--black);
+  color: var(--white-88);
+  border-color: var(--white-25);
 }
 
 
@@ -262,7 +263,6 @@ textarea.ant-input {
   &:hover,
   &:focus {
     background-color: var(--button-focused);
-    border-color: var(--button-focused);
     color: var(--white);
   }
 }
@@ -273,11 +273,16 @@ textarea.ant-input {
 .ant-btn-primary:hover, 
 .ant-btn-primary:focus {
   background-color: var(--button-focused);
-  border-color: var(--button-focused);
+  color: var(--white);
 }
 .ant-btn.ant-btn-primary:hover {
   border-color: var(--white);
 }
+.ant-btn:focus,
+.ant-btn-primary:focus {
+  border-color: var(--white);
+}
+
 .ant-btn-primary[disabled] {
   background-color: var(--white-25);
   border-color: var(--white-25);
@@ -375,9 +380,29 @@ textarea.ant-input {
 
 // SELECT
 .ant-select-dropdown {
-  background-color: var(--gray);
+  background-color: var(--black);
 }
-
+.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: var(--black);
+  border-color:  var(--owncast-purple-50);
+}
+.ant-select-arrow {
+  color: var(--owncast-purple);
+}
+.ant-select-selection-placeholder {
+  color: var(--owncast-purple-50);
+}
+.ant-select {
+  color: var(--white);
+}
+.ant-select-item {
+  background-color: var(--gray-dark);
+  color: var(--white-88);
+}
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: var(--gray);
+  color: var(--white-75);
+}
 
 // SLIDER
 // .ant-slider-with-marks {
@@ -460,13 +485,12 @@ textarea.ant-input {
 
 
 
-
 // ANT TAGS
-
-.ant-tag-orange {
-  background: #fa8c16;
-  color: #fff7e6;
-  border-color: #ffd591;
+.ant-tag-red,
+.ant-tag-orange,
+.ant-tag-green,
+.ant-tag-blue {
+  background-color: var(--black);
 }
 
 

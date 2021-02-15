@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, Row } from 'antd';
+import { Table, Row, Typography } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
 import { UserOutlined } from '@ant-design/icons';
 import { SortOrder } from 'antd/lib/table/interface';
@@ -94,7 +94,9 @@ export default function ViewersOverTime() {
   ];
 
   return (
-    <div>
+    <>
+      <Typography.Title>Viewer Info</Typography.Title>
+      <br />
       <Row gutter={[16, 16]} justify="space-around">
         {online && (
           <StatisticItem
@@ -117,6 +119,6 @@ export default function ViewersOverTime() {
 
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
       {online && <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />}
-    </div>
+    </>
   );
 }

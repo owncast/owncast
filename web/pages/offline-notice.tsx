@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Result, Card } from 'antd';
+import { Result, Card, Row, Col } from 'antd';
 import {
   MessageTwoTone,
   QuestionCircleTwoTone,
@@ -55,22 +55,23 @@ export default function Offline({ logs = [] }) {
 
   return (
     <>
-      <div className="offline-content">
-        <div className="logo-section">
+      <Row gutter={[16, 16]} className="offline-content">
+        <Col span={12} xs={24} sm={24} md={24} lg={12} className="logo-section">
           <Result
             icon={<OwncastLogo />}
             title="No stream is active."
             subTitle="You should start one."
           />
-        </div>
-        <div className="list-section">
+        </Col>
+
+        <Col span={12} xs={24} sm={24} md={24} lg={12} className="list-section">
           {data.map(item => (
-            <Card key={item.title}>
+            <Card key={item.title} size="small" bordered={false}>
               <Meta avatar={item.icon} title={item.title} description={item.content} />
             </Card>
           ))}
-        </div>
-      </div>
+        </Col>
+      </Row>
       <LogTable logs={logs} pageSize={5} />
     </>
   );
