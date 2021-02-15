@@ -44,15 +44,11 @@ export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
   };
 
   return (
-    <div className="config-video-segements-conatiner">
-      <Title level={3} className="section-title">
-        CPU Usage
-      </Title>
+    <div className="config-video-cpu-container">
+      <Title level={3}>CPU Usage</Title>
       <p className="description">
         There are trade-offs when considering CPU usage blah blah more wording here.
       </p>
-      <br />
-
       <div className="segment-slider-container">
         <Slider
           tipFormatter={value => TOOLTIPS[value]}

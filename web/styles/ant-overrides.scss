@@ -54,6 +54,9 @@ h5.ant-typography,
 h1.ant-typography {
   font-size: 1.75em;
   color: var(--pink);
+  &:first-of-type {
+    margin-top: 0;
+  }
 }
 .ant-typography h2,
 h2.ant-typography {
@@ -253,13 +256,13 @@ textarea.ant-input {
 
 // ANT BUTTON
 .ant-btn {
-  background-color: var(--purple-dark);
-  border-color: var(--white-25);
+  background-color: var(--owncast-purple-25);
+  border-color: var(--owncast-purple-25);
   color: var(--white-75);
   &:hover,
   &:focus {
-    background-color: var(--owncast-purple);
-    border-color: var(--owncast-purple);
+    background-color: var(--button-focused);
+    border-color: var(--button-focused);
     color: var(--white);
   }
 }
@@ -308,12 +311,13 @@ textarea.ant-input {
 }
 .ant-table-tbody > tr > td {
   transition-duration: var(--ant-transition-duration);
-  background-color: #141417;
+  background-color: #222325;
   color: var(--white-75);
 }
-.ant-table-tbody > tr:nth-child(odd) > td {
-  background-color: #222325;
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background-color: var(--gray-dark);
 }
+
 .ant-empty {
   color: var(--white-75);
 }
@@ -335,6 +339,10 @@ textarea.ant-input {
 
 
 // MODAL
+.ant-modal,
+.ant-modal-body {
+  font-size: 1em;
+}
 .ant-modal-content {
   border-radius: var(--container-border-radius);
   border: 1px solid var(--owncast-purple);
@@ -362,7 +370,7 @@ textarea.ant-input {
 .ant-modal-content,
 .ant-modal-header,
 .ant-modal-footer {
-  border-color: var(--gray);
+  border-color: var(--white-50);
 }
 
 // SELECT
@@ -378,6 +386,23 @@ textarea.ant-input {
 .ant-slider-mark-text {
   font-size: .85em;
   white-space: nowrap;
+  color: var(--white);
+  opacity: .5;
+}
+.ant-slider-handle {
+  border-color: var(--blue);
+}
+.ant-slider:hover .ant-slider-track {
+  background-color: var(--blue);
+}
+.ant-slider-rail {
+  background-color: var(--black);
+}
+.ant-slider-track {
+  background-color: var(--nav-text);
+}
+.ant-slider-mark-text-active {
+  opacity: 1;
 }
 
 // ANT SWITCH
@@ -394,6 +419,7 @@ textarea.ant-input {
 
 // ANT COLLAPSE
 .ant-collapse {
+  font-size: 1em;
   border-color: transparent;
   &> .ant-collapse-item,
   .ant-collapse-content {
@@ -410,13 +436,16 @@ textarea.ant-input {
 .ant-collapse-content {
   background-color: var(--black-35); //#181231;
 }
+.ant-collapse > .ant-collapse-item:last-child, .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
+  border-radius: var(--container-border-radius) var(--container-border-radius) 0 0;
+}
+.ant-collapse-item:last-child > .ant-collapse-content {
+  border-radius: 0 0 var(--container-border-radius) var(--container-border-radius);
+}
 
 
 
 // ANT POPOVER
-.ant-popover {
-
-}
 .ant-popover-inner {
   background-color: var(--black);
 }

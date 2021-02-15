@@ -104,7 +104,7 @@ export default function VideoLatency() {
   };
 
   return (
-    <div className="config-video-segements-conatiner">
+    <div className="config-video-latency-container">
       <Title level={3} className="section-title">
         Latency Buffer
       </Title>

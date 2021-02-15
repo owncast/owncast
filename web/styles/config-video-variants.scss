@@ -7,9 +7,7 @@
   }
 
   .variants-table-module {
-    min-width: 48%;
-    max-width: 600px;
-    margin-right: 1em
+    min-width: 400px;
   }
 
 }
@@ -20,80 +18,13 @@
     margin-top: 0;
   }
 
+  .cpu-usage-container,
+  .bitrate-container {
+    height: 20em;
+  }
 
   .advanced-settings {
-    width: 48%;
-    margin-left: 2em;
-  }
-  .blurb {
-    margin: 1em;
-    opacity: .75;
-  }
-  .note {
-    display: inline-block;
-    margin-left: 1em;
-    font-size: .75em;
-    opacity: .5;
-    font-style: italic;
-  }
-
-
-  // .field {
-  //   margin-bottom: 2em;
-  //   display: flex;
-  //   flex-direction: row;
-  //   justify-content: center;
-  //   align-items: flex-start;
-  //   transform: opacity .15s;
-  //   &.disabled {
-  //     opacity: .25;
-  //   }
-
-  //   .label {
-  //     width: 40%;
-  //     text-align: right;
-  //     padding-right: 2em;
-  //     font-weight: bold;
-  //     color: var(--owncast-purple);
-  //   }
-  //   .info-tip {
-  //     margin-right: 1em;
-  //   }
-  //   .form-component {
-  //     width: 60%;
-      
-  //     .selected-value-note {
-  //       font-size: .85em;
-  //       display: inline-block;
-  //       text-align: center;
-  //     }
-  //   }
-  // }
-  // .ant-collapse {
-  //   border: none;
-  //   border-radius: 6px;
-  // }
-  // .ant-collapse > .ant-collapse-item:last-child, 
-  // .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-  //   border: none;
-  //   background-color: rgba(0,0,0,.25);
-  //   border-radius: 6px;
-  // }
-  // .ant-collapse-content {
-  //   background-color: rgba(0,0,0,.1);
-  // }
-}
-
-
-
-.config-video-segements-conatiner {
-  // display: flex;
-  // flex-direction: row;
-  // justify-content: center;
-  // align-items: flex-start;
-
-  .status-message {
-    text-align: center;
+    margin-top: 1em;
   }
 }
 
@@ -108,8 +39,4 @@
     margin-left: .5em;
     opacity: .8;
   }
-}
-
-.advanced-settings {
-  margin-top: 2em;
 }

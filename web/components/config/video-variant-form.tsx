@@ -1,11 +1,11 @@
 // This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
-import { Slider, Switch, Collapse, Typography } from 'antd';
+import { Row, Col, Slider, Collapse, Typography } from 'antd';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
 import TextField from './form-textfield';
 import { DEFAULT_VARIANT_STATE } from '../../utils/config-constants';
-import InfoTip from '../info-tip';
 import CPUUsageSelector from './cpu-usage';
+import ToggleSwitch from './form-toggleswitch';
 
 const { Panel } = Collapse;
 
@@ -146,52 +146,45 @@ export default function VideoVariantForm({
     }
     return note;
   };
-  const selectedPresetNote = '';
 
   return (
     <div className="config-variant-form">
       <p className="description">
         Say a thing here about how this all works. Read more{' '}
-        <a href="https://owncast.online/docs/configuration/">here</a>.
+        <a href="https://owncast.online/docs/configuration/">here</a>. Click the OK button below to
+        save your information.
       </p>
 
-      <div className="row">
-        <div>
+      <Row gutter={16}>
+        <Col xs={12} xl={12}>
           {/* ENCODER PRESET FIELD */}
           <div className="form-module cpu-usage-container">
             <CPUUsageSelector
               defaultValue={dataState.cpuUsageLevel}
               onChange={handleVideoCpuUsageLevelChange}
             />
-            {selectedPresetNote && (
-              <span className="selected-value-note">{selectedPresetNote}</span>
-            )}
           </div>
 
-          {/* VIDEO PASSTHROUGH FIELD */}
+          {/* VIDEO PASSTHROUGH FIELD - currently disabled */}
           <div style={{ display: 'none' }} className="form-module">
-            <p className="label">
-              <InfoTip tip={VIDEO_VARIANT_DEFAULTS.videoPassthrough.tip} />
-              Use Video Passthrough?
-            </p>
-            <div className="form-component">
-              {/* todo: change to ToggleSwitch for layout */}
-              <Switch
-                defaultChecked={dataState.videoPassthrough}
-                checked={dataState.videoPassthrough}
-                onChange={handleVideoPassChange}
-                // label="Use Video Passthrough"
-                checkedChildren="Yes"
-                unCheckedChildren="No"
-              />
-            </div>
+            <ToggleSwitch
+              label="Use Video Passthrough?"
+              fieldName="video-passthrough"
+              tip={VIDEO_VARIANT_DEFAULTS.videoPassthrough.tip}
+              checked={dataState.videoPassthrough}
+              onChange={handleVideoPassChange}
+            />
           </div>
+        </Col>
 
+        <Col xs={12} xl={12}>
           {/* VIDEO BITRATE FIELD */}
-          <div className={`form-module ${dataState.videoPassthrough ? 'disabled' : ''}`}>
-            <Typography.Title level={3} className="section-title">
-              Video Bitrate
-            </Typography.Title>
+          <div
+            className={`form-module bitrate-container ${
+              dataState.videoPassthrough ? 'disabled' : ''
+            }`}
+          >
+            <Typography.Title level={3}>Video Bitrate</Typography.Title>
             <p className="description">{VIDEO_VARIANT_DEFAULTS.videoBitrate.tip}</p>
             <div className="segment-slider-container">
               <Slider
@@ -205,58 +198,53 @@ export default function VideoVariantForm({
                 max={videoBRMax}
                 marks={videoBRMarks}
               />
-              <span className="selected-value-note">{selectedVideoBRnote()}</span>
+              <p className="selected-value-note">{selectedVideoBRnote()}</p>
             </div>
           </div>
-        </div>
-        <Collapse className="advanced-settings">
-          <Panel header="Advanced Settings" key="1">
-            <div className="section-intro">
-              Resizing your content will take additional resources on your server. If you wish to
-              optionally resize your output for this stream variant then you should either set the
-              width <strong>or</strong> the height to keep your aspect ratio.
-            </div>
-            <div className="field">
-              <TextField
-                type="number"
-                {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
-                value={dataState.scaledWidth}
-                onChange={handleScaledWidthChanged}
-              />
-            </div>
-            <div className="field">
-              <TextField
-                type="number"
-                {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
-                value={dataState.scaledHeight}
-                onChange={handleScaledHeightChanged}
-              />
-            </div>
+        </Col>
+      </Row>
+      <Collapse className="advanced-settings">
+        <Panel header="Advanced Settings" key="1">
+          <p className="description">
+            Resizing your content will take additional resources on your server. If you wish to
+            optionally resize your output for this stream variant then you should either set the
+            width <strong>or</strong> the height to keep your aspect ratio.
+          </p>
 
-            {/* FRAME RATE FIELD */}
-            <div className="field">
-              <p className="label">
-                <InfoTip tip={VIDEO_VARIANT_DEFAULTS.framerate.tip} />
-                Frame rate:
-              </p>
-              <div className="segment-slider-container form-component">
-                <Slider
-                  // tooltipVisible
-                  tipFormatter={value => `${value} ${framerateUnit}`}
-                  defaultValue={dataState.framerate}
-                  value={dataState.framerate}
-                  onChange={handleFramerateChange}
-                  step={framerateDefaults.incrementBy}
-                  min={framerateMin}
-                  max={framerateMax}
-                  marks={framerateMarks}
-                />
-                <span className="selected-value-note">{selectedFramerateNote()}</span>
-              </div>
+          <TextField
+            type="number"
+            {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
+            value={dataState.scaledWidth}
+            onChange={handleScaledWidthChanged}
+          />
+          <TextField
+            type="number"
+            {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
+            value={dataState.scaledHeight}
+            onChange={handleScaledHeightChanged}
+          />
+
+          {/* FRAME RATE FIELD */}
+          <div className="form-module frame-rate">
+            <Typography.Title level={3}>Frame rate</Typography.Title>
+            <p className="description">{VIDEO_VARIANT_DEFAULTS.framerate.tip}</p>
+            <div className="segment-slider-container">
+              <Slider
+                // tooltipVisible
+                tipFormatter={value => `${value} ${framerateUnit}`}
+                defaultValue={dataState.framerate}
+                value={dataState.framerate}
+                onChange={handleFramerateChange}
+                step={framerateDefaults.incrementBy}
+                min={framerateMin}
+                max={framerateMax}
+                marks={framerateMarks}
+              />
+              <p className="selected-value-note">{selectedFramerateNote()}</p>
             </div>
-          </Panel>
-        </Collapse>
-      </div>
+          </div>
+        </Panel>
+      </Collapse>
     </div>
   );
 }

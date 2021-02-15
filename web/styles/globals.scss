@@ -72,6 +72,12 @@ code {
   background-color: var(--container-bg-color);
   padding: 2em;
   border-radius: var(--container-border-radius);
+
+  h3 {
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
 }
 
 .row {

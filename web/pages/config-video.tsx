@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography } from 'antd';
+import { Typography, Row, Col } from 'antd';
 
 import VideoVariantsTable from '../components/config/video-variants-table';
 import VideoLatency from '../components/config/video-latency';
@@ -16,15 +16,18 @@ export default function ConfigVideoSettings() {
         how it impacts your stream performance.
       </p>
 
-      <div className="row">
-        <div className="form-module variants-table-module">
-          <VideoVariantsTable />
-        </div>
-
-        <div className="form-module latency-module">
-          <VideoLatency />
-        </div>
-      </div>
+      <Row gutter={16}>
+        <Col lg={12}>
+          <div className="form-module variants-table-module">
+            <VideoVariantsTable />
+          </div>
+        </Col>
+        <Col lg={12}>
+          <div className="form-module latency-module">
+            <VideoLatency />
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 }
