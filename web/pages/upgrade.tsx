@@ -53,7 +53,7 @@ export default function Logs() {
   }
 
   return (
-    <div>
+    <div className="upgrade-page">
       <Title level={2}>
         <a href={release.html_url}>{release.name}</a>
       </Title>

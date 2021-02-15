@@ -38,6 +38,13 @@
   }
   .instance-details-container {
     width: 100%;
+
+    .logo-preview {
+      display: inline-block;
+      margin: -1em 0 1em 11em;
+      height: 120px;
+      border: 1px solid var(--white-25);
+    }
   }
   .social-items-container {
     background-color: var(--container-bg-color-alt);
