@@ -38,12 +38,11 @@
 
   .outbound-details,
   .inbound-details {
-    >.ant-card-bordered {
-      border-color: rgba(255,255,255,.1);
+    > .ant-card-bordered {
+      border-color: rgba(255, 255, 255, 0.1);
     }
   }
 }
-
 
 .offline-content {
   max-width: 1000px;
@@ -64,12 +63,12 @@
     background-color: var(--container-bg-color-alt);
     border-radius: var(--container-border-radius);
     padding: 1em;
-    
+
     > .ant-card {
       background-color: var(--black);
       margin-bottom: 1em;
       .ant-card-meta-avatar {
-        margin-top: .25rem;
+        margin-top: 0.25rem;
         svg {
           height: 1.5em;
           width: 1.5em;
