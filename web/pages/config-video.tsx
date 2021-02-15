@@ -12,8 +12,10 @@ export default function ConfigVideoSettings() {
       <Title>Video configuration</Title>
       <p className="description">
         Before changing your video configuration{' '}
-        <a href="https://owncast.online/docs/video">visit the video documentation</a> to learn
-        how it impacts your stream performance. The general rule is to start conservatively by having one middle quality stream output variant and experiment with adding more of varied qualities.
+        <a href="https://owncast.online/docs/video">visit the video documentation</a> to learn how
+        it impacts your stream performance. The general rule is to start conservatively by having
+        one middle quality stream output variant and experiment with adding more of varied
+        qualities.
       </p>
 
       <Row gutter={[16, 16]}>

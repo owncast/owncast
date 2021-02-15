@@ -1,7 +1,6 @@
 // styles for Video variant editor (table + modal)
 
 .config-video-variants {
-
   .variants-table {
     margin-top: 2em;
   }
@@ -9,7 +8,6 @@
   .variants-table-module {
     min-width: 400px;
   }
-
 }
 
 // modal content
@@ -28,7 +26,6 @@
   }
 }
 
-
 .variants-table {
   .actions {
     display: flex;
@@ -36,8 +33,8 @@
     justify-content: center;
   }
   .delete-button {
-    margin-left: .5em;
-    opacity: .8;
+    margin-left: 0.5em;
+    opacity: 0.8;
   }
 }
 

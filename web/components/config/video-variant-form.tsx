@@ -16,7 +16,8 @@ const VIDEO_VARIANT_DEFAULTS = {
     defaultValue: 24,
     unit: 'fps',
     incrementBy: null,
-    tip: 'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
+    tip:
+      'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
   },
   videoBitrate: {
     min: 600,
@@ -150,7 +151,8 @@ export default function VideoVariantForm({
   return (
     <div className="config-variant-form">
       <p className="description">
-        <a href="https://owncast.online/docs/video">Learn more</a> about how each of these settings can impact the performance of your server.
+        <a href="https://owncast.online/docs/video">Learn more</a> about how each of these settings
+        can impact the performance of your server.
       </p>
 
       <Row gutter={16}>
@@ -161,7 +163,9 @@ export default function VideoVariantForm({
               defaultValue={dataState.cpuUsageLevel}
               onChange={handleVideoCpuUsageLevelChange}
             />
-            <p className="read-more-subtext"><a href="https://owncast.online/docs/video/#cpu-usage">Read more about CPU usage.</a></p>
+            <p className="read-more-subtext">
+              <a href="https://owncast.online/docs/video/#cpu-usage">Read more about CPU usage.</a>
+            </p>
           </div>
 
           {/* VIDEO PASSTHROUGH FIELD - currently disabled */}
@@ -179,8 +183,9 @@ export default function VideoVariantForm({
         <Col sm={24} md={12}>
           {/* VIDEO BITRATE FIELD */}
           <div
-            className={`form-module bitrate-container ${dataState.videoPassthrough ? 'disabled' : ''
-              }`}
+            className={`form-module bitrate-container ${
+              dataState.videoPassthrough ? 'disabled' : ''
+            }`}
           >
             <Typography.Title level={3}>Video Bitrate</Typography.Title>
             <p className="description">{VIDEO_VARIANT_DEFAULTS.videoBitrate.tip}</p>
@@ -198,7 +203,9 @@ export default function VideoVariantForm({
               />
               <p className="selected-value-note">{selectedVideoBRnote()}</p>
             </div>
-            <p className="read-more-subtext"><a href="https://owncast.online/docs/video/#bitrate">Read more about bitrates.</a></p>
+            <p className="read-more-subtext">
+              <a href="https://owncast.online/docs/video/#bitrate">Read more about bitrates.</a>
+            </p>
           </div>
         </Col>
       </Row>
@@ -241,7 +248,9 @@ export default function VideoVariantForm({
               />
               <p className="selected-value-note">{selectedFramerateNote()}</p>
             </div>
-            <p className="read-more-subtext"><a href="https://owncast.online/docs/video/#framerate">Read more about framerates.</a></p>
+            <p className="read-more-subtext">
+              <a href="https://owncast.online/docs/video/#framerate">Read more about framerates.</a>
+            </p>
           </div>
         </Panel>
       </Collapse>
