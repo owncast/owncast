@@ -15,9 +15,6 @@ import {
 } from '@ant-design/icons';
 import React from 'react';
 
-
-
-
 export default function Help() {
   const questions = [
     {

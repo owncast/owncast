@@ -5,16 +5,17 @@ import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../utils/apis';
 import Chart from '../components/chart';
 import StatisticItem from '../components/statistic';
 
-interface TimedValue {
-  time: Date;
-  value: Number;
-}
+// TODO: FIX TS WARNING FROM THIS.
+// interface TimedValue {
+//   time: Date;
+//   value: Number;
+// }
 
 export default function HardwareInfo() {
   const [hardwareStatus, setHardwareStatus] = useState({
-    cpu: Array<TimedValue>(),
-    memory: Array<TimedValue>(),
-    disk: Array<TimedValue>(),
+    cpu: [], // Array<TimedValue>(),
+    memory: [], // Array<TimedValue>(),
+    disk: [], // Array<TimedValue>(),
     message: '',
   });
 
