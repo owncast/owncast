@@ -1,91 +1,91 @@
 export const SOCIAL_PLATFORMS = {
   default: {
-    name: "default",
+    name: 'default',
     icon: '/img/platformlogos/default.svg',
   },
 
   facebook: {
-    name: "Facebook",
+    name: 'Facebook',
     icon: '/img/platformlogos/facebook.svg',
   },
   twitter: {
-    name: "Twitter",
+    name: 'Twitter',
     icon: '/img/platformlogos/twitter.svg',
   },
   instagram: {
-    name: "Instagram",
+    name: 'Instagram',
     icon: '/img/platformlogos/instagram.svg',
   },
   snapchat: {
-    name: "Snapchat",
+    name: 'Snapchat',
     icon: '/img/platformlogos/snapchat.svg',
   },
   tiktok: {
-    name: "TikTok",
+    name: 'TikTok',
     icon: '/img/platformlogos/tiktok.svg',
   },
   soundcloud: {
-    name: "Soundcloud",
+    name: 'Soundcloud',
     icon: '/img/platformlogos/soundcloud.svg',
   },
   bandcamp: {
-    name: "Bandcamp",
+    name: 'Bandcamp',
     icon: '/img/platformlogos/bandcamp.svg',
   },
   patreon: {
-    name: "Patreon",
+    name: 'Patreon',
     icon: '/img/platformlogos/patreon.svg',
   },
   youtube: {
-    name: "YouTube",
+    name: 'YouTube',
     icon: '/img/platformlogos/youtube.svg',
   },
   spotify: {
-    name: "Spotify",
+    name: 'Spotify',
     icon: '/img/platformlogos/spotify.svg',
   },
   twitch: {
-    name: "Twitch",
+    name: 'Twitch',
     icon: '/img/platformlogos/twitch.svg',
   },
   paypal: {
-    name: "Paypal",
+    name: 'Paypal',
     icon: '/img/platformlogos/paypal.svg',
   },
   github: {
-    name: "Github",
+    name: 'Github',
     icon: '/img/platformlogos/github.svg',
   },
   linkedin: {
-    name: "LinkedIn",
+    name: 'LinkedIn',
     icon: '/img/platformlogos/linkedin.svg',
   },
   discord: {
-    name: "Discord",
+    name: 'Discord',
     icon: '/img/platformlogos/discord.svg',
   },
   mastodon: {
-    name: "Mastodon",
+    name: 'Mastodon',
     icon: '/img/platformlogos/mastodon.svg',
   },
   gitlab: {
-    name: "Gitlab",
+    name: 'Gitlab',
     icon: '/img/platformlogos/gitlab.svg',
   },
   kofi: {
-    name: "Ko-Fi",
+    name: 'Ko-Fi',
     icon: '/img/platformlogos/ko-fi.svg',
   },
   keyoxide: {
-    name: "Key Oxide",
+    name: 'Key Oxide',
     icon: '/img/platformlogos/keyoxide.png',
   },
   donate: {
-    name: "Donate",
+    name: 'Donate',
     icon: '/img/platformlogos/donate.svg',
   },
   follow: {
-    name: "Follow",
+    name: 'Follow',
     icon: 'img/platformlogos/follow.svg',
-  }
+  },
 };
