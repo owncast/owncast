@@ -3,12 +3,19 @@
         "Debugln",
         "Errorln",
         "Ffmpeg",
+        "Mbps",
+        "Owncast",
         "RTMP",
+        "Tracef",
         "Traceln",
         "Warnf",
         "Warnln",
+        "ffmpegpath",
         "mattn",
         "nolint",
-        "sqlite"
+        "preact",
+        "rtmpserverport",
+        "sqlite",
+        "videojs"
     ]
 }

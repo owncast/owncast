@@ -12,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// GetLogo will return the logo image as a response.
 func GetLogo(w http.ResponseWriter, r *http.Request) {
 	imageFilename := data.GetLogoPath()
 	if imageFilename == "" {

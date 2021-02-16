@@ -20,6 +20,7 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// MetadataPage represents a server-rendered web page for bots and web scrapers.
 type MetadataPage struct {
 	RequestedURL  string
 	Image         string

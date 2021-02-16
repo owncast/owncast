@@ -10,6 +10,7 @@ import (
 
 type j map[string]interface{}
 
+// InternalErrorHandler will return an error message as an HTTP response.
 func InternalErrorHandler(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
@@ -23,6 +24,7 @@ func InternalErrorHandler(w http.ResponseWriter, err error) {
 	}
 }
 
+// BadRequestHandler will return an HTTP 500 as an HTTP response.
 func BadRequestHandler(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
@@ -36,6 +38,7 @@ func BadRequestHandler(w http.ResponseWriter, err error) {
 	}
 }
 
+// WriteSimpleResponse will return a message as a response.
 func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 	response := models.BaseAPIResponse{
 		Success: success,
@@ -55,6 +58,7 @@ func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 	}
 }
 
+// WriteResponse will return an object as a JSON encoded response.
 func WriteResponse(w http.ResponseWriter, response interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

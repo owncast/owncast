@@ -63,7 +63,7 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) {
 
 // DeleteWebhook will delete a single webhook.
 func DeleteWebhook(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
