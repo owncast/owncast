@@ -13,7 +13,7 @@ import {
   OTHER_SOCIAL_HANDLE_OPTION,
 } from '../../utils/config-constants';
 import { SocialHandle, UpdateArgs } from '../../types/config-section';
-import { isValidUrl } from '../../utils/urls';
+import isValidUrl from '../../utils/urls';
 import TextField from './form-textfield';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';

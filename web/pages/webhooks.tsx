@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { isValidUrl } from '../utils/urls';
+import isValidUrl from '../utils/urls';
 
 import { fetchData, DELETE_WEBHOOK, CREATE_WEBHOOK, WEBHOOKS } from '../utils/apis';
 
