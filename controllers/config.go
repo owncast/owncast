@@ -29,6 +29,14 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
+	socialHandles := data.GetSocialHandles()
+	for i, handle := range socialHandles {
+		platform := models.GetSocialHandle(handle.Platform)
+		if platform != nil {
+			handle.Icon = platform.Icon
+			socialHandles[i] = handle
+		}
+	}
 
 	configuration := webConfigResponse{
 		Name:             data.GetServerName(),
@@ -39,7 +47,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		NSFW:             data.GetNSFW(),
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),
-		SocialHandles:    data.GetSocialHandles(),
+		SocialHandles:    socialHandles,
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {

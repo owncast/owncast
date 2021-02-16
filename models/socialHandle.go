@@ -7,6 +7,16 @@ type SocialHandle struct {
 	Icon     string `json:"icon,omitempty"`
 }
 
+// GetSocialHandle will return the details for a supported platform.
+func GetSocialHandle(platform string) *SocialHandle {
+	allPlatforms := GetAllSocialHandles()
+	if platform, ok := allPlatforms[platform]; ok {
+		return &platform
+	}
+
+	return nil
+}
+
 // GetAllSocialHandles will return a list of all the social platforms we support.
 func GetAllSocialHandles() map[string]SocialHandle {
 	socialHandlePlatforms := map[string]SocialHandle{
