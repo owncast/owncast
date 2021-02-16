@@ -42,7 +42,7 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
               return (
                 <Select.Option className="social-option" key={`platform-${key}`} value={key}>
                   <span className="option-icon">
-                    <img src={`${NEXT_PUBLIC_API_HOST}${icon}`} alt="" className="option-icon" />
+                    <img src={`${icon}`} alt="" className="option-icon" />
                   </span>
                   <span className="option-label">{platform}</span>
                 </Select.Option>

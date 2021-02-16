@@ -178,7 +178,7 @@ export default function EditSocialLinks() {
         return (
           <div className="social-handle-cell">
             <span className="option-icon">
-              <img src={`${NEXT_PUBLIC_API_HOST}${icon}`} alt="" className="option-icon" />
+              <img src={`${icon}`} alt="" className="option-icon" />
             </span>
             <p className="option-label">
               <strong>{platformName}</strong>
