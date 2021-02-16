@@ -82,7 +82,7 @@ func migrateYPKey() {
 }
 
 func migrateConfigFile() {
-	filePath := "config.yaml"
+	filePath := config.ConfigFilePath
 
 	if !utils.DoesFileExists(filePath) {
 		return

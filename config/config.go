@@ -19,3 +19,6 @@ var WebServerPort = 8080
 
 // InternalHLSListenerPort is the port for HLS writes that is used for this execution of the service.
 var InternalHLSListenerPort = "8927"
+
+// ConfigFilePath is the path to the config file for migration.
+var ConfigFilePath = "config.yaml"

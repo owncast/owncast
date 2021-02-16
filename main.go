@@ -35,7 +35,7 @@ func main() {
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
-	// configFile := flag.String("configFile", "config.yaml", "Config File full path. Defaults to current folder")
+	configFile := flag.String("configFile", "config.yaml", "Config file path to migrate to the new database")
 	dbFile := flag.String("database", "", "Path to the database file.")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
@@ -44,6 +44,8 @@ func main() {
 	webServerPortOverride := flag.String("webserverport", "", "Force the web server to listen on a specific port")
 
 	flag.Parse()
+
+	config.ConfigFilePath = *configFile
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {
