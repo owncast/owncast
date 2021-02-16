@@ -8,7 +8,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding: .25em;
+    padding: 0.25em;
     line-height: normal;
 
     .option-icon {
@@ -31,9 +31,9 @@
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      color: rgba(255,255,255,.85);
+      color: var(--white-75);
 
-      .option-icon {        
+      .option-icon {
         height: 2em;
         width: 2em;
         line-height: normal;
@@ -43,7 +43,7 @@
         flex-direction: column;
         margin: 0 0 0 1em;
         line-height: 2;
-        font-size: .85em;
+        font-size: 0.85em;
       }
     }
     .actions {

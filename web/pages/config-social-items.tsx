@@ -7,7 +7,7 @@ const { Title } = Typography;
 export default function ConfigSocialThings() {
   return (
     <div className="config-social-items">
-      <Title level={2}>Social Items</Title>
+      <Title>Social Items</Title>
 
       <EditSocialLinks />
     </div>

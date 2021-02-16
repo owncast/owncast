@@ -1,137 +1,51 @@
 .home-container {
-  max-width: 1000px;
-
-  .statistics-list {
-    li {
-      margin-left: -.5em;
-    }
-  }
-
-  .section {
-    margin: 1rem 0;
-
-    .ant-statistic-content {
-      font-size: 1rem;
-    }
-  }
-
   .online-status-section {
-    > .ant-card {
-      box-shadow: 0px 1px 10px 2px rgba(0, 22, 40, 0.1);
+    margin-bottom: 1em;
+    .online-details-card {
+      border-color: var(--online-color);
     }
-
-    .ant-card-head {
-      background-color: #40b246;
-      border-color: #ccc;
-      color:#fff;
-      @media (prefers-color-scheme: dark) {
-        background-color: #2a762e;
-        border-bottom-color: black;
-      }
-    }
-    .ant-card-head-title {
-      font-size: .88rem;
+    .ant-statistic {
+      text-align: center;
     }
     .ant-statistic-title {
-      font-size: .88rem;
-    }
-    .ant-card-body {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: flex-start;
-      .ant-statistic {
-        width: 30%;
-        text-align: center;
-        margin: 0 1rem;
-      }
+      color: var(--white-50);
     }
   }
 
+  .ant-card-head {
+    color: var(--online-color);
+  }
 
-  .stream-details-section {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    .details {
-      width: 49%;
-
-      > .ant-card {
-        margin-bottom: 1rem;
-      }
-
-      .ant-card-head {
-        background-color: #ccd;
-        color: black;
-        @media (prefers-color-scheme: dark) {
-          background-color: #000;
-          color: #ccd;
-        }
-
-      }
+  .stream-details-item-container {
+    margin: 1em 0;
+    &:first-of-type {
+      margin-top: 0;
     }
-    .server-detail {
-      .ant-card-body {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-start;
-
-        .ant-card {
-          width: 45%;
-          text-align: center;
-        }
-      }
-      .ant-card-head {
-        background-color: #669;
-        color: #fff;
-      }
+  }
+  .ant-statistic.stream-details-item {
+    background-color: var(--black-50);
+    padding: 1em;
+    .ant-statistic-title {
+      color: var(--blue);
+    }
+    .ant-statistic-content {
+      font-size: 1.25em;
+      white-space: nowrap;
     }
   }
 
-
-  @media (max-width: 800px) {
-    .online-status-section{
-      .ant-card-body {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        .ant-statistic {
-          width: auto;
-          text-align: left;
-          margin: 1em;
-        }
-      }
-    }
-
-    .stream-details-section {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      width: 100%;
-      .details {
-        width: 100%;
-      }
+  .outbound-details,
+  .inbound-details {
+    > .ant-card-bordered {
+      border-color: rgba(255, 255, 255, 0.1);
     }
   }
 }
 
-
 .offline-content {
   max-width: 1000px;
 
-
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  width: 100%;
   .logo-section {
-    width: 50%;
     .ant-result-title {
       font-size: 2rem;
     }
@@ -144,36 +58,20 @@
     }
   }
   .list-section {
-    width: 50%;
+    background-color: var(--container-bg-color-alt);
+    border-radius: var(--container-border-radius);
+    padding: 1em;
+
     > .ant-card {
-      margin-bottom: 1rem;
-      .ant-card-head {
-        background-color: #dde;
-      }
-      .ant-card-head-title {
-        font-size: 1rem;
-      }
+      background-color: var(--black);
+      margin-bottom: 1em;
       .ant-card-meta-avatar {
-        margin-top: .25rem;
+        margin-top: 0.25rem;
         svg {
-          height: 1.25rem;
-          width: 1.25rem;
+          height: 1.5em;
+          width: 1.5em;
         }
       }
-      .ant-card-body {
-        font-size: .88rem;
-      }
     }
-  }
-
-  @media (max-width: 800px) {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    .logo-section,
-    .list-section {
-      width: 100%
-    }
-
   }
 }

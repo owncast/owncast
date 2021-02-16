@@ -30,7 +30,7 @@
 /* TIP CONTAINER BASE */
 .field-tip {
   font-size: .8em;
-  color: rgba(255,255,255,.5)
+  color: var(--white-50);
 }
 
 
@@ -39,37 +39,33 @@ Ideal for wrapping each Textfield on a page with many text fields in a row. This
 */
 .field-container {
   padding: .85em 0 .5em;
-  // &:nth-child(even) {
-  //   background-color: rgba(0,0,0,.25);
-  // }
 }
 
 
-/* SEGMENT SLIDER */
+/* SEGMENT SLIDER GROUP WITH SELECTED NOTE, OR STATUS */
 .segment-slider-container {
-  width: 90%;
+  width: 100%;
   margin: auto;
   padding: 1em 2em .75em;
-  background-color: var(--textfield-border);
-  border-radius: 1em;
-  .ant-slider-rail {
-    background-color: black;
-  }
-  .ant-slider-track {
-    background-color: var(--nav-text);
-  }
-  .ant-slider-mark-text,
-  .ant-slider-mark-text-active {
-    color: white;
-    opacity: .5;
-  }
-  .ant-slider-mark-text-active {
-    opacity: 1;
-  }
+  background-color: var(--owncast-purple-25);
+  border-radius: var(--container-border-radius);
+
   .status-container {
     width: 100%;
     margin: .5em auto;
     text-align: center;
+  }
+
+  .selected-value-note {
+    width: 100%;
+    margin: 3em auto 0;
+    text-align: center;
+    font-size: .75em;
+    line-height: normal;
+    color: var(--white);
+    padding: 1em;
+    border-radius: var(--container-border-radius);
+    background-color: var(--black-35);
   }
 }
 

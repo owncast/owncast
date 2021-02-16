@@ -1,23 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  Tag,
-  Space,
-  Button,
-  Modal,
-  Checkbox,
-  Input,
-  Typography,
-  Tooltip,
-  Select,
-} from 'antd';
-import { DeleteOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
+import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { isValidUrl } from '../utils/urls';
 
-const { Title, Paragraph, Text } = Typography;
-const { Option } = Select;
-
 import { fetchData, DELETE_WEBHOOK, CREATE_WEBHOOK, WEBHOOKS } from '../utils/apis';
+
+const { Title, Paragraph } = Typography;
 
 const availableEvents = {
   CHAT: { name: 'Chat messages', description: 'When a user sends a chat message', color: 'purple' },
@@ -49,12 +37,19 @@ function convertEventStringToTag(eventString) {
     </Tooltip>
   );
 }
+interface Props {
+  onCancel: () => void;
+  onOk: any; // todo: make better type
+  visible: boolean;
+}
 
-function NewWebhookModal(props) {
+function NewWebhookModal(props: Props) {
+  const { onOk, onCancel, visible } = props;
+
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
 
-  const events = Object.keys(availableEvents).map(function (key) {
+  const events = Object.keys(availableEvents).map(key => {
     return { value: key, label: availableEvents[key].description };
   });
 
@@ -67,7 +62,7 @@ function NewWebhookModal(props) {
   }
 
   function save() {
-    props.onOk(webhookUrl, selectedEvents);
+    onOk(webhookUrl, selectedEvents);
 
     // Reset the modal
     setWebhookUrl('');
@@ -81,9 +76,9 @@ function NewWebhookModal(props) {
   return (
     <Modal
       title="Create New Webhook"
-      visible={props.visible}
+      visible={visible}
       onOk={save}
-      onCancel={props.onCancel}
+      onCancel={onCancel}
       okButtonProps={okButtonProps}
     >
       <div>
@@ -96,9 +91,12 @@ function NewWebhookModal(props) {
 
       <p>Select the events that will be sent to this webhook.</p>
       <Checkbox.Group options={events} value={selectedEvents} onChange={onChange} />
-      <Button type="text" size="small" onClick={selectAll}>
-        Select all
-      </Button>
+
+      <p>
+        <Button type="primary" onClick={selectAll}>
+          Select all
+        </Button>
+      </p>
     </Modal>
   );
 }
@@ -136,14 +134,19 @@ export default function Webhooks() {
     },
   ];
 
-  const getWebhooks = async () => {
+  function handleError(error) {
+    console.error('error', error);
+    alert(error);
+  }
+
+  async function getWebhooks() {
     try {
       const result = await fetchData(WEBHOOKS);
       setWebhooks(result);
     } catch (error) {
       handleError(error);
     }
-  };
+  }
 
   useEffect(() => {
     getWebhooks();
@@ -151,7 +154,7 @@ export default function Webhooks() {
 
   async function handleDelete(id) {
     try {
-      const result = await fetchData(DELETE_WEBHOOK, { method: 'POST', data: { id: id } });
+      await fetchData(DELETE_WEBHOOK, { method: 'POST', data: { id } });
       getWebhooks();
     } catch (error) {
       handleError(error);
@@ -162,17 +165,12 @@ export default function Webhooks() {
     try {
       const newHook = await fetchData(CREATE_WEBHOOK, {
         method: 'POST',
-        data: { url: url, events: events },
+        data: { url, events },
       });
       setWebhooks(webhooks.concat(newHook));
     } catch (error) {
       handleError(error);
     }
-  }
-
-  function handleError(error) {
-    console.error('error', error);
-    alert(error);
   }
 
   const showCreateModal = () => {
@@ -194,7 +192,7 @@ export default function Webhooks() {
       <Paragraph>
         A webhook is a callback made to an external API in response to an event that takes place
         within Owncast. This can be used to build chat bots or sending automatic notifications that
-        you've started streaming.
+        you&apos;ve started streaming.
       </Paragraph>
       <Paragraph>
         Read more about how to use webhooks, with examples, at{' '}

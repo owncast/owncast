@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
-import { DeleteOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-const { Title, Paragraph, Text } = Typography;
+import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
 
 import { fetchData, ACCESS_TOKENS, DELETE_ACCESS_TOKEN, CREATE_ACCESS_TOKEN } from '../utils/apis';
+
+const { Title, Paragraph } = Typography;
 
 const availableScopes = {
   CAN_SEND_SYSTEM_MESSAGES: {
@@ -39,11 +40,17 @@ function convertScopeStringToTag(scopeString) {
   );
 }
 
-function NewTokenModal(props) {
+interface Props {
+  onCancel: () => void;
+  onOk: any; // todo: make better type
+  visible: boolean;
+}
+function NewTokenModal(props: Props) {
+  const { onOk, onCancel, visible } = props;
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [name, setName] = useState('');
 
-  const scopes = Object.keys(availableScopes).map(function (key) {
+  const scopes = Object.keys(availableScopes).map(key => {
     return { value: key, label: availableScopes[key].description };
   });
 
@@ -52,7 +59,7 @@ function NewTokenModal(props) {
   }
 
   function saveToken() {
-    props.onOk(name, selectedScopes);
+    onOk(name, selectedScopes);
 
     // Clear the modal
     setSelectedScopes([]);
@@ -70,9 +77,9 @@ function NewTokenModal(props) {
   return (
     <Modal
       title="Create New Access token"
-      visible={props.visible}
+      visible={visible}
       onOk={saveToken}
-      onCancel={props.onCancel}
+      onCancel={onCancel}
       okButtonProps={okButtonProps}
     >
       <p>
@@ -84,12 +91,16 @@ function NewTokenModal(props) {
       </p>
 
       <p>
-        Select the permissions this access token will have. It cannot be edited after it's created.
+        Select the permissions this access token will have. It cannot be edited after it&apos;s
+        created.
       </p>
       <Checkbox.Group options={scopes} value={selectedScopes} onChange={onChange} />
-      <Button type="text" size="small" onClick={selectAll}>
-        Select all
-      </Button>
+
+      <p>
+        <Button type="primary" onClick={selectAll}>
+          Select all
+        </Button>
+      </p>
     </Modal>
   );
 }
@@ -97,6 +108,47 @@ function NewTokenModal(props) {
 export default function AccessTokens() {
   const [tokens, setTokens] = useState([]);
   const [isTokenModalVisible, setIsTokenModalVisible] = useState(false);
+
+  function handleError(error) {
+    console.error('error', error);
+    alert(error);
+  }
+
+  async function getAccessTokens() {
+    try {
+      const result = await fetchData(ACCESS_TOKENS);
+      setTokens(result);
+    } catch (error) {
+      handleError(error);
+    }
+  }
+  useEffect(() => {
+    getAccessTokens();
+  }, []);
+
+  async function handleDeleteToken(token) {
+    try {
+      await fetchData(DELETE_ACCESS_TOKEN, {
+        method: 'POST',
+        data: { token },
+      });
+      getAccessTokens();
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  async function handleSaveToken(name: string, scopes: string[]) {
+    try {
+      const newToken = await fetchData(CREATE_ACCESS_TOKEN, {
+        method: 'POST',
+        data: { name, scopes },
+      });
+      setTokens(tokens.concat(newToken));
+    } catch (error) {
+      handleError(error);
+    }
+  }
 
   const columns = [
     {
@@ -117,7 +169,7 @@ export default function AccessTokens() {
       title: 'Token',
       dataIndex: 'token',
       key: 'token',
-      render: (text, record) => <Input.Password size="small" bordered={false} value={text} />,
+      render: text => <Input.Password size="small" bordered={false} value={text} />,
     },
     {
       title: 'Scopes',
@@ -144,48 +196,6 @@ export default function AccessTokens() {
       },
     },
   ];
-
-  const getAccessTokens = async () => {
-    try {
-      const result = await fetchData(ACCESS_TOKENS);
-      setTokens(result);
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  useEffect(() => {
-    getAccessTokens();
-  }, []);
-
-  async function handleDeleteToken(token) {
-    try {
-      const result = await fetchData(DELETE_ACCESS_TOKEN, {
-        method: 'POST',
-        data: { token: token },
-      });
-      getAccessTokens();
-    } catch (error) {
-      handleError(error);
-    }
-  }
-
-  async function handleSaveToken(name: string, scopes: string[]) {
-    try {
-      const newToken = await fetchData(CREATE_ACCESS_TOKEN, {
-        method: 'POST',
-        data: { name: name, scopes: scopes },
-      });
-      setTokens(tokens.concat(newToken));
-    } catch (error) {
-      handleError(error);
-    }
-  }
-
-  function handleError(error) {
-    console.error('error', error);
-    alert(error);
-  }
 
   const showCreateTokenModal = () => {
     setIsTokenModalVisible(true);

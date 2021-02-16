@@ -75,7 +75,7 @@ export default function LogTable({ logs, pageSize }: Props) {
 
   return (
     <div className="logs-section">
-      <Title level={2}>Logs</Title>
+      <Title>Logs</Title>
       <Table
         size="middle"
         dataSource={logs}

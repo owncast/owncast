@@ -7,9 +7,7 @@ const { Title } = Typography;
 export default function ConfigStorageInfo() {
   return (
     <>
-      <Title level={2} className="page-title">
-        Storage
-      </Title>
+      <Title>Storage</Title>
       <p className="description">
         Owncast supports optionally using external storage providers to distribute your video. Learn
         more about this by visiting our{' '}

@@ -153,7 +153,6 @@ export default function CurrentVariantsTable() {
         return (
           <span className="actions">
             <Button
-              type="primary"
               size="small"
               onClick={() => {
                 setEditId(index);

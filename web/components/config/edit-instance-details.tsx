@@ -17,9 +17,10 @@ import {
   FIELD_PROPS_YP,
   FIELD_PROPS_NSFW,
 } from '../../utils/config-constants';
+import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
 import { UpdateArgs } from '../../types/config-section';
-import ToggleSwitch from './form-toggleswitch-with-submit';
+import ToggleSwitch from './form-toggleswitch';
 
 const { Title } = Typography;
 
@@ -102,7 +103,9 @@ export default function EditInstanceDetails() {
         initialValue={instanceDetails.logo}
         onChange={handleFieldChange}
       />
-
+      {instanceDetails.logo && (
+        <img src={`${NEXT_PUBLIC_API_HOST}/logo`} alt="uploaded logo" className="logo-preview" />
+      )}
       <br />
 
       <Title level={3} className="section-title">

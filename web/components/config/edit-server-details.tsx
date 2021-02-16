@@ -86,7 +86,7 @@ export default function EditInstanceDetails() {
   }
 
   return (
-    <div className="edit-public-details-container">
+    <div className="edit-server-details-container">
       <div className="field-container field-streamkey-container">
         <div className="left-side">
           <TextFieldWithSubmit

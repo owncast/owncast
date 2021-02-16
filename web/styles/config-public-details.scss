@@ -38,14 +38,21 @@
   }
   .instance-details-container {
     width: 100%;
+
+    .logo-preview {
+      display: inline-block;
+      margin: -1em 0 1em 11em;
+      height: 120px;
+      border: 1px solid var(--white-25);
+    }
   }
   .social-items-container {
     background-color: var(--container-bg-color-alt);
-    padding: 0 .75em;
+    padding: 0 0.75em;
     margin-left: 1em;
     max-width: 450px;
     .form-module {
-      background-color: #000;
+      background-color: var(--black);
     }
 
     .social-handles-container {
@@ -62,4 +69,8 @@
       height: 6em !important;
     }
   }
+}
+
+.other-field-container {
+  margin: 0.5em 0;
 }

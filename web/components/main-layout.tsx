@@ -194,7 +194,7 @@ export default function MainLayout(props) {
             <TextFieldWithSubmit
               fieldName="streamTitle"
               {...TEXTFIELD_PROPS_STREAM_TITLE}
-              placeholder="What you're streaming right now"
+              placeholder="What are you streaming now"
               value={currentStreamTitle}
               initialValue={instanceDetails.streamTitle}
               onChange={handleStreamTitleChanged}

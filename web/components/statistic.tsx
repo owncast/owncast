@@ -1,3 +1,6 @@
+/* eslint-disable react/no-unused-prop-types */
+// TODO: This component should be cleaned up and usage should be re-examined. The types should be reconsidered as well.
+
 import { Typography, Statistic, Card, Progress } from 'antd';
 
 const { Text } = Typography;
@@ -5,7 +8,7 @@ const { Text } = Typography;
 interface StatisticItemProps {
   title?: string;
   value?: any;
-  prefix?: JSX.Element;
+  prefix?: any;
   color?: string;
   progress?: boolean;
   centered?: boolean;
@@ -43,7 +46,7 @@ function ProgressView({ title, value, prefix, color }: StatisticItemProps) {
         '0%': color,
         '90%': endColor,
       }}
-      format={percent => content}
+      format={() => content}
     />
   );
 }

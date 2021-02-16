@@ -36,14 +36,6 @@ const SLIDER_COMMENTS = {
   6: 'Highest latency, highest error tolerance',
 };
 
-interface SegmentToolTipProps {
-  value: string;
-}
-
-function SegmentToolTip({ value }: SegmentToolTipProps) {
-  return <span className="segment-tip">{value}</span>;
-}
-
 export default function VideoLatency() {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -104,7 +96,7 @@ export default function VideoLatency() {
   };
 
   return (
-    <div className="config-video-segements-conatiner">
+    <div className="config-video-latency-container">
       <Title level={3} className="section-title">
         Latency Buffer
       </Title>
@@ -120,7 +112,7 @@ export default function VideoLatency() {
 
       <div className="segment-slider-container">
         <Slider
-          tipFormatter={value => <SegmentToolTip value={SLIDER_COMMENTS[value]} />}
+          tipFormatter={value => SLIDER_COMMENTS[value]}
           onChange={handleChange}
           min={1}
           max={6}
@@ -128,6 +120,7 @@ export default function VideoLatency() {
           defaultValue={selectedOption}
           value={selectedOption}
         />
+        <p className="selected-value-note">{SLIDER_COMMENTS[selectedOption]}</p>
         <FormStatusIndicator status={submitStatus} />
       </div>
     </div>

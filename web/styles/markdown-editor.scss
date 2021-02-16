@@ -1,26 +1,38 @@
-
 // markdown editor overrides
 
 .rc-virtual-list-scrollbar {
   display: block !important;
 }
 .rc-md-editor {
-  border-color: black !important;
-  border: 1px solid black;
-  background-color: black !important;
+  border-color: var(--black) !important;
+  border: 1px solid var(--black);
+  background-color: var(--black) !important;
   .rc-md-navigation {
-    background-color: black;
-    border-color: black;
+    background-color: var(--black);
+    border-color: var(--black);
   }
   // Set the background color of the preview container
   .editor-container {
-    color: rgba(45,55,72,1);
-    background-color: rgba(226,232,240, 1) !important;
+    p {
+      color: var(--black-75);
+    }
+    background-color: rgba(226, 232, 240, 1) !important;
 
+    .sec-html {
+      background-color: white;
+
+      pre,
+      code {
+        background-color: #eee;
+        color: #900;
+      }
+    }
   }
 
   // Custom CSS for formatting the preview text
   .markdown-editor-preview-pane {
+    color: var(--black-75);
+
     a {
       color: var(--owncast-purple);
     }
@@ -31,23 +43,29 @@
 
   // Custom CSS class used to format the text of the editor
   .markdown-editor-pane {
-    color: rgba(255,255,255,.85) !important;
-    border-color: black  !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    border-color: black !important;
     background-color: black;
     font-family: monospace;
   }
 
-
-
   // Set the background color of the editor text input
   textarea {
-    background-color: #223 !important;
-    color: rgba(255,255,255,.5)  !important;
+    background-color: var(--gray) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    overflow: auto;
   }
 
-
   // Hide extra toolbar buttons.
-  .button-type-undo, .button-type-redo, .button-type-clear, .button-type-image, .button-type-wrap, .button-type-quote, .button-type-strikethrough, .button-type-code-inline, .button-type-code-block {
+  .button-type-undo,
+  .button-type-redo,
+  .button-type-clear,
+  .button-type-image,
+  .button-type-wrap,
+  .button-type-quote,
+  .button-type-strikethrough,
+  .button-type-code-inline,
+  .button-type-code-block {
     display: none !important;
   }
 }

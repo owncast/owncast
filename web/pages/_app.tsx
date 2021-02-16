@@ -1,6 +1,6 @@
 // order matters!
 import 'antd/dist/antd.css';
-import '../styles/colors.scss';
+import '../styles/variables.scss';
 import '../styles/ant-overrides.scss';
 import '../styles/markdown-editor.scss';
 import '../styles/globals.scss';
@@ -17,7 +17,7 @@ import '../styles/config-public-details.scss';
 
 import '../styles/home.scss';
 import '../styles/chat.scss';
-import '../styles/config.scss';
+import '../styles/pages.scss';
 
 import { AppProps } from 'next/app';
 import ServerStatusProvider from '../utils/server-status-context';

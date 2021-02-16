@@ -1,5 +1,6 @@
 // This is a wrapper for the Ant Switch component.
-// onChange of the switch, it will automatically post a change to the config api.
+// This one is styled to match the form-textfield component.
+// If `useSubmit` is true then it will automatically post to the config API onChange.
 
 import React, { useState, useContext } from 'react';
 import { Switch } from 'antd';
@@ -17,9 +18,9 @@ import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constan
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 interface ToggleSwitchProps {
-  apiPath: string;
   fieldName: string;
 
+  apiPath?: string;
   checked?: boolean;
   configPath?: string;
   disabled?: boolean;
@@ -106,6 +107,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
 }
 
 ToggleSwitch.defaultProps = {
+  apiPath: '',
   checked: false,
   configPath: '',
   disabled: false,
