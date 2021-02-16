@@ -80,4 +80,12 @@ export const SOCIAL_PLATFORMS = {
     name: "Key Oxide",
     icon: '/img/platformlogos/keyoxide.png',
   },
+  donate: {
+    name: "Donate",
+    icon: '/img/platformlogos/donate.svg',
+  },
+  follow: {
+    name: "Follow",
+    icon: 'img/platformlogos/follow.svg',
+  }
 };

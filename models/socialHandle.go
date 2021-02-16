@@ -86,6 +86,14 @@ func GetAllSocialHandles() map[string]SocialHandle {
 			Platform: "YouTube",
 			Icon:     "/img/platformlogos/youtube.svg",
 		},
+		"donate": {
+			Platform: "Donations",
+			Icon:     "/img/platformlogos/donate.svg",
+		},
+		"follow": {
+			Platform: "Follow",
+			Icon:     "/img/platformlogos/follow.svg",
+		},
 	}
 
 	return socialHandlePlatforms
