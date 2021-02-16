@@ -17,7 +17,7 @@ const streamKeyKey = "stream_key"
 const logoPathKey = "logo_path"
 const serverSummaryKey = "server_summary"
 const serverNameKey = "server_name"
-const serverUrlKey = "server_url"
+const serverURLKey = "server_url"
 const httpPortNumberKey = "http_port_number"
 const rtmpPortNumberKey = "rtmp_port_number"
 const serverMetadataTagsKey = "server_metadata_tags"
@@ -135,7 +135,7 @@ func SetServerName(name string) error {
 
 // GetServerURL will return the server URL.
 func GetServerURL() string {
-	url, err := _datastore.GetString(serverUrlKey)
+	url, err := _datastore.GetString(serverURLKey)
 	if err != nil {
 		return ""
 	}
@@ -145,7 +145,7 @@ func GetServerURL() string {
 
 // SetServerURL will set the server URL.
 func SetServerURL(url string) error {
-	return _datastore.SetString(serverUrlKey, url)
+	return _datastore.SetString(serverURLKey, url)
 }
 
 // GetHTTPPortNumber will return the server HTTP port.
@@ -411,7 +411,7 @@ func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
 	if GetStreamKey() == "" {
-		return errors.New("No stream key set. Please set one in your config file.")
+		return errors.New("no stream key set. Please set one in your config file")
 	}
 
 	return nil

@@ -7,9 +7,12 @@ import (
 )
 
 const (
-	ScopeCanSendUserMessages   = "CAN_SEND_MESSAGES"
+	// ScopeCanSendUserMessages will allow sending chat messages as users.
+	ScopeCanSendUserMessages = "CAN_SEND_MESSAGES"
+	// ScopeCanSendSystemMessages will allow sending chat messages as the system.
 	ScopeCanSendSystemMessages = "CAN_SEND_SYSTEM_MESSAGES"
-	ScopeHasAdminAccess        = "HAS_ADMIN_ACCESS"
+	// ScopeHasAdminAccess will allow performing administrative actions on the server.
+	ScopeHasAdminAccess = "HAS_ADMIN_ACCESS"
 )
 
 // For a scope to be seen as "valid" it must live in this slice.
@@ -19,6 +22,7 @@ var validAccessTokenScopes = []string{
 	ScopeHasAdminAccess,
 }
 
+// AccessToken gives access to 3rd party code to access specific Owncast APIs.
 type AccessToken struct {
 	Token     string     `json:"token"`
 	Name      string     `json:"name"`

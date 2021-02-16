@@ -394,8 +394,8 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 
 	for i, variant := range videoVariants.Value {
 		preset := "superfast"
-		if variant.CpuUsageLevel > 0 && variant.CpuUsageLevel <= len(presetMapping) {
-			preset = presetMapping[variant.CpuUsageLevel-1]
+		if variant.CPUUsageLevel > 0 && variant.CPUUsageLevel <= len(presetMapping) {
+			preset = presetMapping[variant.CPUUsageLevel-1]
 		}
 		variant.EncoderPreset = preset
 		videoVariants.Value[i] = variant

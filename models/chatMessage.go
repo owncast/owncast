@@ -31,6 +31,7 @@ func (m ChatEvent) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""
 }
 
+// SetDefaults will set default values on a chat event object.
 func (m *ChatEvent) SetDefaults() {
 	id, _ := shortid.Generate()
 	m.ID = id
@@ -47,6 +48,7 @@ func (m *ChatEvent) RenderAndSanitizeMessageBody() {
 	m.Body = RenderAndSanitize(m.RawBody)
 }
 
+// Empty will return if this message's contents is empty.
 func (m *ChatEvent) Empty() bool {
 	return m.Body == ""
 }

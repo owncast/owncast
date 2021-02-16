@@ -1,11 +1,13 @@
 package models
 
+// SocialHandle represents an external link.
 type SocialHandle struct {
 	Platform string `yaml:"platform" json:"platform,omitempty"`
 	URL      string `yaml:"url" json:"url,omitempty"`
 	Icon     string `json:"icon,omitempty"`
 }
 
+// GetAllSocialHandles will return a list of all the social platforms we support.
 func GetAllSocialHandles() map[string]SocialHandle {
 	socialHandlePlatforms := map[string]SocialHandle{
 		"bandcamp": {

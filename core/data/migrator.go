@@ -146,7 +146,7 @@ func migrateConfigFile() {
 			"faster":    4,
 			"fast":      5,
 		}
-		migratedVariant.CpuUsageLevel = presetMapping[variant.EncoderPreset]
+		migratedVariant.CPUUsageLevel = presetMapping[variant.EncoderPreset]
 		variants = append(variants, migratedVariant)
 	}
 	_ = SetStreamOutputVariants(variants)

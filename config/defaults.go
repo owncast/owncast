@@ -2,6 +2,7 @@ package config
 
 import "github.com/owncast/owncast/models"
 
+// Defaults will hold default configuration values.
 type Defaults struct {
 	Name            string
 	Title           string
@@ -23,12 +24,13 @@ type Defaults struct {
 	StreamVariants       []models.StreamOutputVariant
 }
 
+// GetDefaults will return default configuration values.
 func GetDefaults() Defaults {
 	return Defaults{
 		Name:    "Owncast",
 		Title:   "My Owncast Server",
-		Summary: "This is brief summary of whom you are or what your stream is. You can edit this description in your config file.",
-		Logo:    "/img/logo.svg",
+		Summary: "This is brief summary of whom you are or what your stream is. You can edit this description in the admin.",
+		Logo:    "logo.svg",
 		Tags: []string{
 			"owncast",
 			"streaming",
@@ -45,8 +47,6 @@ func GetDefaults() Defaults {
 		RTMPServerPort: 1935,
 		StreamKey:      "abc123",
 
-		SegmentLengthSeconds: 4,
-		SegmentsInPlaylist:   4,
 		StreamVariants: []models.StreamOutputVariant{
 			{
 				IsAudioPassthrough: true,

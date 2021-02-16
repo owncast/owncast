@@ -1,5 +1,6 @@
 package models
 
+// S3 is the storage configuration.
 type S3 struct {
 	Enabled         bool   `json:"enabled"`
 	Endpoint        string `json:"endpoint,omitempty"`

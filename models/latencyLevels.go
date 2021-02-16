@@ -1,11 +1,13 @@
 package models
 
+// LatencyLevel is a representation of HLS configuration values.
 type LatencyLevel struct {
 	Level             int `json:"level"`
 	SecondsPerSegment int `json:"-"`
 	SegmentCount      int `json:"-"`
 }
 
+// GetLatencyConfigs will return the available latency level options.
 func GetLatencyConfigs() map[int]LatencyLevel {
 	return map[int]LatencyLevel{
 		1: {Level: 1, SecondsPerSegment: 1, SegmentCount: 2},
@@ -17,6 +19,7 @@ func GetLatencyConfigs() map[int]LatencyLevel {
 	}
 }
 
+// GetLatencyLevel will return the latency level at index.
 func GetLatencyLevel(index int) LatencyLevel {
 	return GetLatencyConfigs()[index]
 }

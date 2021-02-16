@@ -20,7 +20,8 @@ type StreamOutputVariant struct {
 
 	Framerate     int    `yaml:"framerate" json:"framerate"`
 	EncoderPreset string `yaml:"encoderPreset" json:"encoderPreset"` // Remove after migration is no longer used
-	CpuUsageLevel int    `json:"cpuUsageLevel"`
+	// CPUUsageLevel represents a codec preset to configure CPU usage.
+	CPUUsageLevel int `json:"cpuUsageLevel"`
 }
 
 // GetFramerate returns the framerate or default.

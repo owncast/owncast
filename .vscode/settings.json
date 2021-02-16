@@ -11,6 +11,7 @@
         "Warnf",
         "Warnln",
         "ffmpegpath",
+        "ffmpg",
         "mattn",
         "nolint",
         "preact",
