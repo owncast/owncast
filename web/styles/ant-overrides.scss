@@ -236,13 +236,24 @@ textarea.ant-input {
     border-color: var(--owncast-purple);
   }
 }
-.ant-input-textarea-clear-icon,
-.ant-input-clear-icon {
-  color: var(--white-55);
-}
+
 textarea.ant-input {
   padding-right: 25px;
 }
+.ant-input-affix-wrapper {
+  color: transparent;
+}
+
+.ant-input-suffix,
+.ant-input-clear-icon,
+.ant-input-textarea-clear-icon,
+.ant-input-password-icon {
+  color: var(--white-50);
+  &:hover {
+    color: var(--white);
+  }
+}
+
 
 // ANT BUTTON
 .ant-btn {
