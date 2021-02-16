@@ -34,7 +34,7 @@ export default function Help() {
     },
     {
       icon: <CameraTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I need help configuring my broadcasting software',
+      title: 'Help configuring my broadcasting software',
       content: (
         <div>
           <a
@@ -71,7 +71,7 @@ export default function Help() {
     },
     {
       icon: <SlidersTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to tweak my encoding quality or performance',
+      title: 'I want to tweak my video output',
       content: (
         <div>
           <a href="https://owncast.online/docs/encoding/" target="_blank" rel="noopener noreferrer">
@@ -82,7 +82,7 @@ export default function Help() {
     },
     {
       icon: <DatabaseTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to offload my video to an external storage provider',
+      title: 'I want to use an external storage provider',
       content: (
         <div>
           <a href="https://owncast.online/docs/storage/" target="_blank" rel="noopener noreferrer">
@@ -127,7 +127,7 @@ export default function Help() {
     },
     {
       icon: <ApiTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to build add-ons for my Owncast server',
+      title: 'I want to build add-ons for Owncast',
       content: (
         <div>
           You can build your own bots, overlays, tools and add-ons with our
