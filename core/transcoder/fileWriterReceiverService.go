@@ -93,6 +93,6 @@ func (s *FileWriterReceiverService) fileWritten(path string) {
 }
 
 func returnError(err error, w http.ResponseWriter) {
-	log.Errorln(err)
+	log.Debugln(err)
 	http.Error(w, http.StatusText(http.StatusInternalServerError)+": "+err.Error(), http.StatusInternalServerError)
 }
