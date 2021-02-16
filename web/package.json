@@ -15,7 +15,7 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
     "markdown-it": "^12.0.4",
-    "next": "^10.0.6",
+    "next": "10.0.0",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-chartkick": "^0.4.1",
