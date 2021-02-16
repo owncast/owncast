@@ -4,7 +4,7 @@
 - Give your page or form a title. Feel free to use Ant Design's `<Title>` component.
 - Give your form a description inside of a `<p className="description" />` tag.
 
-- Use some Ant Design `Row` and `Col`'s to layout your forms if you want to spread them out into responsive columns.
+- Use some Ant Design `Row` and `Col`'s to layout your forms if you want to spread them out into responsive columns.  If you use an `<Row>`s, be sure to use `<Col>`s with them too!
 
 - Use the `form-module` CSS class if you want to add a visual separation to a grouping of items.
   

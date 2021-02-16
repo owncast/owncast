@@ -32,6 +32,8 @@
 
   // Custom CSS for formatting the preview text
   .markdown-editor-preview-pane {
+    color: var(--black-75);
+
     a {
       color: var(--owncast-purple);
     }
@@ -47,7 +49,6 @@
     background-color: black;
     font-family: monospace;
   }
-
 
 
   // Set the background color of the editor text input

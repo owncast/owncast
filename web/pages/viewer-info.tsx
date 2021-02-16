@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, Row, Typography } from 'antd';
+import { Table, Row, Col, Typography } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
 import { UserOutlined } from '@ant-design/icons';
 import { SortOrder } from 'antd/lib/table/interface';
@@ -99,22 +99,28 @@ export default function ViewersOverTime() {
       <br />
       <Row gutter={[16, 16]} justify="space-around">
         {online && (
+          <Col span={8} md={8}>
+            <StatisticItem
+              title="Current viewers"
+              value={viewerCount.toString()}
+              prefix={<UserOutlined />}
+            />
+          </Col>
+        )}
+        <Col md={online ? 8 : 12}>
           <StatisticItem
-            title="Current viewers"
-            value={viewerCount.toString()}
+            title={online ? 'Max viewers this session' : 'Max viewers last session'}
+            value={sessionPeakViewerCount.toString()}
             prefix={<UserOutlined />}
           />
-        )}
-        <StatisticItem
-          title={online ? 'Max viewers this session' : 'Max viewers last session'}
-          value={sessionPeakViewerCount.toString()}
-          prefix={<UserOutlined />}
-        />
-        <StatisticItem
-          title="All-time max viewers"
-          value={overallPeakViewerCount.toString()}
-          prefix={<UserOutlined />}
-        />
+        </Col>
+        <Col md={online ? 8 : 12}>
+          <StatisticItem
+            title="All-time max viewers"
+            value={overallPeakViewerCount.toString()}
+            prefix={<UserOutlined />}
+          />
+        </Col>
       </Row>
 
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
