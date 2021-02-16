@@ -103,9 +103,7 @@ export default function EditInstanceDetails() {
         initialValue={instanceDetails.logo}
         onChange={handleFieldChange}
       />
-      {instanceDetails.logo && (
-        <img src={"/logo"} alt="uploaded logo" className="logo-preview" />
-      )}
+      {instanceDetails.logo && <img src={'/logo'} alt="uploaded logo" className="logo-preview" />}
       <br />
 
       <Title level={3} className="section-title">
