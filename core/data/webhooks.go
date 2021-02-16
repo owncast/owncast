@@ -134,7 +134,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 		}
 
 		singleWebhook := models.Webhook{
-			Url: url,
+			URL: url,
 		}
 
 		webhooks = append(webhooks, singleWebhook)
@@ -179,7 +179,7 @@ func GetWebhooks() ([]models.Webhook, error) { //nolint
 
 		singleWebhook := models.Webhook{
 			ID:        id,
-			Url:       url,
+			URL:       url,
 			Events:    strings.Split(events, ","),
 			Timestamp: timestamp,
 			LastUsed:  lastUsed,

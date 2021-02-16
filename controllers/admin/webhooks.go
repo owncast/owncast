@@ -43,7 +43,7 @@ func CreateWebhook(w http.ResponseWriter, r *http.Request) {
 
 	controllers.WriteResponse(w, models.Webhook{
 		ID:        newWebhookID,
-		Url:       request.URL,
+		URL:       request.URL,
 		Events:    request.Events,
 		Timestamp: time.Now(),
 		LastUsed:  nil,

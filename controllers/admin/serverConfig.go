@@ -22,7 +22,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			EncoderPreset:      variant.GetEncoderPreset(),
 			VideoBitrate:       variant.VideoBitrate,
 			AudioBitrate:       variant.AudioBitrate,
-			CPUUsageLevel:      variant.GetCpuUsageLevel(),
+			CPUUsageLevel:      variant.GetCPUUsageLevel(),
 		})
 	}
 	response := serverConfigAdminResponse{

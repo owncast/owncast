@@ -50,7 +50,8 @@ func (q *StreamOutputVariant) GetEncoderPreset() string {
 	return "veryfast"
 }
 
-func (q *StreamOutputVariant) GetCpuUsageLevel() int {
+// GetCPUUsageLevel will return the libx264 codec encoder preset that maps to a level.
+func (q *StreamOutputVariant) GetCPUUsageLevel() int {
 	presetMapping := map[string]int{
 		"ultrafast": 1,
 		"superfast": 2,
@@ -62,6 +63,7 @@ func (q *StreamOutputVariant) GetCpuUsageLevel() int {
 	return presetMapping[q.GetEncoderPreset()]
 }
 
+// GetIsAudioPassthrough will return if this variant audio is passthrough.
 func (q *StreamOutputVariant) GetIsAudioPassthrough() bool {
 	if q.IsAudioPassthrough {
 		return true

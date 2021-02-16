@@ -2,9 +2,10 @@ package models
 
 import "time"
 
+// Webhook is an event that is sent to 3rd party, external services with details about something that took place within an Owncast server.
 type Webhook struct {
 	ID        int         `json:"id"`
-	Url       string      `json:"url"`
+	URL       string      `json:"url"`
 	Events    []EventType `json:"events"`
 	Timestamp time.Time   `json:"timestamp"`
 	LastUsed  *time.Time  `json:"lastUsed"`

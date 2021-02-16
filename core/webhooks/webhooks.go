@@ -30,9 +30,9 @@ func SendEventToWebhooks(payload WebhookEvent) {
 	webhooks := data.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
-		log.Debugf("Event %s sent to Webhook %s", payload.Type, webhook.Url)
-		if err := sendWebhook(webhook.Url, payload); err != nil {
-			log.Errorf("Event: %s failed to send to webhook: %s  Error: %s", payload.Type, webhook.Url, err)
+		log.Debugf("Event %s sent to Webhook %s", payload.Type, webhook.URL)
+		if err := sendWebhook(webhook.URL, payload); err != nil {
+			log.Errorf("Event: %s failed to send to webhook: %s  Error: %s", payload.Type, webhook.URL, err)
 		}
 	}
 }
