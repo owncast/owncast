@@ -69,6 +69,7 @@ build() {
   cp "${TMPDIR}tailwind.min.css" ./dist/${NAME}/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
   cp -R static/ dist/${NAME}/static
   cp README.md dist/${NAME}
+  cp webroot/img/logo.svg dist/${NAME}/data/logo.svg
 
   pushd dist/${NAME} >> /dev/null
 
