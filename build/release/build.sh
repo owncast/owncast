@@ -61,12 +61,7 @@ build() {
   echo "Building ${NAME} (${OS}/${ARCH}) release from ${GIT_BRANCH}..."
 
   mkdir -p dist/${NAME}
-  mkdir -p dist/${NAME}/webroot/static
   mkdir -p dist/${NAME}/data
-
-  # Default files
-  cp config-default.yaml dist/${NAME}/config.yaml
-  cp data/content-example.md dist/${NAME}/data/content.md
 
   cp -R webroot/ dist/${NAME}/webroot/
 
