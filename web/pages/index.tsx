@@ -65,7 +65,7 @@ export default function Home() {
   }
 
   if (!broadcaster) {
-    return <Offline logs={logsData} />;
+    return <Offline logs={logsData} config={configData} />;
   }
 
   // map out settings
