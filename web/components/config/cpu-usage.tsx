@@ -13,11 +13,11 @@ const SLIDER_MARKS = {
 };
 
 const TOOLTIPS = {
-  1: 'lowest',
-  2: 'low',
-  3: 'medium',
-  4: 'high',
-  5: 'highest',
+  1: 'Lowest CPU usage - lowest quality video',
+  2: 'Low CPU usage - low quality video',
+  3: 'Medium CPU usage - average quality video',
+  4: 'High CPU usage - high quality video',
+  5: 'Highest CPU usage - higher quality video',
 };
 interface Props {
   defaultValue: number;
@@ -47,7 +47,7 @@ export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
     <div className="config-video-cpu-container">
       <Title level={3}>CPU Usage</Title>
       <p className="description">
-        Reduce the to improve server performance, or increase it to improve video quality.
+        Reduce to improve server performance, or increase it to improve video quality.
       </p>
       <div className="segment-slider-container">
         <Slider
@@ -59,7 +59,7 @@ export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
           defaultValue={selectedOption}
           value={selectedOption}
         />
-        <p className="selected-value-note">Selected: {TOOLTIPS[selectedOption]}</p>
+        <p className="selected-value-note">{TOOLTIPS[selectedOption]}</p>
       </div>
     </div>
   );

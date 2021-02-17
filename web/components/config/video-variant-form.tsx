@@ -102,6 +102,7 @@ export default function VideoVariantForm({
     [framerateMin]: `${framerateMin} ${framerateUnit}`,
     30: '',
     60: '',
+    90: '',
     [framerateMax]: `${framerateMax} ${framerateUnit}`,
   };
 
@@ -117,7 +118,7 @@ export default function VideoVariantForm({
   };
 
   const selectedVideoBRnote = () => {
-    let note = `Selected: ${dataState.videoBitrate}${videoBRUnit}`;
+    let note = `${dataState.videoBitrate}${videoBRUnit}`;
     if (dataState.videoBitrate < 2000) {
       note = `${note} - Good for low bandwidth environments.`;
     } else if (dataState.videoBitrate < 3500) {
@@ -139,6 +140,9 @@ export default function VideoVariantForm({
       case 60:
         note = `${note} - Good for fast/action games, sports, HD video.`;
         break;
+      case 90:
+        note = `${note} - Good for newer fast games and hardware.`;
+        break
       case 120:
         note = `${note} - Experimental, use at your own risk!`;
         break;
