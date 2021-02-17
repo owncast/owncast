@@ -123,12 +123,6 @@ func (yp *YP) ping() {
 	}
 }
 
-// DisplayInstructions will let the user know they are not in the directory by default and
-// how they can enable the feature.
-func DisplayInstructions() {
-	text := "Your instance can be listed on the Owncast directory at http://directory.owncast.online by enabling YP in your config.  Learn more at https://directory.owncast.online/get-listed."
-	log.Debugln(text)
-}
 func isUrl(str string) bool {
 	u, err := url.Parse(str)
 	return err == nil && u.Scheme != "" && u.Host != ""

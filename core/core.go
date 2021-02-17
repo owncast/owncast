@@ -62,10 +62,6 @@ func Start() error {
 
 	_yp = yp.NewYP(GetStatus)
 
-	if !data.GetDirectoryEnabled() {
-		yp.DisplayInstructions()
-	}
-
 	chat.Setup(ChatListenerImpl{})
 
 	// start the rtmp server
