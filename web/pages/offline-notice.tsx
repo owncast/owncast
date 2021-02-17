@@ -12,7 +12,7 @@ import LogTable from '../components/log-table';
 
 const { Meta } = Card;
 
-export default function Offline({ logs = [], config}) {
+export default function Offline({ logs = [], config }) {
   const data = [
     {
       icon: <BookTwoTone twoToneColor="#6f42c1" />,
@@ -60,8 +60,8 @@ export default function Offline({ logs = [], config}) {
       title: 'Find an audience on the Owncast Directory',
       content: (
         <div>
-          List yourself in the Owncast Directory and show off your stream.
-          Enable it in <Link href="/config-public-details">settings.</Link>
+          List yourself in the Owncast Directory and show off your stream. Enable it in{' '}
+          <Link href="/config-public-details">settings.</Link>
         </div>
       ),
     });
