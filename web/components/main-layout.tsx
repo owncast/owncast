@@ -30,8 +30,6 @@ import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 
 import { UpdateArgs } from '../types/config-section';
 
-let performedUpgradeCheck = false;
-
 export default function MainLayout(props) {
   const { children } = props;
 
@@ -60,11 +58,8 @@ export default function MainLayout(props) {
   };
 
   useEffect(() => {
-    if (!performedUpgradeCheck) {
-      checkForUpgrade();
-      performedUpgradeCheck = true;
-    }
-  });
+    checkForUpgrade();
+  }, [versionNumber]);
 
   useEffect(() => {
     setCurrentStreamTitle(instanceDetails.streamTitle);
