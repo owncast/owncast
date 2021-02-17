@@ -72,6 +72,14 @@ export default function EditInstanceDetails() {
       <br />
 
       <TextFieldWithSubmit
+        fieldName="name"
+        {...TEXTFIELD_PROPS_SERVER_NAME}
+        value={formDataValues.name}
+        initialValue={instanceDetails.name}
+        onChange={handleFieldChange}
+      />
+
+      <TextFieldWithSubmit
         fieldName="instanceUrl"
         {...TEXTFIELD_PROPS_INSTANCE_URL}
         value={formDataValues.instanceUrl}
@@ -81,13 +89,6 @@ export default function EditInstanceDetails() {
         onSubmit={handleSubmitInstanceUrl}
       />
 
-      <TextFieldWithSubmit
-        fieldName="name"
-        {...TEXTFIELD_PROPS_SERVER_NAME}
-        value={formDataValues.name}
-        initialValue={instanceDetails.name}
-        onChange={handleFieldChange}
-      />
       <TextFieldWithSubmit
         fieldName="summary"
         {...TEXTFIELD_PROPS_SERVER_SUMMARY}
@@ -106,16 +107,14 @@ export default function EditInstanceDetails() {
       {instanceDetails.logo && <img src={'/logo'} alt="uploaded logo" className="logo-preview" />}
       <br />
 
-      <Title level={3} className="section-title">
-        Owncast Directory Settings
-      </Title>
       <p className="description">
-        Would you like to appear in the{' '}
+        Increase your audience by appearing in the{' '}
         <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
           <strong>Owncast Directory</strong>
-        </a>
-        ?
+        </a>.  This is an external service run by the Owncast project.  <a href="https://owncast.online/docs/directory/">Learn more</a>.
+        {!yp.instanceUrl && <div><br/>You must set your server URL above to enable the directory.</div>}
       </p>
+
       <div className="config-yp-container">
         <ToggleSwitch
           fieldName="enabled"

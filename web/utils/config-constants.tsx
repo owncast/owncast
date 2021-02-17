@@ -111,7 +111,7 @@ export const TEXTFIELD_PROPS_INSTANCE_URL = {
   configPath: 'yp',
   maxLength: 255,
   placeholder: 'https://owncast.mysite.com',
-  label: 'Instance URL',
+  label: 'Server URL',
   tip: 'The full url to your Owncast server.',
 };
 // MISC FIELDS
@@ -137,15 +137,15 @@ export const FIELD_PROPS_NSFW = {
   configPath: 'instanceDetails',
   label: 'NSFW?',
   tip:
-    "Turn this ON if you plan to steam explicit or adult content. You may want to respectfully set this flag so that unexpecting eyes won't accidentally see it from the Directory.",
+    "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
 };
 
 export const FIELD_PROPS_YP = {
   apiPath: API_YP_SWITCH,
   configPath: 'yp',
-  label: 'Display in the Owncast Directory?',
+  label: 'Enable directory',
   tip:
-    'Turn this ON if you want to show up in the Owncast directory at https://directory.owncast.online.',
+    'Turn this ON if you want to show up in the directory.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
