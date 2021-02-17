@@ -23,7 +23,7 @@ func setupStats() error {
 	statsSaveTimer := time.NewTicker(1 * time.Minute)
 	go func() {
 		for range statsSaveTimer.C {
-			if err := saveStatsToFile(); err != nil {
+			if err := saveStats(); err != nil {
 				panic(err)
 			}
 		}
@@ -97,10 +97,16 @@ func GetClients() []models.Client {
 	return clients
 }
 
-func saveStatsToFile() error {
-	data.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount)
-	data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount)
-	data.SetLastDisconnectTime(_stats.LastConnectTime.Time)
+func saveStats() error {
+	if err := data.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount); err != nil {
+		log.Errorln("error saving viewer count", err)
+	}
+	if err := data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount); err != nil {
+		log.Errorln("error saving viewer count", err)
+	}
+	if err := data.SetLastDisconnectTime(_stats.LastConnectTime.Time); err != nil {
+		log.Errorln("error saving disconnect time", err)
+	}
 
 	return nil
 }
