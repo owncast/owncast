@@ -107,9 +107,11 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 }
 
 func makeAnimatedGifPreview(sourceFile string, outputFile string) {
+	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{
-		data.GetFfMpegPath(),
+		ffmpegPath,
 		"-y",             // Overwrite file
 		"-threads 1",     // Low priority processing
 		"-i", sourceFile, // Input
