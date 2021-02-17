@@ -51,8 +51,11 @@ func Start() error {
 	// and makes storage decisions.  It's rather simple right now
 	// but will play more useful when recordings come into play.
 	handler = transcoder.HLSHandler{}
-	setupStorage()
-	// handler.Storage = _storage
+
+	if err := setupStorage(); err != nil {
+		log.Errorln("storage error", err)
+	}
+
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
 	if err := createInitialOfflineState(); err != nil {
