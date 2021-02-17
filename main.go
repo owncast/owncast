@@ -21,7 +21,7 @@ import (
 // the following are injected at build-time.
 var (
 	// GitCommit is the commit which this version of owncast is running.
-	GitCommit = time.Now().Format("20060102")
+	GitCommit = ""
 	// BuildVersion is the version.
 	BuildVersion = config.StaticVersionNumber
 	// BuildPlatform is the type of build.
@@ -46,7 +46,11 @@ func main() {
 
 	config.ConfigFilePath = *configFile
 	config.VersionNumber = BuildVersion
-	config.GitCommit = GitCommit
+	if GitCommit != "" {
+		config.GitCommit = GitCommit
+	} else {
+		config.GitCommit = time.Now().Format("20060102")
+	}
 	config.BuildPlatform = BuildPlatform
 
 	log.Infoln(config.GetReleaseString())
