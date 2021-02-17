@@ -43,7 +43,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Summary:          data.GetServerSummary(),
 		Logo:             "/logo",
 		Tags:             data.GetServerMetadataTags(),
-		Version:          config.VersionInfo,
+		Version:          config.GetReleaseString(),
 		NSFW:             data.GetNSFW(),
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),

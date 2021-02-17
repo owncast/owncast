@@ -3,8 +3,8 @@ package config
 import "path/filepath"
 
 const (
-	// CurrentBuildString is the version of Owncast that is used when it's not overwritten via build-time settings.
-	CurrentBuildString = "0.0.6" // Shown when you build from master
+	// StaticVersionNumber is the version of Owncast that is used when it's not overwritten via build-time settings.
+	StaticVersionNumber = "0.0.6" // Shown when you build from master
 	// WebRoot is the web server root directory.
 	WebRoot = "webroot"
 	// PrivateHLSStoragePath is the HLS write directory.

@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
@@ -21,17 +21,16 @@ import (
 // the following are injected at build-time.
 var (
 	// GitCommit is the commit which this version of owncast is running.
-	GitCommit = "unknown"
+	GitCommit = time.Now().Format("20060102")
 	// BuildVersion is the version.
-	BuildVersion = config.CurrentBuildString
-	// BuildType is the type of build.
-	BuildType = "dev"
+	BuildVersion = config.StaticVersionNumber
+	// BuildPlatform is the type of build.
+	BuildPlatform = "dev"
 )
 
 func main() {
 	configureLogging()
 
-	log.Infoln(getReleaseString())
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
@@ -46,6 +45,11 @@ func main() {
 	flag.Parse()
 
 	config.ConfigFilePath = *configFile
+	config.VersionNumber = BuildVersion
+	config.GitCommit = GitCommit
+	config.BuildPlatform = BuildPlatform
+
+	log.Infoln(config.GetReleaseString())
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {
@@ -117,15 +121,6 @@ func main() {
 		log.Fatalln("failed to start/run the router", err)
 	}
 
-}
-
-// getReleaseString gets the version string.
-func getReleaseString() string {
-	return fmt.Sprintf("Owncast v%s-%s (%s)", BuildVersion, BuildType, GitCommit)
-}
-
-func getVersionNumber() string {
-	return BuildVersion
 }
 
 func configureLogging() {
