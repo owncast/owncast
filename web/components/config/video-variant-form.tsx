@@ -142,7 +142,7 @@ export default function VideoVariantForm({
         break;
       case 90:
         note = `${note} - Good for newer fast games and hardware.`;
-        break
+        break;
       case 120:
         note = `${note} - Experimental, use at your own risk!`;
         break;
