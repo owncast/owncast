@@ -14,16 +14,23 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 )
 
+// MetadataPage represents a server-rendered web page for bots and web scrapers.
 type MetadataPage struct {
-	Config       config.InstanceDetails
-	RequestedURL string
-	Image        string
-	Thumbnail    string
-	TagsString   string
+	RequestedURL  string
+	Image         string
+	Thumbnail     string
+	TagsString    string
+	Title         string
+	Summary       string
+	Name          string
+	Tags          []string
+	SocialHandles []models.SocialHandle
 }
 
 // IndexHandler handles the default index route.
@@ -70,7 +77,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Panicln(err)
 	}
-	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, config.Config.InstanceDetails.Logo))
+	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, data.GetLogoPath()))
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -91,8 +98,15 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 		thumbnailURL = imageURL.String()
 	}
 
-	tagsString := strings.Join(config.Config.InstanceDetails.Tags, ",")
-	metadata := MetadataPage{config.Config.InstanceDetails, fullURL.String(), imageURL.String(), thumbnailURL, tagsString}
+	tagsString := strings.Join(data.GetServerMetadataTags(), ",")
+	metadata := MetadataPage{
+		RequestedURL:  fullURL.String(),
+		Image:         imageURL.String(),
+		Thumbnail:     thumbnailURL,
+		TagsString:    tagsString,
+		Tags:          data.GetServerMetadataTags(),
+		SocialHandles: data.GetSocialHandles(),
+	}
 
 	w.Header().Set("Content-Type", "text/html")
 	err = tmpl.Execute(w, metadata)

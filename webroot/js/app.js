@@ -177,8 +177,8 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { title, summary } = data;
-    window.document.title = title;
+    const { name, summary } = data;
+    window.document.title = name;
 
     this.setState({
       configData: {
@@ -199,6 +199,7 @@ export default class App extends Component {
       viewerCount,
       online,
       lastConnectTime,
+      streamTitle,
     } = status;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
@@ -215,6 +216,7 @@ export default class App extends Component {
       viewerCount,
       lastConnectTime,
       streamOnline: online,
+      streamTitle,
     });
   }
 
@@ -263,7 +265,7 @@ export default class App extends Component {
     }
 
     if (this.windowBlurred) {
-      document.title = ` 🔴 ${this.state.configData && this.state.configData.title}`;
+      document.title = ` 🔴 ${this.state.configData && this.state.configData.name}`;
     }
   }
 
@@ -282,11 +284,12 @@ export default class App extends Component {
       playerActive: true,
       streamOnline: true,
       chatInputEnabled: true,
+      streamTitle: '',
       streamStatusMessage: MESSAGE_ONLINE,
     });
 
     if (this.windowBlurred) {
-      document.title = ` 🟢 ${this.state.configData && this.state.configData.title}`;
+      document.title = ` 🟢 ${this.state.configData && this.state.configData.name}`;
     }
   }
 
@@ -362,7 +365,7 @@ export default class App extends Component {
 
   handleWindowFocus() {
     this.windowBlurred = false;
-    window.document.title = this.state.configData && this.state.configData.title;
+    window.document.title = this.state.configData && this.state.configData.name;
   }
 
   handleSpaceBarPressed(e) {
@@ -396,6 +399,7 @@ export default class App extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
+      streamTitle,
       touchKeyboardActive,
       username,
       viewerCount,
@@ -409,10 +413,9 @@ export default class App extends Component {
       version: appVersion,
       logo = TEMP_IMAGE,
       socialHandles = [],
-      name: streamerName,
       summary,
       tags = [],
-      title,
+      name,
       extraPageContent,
     } = configData;
 
@@ -430,6 +433,10 @@ export default class App extends Component {
           `
         )
       : null;
+
+    const viewerCountMessage = streamOnline && viewerCount > 0 ? (
+      html`${viewerCount} ${pluralize('viewer', viewerCount)}`
+    ) : null;
 
     const mainClass = playerActive ? 'online' : '';
     const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
@@ -469,7 +476,7 @@ export default class App extends Component {
                 <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
               </span>
               <span class="instance-title overflow-hidden truncate"
-                >${title}</span
+                >${(streamOnline && streamTitle) ? streamTitle : name}</span
               >
             </h1>
             <div
@@ -515,7 +522,7 @@ export default class App extends Component {
             class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
           >
             <span>${streamStatusMessage}</span>
-            <span id="stream-viewer-count">${viewerCount} ${pluralize('viewer', viewerCount)}.</span>
+            <span id="stream-viewer-count">${viewerCountMessage}</span>
           </section>
         </main>
 
@@ -532,9 +539,12 @@ export default class App extends Component {
             >
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600"
-                  >${streamerName}</span
+                  >${name}</span
                 >
               </h2>
+              <h3 class="font-semibold text-3xl">
+                ${streamOnline && streamTitle}
+              </h3>
               <${SocialIconsList} handles=${socialHandles} />
               <div
                 id="stream-summary"
@@ -564,7 +574,7 @@ export default class App extends Component {
           websocket=${websocket}
           username=${username}
           chatInputEnabled=${chatInputEnabled}
-          instanceTitle=${title}
+          instanceTitle=${name}
         />
       </div>
     `;

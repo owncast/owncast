@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
 
@@ -11,15 +12,25 @@ func GetStatus() models.Status {
 		return models.Status{}
 	}
 
+	viewerCount := 0
+	if IsStreamConnected() {
+		viewerCount = len(_stats.Clients)
+	}
+
 	return models.Status{
 		Online:                IsStreamConnected(),
-		ViewerCount:           len(_stats.Clients),
+		ViewerCount:           viewerCount,
 		OverallMaxViewerCount: _stats.OverallMaxViewerCount,
 		SessionMaxViewerCount: _stats.SessionMaxViewerCount,
 		LastDisconnectTime:    _stats.LastDisconnectTime,
 		LastConnectTime:       _stats.LastConnectTime,
-		VersionNumber:         config.Config.VersionNumber,
+		VersionNumber:         config.VersionNumber,
+		StreamTitle:           data.GetStreamTitle(),
 	}
+}
+
+func GetCurrentBroadcast() *models.CurrentBroadcast {
+	return _currentBroadcast
 }
 
 // setBroadcaster will store the current inbound broadcasting details.

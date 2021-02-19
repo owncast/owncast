@@ -24,7 +24,7 @@ BUILD_TEMP_DIRECTORY="$(mktemp -d)"
 cd $BUILD_TEMP_DIRECTORY
 
 echo "Cloning owncast into $BUILD_TEMP_DIRECTORY..."
-git clone --depth 1 https://github.com/owncast/owncast 2> /dev/null
+git clone https://github.com/owncast/owncast 2> /dev/null
 cd owncast
 
 echo "Changing to branch: $GIT_BRANCH"
@@ -58,15 +58,10 @@ build() {
   VERSION=$4
   GIT_COMMIT=$5
 
-  echo "Building ${NAME} (${OS}/${ARCH}) release from ${GIT_BRANCH}..."
+  echo "Building ${NAME} (${OS}/${ARCH}) release from ${GIT_BRANCH} ${GIT_COMMIT}..."
 
   mkdir -p dist/${NAME}
-  mkdir -p dist/${NAME}/webroot/static
   mkdir -p dist/${NAME}/data
-
-  # Default files
-  cp config-default.yaml dist/${NAME}/config.yaml
-  cp data/content-example.md dist/${NAME}/data/content.md
 
   cp -R webroot/ dist/${NAME}/webroot/
 
@@ -74,10 +69,11 @@ build() {
   cp "${TMPDIR}tailwind.min.css" ./dist/${NAME}/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
   cp -R static/ dist/${NAME}/static
   cp README.md dist/${NAME}
+  cp webroot/img/logo.svg dist/${NAME}/data/logo.svg
 
   pushd dist/${NAME} >> /dev/null
 
-  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildType=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
+  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildPlatform=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
   mv owncast-*-${ARCH} owncast
 
   zip -r -q -8 ../owncast-$VERSION-$NAME.zip .

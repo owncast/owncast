@@ -1,18 +1,15 @@
 import {h} from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
-import {SOCIAL_PLATFORMS} from '../utils/platforms.js';
 import {classNames} from '../utils/helpers.js';
 
 const html = htm.bind(h);
 
 function SocialIcon(props) {
   const {platform, icon, url} = props;
-  const platformInfo = SOCIAL_PLATFORMS[platform.toLowerCase()];
-  const inList = !!platformInfo;
   const iconSupplied = !!icon
-  const name = inList ? platformInfo.name : platform;
+  const name = platform;
 
-  const finalIcon = iconSupplied ? icon : (inList ? platformInfo.icon : '/img/platformlogos/default.svg')
+  const finalIcon = iconSupplied ? icon : '/img/platformlogos/default.svg';
 
   const style = `background-image: url(${finalIcon});`
 
@@ -22,7 +19,6 @@ function SocialIcon(props) {
     "justify-start": true,
     "items-center": true,
     "-mr-1": true,
-    "use-default": !inList,
   });
   const labelClass = classNames({
     "platform-label": true,

@@ -8,10 +8,12 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// ConnectedClientsResponse is the response of the currently connected chat clients.
 type ConnectedClientsResponse struct {
 	Clients []Client `json:"clients"`
 }
 
+// Client represents a single chat client.
 type Client struct {
 	ConnectedAt  time.Time         `json:"connectedAt"`
 	LastSeen     time.Time         `json:"-"`
@@ -23,6 +25,7 @@ type Client struct {
 	Geo          *geoip.GeoDetails `json:"geo"`
 }
 
+// GenerateClientFromRequest will return a chat client from a http request.
 func GenerateClientFromRequest(req *http.Request) Client {
 	return Client{
 		ConnectedAt:  time.Now(),

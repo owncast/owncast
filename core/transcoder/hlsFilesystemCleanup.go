@@ -1,4 +1,4 @@
-package ffmpeg
+package transcoder
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 )
 
 // CleanupOldContent will delete old files from the private dir that are no longer being referenced
 // in the stream.
 func CleanupOldContent(baseDirectory string) {
 	// Determine how many files we should keep on disk
-	maxNumber := config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
+	maxNumber := int(data.GetStreamLatencyLevel().SegmentCount)
 	buffer := 10
 
 	files, err := getAllFilesRecursive(baseDirectory)

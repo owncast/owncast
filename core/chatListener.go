@@ -1,8 +1,6 @@
 package core
 
 import (
-	"errors"
-
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 )
@@ -26,16 +24,16 @@ func (cl ChatListenerImpl) MessageSent(message models.ChatEvent) {
 
 // SendMessageToChat sends a message to the chat server.
 func SendMessageToChat(message models.ChatEvent) error {
-	if !message.Valid() {
-		return errors.New("invalid chat message; id, author, and body are required")
-	}
-
 	chat.SendMessage(message)
 
 	return nil
 }
 
 // GetAllChatMessages gets all of the chat messages.
-func GetAllChatMessages(filtered bool) []models.ChatEvent {
-	return chat.GetMessages(filtered)
+func GetAllChatMessages() []models.ChatEvent {
+	return chat.GetMessages()
+}
+
+func GetModerationChatMessages() []models.ChatEvent {
+	return chat.GetModerationChatMessages()
 }

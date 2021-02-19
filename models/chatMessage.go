@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/teris-io/shortid"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
@@ -18,8 +19,9 @@ type ChatEvent struct {
 
 	Author      string    `json:"author,omitempty"`
 	Body        string    `json:"body,omitempty"`
+	RawBody     string    `json:"-"`
 	ID          string    `json:"id"`
-	MessageType string    `json:"type"`
+	MessageType EventType `json:"type"`
 	Visible     bool      `json:"visible"`
 	Timestamp   time.Time `json:"timestamp,omitempty"`
 }
@@ -29,15 +31,24 @@ func (m ChatEvent) Valid() bool {
 	return m.Author != "" && m.Body != "" && m.ID != ""
 }
 
+// SetDefaults will set default values on a chat event object.
+func (m *ChatEvent) SetDefaults() {
+	id, _ := shortid.Generate()
+	m.ID = id
+	m.Timestamp = time.Now()
+	m.Visible = true
+}
+
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func (m *ChatEvent) RenderAndSanitizeMessageBody() {
-	raw := m.Body
+	m.RawBody = m.Body
 
 	// Set the new, sanitized and rendered message body
-	m.Body = RenderAndSanitize(raw)
+	m.Body = RenderAndSanitize(m.RawBody)
 }
 
+// Empty will return if this message's contents is empty.
 func (m *ChatEvent) Empty() bool {
 	return m.Body == ""
 }

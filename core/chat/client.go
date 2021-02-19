@@ -28,25 +28,19 @@ type Client struct {
 	Username     *string
 	ClientID     string            // How we identify unique viewers when counting viewer counts.
 	Geo          *geoip.GeoDetails `json:"geo"`
+	Ignore       bool              // If set to true this will not be treated as a viewer
 
 	socketID              string // How we identify a single websocket client.
 	ws                    *websocket.Conn
 	ch                    chan models.ChatEvent
 	pingch                chan models.PingMessage
 	usernameChangeChannel chan models.NameChangeEvent
+	userJoinedChannel     chan models.UserJoinedEvent
 
 	doneCh chan bool
 
 	rateLimiter *rate.Limiter
 }
-
-const (
-	CHAT             = "CHAT"
-	NAMECHANGE       = "NAME_CHANGE"
-	PING             = "PING"
-	PONG             = "PONG"
-	VISIBILITYUPDATE = "VISIBILITY-UPDATE"
-)
 
 // NewClient creates a new chat client.
 func NewClient(ws *websocket.Conn) *Client {
@@ -54,10 +48,18 @@ func NewClient(ws *websocket.Conn) *Client {
 		log.Panicln("ws cannot be nil")
 	}
 
+	var ignoreClient = false
+	for _, extraData := range ws.Config().Protocol {
+		if extraData == "IGNORE_CLIENT" {
+			ignoreClient = true
+		}
+	}
+
 	ch := make(chan models.ChatEvent, channelBufSize)
 	doneCh := make(chan bool)
 	pingch := make(chan models.PingMessage)
 	usernameChangeChannel := make(chan models.NameChangeEvent)
+	userJoinedChannel := make(chan models.UserJoinedEvent)
 
 	ipAddress := utils.GetIPAddressFromRequest(ws.Request())
 	userAgent := ws.Request().UserAgent()
@@ -66,7 +68,7 @@ func NewClient(ws *websocket.Conn) *Client {
 
 	rateLimiter := rate.NewLimiter(0.6, 5)
 
-	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh, rateLimiter}
+	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, ignoreClient, socketID, ws, ch, pingch, usernameChangeChannel, userJoinedChannel, doneCh, rateLimiter}
 }
 
 func (c *Client) write(msg models.ChatEvent) {
@@ -105,6 +107,12 @@ func (c *Client) listenWrite() {
 			if err != nil {
 				c.handleClientSocketError(err)
 			}
+		case msg := <-c.userJoinedChannel:
+			err := websocket.JSON.Send(c.ws, msg)
+			if err != nil {
+				c.handleClientSocketError(err)
+			}
+
 		// receive done request
 		case <-c.doneCh:
 			_server.removeClient(c)
@@ -157,19 +165,37 @@ func (c *Client) listenRead() {
 				log.Errorln(err)
 			}
 
-			messageType := messageTypeCheck["type"]
+			messageType := messageTypeCheck["type"].(string)
 
 			if !c.passesRateLimit() {
 				continue
 			}
 
-			if messageType == CHAT {
+			if messageType == models.MessageSent {
 				c.chatMessageReceived(data)
-			} else if messageType == NAMECHANGE {
+			} else if messageType == models.UserNameChanged {
 				c.userChangedName(data)
+			} else if messageType == models.UserJoined {
+				c.userJoined(data)
 			}
 		}
 	}
+}
+
+func (c *Client) userJoined(data []byte) {
+	var msg models.UserJoinedEvent
+	if err := json.Unmarshal(data, &msg); err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	msg.ID = shortid.MustGenerate()
+	msg.Type = models.UserJoined
+	msg.Timestamp = time.Now()
+
+	c.Username = &msg.Username
+
+	_server.userJoined(msg)
 }
 
 func (c *Client) userChangedName(data []byte) {
@@ -178,7 +204,7 @@ func (c *Client) userChangedName(data []byte) {
 	if err != nil {
 		log.Errorln(err)
 	}
-	msg.Type = NAMECHANGE
+	msg.Type = models.UserNameChanged
 	msg.ID = shortid.MustGenerate()
 	_server.usernameChanged(msg)
 	c.Username = &msg.NewName
@@ -191,10 +217,7 @@ func (c *Client) chatMessageReceived(data []byte) {
 		log.Errorln(err)
 	}
 
-	id, _ := shortid.Generate()
-	msg.ID = id
-	msg.Timestamp = time.Now()
-	msg.Visible = true
+	msg.SetDefaults()
 
 	c.MessageCount++
 	c.Username = &msg.Author

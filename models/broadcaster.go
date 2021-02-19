@@ -9,6 +9,7 @@ type Broadcaster struct {
 	Time          time.Time            `json:"time"`
 }
 
+// InboundStreamDetails represents an inbound broadcast stream.
 type InboundStreamDetails struct {
 	Width          int     `json:"width"`
 	Height         int     `json:"height"`

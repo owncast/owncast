@@ -1,4 +1,4 @@
-package ffmpeg
+package transcoder
 
 import (
 	"github.com/owncast/owncast/models"

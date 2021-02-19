@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,15 +14,17 @@ import (
 func Status(w http.ResponseWriter, r *http.Request) {
 	broadcaster := core.GetBroadcaster()
 	status := core.GetStatus()
+	currentBroadcast := core.GetCurrentBroadcast()
 
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,
+		CurrentBroadcast:       currentBroadcast,
 		Online:                 status.Online,
 		ViewerCount:            status.ViewerCount,
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
 		VersionNumber:          status.VersionNumber,
-		DisableUpgradeChecks:   config.Config.DisableUpgradeChecks,
+		StreamTitle:            data.GetStreamTitle(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -33,12 +35,12 @@ func Status(w http.ResponseWriter, r *http.Request) {
 }
 
 type adminStatusResponse struct {
-	Broadcaster            *models.Broadcaster `json:"broadcaster"`
-	Online                 bool                `json:"online"`
-	ViewerCount            int                 `json:"viewerCount"`
-	OverallPeakViewerCount int                 `json:"overallPeakViewerCount"`
-	SessionPeakViewerCount int                 `json:"sessionPeakViewerCount"`
-
-	VersionNumber        string `json:"versionNumber"`
-	DisableUpgradeChecks bool   `json:"disableUpgradeChecks"`
+	Broadcaster            *models.Broadcaster      `json:"broadcaster"`
+	CurrentBroadcast       *models.CurrentBroadcast `json:"currentBroadcast"`
+	Online                 bool                     `json:"online"`
+	ViewerCount            int                      `json:"viewerCount"`
+	OverallPeakViewerCount int                      `json:"overallPeakViewerCount"`
+	SessionPeakViewerCount int                      `json:"sessionPeakViewerCount"`
+	StreamTitle            string                   `json:"streamTitle"`
+	VersionNumber          string                   `json:"versionNumber"`
 }

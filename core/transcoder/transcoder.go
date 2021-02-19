@@ -1,4 +1,4 @@
-package ffmpeg
+package transcoder
 
 import (
 	"fmt"
@@ -10,6 +10,8 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -21,14 +23,15 @@ type Transcoder struct {
 	segmentOutputPath    string
 	playlistOutputPath   string
 	variants             []HLSVariant
-	hlsPlaylistLength    int
-	segmentLengthSeconds int
 	appendToStream       bool
 	ffmpegPath           string
 	segmentIdentifier    string
-	internalListenerPort int
-	videoOnly            bool // If true ignore any audio, if any
-	TranscoderCompleted  func(error)
+	internalListenerPort string
+
+	currentStreamOutputSettings []models.StreamOutputVariant
+	currentLatencyLevel         models.LatencyLevel
+
+	TranscoderCompleted func(error)
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream.
@@ -81,11 +84,8 @@ func (t *Transcoder) Start() {
 	command := t.getString()
 
 	log.Tracef("Video transcoder started with %d stream variants.", len(t.variants))
-	if t.videoOnly {
-		log.Tracef("Transcoder requested to operate on video only, ignoring audio.")
-	}
 
-	if config.Config.EnableDebugFeatures {
+	if config.EnableDebugFeatures {
 		log.Println(command)
 	}
 
@@ -103,16 +103,8 @@ func (t *Transcoder) Start() {
 }
 
 func (t *Transcoder) getString() string {
-	var port int
-	if config.Config != nil {
-		port = config.Config.GetPublicWebServerPort() + 1
-	} else if t.internalListenerPort != 0 {
-		port = t.internalListenerPort
-	} else {
-		log.Panicln("A internal port must be set for transcoder callback")
-	}
-
-	localListenerAddress := "http://127.0.0.1:" + strconv.Itoa(port)
+	var port = t.internalListenerPort
+	localListenerAddress := "http://127.0.0.1:" + port
 
 	hlsOptionFlags := []string{}
 
@@ -139,8 +131,8 @@ func (t *Transcoder) getString() string {
 		// HLS Output
 		"-f", "hls",
 
-		"-hls_time", strconv.Itoa(t.segmentLengthSeconds), // Length of each segment
-		"-hls_list_size", strconv.Itoa(t.hlsPlaylistLength), // Max # in variant playlist
+		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
+		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
 		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		hlsOptionsString,
 
@@ -165,7 +157,7 @@ func (t *Transcoder) getString() string {
 	return strings.Join(ffmpegFlags, " ")
 }
 
-func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVariant {
+func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) HLSVariant {
 	variant := HLSVariant{}
 	variant.index = index
 	variant.isAudioPassthrough = quality.IsAudioPassthrough
@@ -202,12 +194,17 @@ func getVariantFromConfigQuality(quality config.StreamQuality, index int) HLSVar
 
 // NewTranscoder will return a new Transcoder, populated by the config.
 func NewTranscoder() *Transcoder {
+	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+
 	transcoder := new(Transcoder)
-	transcoder.ffmpegPath = config.Config.GetFFMpegPath()
-	transcoder.hlsPlaylistLength = config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist()
+	transcoder.ffmpegPath = ffmpegPath
+	transcoder.internalListenerPort = config.InternalHLSListenerPort
+
+	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
+	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
 
 	var outputPath string
-	if config.Config.S3.Enabled {
+	if data.GetS3Config().Enabled {
 		// Segments are not available via the local HTTP server
 		outputPath = config.PrivateHLSStoragePath
 	} else {
@@ -220,10 +217,8 @@ func NewTranscoder() *Transcoder {
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
 	transcoder.input = utils.GetTemporaryPipePath()
-	transcoder.segmentLengthSeconds = config.Config.GetVideoSegmentSecondsLength()
 
-	qualities := config.Config.GetVideoStreamQualities()
-	for index, quality := range qualities {
+	for index, quality := range transcoder.currentStreamOutputSettings {
 		variant := getVariantFromConfigQuality(quality, index)
 		transcoder.AddVariant(variant)
 	}
@@ -257,12 +252,7 @@ func (t *Transcoder) getVariantsString() string {
 	for _, variant := range t.variants {
 		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
 		singleVariantMap := ""
-		if t.videoOnly {
-			singleVariantMap = fmt.Sprintf("v:%d ", variant.index)
-		} else {
-			singleVariantMap = fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
-		}
-
+		singleVariantMap = fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
 		variantsStreamMaps = variantsStreamMaps + singleVariantMap
 	}
 	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
@@ -306,7 +296,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 
 	// -1 to work around segments being generated slightly larger than expected.
 	// https://trac.ffmpeg.org/ticket/6915?replyto=58#comment:57
-	gop := (t.segmentLengthSeconds * v.framerate) - 1
+	gop := (t.currentLatencyLevel.SecondsPerSegment * v.framerate) - 1
 
 	// For limiting the output bitrate
 	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
@@ -374,16 +364,6 @@ func (t *Transcoder) SetOutputPath(output string) {
 	t.segmentOutputPath = output
 }
 
-// SetHLSPlaylistLength will set the max number of items in a HLS variant's playlist.
-func (t *Transcoder) SetHLSPlaylistLength(length int) {
-	t.hlsPlaylistLength = length
-}
-
-// SetSegmentLength Specifies the number of seconds each segment should be.
-func (t *Transcoder) SetSegmentLength(seconds int) {
-	t.segmentLengthSeconds = seconds
-}
-
 // SetAppendToStream enables appending to the HLS stream instead of overwriting.
 func (t *Transcoder) SetAppendToStream(append bool) {
 	t.appendToStream = append
@@ -394,11 +374,6 @@ func (t *Transcoder) SetIdentifier(output string) {
 	t.segmentIdentifier = output
 }
 
-func (t *Transcoder) SetInternalHTTPPort(port int) {
+func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
-}
-
-// SetVideoOnly will ignore any audio streams, if any.
-func (t *Transcoder) SetVideoOnly(videoOnly bool) {
-	t.videoOnly = videoOnly
 }

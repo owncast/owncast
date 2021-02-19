@@ -8,25 +8,32 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
 	schemaVersion = 0
+	backupFile    = "backup/owncastdb.bak"
 )
 
 var _db *sql.DB
+var _datastore *Datastore
 
+// GetDatabase will return the shared instance of the actual database.
 func GetDatabase() *sql.DB {
 	return _db
 }
 
-func SetupPersistence() error {
-	file := config.Config.DatabaseFilePath
+// GetStore will return the shared instance of the read/write datastore.
+func GetStore() *Datastore {
+	return _datastore
+}
 
+// SetupPersistence will open the datastore and make it available.
+func SetupPersistence(file string) error {
 	// Create empty DB file if it doesn't exist.
 	if !utils.DoesFileExists(file) {
 		log.Traceln("Creating new database at", file)
@@ -79,11 +86,26 @@ func SetupPersistence() error {
 	}
 
 	_db = db
+
+	createWebhooksTable()
+	createAccessTokensTable()
+
+	_datastore = &Datastore{}
+	_datastore.Setup()
+
+	dbBackupTicker := time.NewTicker(1 * time.Hour)
+	go func() {
+		for range dbBackupTicker.C {
+			utils.Backup(_db, backupFile)
+		}
+	}()
+
 	return nil
 }
 
 func migrateDatabase(db *sql.DB, from, to int) error {
 	log.Printf("Migrating database from version %d to %d\n", from, to)
+	utils.Backup(db, fmt.Sprintf("backup/owncast-v%d.bak", from))
 	for v := from; v < to; v++ {
 		switch v {
 		case 0:

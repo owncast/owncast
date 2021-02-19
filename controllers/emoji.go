@@ -40,6 +40,6 @@ func GetCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(emojiList); err != nil {
-		internalErrorHandler(w, err)
+		InternalErrorHandler(w, err)
 	}
 }

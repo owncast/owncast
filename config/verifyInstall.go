@@ -12,8 +12,8 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-// verifyFFMpegPath verifies that the path exists, is a file, and is executable.
-func verifyFFMpegPath(path string) error {
+// VerifyFFMpegPath verifies that the path exists, is a file, and is executable.
+func VerifyFFMpegPath(path string) error {
 	stat, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
@@ -39,12 +39,12 @@ func verifyFFMpegPath(path string) error {
 
 	response := string(out)
 	if response == "" {
-		return fmt.Errorf("unable to determine the version of your ffmpeg installation at %s. you may experience issues with video.", path)
+		return fmt.Errorf("unable to determine the version of your ffmpeg installation at %s you may experience issues with video", path)
 	}
 
 	responseComponents := strings.Split(response, " ")
 	if len(responseComponents) < 3 {
-		log.Debugf("unable to determine the version of your ffmpeg installation at %s. you may experience issues with video.", path)
+		log.Debugf("unable to determine the version of your ffmpeg installation at %s you may experience issues with video", path)
 		return nil
 	}
 
@@ -59,7 +59,7 @@ func verifyFFMpegPath(path string) error {
 	}
 
 	if semver.Compare(versionString, FfmpegSuggestedVersion) == -1 {
-		return fmt.Errorf("your %s version of ffmpeg at %s may be older than the suggested version of %s. you may experience issues with video.", versionString, path, FfmpegSuggestedVersion)
+		return fmt.Errorf("your %s version of ffmpeg at %s may be older than the suggested version of %s you may experience issues with video", versionString, path, FfmpegSuggestedVersion)
 	}
 
 	return nil

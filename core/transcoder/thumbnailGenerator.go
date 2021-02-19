@@ -1,4 +1,4 @@
-package ffmpeg
+package transcoder
 
 import (
 	"io/ioutil"
@@ -11,6 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 )
 
 var _timer *time.Ticker
@@ -78,9 +80,10 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	}
 
 	mostRecentFile := path.Join(framePath, names[0])
+	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 
 	thumbnailCmdFlags := []string{
-		config.Config.GetFFMpegPath(),
+		ffmpegPath,
 		"-y",                 // Overwrite file
 		"-threads 1",         // Low priority processing
 		"-t 1",               // Pull from frame 1
@@ -96,7 +99,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	}
 
 	// If YP support is enabled also create an animated GIF preview
-	if config.Config.YP.Enabled {
+	if data.GetDirectoryEnabled() {
 		makeAnimatedGifPreview(mostRecentFile, previewGifFile)
 	}
 
@@ -104,9 +107,11 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 }
 
 func makeAnimatedGifPreview(sourceFile string, outputFile string) {
+	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{
-		config.Config.GetFFMpegPath(),
+		ffmpegPath,
 		"-y",             // Overwrite file
 		"-threads 1",     // Low priority processing
 		"-i", sourceFile, // Input

@@ -31,7 +31,7 @@ test('can send a chat message', (done) => {
 var messageId;
 
 test('verify we can make API call to mark message as hidden', async (done) => {
-    const res = await request.get('/api/chat').expect(200);
+    const res = await request.get('/api/admin/chat/messages').auth('admin', 'abc123').expect(200)
     const message = res.body[0];
     messageId = message.id;
     await request.post('/api/admin/chat/updatemessagevisibility')

@@ -5,39 +5,65 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
 type j map[string]interface{}
 
-func internalErrorHandler(w http.ResponseWriter, err error) {
+// InternalErrorHandler will return an error message as an HTTP response.
+func InternalErrorHandler(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
 	}
+
+	log.Errorln(err)
 
 	w.WriteHeader(http.StatusInternalServerError)
 	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {
-		internalErrorHandler(w, err)
+		InternalErrorHandler(w, err)
 	}
 }
 
-func badRequestHandler(w http.ResponseWriter, err error) {
+// BadRequestHandler will return an HTTP 500 as an HTTP response.
+func BadRequestHandler(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
 	}
 
+	log.Debugln(err)
+
 	w.WriteHeader(http.StatusBadRequest)
 	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {
-		internalErrorHandler(w, err)
+		InternalErrorHandler(w, err)
 	}
 }
 
+// WriteSimpleResponse will return a message as a response.
 func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 	response := models.BaseAPIResponse{
 		Success: success,
 		Message: message,
 	}
-	w.WriteHeader(http.StatusOK)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if success {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		internalErrorHandler(w, err)
+		InternalErrorHandler(w, err)
+	}
+}
+
+// WriteResponse will return an object as a JSON encoded response.
+func WriteResponse(w http.ResponseWriter, response interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		InternalErrorHandler(w, err)
 	}
 }

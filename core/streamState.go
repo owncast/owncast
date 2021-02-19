@@ -10,8 +10,11 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/ffmpeg"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/core/transcoder"
+	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 
 	"github.com/grafov/m3u8"
@@ -23,11 +26,19 @@ var _offlineCleanupTimer *time.Timer
 // While a stream takes place cleanup old HLS content every N min.
 var _onlineCleanupTicker *time.Ticker
 
+var _currentBroadcast *models.CurrentBroadcast
+
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected() {
+
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
+
+	_currentBroadcast = &models.CurrentBroadcast{
+		LatencyLevel:   data.GetStreamLatencyLevel(),
+		OutputSettings: data.GetStreamOutputVariants(),
+	}
 
 	StopOfflineCleanupTimer()
 	startOnlineCleanupTimer()
@@ -37,23 +48,28 @@ func setStreamAsConnected() {
 	}
 
 	segmentPath := config.PublicHLSStoragePath
-	if config.Config.S3.Enabled {
+	s3Config := data.GetS3Config()
+
+	if err := setupStorage(); err != nil {
+		log.Fatalln("failed to setup the storage", err)
+	}
+
+	if s3Config.Enabled {
 		segmentPath = config.PrivateHLSStoragePath
 	}
 
 	go func() {
-		_transcoder = ffmpeg.NewTranscoder()
-		if _broadcaster != nil {
-			_transcoder.SetVideoOnly(_broadcaster.StreamDetails.VideoOnly)
-		}
-
+		_transcoder = transcoder.NewTranscoder()
 		_transcoder.TranscoderCompleted = func(error) {
 			SetStreamAsDisconnected()
+			_transcoder = nil
+			_currentBroadcast = nil
 		}
 		_transcoder.Start()
 	}()
 
-	ffmpeg.StartThumbnailGenerator(segmentPath, config.Config.VideoSettings.HighestQualityStreamIndex)
+	go webhooks.SendStreamStatusEvent(models.StreamStarted)
+	transcoder.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
@@ -65,14 +81,14 @@ func SetStreamAsDisconnected() {
 	offlineFilename := "offline.ts"
 	offlineFilePath := "static/" + offlineFilename
 
-	ffmpeg.StopThumbnailGenerator()
+	transcoder.StopThumbnailGenerator()
 	rtmp.Disconnect()
 
 	if _yp != nil {
 		_yp.Stop()
 	}
 
-	for index := range config.Config.GetVideoStreamQualities() {
+	for index := range data.GetStreamOutputVariants() {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
 
@@ -97,7 +113,7 @@ func SetStreamAsDisconnected() {
 			}
 
 			variantPlaylist := playlist.(*m3u8.MediaPlaylist)
-			if len(variantPlaylist.Segments) > config.Config.GetMaxNumberOfReferencedSegmentsInPlaylist() {
+			if len(variantPlaylist.Segments) > int(data.GetStreamLatencyLevel().SegmentCount) {
 				variantPlaylist.Segments = variantPlaylist.Segments[:len(variantPlaylist.Segments)]
 			}
 
@@ -144,6 +160,8 @@ func SetStreamAsDisconnected() {
 
 	StartOfflineCleanupTimer()
 	stopOnlineCleanupTimer()
+
+	go webhooks.SendStreamStatusEvent(models.StreamStopped)
 }
 
 // StartOfflineCleanupTimer will fire a cleanup after n minutes being disconnected.
@@ -153,6 +171,7 @@ func StartOfflineCleanupTimer() {
 		for range _offlineCleanupTimer.C {
 			// Reset the session count since the session is over
 			_stats.SessionMaxViewerCount = 0
+			// Set video to offline state
 			resetDirectories()
 			transitionToOfflineVideoStreamContent()
 		}
@@ -170,7 +189,7 @@ func startOnlineCleanupTimer() {
 	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
 		for range _onlineCleanupTicker.C {
-			ffmpeg.CleanupOldContent(config.PrivateHLSStoragePath)
+			transcoder.CleanupOldContent(config.PrivateHLSStoragePath)
 		}
 	}()
 }

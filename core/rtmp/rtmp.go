@@ -8,14 +8,13 @@ import (
 	"strings"
 	"syscall"
 	"time"
-	"unsafe"
 
 	"github.com/nareix/joy5/format/flv"
 	"github.com/nareix/joy5/format/flv/flvio"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nareix/joy5/format/rtmp"
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -35,7 +34,7 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
-	port := config.Config.GetRTMPServerPort()
+	port := data.GetRTMPPortNumber()
 	s := rtmp.NewServer()
 	var lis net.Listener
 	var err error
@@ -45,7 +44,7 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 
 	s.LogEvent = func(c *rtmp.Conn, nc net.Conn, e int) {
 		es := rtmp.EventString[e]
-		log.Traceln(unsafe.Pointer(c), nc.LocalAddr(), nc.RemoteAddr(), es)
+		log.Traceln("RTMP", nc.LocalAddr(), nc.RemoteAddr(), es)
 	}
 
 	s.HandleConn = HandleConn
@@ -81,7 +80,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	streamingKeyComponents := strings.Split(c.URL.Path, "/")
 	streamingKey := streamingKeyComponents[len(streamingKeyComponents)-1]
-	if streamingKey != config.Config.VideoSettings.StreamingKey {
+	if streamingKey != data.GetStreamKey() {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
 		nc.Close()
 		return

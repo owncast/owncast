@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development master branch.
-  version: '0.0.5'
+  version: '0.0.6-development'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -17,29 +17,31 @@ tags:
     description: Admin operations requiring authentication.
   - name: Chat
     description: Endpoints related to the chat interface.
+  - name: Integrations
+    description: APIs built to allow 3rd parties to interact with an Owncast server.
 
 components:
   schemas:
     ClientArray:
       type: array
       items:
-        $ref: '#/components/schemas/Client'
+        $ref: "#/components/schemas/Client"
 
     LogEntryArray:
       type: array
       items:
-        $ref: '#/components/schemas/LogEntry'
+        $ref: "#/components/schemas/LogEntry"
 
     Client:
       type: object
       description: A single representation of a client.
       example:
-        connectedAt: '2020-10-06T23:20:44.588649-07:00'
+        connectedAt: "2020-10-06T23:20:44.588649-07:00"
         messageCount: 0
         userAgent: >-
           Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
-        ipAddress: '::1'
+        ipAddress: "::1"
         username: null
         clientID: 2ba20dd34f911c198df3218ddc64c740
         geo:
@@ -91,9 +93,6 @@ components:
         name:
           type: string
           description: Displayed as the header in the instance details.
-        title:
-          type: string
-          description: Displayed in the document title and header.
         summary:
           type: string
           description: This is brief summary of whom you are or what the stream is.
@@ -186,6 +185,7 @@ components:
         encoderPreset:
           type: string
           description: "The [H.264 preset value](https://trac.ffmpeg.org/wiki/Encode/H.264) selected for this HLS variant."
+    
     TimestampedValue:
       type: object
       properties:
@@ -194,6 +194,18 @@ components:
           format: date-time
         value:
           type: integer
+
+    ConfigValue:
+      description: A wrapper object used to set values in many config endpoints.
+      type: object
+      properties:
+        value:
+          oneOf:
+            - type: string
+            - type: integer
+            - type: object
+            - type: boolean
+
     LogEntry:
       type: object
       properties:
@@ -207,13 +219,38 @@ components:
         message:
           type: string
           description: "The log entry contents"
-
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of this webhook.
+        url:
+          type: string
+          description: The URL that events will be sent to.
+        events:
+          type: array
+          items:
+            type: string
+            description: The events that will be sent to this webhook.
+        timestamp:
+          type: string
+          format: date-time
+          description: When this webhook was created.
+        lastUsed:
+          type: string
+          format: date-time
+          description: When this webhook was last used.
 
   securitySchemes:
     AdminBasicAuth:
       type: http
       scheme: basic
       description: The username for admin basic auth is `admin` and the password is the stream key.
+    AccessToken:
+      type: http
+      scheme: bearer
+      description: 3rd party integration auth where a service user must provide an access token.
 
   responses:
     ClientsResponse:
@@ -223,18 +260,18 @@ components:
           schema:
             $ref: "#/components/schemas/ClientArray"
           example:
-          - connectedAt: '2020-10-06T23:20:44.588649-07:00'
-            messageCount: 3
-            userAgent: >-
-              Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
-              (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
-            ipAddress: '172.217.164.110'
-            username: coolperson42
-            clientID: 2ba20dd34f911c198df3218ddc64c740
-            geo:
-              countryCode: US
-              regionName: California
-              timeZone: America/Los_Angeles
+            - connectedAt: "2020-10-06T23:20:44.588649-07:00"
+              messageCount: 3
+              userAgent: >-
+                Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
+                (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
+              ipAddress: "172.217.164.110"
+              username: coolperson42
+              clientID: 2ba20dd34f911c198df3218ddc64c740
+              geo:
+                countryCode: US
+                regionName: California
+                timeZone: America/Los_Angeles
 
     LogsResponse:
       description: Response of server log entries
@@ -245,8 +282,24 @@ components:
           examples:
             success:
               summary: Logs returned
-              value: [{"message":"Owncast v0.0.0-localdev (unknown)","level":"info","time":"2020-10-29T18:35:34.422386-07:00"},{"message":"Web server running on port: 8080","level":"info","time":"2020-10-29T18:35:35.011731-07:00"},{"message":"RTMP server is listening for incoming stream on port: 1935","level":"info","time":"2020-10-29T18:35:35.011823-07:00"}]
-
+              value:
+                [
+                  {
+                    "message": "Owncast v0.0.0-localdev (unknown)",
+                    "level": "info",
+                    "time": "2020-10-29T18:35:34.422386-07:00",
+                  },
+                  {
+                    "message": "Web server running on port: 8080",
+                    "level": "info",
+                    "time": "2020-10-29T18:35:35.011731-07:00",
+                  },
+                  {
+                    "message": "RTMP server is listening for incoming stream on port: 1935",
+                    "level": "info",
+                    "time": "2020-10-29T18:35:35.011823-07:00",
+                  },
+                ]
 
     BasicResponse:
       description: Operation Success/Failure Response
@@ -257,20 +310,27 @@ components:
           examples:
             success:
               summary: Operation succeeded.
-              value: {"success": true, "message": "context specific success message"}
+              value:
+                {
+                  "success": true,
+                  "message": "context specific success message",
+                }
             failure:
               summary: Operation failed.
-              value: {"success": false, "message": "context specific failure message"}
+              value:
+                {
+                  "success": false,
+                  "message": "context specific failure message",
+                }
 
 paths:
-
   /api/config:
     get:
       summary: Information
       description: The client configuration. Information useful for the user interface.
       tags: ["Server"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -283,7 +343,7 @@ paths:
       description: This endpoint is used to discover when a server is broadcasting, the number of active viewers as well as other useful information for updating the user interface.
       tags: ["Server"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -322,7 +382,7 @@ paths:
       description: Used to get all chat messages prior to connecting to the websocket.
       tags: ["Chat"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -353,7 +413,7 @@ paths:
       description: Information to be used in the Yellow Pages service, a global directory of Owncast servers.
       tags: ["Server"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -391,7 +451,7 @@ paths:
       description: Get a list of custom emoji that are supported in chat.
       tags: ["Chat"]
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -422,7 +482,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: Server status and broadcaster details
           content:
             application/json:
@@ -471,9 +531,6 @@ paths:
                   versionNumber:
                     type: string
                     description: The current version of the owncast software
-                  disableUpgradeChecks:
-                    type: boolean
-                    description: Turn off checking for owncast releases
               examples:
                 connected:
                   summary: "Broadcaster Connected"
@@ -495,13 +552,22 @@ paths:
                     overallPeakViewerCount: 4
                     sessionPeakViewerCount: 4
                     versionNumber: "0.0.3"
-                    disableUpgradeChecks: false
-
 
   /api/admin/disconnect:
     post:
       summary: Disconnect Broadcaster
       description: Disconnect the active inbound stream, if one exists, and terminate the broadcast.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/BasicResponse"
+
+  /api/admin/yp/reset:
+    post:
+      summary: Reset your YP registration key.
+      description: Used when there is a problem with your registration to the Owncast Directory via the YP APIs.  This will reset your local registration key.
       tags: ["Admin"]
       security:
         - AdminBasicAuth: []
@@ -517,7 +583,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/ClientsResponse"
 
   /api/admin/logs:
@@ -528,7 +594,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/LogsResponse"
 
   /api/admin/logs/warnings:
@@ -539,171 +605,8 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/LogsResponse"
-
-
-  /api/admin/changekey:
-    post:
-      summary: Update Stream Key.  Pre-release, do not use.
-      description: Change the stream key in memory, but not in the config file.  This will require all broadcasters to be reconfigured to connect again.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                key:
-                  type: string
-      responses:
-        '200':
-          description: Key was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changeExtraPageContent:
-    post:
-      summary: Change the extra page content.  Pre-release, do not use.
-      description: Change the extra page content in memory, but not on disk.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                content:
-                  type: string
-      responses:
-        '200':
-          description: Page content was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changetitle:
-    post:
-      summary: Update Stream Title.  Pre-release, do not use.
-      description: Change the stream title in memory, but not in the config file.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-      responses:
-        '200':
-          description: Title was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changename:
-    post:
-      summary: Update Stream Name.  Pre-release, do not use.
-      description: Change the stream name in memory, but not in the config file.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-      responses:
-        '200':
-          description: Name was changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
-
-  /api/admin/changetags:
-    post:
-      summary: Update Stream Tags.  Pre-release, do not use.
-      description: Change the stream tags in memory, but not in the config file.
-      tags: ["Admin", "Pre-release"]
-      security:
-        - AdminBasicAuth: []
-      requestBody:
-        description: ""
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tags:
-                  type: array
-                  items:
-                    type: string
-      responses:
-        '200':
-          description: Tags were changed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: changed
 
   /api/admin/serverconfig:
     get:
@@ -713,7 +616,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -728,6 +631,9 @@ paths:
                   webServerPort:
                     type: integer
                     description: The port the public web server is listening on.
+                  rtmpServerPort:
+                    type: integer
+                    description: The port the inbound RTMP broadcast should be sent to.
                   s3:
                     $ref: "#/components/schemas/S3"
                   videoSettings:
@@ -738,15 +644,12 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/StreamQuality"
-                      segmentLengthSeconds:
+                      latencyLevel:
                         type: integer
-                        description: The target number of seconds each HLS video segment of video will last.
-                      numberOfPlaylistItems:
-                        type: integer
-                        description: The maximum number of HLS video segments we will keep referenced in the playlist.
+                        description: The level of latency selected for streaming.  Lower latency can create more buffering.
                   yp:
                     $ref: "#/components/schemas/YP"
-              
+
   /api/admin/chat/messages:
     get:
       summary: Chat messages, unfiltered.
@@ -755,7 +658,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -780,7 +683,6 @@ paths:
                       type: string
                       format: date-time
 
-
   /api/admin/chat/updatemessagevisibility:
     post:
       summary: Update the visibility of chat messages.
@@ -793,7 +695,7 @@ paths:
               properties:
                 visible:
                   type: boolean
-                  description: Are these messages visible in "Get the CPU, Memory and Disk utilization levels over the collected period."
+                  description: Are these messages visible.
                 idArray:
                   type: array
                   items:
@@ -803,9 +705,339 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/BasicResponse"
 
+  /api/admin/config/key:
+    post:
+      summary: Set the stream key.
+      description: Set the stream key.  Also used as the admin password.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+
+  /api/admin/config/pagecontent:
+    post:
+      summary: Set the custom page content.
+      description: Set the custom page content using markdown.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              "# Welcome to my cool server!<br><br>I _hope_ you enjoy it."
+
+  /api/admin/config/streamtitle:
+    post:
+      summary: Set the stream title.
+      description: Set the title of the currently streaming content.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: Streaming my favorite game, Desert Bus.
+
+  /api/admin/config/name:
+    post:
+      summary: Set the server name.
+      description: Set the name associated with your server.  Often is your name, username or identity.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+
+  /api/admin/config/serversummary:
+    post:
+      summary: Set the server summary.
+      description: Set the summary of your server's streaming content.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: The best in Desert Bus Streaming  
+
+  /api/admin/config/logo:
+    post:
+      summary: Set the server logo.
+      description: Set the logo for your server.  Path is relative to webroot.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"    
+            example:
+              value: "/img/mylogo.png"
+
+  /api/admin/config/tags:
+    post:
+      summary: Set the server tags.
+      description: Set the tags displayed for your server and the categories you can show up in on the directory.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"   
+            example:
+              value:
+                - games
+                - music
+                - streaming             
+
+  /api/admin/config/ffmpegpath:
+    post:
+      summary: Set the ffmpeg binary path
+      description: Set the path for a specific copy of ffmpeg on your system.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"  
+            example:
+              value: "/home/owncast/ffmpeg"
+
+  /api/admin/config/webserverport:
+    post:
+      summary: Set the owncast web port.
+      description: Set the port the owncast web server should listen on.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"    
+            example:
+              value: 8080
+
+  /api/admin/config/rtmpserverport:
+    post:
+      summary: Set the inbound rtmp server port.
+      description: Set the port where owncast service will listen for inbound broadcasts.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: 1935
+
+  /api/admin/config/nsfw:
+    post:
+      summary: Mark if your stream is not safe for work
+      description: Mark if your stream can be consitered not safe for work.  Used in different contexts, including the directory for filtering purposes.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: false
+
+  /api/admin/config/directoryenabled:
+    post:
+      summary: Set if this server supports the Owncast directory.
+      description: If set to true the server will attempt to register itself with the [Owncast Directory](https://directory.owncast.online).  Off by default.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: true
+
+  /api/admin/config/serverurl:
+    post:
+      summary: Set the public url of this owncast server.
+      description: Set the public url of this owncast server.  Used for the directory and optional integrations.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"  
+            example:
+              value: https://live.mycoolserver.biz
+
+  /api/admin/config/video/streamlatencylevel:
+    post:
+      summary: Set the latency level for the stream.
+      description: Sets the latency level that determines how much video is buffered between the server and viewer.  Less latency can end up with more buffering.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  description: The latency level
+                  type: integer
+              example:
+                value: 4
+ 
+
+  /api/admin/config/video/streamoutputvariants:
+    post:
+      summary: Set the configuration of your stream output.
+      description: Sets the detailed configuration for all of the stream variants you support.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value:
+                - framerate: 30
+                  videoPassthrough: false
+                  videoBitrate: 1800
+                  encoderPreset: veryfast
+                  audioPassthrough: true
+                - framerate: 24
+                  videoPassthrough: false
+                  videoBitrate: 1000
+                  encoderPreset: superfast
+                  audioPassthrough: true                                                               
+
+  /api/admin/config/s3:
+      post:
+        summary: Set your storage configration. 
+        description: Sets your S3 storage provider configuration details to enable external storage.
+        tags: ["Admin"]
+        security:
+          - AdminBasicAuth: []
+        responses:
+          '200':
+            $ref: "#/components/responses/BasicResponse"      
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigValue"
+              example:
+                value:
+                  enabled: true
+                  endpoint: https://s3.us-west-000.backblazeb2.com
+                  accessKey: e1ac500y7000500047156bd060
+                  secret: "H8FH8eSxM2K/S42CUg5K000Tt4WY2fI"
+                  bucket: "video"
+                  region: us-west-000
+
+  /api/admin/config/socialhandles:
+      post:
+        summary: Set your social handles.
+        description: Sets the external links to social networks and profiles.
+        tags: ["Admin"]
+        security:
+          - AdminBasicAuth: []
+        responses:
+          '200':
+            $ref: "#/components/responses/BasicResponse"      
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigValue"
+              example:
+                value:
+                  - platform: github
+                    url: https://github.com/owncast/owncast
+                  - platform: mastodon
+                    url: https://mastodon.social/@gabek
+                  
   /api/admin/viewersOverTime:
     get:
       summary: Viewers Over Time
@@ -814,7 +1046,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -830,9 +1062,6 @@ paths:
                     - time: "2020-10-03T21:42:00.381996-05:00"
                       value: 52
 
-
-
-
   /api/admin/hardwarestats:
     get:
       summary: Hardware Stats
@@ -841,7 +1070,7 @@ paths:
       security:
         - AdminBasicAuth: []
       responses:
-        '200':
+        "200":
           description: ""
           content:
             application/json:
@@ -884,3 +1113,360 @@ paths:
                         value: 11
                       - time: "2020-10-03T21:43:00.381996-05:00"
                         value: 11
+
+  /api/integrations/streamtitle:
+    post:
+      summary: Set the stream title.
+      description: Set the title of the currently streaming content.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: Streaming my favorite game, Desert Bus.
+
+
+  /api/integrations/chat/user:
+    post:
+      summary: Send a user chat message.
+      description: Send a chat message on behalf of a user.  Could be a bot name or a real user.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  description: The user you want to send this message as.
+                body:
+                  type: string
+                  description: The message text that will be sent as the user.
+      responses:
+        "200":
+          description: Message was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: sent
+
+  /api/integrations/chat/system:
+    post:
+      summary: Send a system chat message.
+      description: Send a chat message on behalf of the system/server.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  description: The message text that will be sent as the system user.
+      responses:
+        "200":
+          description: Message was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: sent
+
+  /api/integrations/chat/action:
+    post:
+      summary: Send a chat action.
+      description: Send an action that took place to the chat.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - "body"
+              properties:
+                body:
+                  type: string
+                  description: The message text that will be sent as the system user.
+                  example: "rolled a 15 on the dice"
+                author:
+                  type: string
+                  description: An optional user name that performed the action.
+                  example: "JohnSmith"
+      responses:
+        "200":
+          description: Message was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: sent
+
+
+  /api/admin/accesstokens/create:
+    post:
+      summary: Create an access token.
+      description: Create a single access token that has access to the access scopes provided.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The human-readable name to give this access token.
+                scopes:
+                  type: array
+                  items:
+                    type: string
+
+      responses:
+        "200":
+          description: Token was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: your new token
+                  token:
+                    type: string
+                    example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
+
+  /api/admin/accesstokens/delete:
+    post:
+      summary: Delete an access token.
+      description: Delete a single access token.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: The token to delete
+
+      responses:
+        "200":
+          description: Token was deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: deleted token
+
+  /api/admin/accesstokens:
+    get:
+      summary: Return all access tokens.
+      description: Return all of the available access tokens.
+      tags: ["Integrations"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        "200":
+          description: Tokens are returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/admin/webhooks:
+    get:
+      summary: Return all webhooks.
+      description: Return all of the configured webhooks for external events.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        "200":
+          description: Webhooks are returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+
+  /api/admin/webhooks/delete:
+    post:
+      summary: Delete a single webhook.
+      description: Delete a single webhook by its ID.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The webhook id to delete
+      responses:
+        "200":
+          description: Webhook is deleted
+
+  /api/admin/webhooks/create:
+    post:
+      summary: Create a webhook.
+      description: Create a single webhook that acts on the requested events.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The url to post the events to.
+                events:
+                  description: The events to be notified about.
+                  type: array
+                  items:
+                    type: string
+
+      responses:
+        "200":
+          description: Token was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: your new token
+                  token:
+                    type: string
+                    example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
+
+
+  /api/integrations/clients:
+    get:
+      summary: Return a list of currently connected clients
+      description: Return a list of currently connected clients with optional geo details.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientsResponse"
+
+  /api/integrations/chat:
+      get:
+        summary: Historical Chat Messages
+        description: Used to get the backlog of chat messages.
+        tags: ["Integrations"]
+        security:
+          - AccessToken: []
+        responses:
+          "200":
+            description: ""
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      author:
+                        type: string
+                        description: Username of the chat message poster.
+                      body:
+                        type: string
+                        description: Escaped HTML of the chat message content.
+                      id:
+                        type: string
+                        description: Unique ID of the chat message.
+                      visible:
+                        type: boolean
+                        description: "Should chat message be visibly rendered."
+                      timestamp:
+                        type: string
+                        format: date-time
+
+  /api/integrations/chat/updatemessagevisibility:
+    post:
+      summary: Update the visibility of chat messages.
+      description: Pass an array of IDs you want to change the chat visibility of.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visible:
+                  type: boolean
+                  description: Are these messages visible.
+                idArray:
+                  type: array
+                  items:
+                    type: string
+                    description: IDs of the chat messages you wish to change the visibility of.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/BasicResponse"
