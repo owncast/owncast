@@ -1,0 +1,57 @@
+// styles for social handles editing section
+
+.social-option,
+.social-dropdown {
+  .ant-select-item-option-content,
+  .ant-select-selection-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.25em;
+    line-height: normal;
+
+    .option-icon {
+      height: 1.5em;
+      width: 1.5em;
+      line-height: normal;
+    }
+    .option-label {
+      display: inline-block;
+      margin-left: 1em;
+      line-height: normal;
+    }
+  }
+}
+
+.social-links-edit-container {
+  .social-handles-table {
+    .social-handle-cell {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      color: var(--white-75);
+
+      .option-icon {
+        height: 2em;
+        width: 2em;
+        line-height: normal;
+      }
+      .option-label {
+        display: flex;
+        flex-direction: column;
+        margin: 0 0 0 1em;
+        line-height: 2;
+        font-size: 0.85em;
+      }
+    }
+    .actions {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-evenly;
+      width: 6em;
+    }
+  }
+}

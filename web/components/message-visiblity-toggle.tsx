@@ -1,20 +1,28 @@
-// Custom component for AntDesign Button that makes an api call, then displays a confirmation icon upon 
-import React, { useState, useEffect } from "react";
-import { Button, Tooltip } from "antd";
-import { EyeOutlined, EyeInvisibleOutlined, CheckCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
-import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from "../../utils/apis";
-import { MessageType } from '../../types/chat';
-import { OUTCOME_TIMEOUT } from "../chat";
-import { isEmptyObject } from "../../utils/format";
+// Custom component for AntDesign Button that makes an api call, then displays a confirmation icon upon
+import React, { useState, useEffect } from 'react';
+import { Button, Tooltip } from 'antd';
+import {
+  EyeOutlined,
+  EyeInvisibleOutlined,
+  CheckCircleFilled,
+  ExclamationCircleFilled,
+} from '@ant-design/icons';
+import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from '../utils/apis';
+import { MessageType } from '../types/chat';
+import { OUTCOME_TIMEOUT } from '../pages/chat';
+import { isEmptyObject } from '../utils/format';
 
 interface MessageToggleProps {
   isVisible: boolean;
   message: MessageType;
-  setMessage: (message: MessageType) => void,
-};
+  setMessage: (message: MessageType) => void;
+}
 
-
-export default function MessageVisiblityToggle({ isVisible, message, setMessage }: MessageToggleProps) {
+export default function MessageVisiblityToggle({
+  isVisible,
+  message,
+  setMessage,
+}: MessageToggleProps) {
   if (!message || isEmptyObject(message)) {
     return null;
   }
@@ -25,15 +33,16 @@ export default function MessageVisiblityToggle({ isVisible, message, setMessage 
   const { id: messageId } = message || {};
 
   const resetOutcome = () => {
-    outcomeTimeout = setTimeout(() => { setOutcome(0)}, OUTCOME_TIMEOUT);
+    outcomeTimeout = setTimeout(() => {
+      setOutcome(0);
+    }, OUTCOME_TIMEOUT);
   };
-  
+
   useEffect(() => {
     return () => {
       clearTimeout(outcomeTimeout);
     };
   });
-
 
   const updateChatMessage = async () => {
     clearTimeout(outcomeTimeout);
@@ -47,7 +56,7 @@ export default function MessageVisiblityToggle({ isVisible, message, setMessage 
       },
     });
 
-    if (result.success && result.message === "changed") {
+    if (result.success && result.message === 'changed') {
       setMessage({ ...message, visible: !isVisible });
       setOutcome(1);
     } else {
@@ -55,14 +64,16 @@ export default function MessageVisiblityToggle({ isVisible, message, setMessage 
       setOutcome(-1);
     }
     resetOutcome();
-  }
-
+  };
 
   let outcomeIcon = <CheckCircleFilled style={{ color: 'transparent' }} />;
   if (outcome) {
-    outcomeIcon = outcome > 0 ? 
-    <CheckCircleFilled style={{ color: 'var(--ant-success)' }} /> :
-    <ExclamationCircleFilled style={{ color: 'var(--ant-warning)' }} />;
+    outcomeIcon =
+      outcome > 0 ? (
+        <CheckCircleFilled style={{ color: 'var(--ant-success)' }} />
+      ) : (
+        <ExclamationCircleFilled style={{ color: 'var(--ant-warning)' }} />
+      );
   }
 
   const toolTipMessage = `Click to ${isVisible ? 'hide' : 'show'} this message`;
@@ -74,7 +85,7 @@ export default function MessageVisiblityToggle({ isVisible, message, setMessage 
           shape="circle"
           size="small"
           type="text"
-          icon={ isVisible ? <EyeOutlined /> : <EyeInvisibleOutlined /> }
+          icon={isVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           onClick={updateChatMessage}
         />
       </Tooltip>

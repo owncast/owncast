@@ -1,4 +1,4 @@
-$owncast-purple: rgba(90,103,216,1);
+// @import "~antd/dist/antd.dark";
 
 html,
 body {
@@ -7,42 +7,89 @@ body {
   font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 
   font-size: 16px;
+
+  background-color: var(--default-bg-color);
+  color: var(--default-text-color);
 }
 
 a {
   color: inherit;
   text-decoration: none;
-  color: rgba(90,103,216,1);
+  color: var(--default-link-color);
+
+  &:hover {
+    color: var(--default-text-color);
+  }
 }
 
 * {
   box-sizing: border-box;
 }
 
+p,
+p.description,
+.ant-typography {
+  font-weight: 300;
+  margin: 1em 0;
+  color: var(--white-75); 
+}
 pre {
   display: block;
   padding: 1rem;
   margin: .5rem 0;
-  background-color: #eee;
+  background-color: var(--code-bg-color);
+  color: var(--white-50);
 }
 
-.owncast-layout .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
-  background-color: $owncast-purple;
+code {
+  color: var(--code-color);
+  background-color: var(--white-15);
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: .88em;
 }
 
-// misc system overrides
-.ant-card {
-  border-radius: .5em;
-}
-.ant-btn {
-  transition-duration: .15s;
-  transition-delay: 0s;
+
+.logo-svg {
+  height: 2rem;
+  width: 2rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  @import "~antd/dist/antd.dark";
-  pre {
-    background-color: rgb(44, 44, 44);
-    color:lightgrey;
+
+
+
+.line-chart-container {
+  margin: 2em auto;
+  padding: 1em;
+  border: 1px solid var(--gray-dark);
+}
+
+
+
+.form-module {
+  margin: 1em 0;
+  background-color: var(--container-bg-color);
+  padding: 2em;
+  border-radius: var(--container-border-radius);
+
+  h3 {
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  @media (max-width: 980px) {
+    flex-direction: column;
+    .form-module {
+      width: 100%;
+    }
   }
 }

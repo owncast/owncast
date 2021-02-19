@@ -1,0 +1,39 @@
+// config tags block
+
+.tag-current-tags {
+  .ant-tag {
+    margin: .1rem;
+    font-size: .85rem;
+    border-radius: 10em;
+    padding: .25em 1em;
+    &:hover {
+      opacity: 1;
+    }
+
+    .ant-tag-close-icon {
+      transform: translateY(-1px);
+      margin-left: .3rem;
+      padding: 2px;
+      border-radius: 5rem;
+      color: var(--black);
+      border: 1px solid var(--black);
+      transition-duration: var(--ant-transition-duration);
+      &:hover {
+        border-color: var(--owncast-purple);
+        background-color: var(--white);
+        svg {
+          fill: black;
+          transition: fill var(--ant-transition-duration);
+        }
+      }
+    }
+  }
+}
+
+.add-new-tag-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 2em;
+}

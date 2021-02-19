@@ -1,0 +1,43 @@
+// styles for Video variant editor (table + modal)
+
+.config-video-variants {
+  .variants-table {
+    margin-top: 2em;
+  }
+
+  .variants-table-module {
+    min-width: 400px;
+  }
+}
+
+// modal content
+.config-variant-form {
+  .description {
+    margin-top: 0;
+  }
+
+  .cpu-usage-container,
+  .bitrate-container {
+    height: 20em;
+  }
+
+  .advanced-settings {
+    margin-top: 1em;
+  }
+}
+
+.variants-table {
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .delete-button {
+    margin-left: 0.5em;
+    opacity: 0.8;
+  }
+}
+
+.read-more-subtext {
+  font-size: 0.8rem;
+}

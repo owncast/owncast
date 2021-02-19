@@ -1,0 +1,76 @@
+// dealiing with some general layout on the public details page
+
+.config-public-details-page {
+  width: 100%;
+  .top-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    @media (max-width: 1200px) {
+      flex-wrap: wrap;
+      .social-items-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        flex-wrap: nowrap;
+        margin: 1em 0;
+        width: 100%;
+        max-width: none;
+        .tags-module {
+          margin-right: 1em;
+        }
+        .form-module {
+          max-width: none;
+        }
+
+        @media (max-width: 980px) {
+          flex-direction: column;
+          .form-module {
+            width: 100%;
+          }
+          .tags-module {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+  .instance-details-container {
+    width: 100%;
+
+    .logo-preview {
+      display: inline-block;
+      margin: -1em 0 1em 11em;
+      height: 120px;
+      border: 1px solid var(--white-25);
+    }
+  }
+  .social-items-container {
+    background-color: var(--container-bg-color-alt);
+    padding: 0 0.75em;
+    margin-left: 1em;
+    max-width: 450px;
+    .form-module {
+      background-color: var(--black);
+    }
+
+    .social-handles-container {
+      min-width: 350px;
+    }
+  }
+  .instance-details-container,
+  .page-content-module {
+    margin: 1em 0;
+  }
+
+  .field-summary {
+    textarea {
+      height: 6em !important;
+    }
+  }
+}
+
+.other-field-container {
+  margin: 0.5em 0;
+}

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint --ext .js,.ts,.tsx types/ pages/ components/"
   },
   "dependencies": {
     "@ant-design/icons": "^4.5.0",
@@ -13,18 +14,21 @@
     "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
-    "next": "^10.0.6",
+    "markdown-it": "^12.0.4",
+    "next": "^10.0.5",
     "prop-types": "^15.7.2",
-    "react": "16.13.1",
+    "react": "^17.0.1",
     "react-chartkick": "^0.4.1",
-    "react-dom": "16.13.1",
+    "react-dom": "^17.0.1",
     "react-linkify": "^1.0.0-alpha",
     "react-markdown": "^5.0.3",
+    "react-markdown-editor-lite": "^1.2.3",
     "sass": "^1.32.7"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.30",
     "@types/classnames": "^2.2.11",
+    "@types/markdown-it": "^12.0.1",
     "@types/node": "^14.14.28",
     "@types/prop-types": "^15.7.3",
     "@types/react": "^17.0.2",

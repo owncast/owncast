@@ -1,41 +1,68 @@
+// TODO: add a notication after updating info that changes will take place either on a new stream or server restart. may be different for each field.
+
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
+import { ConfigDetails, UpdateArgs } from '../types/config-section';
+import { DEFAULT_VARIANT_STATE } from './config-constants';
 
-export const initialServerConfigState = {
+export const initialServerConfigState: ConfigDetails = {
   streamKey: '',
+  instanceDetails: {
+    extraPageContent: '',
+    logo: '',
+    name: '',
+    nsfw: false,
+    socialHandles: [],
+    streamTitle: '',
+    summary: '',
+    tags: [],
+    title: '',
+  },
+  ffmpegPath: '',
+  rtmpServerPort: '',
+  webServerPort: '',
+  s3: {
+    accessKey: '',
+    acl: '',
+    bucket: '',
+    enabled: false,
+    endpoint: '',
+    region: '',
+    secret: '',
+    servingEndpoint: '',
+  },
   yp: {
     enabled: false,
+    instanceUrl: '',
   },
   videoSettings: {
-    videoQualityVariants: [
-      {
-        audioPassthrough: false,
-        videoPassthrough: false,
-        videoBitrate: 0,
-        audioBitrate: 0,
-        framerate: 0,
-      },
-    ],
-  }
+    latencyLevel: 4,
+    cpuUsageLevel: 3,
+    videoQualityVariants: [DEFAULT_VARIANT_STATE],
+  },
 };
 
 const initialServerStatusState = {
   broadcastActive: false,
   broadcaster: null,
+  currentBroadcast: null,
   online: false,
   viewerCount: 0,
   sessionMaxViewerCount: 0,
   sessionPeakViewerCount: 0,
   overallPeakViewerCount: 0,
-  disableUpgradeChecks: true,
   versionNumber: '0.0.0',
+  streamTitle: '',
 };
 
 export const ServerStatusContext = React.createContext({
   ...initialServerStatusState,
   serverConfig: initialServerConfigState,
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setFieldInConfigState: (args: UpdateArgs) => null,
 });
 
 const ServerStatusProvider = ({ children }) => {
@@ -46,7 +73,6 @@ const ServerStatusProvider = ({ children }) => {
     try {
       const result = await fetchData(STATUS);
       setStatus({ ...result });
-
     } catch (error) {
       // todo
     }
@@ -60,7 +86,22 @@ const ServerStatusProvider = ({ children }) => {
     }
   };
 
-  
+  const setFieldInConfigState = ({ fieldName, value, path }: UpdateArgs) => {
+    const updatedConfig = path
+      ? {
+          ...config,
+          [path]: {
+            ...config[path],
+            [fieldName]: value,
+          },
+        }
+      : {
+          ...config,
+          [fieldName]: value,
+        };
+    setConfig(updatedConfig);
+  };
+
   useEffect(() => {
     let getStatusIntervalId = null;
 
@@ -69,22 +110,22 @@ const ServerStatusProvider = ({ children }) => {
 
     getConfig();
 
-    // returned function will be called on component unmount 
+    // returned function will be called on component unmount
     return () => {
       clearInterval(getStatusIntervalId);
-    }
-  }, [])
+    };
+  }, []);
 
   const providerValue = {
-      ...status,
-      serverConfig: config,
+    ...status,
+    serverConfig: config,
+
+    setFieldInConfigState,
   };
   return (
-    <ServerStatusContext.Provider value={providerValue}>
-      {children}
-    </ServerStatusContext.Provider>
+    <ServerStatusContext.Provider value={providerValue}>{children}</ServerStatusContext.Provider>
   );
-}
+};
 
 ServerStatusProvider.propTypes = {
   children: PropTypes.element.isRequired,

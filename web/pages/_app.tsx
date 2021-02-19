@@ -1,25 +1,40 @@
+// order matters!
 import 'antd/dist/antd.css';
-import '../styles/colors.scss';
+import '../styles/variables.scss';
+import '../styles/ant-overrides.scss';
+import '../styles/markdown-editor.scss';
 import '../styles/globals.scss';
 
-// GW: I can't override ant design styles through components using NextJS's built-in CSS modules. So I'll just import styles here for now and figure out enabling SASS modules later.
+import '../styles/main-layout.scss';
+
+import '../styles/form-textfields.scss';
+import '../styles/form-misc-elements.scss';
+import '../styles/config-socialhandles.scss';
+import '../styles/config-storage.scss';
+import '../styles/config-tags.scss';
+import '../styles/config-video-variants.scss';
+import '../styles/config-public-details.scss';
+
 import '../styles/home.scss';
 import '../styles/chat.scss';
+import '../styles/pages.scss';
 
 import { AppProps } from 'next/app';
 import ServerStatusProvider from '../utils/server-status-context';
-import MainLayout from './components/main-layout';
+import AlertMessageProvider from '../utils/alert-message-context';
 
+import MainLayout from '../components/main-layout';
 
 function App({ Component, pageProps }: AppProps) {
   return (
     <ServerStatusProvider>
-      <MainLayout>
-        <Component {...pageProps} />
-      </MainLayout>
+      <AlertMessageProvider>
+        <MainLayout>
+          <Component {...pageProps} />
+        </MainLayout>
+      </AlertMessageProvider>
     </ServerStatusProvider>
-    
-  )
+  );
 }
 
 export default App;

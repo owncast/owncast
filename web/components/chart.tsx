@@ -1,7 +1,6 @@
-import { LineChart } from 'react-chartkick'
+import { LineChart } from 'react-chartkick';
 import 'chart.js';
 import format from 'date-fns/format';
-import styles from '../../styles/styles.module.scss';
 
 interface TimedValue {
   time: Date;
@@ -9,11 +8,11 @@ interface TimedValue {
 }
 
 interface ChartProps {
-  data?: TimedValue[],
-  title?: string,
-  color: string,
-  unit: string,
-  dataCollections?: any[],
+  data?: TimedValue[];
+  title?: string;
+  color: string;
+  unit: string;
+  dataCollections?: any[];
 }
 
 function createGraphDataset(dataArray) {
@@ -22,7 +21,7 @@ function createGraphDataset(dataArray) {
     const dateObject = new Date(item.time);
     const dateString = format(dateObject, 'p P');
     dataValues[dateString] = item.value;
-  })
+  });
   return dataValues;
 }
 
@@ -33,18 +32,20 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
     renderData.push({
       name: title,
       color,
-      data: createGraphDataset(data)
+      data: createGraphDataset(data),
     });
   }
 
   dataCollections.forEach(collection => {
-    renderData.push(
-      {name: collection.name, data: createGraphDataset(collection.data), color: collection.color}
-    )
+    renderData.push({
+      name: collection.name,
+      data: createGraphDataset(collection.data),
+      color: collection.color,
+    });
   });
 
   return (
-    <div className={styles.lineChartContainer}>
+    <div className="line-chart-container">
       <LineChart
         xtitle="Time"
         ytitle={title}
