@@ -525,6 +525,8 @@ textarea.ant-input {
 .ant-pagination-next {
   .ant-pagination-item-link {
     color: var(--default-link-color);
+    background: transparent;
+    border-color: transparent;
     &:hover {
       color: var(--white);
     }
