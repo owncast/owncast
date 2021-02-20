@@ -16,6 +16,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	var videoQualityVariants = make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
 		videoQualityVariants = append(videoQualityVariants, models.StreamOutputVariant{
+			Name:               variant.GetName(),
 			IsAudioPassthrough: variant.GetIsAudioPassthrough(),
 			IsVideoPassthrough: variant.IsVideoPassthrough,
 			Framerate:          variant.GetFramerate(),

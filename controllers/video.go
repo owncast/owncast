@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-	"math"
 	"net/http"
 	"sort"
 
@@ -32,26 +30,9 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	result := make([]variantsResponse, len(outputVariants))
 
 	for i, variant := range outputVariants {
-		var name string
-		bitrate := getBitrateString(variant.VideoBitrate)
-
-		if variant.IsVideoPassthrough {
-			name = "Source"
-		} else if variant.ScaledHeight == 720 && variant.ScaledWidth == 1080 {
-			name = fmt.Sprintf("720p @%s", bitrate)
-		} else if variant.ScaledHeight == 1080 && variant.ScaledWidth == 1920 {
-			name = fmt.Sprintf("1080p @%s", bitrate)
-		} else if variant.ScaledHeight != 0 {
-			name = fmt.Sprintf("%dh", variant.ScaledHeight)
-		} else if variant.ScaledWidth != 0 {
-			name = fmt.Sprintf("%dw", variant.ScaledWidth)
-		} else {
-			name = fmt.Sprintf("%s@%dfps", bitrate, variant.Framerate)
-		}
-
 		variantResponse := variantsResponse{
 			Index: i,
-			Name:  name,
+			Name:  variant.GetName(),
 		}
 		result[i] = variantResponse
 	}
@@ -66,20 +47,4 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	})
 
 	WriteResponse(w, result)
-}
-
-func getBitrateString(bitrate int) string {
-	if bitrate == 0 {
-		return ""
-	} else if bitrate < 1000 {
-		return fmt.Sprintf("%dKbps", bitrate)
-	} else if bitrate >= 1000 {
-		if math.Mod(float64(bitrate), 1000) == 0 {
-			return fmt.Sprintf("%dMbps", bitrate/1000.0)
-		} else {
-			return fmt.Sprintf("%.1fMbps", float32(bitrate)/1000.0)
-		}
-	}
-
-	return ""
 }
