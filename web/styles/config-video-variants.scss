@@ -18,11 +18,16 @@
 
   .cpu-usage-container,
   .bitrate-container {
-    height: 20em;
+    min-height: 22em;
   }
 
   .advanced-settings {
     margin-top: 1em;
+
+    .resolution-module,
+    .video-passthroug-module {
+      min-height: 30em;
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 // This content populates the video variant modal, which is spawned from the variants table.
 import React from 'react';
-import { Row, Col, Slider, Collapse, Typography } from 'antd';
+import { Popconfirm, Row, Col, Slider, Collapse, Typography } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
 import TextField from './form-textfield';
 import { DEFAULT_VARIANT_STATE } from '../../utils/config-constants';
@@ -71,9 +72,6 @@ export default function VideoVariantForm({
   const handleVideoBitrateChange = (value: number) => {
     onUpdateField({ fieldName: 'videoBitrate', value });
   };
-  const handleVideoPassChange = (value: boolean) => {
-    onUpdateField({ fieldName: 'videoPassthrough', value });
-  };
   const handleVideoCpuUsageLevelChange = (value: number) => {
     onUpdateField({ fieldName: 'cpuUsageLevel', value });
   };
@@ -91,9 +89,21 @@ export default function VideoVariantForm({
     if (isNaN(value)) {
       return;
     }
-
     onUpdateField({ fieldName: 'scaledHeight', value: value || '' });
   };
+
+  // Video passthrough handling
+  const handleVideoPassConfirm = () => {
+    onUpdateField({ fieldName: 'videoPassthrough', value: true });
+  };
+  // If passthrough is currently on, set it back to false on toggle.
+  // Else let the Popconfirm turn it on.
+  const handleVideoPassthroughToggle = (value: boolean) => {
+    if (dataState.videoPassthrough) {
+      onUpdateField({ fieldName: 'videoPassthrough', value });
+    }
+  };
+
   const framerateDefaults = VIDEO_VARIANT_DEFAULTS.framerate;
   const framerateMin = framerateDefaults.min;
   const framerateMax = framerateDefaults.max;
@@ -171,17 +181,6 @@ export default function VideoVariantForm({
               <a href="https://owncast.online/docs/video/#cpu-usage">Read more about CPU usage.</a>
             </p>
           </div>
-
-          {/* VIDEO PASSTHROUGH FIELD - currently disabled */}
-          <div style={{ display: 'none' }} className="form-module">
-            <ToggleSwitch
-              label="Use Video Passthrough?"
-              fieldName="video-passthrough"
-              tip={VIDEO_VARIANT_DEFAULTS.videoPassthrough.tip}
-              checked={dataState.videoPassthrough}
-              onChange={handleVideoPassChange}
-            />
-          </div>
         </Col>
 
         <Col sm={24} md={12}>
@@ -215,28 +214,65 @@ export default function VideoVariantForm({
       </Row>
       <Collapse className="advanced-settings">
         <Panel header="Advanced Settings" key="1">
-          <p className="description">
-            Resizing your content will take additional resources on your server. If you wish to
-            optionally resize your content for this stream output then you should either set the
-            width <strong>or</strong> the height to keep your aspect ratio.{' '}
-            <a href="https://owncast.online/docs/video/#resolution">Read more about resolutions.</a>
-          </p>
-
-          <TextField
-            type="number"
-            {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
-            value={dataState.scaledWidth}
-            onChange={handleScaledWidthChanged}
-          />
-          <TextField
-            type="number"
-            {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
-            value={dataState.scaledHeight}
-            onChange={handleScaledHeightChanged}
-          />
+          <Row gutter={16}>
+            <Col sm={24} md={12}>
+              <div className="form-module resolution-module">
+                <Typography.Title level={3}>Resolution</Typography.Title>
+                <p className="description">
+                  Resizing your content will take additional resources on your server. If you wish to
+                  optionally resize your content for this stream output then you should either set the
+                  width <strong>or</strong> the height to keep your aspect ratio.{' '}
+                  <a href="https://owncast.online/docs/video/#resolution">Read more about resolutions.</a>
+                </p>
+                <br />
+                <TextField
+                  type="number"
+                  {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
+                  value={dataState.scaledWidth}
+                  onChange={handleScaledWidthChanged}
+                />
+                <TextField
+                  type="number"
+                  {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
+                  value={dataState.scaledHeight}
+                  onChange={handleScaledHeightChanged}
+                />
+              </div>
+            </Col>
+            <Col sm={24} md={12}>
+              {/* VIDEO PASSTHROUGH FIELD */}
+              <div className="form-module video-passthroug-module">
+                <Typography.Title level={3}>Video Passthrough</Typography.Title>
+                <p className="description">
+                  Description
+                  <a href="https://owncast.online/docs/">link.</a>
+                </p>
+                <Popconfirm
+                  disabled={dataState.videoPassthrough === true}
+                  title="are you sure you wanna do this??"
+                  icon={<ExclamationCircleFilled />}
+                  onConfirm={handleVideoPassConfirm}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  {/* adding an <a> tag to force Popcofirm to register click on toggle */}
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a href="#">
+                    <ToggleSwitch
+                      label="Use Video Passthrough?"
+                      fieldName="video-passthrough"
+                      tip={VIDEO_VARIANT_DEFAULTS.videoPassthrough.tip}
+                      checked={dataState.videoPassthrough}
+                      onChange={handleVideoPassthroughToggle}
+                    />
+                  </a>
+                </Popconfirm>
+              </div>
+            </Col>
+          </Row>
 
           {/* FRAME RATE FIELD */}
-          <div className="form-module frame-rate">
+          <div className="form-module frame-rate-module">
             <Typography.Title level={3}>Frame rate</Typography.Title>
             <p className="description">{VIDEO_VARIANT_DEFAULTS.framerate.tip}</p>
             <div className="segment-slider-container">

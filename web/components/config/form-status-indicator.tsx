@@ -14,9 +14,9 @@ export default function FormStatusIndicator({ status }: FormStatusIndicatorProps
     empty: !message,
   });
   return (
-    <div className={classes}>
+    <span className={classes}>
       {icon ? <span className="status-icon">{icon}</span> : null}
       {message ? <span className="status-message">{message}</span> : null}
-    </div>
+    </span>
   );
 }
