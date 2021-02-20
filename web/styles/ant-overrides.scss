@@ -314,7 +314,7 @@ textarea.ant-input {
 }
 .ant-table-tbody > tr > td {
   transition-duration: var(--ant-transition-duration);
-  background-color: var(--gray-dark); // #222325;
+  background-color: var(--gray-dark);
   color: var(--white-75);
 }
 .ant-table-tbody > tr.ant-table-row:hover > td {
@@ -490,18 +490,48 @@ textarea.ant-input {
 }
 
 // ANT PAGINATOR
+.ant-pagination-item  {
+  border-color: var(--white);
+  color: var(--default-link-color);
+  a {
+    color: var(--default-link-color);
+  }
+  &:active,
+  &:focus,
+  &:hover {
+    border-color: var(--white);
+    a {
+      color: var(--white);
+    }
+  }
+}
 .ant-pagination-item-active {
   color: var(--white);
   background-color: var(--default-link-color);
   border-color: var(--default-link-color);
   a {
     color: var(--white);
-    &:hover {
+  }
+  &:hover,
+  &:focus,
+  &:active {
+    border-color: var(--default-link-color);
+    a {
       color: var(--white);
-      opacity: 0.75;
     }
   }
 }
+.ant-pagination-prev,
+.ant-pagination-next {
+  .ant-pagination-item-link {
+    color: var(--default-link-color);
+    &:hover {
+      color: var(--white);
+    }
+  }
+}
+
+
 
 // ANT CHECKBOX
 .ant-checkbox-wrapper {
