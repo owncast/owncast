@@ -314,7 +314,7 @@ textarea.ant-input {
 }
 .ant-table-tbody > tr > td {
   transition-duration: var(--ant-transition-duration);
-  background-color: #222325;
+  background-color: var(--gray-dark); // #222325;
   color: var(--white-75);
 }
 .ant-table-tbody > tr.ant-table-row:hover > td {
@@ -325,8 +325,11 @@ textarea.ant-input {
   color: var(--white-75);
 }
 .ant-table-empty .ant-table-tbody > tr.ant-table-placeholder {
+  .ant-empty-image {
+    display: none;
+  }
   &:hover > td {
-    background-color: transparent;
+    background-color: var(--gray-dark);
   }
 }
 .ant-table-thead th.ant-table-column-has-sorters:hover {
