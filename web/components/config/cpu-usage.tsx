@@ -21,9 +21,10 @@ const TOOLTIPS = {
 };
 interface Props {
   defaultValue: number;
+  disabled: boolean;
   onChange: (arg: number) => void;
 }
-export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
+export default function CPUUsageSelector({ defaultValue, disabled, onChange }: Props) {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
@@ -43,6 +44,14 @@ export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
     onChange(value);
   };
 
+  const cpuUsageNote = () => {
+    if (disabled) {
+      return 'CPU usage selection is disabled when Video Passthrough is enabled.';
+    }
+
+    return TOOLTIPS[selectedOption]
+  }
+
   return (
     <div className="config-video-cpu-container">
       <Title level={3}>CPU Usage</Title>
@@ -58,8 +67,9 @@ export default function CPUUsageSelector({ defaultValue, onChange }: Props) {
           marks={SLIDER_MARKS}
           defaultValue={selectedOption}
           value={selectedOption}
+          disabled={disabled}
         />
-        <p className="selected-value-note">{TOOLTIPS[selectedOption]}</p>
+        <p className="selected-value-note">{cpuUsageNote()}</p>
       </div>
     </div>
   );

@@ -135,14 +135,14 @@ export default function CurrentVariantsTable() {
       title: 'Video bitrate',
       dataIndex: 'videoBitrate',
       key: 'videoBitrate',
-      render: (bitrate: number) => (!bitrate ? 'Same as source' : `${bitrate} kbps`),
+      render: (bitrate: number, variant: VideoVariant) => (!bitrate || variant.videoPassthrough ? 'Same as source' : `${bitrate} kbps`),
     },
 
     {
       title: 'CPU Usage',
       dataIndex: 'cpuUsageLevel',
       key: 'cpuUsageLevel',
-      render: (level: string) => (!level ? 'n/a' : CPU_USAGE_LEVEL_MAP[level]),
+      render: (level: string, variant: VideoVariant) => (!level  || variant.videoPassthrough ? 'n/a' : CPU_USAGE_LEVEL_MAP[level]),
     },
     {
       title: '',

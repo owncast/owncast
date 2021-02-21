@@ -37,7 +37,7 @@ const VIDEO_VARIANT_DEFAULTS = {
     tip: 'nothing to see here',
   },
   videoPassthrough: {
-    tip: 'If No is selected, then you should set your desired Video Bitrate.',
+    tip: 'If enabled, all other settings will be disabled. Otherwise configure as desired.',
   },
   audioPassthrough: {
     tip: 'If No is selected, then you should set your desired Audio Bitrate.',
@@ -128,6 +128,10 @@ export default function VideoVariantForm({
   };
 
   const selectedVideoBRnote = () => {
+    if (dataState.videoPassthrough) {
+      return 'Bitrate selection is disabled when Video Passthrough is enabled.';
+    }
+
     let note = `${dataState.videoBitrate}${videoBRUnit}`;
     if (dataState.videoBitrate < 2000) {
       note = `${note} - Good for low bandwidth environments.`;
@@ -139,6 +143,10 @@ export default function VideoVariantForm({
     return note;
   };
   const selectedFramerateNote = () => {
+    if (dataState.videoPassthrough) {
+      return 'Framerate selection is disabled when Video Passthrough is enabled.';
+    }
+
     let note = `Selected: ${dataState.framerate}${framerateUnit}`;
     switch (dataState.framerate) {
       case 24:
@@ -176,6 +184,7 @@ export default function VideoVariantForm({
             <CPUUsageSelector
               defaultValue={dataState.cpuUsageLevel}
               onChange={handleVideoCpuUsageLevelChange}
+              disabled={dataState.videoPassthrough}
             />
             <p className="read-more-subtext">
               <a href="https://owncast.online/docs/video/#cpu-usage">Read more about CPU usage.</a>
@@ -195,7 +204,7 @@ export default function VideoVariantForm({
             <div className="segment-slider-container">
               <Slider
                 tipFormatter={value => `${value} ${videoBRUnit}`}
-                disabled={dataState.videoPassthrough === true}
+                disabled={dataState.videoPassthrough}
                 defaultValue={dataState.videoBitrate}
                 value={dataState.videoBitrate}
                 onChange={handleVideoBitrateChange}
@@ -230,12 +239,14 @@ export default function VideoVariantForm({
                   {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
                   value={dataState.scaledWidth}
                   onChange={handleScaledWidthChanged}
+                  disabled={dataState.videoPassthrough}
                 />
                 <TextField
                   type="number"
                   {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
                   value={dataState.scaledHeight}
                   onChange={handleScaledHeightChanged}
+                  disabled={dataState.videoPassthrough}
                 />
               </div>
             </Col>
@@ -244,12 +255,13 @@ export default function VideoVariantForm({
               <div className="form-module video-passthroug-module">
                 <Typography.Title level={3}>Video Passthrough</Typography.Title>
                 <p className="description">
-                  Description
-                  <a href="https://owncast.online/docs/">link.</a>
+                  <p>Enabling video passthrough may allow for less hardware utilization, but may also make your stream <strong>unplayable</strong>.</p>
+                  <p>All other settings for this stream output will be disabled if passthrough is used.</p>
+                  <p><a href="https://owncast.online/docs/video/#video-passthrough">Read the documentation before enabling, as it impacts your stream.</a></p>
                 </p>
                 <Popconfirm
                   disabled={dataState.videoPassthrough === true}
-                  title="are you sure you wanna do this??"
+                  title="Did you read the documentation about video passthrough and understand the risks involved with enabling it?"
                   icon={<ExclamationCircleFilled />}
                   onConfirm={handleVideoPassConfirm}
                   okText="Yes"
@@ -285,6 +297,7 @@ export default function VideoVariantForm({
                 min={framerateMin}
                 max={framerateMax}
                 marks={framerateMarks}
+                disabled={dataState.videoPassthrough}
               />
               <p className="selected-value-note">{selectedFramerateNote()}</p>
             </div>
