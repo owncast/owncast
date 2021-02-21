@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
 
-  <title>{{.Config.Title}}</title>
+  <title>{{.Name}}</title>
   <meta name="description" content="{{.Summary}}">
 
-  <meta property="og:title" content="{{.Title}}">
-  <meta property="og:site_name" content="{{.Title}}">
+  <meta property="og:title" content="{{.Name}}">
+  <meta property="og:site_name" content="{{.Name}}">
   <meta property="og:url" content="{{.RequestedURL}}">
   <meta property="og:description" content="{{.Summary}}">
   <meta property="og:type" content="video.other">
@@ -24,7 +24,7 @@
   <meta property="og:video:type" content="application/x-mpegURL" />
   <meta property="og:video:actor" content="{{.Name}}" />
 
-  <meta property="twitter:title" content="{{.Title}}">
+  <meta property="twitter:title" content="{{.Name}}">
   <meta property="twitter:url" content="{{.RequestedURL}}">
   <meta property="twitter:description" content="{{.Summary}}">
   <meta property="twitter:image" content="{{.Image}}">
@@ -51,8 +51,7 @@
 </head>
 
 <body>
-  <h1>{{.Title}}</h1>
-  <h2>{{.Name}}</h2>
+  <h1>{{.Name}}</h1>
 
   <center>
     <img src="{{.Thumbnail}}" width=10% />

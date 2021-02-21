@@ -26,7 +26,6 @@ type MetadataPage struct {
 	Image         string
 	Thumbnail     string
 	TagsString    string
-	Title         string
 	Summary       string
 	Name          string
 	Tags          []string
@@ -77,7 +76,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Panicln(err)
 	}
-	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, data.GetLogoPath()))
+	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/logo"))
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -100,6 +99,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	tagsString := strings.Join(data.GetServerMetadataTags(), ",")
 	metadata := MetadataPage{
+		Name:          data.GetServerName(),
 		RequestedURL:  fullURL.String(),
 		Image:         imageURL.String(),
 		Thumbnail:     thumbnailURL,
