@@ -16,12 +16,12 @@ RestartSec=5
 `WorkingDirectory` should be where you want the owncast folder to live.<br />
 
 **Example:**<br />
-```WorkingDirectory=\var\www\owncast```
+```WorkingDirectory=/var/www/owncast```
 
 Similarly the `ExecStart` is the actual owncast binary.<br />
 
 **Example:**<br />
-```ExecStart=\var\www\owncast\owncast```
+```ExecStart=/var/www/owncast/owncast```
 
 ```
 [Install]
