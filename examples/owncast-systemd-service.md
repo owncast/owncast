@@ -6,12 +6,10 @@ Description=Owncast Service
 
 This is where the "functional" parts of the service live.<br />
 `WorkingDirectory` should be where you want the owncast folder to live.<br />
-**Example**<br />
-```WorkingDirectory=\var\www\owncast```
+**Example:** ```WorkingDirectory=\var\www\owncast```
 
 Similarly the `ExecStart` is the actual owncast binary.<br />
-**Example:**<br />
-```ExecStart=\var\www\owncast\owncast```
+**Example:** ```ExecStart=\var\www\owncast\owncast```
 
 ```
 [Service]
