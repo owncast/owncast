@@ -109,7 +109,7 @@ func getChatModerationHistory() []models.ChatEvent {
 
 func getChatHistory() []models.ChatEvent {
 	// Get all messages sent within the past 5hrs, max 50
-	var query = "SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND visible = 1 LIMIT 50"
+	var query = "SELECT * FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND visible = 1 ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc"
 	return getChat(query)
 }
 
