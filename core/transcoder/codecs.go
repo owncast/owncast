@@ -24,7 +24,7 @@ func (c *Libx264Codec) PixelFormat() string {
 
 func (c *Libx264Codec) ExtraArguments() string {
 	return strings.Join([]string{
-		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+		// "-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 	}, " ")
 }
 

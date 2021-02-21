@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -13,6 +14,8 @@ import (
 
 // GetServerConfig gets the config details of the server.
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+
 	var videoQualityVariants = make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
 		videoQualityVariants = append(videoQualityVariants, models.StreamOutputVariant{
@@ -41,7 +44,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			NSFW:             data.GetNSFW(),
 			CustomStyles:     data.GetCustomStyles(),
 		},
-		FFmpegPath:     utils.ValidatedFfmpegPath(data.GetFfMpegPath()),
+		FFmpegPath:     ffmpeg,
 		StreamKey:      data.GetStreamKey(),
 		WebServerPort:  config.WebServerPort,
 		RTMPServerPort: data.GetRTMPPortNumber(),
@@ -55,7 +58,11 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			InstanceURL: data.GetServerURL(),
 		},
 		S3:              data.GetS3Config(),
+<<<<<<< HEAD
 		ExternalActions: data.GetExternalActions(),
+=======
+		SupportedCodecs: transcoder.GetCodecs(ffmpeg),
+>>>>>>> c3e9567a... Return codecs in admin/serverconfig
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -77,6 +84,7 @@ type serverConfigAdminResponse struct {
 	YP              yp                      `json:"yp"`
 	ChatDisabled    bool                    `json:"chatDisabled"`
 	ExternalActions []models.ExternalAction `json:"externalActions"`
+	SupportedCodecs []string          `json:"supportedCodecs"`
 }
 
 type videoSettings struct {

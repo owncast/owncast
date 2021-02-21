@@ -17,7 +17,7 @@ import (
 
 var _commandExec *exec.Cmd
 
-var codec = Libx264Codec{} //VaapiCodec{}
+var codec = VaapiCodec{}
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
