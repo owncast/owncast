@@ -228,10 +228,12 @@ export default function VideoVariantForm({
               <div className="form-module resolution-module">
                 <Typography.Title level={3}>Resolution</Typography.Title>
                 <p className="description">
-                  Resizing your content will take additional resources on your server. If you wish to
-                  optionally resize your content for this stream output then you should either set the
-                  width <strong>or</strong> the height to keep your aspect ratio.{' '}
-                  <a href="https://owncast.online/docs/video/#resolution">Read more about resolutions.</a>
+                  Resizing your content will take additional resources on your server. If you wish
+                  to optionally resize your content for this stream output then you should either
+                  set the width <strong>or</strong> the height to keep your aspect ratio.{' '}
+                  <a href="https://owncast.online/docs/video/#resolution">
+                    Read more about resolutions.
+                  </a>
                 </p>
                 <br />
                 <TextField
@@ -255,9 +257,19 @@ export default function VideoVariantForm({
               <div className="form-module video-passthroug-module">
                 <Typography.Title level={3}>Video Passthrough</Typography.Title>
                 <p className="description">
-                  <p>Enabling video passthrough may allow for less hardware utilization, but may also make your stream <strong>unplayable</strong>.</p>
-                  <p>All other settings for this stream output will be disabled if passthrough is used.</p>
-                  <p><a href="https://owncast.online/docs/video/#video-passthrough">Read the documentation before enabling, as it impacts your stream.</a></p>
+                  <p>
+                    Enabling video passthrough may allow for less hardware utilization, but may also
+                    make your stream <strong>unplayable</strong>.
+                  </p>
+                  <p>
+                    All other settings for this stream output will be disabled if passthrough is
+                    used.
+                  </p>
+                  <p>
+                    <a href="https://owncast.online/docs/video/#video-passthrough">
+                      Read the documentation before enabling, as it impacts your stream.
+                    </a>
+                  </p>
                 </p>
                 <Popconfirm
                   disabled={dataState.videoPassthrough === true}

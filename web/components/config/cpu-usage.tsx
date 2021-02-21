@@ -49,8 +49,8 @@ export default function CPUUsageSelector({ defaultValue, disabled, onChange }: P
       return 'CPU usage selection is disabled when Video Passthrough is enabled.';
     }
 
-    return TOOLTIPS[selectedOption]
-  }
+    return TOOLTIPS[selectedOption];
+  };
 
   return (
     <div className="config-video-cpu-container">
