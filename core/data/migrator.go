@@ -133,7 +133,7 @@ func migrateConfigFile() {
 	for _, variant := range oldConfig.VideoSettings.StreamQualities {
 		migratedVariant := models.StreamOutputVariant{}
 		migratedVariant.IsAudioPassthrough = true
-		migratedVariant.IsVideoPassthrough = variant.IsVideoPassthrough
+		migratedVariant.IsVideoPassthrough = variant.IsVideoPassthrough || variant.VideoBitrate == 0
 		migratedVariant.Framerate = variant.Framerate
 		migratedVariant.VideoBitrate = variant.VideoBitrate
 		migratedVariant.ScaledHeight = variant.ScaledHeight
