@@ -3,8 +3,8 @@ Description=Owncast Service
 
 [Service]
 Type=simple
-WorkingDirectory=/var/owncast
-ExecStart=/var/owncast/owncast
+WorkingDirectory=[path_to_owncast_root_directory]
+ExecStart=[path_to_owncast_executable]
 Restart=on-failure
 RestartSec=5
 
