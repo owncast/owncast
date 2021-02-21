@@ -18,10 +18,10 @@ type variantsResponse struct {
 // Len returns the number of variants.
 func (v variants) Len() int { return len(v) }
 
-// Less does less.
+// Less is less than..
 func (v variants) Less(i, j int) bool { return v[i].VideoBitrate < v[j].VideoBitrate }
 
-// Swap will swap.
+// Swap will swap two values.
 func (v variants) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
 
 // GetVideoStreamOutputVariants will return the video variants available
@@ -38,12 +38,7 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Slice(result, func(i, j int) bool {
-		// Sort video passthrough to the front of the list
-		if outputVariants[i].IsVideoPassthrough {
-			return true
-		}
-
-		return outputVariants[i].VideoBitrate > outputVariants[j].VideoBitrate
+		return outputVariants[i].VideoBitrate > outputVariants[j].VideoBitrate || !outputVariants[i].IsVideoPassthrough
 	})
 
 	WriteResponse(w, result)
