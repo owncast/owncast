@@ -28,3 +28,14 @@ Similarly the `ExecStart` is the actual owncast binary.<br />
 WantedBy=multi-user.target
 ```
 This just means, use runlevel 3 non-graphical.
+
+
+**INSTALLATION**
+Just create the file in your systemd configuraiton directory (typically /etc/systemd/system/), and update the systemd daemon with:
+```$sudo systemd daemon-reload```
+
+**USAGE**
+Currently the following options work
+- Start
+- Stop
+- Status
