@@ -1,0 +1,13 @@
+[Unit]
+Description=Owncast Service
+
+[Service]
+Type=simple
+WorkingDirectory=/var/owncast
+ExecStart=/var/owncast/owncast
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
