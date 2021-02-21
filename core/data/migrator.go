@@ -226,7 +226,7 @@ type videoSettings struct {
 // yp allows registration to the central Owncast yp (Yellow pages) service operating as a directory.
 type yp struct {
 	Enabled     bool   `yaml:"enabled"`
-	InstanceURL string `yaml:"instanceUrl"` // The public URL the directory should link to
+	InstanceURL string `yaml:"instanceURL"` // The public URL the directory should link to
 }
 
 // streamQuality defines the specifics of a single HLS stream variant.
