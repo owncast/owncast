@@ -22,6 +22,11 @@ func (cl ChatListenerImpl) ClientRemoved(clientID string) {
 func (cl ChatListenerImpl) MessageSent(message models.ChatEvent) {
 }
 
+// IsStreamConnected will return if the stream is connected.
+func (cl ChatListenerImpl) IsStreamConnected() bool {
+	return IsStreamConnected()
+}
+
 // SendMessageToChat sends a message to the chat server.
 func SendMessageToChat(message models.ChatEvent) error {
 	chat.SendMessage(message)

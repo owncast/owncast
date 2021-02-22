@@ -77,10 +77,11 @@ func (s *server) usernameChanged(msg models.NameChangeEvent) {
 }
 
 func (s *server) userJoined(msg models.UserJoinedEvent) {
-	for _, c := range s.Clients {
-		c.userJoinedChannel <- msg
+	if s.listener.IsStreamConnected() {
+		for _, c := range s.Clients {
+			c.userJoinedChannel <- msg
+		}
 	}
-
 	go webhooks.SendChatEventUserJoined(msg)
 }
 

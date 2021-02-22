@@ -5,4 +5,5 @@ type ChatListener interface {
 	ClientAdded(client Client)
 	ClientRemoved(clientID string)
 	MessageSent(message ChatEvent)
+	IsStreamConnected() bool
 }
