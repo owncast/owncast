@@ -34,6 +34,7 @@ const s3StorageConfigKey = "s3_storage_config"
 const videoLatencyLevel = "video_latency_level"
 const videoStreamOutputVariantsKey = "video_stream_output_variants"
 const chatDisabledKey = "chat_disabled"
+const externalActionsKey = "external_actions"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -422,6 +423,27 @@ func GetChatDisabled() bool {
 	}
 
 	return false
+}
+
+// GetExternalActions will return the registered external actions.
+func GetExternalActions() []models.ExternalAction {
+	configEntry, err := _datastore.Get(externalActionsKey)
+	if err != nil {
+		return []models.ExternalAction{}
+	}
+
+	var externalActions []models.ExternalAction
+	if err := configEntry.getObject(&externalActions); err != nil {
+		return []models.ExternalAction{}
+	}
+
+	return externalActions
+}
+
+// SetExternalActions will save external actions.
+func SetExternalActions(actions []models.ExternalAction) error {
+	var configEntry = ConfigEntry{Key: externalActionsKey, Value: actions}
+	return _datastore.Save(configEntry)
 }
 
 // VerifySettings will perform a sanity check for specific settings values.

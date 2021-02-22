@@ -150,6 +150,7 @@ func Start() error {
 
 	// Connected clients
 	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetConnectedClients))
+
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogoPath))
 
@@ -188,6 +189,9 @@ func Start() error {
 
 	// reset the YP registration
 	http.HandleFunc("/api/admin/yp/reset", middleware.RequireAdminAuth(admin.ResetYPRegistration))
+
+	// set external action links
+	http.HandleFunc("/api/admin/config/externalactions", middleware.RequireAdminAuth(admin.SetExternalActions))
 
 	port := config.WebServerPort
 

@@ -52,7 +52,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Enabled:     data.GetDirectoryEnabled(),
 			InstanceURL: data.GetServerURL(),
 		},
-		S3: data.GetS3Config(),
+		S3:              data.GetS3Config(),
+		ExternalActions: data.GetExternalActions(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -63,16 +64,17 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 type serverConfigAdminResponse struct {
-	InstanceDetails webConfigResponse `json:"instanceDetails"`
-	FFmpegPath      string            `json:"ffmpegPath"`
-	StreamKey       string            `json:"streamKey"`
-	WebServerPort   int               `json:"webServerPort"`
-	RTMPServerPort  int               `json:"rtmpServerPort"`
-	S3              models.S3         `json:"s3"`
-	VideoSettings   videoSettings     `json:"videoSettings"`
-	LatencyLevel    int               `json:"latencyLevel"`
-	YP              yp                `json:"yp"`
-	ChatDisabled    bool              `json:"chatDisabled"`
+	InstanceDetails webConfigResponse       `json:"instanceDetails"`
+	FFmpegPath      string                  `json:"ffmpegPath"`
+	StreamKey       string                  `json:"streamKey"`
+	WebServerPort   int                     `json:"webServerPort"`
+	RTMPServerPort  int                     `json:"rtmpServerPort"`
+	S3              models.S3               `json:"s3"`
+	VideoSettings   videoSettings           `json:"videoSettings"`
+	LatencyLevel    int                     `json:"latencyLevel"`
+	YP              yp                      `json:"yp"`
+	ChatDisabled    bool                    `json:"chatDisabled"`
+	ExternalActions []models.ExternalAction `json:"externalActions"`
 }
 
 type videoSettings struct {
