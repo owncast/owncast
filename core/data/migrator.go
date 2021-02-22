@@ -118,9 +118,11 @@ func migrateConfigFile() {
 	// Migrate logo
 	if logo := oldConfig.InstanceDetails.Logo; logo != "" {
 		filename := filepath.Base(logo)
+		oldPath := filepath.Join("webroot", logo)
 		newPath := filepath.Join("data", filename)
-		err := utils.Copy(filepath.Join("webroot", logo), newPath)
-		log.Traceln("Copying logo from", logo, "to", newPath)
+
+		log.Infoln("Copying logo from", oldPath, "to", newPath)
+		err := utils.Copy(oldPath, newPath)
 		if err != nil {
 			log.Errorln("Error moving logo", logo, err)
 		} else {
