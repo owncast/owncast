@@ -41,7 +41,7 @@ func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 		Name:                  data.GetServerName(),
 		Description:           data.GetServerSummary(),
 		StreamTitle:           streamTitle,
-		Logo:                  data.GetLogoPath(),
+		Logo:                  "/logo",
 		NSFW:                  data.GetNSFW(),
 		Tags:                  data.GetServerMetadataTags(),
 		Online:                status.Online,
