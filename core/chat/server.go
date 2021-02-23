@@ -137,7 +137,9 @@ func (s *server) Listen() {
 
 				// Store in the message history
 				msg.SetDefaults()
-				addMessage(msg)
+				if !msg.Ephemeral {
+					addMessage(msg)
+				}
 
 				// Send webhooks
 				go webhooks.SendChatEvent(msg)

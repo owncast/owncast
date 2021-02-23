@@ -24,6 +24,7 @@ type ChatEvent struct {
 	MessageType EventType `json:"type"`
 	Visible     bool      `json:"visible"`
 	Timestamp   time.Time `json:"timestamp,omitempty"`
+	Ephemeral   bool      `json:"ephemeral,omitempty"`
 }
 
 // Valid checks to ensure the message is valid.
