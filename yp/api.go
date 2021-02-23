@@ -35,10 +35,7 @@ func GetYPResponse(w http.ResponseWriter, r *http.Request) {
 
 	status := getStatus()
 
-	streamTitle := ""
-	if status.Online {
-		streamTitle = data.GetStreamTitle()
-	}
+	streamTitle := data.GetStreamTitle()
 
 	response := ypDetailsResponse{
 		Name:                  data.GetServerName(),
