@@ -31,7 +31,7 @@ func handleCPUAlerting() {
 
 	avg := recentAverage(Metrics.CPUUtilizations)
 	if avg > maxCPUAlertingThresholdPCT && !inCpuAlertingState {
-		log.Warnf(alertingError, "CPU", maxCPUAlertingThresholdPCT)
+		log.Warnf(alertingError, "CPU", avg)
 		inCpuAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
@@ -49,7 +49,7 @@ func handleRAMAlerting() {
 
 	avg := recentAverage(Metrics.RAMUtilizations)
 	if avg > maxRAMAlertingThresholdPCT && !inRamAlertingState {
-		log.Warnf(alertingError, "memory", maxRAMAlertingThresholdPCT)
+		log.Warnf(alertingError, "memory", avg)
 		inRamAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
@@ -68,7 +68,7 @@ func handleDiskAlerting() {
 	avg := recentAverage(Metrics.DiskUtilizations)
 
 	if avg > maxDiskAlertingThresholdPCT && !inDiskAlertingState {
-		log.Warnf(alertingError, "disk", maxRAMAlertingThresholdPCT)
+		log.Warnf(alertingError, "disk", avg)
 		inDiskAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
