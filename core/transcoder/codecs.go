@@ -7,6 +7,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var supportedCodecs = map[string]string{
+	"libx264":    "libx264",
+	"h264_omx":   "omx",
+	"h264_vaapi": "vaapi",
+	"h264_nvenc": "NVIDEA nvenc",
+	"h264_qsv":   "Intel Quicksync",
+}
+
 type Libx264Codec struct {
 }
 
@@ -58,9 +66,9 @@ func (c *VaapiCodec) Name() string {
 
 func (c *VaapiCodec) GlobalFlags() string {
 	flags := []string{
-		"-hwaccel vaapi",
-		"-hwaccel_output_format vaapi",
-		"-vaapi_device /dev/dri/renderD128",
+		// "-hwaccel", "vaapi",
+		// "-hwaccel_output_format", "vaapi",
+		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
 	return strings.Join(flags, " ")
@@ -71,7 +79,7 @@ func (c *VaapiCodec) PixelFormat() string {
 }
 
 func (c *VaapiCodec) ExtraArguments() string {
-	return ""
+	return "-vf 'format=nv12,hwupload'"
 }
 
 type NvencCodec struct {
@@ -97,6 +105,44 @@ func (c *NvencCodec) ExtraArguments() string {
 	return ""
 }
 
+type QuicksyncCodec struct {
+}
+
+func (c *QuicksyncCodec) Name() string {
+	return "h264_qsv"
+}
+
+func (c *QuicksyncCodec) GlobalFlags() string {
+	return ""
+}
+
+func (c *QuicksyncCodec) PixelFormat() string {
+	return "yuv420p"
+}
+
+func (c *QuicksyncCodec) ExtraArguments() string {
+	return ""
+}
+
+type Video4Linux struct{}
+
+func (c *Video4Linux) Name() string {
+	return "h264_v4l2m2m"
+}
+
+func (c *Video4Linux) GlobalFlags() string {
+	return ""
+}
+
+func (c *Video4Linux) PixelFormat() string {
+	return "yuv420p"
+}
+
+func (c *Video4Linux) ExtraArguments() string {
+	return ""
+}
+
+// Codec represents a supported codec on the system.
 type Codec interface {
 	Name() string
 	GlobalFlags() string
@@ -104,6 +150,7 @@ type Codec interface {
 	ExtraArguments() string
 }
 
+// GetCodecs will return the supported codecs available on the system.
 func GetCodecs(ffmpegPath string) []string {
 	codecs := make([]string, 0)
 
@@ -120,7 +167,9 @@ func GetCodecs(ffmpegPath string) []string {
 		if strings.Contains(line, "H.264") {
 			fields := strings.Fields(line)
 			codec := fields[1]
-			codecs = append(codecs, codec)
+			if _, supported := supportedCodecs[codec]; supported {
+				codecs = append(codecs, codec)
+			}
 		}
 	}
 
