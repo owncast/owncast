@@ -1,6 +1,7 @@
 package transcoder
 
 import (
+	"bufio"
 	"fmt"
 	"os/exec"
 	"strconv"
@@ -17,7 +18,7 @@ import (
 
 var _commandExec *exec.Cmd
 
-var codec = VaapiCodec{}
+var codec = Libx264Codec{} //QuicksyncCodec{} //VaapiCodec{}
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
@@ -84,6 +85,7 @@ func (t *Transcoder) Stop() {
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
 	command := t.getString()
+	ffmpegErrorHandleCh := make(chan error, 1)
 
 	log.Infof("Video transcoder started using %s with %d stream variants.", codec.Name(), len(t.variants))
 
@@ -92,13 +94,30 @@ func (t *Transcoder) Start() {
 	}
 
 	_commandExec = exec.Command("sh", "-c", command)
-	err := _commandExec.Start()
+	stdout, err := _commandExec.StderrPipe()
+	if err != nil {
+		panic(err)
+	}
+
+	err = _commandExec.Start()
 	if err != nil {
 		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
 		log.Panicln(err, command)
 	}
 
-	err = _commandExec.Wait()
+	go func() {
+		ffmpegErrorHandleCh <- _commandExec.Wait()
+	}()
+
+	go func() {
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			line := scanner.Text()
+			handleTranscoderMessage(line)
+		}
+	}()
+
+	// err = _commandExec.Wait()
 	if t.TranscoderCompleted != nil {
 		t.TranscoderCompleted(err)
 	}
@@ -127,6 +146,7 @@ func (t *Transcoder) getString() string {
 		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
 	}
 	ffmpegFlags := []string{
+		`FFREPORT=file="transcoder.log":level=32`,
 		t.ffmpegPath,
 		"-hide_banner",
 		"-loglevel warning",
@@ -158,7 +178,7 @@ func (t *Transcoder) getString() string {
 		"-method PUT -http_persistent 0",         // HLS results sent back to us will be over PUTs
 		"-fflags +genpts",                        // Generate presentation time stamp if missing
 		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
-		"2> transcoder.log",                      // Log to a file for debugging
+		// "2> transcoder.log",                      // Log to a file for debugging
 	}
 
 	return strings.Join(ffmpegFlags, " ")
