@@ -23,6 +23,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			VideoBitrate:       variant.VideoBitrate,
 			AudioBitrate:       variant.AudioBitrate,
 			CPUUsageLevel:      variant.GetCPUUsageLevel(),
+			ScaledWidth:        variant.ScaledWidth,
+			ScaledHeight:       variant.ScaledHeight,
 		})
 	}
 	response := serverConfigAdminResponse{
