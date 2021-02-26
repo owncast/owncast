@@ -185,7 +185,8 @@ func Start() error {
 
 	port := config.WebServerPort
 
-	log.Tracef("Web server running on port: %d", port)
+	log.Infof("Web server is listening on port %d.", port)
+	log.Infoln("The web admin interface is available at /admin.")
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }

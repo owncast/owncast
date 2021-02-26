@@ -72,10 +72,8 @@ func Start() error {
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)
 
-	port := config.WebServerPort
 	rtmpPort := data.GetRTMPPortNumber()
-	log.Infof("Web server is listening on port %d, RTMP is accepting inbound streams on port %d.", port, rtmpPort)
-	log.Infoln("The web admin interface is available at /admin.")
+	log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 
 	return nil
 }
