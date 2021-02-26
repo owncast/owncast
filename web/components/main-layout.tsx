@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Popover, Alert } from 'antd';
+import { Layout, Menu, Popover, Alert, Typography } from 'antd';
 
 import {
   SettingOutlined,
@@ -91,10 +91,16 @@ export default function MainLayout(props) {
     ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time)))
     : '';
   const currentThumbnail = online ? (
-    <img src="/thumbnail.jpg" className="online-thumbnail" alt="current thumbnail" />
+    <img
+      src="http://localhost:8080/thumbnail.jpg"
+      className="online-thumbnail"
+      alt="current thumbnail"
+      style={{ width: '10rem' }}
+    />
   ) : null;
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : 'Offline';
+  const popoverTitle = <Typography.Text>Thumbnail</Typography.Text>;
 
   const statusIndicator = (
     <div className="online-status-indicator">
@@ -103,7 +109,7 @@ export default function MainLayout(props) {
     </div>
   );
   const statusIndicatorWithThumb = online ? (
-    <Popover content={currentThumbnail} title="Thumbnail" trigger="hover">
+    <Popover content={currentThumbnail} title={popoverTitle} trigger="hover">
       {statusIndicator}
     </Popover>
   ) : (
