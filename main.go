@@ -103,11 +103,6 @@ func main() {
 		log.Exit(0)
 	}
 
-	// starts the core
-	if err := core.Start(); err != nil {
-		log.Fatalln("failed to start the core package", err)
-	}
-
 	// Set the web server port
 	if *webServerPortOverride != "" {
 		portNumber, err := strconv.Atoi(*webServerPortOverride)
@@ -119,6 +114,11 @@ func main() {
 		config.WebServerPort = portNumber
 	} else {
 		config.WebServerPort = data.GetHTTPPortNumber()
+	}
+
+	// starts the core
+	if err := core.Start(); err != nil {
+		log.Fatalln("failed to start the core package", err)
 	}
 
 	if err := router.Start(); err != nil {
