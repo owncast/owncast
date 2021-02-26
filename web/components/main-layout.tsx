@@ -95,8 +95,8 @@ export default function MainLayout(props) {
       src="http://localhost:8080/thumbnail.jpg"
       className="online-thumbnail"
       alt="current thumbnail"
-      style={{ width: "10rem" }}
-      />
+      style={{ width: '10rem' }}
+    />
   ) : null;
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : 'Offline';
