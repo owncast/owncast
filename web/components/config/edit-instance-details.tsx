@@ -104,15 +104,25 @@ export default function EditInstanceDetails() {
         initialValue={instanceDetails.logo}
         onChange={handleFieldChange}
       />
-      {instanceDetails.logo && <img src={'/logo'} alt="uploaded logo" className="logo-preview" />}
+      {instanceDetails.logo && <img src="/logo'" alt="uploaded logo" className="logo-preview" />}
       <br />
 
       <p className="description">
         Increase your audience by appearing in the{' '}
         <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
           <strong>Owncast Directory</strong>
-        </a>.  This is an external service run by the Owncast project.  <a href="https://owncast.online/docs/directory/">Learn more</a>.
-        {!yp.instanceUrl && <div><br/>You must set your server URL above to enable the directory.</div>}
+        </a>
+        . This is an external service run by the Owncast project.{' '}
+        <a href="https://owncast.online/docs/directory/" target="_blank" rel="noopener noreferrer">
+          Learn more
+        </a>
+        .
+        {!yp.instanceUrl && (
+          <div>
+            <br />
+            You must set your server URL above to enable the directory.
+          </div>
+        )}
       </p>
 
       <div className="config-yp-container">

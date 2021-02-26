@@ -220,7 +220,14 @@ export default function AccessTokens() {
       </Paragraph>
       <Paragraph>
         Read more about how to use these tokens, with examples, at{' '}
-        <a href="https://owncast.online/docs/integrations/">our documentation</a>.
+        <a
+          href="https://owncast.online/docs/integrations/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          our documentation
+        </a>
+        .
       </Paragraph>
 
       <Table rowKey="token" columns={columns} dataSource={tokens} pagination={false} />

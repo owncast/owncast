@@ -204,7 +204,9 @@ export default function MainLayout(props) {
         <Content className="main-content-container">{children}</Content>
 
         <Footer className="footer-container">
-          <a href="https://owncast.online/">About Owncast v{versionNumber}</a>
+          <a href="https://owncast.online/" target="_blank" rel="noopener noreferrer">
+            About Owncast v{versionNumber}
+          </a>
         </Footer>
       </Layout>
     </Layout>

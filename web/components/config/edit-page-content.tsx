@@ -91,7 +91,14 @@ export default function EditPageContent() {
 
       <p className="description">
         Edit the content of your page by using simple{' '}
-        <a href="https://www.markdownguide.org/basic-syntax/">Markdown syntax</a>.
+        <a
+          href="https://www.markdownguide.org/basic-syntax/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Markdown syntax
+        </a>
+        .
       </p>
 
       <MdEditor

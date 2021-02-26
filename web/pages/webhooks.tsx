@@ -196,7 +196,14 @@ export default function Webhooks() {
       </Paragraph>
       <Paragraph>
         Read more about how to use webhooks, with examples, at{' '}
-        <a href="https://owncast.online/docs/integrations/">our documentation</a>.
+        <a
+          href="https://owncast.online/docs/integrations/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          our documentation
+        </a>
+        .
       </Paragraph>
 
       <Table rowKey="id" columns={columns} dataSource={webhooks} pagination={false} />

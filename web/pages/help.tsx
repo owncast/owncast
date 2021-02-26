@@ -121,7 +121,14 @@ export default function Help() {
             {' '}
             FAQ
           </a>{' '}
-          or exist in our <a href="https://github.com/owncast/owncast/discussions">discussions</a>
+          or exist in our{' '}
+          <a
+            href="https://github.com/owncast/owncast/discussions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            discussions
+          </a>
         </div>
       ),
     },

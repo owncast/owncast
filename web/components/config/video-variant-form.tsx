@@ -173,8 +173,10 @@ export default function VideoVariantForm({
   return (
     <div className="config-variant-form">
       <p className="description">
-        <a href="https://owncast.online/docs/video">Learn more</a> about how each of these settings
-        can impact the performance of your server.
+        <a href="https://owncast.online/docs/video" target="_blank" rel="noopener noreferrer">
+          Learn more
+        </a>{' '}
+        about how each of these settings can impact the performance of your server.
       </p>
 
       <Row gutter={16}>
@@ -187,7 +189,13 @@ export default function VideoVariantForm({
               disabled={dataState.videoPassthrough}
             />
             <p className="read-more-subtext">
-              <a href="https://owncast.online/docs/video/#cpu-usage">Read more about CPU usage.</a>
+              <a
+                href="https://owncast.online/docs/video/#cpu-usage"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more about CPU usage.
+              </a>
             </p>
           </div>
         </Col>
@@ -216,7 +224,13 @@ export default function VideoVariantForm({
               <p className="selected-value-note">{selectedVideoBRnote()}</p>
             </div>
             <p className="read-more-subtext">
-              <a href="https://owncast.online/docs/video/#bitrate">Read more about bitrates.</a>
+              <a
+                href="https://owncast.online/docs/video/#bitrate"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more about bitrates.
+              </a>
             </p>
           </div>
         </Col>
@@ -231,7 +245,11 @@ export default function VideoVariantForm({
                   Resizing your content will take additional resources on your server. If you wish
                   to optionally resize your content for this stream output then you should either
                   set the width <strong>or</strong> the height to keep your aspect ratio.{' '}
-                  <a href="https://owncast.online/docs/video/#resolution">
+                  <a
+                    href="https://owncast.online/docs/video/#resolution"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Read more about resolutions.
                   </a>
                 </p>
@@ -266,7 +284,11 @@ export default function VideoVariantForm({
                     used.
                   </p>
                   <p>
-                    <a href="https://owncast.online/docs/video/#video-passthrough">
+                    <a
+                      href="https://owncast.online/docs/video/#video-passthrough"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Read the documentation before enabling, as it impacts your stream.
                     </a>
                   </p>
@@ -314,7 +336,13 @@ export default function VideoVariantForm({
               <p className="selected-value-note">{selectedFramerateNote()}</p>
             </div>
             <p className="read-more-subtext">
-              <a href="https://owncast.online/docs/video/#framerate">Read more about framerates.</a>
+              <a
+                href="https://owncast.online/docs/video/#framerate"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more about framerates.
+              </a>
             </p>
           </div>
         </Panel>

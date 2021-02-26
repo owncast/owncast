@@ -19,7 +19,11 @@ export default function Offline({ logs = [], config }) {
       title: 'Use your broadcasting software',
       content: (
         <div>
-          <a href="https://owncast.online/docs/broadcasting/">
+          <a
+            href="https://owncast.online/docs/broadcasting/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Learn how to point your existing software to your new server and start streaming your
             content.
           </a>
@@ -36,7 +40,7 @@ export default function Offline({ logs = [], config }) {
       title: 'Embed your video onto other sites',
       content: (
         <div>
-          <a href="https://owncast.online/docs/embed">
+          <a href="https://owncast.online/docs/embed" target="_blank" rel="noopener noreferrer">
             Learn how you can add your Owncast stream to other sites you control.
           </a>
         </div>
