@@ -34,6 +34,7 @@ func setStreamAsConnected() {
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
+	_stats.SessionMaxViewerCount = 0
 
 	_currentBroadcast = &models.CurrentBroadcast{
 		LatencyLevel:   data.GetStreamLatencyLevel(),
@@ -169,8 +170,6 @@ func StartOfflineCleanupTimer() {
 	_offlineCleanupTimer = time.NewTimer(5 * time.Minute)
 	go func() {
 		for range _offlineCleanupTimer.C {
-			// Reset the session count since the session is over
-			_stats.SessionMaxViewerCount = 0
 			// Set video to offline state
 			resetDirectories()
 			transitionToOfflineVideoStreamContent()
