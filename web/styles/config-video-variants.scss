@@ -15,6 +15,15 @@
   .description {
     margin-top: 0;
   }
+  .passthrough-warning {
+    text-align: center;
+    padding: 1em;
+    color: var(--ant-warning);
+    font-size: 0.88em;
+    font-weight: 500;
+    background-color: var(--black-50);
+    border-radius: var(--container-border-radius);
+  }
 
   .cpu-usage-container,
   .bitrate-container {
@@ -25,8 +34,15 @@
     margin-top: 1em;
 
     .resolution-module,
-    .video-passthroug-module {
+    .video-passthrough-module {
       min-height: 30em;
+    }
+  }
+  // make some things look disabled when passthrough is on
+  &.video-passthrough-enabled {
+    .form-module:not(.video-passthrough-module) {
+      opacity: 0.25;
+      cursor: not-allowed;
     }
   }
 }

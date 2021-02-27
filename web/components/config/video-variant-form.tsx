@@ -1,62 +1,25 @@
-// This content populates the video variant modal, which is spawned from the variants table.
+// This content populates the video variant modal, which is spawned from the variants table. This relies on the `dataState` prop fed in by the table.
 import React from 'react';
 import { Popconfirm, Row, Col, Slider, Collapse, Typography } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import classNames from 'classnames';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
 import TextField from './form-textfield';
-import { DEFAULT_VARIANT_STATE } from '../../utils/config-constants';
-import CPUUsageSelector from './cpu-usage';
+import {
+  DEFAULT_VARIANT_STATE,
+  VIDEO_VARIANT_SETTING_DEFAULTS,
+  ENCODER_PRESET_SLIDER_MARKS,
+  ENCODER_PRESET_TOOLTIPS,
+  VIDEO_BITRATE_DEFAULTS,
+  VIDEO_BITRATE_SLIDER_MARKS,
+  FRAMERATE_SLIDER_MARKS,
+  FRAMERATE_DEFAULTS,
+  FRAMERATE_TOOLTIPS,
+} from '../../utils/config-constants';
 import ToggleSwitch from './form-toggleswitch';
 
 const { Panel } = Collapse;
 
-const VIDEO_VARIANT_DEFAULTS = {
-  framerate: {
-    min: 24,
-    max: 120,
-    defaultValue: 24,
-    unit: 'fps',
-    incrementBy: null,
-    tip:
-      'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
-  },
-  videoBitrate: {
-    min: 600,
-    max: 6000,
-    defaultValue: 1200,
-    unit: 'kbps',
-    incrementBy: 100,
-    tip: 'The overall quality of your stream is generally impacted most by bitrate.',
-  },
-  audioBitrate: {
-    min: 600,
-    max: 1200,
-    defaultValue: 800,
-    unit: 'kbps',
-    incrementBy: 100,
-    tip: 'nothing to see here',
-  },
-  videoPassthrough: {
-    tip: 'If enabled, all other settings will be disabled. Otherwise configure as desired.',
-  },
-  audioPassthrough: {
-    tip: 'If No is selected, then you should set your desired Audio Bitrate.',
-  },
-  scaledWidth: {
-    fieldName: 'scaledWidth',
-    label: 'Resized Width',
-    maxLength: 4,
-    placeholder: '1080',
-    tip: "Optionally resize this content's width.",
-  },
-  scaledHeight: {
-    fieldName: 'scaledHeight',
-    label: 'Resized Height',
-    maxLength: 4,
-    placeholder: '720',
-    tip: "Optionally resize this content's height.",
-  },
-};
 interface VideoVariantFormProps {
   dataState: VideoVariant;
   onUpdateField: FieldUpdaterFunc;
@@ -66,6 +29,8 @@ export default function VideoVariantForm({
   dataState = DEFAULT_VARIANT_STATE,
   onUpdateField,
 }: VideoVariantFormProps) {
+  const videoPassthroughEnabled = dataState.videoPassthrough;
+
   const handleFramerateChange = (value: number) => {
     onUpdateField({ fieldName: 'framerate', value });
   };
@@ -99,40 +64,17 @@ export default function VideoVariantForm({
   // If passthrough is currently on, set it back to false on toggle.
   // Else let the Popconfirm turn it on.
   const handleVideoPassthroughToggle = (value: boolean) => {
-    if (dataState.videoPassthrough) {
+    if (videoPassthroughEnabled) {
       onUpdateField({ fieldName: 'videoPassthrough', value });
     }
   };
 
-  const framerateDefaults = VIDEO_VARIANT_DEFAULTS.framerate;
-  const framerateMin = framerateDefaults.min;
-  const framerateMax = framerateDefaults.max;
-  const framerateUnit = framerateDefaults.unit;
-  const framerateMarks = {
-    [framerateMin]: `${framerateMin} ${framerateUnit}`,
-    30: '',
-    60: '',
-    90: '',
-    [framerateMax]: `${framerateMax} ${framerateUnit}`,
-  };
-
-  const videoBitrateDefaults = VIDEO_VARIANT_DEFAULTS.videoBitrate;
-  const videoBRMin = videoBitrateDefaults.min;
-  const videoBRMax = videoBitrateDefaults.max;
-  const videoBRUnit = videoBitrateDefaults.unit;
-  const videoBRMarks = {
-    [videoBRMin]: `${videoBRMin} ${videoBRUnit}`,
-    3000: 3000,
-    4500: 4500,
-    [videoBRMax]: `${videoBRMax} ${videoBRUnit}`,
-  };
-
+  // Slider notes
   const selectedVideoBRnote = () => {
-    if (dataState.videoPassthrough) {
+    if (videoPassthroughEnabled) {
       return 'Bitrate selection is disabled when Video Passthrough is enabled.';
     }
-
-    let note = `${dataState.videoBitrate}${videoBRUnit}`;
+    let note = `${dataState.videoBitrate}${VIDEO_BITRATE_DEFAULTS.unit}`;
     if (dataState.videoBitrate < 2000) {
       note = `${note} - Good for low bandwidth environments.`;
     } else if (dataState.videoBitrate < 3500) {
@@ -143,35 +85,24 @@ export default function VideoVariantForm({
     return note;
   };
   const selectedFramerateNote = () => {
-    if (dataState.videoPassthrough) {
+    if (videoPassthroughEnabled) {
       return 'Framerate selection is disabled when Video Passthrough is enabled.';
     }
-
-    let note = `Selected: ${dataState.framerate}${framerateUnit}`;
-    switch (dataState.framerate) {
-      case 24:
-        note = `${note} - Good for film, presentations, music, low power/bandwidth servers.`;
-        break;
-      case 30:
-        note = `${note} - Good for slow/casual games, chat, general purpose.`;
-        break;
-      case 60:
-        note = `${note} - Good for fast/action games, sports, HD video.`;
-        break;
-      case 90:
-        note = `${note} - Good for newer fast games and hardware.`;
-        break;
-      case 120:
-        note = `${note} - Experimental, use at your own risk!`;
-        break;
-      default:
-        note = '';
+    return FRAMERATE_TOOLTIPS[dataState.framerate] || '';
+  };
+  const cpuUsageNote = () => {
+    if (videoPassthroughEnabled) {
+      return 'CPU usage selection is disabled when Video Passthrough is enabled.';
     }
-    return note;
+    return ENCODER_PRESET_TOOLTIPS[dataState.cpuUsageLevel] || '';
   };
 
+  const classes = classNames({
+    'config-variant-form': true,
+    'video-passthrough-enabled': videoPassthroughEnabled,
+  });
   return (
-    <div className="config-variant-form">
+    <div className={classes}>
       <p className="description">
         <a href="https://owncast.online/docs/video" target="_blank" rel="noopener noreferrer">
           Learn more
@@ -179,15 +110,34 @@ export default function VideoVariantForm({
         about how each of these settings can impact the performance of your server.
       </p>
 
+      {videoPassthroughEnabled && (
+        <p className="passthrough-warning">
+          NOTE: Video Passthrough for this output stream variant is <em>enabled</em>, disabling the
+          below video encoding settings.
+        </p>
+      )}
+
       <Row gutter={16}>
         <Col sm={24} md={12}>
-          {/* ENCODER PRESET FIELD */}
+          {/* ENCODER PRESET (CPU USAGE) FIELD */}
           <div className="form-module cpu-usage-container">
-            <CPUUsageSelector
-              defaultValue={dataState.cpuUsageLevel}
-              onChange={handleVideoCpuUsageLevelChange}
-              disabled={dataState.videoPassthrough}
-            />
+            <Typography.Title level={3}>CPU Usage</Typography.Title>
+            <p className="description">
+              Reduce to improve server performance, or increase it to improve video quality.
+            </p>
+            <div className="segment-slider-container">
+              <Slider
+                tipFormatter={value => ENCODER_PRESET_TOOLTIPS[value]}
+                onChange={handleVideoCpuUsageLevelChange}
+                min={1}
+                max={Object.keys(ENCODER_PRESET_SLIDER_MARKS).length}
+                marks={ENCODER_PRESET_SLIDER_MARKS}
+                defaultValue={dataState.cpuUsageLevel}
+                value={dataState.cpuUsageLevel}
+                disabled={dataState.videoPassthrough}
+              />
+              <p className="selected-value-note">{cpuUsageNote()}</p>
+            </div>
             <p className="read-more-subtext">
               <a
                 href="https://owncast.online/docs/video/#cpu-usage"
@@ -208,18 +158,18 @@ export default function VideoVariantForm({
             }`}
           >
             <Typography.Title level={3}>Video Bitrate</Typography.Title>
-            <p className="description">{VIDEO_VARIANT_DEFAULTS.videoBitrate.tip}</p>
+            <p className="description">{VIDEO_BITRATE_DEFAULTS.tip}</p>
             <div className="segment-slider-container">
               <Slider
-                tipFormatter={value => `${value} ${videoBRUnit}`}
+                tipFormatter={value => `${value} ${VIDEO_BITRATE_DEFAULTS.unit}`}
                 disabled={dataState.videoPassthrough}
                 defaultValue={dataState.videoBitrate}
                 value={dataState.videoBitrate}
                 onChange={handleVideoBitrateChange}
-                step={videoBitrateDefaults.incrementBy}
-                min={videoBRMin}
-                max={videoBRMax}
-                marks={videoBRMarks}
+                step={VIDEO_BITRATE_DEFAULTS.incrementBy}
+                min={VIDEO_BITRATE_DEFAULTS.min}
+                max={VIDEO_BITRATE_DEFAULTS.max}
+                marks={VIDEO_BITRATE_SLIDER_MARKS}
               />
               <p className="selected-value-note">{selectedVideoBRnote()}</p>
             </div>
@@ -256,14 +206,14 @@ export default function VideoVariantForm({
                 <br />
                 <TextField
                   type="number"
-                  {...VIDEO_VARIANT_DEFAULTS.scaledWidth}
+                  {...VIDEO_VARIANT_SETTING_DEFAULTS.scaledWidth}
                   value={dataState.scaledWidth}
                   onChange={handleScaledWidthChanged}
                   disabled={dataState.videoPassthrough}
                 />
                 <TextField
                   type="number"
-                  {...VIDEO_VARIANT_DEFAULTS.scaledHeight}
+                  {...VIDEO_VARIANT_SETTING_DEFAULTS.scaledHeight}
                   value={dataState.scaledHeight}
                   onChange={handleScaledHeightChanged}
                   disabled={dataState.videoPassthrough}
@@ -272,7 +222,7 @@ export default function VideoVariantForm({
             </Col>
             <Col sm={24} md={12}>
               {/* VIDEO PASSTHROUGH FIELD */}
-              <div className="form-module video-passthroug-module">
+              <div className="form-module video-passthrough-module">
                 <Typography.Title level={3}>Video Passthrough</Typography.Title>
                 <p className="description">
                   <p>
@@ -307,7 +257,7 @@ export default function VideoVariantForm({
                     <ToggleSwitch
                       label="Use Video Passthrough?"
                       fieldName="video-passthrough"
-                      tip={VIDEO_VARIANT_DEFAULTS.videoPassthrough.tip}
+                      tip={VIDEO_VARIANT_SETTING_DEFAULTS.videoPassthrough.tip}
                       checked={dataState.videoPassthrough}
                       onChange={handleVideoPassthroughToggle}
                     />
@@ -320,17 +270,17 @@ export default function VideoVariantForm({
           {/* FRAME RATE FIELD */}
           <div className="form-module frame-rate-module">
             <Typography.Title level={3}>Frame rate</Typography.Title>
-            <p className="description">{VIDEO_VARIANT_DEFAULTS.framerate.tip}</p>
+            <p className="description">{FRAMERATE_DEFAULTS.tip}</p>
             <div className="segment-slider-container">
               <Slider
-                tipFormatter={value => `${value} ${framerateUnit}`}
+                tipFormatter={value => `${value} ${FRAMERATE_DEFAULTS.unit}`}
                 defaultValue={dataState.framerate}
                 value={dataState.framerate}
                 onChange={handleFramerateChange}
-                step={framerateDefaults.incrementBy}
-                min={framerateMin}
-                max={framerateMax}
-                marks={framerateMarks}
+                step={FRAMERATE_DEFAULTS.incrementBy}
+                min={FRAMERATE_DEFAULTS.min}
+                max={FRAMERATE_DEFAULTS.max}
+                marks={FRAMERATE_SLIDER_MARKS}
                 disabled={dataState.videoPassthrough}
               />
               <p className="selected-value-note">{selectedFramerateNote()}</p>

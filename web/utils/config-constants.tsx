@@ -144,8 +144,7 @@ export const FIELD_PROPS_YP = {
   apiPath: API_YP_SWITCH,
   configPath: 'yp',
   label: 'Enable directory',
-  tip:
-    'Turn this ON if you want to show up in the directory.',
+  tip: 'Turn this ON if you want to show up in the directory.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
@@ -157,6 +156,94 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
   cpuUsageLevel: 3,
   scaledHeight: null,
   scaledWidth: null,
+};
+
+export const VIDEO_VARIANT_SETTING_DEFAULTS = {
+  // this one is currently unused
+  audioBitrate: {
+    min: 600,
+    max: 1200,
+    defaultValue: 800,
+    unit: 'kbps',
+    incrementBy: 100,
+    tip: 'nothing to see here',
+  },
+  videoPassthrough: {
+    tip: 'If enabled, all other settings will be disabled. Otherwise configure as desired.',
+  },
+  audioPassthrough: {
+    tip: 'If No is selected, then you should set your desired Audio Bitrate.',
+  },
+  scaledWidth: {
+    fieldName: 'scaledWidth',
+    label: 'Resized Width',
+    maxLength: 4,
+    placeholder: '1080',
+    tip: "Optionally resize this content's width.",
+  },
+  scaledHeight: {
+    fieldName: 'scaledHeight',
+    label: 'Resized Height',
+    maxLength: 4,
+    placeholder: '720',
+    tip: "Optionally resize this content's height.",
+  },
+};
+
+// VIDEO VARIANT FORM - framerate
+export const FRAMERATE_DEFAULTS = {
+  min: 24,
+  max: 120,
+  defaultValue: 24,
+  unit: 'fps',
+  incrementBy: null,
+  tip:
+    'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
+};
+export const FRAMERATE_SLIDER_MARKS = {
+  [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min} ${FRAMERATE_DEFAULTS.unit}`,
+  30: '',
+  60: '',
+  90: '',
+  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max} ${FRAMERATE_DEFAULTS.unit}`,
+};
+export const FRAMERATE_TOOLTIPS = {
+  [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min}fps - Good for film, presentations, music, low power/bandwidth servers.`,
+  30: '30fps - Good for slow/casual games, chat, general purpose.',
+  60: '60fps - Good for fast/action games, sports, HD video.',
+  90: '90fps - Good for newer fast games and hardware.',
+  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max}fps - Experimental, use at your own risk!`,
+};
+// VIDEO VARIANT FORM - bitrate
+export const VIDEO_BITRATE_DEFAULTS = {
+  min: 600,
+  max: 6000,
+  defaultValue: 1200,
+  unit: 'kbps',
+  incrementBy: 100,
+  tip: 'The overall quality of your stream is generally impacted most by bitrate.',
+};
+export const VIDEO_BITRATE_SLIDER_MARKS = {
+  [VIDEO_BITRATE_DEFAULTS.min]: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
+  3000: 3000,
+  4500: 4500,
+  [VIDEO_BITRATE_DEFAULTS.max]: `${VIDEO_BITRATE_DEFAULTS.max} ${VIDEO_BITRATE_DEFAULTS.unit}`,
+};
+// VIDEO VARIANT FORM - encoder preset
+// CPU
+export const ENCODER_PRESET_SLIDER_MARKS = {
+  1: 'lowest',
+  2: '',
+  3: '',
+  4: '',
+  5: 'highest',
+};
+export const ENCODER_PRESET_TOOLTIPS = {
+  1: 'Lowest CPU usage - lowest quality video',
+  2: 'Low CPU usage - low quality video',
+  3: 'Medium CPU usage - average quality video',
+  4: 'High CPU usage - high quality video',
+  5: 'Highest CPU usage - higher quality video',
 };
 
 export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
