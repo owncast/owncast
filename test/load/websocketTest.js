@@ -6,7 +6,7 @@ function createTestMessageObject(userContext, events, done) {
   const data = {
     author: author,
     body: "Test 12345. " + randomNumber,
-    image: "https://robohash.org/" + author + "?size=80x80&set=set3"
+    type: "CHAT"
   };
   // set the "data" variable for the virtual user to use in the subsequent action
   userContext.vars.data = data;
