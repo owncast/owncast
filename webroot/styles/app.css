@@ -216,7 +216,7 @@ header {
 }
 
 
-/* ************************************************8 */
+/* ************************************************ */
 
 
 @media screen and (max-width: 860px) {
@@ -230,5 +230,18 @@ header {
   .instance-title {
     font-size: 1rem;
   }
+}
 
+/* ************************************************ */
+
+
+@media screen and (max-width: 600px) {
+  #user-info-change {
+    width: 75vw;
+  }
+  #user-info-display {
+    max-width: 30vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
