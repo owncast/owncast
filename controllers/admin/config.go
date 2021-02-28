@@ -1,11 +1,14 @@
 package admin
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core"
@@ -156,8 +159,8 @@ func SetStreamKey(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-// SetLogoPath will handle the web config request to validate and set the logo path.
-func SetLogoPath(w http.ResponseWriter, r *http.Request) {
+// SetLogo will handle a new logo image file being uploaded.
+func SetLogo(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -167,14 +170,46 @@ func SetLogoPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	imgPath := configValue.Value.(string)
-	fullPath := filepath.Join("data", imgPath)
-	if !utils.DoesFileExists(fullPath) {
-		controllers.WriteSimpleResponse(w, false, fmt.Sprintf("%s does not exist", fullPath))
+	s := strings.SplitN(configValue.Value.(string), ",", 2)
+	if len(s) < 2 {
+		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image data.")
+		return
+	}
+	bytes, err := base64.StdEncoding.DecodeString(s[1])
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	if err := data.SetLogoPath(imgPath); err != nil {
+	splitHeader := strings.Split(s[0], ":")
+	if len(splitHeader) < 2 {
+		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image header.")
+		return
+	}
+	contentType := strings.Split(splitHeader[1], ";")[0]
+	extension := ""
+	if contentType == "image/svg+xml" {
+		extension = ".svg"
+	} else if contentType == "image/gif" {
+		extension = ".gif"
+	} else if contentType == "image/png" {
+		extension = ".png"
+	} else if contentType == "image/jpeg" {
+		extension = ".jpeg"
+	}
+
+	if extension == "" {
+		controllers.WriteSimpleResponse(w, false, "Missing or invalid contentType in base64 image.")
+		return
+	}
+
+	imgPath := filepath.Join("data", "logo"+extension)
+	if err := ioutil.WriteFile(imgPath, bytes, 0644); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	if err := data.SetLogoPath("logo" + extension); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
