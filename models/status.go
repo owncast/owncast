@@ -6,8 +6,8 @@ import "github.com/owncast/owncast/utils"
 type Status struct {
 	Online                bool `json:"online"`
 	ViewerCount           int  `json:"viewerCount"`
-	OverallMaxViewerCount int  `json:"overallMaxViewerCount,omitempty"`
-	SessionMaxViewerCount int  `json:"sessionMaxViewerCount,omitempty"`
+	OverallMaxViewerCount int  `json:"overallMaxViewerCount"`
+	SessionMaxViewerCount int  `json:"sessionMaxViewerCount"`
 
 	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
