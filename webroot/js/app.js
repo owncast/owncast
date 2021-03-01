@@ -74,6 +74,8 @@ export default class App extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       orientation: getOrientation(this.hasTouchScreen),
+
+      externalActionModalUrl: null,
     };
 
     // timers
@@ -98,6 +100,8 @@ export default class App extends Component {
     this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
+    this.displayExternalAction = this.displayExternalAction.bind(this);
+    this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -397,6 +401,18 @@ export default class App extends Component {
     }
   }
 
+  displayExternalAction() {
+    this.setState({
+      externalActionModalUrl: 'https://owncast-example-tip-jar.glitch.me/'
+    });
+  }
+
+  closeExternalActionModal() {
+    this.setState({
+      externalActionModalUrl: null
+    });
+  }
+
   render(props, state) {
     const {
       chatInputEnabled,
@@ -414,6 +430,7 @@ export default class App extends Component {
       websocket,
       windowHeight,
       windowWidth,
+      externalActionModalUrl,
     } = state;
 
     const {
@@ -470,6 +487,8 @@ export default class App extends Component {
     const poster = isPlaying
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
+
+    const externalActionModal = externalActionModalUrl ? html`<${ExternalActionModal} title="Test Title" url=${this.state.externalActionModalUrl} onClose=${this.closeExternalActionModal} />` : null;
 
     return html`
       <div
@@ -568,6 +587,9 @@ export default class App extends Component {
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
+              <div>
+                <button onClick=${this.displayExternalAction}>External action</button>
+              </div>
               <ul id="tag-list" class="tag-list flex flex-row flex-wrap my-4">
                 ${tagList}
               </ul>
@@ -593,7 +615,7 @@ export default class App extends Component {
           chatInputEnabled=${chatInputEnabled && !chatDisabled}
           instanceTitle=${name}
         />
-        <${ExternalActionModal} />
+        ${externalActionModal}
       </div>
     `;
   }
