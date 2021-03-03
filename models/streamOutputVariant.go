@@ -1,6 +1,8 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // StreamOutputVariant defines the output specifics of a single HLS stream variant.
 type StreamOutputVariant struct {
@@ -86,4 +88,64 @@ func (q *StreamOutputVariant) MarshalJSON() ([]byte, error) {
 		Framerate: q.GetFramerate(),
 		Alias:     (*Alias)(q),
 	})
+}
+
+// UnmarshalJSON is a custom JSON deserializer for StreamOutputVariant.
+func (q *StreamOutputVariant) UnmarshalJSON(data []byte) error {
+	var v map[string]interface{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	if v["audioPassthrough"] == nil {
+		q.IsAudioPassthrough = true
+	} else {
+		q.IsAudioPassthrough = v["audioPassthrough"].(bool)
+	}
+
+	if v["videoPassthrough"] == nil {
+		q.IsVideoPassthrough = false
+	} else {
+		q.IsVideoPassthrough = v["videoPassthrough"].(bool)
+	}
+
+	if v["cpuUsageLevel"] == "" || v["cpuUsageLevel"] == nil || v["cpuUsageLevel"] == 0 {
+		q.CPUUsageLevel = 3
+	} else {
+		q.CPUUsageLevel = int(v["cpuUsageLevel"].(float64))
+	}
+
+	if v["framerate"] == "" || v["framerate"] == nil || v["framerate"] == 0 {
+		q.Framerate = 24
+	} else {
+		q.Framerate = int(v["framerate"].(float64))
+	}
+
+	if v["scaledWidth"] == "" || v["scaledWidth"] == nil {
+		q.ScaledWidth = 0
+	} else {
+		q.ScaledWidth = int(v["scaledWidth"].(float64))
+	}
+
+	if v["scaledHeight"] == "" || v["scaledHeight"] == nil {
+		q.ScaledHeight = 0
+	} else {
+		q.ScaledHeight = int(v["scaledHeight"].(float64))
+	}
+
+	if v["videoBitrate"] == "" || v["videoBitrate"] == nil || v["videoBitrate"] == 0 {
+		q.VideoBitrate = 0
+		q.IsVideoPassthrough = true
+	} else {
+		q.VideoBitrate = int(v["videoBitrate"].(float64))
+	}
+
+	if v["audioBitrate"] == "" || v["audioBitrate"] == nil || v["audioBitrate"] == 0 {
+		q.AudioBitrate = 0
+		q.IsAudioPassthrough = true
+	} else {
+		q.AudioBitrate = int(v["audioBitrate"].(float64))
+	}
+
+	return nil
 }
