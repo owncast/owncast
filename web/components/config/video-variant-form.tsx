@@ -46,7 +46,7 @@ export default function VideoVariantForm({
     if (isNaN(value)) {
       return;
     }
-    onUpdateField({ fieldName: 'scaledWidth', value: value || '' });
+    onUpdateField({ fieldName: 'scaledWidth', value: value || 0 });
   };
   const handleScaledHeightChanged = (args: UpdateArgs) => {
     const value = Number(args.value);
@@ -54,7 +54,7 @@ export default function VideoVariantForm({
     if (isNaN(value)) {
       return;
     }
-    onUpdateField({ fieldName: 'scaledHeight', value: value || '' });
+    onUpdateField({ fieldName: 'scaledHeight', value: value || 0 });
   };
 
   // Video passthrough handling
