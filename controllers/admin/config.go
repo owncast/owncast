@@ -378,7 +378,7 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var videoVariants streamOutputVariantRequest
 	if err := decoder.Decode(&videoVariants); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
+		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
 	}
 
@@ -403,7 +403,7 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetStreamOutputVariants(videoVariants.Value); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values")
+		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
 	}
 
