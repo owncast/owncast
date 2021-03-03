@@ -224,7 +224,7 @@ export default function VideoVariantForm({
               {/* VIDEO PASSTHROUGH FIELD */}
               <div className="form-module video-passthrough-module">
                 <Typography.Title level={3}>Video Passthrough</Typography.Title>
-                <p className="description">
+                <div className="description">
                   <p>
                     Enabling video passthrough may allow for less hardware utilization, but may also
                     make your stream <strong>unplayable</strong>.
@@ -242,7 +242,7 @@ export default function VideoVariantForm({
                       Read the documentation before enabling, as it impacts your stream.
                     </a>
                   </p>
-                </p>
+                </div>
                 <Popconfirm
                   disabled={dataState.videoPassthrough === true}
                   title="Did you read the documentation about video passthrough and understand the risks involved with enabling it?"
