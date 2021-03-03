@@ -3,7 +3,7 @@ import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
 import SocialDropdown from './social-icons-dropdown';
-import { fetchData, NEXT_PUBLIC_API_HOST, SOCIAL_PLATFORMS_LIST } from '../../utils/apis';
+import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../utils/apis';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   API_SOCIAL_HANDLES,
@@ -138,6 +138,7 @@ export default function EditSocialLinks() {
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
+        setModalProcessing(false);
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
@@ -192,28 +193,26 @@ export default function EditSocialLinks() {
       title: '',
       dataIndex: '',
       key: 'edit',
-      render: (data, record, index) => {
-        return (
-          <div className="actions">
-            <Button
-              size="small"
-              onClick={() => {
-                setEditId(index);
-                setModalDataState({ ...currentSocialHandles[index] });
-                setDisplayModal(true);
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              className="delete-button"
-              icon={<DeleteOutlined />}
-              size="small"
-              onClick={() => handleDeleteItem(index)}
-            />
-          </div>
-        );
-      },
+      render: (data, record, index) => (
+        <div className="actions">
+          <Button
+            size="small"
+            onClick={() => {
+              setEditId(index);
+              setModalDataState({ ...currentSocialHandles[index] });
+              setDisplayModal(true);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            className="delete-button"
+            icon={<DeleteOutlined />}
+            size="small"
+            onClick={() => handleDeleteItem(index)}
+          />
+        </div>
+      ),
     },
   ];
 

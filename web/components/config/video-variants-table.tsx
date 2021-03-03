@@ -14,6 +14,7 @@ import {
   DEFAULT_VARIANT_STATE,
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
+  ENCODER_PRESET_TOOLTIPS,
 } from '../../utils/config-constants';
 import {
   createInputStatus,
@@ -25,14 +26,6 @@ import {
 import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
-
-const CPU_USAGE_LEVEL_MAP = {
-  1: 'lowest',
-  2: 'low',
-  3: 'medium',
-  4: 'high',
-  5: 'highest',
-};
 
 export default function CurrentVariantsTable() {
   const [displayModal, setDisplayModal] = useState(false);
@@ -97,6 +90,7 @@ export default function CurrentVariantsTable() {
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
+        setModalProcessing(false);
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
@@ -144,7 +138,7 @@ export default function CurrentVariantsTable() {
       dataIndex: 'cpuUsageLevel',
       key: 'cpuUsageLevel',
       render: (level: string, variant: VideoVariant) =>
-        !level || variant.videoPassthrough ? 'n/a' : CPU_USAGE_LEVEL_MAP[level],
+        !level || variant.videoPassthrough ? 'n/a' : ENCODER_PRESET_TOOLTIPS[level].split(' ')[0],
     },
     {
       title: '',
