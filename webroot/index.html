@@ -39,36 +39,35 @@
         
          If you wish to re-generate this list, run the following shell command 
          (assuming a linux or unix-ish system):
-         find webroot | grep -E '\.js$' | sed -E 's|webroot(.*)|<script type="module" src="\1"></script>|'
+         find webroot | grep -E '\.js$' | sed -E 's|webroot(.*)|<script type="preload" src="\1"></script>|'
+         Don't load/preload chat-only or video-only.
     -->
 
-    <script type="module" src="/js/app.js"></script>
-    <script type="module" src="/js/app-standalone-chat.js"></script>
-    <script type="module" src="/js/app-video-only.js"></script>
-    <script type="module" src="/js/components/chat/chat-input.js"></script>
-    <script type="module" src="/js/components/chat/chat.js"></script>
-    <script type="module" src="/js/components/chat/chat-message-view.js"></script>
-    <script type="module" src="/js/components/chat/content-editable.js"></script>
-    <script type="module" src="/js/components/chat/message.js"></script>
-    <script type="module" src="/js/components/chat/username.js"></script>
-    <script type="module" src="/js/components/platform-logos-list.js"></script>
-    <script type="module" src="/js/components/player.js"></script>
-    <script type="module" src="/js/components/video-poster.js"></script>
-    <script type="module" src="/js/utils/chat.js"></script>
-    <script type="module" src="/js/utils/constants.js"></script>
-    <script type="module" src="/js/utils/helpers.js"></script>
-    <script type="module" src="/js/utils/user-colors.js"></script>
-    <script type="module" src="/js/utils/websocket.js"></script>
-    <script type="module" src="/js/web_modules/common/_commonjsHelpers-37fa8da4.js"></script>
-    <script type="module" src="/js/web_modules/common/core-d14f1e1c.js"></script>
-    <script type="module" src="/js/web_modules/common/core-fed3ccd8.js"></script>
-    <script type="module" src="/js/web_modules/htm.js"></script>
-    <script type="module" src="/js/web_modules/@joeattardi/emoji-button.js"></script>
-    <script type="module" src="/js/web_modules/@justinribeiro/lite-youtube.js"></script>
-    <script type="module" src="/js/web_modules/markjs/dist/mark.es6.min.js"></script>
-    <script type="module" src="/js/web_modules/preact.js"></script>
-    <script type="module" src="/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
-    <script type="module" src="/js/web_modules/videojs/core.js"></script>
+    <script type="preload" src="/js/app.js"></script>
+    <script type="preload" src="/js/components/chat/chat-input.js"></script>
+    <script type="preload" src="/js/components/chat/chat.js"></script>
+    <script type="preload" src="/js/components/chat/chat-message-view.js"></script>
+    <script type="preload" src="/js/components/chat/content-editable.js"></script>
+    <script type="preload" src="/js/components/chat/message.js"></script>
+    <script type="preload" src="/js/components/chat/username.js"></script>
+    <script type="preload" src="/js/components/platform-logos-list.js"></script>
+    <script type="preload" src="/js/components/player.js"></script>
+    <script type="preload" src="/js/components/video-poster.js"></script>
+    <script type="preload" src="/js/utils/chat.js"></script>
+    <script type="preload" src="/js/utils/constants.js"></script>
+    <script type="preload" src="/js/utils/helpers.js"></script>
+    <script type="preload" src="/js/utils/user-colors.js"></script>
+    <script type="preload" src="/js/utils/websocket.js"></script>
+    <script type="preload" src="/js/web_modules/common/_commonjsHelpers-37fa8da4.js"></script>
+    <script type="preload" src="/js/web_modules/common/core-d14f1e1c.js"></script>
+    <script type="preload" src="/js/web_modules/common/core-fed3ccd8.js"></script>
+    <script type="preload" src="/js/web_modules/htm.js"></script>
+    <script type="preload" src="/js/web_modules/@joeattardi/emoji-button.js"></script>
+    <script type="preload" src="/js/web_modules/@justinribeiro/lite-youtube.js"></script>
+    <script type="preload" src="/js/web_modules/markjs/dist/mark.es6.min.js"></script>
+    <script type="preload" src="/js/web_modules/preact.js"></script>
+    <script type="preload" src="/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
+    <script type="preload" src="/js/web_modules/videojs/core.js"></script>
 
   </head>
 
