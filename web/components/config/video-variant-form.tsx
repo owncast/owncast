@@ -104,7 +104,11 @@ export default function VideoVariantForm({
   return (
     <div className={classes}>
       <p className="description">
-        <a href="https://owncast.online/docs/video?source=admin" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://owncast.online/docs/video?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Learn more
         </a>{' '}
         about how each of these settings can impact the performance of your server.

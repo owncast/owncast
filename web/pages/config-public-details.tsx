@@ -14,7 +14,11 @@ export default function PublicFacingDetails() {
       <Title>General Settings</Title>
       <p className="description">
         The following are displayed on your site to describe your stream and its content.{' '}
-        <a href="https://owncast.online/docs/website/?source=admin" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://owncast.online/docs/website/?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Learn more.
         </a>
       </p>

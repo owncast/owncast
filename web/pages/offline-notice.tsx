@@ -40,7 +40,11 @@ export default function Offline({ logs = [], config }) {
       title: 'Embed your video onto other sites',
       content: (
         <div>
-          <a href="https://owncast.online/docs/embed?source=admin" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://owncast.online/docs/embed?source=admin"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Learn how you can add your Owncast stream to other sites you control.
           </a>
         </div>

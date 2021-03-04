@@ -11,7 +11,11 @@ export default function ConfigStorageInfo() {
       <p className="description">
         Owncast supports optionally using external storage providers to distribute your video. Learn
         more about this by visiting our{' '}
-        <a href="https://owncast.online/docs/storage/?source=admin" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://owncast.online/docs/storage/?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Storage Documentation
         </a>
         .

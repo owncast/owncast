@@ -113,7 +113,11 @@ export default function EditInstanceDetails() {
           <strong>Owncast Directory</strong>
         </a>
         . This is an external service run by the Owncast project.{' '}
-        <a href="https://owncast.online/docs/directory/?source=admin" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://owncast.online/docs/directory/?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Learn more
         </a>
         .

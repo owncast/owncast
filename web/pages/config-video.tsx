@@ -12,7 +12,11 @@ export default function ConfigVideoSettings() {
       <Title>Video configuration</Title>
       <p className="description">
         Before changing your video configuration{' '}
-        <a href="https://owncast.online/docs/video?source=admin" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://owncast.online/docs/video?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           visit the video documentation
         </a>{' '}
         to learn how it impacts your stream performance. The general rule is to start conservatively
