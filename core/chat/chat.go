@@ -73,6 +73,9 @@ func GetModerationChatMessages() []models.ChatEvent {
 }
 
 func GetClient(clientID string) *Client {
+	l.RLock()
+	defer l.RUnlock()
+
 	for _, client := range _server.Clients {
 		if client.ClientID == clientID {
 			return client

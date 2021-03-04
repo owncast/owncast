@@ -18,7 +18,7 @@ var (
 	_server *server
 )
 
-var l = sync.Mutex{}
+var l = &sync.RWMutex{}
 
 // Server represents the server which handles the chat.
 type server struct {
@@ -56,32 +56,42 @@ func (s *server) err(err error) {
 }
 
 func (s *server) sendAll(msg models.ChatEvent) {
+	l.RLock()
 	for _, c := range s.Clients {
 		c.write(msg)
 	}
+	l.RUnlock()
 }
 
 func (s *server) ping() {
 	ping := models.PingMessage{MessageType: models.PING}
+
+	l.RLock()
 	for _, c := range s.Clients {
 		c.pingch <- ping
 	}
+	l.RUnlock()
 }
 
 func (s *server) usernameChanged(msg models.NameChangeEvent) {
+	l.RLock()
 	for _, c := range s.Clients {
 		c.usernameChangeChannel <- msg
 	}
+	l.RUnlock()
 
 	go webhooks.SendChatEventUsernameChanged(msg)
 }
 
 func (s *server) userJoined(msg models.UserJoinedEvent) {
+	l.RLock()
 	if s.listener.IsStreamConnected() {
 		for _, c := range s.Clients {
 			c.userJoinedChannel <- msg
 		}
 	}
+	l.RUnlock()
+
 	go webhooks.SendChatEventUserJoined(msg)
 }
 
@@ -92,7 +102,8 @@ func (s *server) onConnection(ws *websocket.Conn) {
 		s.removeClient(client)
 
 		if err := ws.Close(); err != nil {
-			s.errCh <- err
+			log.Debugln(err)
+			//s.errCh <- err
 		}
 	}()
 
@@ -113,12 +124,12 @@ func (s *server) Listen() {
 		case c := <-s.addCh:
 			l.Lock()
 			s.Clients[c.socketID] = c
-			l.Unlock()
 
 			if !c.Ignore {
 				s.listener.ClientAdded(c.GetViewerClientFromChatClient())
 				s.sendWelcomeMessageToClient(c)
 			}
+			l.Unlock()
 
 		// remove a client
 		case c := <-s.delCh:
@@ -158,12 +169,10 @@ func (s *server) Listen() {
 
 func (s *server) removeClient(c *Client) {
 	l.Lock()
-
 	if _, ok := s.Clients[c.socketID]; ok {
 		delete(s.Clients, c.socketID)
 
 		s.listener.ClientRemoved(c.socketID)
-
 		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(c.ConnectedAt), c.MessageCount, c.ClientID)
 	}
 	l.Unlock()

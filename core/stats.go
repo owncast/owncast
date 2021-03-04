@@ -14,7 +14,7 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var l = sync.Mutex{}
+var l = &sync.RWMutex{}
 
 func setupStats() error {
 	s := getSavedStats()
@@ -52,6 +52,8 @@ func IsStreamConnected() bool {
 // SetClientActive sets a client as active and connected.
 func SetClientActive(client models.Client) {
 	l.Lock()
+	defer l.Unlock()
+
 	// If this clientID already exists then update it.
 	// Otherwise set a new one.
 	if existingClient, ok := _stats.Clients[client.ClientID]; ok {
@@ -66,7 +68,6 @@ func SetClientActive(client models.Client) {
 		}
 		_stats.Clients[client.ClientID] = client
 	}
-	l.Unlock()
 
 	// Don't update viewer counts if a live stream session is not active.
 	if _stats.StreamConnected {
@@ -85,6 +86,7 @@ func RemoveClient(clientID string) {
 }
 
 func GetClients() []models.Client {
+	l.RLock()
 	clients := make([]models.Client, 0)
 	for _, client := range _stats.Clients {
 		chatClient := chat.GetClient(client.ClientID)
@@ -94,6 +96,8 @@ func GetClients() []models.Client {
 			clients = append(clients, client)
 		}
 	}
+	l.RUnlock()
+
 	return clients
 }
 

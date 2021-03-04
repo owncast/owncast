@@ -7,8 +7,15 @@ config:
     maxErrorRate: 1
 
   phases:
-    - duration: 100
-      arrivalRate: 15
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 5
+      name: "Warming up"
+    - duration: 240
+      arrivalRate: 5
+      rampTo: 40
+      name: "Max load"
+      
   ws:
     subprotocols:
       - json
@@ -16,9 +23,10 @@ config:
       Connection: Upgrade
       Origin: http://localhost:8080
       Sec-WebSocket-Version: 13
+      
 scenarios:
   - engine: "ws"
     flow:
     - function: "createTestMessageObject"
     - send: "{{ data }}"
-    - think: 10
+    - think: 30 # Each client should stay connected for 30 seconds

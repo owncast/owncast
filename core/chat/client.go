@@ -153,10 +153,9 @@ func (c *Client) listenRead() {
 			if err != nil {
 				if err == io.EOF {
 					c.doneCh <- true
-				} else {
-					c.handleClientSocketError(err)
+					return
 				}
-				return
+				c.handleClientSocketError(err)
 			}
 
 			var messageTypeCheck map[string]interface{}
@@ -165,11 +164,11 @@ func (c *Client) listenRead() {
 				log.Errorln(err)
 			}
 
-			messageType := messageTypeCheck["type"].(string)
-
 			if !c.passesRateLimit() {
 				continue
 			}
+
+			messageType := messageTypeCheck["type"].(string)
 
 			if messageType == models.MessageSent {
 				c.chatMessageReceived(data)
