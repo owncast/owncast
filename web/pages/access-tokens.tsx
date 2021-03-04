@@ -221,7 +221,7 @@ export default function AccessTokens() {
       <Paragraph>
         Read more about how to use these tokens, with examples, at{' '}
         <a
-          href="https://owncast.online/docs/integrations/"
+          href="https://owncast.online/docs/integrations/?source=admin"
           target="_blank"
           rel="noopener noreferrer"
         >

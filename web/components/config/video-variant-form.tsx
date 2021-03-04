@@ -104,7 +104,7 @@ export default function VideoVariantForm({
   return (
     <div className={classes}>
       <p className="description">
-        <a href="https://owncast.online/docs/video" target="_blank" rel="noopener noreferrer">
+        <a href="https://owncast.online/docs/video?source=admin" target="_blank" rel="noopener noreferrer">
           Learn more
         </a>{' '}
         about how each of these settings can impact the performance of your server.
@@ -140,7 +140,7 @@ export default function VideoVariantForm({
             </div>
             <p className="read-more-subtext">
               <a
-                href="https://owncast.online/docs/video/#cpu-usage"
+                href="https://owncast.online/docs/video/#cpu-usage?source=admin"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -175,7 +175,7 @@ export default function VideoVariantForm({
             </div>
             <p className="read-more-subtext">
               <a
-                href="https://owncast.online/docs/video/#bitrate"
+                href="https://owncast.online/docs/video/#bitrate?source=admin"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -196,7 +196,7 @@ export default function VideoVariantForm({
                   to optionally resize your content for this stream output then you should either
                   set the width <strong>or</strong> the height to keep your aspect ratio.{' '}
                   <a
-                    href="https://owncast.online/docs/video/#resolution"
+                    href="https://owncast.online/docs/video/#resolution?source=admin"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -235,7 +235,7 @@ export default function VideoVariantForm({
                   </p>
                   <p>
                     <a
-                      href="https://owncast.online/docs/video/#video-passthrough"
+                      href="https://owncast.online/docs/video/#video-passthrough?source=admin"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -287,7 +287,7 @@ export default function VideoVariantForm({
             </div>
             <p className="read-more-subtext">
               <a
-                href="https://owncast.online/docs/video/#framerate"
+                href="https://owncast.online/docs/video/#framerate?source=admin"
                 target="_blank"
                 rel="noopener noreferrer"
               >

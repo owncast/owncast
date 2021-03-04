@@ -23,7 +23,7 @@ export default function Help() {
       content: (
         <div>
           <a
-            href="https://owncast.online/docs/configuration/"
+            href="https://owncast.online/docs/configuration/?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -38,7 +38,7 @@ export default function Help() {
       content: (
         <div>
           <a
-            href="https://owncast.online/docs/broadcasting/"
+            href="https://owncast.online/docs/broadcasting/?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -52,7 +52,7 @@ export default function Help() {
       title: 'I want to embed my stream into another site',
       content: (
         <div>
-          <a href="https://owncast.online/docs/embed/" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/docs/embed/?source=admin" target="_blank" rel="noopener noreferrer">
             <LinkOutlined /> Learn more
           </a>
         </div>
@@ -63,7 +63,7 @@ export default function Help() {
       title: 'I want to customize my website',
       content: (
         <div>
-          <a href="https://owncast.online/docs/website/" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/docs/website/?source=admin" target="_blank" rel="noopener noreferrer">
             <LinkOutlined /> Learn more
           </a>
         </div>
@@ -74,7 +74,7 @@ export default function Help() {
       title: 'I want to tweak my video output',
       content: (
         <div>
-          <a href="https://owncast.online/docs/encoding/" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/docs/encoding/?source=admin" target="_blank" rel="noopener noreferrer">
             <LinkOutlined /> Learn more
           </a>
         </div>
@@ -85,7 +85,7 @@ export default function Help() {
       title: 'I want to use an external storage provider',
       content: (
         <div>
-          <a href="https://owncast.online/docs/storage/" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/docs/storage/?source=admin" target="_blank" rel="noopener noreferrer">
             <LinkOutlined /> Learn more
           </a>
         </div>
@@ -117,7 +117,7 @@ export default function Help() {
       content: (
         <div>
           Most general questions are answered in our
-          <a href="https://owncast.online/docs/faq/" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/docs/faq/?source=admin" target="_blank" rel="noopener noreferrer">
             {' '}
             FAQ
           </a>{' '}
@@ -138,7 +138,7 @@ export default function Help() {
       content: (
         <div>
           You can build your own bots, overlays, tools and add-ons with our
-          <a href="https://owncast.online/thirdparty" target="_blank" rel="noopener noreferrer">
+          <a href="https://owncast.online/thirdparty?source=admin" target="_blank" rel="noopener noreferrer">
             &nbsp;developer APIs.&nbsp;
           </a>
         </div>
@@ -156,7 +156,7 @@ export default function Help() {
           <Button
             target="_blank"
             rel="noopener noreferrer"
-            href="https://owncast.online/docs/troubleshooting/"
+            href="https://owncast.online/docs/troubleshooting/?source=admin"
             icon={<LinkOutlined />}
             type="primary"
           >
@@ -169,7 +169,7 @@ export default function Help() {
           <Button
             target="_blank"
             rel="noopener noreferrer"
-            href="https://owncast.online/docs"
+            href="https://owncast.online/docs?source=admin"
             icon={<LinkOutlined />}
             type="primary"
           >

@@ -108,7 +108,7 @@ export default function VideoLatency() {
         For interactive live streams you may want to experiment with a lower latency, for
         non-interactive broadcasts you may want to increase it.{' '}
         <a
-          href="https://owncast.online/docs/encoding#latency-buffer"
+          href="https://owncast.online/docs/encoding#latency-buffer?source=admin"
           target="_blank"
           rel="noopener noreferrer"
         >

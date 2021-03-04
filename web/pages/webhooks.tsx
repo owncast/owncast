@@ -197,7 +197,7 @@ export default function Webhooks() {
       <Paragraph>
         Read more about how to use webhooks, with examples, at{' '}
         <a
-          href="https://owncast.online/docs/integrations/"
+          href="https://owncast.online/docs/integrations/?source=admin"
           target="_blank"
           rel="noopener noreferrer"
         >
