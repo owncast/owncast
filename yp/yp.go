@@ -60,6 +60,10 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
+	if !data.GetDirectoryEnabled() {
+		return
+	}
+
 	myInstanceURL := data.GetServerURL()
 	if myInstanceURL == "" {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")

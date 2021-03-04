@@ -63,9 +63,7 @@ func Start() error {
 		return err
 	}
 
-	if data.GetDirectoryEnabled() {
-		_yp = yp.NewYP(GetStatus)
-	}
+	_yp = yp.NewYP(GetStatus)
 
 	chat.Setup(ChatListenerImpl{})
 
