@@ -109,6 +109,9 @@ func Start() error {
 	// Server summary
 	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.SetServerSummary))
 
+	// Disable chat
+	http.HandleFunc("/api/admin/config/chat/disable", middleware.RequireAdminAuth(admin.SetChatDisabled))
+
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
 

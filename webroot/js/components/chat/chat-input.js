@@ -5,8 +5,17 @@ const html = htm.bind(h);
 import { EmojiButton } from '/js/web_modules/@joeattardi/emoji-button.js';
 
 import ContentEditable, { replaceCaret } from './content-editable.js';
-import { generatePlaceholderText, getCaretPosition, convertToText, convertOnPaste } from '../../utils/chat.js';
-import { getLocalStorage, setLocalStorage, classNames } from '../../utils/helpers.js';
+import {
+  generatePlaceholderText,
+  getCaretPosition,
+  convertToText,
+  convertOnPaste,
+} from '../../utils/chat.js';
+import {
+  getLocalStorage,
+  setLocalStorage,
+  classNames,
+} from '../../utils/helpers.js';
 import {
   URL_CUSTOM_EMOJIS,
   KEY_CHAT_FIRST_MESSAGE_SENT,
@@ -46,7 +55,9 @@ export default class ChatInput extends Component {
     this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
 
-    this.handleContentEditableChange = this.handleContentEditableChange.bind(this);
+    this.handleContentEditableChange = this.handleContentEditableChange.bind(
+      this
+    );
   }
 
   componentDidMount() {
@@ -55,13 +66,13 @@ export default class ChatInput extends Component {
 
   getCustomEmojis() {
     fetch(URL_CUSTOM_EMOJIS)
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`Network response was not ok ${response.ok}`);
         }
         return response.json();
       })
-      .then(json => {
+      .then((json) => {
         this.emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
@@ -75,7 +86,7 @@ export default class ChatInput extends Component {
           position: 'right-start',
           strategy: 'absolute',
         });
-        this.emojiPicker.on('emoji', emoji => {
+        this.emojiPicker.on('emoji', (emoji) => {
           this.handleEmojiSelected(emoji);
         });
         this.emojiPicker.on('hidden', () => {
@@ -83,7 +94,7 @@ export default class ChatInput extends Component {
           replaceCaret(this.formMessageInput.current);
         });
       })
-      .catch(error => {
+      .catch((error) => {
         // this.handleNetworkingError(`Emoji Fetch: ${error}`);
       });
   }
@@ -98,9 +109,9 @@ export default class ChatInput extends Component {
     const { inputHTML } = this.state;
     let content = '';
     if (emoji.url) {
-      const url = location.protocol + "//" + location.host + "/" + emoji.url;
+      const url = location.protocol + '//' + location.host + '/' + emoji.url;
       const name = url.split('\\').pop().split('/').pop();
-      content = "<img class=\"emoji\" alt=\"" + name + "\" src=\"" + url + "\"/>";
+      content = '<img class="emoji" alt="' + name + '" src="' + url + '"/>';
     } else {
       content = emoji.emoji;
     }
@@ -109,11 +120,11 @@ export default class ChatInput extends Component {
       inputHTML: inputHTML + content,
     });
     // a hacky way add focus back into input field
-    setTimeout( () => {
+    setTimeout(() => {
       const input = this.formMessageInput.current;
       input.focus();
       replaceCaret(input);
-     }, 100);
+    }, 100);
   }
 
   // autocomplete user names
@@ -138,7 +149,10 @@ export default class ChatInput extends Component {
       return username.toLowerCase().startsWith(partial.toLowerCase());
     });
 
-    if (this.completionIndex === undefined || ++this.completionIndex >= possibilities.length) {
+    if (
+      this.completionIndex === undefined ||
+      ++this.completionIndex >= possibilities.length
+    ) {
       this.completionIndex = 0;
     }
 
@@ -146,8 +160,12 @@ export default class ChatInput extends Component {
       this.suggestion = possibilities[this.completionIndex];
 
       this.setState({
-        inputHTML: inputHTML.substring(0, at + 1) + this.suggestion + ' ' + inputHTML.substring(position),
-      })
+        inputHTML:
+          inputHTML.substring(0, at + 1) +
+          this.suggestion +
+          ' ' +
+          inputHTML.substring(position),
+      });
     }
 
     return true;
@@ -204,7 +222,7 @@ export default class ChatInput extends Component {
     const { key } = event;
 
     if (key === 'Control' || key === 'Shift') {
-     this.prepNewLine = false;
+      this.prepNewLine = false;
     }
     if (CHAT_KEY_MODIFIERS.includes(key)) {
       this.modifierKeyPressed = false;
@@ -264,52 +282,61 @@ export default class ChatInput extends Component {
 
   render(props, state) {
     const { hasSentFirstChatMessage, inputCharsLeft, inputHTML } = state;
-    const { inputEnabled } = props;
+    const { inputEnabled, chatDisabled } = props;
     const emojiButtonStyle = {
       display: this.emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
     };
     const extraClasses = classNames({
       'display-count': inputCharsLeft <= CHAT_CHAR_COUNT_BUFFER,
     });
-    const placeholderText = generatePlaceholderText(inputEnabled, hasSentFirstChatMessage);
-    return (
-      html`
-        <div id="message-input-container" class="relative shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4 z-20 ${extraClasses}">
+    const placeholderText = generatePlaceholderText(
+      inputEnabled,
+      hasSentFirstChatMessage
+    );
+    return html`
+      <div
+        id="message-input-container"
+        class="relative shadow-md bg-gray-900 border-t border-gray-700 border-solid p-4 z-20 ${extraClasses}"
+      >
+        <div
+          id="message-input-wrap"
+          class="flex flex-row justify-end appearance-none w-full bg-gray-200 border border-black-500 rounded py-2 px-2 pr-12 my-2 overflow-auto"
+        >
+          <${ContentEditable}
+            id="message-input"
+            class="appearance-none block w-full bg-transparent text-sm text-gray-700 h-full focus:outline-none"
+            placeholderText=${placeholderText}
+            innerRef=${this.formMessageInput}
+            html=${inputHTML}
+            disabled=${!inputEnabled}
+            onChange=${this.handleContentEditableChange}
+            onKeyDown=${this.handleMessageInputKeydown}
+            onKeyUp=${this.handleMessageInputKeyup}
+            onBlur=${this.handleMessageInputBlur}
+            onPaste=${this.handlePaste}
+          />
+        </div>
+        <div
+          id="message-form-actions"
+          class="absolute flex flex-col w-10 justify-end items-center"
+        >
+          <button
+            ref=${this.emojiPickerButton}
+            id="emoji-button"
+            class="text-3xl leading-3 cursor-pointer text-purple-600"
+            type="button"
+            style=${emojiButtonStyle}
+            onclick=${this.handleEmojiButtonClick}
+            disabled=${!inputEnabled}
+          >
+            <img src="../../../img/smiley.png" />
+          </button>
 
-          <div
-            id="message-input-wrap"
-            class="flex flex-row justify-end appearance-none w-full bg-gray-200 border border-black-500 rounded py-2 px-2 pr-12 my-2 overflow-auto">
-            <${ContentEditable}
-              id="message-input"
-              class="appearance-none block w-full bg-transparent text-sm text-gray-700 h-full focus:outline-none"
-
-              placeholderText=${placeholderText}
-              innerRef=${this.formMessageInput}
-              html=${inputHTML}
-              disabled=${!inputEnabled}
-              onChange=${this.handleContentEditableChange}
-              onKeyDown=${this.handleMessageInputKeydown}
-              onKeyUp=${this.handleMessageInputKeyup}
-              onBlur=${this.handleMessageInputBlur}
-
-              onPaste=${this.handlePaste}
-            />
-          </div>
-          <div id="message-form-actions" class="absolute flex flex-col w-10 justify-end items-center">
-              <button
-                ref=${this.emojiPickerButton}
-                id="emoji-button"
-                class="text-3xl leading-3 cursor-pointer text-purple-600"
-                type="button"
-                style=${emojiButtonStyle}
-                onclick=${this.handleEmojiButtonClick}
-                disabled=${!inputEnabled}
-              ><img src="../../../img/smiley.png" /></button>
-
-              <span id="message-form-warning" class="text-red-600 text-xs">${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span>
-            </div>
+          <span id="message-form-warning" class="text-red-600 text-xs"
+            >${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span
+          >
+        </div>
       </div>
-    `);
+    `;
   }
-
-  }
+}

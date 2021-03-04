@@ -33,6 +33,7 @@ const s3StorageEnabledKey = "s3_storage_enabled"
 const s3StorageConfigKey = "s3_storage_config"
 const videoLatencyLevel = "video_latency_level"
 const videoStreamOutputVariantsKey = "video_stream_output_variants"
+const chatDisabledKey = "chat_disabled"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -406,6 +407,21 @@ func GetStreamOutputVariants() []models.StreamOutputVariant {
 func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
 	var configEntry = ConfigEntry{Key: videoStreamOutputVariantsKey, Value: variants}
 	return _datastore.Save(configEntry)
+}
+
+// SetChatDisabled will disable chat if set to true.
+func SetChatDisabled(disabled bool) error {
+	return _datastore.SetBool(chatDisabledKey, disabled)
+}
+
+// GetChatDisabled will return if chat is disabled.
+func GetChatDisabled() bool {
+	disabled, err := _datastore.GetBool(chatDisabledKey)
+	if err == nil {
+		return disabled
+	}
+
+	return false
 }
 
 // VerifySettings will perform a sanity check for specific settings values.

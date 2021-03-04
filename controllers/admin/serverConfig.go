@@ -43,6 +43,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		StreamKey:      data.GetStreamKey(),
 		WebServerPort:  config.WebServerPort,
 		RTMPServerPort: data.GetRTMPPortNumber(),
+		ChatDisabled:   data.GetChatDisabled(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -71,6 +72,7 @@ type serverConfigAdminResponse struct {
 	VideoSettings   videoSettings     `json:"videoSettings"`
 	LatencyLevel    int               `json:"latencyLevel"`
 	YP              yp                `json:"yp"`
+	ChatDisabled    bool              `json:"chatDisabled"`
 }
 
 type videoSettings struct {
