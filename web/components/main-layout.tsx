@@ -92,7 +92,7 @@ export default function MainLayout(props) {
     : '';
   const currentThumbnail = online ? (
     <img
-      src="http://localhost:8080/thumbnail.jpg"
+      src="/thumbnail.jpg"
       className="online-thumbnail"
       alt="current thumbnail"
       style={{ width: '10rem' }}
