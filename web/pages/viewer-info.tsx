@@ -124,7 +124,12 @@ export default function ViewersOverTime() {
       </Row>
 
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
-      {online && <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />}
+      {online && 
+        <div>
+          <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />
+          <p><Typography.Text type="disabled">Visit the <a href="https://owncast.online/docs/viewers/?source=admin">documentation</a> to configure additional details bout your viewers.</Typography.Text> </p>
+        </div>
+      }
     </>
   );
 }
