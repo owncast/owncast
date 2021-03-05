@@ -2,6 +2,7 @@ package models
 
 import (
 	"bytes"
+	"regexp"
 	"strings"
 	"time"
 
@@ -96,6 +97,7 @@ func sanitize(raw string) string {
 
 	// Require URLs to be parseable by net/url.Parse
 	p.AllowStandardURLs()
+	p.RequireParseableURLs(true)
 
 	// Allow links
 	p.AllowAttrs("href").OnElements("a")
@@ -110,9 +112,10 @@ func sanitize(raw string) string {
 	p.AllowElements("br")
 	p.AllowElements("p")
 
-	// Allow img tags
+	// Allow img tags from the the local emoji directory only
 	p.AllowElements("img")
-	p.AllowAttrs("src").OnElements("img")
+	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
+
 	p.AllowAttrs("alt").OnElements("img")
 	p.AllowAttrs("title").OnElements("img")
 
