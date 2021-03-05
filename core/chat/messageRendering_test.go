@@ -29,5 +29,26 @@ blah blah blah
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
 	}
+}
 
+// Test to make sure we block remote images in chat messages.
+func TestBlockRemoteImages(t *testing.T) {
+	messageContent := `<img src="https://via.placeholder.com/350x150"> test ![](https://via.placeholder.com/350x150)`
+	expected := `<p> test </p>`
+	result := models.RenderAndSanitize(messageContent)
+
+	if result != expected {
+		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
+	}
+}
+
+// Test to make sure emoji images are allowed in chat messages.
+func TestAllowEmojiImages(t *testing.T) {
+	messageContent := `<img src="/img/emoji/beerparrot.gif"> test ![](/img/emoji/beerparrot.gif)`
+	expected := `<p><img src="/img/emoji/beerparrot.gif"> test <img src="/img/emoji/beerparrot.gif"></p>`
+	result := models.RenderAndSanitize(messageContent)
+
+	if result != expected {
+		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
+	}
 }

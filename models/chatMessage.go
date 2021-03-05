@@ -116,8 +116,8 @@ func sanitize(raw string) string {
 	p.AllowElements("img")
 	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
 
-	p.AllowAttrs("alt").OnElements("img")
-	p.AllowAttrs("title").OnElements("img")
+	p.AllowAttrs("alt").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
+	p.AllowAttrs("title").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
 
 	// Custom emoji have a class already specified.
 	// We should only allow classes on emoji, not *all* imgs.
