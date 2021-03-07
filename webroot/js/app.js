@@ -370,7 +370,7 @@ export default class App extends Component {
 
   handleSpaceBarPressed(e) {
     e.preventDefault();
-    if(this.state.isPlaying) {
+    if (this.state.isPlaying) {
       this.setState({
         isPlaying: false,
       });
@@ -383,9 +383,31 @@ export default class App extends Component {
     }
   }
 
+  handleMuteKeyPressed() {
+    this.player.vjsPlayer.muted(!this.player.vjsPlayer.muted());
+  }
+
+  handleFullScreenKeyPressed() {
+    if (this.player.vjsPlayer.isFullscreen()) {
+      this.player.vjsPlayer.exitFullscreen();
+    } else {
+      this.player.vjsPlayer.requestFullscreen();
+    }
+  }
+
   handleKeyPressed(e) {
-    if (e.code === 'Space' && e.target === document.body && this.state.streamOnline) {
-      this.handleSpaceBarPressed(e);
+    if (e.target === document.body && this.state.streamOnline) {
+      switch (e.code) {
+        case 'Space':
+          this.handleSpaceBarPressed(e);
+          break;
+        case 'KeyM':
+          this.handleMuteKeyPressed(e);
+          break;
+        case 'KeyF':
+          this.handleFullScreenKeyPressed(e);
+          break;
+      }
     }
   }
 
@@ -422,17 +444,17 @@ export default class App extends Component {
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
     const tagList = (tags !== null && tags.length > 0)
-      ? tags.map(
-          (tag, index) => html`
-            <li
-              key="tag${index}"
-              class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
-            >
-              ${tag}
-            </li>
-          `
-        )
-      : null;
+        ? tags.map(
+            (tag, index) => html`
+              <li
+                key="tag${index}"
+                class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
+              >
+                ${tag}
+              </li>
+            `
+          )
+        : null;
 
     const viewerCountMessage = streamOnline && viewerCount > 0 ? (
       html`${viewerCount} ${pluralize('viewer', viewerCount)}`
