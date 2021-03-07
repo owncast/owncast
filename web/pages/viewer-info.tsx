@@ -128,7 +128,7 @@ export default function ViewersOverTime() {
         <div>
           <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />
           <p>
-            <Typography.Text type="disabled">
+            <Typography.Text type="secondary">
               Visit the{' '}
               <a href="https://owncast.online/docs/viewers/?source=admin">documentation</a> to
               configure additional details bout your viewers.
