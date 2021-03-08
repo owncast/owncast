@@ -131,7 +131,7 @@ export default function ViewersOverTime() {
             <Typography.Text type="secondary">
               Visit the{' '}
               <a href="https://owncast.online/docs/viewers/?source=admin">documentation</a> to
-              configure additional details bout your viewers.
+              configure additional details about your viewers.
             </Typography.Text>{' '}
           </p>
         </div>
