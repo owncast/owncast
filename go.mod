@@ -15,7 +15,7 @@ require (
 	github.com/mvdan/xurls v1.1.0 // indirect
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/oschwald/geoip2-golang v1.4.0
+	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/schollz/sqlite3dump v1.2.4
 	github.com/shirou/gopsutil v2.20.9+incompatible
 	github.com/sirupsen/logrus v1.8.0
