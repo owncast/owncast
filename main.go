@@ -25,7 +25,7 @@ var (
 	// BuildVersion is the version.
 	BuildVersion = config.StaticVersionNumber
 	// BuildPlatform is the type of build.
-	BuildPlatform = "dev"
+	BuildPlatform = ""
 )
 
 func main() {
