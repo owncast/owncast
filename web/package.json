@@ -13,7 +13,7 @@
     "antd": "^4.6.6",
     "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
-    "date-fns": "^2.16.1",
+    "date-fns": "^2.19.0",
     "markdown-it": "^12.0.4",
     "next": "^10.0.5",
     "prop-types": "^15.7.2",
