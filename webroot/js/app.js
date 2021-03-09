@@ -405,6 +405,7 @@ export default class App extends Component {
     if (e.target === document.body && this.state.streamOnline) {
       switch (e.code) {
         case 'MediaPlayPause':
+        case 'KeyP':
         case 'Space':
           this.handleSpaceBarPressed(e);
           break;
@@ -413,6 +414,9 @@ export default class App extends Component {
           break;
         case 'KeyF':
           this.handleFullScreenKeyPressed(e);
+          break;
+        case 'KeyC':
+          this.handleChatPanelToggle();
           break;
         case 'Digit9':
           this.handleVolumeSet(-0.1);
