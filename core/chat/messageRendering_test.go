@@ -15,7 +15,7 @@ func TestRenderAndSanitize(t *testing.T) {
 
   ## blah blah blah
   [test link](http://owncast.online)
-  <img class="emoji" alt="bananadance.gif" width="600px" src="https://goth.land/img/emoji/bananadance.gif">
+  <img class="emoji" alt="bananadance.gif" width="600px" src="/img/emoji/bananadance.gif">
   <script src="http://hackers.org/hack.js"></script>
   `
 
@@ -23,7 +23,7 @@ func TestRenderAndSanitize(t *testing.T) {
 Here is an iframe </p>
 blah blah blah
 <p><a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a>
-<img class="emoji" alt="bananadance.gif" src="https://goth.land/img/emoji/bananadance.gif"></p>`
+<img class="emoji" src="/img/emoji/bananadance.gif"></p>`
 
 	result := models.RenderAndSanitize(messageContent)
 	if result != expected {

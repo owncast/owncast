@@ -108,20 +108,11 @@ func sanitize(raw string) string {
 	// Links will get target="_blank" added to them.
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
-	// Allow paragraphs
-	p.AllowElements("br")
-	p.AllowElements("p")
+	// Allow breaks
+	p.AllowElements("br", "p")
 
 	// Allow img tags from the the local emoji directory only
-	p.AllowElements("img")
-	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
-
-	p.AllowAttrs("alt").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
-	p.AllowAttrs("title").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
-
-	// Custom emoji have a class already specified.
-	// We should only allow classes on emoji, not *all* imgs.
-	// But TODO.
+	p.AllowAttrs("src", "alt", "class", "title").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
 	p.AllowAttrs("class").OnElements("img")
 
 	// Allow bold
