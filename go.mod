@@ -18,7 +18,7 @@ require (
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/schollz/sqlite3dump v1.2.4
 	github.com/shirou/gopsutil v2.20.9+incompatible
-	github.com/sirupsen/logrus v1.8.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/yuin/goldmark v1.3.2
 	golang.org/x/mod v0.4.1
