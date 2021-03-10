@@ -143,11 +143,13 @@ func (s *server) Listen() {
 			msg.RenderAndSanitizeMessageBody()
 
 			if !msg.Empty() {
+				// set defaults before sending msg to anywhere
+				msg.SetDefaults()
+
 				s.listener.MessageSent(msg)
 				s.sendAll(msg)
 
 				// Store in the message history
-				msg.SetDefaults()
 				if !msg.Ephemeral {
 					addMessage(msg)
 				}
