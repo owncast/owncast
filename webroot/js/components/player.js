@@ -141,23 +141,23 @@ class OwncastPlayer {
     // console.log(`>>> Player: ${message}`);
   }
 
-  async addQualitySelector() {    
+  async addQualitySelector() {
     if (this.qualityMenuButton) {
-      player.controlBar.removeChild(this.qualityMenuButton)
+      player.controlBar.removeChild(this.qualityMenuButton);
     }
 
     videojs.hookOnce(
       'setup',
       async function (player) {
         var qualities = [];
-        
+
         try {
-          const response = await fetch("/api/video/variants");
+          const response = await fetch('/api/video/variants');
           qualities = await response.json();
-        } catch(e) {
+        } catch (e) {
           console.log(e);
         }
-    
+
         var MenuItem = videojs.getComponent('MenuItem');
         var MenuButtonClass = videojs.getComponent('MenuButton');
         var MenuButton = videojs.extend(MenuButtonClass, {
@@ -168,8 +168,7 @@ class OwncastPlayer {
             MenuButtonClass.call(this, player);
           },
 
-          handleClick: function () {
-          },
+          handleClick: function () {},
 
           createItems: function () {
             const defaultAutoItem = new MenuItem(player, {
@@ -186,10 +185,13 @@ class OwncastPlayer {
               // Quality selected
               newMenuItem.on('click', function () {
                 // Only enable this single, selected representation.
-                player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
-                  rep.enabled(index === item.index);
-                });
-                newMenuItem.selected(false)
+                player
+                  .tech({ IWillNotUseThisInPlugins: true })
+                  .vhs.representations()
+                  .forEach(function (rep, index) {
+                    rep.enabled(index === item.index);
+                  });
+                newMenuItem.selected(false);
               });
 
               return newMenuItem;
@@ -197,10 +199,13 @@ class OwncastPlayer {
 
             defaultAutoItem.on('click', function () {
               // Re-enable all representations.
-              player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
-                rep.enabled(true);
-              });
-              defaultAutoItem.selected(false)
+              player
+                .tech({ IWillNotUseThisInPlugins: true })
+                .vhs.representations()
+                .forEach(function (rep, index) {
+                  rep.enabled(true);
+                });
+              defaultAutoItem.selected(false);
             });
 
             return [defaultAutoItem, ...items];
@@ -209,7 +214,11 @@ class OwncastPlayer {
 
         var menuButton = new MenuButton();
         menuButton.addClass('vjs-quality-selector');
-        player.controlBar.addChild(menuButton, {}, player.controlBar.children_.length -2 );
+        player.controlBar.addChild(
+          menuButton,
+          {},
+          player.controlBar.children_.length - 2
+        );
 
         this.qualityMenuButton = menuButton;
       }.bind(this)
