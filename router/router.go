@@ -58,6 +58,9 @@ func Start() error {
 	// return the logo
 	http.HandleFunc("/logo", controllers.GetLogo)
 
+	// return the list of video variants available
+	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
