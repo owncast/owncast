@@ -25,6 +25,7 @@ const VIDEO_OPTIONS = {
     vhs: {
       // used to select the lowest bitrate playlist initially. This helps to decrease playback start time. This setting is false by default.
       enableLowInitialPlaylist: true,
+      smoothQualityChange: true,
     },
   },
   liveTracker: {
@@ -141,6 +142,10 @@ class OwncastPlayer {
   }
 
   async addQualitySelector() {    
+    if (this.qualityMenuButton) {
+      player.controlBar.removeChild(this.qualityMenuButton)
+    }
+
     videojs.hookOnce(
       'setup',
       async function (player) {
@@ -172,33 +177,30 @@ class OwncastPlayer {
               label: 'Auto',
             });
 
-            defaultAutoItem.on('click', function () {
-              // Re-enable all representations.
-              player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
-                rep.enabled(true);
-              });
-              defaultAutoItem.selected(true);
-            });
-
-            defaultAutoItem.selected(true);
-
             const items = qualities.map(function (item) {
               var newMenuItem = new MenuItem(player, {
                 selectable: true,
                 label: item.name,
               });
 
+              // Quality selected
               newMenuItem.on('click', function () {
-                console.log('Forcing', item.name);
                 // Only enable this single, selected representation.
                 player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
                   rep.enabled(index === item.index);
                 });
-
-                newMenuItem.selected(true);
+                newMenuItem.selected(false)
               });
 
               return newMenuItem;
+            });
+
+            defaultAutoItem.on('click', function () {
+              // Re-enable all representations.
+              player.tech({ IWillNotUseThisInPlugins: true }).vhs.representations().forEach(function(rep, index) {
+                rep.enabled(true);
+              });
+              defaultAutoItem.selected(false)
             });
 
             return [defaultAutoItem, ...items];
@@ -208,6 +210,8 @@ class OwncastPlayer {
         var menuButton = new MenuButton();
         menuButton.addClass('vjs-quality-selector');
         player.controlBar.addChild(menuButton, {}, player.controlBar.children_.length -2 );
+
+        this.qualityMenuButton = menuButton;
       }.bind(this)
     );
   }
