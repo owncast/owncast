@@ -24,7 +24,7 @@ func (v variants) Less(i, j int) bool { return v[i].VideoBitrate < v[j].VideoBit
 // Swap will swap two values.
 func (v variants) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
 
-// GetVideoStreamOutputVariants will return the video variants available
+// GetVideoStreamOutputVariants will return the video variants available,
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
 	result := make([]variantsResponse, len(outputVariants))
