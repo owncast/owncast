@@ -6,5 +6,5 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "gingervitis"
+      - "nebunez"
       - "gabek"
