@@ -59,6 +59,8 @@ export interface VideoVariant {
 
   scaledWidth: number;
   scaledHeight: number;
+
+  name: string;
 }
 export interface VideoSettingsFields {
   latencyLevel: number;

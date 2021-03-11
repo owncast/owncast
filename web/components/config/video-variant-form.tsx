@@ -8,6 +8,7 @@ import TextField from './form-textfield';
 import {
   DEFAULT_VARIANT_STATE,
   VIDEO_VARIANT_SETTING_DEFAULTS,
+  VIDEO_NAME_DEFAULTS,
   ENCODER_PRESET_SLIDER_MARKS,
   ENCODER_PRESET_TOOLTIPS,
   VIDEO_BITRATE_DEFAULTS,
@@ -69,6 +70,10 @@ export default function VideoVariantForm({
     }
   };
 
+  const handleNameChanged = (args: UpdateArgs) => {
+    onUpdateField({ fieldName: 'name', value: args.value });
+  };
+
   // Slider notes
   const selectedVideoBRnote = () => {
     if (videoPassthroughEnabled) {
@@ -122,6 +127,12 @@ export default function VideoVariantForm({
       )}
 
       <Row gutter={16}>
+        <TextField
+          maxLength="10"
+          {...VIDEO_NAME_DEFAULTS}
+          value={dataState.name}
+          onChange={handleNameChanged}
+        />
         <Col sm={24} md={12}>
           {/* ENCODER PRESET (CPU USAGE) FIELD */}
           <div className="form-module cpu-usage-container">

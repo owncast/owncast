@@ -156,6 +156,7 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
   cpuUsageLevel: 3,
   scaledHeight: null,
   scaledWidth: null,
+  name: '',
 };
 
 export const VIDEO_VARIANT_SETTING_DEFAULTS = {
@@ -223,6 +224,15 @@ export const VIDEO_BITRATE_DEFAULTS = {
   incrementBy: 100,
   tip: 'The overall quality of your stream is generally impacted most by bitrate.',
 };
+
+export const VIDEO_NAME_DEFAULTS = {
+  fieldName: 'name',
+  label: 'Name',
+  maxLength: 12,
+  placeholder: 'HD or Low',
+  tip: 'Human-readable name for for displaying in the quality selector.',
+};
+
 export const VIDEO_BITRATE_SLIDER_MARKS = {
   [VIDEO_BITRATE_DEFAULTS.min]: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
   3000: 3000,
