@@ -135,13 +135,6 @@ func (s *server) Listen() {
 		case c := <-s.delCh:
 			s.removeClient(c)
 		case msg := <-s.sendAllCh:
-			// message was received from a client and should be sanitized, validated
-			// and distributed to other clients.
-			//
-			// Will turn markdown into html, sanitize user-supplied raw html
-			// and standardize this message into something safe we can send everyone else.
-			msg.RenderAndSanitizeMessageBody()
-
 			if !msg.Empty() {
 				// set defaults before sending msg to anywhere
 				msg.SetDefaults()

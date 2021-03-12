@@ -55,17 +55,23 @@ func (m *ChatEvent) Empty() bool {
 	return m.Body == ""
 }
 
+// RenderBody will render markdown to html without any sanitization
+func (m *ChatEvent) RenderBody() {
+	m.RawBody = m.Body
+	m.Body = RenderMarkdown(m.RawBody)
+}
+
 // RenderAndSanitize will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func RenderAndSanitize(raw string) string {
-	rendered := renderMarkdown(raw)
+	rendered := RenderMarkdown(raw)
 	safe := sanitize(rendered)
 
 	// Set the new, sanitized and rendered message body
 	return strings.TrimSpace(safe)
 }
 
-func renderMarkdown(raw string) string {
+func RenderMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
