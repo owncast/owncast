@@ -106,8 +106,8 @@ func GetAllSocialHandles() map[string]SocialHandle {
 		},
 		"liberapay": {
 			Platform: "LiberaPay",
-			Icon: "/img/platformlogos/liberapay.svg",
-		}
+			Icon:     "/img/platformlogos/liberapay.svg",
+		},
 		"donate": {
 			Platform: "Donations",
 			Icon:     "/img/platformlogos/donate.svg",
