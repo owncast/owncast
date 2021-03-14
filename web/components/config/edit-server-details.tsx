@@ -4,6 +4,7 @@ import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 
 import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield';
 import TextFieldWithSubmit from './form-textfield-with-submit';
+import ToggleSwitch from './form-toggleswitch';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
@@ -13,6 +14,7 @@ import {
   TEXTFIELD_PROPS_RTMP_PORT,
   TEXTFIELD_PROPS_STREAM_KEY,
   TEXTFIELD_PROPS_WEB_PORT,
+  FIELD_PROPS_DISABLE_CHAT,
 } from '../../utils/config-constants';
 
 import { UpdateArgs } from '../../types/config-section';
@@ -27,7 +29,7 @@ export default function EditInstanceDetails() {
 
   const { serverConfig } = serverStatusData || {};
 
-  const { streamKey, ffmpegPath, rtmpServerPort, webServerPort, yp } = serverConfig;
+  const { chatDisabled, streamKey, ffmpegPath, rtmpServerPort, webServerPort, yp } = serverConfig;
 
   const [copyIsVisible, setCopyVisible] = useState(false);
 
@@ -39,6 +41,7 @@ export default function EditInstanceDetails() {
       ffmpegPath,
       rtmpServerPort,
       webServerPort,
+      chatDisabled,
     });
   }, [serverConfig]);
 
@@ -83,6 +86,10 @@ export default function EditInstanceDetails() {
       setCopyVisible(true);
       setTimeout(() => setCopyVisible(false), COPY_TOOLTIP_TIMEOUT);
     });
+  }
+
+  function handleChatDisableChange(disabled: boolean) {
+    handleFieldChange({ fieldName: 'chatDisabled', value: disabled });
   }
 
   return (
@@ -137,6 +144,12 @@ export default function EditInstanceDetails() {
         type={TEXTFIELD_TYPE_NUMBER}
         onChange={handleFieldChange}
         onSubmit={showConfigurationRestartMessage}
+      />
+      <ToggleSwitch
+        fieldName="chatDisabled"
+        {...FIELD_PROPS_DISABLE_CHAT}
+        checked={formDataValues.chatDisabled}
+        onChange={handleChatDisableChange}
       />
 
       {yp.enabled && (

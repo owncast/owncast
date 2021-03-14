@@ -23,6 +23,7 @@ export const initialServerConfigState: ConfigDetails = {
   ffmpegPath: '',
   rtmpServerPort: '',
   webServerPort: '',
+  chatDisabled: false,
   s3: {
     accessKey: '',
     acl: '',
