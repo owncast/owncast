@@ -96,6 +96,18 @@ func GetAllSocialHandles() map[string]SocialHandle {
 			Platform: "YouTube",
 			Icon:     "/img/platformlogos/youtube.svg",
 		},
+		"odysee": {
+			Platform: "Odysee",
+			Icon:     "/img/platformlogos/odysee.svg",
+		},
+		"lbry": {
+			Platform: "LBRY",
+			Icon:     "/img/platformlogos/lbry.svg",
+		},
+		"liberapay": {
+			Platform: "LiberaPay",
+			Icon: "/img/platformlogos/liberapay.svg",
+		}
 		"donate": {
 			Platform: "Donations",
 			Icon:     "/img/platformlogos/donate.svg",
