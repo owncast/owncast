@@ -243,7 +243,7 @@ class OwncastPlayer {
           },
         });
 
-        var concreteButtonInstance = this.vjsPlayer.controlBar.addChild(
+        var concreteButtonInstance = player.controlBar.addChild(
           new concreteButtonClass()
         );
         concreteButtonInstance.addClass('vjs-airplay');
