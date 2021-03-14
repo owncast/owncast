@@ -118,6 +118,25 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetServerWelcomeMessage will handle the web config request to set the welcome message text.
+func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetServerWelcomeMessage(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
 // SetExtraPageContent will handle the web config request to set the page markdown content.
 func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {

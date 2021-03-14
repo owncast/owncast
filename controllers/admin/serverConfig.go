@@ -35,6 +35,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Tags:             data.GetServerMetadataTags(),
 			ExtraPageContent: data.GetExtraPageBodyContent(),
 			StreamTitle:      data.GetStreamTitle(),
+			WelcomeMessage:   data.GetServerWelcomeMessage(),
 			Logo:             data.GetLogoPath(),
 			SocialHandles:    data.GetSocialHandles(),
 			NSFW:             data.GetNSFW(),
@@ -81,6 +82,7 @@ type videoSettings struct {
 type webConfigResponse struct {
 	Name             string                `json:"name"`
 	Summary          string                `json:"summary"`
+	WelcomeMessage   string                `json:"welcomeMessage"`
 	Logo             string                `json:"logo"`
 	Tags             []string              `json:"tags"`
 	Version          string                `json:"version"`

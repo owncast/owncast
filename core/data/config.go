@@ -16,6 +16,7 @@ const streamTitleKey = "stream_title"
 const streamKeyKey = "stream_key"
 const logoPathKey = "logo_path"
 const serverSummaryKey = "server_summary"
+const serverWelcomeMessageKey = "server_welcome_message"
 const serverNameKey = "server_name"
 const serverURLKey = "server_url"
 const httpPortNumberKey = "http_port_number"
@@ -115,6 +116,22 @@ func GetServerSummary() string {
 // SetServerSummary will set the server summary text.
 func SetServerSummary(summary string) error {
 	return _datastore.SetString(serverSummaryKey, summary)
+}
+
+// GetServerWelcomeMessage will return the server welcome message text.
+func GetServerWelcomeMessage() string {
+	welcomeMessage, err := _datastore.GetString(serverWelcomeMessageKey)
+	if err != nil {
+		log.Debugln(serverWelcomeMessageKey, err)
+		return config.GetDefaults().ServerWelcomeMessage
+	}
+
+	return welcomeMessage
+}
+
+// SetServerWelcomeMessage will set the server welcome message text.
+func SetServerWelcomeMessage(welcomeMessage string) error {
+	return _datastore.SetString(serverWelcomeMessageKey, welcomeMessage)
 }
 
 // GetServerName will return the server name text.
