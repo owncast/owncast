@@ -58,11 +58,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			InstanceURL: data.GetServerURL(),
 		},
 		S3:              data.GetS3Config(),
-<<<<<<< HEAD
 		ExternalActions: data.GetExternalActions(),
-=======
 		SupportedCodecs: transcoder.GetCodecs(ffmpeg),
->>>>>>> c3e9567a... Return codecs in admin/serverconfig
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -84,7 +81,7 @@ type serverConfigAdminResponse struct {
 	YP              yp                      `json:"yp"`
 	ChatDisabled    bool                    `json:"chatDisabled"`
 	ExternalActions []models.ExternalAction `json:"externalActions"`
-	SupportedCodecs []string          `json:"supportedCodecs"`
+	SupportedCodecs []string                `json:"supportedCodecs"`
 }
 
 type videoSettings struct {
