@@ -463,19 +463,7 @@ export default class App extends Component {
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
-    const tagList =
-      tags !== null && tags.length > 0
-        ? tags.map(
-            (tag, index) => html`
-              <li
-                key="tag${index}"
-                class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
-              >
-                ${tag}
-              </li>
-            `
-          )
-        : null;
+    const tagList = tags !== null && tags.length > 0 && tags.join(' #');
 
     const viewerCountMessage =
       streamOnline && viewerCount > 0
@@ -629,9 +617,9 @@ export default class App extends Component {
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
-              <ul id="tag-list" class="tag-list flex flex-row flex-wrap my-4">
-                ${tagList}
-              </ul>
+              <div id="tag-list" class="tag-list text-gray-600 mb-3">
+                ${tagList && `#${tagList}`}
+              </div>
             </div>
           </div>
           <div
