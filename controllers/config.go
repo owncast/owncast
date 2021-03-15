@@ -12,16 +12,17 @@ import (
 )
 
 type webConfigResponse struct {
-	Name             string                `json:"name"`
-	Summary          string                `json:"summary"`
-	Logo             string                `json:"logo"`
-	Tags             []string              `json:"tags"`
-	Version          string                `json:"version"`
-	NSFW             bool                  `json:"nsfw"`
-	ExtraPageContent string                `json:"extraPageContent"`
-	StreamTitle      string                `json:"streamTitle,omitempty"` // What's going on with the current stream
-	SocialHandles    []models.SocialHandle `json:"socialHandles"`
-	ChatDisabled     bool                  `json:"chatDisabled"`
+	Name             string                  `json:"name"`
+	Summary          string                  `json:"summary"`
+	Logo             string                  `json:"logo"`
+	Tags             []string                `json:"tags"`
+	Version          string                  `json:"version"`
+	NSFW             bool                    `json:"nsfw"`
+	ExtraPageContent string                  `json:"extraPageContent"`
+	StreamTitle      string                  `json:"streamTitle,omitempty"` // What's going on with the current stream
+	SocialHandles    []models.SocialHandle   `json:"socialHandles"`
+	ChatDisabled     bool                    `json:"chatDisabled"`
+	ExternalActions  []models.ExternalAction `json:"externalActions"`
 }
 
 // GetWebConfig gets the status of the server.
@@ -50,6 +51,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		StreamTitle:      data.GetStreamTitle(),
 		SocialHandles:    socialHandles,
 		ChatDisabled:     data.GetChatDisabled(),
+		ExternalActions:  data.GetExternalActions(),
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {

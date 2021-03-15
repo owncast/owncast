@@ -452,6 +452,26 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "chat disabled status updated")
 }
 
+// SetExternalActions will set the 3rd party actions for the web interface.
+func SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	type externalActionsRequest struct {
+		Value []models.ExternalAction `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var actions externalActionsRequest
+	if err := decoder.Decode(&actions); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+		return
+	}
+
+	if err := data.SetExternalActions(actions.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+	}
+
+	controllers.WriteSimpleResponse(w, true, "external actions update")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
