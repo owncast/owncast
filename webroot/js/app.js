@@ -8,7 +8,11 @@ import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { parseSecondsToDurationString, hasTouchScreen, getOrientation } from './utils/helpers.js';
+import {
+  parseSecondsToDurationString,
+  hasTouchScreen,
+  getOrientation,
+} from './utils/helpers.js';
 
 import {
   addNewlines,
@@ -195,12 +199,7 @@ export default class App extends Component {
     if (!status) {
       return;
     }
-    const {
-      viewerCount,
-      online,
-      lastConnectTime,
-      streamTitle,
-    } = status;
+    const { viewerCount, online, lastConnectTime, streamTitle } = status;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
 
@@ -265,7 +264,9 @@ export default class App extends Component {
     }
 
     if (this.windowBlurred) {
-      document.title = ` 🔴 ${this.state.configData && this.state.configData.name}`;
+      document.title = ` 🔴 ${
+        this.state.configData && this.state.configData.name
+      }`;
     }
   }
 
@@ -289,7 +290,9 @@ export default class App extends Component {
     });
 
     if (this.windowBlurred) {
-      document.title = ` 🟢 ${this.state.configData && this.state.configData.name}`;
+      document.title = ` 🟢 ${
+        this.state.configData && this.state.configData.name
+      }`;
     }
   }
 
@@ -302,7 +305,6 @@ export default class App extends Component {
     this.setState({
       streamStatusMessage: `${MESSAGE_ONLINE} ${streamDurationString}`,
     });
-
   }
 
   handleUsernameChange(newName) {
@@ -370,7 +372,7 @@ export default class App extends Component {
 
   handleSpaceBarPressed(e) {
     e.preventDefault();
-    if(this.state.isPlaying) {
+    if (this.state.isPlaying) {
       this.setState({
         isPlaying: false,
       });
@@ -400,7 +402,11 @@ export default class App extends Component {
   }
 
   handleKeyPressed(e) {
-    if (e.target === document.body && this.state.streamOnline) {
+    if (
+      e.target !== document.getElementById('message-input') &&
+      e.target !== document.getElementById('username-change-input') &&
+      this.state.streamOnline
+    ) {
       switch (e.code) {
         case 'MediaPlayPause':
         case 'KeyP':
@@ -444,7 +450,6 @@ export default class App extends Component {
       windowWidth,
     } = state;
 
-
     const {
       version: appVersion,
       logo = TEMP_IMAGE,
@@ -457,25 +462,28 @@ export default class App extends Component {
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
-    const tagList = (tags !== null && tags.length > 0)
-      ? tags.map(
-          (tag, index) => html`
-            <li
-              key="tag${index}"
-              class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
-            >
-              ${tag}
-            </li>
-          `
-        )
-      : null;
+    const tagList =
+      tags !== null && tags.length > 0
+        ? tags.map(
+            (tag, index) => html`
+              <li
+                key="tag${index}"
+                class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
+              >
+                ${tag}
+              </li>
+            `
+          )
+        : null;
 
-    const viewerCountMessage = streamOnline && viewerCount > 0 ? (
-      html`${viewerCount} ${pluralize('viewer', viewerCount)}`
-    ) : null;
+    const viewerCountMessage =
+      streamOnline && viewerCount > 0
+        ? html`${viewerCount} ${pluralize('viewer', viewerCount)}`
+        : null;
 
     const mainClass = playerActive ? 'online' : '';
-    const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
+    const isPortrait =
+      this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
@@ -489,9 +497,9 @@ export default class App extends Component {
       'touch-keyboard-active': touchKeyboardActive,
     });
 
-    const poster = isPlaying ? null : html`
-      <${VideoPoster} offlineImage=${logo} active=${streamOnline} />
-    `;
+    const poster = isPlaying
+      ? null
+      : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
     return html`
       <div
@@ -509,10 +517,14 @@ export default class App extends Component {
                 id="logo-container"
                 class="inline-block	rounded-full bg-white w-8 min-w-8 min-h-8 h-8 mr-2 bg-no-repeat bg-center"
               >
-                <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
+                <img
+                  class="logo visually-hidden"
+                  src=${OWNCAST_LOGO_LOCAL}
+                  alt="owncast logo"
+                />
               </span>
               <span class="instance-title overflow-hidden truncate"
-                >${(streamOnline && streamTitle) ? streamTitle : name}</span
+                >${streamOnline && streamTitle ? streamTitle : name}</span
               >
             </h1>
             <div
@@ -574,9 +586,7 @@ export default class App extends Component {
               class="user-content-header border-b border-gray-500 border-solid"
             >
               <h2 class="font-semibold text-5xl">
-                <span class="streamer-name text-indigo-600"
-                  >${name}</span
-                >
+                <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
