@@ -35,6 +35,7 @@ export interface ConfigInstanceDetailsFields {
   socialHandles: SocialHandle[];
   streamTitle: string;
   summary: string;
+  welcomeMessage: string;
   tags: string[];
   title: string;
 }

@@ -15,6 +15,7 @@ export const API_NSFW_SWITCH = '/nsfw';
 export const API_RTMP_PORT = '/rtmpserverport';
 export const API_S3_INFO = '/s3';
 export const API_SERVER_SUMMARY = '/serversummary';
+export const API_SERVER_WELCOME_MESSAGE = '/welcomemessage';
 export const API_SERVER_NAME = '/name';
 export const API_SOCIAL_HANDLES = '/socialhandles';
 export const API_STREAM_KEY = '/key';
@@ -62,6 +63,14 @@ export const TEXTFIELD_PROPS_SERVER_SUMMARY = {
   placeholder: '',
   label: 'About',
   tip: 'A brief blurb about you, your server, or what your stream is about.',
+};
+export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
+  apiPath: API_SERVER_WELCOME_MESSAGE,
+  maxLength: 500,
+  placeholder: '',
+  label: 'Welcome Message',
+  tip:
+    'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
 };
 export const TEXTFIELD_PROPS_LOGO = {
   apiPath: API_LOGO,

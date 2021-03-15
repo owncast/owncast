@@ -12,6 +12,7 @@ import {
   TEXTFIELD_PROPS_INSTANCE_URL,
   TEXTFIELD_PROPS_SERVER_NAME,
   TEXTFIELD_PROPS_SERVER_SUMMARY,
+  TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
   TEXTFIELD_PROPS_LOGO,
   API_YP_SWITCH,
   FIELD_PROPS_YP,
@@ -95,6 +96,14 @@ export default function EditInstanceDetails() {
         type={TEXTFIELD_TYPE_TEXTAREA}
         value={formDataValues.summary}
         initialValue={instanceDetails.summary}
+        onChange={handleFieldChange}
+      />
+      <TextFieldWithSubmit
+        fieldName="welcomeMessage"
+        {...TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE}
+        type={TEXTFIELD_TYPE_TEXTAREA}
+        value={formDataValues.welcomeMessage}
+        initialValue={instanceDetails.welcomeMessage}
         onChange={handleFieldChange}
       />
       <TextFieldWithSubmit
