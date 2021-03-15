@@ -31,7 +31,7 @@ export default function ExternalActionModal({ url, title, onClose }) {
               <button
                 onclick=${onClose}
                 type="button"
-                class="mt-3  rounded-md border border-gray-300 shadow-sm  bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 rounded-md border border-gray-300 shadow-sm  bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Close
               </button>
@@ -51,5 +51,25 @@ export default function ExternalActionModal({ url, title, onClose }) {
         </div>
       </div>
     </div>
+  `;
+}
+
+
+export function ExternalActionButton({index, action, onClick}) {
+  const { title, icon, color = undefined } = action;
+  const logo = icon && html`
+    <span class="external-action-icon"><img src=${icon} alt="" /></span>
+  `;
+  const bgcolor = color && { backgroundColor: `${color}` };
+  return html`
+    <button
+      class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden bg-gray-800"
+      data-index=${index}
+      onClick=${onClick}
+      style=${bgcolor}
+    >
+      ${logo}
+      <span class="external-action-label">${title}</span>
+    </button>
   `;
 }

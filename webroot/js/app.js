@@ -13,7 +13,9 @@ import {
   hasTouchScreen,
   getOrientation,
 } from './utils/helpers.js';
-import ExternalActionModal from './components/external-action-modal.js';
+import ExternalActionModal, {
+  ExternalActionButton,
+} from './components/external-action-modal.js';
 
 import {
   addNewlines,
@@ -406,7 +408,7 @@ export default class App extends Component {
     const action = this.state.configData.externalActions[index];
 
     let url = new URL(action.url);
-    // Append url and username to params so the link knows where we came from and who we are. 
+    // Append url and username to params so the link knows where we came from and who we are.
     url.searchParams.append('username', this.state.username);
     url.searchParams.append('instance', window.location);
 
@@ -423,7 +425,7 @@ export default class App extends Component {
 
   closeExternalActionModal() {
     this.setState({
-      externalAction: null
+      externalAction: null,
     });
   }
 
@@ -503,11 +505,31 @@ export default class App extends Component {
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
-    const externalActionButtons = externalActions && externalActions.map(function(action, index) {
-      return html`<button data-index=${index} onClick=${this.displayExternalAction}>${action.title}</button>`
-    }.bind(this));
+    const externalActionButtons =
+      externalActions &&
+      html`<div
+        id="external-actions-container"
+        class="flex flex-row align-center"
+      >
+        ${externalActions.map(
+          function (action, index) {
+            return html`<${ExternalActionButton}
+              onClick=${this.displayExternalAction}
+              action=${action}
+              index=${index}
+            />`;
+          }.bind(this)
+        )}
+      </div>`;
 
-    const externalActionModal = externalAction ? html`<${ExternalActionModal} title=${this.state.externalAction.description || this.state.externalAction.title} url=${this.state.externalAction.url} onClose=${this.closeExternalActionModal} />` : null;
+    const externalActionModal = externalAction
+      ? html`<${ExternalActionModal}
+          title=${this.state.externalAction.description ||
+          this.state.externalAction.title}
+          url=${this.state.externalAction.url}
+          onClose=${this.closeExternalActionModal}
+        />`
+      : null;
 
     return html`
       <div
@@ -594,6 +616,7 @@ export default class App extends Component {
             <div
               class="user-content-header border-b border-gray-500 border-solid"
             >
+              ${externalActionButtons}
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
@@ -606,9 +629,6 @@ export default class App extends Component {
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
-              <div>
-                ${externalActionButtons}
-              </div>
               <ul id="tag-list" class="tag-list flex flex-row flex-wrap my-4">
                 ${tagList}
               </ul>

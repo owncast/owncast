@@ -82,6 +82,37 @@ header {
   display: inline;
 }
 
+#external-actions-container {
+  margin: 1em 0;
+
+}
+.external-action-button {
+  border-radius: 4px;
+  color: #fff;
+  font-size: .88em;
+  padding: .25em .75em;
+  margin: .35em;
+  margin-left: 0;
+  display: flex;
+  max-width: 250px;
+  padding-top: .3em;
+}
+.external-action-button:hover {
+  text-decoration: underline;
+}
+.external-action-icon {
+  margin: .25em .5em .25em 0;
+}
+.external-action-icon img {
+  height: 1.5em;
+  width: 1.5em;
+}
+.external-action-label {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
 
 /* ************************************************ */
 
