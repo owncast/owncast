@@ -403,16 +403,19 @@ export default class App extends Component {
     }
   }
 
-  displayExternalAction(event) {
-    const index = event.target.getAttribute('data-index');
-    const action = this.state.configData.externalActions[index];
-
-    let url = new URL(action.url);
+  displayExternalAction(index) {
+    const { configData, username } = this.state;
+    const action = configData.externalActions[index];
+    if (!action) {
+      return;
+    }
+    const { url: actionUrl, openExternally } = action || {};
+    let url = new URL(actionUrl);
     // Append url and username to params so the link knows where we came from and who we are.
-    url.searchParams.append('username', this.state.username);
+    url.searchParams.append('username', username);
     url.searchParams.append('instance', window.location);
 
-    if (action.openExternally) {
+    if (openExternally) {
       var win = window.open(url.toString(), '_blank');
       win.focus();
       return;

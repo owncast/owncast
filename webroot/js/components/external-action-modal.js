@@ -61,11 +61,12 @@ export function ExternalActionButton({index, action, onClick}) {
     <span class="external-action-icon"><img src=${icon} alt="" /></span>
   `;
   const bgcolor = color && { backgroundColor: `${color}` };
+  const handleClick = () => onClick(index);
   return html`
     <button
       class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden bg-gray-800"
       data-index=${index}
-      onClick=${onClick}
+      onClick=${handleClick}
       style=${bgcolor}
     >
       ${logo}
