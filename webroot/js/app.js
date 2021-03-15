@@ -101,6 +101,7 @@ export default class App extends Component {
     this.disableChatInput = this.disableChatInput.bind(this);
     this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
     this.displayExternalAction = this.displayExternalAction.bind(this);
     this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
@@ -126,6 +127,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.addEventListener('orientationchange', this.handleWindowResize);
     }
+    window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keypress', this.handleKeyPressed);
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
@@ -147,6 +149,7 @@ export default class App extends Component {
     window.removeEventListener('resize', this.handleWindowResize);
     window.removeEventListener('blur', this.handleWindowBlur);
     window.removeEventListener('focus', this.handleWindowFocus);
+    window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keypress', this.handleKeyPressed);
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
@@ -390,6 +393,12 @@ export default class App extends Component {
         isPlaying: true,
       });
       this.player.vjsPlayer.play();
+    }
+  }
+
+  handleKeyDown(e) {
+    if (e.code === 'Escape' && this.state.externalAction !== null) {
+      this.closeExternalActionModal();
     }
   }
 
