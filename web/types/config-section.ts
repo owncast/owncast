@@ -80,6 +80,13 @@ export interface S3Field {
   servingEndpoint?: string;
 }
 
+export interface ExternalAction {
+  title: string,
+  description: string;
+  url: string;
+  openExternally: boolean;
+}
+
 export interface ConfigDetails {
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
@@ -90,4 +97,5 @@ export interface ConfigDetails {
   yp: ConfigDirectoryFields;
   videoSettings: VideoSettingsFields;
   chatDisabled: boolean;
+  externalActions: ExternalAction[];
 }

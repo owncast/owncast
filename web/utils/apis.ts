@@ -60,8 +60,12 @@ export const DELETE_WEBHOOK = `${API_LOCATION}webhooks/delete`;
 
 // Create a single webhook
 export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
+
 // hard coded social icons list
 export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
+
+// set external action links
+export const EXTERNAL_ACTIONS = `${API_LOCATION}api/externalactions`
 
 export const API_YP_RESET = `${API_LOCATION}yp/reset`;
 

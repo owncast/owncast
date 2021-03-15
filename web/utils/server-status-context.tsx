@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
-import { ConfigDetails, UpdateArgs } from '../types/config-section';
+import { ConfigDetails, UpdateArgs, ExternalAction } from '../types/config-section';
 import { DEFAULT_VARIANT_STATE } from './config-constants';
 
 export const initialServerConfigState: ConfigDetails = {
@@ -44,6 +44,7 @@ export const initialServerConfigState: ConfigDetails = {
     cpuUsageLevel: 3,
     videoQualityVariants: [DEFAULT_VARIANT_STATE],
   },
+  externalActions: [],
 };
 
 const initialServerStatusState = {

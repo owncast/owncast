@@ -27,6 +27,7 @@ export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 export const API_CHAT_DISABLE = '/chat/disable';
+export const API_EXTERNAL_ACTIONS = '/externalactions'
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;

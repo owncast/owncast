@@ -182,6 +182,9 @@ export default function MainLayout(props) {
             <Menu.Item key="access-tokens">
               <Link href="/access-tokens">Access Tokens</Link>
             </Menu.Item>
+            <Menu.Item key="actions">
+              <Link href="/actions">External Actions</Link>
+            </Menu.Item>
           </SubMenu>
           <Menu.Item key="help" icon={<QuestionCircleOutlined />} title="Help">
             <Link href="/help">Help</Link>
