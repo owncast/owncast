@@ -276,3 +276,7 @@ header {
     text-overflow: ellipsis;
   }
 }
+
+iframe{
+  background:url(/img/loading.gif) center center no-repeat; height: 100%;
+}
