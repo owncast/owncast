@@ -25,17 +25,15 @@ export default function ExternalActionModal({ url, title, onClose }) {
           aria-labelledby="modal-headline"
         >
           <div class="bg-white ">
-            <div
-              class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
-            >
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex justify-between items-center">
+              <h3 class="font-bold">${title}</h3>
               <button
                 onclick=${onClose}
                 type="button"
-                class="mt-3 rounded-md border border-gray-300 shadow-sm  bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 p-1 rounded-md border border-gray-300 shadow-sm  bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Close
               </button>
-              <div>${title}</div>
             </div>
 
             <!-- TODO: Show a loading spinner while the iframe loads -->
