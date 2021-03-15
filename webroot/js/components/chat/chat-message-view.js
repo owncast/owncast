@@ -22,7 +22,7 @@ export default class ChatMessageView extends Component {
     const { formattedMessage } = this.state;
     const { formattedMessage: nextFormattedMessage } = nextState;
 
-    return (formattedMessage !== nextFormattedMessage);
+    return formattedMessage !== nextFormattedMessage;
   }
 
   async componentDidMount() {
@@ -35,7 +35,6 @@ export default class ChatMessageView extends Component {
       });
     }
   }
-
 
   render() {
     const { message } = this.props;
@@ -66,10 +65,7 @@ export default class ChatMessageView extends Component {
         title=${formattedTimestamp}
       >
         <div class="message-content break-words w-full">
-          <div
-            style=${authorTextColor}
-            class="message-author font-bold"
-          >
+          <div style=${authorTextColor} class="message-author font-bold">
             ${author}
           </div>
           <div
@@ -100,18 +96,18 @@ function highlightUsername(message, username) {
   // https://github.com/julmot/mark.js/issues/115
   const node = document.createElement('span');
   node.innerHTML = message;
-  return new Promise(res => {
+  return new Promise((res) => {
     new Mark(node).mark(username, {
       element: 'span',
       className: 'highlighted px-1 rounded font-bold bg-orange-500',
       separateWordSearch: false,
       accuracy: {
         value: 'exactly',
-        limiters: [",", ".", "'", '?', '@'],
+        limiters: [',', '.', "'", '?', '@'],
       },
       done() {
         res(node.innerHTML);
-      }
+      },
     });
   });
 }
@@ -131,8 +127,6 @@ function getMessageWithEmbeds(message) {
       embedText += getYoutubeEmbedFromID(youtubeID);
     } else if (url.indexOf('instagram.com/p/') > -1) {
       embedText += getInstagramEmbedFromURL(url);
-    } else if (isImage(url)) {
-      embedText += getImageForURL(url);
     }
   }
 
@@ -174,15 +168,6 @@ function getInstagramEmbedFromURL(url) {
   return `<iframe class="chat-embed instagram-embed" src="${urlObject.href}" frameborder="0" allowfullscreen></iframe>`;
 }
 
-function isImage(url) {
-  const re = /\.(jpe?g|png|gif)$/i;
-  return re.test(url);
-}
-
-function getImageForURL(url) {
-  return `<a target="_blank" href="${url}"><img class="chat-embed embedded-image" src="${url}" /></a>`;
-}
-
 function isMessageJustAnchor(message, anchor) {
   return stripTags(message) === stripTags(anchor.innerHTML);
 }
@@ -217,5 +202,3 @@ function convertToMarkup(str = '') {
 function stripTags(str) {
   return str.replace(/<\/?[^>]+(>|$)/g, '');
 }
-
-

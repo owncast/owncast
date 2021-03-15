@@ -54,6 +54,7 @@ export default class App extends Component {
       websocket: new Websocket(),
       displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
+      chatDisabled: false,
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       touchKeyboardActive: false,
 
@@ -458,6 +459,7 @@ export default class App extends Component {
       tags = [],
       name,
       extraPageContent,
+      chatDisabled,
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -487,11 +489,14 @@ export default class App extends Component {
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
+    const shouldDisplayChat = displayChat && !chatDisabled;
+    const usernameStyle = chatDisabled ? 'none' : 'flex';
+
     const extraAppClasses = classNames({
-      chat: displayChat,
-      'no-chat': !displayChat,
+      chat: shouldDisplayChat,
+      'no-chat': !shouldDisplayChat,
       'single-col': singleColMode,
-      'bg-gray-800': singleColMode && displayChat,
+      'bg-gray-800': singleColMode && shouldDisplayChat,
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
       'touch-screen': this.hasTouchScreen,
       'touch-keyboard-active': touchKeyboardActive,
@@ -530,6 +535,7 @@ export default class App extends Component {
             <div
               id="user-options-container"
               class="flex flex-row justify-end items-center flex-no-wrap"
+              style=${{ display: usernameStyle }}
             >
               <${UsernameForm}
                 username=${username}
@@ -619,7 +625,7 @@ export default class App extends Component {
         <${Chat}
           websocket=${websocket}
           username=${username}
-          chatInputEnabled=${chatInputEnabled}
+          chatInputEnabled=${chatInputEnabled && !chatDisabled}
           instanceTitle=${name}
         />
       </div>

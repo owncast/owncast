@@ -25,6 +25,7 @@ const VIDEO_OPTIONS = {
     vhs: {
       // used to select the lowest bitrate playlist initially. This helps to decrease playback start time. This setting is false by default.
       enableLowInitialPlaylist: true,
+      smoothQualityChange: true,
     },
   },
   liveTracker: {
@@ -53,10 +54,16 @@ class OwncastPlayer {
     this.handleVolume = this.handleVolume.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.addQualitySelector = this.addQualitySelector.bind(this);
+
+    this.qualitySelectionMenu = null;
   }
 
   init() {
-    videojs.Vhs.xhr.beforeRequest = options => {
+    this.addAirplay();
+    this.addQualitySelector();
+
+    videojs.Vhs.xhr.beforeRequest = (options) => {
       if (options.uri.match('m3u8')) {
         const cachebuster = Math.round(new Date().getTime() / 1000);
         options.uri = `${options.uri}?cachebust=${cachebuster}`;
@@ -66,7 +73,6 @@ class OwncastPlayer {
 
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
 
-    this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
   }
 
@@ -103,7 +109,10 @@ class OwncastPlayer {
   }
 
   handleVolume() {
-    setLocalStorage(PLAYER_VOLUME, this.vjsPlayer.muted() ? 0 : this.vjsPlayer.volume());
+    setLocalStorage(
+      PLAYER_VOLUME,
+      this.vjsPlayer.muted() ? 0 : this.vjsPlayer.volume()
+    );
   }
 
   handlePlaying() {
@@ -132,6 +141,90 @@ class OwncastPlayer {
     // console.log(`>>> Player: ${message}`);
   }
 
+  async addQualitySelector() {
+    if (this.qualityMenuButton) {
+      player.controlBar.removeChild(this.qualityMenuButton);
+    }
+
+    videojs.hookOnce(
+      'setup',
+      async function (player) {
+        var qualities = [];
+
+        try {
+          const response = await fetch('/api/video/variants');
+          qualities = await response.json();
+        } catch (e) {
+          console.log(e);
+        }
+
+        var MenuItem = videojs.getComponent('MenuItem');
+        var MenuButtonClass = videojs.getComponent('MenuButton');
+        var MenuButton = videojs.extend(MenuButtonClass, {
+          // The `init()` method will also work for constructor logic here, but it is
+          // deprecated. If you provide an `init()` method, it will override the
+          // `constructor()` method!
+          constructor: function () {
+            MenuButtonClass.call(this, player);
+          },
+
+          handleClick: function () {},
+
+          createItems: function () {
+            const defaultAutoItem = new MenuItem(player, {
+              selectable: true,
+              label: 'Auto',
+            });
+
+            const items = qualities.map(function (item) {
+              var newMenuItem = new MenuItem(player, {
+                selectable: true,
+                label: item.name,
+              });
+
+              // Quality selected
+              newMenuItem.on('click', function () {
+                // Only enable this single, selected representation.
+                player
+                  .tech({ IWillNotUseThisInPlugins: true })
+                  .vhs.representations()
+                  .forEach(function (rep, index) {
+                    rep.enabled(index === item.index);
+                  });
+                newMenuItem.selected(false);
+              });
+
+              return newMenuItem;
+            });
+
+            defaultAutoItem.on('click', function () {
+              // Re-enable all representations.
+              player
+                .tech({ IWillNotUseThisInPlugins: true })
+                .vhs.representations()
+                .forEach(function (rep, index) {
+                  rep.enabled(true);
+                });
+              defaultAutoItem.selected(false);
+            });
+
+            return [defaultAutoItem, ...items];
+          },
+        });
+
+        var menuButton = new MenuButton();
+        menuButton.addClass('vjs-quality-selector');
+        player.controlBar.addChild(
+          menuButton,
+          {},
+          player.controlBar.children_.length - 2
+        );
+
+        this.qualityMenuButton = menuButton;
+      }.bind(this)
+    );
+  }
+
   addAirplay() {
     videojs.hookOnce('setup', function (player) {
       if (window.WebKitPlaybackTargetAvailabilityEvent) {
@@ -150,7 +243,7 @@ class OwncastPlayer {
           },
         });
 
-        var concreteButtonInstance = this.vjsPlayer.controlBar.addChild(
+        var concreteButtonInstance = player.controlBar.addChild(
           new concreteButtonClass()
         );
         concreteButtonInstance.addClass('vjs-airplay');

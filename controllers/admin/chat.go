@@ -58,8 +58,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// SendSystemMessage will send an official "SYSTEM" message
-// to chat on behalf of your server.
+// SendSystemMessage will send an official "SYSTEM" message to chat on behalf of your server.
 func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -76,7 +75,7 @@ func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	message.Visible = true
 
 	message.SetDefaults()
-	message.RenderAndSanitizeMessageBody()
+	message.RenderBody()
 
 	if err := core.SendMessageToChat(message); err != nil {
 		controllers.BadRequestHandler(w, err)
@@ -137,6 +136,7 @@ func SendChatAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	message.SetDefaults()
+	message.RenderAndSanitizeMessageBody()
 
 	if err := core.SendMessageToChat(message); err != nil {
 		controllers.BadRequestHandler(w, err)

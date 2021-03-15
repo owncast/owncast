@@ -58,6 +58,9 @@ func Start() error {
 	// return the logo
 	http.HandleFunc("/logo", controllers.GetLogo)
 
+	// return the list of video variants available
+	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
@@ -105,6 +108,9 @@ func Start() error {
 
 	// Server summary
 	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.SetServerSummary))
+
+	// Disable chat
+	http.HandleFunc("/api/admin/config/chat/disable", middleware.RequireAdminAuth(admin.SetChatDisabled))
 
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))

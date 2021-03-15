@@ -11,7 +11,7 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "gingervitis"
+      - "nebunez"
       - "gabek"
 
   - package-ecosystem: "gomod"

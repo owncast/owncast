@@ -21,6 +21,7 @@ type webConfigResponse struct {
 	ExtraPageContent string                `json:"extraPageContent"`
 	StreamTitle      string                `json:"streamTitle,omitempty"` // What's going on with the current stream
 	SocialHandles    []models.SocialHandle `json:"socialHandles"`
+	ChatDisabled     bool                  `json:"chatDisabled"`
 }
 
 // GetWebConfig gets the status of the server.
@@ -48,6 +49,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),
 		SocialHandles:    socialHandles,
+		ChatDisabled:     data.GetChatDisabled(),
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {

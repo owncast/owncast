@@ -28,7 +28,7 @@ var ConfigFilePath = "config.yaml"
 var GitCommit = ""
 
 // BuildPlatform is the optional platform this release was built for.
-var BuildPlatform = "local"
+var BuildPlatform = "dev"
 
 // GetReleaseString gets the version string.
 func GetReleaseString() string {

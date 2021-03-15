@@ -2,6 +2,7 @@ package models
 
 import (
 	"bytes"
+	"regexp"
 	"strings"
 	"time"
 
@@ -54,17 +55,23 @@ func (m *ChatEvent) Empty() bool {
 	return m.Body == ""
 }
 
+// RenderBody will render markdown to html without any sanitization
+func (m *ChatEvent) RenderBody() {
+	m.RawBody = m.Body
+	m.Body = RenderMarkdown(m.RawBody)
+}
+
 // RenderAndSanitize will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func RenderAndSanitize(raw string) string {
-	rendered := renderMarkdown(raw)
+	rendered := RenderMarkdown(raw)
 	safe := sanitize(rendered)
 
 	// Set the new, sanitized and rendered message body
 	return strings.TrimSpace(safe)
 }
 
-func renderMarkdown(raw string) string {
+func RenderMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
@@ -96,6 +103,7 @@ func sanitize(raw string) string {
 
 	// Require URLs to be parseable by net/url.Parse
 	p.AllowStandardURLs()
+	p.RequireParseableURLs(true)
 
 	// Allow links
 	p.AllowAttrs("href").OnElements("a")
@@ -106,19 +114,11 @@ func sanitize(raw string) string {
 	// Links will get target="_blank" added to them.
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
-	// Allow paragraphs
-	p.AllowElements("br")
-	p.AllowElements("p")
+	// Allow breaks
+	p.AllowElements("br", "p")
 
-	// Allow img tags
-	p.AllowElements("img")
-	p.AllowAttrs("src").OnElements("img")
-	p.AllowAttrs("alt").OnElements("img")
-	p.AllowAttrs("title").OnElements("img")
-
-	// Custom emoji have a class already specified.
-	// We should only allow classes on emoji, not *all* imgs.
-	// But TODO.
+	// Allow img tags from the the local emoji directory only
+	p.AllowAttrs("src", "alt", "class", "title").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
 	p.AllowAttrs("class").OnElements("img")
 
 	// Allow bold

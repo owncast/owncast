@@ -222,6 +222,8 @@ func (c *Client) chatMessageReceived(data []byte) {
 	c.Username = &msg.Author
 
 	msg.ClientID = c.ClientID
+	msg.RenderAndSanitizeMessageBody()
+
 	_server.SendToAll(msg)
 }
 

@@ -14,6 +14,10 @@ video.video-js {
   content: url("../img/airplay.png");
 }
 
+.vjs-quality-selector .vjs-icon-placeholder::before {
+  content: url("../img/video-settings.png");
+}
+
 .vjs-big-play-button {
   z-index: 100;
 }
