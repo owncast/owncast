@@ -41,7 +41,7 @@ func GetDefaults() Defaults {
 		DatabaseFilePath: "data/owncast.db",
 
 		YPEnabled: false,
-		YPServer:  "https://yp.owncast.online",
+		YPServer:  "https://directory.owncast.online",
 
 		WebServerPort:  8080,
 		RTMPServerPort: 1935,
