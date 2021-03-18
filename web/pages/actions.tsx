@@ -43,8 +43,21 @@ function NewActionModal(props: Props) {
     onOk(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
   }
 
+  function canSave(): Boolean {
+    try {
+      const validationObject = new URL(actionUrl);
+      if (validationObject.protocol !== 'https:') {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+
+    return isValidUrl(actionUrl) && actionTitle !== '';
+  }
+
   const okButtonProps = {
-    disabled: !isValidUrl(actionUrl) || actionTitle === '',
+    disabled: !canSave(),
   };
 
   const onOpenExternallyChanged = checkbox => {
@@ -60,6 +73,8 @@ function NewActionModal(props: Props) {
       okButtonProps={okButtonProps}
     >
       <div>
+        Add the URL for the external action you want to present.  <strong>Only HTTPS urls are supported.</strong>
+        <p><a href="https://owncast.online/docs">Read more about external actions.</a></p>
         <p>
           <Input
             value={actionUrl}
@@ -99,6 +114,7 @@ function NewActionModal(props: Props) {
             value={actionColor}
             onChange={input => setActionColor(input.currentTarget.value)}
           />
+          Optional background color of the action button.
         </p>
 
         <Checkbox
@@ -169,7 +185,7 @@ export default function Actions() {
       dataIndex: 'color',
       key: 'color',
       render: (color: string) => {
-        return color ? (<div style={{backgroundColor: color, height: '30px'}}>{color}</div>) : null;
+        return color ? <div style={{ backgroundColor: color, height: '30px' }}>{color}</div> : null;
       },
     },
     {
@@ -205,7 +221,14 @@ export default function Actions() {
   ) {
     try {
       let actionsData = [...actions];
-      const updatedActions = actionsData.concat({ url, title, description, icon, color, openExternally });
+      const updatedActions = actionsData.concat({
+        url,
+        title,
+        description,
+        icon,
+        color,
+        openExternally,
+      });
       setActions(updatedActions);
       await save(updatedActions);
     } catch (error) {
