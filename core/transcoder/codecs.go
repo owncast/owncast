@@ -117,7 +117,7 @@ func (c *QuicksyncCodec) GlobalFlags() string {
 }
 
 func (c *QuicksyncCodec) PixelFormat() string {
-	return "yuv420p"
+	return "nv12"
 }
 
 func (c *QuicksyncCodec) ExtraArguments() string {

@@ -17,8 +17,7 @@ import (
 )
 
 var _commandExec *exec.Cmd
-
-var codec = Libx264Codec{} //QuicksyncCodec{} //VaapiCodec{}
+var codec = VaapiCodec{} // Libx264Codec{} //QuicksyncCodec{} //VaapiCodec{} // QuicksyncCodec{} //
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
@@ -85,8 +84,6 @@ func (t *Transcoder) Stop() {
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
 	command := t.getString()
-	ffmpegErrorHandleCh := make(chan error, 1)
-
 	log.Infof("Video transcoder started using %s with %d stream variants.", codec.Name(), len(t.variants))
 
 	if config.EnableDebugFeatures {
@@ -106,10 +103,6 @@ func (t *Transcoder) Start() {
 	}
 
 	go func() {
-		ffmpegErrorHandleCh <- _commandExec.Wait()
-	}()
-
-	go func() {
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
 			line := scanner.Text()
@@ -117,7 +110,7 @@ func (t *Transcoder) Start() {
 		}
 	}()
 
-	// err = _commandExec.Wait()
+	err = _commandExec.Wait()
 	if t.TranscoderCompleted != nil {
 		t.TranscoderCompleted(err)
 	}
@@ -125,6 +118,7 @@ func (t *Transcoder) Start() {
 	if err != nil {
 		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", codec.Name())
 	}
+
 }
 
 func (t *Transcoder) getString() string {
@@ -165,6 +159,8 @@ func (t *Transcoder) getString() string {
 
 		// Video settings
 		codec.ExtraArguments(),
+		// "-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+		// "-pix_fmt", "yuv420p", // Force yuv420p color format
 		"-pix_fmt", codec.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
