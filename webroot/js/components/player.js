@@ -212,6 +212,11 @@ class OwncastPlayer {
           },
         });
 
+        // Only show the quality selector if there is more than one option.
+        if (qualities.length < 2) {
+          return;
+        }
+
         var menuButton = new MenuButton();
         menuButton.addClass('vjs-quality-selector');
         player.controlBar.addChild(
