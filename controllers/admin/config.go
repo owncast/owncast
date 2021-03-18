@@ -75,6 +75,8 @@ func sendSystemChatAction(messageText string, ephemeral bool) {
 	message.Ephemeral = ephemeral
 	message.SetDefaults()
 
+	message.RenderBody()
+
 	if err := core.SendMessageToChat(message); err != nil {
 		log.Errorln(err)
 	}
