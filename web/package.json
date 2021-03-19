@@ -17,7 +17,7 @@
     "markdown-it": "^12.0.4",
     "next": "^10.0.9",
     "prop-types": "^15.7.2",
-    "rc-util": "^5.8.1",
+    "rc-util": "^5.9.3",
     "react": "^17.0.1",
     "react-chartkick": "^0.4.1",
     "react-dom": "^17.0.1",
