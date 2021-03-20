@@ -508,6 +508,22 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "chat disabled status updated")
 }
 
+// SetVideoCodec will change the codec used for video encoding.
+func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to change video codec")
+		return
+	}
+
+	data.SetVideoCodec(configValue.Value.(string))
+	controllers.WriteSimpleResponse(w, true, "video codec updated")
+}
+
 // SetExternalActions will set the 3rd party actions for the web interface.
 func SetExternalActions(w http.ResponseWriter, r *http.Request) {
 	type externalActionsRequest struct {
