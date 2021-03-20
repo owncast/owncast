@@ -1,6 +1,7 @@
 package transcoder
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -32,8 +33,21 @@ func (c *Libx264Codec) PixelFormat() string {
 
 func (c *Libx264Codec) ExtraArguments() string {
 	return strings.Join([]string{
-		// "-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 	}, " ")
+}
+
+func (c *Libx264Codec) ExtraFilters() string {
+	return ""
+}
+
+func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
+	bufferSize := int(float64(v.videoBitrate) * 1.2) // How often it checks the bitrate of encoded segments to see if it's too high/low.
+
+	return strings.Join([]string{
+		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize), // How often the encoder checks the bitrate in order to meet average/max values
+	}, " ")
+
 }
 
 type OmxCodec struct {
@@ -57,6 +71,14 @@ func (c *OmxCodec) ExtraArguments() string {
 	}, " ")
 }
 
+func (c *OmxCodec) ExtraFilters() string {
+	return ""
+}
+
+func (c *OmxCodec) VariantFlags(v *HLSVariant) string {
+	return ""
+}
+
 type VaapiCodec struct {
 }
 
@@ -78,8 +100,16 @@ func (c *VaapiCodec) PixelFormat() string {
 	return "vaapi_vld"
 }
 
+func (c *VaapiCodec) ExtraFilters() string {
+	return "format=nv12,hwupload"
+}
+
 func (c *VaapiCodec) ExtraArguments() string {
-	return "-vf 'format=nv12,hwupload'"
+	return ""
+}
+
+func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
+	return ""
 }
 
 type NvencCodec struct {
@@ -105,6 +135,14 @@ func (c *NvencCodec) ExtraArguments() string {
 	return ""
 }
 
+func (c *NvencCodec) ExtraFilters() string {
+	return ""
+}
+
+func (c *NvencCodec) VariantFlags(v *HLSVariant) string {
+	return ""
+}
+
 type QuicksyncCodec struct {
 }
 
@@ -121,6 +159,14 @@ func (c *QuicksyncCodec) PixelFormat() string {
 }
 
 func (c *QuicksyncCodec) ExtraArguments() string {
+	return ""
+}
+
+func (c *QuicksyncCodec) ExtraFilters() string {
+	return ""
+}
+
+func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
 	return ""
 }
 
@@ -142,12 +188,22 @@ func (c *Video4Linux) ExtraArguments() string {
 	return ""
 }
 
+func (c *Video4Linux) ExtraFilters() string {
+	return ""
+}
+
+func (c *Video4Linux) VariantFlags(v *HLSVariant) string {
+	return ""
+}
+
 // Codec represents a supported codec on the system.
 type Codec interface {
 	Name() string
 	GlobalFlags() string
 	PixelFormat() string
 	ExtraArguments() string
+	ExtraFilters() string
+	VariantFlags(v *HLSVariant) string
 }
 
 // GetCodecs will return the supported codecs available on the system.
@@ -174,4 +230,19 @@ func GetCodecs(ffmpegPath string) []string {
 	}
 
 	return codecs
+}
+
+func getCodec(name string) Codec {
+	switch name {
+	case (&NvencCodec{}).Name():
+		return &NvencCodec{}
+	case (&VaapiCodec{}).Name():
+		return &VaapiCodec{}
+	case (&QuicksyncCodec{}).Name():
+		return &QuicksyncCodec{}
+	case (&OmxCodec{}).Name():
+		return &OmxCodec{}
+	default:
+		return &Libx264Codec{}
+	}
 }

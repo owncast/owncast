@@ -17,7 +17,8 @@ import (
 )
 
 var _commandExec *exec.Cmd
-var codec = VaapiCodec{} // Libx264Codec{} //QuicksyncCodec{} //VaapiCodec{} // QuicksyncCodec{} //
+
+// var codec = Libx264Codec{} //QuicksyncCodec{} //VaapiCodec{} // QuicksyncCodec{} //
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
@@ -29,6 +30,7 @@ type Transcoder struct {
 	ffmpegPath           string
 	segmentIdentifier    string
 	internalListenerPort string
+	codec                Codec
 
 	currentStreamOutputSettings []models.StreamOutputVariant
 	currentLatencyLevel         models.LatencyLevel
@@ -84,7 +86,7 @@ func (t *Transcoder) Stop() {
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
 	command := t.getString()
-	log.Infof("Video transcoder started using %s with %d stream variants.", codec.Name(), len(t.variants))
+	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.Name(), len(t.variants))
 
 	if config.EnableDebugFeatures {
 		log.Println(command)
@@ -116,7 +118,7 @@ func (t *Transcoder) Start() {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", codec.Name())
+		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name())
 	}
 
 }
@@ -144,7 +146,7 @@ func (t *Transcoder) getString() string {
 		t.ffmpegPath,
 		"-hide_banner",
 		"-loglevel warning",
-		codec.GlobalFlags(),
+		t.codec.GlobalFlags(),
 		"-i ", t.input,
 
 		t.getVariantsString(),
@@ -158,11 +160,12 @@ func (t *Transcoder) getString() string {
 		hlsOptionsString,
 
 		// Video settings
-		codec.ExtraArguments(),
+		t.codec.ExtraArguments(),
 		// "-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 		// "-pix_fmt", "yuv420p", // Force yuv420p color format
-		"-pix_fmt", codec.PixelFormat(),
+		"-pix_fmt", t.codec.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
+		// fmt.Sprintf("-vf %s", t.codec.ExtraFilters()),
 
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
@@ -225,6 +228,7 @@ func NewTranscoder() *Transcoder {
 
 	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
+	transcoder.codec = getCodec(data.GetVideoCodec())
 
 	var outputPath string
 	if data.GetS3Config().Enabled {
@@ -256,8 +260,20 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 		v.getAudioQualityString(),
 	}
 
-	if v.videoSize.Width != 0 || v.videoSize.Height != 0 {
-		variantEncoderCommands = append(variantEncoderCommands, v.getScalingString())
+	if (v.videoSize.Width != 0 || v.videoSize.Height != 0) && !v.isVideoPassthrough {
+		// Order here matters, you must scale before changing hardware formats
+		filters := []string{
+			v.getScalingString(),
+		}
+		if t.codec.ExtraFilters() != "" {
+			filters = append(filters, t.codec.ExtraFilters())
+		}
+		scalingAlgorithm := "bilinear"
+		filterString := fmt.Sprintf("-sws_flags %s -filter:v:%d \"%s\"", scalingAlgorithm, v.index, strings.Join(filters, ","))
+		variantEncoderCommands = append(variantEncoderCommands, filterString)
+	} else if t.codec.ExtraFilters() != "" && !v.isVideoPassthrough {
+		filterString := fmt.Sprintf("-filter:v:%d \"%s\"", v.index, t.codec.ExtraFilters())
+		variantEncoderCommands = append(variantEncoderCommands, filterString)
 	}
 
 	if v.encoderPreset != "" {
@@ -299,8 +315,7 @@ func (v *HLSVariant) SetVideoScalingHeight(height int) {
 }
 
 func (v *HLSVariant) getScalingString() string {
-	scalingAlgorithm := "bilinear"
-	return fmt.Sprintf("-filter:v:%d \"scale=%s\" -sws_flags %s", v.index, v.videoSize.getString(), scalingAlgorithm)
+	return fmt.Sprintf("scale=%s", v.videoSize.getString())
 }
 
 // Video Quality
@@ -325,18 +340,17 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 	// Adjust the max & buffer size until the output bitrate doesn't exceed the ~+10% that Apple's media validator
 	// complains about.
 	maxBitrate := int(float64(v.videoBitrate) * 1.06) // Max is a ~+10% over specified bitrate.
-	bufferSize := int(float64(v.videoBitrate) * 1.2)  // How often it checks the bitrate of encoded segments to see if it's too high/low.
+	// bufferSize := int(float64(v.videoBitrate) * 1.2)  // How often it checks the bitrate of encoded segments to see if it's too high/low.
 
 	cmd := []string{
 		"-map v:0",
-		fmt.Sprintf("-c:v:%d %s", v.index, codec.Name()),      // Video codec used for this variant
+		fmt.Sprintf("-c:v:%d %s", v.index, t.codec.Name()),    // Video codec used for this variant
 		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),   // The average bitrate for this variant
 		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate), // The max bitrate allowed for this variant
-		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize), // How often the encoder checks the bitrate in order to meet average/max values
 		fmt.Sprintf("-g:v:%d %d", v.index, gop),               // How often i-frames are encoded into the segments
 		fmt.Sprintf("-profile:v:%d %s", v.index, "high"),      // Encoding profile
 		fmt.Sprintf("-r:v:%d %d", v.index, v.framerate),
-		// fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0:min-keyint=%d:keyint=%d\"", v.index, gop, gop), // How often i-frames are encoded into the segments
+		t.codec.VariantFlags(v),
 	}
 
 	return strings.Join(cmd, " ")
@@ -397,4 +411,8 @@ func (t *Transcoder) SetIdentifier(output string) {
 
 func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
+}
+
+func (t *Transcoder) SetCodec(codecName string) {
+	t.codec = getCodec(codecName)
 }
