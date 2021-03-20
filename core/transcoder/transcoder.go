@@ -118,7 +118,7 @@ func (t *Transcoder) Start() {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name())
+		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/troubleshooting/#misc-video-issues")
 	}
 
 }
