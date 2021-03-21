@@ -9,11 +9,12 @@ import (
 )
 
 var supportedCodecs = map[string]string{
-	"libx264":    "libx264",
-	"h264_omx":   "omx",
-	"h264_vaapi": "vaapi",
-	"h264_nvenc": "NVIDEA nvenc",
-	"h264_qsv":   "Intel Quicksync",
+	"libx264":      "libx264",
+	"h264_omx":     "omx",
+	"h264_vaapi":   "vaapi",
+	"h264_nvenc":   "NVIDEA nvenc",
+	"h264_qsv":     "Intel Quicksync",
+	"h264_v4l2m2m": "Video4Linux",
 }
 
 type Libx264Codec struct {
