@@ -136,6 +136,10 @@ func (s *server) Listen() {
 		case c := <-s.delCh:
 			s.removeClient(c)
 		case msg := <-s.sendAllCh:
+			if data.GetChatDisabled() {
+				break
+			}
+
 			if !msg.Empty() {
 				// set defaults before sending msg to anywhere
 				msg.SetDefaults()

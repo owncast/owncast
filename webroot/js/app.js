@@ -8,7 +8,14 @@ import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { parseSecondsToDurationString, hasTouchScreen, getOrientation } from './utils/helpers.js';
+import {
+  parseSecondsToDurationString,
+  hasTouchScreen,
+  getOrientation,
+} from './utils/helpers.js';
+import ExternalActionModal, {
+  ExternalActionButton,
+} from './components/external-action-modal.js';
 
 import {
   addNewlines,
@@ -50,6 +57,7 @@ export default class App extends Component {
       websocket: new Websocket(),
       displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
+      chatDisabled: false,
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       touchKeyboardActive: false,
 
@@ -68,6 +76,8 @@ export default class App extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       orientation: getOrientation(this.hasTouchScreen),
+
+      externalAction: null,
     };
 
     // timers
@@ -91,7 +101,10 @@ export default class App extends Component {
     this.disableChatInput = this.disableChatInput.bind(this);
     this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
+    this.displayExternalAction = this.displayExternalAction.bind(this);
+    this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -114,6 +127,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.addEventListener('orientationchange', this.handleWindowResize);
     }
+    window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keypress', this.handleKeyPressed);
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
@@ -135,6 +149,7 @@ export default class App extends Component {
     window.removeEventListener('resize', this.handleWindowResize);
     window.removeEventListener('blur', this.handleWindowBlur);
     window.removeEventListener('focus', this.handleWindowFocus);
+    window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keypress', this.handleKeyPressed);
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
@@ -195,12 +210,7 @@ export default class App extends Component {
     if (!status) {
       return;
     }
-    const {
-      viewerCount,
-      online,
-      lastConnectTime,
-      streamTitle,
-    } = status;
+    const { viewerCount, online, lastConnectTime, streamTitle } = status;
 
     this.lastDisconnectTime = status.lastDisconnectTime;
 
@@ -265,7 +275,9 @@ export default class App extends Component {
     }
 
     if (this.windowBlurred) {
-      document.title = ` 🔴 ${this.state.configData && this.state.configData.name}`;
+      document.title = ` 🔴 ${
+        this.state.configData && this.state.configData.name
+      }`;
     }
   }
 
@@ -289,7 +301,9 @@ export default class App extends Component {
     });
 
     if (this.windowBlurred) {
-      document.title = ` 🟢 ${this.state.configData && this.state.configData.name}`;
+      document.title = ` 🟢 ${
+        this.state.configData && this.state.configData.name
+      }`;
     }
   }
 
@@ -302,7 +316,6 @@ export default class App extends Component {
     this.setState({
       streamStatusMessage: `${MESSAGE_ONLINE} ${streamDurationString}`,
     });
-
   }
 
   handleUsernameChange(newName) {
@@ -370,7 +383,7 @@ export default class App extends Component {
 
   handleSpaceBarPressed(e) {
     e.preventDefault();
-    if(this.state.isPlaying) {
+    if (this.state.isPlaying) {
       this.setState({
         isPlaying: false,
       });
@@ -383,10 +396,49 @@ export default class App extends Component {
     }
   }
 
+  handleKeyDown(e) {
+    if (e.code === 'Escape' && this.state.externalAction !== null) {
+      this.closeExternalActionModal();
+    }
+  }
+
   handleKeyPressed(e) {
-    if (e.code === 'Space' && e.target === document.body && this.state.streamOnline) {
+    if (
+      e.code === 'Space' &&
+      e.target === document.body &&
+      this.state.streamOnline
+    ) {
       this.handleSpaceBarPressed(e);
     }
+  }
+
+  displayExternalAction(index) {
+    const { configData, username } = this.state;
+    const action = configData.externalActions[index];
+    if (!action) {
+      return;
+    }
+    const { url: actionUrl, openExternally } = action || {};
+    let url = new URL(actionUrl);
+    // Append url and username to params so the link knows where we came from and who we are.
+    url.searchParams.append('username', username);
+    url.searchParams.append('instance', window.location);
+
+    if (openExternally) {
+      var win = window.open(url.toString(), '_blank');
+      win.focus();
+      return;
+    }
+
+    this.setState({
+      externalAction: action,
+    });
+  }
+
+  closeExternalActionModal() {
+    this.setState({
+      externalAction: null,
+    });
   }
 
   render(props, state) {
@@ -406,8 +458,8 @@ export default class App extends Component {
       websocket,
       windowHeight,
       windowWidth,
+      externalAction,
     } = state;
-
 
     const {
       version: appVersion,
@@ -417,45 +469,67 @@ export default class App extends Component {
       tags = [],
       name,
       extraPageContent,
+      chatDisabled,
+      externalActions,
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
-    const tagList = (tags !== null && tags.length > 0)
-      ? tags.map(
-          (tag, index) => html`
-            <li
-              key="tag${index}"
-              class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
-            >
-              ${tag}
-            </li>
-          `
-        )
-      : null;
+    const tagList = tags !== null && tags.length > 0 && tags.join(' #');
 
-    const viewerCountMessage = streamOnline && viewerCount > 0 ? (
-      html`${viewerCount} ${pluralize('viewer', viewerCount)}`
-    ) : null;
+    const viewerCountMessage =
+      streamOnline && viewerCount > 0
+        ? html`${viewerCount} ${pluralize('viewer', viewerCount)}`
+        : null;
 
     const mainClass = playerActive ? 'online' : '';
-    const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
+    const isPortrait =
+      this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
+    const shouldDisplayChat = displayChat && !chatDisabled;
+    const usernameStyle = chatDisabled ? 'none' : 'flex';
+
     const extraAppClasses = classNames({
-      chat: displayChat,
-      'no-chat': !displayChat,
+      chat: shouldDisplayChat,
+      'no-chat': !shouldDisplayChat,
       'single-col': singleColMode,
-      'bg-gray-800': singleColMode && displayChat,
+      'bg-gray-800': singleColMode && shouldDisplayChat,
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
       'touch-screen': this.hasTouchScreen,
       'touch-keyboard-active': touchKeyboardActive,
     });
 
-    const poster = isPlaying ? null : html`
-      <${VideoPoster} offlineImage=${logo} active=${streamOnline} />
-    `;
+    const poster = isPlaying
+      ? null
+      : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
+
+    const externalActionButtons =
+      externalActions &&
+      html`<div
+        id="external-actions-container"
+        class="flex flex-row align-center"
+      >
+        ${externalActions.map(
+          function (action, index) {
+            return html`<${ExternalActionButton}
+              onClick=${this.displayExternalAction}
+              action=${action}
+              index=${index}
+            />`;
+          }.bind(this)
+        )}
+      </div>`;
+
+    const externalActionModal = externalAction
+      ? html`<${ExternalActionModal}
+          title=${this.state.externalAction.description ||
+          this.state.externalAction.title}
+          url=${this.state.externalAction.url}
+          onClose=${this.closeExternalActionModal}
+        />`
+      : null;
 
     return html`
       <div
@@ -473,15 +547,20 @@ export default class App extends Component {
                 id="logo-container"
                 class="inline-block	rounded-full bg-white w-8 min-w-8 min-h-8 h-8 mr-2 bg-no-repeat bg-center"
               >
-                <img class="logo visually-hidden" src=${OWNCAST_LOGO_LOCAL} alt="owncast logo" />
+                <img
+                  class="logo visually-hidden"
+                  src=${OWNCAST_LOGO_LOCAL}
+                  alt="owncast logo"
+                />
               </span>
               <span class="instance-title overflow-hidden truncate"
-                >${(streamOnline && streamTitle) ? streamTitle : name}</span
+                >${streamOnline && streamTitle ? streamTitle : name}</span
               >
             </h1>
             <div
               id="user-options-container"
               class="flex flex-row justify-end items-center flex-no-wrap"
+              style=${{ display: usernameStyle }}
             >
               <${UsernameForm}
                 username=${username}
@@ -537,10 +616,9 @@ export default class App extends Component {
             <div
               class="user-content-header border-b border-gray-500 border-solid"
             >
+              ${externalActionButtons}
               <h2 class="font-semibold text-5xl">
-                <span class="streamer-name text-indigo-600"
-                  >${name}</span
-                >
+                <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
@@ -551,9 +629,9 @@ export default class App extends Component {
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
-              <ul id="tag-list" class="tag-list flex flex-row flex-wrap my-4">
-                ${tagList}
-              </ul>
+              <div id="tag-list" class="tag-list text-gray-600 mb-3">
+                ${tagList && `#${tagList}`}
+              </div>
             </div>
           </div>
           <div
@@ -573,11 +651,11 @@ export default class App extends Component {
         <${Chat}
           websocket=${websocket}
           username=${username}
-          chatInputEnabled=${chatInputEnabled}
+          chatInputEnabled=${chatInputEnabled && !chatDisabled}
           instanceTitle=${name}
         />
+        ${externalActionModal}
       </div>
     `;
   }
 }
-

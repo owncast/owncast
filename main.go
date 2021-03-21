@@ -51,8 +51,9 @@ func main() {
 	} else {
 		config.GitCommit = time.Now().Format("20060102")
 	}
-	config.BuildPlatform = BuildPlatform
-
+	if BuildPlatform != "" {
+		config.BuildPlatform = BuildPlatform
+	}
 	log.Infoln(config.GetReleaseString())
 
 	// Allows a user to restore a specific database backup

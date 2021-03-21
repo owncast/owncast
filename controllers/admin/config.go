@@ -75,6 +75,8 @@ func sendSystemChatAction(messageText string, ephemeral bool) {
 	message.Ephemeral = ephemeral
 	message.SetDefaults()
 
+	message.RenderBody()
+
 	if err := core.SendMessageToChat(message); err != nil {
 		log.Errorln(err)
 	}
@@ -452,6 +454,43 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	controllers.WriteSimpleResponse(w, true, "social handles updated")
+}
+
+// SetChatDisabled will disable chat functionality.
+func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update chat disabled")
+		return
+	}
+
+	data.SetChatDisabled(configValue.Value.(bool))
+
+	controllers.WriteSimpleResponse(w, true, "chat disabled status updated")
+}
+
+// SetExternalActions will set the 3rd party actions for the web interface.
+func SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	type externalActionsRequest struct {
+		Value []models.ExternalAction `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var actions externalActionsRequest
+	if err := decoder.Decode(&actions); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+		return
+	}
+
+	if err := data.SetExternalActions(actions.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+	}
+
+	controllers.WriteSimpleResponse(w, true, "external actions update")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

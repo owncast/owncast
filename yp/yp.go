@@ -93,7 +93,7 @@ func (yp *YP) ping() {
 		return
 	}
 
-	pingURL := config.GetDefaults().YPServer + "/ping"
+	pingURL := config.GetDefaults().YPServer + "/api/ping"
 	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req)) //nolint
 	if err != nil {
 		log.Errorln(err)
