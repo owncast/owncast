@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core"
@@ -131,7 +132,7 @@ func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerWelcomeMessage(configValue.Value.(string)); err != nil {
+	if err := data.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

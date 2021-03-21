@@ -3,7 +3,6 @@ package chat
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -184,7 +183,7 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		time.Sleep(7 * time.Second)
 
 		welcomeMessage := data.GetServerWelcomeMessage()
-		if strings.TrimSpace(welcomeMessage) != "" {
+		if welcomeMessage != "" {
 			initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: data.GetServerName(), Body: welcomeMessage, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
 			c.write(initialMessage)
 		}
