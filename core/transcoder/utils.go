@@ -25,6 +25,8 @@ var ignoredErrors = []string{
 }
 
 func handleTranscoderMessage(message string) {
+	log.Debugln(message)
+
 	// Convert specific transcoding messages to human-readable messages.
 	for error, displayMessage := range errorMap {
 		if strings.Contains(message, error) {
@@ -38,6 +40,10 @@ func handleTranscoderMessage(message string) {
 		if strings.Contains(message, error) {
 			return
 		}
+	}
+
+	if message == "" {
+		return
 	}
 
 	// Simply print the transcoding message verbatim.

@@ -243,6 +243,8 @@ func getCodec(name string) Codec {
 		return &QuicksyncCodec{}
 	case (&OmxCodec{}).Name():
 		return &OmxCodec{}
+	case (&Video4Linux{}).Name():
+		return &Video4Linux{}
 	default:
 		return &Libx264Codec{}
 	}
