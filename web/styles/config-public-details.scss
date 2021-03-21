@@ -38,13 +38,6 @@
   }
   .instance-details-container {
     width: 100%;
-
-    .logo-preview {
-      display: inline-block;
-      margin: -1em 0 1em 11em;
-      height: 120px;
-      border: 1px solid var(--white-25);
-    }
   }
   .social-items-container {
     background-color: var(--container-bg-color-alt);
@@ -73,4 +66,20 @@
 
 .other-field-container {
   margin: 0.5em 0;
+}
+
+
+.logo-upload-container {
+  .input-group {
+    align-items: center;
+  }
+  img.logo-preview {
+    min-height: 120px;
+    min-width: 120px;
+    max-height: 256px;
+    max-width: 256px;
+    margin-right: 1em;
+    display: inline-block;
+    border: 1px solid var(--white-25);
+  }
 }

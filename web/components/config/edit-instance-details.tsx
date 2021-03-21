@@ -13,15 +13,14 @@ import {
   TEXTFIELD_PROPS_SERVER_NAME,
   TEXTFIELD_PROPS_SERVER_SUMMARY,
   TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
-  TEXTFIELD_PROPS_LOGO,
   API_YP_SWITCH,
   FIELD_PROPS_YP,
   FIELD_PROPS_NSFW,
 } from '../../utils/config-constants';
-import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
 import { UpdateArgs } from '../../types/config-section';
 import ToggleSwitch from './form-toggleswitch';
+import EditLogo from './edit-logo';
 
 const { Title } = Typography;
 
@@ -106,16 +105,11 @@ export default function EditInstanceDetails() {
         initialValue={instanceDetails.welcomeMessage}
         onChange={handleFieldChange}
       />
-      <TextFieldWithSubmit
-        fieldName="logo"
-        {...TEXTFIELD_PROPS_LOGO}
-        value={formDataValues.logo}
-        initialValue={instanceDetails.logo}
-        onChange={handleFieldChange}
-      />
-      {instanceDetails.logo && <img src="/logo" alt="uploaded logo" className="logo-preview" />}
-      <br />
 
+      {/* Logo section */}
+      <EditLogo />
+
+      <br />
       <p className="description">
         Increase your audience by appearing in the{' '}
         <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
