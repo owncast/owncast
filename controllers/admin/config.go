@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core"
@@ -113,6 +114,25 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetServerSummary(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
+// SetServerWelcomeMessage will handle the web config request to set the welcome message text.
+func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
