@@ -23,10 +23,9 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			IsAudioPassthrough: variant.GetIsAudioPassthrough(),
 			IsVideoPassthrough: variant.IsVideoPassthrough,
 			Framerate:          variant.GetFramerate(),
-			EncoderPreset:      variant.GetEncoderPreset(),
 			VideoBitrate:       variant.VideoBitrate,
 			AudioBitrate:       variant.AudioBitrate,
-			CPUUsageLevel:      variant.GetCPUUsageLevel(),
+			CPUUsageLevel:      variant.CPUUsageLevel,
 			ScaledWidth:        variant.ScaledWidth,
 			ScaledHeight:       variant.ScaledHeight,
 		})

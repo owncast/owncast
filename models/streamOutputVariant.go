@@ -25,8 +25,7 @@ type StreamOutputVariant struct {
 	ScaledWidth  int `yaml:"scaledWidth" json:"scaledWidth,omitempty"`
 	ScaledHeight int `yaml:"scaledHeight" json:"scaledHeight,omitempty"`
 
-	Framerate     int    `yaml:"framerate" json:"framerate"`
-	EncoderPreset string `yaml:"encoderPreset" json:"encoderPreset"` // Remove after migration is no longer used
+	Framerate int `yaml:"framerate" json:"framerate"`
 	// CPUUsageLevel represents a codec preset to configure CPU usage.
 	CPUUsageLevel int `json:"cpuUsageLevel"`
 }
@@ -42,32 +41,6 @@ func (q *StreamOutputVariant) GetFramerate() int {
 	}
 
 	return 24
-}
-
-// GetEncoderPreset returns the preset or default.
-func (q *StreamOutputVariant) GetEncoderPreset() string {
-	if q.IsVideoPassthrough {
-		return ""
-	}
-
-	if q.EncoderPreset != "" {
-		return q.EncoderPreset
-	}
-
-	return "veryfast"
-}
-
-// GetCPUUsageLevel will return the libx264 codec encoder preset that maps to a level.
-func (q *StreamOutputVariant) GetCPUUsageLevel() int {
-	presetMapping := map[string]int{
-		"ultrafast": 1,
-		"superfast": 2,
-		"veryfast":  3,
-		"faster":    4,
-		"fast":      5,
-	}
-
-	return presetMapping[q.GetEncoderPreset()]
 }
 
 // GetIsAudioPassthrough will return if this variant audio is passthrough.

@@ -48,7 +48,22 @@ func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
 	return strings.Join([]string{
 		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize), // How often the encoder checks the bitrate in order to meet average/max values
 	}, " ")
+}
 
+func (c *Libx264Codec) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"ultrafast",
+		"superfast",
+		"veryfast",
+		"faster",
+		"fast",
+	}
+
+	if l >= len(presetMapping) {
+		return "superfast"
+	}
+
+	return presetMapping[l]
 }
 
 type OmxCodec struct {
@@ -78,6 +93,22 @@ func (c *OmxCodec) ExtraFilters() string {
 
 func (c *OmxCodec) VariantFlags(v *HLSVariant) string {
 	return ""
+}
+
+func (c *OmxCodec) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"ultrafast",
+		"superfast",
+		"veryfast",
+		"faster",
+		"fast",
+	}
+
+	if l >= len(presetMapping) {
+		return "superfast"
+	}
+
+	return presetMapping[l]
 }
 
 type VaapiCodec struct {
@@ -110,7 +141,24 @@ func (c *VaapiCodec) ExtraArguments() string {
 }
 
 func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+	tuning := "ll" // low latency
+	return fmt.Sprintf("-tuning_info:v:%d %s", v.index, tuning)
+}
+
+func (c *VaapiCodec) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"ultrafast",
+		"superfast",
+		"veryfast",
+		"faster",
+		"fast",
+	}
+
+	if l >= len(presetMapping) {
+		return "superfast"
+	}
+
+	return presetMapping[l]
 }
 
 type NvencCodec struct {
@@ -144,6 +192,22 @@ func (c *NvencCodec) VariantFlags(v *HLSVariant) string {
 	return ""
 }
 
+func (c *NvencCodec) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"llhp", // low latency high performance
+		"llhp", // low latency high performance
+		"ll",   // low latency default
+		"llhq", // low latency high quality
+		"llhq", // low latency high quality
+	}
+
+	if l >= len(presetMapping) {
+		return "llhp"
+	}
+
+	return presetMapping[l]
+}
+
 type QuicksyncCodec struct {
 }
 
@@ -169,6 +233,22 @@ func (c *QuicksyncCodec) ExtraFilters() string {
 
 func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
 	return ""
+}
+
+func (c *QuicksyncCodec) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"ultrafast",
+		"superfast",
+		"veryfast",
+		"faster",
+		"fast",
+	}
+
+	if l >= len(presetMapping) {
+		return "superfast"
+	}
+
+	return presetMapping[l]
 }
 
 type Video4Linux struct{}
@@ -197,6 +277,22 @@ func (c *Video4Linux) VariantFlags(v *HLSVariant) string {
 	return ""
 }
 
+func (c *Video4Linux) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"ultrafast",
+		"superfast",
+		"veryfast",
+		"faster",
+		"fast",
+	}
+
+	if l >= len(presetMapping) {
+		return "superfast"
+	}
+
+	return presetMapping[l]
+}
+
 // Codec represents a supported codec on the system.
 type Codec interface {
 	Name() string
@@ -205,6 +301,7 @@ type Codec interface {
 	ExtraArguments() string
 	ExtraFilters() string
 	VariantFlags(v *HLSVariant) string
+	GetPresetForLevel(l int) string
 }
 
 // GetCodecs will return the supported codecs available on the system.

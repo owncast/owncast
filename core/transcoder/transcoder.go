@@ -50,7 +50,7 @@ type HLSVariant struct {
 	audioBitrate       string // The audio bitrate
 	isAudioPassthrough bool   // Override all settings and just copy the audio stream
 
-	encoderPreset string // A collection of automatic settings for the encoder. https://trac.ffmpeg.org/wiki/Encode/H.264#crf
+	cpuUsageLevel int // The amount of hardware to use for encoding a stream
 }
 
 // VideoSize is the scaled size of the video output.
@@ -207,7 +207,7 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 	// Set a default, reasonable preset if one is not provided.
 	// "superfast" and "ultrafast" are generally not recommended since they look bad.
 	// https://trac.ffmpeg.org/wiki/Encode/H.264
-	variant.encoderPreset = quality.GetEncoderPreset()
+	variant.cpuUsageLevel = quality.CPUUsageLevel
 
 	variant.SetVideoBitrate(quality.VideoBitrate)
 	variant.SetAudioBitrate(strconv.Itoa(quality.AudioBitrate) + "k")
@@ -276,8 +276,9 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 		variantEncoderCommands = append(variantEncoderCommands, filterString)
 	}
 
-	if v.encoderPreset != "" {
-		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-preset %s", v.encoderPreset))
+	preset := t.codec.GetPresetForLevel(v.cpuUsageLevel)
+	if preset != "" {
+		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-preset %s", preset))
 	}
 
 	return strings.Join(variantEncoderCommands, " ")
@@ -362,8 +363,8 @@ func (v *HLSVariant) SetVideoFramerate(framerate int) {
 }
 
 // SetEncoderPreset will set the video encoder preset of this variant.
-func (v *HLSVariant) SetEncoderPreset(preset string) {
-	v.encoderPreset = preset
+func (v *HLSVariant) SetCPUUsageLevel(level int) {
+	v.cpuUsageLevel = level
 }
 
 // Audio Quality

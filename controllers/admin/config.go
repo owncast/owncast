@@ -438,26 +438,6 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Temporary: Convert the cpuUsageLevel to a preset.  In the future we will have
-	// different codec models that will handle this for us and we won't
-	// be keeping track of presets at all.  But for now...
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
-	}
-
-	for i, variant := range videoVariants.Value {
-		preset := "superfast"
-		if variant.CPUUsageLevel > 0 && variant.CPUUsageLevel <= len(presetMapping) {
-			preset = presetMapping[variant.CPUUsageLevel-1]
-		}
-		variant.EncoderPreset = preset
-		videoVariants.Value[i] = variant
-	}
-
 	if err := data.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
