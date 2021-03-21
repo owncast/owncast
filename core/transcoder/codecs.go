@@ -141,8 +141,7 @@ func (c *VaapiCodec) ExtraArguments() string {
 }
 
 func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
-	tuning := "ll" // low latency
-	return fmt.Sprintf("-tuning_info:v:%d %s", v.index, tuning)
+	return ""
 }
 
 func (c *VaapiCodec) GetPresetForLevel(l int) string {
@@ -189,20 +188,21 @@ func (c *NvencCodec) ExtraFilters() string {
 }
 
 func (c *NvencCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+	tuning := "ll" // low latency
+	return fmt.Sprintf("-tune:v:%d %s", v.index, tuning)
 }
 
 func (c *NvencCodec) GetPresetForLevel(l int) string {
 	presetMapping := []string{
-		"llhp", // low latency high performance
-		"llhp", // low latency high performance
-		"ll",   // low latency default
-		"llhq", // low latency high quality
-		"llhq", // low latency high quality
+		"p1",
+		"p2",
+		"p3",
+		"p4",
+		"p5",
 	}
 
 	if l >= len(presetMapping) {
-		return "llhp"
+		return "p3"
 	}
 
 	return presetMapping[l]
