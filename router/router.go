@@ -155,7 +155,7 @@ func Start() error {
 	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetConnectedClients))
 
 	// Logo path
-	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogoPath))
+	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
 
 	// Server tags
 	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.SetTags))
