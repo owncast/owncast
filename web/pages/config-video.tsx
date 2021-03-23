@@ -1,8 +1,9 @@
 import React from 'react';
-import { Typography, Row, Col } from 'antd';
+import { Typography, Row, Col, Select } from 'antd';
 
 import VideoVariantsTable from '../components/config/video-variants-table';
 import VideoLatency from '../components/config/video-latency';
+import VideoCodecSelector from '../components/config/video-codec-selector';
 
 const { Title } = Typography;
 
@@ -29,6 +30,9 @@ export default function ConfigVideoSettings() {
           <div className="form-module variants-table-module">
             <VideoVariantsTable />
           </div>
+          <div className="form-module variants-table-module">
+            <VideoCodecSelector />
+          </div>
         </Col>
         <Col md={24} lg={12}>
           <div className="form-module latency-module">
@@ -39,3 +43,4 @@ export default function ConfigVideoSettings() {
     </div>
   );
 }
+

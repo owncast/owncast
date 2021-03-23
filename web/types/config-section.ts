@@ -99,4 +99,6 @@ export interface ConfigDetails {
   videoSettings: VideoSettingsFields;
   webServerPort: string;
   yp: ConfigDirectoryFields;
+  supportedCodecs: string[];
+  videoCodec: string;
 }

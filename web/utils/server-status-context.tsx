@@ -46,6 +46,8 @@ export const initialServerConfigState: ConfigDetails = {
     videoQualityVariants: [DEFAULT_VARIANT_STATE],
   },
   externalActions: [],
+  supportedCodecs: [],
+  videoCodec: '',
 };
 
 const initialServerStatusState = {
