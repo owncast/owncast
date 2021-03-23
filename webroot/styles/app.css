@@ -17,6 +17,14 @@ html {
   scrollbar-width: none;
 }
 
+#loading-logo {
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
+  opacity: 0.2;
+}
+
 a:hover {
   text-decoration: underline;
 }
