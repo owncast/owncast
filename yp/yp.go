@@ -64,6 +64,12 @@ func (yp *YP) ping() {
 		return
 	}
 
+	// Hack: Don't allow ping'ing when offline.
+	// It shouldn't even be trying to, but on some instances the ping timer isn't stopping.
+	if !getStatus().Online {
+		return
+	}
+
 	myInstanceURL := data.GetServerURL()
 	if myInstanceURL == "" {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
