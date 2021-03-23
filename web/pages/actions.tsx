@@ -73,8 +73,13 @@ function NewActionModal(props: Props) {
       okButtonProps={okButtonProps}
     >
       <div>
-        Add the URL for the external action you want to present.  <strong>Only HTTPS urls are supported.</strong>
-        <p><a href="https://owncast.online/docs">Read more about external actions.</a></p>
+        Add the URL for the external action you want to present.{' '}
+        <strong>Only HTTPS urls are supported.</strong>
+        <p>
+          <a href="https://owncast.online/docs" target="_blank" rel="noopener noreferrer">
+            Read more about external actions.
+          </a>
+        </p>
         <p>
           <Input
             value={actionUrl}
@@ -91,7 +96,6 @@ function NewActionModal(props: Props) {
             onChange={input => setActionTitle(input.currentTarget.value)}
           />
         </p>
-
         <p>
           <Input
             value={actionDescription}
@@ -99,7 +103,6 @@ function NewActionModal(props: Props) {
             onChange={input => setActionDescription(input.currentTarget.value)}
           />
         </p>
-
         <p>
           <Input
             value={actionIcon}
@@ -107,7 +110,6 @@ function NewActionModal(props: Props) {
             onChange={input => setActionIcon(input.currentTarget.value)}
           />
         </p>
-
         <p>
           <Input
             type="color"
@@ -116,7 +118,6 @@ function NewActionModal(props: Props) {
           />
           Optional background color of the action button.
         </p>
-
         <Checkbox
           checked={openExternally}
           defaultChecked={openExternally}
@@ -279,7 +280,8 @@ export default function Actions() {
       <Paragraph>Description goes here.</Paragraph>
       <Paragraph>
         Read more about how to use actions, with examples, at{' '}
-        <a href="https://owncast.online/thirdparty/?source=admin">our documentation</a>.
+        <a href="https://owncast.online/thirdparty/?source=admin" target="_blank"
+          rel="noopener noreferrer">our documentation</a>.
       </Paragraph>
 
       <Table rowKey="id" columns={columns} dataSource={actions} pagination={false} />
