@@ -124,13 +124,12 @@ export default function EditInstanceDetails() {
           Learn more
         </a>
         .
-        {!yp.instanceUrl && (
-          <div>
-            <br />
-            You must set your server URL above to enable the directory.
-          </div>
-        )}
       </p>
+      {!yp.instanceUrl && (
+        <p className="description">
+          You must set your <strong>Server URL</strong> above to enable the directory.
+        </p>
+      )}
 
       <div className="config-yp-container">
         <ToggleSwitch

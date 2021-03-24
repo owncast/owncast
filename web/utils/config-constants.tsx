@@ -46,6 +46,7 @@ export async function postConfigUpdateToAPI(args: ApiPostArgs) {
 // Some default props to help build out a TextField
 export const TEXTFIELD_PROPS_SERVER_NAME = {
   apiPath: API_SERVER_NAME,
+  configPath: 'instanceDetails',
   maxLength: TEXT_MAXLENGTH,
   placeholder: 'Owncast site name', // like "gothland"
   label: 'Name',
@@ -53,6 +54,7 @@ export const TEXTFIELD_PROPS_SERVER_NAME = {
 };
 export const TEXTFIELD_PROPS_STREAM_TITLE = {
   apiPath: API_STREAM_TITLE,
+  configPath: 'instanceDetails',
   maxLength: 100,
   placeholder: 'Doing cool things...',
   label: 'Stream Title',
@@ -60,6 +62,7 @@ export const TEXTFIELD_PROPS_STREAM_TITLE = {
 };
 export const TEXTFIELD_PROPS_SERVER_SUMMARY = {
   apiPath: API_SERVER_SUMMARY,
+  configPath: 'instanceDetails',
   maxLength: 500,
   placeholder: '',
   label: 'About',
@@ -67,6 +70,7 @@ export const TEXTFIELD_PROPS_SERVER_SUMMARY = {
 };
 export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
   apiPath: API_SERVER_WELCOME_MESSAGE,
+  configPath: 'instanceDetails',
   maxLength: 500,
   placeholder: '',
   label: 'Welcome Message',
@@ -75,6 +79,7 @@ export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
 };
 export const TEXTFIELD_PROPS_LOGO = {
   apiPath: API_LOGO,
+  configPath: 'instanceDetails',
   maxLength: 255,
   placeholder: '/img/mylogo.png',
   label: 'Logo',
