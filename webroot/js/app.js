@@ -643,7 +643,7 @@ export default class App extends Component {
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
           <span class="mx-1 inline-block">
-            <a href="${URL_OWNCAST}" target="_blank">About Owncast</a>
+            <a href="${URL_OWNCAST}" rel="noopener noreferrer" target="_blank">About Owncast</a>
           </span>
           <span class="mx-1 inline-block">Version ${appVersion}</span>
         </footer>
