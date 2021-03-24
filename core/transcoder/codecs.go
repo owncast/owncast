@@ -262,7 +262,7 @@ func (c *Video4Linux) GlobalFlags() string {
 }
 
 func (c *Video4Linux) PixelFormat() string {
-	return "yuv420p"
+	return "nv21"
 }
 
 func (c *Video4Linux) ExtraArguments() string {

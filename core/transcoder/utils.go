@@ -16,6 +16,7 @@ var errorMap = map[string]string{
 	"Cannot use rename on non file protocol, this may lead to races and temporary partial files": "",
 	"No VA display found for device": "vaapi not enabled. either your copy of ffmpeg does not support it, your hardware does not support it, or you need to install additional drivers for your hardware.",
 	"Unrecognized option":            "error with codec. if your copy of ffmpeg or your hardware does not support your selected codec you may need to select another",
+	"Could not find a valid device":  "your codec is either not supported or not configured properly",
 }
 
 var ignoredErrors = []string{

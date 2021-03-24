@@ -349,7 +349,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),   // The average bitrate for this variant
 		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate), // The max bitrate allowed for this variant
 		fmt.Sprintf("-g:v:%d %d", v.index, gop),               // How often i-frames are encoded into the segments
-		fmt.Sprintf("-profile:v:%d %s", v.index, "high"),      // Encoding profile
+		// fmt.Sprintf("-profile:v:%d %s", v.index, "high"),      // Encoding profile
 		fmt.Sprintf("-r:v:%d %d", v.index, v.framerate),
 		t.codec.VariantFlags(v),
 	}
