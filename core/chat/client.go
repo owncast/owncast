@@ -123,7 +123,6 @@ func (c *Client) listenWrite() {
 }
 
 func (c *Client) handleClientSocketError(err error) {
-	log.Warnln("Websocket client error: ", err.Error())
 	_server.removeClient(c)
 }
 
@@ -158,13 +157,22 @@ func (c *Client) listenRead() {
 				c.handleClientSocketError(err)
 			}
 
-			var messageTypeCheck map[string]interface{}
-			err = json.Unmarshal(data, &messageTypeCheck)
-			if err != nil {
-				log.Errorln(err)
+			if !c.passesRateLimit() {
+				continue
 			}
 
-			if !c.passesRateLimit() {
+			var messageTypeCheck map[string]interface{}
+			err = json.Unmarshal(data, &messageTypeCheck)
+
+			// Bad messages should be thrown away
+			if err != nil {
+				log.Debugln("Badly formatted message received from", c.Username, c.ws.Request().RemoteAddr)
+				continue
+			}
+
+			// If we can't tell the type of message, also throw it away.
+			if messageTypeCheck == nil {
+				log.Debugln("Untyped message received from", c.Username, c.ws.Request().RemoteAddr)
 				continue
 			}
 
