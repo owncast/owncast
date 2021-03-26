@@ -16,6 +16,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
+import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
 const ACCEPTED_FILE_TYPES = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/gif'];
 
@@ -88,6 +89,8 @@ export default function EditLogo() {
     }
   };
 
+  const logoDisplayUrl = NEXT_PUBLIC_API_HOST + 'logo';
+
   return (
     <div className="formfield-container logo-upload-container">
       <div className="label-side">
@@ -96,7 +99,7 @@ export default function EditLogo() {
 
       <div className="input-side">
         <div className="input-group">
-          <img src={logoUrl || currentLogo || '/logo'} alt="avatar" className="logo-preview" />
+          <img src={logoDisplayUrl} alt="avatar" className="logo-preview" />
           <Upload
             name="logo"
             listType="picture"

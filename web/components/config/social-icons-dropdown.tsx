@@ -39,10 +39,12 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
           >
             {iconList.map(item => {
               const { platform, icon, key } = item;
+              const iconUrl = NEXT_PUBLIC_API_HOST + `${icon.slice(1)}`;
+
               return (
                 <Select.Option className="social-option" key={`platform-${key}`} value={key}>
                   <span className="option-icon">
-                    <img src={`${icon}`} alt="" className="option-icon" />
+                    <img src={iconUrl} alt="" className="option-icon" />
                   </span>
                   <span className="option-label">{platform}</span>
                 </Select.Option>

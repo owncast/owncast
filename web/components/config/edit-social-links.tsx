@@ -17,6 +17,7 @@ import isValidUrl from '../../utils/urls';
 import TextField from './form-textfield';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
+import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
 const { Title } = Typography;
 
@@ -176,10 +177,12 @@ export default function EditSocialLinks() {
           return platform;
         }
         const { icon, platform: platformName } = platformInfo;
+        const iconUrl = NEXT_PUBLIC_API_HOST + `${icon.slice(1)}`;
+
         return (
           <div className="social-handle-cell">
             <span className="option-icon">
-              <img src={`${icon}`} alt="" className="option-icon" />
+              <img src={ iconUrl } alt="" className="option-icon" />
             </span>
             <p className="option-label">
               <strong>{platformName}</strong>
