@@ -20,6 +20,7 @@
       display: inline-block;
       margin-left: 1em;
       line-height: normal;
+      word-break: break-word;
     }
   }
 }
@@ -44,6 +45,7 @@
         margin: 0 0 0 1em;
         line-height: 2;
         font-size: 0.85em;
+        word-break: break-word;
       }
     }
     .actions {

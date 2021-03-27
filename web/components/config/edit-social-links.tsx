@@ -186,7 +186,7 @@ export default function EditSocialLinks() {
             </span>
             <p className="option-label">
               <strong>{platformName}</strong>
-              <span>{url}</span>
+              <span className="handle-url" title={url}>{url}</span>
             </p>
           </div>
         );
