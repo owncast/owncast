@@ -112,10 +112,11 @@ func main() {
 			return
 		}
 
-		config.WebServerPort = portNumber
-	} else {
-		config.WebServerPort = data.GetHTTPPortNumber()
+		log.Println("Saving new web server port number to", portNumber)
+		data.SetHTTPPortNumber(float64(portNumber))
 	}
+
+	config.WebServerPort = data.GetHTTPPortNumber()
 
 	// starts the core
 	if err := core.Start(); err != nil {
