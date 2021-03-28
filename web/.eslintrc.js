@@ -31,6 +31,7 @@ module.exports = {
     'no-use-before-define': [0],
     '@typescript-eslint/no-use-before-define': [1],
 
+    "react/jsx-no-target-blank": [1, { "allowReferrer": false, "enforceDynamicLinks": 'always' }],
     'import/extensions': [
       'error',
       'ignorePackages',
