@@ -73,7 +73,9 @@
 
   <body class="scrollbar-hidden bg-gray-300 text-gray-800">
     <div id="app">
-      <img id="loading-logo" src="/logo">
+      <div id="loading-logo-container">
+        <img id="loading-logo" src="/logo">
+      </div>
     </div>
 
     <script type="module">
@@ -82,7 +84,7 @@
       const html = htm.bind(h);
 
       import App from './js/app.js';
-      render(html`<${App} />`, document.getElementById("app"));
+      render(html`<${App} />`, document.getElementById("app"), document.getElementById("loading-logo-container"));
     </script>
 
     <noscript>
