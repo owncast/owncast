@@ -14,29 +14,9 @@ jobs:
       with:
         # Make sure the actual branch is checked out when running on pull requests
         ref: ${{ github.head_ref }}
-        
-  linter:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.head_ref }}
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 9.8.0
-      - name: Install
-        run: npm install
-      - name: Run ESLint on changed files
-        uses: tj-actions/eslint-changed-files@v4
-        with:
-          config-path: '.eslintrc.js'
-          ignore-path: '.eslintignore'
-          extensions: 'ts,tsx,js,jsx'
-
         fetch-depth: 0
-
-    - name: Prettify code
+        
+    - name: Prettier
       uses: creyD/prettier_action@v3.1
       with:
         # This part is also where you can pass other options, for example:
@@ -45,3 +25,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
+    - name: Linter
+      uses: tj-actions/eslint-changed-files@v4
+      with:
+        config-path: '.eslintrc.js'
+        ignore-path: '.eslintignore'
+        extensions: 'ts,tsx,js,jsx'
