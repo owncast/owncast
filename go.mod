@@ -10,7 +10,7 @@ require (
 	github.com/grafov/m3u8 v0.11.1
 	github.com/markbates/pkger v0.17.1
 	github.com/mattn/go-sqlite3 v1.14.6
-	github.com/microcosm-cc/bluemonday v1.0.4
+	github.com/microcosm-cc/bluemonday v1.0.5
 	github.com/mssola/user_agent v0.5.2
 	github.com/mvdan/xurls v1.1.0 // indirect
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
