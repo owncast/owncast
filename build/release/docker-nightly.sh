@@ -1,7 +1,8 @@
 # Docker build
 # Must authenticate first: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages
 DOCKER_IMAGE="owncast"
-VERSION="nightly"
+DATE=$(date +"%Y%m%d")
+VERSION="${DATE}-nightly"
 GIT_COMMIT=$(git rev-list -1 HEAD)
 
 echo "Building Docker image ${DOCKER_IMAGE}..."
