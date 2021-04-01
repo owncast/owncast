@@ -285,6 +285,6 @@ header {
   }
 }
 
-iframe{
-  background:url(/img/loading.gif) center center no-repeat; height: 100%;
+#external-modal-iframe {
+  height: 70vh;
 }

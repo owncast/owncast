@@ -1,8 +1,15 @@
 import { h } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
+
 const html = htm.bind(h);
 
 export default function ExternalActionModal({ url, title, onClose }) {
+  const loading = 'background:url(/img/loading.gif) center center no-repeat;'
+
+  function loaded() {
+    document.querySelector("#external-modal-iframe").style = '';
+  }
+
   return html`
     <div class="fixed inset-0 overflow-y-auto" style="z-index: 9999">
       <div
@@ -47,14 +54,15 @@ export default function ExternalActionModal({ url, title, onClose }) {
               </span>
             </div>
 
-            <!-- TODO: Show a loading spinner while the iframe loads -->
             <iframe
-              style="height: 70vh"
+              id="external-modal-iframe"
+              style=${`${loading}`}
               width="100%"
               allowpaymentrequest="true"
               allowfullscreen="false"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
               src=${url}
+              onload=${loaded}
             />
           </div>
         </div>
