@@ -616,10 +616,10 @@ export default class App extends Component {
             <div
               class="user-content-header border-b border-gray-500 border-solid"
             >
-              ${externalActionButtons}
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
+              <div>${externalActionButtons}</div>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
