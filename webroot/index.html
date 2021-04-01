@@ -72,7 +72,11 @@
   </head>
 
   <body class="scrollbar-hidden bg-gray-300 text-gray-800">
-    <div id="app"></div>
+    <div id="app">
+      <div id="loading-logo-container">
+        <img id="loading-logo" src="/logo">
+      </div>
+    </div>
 
     <script type="module">
       import { h, render } from '/js/web_modules/preact.js';
@@ -80,7 +84,7 @@
       const html = htm.bind(h);
 
       import App from './js/app.js';
-      render(html`<${App} />`, document.getElementById("app"));
+      render(html`<${App} />`, document.getElementById("app"), document.getElementById("loading-logo-container"));
     </script>
 
     <noscript>
@@ -101,7 +105,7 @@
         }
       </style>
       <div class="noscript">
-        <img src="https://owncast.online/images/logo.png" />
+        <img src="/logo" />
         <br/>
         <p>
           This <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a> stream requires Javascript to play.

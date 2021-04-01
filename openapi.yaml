@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development master branch.
-  version: '0.0.6'
+  version: '0.0.7-dev'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com

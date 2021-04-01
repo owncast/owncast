@@ -28,6 +28,7 @@ func PopulateDefaults() {
 	_ = SetLogoPath(defaults.Logo)
 	_ = SetServerMetadataTags([]string{"owncast", "streaming"})
 	_ = SetServerSummary("Welcome to your new Owncast server!  This description can be changed in the admin")
+	_ = SetServerWelcomeMessage("")
 	_ = SetServerName("Owncast")
 	_ = SetStreamKey(defaults.StreamKey)
 	_ = SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")

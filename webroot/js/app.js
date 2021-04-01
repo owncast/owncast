@@ -13,6 +13,9 @@ import {
   hasTouchScreen,
   getOrientation,
 } from './utils/helpers.js';
+import ExternalActionModal, {
+  ExternalActionButton,
+} from './components/external-action-modal.js';
 
 import {
   addNewlines,
@@ -73,6 +76,8 @@ export default class App extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       orientation: getOrientation(this.hasTouchScreen),
+
+      externalAction: null,
     };
 
     // timers
@@ -96,7 +101,10 @@ export default class App extends Component {
     this.disableChatInput = this.disableChatInput.bind(this);
     this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
+    this.displayExternalAction = this.displayExternalAction.bind(this);
+    this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -119,6 +127,7 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.addEventListener('orientationchange', this.handleWindowResize);
     }
+    window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keypress', this.handleKeyPressed);
     this.player = new OwncastPlayer();
     this.player.setupPlayerCallbacks({
@@ -140,6 +149,7 @@ export default class App extends Component {
     window.removeEventListener('resize', this.handleWindowResize);
     window.removeEventListener('blur', this.handleWindowBlur);
     window.removeEventListener('focus', this.handleWindowFocus);
+    window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keypress', this.handleKeyPressed);
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
@@ -410,6 +420,12 @@ export default class App extends Component {
     this.player.vjsPlayer.volume(this.player.vjsPlayer.volume() + factor);
   }
 
+  handleKeyDown(e) {
+    if (e.code === 'Escape' && this.state.externalAction !== null) {
+      this.closeExternalActionModal();
+    }
+  }
+  
   handleKeyPressed(e) {
     if (
       e.target !== document.getElementById('message-input') &&
@@ -440,6 +456,35 @@ export default class App extends Component {
     }
   }
 
+  displayExternalAction(index) {
+    const { configData, username } = this.state;
+    const action = configData.externalActions[index];
+    if (!action) {
+      return;
+    }
+    const { url: actionUrl, openExternally } = action || {};
+    let url = new URL(actionUrl);
+    // Append url and username to params so the link knows where we came from and who we are.
+    url.searchParams.append('username', username);
+    url.searchParams.append('instance', window.location);
+
+    if (openExternally) {
+      var win = window.open(url.toString(), '_blank');
+      win.focus();
+      return;
+    }
+
+    this.setState({
+      externalAction: action,
+    });
+  }
+
+  closeExternalActionModal() {
+    this.setState({
+      externalAction: null,
+    });
+  }
+
   render(props, state) {
     const {
       chatInputEnabled,
@@ -457,6 +502,7 @@ export default class App extends Component {
       websocket,
       windowHeight,
       windowWidth,
+      externalAction,
     } = state;
 
     const {
@@ -468,23 +514,12 @@ export default class App extends Component {
       name,
       extraPageContent,
       chatDisabled,
+      externalActions,
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
-    const tagList =
-      tags !== null && tags.length > 0
-        ? tags.map(
-            (tag, index) => html`
-              <li
-                key="tag${index}"
-                class="tag rounded-sm text-gray-100 bg-gray-700 text-xs uppercase mr-3 mb-2 p-2 whitespace-no-wrap"
-              >
-                ${tag}
-              </li>
-            `
-          )
-        : null;
+    const tagList = tags !== null && tags.length > 0 && tags.join(' #');
 
     const viewerCountMessage =
       streamOnline && viewerCount > 0
@@ -513,6 +548,32 @@ export default class App extends Component {
     const poster = isPlaying
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
+
+    const externalActionButtons =
+      externalActions &&
+      html`<div
+        id="external-actions-container"
+        class="flex flex-row align-center"
+      >
+        ${externalActions.map(
+          function (action, index) {
+            return html`<${ExternalActionButton}
+              onClick=${this.displayExternalAction}
+              action=${action}
+              index=${index}
+            />`;
+          }.bind(this)
+        )}
+      </div>`;
+
+    const externalActionModal = externalAction
+      ? html`<${ExternalActionModal}
+          title=${this.state.externalAction.description ||
+          this.state.externalAction.title}
+          url=${this.state.externalAction.url}
+          onClose=${this.closeExternalActionModal}
+        />`
+      : null;
 
     return html`
       <div
@@ -602,6 +663,7 @@ export default class App extends Component {
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
+              <div>${externalActionButtons}</div>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
@@ -611,9 +673,9 @@ export default class App extends Component {
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
-              <ul id="tag-list" class="tag-list flex flex-row flex-wrap my-4">
-                ${tagList}
-              </ul>
+              <div id="tag-list" class="tag-list text-gray-600 mb-3">
+                ${tagList && `#${tagList}`}
+              </div>
             </div>
           </div>
           <div
@@ -625,7 +687,9 @@ export default class App extends Component {
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
           <span class="mx-1 inline-block">
-            <a href="${URL_OWNCAST}" target="_blank">About Owncast</a>
+            <a href="${URL_OWNCAST}" rel="noopener noreferrer" target="_blank"
+              >About Owncast</a
+            >
           </span>
           <span class="mx-1 inline-block">Version ${appVersion}</span>
         </footer>
@@ -636,6 +700,7 @@ export default class App extends Component {
           chatInputEnabled=${chatInputEnabled && !chatDisabled}
           instanceTitle=${name}
         />
+        ${externalActionModal}
       </div>
     `;
   }

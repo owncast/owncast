@@ -51,8 +51,9 @@ func main() {
 	} else {
 		config.GitCommit = time.Now().Format("20060102")
 	}
-	config.BuildPlatform = BuildPlatform
-
+	if BuildPlatform != "" {
+		config.BuildPlatform = BuildPlatform
+	}
 	log.Infoln(config.GetReleaseString())
 
 	// Allows a user to restore a specific database backup
@@ -111,10 +112,11 @@ func main() {
 			return
 		}
 
-		config.WebServerPort = portNumber
-	} else {
-		config.WebServerPort = data.GetHTTPPortNumber()
+		log.Println("Saving new web server port number to", portNumber)
+		data.SetHTTPPortNumber(float64(portNumber))
 	}
+
+	config.WebServerPort = data.GetHTTPPortNumber()
 
 	// starts the core
 	if err := core.Start(); err != nil {

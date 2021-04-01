@@ -16,6 +16,7 @@ const streamTitleKey = "stream_title"
 const streamKeyKey = "stream_key"
 const logoPathKey = "logo_path"
 const serverSummaryKey = "server_summary"
+const serverWelcomeMessageKey = "server_welcome_message"
 const serverNameKey = "server_name"
 const serverURLKey = "server_url"
 const httpPortNumberKey = "http_port_number"
@@ -34,6 +35,7 @@ const s3StorageConfigKey = "s3_storage_config"
 const videoLatencyLevel = "video_latency_level"
 const videoStreamOutputVariantsKey = "video_stream_output_variants"
 const chatDisabledKey = "chat_disabled"
+const externalActionsKey = "external_actions"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -116,6 +118,22 @@ func GetServerSummary() string {
 // SetServerSummary will set the server summary text.
 func SetServerSummary(summary string) error {
 	return _datastore.SetString(serverSummaryKey, summary)
+}
+
+// GetServerWelcomeMessage will return the server welcome message text.
+func GetServerWelcomeMessage() string {
+	welcomeMessage, err := _datastore.GetString(serverWelcomeMessageKey)
+	if err != nil {
+		log.Debugln(serverWelcomeMessageKey, err)
+		return config.GetDefaults().ServerWelcomeMessage
+	}
+
+	return welcomeMessage
+}
+
+// SetServerWelcomeMessage will set the server welcome message text.
+func SetServerWelcomeMessage(welcomeMessage string) error {
+	return _datastore.SetString(serverWelcomeMessageKey, welcomeMessage)
 }
 
 // GetServerName will return the server name text.
@@ -422,6 +440,27 @@ func GetChatDisabled() bool {
 	}
 
 	return false
+}
+
+// GetExternalActions will return the registered external actions.
+func GetExternalActions() []models.ExternalAction {
+	configEntry, err := _datastore.Get(externalActionsKey)
+	if err != nil {
+		return []models.ExternalAction{}
+	}
+
+	var externalActions []models.ExternalAction
+	if err := configEntry.getObject(&externalActions); err != nil {
+		return []models.ExternalAction{}
+	}
+
+	return externalActions
+}
+
+// SetExternalActions will save external actions.
+func SetExternalActions(actions []models.ExternalAction) error {
+	var configEntry = ConfigEntry{Key: externalActionsKey, Value: actions}
+	return _datastore.Save(configEntry)
 }
 
 // VerifySettings will perform a sanity check for specific settings values.

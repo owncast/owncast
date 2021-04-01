@@ -22,6 +22,10 @@ video.video-js {
   z-index: 100;
 }
 
+.vjs-loading-spinner {
+  z-index: 200;
+}
+
 /*
 videojs hack!!
 for some reason, there are cases where a <video class="vjs-tech"> element gets embedded twice.

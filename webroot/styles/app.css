@@ -17,6 +17,14 @@ html {
   scrollbar-width: none;
 }
 
+#loading-logo {
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
+  opacity: 0.2;
+}
+
 a:hover {
   text-decoration: underline;
 }
@@ -81,6 +89,37 @@ header {
 .online #stream-viewer-count {
   display: inline;
 }
+
+#external-actions-container {
+  margin: 1em 0;
+
+}
+.external-action-button {
+  border-radius: 4px;
+  color: #fff;
+  font-size: .88em;
+  padding: .25em .75em;
+  margin: .35em;
+  margin-left: 0;
+  display: flex;
+  max-width: 250px;
+  padding-top: .3em;
+}
+.external-action-button:hover {
+  text-decoration: underline;
+}
+.external-action-icon {
+  margin: .25em .5em .25em 0;
+}
+.external-action-icon img {
+  height: 1.5em;
+  width: 1.5em;
+}
+.external-action-label {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 
 
 /* ************************************************ */
@@ -244,4 +283,8 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+#external-modal-iframe {
+  height: 70vh;
 }

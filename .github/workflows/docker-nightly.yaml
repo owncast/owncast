@@ -1,0 +1,17 @@
+name: Build nightly docker
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  Docker:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - uses: actions/checkout@v2
+      - name: Setup and run
+        run: cd build/release && ./docker-nightly.sh
