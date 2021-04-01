@@ -41,6 +41,12 @@ function NewActionModal(props: Props) {
 
   function save() {
     onOk(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
+    setActionUrl('')
+    setActionTitle('')
+    setActionDescription('')
+    setActionIcon('')
+    setActionColor('')
+    setOpenExternally(false)
   }
 
   function canSave(): Boolean {
