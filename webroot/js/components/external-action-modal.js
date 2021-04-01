@@ -4,10 +4,10 @@ import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
 export default function ExternalActionModal({ url, title, onClose }) {
-  const loading = 'background:url(/img/loading.gif) center center no-repeat;'
+  const loading = 'background:url(/img/loading.gif) center center no-repeat;';
 
   function loaded() {
-    document.querySelector("#external-modal-iframe").style = '';
+    document.querySelector('#external-modal-iframe').style = '';
   }
 
   return html`
