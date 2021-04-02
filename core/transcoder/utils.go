@@ -26,6 +26,8 @@ var ignoredErrors = []string{
 	"Last message repeated",
 	"Option not found",
 	"use of closed network connection",
+	"URL read error: End of file",
+	"upload playlist failed, will retry with a new http session",
 }
 
 func handleTranscoderMessage(message string) {

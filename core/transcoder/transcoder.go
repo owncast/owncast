@@ -174,7 +174,7 @@ func (t *Transcoder) getString() string {
 		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "%s.ts", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 
-		"-method PUT -http_persistent 0",         // HLS results sent back to us will be over PUTs
+		"-method PUT -http_persistent 1",         // HLS results sent back to us will be over PUTs
 		"-fflags +genpts",                        // Generate presentation time stamp if missing
 		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
 		// "2> transcoder.log",                      // Log to a file for debugging
