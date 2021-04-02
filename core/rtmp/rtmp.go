@@ -89,7 +89,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	log.Infoln("Inbound stream connected.")
 	_setStreamAsConnected()
 
-	pipePath := utils.GetTemporaryPipePath()
+	pipePath := utils.GetTemporaryPipePath(fmt.Sprint(data.GetRTMPPortNumber()))
 	if !utils.DoesFileExists(pipePath) {
 		err := syscall.Mkfifo(pipePath, 0666)
 		if err != nil {

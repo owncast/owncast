@@ -216,7 +216,7 @@ func NewTranscoder() *Transcoder {
 	// Playlists are available via the local HTTP server
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
-	transcoder.input = utils.GetTemporaryPipePath()
+	transcoder.input = utils.GetTemporaryPipePath(fmt.Sprint(data.GetRTMPPortNumber()))
 
 	for index, quality := range transcoder.currentStreamOutputSettings {
 		variant := getVariantFromConfigQuality(quality, index)
