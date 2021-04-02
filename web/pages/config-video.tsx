@@ -1,9 +1,10 @@
 import React from 'react';
-import { Typography, Row, Col, Select } from 'antd';
+import { Typography, Row, Col, Collapse } from 'antd';
 
 import VideoVariantsTable from '../components/config/video-variants-table';
 import VideoLatency from '../components/config/video-latency';
 import VideoCodecSelector from '../components/config/video-codec-selector';
+const { Panel } = Collapse;
 
 const { Title } = Typography;
 
@@ -30,17 +31,21 @@ export default function ConfigVideoSettings() {
           <div className="form-module variants-table-module">
             <VideoVariantsTable />
           </div>
-          <div className="form-module variants-table-module">
-            <VideoCodecSelector />
-          </div>
         </Col>
         <Col md={24} lg={12}>
           <div className="form-module latency-module">
             <VideoLatency />
           </div>
+
+          <Collapse className="advanced-settings">
+            <Panel header="Advanced Settings" key="1">
+              <div className="form-module variants-table-module">
+                <VideoCodecSelector />
+              </div>
+            </Panel>
+          </Collapse>
         </Col>
       </Row>
     </div>
   );
 }
-

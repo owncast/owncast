@@ -134,9 +134,8 @@ export default function VideoVariantForm({
           onChange={handleNameChanged}
         />
         <Col sm={24} md={12}>
-          {/* ENCODER PRESET (CPU USAGE) FIELD */}
           <div className="form-module cpu-usage-container">
-            <Typography.Title level={3}>CPU Usage</Typography.Title>
+            <Typography.Title level={3}>CPU or GPU Utilization</Typography.Title>
             <p className="description">
               Reduce to improve server performance, or increase it to improve video quality.
             </p>
@@ -154,12 +153,13 @@ export default function VideoVariantForm({
               <p className="selected-value-note">{cpuUsageNote()}</p>
             </div>
             <p className="read-more-subtext">
+              This could mean GPU or CPU usage depending on your server environment. {' '}
               <a
                 href="https://owncast.online/docs/video/?source=admin#cpu-usage"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Read more about CPU usage.
+                Read more about hardware performance.
               </a>
             </p>
           </div>

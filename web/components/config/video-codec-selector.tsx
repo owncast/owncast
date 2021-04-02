@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Typography, Select } from 'antd';
+import { Typography, Select, Popconfirm } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
@@ -15,7 +15,6 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
-
 
 export default function CodecSelector() {
   const serverStatusData = useContext(ServerStatusContext);
@@ -76,7 +75,7 @@ export default function CodecSelector() {
     } else if (title === 'h264_nvenc') {
       title = 'NVIDIA GPU acceleration';
     } else if (title === 'h264_vaapi') {
-      title = 'VAAPI hardware encoding';
+      title = 'VA-API hardware encoding';
     } else if (title === 'h264_qsv') {
       title = 'Intel QuickSync';
     } else if (title === 'h264_v4l2m2m') {
@@ -88,19 +87,24 @@ export default function CodecSelector() {
         {title}
       </Option>
     );
-  })
+  });
 
   var description = '';
   if (selectedCodec === 'libx264') {
-    description = 'libx264 is default codec and generally the choice you will want to use unless you have access to more specialized options. It is also likely the only option for running on shared VPS environments.';
+    description =
+      'libx264 is the default codec and generally the only working choice for shared VPS enviornments. This is likely what you should be using unless you know you have set up other options.';
   } else if (selectedCodec === 'h264_nvenc') {
-    description = 'You can use your NVIDIA GPU for encoding if you have a modern NVIDIA card with encoding cores.';
+    description =
+      'You can use your NVIDIA GPU for encoding if you have a modern NVIDIA card with encoding cores.';
   } else if (selectedCodec === 'h264_vaapi') {
-    description = 'VAAPI may be supported by NVIDIA proprietary drivers, Mesa open-source drivers for AMD or Intel graphics cards.';
+    description =
+      'VA-API may be supported by your NVIDIA proprietary drivers, Mesa open-source drivers for AMD or Intel graphics.';
   } else if (selectedCodec === 'h264_qsv') {
-    description = "Quick Sync Video is Intel's brand for its dedicated video encoding and decoding hardware core. May be an option if you have a modern Intel CPU with integrated graphics.";
+    description =
+      "Quick Sync Video is Intel's brand for its dedicated video encoding and decoding hardware. It may be an option if you have a modern Intel CPU with integrated graphics.";
   } else if (selectedCodec === 'h264_v4l2m2m') {
-    description = "Video4Linux is an interface to multiple different hardware encoding platforms such as Intel and AMD."
+    description =
+      'Video4Linux is an interface to multiple different hardware encoding platforms such as Intel and AMD.';
   }
 
   return (
@@ -109,14 +113,30 @@ export default function CodecSelector() {
         Video Codec
       </Title>
       <p className="description">
-        Blurb about codecs go here.
+        If you have access to specific hardware with the drivers and software installed for them, you
+        may be able to improve your video encoding performance.
+        <p>
+        <a
+          href="https://owncast.online/docs/codecs?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Read the documentation about this setting before changing it or you may make your stream
+          unplayable.
+        </a>
+        </p>
       </p>
       <div className="segment-slider-container">
-        <Select defaultValue={selectedCodec} value={selectedCodec} style={{ width: '100%' }} onChange={handleChange} >
+        <Select
+          defaultValue={selectedCodec}
+          value={selectedCodec}
+          style={{ width: '100%' }}
+          onChange={handleChange}
+        >
           {items}
         </Select>
         <FormStatusIndicator status={submitStatus} />
-        <p className="selected-value-note">
+        <p id="selected-codec-note" className="selected-value-note">
           {description}
         </p>
       </div>
