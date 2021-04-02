@@ -249,7 +249,7 @@ export const VIDEO_NAME_DEFAULTS = {
   label: 'Name',
   maxLength: 12,
   placeholder: 'HD or Low',
-  tip: 'Human-readable name for for displaying in the quality selector.',
+  tip: 'Human-readable name for for displaying in the player.',
 };
 
 export const VIDEO_BITRATE_SLIDER_MARKS = {
@@ -268,11 +268,11 @@ export const ENCODER_PRESET_SLIDER_MARKS = {
   5: 'highest',
 };
 export const ENCODER_PRESET_TOOLTIPS = {
-  1: 'Lowest CPU usage - lowest quality video',
-  2: 'Low CPU usage - low quality video',
-  3: 'Medium CPU usage - average quality video',
-  4: 'High CPU usage - high quality video',
-  5: 'Highest CPU usage - higher quality video',
+  1: 'Lowest hardware usage - lowest quality video',
+  2: 'Low hardware usage - low quality video',
+  3: 'Medium hardware usage - average quality video',
+  4: 'High hardware usage - high quality video',
+  5: 'Highest hardware usage - higher quality video',
 };
 
 export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
