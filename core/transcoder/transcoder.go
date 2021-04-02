@@ -86,7 +86,7 @@ func (t *Transcoder) Stop() {
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
 	command := t.getString()
-	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.Name(), len(t.variants))
+	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.DisplayName(), len(t.variants))
 
 	if config.EnableDebugFeatures {
 		log.Println(command)

@@ -24,6 +24,10 @@ func (c *Libx264Codec) Name() string {
 	return "libx264"
 }
 
+func (c *Libx264Codec) DisplayName() string {
+	return "x264"
+}
+
 func (c *Libx264Codec) GlobalFlags() string {
 	return ""
 }
@@ -73,6 +77,10 @@ func (c *OmxCodec) Name() string {
 	return "h264_omx"
 }
 
+func (c *OmxCodec) DisplayName() string {
+	return "OpenMax (omx)"
+}
+
 func (c *OmxCodec) GlobalFlags() string {
 	return ""
 }
@@ -116,6 +124,10 @@ type VaapiCodec struct {
 
 func (c *VaapiCodec) Name() string {
 	return "h264_vaapi"
+}
+
+func (c *VaapiCodec) DisplayName() string {
+	return "VA-API"
 }
 
 func (c *VaapiCodec) GlobalFlags() string {
@@ -167,6 +179,10 @@ func (c *NvencCodec) Name() string {
 	return "h264_nvenc"
 }
 
+func (c *NvencCodec) DisplayName() string {
+	return "nvidia nvenc"
+}
+
 func (c *NvencCodec) GlobalFlags() string {
 	flags := []string{
 		"-hwaccel cuda",
@@ -215,6 +231,10 @@ func (c *QuicksyncCodec) Name() string {
 	return "h264_qsv"
 }
 
+func (c *QuicksyncCodec) DisplayName() string {
+	return "Intel QuickSync"
+}
+
 func (c *QuicksyncCodec) GlobalFlags() string {
 	return ""
 }
@@ -257,6 +277,10 @@ func (c *Video4Linux) Name() string {
 	return "h264_v4l2m2m"
 }
 
+func (c *Video4Linux) DisplayName() string {
+	return "Video4Linux"
+}
+
 func (c *Video4Linux) GlobalFlags() string {
 	return ""
 }
@@ -296,6 +320,7 @@ func (c *Video4Linux) GetPresetForLevel(l int) string {
 // Codec represents a supported codec on the system.
 type Codec interface {
 	Name() string
+	DisplayName() string
 	GlobalFlags() string
 	PixelFormat() string
 	ExtraArguments() string
