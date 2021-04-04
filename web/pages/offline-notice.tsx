@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Result, Card, Row, Col } from 'antd';
+import { Typography, Card, Row, Col } from 'antd';
 import {
   MessageTwoTone,
   QuestionCircleTwoTone,
@@ -9,7 +9,9 @@ import {
 } from '@ant-design/icons';
 import OwncastLogo from '../components/logo';
 import LogTable from '../components/log-table';
+import NewsFeed from '../components/news-feed';
 
+const { Title } = Typography;
 const { Meta } = Card;
 
 export default function Offline({ logs = [], config }) {
@@ -77,21 +79,29 @@ export default function Offline({ logs = [], config }) {
 
   return (
     <>
-      <Row gutter={[16, 16]} className="offline-content">
-        <Col span={12} xs={24} sm={24} md={24} lg={12} className="logo-section">
-          <Result
-            icon={<OwncastLogo />}
-            title="No stream is active."
-            subTitle="You should start one."
-          />
+      <Row>
+        <Col span={12} offset={6}>
+          <div className="offline-intro">
+            <span className="logo">
+              <OwncastLogo />
+            </span>
+            <div>
+              <Title level={2}>No stream is active</Title>
+              <p>You should start one.</p>
+            </div>
+          </div>
         </Col>
-
+      </Row>
+      <Row gutter={[16, 16]} className="offline-content">
         <Col span={12} xs={24} sm={24} md={24} lg={12} className="list-section">
           {data.map(item => (
             <Card key={item.title} size="small" bordered={false}>
               <Meta avatar={item.icon} title={item.title} description={item.content} />
             </Card>
           ))}
+        </Col>
+        <Col span={12} xs={24} sm={24} md={24} lg={12}>
+          <NewsFeed />
         </Col>
       </Row>
       <LogTable logs={logs} pageSize={5} />

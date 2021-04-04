@@ -116,9 +116,9 @@ export async function fetchData(url: string, options?: FetchOptions) {
   return {};
 }
 
-export async function getGithubRelease() {
+export async function fetchExternalData(url: string) {
   try {
-    const response = await fetch(GITHUB_RELEASE_URL);
+    const response = await fetch(url);
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);
@@ -129,6 +129,10 @@ export async function getGithubRelease() {
     console.log(error);
   }
   return {};
+}
+
+export async function getGithubRelease() {
+  return fetchExternalData(GITHUB_RELEASE_URL);
 }
 
 // Stolen from https://gist.github.com/prenagha/98bbb03e27163bc2f5e4

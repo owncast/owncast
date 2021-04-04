@@ -8,6 +8,7 @@ import Offline from './offline-notice';
 
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../utils/format';
+import NewsFeed from '../components/news-feed';
 
 function streamDetailsFormatter(streamDetails) {
   return (
@@ -135,13 +136,16 @@ export default function Home() {
         </div>
 
         <Row gutter={[16, 16]} className="section stream-details-section">
-          <Col className="outbound-details" span={12} sm={24} md={24} lg={12}>
-            <Card size="small" title="Outbound Stream Details" type="inner">
+          <Col className="stream-details" span={12} sm={24} md={24} lg={12}>
+            <Card
+              size="small"
+              title="Outbound Stream Details"
+              type="inner"
+              className="outbound-details"
+            >
               {videoQualitySettings}
             </Card>
-          </Col>
 
-          <Col className="inbound-details" span={12} sm={24} md={24} lg={12}>
             <Card size="small" title="Inbound Stream Details" type="inner">
               <Statistic
                 className="stream-details-item"
@@ -160,6 +164,9 @@ export default function Home() {
                 value={streamAudioDetailString}
               />
             </Card>
+          </Col>
+          <Col span={12} xs={24} sm={24} md={24} lg={12}>
+            <NewsFeed />
           </Col>
         </Row>
       </div>
