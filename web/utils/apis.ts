@@ -118,7 +118,10 @@ export async function fetchData(url: string, options?: FetchOptions) {
 
 export async function fetchExternalData(url: string) {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      referrerPolicy: 'no-referrer', // Send no referrer header for privacy reasons.
+      referrer: '',
+    });
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);
