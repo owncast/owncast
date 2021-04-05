@@ -500,7 +500,11 @@ func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetVideoCodec(configValue.Value.(string))
+	if err := data.SetVideoCodec(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update codec")
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "video codec updated")
 }
 

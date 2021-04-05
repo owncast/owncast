@@ -18,8 +18,6 @@ import (
 
 var _commandExec *exec.Cmd
 
-// var codec = Libx264Codec{} //QuicksyncCodec{} //VaapiCodec{} // QuicksyncCodec{} //
-
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
 	input                string
@@ -120,7 +118,6 @@ func (t *Transcoder) Start() {
 	if err != nil {
 		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/troubleshooting/#codecs")
 	}
-
 }
 
 func (t *Transcoder) getString() string {
