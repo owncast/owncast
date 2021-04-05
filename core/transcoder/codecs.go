@@ -1,3 +1,5 @@
+//nolint:goconst
+
 package transcoder
 
 import (
