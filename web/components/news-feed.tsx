@@ -57,7 +57,7 @@ export default function NewsFeed() {
     <section className="news-feed form-module">
       <Title level={2}>News &amp; Updates from Owncast</Title>
       {feed.map(item => (
-        <ArticleItem {...item} />
+        <ArticleItem {...item} key={item.url} />
       ))}
     </section>
   );
