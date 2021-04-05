@@ -12,8 +12,8 @@ var supportedCodecs = map[string]string{
 	"libx264":    "libx264",
 	"h264_omx":   "omx",
 	"h264_vaapi": "vaapi",
-	"h264_nvenc": "NVIDEA nvenc",
-	"h264_qsv":   "Intel Quicksync",
+	"h264_nvenc": "NVIDIA nvenc",
+	// "h264_qsv":   "Intel Quicksync",
 	// "h264_v4l2m2m": "Video4Linux",
 }
 
@@ -50,7 +50,9 @@ func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
 	bufferSize := int(float64(v.videoBitrate) * 1.2) // How often it checks the bitrate of encoded segments to see if it's too high/low.
 
 	return strings.Join([]string{
-		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize), // How often the encoder checks the bitrate in order to meet average/max values
+		fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0\"", v.index), // How often the encoder checks the bitrate in order to meet average/max values
+		fmt.Sprintf("-bufsize:v:%d %dk", v.index, bufferSize),
+		fmt.Sprintf("-profile:v:%d %s", v.index, "high"), // Encoding profile
 	}, " ")
 }
 
@@ -132,8 +134,6 @@ func (c *VaapiCodec) DisplayName() string {
 
 func (c *VaapiCodec) GlobalFlags() string {
 	flags := []string{
-		// "-hwaccel", "vaapi",
-		// "-hwaccel_output_format", "vaapi",
 		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
