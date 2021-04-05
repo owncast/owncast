@@ -118,7 +118,7 @@ func (t *Transcoder) Start() {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/troubleshooting/#misc-video-issues")
+		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/troubleshooting/#codecs")
 	}
 
 }
@@ -156,16 +156,12 @@ func (t *Transcoder) getString() string {
 
 		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
 		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
-		"-hls_delete_threshold", "10", // Start deleting files after hls_list_size + 10
 		hlsOptionsString,
 
 		// Video settings
 		t.codec.ExtraArguments(),
-		// "-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-		// "-pix_fmt", "yuv420p", // Force yuv420p color format
 		"-pix_fmt", t.codec.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
-		// fmt.Sprintf("-vf %s", t.codec.ExtraFilters()),
 
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
@@ -174,10 +170,9 @@ func (t *Transcoder) getString() string {
 		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "%s.ts", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 
-		"-method PUT -http_persistent 1",         // HLS results sent back to us will be over PUTs
+		"-method PUT -http_persistent 0",         // HLS results sent back to us will be over PUTs
 		"-fflags +genpts",                        // Generate presentation time stamp if missing
 		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
-		// "2> transcoder.log",                      // Log to a file for debugging
 	}
 
 	return strings.Join(ffmpegFlags, " ")
@@ -331,9 +326,14 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 		return fmt.Sprintf("-map v:0 -c:v:%d copy", v.index)
 	}
 
-	// -1 to work around segments being generated slightly larger than expected.
-	// https://trac.ffmpeg.org/ticket/6915?replyto=58#comment:57
-	gop := (t.currentLatencyLevel.SecondsPerSegment * v.framerate) - 1
+	// Determine if we should force key frames every 1, 2 or 3 frames.
+	isEven := t.currentLatencyLevel.SecondsPerSegment%2 == 0
+	gop := v.framerate * 2
+	if t.currentLatencyLevel.SecondsPerSegment == 1 {
+		gop = v.framerate
+	} else if !isEven {
+		gop = v.framerate * 3
+	}
 
 	// For limiting the output bitrate
 	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
@@ -341,15 +341,14 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 	// Adjust the max & buffer size until the output bitrate doesn't exceed the ~+10% that Apple's media validator
 	// complains about.
 	maxBitrate := int(float64(v.videoBitrate) * 1.06) // Max is a ~+10% over specified bitrate.
-	// bufferSize := int(float64(v.videoBitrate) * 1.2)  // How often it checks the bitrate of encoded segments to see if it's too high/low.
 
 	cmd := []string{
 		"-map v:0",
 		fmt.Sprintf("-c:v:%d %s", v.index, t.codec.Name()),    // Video codec used for this variant
 		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),   // The average bitrate for this variant
 		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate), // The max bitrate allowed for this variant
-		fmt.Sprintf("-g:v:%d %d", v.index, gop),               // How often i-frames are encoded into the segments
-		// fmt.Sprintf("-profile:v:%d %s", v.index, "high"),      // Encoding profile
+		fmt.Sprintf("-g:v:%d %d", v.index, gop),               // Suggested interval where i-frames are encoded into the segments
+		fmt.Sprintf("-keyint_min:v:%d %d", v.index, gop),      // minimum i-keyframe interval
 		fmt.Sprintf("-r:v:%d %d", v.index, v.framerate),
 		t.codec.VariantFlags(v),
 	}
