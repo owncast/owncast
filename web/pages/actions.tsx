@@ -184,7 +184,7 @@ export default function Actions() {
       dataIndex: 'icon',
       key: 'icon',
       render: (url: string) => {
-        return url ? <img src={url} /> : null;
+        return url ? <img style={{width: '2vw'}} src={url} /> : null;
       },
     },
     {
@@ -283,7 +283,10 @@ export default function Actions() {
   return (
     <div>
       <Title>External Actions</Title>
-      <Paragraph>Description goes here.</Paragraph>
+      <Paragraph>
+        External action URLs are 3rd party UI you can display, embedded, into your Owncast page when
+        a user clicks on a button to launch your action.
+      </Paragraph>
       <Paragraph>
         Read more about how to use actions, with examples, at{' '}
         <a href="https://owncast.online/thirdparty/?source=admin" target="_blank"
