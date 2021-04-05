@@ -36,6 +36,7 @@ var ignoredErrors = []string{
 	"use of closed network connection",
 	"URL read error: End of file",
 	"upload playlist failed, will retry with a new http session",
+	"VBV underflow",
 }
 
 func handleTranscoderMessage(message string) {
