@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/no-danger */
 import React, { useState, useEffect } from 'react';
-import { Typography } from 'antd';
+import { Typography, Skeleton } from 'antd';
 import format from 'date-fns/format';
 
 import { fetchExternalData } from '../utils/apis';
@@ -36,7 +36,11 @@ function ArticleItem({ title, url, content_html: content, date_published: date }
 
 export default function NewsFeed() {
   const [feed, setFeed] = useState<Article[]>([]);
+  const [loading, setLoading] = useState<Boolean>(true);
+
   const getFeed = async () => {
+    setLoading(false);
+
     try {
       const result = await fetchExternalData(OWNCAST_FEED_URL);
       setFeed(result.items);
@@ -49,16 +53,18 @@ export default function NewsFeed() {
     getFeed();
   }, []);
 
-  if (!feed.length) {
-    return null;
-  }
+  const loadingSpinner = loading ? (<Skeleton loading={true} active />) : null;
+  const noNews = !loading && feed.length === 0 ? (<div>No news.</div>) : null;
 
   return (
     <section className="news-feed form-module">
       <Title level={2}>News &amp; Updates from Owncast</Title>
+      {loadingSpinner}
       {feed.map(item => (
         <ArticleItem {...item} key={item.url} />
       ))}
+
+      {noNews}
     </section>
   );
 }
