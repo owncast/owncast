@@ -82,7 +82,7 @@ func (c *OmxCodec) Name() string {
 }
 
 func (c *OmxCodec) DisplayName() string {
-	return "OpenMax (omx)"
+	return "OpenMAX (omx)"
 }
 
 func (c *OmxCodec) GlobalFlags() string {

@@ -2,9 +2,13 @@ package transcoder
 
 import (
 	"strings"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 )
+
+var _lastTranscoderLogMessage = ""
+var l = &sync.RWMutex{}
 
 var errorMap = map[string]string{
 	"Unrecognized option 'vaapi_device'":        "you are likely trying to utilize a vaapi codec, but your version of ffmpeg or your hardware doesn't support it. change your codec to libx264 and restart your stream",
@@ -16,6 +20,7 @@ var errorMap = map[string]string{
 	"Cannot use rename on non file protocol, this may lead to races and temporary partial files": "",
 	"No VA display found for device": "vaapi not enabled. either your copy of ffmpeg does not support it, your hardware does not support it, or you need to install additional drivers for your hardware.",
 	"Could not find a valid device":  "your codec is either not supported or not configured properly",
+	"H.264 bitstream error":          "transcoding content error playback issues may arise. you may want to use the default codec if you are not already.",
 
 	`Unknown encoder 'h264_qsv'`:       "your copy of ffmpeg does not have support for Intel QuickSync encoding (h264_qsv). change the selected codec in your video settings",
 	`Unknown encoder 'h264_vaapi'`:     "your copy of ffmpeg does not have support for VA-API encoding (h264_vaapi). change the selected codec in your video settings",
@@ -37,10 +42,14 @@ var ignoredErrors = []string{
 	"URL read error: End of file",
 	"upload playlist failed, will retry with a new http session",
 	"VBV underflow",
+	"Cannot use rename on non file protocol",
 }
 
 func handleTranscoderMessage(message string) {
 	log.Debugln(message)
+
+	l.Lock()
+	defer l.Unlock()
 
 	// Ignore certain messages that we don't care about.
 	for _, error := range ignoredErrors {
@@ -52,8 +61,8 @@ func handleTranscoderMessage(message string) {
 	// Convert specific transcoding messages to human-readable messages.
 	for error, displayMessage := range errorMap {
 		if strings.Contains(message, error) {
-			log.Error(displayMessage)
-			return
+			message = displayMessage
+			break
 		}
 	}
 
@@ -61,6 +70,13 @@ func handleTranscoderMessage(message string) {
 		return
 	}
 
+	// No good comes from a flood of repeated messages.
+	if message == _lastTranscoderLogMessage {
+		return
+	}
+
 	// Simply print the transcoding message verbatim.
 	log.Error(message)
+
+	_lastTranscoderLogMessage = message
 }

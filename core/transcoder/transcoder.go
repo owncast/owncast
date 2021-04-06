@@ -83,6 +83,8 @@ func (t *Transcoder) Stop() {
 
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start() {
+	_lastTranscoderLogMessage = ""
+
 	command := t.getString()
 	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.DisplayName(), len(t.variants))
 
@@ -144,6 +146,7 @@ func (t *Transcoder) getString() string {
 		"-hide_banner",
 		"-loglevel warning",
 		t.codec.GlobalFlags(),
+		"-fflags +genpts", // Generate presentation time stamp if missing
 		"-i ", t.input,
 
 		t.getVariantsString(),
@@ -154,6 +157,7 @@ func (t *Transcoder) getString() string {
 		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
 		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
 		hlsOptionsString,
+		"-segment_format_options", "mpegts_flags=+initial_discontinuity:mpegts_copyts=1",
 
 		// Video settings
 		t.codec.ExtraArguments(),
@@ -168,7 +172,6 @@ func (t *Transcoder) getString() string {
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 
 		"-method PUT -http_persistent 0",         // HLS results sent back to us will be over PUTs
-		"-fflags +genpts",                        // Generate presentation time stamp if missing
 		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
 	}
 
