@@ -115,7 +115,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 		// If we don't get a readable packet in 10 seconds give up and disconnect
 		if err := _rtmpConnection.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
-			log.Warnln(err)
+			log.Debugln(err)
 		}
 
 		pkt, err := c.ReadPacket()
