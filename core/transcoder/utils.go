@@ -75,7 +75,6 @@ func handleTranscoderMessage(message string) {
 		return
 	}
 
-	// Simply print the transcoding message verbatim.
 	log.Error(message)
 
 	_lastTranscoderLogMessage = message
