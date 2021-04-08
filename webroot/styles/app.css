@@ -18,10 +18,10 @@ html {
 }
 
 #loading-logo {
-  margin-top: 10%;
+  margin-top: 3%;
   margin-left: auto;
   margin-right: auto;
-  width: 30%;
+  height: 80vh;
   opacity: 0.2;
 }
 
