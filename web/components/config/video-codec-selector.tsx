@@ -25,6 +25,8 @@ export default function CodecSelector() {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const { setMessage } = useContext(AlertMessageContext);
   const [selectedCodec, setSelectedCodec] = useState(videoCodec);
+  const [pendingSaveCodec, setPendingSavecodec] = useState(videoCodec);
+  const [confirmPopupVisible, setConfirmPopupVisible] = React.useState(false);
 
   let resetTimer = null;
 
@@ -38,17 +40,23 @@ export default function CodecSelector() {
     clearTimeout(resetTimer);
   };
 
-  async function handleChange(value) {
-    console.log(`selected ${value}`);
-    setSelectedCodec(value);
+  function handleChange(value) {
+    setPendingSavecodec(value);
+    setConfirmPopupVisible(true);
+  }
+
+  async function save() {
+    setSelectedCodec(pendingSaveCodec);
+    setPendingSavecodec('');
+    setConfirmPopupVisible(false);
 
     await postConfigUpdateToAPI({
       apiPath: API_VIDEO_CODEC,
-      data: { value: value },
+      data: { value: pendingSaveCodec },
       onSuccess: () => {
         setFieldInConfigState({
           fieldName: 'videoCodec',
-          value: value,
+          value: pendingSaveCodec,
           path: 'videoSettings',
         });
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Video codec updated.'));
@@ -113,29 +121,39 @@ export default function CodecSelector() {
         Video Codec
       </Title>
       <p className="description">
-        If you have access to specific hardware with the drivers and software installed for them, you
-        may be able to improve your video encoding performance.
+        If you have access to specific hardware with the drivers and software installed for them,
+        you may be able to improve your video encoding performance.
         <p>
-        <a
-          href="https://owncast.online/docs/codecs?source=admin"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Read the documentation about this setting before changing it or you may make your stream
-          unplayable.
-        </a>
+          <a
+            href="https://owncast.online/docs/codecs?source=admin"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Read the documentation about this setting before changing it or you may make your stream
+            unplayable.
+          </a>
         </p>
       </p>
       <div className="segment-slider-container">
-        <Select
-          defaultValue={selectedCodec}
-          value={selectedCodec}
-          style={{ width: '100%' }}
-          onChange={handleChange}
+        <Popconfirm
+          title={`Are you sure you want to change your video codec to ${pendingSaveCodec} and understand what this means?`}
+          visible={confirmPopupVisible}
+          placement={'leftBottom'}
+          onConfirm={save}
+          okText={'Yes'}
+          cancelText={'No'}
         >
-          {items}
-        </Select>
+          <Select
+            defaultValue={selectedCodec}
+            value={selectedCodec}
+            style={{ width: '100%' }}
+            onChange={handleChange}
+          >
+            {items}
+          </Select>
+        </Popconfirm>
         <FormStatusIndicator status={submitStatus} />
+
         <p id="selected-codec-note" className="selected-value-note">
           {description}
         </p>
