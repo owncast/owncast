@@ -29,6 +29,7 @@ function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer) 
 export default function EditLogo() {
   const [logoUrl, setlogoUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [logoCachedbuster, setLogoCacheBuster] = useState(0);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState, serverConfig } = serverStatusData || {};
@@ -79,6 +80,7 @@ export default function EditLogo() {
           setFieldInConfigState({ fieldName: 'logo', value: logoUrl, path: '' });
           setSubmitStatus(createInputStatus(STATUS_SUCCESS));
           setLoading(false);
+          setLogoCacheBuster(Math.floor(Math.random() * 100)); // Force logo to re-load
         },
         onError: (msg: string) => {
           setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
@@ -89,7 +91,7 @@ export default function EditLogo() {
     }
   };
 
-  const logoDisplayUrl = NEXT_PUBLIC_API_HOST + 'logo';
+  const logoDisplayUrl = NEXT_PUBLIC_API_HOST + 'logo?random=' + logoCachedbuster;
 
   return (
     <div className="formfield-container logo-upload-container">
