@@ -4,7 +4,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
 
   font-size: 16px;
 
@@ -31,12 +33,12 @@ p.description,
 .ant-typography {
   font-weight: 300;
   margin: 1em 0;
-  color: var(--white-75); 
+  color: var(--white-75);
 }
 pre {
   display: block;
   padding: 1rem;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
   background-color: var(--code-bg-color);
   color: var(--white-50);
 }
@@ -47,7 +49,7 @@ code {
   display: inline-block;
   padding: 2px 4px;
   border-radius: 4px;
-  font-size: .88em;
+  font-size: 0.88em;
 }
 
 strong {
@@ -59,16 +61,11 @@ strong {
   width: 2rem;
 }
 
-
-
-
 .line-chart-container {
   margin: 2em auto;
   padding: 1em;
   border: 1px solid var(--gray-dark);
 }
-
-
 
 .form-module {
   margin: 1em 0;
@@ -95,4 +92,11 @@ strong {
       width: 100%;
     }
   }
+}
+
+.stream-info-box {
+  background-color: var(--purple-dark);
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.5rem;
+  color: var(--white);
 }

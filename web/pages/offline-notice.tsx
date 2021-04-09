@@ -1,26 +1,61 @@
 import Link from 'next/link';
-import { Typography, Card, Row, Col } from 'antd';
+import { Result, Card, Row, Col, Input, Form, Typography } from 'antd';
 import {
   MessageTwoTone,
   QuestionCircleTwoTone,
   BookTwoTone,
   PlaySquareTwoTone,
   ProfileTwoTone,
+  CopyOutlined,
 } from '@ant-design/icons';
 import OwncastLogo from '../components/logo';
 import LogTable from '../components/log-table';
 import NewsFeed from '../components/news-feed';
+import { useContext } from 'react';
+import { ServerStatusContext } from '../utils/server-status-context';
+const { Paragraph, Text } = Typography;
 
 const { Title } = Typography;
 const { Meta } = Card;
 
+function generateStreamURL(serverURL) {
+  return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}/live/`;
+}
+
 export default function Offline({ logs = [], config }) {
+  const serverStatusData = useContext(ServerStatusContext);
+
+  const { serverConfig } = serverStatusData || {};
+  const { streamKey, yp } = serverConfig;
+  let { instanceUrl } = yp;
+
   const data = [
     {
       icon: <BookTwoTone twoToneColor="#6f42c1" />,
       title: 'Use your broadcasting software',
       content: (
         <div>
+          <Row align="middle">
+            <Col flex="none">
+              <Text strong>Stream-URL:</Text>
+            </Col>
+            <Col flex="auto">
+              <Paragraph className="stream-info-box" copyable>
+                {generateStreamURL(instanceUrl)}
+              </Paragraph>
+            </Col>
+          </Row>
+
+          <Row align="middle">
+            <Col flex="none">
+              <Text strong>Stream-Key:</Text>
+            </Col>
+            <Col flex="auto">
+              <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
+                *********************
+              </Paragraph>
+            </Col>
+          </Row>
           <a
             href="https://owncast.online/docs/broadcasting/?source=admin"
             target="_blank"
