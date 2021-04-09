@@ -1,12 +1,11 @@
 import Link from 'next/link';
-import { Result, Card, Row, Col, Input, Form, Typography } from 'antd';
+import { Result, Card, Row, Col, Input, Collapse, Typography } from 'antd';
 import {
   MessageTwoTone,
   QuestionCircleTwoTone,
   BookTwoTone,
   PlaySquareTwoTone,
   ProfileTwoTone,
-  CopyOutlined,
 } from '@ant-design/icons';
 import OwncastLogo from '../components/logo';
 import LogTable from '../components/log-table';
@@ -17,6 +16,7 @@ const { Paragraph, Text } = Typography;
 
 const { Title } = Typography;
 const { Meta } = Card;
+const { Panel } = Collapse;
 
 function generateStreamURL(serverURL) {
   return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}/live/`;
@@ -26,8 +26,8 @@ export default function Offline({ logs = [], config }) {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};
-  const { streamKey, yp } = serverConfig;
-  let { instanceUrl } = yp;
+  const { streamKey } = serverConfig;
+  const instanceUrl = global.window?.location.hostname || '';
 
   const data = [
     {
@@ -35,27 +35,6 @@ export default function Offline({ logs = [], config }) {
       title: 'Use your broadcasting software',
       content: (
         <div>
-          <Row align="middle">
-            <Col flex="none">
-              <Text strong>Stream-URL:</Text>
-            </Col>
-            <Col flex="auto">
-              <Paragraph className="stream-info-box" copyable>
-                {generateStreamURL(instanceUrl)}
-              </Paragraph>
-            </Col>
-          </Row>
-
-          <Row align="middle">
-            <Col flex="none">
-              <Text strong>Stream-Key:</Text>
-            </Col>
-            <Col flex="auto">
-              <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
-                *********************
-              </Paragraph>
-            </Col>
-          </Row>
           <a
             href="https://owncast.online/docs/broadcasting/?source=admin"
             target="_blank"
@@ -64,6 +43,31 @@ export default function Offline({ logs = [], config }) {
             Learn how to point your existing software to your new server and start streaming your
             content.
           </a>
+          <Collapse>
+            <Panel header="Your connection details" key="1">
+              <Row align="middle">
+                <Col flex="none">
+                  <Text strong>Streaming URL:</Text>
+                </Col>
+                <Col flex="auto">
+                  <Paragraph className="stream-info-box" copyable>
+                    {generateStreamURL(instanceUrl)}
+                  </Paragraph>
+                </Col>
+              </Row>
+
+              <Row align="middle">
+                <Col flex="none">
+                  <Text strong>Stream Key:</Text>
+                </Col>
+                <Col flex="auto">
+                  <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
+                    *********************
+                  </Paragraph>
+                </Col>
+              </Row>
+            </Panel>
+          </Collapse>
         </div>
       ),
     },
