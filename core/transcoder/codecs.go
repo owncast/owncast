@@ -10,13 +10,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Codec represents a supported codec on the system.
+type Codec interface {
+	Name() string
+	DisplayName() string
+	GlobalFlags() string
+	PixelFormat() string
+	ExtraArguments() string
+	ExtraFilters() string
+	VariantFlags(v *HLSVariant) string
+	GetPresetForLevel(l int) string
+}
+
 var supportedCodecs = map[string]string{
-	"libx264":    "libx264",
-	"h264_omx":   "omx",
-	"h264_vaapi": "vaapi",
-	"h264_nvenc": "NVIDIA nvenc",
-	// "h264_qsv":   "Intel Quicksync",
-	// "h264_v4l2m2m": "Video4Linux",
+	(&Libx264Codec{}).Name(): "libx264",
+	(&OmxCodec{}).Name():     "omx",
+	(&VaapiCodec{}).Name():   "vaapi",
+	(&NvencCodec{}).Name():   "NVIDIA nvenc",
 }
 
 type Libx264Codec struct {
@@ -317,18 +327,6 @@ func (c *Video4Linux) GetPresetForLevel(l int) string {
 	}
 
 	return presetMapping[l]
-}
-
-// Codec represents a supported codec on the system.
-type Codec interface {
-	Name() string
-	DisplayName() string
-	GlobalFlags() string
-	PixelFormat() string
-	ExtraArguments() string
-	ExtraFilters() string
-	VariantFlags(v *HLSVariant) string
-	GetPresetForLevel(l int) string
 }
 
 // GetCodecs will return the supported codecs available on the system.
