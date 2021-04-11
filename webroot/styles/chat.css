@@ -1,5 +1,11 @@
 /* some base styles for chat and messaging components */
 
+:root {
+  /* Override this in your custom CSS to change the
+     opacity of the message backgrounds. */
+  --message-background-alpha: 0.3;
+}
+
 #chat-container {
   position: fixed;
   z-index: 9;

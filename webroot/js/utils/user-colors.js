@@ -8,7 +8,7 @@ export function messageBubbleColorForString(str) {
   // Tweak these to adjust the result of the color
   const saturation = 25;
   const lightness = 45;
-  const alpha = 0.3;
+  const alpha = 'var(--message-background-alpha)';
   const hue = parseInt(Math.abs(hash), 16) % 360;
 
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
