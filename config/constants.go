@@ -17,6 +17,8 @@ const (
 	FfmpegSuggestedVersion = "v4.1.5" // Requires the v
 	// BackupDirectory is the directory we write backup files to.
 	BackupDirectory = "backup"
+	// DataDirectory is the directory we save data to.
+	DataDirectory = "data"
 )
 
 var (

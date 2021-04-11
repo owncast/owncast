@@ -2,12 +2,14 @@ package data
 
 import (
 	"errors"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -467,6 +469,16 @@ func SetExternalActions(actions []models.ExternalAction) error {
 func VerifySettings() error {
 	if GetStreamKey() == "" {
 		return errors.New("no stream key set. Please set one in your config file")
+	}
+
+	logoPath := GetLogoPath()
+	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, logoPath)) {
+		defaultLogo := filepath.Join(config.WebRoot, "img/logo.svg")
+		log.Infoln(logoPath, "not found in the data directory. copying a default logo.")
+		if err := utils.Copy(defaultLogo, filepath.Join(config.DataDirectory, "logo.svg")); err != nil {
+			log.Errorln("error copying default logo: ", err)
+		}
+		SetLogoPath("logo.svg")
 	}
 
 	return nil
