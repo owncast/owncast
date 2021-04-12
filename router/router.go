@@ -196,6 +196,9 @@ func Start() error {
 	// set external action links
 	http.HandleFunc("/api/admin/config/externalactions", middleware.RequireAdminAuth(admin.SetExternalActions))
 
+	// set custom style css
+	http.HandleFunc("api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+
 	port := config.WebServerPort
 
 	log.Infof("Web server is listening on port %d.", port)

@@ -38,6 +38,7 @@ const videoLatencyLevel = "video_latency_level"
 const videoStreamOutputVariantsKey = "video_stream_output_variants"
 const chatDisabledKey = "chat_disabled"
 const externalActionsKey = "external_actions"
+const customStylesKey = "custom_styles"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -463,6 +464,21 @@ func GetExternalActions() []models.ExternalAction {
 func SetExternalActions(actions []models.ExternalAction) error {
 	var configEntry = ConfigEntry{Key: externalActionsKey, Value: actions}
 	return _datastore.Save(configEntry)
+}
+
+// SetCustomStyles will save a string with CSS to insert into the page.
+func SetCustomStyles(styles string) error {
+	return _datastore.SetString(customStylesKey, styles)
+}
+
+// GetCustomStyles will return a string with CSS to insert into the page.
+func GetCustomStyles() string {
+	style, err := _datastore.GetString(customStylesKey)
+	if err != nil {
+		return ""
+	}
+
+	return style
 }
 
 // VerifySettings will perform a sanity check for specific settings values.

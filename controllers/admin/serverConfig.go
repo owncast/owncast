@@ -39,6 +39,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Logo:             data.GetLogoPath(),
 			SocialHandles:    data.GetSocialHandles(),
 			NSFW:             data.GetNSFW(),
+			CustomStyles:     data.GetCustomStyles(),
 		},
 		FFmpegPath:     utils.ValidatedFfmpegPath(data.GetFfMpegPath()),
 		StreamKey:      data.GetStreamKey(),
@@ -94,6 +95,7 @@ type webConfigResponse struct {
 	ExtraPageContent string                `json:"extraPageContent"`
 	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
 	SocialHandles    []models.SocialHandle `json:"socialHandles"`
+	CustomStyles     string                `json:"customStyles"`
 }
 
 type yp struct {

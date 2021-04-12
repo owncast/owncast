@@ -23,6 +23,7 @@ type webConfigResponse struct {
 	SocialHandles    []models.SocialHandle   `json:"socialHandles"`
 	ChatDisabled     bool                    `json:"chatDisabled"`
 	ExternalActions  []models.ExternalAction `json:"externalActions"`
+	CustomStyles     string                  `json:"customStyles"`
 }
 
 // GetWebConfig gets the status of the server.
@@ -52,6 +53,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		SocialHandles:    socialHandles,
 		ChatDisabled:     data.GetChatDisabled(),
 		ExternalActions:  data.GetExternalActions(),
+		CustomStyles:     data.GetCustomStyles(),
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {
