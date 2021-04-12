@@ -197,7 +197,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/externalactions", middleware.RequireAdminAuth(admin.SetExternalActions))
 
 	// set custom style css
-	http.HandleFunc("api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
 	port := config.WebServerPort
 
