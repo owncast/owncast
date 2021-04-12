@@ -1037,6 +1037,21 @@ paths:
                     url: https://github.com/owncast/owncast
                   - platform: mastodon
                     url: https://mastodon.social/@gabek
+  /api/admin/config/customstyles:
+    post:
+      summary: Custom CSS styles to be used in the web front endpoints.
+      description: Save a string containing CSS to be inserted in to the web frontend page.
+      tags: ["Admin"]
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigValue"
+            example:
+              value: "body { color: orange; background: black; }"
                   
   /api/admin/viewersOverTime:
     get:
