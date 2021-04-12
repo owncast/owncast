@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"strconv"
 	"time"
 
@@ -55,6 +56,11 @@ func main() {
 		config.BuildPlatform = BuildPlatform
 	}
 	log.Infoln(config.GetReleaseString())
+
+	// Create the data directory if needed
+	if !utils.DoesFileExists("data") {
+		os.Mkdir("./data", 0700)
+	}
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {
