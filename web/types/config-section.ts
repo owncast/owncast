@@ -28,6 +28,7 @@ export interface ConfigDirectoryFields {
 }
 
 export interface ConfigInstanceDetailsFields {
+  customStyles: string;
   extraPageContent: string;
   logo: string;
   name: string;
@@ -35,9 +36,9 @@ export interface ConfigInstanceDetailsFields {
   socialHandles: SocialHandle[];
   streamTitle: string;
   summary: string;
-  welcomeMessage: string;
   tags: string[];
   title: string;
+  welcomeMessage: string;
 }
 
 export type CpuUsageLevel = 1 | 2 | 3 | 4 | 5;
@@ -88,14 +89,14 @@ export interface ExternalAction {
 }
 
 export interface ConfigDetails {
+  chatDisabled: boolean;
+  externalActions: ExternalAction[];
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
   rtmpServerPort: string;
   s3: S3Field;
   streamKey: string;
+  videoSettings: VideoSettingsFields;
   webServerPort: string;
   yp: ConfigDirectoryFields;
-  videoSettings: VideoSettingsFields;
-  chatDisabled: boolean;
-  externalActions: ExternalAction[];
 }

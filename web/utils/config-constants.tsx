@@ -8,6 +8,7 @@ export const RESET_TIMEOUT = 3000;
 
 // CONFIG API ENDPOINTS
 export const API_CUSTOM_CONTENT = '/pagecontent';
+export const API_CUSTOM_CSS_STYLES = '/customstyles';
 export const API_FFMPEG = '/ffmpegpath';
 export const API_INSTANCE_URL = '/serverurl';
 export const API_LOGO = '/logo';
@@ -27,7 +28,7 @@ export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 export const API_CHAT_DISABLE = '/chat/disable';
-export const API_EXTERNAL_ACTIONS = '/externalactions'
+export const API_EXTERNAL_ACTIONS = '/externalactions';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;
@@ -141,13 +142,6 @@ export const FIELD_PROPS_TAGS = {
   tip: '',
 };
 
-export const FIELD_PROPS_CUSTOM_CONTENT = {
-  apiPath: API_CUSTOM_CONTENT,
-  configPath: 'instanceDetails',
-  placeholder: '',
-  label: 'Extra page content',
-  tip: 'Custom markup about yourself',
-};
 export const FIELD_PROPS_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',

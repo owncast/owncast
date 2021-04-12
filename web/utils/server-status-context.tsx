@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
-import { ConfigDetails, UpdateArgs, ExternalAction } from '../types/config-section';
+import { ConfigDetails, UpdateArgs } from '../types/config-section';
 import { DEFAULT_VARIANT_STATE } from './config-constants';
 
 export const initialServerConfigState: ConfigDetails = {
   streamKey: '',
   instanceDetails: {
+    customStyles: '',
     extraPageContent: '',
     logo: '',
     name: '',
@@ -17,9 +18,9 @@ export const initialServerConfigState: ConfigDetails = {
     socialHandles: [],
     streamTitle: '',
     summary: '',
-    welcomeMessage: '',
     tags: [],
     title: '',
+    welcomeMessage: '',
   },
   ffmpegPath: '',
   rtmpServerPort: '',
