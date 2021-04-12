@@ -537,6 +537,9 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data.SetCustomStyles(customStyles.Value.(string))
+
+	controllers.WriteSimpleResponse(w, true, "custom styles updated")
+
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
