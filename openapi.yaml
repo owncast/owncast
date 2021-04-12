@@ -182,9 +182,9 @@ components:
         framerate:
           type: integer
           description: The target frames per second of the video.
-        encoderPreset:
-          type: string
-          description: "The [H.264 preset value](https://trac.ffmpeg.org/wiki/Encode/H.264) selected for this HLS variant."
+        cpuUsageLevel:
+          type: integer
+          description: "The amount of hardware utilization selected for this HLS variant."
     
     TimestampedValue:
       type: object
@@ -984,12 +984,12 @@ paths:
                 - framerate: 30
                   videoPassthrough: false
                   videoBitrate: 1800
-                  encoderPreset: veryfast
+                  cpuUsageLevel: 2
                   audioPassthrough: true
                 - framerate: 24
                   videoPassthrough: false
                   videoBitrate: 1000
-                  encoderPreset: superfast
+                  cpuUsageLevel: 3
                   audioPassthrough: true                                                               
 
   /api/admin/config/s3:

@@ -361,7 +361,7 @@ func (v *HLSVariant) SetVideoFramerate(framerate int) {
 	v.framerate = framerate
 }
 
-// SetEncoderPreset will set the video encoder preset of this variant.
+// SetCPUUsageLevel will set the hardware usage of this variant.
 func (v *HLSVariant) SetCPUUsageLevel(level int) {
 	v.cpuUsageLevel = level
 }
