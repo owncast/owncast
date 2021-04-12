@@ -43,7 +43,9 @@ export default function NewsFeed() {
 
     try {
       const result = await fetchExternalData(OWNCAST_FEED_URL);
-      setFeed(result.items);
+      if (result?.items.length > 0) {
+        setFeed(result.items);
+      }
     } catch (error) {
       console.log('==== error', error);
     }
