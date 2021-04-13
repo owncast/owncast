@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
-    "antd": "^4.15.0",
+    "antd": "^4.15.1",
     "chart.js": "^3.1.0",
     "classnames": "^2.3.1",
     "date-fns": "^2.20.2",
