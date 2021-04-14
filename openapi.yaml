@@ -990,7 +990,29 @@ paths:
                   videoPassthrough: false
                   videoBitrate: 1000
                   cpuUsageLevel: 3
-                  audioPassthrough: true                                                               
+                  audioPassthrough: true
+
+  /api/admin/config/video/codec:
+    post:
+      summary: Set the video codec.
+      description: Sets the specific video codec that will be used for video encoding. Some codecs will support hardware acceleration. Not all codecs will be supported for all systems.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BasicResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  description: The video codec to change to.
+                  type: string
+              example:
+                value: libx264
 
   /api/admin/config/s3:
       post:
