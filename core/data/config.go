@@ -44,7 +44,7 @@ const customStylesKey = "custom_styles"
 func GetExtraPageBodyContent() string {
 	content, err := _datastore.GetString(extraContentKey)
 	if err != nil {
-		log.Errorln(extraContentKey, err)
+		log.Traceln(extraContentKey, err)
 		return config.GetDefaults().PageBodyContent
 	}
 
@@ -75,8 +75,8 @@ func SetStreamTitle(title string) error {
 func GetStreamKey() string {
 	key, err := _datastore.GetString(streamKeyKey)
 	if err != nil {
-		log.Errorln(streamKeyKey, err)
-		return ""
+		log.Traceln(streamKeyKey, err)
+		return config.GetDefaults().StreamKey
 	}
 
 	return key
@@ -91,7 +91,7 @@ func SetStreamKey(key string) error {
 func GetLogoPath() string {
 	logo, err := _datastore.GetString(logoPathKey)
 	if err != nil {
-		log.Errorln(logoPathKey, err)
+		log.Traceln(logoPathKey, err)
 		return config.GetDefaults().Logo
 	}
 
@@ -111,7 +111,7 @@ func SetLogoPath(logo string) error {
 func GetServerSummary() string {
 	summary, err := _datastore.GetString(serverSummaryKey)
 	if err != nil {
-		log.Errorln(serverSummaryKey, err)
+		log.Traceln(serverSummaryKey, err)
 		return ""
 	}
 
@@ -127,7 +127,7 @@ func SetServerSummary(summary string) error {
 func GetServerWelcomeMessage() string {
 	welcomeMessage, err := _datastore.GetString(serverWelcomeMessageKey)
 	if err != nil {
-		log.Debugln(serverWelcomeMessageKey, err)
+		log.Traceln(serverWelcomeMessageKey, err)
 		return config.GetDefaults().ServerWelcomeMessage
 	}
 
@@ -143,8 +143,8 @@ func SetServerWelcomeMessage(welcomeMessage string) error {
 func GetServerName() string {
 	name, err := _datastore.GetString(serverNameKey)
 	if err != nil {
-		log.Errorln(serverNameKey, err)
-		return ""
+		log.Traceln(serverNameKey, err)
+		return config.GetDefaults().Name
 	}
 
 	return name
@@ -174,7 +174,7 @@ func SetServerURL(url string) error {
 func GetHTTPPortNumber() int {
 	port, err := _datastore.GetNumber(httpPortNumberKey)
 	if err != nil {
-		log.Errorln(httpPortNumberKey, err)
+		log.Traceln(httpPortNumberKey, err)
 		return config.GetDefaults().WebServerPort
 	}
 
@@ -193,7 +193,7 @@ func SetHTTPPortNumber(port float64) error {
 func GetRTMPPortNumber() int {
 	port, err := _datastore.GetNumber(rtmpPortNumberKey)
 	if err != nil {
-		log.Errorln(rtmpPortNumberKey, err)
+		log.Traceln(rtmpPortNumberKey, err)
 		return config.GetDefaults().RTMPServerPort
 	}
 
@@ -213,7 +213,7 @@ func SetRTMPPortNumber(port float64) error {
 func GetServerMetadataTags() []string {
 	tagsString, err := _datastore.GetString(serverMetadataTagsKey)
 	if err != nil {
-		log.Errorln(serverMetadataTagsKey, err)
+		log.Traceln(serverMetadataTagsKey, err)
 		return []string{}
 	}
 
@@ -258,12 +258,12 @@ func GetSocialHandles() []models.SocialHandle {
 
 	configEntry, err := _datastore.Get(socialHandlesKey)
 	if err != nil {
-		log.Errorln(socialHandlesKey, err)
+		log.Traceln(socialHandlesKey, err)
 		return socialHandles
 	}
 
 	if err := configEntry.getObject(&socialHandles); err != nil {
-		log.Errorln(err)
+		log.Traceln(err)
 		return socialHandles
 	}
 
@@ -378,7 +378,7 @@ func SetS3Config(config models.S3) error {
 func GetS3StorageEnabled() bool {
 	enabled, err := _datastore.GetBool(s3StorageEnabledKey)
 	if err != nil {
-		log.Errorln(err)
+		log.Traceln(err)
 		return false
 	}
 
@@ -490,7 +490,7 @@ func VerifySettings() error {
 	logoPath := GetLogoPath()
 	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, logoPath)) {
 		defaultLogo := filepath.Join(config.WebRoot, "img/logo.svg")
-		log.Infoln(logoPath, "not found in the data directory. copying a default logo.")
+		log.Traceln(logoPath, "not found in the data directory. copying a default logo.")
 		if err := utils.Copy(defaultLogo, filepath.Join(config.DataDirectory, "logo.svg")); err != nil {
 			log.Errorln("error copying default logo: ", err)
 		}
