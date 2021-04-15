@@ -9,7 +9,7 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/grafov/m3u8 v0.11.1
 	github.com/markbates/pkger v0.17.1
-	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/microcosm-cc/bluemonday v1.0.8
 	github.com/mssola/user_agent v0.5.2
 	github.com/mvdan/xurls v1.1.0 // indirect
