@@ -438,26 +438,6 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Temporary: Convert the cpuUsageLevel to a preset.  In the future we will have
-	// different codec models that will handle this for us and we won't
-	// be keeping track of presets at all.  But for now...
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
-	}
-
-	for i, variant := range videoVariants.Value {
-		preset := "superfast"
-		if variant.CPUUsageLevel > 0 && variant.CPUUsageLevel <= len(presetMapping) {
-			preset = presetMapping[variant.CPUUsageLevel-1]
-		}
-		variant.EncoderPreset = preset
-		videoVariants.Value[i] = variant
-	}
-
 	if err := data.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
@@ -506,6 +486,26 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	data.SetChatDisabled(configValue.Value.(bool))
 
 	controllers.WriteSimpleResponse(w, true, "chat disabled status updated")
+}
+
+// SetVideoCodec will change the codec used for video encoding.
+func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to change video codec")
+		return
+	}
+
+	if err := data.SetVideoCodec(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update codec")
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "video codec updated")
 }
 
 // SetExternalActions will set the 3rd party actions for the web interface.

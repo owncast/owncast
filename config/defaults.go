@@ -53,8 +53,8 @@ func GetDefaults() Defaults {
 			{
 				IsAudioPassthrough: true,
 				VideoBitrate:       1200,
-				EncoderPreset:      "veryfast",
 				Framerate:          24,
+				CPUUsageLevel:      2,
 			},
 		},
 	}

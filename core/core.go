@@ -99,6 +99,7 @@ func transitionToOfflineVideoStreamContent() {
 	offlineFilePath := "static/" + offlineFilename
 	_transcoder := transcoder.NewTranscoder()
 	_transcoder.SetInput(offlineFilePath)
+	_transcoder.SetIdentifier("offline")
 	_transcoder.Start()
 
 	// Copy the logo to be the thumbnail

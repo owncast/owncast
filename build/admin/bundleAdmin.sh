@@ -18,6 +18,7 @@ trap shutdown INT TERM ABRT EXIT
 echo "Cloning owncast admin into $INSTALL_TEMP_DIRECTORY..."
 git clone https://github.com/owncast/owncast-admin 2> /dev/null
 cd owncast-admin
+git checkout gek/codec-selection
 
 echo "Installing npm modules for the owncast admin..."
 npm --silent install 2> /dev/null
