@@ -508,6 +508,7 @@ export default class App extends Component {
       extraPageContent,
       chatDisabled,
       externalActions,
+      customStyles,
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -573,6 +574,8 @@ export default class App extends Component {
         id="app-container"
         class="flex w-full flex-col justify-start relative ${extraAppClasses}"
       >
+        <style>${customStyles}</style>
+
         <div id="top-content" class="z-50">
           <header
             class="flex border-b border-gray-900 border-solid shadow-md fixed z-10 w-full top-0	left-0 flex flex-row justify-between flex-no-wrap"
