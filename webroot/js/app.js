@@ -574,7 +574,9 @@ export default class App extends Component {
         id="app-container"
         class="flex w-full flex-col justify-start relative ${extraAppClasses}"
       >
-        <style>${customStyles}</style>
+        <style>
+          ${customStyles}
+        </style>
 
         <div id="top-content" class="z-50">
           <header
