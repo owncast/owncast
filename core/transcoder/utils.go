@@ -1,9 +1,14 @@
 package transcoder
 
 import (
+	"os"
+	"path"
+	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -78,4 +83,35 @@ func handleTranscoderMessage(message string) {
 	log.Error(message)
 
 	_lastTranscoderLogMessage = message
+}
+
+func createVariantDirectories() {
+	// Create private hls data dirs
+	if len(data.GetStreamOutputVariants()) != 0 {
+		for index := range data.GetStreamOutputVariants() {
+			err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			dir := path.Join(config.PublicHLSStoragePath, strconv.Itoa(index))
+			log.Traceln("Creating", dir)
+			err = os.MkdirAll(dir, 0777)
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+	} else {
+		dir := path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0))
+		log.Traceln("Creating", dir)
+		err := os.MkdirAll(dir, 0777)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		dir = path.Join(config.PublicHLSStoragePath, strconv.Itoa(0))
+		log.Traceln("Creating", dir)
+		err = os.MkdirAll(dir, 0777)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
 }

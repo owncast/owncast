@@ -4,7 +4,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
 
 	log "github.com/sirupsen/logrus"
 
@@ -131,31 +130,6 @@ func resetDirectories() {
 
 	// Remove the previous thumbnail
 	os.Remove(filepath.Join(config.WebRoot, "thumbnail.jpg"))
-
-	// Create private hls data dirs
-	if len(data.GetStreamOutputVariants()) != 0 {
-		for index := range data.GetStreamOutputVariants() {
-			err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
-			if err != nil {
-				log.Fatalln(err)
-			}
-
-			err = os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(index)), 0777)
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-	} else {
-		err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0)), 0777)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		err = os.MkdirAll(path.Join(config.PublicHLSStoragePath, strconv.Itoa(0)), 0777)
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()

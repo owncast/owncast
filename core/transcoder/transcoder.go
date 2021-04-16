@@ -87,6 +87,7 @@ func (t *Transcoder) Start() {
 
 	command := t.getString()
 	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.DisplayName(), len(t.variants))
+	createVariantDirectories()
 
 	if config.EnableDebugFeatures {
 		log.Println(command)
