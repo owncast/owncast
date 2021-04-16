@@ -87,13 +87,12 @@ export default function EditCustomStyles() {
         Customize the look and feel of your Owncast instance by overriding the CSS styles of various
         components on the page. Refer to the{' '}
         <a
-          href="[TODO - Create .md page and point to github url]"
+          href="https://owncast.online/docs/website/"
           rel="noopener noreferrer"
           target="_blank"
         >
           CSS &amp; Components guide
-        </a>{' '}
-        in the code base for suggestions.
+        </a>.
       </p>
       <p className="description">
         Please input plain CSS text, as this will be directly injected onto your page during load.
