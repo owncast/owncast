@@ -461,12 +461,15 @@ export default class App extends Component {
     url.searchParams.append('username', username);
     url.searchParams.append('instance', window.location);
 
+    const fullUrl = url.toString();
+
     if (openExternally) {
-      var win = window.open(url.toString(), '_blank');
+      var win = window.open(fullUrl, '_blank');
       win.focus();
       return;
     }
 
+    action.url = fullUrl;
     this.setState({
       externalAction: action,
     });
