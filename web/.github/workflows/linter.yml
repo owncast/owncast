@@ -1,7 +1,8 @@
 name: linter
 
 # This action works with pull requests and pushes
-on: [push, pull_request]
+on: [push, pull_request_target]
+
 jobs:
   prettier:
     runs-on: ubuntu-latest
