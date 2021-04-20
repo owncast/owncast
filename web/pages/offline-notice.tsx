@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Result, Card, Row, Col, Input, Collapse, Typography } from 'antd';
+import { Card, Row, Col, Input, Collapse, Typography } from 'antd';
 import {
   MessageTwoTone,
   QuestionCircleTwoTone,
@@ -43,11 +43,9 @@ export default function Offline({ logs = [], config }) {
             Learn how to point your existing software to your new server and start streaming your
             content.
           </a>
-          <Collapse>
-            <Panel header="Your connection details" key="1">
               <Row align="middle">
                 <Col flex="none">
-                  <Text strong>Streaming URL:</Text>
+                  <Text>Streaming URL:</Text>
                 </Col>
                 <Col flex="auto">
                   <Paragraph className="stream-info-box" copyable>
@@ -58,7 +56,7 @@ export default function Offline({ logs = [], config }) {
 
               <Row align="middle">
                 <Col flex="none">
-                  <Text strong>Stream Key:</Text>
+                  <Text>Stream Key:</Text>
                 </Col>
                 <Col flex="auto">
                   <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
@@ -66,8 +64,6 @@ export default function Offline({ logs = [], config }) {
                   </Paragraph>
                 </Col>
               </Row>
-            </Panel>
-          </Collapse>
         </div>
       ),
     },
