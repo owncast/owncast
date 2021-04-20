@@ -43,27 +43,27 @@ export default function Offline({ logs = [], config }) {
             Learn how to point your existing software to your new server and start streaming your
             content.
           </a>
-              <Row align="middle">
-                <Col flex="none">
-                  <Text>Streaming URL:</Text>
-                </Col>
-                <Col flex="auto">
-                  <Paragraph className="stream-info-box" copyable>
-                    {generateStreamURL(instanceUrl)}
-                  </Paragraph>
-                </Col>
-              </Row>
+          <Row align="middle">
+            <Col flex="none">
+              <Text>Streaming URL:</Text>
+            </Col>
+            <Col flex="auto">
+              <Paragraph className="stream-info-box" copyable>
+                {generateStreamURL(instanceUrl)}
+              </Paragraph>
+            </Col>
+          </Row>
 
-              <Row align="middle">
-                <Col flex="none">
-                  <Text>Stream Key:</Text>
-                </Col>
-                <Col flex="auto">
-                  <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
-                    *********************
-                  </Paragraph>
-                </Col>
-              </Row>
+          <Row align="middle">
+            <Col flex="none">
+              <Text>Stream Key:</Text>
+            </Col>
+            <Col flex="auto">
+              <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
+                *********************
+              </Paragraph>
+            </Col>
+          </Row>
         </div>
       ),
     },
