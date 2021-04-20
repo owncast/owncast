@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
+import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip, Row, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
@@ -73,6 +73,9 @@ function NewTokenModal(props: Props) {
   function selectAll() {
     setSelectedScopes(Object.keys(availableScopes));
   }
+  const checkboxes = scopes.map(function (singleEvent) {
+    return (<Col span={8} key={singleEvent.value}><Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox></Col>)
+  });
 
   return (
     <Modal
@@ -94,7 +97,11 @@ function NewTokenModal(props: Props) {
         Select the permissions this access token will have. It cannot be edited after it&apos;s
         created.
       </p>
-      <Checkbox.Group options={scopes} value={selectedScopes} onChange={onChange} />
+      <Checkbox.Group style={{ width: '100%' }} value={selectedScopes} onChange={onChange}>
+        <Row>
+          {checkboxes}
+        </Row>
+      </Checkbox.Group>
 
       <p>
         <Button type="primary" onClick={selectAll}>

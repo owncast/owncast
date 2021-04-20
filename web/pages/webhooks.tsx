@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip } from 'antd';
+import {
+  Table,
+  Tag,
+  Space,
+  Button,
+  Modal,
+  Checkbox,
+  Input,
+  Typography,
+  Tooltip,
+  Row,
+  Col,
+} from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import isValidUrl from '../utils/urls';
 
@@ -73,6 +85,10 @@ function NewWebhookModal(props: Props) {
     disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl),
   };
 
+  const checkboxes = events.map(function (singleEvent) {
+    return (<Col span={8} key={singleEvent.value}><Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox></Col>)
+  });
+
   return (
     <Modal
       title="Create New Webhook"
@@ -90,8 +106,11 @@ function NewWebhookModal(props: Props) {
       </div>
 
       <p>Select the events that will be sent to this webhook.</p>
-      <Checkbox.Group options={events} value={selectedEvents} onChange={onChange} />
-
+      <Checkbox.Group style={{ width: '100%' }} value={selectedEvents} onChange={onChange}>
+        <Row>
+          {checkboxes}
+        </Row>
+      </Checkbox.Group>
       <p>
         <Button type="primary" onClick={selectAll}>
           Select all
