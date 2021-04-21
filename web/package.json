@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.32",
-    "@types/classnames": "^2.2.11",
+    "@types/classnames": "^2.3.1",
     "@types/markdown-it": "^12.0.1",
     "@types/node": "^14.14.41",
     "@types/prop-types": "^15.7.3",
