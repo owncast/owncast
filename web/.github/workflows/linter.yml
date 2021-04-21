@@ -1,10 +1,11 @@
 name: linter
 
 # This action works with pull requests and pushes
-on: [push, pull_request_target]
+on: [push, pull_request]
 
 jobs:
-  prettier:
+  format:
+    if: ${{ github.actor != 'dependabot' }}
     runs-on: ubuntu-latest
 
     steps:
