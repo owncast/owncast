@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development branch.
-  version: '0.0.7-dev'
+  version: '0.0.7'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -1378,6 +1378,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Webhook"
+
+  /api/admin/config/externalactions:
+    post:
+      summary: Set external action URLs.
+      description: Set a collection of external action URLs that are displayed in the UI.
+      tags: ["Admin", "Integrations"]
+      security:
+        - AdminBasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        description: URL of the external action content.
+                      title:
+                        type: string
+                        description: The title to put on the external action button.
+                      description:
+                        type: string
+                        description: Optional additional description to display in the UI.
+                      icon:
+                        type: string
+                        description: The URL to an image to place on the external action button.
+                      color:
+                        type: string
+                        description: Optional color to use for drawing the action button.
+                      openExternally:
+                        type: boolean
+                        description: If set this action will open in a new browser tab instead of an internal modal.
+      responses:
+        "200":
+          description: Actions have been updated.
 
   /api/admin/webhooks/delete:
     post:
