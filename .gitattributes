@@ -1,2 +1,10 @@
 webroot/js/web_modules/* linguist-vendored
+webroot/js/web_modules/@joeattardi/* linguist-vendored
+webroot/js/web_modules/@justinribeiro/* linguist-vendored
+webroot/js/web_modules/@videojs/http-streaming/dist/* linguist-vendored
+webroot/js/web_modules/@videojs/themes/fantasy/* linguist-vendored
+webroot/js/web_modules/common/* linguist-vendored
+webroot/js/web_modules/markjs/dist/* linguist-vendored
+webroot/js/web_modules/tailwindcss/dist/* linguist-vendored
+webroot/js/web_modules/videojs/* linguist-vendored
 doc/api/* linguist-documentation
