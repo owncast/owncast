@@ -5,7 +5,7 @@ on: [push, pull_request]
 
 jobs:
   format:
-    if: ${{ github.actor != 'dependabot' }}
+    if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
 
     steps:
