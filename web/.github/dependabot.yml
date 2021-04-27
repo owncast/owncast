@@ -6,5 +6,4 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "nebunez"
       - "gabek"
