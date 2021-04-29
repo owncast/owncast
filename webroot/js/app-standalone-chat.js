@@ -12,7 +12,7 @@ export default class StandaloneChat extends Component {
     super(props, context);
 
     this.state = {
-      websocket: new Websocket(true), // Send along the "ignoreClient" flag so this isn't counted as a viewer
+      websocket: new Websocket(),
       chatEnabled: true, // always true for standalone chat
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
     };
@@ -35,7 +35,6 @@ export default class StandaloneChat extends Component {
           websocket=${websocket}
           username=${username}
           messagesOnly
-          ignoreClient
         />
       `
     );

@@ -4,8 +4,8 @@ import Mark from '/js/web_modules/markjs/dist/mark.es6.min.js';
 const html = htm.bind(h);
 
 import {
-  messageBubbleColorForString,
-  textColorForString,
+  messageBubbleColorForHue,
+  textColorForHue,
 } from '../../utils/user-colors.js';
 import { convertToText } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
@@ -27,10 +27,13 @@ export default class ChatMessageView extends Component {
   }
 
   async componentDidMount() {
-    const { message, username } = this.props;
-    if (message && username) {
+    const { message } = this.props;
+    const { type, user, body } = message;
+    const { displayName } = user;
+  
+    if (message && displayName) {
       const { body } = message;
-      const formattedMessage = await formatMessageText(body, username);
+      const formattedMessage = await formatMessageText(body, displayName);
       this.setState({
         formattedMessage,
       });
@@ -39,7 +42,8 @@ export default class ChatMessageView extends Component {
 
   render() {
     const { message } = this.props;
-    const { author, timestamp, visible } = message;
+    const { type, user, body, visible, timestamp } = message;
+    const { displayName, displayColor } = user;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
@@ -51,10 +55,10 @@ export default class ChatMessageView extends Component {
 
     const authorTextColor = isSystemMessage
       ? { color: '#fff' }
-      : { color: textColorForString(author) };
+      : { color: textColorForHue(displayColor) };
     const backgroundStyle = isSystemMessage
       ? { backgroundColor: '#667eea' }
-      : { backgroundColor: messageBubbleColorForString(author) };
+      : { backgroundColor: messageBubbleColorForHue(displayColor) };
     const messageClassString = isSystemMessage
       ? getSystemMessageClassString()
       : getChatMessageClassString();
@@ -67,7 +71,7 @@ export default class ChatMessageView extends Component {
       >
         <div class="message-content break-words w-full">
           <div style=${authorTextColor} class="message-author font-bold">
-            ${author}
+            ${displayName}
           </div>
           <div
             class="message-text text-gray-300 font-normal overflow-y-hidden pt-2"

@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
@@ -15,6 +16,7 @@ import (
 // GetServerConfig gets the config details of the server.
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	usernameBlocklist := strings.Join(data.GetUsernameBlocklist(), ",")
 
 	var videoQualityVariants = make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
@@ -61,7 +63,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ExternalActions:   data.GetExternalActions(),
 		SupportedCodecs:   transcoder.GetCodecs(ffmpeg),
 		VideoCodec:        data.GetVideoCodec(),
-		UsernameBlocklist: data.GetUsernameBlocklist(),
+		UsernameBlocklist: usernameBlocklist,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

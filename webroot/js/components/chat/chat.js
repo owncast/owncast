@@ -162,12 +162,11 @@ export default class Chat extends Component {
   sendUsernameChange(oldName, newName) {
     clearTimeout(this.sendUserJoinedEvent);
 
-    const nameChange = {
-      type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
-      oldName,
-      newName,
-    };
-    this.websocket.send(nameChange);
+		const nameChange = {
+			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
+			newName,
+		};
+		this.websocket.send(nameChange);
   }
 
   receivedWebsocketMessage(message) {
@@ -181,6 +180,12 @@ export default class Chat extends Component {
 
   // handle any incoming message
   handleMessage(message) {
+    // Ignore errors
+    if (message.type.includes('ERROR')) {
+      return;
+    }
+
+    console.log(message)
     const {
       id: messageId,
       type: messageType,
@@ -247,13 +252,6 @@ export default class Chat extends Component {
     this.setState({
       webSocketConnected: true,
     });
-
-    const hasPreviouslySetCustomUsername = getLocalStorage(
-      KEY_CUSTOM_USERNAME_SET
-    );
-    if (hasPreviouslySetCustomUsername && !this.props.ignoreClient) {
-      this.sendJoinedMessage();
-    }
   }
 
   websocketDisconnected() {
@@ -269,27 +267,9 @@ export default class Chat extends Component {
     const { username } = this.props;
     const message = {
       body: content,
-      author: username,
-      type: SOCKET_MESSAGE_TYPES.CHAT,
+			type: SOCKET_MESSAGE_TYPES.CHAT,
     };
     this.websocket.send(message);
-  }
-
-  sendJoinedMessage() {
-    const { username } = this.props;
-    const message = {
-      username: username,
-      type: SOCKET_MESSAGE_TYPES.USER_JOINED,
-    };
-
-    // Artificial delay so people who join and immediately
-    // leave don't get counted.
-    this.sendUserJoinedEvent = setTimeout(
-      function () {
-        this.websocket.send(message);
-      }.bind(this),
-      5000
-    );
   }
 
   updateAuthorList(message) {

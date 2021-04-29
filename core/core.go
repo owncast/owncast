@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -44,6 +45,8 @@ func Start() error {
 		return err
 	}
 
+	user.SetupUsers()
+
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now
 	// but will play more useful when recordings come into play.
@@ -62,7 +65,9 @@ func Start() error {
 
 	_yp = yp.NewYP(GetStatus)
 
-	chat.Setup(ChatListenerImpl{})
+	if err := chat.Start(); err != nil {
+		log.Errorln(err)
+	}
 
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)

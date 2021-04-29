@@ -7,7 +7,9 @@ import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
-import Websocket from './utils/websocket.js';
+import Websocket, { CALLBACKS } from './utils/websocket.js';
+import { registerChat } from './chat/register.js';
+
 import ExternalActionModal, {
   ExternalActionButton,
 } from './components/external-action-modal.js';
@@ -28,6 +30,7 @@ import {
 } from './utils/helpers.js';
 import {
   HEIGHT_SHORT_WIDE,
+  KEY_ACCESS_TOKEN,
   KEY_CHAT_DISPLAYED,
   KEY_USERNAME,
   MESSAGE_OFFLINE,
@@ -54,10 +57,11 @@ export default class App extends Component {
     this.windowBlurred = false;
 
     this.state = {
-      websocket: new Websocket(),
+      websocket: null,
       displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
+      isRegistering: false,
       touchKeyboardActive: false,
 
       configData: {
@@ -116,6 +120,12 @@ export default class App extends Component {
     // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
+
+    // user events
+    this.handleWebsocketMessage = this.handleWebsocketMessage.bind(this);
+
+    // chat
+    this.setupChatAuth = this.setupChatAuth.bind(this);
   }
 
   componentDidMount() {
@@ -137,6 +147,8 @@ export default class App extends Component {
       onError: this.handlePlayerError,
     });
     this.player.init();
+
+    this.setupChatAuth();
   }
 
   componentWillUnmount() {
@@ -492,6 +504,59 @@ export default class App extends Component {
     });
   }
 
+  handleWebsocketMessage(e) {
+    console.log(e, this.isRegistering);
+    if (e.type === 'ERROR_NEEDS_REGISTRATION' && !this.isRegistering) {
+      this.state.websocket.shutdown();
+      this.setState({websocket: null});
+      this.setupChatAuth(true);
+    }
+  }
+
+  async setupChatAuth(force) {
+    console.log('setupChatAuth');
+
+    var accessToken = getLocalStorage(KEY_ACCESS_TOKEN);
+    var username = getLocalStorage(KEY_USERNAME);
+
+    if (!accessToken || force) {
+      console.log('Registering for chat...');
+      try {    
+        this.isRegistering = true;
+        const registration = await registerChat(this.state.username);
+        accessToken = registration.accessToken;
+        username = registration.displayName;
+
+        setLocalStorage(KEY_ACCESS_TOKEN, accessToken);
+        setLocalStorage(KEY_USERNAME, username);
+
+        console.log('registered', registration, accessToken, username);
+        this.isRegistering = false;
+      } catch (e) {
+        console.error('registration error:', e);
+      }
+    }
+
+    console.log('connecting', accessToken, username);
+
+    if (this.state.websocket) {
+      this.state.websocket.shutdown();
+      this.state.websocket = null;
+    }
+
+    // Without a valid access token he websocket connection will be rejected.
+    const websocket = new Websocket(accessToken);
+    websocket.addListener(
+      CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED,
+      this.handleWebsocketMessage
+    );
+
+    this.setState({
+      username: username,
+      websocket: websocket,
+    });
+  }
+
   render(props, state) {
     const {
       chatInputEnabled,
@@ -586,6 +651,17 @@ export default class App extends Component {
         action=${externalAction}
         onClose=${this.closeExternalActionModal}
       />`;
+
+    const chat = this.state.websocket
+      ? html`
+          <${Chat}
+            websocket=${websocket}
+            username=${username}
+            chatInputEnabled=${chatInputEnabled && !chatDisabled}
+            instanceTitle=${name}
+          />
+        `
+      : null;
 
     return html`
       <div
@@ -712,13 +788,7 @@ export default class App extends Component {
           </span>
         </footer>
 
-        <${Chat}
-          websocket=${websocket}
-          username=${username}
-          chatInputEnabled=${chatInputEnabled && !chatDisabled}
-          instanceTitle=${name}
-        />
-        ${externalActionModal}
+        ${chat} ${externalActionModal}
       </div>
     `;
   }

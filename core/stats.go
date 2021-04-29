@@ -7,7 +7,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
@@ -87,17 +86,17 @@ func RemoveChatClient(clientID string) {
 }
 
 func GetChatClients() []models.Client {
-	l.RLock()
+	// l.RLock()
 	clients := make([]models.Client, 0)
-	for _, client := range _stats.ChatClients {
-		chatClient := chat.GetClient(client.ClientID)
-		if chatClient != nil {
-			clients = append(clients, chatClient.GetViewerClientFromChatClient())
-		} else {
-			clients = append(clients, client)
-		}
-	}
-	l.RUnlock()
+	// for _, client := range _stats.Clients {
+	// 	chatClient := chat.GetClient(client.ClientID)
+	// 	if chatClient != nil {
+	// 		clients = append(clients, chatClient.GetViewerClientFromChatClient())
+	// 	} else {
+	// 		clients = append(clients, client)
+	// 	}
+	// }
+	// l.RUnlock()
 
 	return clients
 }

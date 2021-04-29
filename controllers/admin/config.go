@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -72,16 +72,16 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendSystemChatAction(messageText string, ephemeral bool) {
-	message := models.ChatEvent{}
-	message.Body = messageText
-	message.MessageType = models.ChatActionSent
-	message.ClientID = "internal-server"
-	message.Ephemeral = ephemeral
-	message.SetDefaults()
+	// message := models.ChatEvent{}
+	// message.Body = messageText
+	// message.MessageType = models.ChatActionSent
+	// message.ClientID = "internal-server"
+	// message.Ephemeral = ephemeral
+	// message.SetDefaults()
 
-	message.RenderBody()
+	// message.RenderBody()
 
-	if err := core.SendMessageToChat(message); err != nil {
+	if err := chat.SendSystemAction(messageText, ephemeral); err != nil {
 		log.Errorln(err)
 	}
 }

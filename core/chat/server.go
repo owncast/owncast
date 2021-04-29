@@ -1,191 +1,226 @@
 package chat
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/net/websocket"
 
+	"github.com/gorilla/websocket"
+
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/webhooks"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/utils"
 )
 
-var (
-	_server *server
-)
+var _server *ChatServer
 
-var l = &sync.RWMutex{}
+type ChatServer struct {
+	mu             sync.RWMutex
+	seq            uint
+	clients        map[uint]*ChatClient
+	maxClientCount uint
 
-// Server represents the server which handles the chat.
-type server struct {
-	Clients map[string]*Client
+	// send outbound message payload to all clients
+	outbound chan []byte
 
-	pattern  string
-	listener models.ChatListener
+	// receive inbound message payload from all clients
+	inbound chan chatClientEvent
 
-	addCh     chan *Client
-	delCh     chan *Client
-	sendAllCh chan models.ChatEvent
-	pingCh    chan models.PingMessage
-	doneCh    chan bool
-	errCh     chan error
+	// Unregister requests from clients.
+	unregister chan *ChatClient
 }
 
-// Add adds a client to the server.
-func (s *server) add(c *Client) {
-	s.addCh <- c
-}
-
-// Remove removes a client from the server.
-func (s *server) remove(c *Client) {
-	s.delCh <- c
-}
-
-// SendToAll sends a message to all of the connected clients.
-func (s *server) SendToAll(msg models.ChatEvent) {
-	s.sendAllCh <- msg
-}
-
-// Err handles an error.
-func (s *server) err(err error) {
-	s.errCh <- err
-}
-
-func (s *server) sendAll(msg models.ChatEvent) {
-	l.RLock()
-	for _, c := range s.Clients {
-		c.write(msg)
+func NewChat() *ChatServer {
+	server := &ChatServer{
+		clients:        map[uint]*ChatClient{},
+		outbound:       make(chan []byte),
+		inbound:        make(chan chatClientEvent),
+		maxClientCount: getMaxConnectionCount(),
 	}
-	l.RUnlock()
+
+	return server
 }
 
-func (s *server) ping() {
-	ping := models.PingMessage{MessageType: models.PING}
-
-	l.RLock()
-	for _, c := range s.Clients {
-		c.pingch <- ping
-	}
-	l.RUnlock()
-}
-
-func (s *server) usernameChanged(msg models.NameChangeEvent) {
-	l.RLock()
-	for _, c := range s.Clients {
-		c.usernameChangeChannel <- msg
-	}
-	l.RUnlock()
-
-	go webhooks.SendChatEventUsernameChanged(msg)
-}
-
-func (s *server) userJoined(msg models.UserJoinedEvent) {
-	l.RLock()
-	if s.listener.IsStreamConnected() {
-		for _, c := range s.Clients {
-			c.userJoinedChannel <- msg
-		}
-	}
-	l.RUnlock()
-
-	go webhooks.SendChatEventUserJoined(msg)
-}
-
-func (s *server) onConnection(ws *websocket.Conn) {
-	client := NewClient(ws)
-
-	defer func() {
-		s.removeClient(client)
-
-		if err := ws.Close(); err != nil {
-			log.Debugln(err)
-			//s.errCh <- err
-		}
-	}()
-
-	s.add(client)
-	client.listen()
-}
-
-// Listen and serve.
-// It serves client connection and broadcast request.
-func (s *server) Listen() {
-	http.Handle(s.pattern, websocket.Handler(s.onConnection))
-
-	log.Tracef("Starting the websocket listener on: %s", s.pattern)
-
+func (s *ChatServer) Run() {
 	for {
 		select {
-		// add new a client
-		case c := <-s.addCh:
-			l.Lock()
-			s.Clients[c.socketID] = c
-
-			if !c.Ignore {
-				s.listener.ClientAdded(c.GetViewerClientFromChatClient())
-				s.sendWelcomeMessageToClient(c)
-			}
-			l.Unlock()
-
-		// remove a client
-		case c := <-s.delCh:
-			s.removeClient(c)
-		case msg := <-s.sendAllCh:
-			if data.GetChatDisabled() {
-				break
+		case client := <-s.unregister:
+			if _, ok := s.clients[client.id]; ok {
+				s.mu.Lock()
+				delete(s.clients, client.id)
+				close(client.send)
+				s.mu.Unlock()
 			}
 
-			if !msg.Empty() {
-				// set defaults before sending msg to anywhere
-				msg.SetDefaults()
-
-				s.listener.MessageSent(msg)
-				s.sendAll(msg)
-
-				// Store in the message history
-				if !msg.Ephemeral {
-					addMessage(msg)
-				}
-
-				// Send webhooks
-				go webhooks.SendChatEvent(msg)
-			}
-		case ping := <-s.pingCh:
-			fmt.Println("PING?", ping)
-
-		case err := <-s.errCh:
-			log.Trace("Error: ", err.Error())
-
-		case <-s.doneCh:
-			return
+		case message := <-s.inbound:
+			s.eventReceived(message)
 		}
 	}
 }
 
-func (s *server) removeClient(c *Client) {
-	l.Lock()
-	if _, ok := s.Clients[c.socketID]; ok {
-		delete(s.Clients, c.socketID)
-
-		s.listener.ClientRemoved(c.socketID)
-		log.Tracef("The client was connected for %s and sent %d messages (%s)", time.Since(c.ConnectedAt), c.MessageCount, c.ClientID)
+// Addclient registers new connection as a User.
+func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string) *ChatClient {
+	client := &ChatClient{
+		server:      s,
+		conn:        conn,
+		user:        user,
+		ipAddress:   conn.RemoteAddr().String(),
+		accessToken: accessToken,
+		send:        make(chan []byte, 256),
 	}
-	l.Unlock()
+
+	s.mu.Lock()
+	{
+		client.id = s.seq
+		s.clients[client.id] = client
+		s.seq++
+	}
+	s.mu.Unlock()
+
+	fmt.Println("Adding client", client.id)
+
+	go client.writePump()
+	go client.readPump()
+
+	userJoinedEvent := events.UserJoinedEvent{}
+	userJoinedEvent.SetDefaults()
+	userJoinedEvent.User = user
+
+	s.Broadcast(userJoinedEvent.GetBroadcastPayload())
+	s.sendWelcomeMessageToClient(client)
+
+	return client
 }
 
-func (s *server) sendWelcomeMessageToClient(c *Client) {
-	go func() {
-		// Add an artificial delay so people notice this message come in.
-		time.Sleep(7 * time.Second)
+func (s *ChatServer) ClientClosed(c *ChatClient) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	c.close()
 
-		welcomeMessage := data.GetServerWelcomeMessage()
-		if welcomeMessage != "" {
-			initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: data.GetServerName(), Body: welcomeMessage, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
-			c.write(initialMessage)
+	if _, ok := s.clients[c.id]; ok {
+		fmt.Println("Deleting", c.id)
+		delete(s.clients, c.id)
+	}
+}
+
+func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
+	// Limit concurrent chat connections
+	if uint(len(s.clients)+1) >= s.maxClientCount {
+		fmt.Println("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
+		w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
+		return
+	}
+
+	// TODO: Actually check origin
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	accessToken := r.URL.Query().Get("accessToken")
+	if accessToken == "" {
+		log.Errorln("Access token is required")
+		conn.Close()
+		return
+	}
+
+	// A user is required to use the websocket
+	user := user.GetUserByToken(accessToken)
+	if user == nil {
+		log.Errorln(accessToken, "has no user")
+		conn.WriteJSON(events.EventPayload{
+			"type": events.Event_Error_Needs_Registration,
+		})
+		// Send error that registration is required
+		conn.Close()
+		return
+	}
+
+	// User is disabled therefore we should disconnect.
+	if user.DisabledAt != nil {
+		conn.Close()
+	}
+
+	s.Addclient(conn, user, accessToken)
+}
+
+// Broadcast sends message to all connected clients.
+func (s *ChatServer) Broadcast(payload events.EventPayload) error {
+	// fmt.Println("sending", payload)
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for _, client := range s.clients {
+		select {
+		case client.send <- data:
+		default:
+			close(client.send)
+			delete(s.clients, client.id)
 		}
-	}()
+	}
+
+	return nil
+}
+
+func (s *ChatServer) Send(payload events.EventPayload, client *ChatClient) {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	client.send <- data
+}
+
+func (s *ChatServer) eventReceived(event chatClientEvent) {
+	var typecheck map[string]interface{}
+	if err := json.Unmarshal(event.data, &typecheck); err != nil {
+		panic(err)
+	}
+
+	eventType := typecheck["type"]
+
+	// fmt.Println("handleEvent", eventType)
+	switch eventType {
+	case events.Event_MessageSent:
+		s.userMessageSent(event)
+
+	case events.Event_UserNameChanged:
+		s.userNameChanged(event)
+
+	default:
+		fmt.Println(eventType, "event not found:", typecheck)
+	}
+}
+
+func (s *ChatServer) sendWelcomeMessageToClient(c *ChatClient) {
+	// Add an artificial delay so people notice this message come in.
+	time.Sleep(7 * time.Second)
+
+	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+
+	if welcomeMessage != "" {
+		// initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: data.GetServerName(), Body: welcomeMessage, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
+		clientMessage := events.SystemMessageEvent{
+			Event: events.Event{},
+			MessageEvent: events.MessageEvent{
+				Body: welcomeMessage,
+			},
+		}
+		clientMessage.SetDefaults()
+		s.Send(clientMessage.GetBroadcastPayload(), c)
+	}
 }

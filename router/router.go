@@ -64,6 +64,9 @@ func Start() error {
 	// tell the backend you're an active viewer
 	http.HandleFunc("/api/ping", controllers.Ping)
 
+	// register a new chat user
+	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
@@ -210,6 +213,11 @@ func Start() error {
 
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+
+	// websocket
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		chat.HandleClientConnection(w, r)
+	})
 
 	port := config.WebServerPort
 	ip := config.WebServerIP

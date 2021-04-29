@@ -1,5 +1,5 @@
 config:
-  target: "ws://localhost:8080/entry"
+  target: "ws://localhost:8080/ws?accessToken=aifKeDKJRnfguK-KvuqkcYAGa6lIP_GONqkngsrB0uc="
   processor: "./websocketTest.js"
 
   ensure:
@@ -18,7 +18,7 @@ config:
       
   ws:
     subprotocols:
-      - json
+      # - json
     headers:
       Connection: Upgrade
       Origin: http://localhost:8080

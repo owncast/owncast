@@ -2,11 +2,14 @@ package chat
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,10 +24,10 @@ func setupPersistence() {
 func createTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
 		"id" string NOT NULL PRIMARY KEY,
-		"author" TEXT,
+		"user_id" INTEGER,
 		"body" TEXT,
-		"messageType" TEXT,
-		"visible" INTEGER,
+		"eventType" TEXT,
+		"hidden_at" DATE,
 		"timestamp" DATE
 	);`
 
@@ -38,19 +41,23 @@ func createTable() {
 	}
 }
 
-func addMessage(message models.ChatEvent) {
+func addMessage(event events.UserMessageEvent) {
+	saveEvent(event.Id, event.User.Id, event.Body, event.Type, event.Hidden, event.Timestamp)
+}
+
+func saveEvent(id string, userId string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
 	tx, err := _db.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
-	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
 
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp); err != nil {
+	if _, err = stmt.Exec(id, userId, body, eventType, hidden, timestamp); err != nil {
 		log.Fatal(err)
 	}
 	if err := tx.Commit(); err != nil {
@@ -58,8 +65,10 @@ func addMessage(message models.ChatEvent) {
 	}
 }
 
-func getChat(query string) []models.ChatEvent {
-	history := make([]models.ChatEvent, 0)
+func getChat(query string) []events.UserMessageEvent {
+	fmt.Println(query)
+
+	history := make([]events.UserMessageEvent, 0)
 	rows, err := _db.Query(query)
 	if err != nil {
 		log.Fatal(err)
@@ -68,25 +77,26 @@ func getChat(query string) []models.ChatEvent {
 
 	for rows.Next() {
 		var id string
-		var author string
+		var userId string
 		var body string
 		var messageType models.EventType
-		var visible int
+		var hidden *time.Time
 		var timestamp time.Time
 
-		err = rows.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
+		err = rows.Scan(&id, &userId, &body, &messageType, &hidden, &timestamp)
 		if err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
 			break
 		}
 
-		message := models.ChatEvent{}
-		message.ID = id
-		message.Author = author
+		user := user.GetUserById(userId)
+		message := events.UserMessageEvent{}
+		message.Id = id
+		message.User = user
 		message.Body = body
-		message.MessageType = messageType
-		message.Visible = visible == 1
+		message.Type = messageType
+		// message.Visible = visible == 1
 		message.Timestamp = timestamp
 
 		history = append(history, message)
@@ -99,24 +109,25 @@ func getChat(query string) []models.ChatEvent {
 	return history
 }
 
-func getChatModerationHistory() []models.ChatEvent {
-	var query = "SELECT * FROM messages WHERE messageType == 'CHAT' AND datetime(timestamp) >=datetime('now', '-5 Hour')"
-	return getChat(query)
-}
+// func getChatModerationHistory() []events.Event {
+// 	var query = "SELECT * FROM messages WHERE messageType == 'CHAT' AND datetime(timestamp) >=datetime('now', '-5 Hour')"
+// 	return getChat(query)
+// }
 
-func getChatHistory() []models.ChatEvent {
+func GetChatHistory() []events.UserMessageEvent {
 	// Get all messages sent within the past 5hrs, max 50
-	var query = "SELECT * FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND visible = 1 ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc"
+	var query = "SELECT * FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND hidden_at IS NULL ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc"
 	return getChat(query)
 }
 
+// TODO: Fix this to set timestamp OR null for hidden_at
 func saveMessageVisibility(messageIDs []string, visible bool) error {
 	tx, err := _db.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
+	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
 
 	if err != nil {
 		log.Fatal(err)
@@ -143,7 +154,7 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	return nil
 }
 
-func getMessageById(messageID string) (models.ChatEvent, error) {
+func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 	var query = "SELECT * FROM messages WHERE id = ?"
 	row := _db.QueryRow(query, messageID)
 
@@ -151,21 +162,25 @@ func getMessageById(messageID string) (models.ChatEvent, error) {
 	var author string
 	var body string
 	var messageType models.EventType
-	var visible int
+	var hiddenAt time.Time
 	var timestamp time.Time
 
-	err := row.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
+	err := row.Scan(&id, &author, &body, &messageType, &hiddenAt, &timestamp)
 	if err != nil {
 		log.Errorln(err)
-		return models.ChatEvent{}, err
+		return nil, err
 	}
 
-	return models.ChatEvent{
-		ID:          id,
-		Author:      author,
-		Body:        body,
-		MessageType: messageType,
-		Visible:     visible == 1,
-		Timestamp:   timestamp,
+	return &events.UserMessageEvent{
+		events.Event{
+			Id:        id,
+			Timestamp: timestamp,
+		},
+		events.UserEvent{
+			Hidden: &hiddenAt,
+		},
+		events.MessageEvent{
+			Body: body,
+		},
 	}, nil
 }

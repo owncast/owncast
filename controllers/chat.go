@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,7 +18,9 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		messages := core.GetAllChatMessages()
+		// w.WriteHeader(http.StatusNotImplemented)
+
+		messages := chat.GetChatHistory()
 
 		if err := json.NewEncoder(w).Encode(messages); err != nil {
 			log.Errorln(err)
@@ -27,4 +31,44 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 			InternalErrorHandler(w, err)
 		}
 	}
+}
+
+// RegisterAnonymousChatUser will register a new user.
+func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != POST {
+		WriteSimpleResponse(w, false, r.Method+" not supported")
+		return
+	}
+
+	type registerAnonymousUserRequest struct {
+		DisplayName string `json:"displayName"`
+	}
+
+	type registerAnonymousUserResponse struct {
+		AccessToken string `json:"accessToken"`
+		DisplayName string `json:"displayName"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request registerAnonymousUserRequest
+	if err := decoder.Decode(&request); err != nil {
+		// this is fine. register a new user anyway.
+	}
+
+	err, newUser := user.CreateAnonymousUser(request.DisplayName)
+	if err != nil {
+		WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	response := registerAnonymousUserResponse{
+		AccessToken: newUser.AccessToken,
+		DisplayName: newUser.DisplayName,
+	}
+
+	fmt.Println("Registering user....", newUser.AccessToken)
+
+	WriteResponse(w, response)
 }

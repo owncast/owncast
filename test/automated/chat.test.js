@@ -22,7 +22,7 @@ const testMessage = {
 };
 
 test('can send a chat message', (done) => {
-    ws = new WebSocket('ws://127.0.0.1:8080/entry', {
+    ws = new WebSocket('ws://127.0.0.1:8080/ws', {
     origin: 'http://localhost',
 });
 

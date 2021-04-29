@@ -42,6 +42,10 @@ func GetCommit() string {
 	return GitCommit
 }
 
+var DefaultBlockedUsernames = []string{
+	"owncast", "operator", "admin",
+}
+
 // GetReleaseString gets the version string.
 func GetReleaseString() string {
 	var versionNumber = VersionNumber

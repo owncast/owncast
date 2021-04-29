@@ -577,16 +577,23 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	return indexedQualities[0].index
 }
 
-// GetUsernameBlocklist will return the blocked usernames as a comma separated string.
-func GetUsernameBlocklist() string {
+// GetUsernameBlocklist will return the blocked usernames as a comma seperated string.
+func GetUsernameBlocklist() []string {
 	usernameString, err := _datastore.GetString(blockedUsernamesKey)
 
 	if err != nil {
 		log.Traceln(blockedUsernamesKey, err)
-		return ""
+		return config.DefaultBlockedUsernames
 	}
 
-	return usernameString
+	if usernameString == "" {
+		return config.DefaultBlockedUsernames
+	}
+
+	blocklist := strings.Split(usernameString, ",")
+	blocklist = append(blocklist, config.DefaultBlockedUsernames...)
+
+	return blocklist
 }
 
 // SetUsernameBlocklist set the username blocklist as a comma separated string.
