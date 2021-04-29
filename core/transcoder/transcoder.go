@@ -327,14 +327,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 		return fmt.Sprintf("-map v:0 -c:v:%d copy", v.index)
 	}
 
-	// Determine if we should force key frames every 1, 2 or 3 frames.
-	isEven := t.currentLatencyLevel.SecondsPerSegment%2 == 0
-	gop := v.framerate * 2
-	if t.currentLatencyLevel.SecondsPerSegment == 1 {
-		gop = v.framerate
-	} else if !isEven {
-		gop = v.framerate * 3
-	}
+	gop := v.framerate // force an i-frame every second
 
 	// For limiting the output bitrate
 	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
