@@ -173,7 +173,7 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
 export const FIELD_PROPS_DISABLE_CHAT = {
   apiPath: API_CHAT_DISABLE,
   configPath: 'chatDisabled',
-  label: 'Disable chat',
+  label: 'Hide chat',
   tip: 'Hide the web chat interface.',
   useSubmit: true,
 };
