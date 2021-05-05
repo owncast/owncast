@@ -46,4 +46,4 @@ trap finish EXIT
 
 echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST.  Warning: If these files differ greatly in formats transitioning from one to another may not always work correctly...  ctl+c to exit"
 
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat -safe 0 -i list.txt -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -preset veryfast -acodec copy -f flv $DESTINATION_HOST
+ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat -safe 0 -i list.txt -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -preset veryfast -acodec copy -vf drawtext="fontfile=monofonto.ttf: fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'" -f flv $DESTINATION_HOST
