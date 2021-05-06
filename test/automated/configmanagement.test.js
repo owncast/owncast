@@ -6,7 +6,7 @@ const streamTitle = randomString();
 const serverSummary = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const tags = [randomString(), randomString(), randomString()];
-const latencyLevel = Math.floor(Math.random() * 5 + 1);
+const latencyLevel = Math.floor(Math.random() * 4);
 
 const streamOutputVariants = {
   videoBitrate: randomNumber() * 100,
