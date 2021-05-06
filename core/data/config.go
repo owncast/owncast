@@ -394,8 +394,10 @@ func SetS3StorageEnabled(enabled bool) error {
 // GetStreamLatencyLevel will return the stream latency level.
 func GetStreamLatencyLevel() models.LatencyLevel {
 	level, err := _datastore.GetNumber(videoLatencyLevel)
-	if err != nil || level == 0 {
-		level = 4
+	if err != nil {
+		level = 2 // default
+	} else if level > 4 {
+		level = 4 // highest
 	}
 
 	return models.GetLatencyLevel(int(level))

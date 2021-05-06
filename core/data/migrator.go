@@ -154,21 +154,21 @@ func migrateConfigFile() {
 	_ = SetStreamOutputVariants(variants)
 
 	// Migrate latency level
-	level := 4
+	level := 2
 	oldSegmentLength := oldConfig.VideoSettings.ChunkLengthInSeconds
 	oldNumberOfSegments := oldConfig.Files.MaxNumberInPlaylist
 	latencyLevels := models.GetLatencyConfigs()
 
-	if oldSegmentLength == latencyLevels[1].SecondsPerSegment && oldNumberOfSegments == latencyLevels[1].SegmentCount {
+	if oldSegmentLength == latencyLevels[0].SecondsPerSegment && oldNumberOfSegments == latencyLevels[0].SegmentCount {
+		level = 0
+	} else if oldSegmentLength == latencyLevels[1].SecondsPerSegment && oldNumberOfSegments == latencyLevels[2].SegmentCount {
 		level = 1
 	} else if oldSegmentLength == latencyLevels[2].SecondsPerSegment && oldNumberOfSegments == latencyLevels[2].SegmentCount {
 		level = 2
 	} else if oldSegmentLength == latencyLevels[3].SecondsPerSegment && oldNumberOfSegments == latencyLevels[3].SegmentCount {
 		level = 3
-	} else if oldSegmentLength == latencyLevels[5].SecondsPerSegment && oldNumberOfSegments == latencyLevels[5].SegmentCount {
-		level = 5
-	} else if oldSegmentLength >= latencyLevels[6].SecondsPerSegment && oldNumberOfSegments >= latencyLevels[6].SegmentCount {
-		level = 6
+	} else if oldSegmentLength >= latencyLevels[4].SecondsPerSegment && oldNumberOfSegments >= latencyLevels[4].SegmentCount {
+		level = 4
 	}
 
 	_ = SetStreamLatencyLevel(float64(level))
