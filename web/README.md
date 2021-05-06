@@ -2,13 +2,16 @@ This is a [Next.js](https://nextjs.org/) project with [TypeScript](https://www.t
 
 ## Getting Started
 
-First, run the development server:
+**First**, run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
 ```
+
+**Second**, make sure you're running an instance of Owncast on localhost:8080, as your copy of the admin will look to use that as the API.
+
 
 In production this Admin instance would ideally live on the domain as your Owncast instance, for example: `myowncast-site.com/admin`. So open [http://localhost:3000/admin](http://localhost:3000/admin) with your browser to see the result.
 
@@ -20,11 +23,12 @@ Since this project hits API endpoints you should make requests in [`componentDid
 
 
 A list of API end points can be found here:
-https://github.com/owncast/owncast/blob/master/router/router.go
+https://owncast.online/api/development/
 
 ### Auth-ing for APIs
+Auth: HTTP Basic
 username: admin
-pw: [your stramkey]
+pw: [your streamkey]
 
 
 ## Learn More
