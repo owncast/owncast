@@ -236,7 +236,7 @@ export const FRAMERATE_TOOLTIPS = {
 };
 // VIDEO VARIANT FORM - bitrate
 export const VIDEO_BITRATE_DEFAULTS = {
-  min: 600,
+  min: 400,
   max: 6000,
   defaultValue: 1200,
   unit: 'kbps',
