@@ -27,7 +27,7 @@ const SLIDER_MARKS = {
 };
 
 const SLIDER_COMMENTS = {
-  0: 'Lowest latency, lowest error tolerance (Not recommended)',
+  0: 'Lowest latency, lowest error tolerance (Not recommended, may not work for all content/configurations.)',
   1: 'Low latency, low error tolerance',
   2: 'Medium latency, medium error tolerance (Default)',
   3: 'High latency, high error tolerance',
