@@ -19,21 +19,19 @@ import FormStatusIndicator from './form-status-indicator';
 const { Title } = Typography;
 
 const SLIDER_MARKS = {
-  1: 'Low',
+  0: 'Lowest',
+  1: '',
   2: '',
   3: '',
-  4: '',
-  5: '',
-  6: 'High',
+  4: 'Highest',
 };
 
 const SLIDER_COMMENTS = {
-  1: 'Lowest latency, lowest error tolerance',
-  2: 'Low latency, low error tolerance',
-  3: 'Lower latency, lower error tolerance',
-  4: 'Medium latency, medium error tolerance (Default)',
-  5: 'Higher latency, higher error tolerance',
-  6: 'Highest latency, highest error tolerance',
+  0: 'Lowest latency, lowest error tolerance (Not recommended)',
+  1: 'Low latency, low error tolerance',
+  2: 'Medium latency, medium error tolerance (Default)',
+  3: 'High latency, high error tolerance',
+  4: 'Highest latency, highest error tolerance',
 };
 
 export default function VideoLatency() {
@@ -120,8 +118,8 @@ export default function VideoLatency() {
         <Slider
           tipFormatter={value => SLIDER_COMMENTS[value]}
           onChange={handleChange}
-          min={1}
-          max={6}
+          min={0}
+          max={4}
           marks={SLIDER_MARKS}
           defaultValue={selectedOption}
           value={selectedOption}
