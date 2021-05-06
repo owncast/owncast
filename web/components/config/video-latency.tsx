@@ -100,7 +100,8 @@ export default function VideoLatency() {
       </Title>
       <p className="description">
         While it&apos;s natural to want to keep your latency as low as possible, you may experience
-        reduced error tolerance and stability the lower you go. The lowest setting is not recommended.
+        reduced error tolerance and stability the lower you go. The lowest setting is not
+        recommended.
       </p>
       <p className="description">
         For interactive live streams you may want to experiment with a lower latency, for
