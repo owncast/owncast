@@ -327,7 +327,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 		return fmt.Sprintf("-map v:0 -c:v:%d copy", v.index)
 	}
 
-	gop := v.framerate // force an i-frame every second
+	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
 
 	// For limiting the output bitrate
 	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
