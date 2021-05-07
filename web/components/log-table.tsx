@@ -59,7 +59,7 @@ export default function LogTable({ logs, pageSize }: Props) {
       key: 'time',
       render: timestamp => {
         const dateObject = new Date(timestamp);
-        return format(dateObject, 'p P');
+        return format(dateObject, 'pp P');
       },
       sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
       sortDirections: ['descend', 'ascend'] as SortOrder[],
