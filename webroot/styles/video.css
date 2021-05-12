@@ -19,11 +19,11 @@ video.video-js {
 }
 
 .vjs-big-play-button {
-  z-index: 100;
+  z-index: 48;
 }
 
 .vjs-loading-spinner {
-  z-index: 200;
+  z-index: 49;
 }
 
 /*
