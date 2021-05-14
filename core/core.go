@@ -129,12 +129,11 @@ func resetDirectories() {
 	}
 
 	// Remove the previous thumbnail
-	os.Remove(filepath.Join(config.WebRoot, "thumbnail.jpg"))
-
-	// Remove the previous thumbnail
 	logo := data.GetLogoPath()
-	err = utils.Copy(path.Join("data", logo), "webroot/thumbnail.jpg")
-	if err != nil {
-		log.Warnln(err)
+	if utils.DoesFileExists(logo) {
+		err = utils.Copy(path.Join("data", logo), filepath.Join(config.WebRoot, "thumbnail.jpg"))
+		if err != nil {
+			log.Warnln(err)
+		}
 	}
 }

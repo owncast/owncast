@@ -116,4 +116,4 @@ docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg 
 
 # Dockerhub
 # You must be authenticated via `docker login` with your Dockerhub credentials first.
-docker push gabekangas/owncast
+docker push "gabekangas/owncast:${VERSION}"
