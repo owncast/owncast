@@ -21,7 +21,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
-	github.com/yuin/goldmark v1.3.5
+	github.com/yuin/goldmark v1.3.6
 	golang.org/x/mod v0.4.2
 	golang.org/x/net v0.0.0-20210421230115-4e50805a0758
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
