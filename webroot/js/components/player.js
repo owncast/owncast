@@ -25,7 +25,7 @@ const VIDEO_OPTIONS = {
     vhs: {
       // used to select the lowest bitrate playlist initially. This helps to decrease playback start time. This setting is false by default.
       enableLowInitialPlaylist: true,
-      smoothQualityChange: true,
+      experimentalBufferBasedABR: true,
     },
   },
   liveTracker: {
