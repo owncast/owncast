@@ -46,6 +46,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		FFmpegPath:     ffmpeg,
 		StreamKey:      data.GetStreamKey(),
 		WebServerPort:  config.WebServerPort,
+		WebServerIP:    config.WebServerIP,
 		RTMPServerPort: data.GetRTMPPortNumber(),
 		ChatDisabled:   data.GetChatDisabled(),
 		VideoSettings: videoSettings{
@@ -74,6 +75,7 @@ type serverConfigAdminResponse struct {
 	FFmpegPath      string                  `json:"ffmpegPath"`
 	StreamKey       string                  `json:"streamKey"`
 	WebServerPort   int                     `json:"webServerPort"`
+	WebServerIP     string                  `json:"webServerIP"`
 	RTMPServerPort  int                     `json:"rtmpServerPort"`
 	S3              models.S3               `json:"s3"`
 	VideoSettings   videoSettings           `json:"videoSettings"`

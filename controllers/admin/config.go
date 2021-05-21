@@ -293,12 +293,43 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// don't panic when input is not a float
+	_, is_float := configValue.Value.(float64)
+	if !is_float {
+		return
+	}
+
 	if err := data.SetHTTPPortNumber(configValue.Value.(float64)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "http port set")
+}
+
+// SetWebServerIP will handle the web config request to set the server's HTTP listen address.
+func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	// don't panic when input is not a string
+	_, is_string := configValue.Value.(string)
+	if !is_string {
+		return
+	}
+
+	if err := data.SetHTTPListenAddress(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "http listen address set")
 }
 
 // SetRTMPServerPort will handle the web config request to set the inbound RTMP port.
