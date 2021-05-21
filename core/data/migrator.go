@@ -28,9 +28,7 @@ func RunMigrations() {
 }
 
 func migrateStatsFile() {
-	oldStats := models.Stats{
-		Clients: make(map[string]models.Client),
-	}
+	oldStats := models.Stats{}
 
 	if !utils.DoesFileExists(config.StatsFile) {
 		return

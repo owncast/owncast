@@ -42,6 +42,7 @@ import {
   URL_CONFIG,
   URL_OWNCAST,
   URL_STATUS,
+  URL_VIEWER_PING,
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
 
@@ -186,6 +187,12 @@ export default class App extends Component {
         this.handleOfflineMode();
         this.handleNetworkingError(`Stream status: ${error}`);
       });
+
+    // Ping the API to let them know we're an active viewer
+    fetch(URL_VIEWER_PING).catch((error) => {
+      this.handleOfflineMode();
+      this.handleNetworkingError(`Viewer PING error: ${error}`);
+    });
   }
 
   setConfigData(data = {}) {
