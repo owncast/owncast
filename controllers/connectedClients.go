@@ -9,7 +9,7 @@ import (
 
 // GetConnectedClients returns currently connected clients.
 func GetConnectedClients(w http.ResponseWriter, r *http.Request) {
-	clients := core.GetClients()
+	clients := core.GetChatClients()
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(clients); err != nil {
