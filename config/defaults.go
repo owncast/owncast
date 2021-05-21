@@ -47,7 +47,7 @@ func GetDefaults() Defaults {
 		YPServer:  "https://directory.owncast.online",
 
 		WebServerPort:  8080,
-		WebServerIP:    "127.0.0.1",
+		WebServerIP:    "0.0.0.0",
 		RTMPServerPort: 1935,
 		StreamKey:      "abc123",
 

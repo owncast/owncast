@@ -19,7 +19,7 @@ var VersionNumber = StaticVersionNumber
 var WebServerPort = 8080
 
 // Bind WebServer to this IP address. Be secure by default.
-var WebServerIP = "127.0.0.1"
+var WebServerIP = "0.0.0.0"
 
 // InternalHLSListenerPort is the port for HLS writes that is used for this execution of the service.
 var InternalHLSListenerPort = "8927"
