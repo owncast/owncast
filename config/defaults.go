@@ -14,6 +14,7 @@ type Defaults struct {
 
 	DatabaseFilePath string
 	WebServerPort    int
+	WebServerIP      string
 	RTMPServerPort   int
 	StreamKey        string
 
@@ -46,6 +47,7 @@ func GetDefaults() Defaults {
 		YPServer:  "https://directory.owncast.online",
 
 		WebServerPort:  8080,
+		WebServerIP:    "127.0.0.1",
 		RTMPServerPort: 1935,
 		StreamKey:      "abc123",
 

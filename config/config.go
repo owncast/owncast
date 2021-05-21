@@ -18,6 +18,9 @@ var VersionNumber = StaticVersionNumber
 // WebServerPort is the port for Owncast's webserver that is used for this execution of the service.
 var WebServerPort = 8080
 
+// Bind WebServer to this IP address. Be secure by default.
+var WebServerIP = "127.0.0.1"
+
 // InternalHLSListenerPort is the port for HLS writes that is used for this execution of the service.
 var InternalHLSListenerPort = "8927"
 

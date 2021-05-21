@@ -22,6 +22,7 @@ const serverWelcomeMessageKey = "server_welcome_message"
 const serverNameKey = "server_name"
 const serverURLKey = "server_url"
 const httpPortNumberKey = "http_port_number"
+const httpListenAddressKey = "http_listen_address"
 const rtmpPortNumberKey = "rtmp_port_number"
 const serverMetadataTagsKey = "server_metadata_tags"
 const directoryEnabledKey = "directory_enabled"
@@ -188,6 +189,21 @@ func GetHTTPPortNumber() int {
 // SetHTTPPortNumber will set the server HTTP port.
 func SetHTTPPortNumber(port float64) error {
 	return _datastore.SetNumber(httpPortNumberKey, port)
+}
+
+// GetHTTPListenAddress will return the HTTP listen address.
+func GetHTTPListenAddress() string {
+	address, err := _datastore.GetString(httpListenAddressKey)
+	if err != nil {
+		log.Traceln(httpListenAddressKey, err)
+		return config.GetDefaults().WebServerIP
+	}
+	return string(address)
+}
+
+// SetHTTPListenAddress will set the server HTTP listen address.
+func SetHTTPListenAddress(address string) error {
+	return _datastore.SetString(httpListenAddressKey, address)
 }
 
 // GetRTMPPortNumber will return the server RTMP port.
