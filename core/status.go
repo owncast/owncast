@@ -14,7 +14,7 @@ func GetStatus() models.Status {
 
 	viewerCount := 0
 	if IsStreamConnected() {
-		viewerCount = len(_stats.Clients)
+		viewerCount = len(_stats.Viewers)
 	}
 
 	return models.Status{

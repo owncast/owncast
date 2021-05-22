@@ -43,6 +43,7 @@ func main() {
 	newStreamKey := flag.String("streamkey", "", "Set your stream key/admin password")
 	webServerPortOverride := flag.String("webserverport", "", "Force the web server to listen on a specific port")
 	webServerIPOverride := flag.String("webserverip", "", "Force web server to listen on this IP address")
+	rtmpPortOverride := flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
 
 	flag.Parse()
 
@@ -130,6 +131,12 @@ func main() {
 		data.SetHTTPListenAddress(string(*webServerIPOverride))
 	}
 	config.WebServerIP = data.GetHTTPListenAddress()
+
+	// Set the rtmp server port
+	if *rtmpPortOverride > 0 {
+		log.Println("Saving new RTMP server port number to", *rtmpPortOverride)
+		data.SetRTMPPortNumber(float64(*rtmpPortOverride))
+	}
 
 	// starts the core
 	if err := core.Start(); err != nil {

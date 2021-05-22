@@ -15,6 +15,7 @@ import (
 )
 
 var l = &sync.RWMutex{}
+var _activeViewerPurgeTimeout = time.Second * 10
 
 func setupStats() error {
 	s := getSavedStats()
@@ -26,6 +27,13 @@ func setupStats() error {
 			if err := saveStats(); err != nil {
 				panic(err)
 			}
+		}
+	}()
+
+	viewerCountPruneTimer := time.NewTicker(5 * time.Second)
+	go func() {
+		for range viewerCountPruneTimer.C {
+			pruneViewerCount()
 		}
 	}()
 
@@ -49,46 +57,40 @@ func IsStreamConnected() bool {
 	return _stats.StreamConnected
 }
 
-// SetClientActive sets a client as active and connected.
-func SetClientActive(client models.Client) {
+// SetChatClientActive sets a client as active and connected.
+func SetChatClientActive(client models.Client) {
 	l.Lock()
 	defer l.Unlock()
 
 	// If this clientID already exists then update it.
 	// Otherwise set a new one.
-	if existingClient, ok := _stats.Clients[client.ClientID]; ok {
+	if existingClient, ok := _stats.ChatClients[client.ClientID]; ok {
 		existingClient.LastSeen = time.Now()
 		existingClient.Username = client.Username
 		existingClient.MessageCount = client.MessageCount
 		existingClient.Geo = geoip.GetGeoFromIP(existingClient.IPAddress)
-		_stats.Clients[client.ClientID] = existingClient
+		_stats.ChatClients[client.ClientID] = existingClient
 	} else {
 		if client.Geo == nil {
 			geoip.FetchGeoForIP(client.IPAddress)
 		}
-		_stats.Clients[client.ClientID] = client
-	}
-
-	// Don't update viewer counts if a live stream session is not active.
-	if _stats.StreamConnected {
-		_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Clients)), float64(_stats.SessionMaxViewerCount)))
-		_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+		_stats.ChatClients[client.ClientID] = client
 	}
 }
 
-// RemoveClient removes a client from the active clients record.
-func RemoveClient(clientID string) {
+// RemoveChatClient removes a client from the active clients record.
+func RemoveChatClient(clientID string) {
 	log.Trace("Removing the client:", clientID)
 
 	l.Lock()
-	delete(_stats.Clients, clientID)
+	delete(_stats.ChatClients, clientID)
 	l.Unlock()
 }
 
-func GetClients() []models.Client {
+func GetChatClients() []models.Client {
 	l.RLock()
 	clients := make([]models.Client, 0)
-	for _, client := range _stats.Clients {
+	for _, client := range _stats.ChatClients {
 		chatClient := chat.GetClient(client.ClientID)
 		if chatClient != nil {
 			clients = append(clients, chatClient.GetViewerClientFromChatClient())
@@ -99,6 +101,33 @@ func GetClients() []models.Client {
 	l.RUnlock()
 
 	return clients
+}
+
+// SetViewerIdActive sets a client as active and connected.
+func SetViewerIdActive(id string) {
+	l.Lock()
+	defer l.Unlock()
+
+	_stats.Viewers[id] = time.Now()
+
+	// Don't update viewer counts if a live stream session is not active.
+	if _stats.StreamConnected {
+		_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Viewers)), float64(_stats.SessionMaxViewerCount)))
+		_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+	}
+}
+
+func pruneViewerCount() {
+	viewers := make(map[string]time.Time)
+
+	for viewerId := range _stats.Viewers {
+		viewerLastSeenTime := _stats.Viewers[viewerId]
+		if time.Since(viewerLastSeenTime) < _activeViewerPurgeTimeout {
+			viewers[viewerId] = viewerLastSeenTime
+		}
+	}
+
+	_stats.Viewers = viewers
 }
 
 func saveStats() error {
@@ -118,7 +147,8 @@ func saveStats() error {
 func getSavedStats() models.Stats {
 	savedLastDisconnectTime, savedLastDisconnectTimeErr := data.GetLastDisconnectTime()
 	result := models.Stats{
-		Clients:               make(map[string]models.Client),
+		ChatClients:           make(map[string]models.Client),
+		Viewers:               make(map[string]time.Time),
 		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
 		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
 		LastDisconnectTime:    utils.NullTime{Time: savedLastDisconnectTime, Valid: savedLastDisconnectTimeErr == nil},
