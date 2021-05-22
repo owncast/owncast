@@ -37,6 +37,7 @@ func main() {
 
 	configFile := flag.String("configFile", "config.yaml", "Config file path to migrate to the new database")
 	dbFile := flag.String("database", "", "Path to the database file.")
+	logDirectory := flag.String("logdir", "", "Directory where logs will be written to")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
@@ -57,6 +58,10 @@ func main() {
 		config.BuildPlatform = BuildPlatform
 	}
 	log.Infoln(config.GetReleaseString())
+
+	if *logDirectory != "" {
+		config.LogDirectory = *logDirectory
+	}
 
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {
