@@ -1,6 +1,8 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
+import { TEXTFIELD_TYPE_URL } from '../components/config/form-textfield';
+import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
 
 export const TEXT_MAXLENGTH = 255;
 
@@ -131,6 +133,9 @@ export const TEXTFIELD_PROPS_INSTANCE_URL = {
   placeholder: 'https://owncast.mysite.com',
   label: 'Server URL',
   tip: 'The full url to your Owncast server.',
+  type: TEXTFIELD_TYPE_URL,
+  pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+  useTrim: true,
 };
 // MISC FIELDS
 export const FIELD_PROPS_TAGS = {
@@ -247,7 +252,7 @@ export const VIDEO_BITRATE_DEFAULTS = {
 export const VIDEO_NAME_DEFAULTS = {
   fieldName: 'name',
   label: 'Name',
-  maxLength: 12,
+  maxLength: 15,
   placeholder: 'HD or Low',
   tip: 'Human-readable name for for displaying in the player.',
 };
@@ -313,7 +318,10 @@ export const S3_TEXT_FIELDS_INFO = {
     label: 'Endpoint',
     maxLength: 255,
     placeholder: 'https://your.s3.provider.endpoint.com',
-    tip: 'The full URL endpoint your storage provider gave you.',
+    tip: 'The full URL (with "https://") endpoint from your storage provider.',
+    useTrim: true,
+    type: TEXTFIELD_TYPE_URL,
+    pattern: DEFAULT_TEXTFIELD_URL_PATTERN, 
   },
   region: {
     fieldName: 'region',
@@ -336,5 +344,8 @@ export const S3_TEXT_FIELDS_INFO = {
     placeholder: 'http://cdn.ss3.provider.endpoint.com',
     tip:
       'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
+    type: TEXTFIELD_TYPE_URL,
+    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+    useTrim: true,
   },
 };

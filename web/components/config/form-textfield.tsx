@@ -22,11 +22,13 @@ export interface TextFieldProps {
   disabled?: boolean;
   label?: string;
   maxLength?: number;
+  pattern?: string;
   placeholder?: string;
   required?: boolean;
   status?: StatusState;
   tip?: string;
   type?: string;
+  useTrim?: boolean;
   value?: string | number;
   onBlur?: FieldUpdaterFunc;
   onChange?: FieldUpdaterFunc;
@@ -42,20 +44,21 @@ export default function TextField(props: TextFieldProps) {
     onBlur,
     onChange,
     onPressEnter,
+    pattern,
     placeholder,
     required,
     status,
     tip,
     type,
+    useTrim,
     value,
   } = props;
 
-  // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = (e: any) => {
-    const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
-      onChange({ fieldName, value: val });
+      const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
+      onChange({ fieldName, value: useTrim ? val.trim() : val });
     }
   };
 
@@ -100,6 +103,7 @@ export default function TextField(props: TextFieldProps) {
   } else if (type === TEXTFIELD_TYPE_URL) {
     fieldProps = {
       type: 'url',
+      pattern,
     };
   }
 
@@ -114,6 +118,7 @@ export default function TextField(props: TextFieldProps) {
     required,
     [`status-${statusType}`]: status,
   });
+
   return (
     <div className={containerClass}>
       {label ? (
@@ -130,7 +135,7 @@ export default function TextField(props: TextFieldProps) {
             id={fieldId}
             className={`field ${className} ${fieldId}`}
             {...fieldProps}
-            allowClear
+            {...(type !== TEXTFIELD_TYPE_NUMBER && { allowClear: true })}
             placeholder={placeholder}
             maxLength={maxLength}
             onChange={handleChange}

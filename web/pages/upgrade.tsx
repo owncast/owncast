@@ -23,7 +23,15 @@ function AssetTable(assets) {
     },
   ];
 
-  return <Table dataSource={data} columns={columns} rowKey="id" size="large" pagination={false} />;
+  return (
+    <Table
+      dataSource={data}
+      columns={columns}
+      rowKey={record => record.id}
+      size="large"
+      pagination={false}
+    />
+  );
 }
 
 export default function Logs() {

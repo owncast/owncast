@@ -205,8 +205,8 @@ export default function Help() {
       <Title level={2}>Common tasks</Title>
       <Row gutter={[16, 16]}>
         {questions.map(question => (
-          <Col xs={24} lg={12}>
-            <Card key={question.title}>
+          <Col xs={24} lg={12} key={question.title}>
+            <Card>
               <Meta avatar={question.icon} title={question.title} description={question.content} />
             </Card>
           </Col>
@@ -216,8 +216,8 @@ export default function Help() {
       <Title level={2}>Other</Title>
       <Row gutter={[16, 16]}>
         {otherResources.map(question => (
-          <Col xs={24} lg={12}>
-            <Card key={question.title}>
+          <Col xs={24} lg={12} key={question.title}>
+            <Card>
               <Meta avatar={question.icon} title={question.title} description={question.content} />
             </Card>
           </Col>

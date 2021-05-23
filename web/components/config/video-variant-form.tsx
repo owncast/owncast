@@ -153,7 +153,7 @@ export default function VideoVariantForm({
               <p className="selected-value-note">{cpuUsageNote()}</p>
             </div>
             <p className="read-more-subtext">
-              This could mean GPU or CPU usage depending on your server environment. {' '}
+              This could mean GPU or CPU usage depending on your server environment.{' '}
               <a
                 href="https://owncast.online/docs/video/?source=admin#cpu-usage"
                 target="_blank"

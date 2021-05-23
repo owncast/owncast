@@ -37,7 +37,7 @@ export default function ConfigVideoSettings() {
             <VideoLatency />
           </div>
 
-          <Collapse className="advanced-settings">
+          <Collapse className="advanced-settings codec-module">
             <Panel header="Advanced Settings" key="1">
               <div className="form-module variants-table-module">
                 <VideoCodecSelector />

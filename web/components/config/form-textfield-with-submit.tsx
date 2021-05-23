@@ -41,6 +41,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     apiPath,
     configPath = '',
     initialValue,
+    useTrim,
     ...textFieldProps // rest of props
   } = props;
 
@@ -70,7 +71,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = ({ fieldName: changedFieldName, value: changedValue }: UpdateArgs) => {
     if (onChange) {
-      onChange({ fieldName: changedFieldName, value: changedValue });
+      onChange({ fieldName: changedFieldName, value: useTrim ? changedValue.trim() : changedValue });
     }
   };
 
