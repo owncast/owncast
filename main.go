@@ -8,7 +8,6 @@ import (
 
 	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
@@ -30,7 +29,6 @@ var (
 )
 
 func main() {
-	configureLogging()
 
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
@@ -57,11 +55,13 @@ func main() {
 	if BuildPlatform != "" {
 		config.BuildPlatform = BuildPlatform
 	}
-	log.Infoln(config.GetReleaseString())
 
 	if *logDirectory != "" {
 		config.LogDirectory = *logDirectory
 	}
+
+	configureLogging(*enableDebugOptions, *enableVerboseLogging)
+	log.Infoln(config.GetReleaseString())
 
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {
@@ -81,16 +81,6 @@ func main() {
 
 		log.Println("Database has been restored.  Restart Owncast.")
 		log.Exit(0)
-	}
-
-	if *enableDebugOptions {
-		logrus.SetReportCaller(true)
-	}
-
-	if *enableVerboseLogging {
-		log.SetLevel(log.TraceLevel)
-	} else {
-		log.SetLevel(log.InfoLevel)
 	}
 
 	config.EnableDebugFeatures = *enableDebugOptions
@@ -144,11 +134,10 @@ func main() {
 	if err := router.Start(); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
-
 }
 
-func configureLogging() {
-	logging.Setup()
+func configureLogging(enableDebugFeatures bool, enableVerboseLogging bool) {
+	logging.Setup(enableDebugFeatures, enableVerboseLogging)
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})
