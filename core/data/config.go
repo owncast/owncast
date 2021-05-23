@@ -213,6 +213,10 @@ func SetRTMPPortNumber(port float64) error {
 // GetServerMetadataTags will return the metadata tags.
 func GetServerMetadataTags() []string {
 	tagsString, err := _datastore.GetString(serverMetadataTagsKey)
+	if tagsString == "" {
+		return []string{}
+	}
+
 	if err != nil {
 		log.Traceln(serverMetadataTagsKey, err)
 		return []string{}
