@@ -9,10 +9,6 @@ const (
 	WebRoot = "webroot"
 	// PrivateHLSStoragePath is the HLS write directory.
 	PrivateHLSStoragePath = "hls"
-	// ExtraInfoFile is the markdown file for page content.  Remove this after the migrator is removed.
-	ExtraInfoFile = "data/content.md"
-	// StatsFile is the json file we used to save stats in.  Remove this after the migrator is removed.
-	StatsFile = "data/stats.json"
 	// FfmpegSuggestedVersion is the version of ffmpeg we suggest.
 	FfmpegSuggestedVersion = "v4.1.5" // Requires the v
 	// BackupDirectory is the directory we write backup files to.
