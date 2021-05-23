@@ -184,7 +184,9 @@ export default function EditSocialLinks() {
             <div className="social-handle-cell">
               <p className="option-label">
                 <strong>{platform}</strong>
-                <span className="handle-url" title={url}>{url}</span>
+                <span className="handle-url" title={url}>
+                  {url}
+                </span>
               </p>
             </div>
           );
@@ -195,11 +197,13 @@ export default function EditSocialLinks() {
         return (
           <div className="social-handle-cell">
             <span className="option-icon">
-              <img src={ iconUrl } alt="" className="option-icon" />
+              <img src={iconUrl} alt="" className="option-icon" />
             </span>
             <p className="option-label">
               <strong>{platformName}</strong>
-              <span className="handle-url" title={url}>{url}</span>
+              <span className="handle-url" title={url}>
+                {url}
+              </span>
             </p>
           </div>
         );

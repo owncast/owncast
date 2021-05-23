@@ -112,11 +112,10 @@ strong {
   }
 }
 
-
 input {
   &:not(:focus) {
-    &:invalid  {
+    &:invalid {
       color: var(--ant-error);
-    }  
+    }
   }
 }

@@ -78,8 +78,7 @@ export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
   maxLength: 500,
   placeholder: '',
   label: 'Welcome Message',
-  tip:
-    'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
+  tip: 'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
 };
 export const TEXTFIELD_PROPS_LOGO = {
   apiPath: API_LOGO,
@@ -87,8 +86,7 @@ export const TEXTFIELD_PROPS_LOGO = {
   maxLength: 255,
   placeholder: '/img/mylogo.png',
   label: 'Logo',
-  tip:
-    'Upload your logo if you have one. We recommend that you use a square image that is at least 256x256.',
+  tip: 'Upload your logo if you have one. We recommend that you use a square image that is at least 256x256.',
 };
 export const TEXTFIELD_PROPS_STREAM_KEY = {
   apiPath: API_STREAM_KEY,
@@ -152,8 +150,7 @@ export const FIELD_PROPS_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'NSFW?',
-  tip:
-    "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
+  tip: "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
 };
 
 export const FIELD_PROPS_YP = {
@@ -222,8 +219,7 @@ export const FRAMERATE_DEFAULTS = {
   defaultValue: 24,
   unit: 'fps',
   incrementBy: null,
-  tip:
-    'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
+  tip: 'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
 };
 export const FRAMERATE_SLIDER_MARKS = {
   [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min} ${FRAMERATE_DEFAULTS.unit}`,
@@ -321,7 +317,7 @@ export const S3_TEXT_FIELDS_INFO = {
     tip: 'The full URL (with "https://") endpoint from your storage provider.',
     useTrim: true,
     type: TEXTFIELD_TYPE_URL,
-    pattern: DEFAULT_TEXTFIELD_URL_PATTERN, 
+    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
   },
   region: {
     fieldName: 'region',
@@ -342,8 +338,7 @@ export const S3_TEXT_FIELDS_INFO = {
     label: 'Serving Endpoint',
     maxLength: 255,
     placeholder: 'http://cdn.ss3.provider.endpoint.com',
-    tip:
-      'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
+    tip: 'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
     type: TEXTFIELD_TYPE_URL,
     pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
     useTrim: true,
