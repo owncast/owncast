@@ -135,7 +135,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	defer file.Close()
 
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
-	cacheControlHeader := fmt.Sprintf("Cache-Control: max-age=%d", maxAgeSeconds)
+	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
 	uploadInput := &s3manager.UploadInput{
 		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
 		Key:          aws.String(filePath),   // Name of the file to be saved
