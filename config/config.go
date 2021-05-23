@@ -1,7 +1,6 @@
 package config
 
 import (
-	"path/filepath"
 	"fmt"
 )
 
@@ -41,8 +40,4 @@ func GetReleaseString() string {
 	var gitCommit = GitCommit
 
 	return fmt.Sprintf("Owncast v%s-%s (%s)", versionNumber, buildPlatform, gitCommit)
-}
-
-func GetTranscoderLogFilePath() string {
-	return filepath.Join(LogDirectory, "transcoder.log")
 }
