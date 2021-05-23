@@ -10,6 +10,7 @@ import (
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/owncast/owncast/utils"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 	logger "github.com/sirupsen/logrus"
@@ -28,6 +29,11 @@ var _level logrus.Level
 
 // Setup configures our custom logging destinations.
 func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
+	// Create the logging directory if needed
+	if !utils.DoesFileExists(getLogFilePath()) {
+		os.Mkdir(getLogFilePath(), 0700)
+	}
+
 	// Write logs to a file
 	path := getLogFilePath()
 	writer, _ := rotatelogs.New(
