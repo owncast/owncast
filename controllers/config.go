@@ -41,9 +41,12 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	serverSummary := data.GetServerSummary()
+	serverSummary = utils.RenderPageContentMarkdown(serverSummary)
+
 	configuration := webConfigResponse{
 		Name:             data.GetServerName(),
-		Summary:          data.GetServerSummary(),
+		Summary:          serverSummary,
 		Logo:             "/logo",
 		Tags:             data.GetServerMetadataTags(),
 		Version:          config.GetReleaseString(),
