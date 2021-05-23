@@ -1,6 +1,8 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
+import { TEXTFIELD_TYPE_URL } from '../components/config/form-textfield';
+import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
 
 export const TEXT_MAXLENGTH = 255;
 
@@ -76,8 +78,7 @@ export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
   maxLength: 500,
   placeholder: '',
   label: 'Welcome Message',
-  tip:
-    'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
+  tip: 'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
 };
 export const TEXTFIELD_PROPS_LOGO = {
   apiPath: API_LOGO,
@@ -85,8 +86,7 @@ export const TEXTFIELD_PROPS_LOGO = {
   maxLength: 255,
   placeholder: '/img/mylogo.png',
   label: 'Logo',
-  tip:
-    'Upload your logo if you have one. We recommend that you use a square image that is at least 256x256.',
+  tip: 'Upload your logo if you have one. We recommend that you use a square image that is at least 256x256.',
 };
 export const TEXTFIELD_PROPS_STREAM_KEY = {
   apiPath: API_STREAM_KEY,
@@ -131,6 +131,9 @@ export const TEXTFIELD_PROPS_INSTANCE_URL = {
   placeholder: 'https://owncast.mysite.com',
   label: 'Server URL',
   tip: 'The full url to your Owncast server.',
+  type: TEXTFIELD_TYPE_URL,
+  pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+  useTrim: true,
 };
 // MISC FIELDS
 export const FIELD_PROPS_TAGS = {
@@ -147,8 +150,7 @@ export const FIELD_PROPS_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'NSFW?',
-  tip:
-    "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
+  tip: "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
 };
 
 export const FIELD_PROPS_YP = {
@@ -217,8 +219,7 @@ export const FRAMERATE_DEFAULTS = {
   defaultValue: 24,
   unit: 'fps',
   incrementBy: null,
-  tip:
-    'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
+  tip: 'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
 };
 export const FRAMERATE_SLIDER_MARKS = {
   [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min} ${FRAMERATE_DEFAULTS.unit}`,
@@ -247,7 +248,7 @@ export const VIDEO_BITRATE_DEFAULTS = {
 export const VIDEO_NAME_DEFAULTS = {
   fieldName: 'name',
   label: 'Name',
-  maxLength: 12,
+  maxLength: 15,
   placeholder: 'HD or Low',
   tip: 'Human-readable name for for displaying in the player.',
 };
@@ -313,7 +314,10 @@ export const S3_TEXT_FIELDS_INFO = {
     label: 'Endpoint',
     maxLength: 255,
     placeholder: 'https://your.s3.provider.endpoint.com',
-    tip: 'The full URL endpoint your storage provider gave you.',
+    tip: 'The full URL (with "https://") endpoint from your storage provider.',
+    useTrim: true,
+    type: TEXTFIELD_TYPE_URL,
+    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
   },
   region: {
     fieldName: 'region',
@@ -334,7 +338,9 @@ export const S3_TEXT_FIELDS_INFO = {
     label: 'Serving Endpoint',
     maxLength: 255,
     placeholder: 'http://cdn.ss3.provider.endpoint.com',
-    tip:
-      'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
+    tip: 'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
+    type: TEXTFIELD_TYPE_URL,
+    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+    useTrim: true,
   },
 };

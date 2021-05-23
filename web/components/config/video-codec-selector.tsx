@@ -120,7 +120,7 @@ export default function CodecSelector() {
       <Title level={3} className="section-title">
         Video Codec
       </Title>
-      <p className="description">
+      <div className="description">
         If you have access to specific hardware with the drivers and software installed for them,
         you may be able to improve your video encoding performance.
         <p>
@@ -133,7 +133,7 @@ export default function CodecSelector() {
             unplayable.
           </a>
         </p>
-      </p>
+      </div>
       <div className="segment-slider-container">
         <Popconfirm
           title={`Are you sure you want to change your video codec to ${pendingSaveCodec} and understand what this means?`}

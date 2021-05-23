@@ -13,7 +13,7 @@ import {
   Col,
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import isValidUrl from '../utils/urls';
+import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../utils/urls';
 
 import { fetchData, DELETE_WEBHOOK, CREATE_WEBHOOK, WEBHOOKS } from '../utils/apis';
 
@@ -86,7 +86,11 @@ function NewWebhookModal(props: Props) {
   };
 
   const checkboxes = events.map(function (singleEvent) {
-    return (<Col span={8} key={singleEvent.value}><Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox></Col>)
+    return (
+      <Col span={8} key={singleEvent.value}>
+        <Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox>
+      </Col>
+    );
   });
 
   return (
@@ -101,15 +105,15 @@ function NewWebhookModal(props: Props) {
         <Input
           value={webhookUrl}
           placeholder="https://myserver.com/webhook"
-          onChange={input => setWebhookUrl(input.currentTarget.value)}
+          onChange={input => setWebhookUrl(input.currentTarget.value.trim())}
+          type="url"
+          pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
         />
       </div>
 
       <p>Select the events that will be sent to this webhook.</p>
       <Checkbox.Group style={{ width: '100%' }} value={selectedEvents} onChange={onChange}>
-        <Row>
-          {checkboxes}
-        </Row>
+        <Row>{checkboxes}</Row>
       </Checkbox.Group>
       <p>
         <Button type="primary" onClick={selectAll}>
@@ -225,7 +229,12 @@ export default function Webhooks() {
         .
       </Paragraph>
 
-      <Table rowKey="id" columns={columns} dataSource={webhooks} pagination={false} />
+      <Table
+        rowKey={record => record.id}
+        columns={columns}
+        dataSource={webhooks}
+        pagination={false}
+      />
       <br />
       <Button type="primary" onClick={showCreateModal}>
         Create Webhook
