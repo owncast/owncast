@@ -36,7 +36,7 @@
     "@types/react-linkify": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
-    "eslint": "^7.26.0",
+    "eslint": "^7.27.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.2",
