@@ -8,7 +8,6 @@ import (
 
 	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
@@ -30,13 +29,13 @@ var (
 )
 
 func main() {
-	configureLogging()
 
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
 	configFile := flag.String("configFile", "config.yaml", "Config file path to migrate to the new database")
 	dbFile := flag.String("database", "", "Path to the database file.")
+	logDirectory := flag.String("logdir", "", "Directory where logs will be written to")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
@@ -57,6 +56,12 @@ func main() {
 	if BuildPlatform != "" {
 		config.BuildPlatform = BuildPlatform
 	}
+
+	if *logDirectory != "" {
+		config.LogDirectory = *logDirectory
+	}
+
+	configureLogging(*enableDebugOptions, *enableVerboseLogging)
 	log.Infoln(config.GetReleaseString())
 
 	// Create the data directory if needed
@@ -77,16 +82,6 @@ func main() {
 
 		log.Println("Database has been restored.  Restart Owncast.")
 		log.Exit(0)
-	}
-
-	if *enableDebugOptions {
-		logrus.SetReportCaller(true)
-	}
-
-	if *enableVerboseLogging {
-		log.SetLevel(log.TraceLevel)
-	} else {
-		log.SetLevel(log.InfoLevel)
 	}
 
 	config.EnableDebugFeatures = *enableDebugOptions
@@ -146,11 +141,10 @@ func main() {
 	if err := router.Start(); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
-
 }
 
-func configureLogging() {
-	logging.Setup()
+func configureLogging(enableDebugFeatures bool, enableVerboseLogging bool) {
+	logging.Setup(enableDebugFeatures, enableVerboseLogging)
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})

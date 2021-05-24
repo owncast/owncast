@@ -12,6 +12,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -101,7 +102,7 @@ func (t *Transcoder) Start() {
 
 	err = _commandExec.Start()
 	if err != nil {
-		log.Errorln("Transcoder error.  See transcoder.log for full output to debug.")
+		log.Errorln("Transcoder error.  See ", logging.GetTranscoderLogFilePath(), " for full output to debug.")
 		log.Panicln(err, command)
 	}
 
@@ -119,7 +120,7 @@ func (t *Transcoder) Start() {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at transcoder.log to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/troubleshooting/#codecs")
+		log.Errorln("transcoding error. look at ", logging.GetTranscoderLogFilePath(), " to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/troubleshooting/#codecs")
 	}
 }
 
@@ -142,7 +143,7 @@ func (t *Transcoder) getString() string {
 		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
 	}
 	ffmpegFlags := []string{
-		`FFREPORT=file="transcoder.log":level=32`,
+		fmt.Sprintf(`FFREPORT=file="%s":level=32`, logging.GetTranscoderLogFilePath()),
 		t.ffmpegPath,
 		"-hide_banner",
 		"-loglevel warning",

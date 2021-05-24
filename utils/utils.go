@@ -141,7 +141,7 @@ func RenderPageContentMarkdown(raw string) string {
 		panic(err)
 	}
 
-	return buf.String()
+	return strings.TrimSpace(buf.String())
 }
 
 // GetCacheDurationSecondsForPath will return the number of seconds to cache an item.

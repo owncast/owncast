@@ -41,6 +41,7 @@ const chatDisabledKey = "chat_disabled"
 const externalActionsKey = "external_actions"
 const customStylesKey = "custom_styles"
 const videoCodecKey = "video_codec"
+const blockedUsernamesKey = "blocked_usernames"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -229,6 +230,10 @@ func SetRTMPPortNumber(port float64) error {
 // GetServerMetadataTags will return the metadata tags.
 func GetServerMetadataTags() []string {
 	tagsString, err := _datastore.GetString(serverMetadataTagsKey)
+	if tagsString == "" {
+		return []string{}
+	}
+
 	if err != nil {
 		log.Traceln(serverMetadataTagsKey, err)
 		return []string{}
@@ -563,4 +568,21 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	})
 
 	return indexedQualities[0].index
+}
+
+// GetUsernameBlocklist will return the blocked usernames as a comma seperated string.
+func GetUsernameBlocklist() string {
+	usernameString, err := _datastore.GetString(blockedUsernamesKey)
+
+	if err != nil {
+		log.Traceln(blockedUsernamesKey, err)
+		return ""
+	}
+
+	return usernameString
+}
+
+// SetUsernameBlocklist set the username blocklist as a comma seperated string.
+func SetUsernameBlocklist(usernames string) error {
+	return _datastore.SetString(serverMetadataTagsKey, usernames)
 }

@@ -30,6 +30,7 @@ hls/
 dist/
 data/
 transcoder.log
+owncast.log*
 chat.db
 .yp.key
 backup/

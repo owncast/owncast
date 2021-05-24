@@ -576,7 +576,19 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	data.SetCustomStyles(customStyles.Value.(string))
 
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
+}
 
+// SetUsernameBlocklist will set the list of usernames we do not allow to use.
+func SetUsernameBlocklist(w http.ResponseWriter, r *http.Request) {
+	usernames, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update custom styles")
+		return
+	}
+
+	data.SetUsernameBlocklist(usernames.Value.(string))
+
+	controllers.WriteSimpleResponse(w, true, "blocklist updated")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

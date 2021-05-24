@@ -9,6 +9,9 @@ import (
 // DatabaseFilePath is the path to the file ot be used as the global database for this run of the application.
 var DatabaseFilePath = "data/owncast.db"
 
+// LogDirectory is the path to various log files
+var LogDirectory = "./data/logs"
+
 // EnableDebugFeatures will print additional data to help in debugging.
 var EnableDebugFeatures = false
 
