@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"path/filepath"
 	"reflect"
@@ -293,12 +294,48 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetHTTPPortNumber(configValue.Value.(float64)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if port, ok := configValue.Value.(float64); ok {
+		if (port < 1) || (port > 65535) {
+			controllers.WriteSimpleResponse(w, false, "Port number must be between 1 and 65535")
+			return
+		}
+		if err := data.SetHTTPPortNumber(port); err != nil {
+			controllers.WriteSimpleResponse(w, false, err.Error())
+			return
+		} else {
+			controllers.WriteSimpleResponse(w, true, "HTTP port set")
+			return
+		}
+	}
+	controllers.WriteSimpleResponse(w, false, "Invalid type or value, port must be a number")
+}
+
+// SetWebServerIP will handle the web config request to set the server's HTTP listen address.
+func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "http port set")
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if input, ok := configValue.Value.(string); ok {
+		if ip := net.ParseIP(input); ip != nil {
+			if err := data.SetHTTPListenAddress(ip.String()); err != nil {
+				controllers.WriteSimpleResponse(w, false, err.Error())
+				return
+			} else {
+				controllers.WriteSimpleResponse(w, true, "HTTP listen address set")
+				return
+			}
+		} else {
+			controllers.WriteSimpleResponse(w, false, "Invalid IP address")
+			return
+		}
+	}
+	controllers.WriteSimpleResponse(w, false, "Invalid type or value, IP address must be a string")
 }
 
 // SetRTMPServerPort will handle the web config request to set the inbound RTMP port.

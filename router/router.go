@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -172,6 +173,9 @@ func Start() error {
 	// Server http port
 	http.HandleFunc("/api/admin/config/webserverport", middleware.RequireAdminAuth(admin.SetWebServerPort))
 
+	// Server http listen address
+	http.HandleFunc("/api/admin/config/webserverip", middleware.RequireAdminAuth(admin.SetWebServerIP))
+
 	// Server rtmp port
 	http.HandleFunc("/api/admin/config/rtmpserverport", middleware.RequireAdminAuth(admin.SetRTMPServerPort))
 
@@ -206,9 +210,14 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
 	port := config.WebServerPort
+	ip := config.WebServerIP
 
-	log.Infof("Web server is listening on port %d.", port)
+	ip_addr := net.ParseIP(ip)
+	if ip_addr == nil {
+		log.Fatalln("Invalid IP address", ip)
+	}
+	log.Infof("Web server is listening on IP %s port %d.", ip_addr.String(), port)
 	log.Infoln("The web admin interface is available at /admin.")
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", ip_addr.String(), port), nil)
 }
