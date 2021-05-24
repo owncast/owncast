@@ -24,7 +24,7 @@
     "react-linkify": "^1.0.0-alpha",
     "react-markdown": "^6.0.2",
     "react-markdown-editor-lite": "^1.2.4",
-    "sass": "^1.33.0"
+    "sass": "^1.34.0"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.32",
