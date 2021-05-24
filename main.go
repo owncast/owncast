@@ -41,6 +41,7 @@ func main() {
 	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
 	newStreamKey := flag.String("streamkey", "", "Set your stream key/admin password")
 	webServerPortOverride := flag.String("webserverport", "", "Force the web server to listen on a specific port")
+	webServerIPOverride := flag.String("webserverip", "", "Force web server to listen on this IP address")
 	rtmpPortOverride := flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
 
 	flag.Parse()
@@ -117,8 +118,14 @@ func main() {
 		log.Println("Saving new web server port number to", portNumber)
 		data.SetHTTPPortNumber(float64(portNumber))
 	}
-
 	config.WebServerPort = data.GetHTTPPortNumber()
+
+	// Set the web server ip
+	if *webServerIPOverride != "" {
+		log.Println("Saving new web server listen IP address to", *webServerIPOverride)
+		data.SetHTTPListenAddress(string(*webServerIPOverride))
+	}
+	config.WebServerIP = data.GetHTTPListenAddress()
 
 	// Set the rtmp server port
 	if *rtmpPortOverride > 0 {
