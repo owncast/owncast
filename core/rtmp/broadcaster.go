@@ -11,7 +11,7 @@ import (
 func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 	data, err := getInboundDetailsFromMetadata(t.DebugFields())
 	if err != nil {
-		log.Warnln("Unable to parse inbound broadcaster details:", err)
+		log.Traceln("Unable to parse inbound broadcaster details:", err)
 	}
 
 	broadcaster := models.Broadcaster{
