@@ -34,7 +34,7 @@ const VIDEO_OPTIONS = {
   sources: [VIDEO_SRC],
 };
 
-export const POSTER_DEFAULT = `/img/logo.png`;
+export const POSTER_DEFAULT = `/offlineStreamImage`;
 export const POSTER_THUMB = `/thumbnail.jpg`;
 
 class OwncastPlayer {

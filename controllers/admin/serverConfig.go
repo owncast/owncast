@@ -93,17 +93,18 @@ type videoSettings struct {
 }
 
 type webConfigResponse struct {
-	Name             string                `json:"name"`
-	Summary          string                `json:"summary"`
-	WelcomeMessage   string                `json:"welcomeMessage"`
-	Logo             string                `json:"logo"`
-	Tags             []string              `json:"tags"`
-	Version          string                `json:"version"`
-	NSFW             bool                  `json:"nsfw"`
-	ExtraPageContent string                `json:"extraPageContent"`
-	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
-	SocialHandles    []models.SocialHandle `json:"socialHandles"`
-	CustomStyles     string                `json:"customStyles"`
+	Name               string                `json:"name"`
+	Summary            string                `json:"summary"`
+	WelcomeMessage     string                `json:"welcomeMessage"`
+	Logo               string                `json:"logo"`
+	OfflineStreamImage string                `json:"offlineStreamImage"`
+	Tags               []string              `json:"tags"`
+	Version            string                `json:"version"`
+	NSFW               bool                  `json:"nsfw"`
+	ExtraPageContent   string                `json:"extraPageContent"`
+	StreamTitle        string                `json:"streamTitle"` // What's going on with the current stream
+	SocialHandles      []models.SocialHandle `json:"socialHandles"`
+	CustomStyles       string                `json:"customStyles"`
 }
 
 type yp struct {

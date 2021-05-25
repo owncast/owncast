@@ -17,6 +17,7 @@ const extraContentKey = "extra_page_content"
 const streamTitleKey = "stream_title"
 const streamKeyKey = "stream_key"
 const logoPathKey = "logo_path"
+const offlineStreamImageKey = "offline_stream_image"
 const serverSummaryKey = "server_summary"
 const serverWelcomeMessageKey = "server_welcome_message"
 const serverNameKey = "server_name"
@@ -107,6 +108,26 @@ func GetLogoPath() string {
 // SetLogoPath will set the path for the logo, relative to webroot.
 func SetLogoPath(logo string) error {
 	return _datastore.SetString(logoPathKey, logo)
+}
+
+// GetOfflineStreamImagePath will return the path for the offline stream image, relative to webroot.
+func GetOfflineStreamImagePath() string {
+	offlineStreamImage, err := _datastore.GetString(offlineStreamImageKey)
+	if err != nil {
+		log.Traceln(offlineStreamImageKey, err)
+		return config.GetDefaults().Logo
+	}
+
+	if offlineStreamImage == "" {
+		return GetLogoPath()
+	}
+
+	return offlineStreamImage
+}
+
+// SetOfflineStreamImagePath will set the path for the offline stream image, relative to webroot.
+func SetOfflineStreamImagePath(offlineStreamImage string) error {
+	return _datastore.SetString(offlineStreamImageKey, offlineStreamImage)
 }
 
 // GetServerSummary will return the server summary text.
@@ -507,6 +528,12 @@ func GetVideoCodec() string {
 func VerifySettings() error {
 	if GetStreamKey() == "" {
 		return errors.New("no stream key set. Please set one in your config file")
+	}
+
+	offlineStreamImagePath := GetOfflineStreamImagePath()
+	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, offlineStreamImagePath)) {
+		log.Traceln(offlineStreamImagePath, "not found in the data directory. disabling custom offline stream image.")
+		SetOfflineStreamImagePath("")
 	}
 
 	logoPath := GetLogoPath()

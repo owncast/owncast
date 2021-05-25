@@ -39,6 +39,33 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 }
 
+// GetLogo will return the logo image as a response.
+func GetOfflineStreamImage(w http.ResponseWriter, r *http.Request) {
+	imageFilename := data.GetOfflineStreamImagePath()
+	if imageFilename == "" {
+		returnDefault(w)
+		return
+	}
+	imagePath := filepath.Join("data", imageFilename)
+	imageBytes, err := getImage(imagePath)
+	if err != nil {
+		returnDefault(w)
+		return
+	}
+
+	contentType := "image/jpeg"
+	if filepath.Ext(imageFilename) == ".svg" {
+		contentType = "image/svg+xml"
+	} else if filepath.Ext(imageFilename) == ".gif" {
+		contentType = "image/gif"
+	} else if filepath.Ext(imageFilename) == ".png" {
+		contentType = "image/png"
+	}
+
+	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
+	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
+}
+
 func returnDefault(w http.ResponseWriter) {
 	imagePath := filepath.Join(config.WebRoot, "img", "logo.svg")
 	imageBytes, err := getImage(imagePath)

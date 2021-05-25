@@ -58,6 +58,9 @@ func Start() error {
 	// return the logo
 	http.HandleFunc("/logo", controllers.GetLogo)
 
+	// return the offlineStreamImage
+	http.HandleFunc("/offlineStreamImage", controllers.GetOfflineStreamImage)
+
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
 
@@ -162,6 +165,9 @@ func Start() error {
 
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
+
+	// OfflineStreamImage path
+	http.HandleFunc("/api/admin/config/offlineStreamImage", middleware.RequireAdminAuth(admin.SetOfflineStreamImage))
 
 	// Server tags
 	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.SetTags))
