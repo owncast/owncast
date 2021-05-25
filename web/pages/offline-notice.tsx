@@ -18,15 +18,15 @@ const { Title } = Typography;
 const { Meta } = Card;
 const { Panel } = Collapse;
 
-function generateStreamURL(serverURL) {
-  return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}/live/`;
+function generateStreamURL(serverURL, rtmpServerPort) {
+  return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}:${rtmpServerPort}/live/`;
 }
 
 export default function Offline({ logs = [], config }) {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};
-  const { streamKey } = serverConfig;
+  const { streamKey, rtmpServerPort } = serverConfig;
   const instanceUrl = global.window?.location.hostname || '';
 
   const data = [
@@ -49,7 +49,7 @@ export default function Offline({ logs = [], config }) {
             </Col>
             <Col flex="auto">
               <Paragraph className="stream-info-box" copyable>
-                {generateStreamURL(instanceUrl)}
+                {generateStreamURL(instanceUrl, rtmpServerPort)}
               </Paragraph>
             </Col>
           </Row>
