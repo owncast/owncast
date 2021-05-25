@@ -511,6 +511,7 @@ export default class App extends Component {
     const {
       version: appVersion,
       logo = TEMP_IMAGE,
+      offlineStreamImage = TEMP_IMAGE,
       socialHandles = [],
       summary,
       tags = [],
@@ -551,7 +552,7 @@ export default class App extends Component {
 
     const poster = isPlaying
       ? null
-      : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
+      : html` <${VideoPoster} offlineImage=${offlineStreamImage} active=${streamOnline} /> `;
 
     const externalActionButtons =
       externalActions &&

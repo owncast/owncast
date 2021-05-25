@@ -14,42 +14,24 @@ import (
 
 // GetLogo will return the logo image as a response.
 func GetLogo(w http.ResponseWriter, r *http.Request) {
-	imageFilename := data.GetLogoPath()
-	if imageFilename == "" {
-		returnDefault(w)
-		return
-	}
-	imagePath := filepath.Join("data", imageFilename)
-	imageBytes, err := getImage(imagePath)
-	if err != nil {
-		returnDefault(w)
-		return
-	}
+	handleGetImage(w, r, data.GetLogoPath(), returnDefault)
 
-	contentType := "image/jpeg"
-	if filepath.Ext(imageFilename) == ".svg" {
-		contentType = "image/svg+xml"
-	} else if filepath.Ext(imageFilename) == ".gif" {
-		contentType = "image/gif"
-	} else if filepath.Ext(imageFilename) == ".png" {
-		contentType = "image/png"
-	}
-
-	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 }
 
 // GetLogo will return the logo image as a response.
 func GetOfflineStreamImage(w http.ResponseWriter, r *http.Request) {
-	imageFilename := data.GetOfflineStreamImagePath()
+	handleGetImage(w, r, data.GetOfflineStreamImagePath(), GetLogo)
+}
+
+func handleGetImage(w http.ResponseWriter, r *http.Request, imageFilename string, returnDefault func(http.ResponseWriter, *http.Request)) {
 	if imageFilename == "" {
-		returnDefault(w)
+		returnDefault(w, r)
 		return
 	}
 	imagePath := filepath.Join("data", imageFilename)
 	imageBytes, err := getImage(imagePath)
 	if err != nil {
-		returnDefault(w)
+		returnDefault(w, r)
 		return
 	}
 
@@ -66,7 +48,7 @@ func GetOfflineStreamImage(w http.ResponseWriter, r *http.Request) {
 	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 }
 
-func returnDefault(w http.ResponseWriter) {
+func returnDefault(w http.ResponseWriter, r *http.Request) {
 	imagePath := filepath.Join(config.WebRoot, "img", "logo.svg")
 	imageBytes, err := getImage(imagePath)
 	if err != nil {

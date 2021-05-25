@@ -182,64 +182,15 @@ func SetStreamKey(w http.ResponseWriter, r *http.Request) {
 
 // SetLogo will handle a new logo image file being uploaded.
 func SetLogo(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
-		return
-	}
-
-	configValue, success := getValueFromRequest(w, r)
-	if !success {
-		return
-	}
-
-	s := strings.SplitN(configValue.Value.(string), ",", 2)
-	if len(s) < 2 {
-		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image data.")
-		return
-	}
-	bytes, err := base64.StdEncoding.DecodeString(s[1])
-	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	splitHeader := strings.Split(s[0], ":")
-	if len(splitHeader) < 2 {
-		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image header.")
-		return
-	}
-	contentType := strings.Split(splitHeader[1], ";")[0]
-	extension := ""
-	if contentType == "image/svg+xml" {
-		extension = ".svg"
-	} else if contentType == "image/gif" {
-		extension = ".gif"
-	} else if contentType == "image/png" {
-		extension = ".png"
-	} else if contentType == "image/jpeg" {
-		extension = ".jpeg"
-	}
-
-	if extension == "" {
-		controllers.WriteSimpleResponse(w, false, "Missing or invalid contentType in base64 image.")
-		return
-	}
-
-	imgPath := filepath.Join("data", "logo"+extension)
-	if err := ioutil.WriteFile(imgPath, bytes, 0644); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	if err := data.SetLogoPath("logo" + extension); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	controllers.WriteSimpleResponse(w, true, "changed")
+	handleSetImage(w, r, "logo", data.SetLogoPath)
 }
 
 // SetLogo will handle a new logo image file being uploaded.
 func SetOfflineStreamImage(w http.ResponseWriter, r *http.Request) {
+	handleSetImage(w, r, "offlineStreamImage", data.SetOfflineStreamImagePath)
+}
+
+func handleSetImage(w http.ResponseWriter, r *http.Request, name string, imagePathSetter func(string) error) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -282,13 +233,13 @@ func SetOfflineStreamImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	imgPath := filepath.Join("data", "offlineStreamImage"+extension)
+	imgPath := filepath.Join("data", name+extension)
 	if err := ioutil.WriteFile(imgPath, bytes, 0644); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	if err := data.SetOfflineStreamImagePath("offlineStreamImage" + extension); err != nil {
+	if err := imagePathSetter(name + extension); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
