@@ -43,27 +43,20 @@ export default function Offline({ logs = [], config }) {
             Learn how to point your existing software to your new server and start streaming your
             content.
           </a>
-          <Row align="middle">
-            <Col flex="none">
-              <Text>Streaming URL:</Text>
-            </Col>
-            <Col flex="auto">
-              <Paragraph className="stream-info-box" copyable>
-                {generateStreamURL(instanceUrl, rtmpServerPort)}
-              </Paragraph>
-            </Col>
-          </Row>
-
-          <Row align="middle">
-            <Col flex="none">
-              <Text>Stream Key:</Text>
-            </Col>
-            <Col flex="auto">
-              <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
-                *********************
-              </Paragraph>
-            </Col>
-          </Row>
+          <div className="stream-info-container">
+            <Text strong className="stream-info-label">
+              Streaming URL:
+            </Text>
+            <Paragraph className="stream-info-box" copyable>
+              {generateStreamURL(instanceUrl, rtmpServerPort)}
+            </Paragraph>
+            <Text strong className="stream-info-label">
+              Stream Key:
+            </Text>
+            <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
+              *********************
+            </Paragraph>
+          </div>
         </div>
       ),
     },
