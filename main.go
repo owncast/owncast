@@ -33,7 +33,6 @@ func main() {
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
-	configFile := flag.String("configFile", "config.yaml", "Config file path to migrate to the new database")
 	dbFile := flag.String("database", "", "Path to the database file.")
 	logDirectory := flag.String("logdir", "", "Directory where logs will be written to")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
@@ -46,7 +45,6 @@ func main() {
 
 	flag.Parse()
 
-	config.ConfigFilePath = *configFile
 	config.VersionNumber = BuildVersion
 	if GitCommit != "" {
 		config.GitCommit = GitCommit

@@ -27,9 +27,6 @@ var WebServerIP = "0.0.0.0"
 // InternalHLSListenerPort is the port for HLS writes that is used for this execution of the service.
 var InternalHLSListenerPort = "8927"
 
-// ConfigFilePath is the path to the config file for migration.
-var ConfigFilePath = "config.yaml"
-
 // GitCommit is an optional commit this build was made from.
 var GitCommit = ""
 
