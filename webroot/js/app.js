@@ -430,6 +430,7 @@ export default class App extends Component {
     } else if (
       e.target !== document.getElementById('message-input') &&
       e.target !== document.getElementById('username-change-input') &&
+      e.target !== document.getElementsByClassName('emoji-picker__search')[0] &&
       this.state.streamOnline
     ) {
       switch (e.code) {
