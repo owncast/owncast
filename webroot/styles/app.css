@@ -37,9 +37,8 @@ a:hover {
   scrollbar-width: none; /* moz only */
 }
 
-
-#app-container * {
-  transition: all .25s;
+#app-container.config-loading {
+  visibility: hidden;
 }
 
 button[disabled] {
@@ -150,7 +149,6 @@ header {
 
 /* *********** overrides when chat is off ***************************** */
 
-
 .no-chat footer {
   justify-content: center;
 }
@@ -159,7 +157,8 @@ header {
   opacity: .75;
 }
 
-.no-chat #chat-container-wrap {
+/* hide chat by default */
+#chat-container-wrap {
   display: none;
 }
 
@@ -172,8 +171,8 @@ header {
   display: block;
 }
 
-.chat #video-container,
-.chat #stream-info,
+.chat main,
+.chat footer,
 .chat #user-content {
   width: var(--content-width);
 }

@@ -58,11 +58,12 @@ export default class App extends Component {
       websocket: new Websocket(),
       displayChat: chatStorage === null ? true : chatStorage,
       chatInputEnabled: false, // chat input box state
-      chatDisabled: false,
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       touchKeyboardActive: false,
 
-      configData: {},
+      configData: {
+        loading: true,
+      },
       extraPageContent: '',
 
       playerActive: false, // player object is active
@@ -541,6 +542,7 @@ export default class App extends Component {
     const usernameStyle = chatDisabled ? 'none' : 'flex';
 
     const extraAppClasses = classNames({
+      'config-loading': configData.loading,
       chat: shouldDisplayChat,
       'no-chat': !shouldDisplayChat,
       'single-col': singleColMode,
