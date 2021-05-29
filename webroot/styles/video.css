@@ -14,8 +14,13 @@ video.video-js {
   content: url("../img/airplay.png");
 }
 
+.vjs-quality-selector .vjs-icon-placeholder {
+  font-family: VideoJS;
+  font-weight: 400;
+  font-style: normal;
+}
 .vjs-quality-selector .vjs-icon-placeholder::before {
-  content: url("../img/video-settings.png");
+  content: "\f110";
 }
 
 .vjs-big-play-button {

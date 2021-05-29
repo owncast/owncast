@@ -168,8 +168,6 @@ class OwncastPlayer {
             MenuButtonClass.call(this, player);
           },
 
-          handleClick: function () {},
-
           createItems: function () {
             const defaultAutoItem = new MenuItem(player, {
               selectable: true,
@@ -224,7 +222,6 @@ class OwncastPlayer {
           {},
           player.controlBar.children_.length - 2
         );
-
         this.qualityMenuButton = menuButton;
       }.bind(this)
     );
