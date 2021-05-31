@@ -20,6 +20,10 @@ func Test_secretMatch(t *testing.T) {
 		{"bad urls", "anything", "nonsense", false},
 		{"missing secret", "abc", "rtmp://example.com/live/", false},
 		{"missing secret and missing last slash", "abc", "rtmp://example.com/live", false},
+		{"streamkey before /live/", "streamkey", "rtmp://example.com/streamkey/live", false},
+		{"missing /live/", "anything", "rtmp://example.com/something/else", false},
+		{"stuff before and after /live/", "after", "rtmp://example.com/before/live/after", false},
+		{"host validation", "abc", "rtmp://very.long.subdomain.example.com/live/abc", true},
 	}
 
 	for _, tt := range tests {

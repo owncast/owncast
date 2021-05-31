@@ -78,16 +78,21 @@ func getVideoCodec(codec interface{}) string {
 }
 
 func secretMatch(configStreamKey string, url string) bool {
-  sep := "/live/"
-  givenParts := strings.Split(url, sep)
+	sep := "/live/"
+	givenParts := strings.Split(url, sep)
 
-  if len(givenParts) < 2 { // url part and secret
-    return false
-  }
+	if len(givenParts) < 2 { // url part and secret
+		return false
+	}
 
-  // If the given url has /live/ in the secret, this /live/ was removed with the
-  // `strings.Split/2` above. So, we add it back now.
-  streamingKey := strings.Join(givenParts[1:], sep)
+	host := strings.Split(givenParts[0], "/")
+	if len(host) != 3 { // "rtmp:", "" between the //, "verylong.example.com"
+		return false // There is stuff between the domain and "/live/", thus fail.
+	}
 
-  return streamingKey == configStreamKey
+	// If the given url has /live/ in the secret, this /live/ was removed with the
+	// `strings.Split/2` above. So, we add it back now.
+	streamingKey := strings.Join(givenParts[1:], sep)
+
+	return streamingKey == configStreamKey
 }
