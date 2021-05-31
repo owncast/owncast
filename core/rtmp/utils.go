@@ -9,6 +9,7 @@ import (
 
 	"github.com/nareix/joy5/format/flv/flvio"
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
 const unknownString = "Unknown"
@@ -77,22 +78,14 @@ func getVideoCodec(codec interface{}) string {
 	return unknownString
 }
 
-func secretMatch(configStreamKey string, url string) bool {
-	sep := "/live/"
-	givenParts := strings.Split(url, sep)
+func secretMatch(configStreamKey string, path string) bool {
+	prefix := "/live/"
 
-	if len(givenParts) < 2 { // url part and secret
-		return false
+	if !strings.HasPrefix(path, prefix) {
+		log.Debug("RTMP path does not start with " + prefix)
+		return false // We need the path to begin with $prefix
 	}
 
-	host := strings.Split(givenParts[0], "/")
-	if len(host) != 3 { // "rtmp:", "" between the //, "verylong.example.com"
-		return false // There is stuff between the domain and "/live/", thus fail.
-	}
-
-	// If the given url has /live/ in the secret, this /live/ was removed with the
-	// `strings.Split/2` above. So, we add it back now.
-	streamingKey := strings.Join(givenParts[1:], sep)
-
+	streamingKey := path[len(prefix):] // Remove $prefix
 	return streamingKey == configStreamKey
 }
