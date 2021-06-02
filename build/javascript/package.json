@@ -12,7 +12,7 @@
     "mark.js": "^8.11.1",
     "preact": "10.5.10",
     "tailwindcss": "^1.9.6",
-    "video.js": "7.11.8"
+    "video.js": "7.12.3"
   },
   "devDependencies": {
     "cssnano": "^5.0.5",
