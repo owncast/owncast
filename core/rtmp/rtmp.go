@@ -5,7 +5,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"strings"
 	"syscall"
 	"time"
 
@@ -78,9 +77,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	streamingKeyComponents := strings.Split(c.URL.Path, "/")
-	streamingKey := streamingKeyComponents[len(streamingKeyComponents)-1]
-	if streamingKey != data.GetStreamKey() {
+	if !secretMatch(data.GetStreamKey(), c.URL.Path) {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
 		nc.Close()
 		return
