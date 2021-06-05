@@ -1,0 +1,15 @@
+{
+  "name": "owncast-load-tests",
+  "version": "1.0.0",
+  "description": "## Load Tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "artillery": "^1.7.2",
+    "ws": "^7.4.6"
+  }
+}
