@@ -9,6 +9,7 @@ import (
 
 	"github.com/nareix/joy5/format/flv/flvio"
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
 const unknownString = "Unknown"
@@ -75,4 +76,16 @@ func getVideoCodec(codec interface{}) string {
 	}
 
 	return unknownString
+}
+
+func secretMatch(configStreamKey string, path string) bool {
+	prefix := "/live/"
+
+	if !strings.HasPrefix(path, prefix) {
+		log.Debug("RTMP path does not start with " + prefix)
+		return false // We need the path to begin with $prefix
+	}
+
+	streamingKey := path[len(prefix):] // Remove $prefix
+	return streamingKey == configStreamKey
 }
