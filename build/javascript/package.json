@@ -26,7 +26,6 @@
       "@videojs/http-streaming/dist/videojs-http-streaming.min.js",
       "video.js/dist/video-js.min.css",
       "@joeattardi/emoji-button",
-      "@justinribeiro/lite-youtube",
       "htm",
       "preact",
       "mark.js/dist/mark.es6.min.js",
