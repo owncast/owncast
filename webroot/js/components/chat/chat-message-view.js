@@ -122,10 +122,7 @@ function getMessageWithEmbeds(message) {
   var anchors = container.getElementsByTagName('a');
   for (var i = 0; i < anchors.length; i++) {
     const url = anchors[i].href;
-    if (getYoutubeIdFromURL(url)) {
-      const youtubeID = getYoutubeIdFromURL(url);
-      embedText += getYoutubeEmbedFromID(youtubeID);
-    } else if (url.indexOf('instagram.com/p/') > -1) {
+    if (url.indexOf('instagram.com/p/') > -1) {
       embedText += getInstagramEmbedFromURL(url);
     }
   }
@@ -140,26 +137,6 @@ function getMessageWithEmbeds(message) {
     return embedText;
   }
   return message + embedText;
-}
-
-function getYoutubeIdFromURL(url) {
-  try {
-    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = url.match(regExp);
-
-    if (match && match[2].length == 11) {
-      return match[2];
-    } else {
-      return null;
-    }
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-}
-
-function getYoutubeEmbedFromID(id) {
-  return `<div class="chat-embed youtube-embed"><lite-youtube videoid="${id}" /></div>`;
 }
 
 function getInstagramEmbedFromURL(url) {

@@ -45,7 +45,6 @@ The styles in this file mostly ovveride those coming from chat.css
 
 #messages-only .message-text .chat-embed,
 #messages-only .message-text .instagram-embed,
-#messages-only .message-text .embedded-image,
-#messages-only .message-text .youtube-embed  {
+#messages-only .message-text .embedded-image {
   max-width: 350px;
 }
