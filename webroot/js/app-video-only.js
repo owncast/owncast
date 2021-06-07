@@ -225,10 +225,7 @@ export default class VideoOnly extends Component {
       isPlaying,
     } = state;
 
-    const { 
-      logo = TEMP_IMAGE,
-      customStyles, 
-    } = configData;
+    const { logo = TEMP_IMAGE, customStyles } = configData;
 
     const mainClass = playerActive ? 'online' : '';
 
@@ -237,7 +234,7 @@ export default class VideoOnly extends Component {
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
     return html`
       <main class=${mainClass}>
-       <style>
+        <style>
           ${customStyles}
         </style>
         <div
