@@ -5,9 +5,17 @@ const html = htm.bind(h);
 import Message from './message.js';
 import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
-import { jumpToBottom, debounce, getLocalStorage } from '../../utils/helpers.js';
+import {
+  jumpToBottom,
+  debounce,
+  getLocalStorage,
+} from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
-import { URL_CHAT_HISTORY, MESSAGE_JUMPTOBOTTOM_BUFFER, KEY_CUSTOM_USERNAME_SET } from '../../utils/constants.js';
+import {
+  URL_CHAT_HISTORY,
+  MESSAGE_JUMPTOBOTTOM_BUFFER,
+  KEY_CUSTOM_USERNAME_SET,
+} from '../../utils/constants.js';
 
 export default class Chat extends Component {
   constructor(props, context) {
@@ -43,36 +51,45 @@ export default class Chat extends Component {
   }
 
   componentDidMount() {
-   this.setupWebSocketCallbacks();
-   this.getChatHistory();
+    this.setupWebSocketCallbacks();
+    this.getChatHistory();
 
-   window.addEventListener('resize', this.handleWindowResize);
+    window.addEventListener('resize', this.handleWindowResize);
 
-   if (!this.props.messagesOnly) {
-    window.addEventListener('blur', this.handleWindowBlur);
-    window.addEventListener('focus', this.handleWindowFocus);
-   }
+    if (!this.props.messagesOnly) {
+      window.addEventListener('blur', this.handleWindowBlur);
+      window.addEventListener('focus', this.handleWindowFocus);
+    }
 
-   this.messageListObserver = new MutationObserver(this.messageListCallback);
-   this.messageListObserver.observe(this.scrollableMessagesContainer.current, { childList: true });
+    this.messageListObserver = new MutationObserver(this.messageListCallback);
+    this.messageListObserver.observe(this.scrollableMessagesContainer.current, {
+      childList: true,
+    });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     const { username, chatInputEnabled } = this.props;
-    const { username: nextUserName, chatInputEnabled: nextChatEnabled } = nextProps;
+    const { username: nextUserName, chatInputEnabled: nextChatEnabled } =
+      nextProps;
 
-    const { webSocketConnected, messages, chatUserNames, newMessagesReceived } = this.state;
-    const {webSocketConnected: nextSocket, messages: nextMessages, chatUserNames: nextUserNames, newMessagesReceived: nextMessagesReceived } = nextState;
+    const { webSocketConnected, messages, chatUserNames, newMessagesReceived } =
+      this.state;
+    const {
+      webSocketConnected: nextSocket,
+      messages: nextMessages,
+      chatUserNames: nextUserNames,
+      newMessagesReceived: nextMessagesReceived,
+    } = nextState;
 
     return (
       username !== nextUserName ||
       chatInputEnabled !== nextChatEnabled ||
       webSocketConnected !== nextSocket ||
       messages.length !== nextMessages.length ||
-      chatUserNames.length !== nextUserNames.length || newMessagesReceived !== nextMessagesReceived
+      chatUserNames.length !== nextUserNames.length ||
+      newMessagesReceived !== nextMessagesReceived
     );
   }
-
 
   componentDidUpdate(prevProps, prevState) {
     const { username: prevName } = prevProps;
@@ -98,50 +115,59 @@ export default class Chat extends Component {
     if (!this.props.messagesOnly) {
       window.removeEventListener('blur', this.handleWindowBlur);
       window.removeEventListener('focus', this.handleWindowFocus);
-     }
+    }
     this.messageListObserver.disconnect();
   }
 
   setupWebSocketCallbacks() {
     this.websocket = this.props.websocket;
     if (this.websocket) {
-      this.websocket.addListener(CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED, this.receivedWebsocketMessage);
-      this.websocket.addListener(CALLBACKS.WEBSOCKET_CONNECTED, this.websocketConnected);
-      this.websocket.addListener(CALLBACKS.WEBSOCKET_DISCONNECTED, this.websocketDisconnected);
+      this.websocket.addListener(
+        CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED,
+        this.receivedWebsocketMessage
+      );
+      this.websocket.addListener(
+        CALLBACKS.WEBSOCKET_CONNECTED,
+        this.websocketConnected
+      );
+      this.websocket.addListener(
+        CALLBACKS.WEBSOCKET_DISCONNECTED,
+        this.websocketDisconnected
+      );
     }
   }
 
   // fetch chat history
   getChatHistory() {
     fetch(URL_CHAT_HISTORY)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok ${response.ok}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      // extra user names
-      const chatUserNames = extraUserNamesFromMessageHistory(data);
-      this.setState({
-        messages: this.state.messages.concat(data),
-        chatUserNames,
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok ${response.ok}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // extra user names
+        const chatUserNames = extraUserNamesFromMessageHistory(data);
+        this.setState({
+          messages: this.state.messages.concat(data),
+          chatUserNames,
+        });
+      })
+      .catch((error) => {
+        this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
       });
-    })
-    .catch(error => {
-      this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
-    });
   }
 
   sendUsernameChange(oldName, newName) {
     clearTimeout(this.sendUserJoinedEvent);
 
-		const nameChange = {
-			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
-			oldName,
-			newName,
-		};
-		this.websocket.send(nameChange);
+    const nameChange = {
+      type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
+      oldName,
+      newName,
+    };
+    this.websocket.send(nameChange);
   }
 
   receivedWebsocketMessage(message) {
@@ -164,7 +190,9 @@ export default class Chat extends Component {
     const { messages: curMessages } = this.state;
     const { messagesOnly } = this.props;
 
-    const existingIndex = curMessages.findIndex(item => item.id === messageId);
+    const existingIndex = curMessages.findIndex(
+      (item) => item.id === messageId
+    );
 
     // If the message already exists and this is an update event
     // then update it.
@@ -177,16 +205,20 @@ export default class Chat extends Component {
       // if message exists and should now hide, take it out.
       if (existingIndex >= 0 && !messageVisible) {
         this.setState({
-          messages: curMessages.filter(item => item.id !== messageId),
+          messages: curMessages.filter((item) => item.id !== messageId),
         });
       } else if (existingIndex === -1 && messageVisible) {
         // insert message at timestamp
         const insertAtIndex = curMessages.findIndex((item, index) => {
           const time = item.timestamp || messageTimestamp;
-          const nextMessage = index < curMessages.length - 1 && curMessages[index + 1];
+          const nextMessage =
+            index < curMessages.length - 1 && curMessages[index + 1];
           const nextTime = nextMessage.timestamp || messageTimestamp;
           const messageTimestampDate = new Date(messageTimestamp);
-          return messageTimestampDate > (new Date(time)) && messageTimestampDate <= (new Date(nextTime));
+          return (
+            messageTimestampDate > new Date(time) &&
+            messageTimestampDate <= new Date(nextTime)
+          );
         });
         updatedMessageList.splice(insertAtIndex + 1, 0, convertedMessage);
         this.setState({
@@ -216,7 +248,9 @@ export default class Chat extends Component {
       webSocketConnected: true,
     });
 
-    const hasPreviouslySetCustomUsername = getLocalStorage(KEY_CUSTOM_USERNAME_SET);
+    const hasPreviouslySetCustomUsername = getLocalStorage(
+      KEY_CUSTOM_USERNAME_SET
+    );
     if (hasPreviouslySetCustomUsername && !this.props.ignoreClient) {
       this.sendJoinedMessage();
     }
@@ -229,30 +263,33 @@ export default class Chat extends Component {
   }
 
   submitChat(content) {
-		if (!content) {
-			return;
+    if (!content) {
+      return;
     }
     const { username } = this.props;
     const message = {
       body: content,
-			author: username,
-			type: SOCKET_MESSAGE_TYPES.CHAT,
+      author: username,
+      type: SOCKET_MESSAGE_TYPES.CHAT,
     };
-		this.websocket.send(message);
+    this.websocket.send(message);
   }
 
   sendJoinedMessage() {
     const { username } = this.props;
     const message = {
-			username: username,
-			type: SOCKET_MESSAGE_TYPES.USER_JOINED,
+      username: username,
+      type: SOCKET_MESSAGE_TYPES.USER_JOINED,
     };
 
     // Artificial delay so people who join and immediately
     // leave don't get counted.
-    this.sendUserJoinedEvent = setTimeout(function() {
-      this.websocket.send(message);
-    }.bind(this), 5000);
+    this.sendUserJoinedEvent = setTimeout(
+      function () {
+        this.websocket.send(message);
+      }.bind(this),
+      5000
+    );
   }
 
   updateAuthorList(message) {
@@ -277,9 +314,12 @@ export default class Chat extends Component {
   }
 
   checkShouldScroll() {
-    const { scrollTop, scrollHeight, clientHeight } = this.scrollableMessagesContainer.current;
+    const { scrollTop, scrollHeight, clientHeight } =
+      this.scrollableMessagesContainer.current;
     const fullyScrolled = scrollHeight - clientHeight;
-    const shouldScroll = scrollHeight >= clientHeight && fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
+    const shouldScroll =
+      scrollHeight >= clientHeight &&
+      fullyScrolled - scrollTop < MESSAGE_JUMPTOBOTTOM_BUFFER;
     return shouldScroll;
   }
 
@@ -316,14 +356,19 @@ export default class Chat extends Component {
         }
       }
       // update document title if window blurred
-      if (this.numMessagesSinceBlur && !this.props.messagesOnly && this.windowBlurred) {
+      if (
+        this.numMessagesSinceBlur &&
+        !this.props.messagesOnly &&
+        this.windowBlurred
+      ) {
         this.updateDocumentTitle();
       }
     }
-  };
+  }
 
   updateDocumentTitle() {
-    const num = this.numMessagesSinceBlur > 10 ? '10+' : this.numMessagesSinceBlur;
+    const num =
+      this.numMessagesSinceBlur > 10 ? '10+' : this.numMessagesSinceBlur;
     window.document.title = `${num} 💬 :: ${this.props.instanceTitle}`;
   }
 
@@ -331,14 +376,16 @@ export default class Chat extends Component {
     const { username, messagesOnly, chatInputEnabled } = props;
     const { messages, chatUserNames, webSocketConnected } = state;
 
-    const messageList = messages.filter(message => message.visible !== false).map(
-      (message) =>
-        html`<${Message}
-          message=${message}
-          username=${username}
-          key=${message.id}
-        />`
-    );
+    const messageList = messages
+      .filter((message) => message.visible !== false)
+      .map(
+        (message) =>
+          html`<${Message}
+            message=${message}
+            username=${username}
+            key=${message.id}
+          />`
+      );
 
     if (messagesOnly) {
       return html`
@@ -375,4 +422,3 @@ export default class Chat extends Component {
     `;
   }
 }
-
