@@ -226,8 +226,7 @@ export default class VideoOnly extends Component {
     } = state;
 
     const { logo = TEMP_IMAGE, customStyles } = configData;
-    
-    
+
     const viewerCountMessage =
       streamOnline && viewerCount > 0
         ? html`${viewerCount} ${pluralize('viewer', viewerCount)}`
