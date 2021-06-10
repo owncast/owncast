@@ -226,6 +226,12 @@ export default class VideoOnly extends Component {
     } = state;
 
     const { logo = TEMP_IMAGE, customStyles } = configData;
+    
+    
+    const viewerCountMessage =
+      streamOnline && viewerCount > 0
+        ? html`${viewerCount} ${pluralize('viewer', viewerCount)}`
+        : null;
 
     const mainClass = playerActive ? 'online' : '';
 
@@ -257,9 +263,7 @@ export default class VideoOnly extends Component {
           class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
         >
           <span>${streamStatusMessage}</span>
-          <span id="stream-viewer-count"
-            >${viewerCount} ${pluralize('viewer', viewerCount)}.</span
-          >
+          <span id="stream-viewer-count">${viewerCountMessage}</span>
         </section>
       </main>
     `;
