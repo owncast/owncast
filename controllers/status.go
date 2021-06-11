@@ -15,23 +15,27 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 
 	status := core.GetStatus()
 	response := webStatusResponse{
-		Online: status.Online,
-		ViewerCount: status.ViewerCount,
-		LastConnectTime: status.LastConnectTime,
+		Online:             status.Online,
+		ViewerCount:        status.ViewerCount,
+		LastConnectTime:    status.LastConnectTime,
 		LastDisconnectTime: status.LastDisconnectTime,
-		VersionNumber: status.VersionNumber,
-		StreamTitle: status.StreamTitle,
+		VersionNumber:      status.VersionNumber,
+		StreamTitle:        status.StreamTitle,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		InternalErrorHandler(w, err)
 	}
+
+	// Mark the user who requested this status as an active viewer
+	id := utils.GenerateClientIDFromRequest(r)
+	core.SetViewerIdActive(id)
 }
 
 type webStatusResponse struct {
-	Online                bool `json:"online"`
-	ViewerCount           int  `json:"viewerCount"`
+	Online      bool `json:"online"`
+	ViewerCount int  `json:"viewerCount"`
 
 	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
