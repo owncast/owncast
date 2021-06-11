@@ -22,6 +22,8 @@ const (
 	StreamStopped EventType = "STREAM_STOPPED"
 	// SystemMessageSent is the event sent when a system message is sent.
 	Event_SystemMessageSent EventType = "SYSTEM"
+	Event_Chat_Disabled     EventType = "CHAT_DISABLED"
+
 	// ChatActionSent is a generic chat action that can be used for anything that doesn't need specific handling or formatting.
 	Event_ChatActionSent                 EventType = "CHAT_ACTION"
 	Event_UserJoined                     EventType = "USER_JOINED"

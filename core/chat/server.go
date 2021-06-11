@@ -109,15 +109,17 @@ func (s *ChatServer) ClientClosed(c *ChatClient) {
 }
 
 func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
-	// Limit concurrent chat connections
-	if uint(len(s.clients)) >= s.maxClientCount {
-		fmt.Println("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
-		w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
+	if data.GetChatDisabled() {
+		w.Write([]byte(events.Event_Chat_Disabled))
 		return
 	}
 
-	// TODO: Actually check origin
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	// Limit concurrent chat connections
+	if uint(len(s.clients)) >= s.maxClientCount {
+		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
+		w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
+		return
+	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
