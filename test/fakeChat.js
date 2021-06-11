@@ -55,7 +55,7 @@ async function sendMessage() {
   }
 
   const ws = new WebSocket(`ws://localhost:8080/ws?accessToken=${accessToken}`, {
-    origin: 'http://watch.owncast.online',
+    origin: 'http://localhost:8080',
   });
 
   ws.on('open', function open() {
