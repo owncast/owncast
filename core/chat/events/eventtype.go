@@ -27,4 +27,5 @@ const (
 	Event_UserJoined                     EventType = "USER_JOINED"
 	Event_Error_Needs_Registration       EventType = "ERROR_NEEDS_REGISTRATION"
 	Event_Error_Max_Connections_Exceeded EventType = "ERROR_MAX_CONNECTIONS_EXCEEDED"
+	Event_Error_User_Disabled            EventType = "ERROR_USER_DISABLED"
 )

@@ -507,10 +507,22 @@ export default class App extends Component {
   handleWebsocketMessage(e) {
     console.log(e, this.isRegistering);
     if (e.type === 'ERROR_NEEDS_REGISTRATION' && !this.isRegistering) {
+      // User needs an access token, so start the user auth flow.
       this.state.websocket.shutdown();
       this.setState({websocket: null});
       this.setupChatAuth(true);
+    } else if (e.type === 'ERROR_USER_DISABLED') {
+      // User has been actively disabled on the backend. Turn off chat for them.
+      this.disableChat();
+    } else if (e.type === 'ERROR_MAX_CONNECTIONS_EXCEEDED') {
+      // Chat server cannot support any more chat clients. Turn off chat for them.
+      this.disableChat();
     }
+  }
+
+  disableChat() {
+    this.state.websocket.shutdown();
+    this.setState({websocket: null, displayChat: false});
   }
 
   async setupChatAuth(force) {

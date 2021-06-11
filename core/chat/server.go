@@ -110,7 +110,7 @@ func (s *ChatServer) ClientClosed(c *ChatClient) {
 
 func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	// Limit concurrent chat connections
-	if uint(len(s.clients)+1) >= s.maxClientCount {
+	if uint(len(s.clients)) >= s.maxClientCount {
 		fmt.Println("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
 		w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
 		return
@@ -146,7 +146,12 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 
 	// User is disabled therefore we should disconnect.
 	if user.DisabledAt != nil {
+		log.Warnln("Disabled user", user.Id, user.DisplayName, "rejected")
+		conn.WriteJSON(events.EventPayload{
+			"type": events.Event_Error_User_Disabled,
+		})
 		conn.Close()
+		return
 	}
 
 	s.Addclient(conn, user, accessToken)
