@@ -35,6 +35,7 @@ func main() {
 
 	dbFile := flag.String("database", "", "Path to the database file.")
 	logDirectory := flag.String("logdir", "", "Directory where logs will be written to")
+  backupDirectory := flag.String("backupdir", "", "Directory where backups will be written to")
 	enableDebugOptions := flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
 	enableVerboseLogging := flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
 	restoreDatabaseFile := flag.String("restoreDatabase", "", "Restore an Owncast database backup")
@@ -62,6 +63,10 @@ func main() {
 	configureLogging(*enableDebugOptions, *enableVerboseLogging)
 	log.Infoln(config.GetReleaseString())
 
+  if *backupDirectory != "" {
+		config.BackupDirectory = *backupDirectory
+	}
+  
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {
 		os.Mkdir("./data", 0700)
