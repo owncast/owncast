@@ -19,9 +19,6 @@ import (
 const (
 	schemaVersion = 0
 )
-var (
-	backupFile    = filepath.Join(config.BackupDirectory, "owncastdb.bak")
-)
 
 var _db *sql.DB
 var _datastore *Datastore
@@ -99,6 +96,7 @@ func SetupPersistence(file string) error {
 
 	dbBackupTicker := time.NewTicker(1 * time.Hour)
 	go func() {
+                backupFile := filepath.Join(config.BackupDirectory, "owncastdb.bak")
 		for range dbBackupTicker.C {
 			utils.Backup(_db, backupFile)
 		}
