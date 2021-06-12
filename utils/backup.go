@@ -63,7 +63,7 @@ func Backup(db *sql.DB, backupFile string) {
   BackupDirectory := filepath.Dir(backupFile)
 
   if !DoesFileExists(BackupDirectory) {
-    err = os.MkdirAll(BackupDirectory, 0700)
+    err := os.MkdirAll(BackupDirectory, 0700)
     if err != nil {
       log.Fatalln(err)
     }
