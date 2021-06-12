@@ -61,9 +61,9 @@ func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
 
   BackupDirectory := filepath.Dir(backupFile)
-  _, err := os.Stat(BackupDirectory)
-  if os.IsNotExist(err) {
-    err = os.MkdirAll(BackupDirectory, 0777)
+
+  if !DoesFileExists(BackupDirectory) {
+    err = os.MkdirAll(BackupDirectory, 0700)
     if err != nil {
       log.Fatalln(err)
     }
