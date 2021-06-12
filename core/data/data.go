@@ -8,15 +8,19 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+  "path/filepath"
 	"time"
-
+  
+  "github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
 	schemaVersion = 0
-	backupFile    = "backup/owncastdb.bak"
+)
+var (
+	backupFile    = filepath.Join(config.BackupDirectory, "owncastdb.bak")
 )
 
 var _db *sql.DB
