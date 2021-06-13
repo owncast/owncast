@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
- 	"path/filepath"
+	"path/filepath"
 	"time"
 
 	"github.com/owncast/owncast/config"

@@ -68,7 +68,7 @@ func Backup(db *sql.DB, backupFile string) {
 			log.Fatalln(err)
 		}
 	}
-  
+
 	// Dump the entire database as plain text sql
 	var b bytes.Buffer
 	out := bufio.NewWriter(&b)

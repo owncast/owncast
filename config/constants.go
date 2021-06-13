@@ -19,5 +19,5 @@ var (
 	// PublicHLSStoragePath is the directory we write public HLS files to for distribution.
 	PublicHLSStoragePath = filepath.Join(WebRoot, "hls")
 	// BackupDirectory is the directory we write backup files to.
-  	BackupDirectory = filepath.Join(DataDirectory, "backup")
+	BackupDirectory = filepath.Join(DataDirectory, "backup")
 )
