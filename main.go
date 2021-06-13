@@ -66,7 +66,7 @@ func main() {
 	if *backupDirectory != "" {
 		config.BackupDirectory = *backupDirectory
 	}
-  
+
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {
 		os.Mkdir("./data", 0700)

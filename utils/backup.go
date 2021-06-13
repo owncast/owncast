@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-  
+
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/schollz/sqlite3dump"
 	log "github.com/sirupsen/logrus"

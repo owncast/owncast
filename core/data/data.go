@@ -10,7 +10,7 @@ import (
 	"os"
  	"path/filepath"
 	"time"
-  
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
