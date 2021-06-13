@@ -10,7 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-  "path/filepath"
+	"path/filepath"
   
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/schollz/sqlite3dump"
@@ -60,14 +60,14 @@ func Restore(backupFile string, databaseFile string) error {
 func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
 
-  BackupDirectory := filepath.Dir(backupFile)
+	BackupDirectory := filepath.Dir(backupFile)
 
-  if !DoesFileExists(BackupDirectory) {
-    err := os.MkdirAll(BackupDirectory, 0700)
-    if err != nil {
-      log.Fatalln(err)
-    }
-  }
+	if !DoesFileExists(BackupDirectory) {
+		err := os.MkdirAll(BackupDirectory, 0700)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
   
 	// Dump the entire database as plain text sql
 	var b bytes.Buffer

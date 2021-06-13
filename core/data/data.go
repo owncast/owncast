@@ -8,10 +8,10 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-  "path/filepath"
+ 	"path/filepath"
 	"time"
   
-  "github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -96,7 +96,7 @@ func SetupPersistence(file string) error {
 
 	dbBackupTicker := time.NewTicker(1 * time.Hour)
 	go func() {
-                backupFile := filepath.Join(config.BackupDirectory, "owncastdb.bak")
+		backupFile := filepath.Join(config.BackupDirectory, "owncastdb.bak")
 		for range dbBackupTicker.C {
 			utils.Backup(_db, backupFile)
 		}
@@ -107,7 +107,7 @@ func SetupPersistence(file string) error {
 
 func migrateDatabase(db *sql.DB, from, to int) error {
 	log.Printf("Migrating database from version %d to %d\n", from, to)
-  dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
+	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
 	utils.Backup(db, dbBackupFile)
 	for v := from; v < to; v++ {
 		switch v {
