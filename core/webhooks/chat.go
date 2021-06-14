@@ -13,7 +13,7 @@ func SendChatEvent(chatEvent *events.UserMessageEvent) {
 			Body:      chatEvent.Body,
 			RawBody:   chatEvent.Body,
 			ID:        chatEvent.Id,
-			Visible:   chatEvent.Hidden == nil,
+			Visible:   chatEvent.HiddenAt == nil,
 			Timestamp: &chatEvent.Timestamp,
 		},
 	}

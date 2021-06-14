@@ -42,14 +42,15 @@ export default class ChatMessageView extends Component {
 
   render() {
     const { message } = this.props;
-    const { type, user, body, visible, timestamp } = message;
-    const { displayName, displayColor } = user;
+    const { user, timestamp } = message;
+    const { displayName, displayColor, createdAt } = user;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
       return null;
     }
-    const formattedTimestamp = formatTimestamp(timestamp);
+    const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
+    const userMetadata = `${displayName} first joined ${formatTimestamp(createdAt)}`;
 
     const isSystemMessage = message.type === SOCKET_MESSAGE_TYPES.SYSTEM;
 
@@ -70,7 +71,7 @@ export default class ChatMessageView extends Component {
         title=${formattedTimestamp}
       >
         <div class="message-content break-words w-full">
-          <div style=${authorTextColor} class="message-author font-bold">
+          <div style=${authorTextColor} class="message-author font-bold" title=${userMetadata}>
             ${displayName}
           </div>
           <div
@@ -160,7 +161,7 @@ function formatTimestamp(sentAt) {
     return '';
   }
 
-  let diffInDays = getDiffInDaysFromNow(sentAt); //(new Date() - sentAt) / (24 * 3600 * 1000);
+  let diffInDays = getDiffInDaysFromNow(sentAt);
   if (diffInDays >= 1) {
     return (
       `Sent at ${sentAt.toLocaleDateString('en-US', {
@@ -169,7 +170,7 @@ function formatTimestamp(sentAt) {
     );
   }
 
-  return `Sent at ${sentAt.toLocaleTimeString()}`;
+  return `${sentAt.toLocaleTimeString()}`;
 }
 
 /*

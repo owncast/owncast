@@ -28,6 +28,7 @@ var (
 		"condescending",
 		"confident",
 		"cranky",
+		"dark",
 		"dazzling",
 		"determined",
 		"distracted",
@@ -50,12 +51,14 @@ var (
 		"gallant",
 		"gifted",
 		"goofy",
+		"goth",
 		"gracious",
 		"happy",
 		"hardcore",
 		"heuristic",
 		"hopeful",
 		"hungry",
+		"industrial",
 		"infallible",
 		"inspiring",
 		"jolly",
@@ -96,6 +99,7 @@ var (
 		"tender",
 		"thirsty",
 		"trusting",
+		"ultimate",
 		"unruffled",
 		"upbeat",
 		"vibrant",
@@ -604,6 +608,21 @@ var (
 
 		// https://en.wikipedia.org/wiki/Rush_(band)
 		"rush",
+
+		// Animal Crossing characters that aren't human names
+		"barold", "nook", "zucker", "cherry", "cookie", "beardo", "deli",
+
+		// Matrix character names
+		"trinity", "neo", "apoc", "dozer", "morpheus", "tank", "switch",
+
+		// Random fun nouns
+		"multipass", "pizza", "dna",
+
+		// Video game characters
+		"mario", "zelda", "link",
+
+		// Ultimate frisbee terminology for Ginger
+		"huck", "hammer", "scoober", "disc", "frisbee",
 	}
 )
 

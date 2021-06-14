@@ -42,7 +42,7 @@ func createTable() {
 }
 
 func addMessage(event events.UserMessageEvent) {
-	saveEvent(event.Id, event.User.Id, event.Body, event.Type, event.Hidden, event.Timestamp)
+	saveEvent(event.Id, event.User.Id, event.Body, event.Type, event.HiddenAt, event.Timestamp)
 }
 
 func saveEvent(id string, userId string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
@@ -80,10 +80,10 @@ func getChat(query string) []events.UserMessageEvent {
 		var userId string
 		var body string
 		var messageType models.EventType
-		var hidden *time.Time
+		var hiddenAt *time.Time
 		var timestamp time.Time
 
-		err = rows.Scan(&id, &userId, &body, &messageType, &hidden, &timestamp)
+		err = rows.Scan(&id, &userId, &body, &messageType, &hiddenAt, &timestamp)
 		if err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
@@ -96,7 +96,7 @@ func getChat(query string) []events.UserMessageEvent {
 		message.User = user
 		message.Body = body
 		message.Type = messageType
-		// message.Visible = visible == 1
+		message.HiddenAt = hiddenAt
 		message.Timestamp = timestamp
 
 		history = append(history, message)
@@ -109,18 +109,70 @@ func getChat(query string) []events.UserMessageEvent {
 	return history
 }
 
-// func getChatModerationHistory() []events.Event {
-// 	var query = "SELECT * FROM messages WHERE messageType == 'CHAT' AND datetime(timestamp) >=datetime('now', '-5 Hour')"
-// 	return getChat(query)
-// }
+func GetChatModerationHistory() []events.UserMessageEvent {
+	// Get all messages sent within the past 5hrs
+	var query = "SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') ORDER BY timestamp desc"
+	return getChat(query)
+}
 
 func GetChatHistory() []events.UserMessageEvent {
-	// Get all messages sent within the past 5hrs, max 50
+	// Get all visible messages sent within the past 5hrs, max 50
 	var query = "SELECT * FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND hidden_at IS NULL ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc"
 	return getChat(query)
 }
 
-// TODO: Fix this to set timestamp OR null for hidden_at
+// SetMessageVisibilityForUserId will bulk change the visibility of messages for a user.
+func SetMessageVisibilityForUserId(userID string, visible bool) error {
+	tx, err := _db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var disabledAt *time.Time
+	if !visible {
+		now := time.Now()
+		disabledAt = &now
+	} else {
+		disabledAt = nil
+	}
+
+	// Set all messages by this user as hidden in the database
+	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE user_id IS ?")
+	defer stmt.Close()
+	stmt.Exec(disabledAt, userID)
+
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	// Get a list of IDs to send to the connected clients to hide
+	// stmt, err = tx.Prepare("SELECT id, hidden_at FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc WHERE user_id IS ?")
+	// defer stmt.Close()
+	// result, err := stmt.Exec(userID)
+
+	// history := make([]events.UserMessageEvent, 0)
+	// rows, err := _db.Query(query)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer rows.Close()
+
+	// for rows.Next() {
+	// 	var id string
+	// 	var hidden *time.Time
+	// 	err = rows.Scan(&id, &hidden)
+	// 	if err != nil {
+	// 		log.Debugln(err)
+	// 		log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
+	// 		break
+	// 	}
+
+	// }
+
+	return nil
+}
+
 func saveMessageVisibility(messageIDs []string, visible bool) error {
 	tx, err := _db.Begin()
 	if err != nil {
@@ -135,8 +187,16 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	}
 	defer stmt.Close()
 
+	var hiddenAt *time.Time
+	if !visible {
+		now := time.Now()
+		hiddenAt = &now
+	} else {
+		hiddenAt = nil
+	}
+
 	args := make([]interface{}, len(messageIDs)+1)
-	args[0] = visible
+	args[0] = hiddenAt
 	for i, id := range messageIDs {
 		args[i+1] = id
 	}
@@ -159,28 +219,33 @@ func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 	row := _db.QueryRow(query, messageID)
 
 	var id string
-	var author string
+	var userId string
 	var body string
-	var messageType models.EventType
-	var hiddenAt time.Time
+	var eventType models.EventType
+	var hiddenAt *time.Time
 	var timestamp time.Time
 
-	err := row.Scan(&id, &author, &body, &messageType, &hiddenAt, &timestamp)
+	err := row.Scan(&id, &userId, &body, &eventType, &hiddenAt, &timestamp)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
 	}
 
+	user := user.GetUserById(userId)
+
 	return &events.UserMessageEvent{
 		events.Event{
+			Type:      eventType,
 			Id:        id,
 			Timestamp: timestamp,
 		},
 		events.UserEvent{
-			Hidden: &hiddenAt,
+			User:     user,
+			HiddenAt: hiddenAt,
 		},
 		events.MessageEvent{
-			Body: body,
+			OutboundEvent: nil,
+			Body:          body,
 		},
 	}, nil
 }

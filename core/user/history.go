@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type userHistoryEntry struct {
+type usernameHistoryEntry struct {
 	DisplayName string    `json:"displayName"`
 	ChangedAt   time.Time `json:"changedAt"`
 }
@@ -30,12 +30,13 @@ func addNameHistory(userId string, name string) error {
 	return tx.Commit()
 }
 
-func createUserHistoryTable() {
+func createUsernameHistoryTable() {
 	log.Traceln("Creating user history table...")
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS user_history (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-		"display_name" string NOT NULL,
+		"user_id" STRING NOT NULL,
+		"display_name" STRING NOT NULL,
 		"changed_at" DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 
@@ -44,10 +45,10 @@ func createUserHistoryTable() {
 	}
 }
 
-func getUserHistory(id string) []*userHistoryEntry {
-	entries := []*userHistoryEntry{}
+func getUsernameHistory(id string) []*usernameHistoryEntry {
+	entries := []*usernameHistoryEntry{}
 
-	query := "SELECT display_name, changed_at FROM user_history WHERE id = ? ORDER BY changed_at DESC LIMIT 3"
+	query := "SELECT display_name, changed_at FROM user_history WHERE user_id IS ? ORDER BY changed_at DESC LIMIT 3"
 	rows, err := _db.Query(query, id)
 
 	if err != nil {
@@ -56,18 +57,18 @@ func getUserHistory(id string) []*userHistoryEntry {
 
 	for rows.Next() {
 		var name string
-		var changedAt string
+		var changedAt time.Time
 
 		err = rows.Scan(&name, &changedAt)
-		changedAtParsed, err := time.Parse("dunno", changedAt)
+		// changedAtParsed, err := time.Parse("dunno", changedAt)
 		if err != nil {
 			log.Fatalln(err)
 			continue
 		}
 
-		entry := userHistoryEntry{
+		entry := usernameHistoryEntry{
 			name,
-			changedAtParsed,
+			changedAt,
 		}
 		entries = append(entries, &entry)
 	}

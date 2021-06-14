@@ -10,11 +10,17 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/user"
 	log "github.com/sirupsen/logrus"
 )
 
 // UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	type messageVisibilityUpdateRequest struct {
+		IDArray []string `json:"idArray"`
+		Visible bool     `json:"visible"`
+	}
+
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
@@ -23,8 +29,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var request messageVisibilityUpdateRequest
 
-	err := decoder.Decode(&request)
-	if err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		log.Errorln(err)
 		controllers.WriteSimpleResponse(w, false, "")
 		return
@@ -38,22 +43,42 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-type messageVisibilityUpdateRequest struct {
-	IDArray []string `json:"idArray"`
-	Visible bool     `json:"visible"`
+func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+	type blockUserRequest struct {
+		UserID  string `json:"userId"`
+		Enabled bool   `json:"enabled"`
+	}
+
+	if r.Method != controllers.POST {
+		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request blockUserRequest
+
+	if err := decoder.Decode(&request); err != nil {
+		log.Errorln(err)
+		controllers.WriteSimpleResponse(w, false, "")
+		return
+	}
+
+	// Disable/enable the user
+	user.SetEnabled(request.UserID, request.Enabled)
+
+	// Hide/show the user's chat messages
+	chat.SetMessageVisibilityForUserId(request.UserID, request.Enabled)
 }
 
 // GetChatMessages returns all of the chat messages, unfiltered.
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	w.WriteHeader(http.StatusNotImplemented)
+	messages := chat.GetChatModerationHistory()
 
-	// messages := core.GetModerationChatMessages()
-
-	// if err := json.NewEncoder(w).Encode(messages); err != nil {
-	// 	log.Errorln(err)
-	// }
+	if err := json.NewEncoder(w).Encode(messages); err != nil {
+		log.Errorln(err)
+	}
 }
 
 // SendSystemMessage will send an official "SYSTEM" message to chat on behalf of your server.
@@ -91,7 +116,7 @@ func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
-// SendUserMessage will send a message to chat on behalf of a user.
+// SendUserMessage will send a message to chat on behalf of a user. *Depreciated*
 func SendUserMessage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	controllers.BadRequestHandler(w, errors.New("no longer supported"))

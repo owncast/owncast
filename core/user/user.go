@@ -17,19 +17,23 @@ var _db *sql.DB
 var _dbLock sync.Mutex
 
 type User struct {
-	Id           string              `json:"id"`
-	AccessToken  string              `json:"-"`
-	DisplayName  string              `json:"displayName"`
-	DisplayColor int                 `json:"displayColor"`
-	CreatedAt    time.Time           `json:"createdAt"`
-	UserHistory  []*userHistoryEntry `json:"userHistory"`
-	DisabledAt   *time.Time          `json:"-"`
+	Id              string                  `json:"id"`
+	AccessToken     string                  `json:"-"`
+	DisplayName     string                  `json:"displayName"`
+	DisplayColor    int                     `json:"displayColor"`
+	CreatedAt       time.Time               `json:"createdAt"`
+	UsernameHistory []*usernameHistoryEntry `json:"usernameHistory"`
+	DisabledAt      *time.Time              `json:"-"`
+}
+
+func (u *User) IsEnabled() bool {
+	return u.DisabledAt == nil
 }
 
 func SetupUsers() {
 	_db = data.GetDatabase()
 	createUsersTable()
-	createUserHistoryTable()
+	createUsernameHistoryTable()
 }
 
 func createUsersTable() {
@@ -86,9 +90,13 @@ func CreateAnonymousUser(username string) (error, *User) {
 
 	setCachedIdUser(id, user)
 	setCachedAccessTokenUser(accessToken, user)
-	// addNameHistory(id, displayName)
+	addNameHistory(id, displayName)
 
 	return nil, user
+}
+
+func ChangeUsername(userId string, username string) {
+	addNameHistory(userId, username)
 }
 
 func create(user *User) error {
@@ -111,21 +119,28 @@ func create(user *User) error {
 	return tx.Commit()
 }
 
-func Disable(user *User) error {
+func SetEnabled(userID string, enabled bool) error {
 	tx, err := _db.Begin()
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 
-	stmt, err := tx.Prepare("UPDATE users SET disabled_at=? WHERE id IS ?")
-	stmt.Exec(user.Id, time.Now())
+	var disabledAt *time.Time
+	if !enabled {
+		now := time.Now()
+		disabledAt = &now
+	} else {
+		disabledAt = nil
+	}
 
-	if err != nil {
+	stmt, err := tx.Prepare("UPDATE users SET disabled_at=? WHERE id IS ?")
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(userID, disabledAt); err != nil {
 		log.Fatal(err)
 		return err
 	}
-	defer stmt.Close()
 
 	return nil
 }
@@ -175,11 +190,11 @@ func getUserFromRow(row *sql.Row) *User {
 	}
 
 	return &User{
-		Id:           id,
-		DisplayName:  displayName,
-		DisplayColor: displayColor,
-		CreatedAt:    createdAt,
-		DisabledAt:   disabledAt,
-		UserHistory:  getUserHistory(id),
+		Id:              id,
+		DisplayName:     displayName,
+		DisplayColor:    displayColor,
+		CreatedAt:       createdAt,
+		DisabledAt:      disabledAt,
+		UsernameHistory: getUsernameHistory(id),
 	}
 }

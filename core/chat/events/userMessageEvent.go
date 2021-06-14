@@ -15,6 +15,7 @@ func (e *UserMessageEvent) GetBroadcastPayload() EventPayload {
 		"body":      e.Body,
 		"user":      e.User,
 		"type":      Event_MessageSent,
+		"visible":   e.HiddenAt == nil,
 	}
 }
 

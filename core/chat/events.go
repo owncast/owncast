@@ -25,18 +25,23 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	user := user.GetUserByToken(eventData.client.accessToken)
-	oldName := user.DisplayName
-	user.DisplayName = receivedEvent.NewName
+	// Save the new name
+	savedUser := user.GetUserByToken(eventData.client.accessToken)
+	user.ChangeUsername(savedUser.Id, receivedEvent.NewName)
+
+	// Send chat event letting everyone about about the name change
+	oldName := savedUser.DisplayName
+	savedUser.DisplayName = receivedEvent.NewName
 	broadcastEvent := events.NameChangeBroadcast{
 		Oldname: oldName,
 	}
-	broadcastEvent.User = user
+	broadcastEvent.User = savedUser
 	broadcastEvent.SetDefaults()
 	payload := broadcastEvent.GetBroadcastPayload()
 	if err := s.Broadcast(payload); err != nil {
 		panic(err)
 	}
+
 }
 
 func (s *ChatServer) userMessageSent(eventData chatClientEvent) {

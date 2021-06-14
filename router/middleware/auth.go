@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -45,6 +46,12 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func accessDenied(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusUnauthorized) //nolint
+	w.Write([]byte("unauthorized"))        //nolint
+}
+
+// RequireAccessToken will validate a 3rd party access token.
 func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
@@ -52,19 +59,14 @@ func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc
 
 		if len(authHeader) == 0 || token == "" {
 			log.Warnln("invalid access token")
-			w.WriteHeader(http.StatusUnauthorized)  //nolint
-			w.Write([]byte("invalid access token")) //nolint
+			accessDenied(w)
 			return
 		}
 
 		if accepted, err := data.DoesTokenSupportScope(token, scope); err != nil {
-			w.WriteHeader(http.StatusInternalServerError) //nolint
-			w.Write([]byte(err.Error()))                  //nolint
 			return
 		} else if !accepted {
-			log.Warnln("invalid access token")
-			w.WriteHeader(http.StatusUnauthorized)  //nolint
-			w.Write([]byte("invalid access token")) //nolint
+			accessDenied(w)
 			return
 		}
 
@@ -73,5 +75,26 @@ func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc
 		if err := data.SetAccessTokenAsUsed(token); err != nil {
 			log.Debugln(token, "not found when updating last_used timestamp")
 		}
+	})
+}
+
+// RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
+// Not to be used for validating 3rd party access.
+func RequireUserAccessToken(handler http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		accessToken := r.URL.Query().Get("accessToken")
+		if accessToken == "" {
+			accessDenied(w)
+			return
+		}
+
+		// A user is required to use the websocket
+		user := user.GetUserByToken(accessToken)
+		if user == nil || !user.IsEnabled() {
+			accessDenied(w)
+			return
+		}
+
+		handler(w, r)
 	})
 }

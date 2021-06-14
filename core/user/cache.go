@@ -9,6 +9,7 @@ import (
 // This stores frequently accessed data about chat users.
 var _userIdCache = ttlcache.NewCache()
 var _userAccessTokenCache = ttlcache.NewCache()
+var _usernameHistoryCache = ttlcache.NewCache()
 
 func init() {
 	_userIdCache.SetTTL(time.Duration(10 * time.Minute))
@@ -18,6 +19,7 @@ func init() {
 func invalidateUserCache(id string) {
 	_userIdCache.Remove(id)
 	_userAccessTokenCache.Remove(id)
+	_usernameHistoryCache.Remove(id)
 }
 
 func getCachedIdUser(id string) *User {

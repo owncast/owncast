@@ -130,6 +130,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	accessToken := r.URL.Query().Get("accessToken")
 	if accessToken == "" {
 		log.Errorln("Access token is required")
+		// Return HTTP status code
 		conn.Close()
 		return
 	}

@@ -24,14 +24,14 @@ type Event struct {
 }
 
 type UserEvent struct {
-	User   *user.User `json:"user"`
-	Hidden *time.Time `json:"hidden,omitempty"`
+	User     *user.User `json:"user"`
+	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
 }
 
 // MessageEvent is an event that has a message body.
 type MessageEvent struct {
-	OutboundEvent
-	Body string `json:"body"`
+	OutboundEvent `json:"-"`
+	Body          string `json:"body"`
 }
 
 type SystemActionEvent struct {

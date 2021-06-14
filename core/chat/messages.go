@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/webhooks"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,8 +22,8 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 			log.Errorln(err)
 			continue
 		}
-		// message.MessageType = models.VisibiltyToggled
 		payload := message.GetBroadcastPayload()
+		payload["type"] = events.Event_VisibiltyToggled
 		_server.Broadcast(payload)
 
 		go webhooks.SendChatEvent(message)

@@ -30,13 +30,6 @@ func Start() error {
 	// custom emoji supported in the chat
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
-	// websocket chat server
-	go func() {
-		if err := chat.Start(); err != nil {
-			log.Fatalln(err)
-		}
-	}()
-
 	// chat rest api
 	http.HandleFunc("/api/chat", controllers.GetChatMessages)
 
@@ -98,6 +91,10 @@ func Start() error {
 
 	// Update chat message visibility
 	http.HandleFunc("/api/admin/chat/updatemessagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
+
+	// Enable/disable a user
+	http.HandleFunc("/api/admin/chat/userenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
+
 	// Update config values
 
 	// Change the current streaming key in memory

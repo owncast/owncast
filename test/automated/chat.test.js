@@ -2,52 +2,43 @@ const { test } = require('@jest/globals');
 var request = require('supertest');
 request = request('http://127.0.0.1:8080');
 
-const WebSocket = require('ws');
-var ws;
+const registerChat = require('./lib/chat').registerChat;
+const sendChatMessage = require('./lib/chat').sendChatMessage;
 
-const testMessageId = Math.random().toString(36).substring(7);
-const username = 'user' + Math.floor(Math.random() * 100);
+var userDisplayName;
 const message = Math.floor(Math.random() * 100) + ' test 123';
-const messageRaw = message + ' *and some markdown too*';
-const messageMarkdown = '<p>' + message + ' <em>and some markdown too</em></p>'
-const date = new Date().toISOString();
+// const messageRaw = message + ' *and some markdown too*';
+// const messageMarkdown = '<p>' + message + ' <em>and some markdown too</em></p>'
 
 const testMessage = {
-    author: username,
-    body: messageRaw,
-    id: testMessageId,
-    type: 'CHAT',
-    visible: true,
-    timestamp: date,
+  body: message,
+  type: 'CHAT',
 };
 
-test('can send a chat message', (done) => {
-    ws = new WebSocket('ws://127.0.0.1:8080/ws', {
-    origin: 'http://localhost',
-});
 
-    function onOpen() {
-        ws.send(JSON.stringify(testMessage), function() {
-            ws.close();
-            done();
-        });
-    }
+test('can send a chat message', async (done) => {
+  const registration = await registerChat();
+  const accessToken = registration.accessToken;
+  userDisplayName = registration.displayName;
 
-    ws.on('open', onOpen);
+  sendChatMessage(testMessage, accessToken, done);
 });
 
 test('can fetch chat messages', (done) => {
-    request.get('/api/admin/chat/messages').auth('admin', 'abc123').expect(200)
-        .then((res) => {
-            const message = res.body.filter(function(msg) {
-                return msg.id = testMessageId;
-            })[0];
+  request
+    .get('/api/admin/chat/messages')
+    .auth('admin', 'abc123')
+    .expect(200)
+    .then((res) => {
+      const message = res.body.filter(function (msg) {
+        return (msg.body = testMessage.body);
+      })[0];
 
-            expect(message.author).toBe(testMessage.author);
-            expect(message.body).toBe(messageMarkdown);
-            expect(message.date).toBe(testMessage.date);
-            expect(message.type).toBe(testMessage.type);
+      expect(message.body).toBe(message.body);
+      expect(message.user.displayName).toBe(userDisplayName);
+      // expect(message.date).toBe(testMessage.date);
+      expect(message.type).toBe(testMessage.type);
 
-            done();
-        });
+      done();
+    });
 });
