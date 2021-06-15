@@ -115,7 +115,15 @@ export default class App extends Component {
     // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
-  }
+
+    try {
+      MicroModal.init({
+        awaitCloseAnimation: false,
+        awaitOpenAnimation: true, //  if using css animations to open the modal. This allows it to wait for the animation to finish before focusing on an element inside the modal.
+      });
+    } catch (e) {
+      console.log("micromodal error: ", e);
+    }  }
 
   componentDidMount() {
     this.getConfig();
@@ -152,6 +160,24 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
     }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Determine if we should be displaying the External Actions Modal.
+    if (!this.state.externalAction) {
+      return;
+    }
+
+    if (prevState.externalAction && (this.state.externalAction.url == prevState.externalAction.url)) {
+      return;
+    }
+
+    // Display the External Actions modal using the externalAction object.
+    MicroModal.show('external-actions-modal', {
+      onClose: function(modal) {
+        this.closeExternalActionModal();
+      }.bind(this)
+    });
   }
 
   // fetch /config data
@@ -424,9 +450,7 @@ export default class App extends Component {
   }
 
   handleKeyPressed(e) {
-    if (e.code === 'Escape' && this.state.externalAction !== null) {
-      this.closeExternalActionModal();
-    } else if (
+    if (
       e.target !== document.getElementById('message-input') &&
       e.target !== document.getElementById('username-change-input') &&
       e.target !== document.getElementsByClassName('emoji-picker__search')[0] &&
@@ -576,14 +600,12 @@ export default class App extends Component {
           </div>`
         : null;
 
-    const externalActionModal = externalAction
-      ? html`<${ExternalActionModal}
+    
+    const externalActionModal = this.state.externalAction ? html`<${ExternalActionModal}
           title=${this.state.externalAction.description ||
           this.state.externalAction.title}
           url=${this.state.externalAction.url}
-          onClose=${this.closeExternalActionModal}
-        />`
-      : null;
+        />` : null;
 
     return html`
       <div

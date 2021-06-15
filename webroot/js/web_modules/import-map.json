@@ -5,6 +5,7 @@
     "@videojs/themes/fantasy/index.css": "./@videojs/themes/fantasy/index.css",
     "htm": "./htm.js",
     "mark.js/dist/mark.es6.min.js": "./markjs/dist/mark.es6.min.js",
+    "micromodal/dist/micromodal.min.js": "./micromodal/dist/micromodal.min.js",
     "preact": "./preact.js",
     "tailwindcss/dist/tailwind.min.css": "./tailwindcss/dist/tailwind.min.css",
     "video.js": "./video.js/core.js",
