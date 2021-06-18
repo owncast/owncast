@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 )
 
 // These are runtime-set values used for configuration.
@@ -33,11 +34,19 @@ var GitCommit = ""
 // BuildPlatform is the optional platform this release was built for.
 var BuildPlatform = "dev"
 
+func GetCommit() string {
+	if GitCommit == "" {
+		GitCommit = time.Now().Format("20060102")
+	}
+
+	return GitCommit
+}
+
 // GetReleaseString gets the version string.
 func GetReleaseString() string {
 	var versionNumber = VersionNumber
 	var buildPlatform = BuildPlatform
-	var gitCommit = GitCommit
+	var gitCommit = GetCommit()
 
 	return fmt.Sprintf("Owncast v%s-%s (%s)", versionNumber, buildPlatform, gitCommit)
 }

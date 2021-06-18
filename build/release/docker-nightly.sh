@@ -11,7 +11,7 @@ echo "Building Docker image ${DOCKER_IMAGE}..."
 cd $(git rev-parse --show-toplevel)
 
 # Docker build
-docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t ghcr.io/owncast/${DOCKER_IMAGE}:nightly . -f build/release/Dockerfile-build
+docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t ghcr.io/owncast/${DOCKER_IMAGE}:nightly .
 
 # Dockerhub
 # You must be authenticated via `docker login` with your Dockerhub credentials first.

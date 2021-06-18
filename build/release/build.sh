@@ -72,7 +72,7 @@ build() {
 
   pushd dist/${NAME} >> /dev/null
 
-  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X main.GitCommit=${GIT_COMMIT} -X main.BuildVersion=${VERSION} -X main.BuildPlatform=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
+  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X github.com/owncast/owncast/config.GitCommit=${GIT_COMMIT} -X github.com/owncast/owncast/config.BuildVersion=${VERSION} -X github.com/owncast/owncast/config.BuildPlatform=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
   mv owncast-*-${ARCH} owncast
 
   zip -r -q -8 ../owncast-$VERSION-$NAME.zip .
@@ -112,7 +112,7 @@ echo "Building Docker image ${DOCKER_IMAGE}..."
 cd $(git rev-parse --show-toplevel)
 
 # Docker build
-docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t gabekangas/owncast:$VERSION -t gabekangas/owncast:latest -t owncast . -f build/release/Dockerfile-build
+docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t gabekangas/owncast:$VERSION -t gabekangas/owncast:latest -t owncast .
 
 # Dockerhub
 # You must be authenticated via `docker login` with your Dockerhub credentials first.

@@ -1,18 +1,28 @@
+# Perform a build
 FROM golang:alpine AS build
-RUN apk add --no-cache gcc build-base linux-headers
-
-WORKDIR /build
-COPY . /build
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o owncast .
-
-
-FROM alpine
-RUN apk add --no-cache ffmpeg ffmpeg-libs
-
-WORKDIR /app
-COPY webroot /app/webroot
-COPY static /app/static
-COPY --from=build /build/owncast /app/owncast
-
 EXPOSE 8080 1935
+RUN mkdir /build
+ADD . /build
+WORKDIR /build
+RUN apk update && apk add --no-cache gcc build-base linux-headers
+
+ARG VERSION=dev
+ENV VERSION=${VERSION}
+ARG GIT_COMMIT
+ENV GIT_COMMIT=${GIT_COMMIT}
+ARG NAME=docker
+ENV NAME=${NAME}
+
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflags \"-static\" -s -w -X github.com/owncast/owncast/config.GitCommit=$GIT_COMMIT -X github.com/owncast/owncast/config.BuildVersion=$VERSION -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -o owncast .
+
+# Create the image by copying the result of the build into a new alpine image
+FROM alpine
+RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates && update-ca-certificates
+
+# Copy owncast assets
+WORKDIR /app
+COPY --from=build /build/owncast /app/owncast
+COPY --from=build /build/webroot /app/webroot
+COPY --from=build /build/static /app/static
+RUN mkdir /app/data
 CMD ["/app/owncast"]

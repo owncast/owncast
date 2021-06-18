@@ -4,7 +4,6 @@ import (
 	"flag"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
@@ -16,16 +15,6 @@ import (
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/router"
 	"github.com/owncast/owncast/utils"
-)
-
-// the following are injected at build-time.
-var (
-	// GitCommit is the commit which this version of owncast is running.
-	GitCommit = ""
-	// BuildVersion is the version.
-	BuildVersion = config.StaticVersionNumber
-	// BuildPlatform is the type of build.
-	BuildPlatform = ""
 )
 
 func main() {
@@ -45,16 +34,6 @@ func main() {
 	rtmpPortOverride := flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
 
 	flag.Parse()
-
-	config.VersionNumber = BuildVersion
-	if GitCommit != "" {
-		config.GitCommit = GitCommit
-	} else {
-		config.GitCommit = time.Now().Format("20060102")
-	}
-	if BuildPlatform != "" {
-		config.BuildPlatform = BuildPlatform
-	}
 
 	if *logDirectory != "" {
 		config.LogDirectory = *logDirectory
