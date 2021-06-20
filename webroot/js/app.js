@@ -8,11 +8,6 @@ import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import {
-  parseSecondsToDurationString,
-  hasTouchScreen,
-  getOrientation,
-} from './utils/helpers.js';
 import ExternalActionModal, {
   ExternalActionButton,
 } from './components/external-action-modal.js';
@@ -24,6 +19,10 @@ import {
   debounce,
   generateUsername,
   getLocalStorage,
+  getOrientation,
+  hasTouchScreen,
+  makeLastOnlineString,
+  parseSecondsToDurationString,
   pluralize,
   setLocalStorage,
 } from './utils/helpers.js';
@@ -72,6 +71,7 @@ export default class App extends Component {
       // status
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
+      lastDisconnectTime: null,
 
       // dom
       windowWidth: window.innerWidth,
@@ -208,9 +208,7 @@ export default class App extends Component {
     if (!status) {
       return;
     }
-    const { viewerCount, online, lastConnectTime, streamTitle } = status;
-
-    this.lastDisconnectTime = status.lastDisconnectTime;
+    const { viewerCount, online, lastConnectTime, streamTitle, lastDisconnectTime } = status;
 
     if (status.online && !curStreamOnline) {
       // stream has just come online.
@@ -225,6 +223,7 @@ export default class App extends Component {
       lastConnectTime,
       streamOnline: online,
       streamTitle,
+      lastDisconnectTime,
     });
   }
 
@@ -260,7 +259,7 @@ export default class App extends Component {
     clearInterval(this.streamDurationTimer);
     const remainingChatTime =
       TIMER_DISABLE_CHAT_AFTER_OFFLINE -
-      (Date.now() - new Date(this.lastDisconnectTime));
+      (Date.now() - new Date(this.state.lastDisconnectTime));
     const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
     this.disableChatTimer = setTimeout(this.disableChatInput, countdown);
     this.setState({
@@ -501,6 +500,7 @@ export default class App extends Component {
       windowHeight,
       windowWidth,
       externalAction,
+      lastDisconnectTime,
     } = state;
 
     const {
@@ -520,10 +520,13 @@ export default class App extends Component {
 
     const tagList = tags !== null && tags.length > 0 && tags.join(' #');
 
-    const viewerCountMessage =
-      streamOnline && viewerCount > 0
-        ? html`${viewerCount} ${pluralize('viewer', viewerCount)}`
-        : null;
+    let viewerCountMessage = '';
+    if (streamOnline && viewerCount > 0) {
+      viewerCountMessage = html`${viewerCount} ${pluralize('viewer', viewerCount)}`;
+    } else if (lastDisconnectTime) {
+      viewerCountMessage = makeLastOnlineString(lastDisconnectTime);
+    }
+
 
     const mainClass = playerActive ? 'online' : '';
     const isPortrait =
@@ -646,10 +649,10 @@ export default class App extends Component {
           <section
             id="stream-info"
             aria-label="Stream status"
-            class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
+            class="flex text-center flex-row justify-between font-mono py-2 px-4 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
           >
-            <span>${streamStatusMessage}</span>
-            <span id="stream-viewer-count">${viewerCountMessage}</span>
+            <span class="text-xs">${streamStatusMessage}</span>
+            <span id="stream-viewer-count" class="text-xs text-right">${viewerCountMessage}</span>
           </section>
         </main>
 

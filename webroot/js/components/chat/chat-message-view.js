@@ -9,6 +9,7 @@ import {
 } from '../../utils/user-colors.js';
 import { convertToText } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
+import { getDiffInDaysFromNow } from '../../utils/helpers.js';
 
 export default class ChatMessageView extends Component {
   constructor(props) {
@@ -155,7 +156,7 @@ function formatTimestamp(sentAt) {
     return '';
   }
 
-  let diffInDays = (new Date() - sentAt) / (24 * 3600 * 1000);
+  let diffInDays = getDiffInDaysFromNow(sentAt); //(new Date() - sentAt) / (24 * 3600 * 1000);
   if (diffInDays >= 1) {
     return (
       `Sent at ${sentAt.toLocaleDateString('en-US', {
