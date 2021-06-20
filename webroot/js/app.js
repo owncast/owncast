@@ -208,7 +208,13 @@ export default class App extends Component {
     if (!status) {
       return;
     }
-    const { viewerCount, online, lastConnectTime, streamTitle, lastDisconnectTime } = status;
+    const {
+      viewerCount,
+      online,
+      lastConnectTime,
+      streamTitle,
+      lastDisconnectTime,
+    } = status;
 
     if (status.online && !curStreamOnline) {
       // stream has just come online.
@@ -522,11 +528,11 @@ export default class App extends Component {
 
     let viewerCountMessage = '';
     if (streamOnline && viewerCount > 0) {
-      viewerCountMessage = html`${viewerCount} ${pluralize('viewer', viewerCount)}`;
+      viewerCountMessage = html`${viewerCount}
+      ${pluralize('viewer', viewerCount)}`;
     } else if (lastDisconnectTime) {
       viewerCountMessage = makeLastOnlineString(lastDisconnectTime);
     }
-
 
     const mainClass = playerActive ? 'online' : '';
     const isPortrait =
@@ -653,7 +659,9 @@ export default class App extends Component {
             class="flex text-center flex-row justify-between font-mono py-2 px-4 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
           >
             <span class="text-xs">${streamStatusMessage}</span>
-            <span id="stream-viewer-count" class="text-xs text-right">${viewerCountMessage}</span>
+            <span id="stream-viewer-count" class="text-xs text-right"
+              >${viewerCountMessage}</span
+            >
           </section>
         </main>
 

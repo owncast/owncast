@@ -3,14 +3,13 @@ import { ORIENTATION_LANDSCAPE, ORIENTATION_PORTRAIT } from './constants.js';
 export function getLocalStorage(key) {
   try {
     return localStorage.getItem(key);
-  } catch (e) {
-  }
+  } catch (e) {}
   return null;
 }
 
 export function setLocalStorage(key, value) {
   try {
-    if (value !== "" && value !== null) {
+    if (value !== '' && value !== null) {
       localStorage.setItem(key, value);
     } else {
       localStorage.removeItem(key);
@@ -28,13 +27,17 @@ export function clearLocalStorage(key) {
 export function jumpToBottom(element) {
   if (!element) return;
 
-  setTimeout(() => {
-    element.scrollTo({
-      top: element.scrollHeight,
-      left: 0,
-      behavior: 'auto'
-    });
-  }, 50, element);
+  setTimeout(
+    () => {
+      element.scrollTo({
+        top: element.scrollHeight,
+        left: 0,
+        behavior: 'auto',
+      });
+    },
+    50,
+    element
+  );
 }
 
 // convert newlines to <br>s
@@ -46,54 +49,51 @@ export function pluralize(string, count) {
   if (count === 1) {
     return string;
   } else {
-    return string + "s";
+    return string + 's';
   }
 }
-
 
 // Trying to determine if browser is mobile/tablet.
 // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 export function hasTouchScreen() {
   let hasTouch = false;
-  if ("maxTouchPoints" in navigator) {
+  if ('maxTouchPoints' in navigator) {
     hasTouch = navigator.maxTouchPoints > 0;
-  } else if ("msMaxTouchPoints" in navigator) {
+  } else if ('msMaxTouchPoints' in navigator) {
     hasTouch = navigator.msMaxTouchPoints > 0;
   } else {
-      var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
-      if (mQ && mQ.media === "(pointer:coarse)") {
-        hasTouch = !!mQ.matches;
-      } else if ('orientation' in window) {
-        hasTouch = true; // deprecated, but good fallback
-      } else {
-          // Only as a last resort, fall back to user agent sniffing
-          var UA = navigator.userAgent;
-          hasTouch = (
-              /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
-              /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
-          );
-      }
+    var mQ = window.matchMedia && matchMedia('(pointer:coarse)');
+    if (mQ && mQ.media === '(pointer:coarse)') {
+      hasTouch = !!mQ.matches;
+    } else if ('orientation' in window) {
+      hasTouch = true; // deprecated, but good fallback
+    } else {
+      // Only as a last resort, fall back to user agent sniffing
+      var UA = navigator.userAgent;
+      hasTouch =
+        /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+        /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+    }
   }
   return hasTouch;
 }
 
-
 export function getOrientation(forTouch = false) {
   // chrome mobile gives misleading matchMedia result when keyboard is up
   if (forTouch && window.screen && window.screen.orientation) {
-    return window.screen.orientation.type.match('portrait') ?
-      ORIENTATION_PORTRAIT :
-      ORIENTATION_LANDSCAPE;
+    return window.screen.orientation.type.match('portrait')
+      ? ORIENTATION_PORTRAIT
+      : ORIENTATION_LANDSCAPE;
   } else {
     // all other cases
-    return window.matchMedia("(orientation: portrait)").matches ?
-    ORIENTATION_PORTRAIT :
-    ORIENTATION_LANDSCAPE;
+    return window.matchMedia('(orientation: portrait)').matches
+      ? ORIENTATION_PORTRAIT
+      : ORIENTATION_LANDSCAPE;
   }
 }
 
 export function generateUsername() {
-  return `User ${(Math.floor(Math.random() * 42) + 1)}`;
+  return `User ${Math.floor(Math.random() * 42) + 1}`;
 }
 
 export function padLeft(text, pad, size) {
@@ -122,19 +122,19 @@ export function setVHvar() {
   var vh = window.innerHeight * 0.01;
   // Then we set the value in the --vh custom property to the root of the document
   document.documentElement.style.setProperty('--vh', `${vh}px`);
-  console.log("== new vh", vh)
+  console.log('== new vh', vh);
 }
 
 export function doesObjectSupportFunction(object, functionName) {
-  return typeof object[functionName] === "function";
+  return typeof object[functionName] === 'function';
 }
 
 // return a string of css classes
 export function classNames(json) {
   const classes = [];
 
-  Object.entries(json).map(function(item) {
-    const [ key, value ] = item;
+  Object.entries(json).map(function (item) {
+    const [key, value] = item;
     if (value) {
       classes.push(key);
     }
@@ -143,20 +143,18 @@ export function classNames(json) {
   return classes.join(' ');
 }
 
-
 // taken from
 // https://medium.com/@TCAS3/debounce-deep-dive-javascript-es6-e6f8d983b7a1
 export function debounce(fn, time) {
   let timeout;
 
-  return function() {
+  return function () {
     const functionCall = () => fn.apply(this, arguments);
 
     clearTimeout(timeout);
     timeout = setTimeout(functionCall, time);
-  }
+  };
 }
-
 
 export function getDiffInDaysFromNow(timestamp) {
   const time = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
@@ -174,7 +172,10 @@ export function makeLastOnlineString(timestamp) {
   if (diffInDays > 1) {
     string = time.toLocaleDateString();
   } else {
-    const atTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const atTime = time.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     string = `Today ${atTime}`;
   }
   return `Last live: ${string}`;

@@ -12,7 +12,11 @@ import { OwncastPlayer } from './components/player.js';
 import Websocket from './utils/websocket.js';
 const websocket = new Websocket();
 
-import { addNewlines, makeLastOnlineString, pluralize } from './utils/helpers.js';
+import {
+  addNewlines,
+  makeLastOnlineString,
+  pluralize,
+} from './utils/helpers.js';
 import {
   URL_CONFIG,
   URL_STATUS,
@@ -223,7 +227,8 @@ export default class VideoOnly extends Component {
 
     let viewerCountMessage = '';
     if (streamOnline && viewerCount > 0) {
-      viewerCountMessage = html`${viewerCount} ${pluralize('viewer', viewerCount)}`;
+      viewerCountMessage = html`${viewerCount}
+      ${pluralize('viewer', viewerCount)}`;
     } else if (lastDisconnectTime) {
       viewerCountMessage = makeLastOnlineString(lastDisconnectTime);
     }
@@ -258,7 +263,9 @@ export default class VideoOnly extends Component {
           class="flex flex-row justify-between font-mono py-2 px-4 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
         >
           <span class="text-xs">${streamStatusMessage}</span>
-          <span id="stream-viewer-count" class="text-xs text-right">${viewerCountMessage}</span>
+          <span id="stream-viewer-count" class="text-xs text-right"
+            >${viewerCountMessage}</span
+          >
         </section>
       </main>
     `;
