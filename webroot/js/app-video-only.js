@@ -136,7 +136,6 @@ export default class VideoOnly extends Component {
       return;
     }
     const { viewerCount, online, lastDisconnectTime } = status;
-    console.log({status})
 
     if (status.online && !curStreamOnline) {
       // stream has just come online.
