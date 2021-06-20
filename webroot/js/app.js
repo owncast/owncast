@@ -115,15 +115,7 @@ export default class App extends Component {
     // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
-
-    try {
-      MicroModal.init({
-        awaitCloseAnimation: false,
-        awaitOpenAnimation: true, //  if using css animations to open the modal. This allows it to wait for the animation to finish before focusing on an element inside the modal.
-      });
-    } catch (e) {
-      console.log("micromodal error: ", e);
-    }  }
+  }
 
   componentDidMount() {
     this.getConfig();
@@ -160,24 +152,6 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
     }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // Determine if we should be displaying the External Actions Modal.
-    if (!this.state.externalAction) {
-      return;
-    }
-
-    if (prevState.externalAction && (this.state.externalAction.url == prevState.externalAction.url)) {
-      return;
-    }
-
-    // Display the External Actions modal using the externalAction object.
-    MicroModal.show('external-actions-modal', {
-      onClose: function(modal) {
-        this.closeExternalActionModal();
-      }.bind(this)
-    });
   }
 
   // fetch /config data
@@ -480,9 +454,8 @@ export default class App extends Component {
     }
   }
 
-  displayExternalAction(index) {
-    const { configData, username } = this.state;
-    const action = configData.externalActions[index];
+  displayExternalAction(action) {
+    const { username } = this.state;
     if (!action) {
       return;
     }
@@ -499,13 +472,13 @@ export default class App extends Component {
       win.focus();
       return;
     }
-
-    action.url = fullUrl;
     this.setState({
-      externalAction: action,
+      externalAction: {
+        ...action,
+        url: fullUrl,
+      },
     });
   }
-
   closeExternalActionModal() {
     this.setState({
       externalAction: null,
@@ -582,30 +555,25 @@ export default class App extends Component {
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
+    // modal buttons
     const externalActionButtons =
-      externalActions && externalActions.length > 0
-        ? html`<div
-            id="external-actions-container"
-            class="flex flex-row align-center"
-          >
-            ${externalActions.map(
-              function (action, index) {
-                return html`<${ExternalActionButton}
-                  onClick=${this.displayExternalAction}
-                  action=${action}
-                  index=${index}
-                />`;
-              }.bind(this)
-            )}
-          </div>`
-        : null;
+      externalActions &&
+      html`<div
+        id="external-actions-container"
+        class="flex flex-row align-center"
+      >
+        ${externalActions.map(
+          function (action) {
+            return html`<${ExternalActionButton}
+              onClick=${this.displayExternalAction}
+              action=${action}
+            />`;
+          }.bind(this)
+        )}
+      </div>`;
 
-    
-    const externalActionModal = this.state.externalAction ? html`<${ExternalActionModal}
-          title=${this.state.externalAction.description ||
-          this.state.externalAction.title}
-          url=${this.state.externalAction.url}
-        />` : null;
+    // modal component
+    const externalActionModal = externalAction && html`<${ExternalActionModal} action=${externalAction} onClose=${this.closeExternalActionModal} />`;
 
     return html`
       <div
