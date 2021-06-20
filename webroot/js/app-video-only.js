@@ -12,7 +12,7 @@ import { OwncastPlayer } from './components/player.js';
 import Websocket from './utils/websocket.js';
 const websocket = new Websocket();
 
-import { addNewlines, pluralize } from './utils/helpers.js';
+import { addNewlines, makeLastOnlineString, pluralize } from './utils/helpers.js';
 import {
   URL_CONFIG,
   URL_STATUS,
@@ -38,6 +38,7 @@ export default class VideoOnly extends Component {
       //status
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
+      lastDisconnectTime: null,
     };
 
     // timers
@@ -134,9 +135,7 @@ export default class VideoOnly extends Component {
     if (!status) {
       return;
     }
-    const { viewerCount, online } = status;
-
-    this.lastDisconnectTime = status.lastDisconnectTime;
+    const { viewerCount, online, lastDisconnectTime } = status;
 
     if (status.online && !curStreamOnline) {
       // stream has just come online.
@@ -148,6 +147,7 @@ export default class VideoOnly extends Component {
     this.setState({
       viewerCount,
       streamOnline: online,
+      lastDisconnectTime,
     });
   }
 
@@ -215,15 +215,18 @@ export default class VideoOnly extends Component {
       playerActive,
       streamOnline,
       streamStatusMessage,
+      lastDisconnectTime,
       isPlaying,
     } = state;
 
     const { logo = TEMP_IMAGE, customStyles } = configData;
 
-    const viewerCountMessage =
-      streamOnline && viewerCount > 0
-        ? html`${viewerCount} ${pluralize('viewer', viewerCount)}`
-        : null;
+    let viewerCountMessage = '';
+    if (streamOnline && viewerCount > 0) {
+      viewerCountMessage = html`${viewerCount} ${pluralize('viewer', viewerCount)}`;
+    } else if (lastDisconnectTime) {
+      viewerCountMessage = makeLastOnlineString(lastDisconnectTime);
+    }
 
     const mainClass = playerActive ? 'online' : '';
 
@@ -252,10 +255,10 @@ export default class VideoOnly extends Component {
         <section
           id="stream-info"
           aria-label="Stream status"
-          class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
+          class="flex flex-row justify-between font-mono py-2 px-4 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
         >
-          <span>${streamStatusMessage}</span>
-          <span id="stream-viewer-count">${viewerCountMessage}</span>
+          <span class="text-xs">${streamStatusMessage}</span>
+          <span id="stream-viewer-count" class="text-xs text-right">${viewerCountMessage}</span>
         </section>
       </main>
     `;

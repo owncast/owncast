@@ -156,3 +156,26 @@ export function debounce(fn, time) {
     timeout = setTimeout(functionCall, time);
   }
 }
+
+
+export function getDiffInDaysFromNow(timestamp) {
+  const time = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  return (new Date() - time) / (24 * 3600 * 1000);
+}
+
+// "Last live today at [time]" or "last live [date]"
+export function makeLastOnlineString(timestamp) {
+  if (!timestamp) {
+    return '';
+  }
+  let string = '';
+  const time = new Date(timestamp);
+  let diffInDays = getDiffInDaysFromNow(time);
+  if (diffInDays > 1) {
+    string = time.toLocaleDateString();
+  } else {
+    const atTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    string = `Today ${atTime}`;
+  }
+  return `Last live: ${string}`;
+}

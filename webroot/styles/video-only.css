@@ -24,8 +24,3 @@ The styles in this file mostly ovveride those coming from chat.css
   opacity: 1;
   pointer-events: auto;
 }
-
-
-#video-only #stream-info {
-  height: 3rem;
-}
