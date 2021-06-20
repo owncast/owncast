@@ -327,14 +327,14 @@ func SetPeakOverallViewerCount(count int) error {
 }
 
 // GetLastDisconnectTime will return the time the last stream ended.
-func GetLastDisconnectTime() (time.Time, error) {
-	var disconnectTime time.Time
+func GetLastDisconnectTime() (utils.NullTime, error) {
+	var disconnectTime utils.NullTime
 	configEntry, err := _datastore.Get(lastDisconnectTimeKey)
 	if err != nil {
 		return disconnectTime, err
 	}
 
-	if err := configEntry.getObject(disconnectTime); err != nil {
+	if err := configEntry.getObject(&disconnectTime); err != nil {
 		return disconnectTime, err
 	}
 
@@ -343,7 +343,8 @@ func GetLastDisconnectTime() (time.Time, error) {
 
 // SetLastDisconnectTime will set the time the last stream ended.
 func SetLastDisconnectTime(disconnectTime time.Time) error {
-	var configEntry = ConfigEntry{Key: lastDisconnectTimeKey, Value: disconnectTime}
+	savedDisconnectTime := utils.NullTime{Time: disconnectTime, Valid: true}
+	var configEntry = ConfigEntry{Key: lastDisconnectTimeKey, Value: savedDisconnectTime}
 	return _datastore.Save(configEntry)
 }
 

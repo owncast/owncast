@@ -30,7 +30,6 @@ var _currentBroadcast *models.CurrentBroadcast
 
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected() {
-
 	_stats.StreamConnected = true
 	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
@@ -161,6 +160,7 @@ func SetStreamAsDisconnected() {
 
 	StartOfflineCleanupTimer()
 	stopOnlineCleanupTimer()
+	saveStats()
 
 	go webhooks.SendStreamStatusEvent(models.StreamStopped)
 }
