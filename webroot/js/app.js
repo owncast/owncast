@@ -551,21 +551,21 @@ export default class App extends Component {
 
     const externalActionButtons =
       externalActions && externalActions.length > 0
-      ? html`<div
-          id="external-actions-container"
-          class="flex flex-row align-center"
-        >
-          ${externalActions.map(
-            function (action, index) {
-              return html`<${ExternalActionButton}
-                onClick=${this.displayExternalAction}
-                action=${action}
-                index=${index}
-              />`;
-            }.bind(this)
-          )}
-        </div>`
-      : null;
+        ? html`<div
+            id="external-actions-container"
+            class="flex flex-row align-center"
+          >
+            ${externalActions.map(
+              function (action, index) {
+                return html`<${ExternalActionButton}
+                  onClick=${this.displayExternalAction}
+                  action=${action}
+                  index=${index}
+                />`;
+              }.bind(this)
+            )}
+          </div>`
+        : null;
 
     const externalActionModal = externalAction
       ? html`<${ExternalActionModal}
@@ -668,7 +668,8 @@ export default class App extends Component {
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
-              ${externalActionButtons && html`<div>${externalActionButtons}</div>`}
+              ${externalActionButtons &&
+              html`<div>${externalActionButtons}</div>`}
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
