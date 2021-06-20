@@ -3,7 +3,7 @@ import htm from '/js/web_modules/htm.js';
 import MicroModal from '/js/web_modules/micromodal/dist/micromodal.min.js';
 
 const html = htm.bind(h);
-//({ url, title, onClose })
+
 export default class ExternalActionModal extends Component {
   constructor(props) {
     super(props);
@@ -36,26 +36,27 @@ export default class ExternalActionModal extends Component {
 
   render() {
     const { action } = this.props;
-    const { url, title } = action;
+    const { url, title, description } = action;
     const { iframeLoaded } = this.state;
     const iframeStyle = iframeLoaded ? null : {
-      background: 'url(/img/loading.gif) center center no-repeat'
+      backgroundImage: 'url(/img/loading.gif)',
     };
     return html`
       <div class="modal micromodal-slide" id="external-actions-modal" aria-hidden="true">
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-          <div id="modal-container" class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-            <header id="modal-header" class="modal__header">
-              <h2 class="modal__title">
-                ${title}
+          <div id="modal-container" class="modal__container rounded-md" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+            <header id="modal-header" class="modal__header flex flex-row justify-between items-center bg-gray-300 p-3 rounded-t-md">
+              <h2 class="modal__title text-indigo-600 font-semibold">
+                ${title || description}
               </h2>
               <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
             </header>
             <div id="modal-content-content" class="modal-content-content">
-              <div id="modal-content" class="modal__content">
+              <div id="modal-content" class="modal__content text-gray-600 rounded-b-md overflow-y-auto overflow-x-hidden">
                 <iframe
                   id="external-modal-iframe"
                   style=${iframeStyle}
+                  class="bg-gray-100 bg-center bg-no-repeat"
                   width="100%"
                   allowpaymentrequest="true"
                   allowfullscreen="false"
@@ -64,9 +65,6 @@ export default class ExternalActionModal extends Component {
                   onload=${this.setIframeLoaded}
                 />
               </div>
-              <footer id="modal-footer" class="modal__footer">
-                <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
-              </footer>
             </div>
           </div>
         </div>
@@ -77,6 +75,7 @@ export default class ExternalActionModal extends Component {
 
 export function ExternalActionButton({ action, onClick }) {
   const { title, icon, color = undefined } = action;
+  console.log(action)
   const logo =
     icon &&
     html`
