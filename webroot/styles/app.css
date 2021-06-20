@@ -186,6 +186,11 @@ header {
   min-height: auto;
 }
 
+/* display `send` button on mobile */
+.touch-screen #send-message-button{
+  display: inline-block;
+}
+
 
 /* *********** single col layout ***************************** */
 
