@@ -146,12 +146,18 @@ func saveStats() error {
 
 func getSavedStats() models.Stats {
 	savedLastDisconnectTime, savedLastDisconnectTimeErr := data.GetLastDisconnectTime()
+
+	var lastDisconnectTime utils.NullTime
+	if savedLastDisconnectTimeErr == nil {
+		lastDisconnectTime = savedLastDisconnectTime
+	}
+
 	result := models.Stats{
 		ChatClients:           make(map[string]models.Client),
 		Viewers:               make(map[string]time.Time),
 		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
 		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
-		LastDisconnectTime:    utils.NullTime{Time: savedLastDisconnectTime, Valid: savedLastDisconnectTimeErr == nil},
+		LastDisconnectTime:    lastDisconnectTime,
 	}
 
 	// If the stats were saved > 5min ago then ignore the
