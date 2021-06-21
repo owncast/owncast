@@ -15,3 +15,13 @@ markComment: >
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: false
 exemptMilestones: true
+
+# Since old PRs are less useful than old issues ping them sooner.
+pulls:
+  daysUntilStale: 30
+  markComment: >
+    This pull request has not had any activity in 30 days. Since things move fast it's best 
+    to get PRs merged in, or to allow somebody else to work on it so the change can get in.
+    This PR will be closed if no further activity occurs. Thank you for your contributions!
+  exemptLabels:
+      - bot
