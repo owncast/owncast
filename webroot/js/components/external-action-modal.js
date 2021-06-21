@@ -75,7 +75,6 @@ export default class ExternalActionModal extends Component {
 
 export function ExternalActionButton({ action, onClick }) {
   const { title, icon, color = undefined } = action;
-  console.log(action)
   const logo =
     icon &&
     html`
