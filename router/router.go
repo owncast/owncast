@@ -31,7 +31,7 @@ func Start() error {
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
 	// chat rest api
-	http.HandleFunc("/api/chat", controllers.GetChatMessages)
+	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
 
 	// web config api
 	http.HandleFunc("/api/config", controllers.GetWebConfig)

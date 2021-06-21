@@ -59,6 +59,7 @@ export default class App extends Component {
     this.state = {
       websocket: null,
       displayChat: chatStorage === null ? true : chatStorage,
+      accessToken: null,
       chatInputEnabled: false, // chat input box state
       username: getLocalStorage(KEY_USERNAME) || generateUsername(),
       isRegistering: false,
@@ -553,7 +554,9 @@ export default class App extends Component {
 
     if (this.state.websocket) {
       this.state.websocket.shutdown();
-      this.state.websocket = null;
+      this.setState({
+        websocket: null
+      });
     }
 
     // Without a valid access token he websocket connection will be rejected.
@@ -566,6 +569,7 @@ export default class App extends Component {
     this.setState({
       username: username,
       websocket: websocket,
+      accessToken: accessToken,
     });
   }
 
@@ -671,6 +675,7 @@ export default class App extends Component {
             username=${username}
             chatInputEnabled=${chatInputEnabled && !chatDisabled}
             instanceTitle=${name}
+            accessToken=${this.state.accessToken}
           />
         `
       : null;

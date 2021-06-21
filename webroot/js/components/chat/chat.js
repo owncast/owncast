@@ -33,6 +33,7 @@ export default class Chat extends Component {
     this.websocket = null;
     this.receivedFirstMessages = false;
     this.receivedMessageUpdate = false;
+    this.hasFetchedHistory = false;
 
     this.windowBlurred = false;
     this.numMessagesSinceBlur = 0;
@@ -52,7 +53,6 @@ export default class Chat extends Component {
 
   componentDidMount() {
     this.setupWebSocketCallbacks();
-    this.getChatHistory();
 
     window.addEventListener('resize', this.handleWindowResize);
 
@@ -93,7 +93,7 @@ export default class Chat extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { username: prevName } = prevProps;
-    const { username } = this.props;
+    const { username, accessToken } = this.props;
 
     const { messages: prevMessages } = prevState;
     const { messages } = this.state;
@@ -109,7 +109,14 @@ export default class Chat extends Component {
         newMessagesReceived: true,
       });
     }
+
+    // Fetch chat history
+    if (!this.hasFetchedHistory && accessToken) {
+      this.hasFetchedHistory = true;
+      this.getChatHistory(accessToken);
+    }
   }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowResize);
     if (!this.props.messagesOnly) {
@@ -138,8 +145,8 @@ export default class Chat extends Component {
   }
 
   // fetch chat history
-  getChatHistory() {
-    fetch(URL_CHAT_HISTORY)
+  getChatHistory(accessToken) {
+    fetch(URL_CHAT_HISTORY + `?accessToken=${accessToken}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Network response was not ok ${response.ok}`);
