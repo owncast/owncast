@@ -5,9 +5,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/time/rate"
 
 	"github.com/gorilla/websocket"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/geoip"
 )
 
 type ChatClient struct {
@@ -19,7 +21,9 @@ type ChatClient struct {
 	server    *ChatServer
 	ipAddress string
 	// Buffered channel of outbound messages.
-	send chan []byte
+	send        chan []byte
+	rateLimiter *rate.Limiter
+	Geo         *geoip.GeoDetails `json:"geo"`
 }
 
 type chatClientEvent struct {
@@ -52,6 +56,8 @@ var (
 )
 
 func (c *ChatClient) readPump() {
+	c.rateLimiter = rate.NewLimiter(0.6, 5)
+
 	defer func() {
 		c.server.unregister <- c
 		c.conn.Close()
@@ -67,6 +73,12 @@ func (c *ChatClient) readPump() {
 			}
 			break
 		}
+
+		// Guard against floods.
+		if !c.passesRateLimit() {
+			continue
+		}
+
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		c.handleEvent(message)
 	}
@@ -128,4 +140,13 @@ func (c *ChatClient) close() {
 
 	c.conn.Close()
 	c.server.unregister <- c
+}
+
+func (c *ChatClient) passesRateLimit() bool {
+	if !c.rateLimiter.Allow() {
+		log.Debugln("Client", c.id, c.user.DisplayName, "has exceeded the messaging rate limiting thresholds.")
+		return false
+	}
+
+	return true
 }

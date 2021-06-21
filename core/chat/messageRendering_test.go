@@ -3,7 +3,7 @@ package chat
 import (
 	"testing"
 
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/chat/events"
 )
 
 // Test a bunch of arbitrary markup and markdown to make sure we get sanitized
@@ -25,7 +25,7 @@ blah blah blah
 <p><a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a>
 <img class="emoji" src="/img/emoji/bananadance.gif"></p>`
 
-	result := models.RenderAndSanitize(messageContent)
+	result := events.RenderAndSanitize(messageContent)
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
 	}
@@ -35,7 +35,7 @@ blah blah blah
 func TestBlockRemoteImages(t *testing.T) {
 	messageContent := `<img src="https://via.placeholder.com/350x150"> test ![](https://via.placeholder.com/350x150)`
 	expected := `<p> test </p>`
-	result := models.RenderAndSanitize(messageContent)
+	result := events.RenderAndSanitize(messageContent)
 
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
@@ -46,7 +46,7 @@ func TestBlockRemoteImages(t *testing.T) {
 func TestAllowEmojiImages(t *testing.T) {
 	messageContent := `<img src="/img/emoji/beerparrot.gif"> test ![](/img/emoji/beerparrot.gif)`
 	expected := `<p><img src="/img/emoji/beerparrot.gif"> test <img src="/img/emoji/beerparrot.gif"></p>`
-	result := models.RenderAndSanitize(messageContent)
+	result := events.RenderAndSanitize(messageContent)
 
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
@@ -57,7 +57,7 @@ func TestAllowEmojiImages(t *testing.T) {
 func TestAllowHTML(t *testing.T) {
 	messageContent := `<img src="/img/emoji/beerparrot.gif"><ul><li>**test thing**</li></ul>`
 	expected := "<p><img src=\"/img/emoji/beerparrot.gif\"><ul><li><strong>test thing</strong></li></ul></p>\n"
-	result := models.RenderMarkdown(messageContent)
+	result := events.RenderMarkdown(messageContent)
 
 	if result != expected {
 		t.Errorf("message rendering does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)

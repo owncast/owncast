@@ -13,7 +13,8 @@ import (
 func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	var receivedEvent events.NameChangeEvent
 	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
-		panic(err)
+		log.Errorln("error unmarshalling to NameChangeEvent", err)
+		return
 	}
 
 	proposedUsername := receivedEvent.NewName
@@ -39,22 +40,37 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	broadcastEvent.SetDefaults()
 	payload := broadcastEvent.GetBroadcastPayload()
 	if err := s.Broadcast(payload); err != nil {
-		panic(err)
+		log.Errorln("error broadcasting NameChangeEvent", err)
+		return
 	}
 
 }
 
 func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
-	// fmt.Println("server:userMessageSent", event)
 	var event events.UserMessageEvent
 	if err := json.Unmarshal(eventData.data, &event); err != nil {
-		panic(err)
+		log.Errorln("error unmarshalling to UserMessageEvent", err)
+		return
 	}
+
 	event.SetDefaults()
+
+	// Ignore empty messages
+	if event.Empty() {
+		return
+	}
+
 	event.User = user.GetUserByToken(eventData.client.accessToken)
+
+	// Guard against nil users
+	if event.User == nil {
+		return
+	}
+
 	payload := event.GetBroadcastPayload()
 	if err := s.Broadcast(payload); err != nil {
-		panic(err)
+		log.Errorln("error broadcasting UserMessageEvent payload", err)
+		return
 	}
 
 	addMessage(event)

@@ -21,10 +21,10 @@ test('can send a chat message', async (done) => {
     sendChatMessage(testVisibilityMessage, accessToken, done);
   });
 
-var messageId;
-
 test('verify we can make API call to mark message as hidden', async (done) => {
     const res = await request.get('/api/admin/chat/messages').auth('admin', 'abc123').expect(200)
+    console.log(res.body)
+
     const message = res.body[0];
     const messageId = message.id;
     await request.post('/api/admin/chat/updatemessagevisibility')
@@ -39,10 +39,11 @@ test('verify message has become hidden', async (done) => {
         .auth('admin', 'abc123')
 
     const message = res.body.filter(obj => {
-        return obj.body === testVisibilityMessage.body;
+        return obj.body === `<p>${testVisibilityMessage.body}</p>`;
     });
-    expect(message.length).toBe(1);
     console.log(message)
-    expect(message[0].hidden).toBeTruthy();
+
+    expect(message.length).toBe(1);
+    expect(message[0].hiddenAt).toBeTruthy();
     done();
 });
