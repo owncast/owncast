@@ -232,7 +232,7 @@ export default class ChatInput extends Component {
     });
   }
 
-  handleMessageInputBlur(event) {
+  handleMessageInputBlur() {
     this.prepNewLine = false;
     this.modifierKeyPressed = false;
   }
@@ -282,7 +282,7 @@ export default class ChatInput extends Component {
 
   render(props, state) {
     const { hasSentFirstChatMessage, inputCharsLeft, inputHTML } = state;
-    const { inputEnabled, chatDisabled } = props;
+    const { inputEnabled } = props;
     const emojiButtonStyle = {
       display: this.emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
     };
@@ -300,7 +300,7 @@ export default class ChatInput extends Component {
       >
         <div
           id="message-input-wrap"
-          class="flex flex-row justify-end appearance-none w-full bg-gray-200 border border-black-500 rounded py-2 px-2 pr-12 my-2 overflow-auto"
+          class="flex flex-row justify-end appearance-none w-full bg-gray-200 border border-black-500 rounded py-2 px-2 pr-20 my-2 overflow-auto"
         >
           <${ContentEditable}
             id="message-input"
@@ -318,19 +318,33 @@ export default class ChatInput extends Component {
         </div>
         <div
           id="message-form-actions"
-          class="absolute flex flex-col w-10 justify-end items-center"
+          class="absolute flex flex-col justify-end items-end mr-4"
         >
-          <button
-            ref=${this.emojiPickerButton}
-            id="emoji-button"
-            class="text-3xl leading-3 cursor-pointer text-purple-600"
-            type="button"
-            style=${emojiButtonStyle}
-            onclick=${this.handleEmojiButtonClick}
-            disabled=${!inputEnabled}
-          >
-            <img src="../../../img/smiley.png" />
-          </button>
+          <span class="flex flex-row justify-center">
+            <button
+              ref=${this.emojiPickerButton}
+              id="emoji-button"
+              class="text-3xl leading-3 cursor-pointer text-purple-600"
+              type="button"
+              style=${emojiButtonStyle}
+              onclick=${this.handleEmojiButtonClick}
+              aria-label="Select an emoji"
+              disabled=${!inputEnabled}
+            >
+              <img src="../../../img/smiley.png" />
+            </button>
+
+            <button
+              id="send-message-button"
+              class="text-sm text-white rounded bg-gray-600 hidden p-1 ml-1 -mr-2"
+              type="button"
+              onclick=${this.handleSubmitChatButton}
+              disabled=${inputHTML === '' || inputCharsLeft < 0}
+              aria-label="Send message"
+            >
+              Send
+            </button>
+          </span>
 
           <span id="message-form-warning" class="text-red-600 text-xs"
             >${inputCharsLeft}/${CHAT_MAX_MESSAGE_LENGTH}</span
