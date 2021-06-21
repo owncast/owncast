@@ -62,6 +62,9 @@ func Start() error {
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
 
+	// tell the backend you're an active viewer
+	http.HandleFunc("/api/ping", controllers.Ping)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
