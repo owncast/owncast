@@ -55,9 +55,8 @@ export default class ChatInput extends Component {
     this.handleSubmitChatButton = this.handleSubmitChatButton.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
 
-    this.handleContentEditableChange = this.handleContentEditableChange.bind(
-      this
-    );
+    this.handleContentEditableChange =
+      this.handleContentEditableChange.bind(this);
   }
 
   componentDidMount() {
