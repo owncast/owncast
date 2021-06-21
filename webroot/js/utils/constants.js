@@ -4,6 +4,7 @@ export const URL_STATUS = `/api/status`;
 export const URL_CHAT_HISTORY = `/api/chat`;
 export const URL_CUSTOM_EMOJIS = `/api/emoji`;
 export const URL_CONFIG = `/api/config`;
+export const URL_VIEWER_PING = `/api/ping`;
 
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
