@@ -1,115 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Owncast</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/favicon/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/favicon/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/favicon/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/favicon/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/favicon/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/favicon/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/favicon/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/favicon/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/manifest.json">
+<head>
+  <title>Owncast</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
 
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+  <link rel="apple-touch-icon" sizes="57x57" href="/img/favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/img/favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/img/favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/img/favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/img/favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/img/favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/img/favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/img/favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
 
-    <link href="/js/web_modules/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
 
-    <link href="/js/web_modules/videojs/video-js.min.css" rel="stylesheet"/>
-    <link href="/js/web_modules/@videojs/themes/fantasy/index.css" rel="stylesheet" />
+  <link href="/js/web_modules/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
 
-    <link href="./styles/video.css" rel="stylesheet" />
-    <link href="./styles/chat.css" rel="stylesheet" />
-    <link href="./styles/user-content.css" rel="stylesheet" />
-    <link href="./styles/app.css" rel="stylesheet" />
+  <link href="/js/web_modules/videojs/video-js.min.css" rel="stylesheet" />
+  <link href="/js/web_modules/@videojs/themes/fantasy/index.css" rel="stylesheet" />
 
-    <!-- The following script tags are not required for the app to run, 
+  <link href="./styles/video.css" rel="stylesheet" />
+  <link href="./styles/chat.css" rel="stylesheet" />
+  <link href="./styles/user-content.css" rel="stylesheet" />
+  <link href="./styles/app.css" rel="stylesheet" />
+
+  <!-- The following script tags are not required for the app to run, 
          however they will make it load a lot faster (fewer round trips) when HTTP/2 is used. 
         
          If you wish to re-generate this list, run the following shell command 
          (assuming a linux or unix-ish system):
          find webroot | grep -E '\.js$' | sed -E 's|webroot(.*)|<script type="preload" src="\1"></script>|'
-         Don't load/preload chat-only or video-only.
+         Don't load/preload app-standalone-chat.js or app-video-only.js.
     -->
 
-    <script type="preload" src="/js/app.js"></script>
-    <script type="preload" src="/js/components/chat/chat-input.js"></script>
-    <script type="preload" src="/js/components/chat/chat.js"></script>
-    <script type="preload" src="/js/components/chat/chat-message-view.js"></script>
-    <script type="preload" src="/js/components/chat/content-editable.js"></script>
-    <script type="preload" src="/js/components/chat/message.js"></script>
-    <script type="preload" src="/js/components/chat/username.js"></script>
-    <script type="preload" src="/js/components/platform-logos-list.js"></script>
-    <script type="preload" src="/js/components/player.js"></script>
-    <script type="preload" src="/js/components/video-poster.js"></script>
-    <script type="preload" src="/js/utils/chat.js"></script>
-    <script type="preload" src="/js/utils/constants.js"></script>
-    <script type="preload" src="/js/utils/helpers.js"></script>
-    <script type="preload" src="/js/utils/user-colors.js"></script>
-    <script type="preload" src="/js/utils/websocket.js"></script>
-    <script type="preload" src="/js/web_modules/common/_commonjsHelpers-37fa8da4.js"></script>
-    <script type="preload" src="/js/web_modules/common/core-d14f1e1c.js"></script>
-    <script type="preload" src="/js/web_modules/common/core-fed3ccd8.js"></script>
-    <script type="preload" src="/js/web_modules/htm.js"></script>
-    <script type="preload" src="/js/web_modules/@joeattardi/emoji-button.js"></script>
-    <script type="preload" src="/js/web_modules/markjs/dist/mark.es6.min.js"></script>
-    <script type="preload" src="/js/web_modules/preact.js"></script>
-    <script type="preload" src="/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
-    <script type="preload" src="/js/web_modules/videojs/core.js"></script>
+  <script type="preload" src="/js/components/platform-logos-list.js"></script>
+  <script type="preload" src="/js/components/chat/chat-input.js"></script>
+  <script type="preload" src="/js/components/chat/message.js"></script>
+  <script type="preload" src="/js/components/chat/content-editable.js"></script>
+  <script type="preload" src="/js/components/chat/chat.js"></script>
+  <script type="preload" src="/js/components/chat/chat-message-view.js"></script>
+  <script type="preload" src="/js/components/chat/username.js"></script>
+  <script type="preload" src="/js/components/external-action-modal.js"></script>
+  <script type="preload" src="/js/components/player.js"></script>
+  <script type="preload" src="/js/components/video-poster.js"></script>
+  <script type="preload" src="/js/app.js"></script>
+  <script type="preload" src="/js/web_modules/preact.js"></script>
+  <script type="preload" src="/js/web_modules/micromodal/dist/micromodal.min.js"></script>
+  <script type="preload" src="/js/web_modules/common/core-a6c34bea.js"></script>
+  <script type="preload" src="/js/web_modules/common/_commonjsHelpers-37fa8da4.js"></script>
+  <script type="preload" src="/js/web_modules/common/core-d14f1e1c.js"></script>
+  <script type="preload" src="/js/web_modules/common/core-fed3ccd8.js"></script>
+  <script type="preload" src="/js/web_modules/common/core-f87370e0.js"></script>
+  <script type="preload" src="/js/web_modules/common/core-d20ff47c.js"></script>
+  <script type="preload" src="/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
+  <script type="preload" src="/js/web_modules/markjs/dist/mark.es6.min.js"></script>
+  <script type="preload" src="/js/web_modules/@joeattardi/emoji-button.js"></script>
+  <script type="preload" src="/js/web_modules/htm.js"></script>
+  <script type="preload" src="/js/web_modules/videojs/core.js"></script>
+  <script type="preload" src="/js/utils/helpers.js"></script>
+  <script type="preload" src="/js/utils/user-colors.js"></script>
+  <script type="preload" src="/js/utils/constants.js"></script>
+  <script type="preload" src="/js/utils/chat.js"></script>
+  <script type="preload" src="/js/utils/websocket.js"></script>
 
-  </head>
+</head>
 
-  <body class="scrollbar-hidden bg-gray-300 text-gray-800">
-    <div id="app">
-      <div id="loading-logo-container">
-        <img id="loading-logo" src="/logo">
-      </div>
+<body class="scrollbar-hidden bg-gray-300 text-gray-800">
+  <div id="app">
+    <div id="loading-logo-container">
+      <img id="loading-logo" src="/logo">
     </div>
+  </div>
 
-    <script type="module">
-      import { h, render } from '/js/web_modules/preact.js';
-      import htm from '/js/web_modules/htm.js';
-      const html = htm.bind(h);
+  <script type="module">
+    import { h, render } from '/js/web_modules/preact.js';
+    import htm from '/js/web_modules/htm.js';
+    const html = htm.bind(h);
 
-      import App from './js/app.js';
-      render(html`<${App} />`, document.getElementById("app"), document.getElementById("loading-logo-container"));
-    </script>
+    import App from './js/app.js';
+    render(html`<${App} />`, document.getElementById("app"), document.getElementById("loading-logo-container"));
+  </script>
 
-    <noscript>
-      <style>
-        .noscript {
-          text-align: center;
-          padding: 30px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          flex-direction: column;
-        }
+  <noscript>
+    <style>
+      .noscript {
+        text-align: center;
+        padding: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
 
-        .noscript a {
-          display: inline;
-          color: blue;
-          text-decoration: underline;
-        }
-      </style>
-      <div class="noscript">
-        <img src="/logo" />
-        <br/>
-        <p>
-          This <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a> stream requires Javascript to play.
-        </p>
-      </div>
-    </noscript>
-  </body>
+      .noscript a {
+        display: inline;
+        color: blue;
+        text-decoration: underline;
+      }
+    </style>
+    <div class="noscript">
+      <img src="/logo" />
+      <br />
+      <p>
+        This <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a> stream requires
+        Javascript to play.
+      </p>
+    </div>
+  </noscript>
+</body>
+
 </html>

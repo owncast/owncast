@@ -424,9 +424,7 @@ export default class App extends Component {
   }
 
   handleKeyPressed(e) {
-    if (e.code === 'Escape' && this.state.externalAction !== null) {
-      this.closeExternalActionModal();
-    } else if (
+    if (
       e.target !== document.getElementById('message-input') &&
       e.target !== document.getElementById('username-change-input') &&
       e.target !== document.getElementsByClassName('emoji-picker__search')[0] &&
@@ -456,9 +454,8 @@ export default class App extends Component {
     }
   }
 
-  displayExternalAction(index) {
-    const { configData, username } = this.state;
-    const action = configData.externalActions[index];
+  displayExternalAction(action) {
+    const { username } = this.state;
     if (!action) {
       return;
     }
@@ -475,13 +472,13 @@ export default class App extends Component {
       win.focus();
       return;
     }
-
-    action.url = fullUrl;
     this.setState({
-      externalAction: action,
+      externalAction: {
+        ...action,
+        url: fullUrl,
+      },
     });
   }
-
   closeExternalActionModal() {
     this.setState({
       externalAction: null,
@@ -558,32 +555,25 @@ export default class App extends Component {
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
+    // modal buttons
     const externalActionButtons =
-      externalActions && externalActions.length > 0
-        ? html`<div
-            id="external-actions-container"
-            class="flex flex-row align-center"
-          >
-            ${externalActions.map(
-              function (action, index) {
-                return html`<${ExternalActionButton}
-                  onClick=${this.displayExternalAction}
-                  action=${action}
-                  index=${index}
-                />`;
-              }.bind(this)
-            )}
-          </div>`
-        : null;
+      externalActions &&
+      html`<div
+        id="external-actions-container"
+        class="flex flex-row align-center"
+      >
+        ${externalActions.map(
+          function (action) {
+            return html`<${ExternalActionButton}
+              onClick=${this.displayExternalAction}
+              action=${action}
+            />`;
+          }.bind(this)
+        )}
+      </div>`;
 
-    const externalActionModal = externalAction
-      ? html`<${ExternalActionModal}
-          title=${this.state.externalAction.description ||
-          this.state.externalAction.title}
-          url=${this.state.externalAction.url}
-          onClose=${this.closeExternalActionModal}
-        />`
-      : null;
+    // modal component
+    const externalActionModal = externalAction && html`<${ExternalActionModal} action=${externalAction} onClose=${this.closeExternalActionModal} />`;
 
     return html`
       <div
