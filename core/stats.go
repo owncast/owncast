@@ -148,7 +148,7 @@ func getSavedStats() models.Stats {
 	savedLastDisconnectTime, savedLastDisconnectTimeErr := data.GetLastDisconnectTime()
 
 	var lastDisconnectTime utils.NullTime
-	if savedLastDisconnectTimeErr == nil {
+	if savedLastDisconnectTimeErr == nil && savedLastDisconnectTime.Valid {
 		lastDisconnectTime = savedLastDisconnectTime
 	}
 
