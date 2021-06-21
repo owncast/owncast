@@ -24,7 +24,7 @@ export default class ExternalActionModal extends Component {
         onClose: this.props.onClose,
       });
     } catch (e) {
-      console.log("micromodal error: ", e);
+      console.log('micromodal error: ', e);
     }
   }
 
@@ -38,21 +38,43 @@ export default class ExternalActionModal extends Component {
     const { action } = this.props;
     const { url, title, description } = action;
     const { iframeLoaded } = this.state;
-    const iframeStyle = iframeLoaded ? null : {
-      backgroundImage: 'url(/img/loading.gif)',
-    };
+    const iframeStyle = iframeLoaded
+      ? null
+      : {
+          backgroundImage: 'url(/img/loading.gif)',
+        };
     return html`
-      <div class="modal micromodal-slide" id="external-actions-modal" aria-hidden="true">
+      <div
+        class="modal micromodal-slide"
+        id="external-actions-modal"
+        aria-hidden="true"
+      >
         <div class="modal__overlay" tabindex="-1" data-micromodal-close>
-          <div id="modal-container" class="modal__container rounded-md" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-            <header id="modal-header" class="modal__header flex flex-row justify-between items-center bg-gray-300 p-3 rounded-t-md">
+          <div
+            id="modal-container"
+            class="modal__container rounded-md"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-1-title"
+          >
+            <header
+              id="modal-header"
+              class="modal__header flex flex-row justify-between items-center bg-gray-300 p-3 rounded-t-md"
+            >
               <h2 class="modal__title text-indigo-600 font-semibold">
                 ${title || description}
               </h2>
-              <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+              <button
+                class="modal__close"
+                aria-label="Close modal"
+                data-micromodal-close
+              ></button>
             </header>
             <div id="modal-content-content" class="modal-content-content">
-              <div id="modal-content" class="modal__content text-gray-600 rounded-b-md overflow-y-auto overflow-x-hidden">
+              <div
+                id="modal-content"
+                class="modal__content text-gray-600 rounded-b-md overflow-y-auto overflow-x-hidden"
+              >
                 <iframe
                   id="external-modal-iframe"
                   style=${iframeStyle}

@@ -573,7 +573,12 @@ export default class App extends Component {
       </div>`;
 
     // modal component
-    const externalActionModal = externalAction && html`<${ExternalActionModal} action=${externalAction} onClose=${this.closeExternalActionModal} />`;
+    const externalActionModal =
+      externalAction &&
+      html`<${ExternalActionModal}
+        action=${externalAction}
+        onClose=${this.closeExternalActionModal}
+      />`;
 
     return html`
       <div
