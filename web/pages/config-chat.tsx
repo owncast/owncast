@@ -44,7 +44,7 @@ export default function ConfigChat() {
       [fieldName]: value,
     });
   };
-  
+
   return (
     <div className="config-server-details-form">
       <Title>Chat Settings</Title>

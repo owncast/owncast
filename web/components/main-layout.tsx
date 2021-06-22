@@ -160,7 +160,6 @@ export default function MainLayout(props) {
             <Menu.Item key="chat-users" icon={<UserOutlined />} title="Chat utilities">
               <Link href="/chat/users">Users</Link>
             </Menu.Item>
-
           </SubMenu>
 
           <SubMenu key="configuration" title="Configuration" icon={<SettingOutlined />}>
