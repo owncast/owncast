@@ -80,7 +80,6 @@ type serverConfigAdminResponse struct {
 	RTMPServerPort    int                     `json:"rtmpServerPort"`
 	S3                models.S3               `json:"s3"`
 	VideoSettings     videoSettings           `json:"videoSettings"`
-	LatencyLevel      int                     `json:"latencyLevel"`
 	YP                yp                      `json:"yp"`
 	ChatDisabled      bool                    `json:"chatDisabled"`
 	ExternalActions   []models.ExternalAction `json:"externalActions"`
