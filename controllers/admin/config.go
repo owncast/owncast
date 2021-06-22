@@ -582,7 +582,7 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 func SetUsernameBlocklist(w http.ResponseWriter, r *http.Request) {
 	usernames, success := getValueFromRequest(w, r)
 	if !success {
-		controllers.WriteSimpleResponse(w, false, "unable to update custom styles")
+		controllers.WriteSimpleResponse(w, false, "unable to update chat username blocklist")
 		return
 	}
 
