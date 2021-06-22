@@ -30,6 +30,7 @@ export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 export const API_CHAT_DISABLE = '/chat/disable';
+export const API_CHAT_USERNAME_BLOCKLIST = '/chat/disallowedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
 export const API_VIDEO_CODEC = '/video/codec';
 
@@ -175,9 +176,16 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
 export const FIELD_PROPS_DISABLE_CHAT = {
   apiPath: API_CHAT_DISABLE,
   configPath: 'chatDisabled',
-  label: 'Hide chat',
-  tip: 'Hide the web chat interface.',
+  label: 'Disable chat',
+  tip: 'Disable chat functionality from your Owncast server.',
   useSubmit: true,
+};
+
+export const TEXTFIELD_PROPS_CHAT_USERNAME_BLOCKLIST = {
+  apiPath: API_CHAT_USERNAME_BLOCKLIST,
+  placeholder: 'admin, god, owncast, stewiegriffin',
+  label: 'Disallowed usernames',
+  tip: 'A comma seperated list of chat usernames you disallow.',
 };
 
 export const VIDEO_VARIANT_SETTING_DEFAULTS = {

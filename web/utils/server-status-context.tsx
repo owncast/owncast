@@ -48,6 +48,7 @@ export const initialServerConfigState: ConfigDetails = {
   externalActions: [],
   supportedCodecs: [],
   videoCodec: '',
+  usernameBlocklist: '',
 };
 
 const initialServerStatusState = {

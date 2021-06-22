@@ -16,6 +16,7 @@ import {
   QuestionCircleOutlined,
   MessageOutlined,
   ExperimentOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import classNames from 'classnames';
 import { upgradeVersionAvailable } from '../utils/apis';
@@ -77,6 +78,8 @@ export default function MainLayout(props) {
   const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
   const upgradeVersionString = `${upgradeVersion}` || '';
   const upgradeMessage = `Upgrade to v${upgradeVersionString}`;
+
+  const chatMenuItemStyle = 'block'; //upgradeVersion ? 'block' : 'none';
 
   const clearAlertMessage = () => {
     alertMessage.setMessage(null);
@@ -144,9 +147,21 @@ export default function MainLayout(props) {
             <Link href="/viewer-info">Viewers</Link>
           </Menu.Item>
 
-          <Menu.Item key="chat" icon={<MessageOutlined />} title="Chat utilities">
-            <Link href="/chat">Chat</Link>
-          </Menu.Item>
+          <SubMenu
+            key="chat-config"
+            title="Chat"
+            icon={<MessageOutlined />}
+            style={{ display: chatMenuItemStyle }}
+          >
+            <Menu.Item key="messages" icon={<MessageOutlined />} title="Chat utilities">
+              <Link href="/chat/messages">Messages</Link>
+            </Menu.Item>
+
+            <Menu.Item key="chat-users" icon={<UserOutlined />} title="Chat utilities">
+              <Link href="/chat/users">Users</Link>
+            </Menu.Item>
+
+          </SubMenu>
 
           <SubMenu key="configuration" title="Configuration" icon={<SettingOutlined />}>
             <Menu.Item key="config-public-details">
@@ -158,6 +173,9 @@ export default function MainLayout(props) {
             </Menu.Item>
             <Menu.Item key="config-video">
               <Link href="/config-video">Video Configuration</Link>
+            </Menu.Item>
+            <Menu.Item key="config-chat">
+              <Link href="/config-chat">Chat</Link>
             </Menu.Item>
             <Menu.Item key="config-storage">
               <Link href="/config-storage">Storage</Link>

@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from '../utils/apis';
 import { MessageType } from '../types/chat';
-import { OUTCOME_TIMEOUT } from '../pages/chat';
+import { OUTCOME_TIMEOUT } from '../pages/chat/messages';
 import { isEmptyObject } from '../utils/format';
 
 interface MessageToggleProps {
