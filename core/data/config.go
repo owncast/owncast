@@ -585,5 +585,5 @@ func GetUsernameBlocklist() string {
 
 // SetUsernameBlocklist set the username blocklist as a comma seperated string.
 func SetUsernameBlocklist(usernames string) error {
-	return _datastore.SetString(serverMetadataTagsKey, usernames)
+	return _datastore.SetString(blockedUsernamesKey, usernames)
 }
