@@ -582,7 +582,6 @@ func GetUsernameBlocklist() []string {
 	usernameString, err := _datastore.GetString(blockedUsernamesKey)
 
 	if err != nil {
-		log.Traceln(blockedUsernamesKey, err)
 		return config.DefaultBlockedUsernames
 	}
 

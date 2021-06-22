@@ -43,7 +43,7 @@ func GetCommit() string {
 }
 
 var DefaultBlockedUsernames = []string{
-	"owncast", "operator", "admin",
+	"owncast", "operator", "admin", "system",
 }
 
 // GetReleaseString gets the version string.

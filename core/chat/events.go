@@ -2,11 +2,12 @@ package chat
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,10 +21,16 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	proposedUsername := receivedEvent.NewName
 	blocklist := data.GetUsernameBlocklist()
 
-	if _, blocked := utils.FindInSlice(blocklist, proposedUsername); blocked {
-		// Denied.
-		log.Debugln(receivedEvent.User.DisplayName, "blocked from changing name to", proposedUsername)
-		return
+	for _, blockedName := range blocklist {
+		normalizedName := strings.TrimSpace(blockedName)
+		normalizedName = strings.ToLower(normalizedName)
+		if strings.Contains(normalizedName, proposedUsername) {
+			// Denied.
+			log.Debugln(eventData.client.user.DisplayName, "blocked from changing name to", proposedUsername, "due to blocked name", normalizedName)
+			message := fmt.Sprintf("You cannot change your name to **%s**.", proposedUsername)
+			s.sendActionToClient(eventData.client, message)
+			return
+		}
 	}
 
 	// Save the new name

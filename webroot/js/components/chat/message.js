@@ -8,12 +8,12 @@ import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default function Message(props) {
   const { message } = props;
-  const { type, user } = message;
-  const { displayName } = user;
+  const { type } = message;
   if (type === SOCKET_MESSAGE_TYPES.CHAT || type === SOCKET_MESSAGE_TYPES.SYSTEM) {
     return html`<${ChatMessageView} ...${props} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
-    const { oldName } = message;
+    const { oldName, user } = message;
+    const { displayName } = user;  
     return (
       html`
         <div class="message message-name-change flex items-center justify-start p-3">
@@ -40,7 +40,7 @@ export default function Message(props) {
         `
     );
   } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {
-    const { author, body } = message;
+    const { body } = message;
     const formattedMessage = `${body}`
     return (
       html`

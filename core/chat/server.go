@@ -221,14 +221,29 @@ func (s *ChatServer) sendWelcomeMessageToClient(c *ChatClient) {
 	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
-		// initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: data.GetServerName(), Body: welcomeMessage, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
-		clientMessage := events.SystemMessageEvent{
-			Event: events.Event{},
-			MessageEvent: events.MessageEvent{
-				Body: welcomeMessage,
-			},
-		}
-		clientMessage.SetDefaults()
-		s.Send(clientMessage.GetBroadcastPayload(), c)
+		//s.sendSystemMessageToClient(c, welcomeMessage)
+		s.sendActionToClient(c, welcomeMessage)
 	}
+}
+
+func (s *ChatServer) sendSystemMessageToClient(c *ChatClient, message string) {
+	clientMessage := events.SystemMessageEvent{
+		Event: events.Event{},
+		MessageEvent: events.MessageEvent{
+			Body: message,
+		},
+	}
+	clientMessage.SetDefaults()
+	s.Send(clientMessage.GetBroadcastPayload(), c)
+}
+
+func (s *ChatServer) sendActionToClient(c *ChatClient, message string) {
+	clientMessage := events.ActionEvent{
+		MessageEvent: events.MessageEvent{
+			Body: message,
+		},
+	}
+	clientMessage.SetDefaults()
+	clientMessage.RenderBody()
+	s.Send(clientMessage.GetBroadcastPayload(), c)
 }
