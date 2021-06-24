@@ -22,5 +22,5 @@ updates:
       - "gabek"
     ignore:
       # Ignore patch revisions of the aws sdk
-      - dependency-name: "aws-sdk-go"
+      - dependency-name: "github.com/aws/aws-sdk-go"
         update-types: ["version-update:semver-patch"]
