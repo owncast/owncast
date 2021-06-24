@@ -20,3 +20,7 @@ updates:
       interval: "daily"
     reviewers:
       - "gabek"
+    ignore:
+      # Ignore patch revisions of the aws sdk
+      - dependency-name: "aws-sdk-go"
+        update-types: ["version-update:semver-patch"]
