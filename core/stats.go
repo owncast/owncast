@@ -11,7 +11,6 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 )
 
 var l = &sync.RWMutex{}
@@ -145,19 +144,14 @@ func saveStats() error {
 }
 
 func getSavedStats() models.Stats {
-	savedLastDisconnectTime, savedLastDisconnectTimeErr := data.GetLastDisconnectTime()
-
-	var lastDisconnectTime utils.NullTime
-	if savedLastDisconnectTimeErr == nil && savedLastDisconnectTime.Valid {
-		lastDisconnectTime = savedLastDisconnectTime
-	}
+	savedLastDisconnectTime, _ := data.GetLastDisconnectTime()
 
 	result := models.Stats{
 		ChatClients:           make(map[string]models.Client),
 		Viewers:               make(map[string]time.Time),
 		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
 		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
-		LastDisconnectTime:    lastDisconnectTime,
+		LastDisconnectTime:    savedLastDisconnectTime,
 	}
 
 	// If the stats were saved > 5min ago then ignore the
