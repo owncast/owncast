@@ -30,10 +30,10 @@
   <link href="/js/web_modules/videojs/video-js.min.css" rel="stylesheet" />
   <link href="/js/web_modules/@videojs/themes/fantasy/index.css" rel="stylesheet" />
 
-  <link href="./styles/video.css" rel="stylesheet" />
-  <link href="./styles/chat.css" rel="stylesheet" />
-  <link href="./styles/user-content.css" rel="stylesheet" />
-  <link href="./styles/app.css" rel="stylesheet" />
+  <link href="/styles/video.css" rel="stylesheet" />
+  <link href="/styles/chat.css" rel="stylesheet" />
+  <link href="/styles/user-content.css" rel="stylesheet" />
+  <link href="/styles/app.css" rel="stylesheet" />
 
   <!-- The following script tags are not required for the app to run, 
          however they will make it load a lot faster (fewer round trips) when HTTP/2 is used. 
@@ -88,7 +88,7 @@
     import htm from '/js/web_modules/htm.js';
     const html = htm.bind(h);
 
-    import App from './js/app.js';
+    import App from '/js/app.js';
     render(html`<${App} />`, document.getElementById("app"), document.getElementById("loading-logo-container"));
   </script>
 
