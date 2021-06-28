@@ -106,7 +106,7 @@ export function ExternalActionButton({ action, onClick }) {
   const handleClick = () => onClick(action);
   return html`
     <button
-      class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden bg-gray-800"
+      class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden m-1 px-3 py-1 text-base  text-white bg-gray-800 rounded"
       onClick=${handleClick}
       style=${bgcolor}
     >

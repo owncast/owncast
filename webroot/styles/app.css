@@ -10,6 +10,13 @@ May have overrides for other components with own stylesheets.
   --video-container-height: calc((9 / 16) * 100vw);
   --header-bg-color: rgba(20,0,40,1);
   --user-image-width: 10em;
+
+  --novideo-container-height: 16em;
+}
+
+.no-video,
+.single-col.no-video {
+  --video-container-height: var(--novideo-container-height);
 }
 
 html {
@@ -78,20 +85,8 @@ header {
   display: none;
 }
 
-#external-actions-container {
-  margin: 1em 0;
-
-}
 .external-action-button {
-  border-radius: 4px;
-  color: #fff;
-  font-size: .88em;
-  padding: .25em .75em;
-  margin: .35em;
-  margin-left: 0;
-  display: flex;
   max-width: 250px;
-  padding-top: .3em;
 }
 .external-action-button:hover {
   text-decoration: underline;
@@ -246,7 +241,12 @@ header {
     display: none;
   }
 }
+/* ************************************************ */
 
+
+.no-video #video-container {
+  min-height: var(--video-container-height);
+}
 
 /* ************************************************ */
 

@@ -25,6 +25,7 @@ import {
   makeLastOnlineString,
   parseSecondsToDurationString,
   pluralize,
+  ROUTE_RECORDINGS,
   setLocalStorage,
 } from './utils/helpers.js';
 import {
@@ -527,6 +528,8 @@ export default class App extends Component {
       windowWidth,
       externalAction,
       lastDisconnectTime,
+      section,
+      sectionId,
     } = state;
 
     const {
@@ -560,7 +563,8 @@ export default class App extends Component {
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
-    const shouldDisplayChat = displayChat && !chatDisabled;
+    const noVideoContent = !playerActive || (section === ROUTE_RECORDINGS && sectionId !== '');
+    const shouldDisplayChat = displayChat && !chatDisabled && !noVideoContent;
     const usernameStyle = chatDisabled ? 'none' : 'flex';
 
     const extraAppClasses = classNames({
@@ -568,6 +572,7 @@ export default class App extends Component {
 
       chat: shouldDisplayChat,
       'no-chat': !shouldDisplayChat,
+      'no-video': noVideoContent,
       'single-col': singleColMode,
       'bg-gray-800': singleColMode && shouldDisplayChat,
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
@@ -584,7 +589,7 @@ export default class App extends Component {
       externalActions &&
       html`<div
         id="external-actions-container"
-        class="flex flex-row align-center"
+        class="flex flex-row justify-end"
       >
         ${externalActions.map(
           function (action) {
@@ -684,26 +689,29 @@ export default class App extends Component {
           </section>
         </main>
 
-        <section id="user-content" aria-label="User information" class="p-8">
+        <section id="user-content" aria-label="User information" class="p-2">
+
+          ${externalActionButtons && html`${externalActionButtons}`}
+
+
           <div class="user-content flex flex-row p-8">
-            <div
-              class="user-image rounded-full bg-white p-4 mr-8 bg-no-repeat bg-center"
-              style=${bgUserLogo}
-            >
-              <img class="logo visually-hidden" alt="" src=${logo} />
+            <div class="flex flex-col align-center justify-start mr-8">
+              <div
+                class="user-image rounded-full bg-white p-4 bg-no-repeat bg-center"
+                style=${bgUserLogo}
+              >
+                <img class="logo visually-hidden" alt="" src=${logo} />
+              </div>
+              <${SocialIconsList} handles=${socialHandles} />
             </div>
-            <div
-              class="user-content-header border-b border-gray-500 border-solid"
-            >
+
+            <div class="user-content-header">
               <h2 class="font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
-              ${externalActionButtons &&
-              html`<div>${externalActionButtons}</div>`}
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
-              <${SocialIconsList} handles=${socialHandles} />
               <div
                 id="stream-summary"
                 class="stream-summary my-4"
@@ -714,6 +722,13 @@ export default class App extends Component {
               </div>
             </div>
           </div>
+
+
+          <!-- tab bar -->
+          <div class="mx-8 border-b border-gray-500 border-solid" id="tab-bar">
+            tab bar
+          </div>
+
           <div
             id="extra-user-content"
             class="extra-user-content px-8"
