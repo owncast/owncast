@@ -718,3 +718,18 @@ func GetFederationIsPrivate() bool {
 
 	return false
 }
+
+// SetFollowApprovalRequired will set if manual approval of followers is required.
+func SetFollowApprovalRequired(approvalRequired bool) error {
+	return _datastore.SetBool(federationFollowApprovalRequiredKey, approvalRequired)
+}
+
+// GetFollowApprovalRequired will return if manual approval of followers is required.
+func GetFollowApprovalRequired() bool {
+	approvalRequired, err := _datastore.GetBool(federationFollowApprovalRequiredKey)
+	if err == nil {
+		return approvalRequired
+	}
+
+	return false
+}

@@ -1,15 +1,12 @@
 package admin
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
-	log "github.com/sirupsen/logrus"
 )
 
 // SendFederationMessage will send a manual message to the fediverse.
@@ -121,14 +118,12 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		Approved      bool   `json:"approved"`
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	var approval approveFollowerRequest
-	if err := decoder.Decode(&approval); err != nil {
-		log.Warnln(err)
-		controllers.WriteSimpleResponse(w, false, "unable to parse new value")
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
 		return
 	}
 
+	approval := configValue.Value.(approveFollowerRequest)
 	if err := persistence.ApprovePreviousFollowRequest(approval.FederationIRI); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -138,25 +133,6 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 
 // GetPendingFollowRequests will return a list of pending follow requests.
 func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	requests, err := activitypub.GetPendingFollowRequests()
-	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
+	//requests := activitypub.GetPendingFollowRequests()
 
-	requesters := make([]models.Follower, 0)
-
-	for _, row := range requests {
-		singleFollower := models.Follower{
-			Name:      row.Name,
-			Username:  row.Username,
-			Image:     row.Image,
-			Link:      row.Link,
-			Inbox:     row.Inbox,
-			CreatedAt: row.CreatedAt,
-		}
-		requesters = append(requesters, singleFollower)
-	}
-
-	controllers.WriteResponse(w, requesters)
 }

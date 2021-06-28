@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -38,6 +37,11 @@ func Add(request apmodels.InboxRequest) {
 func handle(request apmodels.InboxRequest) chan bool {
 	c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
 	r := make(chan bool)
+
+	if verified, err := Verify(request.Request); err != nil || !verified {
+		log.Warnln("Unable to verify remote request", err)
+		return nil
+	}
 
 	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
 		r <- false
@@ -72,10 +76,9 @@ func Verify(request *http.Request) (bool, error) {
 		return false, err
 	}
 
-	log.Println("Fetching key", pubKeyID)
+	log.Traceln("Fetching key", pubKeyID)
 
 	signature := request.Header.Get("signature")
-
 	var algorithmString string
 	signatureComponents := strings.Split(signature, ",")
 	for _, component := range signatureComponents {
@@ -88,35 +91,24 @@ func Verify(request *http.Request) (bool, error) {
 
 	algorithmString = strings.Trim(algorithmString, "\"")
 	if algorithmString == "" {
-		return false, errors.New("unable to determine algorithm to verify request")
+		return false, errors.New("Unable to determine algorithm to verify request")
 	}
 
 	var actor vocab.ActivityStreamsPerson
-	var application vocab.ActivityStreamsApplication
 	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
 		actor = person
 		return nil
 	}
 
-	applicationCallback := func(c context.Context, a vocab.ActivityStreamsApplication) error {
-		application = a
-		return nil
+	if err := resolvers.ResolveIRI(context.TODO(), pubKeyID.String(), personCallback); err != nil {
+		return false, err
 	}
 
-	if err := resolvers.ResolveIRI(context.TODO(), pubKeyID.String(), personCallback, applicationCallback); err != nil {
-		return false, fmt.Errorf("%v %v", err, pubKeyID)
+	if actor == nil {
+		return false, errors.New("unable to resolve actor to fetch key " + pubKeyID.String())
 	}
 
-	var pk vocab.W3IDSecurityV1PublicKeyProperty
-	if actor != nil {
-		pk = actor.GetW3IDSecurityV1PublicKey()
-	} else if application != nil {
-		pk = application.GetW3IDSecurityV1PublicKey()
-	} else {
-		return false, errors.New("unable to resolve actor as either a person or an application to fetch public key")
-	}
-
-	key := pk.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
+	key := actor.GetW3IDSecurityV1PublicKey().Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
 		log.Errorln("failed to parse PEM block containing the public key")

@@ -6,7 +6,7 @@ import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
-import Followers from './components/federation/followers.js'
+import Followers from './components/federation/followers.js';
 
 import Chat from './components/chat/chat.js';
 import Websocket, {
@@ -19,10 +19,13 @@ import ExternalActionModal, {
   ExternalActionButton,
 } from './components/external-action-modal.js';
 
-import FediverseFollowModal, {FediverseFollowButton} from './components/fediverse-follow-modal.js';
+import FediverseFollowModal, {
+  FediverseFollowButton,
+} from './components/fediverse-follow-modal.js';
 
 import {
   addNewlines,
+  checkUrlPathForDisplay,
   classNames,
   debounce,
   getLocalStorage,
@@ -31,6 +34,7 @@ import {
   makeLastOnlineString,
   parseSecondsToDurationString,
   pluralize,
+  ROUTE_RECORDINGS,
   setLocalStorage,
 } from './utils/helpers.js';
 import {
@@ -55,6 +59,7 @@ import {
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
 import { checkIsModerator } from './utils/chat.js';
+import TabBar from './components/tab-bar.js';
 
 export default class App extends Component {
   constructor(props, context) {
@@ -95,8 +100,13 @@ export default class App extends Component {
       windowHeight: window.innerHeight,
       orientation: getOrientation(this.hasTouchScreen),
 
-      externalAction: null,
-      showFediverseFollowModal: false,
+      // modals
+      externalActionModalData: null,
+      fediverseModalData: null,
+
+      // routing & tabbing
+      section: '',
+      sectionId: '',
     };
 
     // timers
@@ -123,9 +133,10 @@ export default class App extends Component {
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
     this.displayExternalAction = this.displayExternalAction.bind(this);
     this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
-    this.displayFediverseFollowModal = this.displayFediverseFollowModal.bind(this);
+    this.displayFediverseFollowModal =
+      this.displayFediverseFollowModal.bind(this);
     this.closeFediverseFollowModal = this.closeFediverseFollowModal.bind(this);
-    
+
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
@@ -164,6 +175,10 @@ export default class App extends Component {
       onError: this.handlePlayerError,
     });
     this.player.init();
+
+    // check routing
+    console.log('==== did mount');
+    this.getRoute();
   }
 
   componentWillUnmount() {
@@ -180,6 +195,13 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
     }
+  }
+
+  getRoute() {
+    const routeInfo = checkUrlPathForDisplay();
+    this.setState({
+      ...routeInfo,
+    });
   }
 
   // fetch /config data
@@ -240,6 +262,13 @@ export default class App extends Component {
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
+
+        // TESTING
+        federation: {
+          enabled: true,
+          account: 'testing@ap-test.owncast.tv',
+          followerCount: 12,
+        }, // MOCK
       },
     });
   }
@@ -533,7 +562,7 @@ export default class App extends Component {
       return;
     }
     this.setState({
-      externalAction: {
+      externalActionModalData: {
         ...action,
         url: fullUrl,
       },
@@ -541,15 +570,15 @@ export default class App extends Component {
   }
   closeExternalActionModal() {
     this.setState({
-      externalAction: null,
+      externalActionModalData: null,
     });
   }
 
-  displayFediverseFollowModal() {
-    this.setState({displayFediverseFollowModal: true});
+  displayFediverseFollowModal(data) {
+    this.setState({ fediverseModalData: data });
   }
   closeFediverseFollowModal() {
-    this.setState({displayFediverseFollowModal: false});
+    this.setState({ fediverseModalData: null });
   }
 
   handleWebsocketMessage(e) {
@@ -658,10 +687,13 @@ export default class App extends Component {
       websocket,
       windowHeight,
       windowWidth,
-      externalAction,
+      fediverseModalData,
+      externalActionModalData,
       lastDisconnectTime,
-      displayFediverseFollowModal,
+      section,
+      sectionId,
     } = state;
+
     const {
       version: appVersion,
       logo = TEMP_IMAGE,
@@ -674,6 +706,7 @@ export default class App extends Component {
       externalActions,
       customStyles,
       maxSocketPayloadSize,
+      federation = {},
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -694,11 +727,19 @@ export default class App extends Component {
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
-    const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
+    const noVideoContent =
+      !playerActive || (section === ROUTE_RECORDINGS && sectionId !== '');
+    const shouldDisplayChat =
+      displayChatPanel && !chatDisabled && !noVideoContent;
+    const usernameStyle = chatDisabled ? 'none' : 'flex';
+    // const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
 
     const extraAppClasses = classNames({
       'config-loading': configData.loading,
+
       chat: shouldDisplayChat,
+      'no-chat': !shouldDisplayChat,
+      'no-video': noVideoContent,
       'chat-hidden': !displayChatPanel && canChat && !chatDisabled, // hide panel
       'chat-disabled': !canChat || chatDisabled,
       'single-col': singleColMode,
@@ -718,7 +759,7 @@ export default class App extends Component {
       externalActions.length > 0 &&
       html`<div
         id="external-actions-container"
-        class="flex flex-row align-center"
+        class="flex flex-row flex-wrap justify-end"
       >
         ${externalActions.map(
           function (action) {
@@ -728,18 +769,38 @@ export default class App extends Component {
             />`;
           }.bind(this)
         )}
-      </div>`;
 
-    const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
-    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
+        <!-- fediverse follow button -->
+        ${federation.enabled &&
+        html`<${FediverseFollowButton}
+          onClick=${this.displayFediverseFollowModal}
+          federationInfo=${federation}
+          serverName=${name}
+        />`}
+      </div>`;
 
     // modal component
     const externalActionModal =
-      externalAction &&
+      externalActionModalData &&
       html`<${ExternalActionModal}
-        action=${externalAction}
+        action=${externalActionModalData}
         onClose=${this.closeExternalActionModal}
       />`;
+
+    const fediverseFollowModal =
+      fediverseModalData &&
+      html`
+        <${ExternalActionModal}
+          onClose=${this.closeFediverseFollowModal}
+          action=${fediverseModalData}
+          useIframe=${false}
+          customContent=${html`<${FediverseFollowModal}
+            name=${name}
+            logo=${logo}
+            federationInfo=${federation}
+          />`}
+        />
+      `;
 
     const chat = this.state.websocket
       ? html`
@@ -754,6 +815,33 @@ export default class App extends Component {
           />
         `
       : null;
+
+    const TAB_CONTENT = [
+      {
+        label: 'About',
+        content: html`
+          <div>
+            <div
+              id="stream-summary"
+              class="stream-summary my-4"
+              dangerouslySetInnerHTML=${{ __html: summary }}
+            ></div>
+            <div id="tag-list" class="tag-list text-gray-600 mb-3">
+              ${tagList && `#${tagList}`}
+            </div>
+            <div
+              id="extra-user-content"
+              class="extra-user-content"
+              dangerouslySetInnerHTML=${{ __html: extraPageContent }}
+            ></div>
+          </div>
+        `,
+      },
+      {
+        label: 'Followers',
+        content: html`<${Followers} />`,
+      },
+    ];
 
     return html`
       <div
@@ -836,42 +924,42 @@ export default class App extends Component {
           </section>
         </main>
 
-        <section id="user-content" aria-label="User information" class="p-8">
+        <section
+          id="user-content"
+          aria-label="Owncast server information"
+          class="p-2"
+        >
+          ${externalActionButtons && html`${externalActionButtons}`}
+
           <div class="user-content flex flex-row p-8">
             <div
-              class="user-image rounded-full bg-white p-4 mr-8 bg-no-repeat bg-center"
-              style=${bgUserLogo}
+              class="user-logo-icons flex flex-col items-center justify-start mr-8"
             >
-              <img class="logo visually-hidden" alt="" src=${logo} />
+              <div
+                class="user-image rounded-full bg-white p-4 bg-no-repeat bg-center"
+                style=${bgUserLogo}
+              >
+                <img class="logo visually-hidden" alt="" src=${logo} />
+              </div>
+              <div class="social-actions">
+                <${SocialIconsList} handles=${socialHandles} />
+              </div>
             </div>
-            <div
-              class="user-content-header border-b border-gray-500 border-solid"
-            >
-              <h2 class="font-semibold text-5xl">
+
+            <div class="user-content-header">
+              <h2 class="server-name font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
               </h2>
-              ${externalActionButtons &&
-              html`<div>${externalActionButtons}</div>`}
-              ${fediverseFollowButton}
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
-              <${SocialIconsList} handles=${socialHandles} />
-              <div
-                id="stream-summary"
-                class="stream-summary my-4"
-                dangerouslySetInnerHTML=${{ __html: summary }}
-              ></div>
-              <div id="tag-list" class="tag-list text-gray-600 mb-3">
-                ${tagList && `#${tagList}`}
+
+              <!-- tab bar -->
+              <div class="my-8">
+                <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
               </div>
             </div>
           </div>
-          <div
-            id="extra-user-content"
-            class="extra-user-content px-8"
-            dangerouslySetInnerHTML=${{ __html: extraPageContent }}
-          ></div>
         </section>
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
@@ -883,9 +971,6 @@ export default class App extends Component {
         </footer>
 
         ${chat} ${externalActionModal} ${fediverseFollowModal}
-        
-        <h3>Followers</h3>
-        <${Followers} />
       </div>
     `;
   }

@@ -51,7 +51,6 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest("GET", iri, nil)
-	req.Header.Set("Accept", "application/activity+json")
 
 	actor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
@@ -76,68 +75,27 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 }
 
 // GetResolvedPersonFromActor resolve a provied actor property to a fully populated person.
-func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
+func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab.ActivityStreamsPerson, error) {
 	var err error
-
-	var response apmodels.ActivityPubActor
+	var person vocab.ActivityStreamsPerson
 
 	personCallback := func(c context.Context, p vocab.ActivityStreamsPerson) error {
-		fullUsername := apmodels.GetFullUsernameFromPerson(p)
-		response = apmodels.ActivityPubActor{
-			ActorIri: p.GetJSONLDId().Get(),
-			Inbox:    p.GetActivityStreamsInbox().GetIRI(),
-			Name:     p.GetActivityStreamsName().At(0).GetXMLSchemaString(),
-			Username: fullUsername,
-			Image:    p.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI(),
-		}
-
+		person = p
 		return nil
 	}
 
-	applicationCallback := func(c context.Context, a vocab.ActivityStreamsApplication) error {
-		fullUsername := apmodels.GetFullUsernameFromApplication(a)
-		response = apmodels.ActivityPubActor{
-			ActorIri: a.GetJSONLDId().Get(),
-			Inbox:    a.GetActivityStreamsInbox().GetIRI(),
-			Name:     a.GetActivityStreamsName().At(0).GetXMLSchemaString(),
-			Username: fullUsername,
-			Image:    nil,
-		}
-		return nil
-	}
-
-	// if actor == nil {
 	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
 		if iter.IsIRI() {
 			iri := iter.GetIRI()
 			c := context.TODO()
-			if e := ResolveIRI(c, iri.String(), personCallback, applicationCallback); e != nil {
+			if e := ResolveIRI(c, iri.String(), personCallback); e != nil {
 				err = e
 			}
 		} else if iter.IsActivityStreamsPerson() {
-			person := iter.GetActivityStreamsPerson()
-			fullUsername := apmodels.GetFullUsernameFromPerson(person)
-			followRequest := apmodels.ActivityPubActor{
-				ActorIri: person.GetJSONLDId().Get(),
-				Inbox:    person.GetActivityStreamsInbox().GetIRI(),
-				Name:     person.GetActivityStreamsName().At(0).GetXMLSchemaString(),
-				Username: fullUsername,
-				Image:    person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI(),
-			}
-			return followRequest, nil
-		} else if iter.IsActivityStreamsApplication() {
-			application := iter.GetActivityStreamsApplication()
-			fullUsername := apmodels.GetFullUsernameFromApplication(application)
-			followRequest := apmodels.ActivityPubActor{
-				ActorIri: application.GetJSONLDId().Get(),
-				Inbox:    application.GetActivityStreamsInbox().GetIRI(),
-				Name:     application.GetActivityStreamsName().At(0).GetXMLSchemaString(),
-				Username: fullUsername,
-				Image:    application.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI(),
-			}
-			return followRequest, nil
+			p := iter.GetActivityStreamsPerson()
+			person = p
 		}
 	}
 
-	return response, err
+	return person, err
 }
