@@ -69,16 +69,15 @@ func (q *Queries) ApproveFederationFollower(ctx context.Context, arg ApproveFede
 }
 
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is null
+SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null
 `
 
 type GetFederationFollowerApprovalRequestsRow struct {
-	Iri       string
-	Inbox     string
-	Name      sql.NullString
-	Username  string
-	Image     sql.NullString
-	CreatedAt sql.NullTime
+	Iri      string
+	Inbox    string
+	Name     sql.NullString
+	Username string
+	Image    sql.NullString
 }
 
 func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]GetFederationFollowerApprovalRequestsRow, error) {
@@ -96,7 +95,6 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 			&i.Name,
 			&i.Username,
 			&i.Image,
-			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -112,16 +110,15 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowers = `-- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null
+SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at is not null
 `
 
 type GetFederationFollowersRow struct {
-	Iri       string
-	Inbox     string
-	Name      sql.NullString
-	Username  string
-	Image     sql.NullString
-	CreatedAt sql.NullTime
+	Iri      string
+	Inbox    string
+	Name     sql.NullString
+	Username string
+	Image    sql.NullString
 }
 
 func (q *Queries) GetFederationFollowers(ctx context.Context) ([]GetFederationFollowersRow, error) {
@@ -139,7 +136,6 @@ func (q *Queries) GetFederationFollowers(ctx context.Context) ([]GetFederationFo
 			&i.Name,
 			&i.Username,
 			&i.Image,
-			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

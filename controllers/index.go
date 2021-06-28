@@ -35,6 +35,19 @@ type MetadataPage struct {
 // IndexHandler handles the default index route.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
+
+	// Treat recordings and schedule as index requests
+	pathRequest := "/"
+	pathComponents := strings.Split(r.URL.Path, "/")
+	if len(pathComponents) > 1 {
+		pathRequest = pathComponents[1]
+	}
+	pathRequest = pathComponents[1]
+
+	if pathRequest == "recordings" || pathRequest == "schedule" {
+		r.URL.Path = "index.html"
+	}
+
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
 
 	// For search engine bots and social scrapers return a special

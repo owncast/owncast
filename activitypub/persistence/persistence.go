@@ -14,7 +14,6 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -31,11 +30,7 @@ func Setup(datastore *data.Datastore) {
 // AddFollow will save a follow to the datastore.
 func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 	log.Println("Saving", follow.ActorIri, "as a follower.")
-	var image string
-	if follow.Image != nil {
-		image = follow.Image.String()
-	}
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, image, approved)
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String(), approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -55,7 +50,7 @@ func ApprovePreviousFollowRequest(iri string) error {
 }
 
 func createFollow(actor string, inbox string, name string, username string, image string, approved bool) error {
-	needsApproval := data.GetFederationIsPrivate()
+	needsApproval := data.GetFollowApprovalRequired()
 
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -68,7 +63,7 @@ func createFollow(actor string, inbox string, name string, username string, imag
 		_ = tx.Rollback()
 	}()
 
-	var approvedAt = sql.NullTime{Valid: false}
+	var approvedAt sql.NullTime
 	if !needsApproval {
 		approvedAt = sql.NullTime{
 			Time:  time.Now(),
@@ -76,16 +71,12 @@ func createFollow(actor string, inbox string, name string, username string, imag
 		}
 	}
 
-	var savedImage sql.NullString = sql.NullString{Valid: false}
-	if image != "" {
-		savedImage = sql.NullString{String: image, Valid: true}
-	}
 	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
 		Iri:        actor,
 		Inbox:      inbox,
 		Name:       sql.NullString{String: name, Valid: true},
 		Username:   username,
-		Image:      savedImage,
+		Image:      sql.NullString{String: image, Valid: true},
 		ApprovedAt: approvedAt,
 	}); err != nil {
 		log.Errorln("error creating new federation follow", err)
@@ -318,10 +309,6 @@ func GetFederationFollowers() ([]models.Follower, error) {
 			Image:    row.Image.String,
 			Link:     row.Iri,
 			Inbox:    row.Inbox,
-			Followed: utils.NullTime{
-				Time:  row.CreatedAt.Time,
-				Valid: row.CreatedAt.Valid,
-			},
 		}
 		followers = append(followers, singleFollower)
 	}
@@ -345,10 +332,6 @@ func GetPendingFollowRequests() ([]models.Follower, error) {
 			Image:    row.Image.String,
 			Link:     row.Iri,
 			Inbox:    row.Inbox,
-			CreatedAt: utils.NullTime{
-				Time:  row.CreatedAt.Time,
-				Valid: row.CreatedAt.Valid,
-			},
 		}
 		followers = append(followers, singleFollower)
 	}

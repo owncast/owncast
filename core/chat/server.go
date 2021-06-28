@@ -21,9 +21,6 @@ import (
 
 var _server *Server
 
-// a map of user IDs and when they last were active.
-var _lastSeenCache = map[string]time.Time{}
-
 // Server represents an instance of the chat server.
 type Server struct {
 	mu                       sync.RWMutex
@@ -90,18 +87,11 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 		ConnectedAt: time.Now(),
 	}
 
-	// Do not send user re-joined broadcast message if they've been active within 5 minutes.
-	shouldSendJoinedMessages := true
-	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*5 {
-		shouldSendJoinedMessages = false
-	}
-
 	s.mu.Lock()
 	{
 		client.id = s.seq
 		s.clients[client.id] = client
 		s.seq++
-		_lastSeenCache[user.ID] = time.Now()
 	}
 	s.mu.Unlock()
 
@@ -113,9 +103,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 	client.sendConnectedClientInfo()
 
 	if getStatus().Online {
-		if shouldSendJoinedMessages {
-			s.sendUserJoinedMessage(client)
-		}
+		s.sendUserJoinedMessage(client)
 		s.sendWelcomeMessageToClient(client)
 	}
 

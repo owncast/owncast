@@ -54,7 +54,7 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	person.SetActivityStreamsInbox(inboxProp)
 
 	needsFollowApprovalProperty := streams.NewActivityStreamsManuallyApprovesFollowersProperty()
-	needsFollowApprovalProperty.Set(data.GetFederationIsPrivate())
+	needsFollowApprovalProperty.Set(data.GetFollowApprovalRequired())
 	person.SetActivityStreamsManuallyApprovesFollowers(needsFollowApprovalProperty)
 
 	outboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/outbox")
@@ -173,15 +173,6 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 func GetFullUsernameFromPerson(person vocab.ActivityStreamsPerson) string {
 	hostname := person.GetJSONLDId().GetIRI().Hostname()
 	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
-	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
-
-	return fullUsername
-}
-
-// GetFullUsernameFromApplication will return the user@host.tld formatted user given an Application object.
-func GetFullUsernameFromApplication(application vocab.ActivityStreamsApplication) string {
-	hostname := application.GetJSONLDId().GetIRI().Hostname()
-	username := application.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 
 	return fullUsername

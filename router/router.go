@@ -22,6 +22,8 @@ import (
 func Start() error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
+	http.HandleFunc("/recordings", controllers.IndexHandler)
+	http.HandleFunc("/schedule", controllers.IndexHandler)
 
 	// admin static files
 	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))

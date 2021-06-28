@@ -42,5 +42,5 @@ func GetFollowerCount() (int64, error) {
 
 // GetPendingFollowRequests will return the pending follow requests.
 func GetPendingFollowRequests() ([]models.Follower, error) {
-	return persistence.GetPendingFollowRequests()
+	return persistence.GetFederationFollowers()
 }
