@@ -10,11 +10,11 @@
 - [ ] add tab bar below tags list
 
 ### Add more local react States
-- add offline / no-video state
-- add recordings[] when comes in from config
-- add schedule[] when comes in from config
-- add route tracker
-- add tab tracker
+- [ ] add offline / no-video state
+- [ ] add recordings[] when comes in from config
+- [ ] add schedule[] when comes in from config
+- [ ] add route tracker
+- [ ] add tab tracker
 
 ## Add Tab bar
 Tab bar includes:
@@ -26,13 +26,13 @@ Tab bar includes:
 ## Routing, Url Handling
 
 #### Recording urls
-`server.com/recordings`
-`server.com/recordings/id123`
+- `server.com/recordings`
+- `server.com/recordings/id123`
 
 
 #### Schedule urls
-`server.com/schedule`
-`server.com/schedule/id123`
+- `server.com/schedule`
+- `server.com/schedule/id123`
 
 ### Todo
 - [ ] modify server side go to just load up index.html/app.js when url routes to /recording or /schedule

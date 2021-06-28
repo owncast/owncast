@@ -14,6 +14,7 @@ import ExternalActionModal, {
 
 import {
   addNewlines,
+  checkUrlPathForDisplay,
   classNames,
   clearLocalStorage,
   debounce,
@@ -80,6 +81,10 @@ export default class App extends Component {
       orientation: getOrientation(this.hasTouchScreen),
 
       externalAction: null,
+
+      // routing & tabbing
+      section: '',
+      sectionId: '',
     };
 
     // timers
@@ -137,6 +142,10 @@ export default class App extends Component {
       onError: this.handlePlayerError,
     });
     this.player.init();
+
+    // check routing
+    console.log("==== did mount");
+    this.getRoute();
   }
 
   componentWillUnmount() {
@@ -153,6 +162,13 @@ export default class App extends Component {
     if (this.hasTouchScreen) {
       window.removeEventListener('orientationchange', this.handleWindowResize);
     }
+  }
+
+  getRoute() {
+    const routeInfo = checkUrlPathForDisplay();
+    this.setState({
+      ...routeInfo,
+    });
   }
 
   // fetch /config data
@@ -549,6 +565,7 @@ export default class App extends Component {
 
     const extraAppClasses = classNames({
       'config-loading': configData.loading,
+
       chat: shouldDisplayChat,
       'no-chat': !shouldDisplayChat,
       'single-col': singleColMode,
