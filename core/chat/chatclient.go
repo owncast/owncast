@@ -17,13 +17,16 @@ type ChatClient struct {
 	accessToken string
 	// io          sync.Mutex
 	conn      *websocket.Conn
-	user      *user.User
+	User      *user.User `json:"user"`
 	server    *ChatServer
-	ipAddress string
+	IPAddress string
 	// Buffered channel of outbound messages.
-	send        chan []byte
-	rateLimiter *rate.Limiter
-	Geo         *geoip.GeoDetails `json:"geo"`
+	send         chan []byte
+	rateLimiter  *rate.Limiter
+	Geo          *geoip.GeoDetails `json:"geo"`
+	MessageCount int               `json:"messageCount"`
+	UserAgent    string            `json:"userAgent"`
+	ConnectedAt  time.Time         `json:"connectedAt"`
 }
 
 type chatClientEvent struct {
@@ -59,8 +62,7 @@ func (c *ChatClient) readPump() {
 	c.rateLimiter = rate.NewLimiter(0.6, 5)
 
 	defer func() {
-		c.server.unregister <- c
-		c.conn.Close()
+		c.close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -84,11 +86,6 @@ func (c *ChatClient) readPump() {
 	}
 }
 
-// writePump pumps messages from the server to the websocket connection.
-//
-// A goroutine running writePump is started for each connection. The
-// application ensures that there is at most one writer to a connection by
-// executing all writes from this goroutine.
 func (c *ChatClient) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
@@ -136,7 +133,7 @@ func (c *ChatClient) handleEvent(data []byte) {
 }
 
 func (c *ChatClient) close() {
-	log.Traceln("client closed:", c.user.DisplayName, c.id, c.ipAddress)
+	log.Traceln("client closed:", c.User.DisplayName, c.id, c.IPAddress)
 
 	c.conn.Close()
 	c.server.unregister <- c
@@ -144,7 +141,7 @@ func (c *ChatClient) close() {
 
 func (c *ChatClient) passesRateLimit() bool {
 	if !c.rateLimiter.Allow() {
-		log.Debugln("Client", c.id, c.user.DisplayName, "has exceeded the messaging rate limiting thresholds.")
+		log.Debugln("Client", c.id, c.User.DisplayName, "has exceeded the messaging rate limiting thresholds.")
 		return false
 	}
 

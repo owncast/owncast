@@ -40,6 +40,7 @@ func NewChat() *ChatServer {
 		clients:        map[uint]*ChatClient{},
 		outbound:       make(chan []byte),
 		inbound:        make(chan chatClientEvent),
+		unregister:     make(chan *ChatClient),
 		maxClientCount: getMaxConnectionCount(),
 	}
 
@@ -64,14 +65,16 @@ func (s *ChatServer) Run() {
 }
 
 // Addclient registers new connection as a User.
-func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string) *ChatClient {
+func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string) *ChatClient {
 	client := &ChatClient{
 		server:      s,
 		conn:        conn,
-		user:        user,
-		ipAddress:   conn.RemoteAddr().String(),
+		User:        user,
+		IPAddress:   conn.RemoteAddr().String(),
 		accessToken: accessToken,
 		send:        make(chan []byte, 256),
+		UserAgent:   userAgent,
+		ConnectedAt: time.Now(),
 	}
 
 	s.mu.Lock()
@@ -157,7 +160,9 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	s.Addclient(conn, user, accessToken)
+	userAgent := r.UserAgent()
+
+	s.Addclient(conn, user, accessToken, userAgent)
 }
 
 // Broadcast sends message to all connected clients.

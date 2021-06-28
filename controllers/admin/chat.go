@@ -5,6 +5,7 @@ package admin
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/owncast/owncast/controllers"
@@ -44,6 +45,8 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("UpdateUserEnabled")
+
 	type blockUserRequest struct {
 		UserID  string `json:"userId"`
 		Enabled bool   `json:"enabled"`
@@ -64,10 +67,23 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Disable/enable the user
-	user.SetEnabled(request.UserID, request.Enabled)
+	if err := user.SetEnabled(request.UserID, request.Enabled); err != nil {
+		log.Fatal(err)
+	}
 
 	// Hide/show the user's chat messages
 	chat.SetMessageVisibilityForUserId(request.UserID, request.Enabled)
+
+	if !request.Enabled {
+		chat.DisconnectUser(request.UserID)
+	}
+}
+
+func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	users := user.GetDisabledUsers()
+	controllers.WriteResponse(w, users)
 }
 
 // GetChatMessages returns all of the chat messages, unfiltered.
@@ -75,10 +91,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	messages := chat.GetChatModerationHistory()
-
-	if err := json.NewEncoder(w).Encode(messages); err != nil {
-		log.Errorln(err)
-	}
+	controllers.WriteResponse(w, messages)
 }
 
 // SendSystemMessage will send an official "SYSTEM" message to chat on behalf of your server.

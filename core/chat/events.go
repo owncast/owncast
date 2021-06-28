@@ -26,7 +26,7 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 		normalizedName = strings.ToLower(normalizedName)
 		if strings.Contains(normalizedName, proposedUsername) {
 			// Denied.
-			log.Debugln(eventData.client.user.DisplayName, "blocked from changing name to", proposedUsername, "due to blocked name", normalizedName)
+			log.Debugln(eventData.client.User.DisplayName, "blocked from changing name to", proposedUsername, "due to blocked name", normalizedName)
 			message := fmt.Sprintf("You cannot change your name to **%s**.", proposedUsername)
 			s.sendActionToClient(eventData.client, message)
 			return
@@ -34,12 +34,16 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new name
+	user.ChangeUsername(eventData.client.User.Id, receivedEvent.NewName)
 	savedUser := user.GetUserByToken(eventData.client.accessToken)
-	user.ChangeUsername(savedUser.Id, receivedEvent.NewName)
 
 	// Send chat event letting everyone about about the name change
 	oldName := savedUser.DisplayName
 	savedUser.DisplayName = receivedEvent.NewName
+
+	// Update the connected clients associated user with the new name
+	eventData.client.User = savedUser
+
 	broadcastEvent := events.NameChangeBroadcast{
 		Oldname: oldName,
 	}
@@ -81,4 +85,6 @@ func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
 	}
 
 	addMessage(event)
+
+	eventData.client.MessageCount = eventData.client.MessageCount + 1
 }

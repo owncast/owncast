@@ -85,21 +85,22 @@ func RemoveChatClient(clientID string) {
 	l.Unlock()
 }
 
-func GetChatClients() []models.Client {
-	// l.RLock()
-	clients := make([]models.Client, 0)
-	// for _, client := range _stats.Clients {
-	// 	chatClient := chat.GetClient(client.ClientID)
-	// 	if chatClient != nil {
-	// 		clients = append(clients, chatClient.GetViewerClientFromChatClient())
-	// 	} else {
-	// 		clients = append(clients, client)
-	// 	}
-	// }
-	// l.RUnlock()
+// func GetChatClients() []models.Client {
+// 	l.RLock()
+// 	defer l.RUnlock()
 
-	return clients
-}
+// 	clients := make([]models.Client, 0)
+// 	for _, client := range _stats.GetChatClients() {
+// 		// 	chatClient := chat.GetClient(client.ClientID)
+// 		// 	if chatClient != nil {
+// 		// 		clients = append(clients, chatClient.GetViewerClientFromChatClient())
+// 		// 	} else {
+// 		// 		clients = append(clients, client)
+// 		// 	}
+// 	}
+
+// 	return clients
+// }
 
 // SetViewerIdActive sets a client as active and connected.
 func SetViewerIdActive(id string) {

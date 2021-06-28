@@ -95,6 +95,9 @@ func Start() error {
 	// Enable/disable a user
 	http.HandleFunc("/api/admin/chat/userenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
 
+	// Get a list of disabled users
+	http.HandleFunc("/api/admin/chat/usersdisabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
+
 	// Update config values
 
 	// Change the current streaming key in memory

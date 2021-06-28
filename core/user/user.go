@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -96,14 +97,40 @@ func CreateAnonymousUser(username string) (error, *User) {
 }
 
 func ChangeUsername(userId string, username string) {
+	tx, err := _db.Begin()
+
+	if err != nil {
+		panic(err)
+	}
+	defer tx.Rollback()
+
+	stmt, err := tx.Prepare("UPDATE users SET display_name = ? WHERE id = ?")
+
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(username, userId)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Errorln("error changing display name of user", userId, err)
+	}
+
 	addNameHistory(userId, username)
 }
 
 func create(user *User) error {
 	tx, err := _db.Begin()
+
 	if err != nil {
 		panic(err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, created_at) values(?, ?, ?, ?, ?)")
 
 	if err != nil {
@@ -121,10 +148,12 @@ func create(user *User) error {
 
 func SetEnabled(userID string, enabled bool) error {
 	tx, err := _db.Begin()
+
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
+	defer tx.Rollback()
 
 	var disabledAt *time.Time
 	if !enabled {
@@ -142,7 +171,7 @@ func SetEnabled(userID string, enabled bool) error {
 		return err
 	}
 
-	return nil
+	return tx.Commit()
 }
 
 // GetUserByToken will return a user by an access token.
@@ -153,10 +182,8 @@ func GetUserByToken(token string) *User {
 
 	// JOIN w/ user history table
 	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token = ?"
+	fmt.Println("SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token =", token)
 	row := _db.QueryRow(query, token)
-	if row == nil || row.Scan().Error() != "" {
-		return nil
-	}
 
 	return getUserFromRow(row)
 }
@@ -177,6 +204,48 @@ func GetUserById(id string) *User {
 	return getUserFromRow(row)
 }
 
+// GetDisabledUsers will return back all the currently disabled users.
+func GetDisabledUsers() []*User {
+	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE disabled_at IS NOT NULL"
+
+	rows, err := _db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	users := getUsersFromRows(rows)
+	return users
+}
+
+func getUsersFromRows(rows *sql.Rows) []*User {
+	users := make([]*User, 0)
+
+	for rows.Next() {
+		var id string
+		var displayName string
+		var displayColor int
+		var createdAt time.Time
+		var disabledAt *time.Time
+
+		if err := rows.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt); err != nil {
+			log.Errorln("error creating collection of users from results", err)
+			return nil
+		}
+
+		user := &User{
+			Id:              id,
+			DisplayName:     displayName,
+			DisplayColor:    displayColor,
+			CreatedAt:       createdAt,
+			DisabledAt:      disabledAt,
+			UsernameHistory: getUsernameHistory(id),
+		}
+		users = append(users, user)
+	}
+
+	return users
+}
 func getUserFromRow(row *sql.Row) *User {
 	var id string
 	var displayName string
@@ -185,7 +254,7 @@ func getUserFromRow(row *sql.Row) *User {
 	var disabledAt *time.Time
 
 	if err := row.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt); err != nil {
-		log.Fatalln(err)
+		log.Errorln("error creating single user from result", err)
 		return nil
 	}
 

@@ -173,6 +173,15 @@ func SetMessageVisibilityForUserId(userID string, visible bool) error {
 	return nil
 }
 
+// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
+func DisconnectUser(userID string) {
+	for _, client := range _server.clients {
+		if client.User.Id == userID {
+			client.close()
+		}
+	}
+}
+
 func saveMessageVisibility(messageIDs []string, visible bool) error {
 	tx, err := _db.Begin()
 	if err != nil {

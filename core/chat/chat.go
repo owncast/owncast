@@ -22,6 +22,16 @@ func GetClient(id uint) *ChatClient {
 	return _server.clients[id]
 }
 
+func GetClients() []*ChatClient {
+	clients := []*ChatClient{}
+
+	for _, client := range _server.clients {
+		clients = append(clients, client)
+	}
+
+	return clients
+}
+
 func SendSystemMessage(text string, ephemeral bool) error {
 	return nil
 }
