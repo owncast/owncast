@@ -126,6 +126,7 @@ export default class App extends Component {
     this.handleWebsocketMessage = this.handleWebsocketMessage.bind(this);
 
     // chat
+    this.hasConfiguredChat = false;
     this.setupChatAuth = this.setupChatAuth.bind(this);
   }
 
@@ -148,8 +149,6 @@ export default class App extends Component {
       onError: this.handlePlayerError,
     });
     this.player.init();
-
-    this.setupChatAuth();
   }
 
   componentWillUnmount() {
@@ -210,9 +209,16 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary } = data;
+    const { name, summary, chatDisabled } = data;
     window.document.title = name;
 
+    // If this is the first time setting the config
+    // then setup chat if it's enabled.
+    if (!this.hasConfiguredChat && !chatDisabled) {
+      this.setupChatAuth();
+    }
+    this.hasConfiguredChat = true;
+    
     this.setState({
       configData: {
         ...data,
