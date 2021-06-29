@@ -25,13 +25,14 @@ type OCLogger struct {
 }
 
 var Logger *OCLogger
-var _level logrus.Level
 
 // Setup configures our custom logging destinations.
 func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	// Create the logging directory if needed
 	if !utils.DoesFileExists(getLogFilePath()) {
-		os.Mkdir(getLogFilePath(), 0700)
+		if err := os.Mkdir(getLogFilePath(), 0700); err != nil {
+			logger.Errorln("unable to create directory", getLogFilePath(), err)
+		}
 	}
 
 	// Write logs to a file

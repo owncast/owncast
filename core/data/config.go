@@ -199,7 +199,7 @@ func GetHTTPListenAddress() string {
 		log.Traceln(httpListenAddressKey, err)
 		return config.GetDefaults().WebServerIP
 	}
-	return string(address)
+	return address
 }
 
 // SetHTTPListenAddress will set the server HTTP listen address.
@@ -577,7 +577,7 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	return indexedQualities[0].index
 }
 
-// GetUsernameBlocklist will return the blocked usernames as a comma seperated string.
+// GetUsernameBlocklist will return the blocked usernames as a comma separated string.
 func GetUsernameBlocklist() string {
 	usernameString, err := _datastore.GetString(blockedUsernamesKey)
 
@@ -589,7 +589,7 @@ func GetUsernameBlocklist() string {
 	return usernameString
 }
 
-// SetUsernameBlocklist set the username blocklist as a comma seperated string.
+// SetUsernameBlocklist set the username blocklist as a comma separated string.
 func SetUsernameBlocklist(usernames string) error {
 	return _datastore.SetString(blockedUsernamesKey, usernames)
 }

@@ -15,7 +15,7 @@ type variantsResponse struct {
 	Index int    `json:"index"`
 }
 
-// GetVideoStreamOutputVariants will return the video variants available,
+// GetVideoStreamOutputVariants will return the video variants available.
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
 	result := make([]variantsResponse, len(outputVariants))

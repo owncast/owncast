@@ -35,7 +35,7 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tagStrings []string
+	tagStrings := make([]string, 0)
 	for _, tag := range configValues {
 		tagStrings = append(tagStrings, tag.Value.(string))
 	}
@@ -226,7 +226,7 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imgPath := filepath.Join("data", "logo"+extension)
-	if err := ioutil.WriteFile(imgPath, bytes, 0644); err != nil {
+	if err := ioutil.WriteFile(imgPath, bytes, 0600); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -434,7 +434,6 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		if newS3Config.Value.Endpoint == "" || !utils.IsValidUrl((newS3Config.Value.Endpoint)) {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires an endpoint")
 			return
-
 		}
 
 		if newS3Config.Value.AccessKey == "" || newS3Config.Value.Secret == "" {
@@ -455,7 +454,6 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 
 	data.SetS3Config(newS3Config.Value)
 	controllers.WriteSimpleResponse(w, true, "storage configuration changed")
-
 }
 
 // SetStreamOutputVariants will handle the web config request to set the video output stream variants.

@@ -14,7 +14,7 @@ import (
 // in the stream.
 func CleanupOldContent(baseDirectory string) {
 	// Determine how many files we should keep on disk
-	maxNumber := int(data.GetStreamLatencyLevel().SegmentCount)
+	maxNumber := data.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
 
 	files, err := getAllFilesRecursive(baseDirectory)
