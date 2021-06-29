@@ -18,7 +18,6 @@ import (
 )
 
 func main() {
-
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
@@ -48,7 +47,9 @@ func main() {
 
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {
-		os.Mkdir("./data", 0700)
+		if err := os.Mkdir("./data", 0700); err != nil {
+			log.Fatalln("Cannot create data directory", err)
+		}
 	}
 
 	// Allows a user to restore a specific database backup

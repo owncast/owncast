@@ -52,7 +52,7 @@ func VerifyFFMpegPath(path string) error {
 
 	versionString := "v" + strings.Split(fullVersionString, "-")[0]
 
-	// Some builds of ffmpeg have wierd build numbers that we can't parse
+	// Some builds of ffmpeg have weird build numbers that we can't parse
 	if !semver.IsValid(versionString) {
 		log.Debugf("unable to determine if ffmpeg version %s is recent enough. if you experience issues with video you may want to look into updating", fullVersionString)
 		return nil
