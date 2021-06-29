@@ -136,8 +136,10 @@ func saveStats() error {
 	if err := data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
-	if err := data.SetLastDisconnectTime(_stats.LastConnectTime.Time); err != nil {
-		log.Errorln("error saving disconnect time", err)
+	if _stats.LastDisconnectTime.Valid {
+		if err := data.SetLastDisconnectTime(_stats.LastConnectTime.Time); err != nil {
+			log.Errorln("error saving disconnect time", err)
+		}
 	}
 
 	return nil
