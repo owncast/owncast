@@ -3,6 +3,7 @@ package transcoder
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -22,6 +23,7 @@ var _commandExec *exec.Cmd
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
 	input                string
+	stdin                *io.PipeReader
 	segmentOutputPath    string
 	playlistOutputPath   string
 	variants             []HLSVariant
@@ -95,6 +97,11 @@ func (t *Transcoder) Start() {
 	}
 
 	_commandExec = exec.Command("sh", "-c", command)
+
+	if t.stdin != nil {
+	  _commandExec.Stdin = t.stdin
+	}
+
 	stdout, err := _commandExec.StderrPipe()
 	if err != nil {
 		panic(err)
@@ -240,7 +247,7 @@ func NewTranscoder() *Transcoder {
 	// Playlists are available via the local HTTP server
 	transcoder.playlistOutputPath = config.PublicHLSStoragePath
 
-	transcoder.input = utils.GetTemporaryPipePath(fmt.Sprint(data.GetRTMPPortNumber()))
+	transcoder.input = "pipe:0" // stdin
 
 	for index, quality := range transcoder.currentStreamOutputSettings {
 		variant := getVariantFromConfigQuality(quality, index)
@@ -387,6 +394,11 @@ func (t *Transcoder) AddVariant(variant HLSVariant) {
 // SetInput sets the input stream on the filesystem.
 func (t *Transcoder) SetInput(input string) {
 	t.input = input
+}
+
+// SetStdin sets the Stdin of the ffmpeg command.
+func (t *Transcoder) SetStdin(rtmp *io.PipeReader) {
+	t.stdin = rtmp
 }
 
 // SetOutputPath sets the root directory that should include playlists and video segments.
