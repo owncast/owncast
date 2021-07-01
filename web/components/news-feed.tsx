@@ -26,7 +26,13 @@ function ArticleItem({ title, url, content_html: content, date_published: date }
     <article>
       <Collapse>
         <Panel header={title} key={url}>
-          <p className="timestamp">{dateString} (<Link href={`${OWNCAST_BASE_URL}${url}`} target="_blank" rel="noopener noreferrer">Link</Link>)</p>
+          <p className="timestamp">
+            {dateString} (
+            <Link href={`${OWNCAST_BASE_URL}${url}`} target="_blank" rel="noopener noreferrer">
+              Link
+            </Link>
+            )
+          </p>
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </Panel>
       </Collapse>
@@ -55,8 +61,8 @@ export default function NewsFeed() {
     getFeed();
   }, []);
 
-  const loadingSpinner = loading ? (<Skeleton loading={true} active />) : null;
-  const noNews = !loading && feed.length === 0 ? (<div>No news.</div>) : null;
+  const loadingSpinner = loading ? <Skeleton loading={true} active /> : null;
+  const noNews = !loading && feed.length === 0 ? <div>No news.</div> : null;
 
   return (
     <section className="news-feed form-module">
