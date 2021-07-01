@@ -1,11 +1,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/no-danger */
 import React, { useState, useEffect } from 'react';
-import { Typography, Skeleton } from 'antd';
+import { Collapse, Typography, Skeleton } from 'antd';
 import format from 'date-fns/format';
 
 import { fetchExternalData } from '../utils/apis';
 
+const { Panel } = Collapse;
 const { Title, Link } = Typography;
 
 const OWNCAST_FEED_URL = 'https://owncast.online/news/index.json';
@@ -23,13 +24,12 @@ function ArticleItem({ title, url, content_html: content, date_published: date }
   const dateString = format(dateObject, 'MMM dd, yyyy, HH:mm');
   return (
     <article>
-      <p className="timestamp">{dateString}</p>
-      <Title level={3}>
-        <Link href={`${OWNCAST_BASE_URL}${url}`} target="_blank" rel="noopener noreferrer">
-          {title}
-        </Link>
-      </Title>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <Collapse>
+        <Panel header={title} key={url}>
+          <p className="timestamp">{dateString} (<Link href={`${OWNCAST_BASE_URL}${url}`} target="_blank" rel="noopener noreferrer">Link</Link>)</p>
+          <div dangerouslySetInnerHTML={{ __html: content }} />
+        </Panel>
+      </Collapse>
     </article>
   );
 }
