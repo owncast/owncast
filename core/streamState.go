@@ -88,7 +88,7 @@ func SetStreamAsDisconnected() {
 		_yp.Stop()
 	}
 
-	for index := range data.GetStreamOutputVariants() {
+	for index := range _currentBroadcast.OutputSettings {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
 
