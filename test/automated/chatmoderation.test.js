@@ -41,8 +41,6 @@ test('verify message has become hidden', async (done) => {
     const message = res.body.filter(obj => {
         return obj.body === `<p>${testVisibilityMessage.body}</p>`;
     });
-    console.log(message)
-
     expect(message.length).toBe(1);
     expect(message[0].hiddenAt).toBeTruthy();
     done();
