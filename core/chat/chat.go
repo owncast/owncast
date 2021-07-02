@@ -49,6 +49,11 @@ func HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	_server.HandleClientConnection(w, r)
 }
 
+// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
+func DisconnectUser(userID string) {
+	_server.DisconnectUser(userID)
+}
+
 // // GetMessages gets all of the messages.
 // func GetMessages() []events.Event {
 // 	if _server == nil {

@@ -24,7 +24,7 @@ type User struct {
 	DisplayColor    int                     `json:"displayColor"`
 	CreatedAt       time.Time               `json:"createdAt"`
 	UsernameHistory []*usernameHistoryEntry `json:"usernameHistory"`
-	DisabledAt      *time.Time              `json:"-"`
+	DisabledAt      *time.Time              `json:"disabledAt,omitempty"`
 }
 
 func (u *User) IsEnabled() bool {
@@ -45,9 +45,8 @@ func createUsersTable() {
 		"access_token" string NOT NULL,
 		"display_name" TEXT NOT NULL,
 		"display_color" NUMBER NOT NULL,
-		"created_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		"name_changed_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		"disabled_at" DATETIME 
+		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		"disabled_at" TIMESTAMP 
 	);`
 
 	if err := execSQL(createTableSQL); err != nil {
@@ -155,18 +154,20 @@ func SetEnabled(userID string, enabled bool) error {
 	}
 	defer tx.Rollback()
 
-	var disabledAt *time.Time
+	var stmt *sql.Stmt
 	if !enabled {
-		now := time.Now()
-		disabledAt = &now
+		stmt, err = tx.Prepare("UPDATE users SET disabled_at=DATETIME('now', 'localtime') WHERE id IS ?")
 	} else {
-		disabledAt = nil
+		stmt, err = tx.Prepare("UPDATE users SET disabled_at=null WHERE id IS ?")
 	}
 
-	stmt, err := tx.Prepare("UPDATE users SET disabled_at=? WHERE id IS ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(userID, disabledAt); err != nil {
+	if _, err := stmt.Exec(userID); err != nil {
 		log.Fatal(err)
 		return err
 	}

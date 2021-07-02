@@ -198,6 +198,24 @@ func (s *ChatServer) Send(payload events.EventPayload, client *ChatClient) {
 	client.send <- data
 }
 
+// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
+func (s *ChatServer) DisconnectUser(userID string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for _, client := range s.clients {
+		if client.User.Id == userID {
+			go func() {
+				event := events.UserDisabledEvent{}
+				event.SetDefaults()
+				_server.Send(event.GetBroadcastPayload(), client)
+				time.Sleep(1 * time.Second) // Allow the socket to send out the above message
+				client.close()
+			}()
+		}
+	}
+}
+
 func (s *ChatServer) eventReceived(event chatClientEvent) {
 	var typecheck map[string]interface{}
 	if err := json.Unmarshal(event.data, &typecheck); err != nil {

@@ -50,17 +50,19 @@ func saveEvent(id string, userId string, body string, eventType string, hidden *
 	if err != nil {
 		log.Fatal(err)
 	}
-	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
+	defer tx.Rollback()
 
+	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer stmt.Close()
 
 	if _, err = stmt.Exec(id, userId, body, eventType, hidden, timestamp); err != nil {
 		log.Fatal(err)
 	}
-	if err := tx.Commit(); err != nil {
+	if err = tx.Commit(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -121,65 +123,24 @@ func GetChatHistory() []events.UserMessageEvent {
 	return getChat(query)
 }
 
-// SetMessageVisibilityForUserId will bulk change the visibility of messages for a user.
+// SetMessageVisibilityForUserId will bulk change the visibility of messages for a user
+// and then send out visibility changed events to chat clients.
 func SetMessageVisibilityForUserId(userID string, visible bool) error {
-	tx, err := _db.Begin()
-	if err != nil {
-		log.Fatal(err)
+	// Get a list of IDs from this user within the 5hr window to send to the connected clients to hide
+	ids := make([]string, 0)
+	query := fmt.Sprintf("SELECT * FROM messages WHERE user_id IS '%s'", userID)
+	messages := getChat(query)
+
+	if len(messages) == 0 {
+		return nil
 	}
 
-	var disabledAt *time.Time
-	if !visible {
-		now := time.Now()
-		disabledAt = &now
-	} else {
-		disabledAt = nil
+	for _, message := range messages {
+		ids = append(ids, message.Id)
 	}
 
-	// Set all messages by this user as hidden in the database
-	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE user_id IS ?")
-	defer stmt.Close()
-	stmt.Exec(disabledAt, userID)
-
-	if err != nil {
-		log.Fatal(err)
-		return err
-	}
-
-	// Get a list of IDs to send to the connected clients to hide
-	// stmt, err = tx.Prepare("SELECT id, hidden_at FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc WHERE user_id IS ?")
-	// defer stmt.Close()
-	// result, err := stmt.Exec(userID)
-
-	// history := make([]events.UserMessageEvent, 0)
-	// rows, err := _db.Query(query)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	var id string
-	// 	var hidden *time.Time
-	// 	err = rows.Scan(&id, &hidden)
-	// 	if err != nil {
-	// 		log.Debugln(err)
-	// 		log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
-	// 		break
-	// 	}
-
-	// }
-
-	return nil
-}
-
-// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
-func DisconnectUser(userID string) {
-	for _, client := range _server.clients {
-		if client.User.Id == userID {
-			client.close()
-		}
-	}
+	// Tell the clients to hide/show these messages.
+	return SetMessagesVisibility(ids, visible)
 }
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {

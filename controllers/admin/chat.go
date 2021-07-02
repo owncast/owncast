@@ -72,8 +72,11 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Hide/show the user's chat messages
-	chat.SetMessageVisibilityForUserId(request.UserID, request.Enabled)
+	if err := chat.SetMessageVisibilityForUserId(request.UserID, request.Enabled); err != nil {
+		log.Fatal(err)
+	}
 
+	// Forcefully disconnect the user from the chat
 	if !request.Enabled {
 		chat.DisconnectUser(request.UserID)
 	}

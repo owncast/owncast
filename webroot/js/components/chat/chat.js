@@ -8,13 +8,12 @@ import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 import {
   jumpToBottom,
   debounce,
-  getLocalStorage,
+  setLocalStorage,
 } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
 import {
   URL_CHAT_HISTORY,
   MESSAGE_JUMPTOBOTTOM_BUFFER,
-  KEY_CUSTOM_USERNAME_SET,
 } from '../../utils/constants.js';
 
 export default class Chat extends Component {
@@ -187,11 +186,6 @@ export default class Chat extends Component {
 
   // handle any incoming message
   handleMessage(message) {
-    // Ignore errors
-    if (message.type.includes('ERROR')) {
-      return;
-    }
-
     console.log(message)
     const {
       id: messageId,

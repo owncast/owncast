@@ -128,6 +128,7 @@ export default class App extends Component {
     // chat
     this.hasConfiguredChat = false;
     this.setupChatAuth = this.setupChatAuth.bind(this);
+    this.disableChat = this.disableChat.bind(this);
   }
 
   componentDidMount() {
@@ -214,11 +215,19 @@ export default class App extends Component {
 
     // If this is the first time setting the config
     // then setup chat if it's enabled.
-    if (!this.hasConfiguredChat && !chatDisabled) {
+    const chatBlocked = getLocalStorage('owncast_chat_blocked');
+    console.log(chatBlocked)
+    if (!chatBlocked && !this.hasConfiguredChat && !chatDisabled) {
       this.setupChatAuth();
+    } else if (chatBlocked) {
+      this.setState({
+        displayChat: false,
+        chatDisabled: true,
+      })
     }
-    this.hasConfiguredChat = true;
     
+    this.hasConfiguredChat = true;
+
     this.setState({
       configData: {
         ...data,
@@ -512,19 +521,23 @@ export default class App extends Component {
   }
 
   handleWebsocketMessage(e) {
-    console.log(e, this.isRegistering);
-    if (e.type === 'ERROR_NEEDS_REGISTRATION' && !this.isRegistering) {
+    if (e.type === 'ERROR_USER_DISABLED') {
+      // User has been actively disabled on the backend. Turn off chat for them.
+      this.handleBlockedChat();
+    } else if (e.type === 'ERROR_NEEDS_REGISTRATION' && !this.isRegistering) {
       // User needs an access token, so start the user auth flow.
       this.state.websocket.shutdown();
       this.setState({websocket: null});
       this.setupChatAuth(true);
-    } else if (e.type === 'ERROR_USER_DISABLED') {
-      // User has been actively disabled on the backend. Turn off chat for them.
-      this.disableChat();
     } else if (e.type === 'ERROR_MAX_CONNECTIONS_EXCEEDED') {
       // Chat server cannot support any more chat clients. Turn off chat for them.
       this.disableChat();
     }
+  }
+
+  handleBlockedChat() {
+    setLocalStorage('owncast_chat_blocked', true);
+    this.disableChat();
   }
 
   disableChat() {
@@ -732,6 +745,7 @@ export default class App extends Component {
                 id="chat-toggle"
                 onClick=${this.handleChatPanelToggle}
                 class="flex cursor-pointer text-center justify-center items-center min-w-12 h-full bg-gray-800 hover:bg-gray-700"
+                style=${{ display: chatDisabled ? 'none' : 'block' }}
               >
                 💬
               </button>
