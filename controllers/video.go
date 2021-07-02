@@ -18,6 +18,11 @@ type variantsResponse struct {
 // GetVideoStreamOutputVariants will return the video variants available.
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
+
+	sort.Slice(outputVariants, func(i, j int) bool {
+		return outputVariants[j].VideoBitrate < outputVariants[i].VideoBitrate
+	})
+
 	result := make([]variantsResponse, len(outputVariants))
 
 	for i, variant := range outputVariants {
@@ -27,10 +32,6 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		}
 		result[i] = variantResponse
 	}
-
-	sort.Slice(result, func(i, j int) bool {
-		return outputVariants[j].VideoBitrate < outputVariants[i].VideoBitrate
-	})
 
 	WriteResponse(w, result)
 }
