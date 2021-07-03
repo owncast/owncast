@@ -74,7 +74,11 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     if (onChange) {
       onChange({
         fieldName: changedFieldName,
-        value: useTrim ? changedValue.trim() : useTrimLead ? changedValue.replace(/^\s+/g,'') : changedValue,
+        value: useTrim
+          ? changedValue.trim()
+          : useTrimLead
+          ? changedValue.replace(/^\s+/g, '')
+          : changedValue,
       });
     }
   };
