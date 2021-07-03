@@ -56,6 +56,8 @@ export const TEXTFIELD_PROPS_SERVER_NAME = {
   placeholder: 'Owncast site name', // like "gothland"
   label: 'Name',
   tip: 'The name of your Owncast server',
+  required: true,
+  useTrimLead: true,
 };
 export const TEXTFIELD_PROPS_STREAM_TITLE = {
   apiPath: API_STREAM_TITLE,

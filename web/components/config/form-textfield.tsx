@@ -29,6 +29,7 @@ export interface TextFieldProps {
   tip?: string;
   type?: string;
   useTrim?: boolean;
+  useTrimLead?: boolean;
   value?: string | number;
   onBlur?: FieldUpdaterFunc;
   onChange?: FieldUpdaterFunc;

@@ -42,6 +42,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     configPath = '',
     initialValue,
     useTrim,
+    useTrimLead,
     ...textFieldProps // rest of props
   } = props;
 
@@ -73,7 +74,7 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
     if (onChange) {
       onChange({
         fieldName: changedFieldName,
-        value: useTrim ? changedValue.trim() : changedValue,
+        value: useTrim ? changedValue.trim() : useTrimLead ? changedValue.replace(/^\s+/g,'') : changedValue,
       });
     }
   };
