@@ -253,7 +253,7 @@ func getUserFromRow(row *sql.Row) *User {
 	var disabledAt *time.Time
 
 	if err := row.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt); err != nil {
-		log.Errorln("error creating single user from result", err)
+		log.Errorln("error fetching single user from row", err)
 		return nil
 	}
 

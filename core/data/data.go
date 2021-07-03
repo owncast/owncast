@@ -46,7 +46,7 @@ func SetupPersistence(file string) error {
 	}
 
 	// db, err := sql.Open("sqlite3", file)
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?cache=shared", file))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s", file))
 	// db.SetMaxOpenConns(1)
 
 	if err != nil {

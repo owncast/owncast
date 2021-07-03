@@ -16,9 +16,22 @@ import (
 
 var _db *sql.DB
 
+const (
+	maxBacklogHours  = 5  // Keep backlog max hours worth of messages
+	maxBacklogNumber = 50 // Keep backlog max number of messages
+)
+
 func setupPersistence() {
 	_db = data.GetDatabase()
 	createTable()
+
+	chatDataPruner := time.NewTicker(5 * time.Minute)
+	go func() {
+		for range chatDataPruner.C {
+			runPruner()
+		}
+	}()
+
 }
 
 func createTable() {
@@ -112,14 +125,14 @@ func getChat(query string) []events.UserMessageEvent {
 }
 
 func GetChatModerationHistory() []events.UserMessageEvent {
-	// Get all messages sent within the past 5hrs
-	var query = "SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') ORDER BY timestamp desc"
+	// Get all messages regardless of visibility
+	var query = "SELECT * FROM messages ORDER BY timestamp desc"
 	return getChat(query)
 }
 
 func GetChatHistory() []events.UserMessageEvent {
-	// Get all visible messages sent within the past 5hrs, max 50
-	var query = "SELECT * FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND hidden_at IS NULL ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc"
+	// Get all visible messages
+	var query = fmt.Sprintf("SELECT * FROM (SELECT * FROM messages WHERE hidden_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
 	return getChat(query)
 }
 
@@ -218,4 +231,29 @@ func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 			Body:          body,
 		},
 	}, nil
+}
+
+// Only keep recent messages so we don't keep more chat data than needed
+// for privacy and efficiency reasons.
+func runPruner() {
+	deleteStatement := fmt.Sprintf("DELETE FROM messages WHERE timestamp >= datetime('now','-%d Hour')", maxBacklogHours)
+	tx, err := _db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt, err := tx.Prepare(deleteStatement)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = tx.Commit()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
