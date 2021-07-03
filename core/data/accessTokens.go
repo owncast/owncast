@@ -90,13 +90,13 @@ func DeleteToken(token string) error {
 	return nil
 }
 
-// DoesTokenSupportScope will determine if a specific token has access to perform a scoped action.
-func DoesTokenSupportScope(token string, scope string) (bool, error) {
+// GetExternalIntegrationForAccessTokenAndScope will determine if a specific token has access to perform a scoped action.
+func GetExternalIntegrationForAccessTokenAndScope(token string, scope string) (*models.ExternalIntegration, error) {
 	// This will split the scopes from comma separated to individual rows
 	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
 	// backends we need to support other methods.
-	var query = `SELECT count(*) FROM (
+	var query = `SELECT name FROM (
 		WITH RECURSIVE split(token, scope, rest) AS (
 		  SELECT token, '', scopes || ',' FROM access_tokens
 		   UNION ALL
@@ -109,18 +109,43 @@ func DoesTokenSupportScope(token string, scope string) (bool, error) {
 		  FROM split 
 		 WHERE scope <> ''
 		 ORDER BY token, scope
-	  ) AS token WHERE token.token = ? AND token.scope = ?;`
+	  ) AS token INNER JOIN access_tokens WHERE token.token = ? AND token.scope = ?`
 
 	row := _db.QueryRow(query, token, scope)
 
-	var count = 0
-	err := row.Scan(&count)
+	var name string
+	err := row.Scan(&name)
+	if err != nil {
+		log.Errorln(err)
+		return nil, err
+	}
 
-	return count > 0, err
+	integration := models.ExternalIntegration{
+		Name:        name,
+		AccessToken: token,
+	}
+
+	return &integration, err
 }
 
-// GetAccessTokens will return all access tokens.
-func GetAccessTokens() ([]models.AccessToken, error) { //nolint
+// GetIntegrationNameForAccessToken will return the integration name associated with a specific access token.
+func GetIntegrationNameForAccessToken(token string) *string {
+	query := "SELECT name FROM access_tokens WHERE token IS ?"
+	row := _db.QueryRow(query, token)
+
+	var name string
+	err := row.Scan(&name)
+
+	if err != nil {
+		log.Warnln(err)
+		return nil
+	}
+
+	return &name
+}
+
+// GetIntegrationAccessTokens will return all access tokens.
+func GetIntegrationAccessTokens() ([]models.AccessToken, error) { //nolint
 	tokens := make([]models.AccessToken, 0)
 
 	// Get all messages sent within the past day
@@ -173,8 +198,8 @@ func GetAccessTokens() ([]models.AccessToken, error) { //nolint
 	return tokens, nil
 }
 
-// SetAccessTokenAsUsed will update the last used timestamp for a token.
-func SetAccessTokenAsUsed(token string) error {
+// SetIntegrationAccessTokenAsUsed will update the last used timestamp for a token.
+func SetIntegrationAccessTokenAsUsed(token string) error {
 	tx, err := _db.Begin()
 	if err != nil {
 		return err

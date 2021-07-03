@@ -181,7 +181,6 @@ func GetUserByToken(token string) *User {
 		return user
 	}
 
-	// JOIN w/ user history table
 	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token = ?"
 	fmt.Println("SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token =", token)
 	row := _db.QueryRow(query, token)
@@ -195,7 +194,6 @@ func GetUserById(id string) *User {
 		return user
 	}
 
-	// JOIN w/ user history table
 	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE id = ?"
 	row := _db.QueryRow(query, id)
 	if row == nil {

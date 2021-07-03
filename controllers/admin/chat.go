@@ -7,13 +7,20 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
+
+// ExternalUpdateMessageVisibility updates an array of message IDs to have the same visiblity.
+func ExternalUpdateMessageVisibility(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+	UpdateMessageVisibility(w, r)
+}
 
 // UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +105,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 // SendSystemMessage will send an official "SYSTEM" message to chat on behalf of your server.
-func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
+func SendSystemMessage(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var message events.SystemMessageEvent
@@ -107,65 +114,59 @@ func SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// message.MessageType = models.SystemMessageSent
-	// message.Author = data.GetServerName()
-	// message.ClientID = "owncast-server"
-	// message.ID = shortid.MustGenerate()
-	// message.Visible = true
-
-	// message.SetDefaults()
-	// message.RenderBody()
-
 	if err := chat.SendSystemMessage(message.Body, false); err != nil {
 		controllers.BadRequestHandler(w, err)
 	}
-	// if err := chat.Broadcast(message); err != nil {
-	// 	controllers.BadRequestHandler(w, err)
-	// 	return
-	// }
-
-	// if err := core.SendMessageToChat(message); err != nil {
-	// 	controllers.BadRequestHandler(w, err)
-	// 	return
-	// }
 
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
 // SendUserMessage will send a message to chat on behalf of a user. *Depreciated*
-func SendUserMessage(w http.ResponseWriter, r *http.Request) {
+func SendUserMessage(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	controllers.BadRequestHandler(w, errors.New("no longer supported"))
+	controllers.BadRequestHandler(w, errors.New("no longer supported. see /api/integrations/chat/send"))
+}
 
-	// var message models.ChatEvent
-	// if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
-	// 	controllers.InternalErrorHandler(w, err)
-	// 	return
-	// }
+func SendIntegrationChatMessage(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-	// if !message.Valid() {
-	// 	controllers.BadRequestHandler(w, errors.New("invalid chat message; id, author, and body are required"))
-	// 	return
-	// }
+	name := integration.Name
 
-	// message.MessageType = models.MessageSent
-	// message.ClientID = "external-request"
-	// message.ID = shortid.MustGenerate()
-	// message.Visible = true
+	if name == "" {
+		controllers.BadRequestHandler(w, errors.New("unknown integration for provided access token"))
+		return
+	}
 
-	// message.SetDefaults()
-	// message.RenderAndSanitizeMessageBody()
+	var event events.UserMessageEvent
+	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
+		controllers.InternalErrorHandler(w, err)
+		return
+	}
 
-	// if err := core.SendMessageToChat(message); err != nil {
-	// 	controllers.BadRequestHandler(w, err)
-	// 	return
-	// }
+	if event.Empty() {
+		controllers.BadRequestHandler(w, errors.New("invalid message"))
+		return
+	}
 
-	// controllers.WriteSimpleResponse(w, true, "sent")
+	event.User = &user.User{
+		Id:           name,
+		DisplayName:  name,
+		DisplayColor: 200,
+		CreatedAt:    time.Now(),
+	}
+	event.SetDefaults()
+	event.RenderBody()
+
+	if err := chat.Broadcast(&event); err != nil {
+		controllers.BadRequestHandler(w, err)
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
 // SendChatAction will send a generic chat action.
-func SendChatAction(w http.ResponseWriter, r *http.Request) {
+func SendChatAction(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var message events.SystemActionEvent
@@ -174,17 +175,8 @@ func SendChatAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// message.MessageType = models.ChatActionSent
-	// message.ClientID = "external-request"
-	// message.ID = shortid.MustGenerate()
-	// message.Visible = true
-
-	// if message.Author != "" {
-	// 	message.Body = fmt.Sprintf("%s %s", message.Author, message.Body)
-	// }
-
-	// message.SetDefaults()
-	// message.RenderAndSanitizeMessageBody()
+	message.SetDefaults()
+	message.RenderBody()
 
 	if err := chat.SendSystemAction(message.Body, false); err != nil {
 		controllers.BadRequestHandler(w, err)

@@ -33,10 +33,12 @@ func GetClients() []*ChatClient {
 }
 
 func SendSystemMessage(text string, ephemeral bool) error {
+	// TODO: Create this
 	return nil
 }
 
 func SendSystemAction(text string, ephemeral bool) error {
+	// TODO: Create this
 	return nil
 }
 

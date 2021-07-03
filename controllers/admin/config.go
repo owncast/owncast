@@ -71,6 +71,10 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+func ExternalSetStreamTitle(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+	SetStreamTitle(w, r)
+}
+
 func sendSystemChatAction(messageText string, ephemeral bool) {
 	// message := models.ChatEvent{}
 	// message.Body = messageText

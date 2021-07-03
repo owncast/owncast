@@ -7,9 +7,15 @@ import (
 
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
+
+// ExternalGetChatMessages gets all of the chat messages.
+func ExternalGetChatMessages(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+	GetChatEmbed(w, r)
+}
 
 // GetChatMessages gets all of the chat messages.
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {

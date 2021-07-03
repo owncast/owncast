@@ -7,8 +7,11 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
+
+type ExternalAccessTokenHandlerFunc func(models.ExternalIntegration, http.ResponseWriter, *http.Request)
 
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
@@ -52,7 +55,7 @@ func accessDenied(w http.ResponseWriter) {
 }
 
 // RequireAccessToken will validate a 3rd party access token.
-func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc {
+func RequireAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
 		token := strings.Join(authHeader, "")
@@ -63,16 +66,15 @@ func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc
 			return
 		}
 
-		if accepted, err := data.DoesTokenSupportScope(token, scope); err != nil {
-			return
-		} else if !accepted {
+		integration, err := data.GetExternalIntegrationForAccessTokenAndScope(token, scope)
+		if integration == nil || err != nil {
 			accessDenied(w)
 			return
 		}
 
-		handler(w, r)
+		handler(*integration, w, r)
 
-		if err := data.SetAccessTokenAsUsed(token); err != nil {
+		if err := data.SetIntegrationAccessTokenAsUsed(token); err != nil {
 			log.Debugln(token, "not found when updating last_used timestamp")
 		}
 	})

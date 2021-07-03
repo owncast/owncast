@@ -148,23 +148,26 @@ func Start() error {
 	// Send a system message to chat
 	http.HandleFunc("/api/integrations/chat/system", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
-	// Send a user message to chat
+	// Send a user message to chat *NO LONGER SUPPORTED
 	http.HandleFunc("/api/integrations/chat/user", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendUserMessage))
+
+	// Send a message to chat as a specific 3rd party bot/integration based on its access token
+	http.HandleFunc("/api/integrations/chat/send", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendIntegrationChatMessage))
 
 	// Send a user action to chat
 	http.HandleFunc("/api/integrations/chat/action", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendChatAction))
 
 	// Hide chat message
-	http.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.UpdateMessageVisibility))
+	http.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility))
 
 	// Stream title
-	http.HandleFunc("/api/integrations/streamtitle", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.SetStreamTitle))
+	http.HandleFunc("/api/integrations/streamtitle", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.ExternalSetStreamTitle))
 
 	// Get chat history
-	http.HandleFunc("/api/integrations/chat", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetChatMessages))
+	http.HandleFunc("/api/integrations/chat", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.ExternalGetChatMessages))
 
 	// Connected clients
-	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetConnectedClients))
+	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.ExternalGetConnectedClients))
 
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))

@@ -61,7 +61,7 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	tokens, err := data.GetAccessTokens()
+	tokens, err := data.GetIntegrationAccessTokens()
 	if err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
