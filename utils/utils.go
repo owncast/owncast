@@ -20,11 +20,6 @@ import (
 	"mvdan.cc/xurls"
 )
 
-// GetTemporaryPipePath gets the temporary path for the streampipe.flv file.
-func GetTemporaryPipePath(identifier string) string {
-	return filepath.Join(os.TempDir(), "streampipe."+identifier)
-}
-
 // DoesFileExists checks if the file exists.
 func DoesFileExists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
