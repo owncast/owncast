@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"os"
-	"syscall"
 	"time"
 
 	"github.com/nareix/joy5/format/flv"
@@ -15,21 +13,20 @@ import (
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 )
 
 var (
 	_hasInboundRTMPConnection = false
 )
 
-var _pipe *os.File
+var _pipe *io.PipeWriter
 var _rtmpConnection net.Conn
 
-var _setStreamAsConnected func()
+var _setStreamAsConnected func(*io.PipeReader)
 var _setBroadcaster func(models.Broadcaster)
 
 // Start starts the rtmp service, listening on specified RTMP port.
-func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster)) {
+func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
@@ -83,27 +80,15 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
+  rtmpOut, rtmpIn := io.Pipe()
+  _pipe = rtmpIn
 	log.Infoln("Inbound stream connected.")
-	_setStreamAsConnected()
-
-	pipePath := utils.GetTemporaryPipePath(fmt.Sprint(data.GetRTMPPortNumber()))
-	if !utils.DoesFileExists(pipePath) {
-		err := syscall.Mkfifo(pipePath, 0666)
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}
+	_setStreamAsConnected(rtmpOut)
 
 	_hasInboundRTMPConnection = true
 	_rtmpConnection = nc
 
-	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
-	_pipe = f
-	if err != nil {
-		log.Fatalln("unable to open", pipePath, "and will exit")
-	}
-
-	w := flv.NewMuxer(f)
+	w := flv.NewMuxer(rtmpIn)
 
 	for {
 		if !_hasInboundRTMPConnection {
