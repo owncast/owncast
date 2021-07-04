@@ -186,7 +186,6 @@ export default class Chat extends Component {
 
   // handle any incoming message
   handleMessage(message) {
-    console.log(message)
     const {
       id: messageId,
       type: messageType,

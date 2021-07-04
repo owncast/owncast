@@ -1,7 +1,10 @@
 package user
 
 func execSQL(schemaSQL string) error {
-	stmt, err := _db.Prepare(schemaSQL)
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	stmt, err := _datastore.DB.Prepare(schemaSQL)
 	if err != nil {
 		return err
 	}

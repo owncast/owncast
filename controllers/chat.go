@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/owncast/owncast/core/chat"
@@ -74,7 +73,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		DisplayName: newUser.DisplayName,
 	}
 
-	fmt.Println("Registering user....", newUser.AccessToken)
+	log.Debugln("Registering user....", newUser.AccessToken)
 
 	WriteResponse(w, response)
 }

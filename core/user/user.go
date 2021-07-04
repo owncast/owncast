@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
-	"sync"
 	"time"
 
 	"github.com/owncast/owncast/core/data"
@@ -14,17 +13,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _db *sql.DB
-var _dbLock sync.Mutex
+var _datastore *data.Datastore
 
 type User struct {
-	Id              string                  `json:"id"`
-	AccessToken     string                  `json:"-"`
-	DisplayName     string                  `json:"displayName"`
-	DisplayColor    int                     `json:"displayColor"`
-	CreatedAt       time.Time               `json:"createdAt"`
-	UsernameHistory []*usernameHistoryEntry `json:"usernameHistory"`
-	DisabledAt      *time.Time              `json:"disabledAt,omitempty"`
+	Id           string     `json:"id"`
+	AccessToken  string     `json:"-"`
+	DisplayName  string     `json:"displayName"`
+	DisplayColor int        `json:"displayColor"`
+	CreatedAt    time.Time  `json:"createdAt"`
+	DisabledAt   *time.Time `json:"disabledAt,omitempty"`
 }
 
 func (u *User) IsEnabled() bool {
@@ -32,9 +29,8 @@ func (u *User) IsEnabled() bool {
 }
 
 func SetupUsers() {
-	_db = data.GetDatabase()
+	_datastore = data.GetDatastore()
 	createUsersTable()
-	createUsernameHistoryTable()
 }
 
 func createUsersTable() {
@@ -46,7 +42,7 @@ func createUsersTable() {
 		"display_name" TEXT NOT NULL,
 		"display_color" NUMBER NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		"disabled_at" TIMESTAMP 
+		"disabled_at" TIMESTAMP
 	);`
 
 	if err := execSQL(createTableSQL); err != nil {
@@ -55,9 +51,6 @@ func createUsersTable() {
 }
 
 func CreateAnonymousUser(username string) (error, *User) {
-	_dbLock.Lock()
-	defer _dbLock.Unlock()
-
 	id := shortid.MustGenerate()
 	accessToken, err := utils.GenerateAccessToken()
 	if err != nil {
@@ -90,13 +83,16 @@ func CreateAnonymousUser(username string) (error, *User) {
 
 	setCachedIdUser(id, user)
 	setCachedAccessTokenUser(accessToken, user)
-	addNameHistory(id, displayName)
+	// addNameHistory(id, displayName)
 
 	return nil, user
 }
 
 func ChangeUsername(userId string, username string) {
-	tx, err := _db.Begin()
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	tx, err := _datastore.DB.Begin()
 
 	if err != nil {
 		panic(err)
@@ -119,11 +115,14 @@ func ChangeUsername(userId string, username string) {
 		log.Errorln("error changing display name of user", userId, err)
 	}
 
-	addNameHistory(userId, username)
+	// addNameHistory(userId, username)
 }
 
 func create(user *User) error {
-	tx, err := _db.Begin()
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	tx, err := _datastore.DB.Begin()
 
 	if err != nil {
 		panic(err)
@@ -146,7 +145,10 @@ func create(user *User) error {
 }
 
 func SetEnabled(userID string, enabled bool) error {
-	tx, err := _db.Begin()
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	tx, err := _datastore.DB.Begin()
 
 	if err != nil {
 		log.Fatal(err)
@@ -181,9 +183,12 @@ func GetUserByToken(token string) *User {
 		return user
 	}
 
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
 	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token = ?"
 	fmt.Println("SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token =", token)
-	row := _db.QueryRow(query, token)
+	row := _datastore.DB.QueryRow(query, token)
 
 	return getUserFromRow(row)
 }
@@ -194,8 +199,11 @@ func GetUserById(id string) *User {
 		return user
 	}
 
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
 	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE id = ?"
-	row := _db.QueryRow(query, id)
+	row := _datastore.DB.QueryRow(query, id)
 	if row == nil {
 		log.Errorln(row)
 		return nil
@@ -207,7 +215,7 @@ func GetUserById(id string) *User {
 func GetDisabledUsers() []*User {
 	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE disabled_at IS NOT NULL"
 
-	rows, err := _db.Query(query)
+	rows, err := _datastore.DB.Query(query)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -233,18 +241,19 @@ func getUsersFromRows(rows *sql.Rows) []*User {
 		}
 
 		user := &User{
-			Id:              id,
-			DisplayName:     displayName,
-			DisplayColor:    displayColor,
-			CreatedAt:       createdAt,
-			DisabledAt:      disabledAt,
-			UsernameHistory: getUsernameHistory(id),
+			Id:           id,
+			DisplayName:  displayName,
+			DisplayColor: displayColor,
+			CreatedAt:    createdAt,
+			DisabledAt:   disabledAt,
+			// UsernameHistory: GetUsernameHistory(id),
 		}
 		users = append(users, user)
 	}
 
 	return users
 }
+
 func getUserFromRow(row *sql.Row) *User {
 	var id string
 	var displayName string
@@ -258,11 +267,11 @@ func getUserFromRow(row *sql.Row) *User {
 	}
 
 	return &User{
-		Id:              id,
-		DisplayName:     displayName,
-		DisplayColor:    displayColor,
-		CreatedAt:       createdAt,
-		DisabledAt:      disabledAt,
-		UsernameHistory: getUsernameHistory(id),
+		Id:           id,
+		DisplayName:  displayName,
+		DisplayColor: displayColor,
+		CreatedAt:    createdAt,
+		DisabledAt:   disabledAt,
+		// UsernameHistory: GetUsernameHistory(id),
 	}
 }

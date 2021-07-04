@@ -85,7 +85,7 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 	}
 	s.mu.Unlock()
 
-	fmt.Println("Adding client", client.id)
+	log.Traceln("Adding client", client.id, "total count:", len(s.clients))
 
 	go client.writePump()
 	go client.readPump()
@@ -106,7 +106,7 @@ func (s *ChatServer) ClientClosed(c *ChatClient) {
 	c.close()
 
 	if _, ok := s.clients[c.id]; ok {
-		fmt.Println("Deleting", c.id)
+		log.Println("Deleting", c.id)
 		delete(s.clients, c.id)
 	}
 }
