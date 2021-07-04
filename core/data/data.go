@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	schemaVersion = 0
+	schemaVersion = 1
 )
 
 var _db *sql.DB
@@ -109,13 +109,14 @@ func SetupPersistence(file string) error {
 }
 
 func migrateDatabase(db *sql.DB, from, to int) error {
-	log.Printf("Migrating database from version %d to %d\n", from, to)
+	log.Printf("Migrating database from version %d to %d", from, to)
 	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
 	utils.Backup(db, dbBackupFile)
 	for v := from; v < to; v++ {
 		switch v {
 		case 0:
-			log.Printf("Migration step from %d to %d\n", v, v+1)
+			log.Printf("Migration step from %d to %d", v, v+1)
+			migrateToSchema1(db)
 		default:
 			panic("missing database migration step")
 		}
