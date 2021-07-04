@@ -2,13 +2,18 @@ package data
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	dbFile := "../../test/test.db"
+	dbFile, err := ioutil.TempFile(os.TempDir(), "owncast-test-db.db")
+	if err != nil {
+		panic(err)
+	}
 
-	SetupPersistence(dbFile)
+	SetupPersistence(dbFile.Name())
 	m.Run()
 }
 
