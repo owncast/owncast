@@ -104,8 +104,10 @@ func getChat(query string) []events.UserMessageEvent {
 		var userDisplayColor int
 		var userCreatedAt time.Time
 		var userDisabledAt *time.Time
+		var previousUsernames string
+		var userNameChangedAt *time.Time
 
-		err = rows.Scan(&id, &userId, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt)
+		err = rows.Scan(&id, &userId, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt, &previousUsernames, &userNameChangedAt)
 		if err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
@@ -113,13 +115,14 @@ func getChat(query string) []events.UserMessageEvent {
 		}
 
 		user := user.User{
-			Id:           userId,
-			AccessToken:  "",
-			DisplayName:  userDisplayName,
-			DisplayColor: userDisplayColor,
-			CreatedAt:    userCreatedAt,
-			// UsernameHistory: user.Ge,
-			DisabledAt: userDisabledAt,
+			Id:            userId,
+			AccessToken:   "",
+			DisplayName:   userDisplayName,
+			DisplayColor:  userDisplayColor,
+			CreatedAt:     userCreatedAt,
+			DisabledAt:    userDisabledAt,
+			NameChangedAt: userNameChangedAt,
+			PreviousNames: strings.Split(previousUsernames, ","),
 		}
 
 		message := events.UserMessageEvent{
@@ -146,13 +149,13 @@ func getChat(query string) []events.UserMessageEvent {
 
 func GetChatModerationHistory() []events.UserMessageEvent {
 	// Get all messages regardless of visibility
-	var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
+	var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
 	return getChat(query)
 }
 
 func GetChatHistory() []events.UserMessageEvent {
 	// Get all visible messages
-	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at FROM (SELECT * FROM messages INNER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
+	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (SELECT * FROM messages INNER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
 	return getChat(query)
 }
 
@@ -161,7 +164,7 @@ func GetChatHistory() []events.UserMessageEvent {
 func SetMessageVisibilityForUserId(userID string, visible bool) error {
 	// Get a list of IDs from this user within the 5hr window to send to the connected clients to hide
 	ids := make([]string, 0)
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
+	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
 	messages := getChat(query)
 
 	if len(messages) == 0 {

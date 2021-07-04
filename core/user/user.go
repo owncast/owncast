@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/owncast/owncast/core/data"
@@ -16,12 +17,14 @@ import (
 var _datastore *data.Datastore
 
 type User struct {
-	Id           string     `json:"id"`
-	AccessToken  string     `json:"-"`
-	DisplayName  string     `json:"displayName"`
-	DisplayColor int        `json:"displayColor"`
-	CreatedAt    time.Time  `json:"createdAt"`
-	DisabledAt   *time.Time `json:"disabledAt,omitempty"`
+	Id            string     `json:"id"`
+	AccessToken   string     `json:"-"`
+	DisplayName   string     `json:"displayName"`
+	DisplayColor  int        `json:"displayColor"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	DisabledAt    *time.Time `json:"disabledAt,omitempty"`
+	PreviousNames []string   `json:"previousNames"`
+	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
 }
 
 func (u *User) IsEnabled() bool {
@@ -42,7 +45,9 @@ func createUsersTable() {
 		"display_name" TEXT NOT NULL,
 		"display_color" NUMBER NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		"disabled_at" TIMESTAMP
+		"disabled_at" TIMESTAMP,
+		"previous_names" TEXT,
+		"namechanged_at" TIMESTAMP
 	);`
 
 	if err := execSQL(createTableSQL); err != nil {
@@ -83,7 +88,6 @@ func CreateAnonymousUser(username string) (error, *User) {
 
 	setCachedIdUser(id, user)
 	setCachedAccessTokenUser(accessToken, user)
-	// addNameHistory(id, displayName)
 
 	return nil, user
 }
@@ -99,14 +103,14 @@ func ChangeUsername(userId string, username string) {
 	}
 	defer tx.Rollback()
 
-	stmt, err := tx.Prepare("UPDATE users SET display_name = ? WHERE id = ?")
+	stmt, err := tx.Prepare("UPDATE users SET display_name = ?, previous_names = previous_names || ?, namechanged_at = ? WHERE id = ?")
 
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(username, userId)
+	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userId)
 	if err != nil {
 		panic(err)
 	}
@@ -114,8 +118,6 @@ func ChangeUsername(userId string, username string) {
 	if err := tx.Commit(); err != nil {
 		log.Errorln("error changing display name of user", userId, err)
 	}
-
-	// addNameHistory(userId, username)
 }
 
 func create(user *User) error {
@@ -129,14 +131,14 @@ func create(user *User) error {
 	}
 	defer tx.Rollback()
 
-	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, created_at) values(?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
 
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.Id, user.AccessToken, user.DisplayName, user.DisplayColor, user.CreatedAt)
+	_, err = stmt.Exec(user.Id, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +151,6 @@ func SetEnabled(userID string, enabled bool) error {
 	defer _datastore.DbLock.Unlock()
 
 	tx, err := _datastore.DB.Begin()
-
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -186,8 +187,8 @@ func GetUserByToken(token string) *User {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
-	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token = ?"
-	fmt.Println("SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE access_token =", token)
+	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE access_token = ?"
+	fmt.Println("SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE access_token =", token)
 	row := _datastore.DB.QueryRow(query, token)
 
 	return getUserFromRow(row)
@@ -202,7 +203,7 @@ func GetUserById(id string) *User {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
-	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE id = ?"
+	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE id = ?"
 	row := _datastore.DB.QueryRow(query, id)
 	if row == nil {
 		log.Errorln(row)
@@ -213,7 +214,7 @@ func GetUserById(id string) *User {
 
 // GetDisabledUsers will return back all the currently disabled users.
 func GetDisabledUsers() []*User {
-	query := "SELECT id, display_name, display_color, created_at, disabled_at FROM users WHERE disabled_at IS NOT NULL"
+	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE disabled_at IS NOT NULL"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
@@ -234,19 +235,22 @@ func getUsersFromRows(rows *sql.Rows) []*User {
 		var displayColor int
 		var createdAt time.Time
 		var disabledAt *time.Time
+		var previousUsernames string
+		var userNameChangedAt *time.Time
 
-		if err := rows.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt); err != nil {
+		if err := rows.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt, &previousUsernames, &userNameChangedAt); err != nil {
 			log.Errorln("error creating collection of users from results", err)
 			return nil
 		}
 
 		user := &User{
-			Id:           id,
-			DisplayName:  displayName,
-			DisplayColor: displayColor,
-			CreatedAt:    createdAt,
-			DisabledAt:   disabledAt,
-			// UsernameHistory: GetUsernameHistory(id),
+			Id:            id,
+			DisplayName:   displayName,
+			DisplayColor:  displayColor,
+			CreatedAt:     createdAt,
+			DisabledAt:    disabledAt,
+			PreviousNames: strings.Split(previousUsernames, ","),
+			NameChangedAt: userNameChangedAt,
 		}
 		users = append(users, user)
 	}
@@ -260,18 +264,21 @@ func getUserFromRow(row *sql.Row) *User {
 	var displayColor int
 	var createdAt time.Time
 	var disabledAt *time.Time
+	var previousUsernames string
+	var userNameChangedAt *time.Time
 
-	if err := row.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt); err != nil {
+	if err := row.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt, &previousUsernames, &userNameChangedAt); err != nil {
 		log.Errorln("error fetching single user from row", err)
 		return nil
 	}
 
 	return &User{
-		Id:           id,
-		DisplayName:  displayName,
-		DisplayColor: displayColor,
-		CreatedAt:    createdAt,
-		DisabledAt:   disabledAt,
-		// UsernameHistory: GetUsernameHistory(id),
+		Id:            id,
+		DisplayName:   displayName,
+		DisplayColor:  displayColor,
+		CreatedAt:     createdAt,
+		DisabledAt:    disabledAt,
+		PreviousNames: strings.Split(previousUsernames, ","),
+		NameChangedAt: userNameChangedAt,
 	}
 }
