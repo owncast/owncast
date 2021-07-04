@@ -167,7 +167,6 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 
 // Broadcast sends message to all connected clients.
 func (s *ChatServer) Broadcast(payload events.EventPayload) error {
-	// fmt.Println("sending", payload)
 	data, err := json.Marshal(payload)
 	if err != nil {
 		return err

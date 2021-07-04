@@ -33,12 +33,31 @@ func GetClients() []*ChatClient {
 }
 
 func SendSystemMessage(text string, ephemeral bool) error {
-	// TODO: Create this
+	message := events.SystemMessageEvent{
+		MessageEvent: events.MessageEvent{
+			Body: text,
+		},
+	}
+	message.SetDefaults()
+	message.RenderBody()
+
+	Broadcast(&message)
+
 	return nil
 }
 
 func SendSystemAction(text string, ephemeral bool) error {
-	// TODO: Create this
+	message := events.ActionEvent{
+		MessageEvent: events.MessageEvent{
+			Body: text,
+		},
+	}
+
+	message.SetDefaults()
+	message.RenderBody()
+
+	Broadcast(&message)
+
 	return nil
 }
 

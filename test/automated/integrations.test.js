@@ -49,8 +49,8 @@ test('check that webhook was deleted', (done) => {
 });
 
 test('create access token', async (done) => {
-    const name = 'test token';
-    const scopes = ['CAN_SEND_SYSTEM_MESSAGES'];
+    const name = 'Automated integration test';
+    const scopes = ['CAN_SEND_SYSTEM_MESSAGES', 'CAN_SEND_MESSAGES'];
     const res = await sendIntegrationsChangePayload('accesstokens/create', {
         name: name,
         scopes: scopes, 
@@ -75,8 +75,24 @@ test('check access tokens', (done) => {
 });
 
 test('send a system message using access token', async (done) => {
-    const payload = {body: 'test 1234'};
+    const payload = {body: 'This is a test system message from the automated integration test'};
     const res = await request.post('/api/integrations/chat/system')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send(payload).expect(200);
+    done();
+});
+
+test('send an external integration message using access token', async (done) => {
+    const payload = {body: 'This is a test external message from the automated integration test'};
+    const res = await request.post('/api/integrations/chat/send')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send(payload).expect(200);
+    done();
+});
+
+test('send an external integration action using access token', async (done) => {
+    const payload = {body: 'This is a test external action from the automated integration test'};
+    const res = await request.post('/api/integrations/chat/action')
         .set('Authorization', 'Bearer ' + accessToken)
         .send(payload).expect(200);
     done();
