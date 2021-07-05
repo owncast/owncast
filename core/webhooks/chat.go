@@ -11,7 +11,7 @@ func SendChatEvent(chatEvent *events.UserMessageEvent) {
 		EventData: &WebhookChatMessage{
 			User:      chatEvent.User,
 			Body:      chatEvent.Body,
-			RawBody:   chatEvent.Body,
+			RawBody:   chatEvent.RawBody,
 			ID:        chatEvent.Id,
 			Visible:   chatEvent.HiddenAt == nil,
 			Timestamp: &chatEvent.Timestamp,
