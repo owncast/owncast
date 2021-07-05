@@ -27,13 +27,11 @@ export default class ChatMessageView extends Component {
   }
 
   async componentDidMount() {
-    const { message } = this.props;
-    const { type, user, body } = message;
-    const { displayName } = user;
+    const { message, username } = this.props;
+    const { body } = message;
   
-    if (message && displayName) {
-      const { body } = message;
-      const formattedMessage = await formatMessageText(body, displayName);
+    if (message && username) {
+      const formattedMessage = await formatMessageText(body, username);
       this.setState({
         formattedMessage,
       });
@@ -92,7 +90,7 @@ function getChatMessageClassString() {
   return 'message flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm';
 }
 
-export async function formatMessageText(message, username) {
+export async function formatMessageText(message, username) {  
   let formattedText = getMessageWithEmbeds(message);
   formattedText = convertToMarkup(formattedText);
   return await highlightUsername(formattedText, username);
