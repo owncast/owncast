@@ -1,10 +1,10 @@
 package chat
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/owncast/owncast/core/chat/events"
+	log "github.com/sirupsen/logrus"
 )
 
 func Start() error {
@@ -14,7 +14,7 @@ func Start() error {
 
 	go _server.Run()
 
-	fmt.Println("Chat server started with max connection count of", _server.maxClientCount)
+	log.Traceln("Chat server started with max connection count of", _server.maxClientCount)
 
 	return nil
 }

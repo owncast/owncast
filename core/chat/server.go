@@ -41,7 +41,7 @@ func NewChat() *ChatServer {
 		outbound:       make(chan []byte),
 		inbound:        make(chan chatClientEvent),
 		unregister:     make(chan *ChatClient),
-		maxClientCount: getMaxConnectionCount(),
+		maxClientCount: handleMaxConnectionCount(),
 	}
 
 	return server
