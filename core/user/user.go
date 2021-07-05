@@ -186,9 +186,9 @@ func GetUserById(id string) *User {
 	return getUserFromRow(row)
 }
 
-// GetDisabledUsers will return back all the currently disabled users.
+// GetDisabledUsers will return back all the currently disabled users that are not API users.
 func GetDisabledUsers() []*User {
-	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE disabled_at IS NOT NULL"
+	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE disabled_at IS NOT NULL AND type IS NOT 'API'"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
