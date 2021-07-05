@@ -33,12 +33,13 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 		}
 	}
 
+	savedUser := user.GetUserByToken(eventData.client.accessToken)
+	oldName := savedUser.DisplayName
+
 	// Save the new name
 	user.ChangeUsername(eventData.client.User.Id, receivedEvent.NewName)
-	savedUser := user.GetUserByToken(eventData.client.accessToken)
 
 	// Send chat event letting everyone about about the name change
-	oldName := savedUser.DisplayName
 	savedUser.DisplayName = receivedEvent.NewName
 
 	// Update the connected clients associated user with the new name
