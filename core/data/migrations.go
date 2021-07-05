@@ -25,27 +25,9 @@ func migrateToSchema1(db *sql.DB) {
 	}
 
 	// Recreate it
-	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
-		"id" string NOT NULL PRIMARY KEY,
-		"user_id" INTEGER,
-		"body" TEXT,
-		"eventType" TEXT,
-		"hidden_at" DATETIME,
-		"timestamp" DATETIME
-	);`
-
-	stmt, err = db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln(err)
-	}
+	createUsersTable(db)
 
 	// Migrate access tokens to become chat users
-
 	type oldAccessToken struct {
 		accessToken string
 		displayName string

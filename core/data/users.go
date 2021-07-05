@@ -1,8 +1,12 @@
 package data
 
-import log "github.com/sirupsen/logrus"
+import (
+	"database/sql"
 
-func createUsersTable() {
+	log "github.com/sirupsen/logrus"
+)
+
+func createUsersTable(db *sql.DB) {
 	log.Traceln("Creating users table...")
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS users (
@@ -19,7 +23,7 @@ func createUsersTable() {
 		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 
-	stmt, err := _db.Prepare(createTableSQL)
+	stmt, err := db.Prepare(createTableSQL)
 	if err != nil {
 		log.Fatal(err)
 	}

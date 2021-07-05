@@ -51,7 +51,7 @@ func SetupPersistence(file string) error {
 	_db = db
 
 	createWebhooksTable()
-	createUsersTable()
+	createUsersTable(db)
 
 	if err != nil {
 		return err
