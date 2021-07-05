@@ -11,7 +11,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
 )
@@ -146,28 +146,28 @@ func Start() error {
 	http.HandleFunc("/api/admin/accesstokens/create", middleware.RequireAdminAuth(admin.CreateAccessToken))
 
 	// Send a system message to chat
-	http.HandleFunc("/api/integrations/chat/system", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendSystemMessage))
+	http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
 	// Send a user message to chat *NO LONGER SUPPORTED
-	http.HandleFunc("/api/integrations/chat/user", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendUserMessage))
+	http.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendUserMessages, admin.SendUserMessage))
 
 	// Send a message to chat as a specific 3rd party bot/integration based on its access token
-	http.HandleFunc("/api/integrations/chat/send", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendIntegrationChatMessage))
+	http.HandleFunc("/api/integrations/chat/send", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendUserMessages, admin.SendIntegrationChatMessage))
 
 	// Send a user action to chat
-	http.HandleFunc("/api/integrations/chat/action", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendChatAction))
+	http.HandleFunc("/api/integrations/chat/action", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendChatAction))
 
 	// Hide chat message
-	http.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility))
+	http.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility))
 
 	// Stream title
-	http.HandleFunc("/api/integrations/streamtitle", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.ExternalSetStreamTitle))
+	http.HandleFunc("/api/integrations/streamtitle", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalSetStreamTitle))
 
 	// Get chat history
-	http.HandleFunc("/api/integrations/chat", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.ExternalGetChatMessages))
+	http.HandleFunc("/api/integrations/chat", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetChatMessages))
 
 	// Connected clients
-	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.ExternalGetConnectedClients))
+	http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetConnectedClients))
 
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))

@@ -43,6 +43,10 @@ func SendSystemMessage(text string, ephemeral bool) error {
 
 	Broadcast(&message)
 
+	if !ephemeral {
+		saveEvent(message.Id, "system", message.Body, message.GetMessageType(), nil, message.Timestamp)
+	}
+
 	return nil
 }
 
@@ -57,6 +61,10 @@ func SendSystemAction(text string, ephemeral bool) error {
 	message.RenderBody()
 
 	Broadcast(&message)
+
+	if !ephemeral {
+		saveEvent(message.Id, "action", message.Body, message.GetMessageType(), nil, message.Timestamp)
+	}
 
 	return nil
 }
@@ -74,16 +82,3 @@ func HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 func DisconnectUser(userID string) {
 	_server.DisconnectUser(userID)
 }
-
-// // GetMessages gets all of the messages.
-// func GetMessages() []events.Event {
-// 	if _server == nil {
-// 		return []events.Event{}
-// 	}
-
-// 	return getChatHistory()
-// }
-
-// func GetModerationChatMessages() []events.Event {
-// 	return getChatModerationHistory()
-// }

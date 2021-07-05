@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -31,7 +30,7 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verify all the scopes provided are valid
-	if !models.HasValidScopes(request.Scopes) {
+	if !user.HasValidScopes(request.Scopes) {
 		controllers.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
 		return
 	}
@@ -42,18 +41,21 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.InsertToken(token, request.Name, request.Scopes); err != nil {
+	color := utils.GenerateRandomDisplayColor()
+
+	if err := user.InsertAPIToken(token, request.Name, color, request.Scopes); err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	controllers.WriteResponse(w, models.AccessToken{
-		Token:     token,
-		Name:      request.Name,
-		Scopes:    request.Scopes,
-		Timestamp: time.Now(),
-		LastUsed:  nil,
+	controllers.WriteResponse(w, user.ExternalIntegration{
+		AccessToken:  token,
+		DisplayName:  request.Name,
+		DisplayColor: color,
+		Scopes:       request.Scopes,
+		CreatedAt:    time.Now(),
+		LastUsedAt:   nil,
 	})
 }
 
@@ -61,7 +63,7 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	tokens, err := data.GetIntegrationAccessTokens()
+	tokens, err := user.GetIntegrationAccessTokens()
 	if err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
@@ -91,7 +93,7 @@ func DeleteAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.DeleteToken(request.Token); err != nil {
+	if err := user.DeleteAPIToken(request.Token); err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}

@@ -22,5 +22,5 @@ func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
 }
 
 func (e *SystemMessageEvent) GetMessageType() EventType {
-	return Event_MessageSent
+	return Event_SystemMessageSent
 }

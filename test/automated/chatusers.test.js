@@ -31,7 +31,8 @@ test('can disable a user', async (done) => {
 
 test('verify user is disabled', async (done) => {
     const response = await request.get('/api/admin/chat/usersdisabled').auth('admin', 'abc123').expect(200);
-    expect(response.body[response.body.length - 1].id).toBe(userId);
+    const tokenCheck = response.body.filter((user) => user.id === userId)
+    expect(tokenCheck).toHaveLength(1);
     done();
 });
 
@@ -54,7 +55,9 @@ test('can re-enable a user', async (done) => {
 
 test('verify user is enabled', async (done) => {
     const response = await request.get('/api/admin/chat/usersdisabled').auth('admin', 'abc123').expect(200);
-    expect(response.body.length).toBe(0);
+    const tokenCheck = response.body.filter((user) => user.id === userId)
+    expect(tokenCheck).toHaveLength(0);
+
     done();
 });
 

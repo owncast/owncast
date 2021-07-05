@@ -45,8 +45,6 @@ func Start() error {
 		return err
 	}
 
-	user.SetupUsers()
-
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now
 	// but will play more useful when recordings come into play.
@@ -55,6 +53,8 @@ func Start() error {
 	if err := setupStorage(); err != nil {
 		log.Errorln("storage error", err)
 	}
+
+	user.SetupUsers()
 
 	fileWriter.SetupFileWriterReceiverService(&handler)
 

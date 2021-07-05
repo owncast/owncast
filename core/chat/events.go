@@ -84,7 +84,7 @@ func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
 		return
 	}
 
-	addMessage(event)
+	SaveUserMessage(event)
 
 	eventData.client.MessageCount = eventData.client.MessageCount + 1
 }

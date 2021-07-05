@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -71,20 +72,11 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ExternalSetStreamTitle(integration models.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func ExternalSetStreamTitle(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
 	SetStreamTitle(w, r)
 }
 
 func sendSystemChatAction(messageText string, ephemeral bool) {
-	// message := models.ChatEvent{}
-	// message.Body = messageText
-	// message.MessageType = models.ChatActionSent
-	// message.ClientID = "internal-server"
-	// message.Ephemeral = ephemeral
-	// message.SetDefaults()
-
-	// message.RenderBody()
-
 	if err := chat.SendSystemAction(messageText, ephemeral); err != nil {
 		log.Errorln(err)
 	}

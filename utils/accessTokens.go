@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"crypto/rand"
 	"encoding/base64"
+	"math/rand"
 )
 
 const tokenLength = 32
@@ -34,4 +34,12 @@ func generateRandomBytes(n int) ([]byte, error) {
 func generateRandomString(n int) (string, error) {
 	b, err := generateRandomBytes(n)
 	return base64.URLEncoding.EncodeToString(b), err
+}
+
+func GenerateRandomDisplayColor() int {
+	// Generate a random hue value. The UI should determine the right saturation and
+	// lightness in order to make it look right.
+	rangeLower := 0
+	rangeUpper := 360
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1)
 }

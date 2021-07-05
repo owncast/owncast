@@ -3,7 +3,6 @@ package user
 import (
 	"database/sql"
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 
@@ -33,26 +32,6 @@ func (u *User) IsEnabled() bool {
 
 func SetupUsers() {
 	_datastore = data.GetDatastore()
-	createUsersTable()
-}
-
-func createUsersTable() {
-	log.Traceln("Creating users table...")
-
-	createTableSQL := `CREATE TABLE IF NOT EXISTS users (
-		"id" TEXT PRIMARY KEY,
-		"access_token" string NOT NULL,
-		"display_name" TEXT NOT NULL,
-		"display_color" NUMBER NOT NULL,
-		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		"disabled_at" TIMESTAMP,
-		"previous_names" TEXT,
-		"namechanged_at" TIMESTAMP
-	);`
-
-	if err := execSQL(createTableSQL); err != nil {
-		log.Fatalln(err)
-	}
 }
 
 func CreateAnonymousUser(username string) (error, *User) {
@@ -68,11 +47,7 @@ func CreateAnonymousUser(username string) (error, *User) {
 		displayName = utils.GeneratePhrase()
 	}
 
-	// Generate a random hue value. The UI should determine the right saturation and
-	// lightness in order to make it look right.
-	rangeLower := 0
-	rangeUpper := 360
-	displayColor := rangeLower + rand.Intn(rangeUpper-rangeLower+1)
+	displayColor := utils.GenerateRandomDisplayColor()
 
 	user := &User{
 		Id:           id,
@@ -188,7 +163,6 @@ func GetUserByToken(token string) *User {
 	defer _datastore.DbLock.Unlock()
 
 	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE access_token = ?"
-	fmt.Println("SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE access_token =", token)
 	row := _datastore.DB.QueryRow(query, token)
 
 	return getUserFromRow(row)

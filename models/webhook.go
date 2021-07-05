@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/owncast/owncast/utils"
+)
 
 // Webhook is an event that is sent to 3rd party, external services with details about something that took place within an Owncast server.
 type Webhook struct {
@@ -25,7 +29,8 @@ var validEvents = []EventType{
 // This is not a efficient method.
 func HasValidEvents(events []EventType) bool {
 	for _, event := range events {
-		if !findItemInSlice(validEvents, event) {
+		_, foundInSlice := utils.FindInSlice(validEvents, event)
+		if !foundInSlice {
 			return false
 		}
 	}

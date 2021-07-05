@@ -243,8 +243,7 @@ func (s *ChatServer) sendWelcomeMessageToClient(c *ChatClient) {
 	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
-		//s.sendSystemMessageToClient(c, welcomeMessage)
-		s.sendActionToClient(c, welcomeMessage)
+		s.sendSystemMessageToClient(c, welcomeMessage)
 	}
 }
 

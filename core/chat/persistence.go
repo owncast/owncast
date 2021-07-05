@@ -53,7 +53,7 @@ func createTable() {
 	}
 }
 
-func addMessage(event events.UserMessageEvent) {
+func SaveUserMessage(event events.UserMessageEvent) {
 	saveEvent(event.Id, event.User.Id, event.Body, event.Type, event.HiddenAt, event.Timestamp)
 }
 
@@ -100,29 +100,46 @@ func getChat(query string) []events.UserMessageEvent {
 		var hiddenAt *time.Time
 		var timestamp time.Time
 
-		var userDisplayName string
-		var userDisplayColor int
-		var userCreatedAt time.Time
+		var userDisplayName *string
+		var userDisplayColor *int
+		var userCreatedAt *time.Time
 		var userDisabledAt *time.Time
-		var previousUsernames string
+		var previousUsernames *string
 		var userNameChangedAt *time.Time
 
+		// Convert a database row into a chat event
 		err = rows.Scan(&id, &userId, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt, &previousUsernames, &userNameChangedAt)
 		if err != nil {
-			log.Debugln(err)
-			log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
+			log.Errorln("There is a problem converting query to chat objects. Please report this:", query)
 			break
+		}
+
+		// System messages and chat actions are special and are not from real
+		if messageType == events.Event_SystemMessageSent || messageType == events.Event_ChatActionSent {
+			name := "Owncast"
+			userDisplayName = &name
+			color := 200
+			userDisplayColor = &color
+		}
+
+		if previousUsernames == nil {
+			previousUsernames = userDisplayName
+		}
+
+		if userCreatedAt == nil {
+			now := time.Now()
+			userCreatedAt = &now
 		}
 
 		user := user.User{
 			Id:            userId,
 			AccessToken:   "",
-			DisplayName:   userDisplayName,
-			DisplayColor:  userDisplayColor,
-			CreatedAt:     userCreatedAt,
+			DisplayName:   *userDisplayName,
+			DisplayColor:  *userDisplayColor,
+			CreatedAt:     *userCreatedAt,
 			DisabledAt:    userDisabledAt,
 			NameChangedAt: userNameChangedAt,
-			PreviousNames: strings.Split(previousUsernames, ","),
+			PreviousNames: strings.Split(*previousUsernames, ","),
 		}
 
 		message := events.UserMessageEvent{
@@ -155,7 +172,7 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 
 func GetChatHistory() []events.UserMessageEvent {
 	// Get all visible messages
-	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (SELECT * FROM messages INNER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
+	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (SELECT * FROM messages LEFT OUTER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
 	return getChat(query)
 }
 

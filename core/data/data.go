@@ -48,6 +48,10 @@ func SetupPersistence(file string) error {
 	// db, err := sql.Open("sqlite3", file)
 	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s", file))
 	db.SetMaxOpenConns(1)
+	_db = db
+
+	createWebhooksTable()
+	createUsersTable()
 
 	if err != nil {
 		return err
@@ -88,11 +92,6 @@ func SetupPersistence(file string) error {
 			return err
 		}
 	}
-
-	_db = db
-
-	createWebhooksTable()
-	createAccessTokensTable()
 
 	_datastore = &Datastore{}
 	_datastore.Setup()
