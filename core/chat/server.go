@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -96,6 +97,9 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 
 	s.Broadcast(userJoinedEvent.GetBroadcastPayload())
 	s.sendWelcomeMessageToClient(client)
+
+	// Send chat user joined webhook
+	webhooks.SendChatEventUserJoined(userJoinedEvent)
 
 	return client
 }
