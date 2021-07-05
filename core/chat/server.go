@@ -156,7 +156,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 
 	// User is disabled therefore we should disconnect.
 	if user.DisabledAt != nil {
-		log.Warnln("Disabled user", user.Id, user.DisplayName, "rejected")
+		log.Traceln("Disabled user", user.Id, user.DisplayName, "rejected")
 		conn.WriteJSON(events.EventPayload{
 			"type": events.Event_Error_User_Disabled,
 		})

@@ -5,7 +5,6 @@ package admin
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/owncast/owncast/controllers"
@@ -50,8 +49,6 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("UpdateUserEnabled")
-
 	type blockUserRequest struct {
 		UserID  string `json:"userId"`
 		Enabled bool   `json:"enabled"`

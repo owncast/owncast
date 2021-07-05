@@ -12,6 +12,7 @@ import (
 )
 
 // ExternalIntegration represents a single 3rd party integration that uses an access token.
+// This struct generally the User struct so they can be used interchangably.
 type ExternalIntegration struct {
 	Id           string     `json:"id"`
 	AccessToken  string     `json:"accessToken"`
@@ -19,7 +20,7 @@ type ExternalIntegration struct {
 	DisplayColor int        `json:"displayColor"`
 	CreatedAt    time.Time  `json:"createdAt"`
 	Scopes       []string   `json:"scopes"`
-	Type         string     `json:"type,omitempty"` // STANDARD or API
+	Type         string     `json:"type,omitempty"` // Should be API
 	LastUsedAt   *time.Time `json:"lastUsedAt,omitempty"`
 }
 

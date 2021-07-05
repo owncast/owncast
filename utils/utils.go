@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/url"
 	"os"
 	"os/exec"
@@ -245,4 +246,12 @@ func FindInSlice(slice []string, val string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.
+// The UI should determine the right saturation and lightness in order to make it look right.
+func GenerateRandomDisplayColor() int {
+	rangeLower := 0
+	rangeUpper := 360
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1)
 }

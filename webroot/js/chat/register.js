@@ -1,4 +1,3 @@
-// import {setLocalStorage} from "../utils/helpers";
 import {URL_CHAT_REGISTRATION} from "../utils/constants.js";
 
 // TODO: Be able to pass in the username they want to register as

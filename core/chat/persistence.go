@@ -17,7 +17,7 @@ var _datastore *data.Datastore
 
 const (
 	maxBacklogHours  = 5  // Keep backlog max hours worth of messages
-	maxBacklogNumber = 50 // Keep backlog max number of messages
+	maxBacklogNumber = 50 // Return max number of messages in history request
 )
 
 func setupPersistence() {
@@ -115,7 +115,7 @@ func getChat(query string) []events.UserMessageEvent {
 			break
 		}
 
-		// System messages and chat actions are special and are not from real
+		// System messages and chat actions are special and are not from real users
 		if messageType == events.Event_SystemMessageSent || messageType == events.Event_ChatActionSent {
 			name := "Owncast"
 			userDisplayName = &name

@@ -15,11 +15,10 @@ import (
 type ChatClient struct {
 	id          uint
 	accessToken string
-	// io          sync.Mutex
-	conn      *websocket.Conn
-	User      *user.User `json:"user"`
-	server    *ChatServer
-	IPAddress string
+	conn        *websocket.Conn
+	User        *user.User `json:"user"`
+	server      *ChatServer
+	IPAddress   string
 	// Buffered channel of outbound messages.
 	send         chan []byte
 	rateLimiter  *rate.Limiter
