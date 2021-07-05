@@ -93,6 +93,8 @@ func ChangeUsername(userId string, username string) {
 	if err := tx.Commit(); err != nil {
 		log.Errorln("error changing display name of user", userId, err)
 	}
+
+	invalidateUserCache(userId)
 }
 
 func create(user *User) error {
@@ -149,6 +151,8 @@ func SetEnabled(userID string, enabled bool) error {
 		log.Fatal(err)
 		return err
 	}
+
+	invalidateUserCache(userID)
 
 	return tx.Commit()
 }
