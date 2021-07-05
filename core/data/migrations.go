@@ -30,8 +30,8 @@ func migrateToSchema1(db *sql.DB) {
 		"user_id" INTEGER,
 		"body" TEXT,
 		"eventType" TEXT,
-		"hidden_at" DATE,
-		"timestamp" DATE
+		"hidden_at" DATETIME,
+		"timestamp" DATETIME
 	);`
 
 	stmt, err = db.Prepare(createTableSQL)

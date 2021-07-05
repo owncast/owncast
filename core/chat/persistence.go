@@ -26,6 +26,7 @@ func setupPersistence() {
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {
+		runPruner()
 		for range chatDataPruner.C {
 			runPruner()
 		}
@@ -39,8 +40,8 @@ func createTable() {
 		"user_id" INTEGER,
 		"body" TEXT,
 		"eventType" TEXT,
-		"hidden_at" DATE,
-		"timestamp" DATE
+		"hidden_at" DATETIME,
+		"timestamp" DATETIME
 	);`
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
@@ -276,7 +277,9 @@ func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 // Only keep recent messages so we don't keep more chat data than needed
 // for privacy and efficiency reasons.
 func runPruner() {
-	deleteStatement := fmt.Sprintf("DELETE FROM messages WHERE timestamp >= datetime('now','-%d Hour')", maxBacklogHours)
+	log.Traceln("Removing chat messages older than", maxBacklogHours, "hours")
+
+	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -288,12 +291,10 @@ func runPruner() {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec()
-	if err != nil {
+	if _, err = stmt.Exec(fmt.Sprintf("-%d hours", maxBacklogHours)); err != nil {
 		log.Fatal(err)
 	}
-	err = tx.Commit()
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		log.Fatal(err)
 	}
 }
