@@ -12,11 +12,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0
         ref: ${{ github.head_ref }}
+        fetch-depth: 0
         
     - name: Prettier
-      uses: creyD/prettier_action@v3.1
+      uses: creyD/prettier_action@v3.3
       with:
         # This part is also where you can pass other options, for example:
         prettier_options: --write **/*.{js,tsx,jsx,css,scss}
