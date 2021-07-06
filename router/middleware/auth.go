@@ -74,7 +74,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 		handler(*integration, w, r)
 
 		if err := user.SetExternalAPIUserAccessTokenAsUsed(token); err != nil {
-			log.Debugln(token, "not found when updating last_used timestamp")
+			log.Debugln("token not found when updating last_used timestamp")
 		}
 	})
 }
