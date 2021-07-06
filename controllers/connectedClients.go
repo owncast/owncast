@@ -19,6 +19,6 @@ func GetConnectedClients(w http.ResponseWriter, r *http.Request) {
 }
 
 // ExternalGetConnectedClients returns currently connected clients.
-func ExternalGetConnectedClients(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func ExternalGetConnectedClients(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	GetConnectedClients(w, r)
 }

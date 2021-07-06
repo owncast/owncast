@@ -15,7 +15,7 @@ import (
 )
 
 // ExternalUpdateMessageVisibility updates an array of message IDs to have the same visiblity.
-func ExternalUpdateMessageVisibility(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func ExternalUpdateMessageVisibility(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	UpdateMessageVisibility(w, r)
 }
 
@@ -100,7 +100,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 // SendSystemMessage will send an official "SYSTEM" message to chat on behalf of your server.
-func SendSystemMessage(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func SendSystemMessage(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var message events.SystemMessageEvent
@@ -117,12 +117,12 @@ func SendSystemMessage(integration user.ExternalIntegration, w http.ResponseWrit
 }
 
 // SendUserMessage will send a message to chat on behalf of a user. *Depreciated*
-func SendUserMessage(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func SendUserMessage(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	controllers.BadRequestHandler(w, errors.New("no longer supported. see /api/integrations/chat/send"))
 }
 
-func SendIntegrationChatMessage(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func SendIntegrationChatMessage(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	name := integration.DisplayName
@@ -164,7 +164,7 @@ func SendIntegrationChatMessage(integration user.ExternalIntegration, w http.Res
 }
 
 // SendChatAction will send a generic chat action.
-func SendChatAction(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func SendChatAction(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var message events.SystemActionEvent

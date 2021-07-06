@@ -72,7 +72,7 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-func ExternalSetStreamTitle(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	SetStreamTitle(w, r)
 }
 

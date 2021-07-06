@@ -11,7 +11,7 @@ import (
 )
 
 // ExternalGetChatMessages gets all of the chat messages.
-func ExternalGetChatMessages(integration user.ExternalIntegration, w http.ResponseWriter, r *http.Request) {
+func ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	GetChatEmbed(w, r)
 }
 

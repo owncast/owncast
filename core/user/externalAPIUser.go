@@ -11,9 +11,9 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-// ExternalIntegration represents a single 3rd party integration that uses an access token.
+// ExternalAPIUser represents a single 3rd party integration that uses an access token.
 // This struct generally the User struct so they can be used interchangably.
-type ExternalIntegration struct {
+type ExternalAPIUser struct {
 	Id           string     `json:"id"`
 	AccessToken  string     `json:"accessToken"`
 	DisplayName  string     `json:"displayName"`
@@ -25,7 +25,7 @@ type ExternalIntegration struct {
 }
 
 const (
-	// ScopeCanSendUserMessages will allow sending chat messages as users.
+	// ScopeCanSendUserMessages will allow sending chat messages as itself.
 	ScopeCanSendUserMessages = "CAN_SEND_MESSAGES"
 	// ScopeCanSendSystemMessages will allow sending chat messages as the system.
 	ScopeCanSendSystemMessages = "CAN_SEND_SYSTEM_MESSAGES"
@@ -41,8 +41,8 @@ var validAccessTokenScopes = []string{
 }
 
 // InsertToken will add a new token to the database.
-func InsertAPIToken(token string, name string, color int, scopes []string) error {
-	log.Println("Adding new access token:", name)
+func InsertExternalAPIUser(token string, name string, color int, scopes []string) error {
+	log.Println("Adding new API user:", name)
 
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -73,8 +73,8 @@ func InsertAPIToken(token string, name string, color int, scopes []string) error
 	return nil
 }
 
-// DeleteAPIToken will delete a token from the database.
-func DeleteAPIToken(token string) error {
+// DeleteExternalAPIUser will delete a token from the database.
+func DeleteExternalAPIUser(token string) error {
 	log.Println("Deleting access token:", token)
 
 	_datastore.DbLock.Lock()
@@ -108,8 +108,8 @@ func DeleteAPIToken(token string) error {
 	return nil
 }
 
-// GetExternalIntegrationForAccessTokenAndScope will determine if a specific token has access to perform a scoped action.
-func GetExternalIntegrationForAccessTokenAndScope(token string, scope string) (*ExternalIntegration, error) {
+// GetExternalAPIUserForAccessTokenAndScope will determine if a specific token has access to perform a scoped action.
+func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*ExternalAPIUser, error) {
 	// This will split the scopes from comma separated to individual rows
 	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
@@ -130,7 +130,7 @@ func GetExternalIntegrationForAccessTokenAndScope(token string, scope string) (*
 	  ) AS token WHERE token.access_token = ? AND token.scope = ?`
 
 	row := _datastore.DB.QueryRow(query, token, scope)
-	integration, err := makeExternalIntegrationFromRow(row)
+	integration, err := makeExternalAPIUserFromRow(row)
 
 	return integration, err
 }
@@ -151,24 +151,24 @@ func GetIntegrationNameForAccessToken(token string) *string {
 	return &name
 }
 
-// GetIntegrationAccessTokens will return all access tokens.
-func GetIntegrationAccessTokens() ([]ExternalIntegration, error) { //nolint
+// GetExternalAPIUser will return all access tokens.
+func GetExternalAPIUser() ([]ExternalAPIUser, error) { //nolint
 	// Get all messages sent within the past day
 	var query = "SELECT id, access_token, display_name, display_color, scopes, created_at, last_used FROM users WHERE type IS 'API' AND disabled_at IS NULL"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
-		return []ExternalIntegration{}, err
+		return []ExternalAPIUser{}, err
 	}
 	defer rows.Close()
 
-	integrations, err := makeExternalIntegrationsFromRows(rows)
+	integrations, err := makeExternalAPIUsersFromRows(rows)
 
 	return integrations, err
 }
 
-// SetIntegrationAccessTokenAsUsed will update the last used timestamp for a token.
-func SetIntegrationAccessTokenAsUsed(token string) error {
+// SetExternalAPIUserAccessTokenAsUsed will update the last used timestamp for a token.
+func SetExternalAPIUserAccessTokenAsUsed(token string) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		return err
@@ -191,7 +191,7 @@ func SetIntegrationAccessTokenAsUsed(token string) error {
 	return nil
 }
 
-func makeExternalIntegrationFromRow(row *sql.Row) (*ExternalIntegration, error) {
+func makeExternalAPIUserFromRow(row *sql.Row) (*ExternalAPIUser, error) {
 	var id string
 	var accessToken string
 	var displayName string
@@ -206,7 +206,7 @@ func makeExternalIntegrationFromRow(row *sql.Row) (*ExternalIntegration, error) 
 		return nil, err
 	}
 
-	integration := ExternalIntegration{
+	integration := ExternalAPIUser{
 		Id:           id,
 		AccessToken:  accessToken,
 		DisplayName:  displayName,
@@ -219,8 +219,8 @@ func makeExternalIntegrationFromRow(row *sql.Row) (*ExternalIntegration, error) 
 	return &integration, nil
 }
 
-func makeExternalIntegrationsFromRows(rows *sql.Rows) ([]ExternalIntegration, error) {
-	integrations := make([]ExternalIntegration, 0)
+func makeExternalAPIUsersFromRows(rows *sql.Rows) ([]ExternalAPIUser, error) {
+	integrations := make([]ExternalAPIUser, 0)
 
 	for rows.Next() {
 		var id string
@@ -237,7 +237,7 @@ func makeExternalIntegrationsFromRows(rows *sql.Rows) ([]ExternalIntegration, er
 			return nil, err
 		}
 
-		integration := ExternalIntegration{
+		integration := ExternalAPIUser{
 			Id:           id,
 			AccessToken:  accessToken,
 			DisplayName:  displayName,
