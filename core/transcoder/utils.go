@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -91,19 +92,12 @@ func handleTranscoderMessage(message string) {
 
 func createVariantDirectories() {
 	// Create private hls data dirs
-
-	err := os.RemoveAll(config.PublicHLSStoragePath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	err = os.RemoveAll(config.PrivateHLSStoragePath)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	utils.CleanupDirectory(config.PublicHLSStoragePath)
+	utils.CleanupDirectory(config.PrivateHLSStoragePath)
 	
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
-			err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
+			err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -117,7 +111,7 @@ func createVariantDirectories() {
 	} else {
 		dir := path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		err = os.MkdirAll(dir, 0777)
+		err := os.MkdirAll(dir, 0777)
 		if err != nil {
 			log.Fatalln(err)
 		}

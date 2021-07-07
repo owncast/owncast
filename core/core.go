@@ -114,28 +114,13 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe the public, web-accessible hls data directory
-	err := os.RemoveAll(config.PublicHLSStoragePath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	err = os.RemoveAll(config.PrivateHLSStoragePath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	err = os.MkdirAll(config.PublicHLSStoragePath, 0777)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	err = os.MkdirAll(config.PrivateHLSStoragePath, 0777)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	utils.CleanupDirectory(config.PublicHLSStoragePath)
+	utils.CleanupDirectory(config.PrivateHLSStoragePath)
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()
 	if utils.DoesFileExists(logo) {
-		err = utils.Copy(path.Join("data", logo), filepath.Join(config.WebRoot, "thumbnail.jpg"))
+		err := utils.Copy(path.Join("data", logo), filepath.Join(config.WebRoot, "thumbnail.jpg"))
 		if err != nil {
 			log.Warnln(err)
 		}
