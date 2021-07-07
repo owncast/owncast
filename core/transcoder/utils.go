@@ -103,7 +103,7 @@ func createVariantDirectories() {
 	
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
-			err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
+			err = os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -117,7 +117,7 @@ func createVariantDirectories() {
 	} else {
 		dir := path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		err := os.MkdirAll(dir, 0777)
+		err = os.MkdirAll(dir, 0777)
 		if err != nil {
 			log.Fatalln(err)
 		}
