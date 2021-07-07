@@ -91,6 +91,16 @@ func handleTranscoderMessage(message string) {
 
 func createVariantDirectories() {
 	// Create private hls data dirs
+
+	err := os.RemoveAll(config.PublicHLSStoragePath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = os.RemoveAll(config.PrivateHLSStoragePath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
 			err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
