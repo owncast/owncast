@@ -71,7 +71,7 @@ async function sendMessage() {
   });
 
   ws.on('error', function incoming(data) {
-    console.log(data);
+    console.error(data);
   });
 }
 

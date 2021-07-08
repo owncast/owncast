@@ -216,7 +216,6 @@ export default class App extends Component {
     // If this is the first time setting the config
     // then setup chat if it's enabled.
     const chatBlocked = getLocalStorage('owncast_chat_blocked');
-    console.log(chatBlocked)
     if (!chatBlocked && !this.hasConfiguredChat && !chatDisabled) {
       this.setupChatAuth();
     } else if (chatBlocked) {
@@ -399,7 +398,7 @@ export default class App extends Component {
   }
 
   handleNetworkingError(error) {
-    console.log(`>>> App Error: ${error}`);
+    console.error(`>>> App Error: ${error}`);
   }
 
   handleWindowResize() {
@@ -546,13 +545,10 @@ export default class App extends Component {
   }
 
   async setupChatAuth(force) {
-    console.log('setupChatAuth');
-
     var accessToken = getLocalStorage(KEY_ACCESS_TOKEN);
     var username = getLocalStorage(KEY_USERNAME);
 
     if (!accessToken || force) {
-      console.log('Registering for chat...');
       try {    
         this.isRegistering = true;
         const registration = await registerChat(this.state.username);
@@ -562,14 +558,11 @@ export default class App extends Component {
         setLocalStorage(KEY_ACCESS_TOKEN, accessToken);
         setLocalStorage(KEY_USERNAME, username);
 
-        console.log('registered', registration, accessToken, username);
         this.isRegistering = false;
       } catch (e) {
         console.error('registration error:', e);
       }
     }
-
-    console.log('connecting', accessToken, username);
 
     if (this.state.websocket) {
       this.state.websocket.shutdown();

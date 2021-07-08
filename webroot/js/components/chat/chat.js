@@ -181,7 +181,7 @@ export default class Chat extends Component {
 
   handleNetworkingError(error) {
     // todo: something more useful
-    console.log(error);
+    console.error('chat error', error);
   }
 
   // handle any incoming message

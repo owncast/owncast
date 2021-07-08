@@ -45,7 +45,6 @@ export default class Websocket {
   createAndConnect() {
     const url = new URL(URL_WEBSOCKET);
     url.searchParams.append('accessToken', this.accessToken);
-    console.log('Connecting to', url.toString());
     
     const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
@@ -83,7 +82,6 @@ export default class Websocket {
   }
 
   shutdown() {
-    console.log('closing websocket')
     this.isShutdown = true;
     this.websocket.close();
   }
@@ -137,7 +135,6 @@ export default class Websocket {
   }
 
   scheduleReconnect() {
-    console.log('scheduling websocket reconnect...')
     this.websocketReconnectTimer = setTimeout(
       this.createAndConnect,
       TIMER_WEBSOCKET_RECONNECT

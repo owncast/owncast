@@ -14,7 +14,6 @@ export async function registerChat(username) {
     try {
         const response = await fetch(URL_CHAT_REGISTRATION, options);
         const result = await response.json();
-        console.log(result)
         return result;
     } catch(e) {
         console.error(e);
