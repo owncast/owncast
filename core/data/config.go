@@ -539,7 +539,9 @@ func VerifySettings() error {
 		if err := utils.Copy(defaultLogo, filepath.Join(config.DataDirectory, "logo.svg")); err != nil {
 			log.Errorln("error copying default logo: ", err)
 		}
-		SetLogoPath("logo.svg")
+		if err := SetLogoPath("logo.svg"); err != nil {
+			log.Errorln("unable to set default logo to logo.svg", err)
+		}
 	}
 
 	return nil
@@ -577,7 +579,7 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	return indexedQualities[0].index
 }
 
-// GetUsernameBlocklist will return the blocked usernames as a comma seperated string.
+// GetUsernameBlocklist will return the blocked usernames as a comma separated string.
 func GetUsernameBlocklist() []string {
 	usernameString, err := _datastore.GetString(blockedUsernamesKey)
 

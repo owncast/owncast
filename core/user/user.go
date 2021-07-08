@@ -74,20 +74,24 @@ func ChangeUsername(userId string, username string) {
 	tx, err := _datastore.DB.Begin()
 
 	if err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Debugln(err)
+		}
+	}()
 
 	stmt, err := tx.Prepare("UPDATE users SET display_name = ?, previous_names = previous_names || ?, namechanged_at = ? WHERE id = ?")
 
 	if err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userId)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -104,20 +108,24 @@ func create(user *User) error {
 	tx, err := _datastore.DB.Begin()
 
 	if err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Debugln(err)
+		}
+	}()
 
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
 
 	if err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(user.Id, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
-		panic(err)
+		log.Errorln("error creating new user", err)
 	}
 
 	return tx.Commit()
@@ -132,7 +140,11 @@ func SetEnabled(userID string, enabled bool) error {
 		log.Fatal(err)
 		return err
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Debugln(err)
+		}
+	}()
 
 	var stmt *sql.Stmt
 	if !enabled {

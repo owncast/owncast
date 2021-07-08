@@ -31,7 +31,6 @@ func setupPersistence() {
 			runPruner()
 		}
 	}()
-
 }
 
 func createTable() {
@@ -66,7 +65,12 @@ func saveEvent(id string, userId string, body string, eventType string, hidden *
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Debugln(err)
+		}
+	}()
 
 	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
@@ -268,8 +272,7 @@ func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 			HiddenAt: hiddenAt,
 		},
 		events.MessageEvent{
-			OutboundEvent: nil,
-			Body:          body,
+			Body: body,
 		},
 	}, nil
 }

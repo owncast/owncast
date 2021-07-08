@@ -86,7 +86,7 @@ func DeleteWebhook(id int) error {
 	}
 
 	if rowsDeleted, _ := result.RowsAffected(); rowsDeleted == 0 {
-		tx.Rollback() //nolint
+		_ = tx.Rollback()
 		return errors.New(fmt.Sprint(id) + " not found")
 	}
 

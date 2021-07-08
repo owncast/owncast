@@ -41,7 +41,8 @@ func migrateToSchema1(db *sql.DB) {
 	query := `SELECT * FROM access_tokens`
 
 	rows, err := db.Query(query)
-	if err != nil {
+	if err != nil || rows.Err() != nil {
+		log.Errorln("error migrating access tokens to schema v1", err, rows.Err())
 		return
 	}
 	defer rows.Close()
@@ -87,7 +88,6 @@ func migrateToSchema1(db *sql.DB) {
 			log.Errorln("Error migrating access token", err)
 		}
 	}
-
 }
 
 func insertAPIToken(db *sql.DB, token string, name string, color int, scopes string) error {

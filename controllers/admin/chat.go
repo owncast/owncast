@@ -116,7 +116,7 @@ func SendSystemMessage(integration user.ExternalAPIUser, w http.ResponseWriter, 
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
-// SendUserMessage will send a message to chat on behalf of a user. *Depreciated*
+// SendUserMessage will send a message to chat on behalf of a user. *Depreciated*.
 func SendUserMessage(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	controllers.BadRequestHandler(w, errors.New("no longer supported. see /api/integrations/chat/send"))

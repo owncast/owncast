@@ -17,7 +17,7 @@ func GenerateAccessToken() (string, error) {
 // case the caller should not continue.
 func generateRandomBytes(n int) ([]byte, error) {
 	b := make([]byte, n)
-	_, err := rand.Read(b)
+	_, err := rand.Read(b) //nolint
 	// Note that err == nil only if we read len(b) bytes.
 	if err != nil {
 		return nil, err

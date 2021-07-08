@@ -253,5 +253,5 @@ func FindInSlice(slice []string, val string) (int, bool) {
 func GenerateRandomDisplayColor() int {
 	rangeLower := 0
 	rangeUpper := 360
-	return rangeLower + rand.Intn(rangeUpper-rangeLower+1)
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
 }

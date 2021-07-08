@@ -627,7 +627,7 @@ var (
 )
 
 func GeneratePhrase() string {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(time.Now().UnixNano())) //nolint
 
 	left_index := int(r.Float32() * float32(len(left)))
 	right_index := int(r.Float32() * float32(len(right)))

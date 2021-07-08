@@ -14,6 +14,7 @@ import (
 	"mvdan.cc/xurls"
 
 	"github.com/owncast/owncast/core/user"
+	log "github.com/sirupsen/logrus"
 )
 
 // EventPayload is a generic key/value map for sending out to chat clients.
@@ -48,15 +49,6 @@ type SystemActionEvent struct {
 	MessageEvent
 }
 
-// render will convert any supported markdown into the message body.
-func (e *MessageEvent) render() string {
-	return e.Body
-}
-
-func (e *MessageEvent) sanitize() string {
-	return e.Body
-}
-
 // SetDefaults will set default properties of all inbound events.
 func (e *Event) SetDefaults() {
 	e.Id = shortid.MustGenerate()
@@ -84,7 +76,7 @@ func (m *MessageEvent) Empty() bool {
 	return m.Body == ""
 }
 
-// RenderBody will render markdown to html without any sanitization
+// RenderBody will render markdown to html without any sanitization.
 func (m *MessageEvent) RenderBody() {
 	m.RawBody = m.Body
 	m.Body = RenderMarkdown(m.RawBody)
@@ -121,7 +113,7 @@ func RenderMarkdown(raw string) string {
 	trimmed := strings.TrimSpace(raw)
 	var buf bytes.Buffer
 	if err := markdown.Convert([]byte(trimmed), &buf); err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
 
 	return buf.String()

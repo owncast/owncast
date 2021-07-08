@@ -24,7 +24,9 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 		}
 		payload := message.GetBroadcastPayload()
 		payload["type"] = events.Event_VisibiltyToggled
-		_server.Broadcast(payload)
+		if err := _server.Broadcast(payload); err != nil {
+			log.Debugln(err)
+		}
 
 		go webhooks.SendChatEvent(message)
 	}

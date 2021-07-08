@@ -2,7 +2,7 @@ package events
 
 import "github.com/owncast/owncast/core/data"
 
-// SystemMessageEvent
+// SystemMessageEvent is a message displayed in chat on behalf of the server.
 type SystemMessageEvent struct {
 	Event
 	MessageEvent

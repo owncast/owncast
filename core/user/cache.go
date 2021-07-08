@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ReneKroon/ttlcache/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 // This stores frequently accessed data about chat users.
@@ -11,13 +12,21 @@ var _userIdCache = ttlcache.NewCache()
 var _userAccessTokenCache = ttlcache.NewCache()
 
 func init() {
-	_userIdCache.SetTTL(time.Duration(10 * time.Minute))
-	_userAccessTokenCache.SetTTL(time.Duration(10 * time.Minute))
+	if err := _userIdCache.SetTTL(10 * time.Minute); err != nil {
+		log.Debugln(err)
+	}
+	if err := _userAccessTokenCache.SetTTL(10 * time.Minute); err != nil {
+		log.Debugln(err)
+	}
 }
 
 func invalidateUserCache(id string) {
-	_userIdCache.Remove(id)
-	_userAccessTokenCache.Remove(id)
+	if err := _userIdCache.Remove(id); err != nil {
+		log.Debugln(err)
+	}
+	if err := _userAccessTokenCache.Remove(id); err != nil {
+		log.Debugln(err)
+	}
 }
 
 func getCachedIdUser(id string) *User {
@@ -28,7 +37,9 @@ func getCachedIdUser(id string) *User {
 }
 
 func setCachedIdUser(id string, user *User) {
-	_userIdCache.Set(id, user)
+	if err := _userIdCache.Set(id, user); err != nil {
+		log.Debugln(err)
+	}
 }
 
 func getCachedAccessTokenUser(id string) *User {
@@ -39,5 +50,7 @@ func getCachedAccessTokenUser(id string) *User {
 }
 
 func setCachedAccessTokenUser(id string, user *User) {
-	_userAccessTokenCache.Set(id, user)
+	if err := _userAccessTokenCache.Set(id, user); err != nil {
+		log.Debugln(err)
+	}
 }

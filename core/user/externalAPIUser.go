@@ -12,7 +12,7 @@ import (
 )
 
 // ExternalAPIUser represents a single 3rd party integration that uses an access token.
-// This struct generally the User struct so they can be used interchangably.
+// This struct generally the User struct so they can be used interchangeably.
 type ExternalAPIUser struct {
 	Id           string     `json:"id"`
 	AccessToken  string     `json:"accessToken"`
@@ -66,7 +66,6 @@ func InsertExternalAPIUser(token string, name string, color int, scopes []string
 	}
 
 	if err = tx.Commit(); err != nil {
-		panic(err)
 		return err
 	}
 

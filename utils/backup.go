@@ -32,7 +32,7 @@ func Restore(backupFile string, databaseFile string) error {
 	defer gz.Close()
 
 	var b bytes.Buffer
-	if _, err := io.Copy(&b, gz); err != nil {
+	if _, err := io.Copy(&b, gz); err != nil { // nolint
 		return fmt.Errorf("Unable to read backup file %s", err)
 	}
 

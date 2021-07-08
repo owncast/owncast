@@ -95,7 +95,9 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 	userJoinedEvent.SetDefaults()
 	userJoinedEvent.User = user
 
-	s.Broadcast(userJoinedEvent.GetBroadcastPayload())
+	if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
+		log.Errorln("error adding client to chat server", err)
+	}
 	s.sendWelcomeMessageToClient(client)
 
 	// Send chat user joined webhook
@@ -117,14 +119,14 @@ func (s *ChatServer) ClientClosed(c *ChatClient) {
 
 func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	if data.GetChatDisabled() {
-		w.Write([]byte(events.Event_Chat_Disabled))
+		_, _ = w.Write([]byte(events.Event_Chat_Disabled))
 		return
 	}
 
 	// Limit concurrent chat connections
 	if uint(len(s.clients)) >= s.maxClientCount {
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
-		w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
+		_, _ = w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
 		return
 	}
 
@@ -146,7 +148,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	user := user.GetUserByToken(accessToken)
 	if user == nil {
 		log.Errorln(accessToken, "has no user")
-		conn.WriteJSON(events.EventPayload{
+		_ = conn.WriteJSON(events.EventPayload{
 			"type": events.Event_Error_Needs_Registration,
 		})
 		// Send error that registration is required
@@ -157,7 +159,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	// User is disabled therefore we should disconnect.
 	if user.DisabledAt != nil {
 		log.Traceln("Disabled user", user.Id, user.DisplayName, "rejected")
-		conn.WriteJSON(events.EventPayload{
+		_ = conn.WriteJSON(events.EventPayload{
 			"type": events.Event_Error_User_Disabled,
 		})
 		conn.Close()
@@ -222,7 +224,7 @@ func (s *ChatServer) DisconnectUser(userID string) {
 func (s *ChatServer) eventReceived(event chatClientEvent) {
 	var typecheck map[string]interface{}
 	if err := json.Unmarshal(event.data, &typecheck); err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
 
 	eventType := typecheck["type"]
