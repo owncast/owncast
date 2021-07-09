@@ -33,8 +33,7 @@ func createTable() {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
+	if _, err := stmt.Exec(); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -51,12 +50,10 @@ func addMessage(message models.ChatEvent) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp)
-	if err != nil {
+	if _, err := stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp); err != nil {
 		log.Fatal(err)
 	}
-	err = tx.Commit()
-	if err != nil {
+	if err := tx.Commit(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -133,13 +130,12 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 		args[i+1] = id
 	}
 
-	_, err = stmt.Exec(args...)
-	if err != nil {
+	if _, err := stmt.Exec(args...); err != nil {
 		log.Fatal(err)
 		return err
 	}
 
-	if err = tx.Commit(); err != nil {
+	if err := tx.Commit(); err != nil {
 		log.Fatal(err)
 		return err
 	}

@@ -32,8 +32,7 @@ func Start() error {
 
 	// websocket chat server
 	go func() {
-		err := chat.Start()
-		if err != nil {
+		if err := chat.Start(); err != nil {
 			log.Fatalln(err)
 		}
 	}()
