@@ -137,7 +137,6 @@ func SetEnabled(userID string, enabled bool) error {
 
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 	defer func() {
@@ -154,13 +153,12 @@ func SetEnabled(userID string, enabled bool) error {
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer stmt.Close()
 
 	if _, err := stmt.Exec(userID); err != nil {
-		log.Fatal(err)
 		return err
 	}
 
@@ -208,7 +206,8 @@ func GetDisabledUsers() []*User {
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln(err)
+		return nil
 	}
 	defer rows.Close()
 

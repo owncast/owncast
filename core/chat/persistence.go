@@ -22,7 +22,7 @@ const (
 
 func setupPersistence() {
 	_datastore = data.GetDatastore()
-	createTable()
+	createMessagesTable()
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {
@@ -33,7 +33,7 @@ func setupPersistence() {
 	}()
 }
 
-func createTable() {
+func createMessagesTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
 		"id" string NOT NULL PRIMARY KEY,
 		"user_id" INTEGER,
@@ -45,11 +45,11 @@ func createTable() {
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error creating chat messages table", err)
 	}
 	defer stmt.Close()
 	if _, err := stmt.Exec(); err != nil {
-		log.Warnln(err)
+		log.Fatal("error creating chat messages table", err)
 	}
 }
 
@@ -63,7 +63,8 @@ func saveEvent(id string, userId string, body string, eventType string, hidden *
 
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln("error saving", eventType, err)
+		return
 	}
 
 	defer func() {
@@ -74,26 +75,28 @@ func saveEvent(id string, userId string, body string, eventType string, hidden *
 
 	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln("error saving", eventType, err)
+		return
 	}
 
 	defer stmt.Close()
 
 	if _, err = stmt.Exec(id, userId, body, eventType, hidden, timestamp); err != nil {
-		log.Fatal(err)
+		log.Errorln("error saving", eventType, err)
+		return
 	}
 	if err = tx.Commit(); err != nil {
-		log.Fatal(err)
+		log.Errorln("error saving", eventType, err)
+		return
 	}
 }
 
 func getChat(query string) []events.UserMessageEvent {
-	log.Traceln(query)
-
 	history := make([]events.UserMessageEvent, 0)
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln("error fetching chat history", err)
+		return history
 	}
 	defer rows.Close()
 
@@ -204,13 +207,12 @@ func SetMessageVisibilityForUserId(userID string, visible bool) error {
 func saveMessageVisibility(messageIDs []string, visible bool) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
 
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 	defer stmt.Close()
@@ -229,13 +231,11 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 		args[i+1] = id
 	}
 
-	if _, err := stmt.Exec(args...); err != nil {
-		log.Fatal(err)
+	if _, err = stmt.Exec(args...); err != nil {
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		log.Fatal(err)
+	if err = tx.Commit(); err != nil {
 		return err
 	}
 
@@ -285,19 +285,23 @@ func runPruner() {
 	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Fatal(err)
+		log.Debugln(err)
+		return
 	}
 
 	stmt, err := tx.Prepare(deleteStatement)
 	if err != nil {
-		log.Fatal(err)
+		log.Debugln(err)
+		return
 	}
 	defer stmt.Close()
 
 	if _, err = stmt.Exec(fmt.Sprintf("-%d hours", maxBacklogHours)); err != nil {
-		log.Fatal(err)
+		log.Debugln(err)
+		return
 	}
 	if err = tx.Commit(); err != nil {
-		log.Fatal(err)
+		log.Debugln(err)
+		return
 	}
 }

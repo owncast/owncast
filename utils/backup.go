@@ -59,12 +59,13 @@ func Restore(backupFile string, databaseFile string) error {
 func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
 
-	BackupDirectory := filepath.Dir(backupFile)
+	backupDirectory := filepath.Dir(backupFile)
 
-	if !DoesFileExists(BackupDirectory) {
-		err := os.MkdirAll(BackupDirectory, 0700)
+	if !DoesFileExists(backupDirectory) {
+		err := os.MkdirAll(backupDirectory, 0700)
 		if err != nil {
-			log.Fatalln(err)
+			log.Errorln("unable to create backup directory. check permissions and ownership.", backupDirectory, err)
+			return
 		}
 	}
 
