@@ -38,10 +38,8 @@ export default function MessageVisiblityToggle({
     }, OUTCOME_TIMEOUT);
   };
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(outcomeTimeout);
-    };
+  useEffect(() => () => {
+    clearTimeout(outcomeTimeout);
   });
 
   const updateChatMessage = async () => {

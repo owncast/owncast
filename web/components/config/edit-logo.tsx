@@ -91,7 +91,7 @@ export default function EditLogo() {
     }
   };
 
-  const logoDisplayUrl = NEXT_PUBLIC_API_HOST + 'logo?random=' + logoCachedbuster;
+  const logoDisplayUrl = `${NEXT_PUBLIC_API_HOST}logo?random=${logoCachedbuster}`;
 
   return (
     <div className="formfield-container logo-upload-container">

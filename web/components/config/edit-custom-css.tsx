@@ -86,13 +86,10 @@ export default function EditCustomStyles() {
       <p className="description">
         Customize the look and feel of your Owncast instance by overriding the CSS styles of various
         components on the page. Refer to the{' '}
-        <a
-          href="https://owncast.online/docs/website/"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
+        <a href="https://owncast.online/docs/website/" rel="noopener noreferrer" target="_blank">
           CSS &amp; Components guide
-        </a>.
+        </a>
+        .
       </p>
       <p className="description">
         Please input plain CSS text, as this will be directly injected onto your page during load.

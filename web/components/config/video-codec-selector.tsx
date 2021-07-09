@@ -1,19 +1,18 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Typography, Select, Popconfirm } from 'antd';
-import { ServerStatusContext } from '../../utils/server-status-context';
+import { Popconfirm, Select, Typography } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
   API_VIDEO_CODEC,
-  RESET_TIMEOUT,
   postConfigUpdateToAPI,
+  RESET_TIMEOUT,
 } from '../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
-  STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import FormStatusIndicator from './form-status-indicator';
 
 export default function CodecSelector() {
@@ -76,8 +75,8 @@ export default function CodecSelector() {
     });
   }
 
-  const items = supportedCodecs.map(function (codec) {
-    var title = codec;
+  const items = supportedCodecs.map(codec => {
+    let title = codec;
     if (title === 'libx264') {
       title = 'Default (libx264)';
     } else if (title === 'h264_nvenc') {
@@ -97,7 +96,7 @@ export default function CodecSelector() {
     );
   });
 
-  var description = '';
+  let description = '';
   if (selectedCodec === 'libx264') {
     description =
       'libx264 is the default codec and generally the only working choice for shared VPS enviornments. This is likely what you should be using unless you know you have set up other options.';
@@ -138,10 +137,10 @@ export default function CodecSelector() {
         <Popconfirm
           title={`Are you sure you want to change your video codec to ${pendingSaveCodec} and understand what this means?`}
           visible={confirmPopupVisible}
-          placement={'leftBottom'}
+          placement="leftBottom"
           onConfirm={save}
-          okText={'Yes'}
-          cancelText={'No'}
+          okText="Yes"
+          cancelText="No"
         >
           <Select
             defaultValue={selectedCodec}

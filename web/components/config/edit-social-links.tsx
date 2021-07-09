@@ -3,7 +3,7 @@ import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
 import SocialDropdown from './social-icons-dropdown';
-import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../utils/apis';
+import { fetchData, SOCIAL_PLATFORMS_LIST, NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   API_SOCIAL_HANDLES,
@@ -17,7 +17,6 @@ import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
 import TextField from './form-textfield';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
-import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
 const { Title } = Typography;
 
@@ -62,9 +61,8 @@ export default function EditSocialLinks() {
     }
   };
 
-  const isPredefinedSocial = (platform: string) => {
-    return availableIconsList.find(item => item.key === platform) || false;
-  };
+  const isPredefinedSocial = (platform: string) =>
+    availableIconsList.find(item => item.key === platform) || false;
 
   const selectedOther =
     modalDataState.platform !== '' &&
@@ -192,7 +190,7 @@ export default function EditSocialLinks() {
           );
         }
         const { icon, platform: platformName } = platformInfo;
-        const iconUrl = NEXT_PUBLIC_API_HOST + `${icon.slice(1)}`;
+        const iconUrl = `${NEXT_PUBLIC_API_HOST}${icon.slice(1)}`;
 
         return (
           <div className="social-handle-cell">

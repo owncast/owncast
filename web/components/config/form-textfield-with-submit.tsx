@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react';
 import { Button } from 'antd';
 import classNames from 'classnames';
-import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constants';
-
-import { ServerStatusContext } from '../../utils/server-status-context';
-import TextField, { TextFieldProps } from './form-textfield';
+import React, { useContext, useEffect, useState } from 'react';
+import { UpdateArgs } from '../../types/config-section';
+import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
@@ -12,8 +10,9 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import { UpdateArgs } from '../../types/config-section';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import FormStatusIndicator from './form-status-indicator';
+import TextField, { TextFieldProps } from './form-textfield';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -72,13 +71,15 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = ({ fieldName: changedFieldName, value: changedValue }: UpdateArgs) => {
     if (onChange) {
+      let newValue: string = changedValue;
+      if (useTrim) {
+        newValue = changedValue.trim();
+      } else if (useTrimLead) {
+        newValue = changedValue.replace(/^\s+/g, '');
+      }
       onChange({
         fieldName: changedFieldName,
-        value: useTrim
-          ? changedValue.trim()
-          : useTrimLead
-          ? changedValue.replace(/^\s+/g, '')
-          : changedValue,
+        value: newValue,
       });
     }
   };

@@ -1,24 +1,15 @@
-// comment
-
-import React, { useState, useEffect, useContext } from 'react';
-import { Table, Space, Button, Modal, Checkbox, Input, Typography } from 'antd';
-import { ServerStatusContext } from '../utils/server-status-context';
 import { DeleteOutlined } from '@ant-design/icons';
-import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../utils/urls';
+import { Button, Checkbox, Input, Modal, Space, Table, Typography } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
 import FormStatusIndicator from '../components/config/form-status-indicator';
 import {
-  createInputStatus,
-  StatusState,
-  STATUS_ERROR,
-  STATUS_PROCESSING,
-  STATUS_SUCCESS,
-} from '../utils/input-statuses';
-
-import {
-  postConfigUpdateToAPI,
   API_EXTERNAL_ACTIONS,
+  postConfigUpdateToAPI,
   RESET_TIMEOUT,
 } from '../utils/config-constants';
+import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../utils/input-statuses';
+import { ServerStatusContext } from '../utils/server-status-context';
+import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../utils/urls';
 
 const { Title, Paragraph } = Typography;
 let resetTimer = null;
@@ -156,6 +147,81 @@ export default function Actions() {
     setActions(externalActions || []);
   }, [externalActions]);
 
+  async function save(actionsData) {
+    await postConfigUpdateToAPI({
+      apiPath: API_EXTERNAL_ACTIONS,
+      data: { value: actionsData },
+      onSuccess: () => {
+        setFieldInConfigState({ fieldName: 'externalActions', value: actionsData, path: '' });
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+      },
+      onError: (message: string) => {
+        console.log(message);
+        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+      },
+    });
+  }
+
+  async function handleDelete(action) {
+    const actionsData = [...actions];
+    const index = actions.findIndex(item => item.url === action.url);
+    actionsData.splice(index, 1);
+
+    try {
+      setActions(actionsData);
+      save(actionsData);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleSave(
+    url: string,
+    title: string,
+    description: string,
+    icon: string,
+    color: string,
+    openExternally: boolean,
+  ) {
+    try {
+      const actionsData = [...actions];
+      const updatedActions = actionsData.concat({
+        url,
+        title,
+        description,
+        icon,
+        color,
+        openExternally,
+      });
+      setActions(updatedActions);
+      await save(updatedActions);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const showCreateModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalSaveButton = (
+    actionUrl: string,
+    actionTitle: string,
+    actionDescription: string,
+    actionIcon: string,
+    actionColor: string,
+    openExternally: boolean,
+  ) => {
+    setIsModalVisible(false);
+    handleSave(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
+  };
+
+  const handleModalCancelButton = () => {
+    setIsModalVisible(false);
+  };
+
   const columns = [
     {
       title: '',
@@ -185,102 +251,22 @@ export default function Actions() {
       title: 'Icon',
       dataIndex: 'icon',
       key: 'icon',
-      render: (url: string) => {
-        return url ? <img style={{ width: '2vw' }} src={url} /> : null;
-      },
+      render: (url: string) => (url ? <img style={{ width: '2vw' }} src={url} alt="" /> : null),
     },
     {
       title: 'Color',
       dataIndex: 'color',
       key: 'color',
-      render: (color: string) => {
-        return color ? <div style={{ backgroundColor: color, height: '30px' }}>{color}</div> : null;
-      },
+      render: (color: string) =>
+        color ? <div style={{ backgroundColor: color, height: '30px' }}>{color}</div> : null,
     },
     {
       title: 'Opens',
       dataIndex: 'openExternally',
       key: 'openExternally',
-      render: (openExternally: boolean) => {
-        return openExternally ? 'In a new tab' : 'In a modal';
-      },
+      render: (openExternally: boolean) => (openExternally ? 'In a new tab' : 'In a modal'),
     },
   ];
-
-  async function handleDelete(action) {
-    let actionsData = [...actions];
-    const index = actions.findIndex(item => item.url === action.url);
-    actionsData.splice(index, 1);
-
-    setActions(actionsData);
-    save(actionsData);
-    try {
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function handleSave(
-    url: string,
-    title: string,
-    description: string,
-    icon: string,
-    color: string,
-    openExternally: boolean,
-  ) {
-    try {
-      let actionsData = [...actions];
-      const updatedActions = actionsData.concat({
-        url,
-        title,
-        description,
-        icon,
-        color,
-        openExternally,
-      });
-      setActions(updatedActions);
-      await save(updatedActions);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function save(actionsData) {
-    await postConfigUpdateToAPI({
-      apiPath: API_EXTERNAL_ACTIONS,
-      data: { value: actionsData },
-      onSuccess: () => {
-        setFieldInConfigState({ fieldName: 'externalActions', value: actionsData, path: '' });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
-        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-      },
-      onError: (message: string) => {
-        console.log(message);
-        setSubmitStatus(createInputStatus(STATUS_ERROR, message));
-        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-      },
-    });
-  }
-
-  const showCreateModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleModalSaveButton = (
-    actionUrl: string,
-    actionTitle: string,
-    actionDescription: string,
-    actionIcon: string,
-    actionColor: string,
-    openExternally: boolean,
-  ) => {
-    setIsModalVisible(false);
-    handleSave(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
-  };
-
-  const handleModalCancelButton = () => {
-    setIsModalVisible(false);
-  };
 
   return (
     <div>

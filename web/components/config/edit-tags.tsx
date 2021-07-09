@@ -37,11 +37,12 @@ export default function EditInstanceTags() {
 
   let resetTimer = null;
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       clearTimeout(resetTimer);
-    };
-  }, []);
+    },
+    [],
+  );
 
   const resetStates = () => {
     setSubmitStatus(null);

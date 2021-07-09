@@ -79,7 +79,7 @@ export default function MainLayout(props) {
   const upgradeVersionString = `${upgradeVersion}` || '';
   const upgradeMessage = `Upgrade to v${upgradeVersionString}`;
 
-  const chatMenuItemStyle = 'block'; //upgradeVersion ? 'block' : 'none';
+  const chatMenuItemStyle = 'block'; // upgradeVersion ? 'block' : 'none';
 
   const clearAlertMessage = () => {
     alertMessage.setMessage(null);

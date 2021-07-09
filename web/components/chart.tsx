@@ -1,7 +1,10 @@
-import { LineChart } from 'react-chartkick';
-import 'chartkick/chart.js'
-
+import ChartJs from 'chart.js/auto';
+import Chartkick from 'chartkick';
 import format from 'date-fns/format';
+import { LineChart } from 'react-chartkick';
+
+// from https://github.com/ankane/chartkick.js/blob/master/chart.js/chart.esm.js
+Chartkick.use(ChartJs);
 
 interface TimedValue {
   time: Date;

@@ -82,7 +82,7 @@ export interface S3Field {
 }
 
 export interface ExternalAction {
-  title: string,
+  title: string;
   description: string;
   url: string;
   openExternally: boolean;

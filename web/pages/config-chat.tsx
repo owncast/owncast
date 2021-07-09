@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
 import { Typography } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { TEXTFIELD_TYPE_TEXTAREA } from '../components/config/form-textfield';
+import TextFieldWithSubmit from '../components/config/form-textfield-with-submit';
+import ToggleSwitch from '../components/config/form-toggleswitch';
+import { UpdateArgs } from '../types/config-section';
 import {
   FIELD_PROPS_DISABLE_CHAT,
   TEXTFIELD_PROPS_CHAT_USERNAME_BLOCKLIST,
 } from '../utils/config-constants';
 import { ServerStatusContext } from '../utils/server-status-context';
-import ToggleSwitch from '../components/config/form-toggleswitch';
-import { UpdateArgs } from '../types/config-section';
-import { TEXTFIELD_TYPE_TEXTAREA } from '../components/config/form-textfield';
-import TextFieldWithSubmit from '../components/config/form-textfield-with-submit';
 
 export default function ConfigChat() {
   const { Title } = Typography;
@@ -18,6 +18,13 @@ export default function ConfigChat() {
   const { serverConfig } = serverStatusData || {};
   const { chatDisabled } = serverConfig;
   const { usernameBlocklist } = serverConfig;
+
+  const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
+    setFormDataValues({
+      ...formDataValues,
+      [fieldName]: value,
+    });
+  };
 
   function handleChatDisableChange(disabled: boolean) {
     handleFieldChange({ fieldName: 'chatDisabled', value: disabled });
@@ -37,13 +44,6 @@ export default function ConfigChat() {
   if (!formDataValues) {
     return null;
   }
-
-  const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
-    setFormDataValues({
-      ...formDataValues,
-      [fieldName]: value,
-    });
-  };
 
   return (
     <div className="config-server-details-form">

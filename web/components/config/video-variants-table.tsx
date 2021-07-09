@@ -149,8 +149,8 @@ export default function CurrentVariantsTable() {
       title: '',
       dataIndex: '',
       key: 'edit',
-      render: (data: VideoVariant) => {
-        const index = data.key - 1;
+      render: ({ key }: VideoVariant) => {
+        const index = key - 1;
         return (
           <span className="actions">
             <Button

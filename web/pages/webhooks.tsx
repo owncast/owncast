@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { DeleteOutlined } from '@ant-design/icons';
 import {
+  Button,
+  Checkbox,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Space,
   Table,
   Tag,
-  Space,
-  Button,
-  Modal,
-  Checkbox,
-  Input,
-  Typography,
   Tooltip,
-  Row,
-  Col,
+  Typography,
 } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../utils/apis';
 import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../utils/urls';
-
-import { fetchData, DELETE_WEBHOOK, CREATE_WEBHOOK, WEBHOOKS } from '../utils/apis';
 
 const { Title, Paragraph } = Typography;
 
@@ -36,7 +35,7 @@ const availableEvents = {
   STREAM_STOPPED: { name: 'Stream stopped', description: 'When a stream stops', color: 'cyan' },
 };
 
-function convertEventStringToTag(eventString) {
+function convertEventStringToTag(eventString: string) {
   if (!eventString || !availableEvents[eventString]) {
     return null;
   }
@@ -61,9 +60,10 @@ function NewWebhookModal(props: Props) {
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
 
-  const events = Object.keys(availableEvents).map(key => {
-    return { value: key, label: availableEvents[key].description };
-  });
+  const events = Object.keys(availableEvents).map(key => ({
+    value: key,
+    label: availableEvents[key].description,
+  }));
 
   function onChange(checkedValues) {
     setSelectedEvents(checkedValues);
@@ -85,13 +85,11 @@ function NewWebhookModal(props: Props) {
     disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl),
   };
 
-  const checkboxes = events.map(function (singleEvent) {
-    return (
-      <Col span={8} key={singleEvent.value}>
-        <Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox>
-      </Col>
-    );
-  });
+  const checkboxes = events.map(singleEvent => (
+    <Col span={8} key={singleEvent.value}>
+      <Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox>
+    </Col>
+  ));
 
   return (
     <Modal
@@ -127,35 +125,6 @@ function NewWebhookModal(props: Props) {
 export default function Webhooks() {
   const [webhooks, setWebhooks] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const columns = [
-    {
-      title: '',
-      key: 'delete',
-      render: (text, record) => (
-        <Space size="middle">
-          <Button onClick={() => handleDelete(record.id)} icon={<DeleteOutlined />} />
-        </Space>
-      ),
-    },
-    {
-      title: 'URL',
-      dataIndex: 'url',
-      key: 'url',
-    },
-    {
-      title: 'Events',
-      dataIndex: 'events',
-      key: 'events',
-      render: events => (
-        <>
-          {events.map(event => {
-            return convertEventStringToTag(event);
-          })}
-        </>
-      ),
-    },
-  ];
 
   function handleError(error) {
     console.error('error', error);
@@ -208,6 +177,29 @@ export default function Webhooks() {
   const handleModalCancelButton = () => {
     setIsModalVisible(false);
   };
+
+  const columns = [
+    {
+      title: '',
+      key: 'delete',
+      render: (text, record) => (
+        <Space size="middle">
+          <Button onClick={() => handleDelete(record.id)} icon={<DeleteOutlined />} />
+        </Space>
+      ),
+    },
+    {
+      title: 'URL',
+      dataIndex: 'url',
+      key: 'url',
+    },
+    {
+      title: 'Events',
+      dataIndex: 'events',
+      key: 'events',
+      render: ({ map }: string[]) => <>{map(event => convertEventStringToTag(event))}</>,
+    },
+  ];
 
   return (
     <div>

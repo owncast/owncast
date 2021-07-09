@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Tooltip, Row, Col } from 'antd';
+import {
+  Table,
+  Tag,
+  Space,
+  Button,
+  Modal,
+  Checkbox,
+  Input,
+  Typography,
+  Tooltip,
+  Row,
+  Col,
+} from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
@@ -26,7 +38,7 @@ const availableScopes = {
   },
 };
 
-function convertScopeStringToTag(scopeString) {
+function convertScopeStringToTag(scopeString: string) {
   if (!scopeString || !availableScopes[scopeString]) {
     return null;
   }
@@ -50,9 +62,10 @@ function NewTokenModal(props: Props) {
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [name, setName] = useState('');
 
-  const scopes = Object.keys(availableScopes).map(key => {
-    return { value: key, label: availableScopes[key].description };
-  });
+  const scopes = Object.keys(availableScopes).map(key => ({
+    value: key,
+    label: availableScopes[key].description,
+  }));
 
   function onChange(checkedValues) {
     setSelectedScopes(checkedValues);
@@ -73,9 +86,11 @@ function NewTokenModal(props: Props) {
   function selectAll() {
     setSelectedScopes(Object.keys(availableScopes));
   }
-  const checkboxes = scopes.map(function (singleEvent) {
-    return (<Col span={8} key={singleEvent.value}><Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox></Col>)
-  });
+  const checkboxes = scopes.map(singleEvent => (
+    <Col span={8} key={singleEvent.value}>
+      <Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox>
+    </Col>
+  ));
 
   return (
     <Modal
@@ -98,9 +113,7 @@ function NewTokenModal(props: Props) {
         created.
       </p>
       <Checkbox.Group style={{ width: '100%' }} value={selectedScopes} onChange={onChange}>
-        <Row>
-          {checkboxes}
-        </Row>
+        <Row>{checkboxes}</Row>
       </Checkbox.Group>
 
       <p>
@@ -182,13 +195,7 @@ export default function AccessTokens() {
       title: 'Scopes',
       dataIndex: 'scopes',
       key: 'scopes',
-      render: scopes => (
-        <>
-          {scopes.map(scope => {
-            return convertScopeStringToTag(scope);
-          })}
-        </>
-      ),
+      render: ({ map }: string[]) => <>{map(scope => convertScopeStringToTag(scope))}</>,
     },
     {
       title: 'Last Used',

@@ -61,7 +61,7 @@ export default function NewsFeed() {
     getFeed();
   }, []);
 
-  const loadingSpinner = loading ? <Skeleton loading={true} active /> : null;
+  const loadingSpinner = loading ? <Skeleton loading active /> : null;
   const noNews = !loading && feed.length === 0 ? <div>No news.</div> : null;
 
   return (
