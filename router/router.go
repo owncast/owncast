@@ -93,10 +93,10 @@ func Start() error {
 	http.HandleFunc("/api/admin/chat/updatemessagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
 
 	// Enable/disable a user
-	http.HandleFunc("/api/admin/chat/userenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
+	http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
 
 	// Get a list of disabled users
-	http.HandleFunc("/api/admin/chat/usersdisabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
+	http.HandleFunc("/api/admin/chat/users/disabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
 
 	// Update config values
 

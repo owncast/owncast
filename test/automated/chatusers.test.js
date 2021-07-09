@@ -24,13 +24,13 @@ test('can send a chat message', async (done) => {
 });
 
 test('can disable a user', async (done) => {
-    await request.post('/api/admin/chat/userenabled').send({ "userId": userId, "enabled": false })
+    await request.post('/api/admin/chat/users/setenabled').send({ "userId": userId, "enabled": false })
     .auth('admin', 'abc123').expect(200);
     done();
 });
 
 test('verify user is disabled', async (done) => {
-    const response = await request.get('/api/admin/chat/usersdisabled').auth('admin', 'abc123').expect(200);
+    const response = await request.get('/api/admin/chat/users/disabled').auth('admin', 'abc123').expect(200);
     const tokenCheck = response.body.filter((user) => user.id === userId)
     expect(tokenCheck).toHaveLength(1);
     done();
@@ -48,13 +48,13 @@ test('verify messages from user are hidden', async (done) => {
 });
 
 test('can re-enable a user', async (done) => {
-    await request.post('/api/admin/chat/userenabled').send({ "userId": userId, "enabled": true })
+    await request.post('/api/admin/chat/users/setenabled').send({ "userId": userId, "enabled": true })
     .auth('admin', 'abc123').expect(200);
     done();
 });
 
 test('verify user is enabled', async (done) => {
-    const response = await request.get('/api/admin/chat/usersdisabled').auth('admin', 'abc123').expect(200);
+    const response = await request.get('/api/admin/chat/users/disabled').auth('admin', 'abc123').expect(200);
     const tokenCheck = response.body.filter((user) => user.id === userId)
     expect(tokenCheck).toHaveLength(0);
 

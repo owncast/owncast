@@ -680,7 +680,7 @@ paths:
         "200":
           $ref: "#/components/responses/ClientsResponse"
 
-  /api/admin/usersdisabled:
+  /api/admin/users/disabled:
       get:
         summary: Return a list of currently connected clients
         description: Return a list of currently connected clients with optional geo details.
@@ -814,7 +814,7 @@ paths:
           $ref: "#/components/responses/BasicResponse"
 
 
-  /api/admin/chat/userenabled:
+  /api/admin/chat/users/setenabled:
     post:
       summary: Enable or disable a single user.
       description: Enable or disable a single user. Disabling will also hide all the user's chat messages.
