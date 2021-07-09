@@ -14,11 +14,11 @@ func (e *UserMessageEvent) GetBroadcastPayload() EventPayload {
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
 		"user":      e.User,
-		"type":      Event_MessageSent,
+		"type":      MessageSent,
 		"visible":   e.HiddenAt == nil,
 	}
 }
 
 func (e *UserMessageEvent) GetMessageType() EventType {
-	return Event_MessageSent
+	return MessageSent
 }

@@ -120,7 +120,7 @@ func getChat(query string) []events.UserMessageEvent {
 		}
 
 		// System messages and chat actions are special and are not from real users
-		if messageType == events.Event_SystemMessageSent || messageType == events.Event_ChatActionSent {
+		if messageType == events.SystemMessageSent || messageType == events.ChatActionSent {
 			name := "Owncast"
 			userDisplayName = &name
 			color := 200

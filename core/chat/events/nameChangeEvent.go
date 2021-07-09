@@ -21,6 +21,6 @@ func (e *NameChangeBroadcast) GetBroadcastPayload() EventPayload {
 		"timestamp": e.Timestamp,
 		"user":      e.User,
 		"oldName":   e.Oldname,
-		"type":      Event_UserNameChanged,
+		"type":      UserNameChanged,
 	}
 }

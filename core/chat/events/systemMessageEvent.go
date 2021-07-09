@@ -14,7 +14,7 @@ func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
 		"id":        e.Id,
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
-		"type":      Event_SystemMessageSent,
+		"type":      SystemMessageSent,
 		"user": EventPayload{
 			"displayName": data.GetServerName(),
 		},
@@ -22,5 +22,5 @@ func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
 }
 
 func (e *SystemMessageEvent) GetMessageType() EventType {
-	return Event_SystemMessageSent
+	return SystemMessageSent
 }

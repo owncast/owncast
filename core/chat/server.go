@@ -2,7 +2,6 @@ package chat
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -32,7 +31,7 @@ type ChatServer struct {
 	// receive inbound message payload from all clients
 	inbound chan chatClientEvent
 
-	// Unregister requests from clients.
+	// unregister requests from clients.
 	unregister chan *ChatClient
 }
 
@@ -119,14 +118,14 @@ func (s *ChatServer) ClientClosed(c *ChatClient) {
 
 func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	if data.GetChatDisabled() {
-		_, _ = w.Write([]byte(events.Event_Chat_Disabled))
+		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
 	}
 
 	// Limit concurrent chat connections
 	if uint(len(s.clients)) >= s.maxClientCount {
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
-		_, _ = w.Write([]byte(events.Event_Error_Max_Connections_Exceeded))
+		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return
 	}
 
@@ -149,7 +148,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	if user == nil {
 		log.Errorln(accessToken, "has no user")
 		_ = conn.WriteJSON(events.EventPayload{
-			"type": events.Event_Error_Needs_Registration,
+			"type": events.ErrorNeedsRegistration,
 		})
 		// Send error that registration is required
 		conn.Close()
@@ -160,7 +159,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	if user.DisabledAt != nil {
 		log.Traceln("Disabled user", user.Id, user.DisplayName, "rejected")
 		_ = conn.WriteJSON(events.EventPayload{
-			"type": events.Event_Error_User_Disabled,
+			"type": events.ErrorUserDisabled,
 		})
 		conn.Close()
 		return
@@ -229,16 +228,15 @@ func (s *ChatServer) eventReceived(event chatClientEvent) {
 
 	eventType := typecheck["type"]
 
-	// fmt.Println("handleEvent", eventType)
 	switch eventType {
-	case events.Event_MessageSent:
+	case events.MessageSent:
 		s.userMessageSent(event)
 
-	case events.Event_UserNameChanged:
+	case events.UserNameChanged:
 		s.userNameChanged(event)
 
 	default:
-		fmt.Println(eventType, "event not found:", typecheck)
+		log.Debugln(eventType, "event not found:", typecheck)
 	}
 }
 

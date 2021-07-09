@@ -23,7 +23,7 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 			continue
 		}
 		payload := message.GetBroadcastPayload()
-		payload["type"] = events.Event_VisibiltyToggled
+		payload["type"] = events.VisibiltyToggled
 		if err := _server.Broadcast(payload); err != nil {
 			log.Debugln(err)
 		}

@@ -16,5 +16,5 @@ func (e *ActionEvent) GetBroadcastPayload() EventPayload {
 }
 
 func (e *ActionEvent) GetMessageType() EventType {
-	return Event_ChatActionSent
+	return ChatActionSent
 }
