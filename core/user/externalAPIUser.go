@@ -12,7 +12,7 @@ import (
 )
 
 // ExternalAPIUser represents a single 3rd party integration that uses an access token.
-// This struct generally the User struct so they can be used interchangeably.
+// This struct mostly matches the User struct so they can be used interchangeably.
 type ExternalAPIUser struct {
 	Id           string     `json:"id"`
 	AccessToken  string     `json:"accessToken"`
@@ -25,8 +25,8 @@ type ExternalAPIUser struct {
 }
 
 const (
-	// ScopeCanSendUserMessages will allow sending chat messages as itself.
-	ScopeCanSendUserMessages = "CAN_SEND_MESSAGES"
+	// ScopeCanSendChatMessages will allow sending chat messages as itself.
+	ScopeCanSendChatMessages = "CAN_SEND_MESSAGES"
 	// ScopeCanSendSystemMessages will allow sending chat messages as the system.
 	ScopeCanSendSystemMessages = "CAN_SEND_SYSTEM_MESSAGES"
 	// ScopeHasAdminAccess will allow performing administrative actions on the server.
@@ -35,7 +35,7 @@ const (
 
 // For a scope to be seen as "valid" it must live in this slice.
 var validAccessTokenScopes = []string{
-	ScopeCanSendUserMessages,
+	ScopeCanSendChatMessages,
 	ScopeCanSendSystemMessages,
 	ScopeHasAdminAccess,
 }
