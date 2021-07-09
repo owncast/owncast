@@ -27,7 +27,6 @@ const (
 
 	// ChatActionSent is a generic chat action that can be used for anything that doesn't need specific handling or formatting.
 	ChatActionSent              EventType = "CHAT_ACTION"
-	Event_UserJoined            EventType = "USER_JOINED"
 	ErrorNeedsRegistration      EventType = "ERROR_NEEDS_REGISTRATION"
 	ErrorMaxConnectionsExceeded EventType = "ERROR_MAX_CONNECTIONS_EXCEEDED"
 	ErrorUserDisabled           EventType = "ERROR_USER_DISABLED"
