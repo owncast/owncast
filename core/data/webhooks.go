@@ -26,8 +26,7 @@ func createWebhooksTable() {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
+	if _, err = stmt.Exec(); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -126,8 +125,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	for rows.Next() {
 		var url string
 
-		err = rows.Scan(&url, &event)
-		if err != nil {
+		if err := rows.Scan(&url, &event); err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the database.")
 			break

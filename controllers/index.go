@@ -112,9 +112,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	err = tmpl.Execute(w, metadata)
-
-	if err != nil {
+	if err := tmpl.Execute(w, metadata); err != nil {
 		log.Panicln(err)
 	}
 }

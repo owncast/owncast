@@ -20,8 +20,7 @@ func GetLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -39,8 +38,7 @@ func GetWarnings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Errorln(err)
 	}
 }

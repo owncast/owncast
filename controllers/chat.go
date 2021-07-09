@@ -18,8 +18,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		messages := core.GetAllChatMessages()
 
-		err := json.NewEncoder(w).Encode(messages)
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(messages); err != nil {
 			log.Errorln(err)
 		}
 	default:
