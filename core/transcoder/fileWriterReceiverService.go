@@ -74,8 +74,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	}
 
 	defer f.Close()
-	_, err = f.Write(data)
-	if err != nil {
+	if _, err := f.Write(data); err != nil {
 		returnError(err, w)
 		return
 	}

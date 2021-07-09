@@ -25,8 +25,7 @@ func createAccessTokensTable() {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
+	if _, err := stmt.Exec(); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -48,7 +47,7 @@ func InsertToken(token string, name string, scopes []string) error {
 	}
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(token, name, scopesString); err != nil {
+	if _, err := stmt.Exec(token, name, scopesString); err != nil {
 		return err
 	}
 

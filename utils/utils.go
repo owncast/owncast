@@ -161,8 +161,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 }
 
 func IsValidUrl(urlToTest string) bool {
-	_, err := url.ParseRequestURI(urlToTest)
-	if err != nil {
+	if _, err := url.ParseRequestURI(urlToTest); err != nil {
 		return false
 	}
 

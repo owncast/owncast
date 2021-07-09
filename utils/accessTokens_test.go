@@ -5,8 +5,7 @@ import (
 )
 
 func TestCreateAccessToken(t *testing.T) {
-	_, err := GenerateAccessToken()
-	if err != nil {
+	if _, err := GenerateAccessToken(); err != nil {
 		t.Error(err)
 	}
 }

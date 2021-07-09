@@ -74,8 +74,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	utils.StartPerformanceMonitor(performanceMonitorKey)
 
 	// Upload the segment
-	_, err := s.Save(localFilePath, 0)
-	if err != nil {
+	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Errorln(err)
 		return
 	}
@@ -92,8 +91,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	// so the segments and the HLS playlist referencing
 	// them are in sync.
 	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
-	_, err = s.Save(playlistPath, 0)
-	if err != nil {
+	if _, err := s.Save(playlistPath, 0); err != nil {
 		_queuedPlaylistUpdates[playlistPath] = playlistPath
 		if pErr, ok := err.(*os.PathError); ok {
 			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
@@ -108,8 +106,7 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// to make sure we're not referring to files in a playlist that don't
 	// yet exist.  See SegmentWritten.
 	if _, ok := _queuedPlaylistUpdates[localFilePath]; ok {
-		_, err := s.Save(localFilePath, 0)
-		if err != nil {
+		if _, err := s.Save(localFilePath, 0); err != nil {
 			log.Errorln(err)
 			_queuedPlaylistUpdates[localFilePath] = localFilePath
 		}
@@ -120,8 +117,7 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	err := s.rewriteRemotePlaylist(localFilePath)
-	if err != nil {
+	if err := s.rewriteRemotePlaylist(localFilePath); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -195,8 +191,7 @@ func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
 	}
 
 	p := m3u8.NewMasterPlaylist()
-	err = p.DecodeFrom(bufio.NewReader(f), false)
-	if err != nil {
+	if err := p.DecodeFrom(bufio.NewReader(f), false); err != nil {
 		log.Warnln(err)
 	}
 

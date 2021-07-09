@@ -113,8 +113,7 @@ func (yp *YP) ping() {
 	}
 
 	pingResponse := ypPingResponse{}
-	err = json.Unmarshal(body, &pingResponse)
-	if err != nil {
+	if err := json.Unmarshal(body, &pingResponse); err != nil {
 		log.Errorln(err)
 	}
 

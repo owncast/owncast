@@ -99,7 +99,7 @@ func (t *Transcoder) Start() {
 	_commandExec = exec.Command("sh", "-c", command)
 
 	if t.stdin != nil {
-	  _commandExec.Stdin = t.stdin
+		_commandExec.Stdin = t.stdin
 	}
 
 	stdout, err := _commandExec.StderrPipe()
@@ -107,8 +107,7 @@ func (t *Transcoder) Start() {
 		panic(err)
 	}
 
-	err = _commandExec.Start()
-	if err != nil {
+	if err := _commandExec.Start(); err != nil {
 		log.Errorln("Transcoder error.  See ", logging.GetTranscoderLogFilePath(), " for full output to debug.")
 		log.Panicln(err, command)
 	}

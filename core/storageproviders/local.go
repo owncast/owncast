@@ -32,16 +32,14 @@ func (s *LocalStorage) Setup() error {
 
 // SegmentWritten is called when a single segment of video is written.
 func (s *LocalStorage) SegmentWritten(localFilePath string) {
-	_, err := s.Save(localFilePath, 0)
-	if err != nil {
+	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }
 
 // VariantPlaylistWritten is called when a variant hls playlist is written.
 func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
-	_, err := s.Save(localFilePath, 0)
-	if err != nil {
+	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Errorln(err)
 		return
 	}
@@ -49,8 +47,7 @@ func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
 
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
-	_, err := s.Save(localFilePath, 0)
-	if err != nil {
+	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }
