@@ -30,7 +30,7 @@ func getCustomEmojiList() []models.CustomEmoji {
 		log.Errorln(err)
 	}
 	if emojiDirInfo.ModTime() != emojiCacheTimestamp {
-		log.Traceln("Emoji cache invalidated!")
+		log.Traceln("Emoji cache invalid")
 		emojiCache = make([]models.CustomEmoji, 0)
 	}
 
