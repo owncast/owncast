@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
-import { getLocalStorage, generateUsername } from './utils/helpers.js';
+import { getLocalStorage } from './utils/helpers.js';
 import { KEY_USERNAME } from './utils/constants.js';
 
 export default class StandaloneChat extends Component {
@@ -14,7 +14,7 @@ export default class StandaloneChat extends Component {
     this.state = {
       websocket: new Websocket(),
       chatEnabled: true, // always true for standalone chat
-      username: getLocalStorage(KEY_USERNAME) || generateUsername(),
+      username: getLocalStorage(KEY_USERNAME),
     };
 
     this.websocket = null;

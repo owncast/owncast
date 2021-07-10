@@ -92,10 +92,6 @@ export function getOrientation(forTouch = false) {
   }
 }
 
-export function generateUsername() {
-  return `User ${Math.floor(Math.random() * 42) + 1}`;
-}
-
 export function padLeft(text, pad, size) {
   return String(pad.repeat(size) + text).slice(-size);
 }

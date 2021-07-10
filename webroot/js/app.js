@@ -19,7 +19,6 @@ import {
   classNames,
   clearLocalStorage,
   debounce,
-  generateUsername,
   getLocalStorage,
   getOrientation,
   hasTouchScreen,
@@ -61,7 +60,7 @@ export default class App extends Component {
       displayChat: chatStorage === null ? true : chatStorage,
       accessToken: null,
       chatInputEnabled: false, // chat input box state
-      username: getLocalStorage(KEY_USERNAME) || generateUsername(),
+      username: getLocalStorage(KEY_USERNAME),
       isRegistering: false,
       touchKeyboardActive: false,
 
