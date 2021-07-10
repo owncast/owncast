@@ -78,7 +78,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
 
 	// Get a a detailed list of currently connected clients
-	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(controllers.GetConnectedClients))
+	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(admin.GetConnectedClients))
 
 	// Get all logs
 	http.HandleFunc("/api/admin/logs", middleware.RequireAdminAuth(admin.GetLogs))
@@ -167,7 +167,7 @@ func Start() error {
 	http.HandleFunc("/api/integrations/chat", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetChatMessages))
 
 	// Connected clients
-	http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetConnectedClients))
+	http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedClients))
 
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
