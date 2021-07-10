@@ -22,6 +22,7 @@ const emojiDir = "/img/emoji" // Relative to webroot
 var emojiCache = make([]models.CustomEmoji, 0)
 var emojiCacheTimestamp time.Time
 
+// getCustomEmojiList returns a list of custom emoji either from the cache or from the emoji directory.
 func getCustomEmojiList() []models.CustomEmoji {
 	fullPath := filepath.Join(config.WebRoot, emojiDir)
 	emojiDirInfo, err := os.Stat(fullPath)
