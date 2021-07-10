@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -243,6 +244,10 @@ func getUsersFromRows(rows *sql.Rows) []*User {
 		}
 		users = append(users, user)
 	}
+
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].CreatedAt.Before(users[j].CreatedAt)
+	})
 
 	return users
 }

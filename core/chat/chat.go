@@ -2,6 +2,7 @@ package chat
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/owncast/owncast/core/chat/events"
 	log "github.com/sirupsen/logrus"
@@ -28,6 +29,10 @@ func GetClients() []*ChatClient {
 	for _, client := range _server.clients {
 		clients = append(clients, client)
 	}
+
+	sort.Slice(clients, func(i, j int) bool {
+		return clients[i].ConnectedAt.Before(clients[j].ConnectedAt)
+	})
 
 	return clients
 }
