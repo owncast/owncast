@@ -22,13 +22,14 @@ import (
 
 // DoesFileExists checks if the file exists.
 func DoesFileExists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
+	if _, err := os.Stat(name); err == nil {
+		return true
+	} else if os.IsNotExist(err) {
+		return false
+	} else {
+		log.Errorln(err)
+		return false
 	}
-
-	return true
 }
 
 // GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path.
