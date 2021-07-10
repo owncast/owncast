@@ -278,9 +278,9 @@ export default class Chat extends Component {
 
     if (
       type === SOCKET_MESSAGE_TYPES.CHAT &&
-      !nameList.includes(message.author)
+      !nameList.includes(message.user.displayName)
     ) {
-      return nameList.push(message.author);
+      return nameList.push(message.user.displayName);
     } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
       const { oldName, newName } = message;
       const oldNameIndex = nameList.indexOf(oldName);

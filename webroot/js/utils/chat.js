@@ -56,8 +56,8 @@ export function extraUserNamesFromMessageHistory(messages) {
   const list = [];
   if (messages) {
     messages.forEach(function(message) {
-      if (!list.includes(message.author)) {
-        list.push(message.author);
+      if (!list.includes(message.user.displayName)) {
+        list.push(message.user.displayName);
       }
     });
   }
