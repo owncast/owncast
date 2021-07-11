@@ -5,9 +5,6 @@ request = request('http://127.0.0.1:8080');
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 
-const WebSocket = require('ws');
-var ws;
-
 const testVisibilityMessage = {
     body: "message " + Math.floor(Math.random() * 100),
     type: 'CHAT',
@@ -16,7 +13,6 @@ const testVisibilityMessage = {
 test('can send a chat message', async (done) => {
     const registration = await registerChat();
     const accessToken = registration.accessToken;
-    userDisplayName = registration.displayName;
   
     sendChatMessage(testVisibilityMessage, accessToken, done);
   });
