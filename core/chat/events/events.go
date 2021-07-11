@@ -27,7 +27,7 @@ type OutboundEvent interface {
 
 // Event is any kind of event.  A type is required to be specified.
 type Event struct {
-	Type      string    `json:"type"`
+	Type      EventType `json:"type"`
 	Id        string    `json:"id"`
 	Timestamp time.Time `json:"timestamp"`
 }
