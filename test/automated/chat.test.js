@@ -36,7 +36,6 @@ test('can fetch chat messages', (done) => {
 
       expect(message.body).toBe(message.body);
       expect(message.user.displayName).toBe(userDisplayName);
-      // expect(message.date).toBe(testMessage.date);
       expect(message.type).toBe(testMessage.type);
 
       done();
