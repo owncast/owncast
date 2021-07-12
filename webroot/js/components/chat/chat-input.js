@@ -33,8 +33,6 @@ export default class ChatInput extends Component {
 
     this.messageCharCount = 0;
 
-    this.emojiPicker = null;
-
     this.prepNewLine = false;
     this.modifierKeyPressed = false; // control/meta/shift/alt
 
@@ -43,6 +41,7 @@ export default class ChatInput extends Component {
       inputText: '', // for counting
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH,
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
+      emojiPicker: null,
     };
 
     this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
@@ -72,7 +71,7 @@ export default class ChatInput extends Component {
         return response.json();
       })
       .then((json) => {
-        this.emojiPicker = new EmojiButton({
+        const emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
           custom: json,
@@ -85,13 +84,14 @@ export default class ChatInput extends Component {
           position: 'right-start',
           strategy: 'absolute',
         });
-        this.emojiPicker.on('emoji', (emoji) => {
+        emojiPicker.on('emoji', (emoji) => {
           this.handleEmojiSelected(emoji);
         });
-        this.emojiPicker.on('hidden', () => {
+        emojiPicker.on('hidden', () => {
           this.formMessageInput.current.focus();
           replaceCaret(this.formMessageInput.current);
         });
+        this.setState({ emojiPicker });
       })
       .catch((error) => {
         // this.handleNetworkingError(`Emoji Fetch: ${error}`);
@@ -99,8 +99,9 @@ export default class ChatInput extends Component {
   }
 
   handleEmojiButtonClick() {
-    if (this.emojiPicker) {
-      this.emojiPicker.togglePicker(this.emojiPickerButton.current);
+    const { emojiPicker } = this.state;
+    if (emojiPicker) {
+      emojiPicker.togglePicker(this.emojiPickerButton.current);
     }
   }
 
@@ -280,10 +281,10 @@ export default class ChatInput extends Component {
   }
 
   render(props, state) {
-    const { hasSentFirstChatMessage, inputCharsLeft, inputHTML } = state;
+    const { hasSentFirstChatMessage, inputCharsLeft, inputHTML, emojiPicker } = state;
     const { inputEnabled } = props;
     const emojiButtonStyle = {
-      display: this.emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
+      display: emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
     };
     const extraClasses = classNames({
       'display-count': inputCharsLeft <= CHAT_CHAR_COUNT_BUFFER,
