@@ -34,11 +34,11 @@ async function registerChat() {
   }
 }
 
-async function sendMessage() {
+async function runSingleUserIteration() {
   const registration = await registerChat();
   const accessToken = registration.accessToken;
 
-  function send() {
+  function sendTestMessage() {
     if (availableMessages.length == 0) {
       availableMessages = messages.slice();
     }
@@ -54,20 +54,22 @@ async function sendMessage() {
   
     ws.send(JSON.stringify(testMessage));
   
-    setTimeout(sendMessage, 20);
+    // After this message is sent then run it again.
+    setTimeout(runSingleUserIteration, 20);
   }
   
   const ws = new WebSocket(`ws://localhost:8080/ws?accessToken=${accessToken}`, {
     origin: 'http://localhost:8080',
   });
 
+  // When the websocket connects then send a chat message.
   ws.on('open', function open() {
     connectionCount++;
     console.log(connectionCount + '/' + targetConnectionCount, " chat clients.")
     if (connectionCount === targetConnectionCount) {
         process.exit();
     }
-    setTimeout(send, 5);
+    setTimeout(sendTestMessage, 5);
   });
 
   ws.on('error', function incoming(data) {
@@ -75,4 +77,4 @@ async function sendMessage() {
   });
 }
 
-sendMessage();
+runSingleUserIteration();
