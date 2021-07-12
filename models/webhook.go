@@ -29,8 +29,7 @@ var validEvents = []EventType{
 // This is not a efficient method.
 func HasValidEvents(events []EventType) bool {
 	for _, event := range events {
-		_, foundInSlice := utils.FindInSlice(validEvents, event)
-		if !foundInSlice {
+		if _, foundInSlice := utils.FindInSlice(validEvents, event); !foundInSlice {
 			return false
 		}
 	}
