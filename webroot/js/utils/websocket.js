@@ -11,13 +11,13 @@ export const SOCKET_MESSAGE_TYPES = {
   PONG: 'PONG',
   SYSTEM: 'SYSTEM',
   USER_JOINED: 'USER_JOINED',
-  CHAT_ACTION: 'CHAT_ACTION'
+  CHAT_ACTION: 'CHAT_ACTION',
+  USER_DISABLED: 'ERROR_USER_DISABLED',
 };
 
 export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
-  WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
 }
 
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
@@ -85,6 +85,7 @@ export default class Websocket {
     this.isShutdown = true;
     this.websocket.close();
   }
+
   // Private methods
 
   // Fire the callbacks of the listeners.
@@ -131,7 +132,9 @@ export default class Websocket {
   onError(e) {
     this.handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
     this.websocket.close();
-    this.scheduleReconnect();
+    if (!this.isShutdown) {
+      this.scheduleReconnect();
+    }
   }
 
   scheduleReconnect() {
