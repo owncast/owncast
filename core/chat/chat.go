@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"errors"
 	"net/http"
 	"sort"
 
@@ -19,8 +20,20 @@ func Start() error {
 
 	return nil
 }
-func GetClient(id uint) *ChatClient {
-	return _server.clients[id]
+
+// GetClientsForUser will return chat connections that are owned by a specific user.
+func GetClientsForUser(userID string) ([]*ChatClient, error) {
+	clients := map[string][]*ChatClient{}
+
+	for _, client := range _server.clients {
+		clients[client.User.Id] = append(clients[client.User.Id], client)
+	}
+
+	if _, exists := clients[userID]; !exists {
+		return nil, errors.New("no connections for user found")
+	}
+
+	return clients[userID], nil
 }
 
 func GetClients() []*ChatClient {
