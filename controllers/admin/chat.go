@@ -5,6 +5,7 @@ package admin
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/owncast/owncast/controllers"
@@ -82,6 +83,8 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	if !request.Enabled {
 		chat.DisconnectUser(request.UserID)
 	}
+
+	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", request.UserID, request.Enabled))
 }
 
 func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
