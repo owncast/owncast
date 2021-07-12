@@ -2,7 +2,6 @@ package chat
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -209,36 +208,36 @@ func (s *ChatServer) Send(payload events.EventPayload, client *ChatClient) {
 // DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
 func (s *ChatServer) DisconnectUser(userID string) {
 	s.mu.Lock()
-	clients := GetClients()
+	clients, err := GetClientsForUser(userID)
 	s.mu.Unlock()
 
-	for _, client := range clients {
-		if client.User.Id == userID {
-			log.Debugln("Disconnecting client", client.User.Id, "owned by", client.User.DisplayName)
-
-			go func() {
-				event := events.UserDisabledEvent{}
-				event.SetDefaults()
-
-				// Send this disabled event specifically to this single connected client
-				// to let them know they've been banned.
-				_server.Send(event.GetBroadcastPayload(), client)
-
-				// Give the socket time to send out the above message.
-				// Unfortunately I don't know of any way to get a real callback to know when
-				// the message was successfully sent, so give it a couple seconds.
-				time.Sleep(2 * time.Second)
-
-				// Forcefully disconnect if still valid.
-				if client != nil {
-					client.close()
-				}
-			}()
-		}
+	if err != nil || clients == nil || len(clients) == 0 {
+		log.Debugln("Requested to disconnect user", userID, err)
+		return
 	}
 
-	disconnectedUser := user.GetUserById(userID)
-	_ = SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
+	for _, client := range clients {
+		log.Traceln("Disconnecting client", client.User.Id, "owned by", client.User.DisplayName)
+
+		go func(client *ChatClient) {
+			event := events.UserDisabledEvent{}
+			event.SetDefaults()
+
+			// Send this disabled event specifically to this single connected client
+			// to let them know they've been banned.
+			_server.Send(event.GetBroadcastPayload(), client)
+
+			// Give the socket time to send out the above message.
+			// Unfortunately I don't know of any way to get a real callback to know when
+			// the message was successfully sent, so give it a couple seconds.
+			time.Sleep(2 * time.Second)
+
+			// Forcefully disconnect if still valid.
+			if client != nil {
+				client.close()
+			}
+		}(client)
+	}
 }
 
 func (s *ChatServer) eventReceived(event chatClientEvent) {
