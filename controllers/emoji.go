@@ -40,14 +40,15 @@ func getCustomEmojiList() []models.CustomEmoji {
 			log.Errorln(err)
 			return emojiCache
 		}
+
+		emojiCacheTimestamp = emojiDirInfo.ModTime()
+
 		for _, f := range files {
 			name := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
 			emojiPath := filepath.Join(emojiDir, f.Name())
 			singleEmoji := models.CustomEmoji{Name: name, Emoji: emojiPath}
 			emojiCache = append(emojiCache, singleEmoji)
 		}
-
-		emojiCacheTimestamp = emojiDirInfo.ModTime()
 	}
 
 	return emojiCache
