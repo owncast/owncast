@@ -57,9 +57,10 @@ export default class App extends Component {
 
     this.state = {
       websocket: null,
-      displayChat: chatStorage === null ? true : chatStorage,
-      accessToken: null,
+      canChat: false, // all of chat functionality (panel + username)
+      displayChatPanel: chatStorage === null ? true : (chatStorage === 'true'), // just the chat panel
       chatInputEnabled: false, // chat input box state
+      accessToken: null,
       username: getLocalStorage(KEY_USERNAME),
       isRegistering: false,
       touchKeyboardActive: false,
@@ -90,7 +91,7 @@ export default class App extends Component {
     this.playerRestartTimer = null;
     this.offlineTimer = null;
     this.statusTimer = null;
-    this.disableChatTimer = null;
+    this.disableChatInputTimer = null;
     this.streamDurationTimer = null;
 
     // misc dom events
@@ -156,7 +157,7 @@ export default class App extends Component {
     clearInterval(this.playerRestartTimer);
     clearInterval(this.offlineTimer);
     clearInterval(this.statusTimer);
-    clearTimeout(this.disableChatTimer);
+    clearTimeout(this.disableChatInputTimer);
     clearInterval(this.streamDurationTimer);
     window.removeEventListener('resize', this.handleWindowResize);
     window.removeEventListener('blur', this.handleWindowBlur);
@@ -217,16 +218,12 @@ export default class App extends Component {
     const chatBlocked = getLocalStorage('owncast_chat_blocked');
     if (!chatBlocked && !this.hasConfiguredChat && !chatDisabled) {
       this.setupChatAuth();
-    } else if (chatBlocked) {
-      this.setState({
-        displayChat: false,
-        chatDisabled: true,
-      })
     }
-    
+
     this.hasConfiguredChat = true;
 
     this.setState({
+      canChat: !chatBlocked,
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
@@ -300,7 +297,7 @@ export default class App extends Component {
       TIMER_DISABLE_CHAT_AFTER_OFFLINE -
       (Date.now() - new Date(this.state.lastDisconnectTime));
     const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
-    this.disableChatTimer = setTimeout(this.disableChatInput, countdown);
+    this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
     this.setState({
       streamOnline: false,
       streamStatusMessage: MESSAGE_OFFLINE,
@@ -320,8 +317,8 @@ export default class App extends Component {
   // play video!
   handleOnlineMode() {
     this.player.startPlayer();
-    clearTimeout(this.disableChatTimer);
-    this.disableChatTimer = null;
+    clearTimeout(this.disableChatInputTimer);
+    this.disableChatInputTimer = null;
 
     this.streamDurationTimer = setInterval(
       this.setCurrentStreamDuration,
@@ -377,16 +374,12 @@ export default class App extends Component {
   }
 
   handleChatPanelToggle() {
-    const { displayChat: curDisplayed } = this.state;
+    const { displayChatPanel: curDisplayed } = this.state;
 
     const displayChat = !curDisplayed;
-    if (displayChat) {
-      setLocalStorage(KEY_CHAT_DISPLAYED, displayChat);
-    } else {
-      clearLocalStorage(KEY_CHAT_DISPLAYED);
-    }
+    setLocalStorage(KEY_CHAT_DISPLAYED, displayChat);
     this.setState({
-      displayChat,
+      displayChatPanel: displayChat,
     });
   }
 
@@ -540,7 +533,7 @@ export default class App extends Component {
 
   disableChat() {
     this.state.websocket.shutdown();
-    this.setState({websocket: null, displayChat: false});
+    this.setState({ websocket: null, canChat: false });
   }
 
   async setupChatAuth(force) {
@@ -548,7 +541,7 @@ export default class App extends Component {
     var username = getLocalStorage(KEY_USERNAME);
 
     if (!accessToken || force) {
-      try {    
+      try {
         this.isRegistering = true;
         const registration = await registerChat(this.state.username);
         accessToken = registration.accessToken;
@@ -578,9 +571,9 @@ export default class App extends Component {
     );
 
     this.setState({
-      username: username,
-      websocket: websocket,
-      accessToken: accessToken,
+      username,
+      websocket,
+      accessToken,
     });
   }
 
@@ -588,7 +581,9 @@ export default class App extends Component {
     const {
       chatInputEnabled,
       configData,
-      displayChat,
+      displayChatPanel,
+      canChat,
+
       isPlaying,
       orientation,
       playerActive,
@@ -604,7 +599,6 @@ export default class App extends Component {
       externalAction,
       lastDisconnectTime,
     } = state;
-
     const {
       version: appVersion,
       logo = TEMP_IMAGE,
@@ -636,13 +630,13 @@ export default class App extends Component {
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
-    const shouldDisplayChat = displayChat && !chatDisabled;
-    const usernameStyle = chatDisabled ? 'none' : 'flex';
+    const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
 
     const extraAppClasses = classNames({
       'config-loading': configData.loading,
       chat: shouldDisplayChat,
-      'no-chat': !shouldDisplayChat,
+      'chat-hidden': !displayChatPanel && canChat && !chatDisabled, // hide panel
+      'chat-disabled': !canChat || chatDisabled,
       'single-col': singleColMode,
       'bg-gray-800': singleColMode && shouldDisplayChat,
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
@@ -724,7 +718,6 @@ export default class App extends Component {
             <div
               id="user-options-container"
               class="flex flex-row justify-end items-center flex-no-wrap"
-              style=${{ display: usernameStyle }}
             >
               <${UsernameForm}
                 username=${username}
