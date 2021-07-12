@@ -38,7 +38,6 @@ func main() {
 		config.LogDirectory = *logDirectory
 	}
 
-	configureLogging(*enableDebugOptions, *enableVerboseLogging)
 	log.Infoln(config.GetReleaseString())
 
 	if *backupDirectory != "" {
@@ -51,6 +50,8 @@ func main() {
 			log.Fatalln("Cannot create data directory", err)
 		}
 	}
+
+	configureLogging(*enableDebugOptions, *enableVerboseLogging)
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {
