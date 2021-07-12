@@ -201,6 +201,9 @@ func SetMessageVisibilityForUserId(userID string, visible bool) error {
 }
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		return err
@@ -276,6 +279,9 @@ func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 // Only keep recent messages so we don't keep more chat data than needed
 // for privacy and efficiency reasons.
 func runPruner() {
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
 	log.Traceln("Removing chat messages older than", maxBacklogHours, "hours")
 
 	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`
