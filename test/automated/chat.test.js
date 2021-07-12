@@ -7,8 +7,6 @@ const sendChatMessage = require('./lib/chat').sendChatMessage;
 
 var userDisplayName;
 const message = Math.floor(Math.random() * 100) + ' test 123';
-// const messageRaw = message + ' *and some markdown too*';
-// const messageMarkdown = '<p>' + message + ' <em>and some markdown too</em></p>'
 
 const testMessage = {
   body: message,
