@@ -32,7 +32,7 @@ test('can fetch chat messages', (done) => {
         return (msg.body = testMessage.body);
       })[0];
 
-      expect(message.body).toBe(message.body);
+      expect(message.body).toBe(testMessage.body);
       expect(message.user.displayName).toBe(userDisplayName);
       expect(message.type).toBe(testMessage.type);
 
