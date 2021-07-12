@@ -56,7 +56,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	var request registerAnonymousUserRequest
-	if err := decoder.Decode(&request); err != nil {
+	if err := decoder.Decode(&request); err != nil { //nolint
 		// this is fine. register a new user anyway.
 	}
 
@@ -71,8 +71,6 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		AccessToken: newUser.AccessToken,
 		DisplayName: newUser.DisplayName,
 	}
-
-	log.Debugln("Registering user....", newUser.AccessToken)
 
 	WriteResponse(w, response)
 }
