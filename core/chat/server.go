@@ -2,6 +2,7 @@ package chat
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -204,19 +205,34 @@ func (s *ChatServer) Send(payload events.EventPayload, client *ChatClient) {
 // DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
 func (s *ChatServer) DisconnectUser(userID string) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+	clients := GetClients()
+	s.mu.Unlock()
 
-	for _, client := range s.clients {
+	for _, client := range clients {
 		if client.User.Id == userID {
+			log.Debugln("Disconnecting client", client.User.Id, "owned by", client.User.DisplayName)
+
 			go func() {
 				event := events.UserDisabledEvent{}
 				event.SetDefaults()
+
+				// Send this disabled event specifically to this single connected client
+				// to let them know they've been banned.
 				_server.Send(event.GetBroadcastPayload(), client)
-				time.Sleep(1 * time.Second) // Allow the socket to send out the above message
+
+				// Give the socket time to send out the above message.
+				// Unfortunately I don't know of any way to get a real callback to know when
+				// the message was successfully sent, so give it a couple seconds.
+				time.Sleep(2 * time.Second)
+
+				// Forcefully disconnect.
 				client.close()
 			}()
 		}
 	}
+
+	disconnectedUser := user.GetUserById(userID)
+	_ = SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 }
 
 func (s *ChatServer) eventReceived(event chatClientEvent) {

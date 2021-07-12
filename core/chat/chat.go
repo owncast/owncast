@@ -26,6 +26,7 @@ func GetClient(id uint) *ChatClient {
 func GetClients() []*ChatClient {
 	clients := []*ChatClient{}
 
+	// Convert the keyed map to a slice.
 	for _, client := range _server.clients {
 		clients = append(clients, client)
 	}

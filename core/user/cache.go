@@ -22,10 +22,10 @@ func init() {
 
 func invalidateUserCache(id string) {
 	if err := _userIdCache.Remove(id); err != nil {
-		log.Debugln(err)
+		log.Traceln(err)
 	}
 	if err := _userAccessTokenCache.Remove(id); err != nil {
-		log.Debugln(err)
+		log.Traceln(err)
 	}
 }
 

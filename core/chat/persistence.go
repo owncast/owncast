@@ -67,11 +67,7 @@ func saveEvent(id string, userId string, body string, eventType string, hidden *
 		return
 	}
 
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			log.Debugln(err)
-		}
-	}()
+	defer tx.Rollback() // nolint
 
 	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {

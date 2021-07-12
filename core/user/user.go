@@ -107,15 +107,14 @@ func create(user *User) error {
 	defer _datastore.DbLock.Unlock()
 
 	tx, err := _datastore.DB.Begin()
-
 	if err != nil {
 		log.Debugln(err)
 	}
 	defer func() {
-		if err := tx.Rollback(); err != nil {
-			log.Debugln(err)
-		}
+		_ = tx.Rollback()
 	}()
+
+	log.Traceln("Creating new user", user.Id, user.DisplayName)
 
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
 
@@ -140,11 +139,8 @@ func SetEnabled(userID string, enabled bool) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			log.Debugln(err)
-		}
-	}()
+
+	defer tx.Rollback() //nolint
 
 	var stmt *sql.Stmt
 	if !enabled {
@@ -213,6 +209,11 @@ func GetDisabledUsers() []*User {
 	defer rows.Close()
 
 	users := getUsersFromRows(rows)
+
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].DisabledAt.Before(*users[j].DisabledAt)
+	})
+
 	return users
 }
 
