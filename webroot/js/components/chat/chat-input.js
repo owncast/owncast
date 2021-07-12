@@ -281,7 +281,8 @@ export default class ChatInput extends Component {
   }
 
   render(props, state) {
-    const { hasSentFirstChatMessage, inputCharsLeft, inputHTML, emojiPicker } = state;
+    const { hasSentFirstChatMessage, inputCharsLeft, inputHTML, emojiPicker } =
+      state;
     const { inputEnabled } = props;
     const emojiButtonStyle = {
       display: emojiPicker && inputCharsLeft > 0 ? 'block' : 'none',
