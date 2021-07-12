@@ -6,6 +6,7 @@ package logging
 import (
 	"math"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -29,9 +30,10 @@ var Logger *OCLogger
 // Setup configures our custom logging destinations.
 func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	// Create the logging directory if needed
-	if !utils.DoesFileExists(getLogFilePath()) {
-		if err := os.Mkdir(getLogFilePath(), 0700); err != nil {
-			logger.Errorln("unable to create directory", getLogFilePath(), err)
+	loggingDirectory := filepath.Dir(getLogFilePath())
+	if !utils.DoesFileExists(loggingDirectory) {
+		if err := os.Mkdir(loggingDirectory, 0700); err != nil {
+			logger.Errorln("unable to create logs directory", loggingDirectory, err)
 		}
 	}
 
