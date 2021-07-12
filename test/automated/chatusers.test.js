@@ -60,14 +60,3 @@ test('verify user is enabled', async (done) => {
 
     done();
 });
-
-test('verify messages from user are visible', async (done) => {
-    const response = await request.get('/api/admin/chat/messages')
-    .auth('admin', 'abc123')
-    .expect(200);
-    const message = response.body.filter(obj => {
-        return obj.user.id === userId;
-    });
-    expect(message[0].hiddenAt).toBeUndefined();
-    done();
-});
