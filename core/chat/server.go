@@ -181,6 +181,10 @@ func (s *ChatServer) Broadcast(payload events.EventPayload) error {
 	defer s.mu.Unlock()
 
 	for _, client := range s.clients {
+		if client == nil {
+			continue
+		}
+
 		select {
 		case client.send <- data:
 		default:
@@ -225,8 +229,10 @@ func (s *ChatServer) DisconnectUser(userID string) {
 				// the message was successfully sent, so give it a couple seconds.
 				time.Sleep(2 * time.Second)
 
-				// Forcefully disconnect.
-				client.close()
+				// Forcefully disconnect if still valid.
+				if client != nil {
+					client.close()
+				}
 			}()
 		}
 	}
