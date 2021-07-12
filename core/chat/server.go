@@ -146,7 +146,6 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	// A user is required to use the websocket
 	user := user.GetUserByToken(accessToken)
 	if user == nil {
-		log.Errorln(accessToken, "has no user")
 		_ = conn.WriteJSON(events.EventPayload{
 			"type": events.ErrorNeedsRegistration,
 		})

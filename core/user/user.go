@@ -262,7 +262,6 @@ func getUserFromRow(row *sql.Row) *User {
 	var userNameChangedAt *time.Time
 
 	if err := row.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt, &previousUsernames, &userNameChangedAt); err != nil {
-		log.Errorln("error fetching single user from row", err)
 		return nil
 	}
 
