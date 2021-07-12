@@ -13,7 +13,6 @@ const testMessage = {
   type: 'CHAT',
 };
 
-
 test('can send a chat message', async (done) => {
   const registration = await registerChat();
   const accessToken = registration.accessToken;
@@ -22,20 +21,20 @@ test('can send a chat message', async (done) => {
   sendChatMessage(testMessage, accessToken, done);
 });
 
-test('can fetch chat messages', (done) => {
-  request
+test('can fetch chat messages', async (done) => {
+  const res = await request
     .get('/api/admin/chat/messages')
     .auth('admin', 'abc123')
-    .expect(200)
-    .then((res) => {
-      const message = res.body.filter(function (msg) {
-        return (msg.body = testMessage.body);
-      })[0];
+    .expect(200);
 
-      expect(message.body).toBe(testMessage.body);
-      expect(message.user.displayName).toBe(userDisplayName);
-      expect(message.type).toBe(testMessage.type);
+    const expectedBody = `<p>${testMessage.body}</p>`
+  const message = res.body.filter(function (msg) {
+    return msg.body ===  expectedBody
+  })[0];
 
-      done();
-    });
+  expect(message.body).toBe(expectedBody);
+  expect(message.user.displayName).toBe(userDisplayName);
+  expect(message.type).toBe(testMessage.type);
+
+  done();
 });
