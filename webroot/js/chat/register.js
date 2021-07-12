@@ -1,7 +1,5 @@
 import {URL_CHAT_REGISTRATION} from "../utils/constants.js";
 
-// TODO: Be able to pass in the username they want to register as
-// in case they have one stored in localstorage already.
 export async function registerChat(username) {
     const options = {
         method: 'POST',
