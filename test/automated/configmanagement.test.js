@@ -31,6 +31,8 @@ const s3Config = {
   region: randomString(),
 };
 
+const forbiddenUsernames = [randomString(), randomString(), randomString()];
+
 test('set server name', async (done) => {
   const res = await sendConfigChangeRequest('name', serverName);
   done();
@@ -81,6 +83,11 @@ test('set s3 configuration', async (done) => {
   done();
 });
 
+test('set forbidden usernames', async (done) => {
+  const res = await sendConfigChangeRequest('chat/forbiddenusernames', forbiddenUsernames);
+  done();
+});
+
 test('verify updated config values', async (done) => {
   const res = await request.get('/api/config');
   expect(res.body.name).toBe(serverName);
@@ -122,6 +129,7 @@ test('admin configuration is correct', (done) => {
       expect(res.body.instanceDetails.socialHandles).toStrictEqual(
         socialHandles
       );
+      expect(res.body.forbiddenUsernames).toStrictEqual(forbiddenUsernames);
 
       expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
       expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(

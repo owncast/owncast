@@ -20,7 +20,7 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	}
 
 	proposedUsername := receivedEvent.NewName
-	blocklist := data.GetUsernameBlocklist()
+	blocklist := data.GetForbiddenUsernameList()
 
 	for _, blockedName := range blocklist {
 		normalizedName := strings.TrimSpace(blockedName)

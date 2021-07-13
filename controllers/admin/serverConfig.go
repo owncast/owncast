@@ -3,7 +3,6 @@ package admin
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
@@ -16,7 +15,7 @@ import (
 // GetServerConfig gets the config details of the server.
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-	usernameBlocklist := strings.Join(data.GetUsernameBlocklist(), ",")
+	usernameBlocklist := data.GetForbiddenUsernameList()
 
 	var videoQualityVariants = make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
@@ -59,11 +58,11 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Enabled:     data.GetDirectoryEnabled(),
 			InstanceURL: data.GetServerURL(),
 		},
-		S3:                data.GetS3Config(),
-		ExternalActions:   data.GetExternalActions(),
-		SupportedCodecs:   transcoder.GetCodecs(ffmpeg),
-		VideoCodec:        data.GetVideoCodec(),
-		UsernameBlocklist: usernameBlocklist,
+		S3:                 data.GetS3Config(),
+		ExternalActions:    data.GetExternalActions(),
+		SupportedCodecs:    transcoder.GetCodecs(ffmpeg),
+		VideoCodec:         data.GetVideoCodec(),
+		ForbiddenUsernames: usernameBlocklist,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -73,20 +72,20 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 type serverConfigAdminResponse struct {
-	InstanceDetails   webConfigResponse       `json:"instanceDetails"`
-	FFmpegPath        string                  `json:"ffmpegPath"`
-	StreamKey         string                  `json:"streamKey"`
-	WebServerPort     int                     `json:"webServerPort"`
-	WebServerIP       string                  `json:"webServerIP"`
-	RTMPServerPort    int                     `json:"rtmpServerPort"`
-	S3                models.S3               `json:"s3"`
-	VideoSettings     videoSettings           `json:"videoSettings"`
-	YP                yp                      `json:"yp"`
-	ChatDisabled      bool                    `json:"chatDisabled"`
-	ExternalActions   []models.ExternalAction `json:"externalActions"`
-	SupportedCodecs   []string                `json:"supportedCodecs"`
-	VideoCodec        string                  `json:"videoCodec"`
-	UsernameBlocklist string                  `json:"usernameBlocklist"`
+	InstanceDetails    webConfigResponse       `json:"instanceDetails"`
+	FFmpegPath         string                  `json:"ffmpegPath"`
+	StreamKey          string                  `json:"streamKey"`
+	WebServerPort      int                     `json:"webServerPort"`
+	WebServerIP        string                  `json:"webServerIP"`
+	RTMPServerPort     int                     `json:"rtmpServerPort"`
+	S3                 models.S3               `json:"s3"`
+	VideoSettings      videoSettings           `json:"videoSettings"`
+	YP                 yp                      `json:"yp"`
+	ChatDisabled       bool                    `json:"chatDisabled"`
+	ExternalActions    []models.ExternalAction `json:"externalActions"`
+	SupportedCodecs    []string                `json:"supportedCodecs"`
+	VideoCodec         string                  `json:"videoCodec"`
+	ForbiddenUsernames []string                `json:"forbiddenUsernames"`
 }
 
 type videoSettings struct {

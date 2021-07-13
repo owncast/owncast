@@ -42,7 +42,7 @@ func GetCommit() string {
 	return GitCommit
 }
 
-var DefaultBlockedUsernames = []string{
+var DefaultForbiddenUsernames = []string{
 	"owncast", "operator", "admin", "system",
 }
 

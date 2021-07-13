@@ -572,17 +572,24 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
 }
 
-// SetUsernameBlocklist will set the list of usernames we do not allow to use.
-func SetUsernameBlocklist(w http.ResponseWriter, r *http.Request) {
-	usernames, success := getValueFromRequest(w, r)
-	if !success {
-		controllers.WriteSimpleResponse(w, false, "unable to update chat username blocklist")
+// SetForbiddenUsernameList will set the list of usernames we do not allow to use.
+func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+	type forbiddenUsernameListRequest struct {
+		Value []string `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request forbiddenUsernameListRequest
+	if err := decoder.Decode(&request); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update forbidden usernames with provided values")
 		return
 	}
 
-	data.SetUsernameBlocklist(usernames.Value.(string))
+	if err := data.SetForbiddenUsernameList(request.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+	}
 
-	controllers.WriteSimpleResponse(w, true, "blocklist updated")
+	controllers.WriteSimpleResponse(w, true, "forbidden username list updated")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
