@@ -97,6 +97,7 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 	if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
 		log.Errorln("error adding client to chat server", err)
 	}
+	client.sendConnectedClientInfo()
 	s.sendWelcomeMessageToClient(client)
 
 	// Send chat user joined webhook
@@ -163,12 +164,6 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 		conn.Close()
 		return
 	}
-
-	// User is valid and we should let them know their user details.
-	_ = conn.WriteJSON(events.EventPayload{
-		"type": events.ConnectedUserInfo,
-		"user": user,
-	})
 
 	userAgent := r.UserAgent()
 

@@ -8,6 +8,7 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/gorilla/websocket"
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/geoip"
 )
@@ -57,6 +58,13 @@ var (
 	space   = []byte{' '}
 )
 
+func (c *ChatClient) sendConnectedClientInfo() {
+	_ = c.conn.WriteJSON(events.EventPayload{
+		"type": events.ConnectedUserInfo,
+		"user": c.User,
+	})
+
+}
 func (c *ChatClient) readPump() {
 	c.rateLimiter = rate.NewLimiter(0.6, 5)
 

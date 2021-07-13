@@ -30,6 +30,10 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 			log.Debugln(eventData.client.User.DisplayName, "blocked from changing name to", proposedUsername, "due to blocked name", normalizedName)
 			message := fmt.Sprintf("You cannot change your name to **%s**.", proposedUsername)
 			s.sendActionToClient(eventData.client, message)
+
+			// Resend the client's user so their username is in sync.
+			eventData.client.sendConnectedClientInfo()
+
 			return
 		}
 	}
