@@ -523,6 +523,13 @@ export default class App extends Component {
     } else if (e.type === 'ERROR_MAX_CONNECTIONS_EXCEEDED') {
       // Chat server cannot support any more chat clients. Turn off chat for them.
       this.disableChat();
+    } else if (e.type === 'CONNECTED_USER_INFO') {
+      // When connected the user will return an event letting us know what our
+      // user details are so we can display them properly.
+      const {user} = e;
+      const {displayName} = user;
+
+      this.setState({username: displayName});
     }
   }
 

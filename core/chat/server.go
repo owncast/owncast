@@ -164,6 +164,12 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// User is valid and we should let them know their user details.
+	_ = conn.WriteJSON(events.EventPayload{
+		"type": events.ConnectedUserInfo,
+		"user": user,
+	})
+
 	userAgent := r.UserAgent()
 
 	s.Addclient(conn, user, accessToken, userAgent)

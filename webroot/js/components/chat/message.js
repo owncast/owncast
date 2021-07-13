@@ -53,6 +53,8 @@ export default function Message(props) {
           </div>
         `
     );
+  } else if (type === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
+    // noop for now
   } else {
     console.log("Unknown message type:", type);
   }

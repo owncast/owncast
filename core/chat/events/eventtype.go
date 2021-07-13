@@ -24,7 +24,8 @@ const (
 	SystemMessageSent EventType = "SYSTEM"
 	// ChatDisabled is when a user is explicitly disabled and blocked from using chat.
 	ChatDisabled EventType = "CHAT_DISABLED"
-
+	// ConnectedUserInfo is a private event to a user letting them know their user details.
+	ConnectedUserInfo EventType = "CONNECTED_USER_INFO"
 	// ChatActionSent is a generic chat action that can be used for anything that doesn't need specific handling or formatting.
 	ChatActionSent              EventType = "CHAT_ACTION"
 	ErrorNeedsRegistration      EventType = "ERROR_NEEDS_REGISTRATION"
