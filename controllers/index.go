@@ -105,6 +105,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 		Name:          data.GetServerName(),
 		RequestedURL:  fullURL.String(),
 		Image:         imageURL.String(),
+		Summary:       data.GetServerSummary(),
 		Thumbnail:     thumbnailURL,
 		TagsString:    tagsString,
 		Tags:          data.GetServerMetadataTags(),
