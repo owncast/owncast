@@ -24,6 +24,10 @@ test('can send a chat message', async (done) => {
 });
 
 test('can disable a user', async (done) => {
+    // To allow for visually being able to see the test hiding the
+    // message add a short delay.
+    await new Promise((r) => setTimeout(r, 1500));
+
     await request.post('/api/admin/chat/users/setenabled').send({ "userId": userId, "enabled": false })
     .auth('admin', 'abc123').expect(200);
     done();
