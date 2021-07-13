@@ -97,11 +97,6 @@ export default class Chat extends Component {
     const { messages: prevMessages } = prevState;
     const { messages } = this.state;
 
-    // if username updated, send a message
-    if (prevName !== username) {
-      this.sendUsernameChange(prevName, username);
-    }
-
     // scroll to bottom of messages list when new ones come in
     if (messages.length !== prevMessages.length) {
       this.setState({
@@ -163,16 +158,6 @@ export default class Chat extends Component {
       .catch((error) => {
         this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
       });
-  }
-
-  sendUsernameChange(oldName, newName) {
-    clearTimeout(this.sendUserJoinedEvent);
-
-		const nameChange = {
-			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
-			newName,
-		};
-		this.websocket.send(nameChange);
   }
 
   receivedWebsocketMessage(message) {
