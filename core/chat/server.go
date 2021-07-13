@@ -111,7 +111,7 @@ func (s *ChatServer) ClientClosed(c *ChatClient) {
 	c.close()
 
 	if _, ok := s.clients[c.id]; ok {
-		log.Println("Deleting", c.id)
+		log.Debugln("Deleting", c.id)
 		delete(s.clients, c.id)
 	}
 }
@@ -131,7 +131,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		log.Debugln(err)
 		return
 	}
 

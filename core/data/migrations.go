@@ -91,7 +91,7 @@ func migrateToSchema1(db *sql.DB) {
 }
 
 func insertAPIToken(db *sql.DB, token string, name string, color int, scopes string) error {
-	log.Println("Adding new access token:", name)
+	log.Debugln("Adding new access token:", name)
 
 	id := shortid.MustGenerate()
 

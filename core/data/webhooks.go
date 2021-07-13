@@ -33,7 +33,7 @@ func createWebhooksTable() {
 
 // InsertWebhook will add a new webhook to the database.
 func InsertWebhook(url string, events []models.EventType) (int, error) {
-	log.Println("Adding new webhook:", url)
+	log.Traceln("Adding new webhook:", url)
 
 	eventsString := strings.Join(events, ",")
 
@@ -67,7 +67,7 @@ func InsertWebhook(url string, events []models.EventType) (int, error) {
 
 // DeleteWebhook will delete a webhook from the database.
 func DeleteWebhook(id int) error {
-	log.Println("Deleting webhook:", id)
+	log.Traceln("Deleting webhook:", id)
 
 	tx, err := _db.Begin()
 	if err != nil {
