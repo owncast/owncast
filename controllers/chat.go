@@ -60,7 +60,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		// this is fine. register a new user anyway.
 	}
 
-	err, newUser := user.CreateAnonymousUser(request.DisplayName)
+	newUser, err := user.CreateAnonymousUser(request.DisplayName)
 	if err != nil {
 		WriteSimpleResponse(w, false, err.Error())
 		return

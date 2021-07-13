@@ -35,12 +35,12 @@ func SetupUsers() {
 	_datastore = data.GetDatastore()
 }
 
-func CreateAnonymousUser(username string) (error, *User) {
+func CreateAnonymousUser(username string) (*User, error) {
 	id := shortid.MustGenerate()
 	accessToken, err := utils.GenerateAccessToken()
 	if err != nil {
 		log.Errorln("Unable to create access token for new user")
-		return err, nil
+		return nil, err
 	}
 
 	var displayName = username
@@ -59,13 +59,10 @@ func CreateAnonymousUser(username string) (error, *User) {
 	}
 
 	if err := create(user); err != nil {
-		return err, nil
+		return nil, err
 	}
 
-	setCachedIdUser(id, user)
-	setCachedAccessTokenUser(accessToken, user)
-
-	return nil, user
+	return user, nil
 }
 
 func ChangeUsername(userId string, username string) {
@@ -98,8 +95,6 @@ func ChangeUsername(userId string, username string) {
 	if err := tx.Commit(); err != nil {
 		log.Errorln("error changing display name of user", userId, err)
 	}
-
-	invalidateUserCache(userId)
 }
 
 func create(user *User) error {
@@ -159,17 +154,11 @@ func SetEnabled(userID string, enabled bool) error {
 		return err
 	}
 
-	invalidateUserCache(userID)
-
 	return tx.Commit()
 }
 
 // GetUserByToken will return a user by an access token.
 func GetUserByToken(token string) *User {
-	if user := getCachedAccessTokenUser(token); user != nil {
-		return user
-	}
-
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -181,10 +170,6 @@ func GetUserByToken(token string) *User {
 
 // GetUserById will return a user by a user ID.
 func GetUserById(id string) *User {
-	if user := getCachedIdUser(id); user != nil {
-		return user
-	}
-
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
