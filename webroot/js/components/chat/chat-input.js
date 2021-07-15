@@ -43,6 +43,7 @@ export default class ChatInput extends Component {
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH,
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
       emojiPicker: null,
+      emojiList: null,
     };
 
     this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
@@ -72,6 +73,7 @@ export default class ChatInput extends Component {
         return response.json();
       })
       .then((json) => {
+        const emojiList = json;
         const emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
@@ -92,7 +94,7 @@ export default class ChatInput extends Component {
           this.formMessageInput.current.focus();
           replaceCaret(this.formMessageInput.current);
         });
-        this.setState({ emojiPicker });
+        this.setState({ emojiList, emojiPicker });
       })
       .catch((error) => {
         // this.handleNetworkingError(`Emoji Fetch: ${error}`);
@@ -170,6 +172,31 @@ export default class ChatInput extends Component {
     return true;
   }
 
+  // replace :emoji: with the emoji <img>
+  injectEmoji() {
+    const { inputHTML, emojiList } = this.state;
+    const position = getCaretPosition(this.formMessageInput.current);
+    const at = inputHTML.lastIndexOf(':', position - 1);
+    if (at === -1) {
+      return false;
+    }
+
+    let typedEmoji = inputHTML.substring(at + 1, position).trim();
+    const emojiIndex = emojiList.findIndex(function (emojiItem) { return emojiItem.name === typedEmoji; });
+
+    if (emojiIndex != -1) {
+      const url = location.protocol + '//' + location.host + '/' + emojiList[emojiIndex].emoji;
+      const emojiItem = '<img class="emoji" alt="' + typedEmoji + '" src="' + url + '"/>';
+
+      this.setState({
+        inputHTML:
+          inputHTML.substring(0, at) + emojiItem + inputHTML.substring(position),
+      });
+      return true;
+    }
+    return false;
+  }
+
   handleMessageInputKeydown(event) {
     const formField = this.formMessageInput.current;
     let textValue = formField.textContent; // get this only to count chars
@@ -196,6 +223,15 @@ export default class ChatInput extends Component {
       if (this.autoCompleteNames()) {
         event.preventDefault();
 
+        // value could have been changed, update char count
+        textValue = formField.textContent;
+        numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
+      }
+    }
+
+    if (key === ':') {
+      if (this.injectEmoji()) {
+        event.preventDefault();
         // value could have been changed, update char count
         textValue = formField.textContent;
         numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
