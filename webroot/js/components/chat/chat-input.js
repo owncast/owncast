@@ -176,7 +176,7 @@ export default class ChatInput extends Component {
   // replace :emoji: with the emoji <img>
   injectEmoji() {
     const { inputHTML, emojiList } = this.state;
-    let textValue = this.formMessageInput.current.textContent;
+    const textValue = this.formMessageInput.current.textContent;
     const position = getCaretCharacterOffsetWithin(this.formMessageInput.current);
     const at = textValue.lastIndexOf(':', position - 1);
     if (at === -1) {
@@ -184,14 +184,16 @@ export default class ChatInput extends Component {
     }
 
     const typedEmoji = textValue.substring(at + 1, position).trim();
-    const emojiIndex = emojiList.findIndex(function (emojiItem) { return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase(); });
+    const emojiIndex = emojiList.findIndex(function (emojiItem) {
+      return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase();
+    });
 
     if (emojiIndex != -1) {
       const url = location.protocol + '//' + location.host + '/' + emojiList[emojiIndex].emoji;
-      const emojiItem = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
+      const emojiImgElement = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" title="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
 
       this.setState({
-        inputHTML: inputHTML.replace(":" + typedEmoji, emojiItem)
+        inputHTML: inputHTML.replace(":" + typedEmoji, emojiImgElement)
       });
       return true;
     }
