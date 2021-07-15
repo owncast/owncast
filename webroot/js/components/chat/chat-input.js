@@ -8,6 +8,7 @@ import ContentEditable, { replaceCaret } from './content-editable.js';
 import {
   generatePlaceholderText,
   getCaretPosition,
+  getCaretCharacterOffsetWithin,
   convertToText,
   convertOnPaste,
   createEmojiMarkup,
@@ -176,7 +177,7 @@ export default class ChatInput extends Component {
   injectEmoji() {
     const { inputHTML, emojiList } = this.state;
     let textValue = this.formMessageInput.current.textContent;
-    const position = getCaretPosition(this.formMessageInput.current);
+    const position = getCaretCharacterOffsetWithin(this.formMessageInput.current);
     const at = textValue.lastIndexOf(':', position - 1);
     if (at === -1) {
       return false;
