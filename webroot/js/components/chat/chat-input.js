@@ -182,12 +182,12 @@ export default class ChatInput extends Component {
       return false;
     }
 
-    let typedEmoji = inputHTML.substring(at + 1, position).trim();
-    const emojiIndex = emojiList.findIndex(function (emojiItem) { return emojiItem.name === typedEmoji; });
+    const typedEmoji = textValue.substring(at + 1, position).trim();
+    const emojiIndex = emojiList.findIndex(function (emojiItem) { return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase(); });
 
     if (emojiIndex != -1) {
       const url = location.protocol + '//' + location.host + '/' + emojiList[emojiIndex].emoji;
-      const emojiItem = '<img class="emoji" alt="' + typedEmoji + '" src="' + url + '"/>';
+      const emojiItem = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
 
       this.setState({
         inputHTML: inputHTML.replace(":" + typedEmoji, emojiItem)
