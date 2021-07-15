@@ -175,8 +175,9 @@ export default class ChatInput extends Component {
   // replace :emoji: with the emoji <img>
   injectEmoji() {
     const { inputHTML, emojiList } = this.state;
+    let textValue = this.formMessageInput.current.textContent;
     const position = getCaretPosition(this.formMessageInput.current);
-    const at = inputHTML.lastIndexOf(':', position - 1);
+    const at = textValue.lastIndexOf(':', position - 1);
     if (at === -1) {
       return false;
     }
@@ -189,8 +190,7 @@ export default class ChatInput extends Component {
       const emojiItem = '<img class="emoji" alt="' + typedEmoji + '" src="' + url + '"/>';
 
       this.setState({
-        inputHTML:
-          inputHTML.substring(0, at) + emojiItem + inputHTML.substring(position),
+        inputHTML: inputHTML.replace(":" + typedEmoji, emojiItem)
       });
       return true;
     }
