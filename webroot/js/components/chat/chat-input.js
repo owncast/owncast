@@ -177,13 +177,13 @@ export default class ChatInput extends Component {
   injectEmoji() {
     const { inputHTML, emojiList } = this.state;
     const textValue = this.formMessageInput.current.textContent;
-    const position = getCaretCharacterOffsetWithin(this.formMessageInput.current);
-    const at = textValue.lastIndexOf(':', position - 1);
-    if (at === -1) {
+    const currentPos = getCaretCharacterOffsetWithin(this.formMessageInput.current);
+    const startPos = textValue.lastIndexOf(':', currentPos - 2);
+    if (startPos === -1) {
       return false;
     }
 
-    const typedEmoji = textValue.substring(at + 1, position).trim();
+    const typedEmoji = textValue.substring(startPos + 1, currentPos - 1).trim();
     const emojiIndex = emojiList.findIndex(function (emojiItem) {
       return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase();
     });
@@ -193,7 +193,7 @@ export default class ChatInput extends Component {
       const emojiImgElement = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" title="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
 
       this.setState({
-        inputHTML: inputHTML.replace(":" + typedEmoji, emojiImgElement)
+        inputHTML: inputHTML.replace(":" + typedEmoji + ":", emojiImgElement)
       });
       return true;
     }
@@ -232,15 +232,6 @@ export default class ChatInput extends Component {
       }
     }
 
-    if (key === ':') {
-      if (this.injectEmoji()) {
-        event.preventDefault();
-        // value could have been changed, update char count
-        textValue = formField.textContent;
-        numCharsLeft = CHAT_MAX_MESSAGE_LENGTH - textValue.length;
-      }
-    }
-
     if (numCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
       newStates.inputText = textValue;
       this.setState(newStates);
@@ -255,7 +246,7 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeyup(event) {
     const formField = this.formMessageInput.current;
-    const textValue = formField.textContent; // get this only to count chars
+    let textValue = formField.textContent; // get this only to count chars
 
     const { key } = event;
 
@@ -264,6 +255,12 @@ export default class ChatInput extends Component {
     }
     if (CHAT_KEY_MODIFIERS.includes(key)) {
       this.modifierKeyPressed = false;
+    }
+    if (key === ':') {
+      if (this.injectEmoji()) {
+        // value could have been changed, update char count
+        textValue = formField.textContent;
+      }
     }
     this.setState({
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH - textValue.length,
