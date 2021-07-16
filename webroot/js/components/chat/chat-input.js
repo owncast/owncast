@@ -8,7 +8,6 @@ import ContentEditable, { replaceCaret } from './content-editable.js';
 import {
   generatePlaceholderText,
   getCaretPosition,
-  getCaretCharacterOffsetWithin,
   convertToText,
   convertOnPaste,
   createEmojiMarkup,
@@ -176,28 +175,36 @@ export default class ChatInput extends Component {
   // replace :emoji: with the emoji <img>
   injectEmoji() {
     const { inputHTML, emojiList } = this.state;
-    const textValue = this.formMessageInput.current.textContent;
-    const currentPos = getCaretCharacterOffsetWithin(this.formMessageInput.current);
-    const startPos = textValue.lastIndexOf(':', currentPos - 2);
-    if (startPos === -1) {
-      return false;
-    }
-
-    const typedEmoji = textValue.substring(startPos + 1, currentPos - 1).trim();
-    const emojiIndex = emojiList.findIndex(function (emojiItem) {
-      return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase();
-    });
-
-    if (emojiIndex != -1) {
-      const url = location.protocol + '//' + location.host + '/' + emojiList[emojiIndex].emoji;
-      const emojiImgElement = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" title="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
-
-      this.setState({
-        inputHTML: inputHTML.replace(":" + typedEmoji + ":", emojiImgElement)
+    let foundEmoji = false;
+    let textValue = this.formMessageInput.current.textContent;
+    let processedHTML = inputHTML;
+    for (var lastPos = textValue.length; lastPos >= 0; lastPos--) {
+      const endPos = textValue.lastIndexOf(':', lastPos);
+      if (endPos === -1) {
+        break;
+      }
+      const startPos = textValue.lastIndexOf(':', endPos - 1);
+      if (startPos === endPos) {
+        continue;
+      }
+      const typedEmoji = textValue.substring(startPos + 1, endPos).trim();
+      const emojiIndex = emojiList.findIndex(function (emojiItem) {
+        return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase();
       });
-      return true;
+
+      if (emojiIndex != -1) {
+        const url = location.protocol + '//' + location.host + '/' + emojiList[emojiIndex].emoji;
+        const emojiImgElement = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" title="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
+
+        processedHTML = processedHTML.replace(":" + typedEmoji + ":", emojiImgElement)
+        foundEmoji = true;
+        textValue = this.formMessageInput.current.textContent;
+      }
     }
-    return false;
+    this.setState({
+      inputHTML: processedHTML
+    });
+    return foundEmoji;
   }
 
   handleMessageInputKeydown(event) {
