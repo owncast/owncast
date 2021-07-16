@@ -263,7 +263,7 @@ export default class ChatInput extends Component {
     if (CHAT_KEY_MODIFIERS.includes(key)) {
       this.modifierKeyPressed = false;
     }
-    if (key === ':') {
+    if (key === ':' || key === ';') {
       if (this.injectEmoji()) {
         // value could have been changed, update char count
         textValue = formField.textContent;
