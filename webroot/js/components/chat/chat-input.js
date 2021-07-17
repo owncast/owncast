@@ -10,6 +10,7 @@ import {
   getCaretPosition,
   convertToText,
   convertOnPaste,
+  createEmojiMarkup,
 } from '../../utils/chat.js';
 import {
   getLocalStorage,
@@ -109,9 +110,7 @@ export default class ChatInput extends Component {
     const { inputHTML } = this.state;
     let content = '';
     if (emoji.url) {
-      const url = location.protocol + '//' + location.host + '/' + emoji.url;
-      const name = url.split('\\').pop().split('/').pop();
-      content = '<img class="emoji" alt="' + name + '" src="' + url + '"/>';
+      content = createEmojiMarkup(emoji, false);
     } else {
       content = emoji.emoji;
     }
