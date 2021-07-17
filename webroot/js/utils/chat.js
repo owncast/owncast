@@ -143,7 +143,6 @@ export function convertOnPaste( event = { preventDefault() {} }) {
 }
 
 export function createEmojiMarkup(data, isCustom) {
-  console.log(data.url)
   const emojiUrl = isCustom ? data.emoji : data.url;
   const emojiName = (isCustom ? data.name : data.url.split('\\').pop().split('/').pop().split('.').shift()).toLowerCase();
   return '<img class="emoji" alt=":' + emojiName + ':" title=":' + emojiName + ':" src="' + emojiUrl + '"/>';
