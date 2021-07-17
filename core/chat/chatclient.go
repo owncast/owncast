@@ -2,6 +2,7 @@ package chat
 
 import (
 	"bytes"
+	"encoding/json"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -59,12 +60,21 @@ var (
 )
 
 func (c *ChatClient) sendConnectedClientInfo() {
-	_ = c.conn.WriteJSON(events.EventPayload{
+	payload := events.EventPayload{
 		"type": events.ConnectedUserInfo,
 		"user": c.User,
-	})
+	}
 
+	var data []byte
+	data, err := json.Marshal(payload)
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	c.send <- data
 }
+
 func (c *ChatClient) readPump() {
 	c.rateLimiter = rate.NewLimiter(0.6, 5)
 
@@ -99,6 +109,7 @@ func (c *ChatClient) writePump() {
 		ticker.Stop()
 		c.conn.Close()
 	}()
+
 	for {
 		select {
 		case message, ok := <-c.send:
