@@ -193,8 +193,7 @@ export default class ChatInput extends Component {
       });
 
       if (emojiIndex != -1) {
-        const url = location.protocol + '//' + location.host + '/' + emojiList[emojiIndex].emoji;
-        const emojiImgElement = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" title="' + emojiList[emojiIndex].name + '" src="' + url + '"/>';
+        const emojiImgElement = '<img class="emoji" alt="' + emojiList[emojiIndex].name + '" title="' + emojiList[emojiIndex].name + '" src="' + emojiList[emojiIndex].emoji + '"/>';
 
         processedHTML = processedHTML.replace(":" + typedEmoji + ":", emojiImgElement)
         foundEmoji = true;
