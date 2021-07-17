@@ -109,8 +109,6 @@ func create(user *User) error {
 		_ = tx.Rollback()
 	}()
 
-	log.Traceln("Creating new user", user.Id, user.DisplayName)
-
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
 
 	if err != nil {
