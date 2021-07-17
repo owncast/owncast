@@ -180,12 +180,12 @@ export default class ChatInput extends Component {
     let processedHTML = inputHTML;
     for (var lastPos = textValue.length; lastPos >= 0; lastPos--) {
       const endPos = textValue.lastIndexOf(':', lastPos);
-      if (endPos === -1) {
+      if (endPos <= 0) {
         break;
       }
       const startPos = textValue.lastIndexOf(':', endPos - 1);
-      if (startPos === endPos) {
-        continue;
+      if (startPos === -1) {
+        break;
       }
       const typedEmoji = textValue.substring(startPos + 1, endPos).trim();
       const emojiIndex = emojiList.findIndex(function (emojiItem) {
