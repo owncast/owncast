@@ -11,6 +11,7 @@ import {
   convertToText,
   convertOnPaste,
   createEmojiMarkup,
+  emojify,
 } from '../../utils/chat.js';
 import {
   getLocalStorage,
@@ -175,35 +176,16 @@ export default class ChatInput extends Component {
   // replace :emoji: with the emoji <img>
   injectEmoji() {
     const { inputHTML, emojiList } = this.state;
-    let foundEmoji = false;
-    let textValue = this.formMessageInput.current.textContent;
-    let processedHTML = inputHTML;
-    for (var lastPos = textValue.length; lastPos >= 0; lastPos--) {
-      const endPos = textValue.lastIndexOf(':', lastPos);
-      if (endPos <= 0) {
-        break;
-      }
-      const startPos = textValue.lastIndexOf(':', endPos - 1);
-      if (startPos === -1) {
-        break;
-      }
-      const typedEmoji = textValue.substring(startPos + 1, endPos).trim();
-      const emojiIndex = emojiList.findIndex(function (emojiItem) {
-        return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase();
+    const textValue = convertToText(inputHTML);
+    const processedHTML = emojify(inputHTML, emojiList);
+
+    if (textValue != convertToText(processedHTML)) {
+      this.setState({
+        inputHTML: processedHTML
       });
-
-      if (emojiIndex != -1) {
-        const emojiImgElement = createEmojiMarkup(emojiList[emojiIndex], true)
-
-        processedHTML = processedHTML.replace(":" + typedEmoji + ":", emojiImgElement)
-        foundEmoji = true;
-        textValue = this.formMessageInput.current.textContent;
-      }
+      return true;
     }
-    this.setState({
-      inputHTML: processedHTML
-    });
-    return foundEmoji;
+    return false;
   }
 
   handleMessageInputKeydown(event) {
