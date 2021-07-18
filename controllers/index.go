@@ -75,11 +75,11 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(path.Join("static", "metadata.html")))
 
-	fullURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, r.URL.Path))
+	fullURL, err := url.Parse(fmt.Sprintf("//%s%s", r.Host, r.URL.Path))
 	if err != nil {
 		log.Panicln(err)
 	}
-	imageURL, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/logo"))
+	imageURL, err := url.Parse(fmt.Sprintf("//%s%s", r.Host, "/logo"))
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -89,7 +89,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string
 	if status.Online && utils.DoesFileExists(filepath.Join(config.WebRoot, "thumbnail.jpg")) {
-		thumbnail, err := url.Parse(fmt.Sprintf("http://%s%s", r.Host, "/thumbnail.jpg"))
+		thumbnail, err := url.Parse(fmt.Sprintf("//%s%s", r.Host, "/thumbnail.jpg"))
 		if err != nil {
 			log.Errorln(err)
 			thumbnailURL = imageURL.String()
