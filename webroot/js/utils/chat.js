@@ -109,7 +109,7 @@ export function convertToText(str = '') {
   You would call this when a user pastes from
   the clipboard into a `contenteditable` area.
 */
-export function convertOnPaste(event = { preventDefault() { } }) {
+export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
   // Prevent paste.
   event.preventDefault();
 
@@ -136,9 +136,11 @@ export function convertOnPaste(event = { preventDefault() { } }) {
   // Clean up text.
   value = convertToText(value);
 
+  const HTML = emojify(value, emojiList);
+
   // Insert text.
   if (typeof document.execCommand === 'function') {
-    document.execCommand('insertText', false, value);
+    document.execCommand('insertHTML', false, HTML);
   }
 }
 

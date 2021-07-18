@@ -266,7 +266,7 @@ export default class ChatInput extends Component {
       event.preventDefault();
       return;
     }
-    convertOnPaste(event);
+    convertOnPaste(event, this.state.emojiList);
     this.handleMessageInputKeydown(event);
   }
 
