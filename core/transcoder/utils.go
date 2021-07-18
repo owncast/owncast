@@ -53,6 +53,8 @@ var ignoredErrors = []string{
 	"Device creation failed",
 	"Error parsing global options",
 	"maybe the hls segment duration will not precise",
+	"Non-monotonous DTS in output",
+	"frames duplicated",
 }
 
 func handleTranscoderMessage(message string) {
