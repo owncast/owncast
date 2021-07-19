@@ -11,6 +11,7 @@ import {
   convertToText,
   convertOnPaste,
   createEmojiMarkup,
+  emojify,
 } from '../../utils/chat.js';
 import {
   getLocalStorage,
@@ -43,6 +44,7 @@ export default class ChatInput extends Component {
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH,
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
       emojiPicker: null,
+      emojiList: null,
     };
 
     this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
@@ -72,6 +74,7 @@ export default class ChatInput extends Component {
         return response.json();
       })
       .then((json) => {
+        const emojiList = json;
         const emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
@@ -92,7 +95,7 @@ export default class ChatInput extends Component {
           this.formMessageInput.current.focus();
           replaceCaret(this.formMessageInput.current);
         });
-        this.setState({ emojiPicker });
+        this.setState({ emojiList, emojiPicker });
       })
       .catch((error) => {
         // this.handleNetworkingError(`Emoji Fetch: ${error}`);
@@ -170,6 +173,21 @@ export default class ChatInput extends Component {
     return true;
   }
 
+  // replace :emoji: with the emoji <img>
+  injectEmoji() {
+    const { inputHTML, emojiList } = this.state;
+    const textValue = convertToText(inputHTML);
+    const processedHTML = emojify(inputHTML, emojiList);
+
+    if (textValue != convertToText(processedHTML)) {
+      this.setState({
+        inputHTML: processedHTML,
+      });
+      return true;
+    }
+    return false;
+  }
+
   handleMessageInputKeydown(event) {
     const formField = this.formMessageInput.current;
     let textValue = formField.textContent; // get this only to count chars
@@ -226,6 +244,9 @@ export default class ChatInput extends Component {
     if (CHAT_KEY_MODIFIERS.includes(key)) {
       this.modifierKeyPressed = false;
     }
+    if (key === ':' || key === ';') {
+      this.injectEmoji();
+    }
     this.setState({
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH - textValue.length,
     });
@@ -242,7 +263,7 @@ export default class ChatInput extends Component {
       event.preventDefault();
       return;
     }
-    convertOnPaste(event);
+    convertOnPaste(event, this.state.emojiList);
     this.handleMessageInputKeydown(event);
   }
 
