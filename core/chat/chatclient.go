@@ -9,6 +9,7 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/gorilla/websocket"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/geoip"
@@ -46,7 +47,9 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 
 	// Maximum message size allowed from peer.
-	maxMessageSize = 512
+	// Larger messages get thrown away.
+	// Messages > *2 the socket gets closed.
+	maxMessageSize = config.MaxSocketPayloadSize
 )
 
 var upgrader = websocket.Upgrader{
@@ -81,16 +84,27 @@ func (c *ChatClient) readPump() {
 	defer func() {
 		c.close()
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
+
+	// If somebody is sending 2x the max message size they're likely a bad actor
+	// and should be disconnected. Below we throw away messages > max size.
+	c.conn.SetReadLimit(maxMessageSize * 2)
+
 	_ = c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { _ = c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
 		_, message, err := c.conn.ReadMessage()
+
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				c.close()
 			}
 			break
+		}
+
+		// Throw away messages greater than max message size.
+		if len(message) > maxMessageSize {
+			c.sendAction("Sorry, that message exceeded the maximum size and can't be delivered.")
+			continue
 		}
 
 		// Guard against floods.
@@ -169,4 +183,26 @@ func (c *ChatClient) passesRateLimit() bool {
 	}
 
 	return true
+}
+
+func (c *ChatClient) sendPayload(payload events.EventPayload) {
+	var data []byte
+	data, err := json.Marshal(payload)
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	c.send <- data
+}
+
+func (c *ChatClient) sendAction(message string) {
+	clientMessage := events.ActionEvent{
+		MessageEvent: events.MessageEvent{
+			Body: message,
+		},
+	}
+	clientMessage.SetDefaults()
+	clientMessage.RenderBody()
+	c.sendPayload(clientMessage.GetBroadcastPayload())
 }
