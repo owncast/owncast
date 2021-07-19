@@ -35,6 +35,7 @@ export const CHAT_INITIAL_PLACEHOLDER_TEXT =
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
 export const CHAT_MAX_MESSAGE_LENGTH = 500;
+export const EST_SOCKET_PAYLOAD_BUFFER = 512;
 export const CHAT_CHAR_COUNT_BUFFER = 20;
 export const CHAT_OK_KEYCODES = [
   'ArrowLeft',

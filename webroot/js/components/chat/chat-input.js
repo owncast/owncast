@@ -11,6 +11,7 @@ import {
   convertToText,
   convertOnPaste,
   createEmojiMarkup,
+  trimNbsp,
 } from '../../utils/chat.js';
 import {
   getLocalStorage,
@@ -175,9 +176,6 @@ export default class ChatInput extends Component {
   }
 
   handleMessageInputKeydown(event) {
-    const formField = this.formMessageInput.current;
-    const tempCharsLeft = this.calculateCurrentBytesLeft(formField.innerHTML);
-
     const key = event && event.key;
 
     if (key === 'Enter') {
@@ -202,6 +200,8 @@ export default class ChatInput extends Component {
     }
 
     // if new input pushes the potential chars over, don't do anything
+    const formField = this.formMessageInput.current;
+    const tempCharsLeft = this.calculateCurrentBytesLeft(formField.innerHTML);
     if (tempCharsLeft <= 0 && !CHAT_OK_KEYCODES.includes(key)) {
       if (!this.modifierKeyPressed) {
         event.preventDefault(); // prevent typing more
@@ -212,7 +212,6 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeyup(event) {
     const { key } = event;
-
     if (key === 'Control' || key === 'Shift') {
       this.prepNewLine = false;
     }
@@ -274,7 +273,7 @@ export default class ChatInput extends Component {
 
   calculateCurrentBytesLeft(inputContent) {
     const { inputMaxBytes } = this.props;
-    const curBytes = new Blob([inputContent]).size;
+    const curBytes = new Blob([trimNbsp(inputContent)]).size;
     return inputMaxBytes - curBytes;
   }
 
@@ -346,7 +345,7 @@ export default class ChatInput extends Component {
           </span>
 
           <span id="message-form-warning" class="text-red-600 text-xs"
-            >${inputCharsLeft}/${inputMaxBytes}</span
+            >${inputCharsLeft} bytes</span
           >
         </div>
       </div>
