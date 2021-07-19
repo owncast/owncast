@@ -68,14 +68,7 @@ func (c *ChatClient) sendConnectedClientInfo() {
 		"user": c.User,
 	}
 
-	var data []byte
-	data, err := json.Marshal(payload)
-	if err != nil {
-		log.Errorln(err)
-		return
-	}
-
-	c.send <- data
+	c.sendPayload(payload)
 }
 
 func (c *ChatClient) readPump() {
@@ -140,17 +133,6 @@ func (c *ChatClient) writePump() {
 			}
 			if _, err := w.Write(message); err != nil {
 				log.Debugln(err)
-			}
-
-			// Add queued chat messages to the current websocket message.
-			n := len(c.send)
-			for i := 0; i < n; i++ {
-				if _, err := w.Write(newline); err != nil {
-					log.Debugln(err)
-				}
-				if _, err := w.Write(<-c.send); err != nil {
-					log.Debugln(err)
-				}
 			}
 
 			if err := w.Close(); err != nil {
