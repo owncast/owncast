@@ -28,6 +28,7 @@ import {
   setLocalStorage,
 } from './utils/helpers.js';
 import {
+  CHAT_MAX_MESSAGE_LENGTH,
   HEIGHT_SHORT_WIDE,
   KEY_ACCESS_TOKEN,
   KEY_CHAT_DISPLAYED,
@@ -628,6 +629,7 @@ export default class App extends Component {
       chatDisabled,
       externalActions,
       customStyles,
+      maxSocketPayloadSize,
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -699,6 +701,7 @@ export default class App extends Component {
             chatInputEnabled=${chatInputEnabled && !chatDisabled}
             instanceTitle=${name}
             accessToken=${this.state.accessToken}
+            inputMaxBytes=${maxSocketPayloadSize || CHAT_MAX_MESSAGE_LENGTH}
           />
         `
       : null;
