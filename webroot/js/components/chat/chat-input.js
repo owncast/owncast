@@ -181,7 +181,7 @@ export default class ChatInput extends Component {
 
     if (textValue != convertToText(processedHTML)) {
       this.setState({
-        inputHTML: processedHTML
+        inputHTML: processedHTML,
       });
       return true;
     }
@@ -251,6 +251,7 @@ export default class ChatInput extends Component {
       }
     }
     this.setState({
+      inputText: textValue,
       inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH - textValue.length,
     });
   }
