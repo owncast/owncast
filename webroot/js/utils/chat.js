@@ -87,7 +87,7 @@ export function convertToText(str = '') {
   value = value.replace(/<p>/gi, '\n');
 
   // Cleanup the emoji titles.
-  value = value.replace(/\u200C/gi, '');
+  value = value.replace(/\u200C{2}/gi, '');
 
   // Trim each line.
   value = value
@@ -150,7 +150,7 @@ export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
 export function createEmojiMarkup(data, isCustom) {
   const emojiUrl = isCustom ? data.emoji : data.url;
   const emojiName = (isCustom ? data.name : data.url.split('\\').pop().split('/').pop().split('.').shift()).toLowerCase();
-  return '<img class="emoji" alt=":‌' + emojiName + '‌:" title=":‌' + emojiName + '‌:" src="' + emojiUrl + '"/>';
+  return '<img class="emoji" alt=":‌‌' + emojiName + '‌‌:" title=":‌‌' + emojiName + '‌‌:" src="' + emojiUrl + '"/>';
 }
 
 export function emojify(HTML, emojiList) {
