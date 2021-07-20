@@ -253,7 +253,7 @@ export default class Chat extends Component {
     const { username } = this.props;
     const message = {
       body: content,
-			type: SOCKET_MESSAGE_TYPES.CHAT,
+      type: SOCKET_MESSAGE_TYPES.CHAT,
     };
     this.websocket.send(message);
   }

@@ -4,11 +4,11 @@ import {
   CHAT_PLACEHOLDER_OFFLINE,
 } from './constants.js';
 
-
 // Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
 export function getCaretPosition(editableDiv) {
   var caretPos = 0,
-    sel, range;
+    sel,
+    range;
   if (window.getSelection) {
     sel = window.getSelection();
     if (sel.rangeCount) {
@@ -20,11 +20,11 @@ export function getCaretPosition(editableDiv) {
   } else if (document.selection && document.selection.createRange) {
     range = document.selection.createRange();
     if (range.parentElement() == editableDiv) {
-      var tempEl = document.createElement("span");
+      var tempEl = document.createElement('span');
       editableDiv.insertBefore(tempEl, editableDiv.firstChild);
       var tempRange = range.duplicate();
       tempRange.moveToElementText(tempEl);
-      tempRange.setEndPoint("EndToEnd", range);
+      tempRange.setEndPoint('EndToEnd', range);
       caretPos = tempRange.text.length;
     }
   }
@@ -44,10 +44,11 @@ export function setCaretPosition(editableDiv, position) {
   sel.addRange(range);
 }
 
-
 export function generatePlaceholderText(isEnabled, hasSentFirstChatMessage) {
   if (isEnabled) {
-    return hasSentFirstChatMessage ? CHAT_PLACEHOLDER_TEXT : CHAT_INITIAL_PLACEHOLDER_TEXT;
+    return hasSentFirstChatMessage
+      ? CHAT_PLACEHOLDER_TEXT
+      : CHAT_INITIAL_PLACEHOLDER_TEXT;
   }
   return CHAT_PLACEHOLDER_OFFLINE;
 }
@@ -112,7 +113,7 @@ export function convertToText(str = '') {
   You would call this when a user pastes from
   the clipboard into a `contenteditable` area.
 */
-export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
+export function convertOnPaste(event = { preventDefault() {} }, emojiList) {
   // Prevent paste.
   event.preventDefault();
 
@@ -149,17 +150,29 @@ export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
 
 export function createEmojiMarkup(data, isCustom) {
   const emojiUrl = isCustom ? data.emoji : data.url;
-  const emojiName = (isCustom ? data.name : data.url.split('\\').pop().split('/').pop().split('.').shift()).toLowerCase();
-  return '<img class="emoji" alt=":‌‌' + emojiName + '‌‌:" title=":‌‌' + emojiName + '‌‌:" src="' + emojiUrl + '"/>';
+  const emojiName = (
+    isCustom
+      ? data.name
+      : data.url.split('\\').pop().split('/').pop().split('.').shift()
+  ).toLowerCase();
+  return (
+    '<img class="emoji" alt=":‌‌' +
+    emojiName +
+    '‌‌:" title=":‌‌' +
+    emojiName +
+    '‌‌:" src="' +
+    emojiUrl +
+    '"/>'
+  );
 }
 
 // trim html white space characters from ends of messages for more accurate counting
 export function trimNbsp(html) {
-  return html.replace(/^(?:&nbsp;|\s)+|(?:&nbsp;|\s)+$/ig,'');
+  return html.replace(/^(?:&nbsp;|\s)+|(?:&nbsp;|\s)+$/gi, '');
 }
 
 export function emojify(HTML, emojiList) {
-  const textValue = convertToText(HTML)
+  const textValue = convertToText(HTML);
 
   for (var lastPos = textValue.length; lastPos >= 0; lastPos--) {
     const endPos = textValue.lastIndexOf(':', lastPos);
@@ -176,10 +189,9 @@ export function emojify(HTML, emojiList) {
     });
 
     if (emojiIndex != -1) {
-      const emojiImgElement = createEmojiMarkup(emojiList[emojiIndex], true)
-      HTML = HTML.replace(":" + typedEmoji + ":", emojiImgElement)
+      const emojiImgElement = createEmojiMarkup(emojiList[emojiIndex], true);
+      HTML = HTML.replace(':' + typedEmoji + ':', emojiImgElement);
     }
   }
   return HTML;
-
 }
