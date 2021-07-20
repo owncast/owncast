@@ -168,9 +168,9 @@ export function makeLastOnlineString(timestamp) {
   }
   let string = '';
   const time = new Date(timestamp);
-  const comparisonDate = new Date(time).setHours(0,0,0,0);
-  
-  if(comparisonDate == new Date().setHours(0,0,0,0)) {
+  const comparisonDate = new Date(time).setHours(0, 0, 0, 0);
+
+  if (comparisonDate == new Date().setHours(0, 0, 0, 0)) {
     const atTime = time.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
