@@ -5,10 +5,7 @@ import (
 	"sort"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
 )
-
-type variants []models.StreamOutputVariant
 
 type variantsResponse struct {
 	Name  string `json:"name"`

@@ -128,7 +128,9 @@ func (yp *YP) ping() {
 	_inErrorState = false
 
 	if pingResponse.Key != key {
-		data.SetDirectoryRegistrationKey(key)
+		if err := data.SetDirectoryRegistrationKey(key); err != nil {
+			log.Errorln("unable to save directory key:", err)
+		}
 	}
 }
 

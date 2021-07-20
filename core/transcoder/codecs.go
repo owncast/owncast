@@ -45,7 +45,7 @@ func (c *Libx264Codec) GlobalFlags() string {
 }
 
 func (c *Libx264Codec) PixelFormat() string {
-	return "yuv420p"
+	return "yuv420p" //nolint:goconst
 }
 
 func (c *Libx264Codec) ExtraArguments() string {
@@ -78,7 +78,7 @@ func (c *Libx264Codec) GetPresetForLevel(l int) string {
 	}
 
 	if l >= len(presetMapping) {
-		return "superfast"
+		return "superfast" //nolint:goconst
 	}
 
 	return presetMapping[l]

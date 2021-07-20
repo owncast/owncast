@@ -448,7 +448,10 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data.SetS3Config(newS3Config.Value)
+	if err := data.SetS3Config(newS3Config.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 	controllers.WriteSimpleResponse(w, true, "storage configuration changed")
 }
 
@@ -514,7 +517,10 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetChatDisabled(configValue.Value.(bool))
+	if err := data.SetChatDisabled(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "chat disabled status updated")
 }
@@ -567,7 +573,10 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetCustomStyles(customStyles.Value.(string))
+	if err := data.SetCustomStyles(customStyles.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
 }

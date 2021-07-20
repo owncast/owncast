@@ -80,8 +80,8 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-  rtmpOut, rtmpIn := io.Pipe()
-  _pipe = rtmpIn
+	rtmpOut, rtmpIn := io.Pipe()
+	_pipe = rtmpIn
 	log.Infoln("Inbound stream connected.")
 	_setStreamAsConnected(rtmpOut)
 

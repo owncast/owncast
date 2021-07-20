@@ -98,21 +98,27 @@ func main() {
 		}
 
 		log.Println("Saving new web server port number to", portNumber)
-		data.SetHTTPPortNumber(float64(portNumber))
+		if err := data.SetHTTPPortNumber(float64(portNumber)); err != nil {
+			log.Errorln(err)
+		}
 	}
 	config.WebServerPort = data.GetHTTPPortNumber()
 
 	// Set the web server ip
 	if *webServerIPOverride != "" {
 		log.Println("Saving new web server listen IP address to", *webServerIPOverride)
-		data.SetHTTPListenAddress(string(*webServerIPOverride))
+		if err := data.SetHTTPListenAddress(*webServerIPOverride); err != nil {
+			log.Errorln(err)
+		}
 	}
 	config.WebServerIP = data.GetHTTPListenAddress()
 
 	// Set the rtmp server port
 	if *rtmpPortOverride > 0 {
 		log.Println("Saving new RTMP server port number to", *rtmpPortOverride)
-		data.SetRTMPPortNumber(float64(*rtmpPortOverride))
+		if err := data.SetRTMPPortNumber(float64(*rtmpPortOverride)); err != nil {
+			log.Errorln(err)
+		}
 	}
 
 	// starts the core

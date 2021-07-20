@@ -23,3 +23,8 @@ linters:
     - unconvert
     - unparam
     - whitespace
+
+linters-settings:
+  govet:
+    disable:
+      - composites
