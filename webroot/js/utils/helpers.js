@@ -168,15 +168,17 @@ export function makeLastOnlineString(timestamp) {
   }
   let string = '';
   const time = new Date(timestamp);
-  let diffInDays = getDiffInDaysFromNow(time);
-  if (diffInDays > 1) {
-    string = time.toLocaleDateString();
-  } else {
+  const comparisonDate = new Date(time).setHours(0,0,0,0);
+  
+  if(comparisonDate == new Date().setHours(0,0,0,0)) {
     const atTime = time.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
     });
     string = `Today ${atTime}`;
+  } else {
+    string = time.toLocaleDateString();
   }
+
   return `Last live: ${string}`;
 }
