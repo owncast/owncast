@@ -97,7 +97,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string
 	if status.Online && utils.DoesFileExists(filepath.Join(config.WebRoot, "thumbnail.jpg")) {
-		thumbnail, err := url.Parse(fmt.Sprintf("//%s%s", r.Host, "/thumbnail.jpg"))
+		thumbnail, err := url.Parse(fmt.Sprintf("%s//%s%s", scheme, r.Host, "/thumbnail.jpg"))
 		if err != nil {
 			log.Errorln(err)
 			thumbnailURL = imageURL.String()
