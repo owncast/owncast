@@ -154,6 +154,7 @@ export default class Chat extends Component {
           messages: this.state.messages.concat(data),
           chatUserNames,
         });
+        this.scrollToBottom();
       })
       .catch((error) => {
         this.handleNetworkingError(`Fetch getChatHistory: ${error}`);

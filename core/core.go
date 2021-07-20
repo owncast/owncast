@@ -65,7 +65,7 @@ func Start() error {
 
 	_yp = yp.NewYP(GetStatus)
 
-	if err := chat.Start(); err != nil {
+	if err := chat.Start(GetStatus); err != nil {
 		log.Errorln(err)
 	}
 

@@ -26,6 +26,7 @@ export const URL_OWNCAST = 'https://owncast.online'; // used in footer
 export const PLAYER_VOLUME = 'owncast_volume';
 
 export const KEY_ACCESS_TOKEN = 'owncast_access_token';
+export const KEY_EMBED_CHAT_ACCESS_TOKEN = 'owncast_embed_chat_access_token';
 export const KEY_USERNAME = 'owncast_username';
 export const KEY_CUSTOM_USERNAME_SET = 'owncast_custom_username_set';
 export const KEY_CHAT_DISPLAYED = 'owncast_chat';
