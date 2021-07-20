@@ -11,7 +11,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
 )
@@ -30,15 +30,8 @@ func Start() error {
 	// custom emoji supported in the chat
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
 
-	// websocket chat server
-	go func() {
-		if err := chat.Start(); err != nil {
-			log.Fatalln(err)
-		}
-	}()
-
 	// chat rest api
-	http.HandleFunc("/api/chat", controllers.GetChatMessages)
+	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
 
 	// web config api
 	http.HandleFunc("/api/config", controllers.GetWebConfig)
@@ -64,6 +57,9 @@ func Start() error {
 	// tell the backend you're an active viewer
 	http.HandleFunc("/api/ping", controllers.Ping)
 
+	// register a new chat user
+	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
@@ -82,7 +78,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
 
 	// Get a a detailed list of currently connected clients
-	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(controllers.GetConnectedClients))
+	http.HandleFunc("/api/admin/clients", middleware.RequireAdminAuth(admin.GetConnectedClients))
 
 	// Get all logs
 	http.HandleFunc("/api/admin/logs", middleware.RequireAdminAuth(admin.GetLogs))
@@ -95,6 +91,13 @@ func Start() error {
 
 	// Update chat message visibility
 	http.HandleFunc("/api/admin/chat/updatemessagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
+
+	// Enable/disable a user
+	http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
+
+	// Get a list of disabled users
+	http.HandleFunc("/api/admin/chat/users/disabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
+
 	// Update config values
 
 	// Change the current streaming key in memory
@@ -119,7 +122,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/chat/disable", middleware.RequireAdminAuth(admin.SetChatDisabled))
 
 	// Set chat usernames that are not allowed
-	http.HandleFunc("/api/admin/config/chat/disallowedusernames", middleware.RequireAdminAuth(admin.SetUsernameBlocklist))
+	http.HandleFunc("/api/admin/config/chat/forbiddenusernames", middleware.RequireAdminAuth(admin.SetForbiddenUsernameList))
 
 	// Set video codec
 	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
@@ -134,34 +137,37 @@ func Start() error {
 	http.HandleFunc("/api/admin/webhooks/create", middleware.RequireAdminAuth(admin.CreateWebhook))
 
 	// Get all access tokens
-	http.HandleFunc("/api/admin/accesstokens", middleware.RequireAdminAuth(admin.GetAccessTokens))
+	http.HandleFunc("/api/admin/accesstokens", middleware.RequireAdminAuth(admin.GetExternalAPIUsers))
 
 	// Delete a single access token
-	http.HandleFunc("/api/admin/accesstokens/delete", middleware.RequireAdminAuth(admin.DeleteAccessToken))
+	http.HandleFunc("/api/admin/accesstokens/delete", middleware.RequireAdminAuth(admin.DeleteExternalAPIUser))
 
 	// Create a single access token
-	http.HandleFunc("/api/admin/accesstokens/create", middleware.RequireAdminAuth(admin.CreateAccessToken))
+	http.HandleFunc("/api/admin/accesstokens/create", middleware.RequireAdminAuth(admin.CreateExternalAPIUser))
 
 	// Send a system message to chat
-	http.HandleFunc("/api/integrations/chat/system", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendSystemMessage))
+	http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
-	// Send a user message to chat
-	http.HandleFunc("/api/integrations/chat/user", middleware.RequireAccessToken(models.ScopeCanSendUserMessages, admin.SendUserMessage))
+	// Send a user message to chat *NO LONGER SUPPORTED
+	http.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage))
+
+	// Send a message to chat as a specific 3rd party bot/integration based on its access token
+	http.HandleFunc("/api/integrations/chat/send", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendIntegrationChatMessage))
 
 	// Send a user action to chat
-	http.HandleFunc("/api/integrations/chat/action", middleware.RequireAccessToken(models.ScopeCanSendSystemMessages, admin.SendChatAction))
+	http.HandleFunc("/api/integrations/chat/action", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendChatAction))
 
 	// Hide chat message
-	http.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.UpdateMessageVisibility))
+	http.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility))
 
 	// Stream title
-	http.HandleFunc("/api/integrations/streamtitle", middleware.RequireAccessToken(models.ScopeHasAdminAccess, admin.SetStreamTitle))
+	http.HandleFunc("/api/integrations/streamtitle", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalSetStreamTitle))
 
 	// Get chat history
-	http.HandleFunc("/api/integrations/chat", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetChatMessages))
+	http.HandleFunc("/api/integrations/chat", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetChatMessages))
 
 	// Connected clients
-	http.HandleFunc("/api/integrations/clients", middleware.RequireAccessToken(models.ScopeHasAdminAccess, controllers.GetConnectedClients))
+	http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedClients))
 
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
@@ -210,6 +216,11 @@ func Start() error {
 
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+
+	// websocket
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		chat.HandleClientConnection(w, r)
+	})
 
 	port := config.WebServerPort
 	ip := config.WebServerIP

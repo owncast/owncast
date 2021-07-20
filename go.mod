@@ -7,6 +7,7 @@ require (
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
 	github.com/aws/aws-sdk-go v1.40.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/grafov/m3u8 v0.11.1
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
@@ -27,7 +28,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/yuin/goldmark v1.4.0
 	golang.org/x/mod v0.4.2
-	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

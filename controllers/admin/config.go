@@ -12,8 +12,9 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -71,17 +72,12 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+func ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	SetStreamTitle(w, r)
+}
+
 func sendSystemChatAction(messageText string, ephemeral bool) {
-	message := models.ChatEvent{}
-	message.Body = messageText
-	message.MessageType = models.ChatActionSent
-	message.ClientID = "internal-server"
-	message.Ephemeral = ephemeral
-	message.SetDefaults()
-
-	message.RenderBody()
-
-	if err := core.SendMessageToChat(message); err != nil {
+	if err := chat.SendSystemAction(messageText, ephemeral); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -576,17 +572,24 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
 }
 
-// SetUsernameBlocklist will set the list of usernames we do not allow to use.
-func SetUsernameBlocklist(w http.ResponseWriter, r *http.Request) {
-	usernames, success := getValueFromRequest(w, r)
-	if !success {
-		controllers.WriteSimpleResponse(w, false, "unable to update chat username blocklist")
+// SetForbiddenUsernameList will set the list of usernames we do not allow to use.
+func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+	type forbiddenUsernameListRequest struct {
+		Value []string `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request forbiddenUsernameListRequest
+	if err := decoder.Decode(&request); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update forbidden usernames with provided values")
 		return
 	}
 
-	data.SetUsernameBlocklist(usernames.Value.(string))
+	if err := data.SetForbiddenUsernameList(request.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+	}
 
-	controllers.WriteSimpleResponse(w, true, "blocklist updated")
+	controllers.WriteSimpleResponse(w, true, "forbidden username list updated")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

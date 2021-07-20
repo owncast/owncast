@@ -24,7 +24,7 @@ export default class ExternalActionModal extends Component {
         onClose: this.props.onClose,
       });
     } catch (e) {
-      console.log('micromodal error: ', e);
+      console.error('modal error: ', e);
     }
   }
 

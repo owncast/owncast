@@ -8,13 +8,12 @@ import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 import {
   jumpToBottom,
   debounce,
-  getLocalStorage,
+  setLocalStorage,
 } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
 import {
   URL_CHAT_HISTORY,
   MESSAGE_JUMPTOBOTTOM_BUFFER,
-  KEY_CUSTOM_USERNAME_SET,
 } from '../../utils/constants.js';
 
 export default class Chat extends Component {
@@ -33,6 +32,7 @@ export default class Chat extends Component {
     this.websocket = null;
     this.receivedFirstMessages = false;
     this.receivedMessageUpdate = false;
+    this.hasFetchedHistory = false;
 
     this.windowBlurred = false;
     this.numMessagesSinceBlur = 0;
@@ -52,7 +52,6 @@ export default class Chat extends Component {
 
   componentDidMount() {
     this.setupWebSocketCallbacks();
-    this.getChatHistory();
 
     window.addEventListener('resize', this.handleWindowResize);
 
@@ -93,15 +92,10 @@ export default class Chat extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { username: prevName } = prevProps;
-    const { username } = this.props;
+    const { username, accessToken } = this.props;
 
     const { messages: prevMessages } = prevState;
     const { messages } = this.state;
-
-    // if username updated, send a message
-    if (prevName !== username) {
-      this.sendUsernameChange(prevName, username);
-    }
 
     // scroll to bottom of messages list when new ones come in
     if (messages.length !== prevMessages.length) {
@@ -109,7 +103,14 @@ export default class Chat extends Component {
         newMessagesReceived: true,
       });
     }
+
+    // Fetch chat history
+    if (!this.hasFetchedHistory && accessToken) {
+      this.hasFetchedHistory = true;
+      this.getChatHistory(accessToken);
+    }
   }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowResize);
     if (!this.props.messagesOnly) {
@@ -138,8 +139,8 @@ export default class Chat extends Component {
   }
 
   // fetch chat history
-  getChatHistory() {
-    fetch(URL_CHAT_HISTORY)
+  getChatHistory(accessToken) {
+    fetch(URL_CHAT_HISTORY + `?accessToken=${accessToken}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Network response was not ok ${response.ok}`);
@@ -153,21 +154,11 @@ export default class Chat extends Component {
           messages: this.state.messages.concat(data),
           chatUserNames,
         });
+        this.scrollToBottom();
       })
       .catch((error) => {
         this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
       });
-  }
-
-  sendUsernameChange(oldName, newName) {
-    clearTimeout(this.sendUserJoinedEvent);
-
-    const nameChange = {
-      type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
-      oldName,
-      newName,
-    };
-    this.websocket.send(nameChange);
   }
 
   receivedWebsocketMessage(message) {
@@ -176,7 +167,7 @@ export default class Chat extends Component {
 
   handleNetworkingError(error) {
     // todo: something more useful
-    console.log(error);
+    console.error('chat error', error);
   }
 
   // handle any incoming message
@@ -247,13 +238,6 @@ export default class Chat extends Component {
     this.setState({
       webSocketConnected: true,
     });
-
-    const hasPreviouslySetCustomUsername = getLocalStorage(
-      KEY_CUSTOM_USERNAME_SET
-    );
-    if (hasPreviouslySetCustomUsername && !this.props.ignoreClient) {
-      this.sendJoinedMessage();
-    }
   }
 
   websocketDisconnected() {
@@ -269,27 +253,9 @@ export default class Chat extends Component {
     const { username } = this.props;
     const message = {
       body: content,
-      author: username,
-      type: SOCKET_MESSAGE_TYPES.CHAT,
+			type: SOCKET_MESSAGE_TYPES.CHAT,
     };
     this.websocket.send(message);
-  }
-
-  sendJoinedMessage() {
-    const { username } = this.props;
-    const message = {
-      username: username,
-      type: SOCKET_MESSAGE_TYPES.USER_JOINED,
-    };
-
-    // Artificial delay so people who join and immediately
-    // leave don't get counted.
-    this.sendUserJoinedEvent = setTimeout(
-      function () {
-        this.websocket.send(message);
-      }.bind(this),
-      5000
-    );
   }
 
   updateAuthorList(message) {
@@ -298,9 +264,9 @@ export default class Chat extends Component {
 
     if (
       type === SOCKET_MESSAGE_TYPES.CHAT &&
-      !nameList.includes(message.author)
+      !nameList.includes(message.user.displayName)
     ) {
-      return nameList.push(message.author);
+      return nameList.push(message.user.displayName);
     } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
       const { oldName, newName } = message;
       const oldNameIndex = nameList.indexOf(oldName);
@@ -373,7 +339,7 @@ export default class Chat extends Component {
   }
 
   render(props, state) {
-    const { username, messagesOnly, chatInputEnabled } = props;
+    const { username, messagesOnly, chatInputEnabled, inputMaxBytes } = props;
     const { messages, chatUserNames, webSocketConnected } = state;
 
     const messageList = messages
@@ -416,6 +382,7 @@ export default class Chat extends Component {
             chatUserNames=${chatUserNames}
             inputEnabled=${webSocketConnected && chatInputEnabled}
             handleSendMessage=${this.submitChat}
+            inputMaxBytes=${inputMaxBytes}
           />
         </div>
       </section>

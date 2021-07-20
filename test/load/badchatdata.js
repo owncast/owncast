@@ -14,7 +14,7 @@ const messages = [
   
   const WebSocket = require('ws');
   
-  const ws = new WebSocket('ws://localhost:8080/entry', {
+  const ws = new WebSocket('ws://localhost:8080/ws', {
     origin: 'http://watch.owncast.online',
   });
   

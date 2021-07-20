@@ -539,7 +539,9 @@ func VerifySettings() error {
 		if err := utils.Copy(defaultLogo, filepath.Join(config.DataDirectory, "logo.svg")); err != nil {
 			log.Errorln("error copying default logo: ", err)
 		}
-		SetLogoPath("logo.svg")
+		if err := SetLogoPath("logo.svg"); err != nil {
+			log.Errorln("unable to set default logo to logo.svg", err)
+		}
 	}
 
 	return nil
@@ -577,19 +579,25 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	return indexedQualities[0].index
 }
 
-// GetUsernameBlocklist will return the blocked usernames as a comma separated string.
-func GetUsernameBlocklist() string {
+// GetForbiddenUsernameList will return the blocked usernames as a comma separated string.
+func GetForbiddenUsernameList() []string {
 	usernameString, err := _datastore.GetString(blockedUsernamesKey)
 
 	if err != nil {
-		log.Traceln(blockedUsernamesKey, err)
-		return ""
+		return config.DefaultForbiddenUsernames
 	}
 
-	return usernameString
+	if usernameString == "" {
+		return config.DefaultForbiddenUsernames
+	}
+
+	blocklist := strings.Split(usernameString, ",")
+
+	return blocklist
 }
 
-// SetUsernameBlocklist set the username blocklist as a comma separated string.
-func SetUsernameBlocklist(usernames string) error {
-	return _datastore.SetString(blockedUsernamesKey, usernames)
+// SetForbiddenUsernameList set the username blocklist as a comma separated string.
+func SetForbiddenUsernameList(usernames []string) error {
+	usernameListString := strings.Join(usernames, ",")
+	return _datastore.SetString(blockedUsernamesKey, usernameListString)
 }

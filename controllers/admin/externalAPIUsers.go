@@ -7,31 +7,30 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/utils"
 )
 
-type deleteTokenRequest struct {
+type deleteExternalAPIUserRequest struct {
 	Token string `json:"token"`
 }
 
-type createTokenRequest struct {
+type createExternalAPIUserRequest struct {
 	Name   string   `json:"name"`
 	Scopes []string `json:"scopes"`
 }
 
-// CreateAccessToken will generate a 3rd party access token.
-func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
+// CreateExternalAPIUser will generate a 3rd party access token.
+func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var request createTokenRequest
+	var request createExternalAPIUserRequest
 	if err := decoder.Decode(&request); err != nil {
 		controllers.BadRequestHandler(w, err)
 		return
 	}
 
 	// Verify all the scopes provided are valid
-	if !models.HasValidScopes(request.Scopes) {
+	if !user.HasValidScopes(request.Scopes) {
 		controllers.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
 		return
 	}
@@ -42,26 +41,29 @@ func CreateAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.InsertToken(token, request.Name, request.Scopes); err != nil {
+	color := utils.GenerateRandomDisplayColor()
+
+	if err := user.InsertExternalAPIUser(token, request.Name, color, request.Scopes); err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	controllers.WriteResponse(w, models.AccessToken{
-		Token:     token,
-		Name:      request.Name,
-		Scopes:    request.Scopes,
-		Timestamp: time.Now(),
-		LastUsed:  nil,
+	controllers.WriteResponse(w, user.ExternalAPIUser{
+		AccessToken:  token,
+		DisplayName:  request.Name,
+		DisplayColor: color,
+		Scopes:       request.Scopes,
+		CreatedAt:    time.Now(),
+		LastUsedAt:   nil,
 	})
 }
 
-// GetAccessTokens will return all 3rd party access tokens.
-func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
+// GetExternalAPIUsers will return all 3rd party access tokens.
+func GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	tokens, err := data.GetAccessTokens()
+	tokens, err := user.GetExternalAPIUser()
 	if err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
@@ -70,8 +72,8 @@ func GetAccessTokens(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteResponse(w, tokens)
 }
 
-// DeleteAccessToken will return a single 3rd party access token.
-func DeleteAccessToken(w http.ResponseWriter, r *http.Request) {
+// DeleteExternalAPIUser will return a single 3rd party access token.
+func DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != controllers.POST {
@@ -80,7 +82,7 @@ func DeleteAccessToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request deleteTokenRequest
+	var request deleteExternalAPIUserRequest
 	if err := decoder.Decode(&request); err != nil {
 		controllers.BadRequestHandler(w, err)
 		return
@@ -91,7 +93,7 @@ func DeleteAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.DeleteToken(request.Token); err != nil {
+	if err := user.DeleteExternalAPIUser(request.Token); err != nil {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}

@@ -11,23 +11,25 @@ export const SOCKET_MESSAGE_TYPES = {
   PONG: 'PONG',
   SYSTEM: 'SYSTEM',
   USER_JOINED: 'USER_JOINED',
-  CHAT_ACTION: 'CHAT_ACTION'
+  CHAT_ACTION: 'CHAT_ACTION',
+  CONNECTED_USER_INFO: 'CONNECTED_USER_INFO',
+  ERROR_USER_DISABLED: 'ERROR_USER_DISABLED',
+  ERROR_NEEDS_REGISTRATION: 'ERROR_NEEDS_REGISTRATION',
+  ERROR_MAX_CONNECTIONS_EXCEEDED: 'ERROR_MAX_CONNECTIONS_EXCEEDED',
 };
-
-const IGNORE_CLIENT_FLAG = 'IGNORE_CLIENT';
 
 export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
-  WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
 }
 
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
 export default class Websocket {
-  constructor(ignoreClient) {
+  constructor(accessToken) {
     this.websocket = null;
     this.websocketReconnectTimer = null;
+    this.accessToken = accessToken;
 
     this.websocketConnectedListeners = [];
     this.websocketDisconnectListeners = [];
@@ -36,15 +38,18 @@ export default class Websocket {
     this.send = this.send.bind(this);
     this.createAndConnect = this.createAndConnect.bind(this);
     this.scheduleReconnect = this.scheduleReconnect.bind(this);
+    this.shutdown = this.shutdown.bind(this);
 
-    this.ignoreClient = ignoreClient;
+    this.isShutdown = false;
 
     this.createAndConnect();
   }
 
   createAndConnect() {
-    const extraFlags = this.ignoreClient ? [IGNORE_CLIENT_FLAG] : [];
-    const ws = new WebSocket(URL_WEBSOCKET, extraFlags);
+    const url = new URL(URL_WEBSOCKET);
+    url.searchParams.append('accessToken', this.accessToken);
+    
+    const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
     ws.onclose = this.onClose.bind(this);
     ws.onerror = this.onError.bind(this);
@@ -77,6 +82,11 @@ export default class Websocket {
 
     const messageJSON = JSON.stringify(message);
     this.websocket.send(messageJSON);
+  }
+
+  shutdown() {
+    this.isShutdown = true;
+    this.websocket.close();
   }
 
   // Private methods
@@ -116,14 +126,18 @@ export default class Websocket {
     this.websocket = null;
     this.notifyWebsocketDisconnectedListeners();
     this.handleNetworkingError('Websocket closed.');
-    this.scheduleReconnect();
+    if (!this.isShutdown) {
+      this.scheduleReconnect();
+    }
   }
 
   // On ws error just close the socket and let it re-connect again for now.
   onError(e) {
     this.handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
     this.websocket.close();
-    this.scheduleReconnect();
+    if (!this.isShutdown) {
+      this.scheduleReconnect();
+    }
   }
 
   scheduleReconnect() {
@@ -142,9 +156,15 @@ export default class Websocket {
     try {
       var model = JSON.parse(e.data);
     } catch (e) {
-      console.log(e);
+      // console.log(e, e.data);
+      return;
     }
 
+    if (!model.type) {
+      console.error("No type provided", model);
+      return;
+    }
+    
     // Send PONGs
     if (model.type === SOCKET_MESSAGE_TYPES.PING) {
       this.sendPong();
