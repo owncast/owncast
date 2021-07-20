@@ -339,7 +339,7 @@ export default class Chat extends Component {
   }
 
   render(props, state) {
-    const { username, messagesOnly, chatInputEnabled } = props;
+    const { username, messagesOnly, chatInputEnabled, inputMaxBytes } = props;
     const { messages, chatUserNames, webSocketConnected } = state;
 
     const messageList = messages
@@ -382,6 +382,7 @@ export default class Chat extends Component {
             chatUserNames=${chatUserNames}
             inputEnabled=${webSocketConnected && chatInputEnabled}
             handleSendMessage=${this.submitChat}
+            inputMaxBytes=${inputMaxBytes}
           />
         </div>
       </section>

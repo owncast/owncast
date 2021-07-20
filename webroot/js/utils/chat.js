@@ -153,6 +153,11 @@ export function createEmojiMarkup(data, isCustom) {
   return '<img class="emoji" alt=":‌‌' + emojiName + '‌‌:" title=":‌‌' + emojiName + '‌‌:" src="' + emojiUrl + '"/>';
 }
 
+// trim html white space characters from ends of messages for more accurate counting
+export function trimNbsp(html) {
+  return html.replace(/^(?:&nbsp;|\s)+|(?:&nbsp;|\s)+$/ig,'');
+}
+
 export function emojify(HTML, emojiList) {
   const textValue = convertToText(HTML)
 
