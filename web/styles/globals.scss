@@ -106,3 +106,39 @@ input {
     }
   }
 }
+
+.table-container {
+  .ant-table-tbody > tr > td {
+    transition: background-color 0.15s;
+  }
+  .ant-table-tbody > tr.ant-table-row:hover > td {
+    background-color: var(--gray);
+  }
+  .ant-table-small {
+    .ant-table-cell {
+      font-size: 12px;
+    }
+    .ant-table-selection-column {
+      width: 20px;
+      min-width: 20px;
+    }
+  }
+  .ant-table-row.hidden {
+    .ant-table-cell {
+      color: var(--black-35);
+    }
+    @media (prefers-color-scheme: dark) {
+      .ant-table-cell {
+        color: var(--white-25);
+      }
+    }
+  }
+  .ant-table-cell {
+    &.actions-col {
+      text-align: right;
+    }
+  }
+  td.number-col {
+    text-align: right;
+  }
+}

@@ -6,7 +6,8 @@ import ToggleSwitch from '../components/config/form-toggleswitch';
 import { UpdateArgs } from '../types/config-section';
 import {
   FIELD_PROPS_DISABLE_CHAT,
-  TEXTFIELD_PROPS_CHAT_USERNAME_BLOCKLIST,
+  TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES,
+  TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
 } from '../utils/config-constants';
 import { ServerStatusContext } from '../utils/server-status-context';
 
@@ -16,8 +17,9 @@ export default function ConfigChat() {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};
-  const { chatDisabled } = serverConfig;
-  const { usernameBlocklist } = serverConfig;
+  const { chatDisabled, forbiddenUsernames } = serverConfig;
+  const { instanceDetails } = serverConfig;
+  const { welcomeMessage } = instanceDetails;
 
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
     setFormDataValues({
@@ -30,14 +32,16 @@ export default function ConfigChat() {
     handleFieldChange({ fieldName: 'chatDisabled', value: disabled });
   }
 
-  function handleChatUsernameBlockListChange(args: UpdateArgs) {
-    handleFieldChange({ fieldName: 'usernameBlocklist', value: args.value });
+  function handleChatForbiddenUsernamesChange(args: UpdateArgs) {
+    const updatedForbiddenUsernameList = args.value.split(',');
+    handleFieldChange({ fieldName: args.fieldName, value: updatedForbiddenUsernameList });
   }
 
   useEffect(() => {
     setFormDataValues({
       chatDisabled,
-      usernameBlocklist,
+      forbiddenUsernames,
+      welcomeMessage,
     });
   }, [serverConfig]);
 
@@ -56,12 +60,18 @@ export default function ConfigChat() {
           onChange={handleChatDisableChange}
         />
         <TextFieldWithSubmit
-          fieldName="usernameBlocklist"
-          {...TEXTFIELD_PROPS_CHAT_USERNAME_BLOCKLIST}
+          fieldName="forbiddenUsernames"
+          {...TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES}
           type={TEXTFIELD_TYPE_TEXTAREA}
-          value={formDataValues.usernameBlocklist}
-          initialValue={usernameBlocklist}
-          onChange={handleChatUsernameBlockListChange}
+          value={formDataValues.forbiddenUsernames}
+          onChange={handleChatForbiddenUsernamesChange}
+        />
+        <TextFieldWithSubmit
+          fieldName="welcomeMessage"
+          {...TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE}
+          type={TEXTFIELD_TYPE_TEXTAREA}
+          value={formDataValues.welcomeMessage}
+          onChange={handleFieldChange}
         />
       </div>
     </div>

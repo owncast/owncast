@@ -67,11 +67,6 @@ export default function Offline({ logs = [], config }: OfflineProps) {
       ),
     },
     {
-      icon: <MessageTwoTone twoToneColor="#0366d6" />,
-      title: 'Chat is disabled',
-      content: 'Chat will continue to be disabled until you begin a live stream.',
-    },
-    {
       icon: <PlaySquareTwoTone twoToneColor="#f9826c" />,
       title: 'Embed your video onto other sites',
       content: (
@@ -86,17 +81,15 @@ export default function Offline({ logs = [], config }: OfflineProps) {
         </div>
       ),
     },
-    {
-      icon: <QuestionCircleTwoTone twoToneColor="#ffd33d" />,
-      title: 'Not sure what to do next?',
-      content: (
-        <div>
-          If you&apos;re having issues or would like to know how to customize and configure your
-          Owncast server visit <Link href="/help">the help page.</Link>
-        </div>
-      ),
-    },
   ];
+
+  if (!config?.chatDisabled) {
+    data.push({
+      icon: <MessageTwoTone twoToneColor="#0366d6" />,
+      title: 'Chat is disabled',
+      content: <span>Chat will continue to be disabled until you begin a live stream.</span>,
+    });
+  }
 
   if (!config?.yp?.enabled) {
     data.push({
@@ -110,6 +103,17 @@ export default function Offline({ logs = [], config }: OfflineProps) {
       ),
     });
   }
+
+  data.push({
+    icon: <QuestionCircleTwoTone twoToneColor="#ffd33d" />,
+    title: 'Not sure what to do next?',
+    content: (
+      <div>
+        If you&apos;re having issues or would like to know how to customize and configure your
+        Owncast server visit <Link href="/help">the help page.</Link>
+      </div>
+    ),
+  });
 
   return (
     <>

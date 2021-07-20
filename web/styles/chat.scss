@@ -1,24 +1,7 @@
-.chat-messages {
-  .ant-table-small .ant-table-selection-column {
-    width: 20px;
-    min-width: 20px;
-  }
-  .ant-table-tbody > tr > td {
-    transition: background-color 0.15s;
-  }
-  .ant-table-row.hidden {
-    .ant-table-cell {
-      color: var(--black-35)
-    }
-    @media (prefers-color-scheme: dark) {
-      .ant-table-cell {
-        color: var(--white-25);
-      }
-    }
-  }
-  .ant-table-cell {
-    font-size: 12px;
+// Users, Chat views
 
+.chat-messages {
+  .ant-table-cell {
     &.name-col {
       text-overflow: ellipsis;
       overflow: hidden;
@@ -31,7 +14,7 @@
 
     .message-contents {
       overflow: auto;
-      max-height: 200px; 
+      max-height: 200px;
       img {
         position: relative;
         margin-top: -5px;
@@ -45,8 +28,8 @@
   }
 
   .bulk-editor {
-    margin: .5rem 0;
-    padding: .5rem;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
     border: 1px solid var(--textfield-border);
     display: flex;
     flex-direction: row;
@@ -60,16 +43,15 @@
     }
 
     .label {
-      font-size: .75rem;
+      font-size: 0.75rem;
       color: var(--white-50);
-      margin-right: .5rem;
+      margin-right: 0.5rem;
     }
 
     button {
-      margin: 0 .2rem;
-      font-size: .75rem;
+      margin: 0 0.2rem;
+      font-size: 0.75rem;
     }
-
   }
 }
 .ant-table-filter-dropdown {
@@ -82,20 +64,20 @@
   align-items: center;
   flex-wrap: nowrap;
   justify-content: flex-end;
-  transition: opacity .15s;
+  transition: opacity 0.15s;
 
   .outcome-icon {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
   &.hidden {
-    opacity: .25;
+    opacity: 0.25;
     &:hover {
       opacity: 1;
     }
   }
   .ant-btn {
     .anticon {
-      opacity: .5;
+      opacity: 0.5;
     }
     &:hover {
       .anticon {
@@ -104,6 +86,63 @@
     }
   }
   .ant-btn-text:hover {
-    background-color: var(--black-35)
+    background-color: var(--black-35);
   }
+}
+
+.blockuser-popover {
+  max-width: 400px;
+}
+
+.user-item-container {
+  // reset <button> properties
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+
+  .display-name {
+    color: var(--white);
+    border-bottom: 1px dotted var(--white-50);
+  }
+  &:hover {
+    .display-name {
+      border-color: var(--white);
+    }
+  }
+}
+.user-details {
+  h5 {
+    color: var(--white);
+  }
+  .created-at {
+    font-size: 0.75em;
+    font-style: italic;
+  }
+  .connection-info {
+    font-size: 0.88em;
+  }
+  .previous-names-list {
+    font-size: 0.88em;
+    .user-name-item {
+      font-family: monospace;
+    }
+    .latest {
+      font-style: italic;
+      .user-name-item {
+        font-weight: bold;
+        font-style: normal;
+        color: var(--pink);
+      }
+    }
+  }
+  .ant-divider {
+    border-color: var(--white-25);
+  }
+}
+.block-user-button {
+  text-transform: capitalize;
 }

@@ -16,7 +16,6 @@ import {
   QuestionCircleOutlined,
   MessageOutlined,
   ExperimentOutlined,
-  UserOutlined,
 } from '@ant-design/icons';
 import classNames from 'classnames';
 import { upgradeVersionAvailable } from '../utils/apis';
@@ -36,7 +35,7 @@ export default function MainLayout(props) {
 
   const context = useContext(ServerStatusContext);
   const { serverConfig, online, broadcaster, versionNumber } = context || {};
-  const { instanceDetails } = serverConfig;
+  const { instanceDetails, chatDisabled } = serverConfig;
 
   const [currentStreamTitle, setCurrentStreamTitle] = useState('');
 
@@ -78,8 +77,7 @@ export default function MainLayout(props) {
   const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
   const upgradeVersionString = `${upgradeVersion}` || '';
   const upgradeMessage = `Upgrade to v${upgradeVersionString}`;
-
-  const chatMenuItemStyle = 'block'; // upgradeVersion ? 'block' : 'none';
+  const chatMenuItemStyle = chatDisabled ? 'none' : 'block';
 
   const clearAlertMessage = () => {
     alertMessage.setMessage(null);
@@ -129,7 +127,7 @@ export default function MainLayout(props) {
       <Sider width={240} className="side-nav">
         <Menu
           defaultSelectedKeys={[route.substring(1) || 'home']}
-          defaultOpenKeys={['current-stream-menu', 'utilities-menu', 'configuration']}
+          defaultOpenKeys={[]}
           mode="inline"
           className="menu-container"
         >
@@ -149,15 +147,15 @@ export default function MainLayout(props) {
 
           <SubMenu
             key="chat-config"
-            title="Chat"
+            title="Chat &amp; Users"
             icon={<MessageOutlined />}
             style={{ display: chatMenuItemStyle }}
           >
-            <Menu.Item key="messages" icon={<MessageOutlined />} title="Chat utilities">
+            <Menu.Item key="messages" title="Chat utilities">
               <Link href="/chat/messages">Messages</Link>
             </Menu.Item>
 
-            <Menu.Item key="chat-users" icon={<UserOutlined />} title="Chat utilities">
+            <Menu.Item key="chat-users" title="Chat utilities">
               <Link href="/chat/users">Users</Link>
             </Menu.Item>
           </SubMenu>

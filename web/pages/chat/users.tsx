@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, Typography } from 'antd';
-import { formatDistanceToNow } from 'date-fns';
-import { SortOrder } from 'antd/lib/table/interface';
-
+import { Typography } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
+import { CONNECTED_CLIENTS, fetchData, DISABLED_USERS } from '../../utils/apis';
+import UserTable from '../../components/user-table';
+import ClientTable from '../../components/client-table';
 
-import { CONNECTED_CLIENTS, VIEWERS_OVER_TIME, fetchData } from '../../utils/apis';
+const { Title } = Typography;
 
-const FETCH_INTERVAL = 60 * 1000; // 1 min
+export const FETCH_INTERVAL = 10 * 1000; // 10 sec
 
 export default function ChatUsers() {
   const context = useContext(ServerStatusContext);
   const { online } = context || {};
 
-  const [viewerInfo, setViewerInfo] = useState([]);
+  const [disabledUsers, setDisabledUsers] = useState([]);
   const [clients, setClients] = useState([]);
 
   const getInfo = async () => {
     try {
-      const result = await fetchData(VIEWERS_OVER_TIME);
-      setViewerInfo(result);
+      const result = await fetchData(DISABLED_USERS);
+      setDisabledUsers(result);
     } catch (error) {
       console.log('==== error', error);
     }
@@ -36,79 +36,42 @@ export default function ChatUsers() {
     let getStatusIntervalId = null;
 
     getInfo();
-    if (online) {
-      getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
-      // returned function will be called on component unmount
-      return () => {
-        clearInterval(getStatusIntervalId);
-      };
-    }
 
-    return () => [];
+    getStatusIntervalId = setInterval(getInfo, FETCH_INTERVAL);
+    // returned function will be called on component unmount
+    return () => {
+      clearInterval(getStatusIntervalId);
+    };
   }, [online]);
 
-  // todo - check to see if broadcast active has changed. if so, start polling.
-
-  if (!viewerInfo.length) {
-    return 'no info';
-  }
-
-  const columns = [
-    {
-      title: 'User name',
-      dataIndex: 'username',
-      key: 'username',
-      render: username => username || '-',
-      sorter: (a, b) => a.username - b.username,
-      sortDirections: ['descend', 'ascend'] as SortOrder[],
-    },
-    {
-      title: 'Messages sent',
-      dataIndex: 'messageCount',
-      key: 'messageCount',
-      sorter: (a, b) => a.messageCount - b.messageCount,
-      sortDirections: ['descend', 'ascend'] as SortOrder[],
-    },
-    {
-      title: 'Connected Time',
-      dataIndex: 'connectedAt',
-      key: 'connectedAt',
-      render: time => formatDistanceToNow(new Date(time)),
-      sorter: (a, b) => new Date(a.connectedAt).getTime() - new Date(b.connectedAt).getTime(),
-      sortDirections: ['descend', 'ascend'] as SortOrder[],
-    },
-    {
-      title: 'User Agent',
-      dataIndex: 'userAgent',
-      key: 'userAgent',
-    },
-    {
-      title: 'Location',
-      dataIndex: 'geo',
-      key: 'geo',
-      render: geo => (geo ? `${geo.regionName}, ${geo.countryCode}` : '-'),
-    },
-  ];
-
+  const connectedUsers = online ? (
+    <>
+      <ClientTable data={clients} />
+      <p className="description">
+        Visit the{' '}
+        <a
+          href="https://owncast.online/docs/viewers/?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          documentation
+        </a>{' '}
+        to configure additional details about your viewers.
+      </p>
+    </>
+  ) : (
+    <p className="description">
+      When a stream is active and chat is enabled, connected chat clients will be displayed here.
+    </p>
+  );
   return (
     <>
-      <div>
-        <Typography.Title>Connected</Typography.Title>
-        <Table dataSource={clients} columns={columns} rowKey={row => row.clientID} />
-        <p>
-          <Typography.Text type="secondary">
-            Visit the{' '}
-            <a
-              href="https://owncast.online/docs/viewers/?source=admin"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>{' '}
-            to configure additional details about your viewers.
-          </Typography.Text>{' '}
-        </p>
-      </div>
+      <Title>Connected Chat Participants</Title>
+      {connectedUsers}
+      <br />
+      <br />
+      <Title>Banned Users</Title>
+      <UserTable data={disabledUsers} />
     </>
   );
 }

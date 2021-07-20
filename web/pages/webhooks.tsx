@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -128,7 +129,6 @@ export default function Webhooks() {
 
   function handleError(error) {
     console.error('error', error);
-    alert(error);
   }
 
   async function getWebhooks() {
@@ -197,7 +197,16 @@ export default function Webhooks() {
       title: 'Events',
       dataIndex: 'events',
       key: 'events',
-      render: ({ map }: string[]) => <>{map(event => convertEventStringToTag(event))}</>,
+      render: events => (
+        <>
+          {
+            // eslint-disable-next-line arrow-body-style
+            events.map(event => {
+              return convertEventStringToTag(event);
+            })
+          }
+        </>
+      ),
     },
   ];
 

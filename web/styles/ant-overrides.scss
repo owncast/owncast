@@ -297,6 +297,14 @@ textarea.ant-input {
   transition-delay: 0s;
   transition-duration: 0.15s;
 }
+.ant-btn-dangerous {
+  color: var(--white-88);
+  border-color: var(--ant-error);
+  background-color: var(--purple-dark);
+}
+.ant-btn-sm {
+  font-size: 12px;
+}
 
 // ANT TABLE
 .ant-table-thead > tr > th,
@@ -379,6 +387,13 @@ textarea.ant-input {
 .ant-modal-header,
 .ant-modal-footer {
   border-color: var(--white-50);
+}
+
+.ant-modal-confirm-body {
+  .ant-modal-confirm-title,
+  .ant-modal-confirm-content {
+    color: var(--default-text-color);
+  }
 }
 
 // SELECT
@@ -473,14 +488,29 @@ textarea.ant-input {
 
 // ANT POPOVER
 .ant-popover-inner {
-  background-color: var(--gray);
+  background-color: var(--popover-base-color);
 }
 .ant-popover-message,
 .ant-popover-inner-content {
   color: var(--default-text-color);
 }
 .ant-popover-placement-topLeft > .ant-popover-content > .ant-popover-arrow {
-  border-color: var(--gray);
+  border-color: var(--popover-base-color);
+}
+.ant-popover-arrow-content {
+  background-color: var(--popover-base-color);
+}
+
+// ANT TOOLTIP
+.ant-tooltip {
+  font-size: 0.75em;
+}
+.ant-tooltip-inner {
+  color: var(--white);
+}
+.ant-tooltip-inner,
+.ant-tooltip-arrow-content {
+  background-color: var(--tooltip-base-color);
 }
 
 // ANT TAGS

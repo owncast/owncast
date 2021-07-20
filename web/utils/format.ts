@@ -1,13 +1,15 @@
+import UAParser from 'ua-parser-js';
+
 export function formatIPAddress(ipAddress: string): string {
-  const ipAddressComponents = ipAddress.split(':')
+  const ipAddressComponents = ipAddress.split(':');
 
   // Wipe out the port component
   ipAddressComponents[ipAddressComponents.length - 1] = '';
 
-  let ip = ipAddressComponents.join(':')
-  ip = ip.slice(0, ip.length - 1)
+  let ip = ipAddressComponents.join(':');
+  ip = ip.slice(0, ip.length - 1);
   if (ip === '[::1]' || ip === '127.0.0.1') {
-    return "Localhost"
+    return 'Localhost';
   }
 
   return ip;
@@ -38,4 +40,22 @@ export function parseSecondsToDurationString(seconds = 0) {
   const secsString = padLeft(`${secs}`, '0', 2);
 
   return daysString + hoursString + minString + secsString;
+}
+
+export function makeAndStringFromArray(arr: string[]): string {
+  if (arr.length === 1) return arr[0];
+  const firsts = arr.slice(0, arr.length - 1);
+  const last = arr[arr.length - 1];
+  return `${firsts.join(', ')} and ${last}`;
+}
+
+export function formatUAstring(uaString: string) {
+  const parser = UAParser(uaString);
+  const { device, os, browser } = parser;
+  const { major: browserVersion, name } = browser;
+  const { version: osVersion, name: osName } = os;
+  const { model, type } = device;
+  const deviceString = model || type ? ` (${model || type})` : '';
+  return `${name} ${browserVersion} on ${osName} ${osVersion}
+  ${deviceString}`;
 }
