@@ -8,7 +8,9 @@ export const URL_VIEWER_PING = `/api/ping`;
 
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
-export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
+export const URL_WEBSOCKET = `${
+  location.protocol === 'https:' ? 'wss' : 'ws'
+}://${location.host}/ws`;
 export const URL_CHAT_REGISTRATION = `/api/chat/register`;
 
 export const TIMER_STATUS_UPDATE = 5000; // ms

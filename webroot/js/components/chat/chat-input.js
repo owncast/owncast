@@ -167,7 +167,11 @@ export default class ChatInput extends Component {
     if (possibilities.length > 0) {
       this.suggestion = possibilities[this.completionIndex];
 
-      const newHTML = inputHTML.substring(0, at + 1) + this.suggestion + ' ' + inputHTML.substring(position);
+      const newHTML =
+        inputHTML.substring(0, at + 1) +
+        this.suggestion +
+        ' ' +
+        inputHTML.substring(position);
 
       this.setState({
         inputHTML: newHTML,

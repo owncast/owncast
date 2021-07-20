@@ -7,7 +7,10 @@ import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
-import Websocket, { CALLBACKS, SOCKET_MESSAGE_TYPES } from './utils/websocket.js';
+import Websocket, {
+  CALLBACKS,
+  SOCKET_MESSAGE_TYPES,
+} from './utils/websocket.js';
 import { registerChat } from './chat/register.js';
 
 import ExternalActionModal, {
@@ -60,7 +63,7 @@ export default class App extends Component {
     this.state = {
       websocket: null,
       canChat: false, // all of chat functionality (panel + username)
-      displayChatPanel: chatStorage === null ? true : (chatStorage === 'true'), // just the chat panel
+      displayChatPanel: chatStorage === null ? true : chatStorage === 'true', // just the chat panel
       chatInputEnabled: false, // chat input box state
       accessToken: null,
       username: getLocalStorage(KEY_USERNAME),
@@ -519,10 +522,13 @@ export default class App extends Component {
     if (e.type === SOCKET_MESSAGE_TYPES.ERROR_USER_DISABLED) {
       // User has been actively disabled on the backend. Turn off chat for them.
       this.handleBlockedChat();
-    } else if (e.type === SOCKET_MESSAGE_TYPES.ERROR_NEEDS_REGISTRATION && !this.isRegistering) {
+    } else if (
+      e.type === SOCKET_MESSAGE_TYPES.ERROR_NEEDS_REGISTRATION &&
+      !this.isRegistering
+    ) {
       // User needs an access token, so start the user auth flow.
       this.state.websocket.shutdown();
-      this.setState({websocket: null});
+      this.setState({ websocket: null });
       this.setupChatAuth(true);
     } else if (e.type === SOCKET_MESSAGE_TYPES.ERROR_MAX_CONNECTIONS_EXCEEDED) {
       // Chat server cannot support any more chat clients. Turn off chat for them.
@@ -530,10 +536,10 @@ export default class App extends Component {
     } else if (e.type === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
       // When connected the user will return an event letting us know what our
       // user details are so we can display them properly.
-      const {user} = e;
-      const {displayName} = user;
+      const { user } = e;
+      const { displayName } = user;
 
-      this.setState({username: displayName});
+      this.setState({ username: displayName });
     }
   }
 
@@ -570,7 +576,7 @@ export default class App extends Component {
     if (this.state.websocket) {
       this.state.websocket.shutdown();
       this.setState({
-        websocket: null
+        websocket: null,
       });
     }
 
@@ -589,13 +595,12 @@ export default class App extends Component {
   }
 
   sendUsernameChange(newName) {
-		const nameChange = {
-			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
-			newName,
-		};
-		this.state.websocket.send(nameChange);
+    const nameChange = {
+      type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
+      newName,
+    };
+    this.state.websocket.send(nameChange);
   }
-
 
   render(props, state) {
     const {
@@ -702,7 +707,8 @@ export default class App extends Component {
             chatInputEnabled=${chatInputEnabled && !chatDisabled}
             instanceTitle=${name}
             accessToken=${this.state.accessToken}
-            inputMaxBytes=${(maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER) || CHAT_MAX_MESSAGE_LENGTH}
+            inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
+            CHAT_MAX_MESSAGE_LENGTH}
           />
         `
       : null;

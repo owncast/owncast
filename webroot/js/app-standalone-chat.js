@@ -40,7 +40,7 @@ export default class StandaloneChat extends Component {
 
   async setupChatAuth(force) {
     var accessToken = getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN);
-    const randomInt = Math.floor(Math.random() * 100) + 1
+    const randomInt = Math.floor(Math.random() * 100) + 1;
     var username = 'chat-embed-' + randomInt;
 
     if (!accessToken || force) {

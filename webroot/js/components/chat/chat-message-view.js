@@ -29,7 +29,7 @@ export default class ChatMessageView extends Component {
   async componentDidMount() {
     const { message, username } = this.props;
     const { body } = message;
-  
+
     if (message && username) {
       const formattedMessage = await formatMessageText(body, username);
       this.setState({
@@ -48,7 +48,9 @@ export default class ChatMessageView extends Component {
       return null;
     }
     const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
-    const userMetadata = `${displayName} first joined ${formatTimestamp(createdAt)}`;
+    const userMetadata = `${displayName} first joined ${formatTimestamp(
+      createdAt
+    )}`;
 
     const isSystemMessage = message.type === SOCKET_MESSAGE_TYPES.SYSTEM;
 
@@ -69,7 +71,11 @@ export default class ChatMessageView extends Component {
         title=${formattedTimestamp}
       >
         <div class="message-content break-words w-full">
-          <div style=${authorTextColor} class="message-author font-bold" title=${userMetadata}>
+          <div
+            style=${authorTextColor}
+            class="message-author font-bold"
+            title=${userMetadata}
+          >
             ${displayName}
           </div>
           <div
@@ -90,7 +96,7 @@ function getChatMessageClassString() {
   return 'message flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm';
 }
 
-export async function formatMessageText(message, username) {  
+export async function formatMessageText(message, username) {
   let formattedText = getMessageWithEmbeds(message);
   formattedText = convertToMarkup(formattedText);
   return await highlightUsername(formattedText, username);

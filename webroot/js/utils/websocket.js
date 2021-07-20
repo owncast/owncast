@@ -21,7 +21,7 @@ export const SOCKET_MESSAGE_TYPES = {
 export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
-}
+};
 
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
@@ -48,7 +48,7 @@ export default class Websocket {
   createAndConnect() {
     const url = new URL(URL_WEBSOCKET);
     url.searchParams.append('accessToken', this.accessToken);
-    
+
     const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
     ws.onclose = this.onClose.bind(this);
@@ -161,10 +161,10 @@ export default class Websocket {
     }
 
     if (!model.type) {
-      console.error("No type provided", model);
+      console.error('No type provided', model);
       return;
     }
-    
+
     // Send PONGs
     if (model.type === SOCKET_MESSAGE_TYPES.PING) {
       this.sendPong();
@@ -182,6 +182,8 @@ export default class Websocket {
   }
 
   handleNetworkingError(error) {
-    console.error(`Websocket Error. Chat is likely not working. Visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`);
+    console.error(
+      `Websocket Error. Chat is likely not working. Visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`
+    );
   }
 }
