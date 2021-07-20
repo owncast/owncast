@@ -6,12 +6,16 @@ import (
 	"sort"
 
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
-func Start() error {
+var getStatus func() models.Status
+
+func Start(getStatusFunc func() models.Status) error {
 	setupPersistence()
 
+	getStatus = getStatusFunc
 	_server = NewChat()
 
 	go _server.Run()
@@ -90,6 +94,10 @@ func SendSystemAction(text string, ephemeral bool) error {
 	}
 
 	return nil
+}
+
+func SendAllWelcomeMessage() {
+	_server.sendAllWelcomeMessage()
 }
 
 func Broadcast(event events.OutboundEvent) error {

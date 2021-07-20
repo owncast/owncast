@@ -90,20 +90,27 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 	go client.writePump()
 	go client.readPump()
 
+	client.sendConnectedClientInfo()
+
+	if getStatus().Online {
+		s.sendUserJoinedMessage(client)
+		s.sendWelcomeMessageToClient(client)
+	}
+
+	return client
+}
+
+func (s *ChatServer) sendUserJoinedMessage(c *ChatClient) {
 	userJoinedEvent := events.UserJoinedEvent{}
 	userJoinedEvent.SetDefaults()
-	userJoinedEvent.User = user
+	userJoinedEvent.User = c.User
 
 	if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
 		log.Errorln("error adding client to chat server", err)
 	}
-	client.sendConnectedClientInfo()
-	s.sendWelcomeMessageToClient(client)
 
 	// Send chat user joined webhook
 	webhooks.SendChatEventUserJoined(userJoinedEvent)
-
-	return client
 }
 
 func (s *ChatServer) ClientClosed(c *ChatClient) {
@@ -269,6 +276,21 @@ func (s *ChatServer) sendWelcomeMessageToClient(c *ChatClient) {
 
 	if welcomeMessage != "" {
 		s.sendSystemMessageToClient(c, welcomeMessage)
+	}
+}
+
+func (s *ChatServer) sendAllWelcomeMessage() {
+	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+
+	if welcomeMessage != "" {
+		clientMessage := events.SystemMessageEvent{
+			Event: events.Event{},
+			MessageEvent: events.MessageEvent{
+				Body: welcomeMessage,
+			},
+		}
+		clientMessage.SetDefaults()
+		_ = s.Broadcast(clientMessage.GetBroadcastPayload())
 	}
 }
 
