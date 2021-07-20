@@ -75,11 +75,19 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(path.Join("static", "metadata.html")))
 
-	fullURL, err := url.Parse(fmt.Sprintf("//%s%s", r.Host, r.URL.Path))
+	scheme := "http"
+
+	if siteUrl := data.GetServerURL(); siteUrl != "" {
+		if parsed, err := url.Parse(siteUrl); err == nil && parsed.Scheme != "" {
+			scheme = parsed.Scheme
+		}
+	}
+
+	fullURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, r.URL.Path))
 	if err != nil {
 		log.Panicln(err)
 	}
-	imageURL, err := url.Parse(fmt.Sprintf("//%s%s", r.Host, "/logo"))
+	imageURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/logo"))
 	if err != nil {
 		log.Panicln(err)
 	}
