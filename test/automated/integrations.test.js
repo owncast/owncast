@@ -49,34 +49,48 @@ test('check that webhook was deleted', (done) => {
 });
 
 test('create access token', async (done) => {
-    const name = 'test token';
-    const scopes = ['CAN_SEND_SYSTEM_MESSAGES'];
+    const name = 'Automated integration test';
+    const scopes = ['CAN_SEND_SYSTEM_MESSAGES', 'CAN_SEND_MESSAGES'];
     const res = await sendIntegrationsChangePayload('accesstokens/create', {
         name: name,
         scopes: scopes, 
     });
 
-    expect(res.body.token).toBeTruthy();
-    expect(res.body.timestamp).toBeTruthy();
-    expect(res.body.name).toBe(name);
+    expect(res.body.accessToken).toBeTruthy();
+    expect(res.body.createdAt).toBeTruthy();
+    expect(res.body.displayName).toBe(name);
     expect(res.body.scopes).toStrictEqual(scopes);
-    accessToken = res.body.token;
+    accessToken = res.body.accessToken;
     done();
 });
 
-test('check access tokens', (done) => {
-    request.get('/api/admin/accesstokens')
+test('check access tokens', async (done) => {
+    const res = await request.get('/api/admin/accesstokens')
         .auth('admin', 'abc123').expect(200)
-        .then((res) => {
-            expect(res.body).toHaveLength(1);
-            expect(res.body[0].token).toBe(accessToken);
-            done();
-        });
+    const tokenCheck = res.body.filter((token) => token.accessToken === accessToken)
+    expect(tokenCheck).toHaveLength(1);
+    done();
 });
 
 test('send a system message using access token', async (done) => {
-    const payload = {body: 'test 1234'};
+    const payload = {body: 'This is a test system message from the automated integration test'};
     const res = await request.post('/api/integrations/chat/system')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send(payload).expect(200);
+    done();
+});
+
+test('send an external integration message using access token', async (done) => {
+    const payload = {body: 'This is a test external message from the automated integration test'};
+    const res = await request.post('/api/integrations/chat/send')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send(payload).expect(200);
+    done();
+});
+
+test('send an external integration action using access token', async (done) => {
+    const payload = {body: 'This is a test external action from the automated integration test'};
+    const res = await request.post('/api/integrations/chat/action')
         .set('Authorization', 'Bearer ' + accessToken)
         .send(payload).expect(200);
     done();
@@ -90,13 +104,12 @@ test('delete access token', async (done) => {
     done();
 });
 
-test('check token delete was successful', (done) => {
-    request.get('/api/admin/accesstokens')
+test('check token delete was successful', async (done) => {
+    const res = await request.get('/api/admin/accesstokens')
         .auth('admin', 'abc123').expect(200)
-        .then((res) => {
-            expect(res.body).toHaveLength(0);
-            done();
-        });
+    const tokenCheck = res.body.filter((token) => token.accessToken === accessToken)
+    expect(tokenCheck).toHaveLength(0);
+    done();
 });
 
 async function sendIntegrationsChangePayload(endpoint, payload) {

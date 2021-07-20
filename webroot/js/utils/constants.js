@@ -8,9 +8,8 @@ export const URL_VIEWER_PING = `/api/ping`;
 
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
-export const URL_WEBSOCKET = `${
-  location.protocol === 'https:' ? 'wss' : 'ws'
-}://${location.host}/entry`;
+export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
+export const URL_CHAT_REGISTRATION = `/api/chat/register`;
 
 export const TIMER_STATUS_UPDATE = 5000; // ms
 export const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins
@@ -26,6 +25,8 @@ export const MESSAGE_ONLINE = 'Stream is online.';
 export const URL_OWNCAST = 'https://owncast.online'; // used in footer
 export const PLAYER_VOLUME = 'owncast_volume';
 
+export const KEY_ACCESS_TOKEN = 'owncast_access_token';
+export const KEY_EMBED_CHAT_ACCESS_TOKEN = 'owncast_embed_chat_access_token';
 export const KEY_USERNAME = 'owncast_username';
 export const KEY_CUSTOM_USERNAME_SET = 'owncast_custom_username_set';
 export const KEY_CHAT_DISPLAYED = 'owncast_chat';
@@ -35,6 +36,7 @@ export const CHAT_INITIAL_PLACEHOLDER_TEXT =
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
 export const CHAT_MAX_MESSAGE_LENGTH = 500;
+export const EST_SOCKET_PAYLOAD_BUFFER = 512;
 export const CHAT_CHAR_COUNT_BUFFER = 20;
 export const CHAT_OK_KEYCODES = [
   'ArrowLeft',

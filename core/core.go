@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -53,6 +54,8 @@ func Start() error {
 		log.Errorln("storage error", err)
 	}
 
+	user.SetupUsers()
+
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
 	if err := createInitialOfflineState(); err != nil {
@@ -62,7 +65,9 @@ func Start() error {
 
 	_yp = yp.NewYP(GetStatus)
 
-	chat.Setup(ChatListenerImpl{})
+	if err := chat.Start(GetStatus); err != nil {
+		log.Errorln(err)
+	}
 
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)

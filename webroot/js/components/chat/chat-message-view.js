@@ -4,8 +4,8 @@ import Mark from '/js/web_modules/markjs/dist/mark.es6.min.js';
 const html = htm.bind(h);
 
 import {
-  messageBubbleColorForString,
-  textColorForString,
+  messageBubbleColorForHue,
+  textColorForHue,
 } from '../../utils/user-colors.js';
 import { convertToText } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
@@ -28,8 +28,9 @@ export default class ChatMessageView extends Component {
 
   async componentDidMount() {
     const { message, username } = this.props;
+    const { body } = message;
+  
     if (message && username) {
-      const { body } = message;
       const formattedMessage = await formatMessageText(body, username);
       this.setState({
         formattedMessage,
@@ -39,22 +40,24 @@ export default class ChatMessageView extends Component {
 
   render() {
     const { message } = this.props;
-    const { author, timestamp, visible } = message;
+    const { user, timestamp } = message;
+    const { displayName, displayColor, createdAt } = user;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
       return null;
     }
-    const formattedTimestamp = formatTimestamp(timestamp);
+    const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
+    const userMetadata = `${displayName} first joined ${formatTimestamp(createdAt)}`;
 
     const isSystemMessage = message.type === SOCKET_MESSAGE_TYPES.SYSTEM;
 
     const authorTextColor = isSystemMessage
       ? { color: '#fff' }
-      : { color: textColorForString(author) };
+      : { color: textColorForHue(displayColor) };
     const backgroundStyle = isSystemMessage
       ? { backgroundColor: '#667eea' }
-      : { backgroundColor: messageBubbleColorForString(author) };
+      : { backgroundColor: messageBubbleColorForHue(displayColor) };
     const messageClassString = isSystemMessage
       ? getSystemMessageClassString()
       : getChatMessageClassString();
@@ -66,8 +69,8 @@ export default class ChatMessageView extends Component {
         title=${formattedTimestamp}
       >
         <div class="message-content break-words w-full">
-          <div style=${authorTextColor} class="message-author font-bold">
-            ${author}
+          <div style=${authorTextColor} class="message-author font-bold" title=${userMetadata}>
+            ${displayName}
           </div>
           <div
             class="message-text text-gray-300 font-normal overflow-y-hidden pt-2"
@@ -87,7 +90,7 @@ function getChatMessageClassString() {
   return 'message flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm';
 }
 
-export async function formatMessageText(message, username) {
+export async function formatMessageText(message, username) {  
   let formattedText = getMessageWithEmbeds(message);
   formattedText = convertToMarkup(formattedText);
   return await highlightUsername(formattedText, username);
@@ -156,7 +159,7 @@ function formatTimestamp(sentAt) {
     return '';
   }
 
-  let diffInDays = getDiffInDaysFromNow(sentAt); //(new Date() - sentAt) / (24 * 3600 * 1000);
+  let diffInDays = getDiffInDaysFromNow(sentAt);
   if (diffInDays >= 1) {
     return (
       `Sent at ${sentAt.toLocaleDateString('en-US', {
@@ -165,7 +168,7 @@ function formatTimestamp(sentAt) {
     );
   }
 
-  return `Sent at ${sentAt.toLocaleTimeString()}`;
+  return `${sentAt.toLocaleTimeString()}`;
 }
 
 /*

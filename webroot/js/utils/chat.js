@@ -7,41 +7,41 @@ import {
 
 // Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
 export function getCaretPosition(editableDiv) {
-	var caretPos = 0,
-		sel, range;
-	if (window.getSelection) {
-		sel = window.getSelection();
-		if (sel.rangeCount) {
-			range = sel.getRangeAt(0);
-			if (range.commonAncestorContainer.parentNode == editableDiv) {
-				caretPos = range.endOffset;
-			}
-		}
-	} else if (document.selection && document.selection.createRange) {
-		range = document.selection.createRange();
-		if (range.parentElement() == editableDiv) {
-			var tempEl = document.createElement("span");
-			editableDiv.insertBefore(tempEl, editableDiv.firstChild);
-			var tempRange = range.duplicate();
-			tempRange.moveToElementText(tempEl);
-			tempRange.setEndPoint("EndToEnd", range);
-			caretPos = tempRange.text.length;
-		}
-	}
-	return caretPos;
+  var caretPos = 0,
+    sel, range;
+  if (window.getSelection) {
+    sel = window.getSelection();
+    if (sel.rangeCount) {
+      range = sel.getRangeAt(0);
+      if (range.commonAncestorContainer.parentNode == editableDiv) {
+        caretPos = range.endOffset;
+      }
+    }
+  } else if (document.selection && document.selection.createRange) {
+    range = document.selection.createRange();
+    if (range.parentElement() == editableDiv) {
+      var tempEl = document.createElement("span");
+      editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+      var tempRange = range.duplicate();
+      tempRange.moveToElementText(tempEl);
+      tempRange.setEndPoint("EndToEnd", range);
+      caretPos = tempRange.text.length;
+    }
+  }
+  return caretPos;
 }
 
 // Might not need this anymore
 // Pieced together from parts of https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
 export function setCaretPosition(editableDiv, position) {
-	var range = document.createRange();
-	var sel = window.getSelection();
-	range.selectNode(editableDiv);
-	range.setStart(editableDiv.childNodes[0], position);
-	range.collapse(true);
+  var range = document.createRange();
+  var sel = window.getSelection();
+  range.selectNode(editableDiv);
+  range.setStart(editableDiv.childNodes[0], position);
+  range.collapse(true);
 
-	sel.removeAllRanges();
-	sel.addRange(range);
+  sel.removeAllRanges();
+  sel.addRange(range);
 }
 
 
@@ -55,9 +55,9 @@ export function generatePlaceholderText(isEnabled, hasSentFirstChatMessage) {
 export function extraUserNamesFromMessageHistory(messages) {
   const list = [];
   if (messages) {
-    messages.forEach(function(message) {
-      if (!list.includes(message.author)) {
-        list.push(message.author);
+    messages.forEach(function (message) {
+      if (!list.includes(message.user.displayName)) {
+        list.push(message.user.displayName);
       }
     });
   }
@@ -86,6 +86,9 @@ export function convertToText(str = '') {
   // Replace `<p>` (from IE).
   value = value.replace(/<p>/gi, '\n');
 
+  // Cleanup the emoji titles.
+  value = value.replace(/\u200C{2}/gi, '');
+
   // Trim each line.
   value = value
     .split('\n')
@@ -109,7 +112,7 @@ export function convertToText(str = '') {
   You would call this when a user pastes from
   the clipboard into a `contenteditable` area.
 */
-export function convertOnPaste( event = { preventDefault() {} }) {
+export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
   // Prevent paste.
   event.preventDefault();
 
@@ -136,8 +139,47 @@ export function convertOnPaste( event = { preventDefault() {} }) {
   // Clean up text.
   value = convertToText(value);
 
+  const HTML = emojify(value, emojiList);
+
   // Insert text.
   if (typeof document.execCommand === 'function') {
-    document.execCommand('insertText', false, value);
+    document.execCommand('insertHTML', false, HTML);
   }
+}
+
+export function createEmojiMarkup(data, isCustom) {
+  const emojiUrl = isCustom ? data.emoji : data.url;
+  const emojiName = (isCustom ? data.name : data.url.split('\\').pop().split('/').pop().split('.').shift()).toLowerCase();
+  return '<img class="emoji" alt=":‌‌' + emojiName + '‌‌:" title=":‌‌' + emojiName + '‌‌:" src="' + emojiUrl + '"/>';
+}
+
+// trim html white space characters from ends of messages for more accurate counting
+export function trimNbsp(html) {
+  return html.replace(/^(?:&nbsp;|\s)+|(?:&nbsp;|\s)+$/ig,'');
+}
+
+export function emojify(HTML, emojiList) {
+  const textValue = convertToText(HTML)
+
+  for (var lastPos = textValue.length; lastPos >= 0; lastPos--) {
+    const endPos = textValue.lastIndexOf(':', lastPos);
+    if (endPos <= 0) {
+      break;
+    }
+    const startPos = textValue.lastIndexOf(':', endPos - 1);
+    if (startPos === -1) {
+      break;
+    }
+    const typedEmoji = textValue.substring(startPos + 1, endPos).trim();
+    const emojiIndex = emojiList.findIndex(function (emojiItem) {
+      return emojiItem.name.toLowerCase() === typedEmoji.toLowerCase();
+    });
+
+    if (emojiIndex != -1) {
+      const emojiImgElement = createEmojiMarkup(emojiList[emojiIndex], true)
+      HTML = HTML.replace(":" + typedEmoji + ":", emojiImgElement)
+    }
+  }
+  return HTML;
+
 }

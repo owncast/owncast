@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
@@ -72,10 +73,15 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
 	transcoder.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
+
+	_ = chat.SendSystemAction("Stay tuned, the stream is starting!", true)
+	chat.SendAllWelcomeMessage()
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
 func SetStreamAsDisconnected() {
+	_ = chat.SendSystemAction("The stream is ending.", true)
+
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: true}
 	_broadcaster = nil

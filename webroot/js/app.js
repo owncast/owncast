@@ -7,7 +7,9 @@ import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
-import Websocket from './utils/websocket.js';
+import Websocket, { CALLBACKS, SOCKET_MESSAGE_TYPES } from './utils/websocket.js';
+import { registerChat } from './chat/register.js';
+
 import ExternalActionModal, {
   ExternalActionButton,
 } from './components/external-action-modal.js';
@@ -17,7 +19,6 @@ import {
   classNames,
   clearLocalStorage,
   debounce,
-  generateUsername,
   getLocalStorage,
   getOrientation,
   hasTouchScreen,
@@ -27,7 +28,10 @@ import {
   setLocalStorage,
 } from './utils/helpers.js';
 import {
+  CHAT_MAX_MESSAGE_LENGTH,
+  EST_SOCKET_PAYLOAD_BUFFER,
   HEIGHT_SHORT_WIDE,
+  KEY_ACCESS_TOKEN,
   KEY_CHAT_DISPLAYED,
   KEY_USERNAME,
   MESSAGE_OFFLINE,
@@ -54,10 +58,13 @@ export default class App extends Component {
     this.windowBlurred = false;
 
     this.state = {
-      websocket: new Websocket(),
-      displayChat: chatStorage === null ? true : chatStorage,
+      websocket: null,
+      canChat: false, // all of chat functionality (panel + username)
+      displayChatPanel: chatStorage === null ? true : (chatStorage === 'true'), // just the chat panel
       chatInputEnabled: false, // chat input box state
-      username: getLocalStorage(KEY_USERNAME) || generateUsername(),
+      accessToken: null,
+      username: getLocalStorage(KEY_USERNAME),
+      isRegistering: false,
       touchKeyboardActive: false,
 
       configData: {
@@ -86,7 +93,7 @@ export default class App extends Component {
     this.playerRestartTimer = null;
     this.offlineTimer = null;
     this.statusTimer = null;
-    this.disableChatTimer = null;
+    this.disableChatInputTimer = null;
     this.streamDurationTimer = null;
 
     // misc dom events
@@ -116,6 +123,14 @@ export default class App extends Component {
     // fetch events
     this.getConfig = this.getConfig.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
+
+    // user events
+    this.handleWebsocketMessage = this.handleWebsocketMessage.bind(this);
+
+    // chat
+    this.hasConfiguredChat = false;
+    this.setupChatAuth = this.setupChatAuth.bind(this);
+    this.disableChat = this.disableChat.bind(this);
   }
 
   componentDidMount() {
@@ -144,7 +159,7 @@ export default class App extends Component {
     clearInterval(this.playerRestartTimer);
     clearInterval(this.offlineTimer);
     clearInterval(this.statusTimer);
-    clearTimeout(this.disableChatTimer);
+    clearTimeout(this.disableChatInputTimer);
     clearInterval(this.streamDurationTimer);
     window.removeEventListener('resize', this.handleWindowResize);
     window.removeEventListener('blur', this.handleWindowBlur);
@@ -197,10 +212,20 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary } = data;
+    const { name, summary, chatDisabled } = data;
     window.document.title = name;
 
+    // If this is the first time setting the config
+    // then setup chat if it's enabled.
+    const chatBlocked = getLocalStorage('owncast_chat_blocked');
+    if (!chatBlocked && !this.hasConfiguredChat && !chatDisabled) {
+      this.setupChatAuth();
+    }
+
+    this.hasConfiguredChat = true;
+
     this.setState({
+      canChat: !chatBlocked,
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
@@ -274,7 +299,7 @@ export default class App extends Component {
       TIMER_DISABLE_CHAT_AFTER_OFFLINE -
       (Date.now() - new Date(this.state.lastDisconnectTime));
     const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
-    this.disableChatTimer = setTimeout(this.disableChatInput, countdown);
+    this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
     this.setState({
       streamOnline: false,
       streamStatusMessage: MESSAGE_OFFLINE,
@@ -294,8 +319,8 @@ export default class App extends Component {
   // play video!
   handleOnlineMode() {
     this.player.startPlayer();
-    clearTimeout(this.disableChatTimer);
-    this.disableChatTimer = null;
+    clearTimeout(this.disableChatInputTimer);
+    this.disableChatInputTimer = null;
 
     this.streamDurationTimer = setInterval(
       this.setCurrentStreamDuration,
@@ -332,6 +357,8 @@ export default class App extends Component {
     this.setState({
       username: newName,
     });
+
+    this.sendUsernameChange(newName);
   }
 
   handleFormFocus() {
@@ -351,16 +378,12 @@ export default class App extends Component {
   }
 
   handleChatPanelToggle() {
-    const { displayChat: curDisplayed } = this.state;
+    const { displayChatPanel: curDisplayed } = this.state;
 
     const displayChat = !curDisplayed;
-    if (displayChat) {
-      setLocalStorage(KEY_CHAT_DISPLAYED, displayChat);
-    } else {
-      clearLocalStorage(KEY_CHAT_DISPLAYED);
-    }
+    setLocalStorage(KEY_CHAT_DISPLAYED, displayChat);
     this.setState({
-      displayChat,
+      displayChatPanel: displayChat,
     });
   }
 
@@ -371,7 +394,7 @@ export default class App extends Component {
   }
 
   handleNetworkingError(error) {
-    console.log(`>>> App Error: ${error}`);
+    console.error(`>>> App Error: ${error}`);
   }
 
   handleWindowResize() {
@@ -492,11 +515,95 @@ export default class App extends Component {
     });
   }
 
+  handleWebsocketMessage(e) {
+    if (e.type === SOCKET_MESSAGE_TYPES.ERROR_USER_DISABLED) {
+      // User has been actively disabled on the backend. Turn off chat for them.
+      this.handleBlockedChat();
+    } else if (e.type === SOCKET_MESSAGE_TYPES.ERROR_NEEDS_REGISTRATION && !this.isRegistering) {
+      // User needs an access token, so start the user auth flow.
+      this.state.websocket.shutdown();
+      this.setState({websocket: null});
+      this.setupChatAuth(true);
+    } else if (e.type === SOCKET_MESSAGE_TYPES.ERROR_MAX_CONNECTIONS_EXCEEDED) {
+      // Chat server cannot support any more chat clients. Turn off chat for them.
+      this.disableChat();
+    } else if (e.type === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
+      // When connected the user will return an event letting us know what our
+      // user details are so we can display them properly.
+      const {user} = e;
+      const {displayName} = user;
+
+      this.setState({username: displayName});
+    }
+  }
+
+  handleBlockedChat() {
+    setLocalStorage('owncast_chat_blocked', true);
+    this.disableChat();
+  }
+
+  disableChat() {
+    this.state.websocket.shutdown();
+    this.setState({ websocket: null, canChat: false });
+  }
+
+  async setupChatAuth(force) {
+    var accessToken = getLocalStorage(KEY_ACCESS_TOKEN);
+    var username = getLocalStorage(KEY_USERNAME);
+
+    if (!accessToken || force) {
+      try {
+        this.isRegistering = true;
+        const registration = await registerChat(this.state.username);
+        accessToken = registration.accessToken;
+        username = registration.displayName;
+
+        setLocalStorage(KEY_ACCESS_TOKEN, accessToken);
+        setLocalStorage(KEY_USERNAME, username);
+
+        this.isRegistering = false;
+      } catch (e) {
+        console.error('registration error:', e);
+      }
+    }
+
+    if (this.state.websocket) {
+      this.state.websocket.shutdown();
+      this.setState({
+        websocket: null
+      });
+    }
+
+    // Without a valid access token he websocket connection will be rejected.
+    const websocket = new Websocket(accessToken);
+    websocket.addListener(
+      CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED,
+      this.handleWebsocketMessage
+    );
+
+    this.setState({
+      username,
+      websocket,
+      accessToken,
+    });
+  }
+
+  sendUsernameChange(newName) {
+		const nameChange = {
+			type: SOCKET_MESSAGE_TYPES.NAME_CHANGE,
+			newName,
+		};
+		this.state.websocket.send(nameChange);
+  }
+
+
   render(props, state) {
     const {
       chatInputEnabled,
       configData,
-      displayChat,
+      displayChatPanel,
+      canChat,
+
       isPlaying,
       orientation,
       playerActive,
@@ -512,7 +619,6 @@ export default class App extends Component {
       externalAction,
       lastDisconnectTime,
     } = state;
-
     const {
       version: appVersion,
       logo = TEMP_IMAGE,
@@ -524,6 +630,7 @@ export default class App extends Component {
       chatDisabled,
       externalActions,
       customStyles,
+      maxSocketPayloadSize,
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -544,13 +651,13 @@ export default class App extends Component {
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
-    const shouldDisplayChat = displayChat && !chatDisabled;
-    const usernameStyle = chatDisabled ? 'none' : 'flex';
+    const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
 
     const extraAppClasses = classNames({
       'config-loading': configData.loading,
       chat: shouldDisplayChat,
-      'no-chat': !shouldDisplayChat,
+      'chat-hidden': !displayChatPanel && canChat && !chatDisabled, // hide panel
+      'chat-disabled': !canChat || chatDisabled,
       'single-col': singleColMode,
       'bg-gray-800': singleColMode && shouldDisplayChat,
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
@@ -587,6 +694,19 @@ export default class App extends Component {
         onClose=${this.closeExternalActionModal}
       />`;
 
+    const chat = this.state.websocket
+      ? html`
+          <${Chat}
+            websocket=${websocket}
+            username=${username}
+            chatInputEnabled=${chatInputEnabled && !chatDisabled}
+            instanceTitle=${name}
+            accessToken=${this.state.accessToken}
+            inputMaxBytes=${(maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER) || CHAT_MAX_MESSAGE_LENGTH}
+          />
+        `
+      : null;
+
     return html`
       <div
         id="app-container"
@@ -620,7 +740,6 @@ export default class App extends Component {
             <div
               id="user-options-container"
               class="flex flex-row justify-end items-center flex-no-wrap"
-              style=${{ display: usernameStyle }}
             >
               <${UsernameForm}
                 username=${username}
@@ -633,6 +752,7 @@ export default class App extends Component {
                 id="chat-toggle"
                 onClick=${this.handleChatPanelToggle}
                 class="flex cursor-pointer text-center justify-center items-center min-w-12 h-full bg-gray-800 hover:bg-gray-700"
+                style=${{ display: chatDisabled ? 'none' : 'block' }}
               >
                 💬
               </button>
@@ -712,13 +832,7 @@ export default class App extends Component {
           </span>
         </footer>
 
-        <${Chat}
-          websocket=${websocket}
-          username=${username}
-          chatInputEnabled=${chatInputEnabled && !chatDisabled}
-          instanceTitle=${name}
-        />
-        ${externalActionModal}
+        ${chat} ${externalActionModal}
       </div>
     `;
   }

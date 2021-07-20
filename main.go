@@ -38,8 +38,6 @@ func main() {
 		config.LogDirectory = *logDirectory
 	}
 
-	log.Infoln(config.GetReleaseString())
-
 	if *backupDirectory != "" {
 		config.BackupDirectory = *backupDirectory
 	}
@@ -52,6 +50,7 @@ func main() {
 	}
 
 	configureLogging(*enableDebugOptions, *enableVerboseLogging)
+	log.Infoln(config.GetReleaseString())
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {

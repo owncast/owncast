@@ -155,7 +155,7 @@ class OwncastPlayer {
           const response = await fetch('/api/video/variants');
           qualities = await response.json();
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
 
         var MenuItem = videojs.getComponent('MenuItem');

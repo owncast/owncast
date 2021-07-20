@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/url"
 	"os"
 	"os/exec"
@@ -236,4 +237,21 @@ func CleanupDirectory(path string) {
 	if err := os.MkdirAll(path, 0777); err != nil {
 		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
 	}
+}
+
+func FindInSlice(slice []string, val string) (int, bool) {
+	for i, item := range slice {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
+// GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.
+// The UI should determine the right saturation and lightness in order to make it look right.
+func GenerateRandomDisplayColor() int {
+	rangeLower := 0
+	rangeUpper := 360
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
 }

@@ -8,6 +8,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/core/user"
+
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
@@ -18,7 +20,7 @@ type WebhookEvent struct {
 }
 
 type WebhookChatMessage struct {
-	Author    string     `json:"author,omitempty"`
+	User      *user.User `json:"user,omitempty"`
 	Body      string     `json:"body,omitempty"`
 	RawBody   string     `json:"rawBody,omitempty"`
 	ID        string     `json:"id,omitempty"`

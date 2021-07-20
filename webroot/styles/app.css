@@ -137,12 +137,16 @@ header {
 }
 
 /* *********** overrides when chat is off ***************************** */
+.chat-disabled #user-options-container {
+  display: none;
+}
 
-.no-chat footer {
+.chat-disabled footer,
+.chat-hidden footer {
   justify-content: center;
 }
 
-.no-chat #chat-toggle {
+.chat-hidden #chat-toggle {
   opacity: .75;
 }
 
@@ -200,7 +204,8 @@ header {
 }
 
 .single-col.chat #video-container,
-.single-col.no-chat #video-container,
+.single-col.chat-disabled #video-container,
+.single-col.chat-hidden #video-container,
 .single-col #video-container #video,
 .single-col.chat #video-container #video {
   width: 100vw;

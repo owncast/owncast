@@ -2,84 +2,113 @@ package chat
 
 import (
 	"errors"
-	"time"
+	"net/http"
+	"sort"
 
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	log "github.com/sirupsen/logrus"
 )
 
-// Setup sets up the chat server.
-func Setup(listener models.ChatListener) {
+var getStatus func() models.Status
+
+func Start(getStatusFunc func() models.Status) error {
 	setupPersistence()
 
-	clients := make(map[string]*Client)
-	addCh := make(chan *Client)
-	delCh := make(chan *Client)
-	sendAllCh := make(chan models.ChatEvent)
-	pingCh := make(chan models.PingMessage)
-	doneCh := make(chan bool)
-	errCh := make(chan error)
+	getStatus = getStatusFunc
+	_server = NewChat()
 
-	_server = &server{
-		clients,
-		"/entry", //hardcoded due to the UI requiring this and it is not configurable
-		listener,
-		addCh,
-		delCh,
-		sendAllCh,
-		pingCh,
-		doneCh,
-		errCh,
-	}
-}
+	go _server.Run()
 
-// Start starts the chat server.
-func Start() error {
-	if _server == nil {
-		return errors.New("chat server is nil")
-	}
+	log.Traceln("Chat server started with max connection count of", _server.maxClientCount)
 
-	ticker := time.NewTicker(30 * time.Second)
-	go func() {
-		for range ticker.C {
-			_server.ping()
-		}
-	}()
-
-	_server.Listen()
-
-	return errors.New("chat server failed to start")
-}
-
-// SendMessage sends a message to all.
-func SendMessage(message models.ChatEvent) {
-	if _server == nil {
-		return
-	}
-
-	_server.SendToAll(message)
-}
-
-// GetMessages gets all of the messages.
-func GetMessages() []models.ChatEvent {
-	if _server == nil {
-		return []models.ChatEvent{}
-	}
-
-	return getChatHistory()
-}
-
-func GetModerationChatMessages() []models.ChatEvent {
-	return getChatModerationHistory()
-}
-
-func GetClient(clientID string) *Client {
-	l.RLock()
-	defer l.RUnlock()
-
-	for _, client := range _server.Clients {
-		if client.ClientID == clientID {
-			return client
-		}
-	}
 	return nil
+}
+
+// GetClientsForUser will return chat connections that are owned by a specific user.
+func GetClientsForUser(userID string) ([]*ChatClient, error) {
+	clients := map[string][]*ChatClient{}
+
+	for _, client := range _server.clients {
+		clients[client.User.Id] = append(clients[client.User.Id], client)
+	}
+
+	if _, exists := clients[userID]; !exists {
+		return nil, errors.New("no connections for user found")
+	}
+
+	return clients[userID], nil
+}
+
+func GetClients() []*ChatClient {
+	clients := []*ChatClient{}
+
+	// Convert the keyed map to a slice.
+	for _, client := range _server.clients {
+		clients = append(clients, client)
+	}
+
+	sort.Slice(clients, func(i, j int) bool {
+		return clients[i].ConnectedAt.Before(clients[j].ConnectedAt)
+	})
+
+	return clients
+}
+
+func SendSystemMessage(text string, ephemeral bool) error {
+	message := events.SystemMessageEvent{
+		MessageEvent: events.MessageEvent{
+			Body: text,
+		},
+	}
+	message.SetDefaults()
+	message.RenderBody()
+
+	if err := Broadcast(&message); err != nil {
+		log.Errorln("error sending system message", err)
+	}
+
+	if !ephemeral {
+		saveEvent(message.Id, "system", message.Body, message.GetMessageType(), nil, message.Timestamp)
+	}
+
+	return nil
+}
+
+func SendSystemAction(text string, ephemeral bool) error {
+	message := events.ActionEvent{
+		MessageEvent: events.MessageEvent{
+			Body: text,
+		},
+	}
+
+	message.SetDefaults()
+	message.RenderBody()
+
+	if err := Broadcast(&message); err != nil {
+		log.Errorln("error sending system chat action")
+	}
+
+	if !ephemeral {
+		saveEvent(message.Id, "action", message.Body, message.GetMessageType(), nil, message.Timestamp)
+	}
+
+	return nil
+}
+
+func SendAllWelcomeMessage() {
+	_server.sendAllWelcomeMessage()
+}
+
+func Broadcast(event events.OutboundEvent) error {
+	return _server.Broadcast(event.GetBroadcastPayload())
+}
+
+func HandleClientConnection(w http.ResponseWriter, r *http.Request) {
+	_server.HandleClientConnection(w, r)
+}
+
+// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
+func DisconnectUser(userID string) {
+	_server.DisconnectUser(userID)
 }

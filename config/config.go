@@ -42,6 +42,13 @@ func GetCommit() string {
 	return GitCommit
 }
 
+var DefaultForbiddenUsernames = []string{
+	"owncast", "operator", "admin", "system",
+}
+
+// The maximum payload we will allow to to be received via the chat socket.
+const MaxSocketPayloadSize = 2048
+
 // GetReleaseString gets the version string.
 func GetReleaseString() string {
 	var versionNumber = VersionNumber

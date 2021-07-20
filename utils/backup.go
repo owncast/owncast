@@ -32,7 +32,7 @@ func Restore(backupFile string, databaseFile string) error {
 	defer gz.Close()
 
 	var b bytes.Buffer
-	if _, err := io.Copy(&b, gz); err != nil {
+	if _, err := io.Copy(&b, gz); err != nil { // nolint
 		return fmt.Errorf("Unable to read backup file %s", err)
 	}
 
@@ -59,12 +59,13 @@ func Restore(backupFile string, databaseFile string) error {
 func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
 
-	BackupDirectory := filepath.Dir(backupFile)
+	backupDirectory := filepath.Dir(backupFile)
 
-	if !DoesFileExists(BackupDirectory) {
-		err := os.MkdirAll(BackupDirectory, 0700)
+	if !DoesFileExists(backupDirectory) {
+		err := os.MkdirAll(backupDirectory, 0700)
 		if err != nil {
-			log.Fatalln(err)
+			log.Errorln("unable to create backup directory. check permissions and ownership.", backupDirectory, err)
+			return
 		}
 	}
 
