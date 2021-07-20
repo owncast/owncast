@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development branch.
-  version: '0.0.8-develop'
+  version: '0.0.8'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -47,7 +47,6 @@ components:
           Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
         ipAddress: "::1"
-        username: null
         clientID: 2ba20dd34f911c198df3218ddc64c740
         geo:
           countryCode: US
@@ -66,9 +65,6 @@ components:
           example: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         ipAddress:
           description: The public IP address of this client
-          type: string
-        username:
-          description: The username for this client in chat if available
           type: string
         clientID:
           description: The value used to identify this client
@@ -485,9 +481,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    author:
-                      type: string
-                      description: Username of the chat message poster.
+                    user:
+                      $ref: "#/components/schemas/User"
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
@@ -772,9 +767,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    author:
-                      type: string
-                      description: Username of the chat message poster.
+                    user:
+                      $ref: "#/components/schemas/User"
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
@@ -1633,9 +1627,8 @@ paths:
                   items:
                     type: object
                     properties:
-                      author:
-                        type: string
-                        description: Username of the chat message poster.
+                      user:
+                        $ref: "#/components/schemas/User"
                       body:
                         type: string
                         description: Escaped HTML of the chat message content.
