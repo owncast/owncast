@@ -320,6 +320,9 @@ textarea.ant-input {
 .ant-table-tbody > tr.ant-table-row:hover > td {
   background-color: var(--gray-dark);
 }
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--white-25);
+}
 
 .ant-empty {
   color: var(--white-75);
