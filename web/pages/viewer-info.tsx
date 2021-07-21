@@ -58,21 +58,6 @@ export default function ViewersOverTime() {
 
   const columns = [
     {
-      title: 'User name',
-      dataIndex: 'username',
-      key: 'username',
-      render: username => username || '-',
-      sorter: (a, b) => a.username - b.username,
-      sortDirections: ['descend', 'ascend'] as SortOrder[],
-    },
-    {
-      title: 'Messages sent',
-      dataIndex: 'messageCount',
-      key: 'messageCount',
-      sorter: (a, b) => a.messageCount - b.messageCount,
-      sortDirections: ['descend', 'ascend'] as SortOrder[],
-    },
-    {
       title: 'Connected Time',
       dataIndex: 'connectedAt',
       key: 'connectedAt',
