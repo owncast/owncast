@@ -27,7 +27,7 @@ export default function Message(props) {
           <div
             class="text-white text-center opacity-50 overflow-hidden break-words"
           >
-            <span class="font-bold">${oldName}</span> is now known as
+            <span class="font-bold">${oldName}</span> is now known as ${' '}
             <span class="font-bold">${displayName}</span>.
           </div>
         </div>
