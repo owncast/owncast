@@ -71,6 +71,7 @@ export default function ConfigChat() {
           {...TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE}
           type={TEXTFIELD_TYPE_TEXTAREA}
           value={formDataValues.welcomeMessage}
+          initialValue={welcomeMessage}
           onChange={handleFieldChange}
         />
       </div>
