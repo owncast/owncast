@@ -100,6 +100,9 @@ func SetViewerIdActive(id string) {
 func pruneViewerCount() {
 	viewers := make(map[string]time.Time)
 
+	l.Lock()
+	defer l.Unlock()
+	
 	for viewerId := range _stats.Viewers {
 		viewerLastSeenTime := _stats.Viewers[viewerId]
 		if time.Since(viewerLastSeenTime) < _activeViewerPurgeTimeout {
