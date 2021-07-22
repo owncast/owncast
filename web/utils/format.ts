@@ -55,6 +55,12 @@ export function formatUAstring(uaString: string) {
   const { major: browserVersion, name } = browser;
   const { version: osVersion, name: osName } = os;
   const { model, type } = device;
+
+  // Fallback to just displaying the raw agent string.
+  if (!name || !browserVersion || !osName) {
+    return uaString;
+  }
+
   const deviceString = model || type ? ` (${model || type})` : '';
   return `${name} ${browserVersion} on ${osName} ${osVersion}
   ${deviceString}`;
