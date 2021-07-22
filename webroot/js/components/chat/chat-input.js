@@ -25,6 +25,7 @@ import {
   CHAT_CHAR_COUNT_BUFFER,
   CHAT_OK_KEYCODES,
   CHAT_KEY_MODIFIERS,
+  CHAT_MAX_MESSAGE_LENGTH,
 } from '../../utils/constants.js';
 
 export default class ChatInput extends Component {
@@ -234,6 +235,9 @@ export default class ChatInput extends Component {
 
   handleMessageInputKeyup(event) {
     const { key } = event;
+    const { inputHTML } = this.state;
+    const textValue = convertToText(inputHTML);
+
     if (key === 'Control' || key === 'Shift') {
       this.prepNewLine = false;
     }
