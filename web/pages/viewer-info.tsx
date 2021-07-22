@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, Row, Col, Typography } from 'antd';
-import { formatDistanceToNow } from 'date-fns';
+import { Row, Col, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { SortOrder } from 'antd/lib/table/interface';
 import Chart from '../components/chart';
 import StatisticItem from '../components/statistic';
 
 import { ServerStatusContext } from '../utils/server-status-context';
 
-import { CONNECTED_CLIENTS, VIEWERS_OVER_TIME, fetchData } from '../utils/apis';
+import { VIEWERS_OVER_TIME, fetchData } from '../utils/apis';
 
 const FETCH_INTERVAL = 60 * 1000; // 1 min
 
@@ -17,19 +15,11 @@ export default function ViewersOverTime() {
   const { online, viewerCount, overallPeakViewerCount, sessionPeakViewerCount } = context || {};
 
   const [viewerInfo, setViewerInfo] = useState([]);
-  const [clients, setClients] = useState([]);
 
   const getInfo = async () => {
     try {
       const result = await fetchData(VIEWERS_OVER_TIME);
       setViewerInfo(result);
-    } catch (error) {
-      console.log('==== error', error);
-    }
-
-    try {
-      const result = await fetchData(CONNECTED_CLIENTS);
-      setClients(result);
     } catch (error) {
       console.log('==== error', error);
     }
@@ -50,33 +40,9 @@ export default function ViewersOverTime() {
     return () => [];
   }, [online]);
 
-  // todo - check to see if broadcast active has changed. if so, start polling.
-
   if (!viewerInfo.length) {
     return 'no info';
   }
-
-  const columns = [
-    {
-      title: 'Connected Time',
-      dataIndex: 'connectedAt',
-      key: 'connectedAt',
-      render: time => formatDistanceToNow(new Date(time)),
-      sorter: (a, b) => new Date(a.connectedAt).getTime() - new Date(b.connectedAt).getTime(),
-      sortDirections: ['descend', 'ascend'] as SortOrder[],
-    },
-    {
-      title: 'User Agent',
-      dataIndex: 'userAgent',
-      key: 'userAgent',
-    },
-    {
-      title: 'Location',
-      dataIndex: 'geo',
-      key: 'geo',
-      render: geo => (geo ? `${geo.regionName}, ${geo.countryCode}` : '-'),
-    },
-  ];
 
   return (
     <>

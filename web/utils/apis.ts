@@ -71,7 +71,7 @@ export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
 export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
 
 // set external action links
-export const EXTERNAL_ACTIONS = `${API_LOCATION}api/externalactions`
+export const EXTERNAL_ACTIONS = `${API_LOCATION}api/externalactions`;
 
 export const API_YP_RESET = `${API_LOCATION}yp/reset`;
 
@@ -88,6 +88,7 @@ interface FetchOptions {
 export async function fetchData(url: string, options?: FetchOptions) {
   const { data, method = 'GET', auth = true } = options || {};
 
+  // eslint-disable-next-line no-undef
   const requestOptions: RequestInit = {
     method,
   };
@@ -119,7 +120,6 @@ export async function fetchData(url: string, options?: FetchOptions) {
     // console.log(error)
     // throw new Error(error)
   }
-  return {};
 }
 
 export async function fetchExternalData(url: string) {
