@@ -151,7 +151,7 @@ export default class Chat extends Component {
         // extra user names
         const chatUserNames = extraUserNamesFromMessageHistory(data);
         this.setState({
-          messages: this.state.messages.concat(data),
+          messages: data.concat(this.state.messages),
           chatUserNames,
         });
         this.scrollToBottom();
