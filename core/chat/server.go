@@ -54,7 +54,6 @@ func (s *ChatServer) Run() {
 			if _, ok := s.clients[client.id]; ok {
 				s.mu.Lock()
 				delete(s.clients, client.id)
-				close(client.send)
 				s.mu.Unlock()
 			}
 
@@ -72,7 +71,7 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 		User:        user,
 		ipAddress:   conn.RemoteAddr().String(),
 		accessToken: accessToken,
-		send:        make(chan []byte, 256),
+		send:        make(chan []byte, maxMessageSize),
 		UserAgent:   userAgent,
 		ConnectedAt: time.Now(),
 	}
@@ -195,7 +194,7 @@ func (s *ChatServer) Broadcast(payload events.EventPayload) error {
 		select {
 		case client.send <- data:
 		default:
-			close(client.send)
+			client.close()
 			delete(s.clients, client.id)
 		}
 	}

@@ -156,6 +156,10 @@ func (c *ChatClient) close() {
 
 	c.conn.Close()
 	c.server.unregister <- c
+	if c.send != nil {
+		close(c.send)
+		c.send = nil
+	}
 }
 
 func (c *ChatClient) passesRateLimit() bool {
@@ -175,7 +179,9 @@ func (c *ChatClient) sendPayload(payload events.EventPayload) {
 		return
 	}
 
-	c.send <- data
+	if c.send != nil {
+		c.send <- data
+	}
 }
 
 func (c *ChatClient) sendAction(message string) {
