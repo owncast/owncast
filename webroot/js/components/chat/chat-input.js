@@ -244,9 +244,6 @@ export default class ChatInput extends Component {
     if (key === ':' || key === ';') {
       this.injectEmoji();
     }
-    this.setState({
-      inputCharsLeft: CHAT_MAX_MESSAGE_LENGTH - textValue.length,
-    });
   }
 
   handleMessageInputBlur() {
