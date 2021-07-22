@@ -664,7 +664,7 @@ paths:
         '200':
           $ref: "#/components/responses/BasicResponse"
 
-  /api/admin/clients:
+  /api/admin/chat/clients:
     get:
       summary: Return a list of currently connected clients
       description: Return a list of currently connected clients with optional geo details.

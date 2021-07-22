@@ -9,8 +9,8 @@ import (
 	"github.com/owncast/owncast/core/user"
 )
 
-// GetConnectedClients returns currently connected clients.
-func GetConnectedClients(w http.ResponseWriter, r *http.Request) {
+// GetConnectedChatClients returns currently connected clients.
+func GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
 	clients := chat.GetClients()
 	w.Header().Set("Content-Type", "application/json")
 
@@ -19,7 +19,7 @@ func GetConnectedClients(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ExternalGetConnectedClients returns currently connected clients.
-func ExternalGetConnectedClients(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	GetConnectedClients(w, r)
+// ExternalGetConnectedChatClients returns currently connected clients.
+func ExternalGetConnectedChatClients(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	GetConnectedChatClients(w, r)
 }
