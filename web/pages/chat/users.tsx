@@ -66,7 +66,7 @@ export default function ChatUsers() {
   );
   return (
     <>
-      <Title>Connected Chat Participants</Title>
+      <Title>Connected Chat Participants ({clients.length})</Title>
       {connectedUsers}
       <br />
       <br />
