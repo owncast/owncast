@@ -146,25 +146,33 @@ export default class ChatInput extends Component {
 
     let partial = inputHTML.substring(at + 1, position).trim();
 
+    if (this.partial === undefined) {
+      this.partial = [];
+    }
+
     if (partial === this.suggestion) {
-      partial = this.partial;
+      partial = this.partial[token];
     } else {
-      this.partial = partial;
+      this.partial[token] = partial;
     }
 
     const possibilities = list.filter(function (item) {
       return item.toLowerCase().startsWith(partial.toLowerCase());
     });
 
+    if (this.completionIndex === undefined) {
+      this.completionIndex = [];
+    }
+
     if (
-      this.completionIndex === undefined ||
-      ++this.completionIndex >= possibilities.length
+      this.completionIndex[token] === undefined ||
+      ++this.completionIndex[token] >= possibilities.length
     ) {
-      this.completionIndex = 0;
+      this.completionIndex[token] = 0;
     }
 
     if (possibilities.length > 0) {
-      this.suggestion = possibilities[this.completionIndex];
+      this.suggestion = possibilities[this.completionIndex[token]];
 
       const newHTML =
         inputHTML.substring(0, at + 1) +
