@@ -22,7 +22,7 @@ const (
 
 func setupPersistence() {
 	_datastore = data.GetDatastore()
-	createMessagesTable()
+	data.CreateMessagesTable(_datastore.DB)
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {
@@ -31,26 +31,6 @@ func setupPersistence() {
 			runPruner()
 		}
 	}()
-}
-
-func createMessagesTable() {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
-		"id" string NOT NULL PRIMARY KEY,
-		"user_id" INTEGER,
-		"body" TEXT,
-		"eventType" TEXT,
-		"hidden_at" DATETIME,
-		"timestamp" DATETIME
-	);`
-
-	stmt, err := _datastore.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal("error creating chat messages table", err)
-	}
-	defer stmt.Close()
-	if _, err := stmt.Exec(); err != nil {
-		log.Fatal("error creating chat messages table", err)
-	}
 }
 
 func SaveUserMessage(event events.UserMessageEvent) {
@@ -176,7 +156,7 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 
 func GetChatHistory() []events.UserMessageEvent {
 	// Get all visible messages
-	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (SELECT * FROM messages LEFT OUTER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
+	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (SELECT * FROM messages LEFT OUTER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
 	return getChat(query)
 }
 

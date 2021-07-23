@@ -21,9 +21,11 @@ func createUsersTable(db *sql.DB) {
 		"scopes" TEXT,
 		"type" TEXT DEFAULT 'STANDARD',
 		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		PRIMARY KEY (id, access_token),
-		UNIQUE(id, access_token)
-	);CREATE INDEX index ON users (id, access_token)`
+		PRIMARY KEY (id)
+	);CREATE INDEX index ON users (id, access_token, disabled_at);
+	CREATE INDEX id ON users (id);
+	CREATE INDEX access_token ON users (access_token);
+	CREATE INDEX disabled_at ON USERS (disabled_at);`
 
 	stmt, err := db.Prepare(createTableSQL)
 	if err != nil {

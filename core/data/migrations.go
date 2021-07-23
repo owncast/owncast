@@ -25,7 +25,7 @@ func migrateToSchema1(db *sql.DB) {
 	}
 
 	// Recreate it
-	createUsersTable(db)
+	CreateMessagesTable(db)
 
 	// Migrate access tokens to become chat users
 	type oldAccessToken struct {
