@@ -75,7 +75,7 @@ export default class ChatInput extends Component {
       })
       .then((json) => {
         const emojiList = json;
-        const emojiNames = emojiList.map(emoji => emoji.name);
+        const emojiNames = emojiList.map((emoji) => emoji.name);
         const emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
