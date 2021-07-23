@@ -44,6 +44,7 @@ export default class ChatInput extends Component {
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
       emojiPicker: null,
       emojiList: null,
+      emojiNames: null,
     };
 
     this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
@@ -74,6 +75,7 @@ export default class ChatInput extends Component {
       })
       .then((json) => {
         const emojiList = json;
+        const emojiNames = emojiList.map(emoji => emoji.name);
         const emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
@@ -94,7 +96,7 @@ export default class ChatInput extends Component {
           this.formMessageInput.current.focus();
           replaceCaret(this.formMessageInput.current);
         });
-        this.setState({ emojiList, emojiPicker });
+        this.setState({ emojiNames, emojiList, emojiPicker });
       })
       .catch((error) => {
         // this.handleNetworkingError(`Emoji Fetch: ${error}`);
@@ -224,8 +226,7 @@ export default class ChatInput extends Component {
     }
     if (key === 'Tab') {
       const { chatUserNames } = this.props;
-      const { emojiList } = this.state;
-      const emojiNames = emojiList.map(emoji => emoji.name);
+      const { emojiNames } = this.state;
       if (this.autoComplete('@', chatUserNames)) {
         event.preventDefault();
       }
