@@ -4,31 +4,18 @@ import {
   CHAT_PLACEHOLDER_OFFLINE,
 } from './constants.js';
 
-// Taken from https://stackoverflow.com/questions/3972014/get-contenteditable-caret-index-position
-export function getCaretPosition(editableDiv) {
-  var caretPos = 0,
-    sel,
-    range;
-  if (window.getSelection) {
-    sel = window.getSelection();
-    if (sel.rangeCount) {
-      range = sel.getRangeAt(0);
-      if (range.commonAncestorContainer.parentNode == editableDiv) {
-        caretPos = range.endOffset;
-      }
-    }
-  } else if (document.selection && document.selection.createRange) {
-    range = document.selection.createRange();
-    if (range.parentElement() == editableDiv) {
-      var tempEl = document.createElement('span');
-      editableDiv.insertBefore(tempEl, editableDiv.firstChild);
-      var tempRange = range.duplicate();
-      tempRange.moveToElementText(tempEl);
-      tempRange.setEndPoint('EndToEnd', range);
-      caretPos = tempRange.text.length;
-    }
-  }
-  return caretPos;
+// Taken from https://stackoverflow.com/a/46902361
+export function getCaretPosition(node) {
+  var range = window.getSelection().getRangeAt(0),
+    preCaretRange = range.cloneRange(),
+    caretPosition,
+    tmp = document.createElement("div");
+
+  preCaretRange.selectNodeContents(node);
+  preCaretRange.setEnd(range.endContainer, range.endOffset);
+  tmp.appendChild(preCaretRange.cloneContents());
+  caretPosition = tmp.innerHTML.length;
+  return caretPosition;
 }
 
 // Might not need this anymore
@@ -113,7 +100,7 @@ export function convertToText(str = '') {
   You would call this when a user pastes from
   the clipboard into a `contenteditable` area.
 */
-export function convertOnPaste(event = { preventDefault() {} }, emojiList) {
+export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
   // Prevent paste.
   event.preventDefault();
 
