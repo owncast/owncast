@@ -45,7 +45,7 @@ func SetupPersistence(file string) error {
 		}
 	}
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s", file))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_cache_size=10000", file))
 	db.SetMaxOpenConns(1)
 	_db = db
 
