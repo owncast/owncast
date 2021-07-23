@@ -113,7 +113,7 @@ func migrateDatabase(db *sql.DB, from, to int) error {
 	for v := from; v < to; v++ {
 		switch v {
 		case 0:
-			log.Printf("Migration step from %d to %d", v, v+1)
+			log.Tracef("Migration step from %d to %d\n", v, v+1)
 			migrateToSchema1(db)
 		default:
 			panic("missing database migration step")
