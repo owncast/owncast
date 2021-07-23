@@ -139,7 +139,7 @@ func sanitize(raw string) string {
 	p.AllowElements("br", "p")
 
 	// Allow img tags from the the local emoji directory only
-	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
+	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)^/img/emoji`)).OnElements("img")
 	p.AllowAttrs("alt", "title").Matching(regexp.MustCompile(`:\S+:`)).OnElements("img")
 	p.AllowAttrs("class").OnElements("img")
 
