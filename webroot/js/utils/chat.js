@@ -9,7 +9,7 @@ export function getCaretPosition(node) {
   var range = window.getSelection().getRangeAt(0),
     preCaretRange = range.cloneRange(),
     caretPosition,
-    tmp = document.createElement("div");
+    tmp = document.createElement('div');
 
   preCaretRange.selectNodeContents(node);
   preCaretRange.setEnd(range.endContainer, range.endOffset);
@@ -100,7 +100,7 @@ export function convertToText(str = '') {
   You would call this when a user pastes from
   the clipboard into a `contenteditable` area.
 */
-export function convertOnPaste(event = { preventDefault() { } }, emojiList) {
+export function convertOnPaste(event = { preventDefault() {} }, emojiList) {
   // Prevent paste.
   event.preventDefault();
 
