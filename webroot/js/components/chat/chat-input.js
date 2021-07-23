@@ -44,6 +44,7 @@ export default class ChatInput extends Component {
       hasSentFirstChatMessage: getLocalStorage(KEY_CHAT_FIRST_MESSAGE_SENT),
       emojiPicker: null,
       emojiList: null,
+      emojiNames: null,
     };
 
     this.handleEmojiButtonClick = this.handleEmojiButtonClick.bind(this);
@@ -74,6 +75,7 @@ export default class ChatInput extends Component {
       })
       .then((json) => {
         const emojiList = json;
+        const emojiNames = emojiList.map(emoji => emoji.name);
         const emojiPicker = new EmojiButton({
           zIndex: 100,
           theme: 'owncast', // see chat.css
@@ -94,7 +96,7 @@ export default class ChatInput extends Component {
           this.formMessageInput.current.focus();
           replaceCaret(this.formMessageInput.current);
         });
-        this.setState({ emojiList, emojiPicker });
+        this.setState({ emojiNames, emojiList, emojiPicker });
       })
       .catch((error) => {
         // this.handleNetworkingError(`Emoji Fetch: ${error}`);
@@ -135,37 +137,44 @@ export default class ChatInput extends Component {
     }, 100);
   }
 
-  // autocomplete user names
-  autoCompleteNames() {
-    const { chatUserNames } = this.props;
+  // autocomplete text from the given "list". "token" marks the start of word lookup.
+  autoComplete(token, list) {
     const { inputHTML } = this.state;
     const position = getCaretPosition(this.formMessageInput.current);
-    const at = inputHTML.lastIndexOf('@', position - 1);
+    const at = inputHTML.lastIndexOf(token, position - 1);
     if (at === -1) {
       return false;
     }
 
     let partial = inputHTML.substring(at + 1, position).trim();
 
-    if (partial === this.suggestion) {
-      partial = this.partial;
-    } else {
-      this.partial = partial;
+    if (this.partial === undefined) {
+      this.partial = [];
     }
 
-    const possibilities = chatUserNames.filter(function (username) {
-      return username.toLowerCase().startsWith(partial.toLowerCase());
+    if (partial === this.suggestion) {
+      partial = this.partial[token];
+    } else {
+      this.partial[token] = partial;
+    }
+
+    const possibilities = list.filter(function (item) {
+      return item.toLowerCase().startsWith(partial.toLowerCase());
     });
 
+    if (this.completionIndex === undefined) {
+      this.completionIndex = [];
+    }
+
     if (
-      this.completionIndex === undefined ||
-      ++this.completionIndex >= possibilities.length
+      this.completionIndex[token] === undefined ||
+      ++this.completionIndex[token] >= possibilities.length
     ) {
-      this.completionIndex = 0;
+      this.completionIndex[token] = 0;
     }
 
     if (possibilities.length > 0) {
-      this.suggestion = possibilities[this.completionIndex];
+      this.suggestion = possibilities[this.completionIndex[token]];
 
       const newHTML =
         inputHTML.substring(0, at + 1) +
@@ -216,7 +225,12 @@ export default class ChatInput extends Component {
       this.prepNewLine = true;
     }
     if (key === 'Tab') {
-      if (this.autoCompleteNames()) {
+      const { chatUserNames } = this.props;
+      const { emojiNames } = this.state;
+      if (this.autoComplete('@', chatUserNames)) {
+        event.preventDefault();
+      }
+      if (this.autoComplete(':', emojiNames)) {
         event.preventDefault();
       }
     }
