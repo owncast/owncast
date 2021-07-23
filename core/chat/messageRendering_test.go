@@ -33,7 +33,7 @@ blah blah blah
 
 // Test to make sure we block remote images in chat messages.
 func TestBlockRemoteImages(t *testing.T) {
-	messageContent := `<img src="https://via.placeholder.com/350x150"> test ![](https://via.placeholder.com/350x150)`
+	messageContent := `<img src="https://via.placeholder.com/img/emoji/350x150"> test ![](https://via.placeholder.com/img/emoji/350x150)`
 	expected := `<p> test </p>`
 	result := events.RenderAndSanitize(messageContent)
 
