@@ -135,12 +135,11 @@ export default class ChatInput extends Component {
     }, 100);
   }
 
-  // autocomplete user names
-  autoCompleteNames() {
-    const { chatUserNames } = this.props;
+  // autocomplete text from the given "list". "token" marks the start of work lookup.
+  autoComplete(token , list) {
     const { inputHTML } = this.state;
     const position = getCaretPosition(this.formMessageInput.current);
-    const at = inputHTML.lastIndexOf('@', position - 1);
+    const at = inputHTML.lastIndexOf(token, position - 1);
     if (at === -1) {
       return false;
     }
@@ -153,8 +152,8 @@ export default class ChatInput extends Component {
       this.partial = partial;
     }
 
-    const possibilities = chatUserNames.filter(function (username) {
-      return username.toLowerCase().startsWith(partial.toLowerCase());
+    const possibilities = list.filter(function (item) {
+      return item.toLowerCase().startsWith(partial.toLowerCase());
     });
 
     if (
@@ -216,7 +215,8 @@ export default class ChatInput extends Component {
       this.prepNewLine = true;
     }
     if (key === 'Tab') {
-      if (this.autoCompleteNames()) {
+      const { chatUserNames } = this.props;
+      if (this.autoComplete('@', chatUserNames)) {
         event.preventDefault();
       }
     }
