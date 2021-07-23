@@ -44,8 +44,8 @@ func TestBlockRemoteImages(t *testing.T) {
 
 // Test to make sure emoji images are allowed in chat messages.
 func TestAllowEmojiImages(t *testing.T) {
-	messageContent := `<img src="/img/emoji/beerparrot.gif"> test ![](/img/emoji/beerparrot.gif)`
-	expected := `<p><img src="/img/emoji/beerparrot.gif"> test <img src="/img/emoji/beerparrot.gif"></p>`
+	messageContent := `<img alt=":beerparrot:" title=":beerparrot:" src="/img/emoji/beerparrot.gif"> test ![](/img/emoji/beerparrot.gif)`
+	expected := `<p><img alt=":beerparrot:" title=":beerparrot:" src="/img/emoji/beerparrot.gif"> test <img src="/img/emoji/beerparrot.gif"></p>`
 	result := events.RenderAndSanitize(messageContent)
 
 	if result != expected {
