@@ -136,7 +136,7 @@ export default class ChatInput extends Component {
   }
 
   // autocomplete text from the given "list". "token" marks the start of work lookup.
-  autoComplete(token , list) {
+  autoComplete(token, list) {
     const { inputHTML } = this.state;
     const position = getCaretPosition(this.formMessageInput.current);
     const at = inputHTML.lastIndexOf(token, position - 1);
@@ -216,7 +216,12 @@ export default class ChatInput extends Component {
     }
     if (key === 'Tab') {
       const { chatUserNames } = this.props;
+      const { emojiList } = this.state;
+      const emojiNames = emojiList.map(emoji => emoji.name);
       if (this.autoComplete('@', chatUserNames)) {
+        event.preventDefault();
+      }
+      if (this.autoComplete(':', emojiNames)) {
         event.preventDefault();
       }
     }
