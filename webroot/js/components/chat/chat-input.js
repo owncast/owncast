@@ -135,7 +135,7 @@ export default class ChatInput extends Component {
     }, 100);
   }
 
-  // autocomplete text from the given "list". "token" marks the start of work lookup.
+  // autocomplete text from the given "list". "token" marks the start of word lookup.
   autoComplete(token, list) {
     const { inputHTML } = this.state;
     const position = getCaretPosition(this.formMessageInput.current);
