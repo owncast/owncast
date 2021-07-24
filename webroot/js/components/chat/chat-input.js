@@ -123,10 +123,14 @@ export default class ChatInput extends Component {
       content = emoji.emoji;
     }
 
-    const newHTML = inputHTML + content;
+    const position = getCaretPosition(this.formMessageInput.current);
+    const newHTML = inputHTML.substring(0, position) +
+      content +
+      inputHTML.substring(position);
+
     const charsLeft = this.calculateCurrentBytesLeft(newHTML);
     this.setState({
-      inputHTML: inputHTML + content,
+      inputHTML: newHTML,
       inputCharsLeft: charsLeft,
     });
     // a hacky way add focus back into input field
