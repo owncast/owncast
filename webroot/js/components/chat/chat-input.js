@@ -124,7 +124,8 @@ export default class ChatInput extends Component {
     }
 
     const position = getCaretPosition(this.formMessageInput.current);
-    const newHTML = inputHTML.substring(0, position) +
+    const newHTML =
+      inputHTML.substring(0, position) +
       content +
       inputHTML.substring(position);
 
