@@ -263,17 +263,19 @@ export default class Chat extends Component {
 
   updateAuthorList(message) {
     const { type } = message;
-    const nameList = this.state.chatUserNames;
+    let nameList = this.state.chatUserNames;
 
     if (
       type === SOCKET_MESSAGE_TYPES.CHAT &&
       !nameList.includes(message.user.displayName)
     ) {
-      return nameList.push(message.user.displayName);
+      nameList.push(message.user.displayName)
+      return nameList;
     } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
       const { oldName, newName } = message;
       const oldNameIndex = nameList.indexOf(oldName);
-      return nameList.splice(oldNameIndex, 1, newName);
+      nameList.splice(oldNameIndex, 1, newName);
+      return nameList;
     }
     return [];
   }
