@@ -156,8 +156,15 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 
 func GetChatHistory() []events.UserMessageEvent {
 	// Get all visible messages
-	var query = fmt.Sprintf("SELECT id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (SELECT * FROM messages LEFT OUTER JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d) ORDER BY timestamp asc", maxBacklogNumber)
-	return getChat(query)
+	var query = fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+	m := getChat(query)
+
+	// Invert order of messages
+	for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
+		m[i], m[j] = m[j], m[i]
+	}
+
+	return m
 }
 
 // SetMessageVisibilityForUserId will bulk change the visibility of messages for a user
