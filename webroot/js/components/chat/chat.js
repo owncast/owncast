@@ -151,7 +151,9 @@ export default class Chat extends Component {
       .then((data) => {
         // extra user names
         const allChatUserNames = extraUserNamesFromMessageHistory(data);
-        const chatUserNames = allChatUserNames.filter(name => name != username);
+        const chatUserNames = allChatUserNames.filter(
+          (name) => name != username
+        );
         this.setState({
           messages: data.concat(this.state.messages),
           chatUserNames,
@@ -225,7 +227,9 @@ export default class Chat extends Component {
       };
       const updatedAllChatUserNames = this.updateAuthorList(message);
       if (updatedAllChatUserNames.length) {
-        const updatedChatUserNames = updatedAllChatUserNames.filter(name => name != username);
+        const updatedChatUserNames = updatedAllChatUserNames.filter(
+          (name) => name != username
+        );
         newState.chatUserNames = [...updatedChatUserNames];
       }
       this.setState(newState);
@@ -269,7 +273,7 @@ export default class Chat extends Component {
       type === SOCKET_MESSAGE_TYPES.CHAT &&
       !nameList.includes(message.user.displayName)
     ) {
-      nameList.push(message.user.displayName)
+      nameList.push(message.user.displayName);
       return nameList;
     } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
       const { oldName, newName } = message;
