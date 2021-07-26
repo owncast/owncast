@@ -77,12 +77,13 @@ export default class StandaloneChat extends Component {
 
   render(props, state) {
     const { username, websocket, accessToken } = state;
+    const { messagesOnly } = props;
     return html`
       <${Chat}
         websocket=${websocket}
         username=${username}
         accessToken=${accessToken}
-        messagesOnly
+        messagesOnly=${messagesOnly}
       />
     `;
   }
