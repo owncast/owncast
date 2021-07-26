@@ -138,12 +138,12 @@
   word-break: break-word;
 }
 .message-text a {
-  color: #ffffff;
-  text-shadow: 0px 1px #0a0a0a75;
-  font-size: 0.95rem;
+  color: #ccd;
+  transition: color .2s;
 }
 .message-text a:hover {
   text-decoration: underline;
+  color: #fff;
 }
 
 .message-text img {
