@@ -73,7 +73,7 @@ func (m *MessageEvent) RenderAndSanitizeMessageBody() {
 
 // Empty will return if this message's contents is empty.
 func (m *MessageEvent) Empty() bool {
-	return m.Body == ""
+	return m.Body == "" || m.Body == "<p></p>"
 }
 
 // RenderBody will render markdown to html without any sanitization.
