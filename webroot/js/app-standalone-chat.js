@@ -5,7 +5,7 @@ const html = htm.bind(h);
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
 import { getLocalStorage, setLocalStorage } from './utils/helpers.js';
-import { KEY_EMBED_CHAT_ACCESS_TOKEN } from './utils/constants.js';
+import { KEY_EMBED_CHAT_ACCESS_TOKEN, KEY_ACCESS_TOKEN, KEY_USERNAME } from './utils/constants.js';
 import { registerChat } from './chat/register.js';
 
 export default class StandaloneChat extends Component {
@@ -39,9 +39,10 @@ export default class StandaloneChat extends Component {
   }
 
   async setupChatAuth(force) {
-    var accessToken = getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN);
+    const { messagesOnly } = this.props;
+    var accessToken = messagesOnly ? getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN) : getLocalStorage(KEY_ACCESS_TOKEN);
     const randomInt = Math.floor(Math.random() * 100) + 1;
-    var username = 'chat-embed-' + randomInt;
+    var username = messagesOnly ? 'chat-embed-' + randomInt : getLocalStorage(KEY_USERNAME);
 
     if (!accessToken || force) {
       try {
