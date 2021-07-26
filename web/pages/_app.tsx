@@ -11,7 +11,7 @@ import '../styles/form-textfields.scss';
 import '../styles/form-misc-elements.scss';
 import '../styles/config-socialhandles.scss';
 import '../styles/config-storage.scss';
-import '../styles/config-tags.scss';
+import '../styles/config-edit-string-tags.scss';
 import '../styles/config-video-variants.scss';
 import '../styles/config-public-details.scss';
 

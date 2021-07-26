@@ -185,9 +185,9 @@ export const FIELD_PROPS_DISABLE_CHAT = {
 
 export const TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES = {
   apiPath: API_CHAT_FORBIDDEN_USERNAMES,
-  placeholder: 'admin,god,owncast,stewiegriffin',
+  placeholder: 'username',
   label: 'Forbidden usernames',
-  tip: 'A comma separated list of chat usernames you disallow.',
+  tip: 'A list of words in chat usernames you disallow.',
 };
 
 export const VIDEO_VARIANT_SETTING_DEFAULTS = {

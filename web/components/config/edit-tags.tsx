@@ -18,10 +18,9 @@ import {
   STATUS_SUCCESS,
   STATUS_WARNING,
 } from '../../utils/input-statuses';
+import { TAG_COLOR } from './edit-string-array';
 
 const { Title } = Typography;
-
-const TAG_COLOR = '#5a67d8';
 
 export default function EditInstanceTags() {
   const [newTagInput, setNewTagInput] = useState<string>('');
@@ -110,7 +109,7 @@ export default function EditInstanceTags() {
         This is a great way to categorize your Owncast server on the Directory!
       </p>
 
-      <div className="tag-current-tags">
+      <div className="edit-current-strings">
         {tags.map((tag, index) => {
           const handleClose = () => {
             handleDeleteTag(index);
@@ -123,7 +122,7 @@ export default function EditInstanceTags() {
         })}
       </div>
 
-      <div className="add-new-tag-section">
+      <div className="add-new-string-section">
         <TextField
           fieldName="tag-input"
           value={newTagInput}
