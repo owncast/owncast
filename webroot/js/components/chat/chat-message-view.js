@@ -48,9 +48,9 @@ export default class ChatMessageView extends Component {
       return null;
     }
     const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
-    const userMetadata = `${displayName} first joined ${formatTimestamp(
-      createdAt
-    )}`;
+    const userMetadata = createdAt
+      ? `${displayName} first joined ${formatTimestamp(createdAt)}`
+      : null;
 
     const isSystemMessage = message.type === SOCKET_MESSAGE_TYPES.SYSTEM;
 
