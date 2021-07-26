@@ -140,6 +140,7 @@ export default class Chat extends Component {
 
   // fetch chat history
   getChatHistory(accessToken) {
+    const { username } = this.props;
     fetch(URL_CHAT_HISTORY + `?accessToken=${accessToken}`)
       .then((response) => {
         if (!response.ok) {
@@ -149,7 +150,8 @@ export default class Chat extends Component {
       })
       .then((data) => {
         // extra user names
-        const chatUserNames = extraUserNamesFromMessageHistory(data);
+        const allChatUserNames = extraUserNamesFromMessageHistory(data);
+        const chatUserNames = allChatUserNames.filter(name => name != username);
         this.setState({
           messages: data.concat(this.state.messages),
           chatUserNames,
@@ -179,7 +181,7 @@ export default class Chat extends Component {
       visible: messageVisible,
     } = message;
     const { messages: curMessages } = this.state;
-    const { messagesOnly } = this.props;
+    const { username, messagesOnly } = this.props;
 
     const existingIndex = curMessages.findIndex(
       (item) => item.id === messageId
@@ -221,8 +223,9 @@ export default class Chat extends Component {
       const newState = {
         messages: [...curMessages, message],
       };
-      const updatedChatUserNames = this.updateAuthorList(message);
-      if (updatedChatUserNames.length) {
+      const updatedAllChatUserNames = this.updateAuthorList(message);
+      if (updatedAllChatUserNames.length) {
+        const updatedChatUserNames = updatedAllChatUserNames.filter(name => name != username);
         newState.chatUserNames = [...updatedChatUserNames];
       }
       this.setState(newState);
@@ -260,17 +263,19 @@ export default class Chat extends Component {
 
   updateAuthorList(message) {
     const { type } = message;
-    const nameList = this.state.chatUserNames;
+    let nameList = this.state.chatUserNames;
 
     if (
       type === SOCKET_MESSAGE_TYPES.CHAT &&
       !nameList.includes(message.user.displayName)
     ) {
-      return nameList.push(message.user.displayName);
+      nameList.push(message.user.displayName)
+      return nameList;
     } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
       const { oldName, newName } = message;
       const oldNameIndex = nameList.indexOf(oldName);
-      return nameList.splice(oldNameIndex, 1, newName);
+      nameList.splice(oldNameIndex, 1, newName);
+      return nameList;
     }
     return [];
   }
