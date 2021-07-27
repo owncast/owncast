@@ -40,7 +40,7 @@ func Start() error {
 	http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
 
 	// chat overlay
-	http.HandleFunc("/embed/chatoverlay", controllers.GetChatoverlay)
+	http.HandleFunc("/embed/chatoverlay", controllers.GetChatOverlay)
 
 	// video embed
 	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
