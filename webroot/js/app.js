@@ -676,7 +676,7 @@ export default class App extends Component {
 
     // modal buttons
     const externalActionButtons =
-      externalActions &&
+      externalActions && externalActions.length > 0 && 
       html`<div
         id="external-actions-container"
         class="flex flex-row align-center"
