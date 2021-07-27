@@ -41,8 +41,9 @@ export default class StandaloneChat extends Component {
   async setupChatAuth(force) {
     const { messagesOnly } = this.props;
     var accessToken = messagesOnly ? getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN) : getLocalStorage(KEY_ACCESS_TOKEN);
-    const randomInt = Math.floor(Math.random() * 100) + 1;
-    var username = messagesOnly ? 'chat-embed-' + randomInt : getLocalStorage(KEY_USERNAME);
+    var randomIntArray = new Uint32Array(1);
+    window.crypto.getRandomValues(randomIntArray);
+    var username = messagesOnly ? 'chat-embed-' + randomIntArray[0] : getLocalStorage(KEY_USERNAME);
 
     if (!accessToken || force) {
       try {
