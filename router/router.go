@@ -39,6 +39,9 @@ func Start() error {
 	// chat embed
 	http.HandleFunc("/embed/chat", controllers.GetChatEmbed)
 
+	// chat overlay
+	http.HandleFunc("/embed/chatoverlay", controllers.GetChatoverlay)
+
 	// video embed
 	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
 

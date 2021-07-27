@@ -9,6 +9,11 @@ func GetChatEmbed(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/index-standalone-chat.html", http.StatusMovedPermanently)
 }
 
+// GetChatEmbed gets the chat overlay.
+func GetChatOverlay(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/index-standalone-chat-overlay.html", http.StatusMovedPermanently)
+}
+
 // GetVideoEmbed gets the embed for video.
 func GetVideoEmbed(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/index-video-only.html", http.StatusMovedPermanently)
