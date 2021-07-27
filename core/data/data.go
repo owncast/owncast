@@ -45,9 +45,15 @@ func SetupPersistence(file string) error {
 		}
 	}
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_cache_size=10000", file))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_cache_size=10000&cache=shared&_journal_mode=WAL", file))
 	db.SetMaxOpenConns(1)
 	_db = db
+
+	// Some SQLite optimizations
+	_, _ = db.Exec("pragma journal_mode = WAL")
+	_, _ = db.Exec("pragma synchronous = normal")
+	_, _ = db.Exec("pragma temp_store = memory")
+	_, _ = db.Exec("pragma wal_checkpoint(full)")
 
 	createWebhooksTable()
 	createUsersTable(db)
