@@ -136,7 +136,9 @@ func sanitize(raw string) string {
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
 	// Allow breaks
-	p.AllowElements("br", "p")
+	p.AllowElements("br")
+
+	p.AllowElementsContent("p")
 
 	// Allow img tags from the the local emoji directory only
 	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)^/img/emoji`)).OnElements("img")
