@@ -27,7 +27,7 @@ test('can fetch chat messages', async (done) => {
     .auth('admin', 'abc123')
     .expect(200);
 
-    const expectedBody = `<p>${testMessage.body}</p>`
+    const expectedBody = `${testMessage.body}`
   const message = res.body.filter(function (msg) {
     return msg.body ===  expectedBody
   })[0];
