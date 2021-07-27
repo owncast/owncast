@@ -25,7 +25,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 		messages := chat.GetChatHistory()
 
 		if err := json.NewEncoder(w).Encode(messages); err != nil {
-			log.Errorln(err)
+			log.Debugln(err)
 		}
 	default:
 		w.WriteHeader(http.StatusNotImplemented)

@@ -155,7 +155,7 @@ func (c *ChatClient) close() {
 	log.Traceln("client closed:", c.User.DisplayName, c.id, c.ipAddress)
 
 	c.conn.Close()
-	c.server.unregister <- c
+	c.server.unregister <- c.id
 	if c.send != nil {
 		close(c.send)
 		c.send = nil
