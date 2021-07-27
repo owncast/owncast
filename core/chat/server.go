@@ -32,7 +32,7 @@ type ChatServer struct {
 	inbound chan chatClientEvent
 
 	// unregister requests from clients.
-	unregister chan *ChatClient
+	unregister chan uint // the ChatClient id
 }
 
 func NewChat() *ChatServer {
@@ -40,7 +40,7 @@ func NewChat() *ChatServer {
 		clients:        map[uint]*ChatClient{},
 		outbound:       make(chan []byte),
 		inbound:        make(chan chatClientEvent),
-		unregister:     make(chan *ChatClient),
+		unregister:     make(chan uint),
 		maxClientCount: handleMaxConnectionCount(),
 	}
 
@@ -50,10 +50,10 @@ func NewChat() *ChatServer {
 func (s *ChatServer) Run() {
 	for {
 		select {
-		case client := <-s.unregister:
-			if _, ok := s.clients[client.id]; ok {
+		case clientId := <-s.unregister:
+			if _, ok := s.clients[clientId]; ok {
 				s.mu.Lock()
-				delete(s.clients, client.id)
+				delete(s.clients, clientId)
 				s.mu.Unlock()
 			}
 
