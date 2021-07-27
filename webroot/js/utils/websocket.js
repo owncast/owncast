@@ -153,26 +153,31 @@ export default class Websocket {
   pass it along to listeners.
   */
   onMessage(e) {
-    try {
-      var model = JSON.parse(e.data);
-    } catch (e) {
-      // console.log(e, e.data);
-      return;
-    }
+    // Optimization where multiple events can be sent within a
+    // single websocket message. So split them if needed.
+    var messages = e.data.split('\n');
+    for (var i = 0; i < messages.length; i++) {
+      try {
+        var model = JSON.parse(e.data);
+      } catch (e) {
+        // console.log(e, e.data);
+        return;
+      }
 
-    if (!model.type) {
-      console.error('No type provided', model);
-      return;
-    }
+      if (!model.type) {
+        console.error('No type provided', model);
+        return;
+      }
 
-    // Send PONGs
-    if (model.type === SOCKET_MESSAGE_TYPES.PING) {
-      this.sendPong();
-      return;
-    }
+      // Send PONGs
+      if (model.type === SOCKET_MESSAGE_TYPES.PING) {
+        this.sendPong();
+        return;
+      }
 
-    // Notify any of the listeners via the raw socket message callback.
-    this.notifyRawMessageListeners(model);
+      // Notify any of the listeners via the raw socket message callback.
+      this.notifyRawMessageListeners(model);
+    }
   }
 
   // Reply to a PING as a keep alive.
