@@ -80,6 +80,11 @@ func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
 		return
 	}
 
+	// Ignore if the stream in offline
+	if !getStatus().Online {
+		return
+	}
+
 	event.User = user.GetUserByToken(eventData.client.accessToken)
 
 	// Guard against nil users
