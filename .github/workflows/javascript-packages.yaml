@@ -6,14 +6,15 @@ on:
 
 jobs:
   run:
+    if: ${{ github.actor != 'dependabot[bot]' }}
     name: npm run build
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repo
           uses: actions/checkout@v2
-          # with:
+          with:
           # Make sure the actual branch is checked out when running on pull requests
-            # ref: ${{ github.head_ref }}
+            ref: ${{ github.head_ref }}
             
         - name: Install dependencies
           run: |
