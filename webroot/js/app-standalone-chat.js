@@ -319,32 +319,49 @@ export default class StandaloneChat extends Component {
     } = configData;
 
     const { messagesOnly } = props;
-    return this.state.websocket ? html`
-        <style>
-          ${customStyles}
-        </style>
-
-        <div id="top-content" class="z-50">
-        <header
-        class="flex fixed z-10 w-full top-0	left-0 flex-row justify-between flex-no-wrap"
-        >
-    <${UsernameForm}
+    if (messagesOnly) {
+      return this.state.websocket ? html`
+    <${Chat}
+      websocket=${websocket}
       username=${username}
-      onUsernameChange=${this.handleUsernameChange}
-      onFocus=${this.handleFormFocus}
-      onBlur=${this.handleFormBlur}
+      accessToken=${accessToken}
+      messagesOnly=${messagesOnly}
+      chatInputEnabled=${chatInputEnabled && !chatDisabled}
+      inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
+        CHAT_MAX_MESSAGE_LENGTH}
     />
-    </header>
-    </div>
-      <${Chat}
-        websocket=${websocket}
-        username=${username}
-        accessToken=${accessToken}
-        messagesOnly=${messagesOnly}
-        chatInputEnabled=${chatInputEnabled && !chatDisabled}
-        inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
-      CHAT_MAX_MESSAGE_LENGTH}
-      />
-    `: null;
+  `: null;
+
+    } else {
+      return this.state.websocket ? html`
+      <style>
+        ${customStyles}
+      </style>
+
+      <div id="top-content" class="z-50">
+      <header
+      class="flex fixed z-10 w-full top-0	left-0 flex-row justify-between flex-no-wrap"
+      >
+  <${UsernameForm}
+    username=${username}
+    onUsernameChange=${this.handleUsernameChange}
+    onFocus=${this.handleFormFocus}
+    onBlur=${this.handleFormBlur}
+  />
+  </header>
+  </div>
+    <${Chat}
+      websocket=${websocket}
+      username=${username}
+      accessToken=${accessToken}
+      messagesOnly=${messagesOnly}
+      chatInputEnabled=${chatInputEnabled && !chatDisabled}
+      inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
+        CHAT_MAX_MESSAGE_LENGTH}
+    />
+  `: null;
+
+    }
+
   }
 }
