@@ -72,7 +72,6 @@ func (s *Server) Run() {
 			}
 
 		case message := <-s.inbound:
-			fmt.Println("inbound...")
 			s.eventReceived(message)
 		}
 	}
