@@ -1,7 +1,7 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
-//import UsernameForm from './components/chat/username.js';
+import UsernameForm from './components/chat/username.js';
 import Chat from './components/chat/chat.js';
 import Websocket, {
   CALLBACKS,
@@ -19,7 +19,6 @@ import {
   KEY_ACCESS_TOKEN,
   KEY_USERNAME,
   TIMER_DISABLE_CHAT_AFTER_OFFLINE,
-  TIMER_STREAM_DURATION_COUNTER,
   URL_STATUS,
   URL_CONFIG,
   TIMER_STATUS_UPDATE,
@@ -54,6 +53,8 @@ export default class StandaloneChat extends Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
     this.handleOnlineMode = this.handleOnlineMode.bind(this);
+    this.handleFormFocus = this.handleFormFocus.bind(this);
+    this.handleFormBlur = this.handleFormBlur.bind(this);
     this.getStreamStatus = this.getStreamStatus.bind(this);
     this.getConfig = this.getConfig.bind(this);
     this.disableChatInput = this.disableChatInput.bind(this);
@@ -166,7 +167,6 @@ export default class StandaloneChat extends Component {
 
   }
 
-  // play video!
   handleOnlineMode() {
 
     clearTimeout(this.disableChatInputTimer);
@@ -224,6 +224,22 @@ export default class StandaloneChat extends Component {
   handleBlockedChat() {
     setLocalStorage('owncast_chat_blocked', true);
     this.disableChat();
+  }
+
+  handleFormFocus() {
+    if (this.hasTouchScreen) {
+      this.setState({
+        touchKeyboardActive: true,
+      });
+    }
+  }
+
+  handleFormBlur() {
+    if (this.hasTouchScreen) {
+      this.setState({
+        touchKeyboardActive: false,
+      });
+    }
   }
 
   disableChat() {
@@ -299,11 +315,32 @@ export default class StandaloneChat extends Component {
     const {
       chatDisabled,
       maxSocketPayloadSize,
-      //customStyles,
+      customStyles,
     } = configData;
 
     const { messagesOnly } = props;
     return this.state.websocket ? html`
+        <style>
+          ${customStyles}
+        </style>
+
+        <div id="top-content" class="z-50">
+        <header
+        class="flex border-b border-gray-900 border-solid shadow-md fixed z-10 w-full top-0	left-0 flex flex-row justify-between flex-no-wrap"
+      >
+      <div
+              id="user-options-container"
+              class="flex flex-row justify-end items-center flex-no-wrap"
+            >
+    <${UsernameForm}
+      username=${username}
+      onUsernameChange=${this.handleUsernameChange}
+      onFocus=${this.handleFormFocus}
+      onBlur=${this.handleFormBlur}
+    />
+    </div>
+    </header>
+    </div>
       <${Chat}
         websocket=${websocket}
         username=${username}
