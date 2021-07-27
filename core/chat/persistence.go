@@ -38,6 +38,10 @@ func SaveUserMessage(event events.UserMessageEvent) {
 }
 
 func saveEvent(id string, userId string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
+	defer func() {
+		_historyCache = nil
+	}()
+
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -148,10 +152,20 @@ func getChat(query string) []events.UserMessageEvent {
 	return history
 }
 
+var _historyCache *[]events.UserMessageEvent
+
 func GetChatModerationHistory() []events.UserMessageEvent {
+	if _historyCache != nil {
+		return *_historyCache
+	}
+
 	// Get all messages regardless of visibility
 	var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
-	return getChat(query)
+	result := getChat(query)
+
+	_historyCache = &result
+
+	return result
 }
 
 func GetChatHistory() []events.UserMessageEvent {
@@ -170,6 +184,10 @@ func GetChatHistory() []events.UserMessageEvent {
 // SetMessageVisibilityForUserId will bulk change the visibility of messages for a user
 // and then send out visibility changed events to chat clients.
 func SetMessageVisibilityForUserId(userID string, visible bool) error {
+	defer func() {
+		_historyCache = nil
+	}()
+
 	// Get a list of IDs from this user within the 5hr window to send to the connected clients to hide
 	ids := make([]string, 0)
 	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
@@ -188,6 +206,10 @@ func SetMessageVisibilityForUserId(userID string, visible bool) error {
 }
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {
+	defer func() {
+		_historyCache = nil
+	}()
+
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
