@@ -73,7 +73,7 @@ func (m *MessageEvent) RenderAndSanitizeMessageBody() {
 
 // Empty will return if this message's contents is empty.
 func (m *MessageEvent) Empty() bool {
-	return m.Body == "" || m.Body == "<p></p>"
+	return m.Body == ""
 }
 
 // RenderBody will render markdown to html without any sanitization.
@@ -136,7 +136,9 @@ func sanitize(raw string) string {
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
 	// Allow breaks
-	p.AllowElements("br", "p")
+	p.AllowElements("br")
+
+	p.AllowElementsContent("p")
 
 	// Allow img tags from the the local emoji directory only
 	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)^/img/emoji`)).OnElements("img")
