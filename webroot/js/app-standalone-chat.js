@@ -326,19 +326,14 @@ export default class StandaloneChat extends Component {
 
         <div id="top-content" class="z-50">
         <header
-        class="flex border-b border-gray-900 border-solid shadow-md fixed z-10 w-full top-0	left-0 flex flex-row justify-between flex-no-wrap"
-      >
-      <div
-              id="user-options-container"
-              class="flex flex-row justify-end items-center flex-no-wrap"
-            >
+        class="flex fixed z-10 w-full top-0	left-0 flex-row justify-between flex-no-wrap"
+        >
     <${UsernameForm}
       username=${username}
       onUsernameChange=${this.handleUsernameChange}
       onFocus=${this.handleFormFocus}
       onBlur=${this.handleFormBlur}
     />
-    </div>
     </header>
     </div>
       <${Chat}
