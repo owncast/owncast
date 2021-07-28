@@ -1,6 +1,8 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Webfinger struct {
 	Subject string `json:"subject"`
@@ -14,10 +16,7 @@ type Link struct {
 }
 
 func MakeWebfingerResponse(account string, inbox string, host string) Webfinger {
-	href, err := MakeURLForResource("/user/"+account, host)
-	if err != nil {
-		panic(err)
-	}
+	accountIRI := MakeLocalIRIForAccount(account)
 
 	return Webfinger{
 		Subject: fmt.Sprintf("acct:%s@%s", account, host),
@@ -25,7 +24,7 @@ func MakeWebfingerResponse(account string, inbox string, host string) Webfinger 
 			{
 				Rel:  "self",
 				Type: "application/activity+json",
-				Href: href.String(),
+				Href: accountIRI.String(),
 			},
 		},
 	}

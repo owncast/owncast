@@ -14,48 +14,47 @@ import (
 	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/utils"
 )
 
 func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
-	hostname, err := utils.GetHostnameFromURLString(data.GetServerURL())
-	if err != nil {
-		panic(err)
+
+	// If this request is for an actor's inbox then pass
+	// the request to the inbox controller.
+	if len(pathComponents) == 5 && pathComponents[4] == "inbox" {
+		InboxHandler(w, r)
+		return
 	}
 
-	actorUrl, err := models.MakeURLForResource("/user/"+accountName, hostname)
-	if err != nil {
-		panic(err)
-	}
+	actorIRI := models.MakeLocalIRIForAccount(accountName)
 
 	person := streams.NewActivityStreamsService()
 	nameProperty := streams.NewActivityStreamsNameProperty()
-	nameProperty.AppendXMLSchemaString(accountName)
+	nameProperty.AppendXMLSchemaString(data.GetServerName())
 	person.SetActivityStreamsName(nameProperty)
 
 	preferredUsernameProperty := streams.NewActivityStreamsPreferredUsernameProperty()
 	preferredUsernameProperty.SetXMLSchemaString(accountName)
 	person.SetActivityStreamsPreferredUsername(preferredUsernameProperty)
 
-	inboxIRI, _ := models.MakeURLForResource("/user/"+accountName+"/inbox", hostname)
+	inboxIRI := models.MakeLocalIRIForResource("/user/" + accountName + "/inbox")
 
 	inboxProp := streams.NewActivityStreamsInboxProperty()
 	inboxProp.SetIRI(inboxIRI)
 	person.SetActivityStreamsInbox(inboxProp)
 
-	outboxIRI, _ := models.MakeURLForResource("/user/"+accountName+"/outbox", hostname)
+	outboxIRI := models.MakeLocalIRIForResource("/user/" + accountName + "/outbox")
 
 	outboxProp := streams.NewActivityStreamsOutboxProperty()
 	outboxProp.SetIRI(outboxIRI)
 	person.SetActivityStreamsOutbox(outboxProp)
 
 	id := streams.NewJSONLDIdProperty()
-	id.Set(actorUrl)
+	id.Set(actorIRI)
 	person.SetJSONLDId(id)
 
-	publicKey := crypto.GetPublicKey(accountName, hostname)
+	publicKey := crypto.GetPublicKey(actorIRI)
 
 	publicKeyProp := streams.NewW3IDSecurityV1PublicKeyProperty()
 	publicKeyType := streams.NewW3IDSecurityV1PublicKey()

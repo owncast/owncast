@@ -1,9 +1,12 @@
 package requests
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -37,4 +40,24 @@ func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey model
 	fmt.Println(string(b))
 
 	return nil
+}
+
+func PostSignedRequest(payload []byte, url string, fromActorIRI *url.URL) ([]byte, error) {
+	fmt.Println("Sending", string(payload), "to", url)
+
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
+		fmt.Println("error signing request:", err)
+		return nil, err
+	}
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	body, _ := ioutil.ReadAll(response.Body)
+
+	fmt.Println("Response: ", response.StatusCode, string(body))
+	return body, nil
 }

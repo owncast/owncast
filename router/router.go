@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
@@ -235,7 +236,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
 	// ActivityPub has its own router
-	activitypub.Start()
+	activitypub.Start(data.GetDatastore())
 
 	// websocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
