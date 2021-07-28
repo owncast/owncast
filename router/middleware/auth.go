@@ -58,6 +58,8 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We should accept 3rd party preflight OPTIONS requests.
 		if r.Method == "OPTIONS" {
+			// All OPTIONS requests should have a wildcard CORS header.
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.WriteHeader(http.StatusOK)
 			return
 		}
@@ -77,7 +79,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 			return
 		}
 
-		// All valid 3rd party requests should have a wildcard CORS header.
+		// All auth'ed 3rd party requests should have a wildcard CORS header.
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		handler(*integration, w, r)
