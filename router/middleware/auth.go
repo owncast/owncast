@@ -56,6 +56,12 @@ func accessDenied(w http.ResponseWriter) {
 // RequireExternalAPIAccessToken will validate a 3rd party access token.
 func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// We should accept 3rd party preflight OPTIONS requests.
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
 		token := strings.Join(authHeader, "")
 
@@ -70,6 +76,9 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 			accessDenied(w)
 			return
 		}
+
+		// All valid 3rd party requests should have a wildcard CORS header.
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		handler(*integration, w, r)
 
