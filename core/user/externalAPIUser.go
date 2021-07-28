@@ -201,7 +201,7 @@ func makeExternalAPIUserFromRow(row *sql.Row) (*ExternalAPIUser, error) {
 
 	err := row.Scan(&id, &accessToken, &scopes, &displayName, &displayColor, &createdAt, &lastUsedAt)
 	if err != nil {
-		log.Errorln(err)
+		log.Debugln("unable to convert row to api user", err)
 		return nil, err
 	}
 
