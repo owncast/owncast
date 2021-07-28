@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <link href="/js/web_modules/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
     <link href="./styles/chat.css" rel="stylesheet" />
-    <link href="./styles/standalone-chat-overlay.css" rel="stylesheet" />
+    <link href="./styles/standalone-chat-readonly.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -19,7 +19,7 @@
 
       import StandaloneChat from './js/app-standalone-chat.js';
       render(
-        html`<${StandaloneChat} messagesOnly />`, document.getElementById("messages-only")
+        html`<${StandaloneChat} readonly />`, document.getElementById("messages-only")
       );
     </script>
   </body>

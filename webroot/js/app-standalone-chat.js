@@ -240,11 +240,11 @@ export default class StandaloneChat extends Component {
   }
 
   async setupChatAuth(force) {
-    const { messagesOnly } = this.props;
-    var accessToken = messagesOnly ? getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN) : getLocalStorage(KEY_ACCESS_TOKEN);
+    const { readonly } = this.props;
+    var accessToken = readonly ? getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN) : getLocalStorage(KEY_ACCESS_TOKEN);
     var randomIntArray = new Uint32Array(1);
     window.crypto.getRandomValues(randomIntArray);
-    var username = messagesOnly ? 'chat-embed-' + randomIntArray[0] : getLocalStorage(KEY_USERNAME);
+    var username = readonly ? 'chat-embed-' + randomIntArray[0] : getLocalStorage(KEY_USERNAME);
 
     if (!accessToken || force) {
       try {
@@ -253,7 +253,7 @@ export default class StandaloneChat extends Component {
         accessToken = registration.accessToken;
         username = registration.displayName;
 
-        if (messagesOnly) {
+        if (readonly) {
           setLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN, accessToken);
         } else {
           setLocalStorage(KEY_ACCESS_TOKEN, accessToken);
@@ -310,9 +310,9 @@ export default class StandaloneChat extends Component {
       customStyles,
     } = configData;
 
-    const { messagesOnly } = props;
+    const { readonly } = props;
     return this.state.websocket ?
-      html`${!messagesOnly ?
+      html`${!readonly ?
         html`<style>
           ${customStyles}
         </style>
@@ -328,7 +328,7 @@ export default class StandaloneChat extends Component {
         websocket=${websocket}
         username=${username}
         accessToken=${accessToken}
-        messagesOnly=${messagesOnly}
+        readonly=${readonly}
         chatInputEnabled=${chatInputEnabled && !chatDisabled}
         inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
         CHAT_MAX_MESSAGE_LENGTH}
