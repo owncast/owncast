@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"sync"
+	"time"
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
@@ -124,6 +125,11 @@ func (ds *Datastore) Setup() {
 
 	if !HasPopulatedDefaults() {
 		PopulateDefaults()
+	}
+
+	// Set the server initialization date if needed.
+	if hasSetInitDate, _ := GetServerInitTime(); !hasSetInitDate.Valid {
+		_ = SetServerInitDate(time.Now())
 	}
 }
 

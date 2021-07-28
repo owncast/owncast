@@ -7,14 +7,14 @@ import (
 
 type ResourceURL = string
 
-func MakeURLForResource(resource string, host string) (ResourceURL, error) {
+func MakeURLForResource(resource string, host string) (*url.URL, error) {
 	generatedURL := "https://" + host
 	u, err := url.Parse(generatedURL)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	u.Path = path.Join(u.Path, "federation", resource)
 
-	return u.String(), nil
+	return u, nil
 }
