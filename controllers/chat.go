@@ -12,12 +12,12 @@ import (
 
 // ExternalGetChatMessages gets all of the chat messages.
 func ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	GetChatEmbed(w, r)
+	middleware.EnableCors(&w)
+	GetChatMessages(w, r)
 }
 
 // GetChatMessages gets all of the chat messages.
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 
 	switch r.Method {
