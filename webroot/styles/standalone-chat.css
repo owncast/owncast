@@ -1,4 +1,12 @@
- #messages-container {
+:root {
+  --header-height: 2em;
+}
+
+header{
+  height: var(--header-height);
+}
+
+#messages-container {
   height: 100vh;
 }
 
@@ -6,10 +14,3 @@
   width: 100%;
 }
 
-:root {
-  --header-height: 2em;
-}
-
-header{
-height: var(--header-height);
-}
