@@ -8,27 +8,38 @@ import (
 )
 
 type variantsResponse struct {
-	Name  string `json:"name"`
-	Index int    `json:"index"`
+	Name               string `json:"name"`
+	Index              int    `json:"index"`
+	VideoBitrate       int    `json:"VideoBitrae"`
+	IsVideoPassthrough bool   `json:"IsVideoPassthrough"`
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
 
-	sort.Slice(outputVariants, func(i, j int) bool {
-		return outputVariants[j].VideoBitrate < outputVariants[i].VideoBitrate
-	})
-
 	result := make([]variantsResponse, len(outputVariants))
-
 	for i, variant := range outputVariants {
 		variantResponse := variantsResponse{
-			Index: i,
-			Name:  variant.GetName(),
+			Index:              i,
+			Name:               variant.GetName(),
+			VideoBitrate:       variant.VideoBitrate,
+			IsVideoPassthrough: variant.IsVideoPassthrough,
 		}
 		result[i] = variantResponse
 	}
+
+	sort.Slice(result, func(i, j int) bool {
+		if outputVariants[i].IsVideoPassthrough && !outputVariants[j].IsVideoPassthrough {
+			return true
+		}
+
+		if !outputVariants[i].IsVideoPassthrough && outputVariants[j].IsVideoPassthrough {
+			return false
+		}
+
+		return outputVariants[i].VideoBitrate > outputVariants[j].VideoBitrate
+	})
 
 	WriteResponse(w, result)
 }
