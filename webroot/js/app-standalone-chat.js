@@ -37,17 +37,13 @@ export default class StandaloneChat extends Component {
       accessToken: null,
       username: null,
       isRegistering: false,
-
-
+      streamOnline: false, // stream is active/online
+      lastDisconnectTime: null,
       configData: {
         loading: true,
       },
-      streamOnline: false, // stream is active/online
-
-      lastDisconnectTime: null,
     };
     this.disableChatInputTimer = null;
-
     this.hasConfiguredChat = false;
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -63,9 +59,6 @@ export default class StandaloneChat extends Component {
 
     // user events
     this.handleWebsocketMessage = this.handleWebsocketMessage.bind(this);
-
-
-
 
     this.getConfig();
 
@@ -168,7 +161,6 @@ export default class StandaloneChat extends Component {
   }
 
   handleOnlineMode() {
-
     clearTimeout(this.disableChatInputTimer);
     this.disableChatInputTimer = null;
 
@@ -319,49 +311,32 @@ export default class StandaloneChat extends Component {
     } = configData;
 
     const { messagesOnly } = props;
-    if (messagesOnly) {
-      return this.state.websocket ? html`
-    <${Chat}
-      websocket=${websocket}
-      username=${username}
-      accessToken=${accessToken}
-      messagesOnly=${messagesOnly}
-      chatInputEnabled=${chatInputEnabled && !chatDisabled}
-      inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
-        CHAT_MAX_MESSAGE_LENGTH}
-    />
-  `: null;
-
-    } else {
-      return this.state.websocket ? html`
-      <style>
+    return this.state.websocket ?
+      html`${!messagesOnly ? 
+      html`<style>
         ${customStyles}
       </style>
-
       <div id="top-content" class="z-50">
-      <header
-      class="flex fixed z-10 w-full top-0	left-0 flex-row justify-between flex-no-wrap"
-      >
-  <${UsernameForm}
-    username=${username}
-    onUsernameChange=${this.handleUsernameChange}
-    onFocus=${this.handleFormFocus}
-    onBlur=${this.handleFormBlur}
-  />
-  </header>
-  </div>
-    <${Chat}
-      websocket=${websocket}
-      username=${username}
-      accessToken=${accessToken}
-      messagesOnly=${messagesOnly}
-      chatInputEnabled=${chatInputEnabled && !chatDisabled}
-      inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
+        <header
+        class="flex fixed z-10 w-full top-0	left-0 flex-row justify-between flex-no-wrap"
+        >
+          <${UsernameForm}
+            username=${username}
+            onUsernameChange=${this.handleUsernameChange}
+            onFocus=${this.handleFormFocus}
+            onBlur=${this.handleFormBlur}
+          />
+        </header>
+      </div>` : ''}
+      <${Chat}
+        websocket=${websocket}
+        username=${username}
+        accessToken=${accessToken}
+        messagesOnly=${messagesOnly}
+        chatInputEnabled=${chatInputEnabled && !chatDisabled}
+        inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
         CHAT_MAX_MESSAGE_LENGTH}
-    />
-  `: null;
-
-    }
-
+      />`
+      : null;
   }
 }
