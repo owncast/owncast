@@ -287,3 +287,19 @@ func GenerateRandomDisplayColor() int {
 	rangeUpper := 360
 	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
 }
+
+// GetHostnameFromURL will return the hostname component from a URL string.
+func GetHostnameFromURL(u url.URL) string {
+	return u.Host
+}
+
+// GetHostnameFromURLString will return the hostname component from a URL object.
+func GetHostnameFromURLString(s string) (string, error) {
+	u, err := url.Parse(s)
+
+	if err != nil {
+		return "", err
+	}
+
+	return u.Host, nil
+}
