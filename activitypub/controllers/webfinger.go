@@ -3,11 +3,11 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 )
 
 // This is a mapping between account names and their outbox
@@ -29,6 +29,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 
 	if _, valid := validAccounts[user]; !valid {
 		// User is not valid
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -36,18 +37,25 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	// should be rejected.
 	instanceHostString := data.GetServerURL()
 	if instanceHostString == "" {
+		w.WriteHeader(http.StatusNotImplemented)
 		return
 	}
 
-	instanceHost, err := url.Parse(instanceHostString)
-	if err != nil {
+	instanceHostString = utils.GetHostnameFromURLString(instanceHostString)
+	if instanceHostString == "" || instanceHostString != host {
+		w.WriteHeader(http.StatusNotImplemented)
 		return
 	}
 
-	if host != instanceHost.Host {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
+	// instanceHost, err := url.Parse(instanceHostString)
+	// if err != nil {
+	// 	return
+	// }
+
+	// if host != instanceHost.Host {
+	// 	w.WriteHeader(http.StatusNotFound)
+	// 	return
+	// }
 
 	// if inbox, ok := validAccounts[user]; ok {
 	webfingerResponse := models.MakeWebfingerResponse(user, user, host)

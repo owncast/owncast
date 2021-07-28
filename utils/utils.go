@@ -319,12 +319,12 @@ func GetHostnameFromURL(u url.URL) string {
 }
 
 // GetHostnameFromURLString will return the hostname component from a URL object.
-func GetHostnameFromURLString(s string) (string, error) {
+func GetHostnameFromURLString(s string) string {
 	u, err := url.Parse(s)
 
 	if err != nil {
-		return "", err
+		return ""
 	}
 
-	return u.Host, nil
+	return u.Host
 }
