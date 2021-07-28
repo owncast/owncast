@@ -312,22 +312,18 @@ export default class StandaloneChat extends Component {
 
     const { messagesOnly } = props;
     return this.state.websocket ?
-      html`${!messagesOnly ? 
-      html`<style>
-        ${customStyles}
-      </style>
-      <div id="top-content" class="z-50">
-        <header
-        class="flex fixed z-10 w-full top-0	left-0 flex-row justify-between flex-no-wrap"
-        >
+      html`${!messagesOnly ?
+        html`<style>
+          ${customStyles}
+        </style>
+        <header class="flex flex-row-reverse fixed z-10 w-full bg-gray-900">
           <${UsernameForm}
             username=${username}
             onUsernameChange=${this.handleUsernameChange}
             onFocus=${this.handleFormFocus}
             onBlur=${this.handleFormBlur}
           />
-        </header>
-      </div>` : ''}
+        </header>` : ''}
       <${Chat}
         websocket=${websocket}
         username=${username}

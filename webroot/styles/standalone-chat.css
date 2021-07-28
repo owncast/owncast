@@ -1,7 +1,15 @@
+ #messages-container {
+  height: 100vh;
+}
+
 #chat-container {
-  width: 100%
+  width: 100%;
+}
+
+:root {
+  --header-height: 2em;
 }
 
 header{
-  background:black;
+height: var(--header-height);
 }
