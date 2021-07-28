@@ -13,19 +13,17 @@ import (
 	"github.com/owncast/owncast/core/data"
 )
 
-func GetPublicKey(accountName string, host string) models.PublicKey {
-	owner, _ := models.MakeURLForResource("/user/"+accountName, host)
+func GetPublicKey(actorIRI *url.URL) models.PublicKey {
 
 	key := data.GetPublicKey()
-
-	idURL, err := url.Parse(owner.String() + "#main-key")
+	idURL, err := url.Parse(actorIRI.String() + "#main-key")
 	if err != nil {
 		panic(err)
 	}
 
 	return models.PublicKey{
 		Id:           idURL,
-		Owner:        owner,
+		Owner:        actorIRI,
 		PublicKeyPem: key,
 	}
 }
