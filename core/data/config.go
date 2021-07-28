@@ -42,6 +42,9 @@ const externalActionsKey = "external_actions"
 const customStylesKey = "custom_styles"
 const videoCodecKey = "video_codec"
 const blockedUsernamesKey = "blocked_usernames"
+const publicKeyKey = "public_key"
+const privateKeyKey = "private_key"
+const serverInitDateKey = "server_init_date"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -600,4 +603,31 @@ func GetForbiddenUsernameList() []string {
 func SetForbiddenUsernameList(usernames []string) error {
 	usernameListString := strings.Join(usernames, ",")
 	return _datastore.SetString(blockedUsernamesKey, usernameListString)
+}
+
+func GetServerInitTime() (utils.NullTime, error) {
+	invalidTime := utils.NullTime{Time: time.Now(), Valid: false}
+	var t utils.NullTime
+
+	configEntry, err := _datastore.Get(serverInitDateKey)
+	if err != nil {
+		return invalidTime, err
+	}
+
+	if err := configEntry.getObject(&t); err != nil {
+		return invalidTime, err
+	}
+
+	if !t.Valid {
+		return invalidTime, err
+	}
+
+	return t, nil
+}
+
+// SetLastDisconnectTime will set the time the last stream ended.
+func SetServerInitDate(t time.Time) error {
+	nt := utils.NullTime{Time: t, Valid: true}
+	var configEntry = ConfigEntry{Key: serverInitDateKey, Value: nt}
+	return _datastore.Save(configEntry)
 }

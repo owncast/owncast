@@ -14,7 +14,7 @@ type Link struct {
 }
 
 func MakeWebfingerResponse(account string, inbox string, host string) Webfinger {
-	url, err := MakeURLForResource(inbox, host)
+	href, err := MakeURLForResource("/user/"+account, host)
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ func MakeWebfingerResponse(account string, inbox string, host string) Webfinger 
 			{
 				Rel:  "self",
 				Type: "application/activity+json",
-				Href: string(url),
+				Href: href.String(),
 			},
 		},
 	}
