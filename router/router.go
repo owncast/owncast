@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
@@ -257,6 +258,8 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+	// ActivityPub has its own router
+	activitypub.Start()
 
 	// websocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
