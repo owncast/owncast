@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/owncast/owncast/activitypub/inbox"
+	log "github.com/sirupsen/logrus"
 )
 
 func InboxHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +36,17 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	inbox.Add(data)
+	// https://gek-ap-test.ngrok.io/federation/user/live/inbox
+	urlPathComponents := strings.Split(r.URL.Path, "/")
+	var forLocalAccount string
+	if len(urlPathComponents) == 7 {
+		forLocalAccount = urlPathComponents[5]
+	} else {
+		log.Errorln("Unable to determine username from url path", r.URL.Path)
+		return
+	}
+
+	inbox.Add(data, forLocalAccount)
 	w.WriteHeader(http.StatusAccepted)
 }
 

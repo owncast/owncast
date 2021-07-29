@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/owncast/owncast/activitypub/crypto"
+	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
 )
@@ -24,4 +25,5 @@ func Start(datastore *data.Datastore) {
 		}
 	}
 
+	go outbox.SendPublic("Hello world.")
 }

@@ -10,25 +10,25 @@ import (
 
 var ch = make(chan []byte, 5)
 
-func Run() {
-	for v := range ch {
-		fmt.Println("run...")
-		h := handle(v)
-		handled := <-h
-		fmt.Println("Handled", handled)
-		// Save followRequest
-		// Send ACCEPT back to actor
-	}
-}
+// func Run() {
+// 	for v := range ch {
+// 		fmt.Println("run...")
+// 		h := handle(v)
+// 		handled := <-h
+// 		fmt.Println("Handled", handled)
+// 		// Save followRequest
+// 		// Send ACCEPT back to actor
+// 	}
+// }
 
-func Add(data []byte) {
+func Add(data []byte, forLocalAccount string) {
 	fmt.Println("Adding AP Payload...")
-	handle(data)
+	handle(data, forLocalAccount)
 	// ch <- data
 }
 
-func handle(data []byte) chan bool {
-	c := context.TODO()
+func handle(data []byte, forLocalAccount string) chan bool {
+	c := context.WithValue(context.Background(), "account", forLocalAccount)
 	r := make(chan bool)
 
 	fmt.Println("Handling payload via worker...")

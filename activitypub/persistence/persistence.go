@@ -26,6 +26,44 @@ func RemoveFollow(unfollow models.ActivityPubActor) error {
 	return removeFollow(unfollow.ActorIri)
 }
 
+func GetFederationFollowers() ([]models.ActivityPubActor, error) {
+	followers := make([]models.ActivityPubActor, 0)
+
+	var query = "SELECT iri, inbox FROM ap_followers"
+
+	rows, err := _datastore.DB.Query(query)
+	if err != nil {
+		return followers, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var iriString string
+		var inboxString string
+
+		if err := rows.Scan(&iriString, &inboxString); err != nil {
+			log.Error("There is a problem reading the database.", err)
+			return followers, err
+		}
+
+		iri, _ := url.Parse(iriString)
+		inbox, _ := url.Parse(inboxString)
+
+		singleFollower := models.ActivityPubActor{
+			ActorIri: iri,
+			Inbox:    inbox,
+		}
+
+		followers = append(followers, singleFollower)
+	}
+
+	if err := rows.Err(); err != nil {
+		return followers, err
+	}
+
+	return followers, nil
+}
+
 func createFederationFollowersTable() {
 	log.Traceln("Creating federation followers table...")
 

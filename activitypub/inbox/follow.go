@@ -25,7 +25,8 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		panic(err)
 	}
 
-	if err := requests.SendFollowAccept(followRequest, "live"); err != nil {
+	account := c.Value("account").(string)
+	if err := requests.SendFollowAccept(followRequest, account); err != nil {
 		return err
 	}
 
