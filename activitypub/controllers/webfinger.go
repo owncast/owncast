@@ -12,7 +12,7 @@ import (
 
 // This is a mapping between account names and their outbox
 var validAccounts = map[string]string{
-	"live": "live",
+	data.GetDefaultFederationUsername(): data.GetDefaultFederationUsername(),
 }
 
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {

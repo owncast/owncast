@@ -605,6 +605,7 @@ func SetForbiddenUsernameList(usernames []string) error {
 	return _datastore.SetString(blockedUsernamesKey, usernameListString)
 }
 
+// GetServerInitTime will return when the server was first setup.
 func GetServerInitTime() (utils.NullTime, error) {
 	invalidTime := utils.NullTime{Time: time.Now(), Valid: false}
 	var t utils.NullTime
@@ -630,4 +631,9 @@ func SetServerInitDate(t time.Time) error {
 	nt := utils.NullTime{Time: t, Valid: true}
 	var configEntry = ConfigEntry{Key: serverInitDateKey, Value: nt}
 	return _datastore.Save(configEntry)
+}
+
+// GetDefaultFederationUsername will return the username used for sending federation activities.
+func GetDefaultFederationUsername() string {
+	return "gabetestingowncast"
 }

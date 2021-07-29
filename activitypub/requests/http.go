@@ -42,10 +42,10 @@ func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey model
 	return nil
 }
 
-func PostSignedRequest(payload []byte, url string, fromActorIRI *url.URL) ([]byte, error) {
+func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]byte, error) {
 	fmt.Println("Sending", string(payload), "to", url)
 
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
 	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
 		fmt.Println("error signing request:", err)
 		return nil, err
