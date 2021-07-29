@@ -15,7 +15,7 @@ func SendFollowAccept(followRequest models.ActivityPubActor, toLocalAccount stri
 	jsonmap, _ = streams.Serialize(followAccept)
 	b, _ := json.Marshal(jsonmap)
 
-	_, err := PostSignedRequest(b, followRequest.Inbox.String(), followRequest.ActorIri)
+	_, err := PostSignedRequest(b, followRequest.Inbox, followRequest.ActorIri)
 	if err != nil {
 		return err
 	}

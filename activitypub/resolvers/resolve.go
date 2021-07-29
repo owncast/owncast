@@ -10,6 +10,7 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/core/data"
 )
 
 // Resolve will translate a raw ActivityPub payload and fire the callback associated with that activity type.
@@ -48,7 +49,7 @@ func ResolveIRI(iri string, c context.Context, callbacks ...interface{}) error {
 
 	req, _ := http.NewRequest("GET", iri, nil)
 
-	actor := models.MakeLocalIRIForAccount("live")
+	actor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
 		return err
 	}
