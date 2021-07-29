@@ -308,6 +308,7 @@ export default class StandaloneChat extends Component {
       chatDisabled,
       maxSocketPayloadSize,
       customStyles,
+      name,
     } = configData;
 
     const { readonly } = props;
@@ -329,6 +330,7 @@ export default class StandaloneChat extends Component {
         username=${username}
         accessToken=${accessToken}
         readonly=${readonly}
+        instanceTitle=${name}
         chatInputEnabled=${chatInputEnabled && !chatDisabled}
         inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
         CHAT_MAX_MESSAGE_LENGTH}
