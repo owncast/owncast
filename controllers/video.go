@@ -10,8 +10,8 @@ import (
 type variantsResponse struct {
 	Name               string `json:"name"`
 	Index              int    `json:"index"`
-	VideoBitrate       int    `json:"VideoBitrae"`
-	IsVideoPassthrough bool   `json:"IsVideoPassthrough"`
+	VideoBitrate       int    `json:"-"`
+	IsVideoPassthrough bool   `json:"-"`
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
