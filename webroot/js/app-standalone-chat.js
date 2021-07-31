@@ -8,10 +8,7 @@ import Websocket, {
   SOCKET_MESSAGE_TYPES,
 } from './utils/websocket.js';
 import { registerChat } from './chat/register.js';
-import {
-  getLocalStorage,
-  setLocalStorage,
-} from './utils/helpers.js';
+import { getLocalStorage, setLocalStorage } from './utils/helpers.js';
 import {
   CHAT_MAX_MESSAGE_LENGTH,
   EST_SOCKET_PAYLOAD_BUFFER,
@@ -23,7 +20,6 @@ import {
   URL_CONFIG,
   TIMER_STATUS_UPDATE,
 } from './utils/constants.js';
-
 
 export default class StandaloneChat extends Component {
   constructor(props, context) {
@@ -128,10 +124,7 @@ export default class StandaloneChat extends Component {
     if (!status) {
       return;
     }
-    const {
-      online,
-      lastDisconnectTime,
-    } = status;
+    const { online, lastDisconnectTime } = status;
 
     if (status.online && !curStreamOnline) {
       // stream has just come online.
@@ -157,7 +150,6 @@ export default class StandaloneChat extends Component {
     this.setState({
       streamOnline: false,
     });
-
   }
 
   handleOnlineMode() {
@@ -176,7 +168,6 @@ export default class StandaloneChat extends Component {
     });
     this.sendUsernameChange(newName);
   }
-
 
   disableChatInput() {
     this.setState({
@@ -241,10 +232,14 @@ export default class StandaloneChat extends Component {
 
   async setupChatAuth(force) {
     const { readonly } = this.props;
-    var accessToken = readonly ? getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN) : getLocalStorage(KEY_ACCESS_TOKEN);
+    var accessToken = readonly
+      ? getLocalStorage(KEY_EMBED_CHAT_ACCESS_TOKEN)
+      : getLocalStorage(KEY_ACCESS_TOKEN);
     var randomIntArray = new Uint32Array(1);
     window.crypto.getRandomValues(randomIntArray);
-    var username = readonly ? 'chat-embed-' + randomIntArray[0] : getLocalStorage(KEY_USERNAME);
+    var username = readonly
+      ? 'chat-embed-' + randomIntArray[0]
+      : getLocalStorage(KEY_USERNAME);
 
     if (!accessToken || force) {
       try {
@@ -296,45 +291,39 @@ export default class StandaloneChat extends Component {
   }
 
   render(props, state) {
-    const {
-      username,
-      websocket,
-      accessToken,
-      chatInputEnabled,
-      configData,
-    } = state;
+    const { username, websocket, accessToken, chatInputEnabled, configData } =
+      state;
 
-    const {
-      chatDisabled,
-      maxSocketPayloadSize,
-      customStyles,
-      name,
-    } = configData;
+    const { chatDisabled, maxSocketPayloadSize, customStyles, name } =
+      configData;
 
     const { readonly } = props;
-    return this.state.websocket ?
-      html`${!readonly ?
-        html`<style>
-          ${customStyles}
-        </style>
-        <header class="flex flex-row-reverse fixed z-10 w-full bg-gray-900">
-          <${UsernameForm}
+    return this.state.websocket
+      ? html`${!readonly
+            ? html`<style>
+                  ${customStyles}
+                </style>
+                <header
+                  class="flex flex-row-reverse fixed z-10 w-full bg-gray-900"
+                >
+                  <${UsernameForm}
+                    username=${username}
+                    onUsernameChange=${this.handleUsernameChange}
+                    onFocus=${this.handleFormFocus}
+                    onBlur=${this.handleFormBlur}
+                  />
+                </header>`
+            : ''}
+          <${Chat}
+            websocket=${websocket}
             username=${username}
-            onUsernameChange=${this.handleUsernameChange}
-            onFocus=${this.handleFormFocus}
-            onBlur=${this.handleFormBlur}
-          />
-        </header>` : ''}
-      <${Chat}
-        websocket=${websocket}
-        username=${username}
-        accessToken=${accessToken}
-        readonly=${readonly}
-        instanceTitle=${name}
-        chatInputEnabled=${chatInputEnabled && !chatDisabled}
-        inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
-        CHAT_MAX_MESSAGE_LENGTH}
-      />`
+            accessToken=${accessToken}
+            readonly=${readonly}
+            instanceTitle=${name}
+            chatInputEnabled=${chatInputEnabled && !chatDisabled}
+            inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
+            CHAT_MAX_MESSAGE_LENGTH}
+          />`
       : null;
   }
 }
