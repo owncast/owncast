@@ -55,7 +55,7 @@ export default class Chat extends Component {
 
     window.addEventListener('resize', this.handleWindowResize);
 
-    if (!this.props.messagesOnly) {
+    if (!this.props.readonly) {
       window.addEventListener('blur', this.handleWindowBlur);
       window.addEventListener('focus', this.handleWindowFocus);
     }
@@ -113,7 +113,7 @@ export default class Chat extends Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowResize);
-    if (!this.props.messagesOnly) {
+    if (!this.props.readonly) {
       window.removeEventListener('blur', this.handleWindowBlur);
       window.removeEventListener('focus', this.handleWindowFocus);
     }
@@ -183,7 +183,7 @@ export default class Chat extends Component {
       visible: messageVisible,
     } = message;
     const { messages: curMessages } = this.state;
-    const { username, messagesOnly } = this.props;
+    const { username, readonly } = this.props;
 
     const existingIndex = curMessages.findIndex(
       (item) => item.id === messageId
@@ -236,7 +236,7 @@ export default class Chat extends Component {
     }
 
     // if window is blurred and we get a new message, add 1 to title
-    if (!messagesOnly && messageType === 'CHAT' && this.windowBlurred) {
+    if (!readonly && messageType === 'CHAT' && this.windowBlurred) {
       this.numMessagesSinceBlur += 1;
     }
   }
@@ -333,7 +333,7 @@ export default class Chat extends Component {
       // update document title if window blurred
       if (
         this.numMessagesSinceBlur &&
-        !this.props.messagesOnly &&
+        !this.props.readonly &&
         this.windowBlurred
       ) {
         this.updateDocumentTitle();
@@ -348,7 +348,7 @@ export default class Chat extends Component {
   }
 
   render(props, state) {
-    const { username, messagesOnly, chatInputEnabled, inputMaxBytes } = props;
+    const { username, readonly, chatInputEnabled, inputMaxBytes } = props;
     const { messages, chatUserNames, webSocketConnected } = state;
 
     const messageList = messages
@@ -362,7 +362,7 @@ export default class Chat extends Component {
           />`
       );
 
-    if (messagesOnly) {
+    if (readonly) {
       return html`
         <div
           id="messages-container"
