@@ -71,7 +71,7 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 		User:        user,
 		ipAddress:   conn.RemoteAddr().String(),
 		accessToken: accessToken,
-		send:        make(chan []byte, maxMessageSize),
+		send:        make(chan []byte, 256),
 		UserAgent:   userAgent,
 		ConnectedAt: time.Now(),
 	}
