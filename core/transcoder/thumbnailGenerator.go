@@ -100,7 +100,9 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		return err
 	} else {
 		// rename temp file
-		os.Rename(outputFileTemp, outputFile)
+		if err := os.Rename(outputFileTemp, outputFile); err != nil {
+			log.Errorln(err)
+		}
 	}
 
 	// If YP support is enabled also create an animated GIF preview
@@ -131,6 +133,8 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 		log.Errorln(err)
 	} else {
 		// rename temp file
-		os.Rename(outputFileTemp, outputFile)
+		if err := os.Rename(outputFileTemp, outputFile); err != nil {
+			log.Errorln(err)
+		}
 	}
 }
