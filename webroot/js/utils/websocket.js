@@ -158,9 +158,9 @@ export default class Websocket {
     var messages = e.data.split('\n');
     for (var i = 0; i < messages.length; i++) {
       try {
-        var model = JSON.parse(e.data);
+        var model = JSON.parse(messages[i]);
       } catch (e) {
-        // console.log(e, e.data);
+        console.error(e, e.data);
         return;
       }
 
