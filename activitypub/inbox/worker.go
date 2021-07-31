@@ -56,11 +56,11 @@ func handle(data []byte, forLocalAccount string) chan bool {
 		return nil
 	}
 
-	go func() {
-		if err := resolvers.Resolve(data, c, createCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
-			panic(err)
-		}
-	}()
+	// go func() {
+	if err := resolvers.Resolve(data, c, createCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
+		panic(err)
+	}
+	// }()
 
 	return r
 }

@@ -13,7 +13,11 @@ import (
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
 	fmt.Println("followCallback fired!")
 
-	follow := resolvers.MakeFollowRequest(activity, c)
+	follow, err := resolvers.MakeFollowRequest(activity, c)
+	if err != nil {
+		panic(err)
+	}
+
 	if follow == nil {
 		return fmt.Errorf("unable to handle request")
 	}
@@ -25,8 +29,9 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		panic(err)
 	}
 
-	account := c.Value("account").(string)
-	if err := requests.SendFollowAccept(followRequest, account); err != nil {
+	localAccountName := c.Value("account").(string)
+
+	if err := requests.SendFollowAccept(followRequest, localAccountName); err != nil {
 		return err
 	}
 

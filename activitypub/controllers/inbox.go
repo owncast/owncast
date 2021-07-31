@@ -39,8 +39,8 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 	// https://gek-ap-test.ngrok.io/federation/user/live/inbox
 	urlPathComponents := strings.Split(r.URL.Path, "/")
 	var forLocalAccount string
-	if len(urlPathComponents) == 7 {
-		forLocalAccount = urlPathComponents[5]
+	if len(urlPathComponents) == 5 {
+		forLocalAccount = urlPathComponents[3]
 	} else {
 		log.Errorln("Unable to determine username from url path", r.URL.Path)
 		return

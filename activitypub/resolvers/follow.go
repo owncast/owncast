@@ -40,15 +40,10 @@ func getPersonFromFollow(activity vocab.ActivityStreamsFollow, c context.Context
 	return getResolvedPersonFromActor(activity.GetActivityStreamsActor())
 }
 
-func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) *models.ActivityPubActor {
+func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) (*models.ActivityPubActor, error) {
 	person, err := getPersonFromFollow(activity, c)
 	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-
-	if person == nil {
-		return nil
+		return nil, err
 	}
 
 	fmt.Println(activity.GetJSONLDId().Get().String())
@@ -59,7 +54,7 @@ func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) 
 		Inbox:     person.GetActivityStreamsInbox().GetIRI(),
 	}
 
-	return &followRequest
+	return &followRequest, nil
 }
 
 func MakeUnFollowRequest(activity vocab.ActivityStreamsUndo, c context.Context) *models.ActivityPubActor {
