@@ -29,7 +29,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 
 	actorIRI := models.MakeLocalIRIForAccount(accountName)
 
-	person := streams.NewActivityStreamsService()
+	person := streams.NewActivityStreamsPerson()
 	nameProperty := streams.NewActivityStreamsNameProperty()
 	nameProperty.AppendXMLSchemaString(data.GetServerName())
 	person.SetActivityStreamsName(nameProperty)
@@ -138,7 +138,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func addMetadataLinkToProfile(profile vocab.ActivityStreamsService, name string, url string) {
+func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, url string) {
 	var attachments = profile.GetActivityStreamsAttachment()
 	if attachments == nil {
 		attachments = streams.NewActivityStreamsAttachmentProperty()

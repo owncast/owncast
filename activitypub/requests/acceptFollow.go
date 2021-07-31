@@ -9,13 +9,15 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-func SendFollowAccept(followRequest models.ActivityPubActor, toLocalAccount string) error {
-	followAccept := makeAcceptFollow(followRequest, toLocalAccount)
+func SendFollowAccept(followRequest models.ActivityPubActor, fromLocalAccountName string) error {
+	followAccept := makeAcceptFollow(followRequest, fromLocalAccountName)
+	localAccountIRI := models.MakeLocalIRIForAccount(fromLocalAccountName)
+
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(followAccept)
 	b, _ := json.Marshal(jsonmap)
 
-	_, err := PostSignedRequest(b, followRequest.Inbox, followRequest.ActorIri)
+	_, err := PostSignedRequest(b, followRequest.Inbox, localAccountIRI)
 	if err != nil {
 		return err
 	}
