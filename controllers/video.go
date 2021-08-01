@@ -8,10 +8,8 @@ import (
 )
 
 type variantsResponse struct {
-	Name               string `json:"name"`
-	Index              int    `json:"index"`
-	VideoBitrate       int    `json:"-"`
-	IsVideoPassthrough bool   `json:"-"`
+	Name  string `json:"name"`
+	Index int    `json:"index"`
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
@@ -21,10 +19,8 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	result := make([]variantsResponse, len(outputVariants))
 	for i, variant := range outputVariants {
 		variantResponse := variantsResponse{
-			Index:              i,
-			Name:               variant.GetName(),
-			VideoBitrate:       variant.VideoBitrate,
-			IsVideoPassthrough: variant.IsVideoPassthrough,
+			Index: i,
+			Name:  variant.GetName(),
 		}
 		result[i] = variantResponse
 	}
