@@ -20,6 +20,12 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
 
+	if _, valid := data.GetFederatedInboxMap()[accountName]; !valid {
+		// User is not valid
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	// If this request is for an actor's inbox then pass
 	// the request to the inbox controller.
 	if len(pathComponents) == 5 && pathComponents[4] == "inbox" {
@@ -131,6 +137,12 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	// Links
 	for _, link := range data.GetSocialHandles() {
 		addMetadataLinkToProfile(person, link.Platform, link.URL)
+	}
+
+	// Work around an issue where a single attachment will not serialize
+	// as an array, so add another item to the mix.
+	if len(data.GetSocialHandles()) == 1 {
+		addMetadataLinkToProfile(person, "Owncast", "https://owncast.online")
 	}
 
 	if err := requests.WriteStreamResponse(person, w, publicKey); err != nil {
