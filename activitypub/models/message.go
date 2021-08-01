@@ -37,10 +37,32 @@ func CreateMessage(content string, localAccountIRI *url.URL) vocab.ActivityStrea
 	// summary := NewActivityStreamsSummaryProperty()
 	// summary.AppendXMLSchemaString("NSFW")
 
-	// addImageAttachmentToNote(note, "https://watch.owncast.online/preview.gif")
-	// addVideoAttachmentToNote(note, "https://goth.land/hls/stream.m3u8")
+	addImageAttachmentToNote(note, "https://watch.owncast.online/preview.gif")
 
 	message.SetActivityStreamsObject(object)
 
 	return message
+}
+
+func addImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
+	imageURL, err := url.Parse(image)
+	if err != nil {
+		return
+	}
+
+	var attachments = note.GetActivityStreamsAttachment()
+	if attachments == nil {
+		attachments = streams.NewActivityStreamsAttachmentProperty()
+	}
+
+	urlProp := streams.NewActivityStreamsUrlProperty()
+	urlProp.AppendIRI(imageURL)
+
+	apImage := streams.NewActivityStreamsImage()
+	apImage.SetActivityStreamsUrl(urlProp)
+	imageProp := streams.NewActivityStreamsImageProperty()
+	imageProp.AppendActivityStreamsImage(apImage)
+	attachments.AppendActivityStreamsImage(apImage)
+
+	note.SetActivityStreamsAttachment(attachments)
 }
