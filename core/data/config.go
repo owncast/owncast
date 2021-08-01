@@ -654,8 +654,3 @@ func SetServerInitDate(t time.Time) error {
 	configEntry := ConfigEntry{Key: serverInitDateKey, Value: nt}
 	return _datastore.Save(configEntry)
 }
-
-// GetDefaultFederationUsername will return the username used for sending federation activities.
-func GetDefaultFederationUsername() string {
-	return "gabetestingowncast"
-}
