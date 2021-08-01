@@ -36,7 +36,6 @@ func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey model
 		return err
 	}
 
-	w.WriteHeader(http.StatusOK)
 	fmt.Println(string(b))
 
 	return nil

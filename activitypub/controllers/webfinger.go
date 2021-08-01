@@ -10,11 +10,6 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-// This is a mapping between account names and their outbox
-var validAccounts = map[string]string{
-	data.GetDefaultFederationUsername(): data.GetDefaultFederationUsername(),
-}
-
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	resource := r.URL.Query().Get("resource")
 	resourceComponents := strings.Split(resource, ":")
@@ -27,7 +22,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	host := userComponents[1]
 	user := userComponents[0]
 
-	if _, valid := validAccounts[user]; !valid {
+	if _, valid := data.GetFederatedInboxMap()[user]; !valid {
 		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
 		return

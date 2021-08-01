@@ -25,5 +25,5 @@ func Start(datastore *data.Datastore) {
 		}
 	}
 
-	go outbox.SendPublic("Hello world.")
+	outbox.SendPublic("Hello world.")
 }
