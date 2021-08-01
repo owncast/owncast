@@ -1,8 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
-
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
@@ -16,14 +14,14 @@ func Start(datastore *data.Datastore) {
 	// Test
 	if data.GetPrivateKey() == "" {
 		privateKey, publicKey, err := crypto.GenerateKeys()
-		fmt.Println(string(privateKey), string(publicKey))
-
-		data.SetPrivateKey(string(privateKey))
-		data.SetPublicKey(string(publicKey))
+		_ = data.SetPrivateKey(string(privateKey))
+		_ = data.SetPublicKey(string(publicKey))
 		if err != nil {
 			panic(err)
 		}
 	}
+}
 
-	outbox.SendPublic("Hello world.")
+func SendLive() {
+	outbox.SendLive()
 }

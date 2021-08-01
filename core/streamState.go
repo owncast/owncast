@@ -2,6 +2,7 @@ package core
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -29,6 +31,8 @@ var _offlineCleanupTimer *time.Timer
 var _onlineCleanupTicker *time.Ticker
 
 var _currentBroadcast *models.CurrentBroadcast
+
+var _onlineTimerCancelFunc context.CancelFunc
 
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected(rtmpOut *io.PipeReader) {
@@ -72,6 +76,9 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
 	chat.SendAllWelcomeMessage()
+
+	// Send a delayed live Federated message.
+	_onlineTimerCancelFunc = startFederatedLiveStreamMessageTimer()
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
@@ -79,6 +86,8 @@ func SetStreamAsDisconnected() {
 	_ = chat.SendSystemAction("The stream is ending.", true)
 
 	now := utils.NullTime{Time: time.Now(), Valid: true}
+	_onlineTimerCancelFunc()
+
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = &now
 	_stats.LastConnectTime = nil
@@ -195,4 +204,19 @@ func stopOnlineCleanupTimer() {
 	if _onlineCleanupTicker != nil {
 		_onlineCleanupTicker.Stop()
 	}
+}
+
+func startFederatedLiveStreamMessageTimer() context.CancelFunc {
+	// Send a delayed live Federated message.
+	c, cancelFunc := context.WithCancel(context.Background())
+	_onlineTimerCancelFunc = cancelFunc
+	go func(c context.Context) {
+		select {
+		case <-time.After(time.Minute * 2.0):
+			log.Traceln("Sending Federated Go Live message.")
+			activitypub.SendLive()
+		case <-c.Done():
+		}
+	}(c)
+	return cancelFunc
 }
