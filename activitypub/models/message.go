@@ -9,7 +9,19 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-func CreateMessage(content string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
+func CreateCreateActivity(localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
+	id := shortid.MustGenerate()
+	objectId := MakeLocalIRIForResource("/create-" + id)
+	message := MakeActivity(objectId)
+
+	actorProp := streams.NewActivityStreamsActorProperty()
+	actorProp.AppendIRI(localAccountIRI)
+	message.SetActivityStreamsActor(actorProp)
+
+	return message
+}
+
+func CreateMessageActivity(content string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
 	toPublic, _ := url.Parse(PUBLIC)
 
 	id := shortid.MustGenerate()
@@ -37,14 +49,12 @@ func CreateMessage(content string, localAccountIRI *url.URL) vocab.ActivityStrea
 	// summary := NewActivityStreamsSummaryProperty()
 	// summary.AppendXMLSchemaString("NSFW")
 
-	addImageAttachmentToNote(note, "https://watch.owncast.online/preview.gif")
-
 	message.SetActivityStreamsObject(object)
 
 	return message
 }
 
-func addImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
+func AddImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
 	imageURL, err := url.Parse(image)
 	if err != nil {
 		return
