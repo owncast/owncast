@@ -158,9 +158,9 @@ export default class Websocket {
     var messages = e.data.split('\n');
     for (var i = 0; i < messages.length; i++) {
       try {
-        var model = JSON.parse(e.data);
+        var model = JSON.parse(messages[i]);
       } catch (e) {
-        // console.log(e, e.data);
+        console.error(e, e.data);
         return;
       }
 
@@ -188,7 +188,7 @@ export default class Websocket {
 
   handleNetworkingError(error) {
     console.error(
-      `Websocket Error. Chat is likely not working. Visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`
+      `Chat has been disconnected and is likely not working for you. It's possible you were removed from chat. If this is a server configuration issue, visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`
     );
   }
 }
