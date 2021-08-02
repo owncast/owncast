@@ -70,8 +70,14 @@ func AddImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
 
 	apImage := streams.NewActivityStreamsImage()
 	apImage.SetActivityStreamsUrl(urlProp)
+
 	imageProp := streams.NewActivityStreamsImageProperty()
 	imageProp.AppendActivityStreamsImage(apImage)
+
+	imageDescription := streams.NewActivityStreamsContentProperty()
+	imageDescription.AppendXMLSchemaString("Live stream preview")
+	apImage.SetActivityStreamsContent(imageDescription)
+
 	attachments.AppendActivityStreamsImage(apImage)
 
 	note.SetActivityStreamsAttachment(attachments)
