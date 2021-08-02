@@ -54,6 +54,30 @@ func SendLive() {
 		}
 	}
 
+	// var tagStrings []string
+	// reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// TODO: Need to assign to a `hashtag` property, not `tag`
+	tagProp := streams.NewActivityStreamsTagProperty()
+	for _, tagString := range data.GetServerMetadataTags() {
+		mention := streams.NewActivityStreamsMention()
+		mentionName := streams.NewActivityStreamsNameProperty()
+		mentionName.AppendXMLSchemaString("#" + tagString)
+		mention.SetActivityStreamsName(mentionName)
+
+		name := streams.NewActivityStreamsNameProperty()
+		name.AppendXMLSchemaString("#" + tagString)
+
+		tagProp.AppendActivityStreamsMention(mention)
+
+		// TODO: Do we want to display tags or just assign them?
+		// tagWithoutSpecialCharacters := reg.ReplaceAllString(tag, "")
+		// tagStrings = append(tagStrings, "#"+tagWithoutSpecialCharacters)
+	}
+	activity.SetActivityStreamsTag(tagProp)
+
 	b, err := models.Serialize(activity)
 	if err != nil {
 		panic(err)
