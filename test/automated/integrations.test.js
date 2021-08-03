@@ -142,7 +142,7 @@ test('test fetch chat history OPTIONS request', async (done) => {
     const res = await request
         .options('/api/integrations/chat')
         .set('Authorization', 'Bearer ' + accessToken)
-        .expect(200);
+        .expect(204);
     done();
 });
 

@@ -28,9 +28,9 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
 
-		// For request needing CORS, send a 200.
+		// For request needing CORS, send a 204.
 		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
@@ -60,7 +60,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 		if r.Method == "OPTIONS" {
 			// All OPTIONS requests should have a wildcard CORS header.
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
