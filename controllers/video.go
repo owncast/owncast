@@ -23,7 +23,7 @@ type variantsResponse struct {
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
 
-	StreamSortVariants := make([]variantsSort, len(outputVariants))
+	streamSortVariants := make([]variantsSort, len(outputVariants))
 	for i, variant := range outputVariants {
 		variantSort := variantsSort{
 			Index:              i,
@@ -31,23 +31,23 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 			IsVideoPassthrough: variant.IsVideoPassthrough,
 			VideoBitrate:       variant.VideoBitrate,
 		}
-		StreamSortVariants[i] = variantSort
+		streamSortVariants[i] = variantSort
 	}
 
-	sort.Slice(StreamSortVariants, func(i, j int) bool {
-		if StreamSortVariants[i].IsVideoPassthrough && !StreamSortVariants[j].IsVideoPassthrough {
+	sort.Slice(streamSortVariants, func(i, j int) bool {
+		if streamSortVariants[i].IsVideoPassthrough && !streamSortVariants[j].IsVideoPassthrough {
 			return true
 		}
 
-		if !StreamSortVariants[i].IsVideoPassthrough && StreamSortVariants[j].IsVideoPassthrough {
+		if !streamSortVariants[i].IsVideoPassthrough && streamSortVariants[j].IsVideoPassthrough {
 			return false
 		}
 
-		return StreamSortVariants[i].VideoBitrate > StreamSortVariants[j].VideoBitrate
+		return streamSortVariants[i].VideoBitrate > streamSortVariants[j].VideoBitrate
 	})
 
-	response := make([]variantsResponse, len(StreamSortVariants))
-	for i, variant := range StreamSortVariants {
+	response := make([]variantsResponse, len(streamSortVariants))
+	for i, variant := range streamSortVariants {
 		variantResponse := variantsResponse{
 			Index: variant.Index,
 			Name:  variant.Name,
