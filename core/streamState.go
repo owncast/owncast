@@ -32,9 +32,10 @@ var _currentBroadcast *models.CurrentBroadcast
 
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected(rtmpOut *io.PipeReader) {
+	now := utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.StreamConnected = true
-	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
-	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
+	_stats.LastDisconnectTime = nil
+	_stats.LastConnectTime = &now
 	_stats.SessionMaxViewerCount = 0
 
 	_currentBroadcast = &models.CurrentBroadcast{
@@ -82,8 +83,10 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 func SetStreamAsDisconnected() {
 	_ = chat.SendSystemAction("The stream is ending.", true)
 
+	now := utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.StreamConnected = false
-	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: true}
+	_stats.LastDisconnectTime = &now
+	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
 	offlineFilename := "offline.ts"

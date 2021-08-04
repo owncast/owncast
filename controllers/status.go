@@ -33,8 +33,8 @@ type webStatusResponse struct {
 	Online      bool `json:"online"`
 	ViewerCount int  `json:"viewerCount"`
 
-	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
-	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
+	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
+	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
 
 	VersionNumber string `json:"versionNumber"`
 	StreamTitle   string `json:"streamTitle"`
