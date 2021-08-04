@@ -23,7 +23,7 @@ type ypDetailsResponse struct {
 	SessionMaxViewerCount int                   `json:"sessionMaxViewerCount"`
 	Social                []models.SocialHandle `json:"social"`
 
-	LastConnectTime utils.NullTime `json:"lastConnectTime"`
+	LastConnectTime *utils.NullTime `json:"lastConnectTime"`
 }
 
 // GetYPResponse gets the status of the server for YP purposes.

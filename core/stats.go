@@ -102,7 +102,7 @@ func pruneViewerCount() {
 
 	l.Lock()
 	defer l.Unlock()
-	
+
 	for viewerId := range _stats.Viewers {
 		viewerLastSeenTime := _stats.Viewers[viewerId]
 		if time.Since(viewerLastSeenTime) < _activeViewerPurgeTimeout {
@@ -120,8 +120,8 @@ func saveStats() {
 	if err := data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
-	if _stats.LastDisconnectTime.Valid {
-		if err := data.SetLastDisconnectTime(_stats.LastConnectTime.Time); err != nil {
+	if _stats.LastDisconnectTime != nil && _stats.LastDisconnectTime.Valid {
+		if err := data.SetLastDisconnectTime(_stats.LastDisconnectTime.Time); err != nil {
 			log.Errorln("error saving disconnect time", err)
 		}
 	}
@@ -140,7 +140,7 @@ func getSavedStats() models.Stats {
 
 	// If the stats were saved > 5min ago then ignore the
 	// peak session count value, since the session is over.
-	if !result.LastDisconnectTime.Valid || time.Since(result.LastDisconnectTime.Time).Minutes() > 5 {
+	if result.LastDisconnectTime == nil || !result.LastDisconnectTime.Valid || time.Since(result.LastDisconnectTime.Time).Minutes() > 5 {
 		result.SessionMaxViewerCount = 0
 	}
 
