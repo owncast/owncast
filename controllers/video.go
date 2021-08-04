@@ -7,35 +7,53 @@ import (
 	"github.com/owncast/owncast/core/data"
 )
 
+type variantsSort struct {
+	Index              int
+	Name               string
+	IsVideoPassthrough bool
+	VideoBitrate       int
+}
+
 type variantsResponse struct {
-	Name  string `json:"name"`
 	Index int    `json:"index"`
+	Name  string `json:"name"`
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
 
-	result := make([]variantsResponse, len(outputVariants))
+	StreamSortVariants := make([]variantsSort, len(outputVariants))
 	for i, variant := range outputVariants {
-		variantResponse := variantsResponse{
-			Index: i,
-			Name:  variant.GetName(),
+		variantSort := variantsSort{
+			Index:              i,
+			Name:               variant.GetName(),
+			IsVideoPassthrough: variant.IsVideoPassthrough,
+			VideoBitrate:       variant.VideoBitrate,
 		}
-		result[i] = variantResponse
+		StreamSortVariants[i] = variantSort
 	}
 
-	sort.Slice(result, func(i, j int) bool {
-		if outputVariants[i].IsVideoPassthrough && !outputVariants[j].IsVideoPassthrough {
+	sort.Slice(StreamSortVariants, func(i, j int) bool {
+		if StreamSortVariants[i].IsVideoPassthrough && !StreamSortVariants[j].IsVideoPassthrough {
 			return true
 		}
 
-		if !outputVariants[i].IsVideoPassthrough && outputVariants[j].IsVideoPassthrough {
+		if !StreamSortVariants[i].IsVideoPassthrough && StreamSortVariants[j].IsVideoPassthrough {
 			return false
 		}
 
-		return outputVariants[i].VideoBitrate > outputVariants[j].VideoBitrate
+		return StreamSortVariants[i].VideoBitrate > StreamSortVariants[j].VideoBitrate
 	})
 
-	WriteResponse(w, result)
+	response := make([]variantsResponse, len(StreamSortVariants))
+	for i, variant := range StreamSortVariants {
+		variantResponse := variantsResponse{
+			Index: variant.Index,
+			Name:  variant.Name,
+		}
+		response[i] = variantResponse
+	}
+
+	WriteResponse(w, response)
 }
