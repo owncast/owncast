@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"net"
 	"net/http"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -13,9 +12,7 @@ import (
 // GenerateClientIDFromRequest generates a client id from the provided request.
 func GenerateClientIDFromRequest(req *http.Request) string {
 	ipAddress := GetIPAddressFromRequest(req)
-	ipAddressComponents := strings.Split(ipAddress, ".")
-	ipAddressComponents[len(ipAddressComponents)-1] = ""
-	clientID := strings.Join(ipAddressComponents, ".") + req.UserAgent()
+	clientID := ipAddress + req.UserAgent()
 
 	// Create a MD5 hash of this ip + useragent
 	b := md5.Sum([]byte(clientID)) // nolint
