@@ -168,7 +168,7 @@ function formatTimestamp(sentAt) {
   let diffInDays = getDiffInDaysFromNow(sentAt);
   if (diffInDays >= 1) {
     return (
-      `Sent at ${sentAt.toLocaleDateString('en-US', {
+      `at ${sentAt.toLocaleDateString('en-US', {
         dateStyle: 'medium',
       })} at ` + sentAt.toLocaleTimeString()
     );
