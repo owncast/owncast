@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-fed/activity/streams"
+	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
@@ -83,6 +84,7 @@ func SendLive() {
 		panic(err)
 	}
 	SendToFollowers(b)
+	Add(activity)
 }
 
 // SendPublicMessage will send a public message to all followers.
@@ -95,6 +97,9 @@ func SendPublicMessage(textContent string) {
 		panic(err)
 	}
 	SendToFollowers(b)
+
+	Add(message)
+	// AddPayloadToOutbox(message.GetJSONLDId().GetIRI().String(), b)
 }
 
 func SendToFollowers(payload []byte) {
@@ -110,5 +115,29 @@ func SendToFollowers(payload []byte) {
 			panic(err)
 		}
 	}
-
 }
+
+func Add(item vocab.Type) error {
+	id := item.GetJSONLDId().GetIRI().String()
+	typeString := item.GetTypeName()
+
+	if id == "" {
+		panic("Unable to get iri from item")
+	}
+
+	b, err := models.Serialize(item)
+	if err != nil {
+		panic(err)
+	}
+
+	return persistence.AddToOutbox(id, b, typeString)
+}
+
+func Get() vocab.ActivityStreamsOrderedCollection {
+	orderedCollection, _ := persistence.GetOutbox()
+	return orderedCollection
+}
+
+// func AddPayloadToOutbox(id string, payload []byte) {
+// 	persistence.AddToOutbox(id, payload)
+// }

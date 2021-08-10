@@ -31,6 +31,9 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	if len(pathComponents) == 5 && pathComponents[4] == "inbox" {
 		InboxHandler(w, r)
 		return
+	} else if len(pathComponents) == 5 && pathComponents[4] == "outbox" {
+		OutboxHandler(w, r)
+		return
 	}
 
 	actorIRI := models.MakeLocalIRIForAccount(accountName)
