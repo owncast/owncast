@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -64,12 +65,12 @@ func (s *ChatServer) Run() {
 }
 
 // Addclient registers new connection as a User.
-func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string) *ChatClient {
+func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *ChatClient {
 	client := &ChatClient{
 		server:      s,
 		conn:        conn,
 		User:        user,
-		ipAddress:   conn.RemoteAddr().String(),
+		ipAddress:   ipAddress,
 		accessToken: accessToken,
 		send:        make(chan []byte, 256),
 		UserAgent:   userAgent,
@@ -95,6 +96,11 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 		s.sendUserJoinedMessage(client)
 		s.sendWelcomeMessageToClient(client)
 	}
+
+	// Asynchronously, optionally, fetch GeoIP data.
+	go func(client *ChatClient) {
+		client.Geo = geoip.GetGeoFromIP(ipAddress)
+	}(client)
 
 	return client
 }
@@ -172,8 +178,9 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	}
 
 	userAgent := r.UserAgent()
+	ipAddress := utils.GetIPAddressFromRequest(r)
 
-	s.Addclient(conn, user, accessToken, userAgent)
+	s.Addclient(conn, user, accessToken, userAgent, ipAddress)
 }
 
 // Broadcast sends message to all connected clients.

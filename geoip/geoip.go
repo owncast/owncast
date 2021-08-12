@@ -37,62 +37,62 @@ func GetGeoFromIP(ip string) *GeoDetails {
 		}
 	}
 
-	return nil
+	return fetchGeoForIP(ip)
 }
 
-// FetchGeoForIP makes an API call to get geo details for an IP address.
-func FetchGeoForIP(ip string) {
+// fetchGeoForIP makes an API call to get geo details for an IP address.
+func fetchGeoForIP(ip string) *GeoDetails {
 	// If GeoIP has been disabled then don't try to access it.
 	if !_enabled {
-		return
+		return nil
 	}
 
 	// Don't re-fetch if we already have it.
-	if _, ok := _geoIPCache[ip]; ok {
-		return
+	if geoDetails, ok := _geoIPCache[ip]; ok {
+		return &geoDetails
 	}
 
-	go func() {
-		db, err := geoip2.Open(geoIPDatabasePath)
-		if err != nil {
-			log.Traceln("GeoIP support is disabled. visit http://owncast.online/docs/geoip to learn how to enable.", err)
-			_enabled = false
-			return
+	db, err := geoip2.Open(geoIPDatabasePath)
+	if err != nil {
+		log.Traceln("GeoIP support is disabled. visit http://owncast.online/docs/geoip to learn how to enable.", err)
+		_enabled = false
+		return nil
+	}
+
+	defer db.Close()
+
+	ipObject := net.ParseIP(ip)
+
+	record, err := db.City(ipObject)
+	if err != nil {
+		log.Warnln(err)
+		return nil
+	}
+
+	// If no country is available then exit
+	if record.Country.IsoCode == "" {
+		return nil
+	}
+
+	// If we believe this IP to be anonymous then no reason to report it
+	if record.Traits.IsAnonymousProxy {
+		return nil
+	}
+
+	var regionName = "Unknown"
+	if len(record.Subdivisions) > 0 {
+		if region, ok := record.Subdivisions[0].Names["en"]; ok {
+			regionName = region
 		}
+	}
 
-		defer db.Close()
+	response := GeoDetails{
+		CountryCode: record.Country.IsoCode,
+		RegionName:  regionName,
+		TimeZone:    record.Location.TimeZone,
+	}
 
-		ipObject := net.ParseIP(ip)
+	_geoIPCache[ip] = response
 
-		record, err := db.City(ipObject)
-		if err != nil {
-			log.Warnln(err)
-			return
-		}
-
-		// If no country is available then exit
-		if record.Country.IsoCode == "" {
-			return
-		}
-
-		// If we believe this IP to be anonymous then no reason to report it
-		if record.Traits.IsAnonymousProxy {
-			return
-		}
-
-		var regionName = "Unknown"
-		if len(record.Subdivisions) > 0 {
-			if region, ok := record.Subdivisions[0].Names["en"]; ok {
-				regionName = region
-			}
-		}
-
-		response := GeoDetails{
-			CountryCode: record.Country.IsoCode,
-			RegionName:  regionName,
-			TimeZone:    record.Location.TimeZone,
-		}
-
-		_geoIPCache[ip] = response
-	}()
+	return &response
 }
