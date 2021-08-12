@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 )
 
@@ -51,27 +50,6 @@ func IsStreamConnected() bool {
 	}
 
 	return _stats.StreamConnected
-}
-
-// SetChatClientActive sets a client as active and connected.
-func SetChatClientActive(client models.Client) {
-	l.Lock()
-	defer l.Unlock()
-
-	// If this clientID already exists then update it.
-	// Otherwise set a new one.
-	if existingClient, ok := _stats.ChatClients[client.ClientID]; ok {
-		existingClient.LastSeen = time.Now()
-		existingClient.Username = client.Username
-		existingClient.MessageCount = client.MessageCount
-		existingClient.Geo = geoip.GetGeoFromIP(existingClient.IPAddress)
-		_stats.ChatClients[client.ClientID] = existingClient
-	} else {
-		if client.Geo == nil {
-			geoip.FetchGeoForIP(client.IPAddress)
-		}
-		_stats.ChatClients[client.ClientID] = client
-	}
 }
 
 // RemoveChatClient removes a client from the active clients record.
