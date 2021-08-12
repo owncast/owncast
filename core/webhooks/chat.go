@@ -30,9 +30,10 @@ func SendChatEventUsernameChanged(event events.NameChangeEvent) {
 	SendEventToWebhooks(webhookEvent)
 }
 
+// SendChatEventUserJoined sends a webhook notifying that a user has joined.
 func SendChatEventUserJoined(event events.UserJoinedEvent) {
 	webhookEvent := WebhookEvent{
-		Type:      models.UserNameChanged,
+		Type:      models.UserJoined,
 		EventData: event,
 	}
 
