@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@joeattardi/emoji-button": "^4.6.0",
-    "@videojs/http-streaming": "2.9.3",
+    "@videojs/http-streaming": "2.10.0",
     "@videojs/themes": "^1.0.1",
     "htm": "^3.1.0",
     "mark.js": "^8.11.1",
