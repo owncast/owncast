@@ -75,7 +75,7 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
 	transcoder.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
 
-	_ = chat.SendSystemAction("Stay tuned, the stream is starting!", true)
+	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
 	chat.SendAllWelcomeMessage()
 }
 
