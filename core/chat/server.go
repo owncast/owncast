@@ -21,10 +21,10 @@ import (
 var _server *ChatServer
 
 type ChatServer struct {
-	mu             sync.RWMutex
-	seq            uint
-	clients        map[uint]*ChatClient
-	maxClientCount uint
+	mu                       sync.RWMutex
+	seq                      uint
+	clients                  map[uint]*ChatClient
+	maxSocketConnectionLimit int64
 
 	// send outbound message payload to all clients
 	outbound chan []byte
@@ -37,12 +37,15 @@ type ChatServer struct {
 }
 
 func NewChat() *ChatServer {
+	maximumConcurrentConnectionLimit := getMaximumConcurrentConnectionLimit()
+	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
+
 	server := &ChatServer{
-		clients:        map[uint]*ChatClient{},
-		outbound:       make(chan []byte),
-		inbound:        make(chan chatClientEvent),
-		unregister:     make(chan uint),
-		maxClientCount: handleMaxConnectionCount(),
+		clients:                  map[uint]*ChatClient{},
+		outbound:                 make(chan []byte),
+		inbound:                  make(chan chatClientEvent),
+		unregister:               make(chan uint),
+		maxSocketConnectionLimit: maximumConcurrentConnectionLimit,
 	}
 
 	return server
@@ -136,8 +139,8 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Limit concurrent chat connections
-	if uint(len(s.clients)) >= s.maxClientCount {
-		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxClientCount)
+	if int64(len(s.clients)) >= s.maxSocketConnectionLimit {
+		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxSocketConnectionLimit)
 		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return
 	}

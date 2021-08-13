@@ -20,7 +20,7 @@ func Start(getStatusFunc func() models.Status) error {
 
 	go _server.Run()
 
-	log.Traceln("Chat server started with max connection count of", _server.maxClientCount)
+	log.Traceln("Chat server started with max connection count of", _server.maxSocketConnectionLimit)
 
 	return nil
 }
