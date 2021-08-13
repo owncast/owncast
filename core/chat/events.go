@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
@@ -80,9 +81,12 @@ func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
 		return
 	}
 
-	// Ignore if the stream in offline
-	if !getStatus().Online {
-		return
+	// Ignore if the stream has been offline
+	if !getStatus().Online && getStatus().LastDisconnectTime != nil {
+		disconnectedTime := getStatus().LastDisconnectTime.Time
+		if time.Since(disconnectedTime) > 5*time.Minute {
+			return
+		}
 	}
 
 	event.User = user.GetUserByToken(eventData.client.accessToken)
