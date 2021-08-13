@@ -136,22 +136,24 @@ export default class StandaloneChat extends Component {
       this.handleOnlineMode();
     } else if (!status.online && (curStreamOnline || curStreamOnline === null)) {
       // stream has just flipped offline or we have just loaded the app and it is offline.
-      this.handleOfflineMode();
+      this.handleOfflineMode(lastDisconnectTime);
     }
   }
 
   // stop status timer and disable chat after some time.
-  handleOfflineMode() {
-    const remainingChatTime =
-      TIMER_DISABLE_CHAT_AFTER_OFFLINE -
-      (Date.now() - new Date(this.state.lastDisconnectTime));
-    const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
-    if (countdown > 0) {
-      this.setState({
-        chatInputEnabled: true,
-      });
+  handleOfflineMode(lastDisconnectTime) {
+    if (lastDisconnectTime) {
+      const remainingChatTime =
+        TIMER_DISABLE_CHAT_AFTER_OFFLINE -
+        (Date.now() - new Date(lastDisconnectTime));
+      const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
+      if (countdown > 0) {
+        this.setState({
+          chatInputEnabled: true,
+        });
+      }
+      this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
     }
-    this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
     this.setState({
       streamOnline: false,
     });
