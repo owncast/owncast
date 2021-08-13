@@ -251,14 +251,6 @@ export default class App extends Component {
       lastDisconnectTime,
     } = status;
 
-    if (status.online && !curStreamOnline) {
-      // stream has just come online.
-      this.handleOnlineMode();
-    } else if (!status.online && curStreamOnline) {
-      // stream has just flipped offline.
-      this.handleOfflineMode();
-    }
-
     this.setState({
       viewerCount,
       lastConnectTime,
@@ -266,6 +258,14 @@ export default class App extends Component {
       streamTitle,
       lastDisconnectTime,
     });
+
+    if (status.online && !curStreamOnline) {
+      // stream has just come online.
+      this.handleOnlineMode();
+    } else if (!status.online && curStreamOnline) {
+      // stream has just flipped offline.
+      this.handleOfflineMode(lastDisconnectTime);
+    }
   }
 
   // when videojs player is ready, start polling for stream
@@ -296,13 +296,17 @@ export default class App extends Component {
   }
 
   // stop status timer and disable chat after some time.
-  handleOfflineMode() {
+  handleOfflineMode(lastDisconnectTime) {
     clearInterval(this.streamDurationTimer);
-    const remainingChatTime =
-      TIMER_DISABLE_CHAT_AFTER_OFFLINE -
-      (Date.now() - new Date(this.state.lastDisconnectTime));
-    const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
-    this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
+
+    if (lastDisconnectTime) {
+      const remainingChatTime =
+        TIMER_DISABLE_CHAT_AFTER_OFFLINE -
+        (Date.now() - new Date(lastDisconnectTime));
+      const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
+      this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
+    }
+
     this.setState({
       streamOnline: false,
       streamStatusMessage: MESSAGE_OFFLINE,
