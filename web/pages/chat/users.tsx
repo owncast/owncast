@@ -64,9 +64,10 @@ export default function ChatUsers() {
       When a stream is active and chat is enabled, connected chat clients will be displayed here.
     </p>
   );
+
   return (
     <>
-      <Title>Connected Chat Participants ({clients.length})</Title>
+      <Title>Connected Chat Participants {online ? `(${clients.length})` : null}</Title>
       {connectedUsers}
       <br />
       <br />
