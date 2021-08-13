@@ -76,7 +76,7 @@ export default class App extends Component {
       extraPageContent: '',
 
       playerActive: false, // player object is active
-      streamOnline: false, // stream is active/online
+      streamOnline: null, // stream is active/online
       isPlaying: false, // player is actively playing video
 
       // status
@@ -262,8 +262,8 @@ export default class App extends Component {
     if (status.online && !curStreamOnline) {
       // stream has just come online.
       this.handleOnlineMode();
-    } else if (!status.online && curStreamOnline) {
-      // stream has just flipped offline.
+    } else if (!status.online && (curStreamOnline || curStreamOnline === null)) {
+      // stream has just flipped offline or we have just loaded the app and it is offline.
       this.handleOfflineMode(lastDisconnectTime);
     }
   }
@@ -304,6 +304,11 @@ export default class App extends Component {
         TIMER_DISABLE_CHAT_AFTER_OFFLINE -
         (Date.now() - new Date(lastDisconnectTime));
       const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
+      if (countdown > 0) {
+        this.setState({
+          chatInputEnabled: true,
+        });
+      }
       this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
     }
 
