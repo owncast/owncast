@@ -131,12 +131,14 @@ export default class StandaloneChat extends Component {
       streamOnline: online,
     });
 
-    if (status.online && !curStreamOnline) {
-      // stream has just come online.
-      this.handleOnlineMode();
-    } else if (!status.online && (curStreamOnline || curStreamOnline === null)) {
-      // stream has just flipped offline or we have just loaded the app and it is offline.
-      this.handleOfflineMode(lastDisconnectTime);
+    if (status.online != curStreamOnline) {
+      if (status.online) {
+        // stream has just come online.
+        this.handleOnlineMode();
+      } else {
+        // stream has just flipped offline or app just got loaded and stream is offline.
+        this.handleOfflineMode(lastDisconnectTime);
+      }
     }
   }
 
