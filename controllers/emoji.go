@@ -15,16 +15,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Make this path configurable if somebody has a valid reason
-// to need it to be.  The config is getting a bit bloated.
-const emojiDir = "/img/emoji" // Relative to webroot
-
 var emojiCache = make([]models.CustomEmoji, 0)
 var emojiCacheTimestamp time.Time
 
 // getCustomEmojiList returns a list of custom emoji either from the cache or from the emoji directory.
 func getCustomEmojiList() []models.CustomEmoji {
-	fullPath := filepath.Join(config.WebRoot, emojiDir)
+	fullPath := filepath.Join(config.WebRoot, config.EmojiDir)
 	emojiDirInfo, err := os.Stat(fullPath)
 	if err != nil {
 		log.Errorln(err)
@@ -42,7 +38,7 @@ func getCustomEmojiList() []models.CustomEmoji {
 		}
 		for _, f := range files {
 			name := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-			emojiPath := filepath.Join(emojiDir, f.Name())
+			emojiPath := filepath.Join(config.EmojiDir, f.Name())
 			singleEmoji := models.CustomEmoji{Name: name, Emoji: emojiPath}
 			emojiCache = append(emojiCache, singleEmoji)
 		}
