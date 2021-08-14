@@ -13,7 +13,7 @@ const (
 	FfmpegSuggestedVersion = "v4.1.5" // Requires the v
 	// DataDirectory is the directory we save data to.
 	DataDirectory = "data"
-	// Relative to webroot
+	// EmojiDir is relative to the webroot.
 	EmojiDir = "/img/emoji"
 )
 
