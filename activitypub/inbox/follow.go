@@ -8,6 +8,8 @@ import (
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
@@ -41,14 +43,28 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
 	fmt.Println("handleUndoInboxRequest fired!")
 
-	// We only care about undoing follows right now.
+	// Determine if this is an undo of a follow, favorite, announce, etc.
+	o := activity.GetActivityStreamsObject()
+	for iter := o.Begin(); iter != o.End(); iter = iter.Next() {
+		if iter.IsActivityStreamsFollow() {
+			// This is an Unfollow request
+			handleUnfollowRequest(c, activity)
+		} else {
+			log.Println("Undo", iter.GetType().GetTypeName(), "ignored")
+		}
+	}
+
+	return nil
+}
+
+func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) {
 	request := resolvers.MakeUnFollowRequest(activity, c)
 	if request == nil {
-		return fmt.Errorf("unable to handle unfollow request")
+		log.Errorf("unable to handle unfollow request")
 	}
 
 	unfollowRequest := *request
-	fmt.Println("unfollow request:", unfollowRequest)
+	log.Println("unfollow request:", unfollowRequest)
 
-	return persistence.RemoveFollow(unfollowRequest)
+	persistence.RemoveFollow(unfollowRequest)
 }
