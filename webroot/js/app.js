@@ -259,7 +259,7 @@ export default class App extends Component {
       lastDisconnectTime,
     });
 
-    if (status.online != curStreamOnline) {
+    if (status.online !== curStreamOnline) {
       if (status.online) {
         // stream has just come online.
         this.handleOnlineMode();
