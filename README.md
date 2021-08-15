@@ -42,8 +42,8 @@
 ## About The Project
 
 <p align="center">
-  <a href="https://owncast.online/images/owncast-screenshot.png">
-    <img src="https://owncast.online/images/owncast-screenshot.png" width="70%">
+  <a href="https://owncast.online/images/owncast-splash.png">
+    <img src="https://owncast.online/images/owncast-splash.png" width="70%">
   </a>
 </p>
 
