@@ -5,30 +5,30 @@ import (
 	"fmt"
 
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/activitypub/resolvers"
 )
 
-var ch = make(chan []byte, 5)
+var _queue = make(chan models.InboxRequest, 5)
 
-// func Run() {
-// 	for v := range ch {
-// 		fmt.Println("run...")
-// 		h := handle(v)
-// 		handled := <-h
-// 		fmt.Println("Handled", handled)
-// 		// Save followRequest
-// 		// Send ACCEPT back to actor
-// 	}
-// }
-
-func Add(data []byte, forLocalAccount string) {
-	fmt.Println("Adding AP Payload...")
-	handle(data, forLocalAccount)
-	// ch <- data
+func init() {
+	go run()
 }
 
-func handle(data []byte, forLocalAccount string) chan bool {
-	c := context.WithValue(context.Background(), "account", forLocalAccount)
+func run() {
+	for r := range _queue {
+		fmt.Println("run...")
+		handle(r)
+	}
+}
+
+func Add(request models.InboxRequest) {
+	fmt.Println("Adding AP Payload...")
+	_queue <- request
+}
+
+func handle(request models.InboxRequest) chan bool {
+	c := context.WithValue(context.Background(), "account", request.ForLocalAccount)
 	r := make(chan bool)
 
 	fmt.Println("Handling payload via worker...")
@@ -51,16 +51,13 @@ func handle(data []byte, forLocalAccount string) chan bool {
 
 	personCallback := func(c context.Context, activity vocab.ActivityStreamsPerson) error {
 		fmt.Println("personCallback fired!")
-		// fmt.Println(activity)
 		r <- false
 		return nil
 	}
 
-	// go func() {
-	if err := resolvers.Resolve(data, c, createCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
+	if err := resolvers.Resolve(request.Data, c, createCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
 		panic(err)
 	}
-	// }()
 
 	return r
 }
