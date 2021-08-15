@@ -160,7 +160,7 @@ export const FIELD_PROPS_YP = {
   apiPath: API_YP_SWITCH,
   configPath: 'yp',
   label: 'Enable directory',
-  tip: 'Turn this ON if you want to show up in the directory.',
+  tip: 'Turn this ON to request to show up in the directory.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
