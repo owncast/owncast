@@ -67,7 +67,9 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	inbox.Add(data, forLocalAccount)
+	inboxRequest := models.InboxRequest{Data: data, ForLocalAccount: forLocalAccount}
+
+	inbox.Add(inboxRequest)
 	w.WriteHeader(http.StatusAccepted)
 }
 
