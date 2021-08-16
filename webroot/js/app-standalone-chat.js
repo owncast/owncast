@@ -33,7 +33,7 @@ export default class StandaloneChat extends Component {
       accessToken: null,
       username: null,
       isRegistering: false,
-      streamOnline: false, // stream is active/online
+      streamOnline: null, // stream is active/online
       lastDisconnectTime: null,
       configData: {
         loading: true,
@@ -126,27 +126,36 @@ export default class StandaloneChat extends Component {
     }
     const { online, lastDisconnectTime } = status;
 
-    if (status.online && !curStreamOnline) {
-      // stream has just come online.
-      this.handleOnlineMode();
-    } else if (!status.online && curStreamOnline) {
-      // stream has just flipped offline.
-      this.handleOfflineMode();
-    }
-
     this.setState({
       lastDisconnectTime,
       streamOnline: online,
     });
+
+    if (status.online !== curStreamOnline) {
+      if (status.online) {
+        // stream has just come online.
+        this.handleOnlineMode();
+      } else {
+        // stream has just flipped offline or app just got loaded and stream is offline.
+        this.handleOfflineMode(lastDisconnectTime);
+      }
+    }
   }
 
   // stop status timer and disable chat after some time.
-  handleOfflineMode() {
-    const remainingChatTime =
-      TIMER_DISABLE_CHAT_AFTER_OFFLINE -
-      (Date.now() - new Date(this.state.lastDisconnectTime));
-    const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
-    this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
+  handleOfflineMode(lastDisconnectTime) {
+    if (lastDisconnectTime) {
+      const remainingChatTime =
+        TIMER_DISABLE_CHAT_AFTER_OFFLINE -
+        (Date.now() - new Date(lastDisconnectTime));
+      const countdown = remainingChatTime < 0 ? 0 : remainingChatTime;
+      if (countdown > 0) {
+        this.setState({
+          chatInputEnabled: true,
+        });
+      }
+      this.disableChatInputTimer = setTimeout(this.disableChatInput, countdown);
+    }
     this.setState({
       streamOnline: false,
     });
