@@ -1,6 +1,9 @@
 package models
 
+import "net/http"
+
 type InboxRequest struct {
-	Data            []byte
+	Request         *http.Request
 	ForLocalAccount string
+	Body            []byte
 }
