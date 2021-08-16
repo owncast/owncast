@@ -189,3 +189,20 @@
 /* MESSAGE TEXT CONTENT */
 /* MESSAGE TEXT CONTENT */
 
+
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */
+
+.moderator-flag:before {
+  content: '👑'; /* this can be a path to an svg */
+  display: inline-block;
+  margin-right: .5rem;
+  vertical-align: bottom;
+}
+
+
+
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */

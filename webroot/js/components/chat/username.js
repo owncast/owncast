@@ -75,7 +75,7 @@ export default class UsernameForm extends Component {
  }
 
   render(props, state) {
-    const { username } = props;
+    const { username, isModerator } = props;
     const { displayForm } = state;
 
     const styles = {
@@ -87,11 +87,13 @@ export default class UsernameForm extends Component {
       },
     };
 
+
+
     return (
       html`
         <div id="user-info" class="whitespace-nowrap">
-          <div id="user-info-display" style=${styles.info} title="Click to update user name" class="flex flex-row justify-end items-center cursor-pointer py-2 px-4 overflow-hidden w-full opacity-1 transition-opacity duration-200 hover:opacity-75" onClick=${this.handleDisplayForm}>
-            <span id="username-display" class="text-indigo-600 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap">${username}</span>
+          <div id="user-info-display" style=${styles.info} title="Click to update user name" class="flex flex-row justify-end items-center align-middle cursor-pointer py-2 px-4 overflow-hidden w-full opacity-1 transition-opacity duration-200 hover:opacity-75" onClick=${this.handleDisplayForm}>
+            <span id="username-display" class="text-indigo-600 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap ${isModerator && 'moderator-flag'}">${username}</span>
           </div>
 
           <div id="user-info-change" class="flex flex-row flex-no-wrap p-1 items-center justify-end" style=${styles.form}>

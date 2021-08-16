@@ -182,3 +182,11 @@ export function emojify(HTML, emojiList) {
   }
   return HTML;
 }
+
+
+// MODERATOR UTILS
+export function checkIsModerator(message) {
+  const { user } = message;
+  return true;
+  // return !!user.isModerator; // or whatever this will look like;
+}

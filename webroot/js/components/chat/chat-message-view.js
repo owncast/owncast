@@ -41,7 +41,7 @@ export default class ChatMessageView extends Component {
   render() {
     const { message } = this.props;
     const { user, timestamp } = message;
-    const { displayName, displayColor, createdAt } = user;
+    const { displayName, displayColor, createdAt, isModerator = true } = user;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
@@ -73,7 +73,7 @@ export default class ChatMessageView extends Component {
         <div class="message-content break-words w-full">
           <div
             style=${authorTextColor}
-            class="message-author font-bold"
+            class="message-author font-bold${isModerator?' moderator-flag' : ''}"
             title=${userMetadata}
           >
             ${displayName}
