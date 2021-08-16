@@ -25,3 +25,7 @@ func Start(datastore *data.Datastore) {
 func SendLive() {
 	outbox.SendLive()
 }
+
+func SendPublicFederatedMessage(message string) {
+	outbox.SendPublicMessage(message)
+}
