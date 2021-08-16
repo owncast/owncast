@@ -27,7 +27,7 @@ require (
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/yuin/goldmark v1.4.0
-	golang.org/x/mod v0.4.2
+	golang.org/x/mod v0.5.0
 	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
