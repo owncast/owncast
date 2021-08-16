@@ -235,6 +235,9 @@ func Start() error {
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
+	// send a public message to the Fediverse from the server's user
+	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederationMessage))
+
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
 
