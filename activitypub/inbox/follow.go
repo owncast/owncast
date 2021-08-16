@@ -61,6 +61,7 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 	request := resolvers.MakeUnFollowRequest(activity, c)
 	if request == nil {
 		log.Errorf("unable to handle unfollow request")
+		return
 	}
 
 	unfollowRequest := *request
