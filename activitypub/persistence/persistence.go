@@ -260,3 +260,18 @@ func GetObject(id string) (string, error) {
 
 	return value, err
 }
+
+func GetLocalPostCount() int {
+	var totalCount int
+
+	query := `SElECT count(*) FROM ap_outbox`
+	rows, err := _datastore.DB.Query(query)
+	if err != nil {
+		return totalCount
+	}
+	defer rows.Close()
+	rows.Next()
+	rows.Scan(&totalCount)
+
+	return totalCount
+}
