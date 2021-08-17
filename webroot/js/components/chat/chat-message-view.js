@@ -10,12 +10,14 @@ import {
 import { convertToText } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 import { getDiffInDaysFromNow } from '../../utils/helpers.js';
+import ModeratorActions from './moderator-actions.js';
 
 export default class ChatMessageView extends Component {
   constructor(props) {
     super(props);
     this.state = {
       formattedMessage: '',
+      moderatorMenuOpen: false,
     };
   }
 
@@ -37,11 +39,14 @@ export default class ChatMessageView extends Component {
       });
     }
   }
-
   render() {
-    const { message } = this.props;
+    const { message, isModerator } = this.props;
+    console.log(this.props)
     const { user, timestamp } = message;
-    const { displayName, displayColor, createdAt, isModerator = true } = user;
+    const { displayName, displayColor, createdAt,
+      // mock field
+      isModerator: isAuthorModerator = true,
+     } = user;
 
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
@@ -61,8 +66,8 @@ export default class ChatMessageView extends Component {
       ? { backgroundColor: '#667eea' }
       : { backgroundColor: messageBubbleColorForHue(displayColor) };
     const messageClassString = isSystemMessage
-      ? getSystemMessageClassString()
-      : getChatMessageClassString();
+      ? 'message flex flex-row items-start p-4 m-2 rounded-lg shadow-l border-solid border-indigo-700 border-2 border-opacity-60 text-l'
+      : `message relative flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm ${isModerator ? 'moderatable' : ''}`;
 
     return html`
       <div
@@ -73,11 +78,12 @@ export default class ChatMessageView extends Component {
         <div class="message-content break-words w-full">
           <div
             style=${authorTextColor}
-            class="message-author font-bold${isModerator?' moderator-flag' : ''}"
+            class="message-author font-bold${isAuthorModerator ? ' moderator-flag' : ''}"
             title=${userMetadata}
           >
             ${displayName}
           </div>
+          ${isModerator && html`<${ModeratorActions}/>`}
           <div
             class="message-text text-gray-300 font-normal overflow-y-hidden pt-2"
             dangerouslySetInnerHTML=${{ __html: formattedMessage }}
@@ -86,14 +92,6 @@ export default class ChatMessageView extends Component {
       </div>
     `;
   }
-}
-
-function getSystemMessageClassString() {
-  return 'message flex flex-row items-start p-4 m-2 rounded-lg shadow-l border-solid border-indigo-700 border-2 border-opacity-60 text-l';
-}
-
-function getChatMessageClassString() {
-  return 'message flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm';
 }
 
 export async function formatMessageText(message, username) {
