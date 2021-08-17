@@ -127,13 +127,15 @@ func createFederationOutboxTable() {
 	log.Traceln("Creating federation followers table...")
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_outbox (
+		"id" TEXT NOT NULL,
 		"iri" TEXT NOT NULL,
 		"value" BLOB,
 		"type" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		PRIMARY KEY (iri));
-		CREATE INDEX iri ON ap_followers (iri);
-		CREATE INDEX type ON ap_followers (type);
+		PRIMARY KEY (id));
+		CREATE INDEX id ON ap_outbox (id);
+		CREATE INDEX iri ON ap_outbox (iri);
+		CREATE INDEX type ON ap_outbox (type);
 	);`
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
@@ -169,8 +171,8 @@ func createFederationFollowersTable() {
 	}
 }
 
-func GetOutbox() (vocab.ActivityStreamsOrderedCollection, error) {
-	collection := streams.NewActivityStreamsOrderedCollection()
+func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
+	collection := streams.NewActivityStreamsOrderedCollectionPage()
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 
 	query := `SELECT value FROM ap_outbox`
@@ -222,7 +224,7 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollection, error) {
 	return collection, nil
 }
 
-func AddToOutbox(iri string, itemData []byte, typeString string) error {
+func AddToOutbox(id string, iri string, itemData []byte, typeString string) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -234,17 +236,27 @@ func AddToOutbox(iri string, itemData []byte, typeString string) error {
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("INSERT INTO ap_outbox(iri, value) values(?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO ap_outbox(id, iri, value, type) values(?, ?, ?, ?)")
 
 	if err != nil {
 		log.Debugln(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(iri, itemData)
+	_, err = stmt.Exec(id, iri, itemData, typeString)
 	if err != nil {
 		log.Errorln("error creating new item in federation outbox", err)
 	}
 
 	return tx.Commit()
+}
+
+func GetObject(id string) (string, error) {
+	query := `SELECT value FROM ap_outbox WHERE id IS ?`
+	row := _datastore.DB.QueryRow(query, id)
+
+	var value string
+	err := row.Scan(&value)
+
+	return value, err
 }

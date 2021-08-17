@@ -28,8 +28,8 @@ func SendLive() {
 
 	localActor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	noteId := models.MakeLocalIRIForResource(data.GetDefaultFederationUsername() + "/" + shortid.MustGenerate())
-
-	activity := models.CreateCreateActivity(localActor)
+	id := shortid.MustGenerate()
+	activity := models.CreateCreateActivity(id, localActor)
 
 	object := streams.NewActivityStreamsObjectProperty()
 	note := models.MakeNote(textContent, noteId, localActor)
@@ -84,13 +84,14 @@ func SendLive() {
 		panic(err)
 	}
 	SendToFollowers(b)
-	Add(activity)
+	Add(activity, id)
 }
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) {
 	localActor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
-	message := models.CreateMessageActivity(textContent, localActor)
+	id := shortid.MustGenerate()
+	message := models.CreateMessageActivity(id, textContent, localActor)
 
 	b, err := models.Serialize(message)
 	if err != nil {
@@ -98,8 +99,7 @@ func SendPublicMessage(textContent string) {
 	}
 	SendToFollowers(b)
 
-	Add(message)
-	// AddPayloadToOutbox(message.GetJSONLDId().GetIRI().String(), b)
+	Add(message, id)
 }
 
 func SendToFollowers(payload []byte) {
@@ -117,11 +117,11 @@ func SendToFollowers(payload []byte) {
 	}
 }
 
-func Add(item vocab.Type) error {
-	id := item.GetJSONLDId().GetIRI().String()
+func Add(item vocab.Type, id string) error {
+	iri := item.GetJSONLDId().GetIRI().String()
 	typeString := item.GetTypeName()
 
-	if id == "" {
+	if iri == "" {
 		panic("Unable to get iri from item")
 	}
 
@@ -130,10 +130,10 @@ func Add(item vocab.Type) error {
 		panic(err)
 	}
 
-	return persistence.AddToOutbox(id, b, typeString)
+	return persistence.AddToOutbox(id, iri, b, typeString)
 }
 
-func Get() vocab.ActivityStreamsOrderedCollection {
+func Get() vocab.ActivityStreamsOrderedCollectionPage {
 	orderedCollection, _ := persistence.GetOutbox()
 	return orderedCollection
 }
