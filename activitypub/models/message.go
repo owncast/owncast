@@ -5,12 +5,9 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/core/data"
-	"github.com/teris-io/shortid"
 )
 
-func CreateCreateActivity(localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
-	id := shortid.MustGenerate()
+func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
 	objectId := MakeLocalIRIForResource("/create-" + id)
 	message := MakeActivity(objectId)
 
@@ -21,12 +18,11 @@ func CreateCreateActivity(localAccountIRI *url.URL) vocab.ActivityStreamsCreate 
 	return message
 }
 
-func CreateMessageActivity(content string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
+func CreateMessageActivity(id string, content string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
 	toPublic, _ := url.Parse(PUBLIC)
 
-	id := shortid.MustGenerate()
-	objectId := MakeLocalIRIForResource("/create-" + id)
-	noteId := MakeLocalIRIForResource(data.GetDefaultFederationUsername() + "/" + id)
+	objectId := MakeLocalIRIForResource(id)
+	noteId := MakeLocalIRIForResource("note" + id)
 
 	actorProp := streams.NewActivityStreamsActorProperty()
 	actorProp.AppendIRI(localAccountIRI)

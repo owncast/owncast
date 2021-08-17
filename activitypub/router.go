@@ -12,4 +12,7 @@ func StartRouter() {
 
 	// Single ActivityPub Actor
 	http.HandleFunc("/federation/user/", controllers.ActorHandler)
+
+	// Single AP object
+	http.HandleFunc("/federation/", controllers.ObjectHandler)
 }
