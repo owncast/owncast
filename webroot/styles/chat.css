@@ -179,6 +179,19 @@
   /* height: 15rem; */
 }
 
+.message-text ul li:before {
+  content: '» ';
+}
+
+.message-text p {
+  margin-bottom: 1.0em;
+}
+
+.message-text li {
+  margin: 0.3em;
+  margin-bottom: 1.0em;
+}
+
 /* MESSAGE TEXT CONTENT */
 /* MESSAGE TEXT CONTENT */
 /* MESSAGE TEXT CONTENT */
