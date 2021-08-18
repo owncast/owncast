@@ -26,6 +26,7 @@ type User struct {
 	DisabledAt    *time.Time `json:"disabledAt,omitempty"`
 	PreviousNames []string   `json:"previousNames"`
 	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
+	Scopes        []string   `json:"scopes"`
 }
 
 // IsEnabled will return if this single user is enabled.

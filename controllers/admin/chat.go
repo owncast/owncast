@@ -103,6 +103,29 @@ func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteResponse(w, users)
 }
 
+func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+	type blockUserRequest struct {
+		UserID      string `json:"userId"`
+		IsModerator bool   `json:"isModerator"`
+	}
+
+	if r.Method != controllers.POST {
+		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request blockUserRequest
+
+	if err := decoder.Decode(&request); err != nil {
+		log.Errorln(err)
+		controllers.WriteSimpleResponse(w, false, "")
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("%s is moderator: %t", request.UserID, request.IsModerator))
+}
+
 // GetChatMessages returns all of the chat messages, unfiltered.
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
