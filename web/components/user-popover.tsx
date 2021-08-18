@@ -5,6 +5,8 @@ import { Divider, Modal, Tooltip, Typography, Row, Col } from 'antd';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
 import { ReactNode } from 'react-markdown';
+import { uniq } from 'lodash';
+
 import BlockUserbutton from './ban-user-button';
 
 import { User, UserConnectionInfo } from '../types/chat';
@@ -104,7 +106,7 @@ export default function UserPopover({ user, connectionInfo, children }: UserPopo
               <Col md={connectionInfo ? 12 : 24}>
                 <Typography.Title level={5}>This user is also seen as:</Typography.Title>
                 <ul className="previous-names-list">
-                  {nameList.map((name, index) => (
+                  {uniq(nameList).map((name, index) => (
                     <li className={index === 0 ? 'latest' : ''}>
                       <span className="user-name-item">{name}</span>
                       {index === 0 ? ` (Changed ${lastNameChangeDuration} ago)` : ''}
