@@ -96,7 +96,6 @@ func RenderMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
-			html.WithHardWraps(),
 		),
 		goldmark.WithExtensions(
 			extension.NewLinkify(
