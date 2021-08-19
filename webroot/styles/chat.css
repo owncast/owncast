@@ -178,18 +178,10 @@
   display: block;
   /* height: 15rem; */
 }
-
-.message-text ul li:before {
-  content: '» ';
-}
-
-.message-text p {
-  margin-bottom: 1.0em;
-}
-
-.message-text li {
-  margin: 0.3em;
-  margin-bottom: 1.0em;
+.message-text ul li {
+  list-style: disc;
+  list-style-position: outside;
+  margin-left: 1.5rem;
 }
 
 /* MESSAGE TEXT CONTENT */
