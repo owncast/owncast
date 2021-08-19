@@ -517,7 +517,7 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatDisabled(configValue.Value.(bool)); err != nil {
+	if err := data.SetChatDisabled(!configValue.Value.(bool)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
