@@ -19,10 +19,10 @@ func TestRenderAndSanitize(t *testing.T) {
   <script src="http://hackers.org/hack.js"></script>
   `
 
-	expected := `Test one two three!  I go to <a href="http://yahoo.com" rel="nofollow noreferrer noopener" target="_blank">http://yahoo.com</a> and search for <em>sports</em> and <strong>answers</strong>.
+	expected := `Test one two three!  I go to <a href="http://yahoo.com" rel="nofollow noreferrer noopener" target="_blank">http://yahoo.com</a> and search for <em>sports</em> and <strong>answers</strong>.<br>
 Here is an iframe 
 blah blah blah
-<a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a>
+<a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a><br>
 <img class="emoji" src="/img/emoji/bananadance.gif">`
 
 	result := events.RenderAndSanitize(messageContent)
