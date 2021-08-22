@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
+	"github.com/owncast/owncast/core/chat"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -68,4 +69,43 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 	log.Println("unfollow request:", unfollowRequest)
 
 	persistence.RemoveFollow(unfollowRequest)
+}
+
+func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) error {
+	object := activity.GetActivityStreamsObject()
+	actorReference := activity.GetActivityStreamsActor()
+	handleEngagementActivity(object, actorReference, "liked")
+	return nil
+}
+
+func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnnounce) error {
+	object := activity.GetActivityStreamsObject()
+	actorReference := activity.GetActivityStreamsActor()
+	handleEngagementActivity(object, actorReference, "re-posted")
+	return nil
+}
+
+func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) {
+	for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
+		postIRI := iter.GetIRI().String()
+
+		// Verify we actually sent this post.
+		post, err := persistence.GetObjectByIRI(postIRI)
+		if err != nil || post == "" {
+			fmt.Println(err)
+			return
+		}
+
+		// Get actor of the Like
+		actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
+
+		// Send chat message
+		actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
+		actorIRI := actorReference.Begin().GetIRI().String()
+
+		fmt.Println(actorIRI)
+
+		msg := fmt.Sprintf("[%s](%s) just **%s** [this post](%s)", actorName, actorIRI, action, postIRI)
+		chat.SendSystemMessage(msg, true)
+	}
 }

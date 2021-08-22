@@ -82,22 +82,23 @@ func SendLive() {
 		panic(err)
 	}
 	SendToFollowers(b)
-	Add(activity, id)
+	Add(note, id)
 }
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) {
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	id := shortid.MustGenerate()
-	message := apmodels.CreateMessageActivity(id, textContent, localActor)
+	activity := apmodels.CreateMessageActivity(id, textContent, localActor)
+	message := activity.GetActivityStreamsObject().Begin().GetActivityStreamsNote()
 
-	b, err := apmodels.Serialize(message)
+	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		panic(err)
 	}
 	SendToFollowers(b)
 
-	Add(message, id)
+	Add(message, message.GetJSONLDId().Get().String())
 }
 
 func SendToFollowers(payload []byte) {

@@ -75,8 +75,8 @@ func handle(request apmodels.InboxRequest) chan bool {
 		return nil
 	}
 
-	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
-		panic(err)
+	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, updateCallback, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
+		log.Errorln(err)
 	}
 
 	return r
