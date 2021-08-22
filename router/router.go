@@ -256,6 +256,20 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+	// Configure Federation features
+
+	// enable/disable federation features
+	http.HandleFunc("/api/admin/config/federation/enable", middleware.RequireAdminAuth(admin.SetFederationEnabled))
+
+	// set if federation activities are private
+	http.HandleFunc("/api/admin/config/federation/private", middleware.RequireAdminAuth(admin.SetFederationActivityPrivate))
+
+	// set local federated username
+	http.HandleFunc("/api/admin/config/federation/username", middleware.RequireAdminAuth(admin.SetFederationUsername))
+
+	// set federated go live message
+	http.HandleFunc("/api/admin/config/federation/livemessage", middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage))
+
 	// send a public message to the Fediverse from the server's user
 	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederationMessage))
 
