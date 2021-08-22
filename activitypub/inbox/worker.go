@@ -68,7 +68,14 @@ func handle(request apmodels.InboxRequest) chan bool {
 		return nil
 	}
 
-	if err := resolvers.Resolve(request.Body, c, createCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
+	deleteCallback := func(c context.Context, activity vocab.ActivityStreamsDelete) error {
+		fmt.Println("deleteCallback fired!")
+		fmt.Println(activity)
+		r <- false
+		return nil
+	}
+
+	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, updateCallback, handleFollowInboxRequest, personCallback, handleUndoInboxRequest); err != nil {
 		panic(err)
 	}
 
