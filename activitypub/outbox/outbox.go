@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/config"
@@ -21,10 +21,10 @@ func SendLive() {
 	textContent := data.GetFederationGoLiveMessage()
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
-	localActor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
-	noteId := models.MakeLocalIRIForResource(data.GetDefaultFederationUsername() + "/" + shortid.MustGenerate())
+	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	noteId := apmodels.MakeLocalIRIForResource(data.GetDefaultFederationUsername() + "/" + shortid.MustGenerate())
 	id := shortid.MustGenerate()
-	activity := models.CreateCreateActivity(id, localActor)
+	activity := apmodels.CreateCreateActivity(id, localActor)
 
 	object := streams.NewActivityStreamsObjectProperty()
 
@@ -56,7 +56,7 @@ func SendLive() {
 
 	textContent = textContent + "\n\n" + tagsString
 
-	note := models.MakeNote(textContent, noteId, localActor)
+	note := apmodels.MakeNote(textContent, noteId, localActor)
 	object.AppendActivityStreamsNote(note)
 
 	// Attach an image along with the Federated message.
@@ -73,11 +73,11 @@ func SendLive() {
 		}
 		if imageToAttach != "" {
 			previewURL.Path = imageToAttach
-			models.AddImageAttachmentToNote(note, previewURL.String())
+			apmodels.AddImageAttachmentToNote(note, previewURL.String())
 		}
 	}
 
-	b, err := models.Serialize(activity)
+	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		panic(err)
 	}
@@ -87,11 +87,11 @@ func SendLive() {
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) {
-	localActor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	id := shortid.MustGenerate()
-	message := models.CreateMessageActivity(id, textContent, localActor)
+	message := apmodels.CreateMessageActivity(id, textContent, localActor)
 
-	b, err := models.Serialize(message)
+	b, err := apmodels.Serialize(message)
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +101,7 @@ func SendPublicMessage(textContent string) {
 }
 
 func SendToFollowers(payload []byte) {
-	localActor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
@@ -123,7 +123,7 @@ func Add(item vocab.Type, id string) error {
 		panic("Unable to get iri from item")
 	}
 
-	b, err := models.Serialize(item)
+	b, err := apmodels.Serialize(item)
 	if err != nil {
 		panic(err)
 	}

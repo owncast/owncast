@@ -1,4 +1,4 @@
-package models
+package apmodels
 
 import (
 	"net/url"

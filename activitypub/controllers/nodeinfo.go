@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/config"
@@ -150,7 +150,7 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 
 func writeResponse(payload interface{}, w http.ResponseWriter) error {
 	accountName := data.GetDefaultFederationUsername()
-	actorIRI := models.MakeLocalIRIForAccount(accountName)
+	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
 
 	return requests.WritePayloadResponse(payload, w, publicKey)

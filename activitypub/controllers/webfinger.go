@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 )
@@ -53,7 +53,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// if inbox, ok := validAccounts[user]; ok {
-	webfingerResponse := models.MakeWebfingerResponse(user, user, host)
+	webfingerResponse := apmodels.MakeWebfingerResponse(user, user, host)
 
 	w.Header().Set("Content-Type", "application/json")
 	// w.WriteHeader(http.StatusOK)
