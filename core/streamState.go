@@ -78,7 +78,9 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	chat.SendAllWelcomeMessage()
 
 	// Send a delayed live Federated message.
-	_onlineTimerCancelFunc = startFederatedLiveStreamMessageTimer()
+	if data.GetFederationEnabled() {
+		_onlineTimerCancelFunc = startFederatedLiveStreamMessageTimer()
+	}
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.

@@ -1,9 +1,10 @@
 package outbox
 
 import (
-	"fmt"
 	"net/url"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -17,9 +18,7 @@ import (
 )
 
 func SendLive() {
-	liveMessage := fmt.Sprintf("%s is live!", data.GetServerName())
-	streamDescription := data.GetFederationGoLiveMessage()
-	textContent := fmt.Sprintf("%s\n\n%s", liveMessage, streamDescription)
+	textContent := data.GetFederationGoLiveMessage()
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
 	localActor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
@@ -28,10 +27,37 @@ func SendLive() {
 	activity := models.CreateCreateActivity(id, localActor)
 
 	object := streams.NewActivityStreamsObjectProperty()
-	note := models.MakeNote(textContent, noteId, localActor)
-	object.AppendActivityStreamsNote(note)
 
 	activity.SetActivityStreamsObject(object)
+
+	var tagStrings []string
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+
+	// TODO: Need to assign to a `hashtag` property, not `tag`
+	tagProp := streams.NewActivityStreamsTagProperty()
+	for _, tagString := range data.GetServerMetadataTags() {
+		mention := streams.NewActivityStreamsMention()
+		mentionName := streams.NewActivityStreamsNameProperty()
+		mentionName.AppendXMLSchemaString("#" + tagString)
+		mention.SetActivityStreamsName(mentionName)
+
+		name := streams.NewActivityStreamsNameProperty()
+		name.AppendXMLSchemaString("#" + tagString)
+
+		tagProp.AppendActivityStreamsMention(mention)
+
+		// TODO: Do we want to display tags or just assign them?
+		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
+		tagStrings = append(tagStrings, "#"+tagWithoutSpecialCharacters)
+	}
+	tagsString := strings.Join(tagStrings, " ")
+
+	activity.SetActivityStreamsTag(tagProp)
+
+	textContent = textContent + "\n\n" + tagsString
+
+	note := models.MakeNote(textContent, noteId, localActor)
+	object.AppendActivityStreamsNote(note)
 
 	// Attach an image along with the Federated message.
 	previewURL, err := url.Parse(data.GetServerURL())
@@ -50,30 +76,6 @@ func SendLive() {
 			models.AddImageAttachmentToNote(note, previewURL.String())
 		}
 	}
-
-	// var tagStrings []string
-	// reg, err := regexp.Compile("[^a-zA-Z0-9]+")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// TODO: Need to assign to a `hashtag` property, not `tag`
-	tagProp := streams.NewActivityStreamsTagProperty()
-	for _, tagString := range data.GetServerMetadataTags() {
-		mention := streams.NewActivityStreamsMention()
-		mentionName := streams.NewActivityStreamsNameProperty()
-		mentionName.AppendXMLSchemaString("#" + tagString)
-		mention.SetActivityStreamsName(mentionName)
-
-		name := streams.NewActivityStreamsNameProperty()
-		name.AppendXMLSchemaString("#" + tagString)
-
-		tagProp.AppendActivityStreamsMention(mention)
-
-		// TODO: Do we want to display tags or just assign them?
-		// tagWithoutSpecialCharacters := reg.ReplaceAllString(tag, "")
-		// tagStrings = append(tagStrings, "#"+tagWithoutSpecialCharacters)
-	}
-	activity.SetActivityStreamsTag(tagProp)
 
 	b, err := models.Serialize(activity)
 	if err != nil {
