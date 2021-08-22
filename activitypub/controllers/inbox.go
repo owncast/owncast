@@ -48,4 +48,5 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func returnInbox(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
 }
