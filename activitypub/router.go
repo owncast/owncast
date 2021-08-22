@@ -10,6 +10,9 @@ func StartRouter() {
 	// WebFinger
 	http.HandleFunc("/.well-known/webfinger", controllers.WebfingerHandler)
 
+	// Host Metadata
+	http.HandleFunc("/.well-known/host-meta", controllers.HostMetaController)
+
 	// Nodeinfo v1
 	http.HandleFunc("/.well-known/nodeinfo", controllers.NodeInfoController)
 
