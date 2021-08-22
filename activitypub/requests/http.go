@@ -10,11 +10,11 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/models"
 )
 
-func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey models.PublicKey) error {
+func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey apmodels.PublicKey) error {
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(item)
 	b, err := json.Marshal(jsonmap)
@@ -25,7 +25,7 @@ func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey model
 	return WriteResponse(b, w, publicKey)
 }
 
-func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey models.PublicKey) error {
+func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey apmodels.PublicKey) error {
 	b, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey 
 	return WriteResponse(b, w, publicKey)
 }
 
-func WriteResponse(payload []byte, w http.ResponseWriter, publicKey models.PublicKey) error {
+func WriteResponse(payload []byte, w http.ResponseWriter, publicKey apmodels.PublicKey) error {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := crypto.SignResponse(w, payload, publicKey); err != nil {

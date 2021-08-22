@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/inbox"
-	"github.com/owncast/owncast/activitypub/models"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -41,7 +41,7 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("INBOX: ", string(data))
 
-	inboxRequest := models.InboxRequest{Request: r, ForLocalAccount: forLocalAccount, Body: data}
+	inboxRequest := apmodels.InboxRequest{Request: r, ForLocalAccount: forLocalAccount, Body: data}
 
 	inbox.Add(inboxRequest)
 	w.WriteHeader(http.StatusAccepted)

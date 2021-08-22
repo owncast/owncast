@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/core/data"
 )
 
-func GetPublicKey(actorIRI *url.URL) models.PublicKey {
+func GetPublicKey(actorIRI *url.URL) apmodels.PublicKey {
 
 	key := data.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
@@ -21,7 +21,7 @@ func GetPublicKey(actorIRI *url.URL) models.PublicKey {
 		panic(err)
 	}
 
-	return models.PublicKey{
+	return apmodels.PublicKey{
 		Id:           idURL,
 		Owner:        actorIRI,
 		PublicKeyPem: key,
