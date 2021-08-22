@@ -26,7 +26,7 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 
 	f, err := pkger.Open(path)
 	if err != nil {
-		log.Warnln(err, path)
+		log.Debugln(err, path)
 		errorHandler(w, http.StatusNotFound)
 		return
 	}
