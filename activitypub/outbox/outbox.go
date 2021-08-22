@@ -55,6 +55,7 @@ func SendLive() {
 	activity.SetActivityStreamsTag(tagProp)
 
 	textContent = textContent + "\n\n" + tagsString
+	textContent = textContent + "\n\n" + data.GetServerURL()
 
 	note := apmodels.MakeNote(textContent, noteId, localActor)
 	object.AppendActivityStreamsNote(note)
