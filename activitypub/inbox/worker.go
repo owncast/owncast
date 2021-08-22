@@ -12,13 +12,13 @@ import (
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/httpsig"
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
 
 	log "github.com/sirupsen/logrus"
 )
 
-var _queue = make(chan models.InboxRequest, 5)
+var _queue = make(chan apmodels.InboxRequest, 5)
 
 func init() {
 	go run()
@@ -31,12 +31,12 @@ func run() {
 	}
 }
 
-func Add(request models.InboxRequest) {
+func Add(request apmodels.InboxRequest) {
 	fmt.Println("Adding AP Payload...")
 	_queue <- request
 }
 
-func handle(request models.InboxRequest) chan bool {
+func handle(request apmodels.InboxRequest) chan bool {
 	c := context.WithValue(context.Background(), "account", request.ForLocalAccount)
 	r := make(chan bool)
 

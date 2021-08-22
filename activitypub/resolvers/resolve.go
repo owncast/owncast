@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/go-fed/activity/streams"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/core/data"
 )
 
@@ -49,7 +49,7 @@ func ResolveIRI(iri string, c context.Context, callbacks ...interface{}) error {
 
 	req, _ := http.NewRequest("GET", iri, nil)
 
-	actor := models.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	actor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
 		return err
 	}

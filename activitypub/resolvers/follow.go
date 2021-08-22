@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 )
 
 func getResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab.ActivityStreamsPerson, error) {
@@ -40,7 +40,7 @@ func getPersonFromFollow(activity vocab.ActivityStreamsFollow, c context.Context
 	return getResolvedPersonFromActor(activity.GetActivityStreamsActor())
 }
 
-func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) (*models.ActivityPubActor, error) {
+func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) (*apmodels.ActivityPubActor, error) {
 	person, err := getPersonFromFollow(activity, c)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) 
 
 	fmt.Println(activity.GetJSONLDId().Get().String())
 
-	followRequest := models.ActivityPubActor{
+	followRequest := apmodels.ActivityPubActor{
 		ActorIri:  person.GetJSONLDId().Get(),
 		FollowIri: activity.GetJSONLDId().Get(),
 		Inbox:     person.GetActivityStreamsInbox().GetIRI(),
@@ -57,7 +57,7 @@ func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) 
 	return &followRequest, nil
 }
 
-func MakeUnFollowRequest(activity vocab.ActivityStreamsUndo, c context.Context) *models.ActivityPubActor {
+func MakeUnFollowRequest(activity vocab.ActivityStreamsUndo, c context.Context) *apmodels.ActivityPubActor {
 	person, err := getResolvedPersonFromActor(activity.GetActivityStreamsActor())
 	if err != nil {
 		fmt.Println(err)
@@ -70,7 +70,7 @@ func MakeUnFollowRequest(activity vocab.ActivityStreamsUndo, c context.Context) 
 
 	fmt.Println(activity.GetJSONLDId().Get().String())
 
-	request := models.ActivityPubActor{
+	request := apmodels.ActivityPubActor{
 		ActorIri:  person.GetJSONLDId().Get(),
 		FollowIri: activity.GetJSONLDId().Get(),
 		Inbox:     person.GetActivityStreamsInbox().GetIRI(),

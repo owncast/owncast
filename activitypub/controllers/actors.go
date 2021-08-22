@@ -10,10 +10,11 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/models"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 )
 
 func ActorHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +39,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 		ActorObjectHandler(w, r)
 	}
 
-	actorIRI := models.MakeLocalIRIForAccount(accountName)
+	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 
 	person := streams.NewActivityStreamsPerson()
 	nameProperty := streams.NewActivityStreamsNameProperty()
@@ -49,7 +50,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	preferredUsernameProperty.SetXMLSchemaString(accountName)
 	person.SetActivityStreamsPreferredUsername(preferredUsernameProperty)
 
-	inboxIRI := models.MakeLocalIRIForResource("/user/" + accountName + "/inbox")
+	inboxIRI := apmodels.MakeLocalIRIForResource("/user/" + accountName + "/inbox")
 
 	inboxProp := streams.NewActivityStreamsInboxProperty()
 	inboxProp.SetIRI(inboxIRI)
@@ -58,7 +59,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: Add needsManualApproval Property
 	// needsFollowApprovalProperty := streams.NewManually()
 
-	outboxIRI := models.MakeLocalIRIForResource("/user/" + accountName + "/outbox")
+	outboxIRI := apmodels.MakeLocalIRIForResource("/user/" + accountName + "/outbox")
 
 	outboxProp := streams.NewActivityStreamsOutboxProperty()
 	outboxProp.SetIRI(outboxIRI)
@@ -164,6 +165,12 @@ func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, 
 		attachments = streams.NewActivityStreamsAttachmentProperty()
 	}
 
+	displayName := name
+	socialHandle := models.GetSocialHandle(name)
+	if socialHandle != nil {
+		displayName = socialHandle.Platform
+	}
+
 	linkValue := fmt.Sprintf("<a href=\"%s\" rel=\"me nofollow noopener noreferrer\" target=\"_blank\">%s</a>", url, url)
 
 	attachment := streams.NewActivityStreamsObject()
@@ -171,7 +178,7 @@ func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, 
 	attachmentProp.AppendXMLSchemaString("PropertyValue")
 	attachment.SetJSONLDType(attachmentProp)
 	attachmentName := streams.NewActivityStreamsNameProperty()
-	attachmentName.AppendXMLSchemaString(name)
+	attachmentName.AppendXMLSchemaString(displayName)
 	attachment.SetActivityStreamsName(attachmentName)
 	attachment.GetUnknownProperties()["value"] = linkValue
 

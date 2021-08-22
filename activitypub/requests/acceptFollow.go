@@ -5,13 +5,13 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/teris-io/shortid"
 )
 
-func SendFollowAccept(followRequest models.ActivityPubActor, fromLocalAccountName string) error {
+func SendFollowAccept(followRequest apmodels.ActivityPubActor, fromLocalAccountName string) error {
 	followAccept := makeAcceptFollow(followRequest, fromLocalAccountName)
-	localAccountIRI := models.MakeLocalIRIForAccount(fromLocalAccountName)
+	localAccountIRI := apmodels.MakeLocalIRIForAccount(fromLocalAccountName)
 
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(followAccept)
@@ -25,18 +25,18 @@ func SendFollowAccept(followRequest models.ActivityPubActor, fromLocalAccountNam
 	return nil
 }
 
-func makeAcceptFollow(follow models.ActivityPubActor, fromAccountName string) vocab.ActivityStreamsAccept {
+func makeAcceptFollow(follow apmodels.ActivityPubActor, fromAccountName string) vocab.ActivityStreamsAccept {
 	acceptIdString := shortid.MustGenerate()
-	acceptId := models.MakeLocalIRIForResource(acceptIdString)
+	acceptId := apmodels.MakeLocalIRIForResource(acceptIdString)
 
-	actorId := models.MakeLocalIRIForAccount(fromAccountName)
+	actorId := apmodels.MakeLocalIRIForAccount(fromAccountName)
 
 	accept := streams.NewActivityStreamsAccept()
 	idProperty := streams.NewJSONLDIdProperty()
 	idProperty.SetIRI(acceptId)
 	accept.SetJSONLDId(idProperty)
 
-	actor := models.MakeActorPropertyWithId(actorId)
+	actor := apmodels.MakeActorPropertyWithId(actorId)
 	accept.SetActivityStreamsActor(actor)
 
 	object := streams.NewActivityStreamsObjectProperty()

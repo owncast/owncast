@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/go-fed/httpsig"
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 )
 
-func SignResponse(w http.ResponseWriter, body []byte, publicKey models.PublicKey) error {
+func SignResponse(w http.ResponseWriter, body []byte, publicKey apmodels.PublicKey) error {
 	privateKey := GetPrivateKey()
 
 	return signResponse(privateKey, *publicKey.Id, body, w)

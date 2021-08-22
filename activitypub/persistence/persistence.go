@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/models"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
@@ -21,18 +21,18 @@ func Setup(datastore *data.Datastore) {
 	createFederationOutboxTable()
 }
 
-func AddFollow(follow models.ActivityPubActor) error {
+func AddFollow(follow apmodels.ActivityPubActor) error {
 	fmt.Println("Saving", follow.ActorIri, "as a follower.")
 	return createFollow(follow.ActorIri, follow.Inbox)
 }
 
-func RemoveFollow(unfollow models.ActivityPubActor) error {
+func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
 	fmt.Println("Removing", unfollow.ActorIri, "as a follower.")
 	return removeFollow(unfollow.ActorIri)
 }
 
-func GetFederationFollowers() ([]models.ActivityPubActor, error) {
-	followers := make([]models.ActivityPubActor, 0)
+func GetFederationFollowers() ([]apmodels.ActivityPubActor, error) {
+	followers := make([]apmodels.ActivityPubActor, 0)
 
 	var query = "SELECT iri, inbox FROM ap_followers"
 
@@ -54,7 +54,7 @@ func GetFederationFollowers() ([]models.ActivityPubActor, error) {
 		iri, _ := url.Parse(iriString)
 		inbox, _ := url.Parse(inboxString)
 
-		singleFollower := models.ActivityPubActor{
+		singleFollower := apmodels.ActivityPubActor{
 			ActorIri: iri,
 			Inbox:    inbox,
 		}
