@@ -7,7 +7,7 @@ import "net/http"
 func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accept := r.Header.Get("Accept")
-		if accept != "application/json" || accept != "application/json+ld" {
+		if accept != "application/json" && accept != "application/json+ld" && accept != "application/activity+json" {
 			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 			return
 		}
