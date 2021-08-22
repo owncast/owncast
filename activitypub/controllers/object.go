@@ -11,7 +11,7 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	objectId := pathComponents[2]
 
-	object, err := persistence.GetObject(objectId)
+	object, err := persistence.GetObjectById(objectId)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		// controllers.WriteSimpleResponse(w, false, err.Error())

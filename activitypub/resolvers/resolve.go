@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/go-fed/activity/streams"
+	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/core/data"
@@ -67,4 +68,30 @@ func ResolveIRI(iri string, c context.Context, callbacks ...interface{}) error {
 
 	// fmt.Println(string(data))
 	return Resolve(data, c, callbacks...)
+}
+
+func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab.ActivityStreamsPerson, error) {
+	var err error
+	var person vocab.ActivityStreamsPerson
+
+	personCallback := func(c context.Context, p vocab.ActivityStreamsPerson) error {
+		person = p
+		return nil
+	}
+
+	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
+		if iter.IsIRI() {
+			fmt.Println("Is IRI", iter.GetIRI())
+			iri := iter.GetIRI()
+			c := context.TODO()
+			if e := ResolveIRI(iri.String(), c, personCallback); e != nil {
+				err = e
+			}
+		} else if iter.IsActivityStreamsPerson() {
+			p := iter.GetActivityStreamsPerson()
+			person = p
+		}
+	}
+
+	return person, err
 }

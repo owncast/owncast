@@ -8,36 +8,10 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 )
 
-func getResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab.ActivityStreamsPerson, error) {
-	var err error
-	var person vocab.ActivityStreamsPerson
-
-	personCallback := func(c context.Context, p vocab.ActivityStreamsPerson) error {
-		person = p
-		return nil
-	}
-
-	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
-		if iter.IsIRI() {
-			fmt.Println("Is IRI", iter.GetIRI())
-			iri := iter.GetIRI()
-			c := context.TODO()
-			if e := ResolveIRI(iri.String(), c, personCallback); e != nil {
-				err = e
-			}
-		} else if iter.IsActivityStreamsPerson() {
-			p := iter.GetActivityStreamsPerson()
-			person = p
-		}
-	}
-
-	return person, err
-}
-
 func getPersonFromFollow(activity vocab.ActivityStreamsFollow, c context.Context) (vocab.ActivityStreamsPerson, error) {
 	fmt.Println("getPersonFromFollow...")
 
-	return getResolvedPersonFromActor(activity.GetActivityStreamsActor())
+	return GetResolvedPersonFromActor(activity.GetActivityStreamsActor())
 }
 
 func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) (*apmodels.ActivityPubActor, error) {
@@ -58,7 +32,7 @@ func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) 
 }
 
 func MakeUnFollowRequest(activity vocab.ActivityStreamsUndo, c context.Context) *apmodels.ActivityPubActor {
-	person, err := getResolvedPersonFromActor(activity.GetActivityStreamsActor())
+	person, err := GetResolvedPersonFromActor(activity.GetActivityStreamsActor())
 	if err != nil {
 		fmt.Println(err)
 		return nil

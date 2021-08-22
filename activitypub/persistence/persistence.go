@@ -251,9 +251,20 @@ func AddToOutbox(id string, iri string, itemData []byte, typeString string) erro
 	return tx.Commit()
 }
 
-func GetObject(id string) (string, error) {
+func GetObjectById(id string) (string, error) {
 	query := `SELECT value FROM ap_outbox WHERE id IS ?`
 	row := _datastore.DB.QueryRow(query, id)
+
+	var value string
+	err := row.Scan(&value)
+
+	return value, err
+}
+
+func GetObjectByIRI(IRI string) (string, error) {
+	query := `SELECT value FROM ap_outbox WHERE iri IS ?`
+	fmt.Println(query, IRI)
+	row := _datastore.DB.QueryRow(query, IRI)
 
 	var value string
 	err := row.Scan(&value)
