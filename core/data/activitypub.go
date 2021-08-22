@@ -9,5 +9,5 @@ func GetFederatedInboxMap() map[string]string {
 
 // GetDefaultFederationUsername will return the username used for sending federation activities.
 func GetDefaultFederationUsername() string {
-	return "owncast-ap-test"
+	return GetFederationUsername()
 }

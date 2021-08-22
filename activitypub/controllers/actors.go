@@ -36,9 +36,8 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if len(pathComponents) == 5 {
 		ActorObjectHandler(w, r)
-	} else {
-		// dunno
 	}
+
 	actorIRI := models.MakeLocalIRIForAccount(accountName)
 
 	person := streams.NewActivityStreamsPerson()
@@ -55,6 +54,9 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	inboxProp := streams.NewActivityStreamsInboxProperty()
 	inboxProp.SetIRI(inboxIRI)
 	person.SetActivityStreamsInbox(inboxProp)
+
+	// TODO: Add needsManualApproval Property
+	// needsFollowApprovalProperty := streams.NewManually()
 
 	outboxIRI := models.MakeLocalIRIForResource("/user/" + accountName + "/outbox")
 
