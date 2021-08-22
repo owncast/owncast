@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -153,4 +154,20 @@ func writeResponse(payload interface{}, w http.ResponseWriter) error {
 	publicKey := crypto.GetPublicKey(actorIRI)
 
 	return requests.WritePayloadResponse(payload, w, publicKey)
+}
+
+// HostMetaController points to webfinger.
+func HostMetaController(w http.ResponseWriter, r *http.Request) {
+	serverURL := data.GetServerURL()
+	if serverURL == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	res := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
+	<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+		<Link rel="lrdd" template="%s/.well-known/webfinger?resource={uri}"/>
+	</XRD>`, serverURL)
+
+	w.Write([]byte(res))
 }
