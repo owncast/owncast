@@ -23,4 +23,3 @@ The following are intended to address the test scenarios and documentation that 
 - [ ] The API documentation was copied to the public documentation site under `/api/0.0.x` and `/api/latest`.
 - [ ] The installer script was updated to point to the new release version.
 - [ ] A TODO issue was created to update the DigitalOcean install image.
-- [ ] A TODO issue was created to tell Linode about the update version bump (the installer will always be up to date, but their listed version will be incorrect). 
