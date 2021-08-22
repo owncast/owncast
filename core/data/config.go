@@ -43,10 +43,14 @@ const (
 	customStylesKey              = "custom_styles"
 	videoCodecKey                = "video_codec"
 	blockedUsernamesKey          = "blocked_usernames"
-	suggestedUsernamesKey        = "suggested_usernames"
 	publicKeyKey                 = "public_key"
 	privateKeyKey                = "private_key"
 	serverInitDateKey            = "server_init_date"
+	federationEnabledKey         = "federation_enabled"
+	federationUsernameKey        = "federation_username"
+	federationPrivateKey         = "federation_private"
+	federationGoLiveMessageKey   = "federation_go_live_message"
+	suggestedUsernamesKey        = "suggested_usernames"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -653,4 +657,64 @@ func SetServerInitDate(t time.Time) error {
 	nt := utils.NullTime{Time: t, Valid: true}
 	configEntry := ConfigEntry{Key: serverInitDateKey, Value: nt}
 	return _datastore.Save(configEntry)
+}
+
+// SetFederationEnabled will enable federation if set to true.
+func SetFederationEnabled(enabled bool) error {
+	return _datastore.SetBool(federationEnabledKey, enabled)
+}
+
+// GetFederationEnabled will return if federation is enabled.
+func GetFederationEnabled() bool {
+	enabled, err := _datastore.GetBool(federationEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
+}
+
+// SetFederationUsername will set the username used in federated activities.
+func SetFederationUsername(username string) error {
+	return _datastore.SetString(federationUsernameKey, username)
+}
+
+// GetFederationUsername will return the username used in federated activities.
+func GetFederationUsername() string {
+	username, err := _datastore.GetString(federationUsernameKey)
+	if username == "" || err != nil {
+		return config.GetDefaults().FederationUsername
+	}
+
+	return username
+}
+
+// SetFederationGoLiveMessage will set the message sent when going live.
+func SetFederationGoLiveMessage(message string) error {
+	return _datastore.SetString(federationGoLiveMessageKey, message)
+}
+
+// GetFederationGoLiveMessage will return the message sent when going live.
+func GetFederationGoLiveMessage() string {
+	message, err := _datastore.GetString(federationGoLiveMessageKey)
+	if message == "" || err != nil {
+		return config.GetDefaults().FederationGoLiveMessage
+	}
+
+	return message
+}
+
+// SetFederationIsPrivate will return if federation activity is private.
+func SetFederationIsPrivate(isPrivate bool) error {
+	return _datastore.SetBool(federationPrivateKey, isPrivate)
+}
+
+// GetFederationIsPrivate will return if federation is private.
+func GetFederationIsPrivate() bool {
+	isPrivate, err := _datastore.GetBool(federationPrivateKey)
+	if err == nil {
+		return isPrivate
+	}
+
+	return false
 }

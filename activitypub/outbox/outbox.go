@@ -18,11 +18,7 @@ import (
 
 func SendLive() {
 	liveMessage := fmt.Sprintf("%s is live!", data.GetServerName())
-	streamDescription := data.GetStreamTitle()
-	if streamDescription == "" {
-		streamDescription = data.GetServerSummary()
-	}
-
+	streamDescription := data.GetFederationGoLiveMessage()
 	textContent := fmt.Sprintf("%s\n\n%s", liveMessage, streamDescription)
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
