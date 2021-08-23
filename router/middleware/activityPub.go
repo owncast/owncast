@@ -10,7 +10,7 @@ import (
 // Not to be used for validating 3rd party access.
 func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		acceptedContentTypes := []string{"application/json", "application/json+ld", "application/activity+json"}
+		acceptedContentTypes := []string{"application/json", "application/json+ld", "application/activity+json", "application/activity+json, application/ld+json"}
 		accept := r.Header.Get("Accept")
 		contentType := r.Header.Get("Content-Type")
 
