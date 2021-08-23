@@ -20,6 +20,11 @@ func MakeActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	id.Set(activityID)
 	activity.SetJSONLDId(id)
 
+	public, _ := url.Parse(PUBLIC)
+	to := streams.NewActivityStreamsToProperty()
+	to.AppendIRI(public)
+	activity.SetActivityStreamsTo(to)
+
 	return activity
 }
 
