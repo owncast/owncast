@@ -2,22 +2,24 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
+	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/requests"
+	"github.com/owncast/owncast/core/data"
 )
 
 func ObjectHandler(w http.ResponseWriter, r *http.Request) {
-	pathComponents := strings.Split(r.URL.Path, "/")
-	objectId := pathComponents[2]
-
-	object, err := persistence.GetObjectById(objectId)
+	object, err := persistence.GetObjectByIRI(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		// controllers.WriteSimpleResponse(w, false, err.Error())
+		return
 	}
 
-	w.Write([]byte(object))
+	accountName := data.GetDefaultFederationUsername()
+	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
+	publicKey := crypto.GetPublicKey(actorIRI)
 
-	// controllers.WriteSimpleResponse(w, true, object)
+	requests.WriteResponse([]byte(object), w, publicKey)
 }

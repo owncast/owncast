@@ -22,7 +22,8 @@ func CreateMessageActivity(id string, content string, localAccountIRI *url.URL) 
 	toPublic, _ := url.Parse(PUBLIC)
 
 	objectId := MakeLocalIRIForResource(id)
-	noteId := MakeLocalIRIForResource("note" + id)
+	noteId := localAccountIRI
+	noteId.Path = noteId.Path + "/note-" + id
 
 	actorProp := streams.NewActivityStreamsActorProperty()
 	actorProp.AppendIRI(localAccountIRI)

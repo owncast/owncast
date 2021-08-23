@@ -23,7 +23,8 @@ func SendLive() {
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
-	noteId := apmodels.MakeLocalIRIForResource(data.GetDefaultFederationUsername() + "/" + shortid.MustGenerate())
+	noteID := shortid.MustGenerate()
+	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
 	id := shortid.MustGenerate()
 	activity := apmodels.CreateCreateActivity(id, localActor)
 
@@ -57,7 +58,7 @@ func SendLive() {
 
 	textContent = fmt.Sprintf("%s\n<a href=\"%s\">%s</a><br/>%s", textContent, data.GetServerURL(), data.GetServerURL(), tagsString)
 
-	note := apmodels.MakeNote(textContent, noteId, localActor)
+	note := apmodels.MakeNote(textContent, noteIRI, localActor)
 	object.AppendActivityStreamsNote(note)
 
 	// Attach an image along with the Federated message.
@@ -83,7 +84,7 @@ func SendLive() {
 		panic(err)
 	}
 	SendToFollowers(b)
-	Add(note, id)
+	Add(note, noteID)
 }
 
 // SendPublicMessage will send a public message to all followers.
@@ -118,7 +119,7 @@ func SendToFollowers(payload []byte) {
 }
 
 func Add(item vocab.Type, id string) error {
-	iri := item.GetJSONLDId().GetIRI().String()
+	iri := "/" + item.GetJSONLDId().GetIRI().Path
 	typeString := item.GetTypeName()
 
 	if iri == "" {
