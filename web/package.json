@@ -33,7 +33,7 @@
     "@types/chart.js": "^2.9.32",
     "@types/classnames": "^2.3.1",
     "@types/markdown-it": "^12.2.0",
-    "@types/node": "^16.6.1",
+    "@types/node": "^16.7.1",
     "@types/prop-types": "^15.7.3",
     "@types/react": "^17.0.11",
     "@types/react-linkify": "^1.0.0",
