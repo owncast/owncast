@@ -16,6 +16,9 @@ func StartRouter() {
 	// Nodeinfo v1
 	http.HandleFunc("/.well-known/nodeinfo", controllers.NodeInfoController)
 
+	// x-nodeinfo v2
+	http.HandleFunc("/.well-known/x-nodeinfo2", controllers.XNodeInfo2Controller)
+
 	// Nodeinfo v2
 	http.HandleFunc("/nodeinfo/2.0", controllers.NodeInfoV2Controller)
 
