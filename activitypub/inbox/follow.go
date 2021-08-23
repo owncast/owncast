@@ -38,6 +38,14 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return err
 	}
 
+	actorReference := activity.GetActivityStreamsActor()
+	actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
+	actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
+	actorIRI := actorReference.Begin().GetIRI().String()
+
+	msg := fmt.Sprintf("[%s](%s) just **followed**!", actorName, actorIRI)
+	chat.SendSystemMessage(msg, false)
+
 	return nil
 }
 
@@ -103,9 +111,7 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 		actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
 		actorIRI := actorReference.Begin().GetIRI().String()
 
-		fmt.Println(actorIRI)
-
 		msg := fmt.Sprintf("[%s](%s) just **%s** [this post](%s)", actorName, actorIRI, action, postIRI)
-		chat.SendSystemMessage(msg, true)
+		chat.SendSystemMessage(msg, false)
 	}
 }

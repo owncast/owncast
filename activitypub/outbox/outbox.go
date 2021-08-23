@@ -1,6 +1,7 @@
 package outbox
 
 import (
+	"fmt"
 	"net/url"
 	"path/filepath"
 	"regexp"
@@ -31,7 +32,7 @@ func SendLive() {
 	activity.SetActivityStreamsObject(object)
 
 	var tagStrings []string
-	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	reg, _ := regexp.Compile("[^a-zA-Z0-9]+")
 
 	// TODO: Need to assign to a `hashtag` property, not `tag`
 	tagProp := streams.NewActivityStreamsTagProperty()
@@ -54,8 +55,7 @@ func SendLive() {
 
 	activity.SetActivityStreamsTag(tagProp)
 
-	textContent = textContent + "\n\n" + tagsString
-	textContent = textContent + "\n\n" + data.GetServerURL()
+	textContent = fmt.Sprintf("%s\n<a href=\"%s\">%s</a><br/>%s", textContent, data.GetServerURL(), data.GetServerURL(), tagsString)
 
 	note := apmodels.MakeNote(textContent, noteId, localActor)
 	object.AppendActivityStreamsNote(note)
