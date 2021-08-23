@@ -12,6 +12,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
+	"github.com/owncast/owncast/config"
 )
 
 func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey apmodels.PublicKey) error {
@@ -58,6 +59,9 @@ func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]b
 	fmt.Println("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
+	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
+	req.Header.Set("User-Agent", ua)
+
 	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
 		fmt.Println("error signing request:", err)
 		return nil, err
