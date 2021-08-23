@@ -49,7 +49,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		WebServerPort:  config.WebServerPort,
 		WebServerIP:    config.WebServerIP,
 		RTMPServerPort: data.GetRTMPPortNumber(),
-		ChatDisabled:   data.GetChatDisabled(),
+		ChatDisabled:   !data.GetChatDisabled(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
