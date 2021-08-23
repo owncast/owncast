@@ -23,7 +23,6 @@ func InboxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
-	// https://gek-ap-test.ngrok.io/federation/user/live/inbox
 	urlPathComponents := strings.Split(r.URL.Path, "/")
 	var forLocalAccount string
 	if len(urlPathComponents) == 5 {
