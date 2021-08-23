@@ -93,6 +93,82 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 	writeResponse(res, w)
 }
 
+// XNodeInfo2Controller returns the x-nodeinfo2.
+func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
+	type Organization struct {
+		Name    string `json:"name"`
+		Contact string `json:"contact"`
+	}
+	type Server struct {
+		BaseURL  string `json:"baseUrl"`
+		Version  string `json:"version"`
+		Name     string `json:"name"`
+		Software string `json:"software"`
+	}
+	type Services struct {
+		Outbound []string `json:"outbound"`
+		Inbound  []string `json:"inbound"`
+	}
+	type Users struct {
+		ActiveWeek     int `json:"activeWeek"`
+		Total          int `json:"total"`
+		ActiveMonth    int `json:"activeMonth"`
+		ActiveHalfyear int `json:"activeHalfyear"`
+	}
+	type Usage struct {
+		Users         Users `json:"users"`
+		LocalPosts    int   `json:"localPosts"`
+		LocalComments int   `json:"localComments"`
+	}
+	type response struct {
+		Organization      Organization `json:"organization"`
+		Server            Server       `json:"server"`
+		Services          Services     `json:"services"`
+		Protocols         []string     `json:"protocols"`
+		Version           string       `json:"version"`
+		OpenRegistrations bool         `json:"openRegistrations"`
+		Usage             Usage        `json:"usage"`
+	}
+
+	serverURL := data.GetServerURL()
+	if serverURL == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	res := &response{
+		Organization: Organization{
+			Name:    data.GetServerName(),
+			Contact: serverURL,
+		},
+		Server: Server{
+			BaseURL:  serverURL,
+			Version:  config.VersionNumber,
+			Name:     "owncast",
+			Software: "owncast",
+		},
+		Services: Services{
+			Inbound:  []string{"activitypub"},
+			Outbound: []string{"activitypub"},
+		},
+		Protocols: []string{"activitypub"},
+		Version:   config.VersionNumber,
+		Usage: Usage{
+			Users: Users{
+				ActiveWeek:     1,
+				Total:          1,
+				ActiveMonth:    1,
+				ActiveHalfyear: 1,
+			},
+
+			LocalPosts:    persistence.GetLocalPostCount(),
+			LocalComments: 0,
+		},
+	}
+
+	writeResponse(res, w)
+}
+
 // InstanceV1Controller returns the v1 instance details.
 func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 	type Stats struct {
