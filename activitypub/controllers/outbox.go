@@ -30,12 +30,10 @@ func OutboxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
-	pathComponents := strings.Split(r.URL.Path, "/")
-	objectId := pathComponents[3]
-
-	object, err := persistence.GetObjectById(objectId)
+	object, err := persistence.GetObjectByIRI(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
+		return
 		// controllers.WriteSimpleResponse(w, false, err.Error())
 	}
 
