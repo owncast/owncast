@@ -9,13 +9,13 @@ import (
 
 func StartRouter() {
 	// WebFinger
-	http.HandleFunc("/.well-known/webfinger", middleware.RequireActivityPubOrRedirect(controllers.WebfingerHandler))
+	http.HandleFunc("/.well-known/webfinger", controllers.WebfingerHandler)
 
 	// Host Metadata
 	http.HandleFunc("/.well-known/host-meta", controllers.HostMetaController)
 
 	// Nodeinfo v1
-	http.HandleFunc("/.well-known/nodeinfo", middleware.RequireActivityPubOrRedirect(controllers.NodeInfoController))
+	http.HandleFunc("/.well-known/nodeinfo", controllers.NodeInfoController)
 
 	// Nodeinfo v2
 	http.HandleFunc("/nodeinfo/2.0", middleware.RequireActivityPubOrRedirect(controllers.NodeInfoV2Controller))
