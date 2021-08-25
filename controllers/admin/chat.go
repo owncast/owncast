@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
@@ -124,6 +126,24 @@ func SendSystemMessage(integration user.ExternalAPIUser, w http.ResponseWriter, 
 	}
 
 	controllers.WriteSimpleResponse(w, true, "sent")
+}
+
+func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	clientId, err := strconv.ParseUint(r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:], 10, 64)
+	if err != nil {
+		return
+	}
+
+	var message events.SystemMessageEvent
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+		controllers.InternalErrorHandler(w, err)
+		return
+	}
+
+	chat.SendSystemMessageToClient(uint(clientId), message.Body)
+	controllers.WriteSimpleResponse(w, true, "sent")
+
 }
 
 // SendUserMessage will send a message to chat on behalf of a user. *Depreciated*.
