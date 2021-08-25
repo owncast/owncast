@@ -41,6 +41,12 @@ func GetClientsForUser(userID string) ([]*Client, error) {
 	return clients[userID], nil
 }
 
+// FindClientByID will return a single connected client by ID.
+func FindClientByID(clientID uint) (*Client, bool) {
+	client, found := _server.clients[clientID]
+	return client, found
+}
+
 // GetClients will return all the current chat clients connected.
 func GetClients() []*Client {
 	clients := []*Client{}
