@@ -160,6 +160,9 @@ func Start() error {
 	// Send a system message to chat
 	http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
+	// Send a system message to a single client
+	http.HandleFunc("/api/integrations/chat/system/client/", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient))
+
 	// Send a user message to chat *NO LONGER SUPPORTED
 	http.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage))
 
