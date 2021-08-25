@@ -319,6 +319,7 @@ func (s *Server) sendSystemMessageToClient(c *Client, message string) {
 		},
 	}
 	clientMessage.SetDefaults()
+	clientMessage.RenderBody()
 	s.Send(clientMessage.GetBroadcastPayload(), c)
 }
 
