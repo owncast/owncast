@@ -111,6 +111,13 @@ func SendAllWelcomeMessage() {
 	_server.sendAllWelcomeMessage()
 }
 
+// SendSystemMessageToClient will send a single message to a single connected chat client.
+func SendSystemMessageToClient(clientID uint, text string) {
+	if client, foundClient := FindClientByID(clientID); foundClient {
+		_server.sendSystemMessageToClient(client, text)
+	}
+}
+
 // Broadcast will send all connected clients the outbound object provided.
 func Broadcast(event events.OutboundEvent) error {
 	return _server.Broadcast(event.GetBroadcastPayload())
