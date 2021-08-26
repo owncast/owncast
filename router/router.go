@@ -22,7 +22,6 @@ func Start() error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
 
-	http.HandleFunc()
 	// admin static files
 	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
 
