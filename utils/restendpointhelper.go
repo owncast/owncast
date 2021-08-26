@@ -45,7 +45,7 @@ func readParameter(pattern string, requestUrl string, paramName string) (string,
 	if value, exists := all[fmt.Sprintf("{%s}", paramName)]; exists {
 		return value, nil
 	}
-	return "", errors.New(fmt.Sprintf("Paramater with name %s not found", paramName))
+	return "", errors.New(fmt.Sprintf("Parameter with name %s not found", paramName))
 }
 
 func ReadRestUrlParameter(r *http.Request, parameterName string) (string, error) {
