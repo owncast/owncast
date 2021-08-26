@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -48,9 +49,10 @@ func readParameter(pattern string, requestUrl string, paramName string) (string,
 }
 
 func ReadRestUrlParameter(r *http.Request, parameterName string) (string, error) {
-	pattern, has_header := r.Header["OWNCAST_RESTURL_PATTERN"]
-	if !has_header {
-		return "", errors.New(fmt.Sprintf("This HandlerFunc is not marked as REST-Endpoint. Cannot read Paramet %s from Request", parameterName))
+	pattern, found := r.Header["OWNCAST-RESTURL-PATTERN"]
+	log.Print(r.Header)
+	if !found {
+		return "", errors.New(fmt.Sprintf("This HandlerFunc is not marked as REST-Endpoint. Cannot read Parameter '%s' from Request", parameterName))
 	}
 
 	return readParameter(pattern[0], r.URL.Path, parameterName)
@@ -59,7 +61,8 @@ func ReadRestUrlParameter(r *http.Request, parameterName string) (string, error)
 func RestEndpoint(pattern string, handler http.HandlerFunc) (string, http.HandlerFunc) {
 	baseUrl := getPatternForRestEndpoint(pattern)
 	return baseUrl, func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Add("OWNCAST_RESTURL_PATTERN", pattern)
+		r.Header["OWNCAST-RESTURL-PATTERN"] = []string{pattern}
+		log.Print(r.Header)
 		handler(w, r)
 	}
 }
