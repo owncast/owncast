@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -130,8 +130,15 @@ func SendSystemMessage(integration user.ExternalAPIUser, w http.ResponseWriter, 
 
 func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	clientId, err := strconv.ParseUint(r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:], 10, 64)
+	clientIdText, err := utils.ReadRestUrlParameter(r, "clientId")
 	if err != nil {
+		controllers.BadRequestHandler(w, err)
+		return
+	}
+
+	clientIdNumeric, err := strconv.ParseUint(clientIdText, 10, 64)
+	if err != nil {
+		controllers.BadRequestHandler(w, err)
 		return
 	}
 
@@ -141,7 +148,7 @@ func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http
 		return
 	}
 
-	chat.SendSystemMessageToClient(uint(clientId), message.Body)
+	chat.SendSystemMessageToClient(uint(clientIdNumeric), message.Body)
 	controllers.WriteSimpleResponse(w, true, "sent")
 
 }
