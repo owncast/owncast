@@ -150,7 +150,6 @@ func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http
 
 	chat.SendSystemMessageToClient(uint(clientIdNumeric), message.Body)
 	controllers.WriteSimpleResponse(w, true, "sent")
-
 }
 
 // SendUserMessage will send a message to chat on behalf of a user. *Depreciated*.
