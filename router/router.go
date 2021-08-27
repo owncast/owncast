@@ -57,6 +57,9 @@ func Start() error {
 	// return the logo
 	http.HandleFunc("/logo", controllers.GetLogo)
 
+	// return a logo that's compatible with external social networks
+	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
+
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
 
