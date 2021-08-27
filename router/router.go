@@ -110,8 +110,11 @@ func Start() error {
 	// Get a list of disabled users
 	http.HandleFunc("/api/admin/chat/users/disabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
 
-	// Enable/disable a user
-	http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
+	// Set moderator status for a user
+	http.HandleFunc("/api/admin/chat/users/setmoderator", middleware.RequireAdminAuth(admin.UpdateUserModerator))
+
+	// Get a list of moderator users
+	http.HandleFunc("/api/admin/chat/users/moderators", middleware.RequireAdminAuth(admin.GetModerators))
 
 	// Update config values
 

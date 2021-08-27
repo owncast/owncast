@@ -41,7 +41,6 @@ export default class ChatMessageView extends Component {
   }
   render() {
     const { message, isModerator } = this.props;
-    console.log(this.props)
     const { user, timestamp } = message;
     const { displayName, displayColor, createdAt,
       // mock field

@@ -66,7 +66,7 @@ var (
 )
 
 func (c *ChatClient) sendConnectedClientInfo() {
-	payload := events.ConnecteClientInfo{
+	payload := events.ConnectedClientInfo{
 		Event: events.Event{
 			Type: events.ConnectedUserInfo,
 		},

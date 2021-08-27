@@ -2,7 +2,7 @@ package events
 
 import "github.com/owncast/owncast/core/user"
 
-type ConnecteClientInfo struct {
+type ConnectedClientInfo struct {
 	Event
 	User *user.User `json:"user"`
 }

@@ -189,5 +189,9 @@ export function checkIsModerator(message) {
   const { user } = message;
   const { scopes } = user;
 
-  return scopes.contains('MODERATION');
+  if (!scopes || scopes.length === 0) {
+    return false;
+  }
+
+  return scopes.includes('MODERATOR');
 }

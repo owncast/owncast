@@ -2,6 +2,7 @@ package chat
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -279,7 +280,48 @@ func (s *Server) DisconnectUser(userID string) {
 	}
 }
 
-func (s *Server) eventReceived(event chatClientEvent) {
+// SendConnectedClientInfoToUser will find all the connected clients assigned to a user
+// and re-send each the connected client info.
+func SendConnectedClientInfoToUser(userID string) error {
+	clients, err := GetClientsForUser(userID)
+	if err != nil {
+		return err
+	}
+
+	// Get an updated reference to the user.
+	user := user.GetUserById(userID)
+	if user == nil {
+		return fmt.Errorf("user not found")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	for _, client := range clients {
+		// Update the client's reference to its user.
+		client.User = user
+		// Send the update to the client.
+		client.sendConnectedClientInfo()
+	}
+
+	return nil
+}
+
+func SendActionToUser(userID string, text string) error {
+	clients, err := GetClientsForUser(userID)
+	if err != nil {
+		return err
+	}
+
+	for _, client := range clients {
+		_server.sendActionToClient(client, text)
+	}
+
+	return nil
+}
+
+func (s *ChatServer) eventReceived(event chatClientEvent) {
 	var typecheck map[string]interface{}
 	if err := json.Unmarshal(event.data, &typecheck); err != nil {
 		log.Debugln(err)
@@ -341,6 +383,9 @@ func (s *Server) sendActionToClient(c *Client, message string) {
 	clientMessage := events.ActionEvent{
 		MessageEvent: events.MessageEvent{
 			Body: message,
+		},
+		Event: events.Event{
+			Type: events.ChatActionSent,
 		},
 	}
 	clientMessage.SetDefaults()

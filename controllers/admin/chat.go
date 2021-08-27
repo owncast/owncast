@@ -104,7 +104,7 @@ func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
-	type blockUserRequest struct {
+	type request struct {
 		UserID      string `json:"userId"`
 		IsModerator bool   `json:"isModerator"`
 	}
@@ -115,15 +115,33 @@ func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request blockUserRequest
+	var req request
 
-	if err := decoder.Decode(&request); err != nil {
-		log.Errorln(err)
+	if err := decoder.Decode(&req); err != nil {
 		controllers.WriteSimpleResponse(w, false, "")
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("%s is moderator: %t", request.UserID, request.IsModerator))
+	// Update the user object with new moderation access.
+	if err := user.SetModerator(req.UserID, req.IsModerator); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Update the clients for this user to know about the moderator access change.
+	if err := chat.SendConnectedClientInfoToUser(req.UserID); err != nil {
+		log.Debugln(err)
+	}
+
+	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("%s is moderator: %t", req.UserID, req.IsModerator))
+}
+
+// GetModerators will return a list of moderator users.
+func GetModerators(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	users := user.GetModeratorUsers()
+	controllers.WriteResponse(w, users)
 }
 
 // GetChatMessages returns all of the chat messages, unfiltered.

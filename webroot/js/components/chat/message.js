@@ -23,14 +23,13 @@ function SystemMessage(props) {
 export default function Message(props) {
   const { message } = props;
   const { type, oldName, user, body } = message;
-  const { displayName } = user;
   if (
     type === SOCKET_MESSAGE_TYPES.CHAT ||
     type === SOCKET_MESSAGE_TYPES.SYSTEM
   ) {
     return html`<${ChatMessageView} ...${props} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
-
+    const { displayName } = user;
     const contents = html`
       <>
         <span class="font-bold">${oldName}</span> is now known as ${' '}
@@ -39,6 +38,7 @@ export default function Message(props) {
     `;
     return html`<${SystemMessage} contents=${contents}/>`;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
+    const { displayName } = user;
     const contents = html`<span class="font-bold">${displayName}</span> joined the chat.`;
     return html`<${SystemMessage} contents=${contents}/>`;
   } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {

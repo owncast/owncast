@@ -37,7 +37,7 @@ function finish {
 trap finish EXIT
 
 echo "Waiting..."
-sleep 13
+sleep 15
 
 # Run the tests against the instance.
 npm test
