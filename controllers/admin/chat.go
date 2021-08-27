@@ -136,7 +136,7 @@ func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http
 		return
 	}
 
-	clientIdNumeric, err := strconv.ParseUint(clientIdText, 10, 64)
+	clientIdNumeric, err := strconv.ParseUint(clientIdText, 10, 32)
 	if err != nil {
 		controllers.BadRequestHandler(w, err)
 		return
