@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         go-version: [1.15.x, 1.16.x]
-        os: [ubuntu-latest, macos-latest, windows-latest, freebsd-latest, openbsd-latest]
+        os: [ubuntu-latest, macos-latest, freebsd-latest, openbsd-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
