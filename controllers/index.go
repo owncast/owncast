@@ -91,7 +91,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Panicln(err)
 	}
-	imageURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/logo"))
+	imageURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/logo/external"))
 	if err != nil {
 		log.Panicln(err)
 	}
