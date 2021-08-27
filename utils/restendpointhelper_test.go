@@ -29,7 +29,10 @@ func TestReadParameter(t *testing.T) {
 
 	for _, ep := range endpoints {
 		v, err := readParameter(ep, strings.Replace(ep, "{p1}", expected, -1), "p1")
-		if err != nil || v != expected {
+		if err != nil {
+			t.Errorf("Unexpected error when reading parameter: %s", err.Error())
+		}
+		if v != expected {
 			t.Errorf("'%s' should have returned %s", ep, expected)
 		}
 	}
