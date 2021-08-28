@@ -246,7 +246,6 @@ func (s *Server) DisconnectUser(userID string) {
 		go func(client *Client) {
 			event := events.UserDisabledEvent{}
 			event.SetDefaults()
-			event.ClientId = client.id
 
 			// Send this disabled event specifically to this single connected client
 			// to let them know they've been banned.
