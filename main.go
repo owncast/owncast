@@ -82,11 +82,10 @@ func main() {
 	if *newStreamKey != "" {
 		if err := data.SetStreamKey(*newStreamKey); err != nil {
 			log.Errorln("Error setting your stream key.", err)
+			log.Exit(1)
 		} else {
 			log.Infoln("Stream key changed to", *newStreamKey)
 		}
-
-		log.Exit(0)
 	}
 
 	// Set the web server port
