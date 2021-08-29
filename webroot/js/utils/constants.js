@@ -52,7 +52,7 @@ export const CHAT_OK_KEYCODES = [
   'Backspace',
 ];
 export const CHAT_KEY_MODIFIERS = ['Control', 'Shift', 'Meta', 'Alt'];
-export const MESSAGE_JUMPTOBOTTOM_BUFFER = 300;
+export const MESSAGE_JUMPTOBOTTOM_BUFFER = 500;
 
 // app styling
 export const WIDTH_SINGLE_COL = 730;
