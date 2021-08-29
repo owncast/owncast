@@ -5,10 +5,7 @@ const html = htm.bind(h);
 import Message from './message.js';
 import ChatInput from './chat-input.js';
 import { CALLBACKS, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
-import {
-  jumpToBottom,
-  debounce,
-} from '../../utils/helpers.js';
+import { jumpToBottom, debounce } from '../../utils/helpers.js';
 import { extraUserNamesFromMessageHistory } from '../../utils/chat.js';
 import {
   URL_CHAT_HISTORY,
