@@ -217,6 +217,10 @@
   opacity: 1;
 }
 
+.message.moderatable:focus-within .moderator-actions-group {
+  opacity: 1;
+}
+
 .moderator-menu-button {
   padding: .15rem;
   height: 1.75rem;
@@ -225,9 +229,16 @@
   text-align: center;
   margin-left: .05rem;
   font-size: 1rem;
+  border: 1px solid transparent;
+  opacity: .5;
 }
 .moderator-menu-button:hover {
   background-color: rgba(0,0,0,.5);
+  opacity: 1;
+}
+.moderator-menu-button:focus {
+  border-color: white;
+  opacity: 1;
 }
 .moderator-action {
   padding: .15rem;
@@ -247,23 +258,28 @@
 .moderator-actions-menu {
   position: absolute;
   bottom: 0;
-  right: 0;
+  right: .5rem;
   z-index: 999;
 }
 .message.moderatable:first-of-type .moderator-actions-menu {
   top: 0;
   bottom: unset;
-  right: 0;
 }
 
 
 .moderator-menu-item {
   font-size: .875rem;
   position: relative;
+  border: 1px solid transparent;
+}
+.moderator-menu-item:focus {
+  border: 1px solid white;
 }
 .moderator-menu-item .moderator-menu-icon {
   height: 1.5rem;
   width: 1.5rem;
+  font-size: 1.5em;
+  vertical-align: text-bottom;
   display: inline-block;
 }
 /* .moderator-menu-item .menu-icon-base {
@@ -278,6 +294,22 @@
 }
 .moderator-menu-item:hover .menu-icon-hover {
   display: inline-block;
+}
+
+.moderator-more-info-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid white;
+  z-index: 5;
+  max-width: calc(var(--right-col-width) - 2rem);
+}
+
+.moderator-more-info-message {
+  overflow-y: auto;
+  max-height: 10em;
 }
 
 /* MODERATOR STYLES */

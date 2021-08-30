@@ -47,6 +47,8 @@ export default class ChatMessageView extends Component {
       isModerator: isAuthorModerator = true,
      } = user;
 
+     const isMessageModeratable = isModerator && message.type === SOCKET_MESSAGE_TYPES.CHAT;
+
     const { formattedMessage } = this.state;
     if (!formattedMessage) {
       return null;
@@ -66,7 +68,7 @@ export default class ChatMessageView extends Component {
       : { backgroundColor: messageBubbleColorForHue(displayColor) };
     const messageClassString = isSystemMessage
       ? 'message flex flex-row items-start p-4 m-2 rounded-lg shadow-l border-solid border-indigo-700 border-2 border-opacity-60 text-l'
-      : `message relative flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm ${isModerator ? 'moderatable' : ''}`;
+      : `message relative flex flex-row items-start p-3 m-3 rounded-lg shadow-s text-sm ${isMessageModeratable ? 'moderatable' : ''}`;
 
     return html`
       <div
@@ -82,7 +84,7 @@ export default class ChatMessageView extends Component {
           >
             ${displayName}
           </div>
-          ${isModerator && html`<${ModeratorActions}/>`}
+          ${isMessageModeratable && html`<${ModeratorActions} message=${message} />`}
           <div
             class="message-text text-gray-300 font-normal overflow-y-hidden pt-2"
             dangerouslySetInnerHTML=${{ __html: formattedMessage }}
