@@ -9,7 +9,7 @@
     "lint": "eslint --ext .js,.ts,.tsx types/ pages/ components/"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.6.3",
+    "@ant-design/icons": "^4.6.4",
     "antd": "^4.16.13",
     "chart.js": "^3.5.1",
     "chartkick": "^4.0.5",
