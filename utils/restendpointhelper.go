@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const restUrlPatternHeaderKey string = "Owncast-Resturl-Pattern"
+const restUrlPatternHeaderKey = "Owncast-Resturl-Pattern"
 
 // takes the segment pattern of an Url string and returns the segment before the first dynamic REST parameter.
 func getPatternForRestEndpoint(pattern string) string {
