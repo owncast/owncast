@@ -68,8 +68,8 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
-	// Opt-out of Google FLoC
-	middleware.DisableFloc(w)
+	// Set our global HTTP headers
+	middleware.SetHeaders(w)
 
 	http.ServeFile(w, r, path.Join(config.WebRoot, r.URL.Path))
 }
