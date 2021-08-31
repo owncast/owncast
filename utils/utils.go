@@ -86,6 +86,27 @@ func IsUserAgentABot(userAgent string) bool {
 	return ua.Bot()
 }
 
+// IsUserAgentAPlayer returns if a web client user-agent is seen as a media player.
+func IsUserAgentAPlayer(userAgent string) bool {
+	if userAgent == "" {
+		return false
+	}
+
+	playerStrings := []string{
+		"mpv",
+		"player",
+		"vlc",
+	}
+
+	for _, playerString := range playerStrings {
+		if strings.Contains(strings.ToLower(userAgent), playerString) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func RenderSimpleMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
