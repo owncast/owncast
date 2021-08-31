@@ -109,13 +109,29 @@
         color: blue;
         text-decoration: underline;
       }
+
+      #app {
+        display: none;
+      }
+
+      .logo {
+        height: 200px;
+      }
     </style>
     <div class="noscript">
-      <img src="/logo" />
+      <img class="logo" src="/logo" />
       <br />
       <p>
-        This <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a> stream requires
-        Javascript to play.
+        This website is powered by <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a>.
+      </p>
+      <p>
+        Owncast uses javascript to for its video player and the chat client. But your web browser does not seem to support javascript, or have it disabled.
+      </p>
+      <p>
+        You can open the URL of this website in your media player (such as <a href="https://mpv.io" rel="noopener noreferrer" target="_blank">mpv</a> or <a href="https://www.videolan.org/vlc/" rel="noopener noreferrer" target="_blank">VLC</a>) to watch the stream.
+      </p>
+      <p>
+        Currently, there is no option to use the chat without the javascript.
       </p>
     </div>
   </noscript>
