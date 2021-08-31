@@ -96,6 +96,7 @@ func IsUserAgentAPlayer(userAgent string) bool {
 		"mpv",
 		"player",
 		"vlc",
+		"applecoremedia",
 	}
 
 	for _, playerString := range playerStrings {
