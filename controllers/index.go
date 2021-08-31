@@ -44,6 +44,11 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if utils.IsUserAgentAPlayer(r.UserAgent()) && isIndexRequest {
+		http.Redirect(w, r, "/hls/stream.m3u8", http.StatusTemporaryRedirect)
+		return
+	}
+
 	// If the ETags match then return a StatusNotModified
 	if responseCode := middleware.ProcessEtags(w, r); responseCode != 0 {
 		w.WriteHeader(responseCode)
