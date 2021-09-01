@@ -99,7 +99,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	// Profile properties
 
 	// Avatar
-	userAvatarUrlString := data.GetServerURL() + "/logo"
+	userAvatarUrlString := data.GetServerURL() + "/logo/external"
 	userAvatarUrl, err := url.Parse(userAvatarUrlString)
 	if err != nil {
 		log.Errorln(err)
