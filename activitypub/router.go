@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub/controllers"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 func StartRouter() {
@@ -26,8 +27,8 @@ func StartRouter() {
 	http.HandleFunc("/api/v1/instance", controllers.InstanceV1Controller)
 
 	// Single ActivityPub Actor
-	http.HandleFunc("/federation/user/", controllers.ActorHandler)
+	http.HandleFunc("/federation/user/", middleware.RequireActivityPubOrRedirect(controllers.ActorHandler))
 
 	// Single AP object
-	http.HandleFunc("/federation/", controllers.ObjectHandler)
+	http.HandleFunc("/federation/", middleware.RequireActivityPubOrRedirect(controllers.ObjectHandler))
 }
