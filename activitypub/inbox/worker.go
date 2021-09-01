@@ -127,12 +127,14 @@ func verify(request *http.Request) (bool, error) {
 	key := actor.GetW3IDSecurityV1PublicKey().Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
-		panic("failed to parse PEM block containing the public key")
+		log.Errorln("failed to parse PEM block containing the public key")
+		return false, errors.New("failed to parse PEM block containing the public key")
 	}
 
 	parsedKey, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
-		panic("failed to parse DER encoded public key: " + err.Error())
+		log.Errorln("failed to parse DER encoded public key: " + err.Error())
+		return false, errors.New("failed to parse DER encoded public key: " + err.Error())
 	}
 
 	if err != nil {

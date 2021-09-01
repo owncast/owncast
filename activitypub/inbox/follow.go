@@ -18,7 +18,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	follow, err := resolvers.MakeFollowRequest(activity, c)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	if follow == nil {
@@ -29,7 +29,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	fmt.Println("follow request:", followRequest)
 
 	if err := persistence.AddFollow(followRequest); err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	localAccountName := c.Value("account").(string)

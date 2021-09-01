@@ -8,6 +8,7 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
 )
 
 // MakeRemoteIRIForResource will create an IRI for a remote location.
@@ -28,7 +29,7 @@ func MakeLocalIRIForResource(resourcePath string) *url.URL {
 	host := data.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	u.Path = path.Join(u.Path, "federation", resourcePath)
@@ -40,7 +41,7 @@ func MakeLocalIRIForAccount(account string) *url.URL {
 	host := data.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	u.Path = path.Join(u.Path, "federation", "user", account)
