@@ -29,7 +29,8 @@ func MakeLocalIRIForResource(resourcePath string) *url.URL {
 	host := data.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to parse local IRI url", host, err)
+		return nil
 	}
 
 	u.Path = path.Join(u.Path, "federation", resourcePath)
@@ -41,7 +42,8 @@ func MakeLocalIRIForAccount(account string) *url.URL {
 	host := data.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to parse local IRI account server url", err)
+		return nil
 	}
 
 	u.Path = path.Join(u.Path, "federation", "user", account)

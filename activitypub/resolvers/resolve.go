@@ -3,8 +3,8 @@ package resolvers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+
 	"net/http"
 
 	"github.com/go-fed/activity/streams"
@@ -12,11 +12,12 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/core/data"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Resolve will translate a raw ActivityPub payload and fire the callback associated with that activity type.
 func Resolve(data []byte, c context.Context, callbacks ...interface{}) error {
-	fmt.Println("Resolving payload...")
 	jsonResolver, err := streams.NewJSONResolver(callbacks...)
 	if err != nil {
 		// Something in the setup was wrong. For example, a callback has an
@@ -29,7 +30,7 @@ func Resolve(data []byte, c context.Context, callbacks ...interface{}) error {
 		return err
 	}
 
-	// fmt.Println(string(data))
+	log.Debugln("Resolving payload...", string(data))
 
 	// The createCallback function will be called.
 	err = jsonResolver.Resolve(c, jsonMap)
@@ -39,14 +40,14 @@ func Resolve(data []byte, c context.Context, callbacks ...interface{}) error {
 	} else if streams.IsUnmatchedErr(err) {
 		// Everything went right but the callback didn't match or the ActivityStreams
 		// type is one that wasn't code generated.
-		fmt.Println("No match: ", err)
+		log.Debugln("No match: ", err)
 	}
 
 	return nil
 }
 
 func ResolveIRI(iri string, c context.Context, callbacks ...interface{}) error {
-	fmt.Println("Resolving", iri)
+	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest("GET", iri, nil)
 
@@ -81,7 +82,8 @@ func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab
 
 	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
 		if iter.IsIRI() {
-			fmt.Println("Is IRI", iter.GetIRI())
+			log.Println("Is IRI", iter.GetIRI())
+
 			iri := iter.GetIRI()
 			c := context.TODO()
 			if e := ResolveIRI(iri.String(), c, personCallback); e != nil {

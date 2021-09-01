@@ -2,7 +2,6 @@ package crypto
 
 import (
 	"crypto"
-	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -32,8 +31,7 @@ func signResponse(privateKey crypto.PrivateKey, pubKeyId url.URL, body []byte, w
 		headersToSign = append(headersToSign, "digest")
 	}
 
-	signer, chosenAlgo, err := httpsig.NewSigner(prefs, digestAlgorithm, headersToSign, httpsig.Signature, 0)
-	fmt.Println("signing with", chosenAlgo)
+	signer, _, err := httpsig.NewSigner(prefs, digestAlgorithm, headersToSign, httpsig.Signature, 0)
 
 	if err != nil {
 		return err
@@ -65,8 +63,7 @@ func signRequest(privateKey crypto.PrivateKey, pubKeyId string, body []byte, r *
 		headersToSign = append(headersToSign, "digest")
 	}
 
-	signer, chosenAlgo, err := httpsig.NewSigner(prefs, digestAlgorithm, headersToSign, httpsig.Signature, 0)
-	fmt.Println("signing with", chosenAlgo)
+	signer, _, err := httpsig.NewSigner(prefs, digestAlgorithm, headersToSign, httpsig.Signature, 0)
 
 	if err != nil {
 		return err
