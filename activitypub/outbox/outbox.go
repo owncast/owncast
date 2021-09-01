@@ -52,13 +52,20 @@ func SendLive() {
 
 		// TODO: Do we want to display tags or just assign them?
 		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
-		tagStrings = append(tagStrings, "#"+tagWithoutSpecialCharacters)
+		tagString := fmt.Sprintf("<a class=\"hashtag\" href=\"https://directory.owncast.online/tags/%s\">#%s</a>", tagWithoutSpecialCharacters, tagWithoutSpecialCharacters)
+		tagStrings = append(tagStrings, tagString)
 	}
 	tagsString := strings.Join(tagStrings, " ")
 
 	activity.SetActivityStreamsTag(tagProp)
 
-	textContent = fmt.Sprintf("%s\n<a href=\"%s\">%s</a><br/>%s", textContent, data.GetServerURL(), data.GetServerURL(), tagsString)
+	var streamTitle string
+	if title := data.GetStreamTitle(); title != "" {
+		streamTitle = fmt.Sprintf("<p>%s</p>", title)
+	}
+	textContent = fmt.Sprintf("<p>%s</p><a href=\"%s\">%s</a>%s<p>%s</p>", textContent, data.GetServerURL(), data.GetServerURL(), streamTitle, tagsString)
+
+	log.Println(textContent)
 
 	note := apmodels.MakeNote(textContent, noteIRI, localActor)
 	object.AppendActivityStreamsNote(note)
