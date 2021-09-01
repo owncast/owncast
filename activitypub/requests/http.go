@@ -13,6 +13,8 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/config"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey apmodels.PublicKey) error {
@@ -40,30 +42,27 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey apmodels.Pub
 
 	if err := crypto.SignResponse(w, payload, publicKey); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Println(err)
+		log.Errorln("unable to sign response", err)
 		return err
 	}
 
-	fmt.Println(string(payload))
 	if _, err := w.Write(payload); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 
-	fmt.Println(string(payload))
-
 	return nil
 }
 
 func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]byte, error) {
-	fmt.Println("Sending", string(payload), "to", url)
+	log.Println("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
 	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
 	req.Header.Set("User-Agent", ua)
 
 	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
-		fmt.Println("error signing request:", err)
+		log.Errorln("error signing request:", err)
 		return nil, err
 	}
 
@@ -74,6 +73,6 @@ func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]b
 
 	body, _ := ioutil.ReadAll(response.Body)
 
-	fmt.Println("Response: ", response.StatusCode, string(body))
+	// fmt.Println("Response: ", response.StatusCode, string(body))
 	return body, nil
 }

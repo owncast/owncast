@@ -25,7 +25,7 @@ func OutboxHandler(w http.ResponseWriter, r *http.Request) {
 	publicKey := crypto.GetPublicKey(actorIRI)
 
 	if err := requests.WriteStreamResponse(orderedCollection, w, publicKey); err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to write stream response for outbox handler", err)
 	}
 }
 

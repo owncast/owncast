@@ -610,28 +610,27 @@ func SetForbiddenUsernameList(usernames []string) error {
 }
 
 // GetServerInitTime will return when the server was first setup.
-func GetServerInitTime() (utils.NullTime, error) {
-	invalidTime := utils.NullTime{Time: time.Now(), Valid: false}
+func GetServerInitTime() (*utils.NullTime, error) {
 	var t utils.NullTime
 
 	configEntry, err := _datastore.Get(serverInitDateKey)
 	if err != nil {
-		return invalidTime, err
+		return nil, err
 	}
 
 	if err := configEntry.getObject(&t); err != nil {
-		return invalidTime, err
+		return nil, err
 	}
 
 	if !t.Valid {
-		return invalidTime, err
+		return nil, err
 	}
 
-	return t, nil
+	return &t, nil
 }
 
-// SetLastDisconnectTime will set the time the last stream ended.
-func SetServerInitDate(t time.Time) error {
+// SetServerInitTime will set when the server was first created.
+func SetServerInitTime(t time.Time) error {
 	nt := utils.NullTime{Time: t, Valid: true}
 	var configEntry = ConfigEntry{Key: serverInitDateKey, Value: nt}
 	return _datastore.Save(configEntry)

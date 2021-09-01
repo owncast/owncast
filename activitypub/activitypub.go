@@ -18,7 +18,7 @@ func Start(datastore *data.Datastore) {
 		_ = data.SetPrivateKey(string(privateKey))
 		_ = data.SetPublicKey(string(publicKey))
 		if err != nil {
-			log.Errorln(err)
+			log.Errorln("Unable to get private key", err)
 		}
 	}
 }

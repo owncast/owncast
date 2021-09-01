@@ -83,9 +83,10 @@ func SendLive() {
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to serialize go live message activity", err)
 		return
 	}
+
 	SendToFollowers(b)
 	Add(note, noteID)
 }
@@ -99,7 +100,7 @@ func SendPublicMessage(textContent string) {
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to serialize send public message activity", err)
 		return
 	}
 	SendToFollowers(b)
@@ -112,13 +113,13 @@ func SendToFollowers(payload []byte) {
 
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to fetch followers to send to", err)
 		return
 	}
 
 	for _, follower := range followers {
 		if _, err := requests.PostSignedRequest(payload, follower.Inbox, localActor); err != nil {
-			log.Errorln(err)
+			log.Errorln("unable to send to follower inbox", follower.Inbox, err)
 			return
 		}
 	}
@@ -135,7 +136,7 @@ func Add(item vocab.Type, id string) error {
 
 	b, err := apmodels.Serialize(item)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to serialize model when saving to outbox", err)
 		return err
 	}
 

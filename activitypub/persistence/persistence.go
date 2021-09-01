@@ -2,7 +2,6 @@ package persistence
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 
 	"github.com/go-fed/activity/streams"
@@ -22,12 +21,12 @@ func Setup(datastore *data.Datastore) {
 }
 
 func AddFollow(follow apmodels.ActivityPubActor) error {
-	fmt.Println("Saving", follow.ActorIri, "as a follower.")
+	log.Println("Saving", follow.ActorIri, "as a follower.")
 	return createFollow(follow.ActorIri, follow.Inbox)
 }
 
 func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
-	fmt.Println("Removing", unfollow.ActorIri, "as a follower.")
+	log.Println("Removing", unfollow.ActorIri, "as a follower.")
 	return removeFollow(unfollow.ActorIri)
 }
 
@@ -145,7 +144,7 @@ func createFederationOutboxTable() {
 	defer stmt.Close()
 	_, err = stmt.Exec()
 	if err != nil {
-		log.Warnln(err)
+		log.Warnln("error executing sql creating outbox table", createTableSQL, err)
 	}
 }
 
@@ -167,7 +166,7 @@ func createFederationFollowersTable() {
 	defer stmt.Close()
 	_, err = stmt.Exec()
 	if err != nil {
-		log.Warnln(err)
+		log.Warnln("error executing sql creating followers table", createTableSQL, err)
 	}
 }
 
@@ -191,9 +190,6 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 		}
 
 		createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
-			fmt.Println("createCallback fired!")
-
-			fmt.Println(activity)
 			// items = append(items, activity)
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
@@ -263,7 +259,7 @@ func GetObjectById(id string) (string, error) {
 
 func GetObjectByIRI(IRI string) (string, error) {
 	query := `SELECT value FROM ap_outbox WHERE iri IS ?`
-	fmt.Println(query, IRI)
+	// log.Println(query, IRI)
 	row := _datastore.DB.QueryRow(query, IRI)
 
 	var value string

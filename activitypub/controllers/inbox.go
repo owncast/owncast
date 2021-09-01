@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -38,7 +37,7 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("INBOX: ", string(data))
+	log.Traceln("INBOX: ", string(data))
 
 	inboxRequest := apmodels.InboxRequest{Request: r, ForLocalAccount: forLocalAccount, Body: data}
 

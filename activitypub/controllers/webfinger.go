@@ -60,6 +60,6 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(webfingerResponse); err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to write webfinger response", err)
 	}
 }

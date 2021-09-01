@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,13 +25,11 @@ func init() {
 
 func run() {
 	for r := range _queue {
-		fmt.Println("run...")
 		handle(r)
 	}
 }
 
 func Add(request apmodels.InboxRequest) {
-	fmt.Println("Adding AP Payload...")
 	_queue <- request
 }
 
@@ -41,42 +38,32 @@ func handle(request apmodels.InboxRequest) chan bool {
 	r := make(chan bool)
 
 	if verified, err := verify(request.Request); err != nil || !verified {
-		log.Errorln("Unable to verify remote request", err)
+		log.Warnln("Unable to verify remote request", err)
 		return nil
 	}
 
-	fmt.Println("Handling payload via worker...")
-
 	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
-		fmt.Println("createCallback fired!")
-		fmt.Println(activity)
 		r <- false
 		return nil
 	}
 
 	updateCallback := func(c context.Context, activity vocab.ActivityStreamsUpdate) error {
-		fmt.Println("updateCallback fired!")
-
-		fmt.Println(activity)
 		r <- false
 		return nil
 	}
 
 	personCallback := func(c context.Context, activity vocab.ActivityStreamsPerson) error {
-		fmt.Println("personCallback fired!")
 		r <- false
 		return nil
 	}
 
 	deleteCallback := func(c context.Context, activity vocab.ActivityStreamsDelete) error {
-		fmt.Println("deleteCallback fired!")
-		fmt.Println(activity)
 		r <- false
 		return nil
 	}
 
 	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, updateCallback, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
-		log.Errorln(err)
+		log.Errorln("resolver error:", err)
 	}
 
 	return r
@@ -93,7 +80,7 @@ func verify(request *http.Request) (bool, error) {
 		return false, err
 	}
 
-	fmt.Println("Fetching key", pubKeyId)
+	log.Traceln("Fetching key", pubKeyId)
 
 	signature := request.Header.Get("signature")
 	var algorithmString string
@@ -113,7 +100,6 @@ func verify(request *http.Request) (bool, error) {
 
 	var actor vocab.ActivityStreamsPerson
 	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
-		fmt.Println("personCallback fired!")
 		actor = person
 		return nil
 	}
@@ -149,8 +135,10 @@ func verify(request *http.Request) (bool, error) {
 	}
 
 	// The verifier will verify the Digest in addition to the HTTP signature
-	verificationError := verifier.Verify(parsedKey, algorithm)
-	fmt.Println(verificationError)
+	if err := verifier.Verify(parsedKey, algorithm); err != nil {
+		log.Warnln("verification error for", pubKeyId, err)
+		return false, err
+	}
 
-	return verificationError == nil, verificationError
+	return true, nil
 }
