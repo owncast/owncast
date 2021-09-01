@@ -102,7 +102,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	userAvatarUrlString := data.GetServerURL() + "/logo"
 	userAvatarUrl, err := url.Parse(userAvatarUrlString)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	image := streams.NewActivityStreamsImage()
@@ -117,7 +117,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 
 	siteURL, err := url.Parse(data.GetServerURL())
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	link := streams.NewActivityStreamsLink()

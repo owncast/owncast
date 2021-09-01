@@ -11,14 +11,14 @@ import (
 
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
 )
 
 func GetPublicKey(actorIRI *url.URL) apmodels.PublicKey {
-
 	key := data.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 
 	return apmodels.PublicKey{
@@ -33,12 +33,14 @@ func GetPrivateKey() *rsa.PrivateKey {
 
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
-		panic(errors.New("failed to parse PEM block containing the key"))
+		log.Errorln(errors.New("failed to parse PEM block containing the key"))
+		return nil
 	}
 
 	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return nil
 	}
 
 	return priv
