@@ -18,7 +18,7 @@ func GetPublicKey(actorIRI *url.URL) apmodels.PublicKey {
 	key := data.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to parse actor iri string", idURL, err)
 	}
 
 	return apmodels.PublicKey{
@@ -39,7 +39,7 @@ func GetPrivateKey() *rsa.PrivateKey {
 
 	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to parse private key", err)
 		return nil
 	}
 

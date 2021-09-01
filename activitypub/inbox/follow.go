@@ -14,11 +14,10 @@ import (
 )
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
-	fmt.Println("followCallback fired!")
-
 	follow, err := resolvers.MakeFollowRequest(activity, c)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to create follow inbox request", err)
+		return err
 	}
 
 	if follow == nil {
@@ -26,10 +25,11 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	}
 
 	followRequest := *follow
-	fmt.Println("follow request:", followRequest)
+	log.Println("follow request:", followRequest)
 
 	if err := persistence.AddFollow(followRequest); err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to save follow request", err)
+		return err
 	}
 
 	localAccountName := c.Value("account").(string)
@@ -50,8 +50,6 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 }
 
 func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
-	fmt.Println("handleUndoInboxRequest fired!")
-
 	// Determine if this is an undo of a follow, favorite, announce, etc.
 	o := activity.GetActivityStreamsObject()
 	for iter := o.Begin(); iter != o.End(); iter = iter.Next() {
@@ -60,6 +58,7 @@ func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUnd
 			handleUnfollowRequest(c, activity)
 		} else {
 			log.Println("Undo", iter.GetType().GetTypeName(), "ignored")
+			continue
 		}
 	}
 
@@ -80,6 +79,8 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 }
 
 func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) error {
+	log.Debugln("handleLikeRequest")
+
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
 	handleEngagementActivity(object, actorReference, "liked")
@@ -87,6 +88,8 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 }
 
 func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnnounce) error {
+	log.Debugln("handleAnnounceRequest")
+
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
 	handleEngagementActivity(object, actorReference, "re-posted")
@@ -94,14 +97,15 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 }
 
 func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) {
+	log.Debugln("handleEngagementActivity")
+
 	for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
 		postIRI := iter.GetIRI().String()
-
 		// Verify we actually sent this post.
 		post, err := persistence.GetObjectByIRI(postIRI)
 		if err != nil || post == "" {
-			fmt.Println(err)
-			return
+			log.Errorln("Could not find post locally:", postIRI, err)
+			// return
 		}
 
 		// Get actor of the Like

@@ -128,9 +128,9 @@ func (ds *Datastore) Setup() {
 	}
 
 	// Set the server initialization date if needed.
-	if hasSetInitDate, _ := GetServerInitTime(); !hasSetInitDate.Valid {
-		_ = SetServerInitDate(time.Now())
-	}
+	// if hasSetInitDate, _ := GetServerInitTime(); hasSetInitDate == nil || !hasSetInitDate.Valid {
+	_ = SetServerInitTime(time.Now())
+	// }
 }
 
 // Reset will delete all config entries in the datastore and start over.

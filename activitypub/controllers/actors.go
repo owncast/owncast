@@ -90,19 +90,20 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	publicKeyProp.AppendW3IDSecurityV1PublicKey(publicKeyType)
 	person.SetW3IDSecurityV1PublicKey(publicKeyProp)
 
-	if t, err := data.GetServerInitTime(); t.Valid {
+	if t, err := data.GetServerInitTime(); t != nil {
 		publishedDateProp := streams.NewActivityStreamsPublishedProperty()
 		publishedDateProp.Set(t.Time)
 		person.SetActivityStreamsPublished(publishedDateProp)
-		log.Errorln(err)
+		log.Errorln("unable to fetch server init time", err)
 	}
+
 	// Profile properties
 
 	// Avatar
 	userAvatarUrlString := data.GetServerURL() + "/logo/external"
 	userAvatarUrl, err := url.Parse(userAvatarUrlString)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to parse user avatar url", userAvatarUrlString, err)
 	}
 
 	image := streams.NewActivityStreamsImage()
@@ -117,7 +118,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 
 	siteURL, err := url.Parse(data.GetServerURL())
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("unable to parse site url", siteURL, err)
 	}
 
 	link := streams.NewActivityStreamsLink()
@@ -156,7 +157,8 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := requests.WriteStreamResponse(person, w, publicKey); err != nil {
-		fmt.Println(err)
+		log.Errorln("unable to write stream response for actor handler", err)
+		return
 	}
 }
 
