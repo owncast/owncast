@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.42.0
 	github.com/go-fed/activity v1.0.0
 	github.com/go-fed/httpsig v1.1.0
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
