@@ -202,7 +202,7 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	thumbnail.Path = "/logo"
+	thumbnail.Path = "/logo/external"
 
 	res := response{
 		URI:              serverURL,
