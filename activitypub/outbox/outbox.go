@@ -1,6 +1,7 @@
 package outbox
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
+	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
 
@@ -81,7 +83,8 @@ func SendLive() {
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return
 	}
 	SendToFollowers(b)
 	Add(note, noteID)
@@ -96,7 +99,8 @@ func SendPublicMessage(textContent string) {
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return
 	}
 	SendToFollowers(b)
 
@@ -108,12 +112,14 @@ func SendToFollowers(payload []byte) {
 
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return
 	}
 
 	for _, follower := range followers {
 		if _, err := requests.PostSignedRequest(payload, follower.Inbox, localActor); err != nil {
-			panic(err)
+			log.Errorln(err)
+			return
 		}
 	}
 }
@@ -123,12 +129,14 @@ func Add(item vocab.Type, id string) error {
 	typeString := item.GetTypeName()
 
 	if iri == "" {
-		panic("Unable to get iri from item")
+		log.Errorln("Unable to get iri from item")
+		return errors.New("Unable to get iri from item " + id)
 	}
 
 	b, err := apmodels.Serialize(item)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		return err
 	}
 
 	return persistence.AddToOutbox(id, iri, b, typeString)

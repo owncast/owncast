@@ -5,6 +5,7 @@ import (
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
 )
 
 func Start(datastore *data.Datastore) {
@@ -17,7 +18,7 @@ func Start(datastore *data.Datastore) {
 		_ = data.SetPrivateKey(string(privateKey))
 		_ = data.SetPublicKey(string(publicKey))
 		if err != nil {
-			panic(err)
+			log.Errorln(err)
 		}
 	}
 }

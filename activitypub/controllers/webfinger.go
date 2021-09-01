@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,6 +60,6 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(webfingerResponse); err != nil {
-		panic(err)
+		log.Errorln(err)
 	}
 }
