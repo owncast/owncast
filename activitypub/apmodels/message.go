@@ -9,7 +9,7 @@ import (
 
 func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
 	objectId := MakeLocalIRIForResource("/create-" + id)
-	message := MakeActivity(objectId)
+	message := MakeCreateActivity(objectId)
 
 	actorProp := streams.NewActivityStreamsActorProperty()
 	actorProp.AppendIRI(localAccountIRI)
@@ -28,7 +28,7 @@ func CreateMessageActivity(id string, content string, localAccountIRI *url.URL) 
 	actorProp := streams.NewActivityStreamsActorProperty()
 	actorProp.AppendIRI(localAccountIRI)
 
-	message := MakeActivity(objectId)
+	message := MakeCreateActivity(objectId)
 
 	object := streams.NewActivityStreamsObjectProperty()
 
