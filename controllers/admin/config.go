@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -45,6 +46,9 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
+
+	// Update Fediverse followers about this change.
+	outbox.UpdateFollowersWithAccountUpdates()
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -99,6 +103,9 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Fediverse followers about this change.
+	outbox.UpdateFollowersWithAccountUpdates()
+
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
@@ -117,6 +124,9 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
+
+	// Update Fediverse followers about this change.
+	outbox.UpdateFollowersWithAccountUpdates()
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -232,6 +242,9 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
+
+	// Update Fediverse followers about this change.
+	outbox.UpdateFollowersWithAccountUpdates()
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -503,6 +516,9 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
 		return
 	}
+
+	// Update Fediverse followers about this change.
+	outbox.UpdateFollowersWithAccountUpdates()
 
 	controllers.WriteSimpleResponse(w, true, "social handles updated")
 }

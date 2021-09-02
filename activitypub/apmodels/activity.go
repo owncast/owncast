@@ -14,8 +14,22 @@ const (
 	PUBLIC PrivacyAudience = "https://www.w3.org/ns/activitystreams#Public"
 )
 
-func MakeActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
+func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	activity := streams.NewActivityStreamsCreate()
+	id := streams.NewJSONLDIdProperty()
+	id.Set(activityID)
+	activity.SetJSONLDId(id)
+
+	public, _ := url.Parse(PUBLIC)
+	to := streams.NewActivityStreamsToProperty()
+	to.AppendIRI(public)
+	activity.SetActivityStreamsTo(to)
+
+	return activity
+}
+
+func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
+	activity := streams.NewActivityStreamsUpdate()
 	id := streams.NewJSONLDIdProperty()
 	id.Set(activityID)
 	activity.SetJSONLDId(id)

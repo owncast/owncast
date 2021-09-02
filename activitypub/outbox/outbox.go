@@ -132,6 +132,37 @@ func SendToFollowers(payload []byte) {
 	}
 }
 
+func UpdateFollowersWithAccountUpdates() {
+	log.Println("Updating followers with new actor details")
+
+	id := shortid.MustGenerate()
+	objectId := apmodels.MakeLocalIRIForResource(id)
+	activity := apmodels.MakeUpdateActivity(objectId)
+
+	// actor := apmodels.MakeActor(data.GetDefaultFederationUsername())
+	actor := streams.NewActivityStreamsPerson()
+	actorID := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	actorIDProperty := streams.NewJSONLDIdProperty()
+	actorIDProperty.Set(actorID)
+	actor.SetJSONLDId(actorIDProperty)
+
+	actorProperty := streams.NewActivityStreamsActorProperty()
+	actorProperty.AppendActivityStreamsPerson(actor)
+	activity.SetActivityStreamsActor(actorProperty)
+
+	obj := streams.NewActivityStreamsObjectProperty()
+	obj.AppendIRI(actorID)
+	activity.SetActivityStreamsObject(obj)
+
+	b, err := apmodels.Serialize(activity)
+	if err != nil {
+		log.Errorln("unable to serialize send update actor activity", err)
+		return
+	}
+	SendToFollowers(b)
+
+}
+
 func Add(item vocab.Type, id string) error {
 	iri := "/" + item.GetJSONLDId().GetIRI().Path
 	typeString := item.GetTypeName()
