@@ -282,3 +282,18 @@ func GetLocalPostCount() int {
 
 	return totalCount
 }
+
+func GetFollowerCount() int {
+	var totalCount int
+
+	query := `SElECT count(*) FROM ap_followers`
+	rows, err := _datastore.DB.Query(query)
+	if err != nil {
+		return totalCount
+	}
+	defer rows.Close()
+	rows.Next()
+	rows.Scan(&totalCount)
+
+	return totalCount
+}

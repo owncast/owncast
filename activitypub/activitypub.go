@@ -30,3 +30,7 @@ func SendLive() {
 func SendPublicFederatedMessage(message string) {
 	outbox.SendPublicMessage(message)
 }
+
+func GetFollowerCount() int {
+	return persistence.GetFollowerCount()
+}
