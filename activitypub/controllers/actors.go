@@ -90,7 +90,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	publicKeyProp.AppendW3IDSecurityV1PublicKey(publicKeyType)
 	person.SetW3IDSecurityV1PublicKey(publicKeyProp)
 
-	if t, err := data.GetServerInitTime(); t != nil {
+	if t, err := data.GetServerInitTime(); t == nil {
 		publishedDateProp := streams.NewActivityStreamsPublishedProperty()
 		publishedDateProp.Set(t.Time)
 		person.SetActivityStreamsPublished(publishedDateProp)
