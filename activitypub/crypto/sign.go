@@ -7,10 +7,9 @@ import (
 	"time"
 
 	"github.com/go-fed/httpsig"
-	"github.com/owncast/owncast/activitypub/apmodels"
 )
 
-func SignResponse(w http.ResponseWriter, body []byte, publicKey apmodels.PublicKey) error {
+func SignResponse(w http.ResponseWriter, body []byte, publicKey PublicKey) error {
 	privateKey := GetPrivateKey()
 
 	return signResponse(privateKey, *publicKey.Id, body, w)

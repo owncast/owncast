@@ -9,19 +9,18 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 
-func GetPublicKey(actorIRI *url.URL) apmodels.PublicKey {
+func GetPublicKey(actorIRI *url.URL) PublicKey {
 	key := data.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
 	if err != nil {
 		log.Errorln("unable to parse actor iri string", idURL, err)
 	}
 
-	return apmodels.PublicKey{
+	return PublicKey{
 		Id:           idURL,
 		Owner:        actorIRI,
 		PublicKeyPem: key,
