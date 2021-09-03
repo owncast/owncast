@@ -46,8 +46,9 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	inboxProp.SetIRI(inboxIRI)
 	person.SetActivityStreamsInbox(inboxProp)
 
-	// TODO: Add needsManualApproval Property
-	// needsFollowApprovalProperty := streams.NewManually()
+	needsFollowApprovalProperty := streams.NewActivityStreamsManuallyApprovesFollowersProperty()
+	needsFollowApprovalProperty.Set(false)
+	person.SetActivityStreamsManuallyApprovesFollowers(needsFollowApprovalProperty)
 
 	outboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/outbox")
 
@@ -79,10 +80,11 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	publicKeyProp.AppendW3IDSecurityV1PublicKey(publicKeyType)
 	person.SetW3IDSecurityV1PublicKey(publicKeyProp)
 
-	if t, err := data.GetServerInitTime(); t == nil {
+	if t, err := data.GetServerInitTime(); t != nil {
 		publishedDateProp := streams.NewActivityStreamsPublishedProperty()
 		publishedDateProp.Set(t.Time)
 		person.SetActivityStreamsPublished(publishedDateProp)
+	} else {
 		log.Errorln("unable to fetch server init time", err)
 	}
 
@@ -110,12 +112,8 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 		log.Errorln("unable to parse site url", siteURL, err)
 	}
 
-	link := streams.NewActivityStreamsLink()
-	hrefLink := streams.NewActivityStreamsHrefProperty()
-	hrefLink.Set(siteURL)
-	link.SetActivityStreamsHref(hrefLink)
 	urlProperty := streams.NewActivityStreamsUrlProperty()
-	urlProperty.AppendActivityStreamsLink(link)
+	urlProperty.AppendIRI(actorIRI)
 	person.SetActivityStreamsUrl(urlProperty)
 
 	// Profile header
@@ -138,6 +136,10 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	for _, link := range data.GetSocialHandles() {
 		addMetadataLinkToProfile(person, link.Platform, link.URL)
 	}
+
+	discoverableProperty := streams.NewTootDiscoverableProperty()
+	discoverableProperty.Set(true)
+	person.SetTootDiscoverable(discoverableProperty)
 
 	// Work around an issue where a single attachment will not serialize
 	// as an array, so add another item to the mix.
