@@ -17,10 +17,11 @@ import ExternalActionModal, {
   ExternalActionButton,
 } from './components/external-action-modal.js';
 
+import FediverseFollowModal, {FediverseFollowButton} from './components/fediverse-follow-modal.js';
+
 import {
   addNewlines,
   classNames,
-  clearLocalStorage,
   debounce,
   getLocalStorage,
   getOrientation,
@@ -90,6 +91,7 @@ export default class App extends Component {
       orientation: getOrientation(this.hasTouchScreen),
 
       externalAction: null,
+      showFediverseFollowModal: false,
     };
 
     // timers
@@ -116,7 +118,9 @@ export default class App extends Component {
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
     this.displayExternalAction = this.displayExternalAction.bind(this);
     this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
-
+    this.displayFediverseFollowModal = this.displayFediverseFollowModal.bind(this);
+    this.closeFediverseFollowModal = this.closeFediverseFollowModal.bind(this);
+    
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
@@ -537,6 +541,13 @@ export default class App extends Component {
     });
   }
 
+  displayFediverseFollowModal() {
+    this.setState({displayFediverseFollowModal: true});
+  }
+  closeFediverseFollowModal() {
+    this.setState({displayFediverseFollowModal: false});
+  }
+
   handleWebsocketMessage(e) {
     if (e.type === SOCKET_MESSAGE_TYPES.ERROR_USER_DISABLED) {
       // User has been actively disabled on the backend. Turn off chat for them.
@@ -642,6 +653,7 @@ export default class App extends Component {
       windowWidth,
       externalAction,
       lastDisconnectTime,
+      displayFediverseFollowModal,
     } = state;
     const {
       version: appVersion,
@@ -710,6 +722,9 @@ export default class App extends Component {
           }.bind(this)
         )}
       </div>`;
+
+    const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
+    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} />`;
 
     // modal component
     const externalActionModal =
@@ -829,6 +844,7 @@ export default class App extends Component {
               </h2>
               ${externalActionButtons &&
               html`<div>${externalActionButtons}</div>`}
+              ${fediverseFollowButton}
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
@@ -858,7 +874,7 @@ export default class App extends Component {
           </span>
         </footer>
 
-        ${chat} ${externalActionModal}
+        ${chat} ${externalActionModal} ${fediverseFollowModal}
       </div>
     `;
   }

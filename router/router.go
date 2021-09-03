@@ -72,6 +72,9 @@ func Start() error {
 	// register a new chat user
 	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
 
+	// return remote follow details
+	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
