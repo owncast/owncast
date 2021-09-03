@@ -105,12 +105,7 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	icon.AppendActivityStreamsImage(image)
 	person.SetActivityStreamsIcon(icon)
 
-	// Site URL
-
-	siteURL, err := url.Parse(data.GetServerURL())
-	if err != nil {
-		log.Errorln("unable to parse site url", siteURL, err)
-	}
+	// Actor  URL
 
 	urlProperty := streams.NewActivityStreamsUrlProperty()
 	urlProperty.AppendIRI(actorIRI)
@@ -137,9 +132,17 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 		addMetadataLinkToProfile(person, link.Platform, link.URL)
 	}
 
+	// Discoverable
 	discoverableProperty := streams.NewTootDiscoverableProperty()
 	discoverableProperty.Set(true)
 	person.SetTootDiscoverable(discoverableProperty)
+
+	// followers
+	followersProperty := streams.NewActivityStreamsFollowersProperty()
+	followersURL := *actorIRI
+	followersURL.Path = actorIRI.Path + "/followers"
+	followersProperty.SetIRI(&followersURL)
+	person.SetActivityStreamsFollowers(followersProperty)
 
 	// Work around an issue where a single attachment will not serialize
 	// as an array, so add another item to the mix.
