@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
 	github.com/aws/aws-sdk-go v1.42.0
-	github.com/go-fed/activity v1.0.0
+	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/websocket v1.4.2
