@@ -5,8 +5,9 @@ import (
 )
 
 type Webfinger struct {
-	Subject string `json:"subject"`
-	Links   []Link `json:"links"`
+	Aliases []string `json:"aliases"`
+	Subject string   `json:"subject"`
+	Links   []Link   `json:"links"`
 }
 
 type Link struct {
@@ -20,6 +21,9 @@ func MakeWebfingerResponse(account string, inbox string, host string) Webfinger 
 
 	return Webfinger{
 		Subject: fmt.Sprintf("acct:%s@%s", account, host),
+		Aliases: []string{
+			accountIRI.String(),
+		},
 		Links: []Link{
 			{
 				Rel:  "self",
@@ -27,10 +31,10 @@ func MakeWebfingerResponse(account string, inbox string, host string) Webfinger 
 				Href: accountIRI.String(),
 			},
 			{
-				Rel: "http://webfinger.net/rel/profile-page",
+				Rel:  "http://webfinger.net/rel/profile-page",
 				Type: "text/html",
-				accountIRI.String(),
-			}
+				Href: accountIRI.String(),
+			},
 		},
 	}
 }
