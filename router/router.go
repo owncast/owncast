@@ -74,6 +74,8 @@ func Start() error {
 	// return remote follow details
 	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
 
+	// return followers
+	http.HandleFunc("/api/followers", controllers.GetFollowers)
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
