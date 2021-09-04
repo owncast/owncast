@@ -181,7 +181,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 		return 31557600
 	} else if fileExtension == ".m3u8" {
 		return 0
-	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" {
+	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
 		return 60 * 60 * 24
 	}
 
