@@ -168,8 +168,8 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	filename := path.Base(filePath)
 	fileExtension := path.Ext(filePath)
 
-	if filename == "thumbnail.jpg" {
-		// Thumbnails re-generate during live
+	if filename == "thumbnail.jpg" || filename == "preview.gif" {
+		// Thumbnails & preview gif re-generate during live
 		return 20
 	} else if fileExtension == ".js" || fileExtension == ".css" {
 		// Cache javascript & CSS
