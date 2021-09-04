@@ -26,6 +26,11 @@ func MakeWebfingerResponse(account string, inbox string, host string) Webfinger 
 				Type: "application/activity+json",
 				Href: accountIRI.String(),
 			},
+			{
+				Rel: "http://webfinger.net/rel/profile-page",
+				Type: "text/html",
+				accountIRI.String(),
+			}
 		},
 	}
 }
