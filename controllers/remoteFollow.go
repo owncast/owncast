@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/core/data"
 )
 
@@ -94,4 +95,21 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	}
 
 	return links.Links, nil
+}
+
+func GetFollowers(w http.ResponseWriter, r *http.Request) {
+	type follower struct {
+		Name  string `json:"name"`
+		Image string `json:"image"`
+		Link  string `json:"link"`
+	}
+
+	type followersResponse struct {
+		Followers []follower `json:"followers"`
+	}
+
+	followers, err := activitypub.GetFederationFollowers()
+	response := followersResponse{}
+
+	WriteResponse(w, response)
 }
