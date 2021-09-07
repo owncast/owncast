@@ -7,4 +7,5 @@ webroot/js/web_modules/common/* linguist-vendored
 webroot/js/web_modules/markjs/dist/* linguist-vendored
 webroot/js/web_modules/tailwindcss/dist/* linguist-vendored
 webroot/js/web_modules/videojs/* linguist-vendored
+webroot/js/web_modules/micromodal/dist/* linguist-vendored
 doc/api/* linguist-documentation
