@@ -37,7 +37,7 @@ func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey 
 }
 
 func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.PublicKey) error {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/activity+json")
 
 	if err := crypto.SignResponse(w, payload, publicKey); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
