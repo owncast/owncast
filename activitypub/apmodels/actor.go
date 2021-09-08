@@ -144,6 +144,15 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	followersProperty.SetIRI(&followersURL)
 	person.SetActivityStreamsFollowers(followersProperty)
 
+	// tags
+	tagProp := streams.NewActivityStreamsTagProperty()
+	for _, tagString := range data.GetServerMetadataTags() {
+		hashtag := MakeHashtag(tagString)
+		tagProp.AppendTootHashtag(hashtag)
+	}
+
+	person.SetActivityStreamsTag(tagProp)
+
 	// Work around an issue where a single attachment will not serialize
 	// as an array, so add another item to the mix.
 	if len(data.GetSocialHandles()) == 1 {
