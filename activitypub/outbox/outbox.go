@@ -40,24 +40,15 @@ func SendLive() {
 	// TODO: Need to assign to a `hashtag` property, not `tag`
 	tagProp := streams.NewActivityStreamsTagProperty()
 	for _, tagString := range data.GetServerMetadataTags() {
-		mention := streams.NewActivityStreamsMention()
-		mentionName := streams.NewActivityStreamsNameProperty()
-		mentionName.AppendXMLSchemaString("#" + tagString)
-		mention.SetActivityStreamsName(mentionName)
-
-		name := streams.NewActivityStreamsNameProperty()
-		name.AppendXMLSchemaString("#" + tagString)
-
-		tagProp.AppendActivityStreamsMention(mention)
+		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
+		hashtag := apmodels.MakeHashtag(tagWithoutSpecialCharacters)
+		tagProp.AppendTootHashtag(hashtag)
 
 		// TODO: Do we want to display tags or just assign them?
-		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
 		tagString := fmt.Sprintf("<a class=\"hashtag\" href=\"https://directory.owncast.online/tags/%s\">#%s</a>", tagWithoutSpecialCharacters, tagWithoutSpecialCharacters)
 		tagStrings = append(tagStrings, tagString)
 	}
 	tagsString := strings.Join(tagStrings, " ")
-
-	activity.SetActivityStreamsTag(tagProp)
 
 	var streamTitle string
 	if title := data.GetStreamTitle(); title != "" {
@@ -68,6 +59,7 @@ func SendLive() {
 	log.Println(textContent)
 
 	note := apmodels.MakeNote(textContent, noteIRI, localActor)
+	note.SetActivityStreamsTag(tagProp)
 	object.AppendActivityStreamsNote(note)
 
 	// Attach an image along with the Federated message.
