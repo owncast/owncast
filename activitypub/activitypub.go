@@ -3,15 +3,19 @@ package activitypub
 import (
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
+var _datastore *data.Datastore
+
 func Start(datastore *data.Datastore) {
+	_datastore = datastore
+
 	persistence.Setup(datastore)
 	StartRouter()
 
@@ -38,8 +42,8 @@ func GetFollowerCount() int {
 	return persistence.GetFollowerCount()
 }
 
-func GetFederationFollowers() ([]apmodels.ActivityPubActor, error) {
-	followers := make([]apmodels.ActivityPubActor, 0)
+func GetFederationFollowers() ([]models.Follower, error) {
+	followers := make([]models.Follower, 0)
 
 	var query = "SELECT iri, inbox FROM ap_followers"
 
@@ -61,9 +65,11 @@ func GetFederationFollowers() ([]apmodels.ActivityPubActor, error) {
 		iri, _ := url.Parse(iriString)
 		inbox, _ := url.Parse(inboxString)
 
-		singleFollower := apmodels.ActivityPubActor{
-			ActorIri: iri,
-			Inbox:    inbox,
+		singleFollower := models.Follower{
+			Name:  "FILL IN NAME HERE",
+			Image: "",
+			Link:  iri.String(),
+			Inbox: *inbox,
 		}
 
 		followers = append(followers, singleFollower)

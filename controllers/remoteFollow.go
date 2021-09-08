@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 )
 
 func RemoteFollow(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +83,7 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	query := requestURL.Query()
 	query.Add("resource", fmt.Sprintf("acct:%s", account))
 	requestURL.RawQuery = query.Encode()
+	fmt.Println(requestURL.String())
 
 	response, err := http.DefaultClient.Get(requestURL.String())
 	if err != nil {
@@ -98,18 +100,15 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 }
 
 func GetFollowers(w http.ResponseWriter, r *http.Request) {
-	type follower struct {
-		Name  string `json:"name"`
-		Image string `json:"image"`
-		Link  string `json:"link"`
-	}
-
 	type followersResponse struct {
-		Followers []follower `json:"followers"`
+		Followers []models.Follower `json:"followers"`
 	}
 
 	followers, err := activitypub.GetFederationFollowers()
-	response := followersResponse{}
+	if err != nil {
+		WriteSimpleResponse(w, false, "unable to fetch followers")
+	}
+	response := followersResponse{Followers: followers}
 
 	WriteResponse(w, response)
 }
