@@ -22,7 +22,7 @@ func Setup(datastore *data.Datastore) {
 
 func AddFollow(follow apmodels.ActivityPubActor) error {
 	log.Println("Saving", follow.ActorIri, "as a follower.")
-	return createFollow(follow.ActorIri, follow.Inbox)
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String())
 }
 
 func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
@@ -33,7 +33,7 @@ func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
 func GetFederationFollowers() ([]apmodels.ActivityPubActor, error) {
 	followers := make([]apmodels.ActivityPubActor, 0)
 
-	var query = "SELECT iri, inbox FROM ap_followers"
+	var query = "SELECT iri, name, username, image, inbox FROM ap_followers"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
@@ -43,19 +43,25 @@ func GetFederationFollowers() ([]apmodels.ActivityPubActor, error) {
 
 	for rows.Next() {
 		var iriString string
+		var name string
+		var usernameString string
+		var imageString string
 		var inboxString string
 
-		if err := rows.Scan(&iriString, &inboxString); err != nil {
+		if err := rows.Scan(&iriString, &name, &usernameString, &imageString, &inboxString); err != nil {
 			log.Error("There is a problem reading the database.", err)
 			return followers, err
 		}
 
 		iri, _ := url.Parse(iriString)
 		inbox, _ := url.Parse(inboxString)
-
+		image, _ := url.Parse(imageString)
 		singleFollower := apmodels.ActivityPubActor{
 			ActorIri: iri,
 			Inbox:    inbox,
+			Name:     name,
+			Username: usernameString,
+			Image:    image,
 		}
 
 		followers = append(followers, singleFollower)
@@ -68,7 +74,7 @@ func GetFederationFollowers() ([]apmodels.ActivityPubActor, error) {
 	return followers, nil
 }
 
-func createFollow(actor *url.URL, inbox *url.URL) error {
+func createFollow(actor string, inbox string, name string, username string, image string) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -80,14 +86,14 @@ func createFollow(actor *url.URL, inbox *url.URL) error {
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("INSERT INTO ap_followers(iri, inbox) values(?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO ap_followers(iri, inbox, name, username, image) values(?, ?, ?, ?, ?)")
 
 	if err != nil {
 		log.Debugln(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(actor.String(), inbox.String())
+	_, err = stmt.Exec(actor, inbox, name, username, image)
 	if err != nil {
 		log.Errorln("error creating new federation follow", err)
 	}
@@ -154,6 +160,9 @@ func createFederationFollowersTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
 		"inbox" TEXT NOT NULL,
+		"name" TEXT,
+		"username" TEXT NOT NULL,
+		"image" TEXT,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri ON ap_followers (iri);
