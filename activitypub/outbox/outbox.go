@@ -48,6 +48,15 @@ func SendLive() {
 		tagString := fmt.Sprintf("<a class=\"hashtag\" href=\"https://directory.owncast.online/tags/%s\">#%s</a>", tagWithoutSpecialCharacters, tagWithoutSpecialCharacters)
 		tagStrings = append(tagStrings, tagString)
 	}
+
+	// Manualy add Owncast hashtag if it doesn't already exist so it shows up
+	// in Owncast search results.
+	// We can remove this down the road, but it'll be nice for now.
+	if _, exists := utils.FindInSlice(tagStrings, "owncast"); !exists {
+		hashtag := apmodels.MakeHashtag("owncast")
+		tagProp.AppendTootHashtag(hashtag)
+	}
+
 	tagsString := strings.Join(tagStrings, " ")
 
 	var streamTitle string
@@ -132,7 +141,6 @@ func UpdateFollowersWithAccountUpdates() {
 	objectId := apmodels.MakeLocalIRIForResource(id)
 	activity := apmodels.MakeUpdateActivity(objectId)
 
-	// actor := apmodels.MakeActor(data.GetDefaultFederationUsername())
 	actor := streams.NewActivityStreamsPerson()
 	actorID := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	actorIDProperty := streams.NewJSONLDIdProperty()
