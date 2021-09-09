@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/owncast/owncast/activitypub"
+	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
@@ -104,7 +104,7 @@ func GetFollowers(w http.ResponseWriter, r *http.Request) {
 		Followers []models.Follower `json:"followers"`
 	}
 
-	followers, err := activitypub.GetFederationFollowers()
+	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
 		WriteSimpleResponse(w, false, "unable to fetch followers")
 	}

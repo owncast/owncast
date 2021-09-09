@@ -117,7 +117,8 @@ func SendToFollowers(payload []byte) {
 	}
 
 	for _, follower := range followers {
-		if _, err := requests.PostSignedRequest(payload, follower.Inbox, localActor); err != nil {
+		inbox, _ := url.Parse(follower.Inbox)
+		if _, err := requests.PostSignedRequest(payload, inbox, localActor); err != nil {
 			log.Errorln("unable to send to follower inbox", follower.Inbox, err)
 			return
 		}
@@ -177,7 +178,3 @@ func Get() vocab.ActivityStreamsOrderedCollectionPage {
 	orderedCollection, _ := persistence.GetOutbox()
 	return orderedCollection
 }
-
-// func AddPayloadToOutbox(id string, payload []byte) {
-// 	persistence.AddToOutbox(id, payload)
-// }

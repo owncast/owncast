@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/go-fed/activity/streams"
@@ -50,12 +51,10 @@ func FollowersHandler(w http.ResponseWriter, r *http.Request) {
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 
 	for _, follower := range followers {
-		person := streams.NewActivityStreamsPerson()
-		idProperty := streams.NewJSONLDIdProperty()
-		idProperty.Set(follower.ActorIri)
-		person.SetJSONLDId(idProperty)
-		orderedItems.AppendActivityStreamsPerson(person)
+		u, _ := url.Parse(follower.Link)
+		orderedItems.AppendIRI(u)
 	}
+	collection.SetActivityStreamsOrderedItems(orderedItems)
 
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
