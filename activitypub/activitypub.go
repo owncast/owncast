@@ -1,8 +1,6 @@
 package activitypub
 
 import (
-	"net/url"
-
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
@@ -45,7 +43,7 @@ func GetFollowerCount() int {
 func GetFederationFollowers() ([]models.Follower, error) {
 	followers := make([]models.Follower, 0)
 
-	var query = "SELECT iri, inbox FROM ap_followers"
+	var query = "SELECT iri, inbox, name, username, image FROM ap_followers"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
@@ -56,20 +54,21 @@ func GetFederationFollowers() ([]models.Follower, error) {
 	for rows.Next() {
 		var iriString string
 		var inboxString string
+		var nameString string
+		var usernameString string
+		var imageString string
 
-		if err := rows.Scan(&iriString, &inboxString); err != nil {
+		if err := rows.Scan(&iriString, &inboxString, &nameString, &usernameString, &imageString); err != nil {
 			log.Error("There is a problem reading the database.", err)
 			return followers, err
 		}
 
-		iri, _ := url.Parse(iriString)
-		inbox, _ := url.Parse(inboxString)
-
 		singleFollower := models.Follower{
-			Name:  "FILL IN NAME HERE",
-			Image: "",
-			Link:  iri.String(),
-			Inbox: *inbox,
+			Name:     nameString,
+			Username: usernameString,
+			Image:    imageString,
+			Link:     iriString,
+			Inbox:    inboxString,
 		}
 
 		followers = append(followers, singleFollower)
