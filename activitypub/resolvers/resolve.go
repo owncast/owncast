@@ -82,8 +82,6 @@ func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab
 
 	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
 		if iter.IsIRI() {
-			log.Println("Is IRI", iter.GetIRI())
-
 			iri := iter.GetIRI()
 			c := context.TODO()
 			if e := ResolveIRI(iri.String(), c, personCallback); e != nil {

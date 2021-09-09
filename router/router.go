@@ -76,6 +76,7 @@ func Start() error {
 
 	// return followers
 	http.HandleFunc("/api/followers", controllers.GetFollowers)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster

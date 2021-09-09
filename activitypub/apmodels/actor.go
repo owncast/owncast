@@ -16,6 +16,9 @@ type ActivityPubActor struct {
 	ActorIri  *url.URL
 	FollowIri *url.URL
 	Inbox     *url.URL
+	Name      string
+	Username  string
+	Image     *url.URL
 }
 
 type DeleteRequest struct {
