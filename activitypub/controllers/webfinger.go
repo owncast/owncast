@@ -12,6 +12,11 @@ import (
 )
 
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	resource := r.URL.Query().Get("resource")
 	resourceComponents := strings.Split(resource, ":")
 	account := resourceComponents[1]
@@ -43,21 +48,9 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// instanceHost, err := url.Parse(instanceHostString)
-	// if err != nil {
-	// 	return
-	// }
-
-	// if host != instanceHost.Host {
-	// 	w.WriteHeader(http.StatusNotFound)
-	// 	return
-	// }
-
-	// if inbox, ok := validAccounts[user]; ok {
 	webfingerResponse := apmodels.MakeWebfingerResponse(user, user, host)
 
-	w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/jrd+json")
 
 	if err := json.NewEncoder(w).Encode(webfingerResponse); err != nil {
 		log.Errorln("unable to write webfinger response", err)

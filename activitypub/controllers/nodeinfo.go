@@ -24,6 +24,11 @@ func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 		Links []links `json:"links"`
 	}
 
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	serverURL := data.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
@@ -70,6 +75,11 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		Protocols         []string `json:"protocols"`
 		Usage             usage    `json:"usage"`
 		OpenRegistrations bool     `json:"openRegistrations"`
+	}
+
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 
 	res := response{
@@ -130,6 +140,11 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		Usage             Usage        `json:"usage"`
 	}
 
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	serverURL := data.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
@@ -188,6 +203,11 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 		Registrations    bool     `json:"registrations"`
 		ApprovalRequired bool     `json:"approval_required"`
 		InvitesEnabled   bool     `json:"invites_enabled"`
+	}
+
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 
 	serverURL := data.GetServerURL()
