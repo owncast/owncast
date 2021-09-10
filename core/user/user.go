@@ -17,7 +17,7 @@ import (
 var _datastore *data.Datastore
 
 type User struct {
-	Id            string     `json:"id"`
+	ID            string     `json:"id"`
 	AccessToken   string     `json:"-"`
 	DisplayName   string     `json:"displayName"`
 	DisplayColor  int        `json:"displayColor"`
@@ -51,7 +51,7 @@ func CreateAnonymousUser(username string) (*User, error) {
 	displayColor := utils.GenerateRandomDisplayColor()
 
 	user := &User{
-		Id:           id,
+		ID:           id,
 		AccessToken:  accessToken,
 		DisplayName:  displayName,
 		DisplayColor: displayColor,
@@ -116,7 +116,7 @@ func create(user *User) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.Id, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
+	_, err = stmt.Exec(user.ID, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
 		log.Errorln("error creating new user", err)
 	}
@@ -218,7 +218,7 @@ func getUsersFromRows(rows *sql.Rows) []*User {
 		}
 
 		user := &User{
-			Id:            id,
+			ID:            id,
 			DisplayName:   displayName,
 			DisplayColor:  displayColor,
 			CreatedAt:     createdAt,
@@ -250,7 +250,7 @@ func getUserFromRow(row *sql.Row) *User {
 	}
 
 	return &User{
-		Id:            id,
+		ID:            id,
 		DisplayName:   displayName,
 		DisplayColor:  displayColor,
 		CreatedAt:     createdAt,

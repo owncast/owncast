@@ -43,7 +43,7 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	oldName := savedUser.DisplayName
 
 	// Save the new name
-	user.ChangeUsername(eventData.client.User.Id, receivedEvent.NewName)
+	user.ChangeUsername(eventData.client.User.ID, receivedEvent.NewName)
 
 	// Update the connected clients associated user with the new name
 	now := time.Now()

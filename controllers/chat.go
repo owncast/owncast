@@ -67,7 +67,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := registerAnonymousUserResponse{
-		Id:          newUser.Id,
+		Id:          newUser.ID,
 		AccessToken: newUser.AccessToken,
 		DisplayName: newUser.DisplayName,
 	}

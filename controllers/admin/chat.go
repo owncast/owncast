@@ -155,7 +155,7 @@ func SendIntegrationChatMessage(integration user.ExternalAPIUser, w http.Respons
 	}
 
 	event.User = &user.User{
-		Id:           integration.Id,
+		ID:           integration.Id,
 		DisplayName:  name,
 		DisplayColor: integration.DisplayColor,
 		CreatedAt:    integration.CreatedAt,

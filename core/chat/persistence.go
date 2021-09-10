@@ -34,7 +34,7 @@ func setupPersistence() {
 }
 
 func SaveUserMessage(event events.UserMessageEvent) {
-	saveEvent(event.Id, event.User.Id, event.Body, event.Type, event.HiddenAt, event.Timestamp)
+	saveEvent(event.Id, event.User.ID, event.Body, event.Type, event.HiddenAt, event.Timestamp)
 }
 
 func saveEvent(id string, userId string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
@@ -120,7 +120,7 @@ func getChat(query string) []events.UserMessageEvent {
 		}
 
 		user := user.User{
-			Id:            userId,
+			ID:            userId,
 			AccessToken:   "",
 			DisplayName:   *userDisplayName,
 			DisplayColor:  *userDisplayColor,

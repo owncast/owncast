@@ -172,7 +172,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 
 	// User is disabled therefore we should disconnect.
 	if user.DisabledAt != nil {
-		log.Traceln("Disabled user", user.Id, user.DisplayName, "rejected")
+		log.Traceln("Disabled user", user.ID, user.DisplayName, "rejected")
 		_ = conn.WriteJSON(events.EventPayload{
 			"type": events.ErrorUserDisabled,
 		})
@@ -234,7 +234,7 @@ func (s *ChatServer) DisconnectUser(userID string) {
 	}
 
 	for _, client := range clients {
-		log.Traceln("Disconnecting client", client.User.Id, "owned by", client.User.DisplayName)
+		log.Traceln("Disconnecting client", client.User.ID, "owned by", client.User.DisplayName)
 
 		go func(client *ChatClient) {
 			event := events.UserDisabledEvent{}

@@ -30,7 +30,7 @@ func GetClientsForUser(userID string) ([]*ChatClient, error) {
 	clients := map[string][]*ChatClient{}
 
 	for _, client := range _server.clients {
-		clients[client.User.Id] = append(clients[client.User.Id], client)
+		clients[client.User.ID] = append(clients[client.User.ID], client)
 	}
 
 	if _, exists := clients[userID]; !exists {
