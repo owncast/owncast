@@ -13,6 +13,12 @@ import (
 )
 
 func InboxHandler(w http.ResponseWriter, r *http.Request) {
+	if verified, err := inbox.Verify(r); err != nil || !verified {
+		log.Warnln("Unable to verify remote request", err)
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	if r.Method == "POST" {
 		acceptInboxRequest(w, r)
 	} else if r.Method == "GET" {
