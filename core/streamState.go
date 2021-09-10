@@ -110,7 +110,7 @@ func SetStreamAsDisconnected() {
 			log.Warnln(err)
 		}
 		if utils.DoesFileExists(playlistFilePath) {
-			f, err := os.OpenFile(playlistFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
+			f, err := os.OpenFile(playlistFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm) //nolint
 			if err != nil {
 				log.Errorln(err)
 			}
