@@ -3,14 +3,14 @@
   <a href="https://github.com/owncast/owncast" alt="Owncast">
     <img src="https://owncast.online/images/logo.png" alt="Logo" width="200">
   </a>
+</p>
 
 <br/>
 
   <p align="center">
-    <h2>Take control over your content and stream it yourself.</h2>
+    <strong>Take control over your content and stream it yourself.</strong>
     <br />
     <a href="http://owncast.online"><strong>Explore the docs »</strong></a>
-    <br />
     <br />
     <a href="https://watch.owncast.online/">View Demo</a>
     ·
@@ -28,12 +28,9 @@
 
 - [About the Project](#about-the-project)
 - [Getting Started](#getting-started)
-  - [Getting Started](#getting-started)
-  - [Configuration](#configuration)
-  - [Web Interface & Chat](#web-interface--chat)
 - [Use with your broadcasting software](#use-with-your-existing-broadcasting-software)
-- [Video storage and distribution options](#video-storage-options)
 - [Building from source](#building-from-source)
+- [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 
@@ -47,7 +44,7 @@
   </a>
 </p>
 
-Owncast is an open source, self-hosted, decentralized, single user live streaming and chat server for running your own live streams similar in style to the large mainstream options.  It offers complete ownership over your content, interface, moderation and audience. <a href="https://watch.owncast.online">Visit the demo</a> for an example.
+Owncast is an open source, self-hosted, decentralized, single user live video streaming and chat server for running your own live streams similar in style to the large mainstream options.  It offers complete ownership over your content, interface, moderation and audience. <a href="https://watch.owncast.online">Visit the demo</a> for an example.
 
 <div>
     <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/owncast/owncast/total?style=for-the-badge">
@@ -69,40 +66,11 @@ Owncast is an open source, self-hosted, decentralized, single user live streamin
 
 The goal is to have a single service that you can run and it works out of the box. **Visit the [Quickstart](https://owncast.online/docs/quickstart/) to get up and running.**
 
-## Configuration
-
-Many aspects can be adjusted and customized to your preferences. [Read more about Configuration](https://owncast.online/docs/configuration/) to update the web UI, video settings, and more.
-
-## Web interface + chat
-
-Owncast includes a web interface to your video with built-in chat that is available once you start the server.
-
-The web interface was specifically built to be editable by anybody comfortable tweaking a web page. It's not bundled or transpiled into anything, it's just HTML + Javascript + CSS that you can start editing.
-
-Read more about the features provided and how to configure them in the [web documentation](https://owncast.online/docs/website/).
-
 ## Use with your existing broadcasting software
 
 In general Owncast is compatible with any software that uses `RTMP` to broadcast to a remote server. `RTMP` is what all the major live streaming services use, so if you’re currently using one of those it’s likely that you can point your existing software at your Owncast instance instead.
 
 OBS, Streamlabs, Restream and many others have been used with Owncast. [Read more about compatibility with existing software](https://owncast.online/docs/broadcasting/).
-
-## Video storage options
-
-Two ways of storing and distributing the video are supported.
-
-1. Locally via the Owncast server.
-2. [S3-compatible storage](https://owncast.online/docs/s3/).
-
-### Local file distribution
-
-This is the simplest and works out of the box. In this scenario video will be served to the public from the computer that is running the server. If you have a fast internet connection, enough bandwidth alotted to you, and a small audience this may be fine for many people.
-
-### S3-Compatible Storage
-
-Instead of serving video directly from your personal server you can use a S3 compatible storage provider to offload the bandwidth and storage requirements elsewhere.
-
-Read [more detailed documentation about configuration of S3-compatible services](https://owncast.online/docs/s3/).
 
 ## Building from Source
 
@@ -123,6 +91,27 @@ To bundle in the latest admin UI:
 1. Install pkger. `go install github.com/markbates/pkger/cmd/...`
 1. From the owncast directory run the packager script: `./build/admin/bundleAdmin.sh`
 1. Compile or run like above. `go run main.go pkged.go`
+
+## Contributing
+
+Owncast is a growing open source project that is giving freedom, flexibility and fun to live streamers.
+And while we have a small team of kind, talented and thoughtful volunteers, we have gaps in our skillset that we’d love to fill so we can get even better at building tools that make a difference for people.
+
+We abide by our [Code of Conduct](https://owncast.online/contribute/) and feel strongly about open, appreciative, and empathetic people joining us.
+We’ve been very lucky to have this so far, so maybe you can help us with your skills and passion, too!
+
+There is a larger, more detailed, and more up-to-date [guide for helping contribute to Owncast on our website](https://owncast.online/help/).
+
+### Architecture
+
+Owncast consists of two repositories with two standalone projects. [The repo you're looking at now](https://github.com/owncast/owncast) is the core repository with the backend and frontend.  [owncast/owncast-admin](https://github.com/owncast/owncast-admin) is an additional web project that is built separately and used for configuration and management of an Owncast server.
+
+### Suggestions when working with the Owncast codebase
+
+1. Install [golangci-lint](https://golangci-lint.run/usage/install/) for helpful warnings and suggestions [directly in your editor](https://golangci-lint.run/usage/integrations/) when writing Go.
+1. If using VSCode install the [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) extension to aid in syntax highlighting of our frontend HTML + Preact.
+1. Run the project with `go run main.go pkged.go` to make sure the Admin (at `/admin`) is available to you in your development environment.
+
 
 <!-- LICENSE -->
 
