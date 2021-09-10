@@ -58,6 +58,32 @@ func createFollow(actor string, inbox string, name string, username string, imag
 	return tx.Commit()
 }
 
+func UpdateFollower(actorIRI string, inbox string, name string, username string, image string) error {
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	tx, err := _datastore.DB.Begin()
+	if err != nil {
+		log.Debugln(err)
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	stmt, err := tx.Prepare("UPDATE ap_followers SET inbox = ?, name = ?, username = ?, image = ? WHERE iri IS ?")
+	if err != nil {
+		log.Debugln(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(actorIRI)
+	if err != nil {
+		log.Errorln("error removing federation follow", err)
+	}
+
+	return tx.Commit()
+}
+
 func removeFollow(actor *url.URL) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
