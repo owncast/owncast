@@ -17,12 +17,12 @@ linters:
     - godot
     - godox
     - goimports
-    - golint
     - goprintffuncname
     - gosec
     - govet
     - misspell
     - prealloc
+    - revive
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
