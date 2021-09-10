@@ -3,9 +3,23 @@ run:
   modules-download-mode: readonly
 
 issues:
+  # The linter has a default list of ignorable errors. Turning this on will enable that list.
   exclude-use-default: false
+  
+  # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0
+  
+  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
   max-same-issues: 0
+
+  exclude:
+    - Subprocess launch(ed with variable|ing should be audited)
+    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
+    - comment on exported (.+) should be of the form "(.+)..."
+
+    # Eventually add these back when we want to fix all the missing comments.
+    - exported (.+) should have comment( \(or a comment on this block\))? or be unexported
+    - (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
 
 linters:
   enable:
