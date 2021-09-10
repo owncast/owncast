@@ -22,6 +22,7 @@ interface ToggleSwitchProps {
 
   apiPath?: string;
   checked?: boolean;
+  reversed?: boolean;
   configPath?: string;
   disabled?: boolean;
   label?: string;
@@ -40,6 +41,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
   const {
     apiPath,
     checked,
+    reversed = false,
     configPath = '',
     disabled = false,
     fieldName,
@@ -58,12 +60,13 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
   const handleChange = async (isChecked: boolean) => {
     if (useSubmit) {
       setSubmitStatus(createInputStatus(STATUS_PROCESSING));
+      const isCheckedSend = reversed ? !isChecked : isChecked;
 
       await postConfigUpdateToAPI({
         apiPath,
-        data: { value: isChecked },
+        data: { value: isCheckedSend },
         onSuccess: () => {
-          setFieldInConfigState({ fieldName, value: isChecked, path: configPath });
+          setFieldInConfigState({ fieldName, value: isCheckedSend, path: configPath });
           setSubmitStatus(createInputStatus(STATUS_SUCCESS));
         },
         onError: (message: string) => {
@@ -109,6 +112,7 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
 ToggleSwitch.defaultProps = {
   apiPath: '',
   checked: false,
+  reversed: false,
   configPath: '',
   disabled: false,
   label: '',

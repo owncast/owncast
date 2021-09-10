@@ -36,7 +36,7 @@ export default function ConfigChat() {
   };
 
   function handleChatDisableChange(disabled: boolean) {
-    handleFieldChange({ fieldName: 'chatDisabled', value: disabled });
+    handleFieldChange({ fieldName: 'chatDisabled', value: !disabled });
   }
 
   function resetForbiddenUsernameState() {
@@ -95,7 +95,8 @@ export default function ConfigChat() {
         <ToggleSwitch
           fieldName="chatDisabled"
           {...FIELD_PROPS_DISABLE_CHAT}
-          checked={formDataValues.chatDisabled}
+          checked={!formDataValues.chatDisabled}
+          reversed
           onChange={handleChatDisableChange}
         />
         <TextFieldWithSubmit

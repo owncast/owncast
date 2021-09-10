@@ -178,8 +178,8 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
 export const FIELD_PROPS_DISABLE_CHAT = {
   apiPath: API_CHAT_DISABLE,
   configPath: '',
-  label: 'Disable chat',
-  tip: 'Disable chat functionality from your Owncast server.',
+  label: 'Chat',
+  tip: 'Turn the chat functionality on/off on your Owncast server.',
   useSubmit: true,
 };
 
