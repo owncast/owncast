@@ -7,6 +7,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/inbox"
+	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -22,6 +23,11 @@ func InboxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	urlPathComponents := strings.Split(r.URL.Path, "/")
 	var forLocalAccount string
 	if len(urlPathComponents) == 5 {
