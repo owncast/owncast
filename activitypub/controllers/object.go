@@ -11,6 +11,11 @@ import (
 )
 
 func ObjectHandler(w http.ResponseWriter, r *http.Request) {
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	object, err := persistence.GetObjectByIRI(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)

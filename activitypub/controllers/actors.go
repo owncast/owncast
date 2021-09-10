@@ -13,6 +13,11 @@ import (
 )
 
 func ActorHandler(w http.ResponseWriter, r *http.Request) {
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
 

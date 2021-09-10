@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -11,6 +12,11 @@ import (
 // Not to be used for validating 3rd party access.
 func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !data.GetFederationEnabled() {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		handleAccepted := func() {
 			handler(w, r)
 		}
