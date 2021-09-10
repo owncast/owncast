@@ -112,7 +112,7 @@ func transitionToOfflineVideoStreamContent() {
 	}
 
 	// Delete the preview Gif
-	os.Remove(path.Join(config.WebRoot, "preview.gif"))
+	_ = os.Remove(path.Join(config.WebRoot, "preview.gif"))
 }
 
 func resetDirectories() {
