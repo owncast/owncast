@@ -37,17 +37,12 @@ func handle(request apmodels.InboxRequest) chan bool {
 	c := context.WithValue(context.Background(), "account", request.ForLocalAccount)
 	r := make(chan bool)
 
-	if verified, err := verify(request.Request); err != nil || !verified {
+	if verified, err := Verify(request.Request); err != nil || !verified {
 		log.Warnln("Unable to verify remote request", err)
 		return nil
 	}
 
 	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
-		r <- false
-		return nil
-	}
-
-	updateCallback := func(c context.Context, activity vocab.ActivityStreamsUpdate) error {
 		r <- false
 		return nil
 	}
@@ -62,15 +57,15 @@ func handle(request apmodels.InboxRequest) chan bool {
 		return nil
 	}
 
-	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, updateCallback, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
+	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, handleUpdateRequest, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
 		log.Errorln("resolver error:", err)
 	}
 
 	return r
 }
 
-// Verify will verify the http signature of an inbound request.
-func verify(request *http.Request) (bool, error) {
+// Verify will Verify the http signature of an inbound request.
+func Verify(request *http.Request) (bool, error) {
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
 		return false, err
