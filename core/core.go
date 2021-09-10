@@ -118,9 +118,8 @@ func transitionToOfflineVideoStreamContent() {
 func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
-	// Wipe the public, web-accessible hls data directory
-	utils.CleanupDirectory(config.PublicHLSStoragePath)
-	utils.CleanupDirectory(config.PrivateHLSStoragePath)
+	// Wipe hls data directory
+	utils.CleanupDirectory(config.HLSStoragePath)
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()

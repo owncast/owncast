@@ -199,7 +199,7 @@ func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
 		item.URI = s.host + filepath.Join("/hls", item.URI)
 	}
 
-	publicPath := filepath.Join(config.PublicHLSStoragePath, filepath.Base(filePath))
+	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(filePath))
 
 	newPlaylist := p.String()
 
