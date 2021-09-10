@@ -165,6 +165,14 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	return person
 }
 
+func GetFullUsernameFromPerson(person vocab.ActivityStreamsPerson) string {
+	hostname := person.GetJSONLDId().GetIRI().Hostname()
+	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
+	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
+
+	return fullUsername
+}
+
 func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, url string) {
 	var attachments = profile.GetActivityStreamsAttachment()
 	if attachments == nil {
