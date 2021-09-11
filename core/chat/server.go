@@ -23,7 +23,7 @@ var _server *ChatServer
 type ChatServer struct {
 	mu                       sync.RWMutex
 	seq                      uint
-	clients                  map[uint]*ChatClient
+	clients                  map[uint]*Client
 	maxSocketConnectionLimit int64
 
 	// send outbound message payload to all clients
@@ -41,7 +41,7 @@ func NewChat() *ChatServer {
 	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
 
 	server := &ChatServer{
-		clients:                  map[uint]*ChatClient{},
+		clients:                  map[uint]*Client{},
 		outbound:                 make(chan []byte),
 		inbound:                  make(chan chatClientEvent),
 		unregister:               make(chan uint),
@@ -68,8 +68,8 @@ func (s *ChatServer) Run() {
 }
 
 // Addclient registers new connection as a User.
-func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *ChatClient {
-	client := &ChatClient{
+func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *Client {
+	client := &Client{
 		server:      s,
 		conn:        conn,
 		User:        user,
@@ -101,14 +101,14 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 	}
 
 	// Asynchronously, optionally, fetch GeoIP data.
-	go func(client *ChatClient) {
+	go func(client *Client) {
 		client.Geo = geoip.GetGeoFromIP(ipAddress)
 	}(client)
 
 	return client
 }
 
-func (s *ChatServer) sendUserJoinedMessage(c *ChatClient) {
+func (s *ChatServer) sendUserJoinedMessage(c *Client) {
 	userJoinedEvent := events.UserJoinedEvent{}
 	userJoinedEvent.SetDefaults()
 	userJoinedEvent.User = c.User
@@ -121,7 +121,7 @@ func (s *ChatServer) sendUserJoinedMessage(c *ChatClient) {
 	webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
-func (s *ChatServer) ClientClosed(c *ChatClient) {
+func (s *ChatServer) ClientClosed(c *Client) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	c.close()
@@ -212,7 +212,7 @@ func (s *ChatServer) Broadcast(payload events.EventPayload) error {
 	return nil
 }
 
-func (s *ChatServer) Send(payload events.EventPayload, client *ChatClient) {
+func (s *ChatServer) Send(payload events.EventPayload, client *Client) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Errorln(err)
@@ -236,7 +236,7 @@ func (s *ChatServer) DisconnectUser(userID string) {
 	for _, client := range clients {
 		log.Traceln("Disconnecting client", client.User.ID, "owned by", client.User.DisplayName)
 
-		go func(client *ChatClient) {
+		go func(client *Client) {
 			event := events.UserDisabledEvent{}
 			event.SetDefaults()
 
@@ -277,7 +277,7 @@ func (s *ChatServer) eventReceived(event chatClientEvent) {
 	}
 }
 
-func (s *ChatServer) sendWelcomeMessageToClient(c *ChatClient) {
+func (s *ChatServer) sendWelcomeMessageToClient(c *Client) {
 	// Add an artificial delay so people notice this message come in.
 	time.Sleep(7 * time.Second)
 
@@ -303,7 +303,7 @@ func (s *ChatServer) sendAllWelcomeMessage() {
 	}
 }
 
-func (s *ChatServer) sendSystemMessageToClient(c *ChatClient, message string) {
+func (s *ChatServer) sendSystemMessageToClient(c *Client, message string) {
 	clientMessage := events.SystemMessageEvent{
 		Event: events.Event{},
 		MessageEvent: events.MessageEvent{
@@ -314,7 +314,7 @@ func (s *ChatServer) sendSystemMessageToClient(c *ChatClient, message string) {
 	s.Send(clientMessage.GetBroadcastPayload(), c)
 }
 
-func (s *ChatServer) sendActionToClient(c *ChatClient, message string) {
+func (s *ChatServer) sendActionToClient(c *Client, message string) {
 	clientMessage := events.ActionEvent{
 		MessageEvent: events.MessageEvent{
 			Body: message,

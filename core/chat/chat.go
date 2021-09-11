@@ -26,8 +26,8 @@ func Start(getStatusFunc func() models.Status) error {
 }
 
 // GetClientsForUser will return chat connections that are owned by a specific user.
-func GetClientsForUser(userID string) ([]*ChatClient, error) {
-	clients := map[string][]*ChatClient{}
+func GetClientsForUser(userID string) ([]*Client, error) {
+	clients := map[string][]*Client{}
 
 	for _, client := range _server.clients {
 		clients[client.User.ID] = append(clients[client.User.ID], client)
@@ -40,8 +40,8 @@ func GetClientsForUser(userID string) ([]*ChatClient, error) {
 	return clients[userID], nil
 }
 
-func GetClients() []*ChatClient {
-	clients := []*ChatClient{}
+func GetClients() []*Client {
+	clients := []*Client{}
 
 	// Convert the keyed map to a slice.
 	for _, client := range _server.clients {
