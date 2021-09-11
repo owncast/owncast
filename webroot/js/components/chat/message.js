@@ -117,8 +117,9 @@ function FediverseNotice({ message }) {
   return html`
     <div class="message flex items-center justify-center p-3 my-1 fediverse-action bg-black">
       <div class="message-content flex flex-row items-center justify-center text-sm w-full">
-        <div class="text-gray-200 text-center overflow-hidden break-words">
-          ${icon}${' '}<span class="italic">${text}</span>
+        <div class="text-gray-400 text-center overflow-hidden break-words align-middle">
+          <span class="text-lg">${icon}${' '}</span>
+          <span class="italic inline-block mx-1">${text}</span>
         </div>
       </div>
     </div>
