@@ -26,15 +26,14 @@ func createWebhooksTable() {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
+	if _, err = stmt.Exec(); err != nil {
 		log.Warnln(err)
 	}
 }
 
 // InsertWebhook will add a new webhook to the database.
 func InsertWebhook(url string, events []models.EventType) (int, error) {
-	log.Println("Adding new webhook:", url)
+	log.Traceln("Adding new webhook:", url)
 
 	eventsString := strings.Join(events, ",")
 
@@ -68,7 +67,7 @@ func InsertWebhook(url string, events []models.EventType) (int, error) {
 
 // DeleteWebhook will delete a webhook from the database.
 func DeleteWebhook(id int) error {
-	log.Println("Deleting webhook:", id)
+	log.Traceln("Deleting webhook:", id)
 
 	tx, err := _db.Begin()
 	if err != nil {
@@ -87,7 +86,7 @@ func DeleteWebhook(id int) error {
 	}
 
 	if rowsDeleted, _ := result.RowsAffected(); rowsDeleted == 0 {
-		tx.Rollback() //nolint
+		_ = tx.Rollback()
 		return errors.New(fmt.Sprint(id) + " not found")
 	}
 
@@ -126,8 +125,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	for rows.Next() {
 		var url string
 
-		err = rows.Scan(&url, &event)
-		if err != nil {
+		if err := rows.Scan(&url, &event); err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the database.")
 			break

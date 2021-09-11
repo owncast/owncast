@@ -9,50 +9,71 @@ import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 export default function Message(props) {
   const { message } = props;
   const { type } = message;
-  if (type === SOCKET_MESSAGE_TYPES.CHAT || type === SOCKET_MESSAGE_TYPES.SYSTEM) {
+  if (
+    type === SOCKET_MESSAGE_TYPES.CHAT ||
+    type === SOCKET_MESSAGE_TYPES.SYSTEM
+  ) {
     return html`<${ChatMessageView} ...${props} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
-    const { oldName, newName } = message;
-    return (
-      html`
-        <div class="message message-name-change flex items-center justify-start p-3">
-          <div class="message-content flex flex-row items-center justify-center text-sm w-full">
-            <div class="text-white text-center opacity-50 overflow-hidden break-words">
-              <span class="font-bold">${oldName}</span> is now known as <span class="font-bold">${newName}</span>.
-            </div>
+    const { oldName, user } = message;
+    const { displayName } = user;
+    return html`
+      <div
+        class="message message-name-change flex items-center justify-start p-3"
+      >
+        <div
+          class="message-content flex flex-row items-center justify-center text-sm w-full"
+        >
+          <div
+            class="text-white text-center opacity-50 overflow-hidden break-words"
+          >
+            <span class="font-bold">${oldName}</span> is now known as ${' '}
+            <span class="font-bold">${displayName}</span>.
           </div>
         </div>
-      `
-    );
+      </div>
+    `;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
-    const { username } = message;
-    return (
-      html`
-          <div class="message message-user-joined flex items-center justify-start p-3">
-            <div class="message-content flex flex-row items-center justify-center text-sm w-full">
-              <div class="text-white text-center opacity-50 overflow-hidden break-words">
-                <span class="font-bold">${username}</span> joined the chat.
-              </div>
-            </div>
+    const { user } = message;
+    const { displayName } = user;
+    return html`
+      <div
+        class="message message-user-joined flex items-center justify-start p-3"
+      >
+        <div
+          class="message-content flex flex-row items-center justify-center text-sm w-full"
+        >
+          <div
+            class="text-white text-center opacity-50 overflow-hidden break-words"
+          >
+            <span class="font-bold">${displayName}</span> joined the chat.
           </div>
-        `
-    );
+        </div>
+      </div>
+    `;
   } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {
-    const { author, body } = message;
-    const formattedMessage = `${body}`
-    return (
-      html`
-          <div class="message message-user-joined flex items-center justify-start p-3">
-            <div class="message-content flex flex-row items-center justify-center text-sm w-full">
-              <div class="text-white text-center opacity-50 overflow-hidden break-words">
-                <span dangerouslySetInnerHTML=${{ __html: formattedMessage }}></span>
-              </div>
-            </div>
+    const { body } = message;
+    const formattedMessage = `${body}`;
+    return html`
+      <div
+        class="message message-user-joined flex items-center justify-start p-3"
+      >
+        <div
+          class="message-content flex flex-row items-center justify-center text-sm w-full"
+        >
+          <div
+            class="text-white text-center opacity-50 overflow-hidden break-words"
+          >
+            <span
+              dangerouslySetInnerHTML=${{ __html: formattedMessage }}
+            ></span>
           </div>
-        `
-    );
+        </div>
+      </div>
+    `;
+  } else if (type === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
+    // noop for now
   } else {
-    console.log("Unknown message type:", type);
+    console.log('Unknown message type:', type);
   }
 }
-

@@ -92,10 +92,6 @@ export function getOrientation(forTouch = false) {
   }
 }
 
-export function generateUsername() {
-  return `User ${Math.floor(Math.random() * 42) + 1}`;
-}
-
 export function padLeft(text, pad, size) {
   return String(pad.repeat(size) + text).slice(-size);
 }
@@ -122,7 +118,6 @@ export function setVHvar() {
   var vh = window.innerHeight * 0.01;
   // Then we set the value in the --vh custom property to the root of the document
   document.documentElement.style.setProperty('--vh', `${vh}px`);
-  console.log('== new vh', vh);
 }
 
 export function doesObjectSupportFunction(object, functionName) {
@@ -168,16 +163,18 @@ export function makeLastOnlineString(timestamp) {
   }
   let string = '';
   const time = new Date(timestamp);
-  let diffInDays = getDiffInDaysFromNow(time);
-  if (diffInDays > 1) {
-    string = time.toLocaleDateString();
-  } else {
+  const comparisonDate = new Date(time).setHours(0, 0, 0, 0);
+
+  if (comparisonDate == new Date().setHours(0, 0, 0, 0)) {
     const atTime = time.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
     });
     string = `Today ${atTime}`;
+  } else {
+    string = time.toLocaleDateString();
   }
+
   return `Last live: ${string}`;
 }
 

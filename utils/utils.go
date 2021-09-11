@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/url"
 	"os"
 	"os/exec"
@@ -20,20 +21,16 @@ import (
 	"mvdan.cc/xurls"
 )
 
-// GetTemporaryPipePath gets the temporary path for the streampipe.flv file.
-func GetTemporaryPipePath(identifier string) string {
-	return filepath.Join(os.TempDir(), "streampipe."+identifier)
-}
-
 // DoesFileExists checks if the file exists.
 func DoesFileExists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
+	if _, err := os.Stat(name); err == nil {
+		return true
+	} else if os.IsNotExist(err) {
+		return false
+	} else {
+		log.Errorln(err)
+		return false
 	}
-
-	return true
 }
 
 // GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path.
@@ -87,6 +84,28 @@ func IsUserAgentABot(userAgent string) bool {
 
 	ua := user_agent.New(userAgent)
 	return ua.Bot()
+}
+
+// IsUserAgentAPlayer returns if a web client user-agent is seen as a media player.
+func IsUserAgentAPlayer(userAgent string) bool {
+	if userAgent == "" {
+		return false
+	}
+
+	playerStrings := []string{
+		"mpv",
+		"player",
+		"vlc",
+		"applecoremedia",
+	}
+
+	for _, playerString := range playerStrings {
+		if strings.Contains(strings.ToLower(userAgent), playerString) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func RenderSimpleMarkdown(raw string) string {
@@ -146,28 +165,32 @@ func RenderPageContentMarkdown(raw string) string {
 
 // GetCacheDurationSecondsForPath will return the number of seconds to cache an item.
 func GetCacheDurationSecondsForPath(filePath string) int {
-	if path.Base(filePath) == "thumbnail.jpg" {
-		// Thumbnails re-generate during live
+	filename := path.Base(filePath)
+	fileExtension := path.Ext(filePath)
+
+	if filename == "thumbnail.jpg" || filename == "preview.gif" {
+		// Thumbnails & preview gif re-generate during live
 		return 20
-	} else if path.Ext(filePath) == ".js" || path.Ext(filePath) == ".css" {
+	} else if fileExtension == ".js" || fileExtension == ".css" {
 		// Cache javascript & CSS
-		return 60
-	} else if path.Ext(filePath) == ".ts" {
+		return 60 * 10
+	} else if fileExtension == ".ts" {
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
 		// and not for live or 3rd party storage.
 		return 31557600
-	} else if path.Ext(filePath) == ".m3u8" {
+	} else if fileExtension == ".m3u8" {
 		return 0
+	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
+		return 60 * 60 * 24
 	}
 
 	// Default cache length in seconds
-	return 30
+	return 60 * 10
 }
 
 func IsValidUrl(urlToTest string) bool {
-	_, err := url.ParseRequestURI(urlToTest)
-	if err != nil {
+	if _, err := url.ParseRequestURI(urlToTest); err != nil {
 		return false
 	}
 
@@ -230,4 +253,32 @@ func VerifyFFMpegPath(path string) error {
 	}
 
 	return nil
+}
+
+// Removes the directory and makes it again. Throws fatal error on failure.
+func CleanupDirectory(path string) {
+	log.Traceln("Cleaning", path)
+	if err := os.RemoveAll(path); err != nil {
+		log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
+	}
+	if err := os.MkdirAll(path, 0777); err != nil {
+		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
+	}
+}
+
+func FindInSlice(slice []string, val string) (int, bool) {
+	for i, item := range slice {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
+// GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.
+// The UI should determine the right saturation and lightness in order to make it look right.
+func GenerateRandomDisplayColor() int {
+	rangeLower := 0
+	rangeUpper := 360
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
 }

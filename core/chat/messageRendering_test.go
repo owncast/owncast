@@ -3,7 +3,7 @@ package chat
 import (
 	"testing"
 
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/chat/events"
 )
 
 // Test a bunch of arbitrary markup and markdown to make sure we get sanitized
@@ -19,13 +19,13 @@ func TestRenderAndSanitize(t *testing.T) {
   <script src="http://hackers.org/hack.js"></script>
   `
 
-	expected := `<p>Test one two three!  I go to <a href="http://yahoo.com" rel="nofollow noreferrer noopener" target="_blank">http://yahoo.com</a> and search for <em>sports</em> and <strong>answers</strong>.
-Here is an iframe </p>
+	expected := `Test one two three!  I go to <a href="http://yahoo.com" rel="nofollow noreferrer noopener" target="_blank">http://yahoo.com</a> and search for <em>sports</em> and <strong>answers</strong>.
+Here is an iframe 
 blah blah blah
-<p><a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a>
-<img class="emoji" src="/img/emoji/bananadance.gif"></p>`
+<a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a>
+<img class="emoji" src="/img/emoji/bananadance.gif">`
 
-	result := models.RenderAndSanitize(messageContent)
+	result := events.RenderAndSanitize(messageContent)
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
 	}
@@ -33,9 +33,9 @@ blah blah blah
 
 // Test to make sure we block remote images in chat messages.
 func TestBlockRemoteImages(t *testing.T) {
-	messageContent := `<img src="https://via.placeholder.com/350x150"> test ![](https://via.placeholder.com/350x150)`
-	expected := `<p> test </p>`
-	result := models.RenderAndSanitize(messageContent)
+	messageContent := `<img src="https://via.placeholder.com/img/emoji/350x150"> test ![](https://via.placeholder.com/img/emoji/350x150)`
+	expected := `test`
+	result := events.RenderAndSanitize(messageContent)
 
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
@@ -44,9 +44,9 @@ func TestBlockRemoteImages(t *testing.T) {
 
 // Test to make sure emoji images are allowed in chat messages.
 func TestAllowEmojiImages(t *testing.T) {
-	messageContent := `<img src="/img/emoji/beerparrot.gif"> test ![](/img/emoji/beerparrot.gif)`
-	expected := `<p><img src="/img/emoji/beerparrot.gif"> test <img src="/img/emoji/beerparrot.gif"></p>`
-	result := models.RenderAndSanitize(messageContent)
+	messageContent := `<img alt=":beerparrot:" title=":beerparrot:" src="/img/emoji/beerparrot.gif"> test ![](/img/emoji/beerparrot.gif)`
+	expected := `<img alt=":beerparrot:" title=":beerparrot:" src="/img/emoji/beerparrot.gif"> test <img src="/img/emoji/beerparrot.gif">`
+	result := events.RenderAndSanitize(messageContent)
 
 	if result != expected {
 		t.Errorf("message rendering/sanitation does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
@@ -57,7 +57,7 @@ func TestAllowEmojiImages(t *testing.T) {
 func TestAllowHTML(t *testing.T) {
 	messageContent := `<img src="/img/emoji/beerparrot.gif"><ul><li>**test thing**</li></ul>`
 	expected := "<p><img src=\"/img/emoji/beerparrot.gif\"><ul><li><strong>test thing</strong></li></ul></p>\n"
-	result := models.RenderMarkdown(messageContent)
+	result := events.RenderMarkdown(messageContent)
 
 	if result != expected {
 		t.Errorf("message rendering does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)

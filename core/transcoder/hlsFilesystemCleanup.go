@@ -14,12 +14,12 @@ import (
 // in the stream.
 func CleanupOldContent(baseDirectory string) {
 	// Determine how many files we should keep on disk
-	maxNumber := int(data.GetStreamLatencyLevel().SegmentCount)
+	maxNumber := data.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
 
 	files, err := getAllFilesRecursive(baseDirectory)
 	if err != nil {
-		log.Errorln("Unable to cleanup old video files", err)
+		log.Debugln("Unable to cleanup old video files", err)
 		return
 	}
 
@@ -37,7 +37,7 @@ func CleanupOldContent(baseDirectory string) {
 			fileToDelete := filepath.Join(baseDirectory, directory, file.Name())
 			err := os.Remove(fileToDelete)
 			if err != nil {
-				log.Errorln(err)
+				log.Debugln(err)
 			}
 		}
 	}
@@ -64,7 +64,6 @@ func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error
 	})
 
 	if err != nil {
-		log.Fatalf(err.Error())
 		return nil, err
 	}
 

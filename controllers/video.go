@@ -5,32 +5,55 @@ import (
 	"sort"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
 )
 
-type variants []models.StreamOutputVariant
-
-type variantsResponse struct {
-	Name  string `json:"name"`
-	Index int    `json:"index"`
+type variantsSort struct {
+	Index              int
+	Name               string
+	IsVideoPassthrough bool
+	VideoBitrate       int
 }
 
-// GetVideoStreamOutputVariants will return the video variants available,
+type variantsResponse struct {
+	Index int    `json:"index"`
+	Name  string `json:"name"`
+}
+
+// GetVideoStreamOutputVariants will return the video variants available.
 func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	outputVariants := data.GetStreamOutputVariants()
-	result := make([]variantsResponse, len(outputVariants))
 
+	streamSortVariants := make([]variantsSort, len(outputVariants))
 	for i, variant := range outputVariants {
-		variantResponse := variantsResponse{
-			Index: i,
-			Name:  variant.GetName(),
+		variantSort := variantsSort{
+			Index:              i,
+			Name:               variant.GetName(),
+			IsVideoPassthrough: variant.IsVideoPassthrough,
+			VideoBitrate:       variant.VideoBitrate,
 		}
-		result[i] = variantResponse
+		streamSortVariants[i] = variantSort
 	}
 
-	sort.Slice(result, func(i, j int) bool {
-		return outputVariants[j].VideoBitrate < outputVariants[i].VideoBitrate
+	sort.Slice(streamSortVariants, func(i, j int) bool {
+		if streamSortVariants[i].IsVideoPassthrough && !streamSortVariants[j].IsVideoPassthrough {
+			return true
+		}
+
+		if !streamSortVariants[i].IsVideoPassthrough && streamSortVariants[j].IsVideoPassthrough {
+			return false
+		}
+
+		return streamSortVariants[i].VideoBitrate > streamSortVariants[j].VideoBitrate
 	})
 
-	WriteResponse(w, result)
+	response := make([]variantsResponse, len(streamSortVariants))
+	for i, variant := range streamSortVariants {
+		variantResponse := variantsResponse{
+			Index: variant.Index,
+			Name:  variant.Name,
+		}
+		response[i] = variantResponse
+	}
+
+	WriteResponse(w, response)
 }

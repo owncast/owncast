@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development branch.
-  version: '0.0.7'
+  version: '0.0.8'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -27,6 +27,11 @@ components:
       items:
         $ref: "#/components/schemas/Client"
 
+    UserArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+
     LogEntryArray:
       type: array
       items:
@@ -42,7 +47,6 @@ components:
           Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
         ipAddress: "::1"
-        username: null
         clientID: 2ba20dd34f911c198df3218ddc64c740
         geo:
           countryCode: US
@@ -58,11 +62,9 @@ components:
         userAgent:
           description: The web client used to connect to this server
           type: string
+          example: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         ipAddress:
           description: The public IP address of this client
-          type: string
-        username:
-          description: The username for this client in chat if available
           type: string
         clientID:
           description: The value used to identify this client
@@ -77,6 +79,8 @@ components:
               type: string
             timeZone:
               type: string
+        user:
+          $ref: "#/components/schemas/User"
       x-last-modified: 1602052347511
 
     BasicResponse:
@@ -242,6 +246,30 @@ components:
           format: date-time
           description: When this webhook was last used.
 
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID
+          example: yklw5Imng
+        displayName:
+          type: string
+          description: The user-facing disaplay name for this user.
+          example: awesome-pizza
+        displayColor:
+          type: integer
+          description: Hue value for displaying in the UI.
+          example: 42
+        createdAt:
+          type: string
+          format: date-time
+          description: When this account was originally registered/created.
+        previousNames:
+          type: string
+          description: Comma separated list of names previously used by this user.
+          example: "awesome-pizza,user42"
+        
   securitySchemes:
     AdminBasicAuth:
       type: http
@@ -251,8 +279,20 @@ components:
       type: http
       scheme: bearer
       description: 3rd party integration auth where a service user must provide an access token.
+    UserToken:
+      type: apiKey
+      name: accessToken
+      in: query
+      description: 3rd party integration auth where a service user must provide an access token.
 
   responses:
+    UsersResponse:
+      description: A collection of users.
+      content:
+        application/json:
+          schema:
+            $ref:  "#/components/schemas/UserArray"
+
     ClientsResponse:
       description: Successful response of an array of clients
       content:
@@ -266,12 +306,16 @@ components:
                 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
                 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
               ipAddress: "172.217.164.110"
-              username: coolperson42
-              clientID: 2ba20dd34f911c198df3218ddc64c740
               geo:
                 countryCode: US
                 regionName: California
                 timeZone: America/Los_Angeles
+              user:
+                id: yklw5Imng
+                displayName: awesome-pizza
+                displayColor: 42
+                createdAt: "2021-07-08T20:21:25.303402404-07:00"
+                previousNames: "awesome-pizza,coolPerson23"
 
     LogsResponse:
       description: Response of server log entries
@@ -337,6 +381,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/InstanceDetails"
 
+  /api/ping:
+    get:
+      summary: Mark the current viewer as active.
+      description: For tracking viewer count, periodically hit the ping endpoint.
+      tags: ["Server"]
+      responses:
+        "200":
+          description: "Successful ping"
+
   /api/status:
     get:
       summary: Current Status
@@ -376,11 +429,48 @@ paths:
                     sessionMaxViewerCount: 12
                     viewerCount: 7
 
+  /api/chat/register:
+    post:
+      summary: Register a chat user
+      description: Register a user that returns an access token for accessing chat.
+      tags: ["Chat"]
+      security:
+      - UserToken: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Optionally provide a display name you want to assign to this user when registering.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The new user's id.
+                  accessToken:
+                    type: string
+                    description: The access token used for accessing chat.
+                  displayName:
+                    type: string
+                    description: The user-facing name displayed for this user.
+
   /api/chat:
     get:
-      summary: Historical Chat Messages
-      description: Used to get all chat messages prior to connecting to the websocket.
+      summary: Chat Messages Backlog
+      description: Used to get chat messages prior to connecting to the websocket.
       tags: ["Chat"]
+      security:
+      - UserToken: []
       responses:
         "200":
           description: ""
@@ -391,9 +481,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    author:
-                      type: string
-                      description: Username of the chat message poster.
+                    user:
+                      $ref: "#/components/schemas/User"
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
@@ -575,7 +664,7 @@ paths:
         '200':
           $ref: "#/components/responses/BasicResponse"
 
-  /api/admin/clients:
+  /api/admin/chat/clients:
     get:
       summary: Return a list of currently connected clients
       description: Return a list of currently connected clients with optional geo details.
@@ -585,6 +674,17 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ClientsResponse"
+
+  /api/admin/users/disabled:
+      get:
+        summary: Return a list of currently connected clients
+        description: Return a list of currently connected clients with optional geo details.
+        tags: ["Admin"]
+        security:
+          - AdminBasicAuth: []
+        responses:
+          "200":
+            $ref: "#/components/responses/UsersResponse"
 
   /api/admin/logs:
     get:
@@ -667,9 +767,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    author:
-                      type: string
-                      description: Username of the chat message poster.
+                    user:
+                      $ref: "#/components/schemas/User"
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
@@ -707,6 +806,32 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/BasicResponse"
+
+
+  /api/admin/chat/users/setenabled:
+    post:
+      summary: Enable or disable a single user.
+      description: Enable or disable a single user. Disabling will also hide all the user's chat messages.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: User ID to act upon.
+                  example: "yklw5Imng"
+                enabled:
+                  type: boolean
+                  description: Set the enabled state of this user.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/BasicResponse"
+
 
   /api/admin/config/key:
     post:
@@ -1170,10 +1295,10 @@ paths:
               value: Streaming my favorite game, Desert Bus.
 
 
-  /api/integrations/chat/user:
+  /api/integrations/chat/send:
     post:
-      summary: Send a user chat message.
-      description: Send a chat message on behalf of a user.  Could be a bot name or a real user.
+      summary: Send a chat message.
+      description: Send a chat message on behalf of a 3rd party integration, bot or service.
       tags: ["Integrations"]
       security:
         - AccessToken: []
@@ -1184,9 +1309,6 @@ paths:
             schema:
               type: object
               properties:
-                user:
-                  type: string
-                  description: The user you want to send this message as.
                 body:
                   type: string
                   description: The message text that will be sent as the user.
@@ -1505,9 +1627,8 @@ paths:
                   items:
                     type: object
                     properties:
-                      author:
-                        type: string
-                        description: Username of the chat message poster.
+                      user:
+                        $ref: "#/components/schemas/User"
                       body:
                         type: string
                         description: Escaped HTML of the chat message content.

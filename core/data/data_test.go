@@ -2,13 +2,18 @@ package data
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	dbFile := "../../test/test.db"
+	dbFile, err := ioutil.TempFile(os.TempDir(), "owncast-test-db.db")
+	if err != nil {
+		panic(err)
+	}
 
-	SetupPersistence(dbFile)
+	SetupPersistence(dbFile.Name())
 	m.Run()
 }
 
@@ -16,8 +21,7 @@ func TestString(t *testing.T) {
 	const testKey = "test string key"
 	const testValue = "test string value"
 
-	err := _datastore.SetString(testKey, testValue)
-	if err != nil {
+	if err := _datastore.SetString(testKey, testValue); err != nil {
 		panic(err)
 	}
 

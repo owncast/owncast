@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,7 +19,7 @@ var l = &sync.RWMutex{}
 var errorMap = map[string]string{
 	"Unrecognized option 'vaapi_device'":        "you are likely trying to utilize a vaapi codec, but your version of ffmpeg or your hardware doesn't support it. change your codec to libx264 and restart your stream",
 	"unable to open display":                    "your copy of ffmpeg is likely installed via snap packages. please uninstall and re-install via a non-snap method.  https://owncast.online/docs/troubleshooting/#misc-video-issues",
-	"Failed to open file 'http://127.0.0.1":     "error transcoding. make sure your version of ffmpeg is compatible with your selected codec or is recent enough https://owncast.online/docs/troubleshooting/#codecs",
+	"Failed to open file 'http://127.0.0.1":     "error transcoding. make sure your version of ffmpeg is compatible with your selected codec or is recent enough https://owncast.online/docs/codecs/",
 	"can't configure encoder":                   "error with codec. if your copy of ffmpeg or your hardware does not support your selected codec you may need to select another",
 	"Unable to parse option value":              "you are likely trying to utilize a specific codec, but your version of ffmpeg or your hardware doesn't support it. either fix your ffmpeg install or try changing your codec to libx264 and restart your stream",
 	"OpenEncodeSessionEx failed: out of memory": "your NVIDIA gpu is limiting the number of concurrent stream qualities you can support. remove a stream output variant and try again.",
@@ -52,6 +53,8 @@ var ignoredErrors = []string{
 	"Device creation failed",
 	"Error parsing global options",
 	"maybe the hls segment duration will not precise",
+	"Non-monotonous DTS in output",
+	"frames duplicated",
 }
 
 func handleTranscoderMessage(message string) {
@@ -91,30 +94,29 @@ func handleTranscoderMessage(message string) {
 
 func createVariantDirectories() {
 	// Create private hls data dirs
+	utils.CleanupDirectory(config.PublicHLSStoragePath)
+	utils.CleanupDirectory(config.PrivateHLSStoragePath)
+
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
-			err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777)
-			if err != nil {
+			if err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777); err != nil {
 				log.Fatalln(err)
 			}
 			dir := path.Join(config.PublicHLSStoragePath, strconv.Itoa(index))
 			log.Traceln("Creating", dir)
-			err = os.MkdirAll(dir, 0777)
-			if err != nil {
+			if err := os.MkdirAll(dir, 0777); err != nil {
 				log.Fatalln(err)
 			}
 		}
 	} else {
 		dir := path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		err := os.MkdirAll(dir, 0777)
-		if err != nil {
+		if err := os.MkdirAll(dir, 0777); err != nil {
 			log.Fatalln(err)
 		}
 		dir = path.Join(config.PublicHLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		err = os.MkdirAll(dir, 0777)
-		if err != nil {
+		if err := os.MkdirAll(dir, 0777); err != nil {
 			log.Fatalln(err)
 		}
 	}

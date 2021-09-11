@@ -1,18 +1,19 @@
 package webhooks
 
 import (
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 )
 
-func SendChatEvent(chatEvent models.ChatEvent) {
+func SendChatEvent(chatEvent *events.UserMessageEvent) {
 	webhookEvent := WebhookEvent{
-		Type: chatEvent.MessageType,
+		Type: chatEvent.GetMessageType(),
 		EventData: &WebhookChatMessage{
-			Author:    chatEvent.Author,
+			User:      chatEvent.User,
 			Body:      chatEvent.Body,
 			RawBody:   chatEvent.RawBody,
-			ID:        chatEvent.ID,
-			Visible:   chatEvent.Visible,
+			ID:        chatEvent.Id,
+			Visible:   chatEvent.HiddenAt == nil,
 			Timestamp: &chatEvent.Timestamp,
 		},
 	}
@@ -20,7 +21,7 @@ func SendChatEvent(chatEvent models.ChatEvent) {
 	SendEventToWebhooks(webhookEvent)
 }
 
-func SendChatEventUsernameChanged(event models.NameChangeEvent) {
+func SendChatEventUsernameChanged(event events.NameChangeEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.UserNameChanged,
 		EventData: event,
@@ -29,9 +30,10 @@ func SendChatEventUsernameChanged(event models.NameChangeEvent) {
 	SendEventToWebhooks(webhookEvent)
 }
 
-func SendChatEventUserJoined(event models.UserJoinedEvent) {
+// SendChatEventUserJoined sends a webhook notifying that a user has joined.
+func SendChatEventUserJoined(event events.UserJoinedEvent) {
 	webhookEvent := WebhookEvent{
-		Type:      models.UserNameChanged,
+		Type:      models.UserJoined,
 		EventData: event,
 	}
 

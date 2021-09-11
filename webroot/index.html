@@ -3,6 +3,7 @@
 
 <head>
   <title>Owncast</title>
+  <base target="_blank" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
 
@@ -35,10 +36,10 @@
   <link href="/styles/user-content.css" rel="stylesheet" />
   <link href="/styles/app.css" rel="stylesheet" />
 
-  <!-- The following script tags are not required for the app to run, 
-         however they will make it load a lot faster (fewer round trips) when HTTP/2 is used. 
-        
-         If you wish to re-generate this list, run the following shell command 
+  <!-- The following script tags are not required for the app to run,
+         however they will make it load a lot faster (fewer round trips) when HTTP/2 is used.
+
+         If you wish to re-generate this list, run the following shell command
          (assuming a linux or unix-ish system):
          find webroot | grep -E '\.js$' | sed -E 's|webroot(.*)|<script type="preload" src="\1"></script>|'
          Don't load/preload app-standalone-chat.js or app-video-only.js.
@@ -101,6 +102,7 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        font-size: large;
       }
 
       .noscript a {
@@ -108,13 +110,45 @@
         color: blue;
         text-decoration: underline;
       }
+
+      #app {
+        display: none;
+      }
+
+      .logo {
+        height: 200px;
+        margin: 30px;
+      }
+
+      h2 {
+        margin-top: 25px;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
     </style>
     <div class="noscript">
-      <img src="/logo" />
+      <img class="logo" src="/logo" />
       <br />
       <p>
-        This <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a> stream requires
-        Javascript to play.
+        This website is powered by <a href="https://owncast.online" rel="noopener noreferrer" target="_blank">Owncast</a>.
+      </p>
+      <p>
+        Owncast uses JavaScript for playing the HTTP Live Streaming (HLS) video, and its chat client. But your web browser does not seem to support JavaScript, or you have it disabled.
+      </p>
+      <p>
+        For the best experience, you should use a different browser with JavaScript support. If you have disabled JavaScript in your browser, you can re-enable it.
+      </p>
+      <h2>
+        How can I watch this stream without JavaScript?
+      </h2>
+      <p> 
+        You can open the URL of this website in your media player (such as <a href="https://mpv.io" rel="noopener noreferrer" target="_blank">mpv</a> or <a href="https://www.videolan.org/vlc/" rel="noopener noreferrer" target="_blank">VLC</a>) to watch the stream.
+      </p>
+      <h2>
+        How can I chat with the others without JavaScript?
+      </h2>
+      <p>
+        Currently, there is no option to use the chat without JavaScript.
       </p>
     </div>
   </noscript>

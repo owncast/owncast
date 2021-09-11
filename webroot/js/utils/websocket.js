@@ -11,23 +11,25 @@ export const SOCKET_MESSAGE_TYPES = {
   PONG: 'PONG',
   SYSTEM: 'SYSTEM',
   USER_JOINED: 'USER_JOINED',
-  CHAT_ACTION: 'CHAT_ACTION'
+  CHAT_ACTION: 'CHAT_ACTION',
+  CONNECTED_USER_INFO: 'CONNECTED_USER_INFO',
+  ERROR_USER_DISABLED: 'ERROR_USER_DISABLED',
+  ERROR_NEEDS_REGISTRATION: 'ERROR_NEEDS_REGISTRATION',
+  ERROR_MAX_CONNECTIONS_EXCEEDED: 'ERROR_MAX_CONNECTIONS_EXCEEDED',
 };
-
-const IGNORE_CLIENT_FLAG = 'IGNORE_CLIENT';
 
 export const CALLBACKS = {
   RAW_WEBSOCKET_MESSAGE_RECEIVED: 'rawWebsocketMessageReceived',
   WEBSOCKET_CONNECTED: 'websocketConnected',
-  WEBSOCKET_DISCONNECTED: 'websocketDisconnected',
-}
+};
 
 const TIMER_WEBSOCKET_RECONNECT = 5000; // ms
 
 export default class Websocket {
-  constructor(ignoreClient) {
+  constructor(accessToken) {
     this.websocket = null;
     this.websocketReconnectTimer = null;
+    this.accessToken = accessToken;
 
     this.websocketConnectedListeners = [];
     this.websocketDisconnectListeners = [];
@@ -36,15 +38,18 @@ export default class Websocket {
     this.send = this.send.bind(this);
     this.createAndConnect = this.createAndConnect.bind(this);
     this.scheduleReconnect = this.scheduleReconnect.bind(this);
+    this.shutdown = this.shutdown.bind(this);
 
-    this.ignoreClient = ignoreClient;
+    this.isShutdown = false;
 
     this.createAndConnect();
   }
 
   createAndConnect() {
-    const extraFlags = this.ignoreClient ? [IGNORE_CLIENT_FLAG] : [];
-    const ws = new WebSocket(URL_WEBSOCKET, extraFlags);
+    const url = new URL(URL_WEBSOCKET);
+    url.searchParams.append('accessToken', this.accessToken);
+
+    const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
     ws.onclose = this.onClose.bind(this);
     ws.onerror = this.onError.bind(this);
@@ -77,6 +82,11 @@ export default class Websocket {
 
     const messageJSON = JSON.stringify(message);
     this.websocket.send(messageJSON);
+  }
+
+  shutdown() {
+    this.isShutdown = true;
+    this.websocket.close();
   }
 
   // Private methods
@@ -116,14 +126,18 @@ export default class Websocket {
     this.websocket = null;
     this.notifyWebsocketDisconnectedListeners();
     this.handleNetworkingError('Websocket closed.');
-    this.scheduleReconnect();
+    if (!this.isShutdown) {
+      this.scheduleReconnect();
+    }
   }
 
   // On ws error just close the socket and let it re-connect again for now.
   onError(e) {
     this.handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
     this.websocket.close();
-    this.scheduleReconnect();
+    if (!this.isShutdown) {
+      this.scheduleReconnect();
+    }
   }
 
   scheduleReconnect() {
@@ -139,20 +153,31 @@ export default class Websocket {
   pass it along to listeners.
   */
   onMessage(e) {
-    try {
-      var model = JSON.parse(e.data);
-    } catch (e) {
-      console.log(e);
-    }
+    // Optimization where multiple events can be sent within a
+    // single websocket message. So split them if needed.
+    var messages = e.data.split('\n');
+    for (var i = 0; i < messages.length; i++) {
+      try {
+        var model = JSON.parse(messages[i]);
+      } catch (e) {
+        console.error(e, e.data);
+        return;
+      }
 
-    // Send PONGs
-    if (model.type === SOCKET_MESSAGE_TYPES.PING) {
-      this.sendPong();
-      return;
-    }
+      if (!model.type) {
+        console.error('No type provided', model);
+        return;
+      }
 
-    // Notify any of the listeners via the raw socket message callback.
-    this.notifyRawMessageListeners(model);
+      // Send PONGs
+      if (model.type === SOCKET_MESSAGE_TYPES.PING) {
+        this.sendPong();
+        return;
+      }
+
+      // Notify any of the listeners via the raw socket message callback.
+      this.notifyRawMessageListeners(model);
+    }
   }
 
   // Reply to a PING as a keep alive.
@@ -162,6 +187,8 @@ export default class Websocket {
   }
 
   handleNetworkingError(error) {
-    console.error(`Websocket Error. Chat is likely not working. Visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`);
+    console.error(
+      `Chat has been disconnected and is likely not working for you. It's possible you were removed from chat. If this is a server configuration issue, visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`
+    );
   }
 }

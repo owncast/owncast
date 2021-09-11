@@ -10,7 +10,7 @@ import (
 // DatabaseFilePath is the path to the file ot be used as the global database for this run of the application.
 var DatabaseFilePath = "data/owncast.db"
 
-// LogDirectory is the path to various log files
+// LogDirectory is the path to various log files.
 var LogDirectory = "./data/logs"
 
 // EnableDebugFeatures will print additional data to help in debugging.
@@ -41,6 +41,13 @@ func GetCommit() string {
 
 	return GitCommit
 }
+
+var DefaultForbiddenUsernames = []string{
+	"owncast", "operator", "admin", "system",
+}
+
+// The maximum payload we will allow to to be received via the chat socket.
+const MaxSocketPayloadSize = 2048
 
 // GetReleaseString gets the version string.
 func GetReleaseString() string {

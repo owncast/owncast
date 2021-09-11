@@ -113,8 +113,7 @@ func (yp *YP) ping() {
 	}
 
 	pingResponse := ypPingResponse{}
-	err = json.Unmarshal(body, &pingResponse)
-	if err != nil {
+	if err := json.Unmarshal(body, &pingResponse); err != nil {
 		log.Errorln(err)
 	}
 
@@ -129,7 +128,9 @@ func (yp *YP) ping() {
 	_inErrorState = false
 
 	if pingResponse.Key != key {
-		data.SetDirectoryRegistrationKey(key)
+		if err := data.SetDirectoryRegistrationKey(key); err != nil {
+			log.Errorln("unable to save directory key:", err)
+		}
 	}
 }
 

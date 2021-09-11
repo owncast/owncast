@@ -1,175 +1,318 @@
 package chat
 
 import (
-	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
-var _db *sql.DB
+var _datastore *data.Datastore
+
+const (
+	maxBacklogHours  = 5  // Keep backlog max hours worth of messages
+	maxBacklogNumber = 50 // Return max number of messages in history request
+)
 
 func setupPersistence() {
-	_db = data.GetDatabase()
-	createTable()
+	_datastore = data.GetDatastore()
+	data.CreateMessagesTable(_datastore.DB)
+
+	chatDataPruner := time.NewTicker(5 * time.Minute)
+	go func() {
+		runPruner()
+		for range chatDataPruner.C {
+			runPruner()
+		}
+	}()
 }
 
-func createTable() {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
-		"id" string NOT NULL PRIMARY KEY,
-		"author" TEXT,
-		"body" TEXT,
-		"messageType" TEXT,
-		"visible" INTEGER,
-		"timestamp" DATE
-	);`
+func SaveUserMessage(event events.UserMessageEvent) {
+	saveEvent(event.Id, event.User.Id, event.Body, event.Type, event.HiddenAt, event.Timestamp)
+}
 
-	stmt, err := _db.Prepare(createTableSQL)
+func saveEvent(id string, userId string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
+	defer func() {
+		_historyCache = nil
+	}()
+
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln("error saving", eventType, err)
+		return
 	}
+
+	defer tx.Rollback() // nolint
+
+	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Errorln("error saving", eventType, err)
+		return
+	}
+
 	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln(err)
+
+	if _, err = stmt.Exec(id, userId, body, eventType, hidden, timestamp); err != nil {
+		log.Errorln("error saving", eventType, err)
+		return
+	}
+	if err = tx.Commit(); err != nil {
+		log.Errorln("error saving", eventType, err)
+		return
 	}
 }
 
-func addMessage(message models.ChatEvent) {
-	tx, err := _db.Begin()
+func getChat(query string) []events.UserMessageEvent {
+	history := make([]events.UserMessageEvent, 0)
+	rows, err := _datastore.DB.Query(query)
 	if err != nil {
-		log.Fatal(err)
-	}
-	stmt, err := tx.Prepare("INSERT INTO messages(id, author, body, messageType, visible, timestamp) values(?, ?, ?, ?, ?, ?)")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(message.ID, message.Author, message.Body, message.MessageType, 1, message.Timestamp)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = tx.Commit()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func getChat(query string) []models.ChatEvent {
-	history := make([]models.ChatEvent, 0)
-	rows, err := _db.Query(query)
-	if err != nil {
-		log.Fatal(err)
+		log.Errorln("error fetching chat history", err)
+		return history
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var id string
-		var author string
+		var userId string
 		var body string
 		var messageType models.EventType
-		var visible int
+		var hiddenAt *time.Time
 		var timestamp time.Time
 
-		err = rows.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
+		var userDisplayName *string
+		var userDisplayColor *int
+		var userCreatedAt *time.Time
+		var userDisabledAt *time.Time
+		var previousUsernames *string
+		var userNameChangedAt *time.Time
+
+		// Convert a database row into a chat event
+		err = rows.Scan(&id, &userId, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt, &previousUsernames, &userNameChangedAt)
 		if err != nil {
-			log.Debugln(err)
-			log.Error("There is a problem with the chat database.  Restore a backup of owncast.db or remove it and start over.")
+			log.Errorln("There is a problem converting query to chat objects. Please report this:", query)
 			break
 		}
 
-		message := models.ChatEvent{}
-		message.ID = id
-		message.Author = author
-		message.Body = body
-		message.MessageType = messageType
-		message.Visible = visible == 1
-		message.Timestamp = timestamp
+		// System messages and chat actions are special and are not from real users
+		if messageType == events.SystemMessageSent || messageType == events.ChatActionSent {
+			name := "Owncast"
+			userDisplayName = &name
+			color := 200
+			userDisplayColor = &color
+		}
+
+		if previousUsernames == nil {
+			previousUsernames = userDisplayName
+		}
+
+		if userCreatedAt == nil {
+			now := time.Now()
+			userCreatedAt = &now
+		}
+
+		user := user.User{
+			Id:            userId,
+			AccessToken:   "",
+			DisplayName:   *userDisplayName,
+			DisplayColor:  *userDisplayColor,
+			CreatedAt:     *userCreatedAt,
+			DisabledAt:    userDisabledAt,
+			NameChangedAt: userNameChangedAt,
+			PreviousNames: strings.Split(*previousUsernames, ","),
+		}
+
+		message := events.UserMessageEvent{
+			Event: events.Event{
+				Type:      messageType,
+				Id:        id,
+				Timestamp: timestamp,
+			},
+			UserEvent: events.UserEvent{
+				User:     &user,
+				HiddenAt: hiddenAt,
+			},
+			MessageEvent: events.MessageEvent{
+				Body:    body,
+				RawBody: body,
+			},
+		}
 
 		history = append(history, message)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
 	}
 
 	return history
 }
 
-func getChatModerationHistory() []models.ChatEvent {
-	var query = "SELECT * FROM messages WHERE messageType == 'CHAT' AND datetime(timestamp) >=datetime('now', '-5 Hour')"
-	return getChat(query)
+var _historyCache *[]events.UserMessageEvent
+
+func GetChatModerationHistory() []events.UserMessageEvent {
+	if _historyCache != nil {
+		return *_historyCache
+	}
+
+	// Get all messages regardless of visibility
+	var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
+	result := getChat(query)
+
+	_historyCache = &result
+
+	return result
 }
 
-func getChatHistory() []models.ChatEvent {
-	// Get all messages sent within the past 5hrs, max 50
-	var query = "SELECT * FROM (SELECT * FROM messages WHERE datetime(timestamp) >=datetime('now', '-5 Hour') AND visible = 1 ORDER BY timestamp DESC LIMIT 50) ORDER BY timestamp asc"
-	return getChat(query)
+func GetChatHistory() []events.UserMessageEvent {
+	// Get all visible messages
+	var query = fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+	m := getChat(query)
+
+	// Invert order of messages
+	for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
+		m[i], m[j] = m[j], m[i]
+	}
+
+	return m
+}
+
+// SetMessageVisibilityForUserId will bulk change the visibility of messages for a user
+// and then send out visibility changed events to chat clients.
+func SetMessageVisibilityForUserId(userID string, visible bool) error {
+	defer func() {
+		_historyCache = nil
+	}()
+
+	// Get a list of IDs from this user within the 5hr window to send to the connected clients to hide
+	ids := make([]string, 0)
+	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
+	messages := getChat(query)
+
+	if len(messages) == 0 {
+		return nil
+	}
+
+	for _, message := range messages {
+		ids = append(ids, message.Id)
+	}
+
+	// Tell the clients to hide/show these messages.
+	return SetMessagesVisibility(ids, visible)
 }
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {
-	tx, err := _db.Begin()
+	defer func() {
+		_historyCache = nil
+	}()
+
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	stmt, err := tx.Prepare("UPDATE messages SET visible=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
+	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
 
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 	defer stmt.Close()
 
+	var hiddenAt *time.Time
+	if !visible {
+		now := time.Now()
+		hiddenAt = &now
+	} else {
+		hiddenAt = nil
+	}
+
 	args := make([]interface{}, len(messageIDs)+1)
-	args[0] = visible
+	args[0] = hiddenAt
 	for i, id := range messageIDs {
 		args[i+1] = id
 	}
 
-	_, err = stmt.Exec(args...)
-	if err != nil {
-		log.Fatal(err)
+	if _, err = stmt.Exec(args...); err != nil {
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		log.Fatal(err)
 		return err
 	}
 
 	return nil
 }
 
-func getMessageById(messageID string) (models.ChatEvent, error) {
+func getMessageById(messageID string) (*events.UserMessageEvent, error) {
 	var query = "SELECT * FROM messages WHERE id = ?"
-	row := _db.QueryRow(query, messageID)
+	row := _datastore.DB.QueryRow(query, messageID)
 
 	var id string
-	var author string
+	var userId string
 	var body string
-	var messageType models.EventType
-	var visible int
+	var eventType models.EventType
+	var hiddenAt *time.Time
 	var timestamp time.Time
 
-	err := row.Scan(&id, &author, &body, &messageType, &visible, &timestamp)
+	err := row.Scan(&id, &userId, &body, &eventType, &hiddenAt, &timestamp)
 	if err != nil {
 		log.Errorln(err)
-		return models.ChatEvent{}, err
+		return nil, err
 	}
 
-	return models.ChatEvent{
-		ID:          id,
-		Author:      author,
-		Body:        body,
-		MessageType: messageType,
-		Visible:     visible == 1,
-		Timestamp:   timestamp,
+	user := user.GetUserById(userId)
+
+	return &events.UserMessageEvent{
+		events.Event{
+			Type:      eventType,
+			Id:        id,
+			Timestamp: timestamp,
+		},
+		events.UserEvent{
+			User:     user,
+			HiddenAt: hiddenAt,
+		},
+		events.MessageEvent{
+			Body: body,
+		},
 	}, nil
+}
+
+// Only keep recent messages so we don't keep more chat data than needed
+// for privacy and efficiency reasons.
+func runPruner() {
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	log.Traceln("Removing chat messages older than", maxBacklogHours, "hours")
+
+	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`
+	tx, err := _datastore.DB.Begin()
+	if err != nil {
+		log.Debugln(err)
+		return
+	}
+
+	stmt, err := tx.Prepare(deleteStatement)
+	if err != nil {
+		log.Debugln(err)
+		return
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(fmt.Sprintf("-%d hours", maxBacklogHours)); err != nil {
+		log.Debugln(err)
+		return
+	}
+	if err = tx.Commit(); err != nil {
+		log.Debugln(err)
+		return
+	}
 }

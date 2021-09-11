@@ -7,11 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 )
 
 var l = &sync.RWMutex{}
@@ -24,9 +21,7 @@ func setupStats() error {
 	statsSaveTimer := time.NewTicker(1 * time.Minute)
 	go func() {
 		for range statsSaveTimer.C {
-			if err := saveStats(); err != nil {
-				panic(err)
-			}
+			saveStats()
 		}
 	}()
 
@@ -57,27 +52,6 @@ func IsStreamConnected() bool {
 	return _stats.StreamConnected
 }
 
-// SetChatClientActive sets a client as active and connected.
-func SetChatClientActive(client models.Client) {
-	l.Lock()
-	defer l.Unlock()
-
-	// If this clientID already exists then update it.
-	// Otherwise set a new one.
-	if existingClient, ok := _stats.ChatClients[client.ClientID]; ok {
-		existingClient.LastSeen = time.Now()
-		existingClient.Username = client.Username
-		existingClient.MessageCount = client.MessageCount
-		existingClient.Geo = geoip.GetGeoFromIP(existingClient.IPAddress)
-		_stats.ChatClients[client.ClientID] = existingClient
-	} else {
-		if client.Geo == nil {
-			geoip.FetchGeoForIP(client.IPAddress)
-		}
-		_stats.ChatClients[client.ClientID] = client
-	}
-}
-
 // RemoveChatClient removes a client from the active clients record.
 func RemoveChatClient(clientID string) {
 	log.Trace("Removing the client:", clientID)
@@ -85,22 +59,6 @@ func RemoveChatClient(clientID string) {
 	l.Lock()
 	delete(_stats.ChatClients, clientID)
 	l.Unlock()
-}
-
-func GetChatClients() []models.Client {
-	l.RLock()
-	clients := make([]models.Client, 0)
-	for _, client := range _stats.ChatClients {
-		chatClient := chat.GetClient(client.ClientID)
-		if chatClient != nil {
-			clients = append(clients, chatClient.GetViewerClientFromChatClient())
-		} else {
-			clients = append(clients, client)
-		}
-	}
-	l.RUnlock()
-
-	return clients
 }
 
 // SetViewerIdActive sets a client as active and connected.
@@ -120,6 +78,9 @@ func SetViewerIdActive(id string) {
 func pruneViewerCount() {
 	viewers := make(map[string]time.Time)
 
+	l.Lock()
+	defer l.Unlock()
+
 	for viewerId := range _stats.Viewers {
 		viewerLastSeenTime := _stats.Viewers[viewerId]
 		if time.Since(viewerLastSeenTime) < _activeViewerPurgeTimeout {
@@ -130,39 +91,34 @@ func pruneViewerCount() {
 	_stats.Viewers = viewers
 }
 
-func saveStats() error {
+func saveStats() {
 	if err := data.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
 	if err := data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
-	if err := data.SetLastDisconnectTime(_stats.LastConnectTime.Time); err != nil {
-		log.Errorln("error saving disconnect time", err)
+	if _stats.LastDisconnectTime != nil && _stats.LastDisconnectTime.Valid {
+		if err := data.SetLastDisconnectTime(_stats.LastDisconnectTime.Time); err != nil {
+			log.Errorln("error saving disconnect time", err)
+		}
 	}
-
-	return nil
 }
 
 func getSavedStats() models.Stats {
-	savedLastDisconnectTime, savedLastDisconnectTimeErr := data.GetLastDisconnectTime()
-
-	var lastDisconnectTime utils.NullTime
-	if savedLastDisconnectTimeErr == nil && savedLastDisconnectTime.Valid {
-		lastDisconnectTime = savedLastDisconnectTime
-	}
+	savedLastDisconnectTime, _ := data.GetLastDisconnectTime()
 
 	result := models.Stats{
 		ChatClients:           make(map[string]models.Client),
 		Viewers:               make(map[string]time.Time),
 		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
 		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
-		LastDisconnectTime:    lastDisconnectTime,
+		LastDisconnectTime:    savedLastDisconnectTime,
 	}
 
 	// If the stats were saved > 5min ago then ignore the
 	// peak session count value, since the session is over.
-	if !result.LastDisconnectTime.Valid || time.Since(result.LastDisconnectTime.Time).Minutes() > 5 {
+	if result.LastDisconnectTime == nil || !result.LastDisconnectTime.Valid || time.Since(result.LastDisconnectTime.Time).Minutes() > 5 {
 		result.SessionMaxViewerCount = 0
 	}
 

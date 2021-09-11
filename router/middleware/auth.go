@@ -6,8 +6,11 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	log "github.com/sirupsen/logrus"
 )
+
+type ExternalAccessTokenHandlerFunc func(user.ExternalAPIUser, http.ResponseWriter, *http.Request)
 
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
@@ -25,9 +28,9 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
 
-		// For request needing CORS, send a 200.
+		// For request needing CORS, send a 204.
 		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
@@ -45,33 +48,65 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func RequireAccessToken(scope string, handler http.HandlerFunc) http.HandlerFunc {
+func accessDenied(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusUnauthorized) //nolint
+	w.Write([]byte("unauthorized"))        //nolint
+}
+
+// RequireExternalAPIAccessToken will validate a 3rd party access token.
+func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// We should accept 3rd party preflight OPTIONS requests.
+		if r.Method == "OPTIONS" {
+			// All OPTIONS requests should have a wildcard CORS header.
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
 		token := strings.Join(authHeader, "")
 
 		if len(authHeader) == 0 || token == "" {
 			log.Warnln("invalid access token")
-			w.WriteHeader(http.StatusUnauthorized)  //nolint
-			w.Write([]byte("invalid access token")) //nolint
+			accessDenied(w)
 			return
 		}
 
-		if accepted, err := data.DoesTokenSupportScope(token, scope); err != nil {
-			w.WriteHeader(http.StatusInternalServerError) //nolint
-			w.Write([]byte(err.Error()))                  //nolint
+		integration, err := user.GetExternalAPIUserForAccessTokenAndScope(token, scope)
+		if integration == nil || err != nil {
+			accessDenied(w)
 			return
-		} else if !accepted {
-			log.Warnln("invalid access token")
-			w.WriteHeader(http.StatusUnauthorized)  //nolint
-			w.Write([]byte("invalid access token")) //nolint
+		}
+
+		// All auth'ed 3rd party requests should have a wildcard CORS header.
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		handler(*integration, w, r)
+
+		if err := user.SetExternalAPIUserAccessTokenAsUsed(token); err != nil {
+			log.Debugln("token not found when updating last_used timestamp")
+		}
+	})
+}
+
+// RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
+// Not to be used for validating 3rd party access.
+func RequireUserAccessToken(handler http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		accessToken := r.URL.Query().Get("accessToken")
+		if accessToken == "" {
+			accessDenied(w)
+			return
+		}
+
+		// A user is required to use the websocket
+		user := user.GetUserByToken(accessToken)
+		if user == nil || !user.IsEnabled() {
+			accessDenied(w)
 			return
 		}
 
 		handler(w, r)
-
-		if err := data.SetAccessTokenAsUsed(token); err != nil {
-			log.Debugln(token, "not found when updating last_used timestamp")
-		}
 	})
 }

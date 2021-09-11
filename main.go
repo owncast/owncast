@@ -18,7 +18,6 @@ import (
 )
 
 func main() {
-
 	// Enable bundling of admin assets
 	_ = pkger.Include("/admin")
 
@@ -39,17 +38,19 @@ func main() {
 		config.LogDirectory = *logDirectory
 	}
 
-	configureLogging(*enableDebugOptions, *enableVerboseLogging)
-	log.Infoln(config.GetReleaseString())
-
 	if *backupDirectory != "" {
 		config.BackupDirectory = *backupDirectory
 	}
 
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {
-		os.Mkdir("./data", 0700)
+		if err := os.Mkdir("./data", 0700); err != nil {
+			log.Fatalln("Cannot create data directory", err)
+		}
 	}
+
+	configureLogging(*enableDebugOptions, *enableVerboseLogging)
+	log.Infoln(config.GetReleaseString())
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {
@@ -74,19 +75,17 @@ func main() {
 
 	go metrics.Start()
 
-	err := data.SetupPersistence(config.DatabaseFilePath)
-	if err != nil {
+	if err := data.SetupPersistence(config.DatabaseFilePath); err != nil {
 		log.Fatalln("failed to open database", err)
 	}
 
 	if *newStreamKey != "" {
 		if err := data.SetStreamKey(*newStreamKey); err != nil {
 			log.Errorln("Error setting your stream key.", err)
+			log.Exit(1)
 		} else {
 			log.Infoln("Stream key changed to", *newStreamKey)
 		}
-
-		log.Exit(0)
 	}
 
 	// Set the web server port
@@ -98,21 +97,27 @@ func main() {
 		}
 
 		log.Println("Saving new web server port number to", portNumber)
-		data.SetHTTPPortNumber(float64(portNumber))
+		if err := data.SetHTTPPortNumber(float64(portNumber)); err != nil {
+			log.Errorln(err)
+		}
 	}
 	config.WebServerPort = data.GetHTTPPortNumber()
 
 	// Set the web server ip
 	if *webServerIPOverride != "" {
 		log.Println("Saving new web server listen IP address to", *webServerIPOverride)
-		data.SetHTTPListenAddress(string(*webServerIPOverride))
+		if err := data.SetHTTPListenAddress(*webServerIPOverride); err != nil {
+			log.Errorln(err)
+		}
 	}
 	config.WebServerIP = data.GetHTTPListenAddress()
 
 	// Set the rtmp server port
 	if *rtmpPortOverride > 0 {
 		log.Println("Saving new RTMP server port number to", *rtmpPortOverride)
-		data.SetRTMPPortNumber(float64(*rtmpPortOverride))
+		if err := data.SetRTMPPortNumber(float64(*rtmpPortOverride)); err != nil {
+			log.Errorln(err)
+		}
 	}
 
 	// starts the core

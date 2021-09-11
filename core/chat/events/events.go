@@ -1,4 +1,4 @@
-package models
+package events
 
 import (
 	"bytes"
@@ -12,38 +12,59 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
 	"mvdan.cc/xurls"
+
+	"github.com/owncast/owncast/core/user"
+	log "github.com/sirupsen/logrus"
 )
 
-// ChatEvent represents a single chat message.
-type ChatEvent struct {
-	ClientID string `json:"-"`
+// EventPayload is a generic key/value map for sending out to chat clients.
+type EventPayload map[string]interface{}
 
-	Author      string    `json:"author,omitempty"`
-	Body        string    `json:"body,omitempty"`
-	RawBody     string    `json:"-"`
-	ID          string    `json:"id"`
-	MessageType EventType `json:"type"`
-	Visible     bool      `json:"visible"`
-	Timestamp   time.Time `json:"timestamp,omitempty"`
-	Ephemeral   bool      `json:"ephemeral,omitempty"`
+type OutboundEvent interface {
+	GetBroadcastPayload() EventPayload
+	GetMessageType() EventType
 }
 
-// Valid checks to ensure the message is valid.
-func (m ChatEvent) Valid() bool {
-	return m.Author != "" && m.Body != "" && m.ID != ""
+// Event is any kind of event.  A type is required to be specified.
+type Event struct {
+	Type      EventType `json:"type,omitempty"`
+	Id        string    `json:"id"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
-// SetDefaults will set default values on a chat event object.
-func (m *ChatEvent) SetDefaults() {
-	id, _ := shortid.Generate()
-	m.ID = id
-	m.Timestamp = time.Now()
-	m.Visible = true
+type UserEvent struct {
+	User     *user.User `json:"user"`
+	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
+}
+
+// MessageEvent is an event that has a message body.
+type MessageEvent struct {
+	OutboundEvent `json:"-"`
+	Body          string `json:"body"`
+	RawBody       string `json:"-"`
+}
+
+type SystemActionEvent struct {
+	Event
+	MessageEvent
+}
+
+// SetDefaults will set default properties of all inbound events.
+func (e *Event) SetDefaults() {
+	e.Id = shortid.MustGenerate()
+	e.Timestamp = time.Now()
+}
+
+// SetDefaults will set default properties of all inbound events.
+func (e *UserMessageEvent) SetDefaults() {
+	e.Id = shortid.MustGenerate()
+	e.Timestamp = time.Now()
+	e.RenderAndSanitizeMessageBody()
 }
 
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
-func (m *ChatEvent) RenderAndSanitizeMessageBody() {
+func (m *MessageEvent) RenderAndSanitizeMessageBody() {
 	m.RawBody = m.Body
 
 	// Set the new, sanitized and rendered message body
@@ -51,12 +72,12 @@ func (m *ChatEvent) RenderAndSanitizeMessageBody() {
 }
 
 // Empty will return if this message's contents is empty.
-func (m *ChatEvent) Empty() bool {
+func (m *MessageEvent) Empty() bool {
 	return m.Body == ""
 }
 
-// RenderBody will render markdown to html without any sanitization
-func (m *ChatEvent) RenderBody() {
+// RenderBody will render markdown to html without any sanitization.
+func (m *MessageEvent) RenderBody() {
 	m.RawBody = m.Body
 	m.Body = RenderMarkdown(m.RawBody)
 }
@@ -92,7 +113,7 @@ func RenderMarkdown(raw string) string {
 	trimmed := strings.TrimSpace(raw)
 	var buf bytes.Buffer
 	if err := markdown.Convert([]byte(trimmed), &buf); err != nil {
-		panic(err)
+		log.Debugln(err)
 	}
 
 	return buf.String()
@@ -115,10 +136,13 @@ func sanitize(raw string) string {
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
 	// Allow breaks
-	p.AllowElements("br", "p")
+	p.AllowElements("br")
+
+	p.AllowElementsContent("p")
 
 	// Allow img tags from the the local emoji directory only
-	p.AllowAttrs("src", "alt", "class", "title").Matching(regexp.MustCompile(`(?i)/img/emoji`)).OnElements("img")
+	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)^/img/emoji`)).OnElements("img")
+	p.AllowAttrs("alt", "title").Matching(regexp.MustCompile(`:\S+:`)).OnElements("img")
 	p.AllowAttrs("class").OnElements("img")
 
 	// Allow bold

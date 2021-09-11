@@ -12,8 +12,9 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +36,7 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tagStrings []string
+	tagStrings := make([]string, 0)
 	for _, tag := range configValues {
 		tagStrings = append(tagStrings, tag.Value.(string))
 	}
@@ -71,17 +72,12 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+func ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	SetStreamTitle(w, r)
+}
+
 func sendSystemChatAction(messageText string, ephemeral bool) {
-	message := models.ChatEvent{}
-	message.Body = messageText
-	message.MessageType = models.ChatActionSent
-	message.ClientID = "internal-server"
-	message.Ephemeral = ephemeral
-	message.SetDefaults()
-
-	message.RenderBody()
-
-	if err := core.SendMessageToChat(message); err != nil {
+	if err := chat.SendSystemAction(messageText, ephemeral); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -226,7 +222,7 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imgPath := filepath.Join("data", "logo"+extension)
-	if err := ioutil.WriteFile(imgPath, bytes, 0644); err != nil {
+	if err := ioutil.WriteFile(imgPath, bytes, 0600); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -434,7 +430,6 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		if newS3Config.Value.Endpoint == "" || !utils.IsValidUrl((newS3Config.Value.Endpoint)) {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires an endpoint")
 			return
-
 		}
 
 		if newS3Config.Value.AccessKey == "" || newS3Config.Value.Secret == "" {
@@ -453,9 +448,11 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data.SetS3Config(newS3Config.Value)
+	if err := data.SetS3Config(newS3Config.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 	controllers.WriteSimpleResponse(w, true, "storage configuration changed")
-
 }
 
 // SetStreamOutputVariants will handle the web config request to set the video output stream variants.
@@ -520,7 +517,10 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetChatDisabled(configValue.Value.(bool))
+	if err := data.SetChatDisabled(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "chat disabled status updated")
 }
@@ -573,22 +573,32 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.SetCustomStyles(customStyles.Value.(string))
+	if err := data.SetCustomStyles(customStyles.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
 }
 
-// SetUsernameBlocklist will set the list of usernames we do not allow to use.
-func SetUsernameBlocklist(w http.ResponseWriter, r *http.Request) {
-	usernames, success := getValueFromRequest(w, r)
-	if !success {
-		controllers.WriteSimpleResponse(w, false, "unable to update chat username blocklist")
+// SetForbiddenUsernameList will set the list of usernames we do not allow to use.
+func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+	type forbiddenUsernameListRequest struct {
+		Value []string `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request forbiddenUsernameListRequest
+	if err := decoder.Decode(&request); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update forbidden usernames with provided values")
 		return
 	}
 
-	data.SetUsernameBlocklist(usernames.Value.(string))
+	if err := data.SetForbiddenUsernameList(request.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+	}
 
-	controllers.WriteSimpleResponse(w, true, "blocklist updated")
+	controllers.WriteSimpleResponse(w, true, "forbidden username list updated")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

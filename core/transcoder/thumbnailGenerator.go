@@ -2,6 +2,7 @@ package transcoder
 
 import (
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path"
 	"strconv"
@@ -81,6 +82,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 
 	mostRecentFile := path.Join(framePath, names[0])
 	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	outputFileTemp := path.Join(config.WebRoot, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
 		ffmpegPath,
@@ -90,12 +92,17 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		"-i", mostRecentFile, // Input
 		"-f image2",  // format
 		"-vframes 1", // Single frame
-		outputFile,
+		outputFileTemp,
 	}
 
 	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
 	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
 		return err
+	} else {
+		// rename temp file
+		if err := os.Rename(outputFileTemp, outputFile); err != nil {
+			log.Errorln(err)
+		}
 	}
 
 	// If YP support is enabled also create an animated GIF preview
@@ -108,6 +115,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 
 func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	outputFileTemp := path.Join(config.WebRoot, "temppreview.gif")
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{
@@ -117,11 +125,16 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 		"-i", sourceFile, // Input
 		"-t 1", // Output is one second in length
 		"-filter_complex", "\"[0:v] fps=8,scale=w=480:h=-1:flags=lanczos,split [a][b];[a] palettegen=stats_mode=full [p];[b][p] paletteuse=new=1\"",
-		outputFile,
+		outputFileTemp,
 	}
 
 	ffmpegCmd := strings.Join(animatedGifFlags, " ")
 	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
 		log.Errorln(err)
+	} else {
+		// rename temp file
+		if err := os.Rename(outputFileTemp, outputFile); err != nil {
+			log.Errorln(err)
+		}
 	}
 }

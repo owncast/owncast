@@ -39,6 +39,39 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 }
 
+// GetCompatibleLogo will return the logo unless it's a SVG
+// and in that case will return a default placeholder.
+// Used for sharing to external social networks that generally
+// don't support SVG.
+func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
+	imageFilename := data.GetLogoPath()
+
+	// If the logo image is not a SVG then we can return it
+	// without any problems.
+	if imageFilename != "" && filepath.Ext(imageFilename) != ".svg" {
+		GetLogo(w, r)
+		return
+	}
+
+	// Otherwise use a fallback logo.png.
+	imagePath := filepath.Join(config.WebRoot, "img", "logo.png")
+	contentType := "image/png"
+	imageBytes, err := getImage(imagePath)
+	if err != nil {
+		returnDefault(w)
+		return
+	}
+
+	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
+	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
+
+	referrer := r.Referer()
+	if referrer == "" {
+		referrer = "an external site"
+	}
+	log.Warnf("%s requested your logo. because many social networks do not support SVGs we returned a placeholder instead. change your current logo \"%s\" to a png or jpeg to be most compatible with external social networking sites.", referrer, imageFilename)
+}
+
 func returnDefault(w http.ResponseWriter) {
 	imagePath := filepath.Join(config.WebRoot, "img", "logo.svg")
 	imageBytes, err := getImage(imagePath)

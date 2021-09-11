@@ -9,8 +9,8 @@ type Status struct {
 	OverallMaxViewerCount int  `json:"overallMaxViewerCount"`
 	SessionMaxViewerCount int  `json:"sessionMaxViewerCount"`
 
-	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
-	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
+	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
+	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
 
 	VersionNumber string `json:"versionNumber"`
 	StreamTitle   string `json:"streamTitle"`

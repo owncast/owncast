@@ -15,12 +15,12 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 
 	status := core.GetStatus()
 	response := webStatusResponse{
-		Online: status.Online,
-		ViewerCount: status.ViewerCount,
-		LastConnectTime: status.LastConnectTime,
+		Online:             status.Online,
+		ViewerCount:        status.ViewerCount,
+		LastConnectTime:    status.LastConnectTime,
 		LastDisconnectTime: status.LastDisconnectTime,
-		VersionNumber: status.VersionNumber,
-		StreamTitle: status.StreamTitle,
+		VersionNumber:      status.VersionNumber,
+		StreamTitle:        status.StreamTitle,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -30,11 +30,11 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 type webStatusResponse struct {
-	Online                bool `json:"online"`
-	ViewerCount           int  `json:"viewerCount"`
+	Online      bool `json:"online"`
+	ViewerCount int  `json:"viewerCount"`
 
-	LastConnectTime    utils.NullTime `json:"lastConnectTime"`
-	LastDisconnectTime utils.NullTime `json:"lastDisconnectTime"`
+	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
+	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
 
 	VersionNumber string `json:"versionNumber"`
 	StreamTitle   string `json:"streamTitle"`

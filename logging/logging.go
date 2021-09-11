@@ -6,6 +6,7 @@ package logging
 import (
 	"math"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -25,13 +26,15 @@ type OCLogger struct {
 }
 
 var Logger *OCLogger
-var _level logrus.Level
 
 // Setup configures our custom logging destinations.
 func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	// Create the logging directory if needed
-	if !utils.DoesFileExists(getLogFilePath()) {
-		os.Mkdir(getLogFilePath(), 0700)
+	loggingDirectory := filepath.Dir(getLogFilePath())
+	if !utils.DoesFileExists(loggingDirectory) {
+		if err := os.Mkdir(loggingDirectory, 0700); err != nil {
+			logger.Errorln("unable to create logs directory", loggingDirectory, err)
+		}
 	}
 
 	// Write logs to a file

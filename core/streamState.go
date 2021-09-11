@@ -3,6 +3,7 @@ package core
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
@@ -29,10 +31,11 @@ var _onlineCleanupTicker *time.Ticker
 var _currentBroadcast *models.CurrentBroadcast
 
 // setStreamAsConnected sets the stream as connected.
-func setStreamAsConnected() {
+func setStreamAsConnected(rtmpOut *io.PipeReader) {
+	now := utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.StreamConnected = true
-	_stats.LastConnectTime = utils.NullTime{Time: time.Now(), Valid: true}
-	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: false}
+	_stats.LastDisconnectTime = nil
+	_stats.LastConnectTime = &now
 	_stats.SessionMaxViewerCount = 0
 
 	_currentBroadcast = &models.CurrentBroadcast{
@@ -65,17 +68,25 @@ func setStreamAsConnected() {
 			_transcoder = nil
 			_currentBroadcast = nil
 		}
+		_transcoder.SetStdin(rtmpOut)
 		_transcoder.Start()
 	}()
 
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
 	transcoder.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
+
+	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
+	chat.SendAllWelcomeMessage()
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
 func SetStreamAsDisconnected() {
+	_ = chat.SendSystemAction("The stream is ending.", true)
+
+	now := utils.NullTime{Time: time.Now(), Valid: true}
 	_stats.StreamConnected = false
-	_stats.LastDisconnectTime = utils.NullTime{Time: time.Now(), Valid: true}
+	_stats.LastDisconnectTime = &now
+	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
 	offlineFilename := "offline.ts"
@@ -88,16 +99,14 @@ func SetStreamAsDisconnected() {
 		_yp.Stop()
 	}
 
-	for index := range data.GetStreamOutputVariants() {
+	for index := range _currentBroadcast.OutputSettings {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
 
-		err := utils.Copy(offlineFilePath, segmentFilePath)
-		if err != nil {
+		if err := utils.Copy(offlineFilePath, segmentFilePath); err != nil {
 			log.Warnln(err)
 		}
-		_, err = _storage.Save(segmentFilePath, 0)
-		if err != nil {
+		if _, err := _storage.Save(segmentFilePath, 0); err != nil {
 			log.Warnln(err)
 		}
 		if utils.DoesFileExists(playlistFilePath) {
@@ -113,20 +122,17 @@ func SetStreamAsDisconnected() {
 			}
 
 			variantPlaylist := playlist.(*m3u8.MediaPlaylist)
-			if len(variantPlaylist.Segments) > int(data.GetStreamLatencyLevel().SegmentCount) {
+			if len(variantPlaylist.Segments) > data.GetStreamLatencyLevel().SegmentCount {
 				variantPlaylist.Segments = variantPlaylist.Segments[:len(variantPlaylist.Segments)]
 			}
 
-			err = variantPlaylist.Append(offlineFilename, 8.0, "")
-			if err != nil {
+			if err := variantPlaylist.Append(offlineFilename, 8.0, ""); err != nil {
 				log.Fatalln(err)
 			}
-			err = variantPlaylist.SetDiscontinuity()
-			if err != nil {
+			if err := variantPlaylist.SetDiscontinuity(); err != nil {
 				log.Fatalln(err)
 			}
-			_, err = f.WriteAt(variantPlaylist.Encode().Bytes(), 0)
-			if err != nil {
+			if _, err := f.WriteAt(variantPlaylist.Encode().Bytes(), 0); err != nil {
 				log.Errorln(err)
 			}
 		} else {
@@ -136,8 +142,7 @@ func SetStreamAsDisconnected() {
 			}
 
 			// If "offline" content gets changed then change the duration below
-			err = p.Append(offlineFilename, 8.0, "")
-			if err != nil {
+			if err := p.Append(offlineFilename, 8.0, ""); err != nil {
 				log.Errorln(err)
 			}
 
@@ -147,13 +152,11 @@ func SetStreamAsDisconnected() {
 				log.Errorln(err)
 			}
 			defer f.Close()
-			_, err = f.Write(p.Encode().Bytes())
-			if err != nil {
+			if _, err := f.Write(p.Encode().Bytes()); err != nil {
 				log.Errorln(err)
 			}
 		}
-		_, err = _storage.Save(playlistFilePath, 0)
-		if err != nil {
+		if _, err := _storage.Save(playlistFilePath, 0); err != nil {
 			log.Warnln(err)
 		}
 	}
