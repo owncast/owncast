@@ -126,7 +126,7 @@ func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.conn.Close()
+		_ = c.conn.Close()
 	}()
 
 	for {
@@ -174,7 +174,7 @@ func (c *Client) handleEvent(data []byte) {
 func (c *Client) close() {
 	log.Traceln("client closed:", c.User.DisplayName, c.id, c.ipAddress)
 
-	c.conn.Close()
+	_ = c.conn.Close()
 	c.server.unregister <- c.id
 	if c.send != nil {
 		close(c.send)

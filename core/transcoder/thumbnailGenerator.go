@@ -98,11 +98,11 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
 	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
 		return err
-	} else {
-		// rename temp file
-		if err := os.Rename(outputFileTemp, outputFile); err != nil {
-			log.Errorln(err)
-		}
+	}
+
+	// rename temp file
+	if err := os.Rename(outputFileTemp, outputFile); err != nil {
+		log.Errorln(err)
 	}
 
 	// If YP support is enabled also create an animated GIF preview

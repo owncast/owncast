@@ -166,7 +166,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 			"type": events.ErrorNeedsRegistration,
 		})
 		// Send error that registration is required
-		conn.Close()
+		_ = conn.Close()
 		return
 	}
 
@@ -176,7 +176,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		_ = conn.WriteJSON(events.EventPayload{
 			"type": events.ErrorUserDisabled,
 		})
-		conn.Close()
+		_ = conn.Close()
 		return
 	}
 

@@ -124,7 +124,7 @@ func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 
 // Save saves the file to the s3 bucket.
 func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
-	file, err := os.Open(filePath)
+	file, err := os.Open(filePath) // nolint
 	if err != nil {
 		return "", err
 	}
@@ -153,10 +153,10 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 		if retryCount < 4 {
 			log.Traceln("Retrying...")
 			return s.Save(filePath, retryCount+1)
-		} else {
-			log.Warnln("Giving up on", filePath, err)
-			return "", fmt.Errorf("Giving up on %s", filePath)
 		}
+
+		log.Warnln("Giving up on", filePath, err)
+		return "", fmt.Errorf("Giving up on %s", filePath)
 	}
 
 	return response.Location, nil
@@ -185,7 +185,7 @@ func (s *S3Storage) connectAWS() *session.Session {
 
 // rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
 func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
-	f, err := os.Open(filePath)
+	f, err := os.Open(filePath) // nolint
 	if err != nil {
 		panic(err)
 	}

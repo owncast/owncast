@@ -298,11 +298,12 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		if err := data.SetHTTPPortNumber(port); err != nil {
 			controllers.WriteSimpleResponse(w, false, err.Error())
 			return
-		} else {
-			controllers.WriteSimpleResponse(w, true, "HTTP port set")
-			return
 		}
+
+		controllers.WriteSimpleResponse(w, true, "HTTP port set")
+		return
 	}
+
 	controllers.WriteSimpleResponse(w, false, "Invalid type or value, port must be a number")
 }
 
@@ -322,14 +323,14 @@ func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 			if err := data.SetHTTPListenAddress(ip.String()); err != nil {
 				controllers.WriteSimpleResponse(w, false, err.Error())
 				return
-			} else {
-				controllers.WriteSimpleResponse(w, true, "HTTP listen address set")
-				return
 			}
-		} else {
-			controllers.WriteSimpleResponse(w, false, "Invalid IP address")
+
+			controllers.WriteSimpleResponse(w, true, "HTTP listen address set")
 			return
 		}
+
+		controllers.WriteSimpleResponse(w, false, "Invalid IP address")
+		return
 	}
 	controllers.WriteSimpleResponse(w, false, "Invalid type or value, IP address must be a string")
 }

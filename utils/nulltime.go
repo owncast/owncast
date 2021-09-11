@@ -45,6 +45,6 @@ func (nt NullTime) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	nt.Time = parsedDateTime
+	nt.Time = parsedDateTime // nolint
 	return nil
 }

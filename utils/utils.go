@@ -51,7 +51,7 @@ func GetIndexFromFilePath(path string) string {
 
 // Copy copies the file to destination.
 func Copy(source, destination string) error {
-	input, err := ioutil.ReadFile(source)
+	input, err := ioutil.ReadFile(source) // nolint
 	if err != nil {
 		return err
 	}
@@ -207,9 +207,8 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 	if ffmpegPath != "" {
 		if err := VerifyFFMpegPath(ffmpegPath); err == nil {
 			return ffmpegPath
-		} else {
-			log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 		}
+		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 	}
 
 	// First look to see if ffmpeg is in the current working directory

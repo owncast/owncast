@@ -86,8 +86,8 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	scheme := "http"
 
-	if siteUrl := data.GetServerURL(); siteUrl != "" {
-		if parsed, err := url.Parse(siteUrl); err == nil && parsed.Scheme != "" {
+	if siteURL := data.GetServerURL(); siteURL != "" {
+		if parsed, err := url.Parse(siteURL); err == nil && parsed.Scheme != "" {
 			scheme = parsed.Scheme
 		}
 	}

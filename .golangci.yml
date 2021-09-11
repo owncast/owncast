@@ -16,6 +16,8 @@ issues:
     - Subprocess launch(ed with variable|ing should be audited)
     - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
     - comment on exported (.+) should be of the form "(.+)..."
+    - G307 # Allow closing files as a defer without checking error.
+    - composite literal uses unkeyed fields
 
     # Eventually add these back when we want to fix all the missing comments.
     - exported (.+) should have comment( \(or a comment on this block\))? or be unexported
@@ -47,4 +49,4 @@ linters:
 linters-settings:
   govet:
     disable:
-      - composites
+      - composite

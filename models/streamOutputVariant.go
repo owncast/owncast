@@ -85,9 +85,9 @@ func getBitrateString(bitrate int) string {
 	} else if bitrate >= 1000 {
 		if math.Mod(float64(bitrate), 1000) == 0 {
 			return fmt.Sprintf("%dMbps", bitrate/1000.0)
-		} else {
-			return fmt.Sprintf("%.1fMbps", float32(bitrate)/1000.0)
 		}
+
+		return fmt.Sprintf("%.1fMbps", float32(bitrate)/1000.0)
 	}
 
 	return ""
