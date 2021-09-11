@@ -8,6 +8,7 @@ import (
 	"github.com/teris-io/shortid"
 )
 
+// SendStreamStatusEvent will send all webhook destinations the current stream status.
 func SendStreamStatusEvent(eventType models.EventType) {
 	SendEventToWebhooks(WebhookEvent{
 		Type: eventType,

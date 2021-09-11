@@ -42,6 +42,7 @@ func GetRelativePathFromAbsolutePath(path string) string {
 	return filepath.Join(variant, file)
 }
 
+// GetIndexFromFilePath is a utility that will return the index/key/variant name in a full path.
 func GetIndexFromFilePath(path string) string {
 	pathComponents := strings.Split(path, "/")
 	variant := pathComponents[len(pathComponents)-2]
@@ -108,6 +109,7 @@ func IsUserAgentAPlayer(userAgent string) bool {
 	return false
 }
 
+// RenderSimpleMarkdown will return HTML without sanitization or specific formatting rules.
 func RenderSimpleMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
@@ -135,6 +137,7 @@ func RenderSimpleMarkdown(raw string) string {
 	return buf.String()
 }
 
+// RenderPageContentMarkdown will return HTML specifically handled for the user-specified page content.
 func RenderPageContentMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
@@ -189,6 +192,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	return 60 * 10
 }
 
+// IsValidURL will return if a URL string is a valid URL or not.
 func IsValidURL(urlToTest string) bool {
 	if _, err := url.ParseRequestURI(urlToTest); err != nil {
 		return false
@@ -254,7 +258,7 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-// Removes the directory and makes it again. Throws fatal error on failure.
+// CleanupDirectory removes the directory and makes it fresh again. Throws fatal error on failure.
 func CleanupDirectory(path string) {
 	log.Traceln("Cleaning", path)
 	if err := os.RemoveAll(path); err != nil {
@@ -265,6 +269,7 @@ func CleanupDirectory(path string) {
 	}
 }
 
+// FindInSlice will return the index if a string is located in a slice of strings.
 func FindInSlice(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {

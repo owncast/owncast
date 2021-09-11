@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// SetMessagesVisibility will set the visibility of multiple messages by ID.
 func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 	// Save new message visibility
 	if err := saveMessageVisibility(messageIDs, visibility); err != nil {

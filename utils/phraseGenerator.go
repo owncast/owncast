@@ -626,6 +626,7 @@ var (
 	}
 )
 
+// GeneratePhrase will generate and return a random string consisting of our word list.
 func GeneratePhrase() string {
 	r := rand.New(rand.NewSource(time.Now().UnixNano())) //nolint
 

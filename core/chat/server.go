@@ -20,6 +20,7 @@ import (
 
 var _server *Server
 
+// Server represents an instance of the chat server.
 type Server struct {
 	mu                       sync.RWMutex
 	seq                      uint
@@ -36,6 +37,7 @@ type Server struct {
 	unregister chan uint // the ChatClient id
 }
 
+// NewChat will return a new instance of the chat server.
 func NewChat() *Server {
 	maximumConcurrentConnectionLimit := getMaximumConcurrentConnectionLimit()
 	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
@@ -51,6 +53,7 @@ func NewChat() *Server {
 	return server
 }
 
+// Run will start the chat server.
 func (s *Server) Run() {
 	for {
 		select {
@@ -121,6 +124,7 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
+// ClientClosed is fired when a client disconnects or connection is dropped.
 func (s *Server) ClientClosed(c *Client) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -132,6 +136,7 @@ func (s *Server) ClientClosed(c *Client) {
 	}
 }
 
+// HandleClientConnection is fired when a single client connects to the websocket.
 func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	if data.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
@@ -212,6 +217,7 @@ func (s *Server) Broadcast(payload events.EventPayload) error {
 	return nil
 }
 
+// Send will send a single payload to a single connected client.
 func (s *Server) Send(payload events.EventPayload, client *Client) {
 	data, err := json.Marshal(payload)
 	if err != nil {

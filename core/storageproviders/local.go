@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
 }
 

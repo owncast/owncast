@@ -60,6 +60,7 @@ func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models
 	}
 }
 
+// HandleConn is fired when an inbound RTMP connection takes place.
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {

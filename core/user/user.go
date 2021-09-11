@@ -16,6 +16,7 @@ import (
 
 var _datastore *data.Datastore
 
+// User represents a single chat user.
 type User struct {
 	ID            string     `json:"id"`
 	AccessToken   string     `json:"-"`
@@ -27,14 +28,17 @@ type User struct {
 	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
 }
 
+// IsEnabled will return if this single user is enabled.
 func (u *User) IsEnabled() bool {
 	return u.DisabledAt == nil
 }
 
+// SetupUsers will perform the initial initialization of the user package.
 func SetupUsers() {
 	_datastore = data.GetDatastore()
 }
 
+// CreateAnonymousUser will create a new anonymous user with the provided display name.
 func CreateAnonymousUser(username string) (*User, error) {
 	id := shortid.MustGenerate()
 	accessToken, err := utils.GenerateAccessToken()
@@ -65,6 +69,7 @@ func CreateAnonymousUser(username string) (*User, error) {
 	return user, nil
 }
 
+// ChangeUsername will change the user associated to userID from one display name to another.
 func ChangeUsername(userID string, username string) {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -124,6 +129,7 @@ func create(user *User) error {
 	return tx.Commit()
 }
 
+// SetEnabled will will set the enabled flag on a single user assigned to userID.
 func SetEnabled(userID string, enabled bool) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()

@@ -40,7 +40,7 @@ var validAccessTokenScopes = []string{
 	ScopeHasAdminAccess,
 }
 
-// InsertToken will add a new token to the database.
+// InsertExternalAPIUser will add a new API user to the database.
 func InsertExternalAPIUser(token string, name string, color int, scopes []string) error {
 	log.Traceln("Adding new API user:", name)
 

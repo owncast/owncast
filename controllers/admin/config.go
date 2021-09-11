@@ -72,6 +72,7 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// ExternalSetStreamTitle will change the stream title on behalf of an external integration API request.
 func ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	SetStreamTitle(w, r)
 }

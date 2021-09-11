@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/geoip"
 )
 
+// Client represents a single chat client.
 type Client struct {
 	id          uint
 	accessToken string

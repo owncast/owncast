@@ -25,7 +25,7 @@ import (
 // then keep a reference to it here.
 var _queuedPlaylistUpdates = make(map[string]string)
 
-// S3Storage is the s3 implementation of the ChunkStorageProvider.
+// S3Storage is the s3 implementation of a storage provider.
 type S3Storage struct {
 	sess *session.Session
 	host string

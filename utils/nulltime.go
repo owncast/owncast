@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// NullTime is a custom nullable time for representing datetime.
 type NullTime struct {
 	Time  time.Time
 	Valid bool // Valid is true if Time is not NULL
@@ -25,6 +26,7 @@ func (nt NullTime) Value() (driver.Value, error) {
 	return nt.Time, nil
 }
 
+// MarshalJSON implements the JSON marshal function.
 func (nt NullTime) MarshalJSON() ([]byte, error) {
 	if !nt.Valid {
 		return []byte("null"), nil
@@ -33,6 +35,7 @@ func (nt NullTime) MarshalJSON() ([]byte, error) {
 	return []byte(val), nil
 }
 
+// UnmarshalJSON implements the JSON unmarshal function.
 func (nt NullTime) UnmarshalJSON(data []byte) error {
 	dateString := string(data)
 	if dateString == "null" {

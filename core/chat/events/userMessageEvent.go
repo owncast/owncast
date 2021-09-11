@@ -19,6 +19,7 @@ func (e *UserMessageEvent) GetBroadcastPayload() EventPayload {
 	}
 }
 
+// GetMessageType will return the event type for this message.
 func (e *UserMessageEvent) GetMessageType() EventType {
 	return MessageSent
 }

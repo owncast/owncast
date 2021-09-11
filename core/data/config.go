@@ -516,6 +516,7 @@ func SetVideoCodec(codec string) error {
 	return _datastore.SetString(videoCodecKey, codec)
 }
 
+// GetVideoCodec returns the codec to use for transcoding video.
 func GetVideoCodec() string {
 	codec, err := _datastore.GetString(videoCodecKey)
 	if codec == "" || err != nil {

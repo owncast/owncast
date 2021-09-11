@@ -32,6 +32,7 @@ func setupPersistence() {
 	}()
 }
 
+// SaveUserMessage will save a single chat event to the messages database.
 func SaveUserMessage(event events.UserMessageEvent) {
 	saveEvent(event.ID, event.User.ID, event.Body, event.Type, event.HiddenAt, event.Timestamp)
 }
@@ -153,6 +154,7 @@ func getChat(query string) []events.UserMessageEvent {
 
 var _historyCache *[]events.UserMessageEvent
 
+// GetChatModerationHistory will return all the chat messages suitable for moderation purposes.
 func GetChatModerationHistory() []events.UserMessageEvent {
 	if _historyCache != nil {
 		return *_historyCache
@@ -167,6 +169,7 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 	return result
 }
 
+// GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []events.UserMessageEvent {
 	// Get all visible messages
 	var query = fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)

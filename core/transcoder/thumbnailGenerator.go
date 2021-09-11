@@ -18,6 +18,7 @@ import (
 
 var _timer *time.Ticker
 
+// StopThumbnailGenerator will stop the periodic generating of a thumbnail from video.
 func StopThumbnailGenerator() {
 	if _timer != nil {
 		_timer.Stop()

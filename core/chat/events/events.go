@@ -20,6 +20,7 @@ import (
 // EventPayload is a generic key/value map for sending out to chat clients.
 type EventPayload map[string]interface{}
 
+// OutboundEvent represents an event that is sent out to all listeners of the chat server.
 type OutboundEvent interface {
 	GetBroadcastPayload() EventPayload
 	GetMessageType() EventType
@@ -32,6 +33,7 @@ type Event struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// UserEvent is an event with an associated user.
 type UserEvent struct {
 	User     *user.User `json:"user"`
 	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
@@ -44,6 +46,7 @@ type MessageEvent struct {
 	RawBody       string `json:"-"`
 }
 
+// SystemActionEvent is an event that represents an action that took place, not a chat message.
 type SystemActionEvent struct {
 	Event
 	MessageEvent
@@ -92,6 +95,7 @@ func RenderAndSanitize(raw string) string {
 	return strings.TrimSpace(safe)
 }
 
+// RenderMarkdown will return HTML rendered from the string body of a chat message.
 func RenderMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(

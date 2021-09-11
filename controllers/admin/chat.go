@@ -49,6 +49,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// UpdateUserEnabled enable or disable a single user by ID.
 func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	type blockUserRequest struct {
 		UserID  string `json:"userId"`
@@ -92,6 +93,7 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", request.UserID, request.Enabled))
 }
 
+// GetDisabledUsers will return all the disabled users.
 func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -130,6 +132,7 @@ func SendUserMessage(integration user.ExternalAPIUser, w http.ResponseWriter, r 
 	controllers.BadRequestHandler(w, errors.New("no longer supported. see /api/integrations/chat/send"))
 }
 
+// SendIntegrationChatMessage will send a chat message on behalf of an external chat integration.
 func SendIntegrationChatMessage(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

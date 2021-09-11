@@ -16,6 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Restore will attempt to restore the database using a specified backup file.
 func Restore(backupFile string, databaseFile string) error {
 	log.Printf("Restoring database backup %s to %s", backupFile, databaseFile)
 
@@ -55,6 +56,7 @@ func Restore(backupFile string, databaseFile string) error {
 	return nil
 }
 
+// Backup will backup the provided instance of the database to the specified file.
 func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
 

@@ -12,6 +12,7 @@ import (
 
 var getStatus func() models.Status
 
+// Start begins the chat server.
 func Start(getStatusFunc func() models.Status) error {
 	setupPersistence()
 
@@ -40,6 +41,7 @@ func GetClientsForUser(userID string) ([]*Client, error) {
 	return clients[userID], nil
 }
 
+// GetClients will return all the current chat clients connected.
 func GetClients() []*Client {
 	clients := []*Client{}
 
@@ -55,6 +57,7 @@ func GetClients() []*Client {
 	return clients
 }
 
+// SendSystemMessage will send a message string as a system message to all clients.
 func SendSystemMessage(text string, ephemeral bool) error {
 	message := events.SystemMessageEvent{
 		MessageEvent: events.MessageEvent{
@@ -75,6 +78,7 @@ func SendSystemMessage(text string, ephemeral bool) error {
 	return nil
 }
 
+// SendSystemAction will send a system action string as an action event to all clients.
 func SendSystemAction(text string, ephemeral bool) error {
 	message := events.ActionEvent{
 		MessageEvent: events.MessageEvent{
@@ -96,14 +100,17 @@ func SendSystemAction(text string, ephemeral bool) error {
 	return nil
 }
 
+// SendAllWelcomeMessage will send the chat message to all connected clients.
 func SendAllWelcomeMessage() {
 	_server.sendAllWelcomeMessage()
 }
 
+// Broadcast will send all connected clients the outbound object provided.
 func Broadcast(event events.OutboundEvent) error {
 	return _server.Broadcast(event.GetBroadcastPayload())
 }
 
+// HandleClientConnection handles a single inbound websocket connection.
 func HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	_server.HandleClientConnection(w, r)
 }
