@@ -86,7 +86,7 @@ class ModeratorMenu extends Component {
         role="menu"
         id="open-mod-actions-menu"
         aria-labelledby="open-mod-actions-button"
-        class="moderator-actions-menu bg-gray-700	rounded-lg"
+        class="moderator-actions-menu bg-gray-700	rounded-lg shadow-md"
         ref=${this.menuNode}
       >
         <li>
@@ -108,6 +108,7 @@ class ModeratorMenu extends Component {
   }
 }
 
+// 3 dots button
 function ModeratorMenuItem({ icon, hoverIcon, label, onClick }) {
 
   return html`
@@ -125,6 +126,7 @@ function ModeratorMenuItem({ icon, hoverIcon, label, onClick }) {
 }
 
 
+// more details panel that display message, prev usernames, actions
 function ModeratorMoreInfoContainer({ message }) {
   const { user, timestamp, body } = message;
   const { displayName, createdAt, previousNames, displayColor,
@@ -136,17 +138,18 @@ function ModeratorMoreInfoContainer({ message }) {
   const createDate = new Date(createdAt);
   const sentDate = new Date(timestamp);
   return html`
-    <div className="moderator-more-info-container text-gray-300 bg-gray-800 rounded-lg">
+    <div className="moderator-more-info-container text-gray-300 bg-gray-800 rounded-lg p-4 border border-white text-base absolute">
       <div className="moderator-more-info-message scrollbar-hidden bg-gray-700 rounded-md pb-2">
         <p className="text-xs text-gray-500">Sent at ${sentDate.toLocaleTimeString()}</p>
         <div className="text-sm" dangerouslySetInnerHTML=${{ __html: body }} />
       </div>
       <div className="moderator-more-info-user py-2 my-2">
+        <p className="text-xs text-gray-500">Sent by:</p>
         <p
           className="font-bold ${isAuthorModerator && ' moderator-flag'}"
           style=${authorTextColor}>${displayName}</p>
 
-        <p className="text-xs text-gray-500">Created at: ${createDate.toLocaleTimeString()}</p>
+        <p className="text-xs text-gray-500 mt-2">Viewer created at: ${createDate.toLocaleString()}</p>
 
         ${previousNames.length > 1 &&
           html`
@@ -157,7 +160,7 @@ function ModeratorMoreInfoContainer({ message }) {
         }
 
       </div>
-      <div className="moderator-more-info-actions pt-2 flex flex-row border-t border-gray-700">
+      <div className="moderator-more-info-actions pt-2 flex flex-row border-t border-gray-700 shadow-md">
         <${ModeratorMenuItem} icon=${HIDE_MESSAGE_ICON} hoverIcon=${HIDE_MESSAGE_ICON_HOVER} label="Hide message" onClick="" />
         <${ModeratorMenuItem} icon=${BAN_USER_ICON} hoverIcon=${BAN_USER_ICON_HOVER} label="Ban user" onClick="" />
       </div>
