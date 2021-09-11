@@ -4,9 +4,13 @@ const html = htm.bind(h);
 
 import ChatMessageView from './chat-message-view.js';
 
-import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
+import { FEDIVERSE_MESSAGE_TYPES, SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 
 export default function Message(props) {
+  if (!getRandomInt(2)) {
+    return html`<${FediverseNotice} ...${props} />`;
+  }
+
   const { message } = props;
   const { type } = message;
   if (
@@ -73,7 +77,50 @@ export default function Message(props) {
     `;
   } else if (type === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
     // noop for now
+  } else if (FEDIVERSE_MESSAGE_TYPES.includes(type)) {
+    return html`<${FediverseNotice} ...${props} />`;
   } else {
     console.log('Unknown message type:', type);
   }
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+function FediverseNotice({ message }) {
+  // `serverName` `content` are just placeholders
+  const { serverName = 'a@x.y', content = 'some message' } = message;
+  let icon = '';
+  let text = '';
+
+  //temp
+  const type = FEDIVERSE_MESSAGE_TYPES[getRandomInt(FEDIVERSE_MESSAGE_TYPES.length)];
+
+  switch (type) {
+    case SOCKET_MESSAGE_TYPES.FEDIVERISE_BOOST:
+      icon = '🚀';
+      text = `${serverName} just boosted ${content}!`;
+      break;
+    case SOCKET_MESSAGE_TYPES.FEDIVERISE_FAV:
+      icon = '❤️';
+      text = `${serverName} just favorited ${content}!`;
+      break;
+    case SOCKET_MESSAGE_TYPES.FEDIVERISE_FOLLOW:
+      icon = '😎';
+      text = `${serverName} is now following ${content}!`;
+      break;
+  }
+
+  if (!icon & !text) {
+    return null;
+  }
+  return html`
+    <div class="message flex items-center justify-center p-3 my-1 fediverse-action bg-black">
+      <div class="message-content flex flex-row items-center justify-center text-sm w-full">
+        <div class="text-gray-200 text-center overflow-hidden break-words">
+          ${icon}${' '}<span class="italic">${text}</span>
+        </div>
+      </div>
+    </div>
+  `;
 }
