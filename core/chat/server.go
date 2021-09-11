@@ -18,9 +18,9 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var _server *ChatServer
+var _server *Server
 
-type ChatServer struct {
+type Server struct {
 	mu                       sync.RWMutex
 	seq                      uint
 	clients                  map[uint]*Client
@@ -36,11 +36,11 @@ type ChatServer struct {
 	unregister chan uint // the ChatClient id
 }
 
-func NewChat() *ChatServer {
+func NewChat() *Server {
 	maximumConcurrentConnectionLimit := getMaximumConcurrentConnectionLimit()
 	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
 
-	server := &ChatServer{
+	server := &Server{
 		clients:                  map[uint]*Client{},
 		outbound:                 make(chan []byte),
 		inbound:                  make(chan chatClientEvent),
@@ -51,7 +51,7 @@ func NewChat() *ChatServer {
 	return server
 }
 
-func (s *ChatServer) Run() {
+func (s *Server) Run() {
 	for {
 		select {
 		case clientID := <-s.unregister:
@@ -68,7 +68,7 @@ func (s *ChatServer) Run() {
 }
 
 // Addclient registers new connection as a User.
-func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *Client {
+func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *Client {
 	client := &Client{
 		server:      s,
 		conn:        conn,
@@ -108,7 +108,7 @@ func (s *ChatServer) Addclient(conn *websocket.Conn, user *user.User, accessToke
 	return client
 }
 
-func (s *ChatServer) sendUserJoinedMessage(c *Client) {
+func (s *Server) sendUserJoinedMessage(c *Client) {
 	userJoinedEvent := events.UserJoinedEvent{}
 	userJoinedEvent.SetDefaults()
 	userJoinedEvent.User = c.User
@@ -121,7 +121,7 @@ func (s *ChatServer) sendUserJoinedMessage(c *Client) {
 	webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
-func (s *ChatServer) ClientClosed(c *Client) {
+func (s *Server) ClientClosed(c *Client) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	c.close()
@@ -132,7 +132,7 @@ func (s *ChatServer) ClientClosed(c *Client) {
 	}
 }
 
-func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	if data.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
@@ -155,7 +155,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 	if accessToken == "" {
 		log.Errorln("Access token is required")
 		// Return HTTP status code
-		conn.Close()
+		_ = conn.Close()
 		return
 	}
 
@@ -187,7 +187,7 @@ func (s *ChatServer) HandleClientConnection(w http.ResponseWriter, r *http.Reque
 }
 
 // Broadcast sends message to all connected clients.
-func (s *ChatServer) Broadcast(payload events.EventPayload) error {
+func (s *Server) Broadcast(payload events.EventPayload) error {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -212,7 +212,7 @@ func (s *ChatServer) Broadcast(payload events.EventPayload) error {
 	return nil
 }
 
-func (s *ChatServer) Send(payload events.EventPayload, client *Client) {
+func (s *Server) Send(payload events.EventPayload, client *Client) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Errorln(err)
@@ -223,7 +223,7 @@ func (s *ChatServer) Send(payload events.EventPayload, client *Client) {
 }
 
 // DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
-func (s *ChatServer) DisconnectUser(userID string) {
+func (s *Server) DisconnectUser(userID string) {
 	s.mu.Lock()
 	clients, err := GetClientsForUser(userID)
 	s.mu.Unlock()
@@ -257,7 +257,7 @@ func (s *ChatServer) DisconnectUser(userID string) {
 	}
 }
 
-func (s *ChatServer) eventReceived(event chatClientEvent) {
+func (s *Server) eventReceived(event chatClientEvent) {
 	var typecheck map[string]interface{}
 	if err := json.Unmarshal(event.data, &typecheck); err != nil {
 		log.Debugln(err)
@@ -277,7 +277,7 @@ func (s *ChatServer) eventReceived(event chatClientEvent) {
 	}
 }
 
-func (s *ChatServer) sendWelcomeMessageToClient(c *Client) {
+func (s *Server) sendWelcomeMessageToClient(c *Client) {
 	// Add an artificial delay so people notice this message come in.
 	time.Sleep(7 * time.Second)
 
@@ -288,7 +288,7 @@ func (s *ChatServer) sendWelcomeMessageToClient(c *Client) {
 	}
 }
 
-func (s *ChatServer) sendAllWelcomeMessage() {
+func (s *Server) sendAllWelcomeMessage() {
 	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
@@ -303,7 +303,7 @@ func (s *ChatServer) sendAllWelcomeMessage() {
 	}
 }
 
-func (s *ChatServer) sendSystemMessageToClient(c *Client, message string) {
+func (s *Server) sendSystemMessageToClient(c *Client, message string) {
 	clientMessage := events.SystemMessageEvent{
 		Event: events.Event{},
 		MessageEvent: events.MessageEvent{
@@ -314,7 +314,7 @@ func (s *ChatServer) sendSystemMessageToClient(c *Client, message string) {
 	s.Send(clientMessage.GetBroadcastPayload(), c)
 }
 
-func (s *ChatServer) sendActionToClient(c *Client, message string) {
+func (s *Server) sendActionToClient(c *Client, message string) {
 	clientMessage := events.ActionEvent{
 		MessageEvent: events.MessageEvent{
 			Body: message,

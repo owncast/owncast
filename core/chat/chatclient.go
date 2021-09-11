@@ -20,7 +20,7 @@ type Client struct {
 	accessToken string
 	conn        *websocket.Conn
 	User        *user.User `json:"user"`
-	server      *ChatServer
+	server      *Server
 	ipAddress   string `json:"-"`
 	// Buffered channel of outbound messages.
 	send         chan []byte

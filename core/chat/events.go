@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
+func (s *Server) userNameChanged(eventData chatClientEvent) {
 	var receivedEvent events.NameChangeEvent
 	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
 		log.Errorln("error unmarshalling to NameChangeEvent", err)
@@ -69,7 +69,7 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	webhooks.SendChatEventUsernameChanged(receivedEvent)
 }
 
-func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
+func (s *Server) userMessageSent(eventData chatClientEvent) {
 	var event events.UserMessageEvent
 	if err := json.Unmarshal(eventData.data, &event); err != nil {
 		log.Errorln("error unmarshalling to UserMessageEvent", err)
