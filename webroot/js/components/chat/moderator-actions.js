@@ -1,5 +1,6 @@
 import { h, Component, createRef } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
+import { textColorForHue } from '../../utils/user-colors.js';
 const html = htm.bind(h);
 
 const HIDE_MESSAGE_ICON = '🐵';
@@ -126,34 +127,37 @@ function ModeratorMenuItem({ icon, hoverIcon, label, onClick }) {
 
 function ModeratorMoreInfoContainer({ message }) {
   const { user, timestamp, body } = message;
-  const { displayName, createdAt, previousNames,
+  const { displayName, createdAt, previousNames, displayColor,
     // mock field
     isModerator: isAuthorModerator = true,
     } = user;
 
+  const authorTextColor = { color: textColorForHue(displayColor) };
   const createDate = new Date(createdAt);
   const sentDate = new Date(timestamp);
   return html`
     <div className="moderator-more-info-container text-gray-300 bg-gray-800 rounded-lg">
-      <div className="moderator-more-info-message pb-2">
-        <p className="text-xs text-gray-400">Sent at ${sentDate.toLocaleTimeString()}</p>
+      <div className="moderator-more-info-message scrollbar-hidden bg-gray-700 rounded-md pb-2">
+        <p className="text-xs text-gray-500">Sent at ${sentDate.toLocaleTimeString()}</p>
         <div className="text-sm" dangerouslySetInnerHTML=${{ __html: body }} />
       </div>
-
       <div className="moderator-more-info-user py-2 my-2">
-        <p className="${isAuthorModerator && ' moderator-flag'}">${displayName}</p>
+        <p
+          className="font-bold ${isAuthorModerator && ' moderator-flag'}"
+          style=${authorTextColor}>${displayName}</p>
 
-        <p>Created at: ${createDate.toLocaleTimeString()}</p>
+        <p className="text-xs text-gray-500">Created at: ${createDate.toLocaleTimeString()}</p>
 
         ${previousNames.length > 1 &&
           html`
-            <p>Previous Names:</p>
-            ${previousNames.join()}
+            <p className="text-xs text-gray-500 my-1">Previously known as: ${' '}
+              <span className="text-white text-gray-400">${previousNames.join(', ')}</span>
+            </p>
           `
         }
 
       </div>
-      <div className="moderator-more-info-actions pt-2">
+      <div className="moderator-more-info-actions pt-2 flex flex-row border-t border-gray-700">
         <${ModeratorMenuItem} icon=${HIDE_MESSAGE_ICON} hoverIcon=${HIDE_MESSAGE_ICON_HOVER} label="Hide message" onClick="" />
         <${ModeratorMenuItem} icon=${BAN_USER_ICON} hoverIcon=${BAN_USER_ICON_HOVER} label="Ban user" onClick="" />
       </div>

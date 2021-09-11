@@ -304,12 +304,13 @@
   font-size: 1rem;
   border: 1px solid white;
   z-index: 5;
-  max-width: calc(var(--right-col-width) - 2rem);
+  width: calc(var(--right-col-width) - 2rem);
 }
 
 .moderator-more-info-message {
   overflow-y: auto;
-  max-height: 10em;
+  max-height: 8em;
+  padding: .75rem;
 }
 
 /* MODERATOR STYLES */
