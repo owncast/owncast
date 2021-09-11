@@ -69,7 +69,7 @@ func SendSystemMessage(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		saveEvent(message.Id, "system", message.Body, message.GetMessageType(), nil, message.Timestamp)
+		saveEvent(message.ID, "system", message.Body, message.GetMessageType(), nil, message.Timestamp)
 	}
 
 	return nil
@@ -90,7 +90,7 @@ func SendSystemAction(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		saveEvent(message.Id, "action", message.Body, message.GetMessageType(), nil, message.Timestamp)
+		saveEvent(message.ID, "action", message.Body, message.GetMessageType(), nil, message.Timestamp)
 	}
 
 	return nil

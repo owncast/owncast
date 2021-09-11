@@ -189,7 +189,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	return 60 * 10
 }
 
-func IsValidUrl(urlToTest string) bool {
+func IsValidURL(urlToTest string) bool {
 	if _, err := url.ParseRequestURI(urlToTest); err != nil {
 		return false
 	}
@@ -261,7 +261,7 @@ func CleanupDirectory(path string) {
 	if err := os.RemoveAll(path); err != nil {
 		log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
 	}
-	if err := os.MkdirAll(path, 0777); err != nil {
+	if err := os.MkdirAll(path, 0750); err != nil {
 		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
 	}
 }

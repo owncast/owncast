@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -34,10 +33,10 @@ func setupPersistence() {
 }
 
 func SaveUserMessage(event events.UserMessageEvent) {
-	saveEvent(event.Id, event.User.ID, event.Body, event.Type, event.HiddenAt, event.Timestamp)
+	saveEvent(event.ID, event.User.ID, event.Body, event.Type, event.HiddenAt, event.Timestamp)
 }
 
-func saveEvent(id string, userId string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
+func saveEvent(id string, userID string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
 	defer func() {
 		_historyCache = nil
 	}()
@@ -61,7 +60,7 @@ func saveEvent(id string, userId string, body string, eventType string, hidden *
 
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(id, userId, body, eventType, hidden, timestamp); err != nil {
+	if _, err = stmt.Exec(id, userID, body, eventType, hidden, timestamp); err != nil {
 		log.Errorln("error saving", eventType, err)
 		return
 	}
@@ -82,7 +81,7 @@ func getChat(query string) []events.UserMessageEvent {
 
 	for rows.Next() {
 		var id string
-		var userId string
+		var userID string
 		var body string
 		var messageType models.EventType
 		var hiddenAt *time.Time
@@ -96,7 +95,7 @@ func getChat(query string) []events.UserMessageEvent {
 		var userNameChangedAt *time.Time
 
 		// Convert a database row into a chat event
-		err = rows.Scan(&id, &userId, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt, &previousUsernames, &userNameChangedAt)
+		err = rows.Scan(&id, &userID, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt, &previousUsernames, &userNameChangedAt)
 		if err != nil {
 			log.Errorln("There is a problem converting query to chat objects. Please report this:", query)
 			break
@@ -120,7 +119,7 @@ func getChat(query string) []events.UserMessageEvent {
 		}
 
 		user := user.User{
-			ID:            userId,
+			ID:            userID,
 			AccessToken:   "",
 			DisplayName:   *userDisplayName,
 			DisplayColor:  *userDisplayColor,
@@ -133,7 +132,7 @@ func getChat(query string) []events.UserMessageEvent {
 		message := events.UserMessageEvent{
 			Event: events.Event{
 				Type:      messageType,
-				Id:        id,
+				ID:        id,
 				Timestamp: timestamp,
 			},
 			UserEvent: events.UserEvent{
@@ -181,9 +180,9 @@ func GetChatHistory() []events.UserMessageEvent {
 	return m
 }
 
-// SetMessageVisibilityForUserId will bulk change the visibility of messages for a user
+// SetMessageVisibilityForUserID will bulk change the visibility of messages for a user
 // and then send out visibility changed events to chat clients.
-func SetMessageVisibilityForUserId(userID string, visible bool) error {
+func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	defer func() {
 		_historyCache = nil
 	}()
@@ -198,7 +197,7 @@ func SetMessageVisibilityForUserId(userID string, visible bool) error {
 	}
 
 	for _, message := range messages {
-		ids = append(ids, message.Id)
+		ids = append(ids, message.ID)
 	}
 
 	// Tell the clients to hide/show these messages.
@@ -250,29 +249,29 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	return nil
 }
 
-func getMessageById(messageID string) (*events.UserMessageEvent, error) {
+func getMessageByID(messageID string) (*events.UserMessageEvent, error) {
 	var query = "SELECT * FROM messages WHERE id = ?"
 	row := _datastore.DB.QueryRow(query, messageID)
 
 	var id string
-	var userId string
+	var userID string
 	var body string
 	var eventType models.EventType
 	var hiddenAt *time.Time
 	var timestamp time.Time
 
-	err := row.Scan(&id, &userId, &body, &eventType, &hiddenAt, &timestamp)
+	err := row.Scan(&id, &userID, &body, &eventType, &hiddenAt, &timestamp)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
 	}
 
-	user := user.GetUserById(userId)
+	user := user.GetUserByID(userID)
 
 	return &events.UserMessageEvent{
 		events.Event{
 			Type:      eventType,
-			Id:        id,
+			ID:        id,
 			Timestamp: timestamp,
 		},
 		events.UserEvent{

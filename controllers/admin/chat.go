@@ -77,7 +77,7 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	// Hide/show the user's chat messages if disabling.
 	// Leave hidden messages hidden to be safe.
 	if !request.Enabled {
-		if err := chat.SetMessageVisibilityForUserId(request.UserID, request.Enabled); err != nil {
+		if err := chat.SetMessageVisibilityForUserID(request.UserID, request.Enabled); err != nil {
 			log.Errorln("error changing user messages visibility", err)
 		}
 	}
@@ -85,7 +85,7 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	// Forcefully disconnect the user from the chat
 	if !request.Enabled {
 		chat.DisconnectUser(request.UserID)
-		disconnectedUser := user.GetUserById(request.UserID)
+		disconnectedUser := user.GetUserByID(request.UserID)
 		_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 	}
 
@@ -155,7 +155,7 @@ func SendIntegrationChatMessage(integration user.ExternalAPIUser, w http.Respons
 	}
 
 	event.User = &user.User{
-		ID:           integration.Id,
+		ID:           integration.ID,
 		DisplayName:  name,
 		DisplayColor: integration.DisplayColor,
 		CreatedAt:    integration.CreatedAt,

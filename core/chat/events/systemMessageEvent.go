@@ -11,7 +11,7 @@ type SystemMessageEvent struct {
 // SystemMessageEvent will return the object to send to all chat users.
 func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.Id,
+		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
 		"type":      SystemMessageSent,

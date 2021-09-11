@@ -10,7 +10,7 @@ type UserJoinedEvent struct {
 func (e *UserJoinedEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
 		"type":      UserJoined,
-		"id":        e.Id,
+		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"user":      e.User,
 	}

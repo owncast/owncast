@@ -67,7 +67,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Use this as an opportunity to mark this viewer as active.
 		id := utils.GenerateClientIDFromRequest(r)
-		core.SetViewerIdActive(id)
+		core.SetViewerIDActive(id)
 	}
 
 	// Set a cache control max-age header

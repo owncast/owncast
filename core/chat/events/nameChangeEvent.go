@@ -17,7 +17,7 @@ type NameChangeBroadcast struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *NameChangeBroadcast) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.Id,
+		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"user":      e.User,
 		"oldName":   e.Oldname,

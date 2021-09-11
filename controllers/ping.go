@@ -9,5 +9,5 @@ import (
 
 func Ping(w http.ResponseWriter, r *http.Request) {
 	id := utils.GenerateClientIDFromRequest(r)
-	core.SetViewerIdActive(id)
+	core.SetViewerIDActive(id)
 }

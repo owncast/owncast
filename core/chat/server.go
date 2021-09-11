@@ -54,10 +54,10 @@ func NewChat() *ChatServer {
 func (s *ChatServer) Run() {
 	for {
 		select {
-		case clientId := <-s.unregister:
-			if _, ok := s.clients[clientId]; ok {
+		case clientID := <-s.unregister:
+			if _, ok := s.clients[clientID]; ok {
 				s.mu.Lock()
-				delete(s.clients, clientId)
+				delete(s.clients, clientID)
 				s.mu.Unlock()
 			}
 

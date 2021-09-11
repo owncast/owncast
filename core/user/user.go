@@ -65,7 +65,7 @@ func CreateAnonymousUser(username string) (*User, error) {
 	return user, nil
 }
 
-func ChangeUsername(userId string, username string) {
+func ChangeUsername(userID string, username string) {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -87,13 +87,13 @@ func ChangeUsername(userId string, username string) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userId)
+	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userID)
 	if err != nil {
 		log.Errorln(err)
 	}
 
 	if err := tx.Commit(); err != nil {
-		log.Errorln("error changing display name of user", userId, err)
+		log.Errorln("error changing display name of user", userID, err)
 	}
 }
 
@@ -166,8 +166,8 @@ func GetUserByToken(token string) *User {
 	return getUserFromRow(row)
 }
 
-// GetUserById will return a user by a user ID.
-func GetUserById(id string) *User {
+// GetUserByID will return a user by a user ID.
+func GetUserByID(id string) *User {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 

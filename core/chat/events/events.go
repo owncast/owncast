@@ -28,7 +28,7 @@ type OutboundEvent interface {
 // Event is any kind of event.  A type is required to be specified.
 type Event struct {
 	Type      EventType `json:"type,omitempty"`
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
@@ -51,13 +51,13 @@ type SystemActionEvent struct {
 
 // SetDefaults will set default properties of all inbound events.
 func (e *Event) SetDefaults() {
-	e.Id = shortid.MustGenerate()
+	e.ID = shortid.MustGenerate()
 	e.Timestamp = time.Now()
 }
 
 // SetDefaults will set default properties of all inbound events.
 func (e *UserMessageEvent) SetDefaults() {
-	e.Id = shortid.MustGenerate()
+	e.ID = shortid.MustGenerate()
 	e.Timestamp = time.Now()
 	e.RenderAndSanitizeMessageBody()
 }

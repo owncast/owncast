@@ -64,7 +64,7 @@ func migrateToSchema1(db *sql.DB) {
 			return
 		}
 
-		var lastUsed *time.Time = nil
+		var lastUsed *time.Time
 		if lastUsedString != nil {
 			lastUsedTime, _ := time.Parse(time.RFC3339, *lastUsedString)
 			lastUsed = &lastUsedTime

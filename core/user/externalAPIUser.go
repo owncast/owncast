@@ -14,7 +14,7 @@ import (
 // ExternalAPIUser represents a single 3rd party integration that uses an access token.
 // This struct mostly matches the User struct so they can be used interchangeably.
 type ExternalAPIUser struct {
-	Id           string     `json:"id"`
+	ID           string     `json:"id"`
 	AccessToken  string     `json:"accessToken"`
 	DisplayName  string     `json:"displayName"`
 	DisplayColor int        `json:"displayColor"`
@@ -206,7 +206,7 @@ func makeExternalAPIUserFromRow(row *sql.Row) (*ExternalAPIUser, error) {
 	}
 
 	integration := ExternalAPIUser{
-		Id:           id,
+		ID:           id,
 		AccessToken:  accessToken,
 		DisplayName:  displayName,
 		DisplayColor: displayColor,
@@ -237,7 +237,7 @@ func makeExternalAPIUsersFromRows(rows *sql.Rows) ([]ExternalAPIUser, error) {
 		}
 
 		integration := ExternalAPIUser{
-			Id:           id,
+			ID:           id,
 			AccessToken:  accessToken,
 			DisplayName:  displayName,
 			DisplayColor: displayColor,

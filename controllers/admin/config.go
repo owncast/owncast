@@ -427,7 +427,7 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if newS3Config.Value.Enabled {
-		if newS3Config.Value.Endpoint == "" || !utils.IsValidUrl((newS3Config.Value.Endpoint)) {
+		if newS3Config.Value.Endpoint == "" || !utils.IsValidURL((newS3Config.Value.Endpoint)) {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires an endpoint")
 			return
 		}
