@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"io/ioutil"
 	"net/http"
 	"path"
 	"path/filepath"
@@ -13,7 +12,6 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // HandleHLSRequest will manage all requests to HLS content.
@@ -48,19 +46,5 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	}
 
-	writeHLSResponse(fullPath, w)
-}
-
-func writeHLSResponse(filePath string, w http.ResponseWriter) {
-	b, err := ioutil.ReadFile(filePath)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if _, err := w.Write(b); err != nil {
-		log.Warnln(err)
-		return
-	}
+	http.ServeFile(w, r, fullPath)
 }
