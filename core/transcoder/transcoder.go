@@ -233,19 +233,8 @@ func NewTranscoder() *Transcoder {
 	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
 	transcoder.codec = getCodec(data.GetVideoCodec())
-
-	var outputPath string
-	if data.GetS3Config().Enabled {
-		// Segments are not available via the local HTTP server
-		outputPath = config.PrivateHLSStoragePath
-	} else {
-		// Segments are available via the local HTTP server
-		outputPath = config.PublicHLSStoragePath
-	}
-
-	transcoder.segmentOutputPath = outputPath
-	// Playlists are available via the local HTTP server
-	transcoder.playlistOutputPath = config.PublicHLSStoragePath
+	transcoder.segmentOutputPath = config.HLSStoragePath
+	transcoder.playlistOutputPath = config.HLSStoragePath
 
 	transcoder.input = "pipe:0" // stdin
 

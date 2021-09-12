@@ -62,14 +62,6 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if path.Ext(r.URL.Path) == ".m3u8" {
-		middleware.DisableCache(w)
-
-		// Use this as an opportunity to mark this viewer as active.
-		id := utils.GenerateClientIDFromRequest(r)
-		core.SetViewerIDActive(id)
-	}
-
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 

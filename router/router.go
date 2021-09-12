@@ -74,6 +74,9 @@ func Start() error {
 	// Current inbound broadcaster
 	http.HandleFunc("/api/admin/status", middleware.RequireAdminAuth(admin.Status))
 
+	// Return HLS video
+	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
+
 	// Disconnect inbound stream
 	http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(admin.DisconnectInboundConnection))
 

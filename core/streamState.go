@@ -50,15 +50,10 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 		go _yp.Start()
 	}
 
-	segmentPath := config.PublicHLSStoragePath
-	s3Config := data.GetS3Config()
+	segmentPath := config.HLSStoragePath
 
 	if err := setupStorage(); err != nil {
 		log.Fatalln("failed to setup the storage", err)
-	}
-
-	if s3Config.Enabled {
-		segmentPath = config.PrivateHLSStoragePath
 	}
 
 	go func() {
@@ -100,8 +95,8 @@ func SetStreamAsDisconnected() {
 	}
 
 	for index := range _currentBroadcast.OutputSettings {
-		playlistFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/stream.m3u8"), index)
-		segmentFilePath := fmt.Sprintf(filepath.Join(config.PrivateHLSStoragePath, "%d/%s"), index, offlineFilename)
+		playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
+		segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
 
 		if err := utils.Copy(offlineFilePath, segmentFilePath); err != nil {
 			log.Warnln(err)
@@ -191,7 +186,7 @@ func startOnlineCleanupTimer() {
 	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
 		for range _onlineCleanupTicker.C {
-			transcoder.CleanupOldContent(config.PrivateHLSStoragePath)
+			transcoder.CleanupOldContent(config.HLSStoragePath)
 		}
 	}()
 }
