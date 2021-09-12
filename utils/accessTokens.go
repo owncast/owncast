@@ -8,6 +8,7 @@ import (
 
 const tokenLength = 32
 
+// GenerateAccessToken will generate and return an access token.
 func GenerateAccessToken() (string, error) {
 	return generateRandomString(tokenLength)
 }

@@ -61,8 +61,8 @@ func RemoveChatClient(clientID string) {
 	l.Unlock()
 }
 
-// SetViewerIdActive sets a client as active and connected.
-func SetViewerIdActive(id string) {
+// SetViewerIDActive sets a client as active and connected.
+func SetViewerIDActive(id string) {
 	l.Lock()
 	defer l.Unlock()
 
@@ -81,10 +81,10 @@ func pruneViewerCount() {
 	l.Lock()
 	defer l.Unlock()
 
-	for viewerId := range _stats.Viewers {
-		viewerLastSeenTime := _stats.Viewers[viewerId]
+	for viewerID := range _stats.Viewers {
+		viewerLastSeenTime := _stats.Viewers[viewerID]
 		if time.Since(viewerLastSeenTime) < _activeViewerPurgeTimeout {
-			viewers[viewerId] = viewerLastSeenTime
+			viewers[viewerID] = viewerLastSeenTime
 		}
 	}
 

@@ -144,6 +144,7 @@ func (ds *Datastore) Reset() {
 	PopulateDefaults()
 }
 
+// GetDatastore returns the shared instance of the owncast datastore.
 func GetDatastore() *Datastore {
 	return _datastore
 }

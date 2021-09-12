@@ -1,20 +1,22 @@
 package events
 
+// ActionEvent represents an action that took place, not a chat message.
 type ActionEvent struct {
 	Event
 	MessageEvent
 }
 
-// ActionEvent will return the object to send to all chat users.
+// GetBroadcastPayload will return the object to send to all chat users.
 func (e *ActionEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.Id,
+		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
 		"type":      e.GetMessageType(),
 	}
 }
 
+// GetMessageType will return the type of message.
 func (e *ActionEvent) GetMessageType() EventType {
 	return ChatActionSent
 }

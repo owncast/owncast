@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// CreateMessagesTable will create the chat messages table if needed.
 func CreateMessagesTable(db *sql.DB) {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
 		"id" string NOT NULL,

@@ -67,7 +67,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Use this as an opportunity to mark this viewer as active.
 		id := utils.GenerateClientIDFromRequest(r)
-		core.SetViewerIdActive(id)
+		core.SetViewerIDActive(id)
 	}
 
 	// Set a cache control max-age header
@@ -86,8 +86,8 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	scheme := "http"
 
-	if siteUrl := data.GetServerURL(); siteUrl != "" {
-		if parsed, err := url.Parse(siteUrl); err == nil && parsed.Scheme != "" {
+	if siteURL := data.GetServerURL(); siteURL != "" {
+		if parsed, err := url.Parse(siteURL); err == nil && parsed.Scheme != "" {
 			scheme = parsed.Scheme
 		}
 	}

@@ -16,8 +16,9 @@ import (
 
 var _datastore *data.Datastore
 
+// User represents a single chat user.
 type User struct {
-	Id            string     `json:"id"`
+	ID            string     `json:"id"`
 	AccessToken   string     `json:"-"`
 	DisplayName   string     `json:"displayName"`
 	DisplayColor  int        `json:"displayColor"`
@@ -27,14 +28,17 @@ type User struct {
 	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
 }
 
+// IsEnabled will return if this single user is enabled.
 func (u *User) IsEnabled() bool {
 	return u.DisabledAt == nil
 }
 
+// SetupUsers will perform the initial initialization of the user package.
 func SetupUsers() {
 	_datastore = data.GetDatastore()
 }
 
+// CreateAnonymousUser will create a new anonymous user with the provided display name.
 func CreateAnonymousUser(username string) (*User, error) {
 	id := shortid.MustGenerate()
 	accessToken, err := utils.GenerateAccessToken()
@@ -51,7 +55,7 @@ func CreateAnonymousUser(username string) (*User, error) {
 	displayColor := utils.GenerateRandomDisplayColor()
 
 	user := &User{
-		Id:           id,
+		ID:           id,
 		AccessToken:  accessToken,
 		DisplayName:  displayName,
 		DisplayColor: displayColor,
@@ -65,7 +69,8 @@ func CreateAnonymousUser(username string) (*User, error) {
 	return user, nil
 }
 
-func ChangeUsername(userId string, username string) {
+// ChangeUsername will change the user associated to userID from one display name to another.
+func ChangeUsername(userID string, username string) {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -87,13 +92,13 @@ func ChangeUsername(userId string, username string) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userId)
+	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userID)
 	if err != nil {
 		log.Errorln(err)
 	}
 
 	if err := tx.Commit(); err != nil {
-		log.Errorln("error changing display name of user", userId, err)
+		log.Errorln("error changing display name of user", userID, err)
 	}
 }
 
@@ -116,7 +121,7 @@ func create(user *User) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.Id, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
+	_, err = stmt.Exec(user.ID, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
 		log.Errorln("error creating new user", err)
 	}
@@ -124,6 +129,7 @@ func create(user *User) error {
 	return tx.Commit()
 }
 
+// SetEnabled will will set the enabled flag on a single user assigned to userID.
 func SetEnabled(userID string, enabled bool) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -166,8 +172,8 @@ func GetUserByToken(token string) *User {
 	return getUserFromRow(row)
 }
 
-// GetUserById will return a user by a user ID.
-func GetUserById(id string) *User {
+// GetUserByID will return a user by a user ID.
+func GetUserByID(id string) *User {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -218,7 +224,7 @@ func getUsersFromRows(rows *sql.Rows) []*User {
 		}
 
 		user := &User{
-			Id:            id,
+			ID:            id,
 			DisplayName:   displayName,
 			DisplayColor:  displayColor,
 			CreatedAt:     createdAt,
@@ -250,7 +256,7 @@ func getUserFromRow(row *sql.Row) *User {
 	}
 
 	return &User{
-		Id:            id,
+		ID:            id,
 		DisplayName:   displayName,
 		DisplayColor:  displayColor,
 		CreatedAt:     createdAt,

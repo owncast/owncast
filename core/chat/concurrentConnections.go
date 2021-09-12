@@ -1,3 +1,4 @@
+// nolint:goimports
 // +build !freebsd
 
 package chat

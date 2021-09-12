@@ -19,12 +19,14 @@ import (
 
 const maxLogEntries = 500
 
+// OCLogger represents the owncast internal logging.
 type OCLogger struct {
 	Entries  []logrus.Entry
 	Warnings []logrus.Entry
 	mu       sync.RWMutex
 }
 
+// Logger is the shared instance of the internal logger.
 var Logger *OCLogger
 
 // Setup configures our custom logging destinations.

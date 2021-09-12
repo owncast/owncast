@@ -75,7 +75,7 @@ func (yp *YP) ping() {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
 		return
 	}
-	isValidInstanceURL := isUrl(myInstanceURL)
+	isValidInstanceURL := isURL(myInstanceURL)
 	if myInstanceURL == "" || !isValidInstanceURL {
 		if !_inErrorState {
 			log.Warnln("YP Error: unable to use", myInstanceURL, "as a public instance URL. Fix this value in your configuration.")
@@ -134,7 +134,7 @@ func (yp *YP) ping() {
 	}
 }
 
-func isUrl(str string) bool {
+func isURL(str string) bool {
 	u, err := url.Parse(str)
 	return err == nil && u.Scheme != "" && u.Host != ""
 }

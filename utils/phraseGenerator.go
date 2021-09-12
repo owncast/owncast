@@ -626,11 +626,12 @@ var (
 	}
 )
 
+// GeneratePhrase will generate and return a random string consisting of our word list.
 func GeneratePhrase() string {
 	r := rand.New(rand.NewSource(time.Now().UnixNano())) //nolint
 
-	left_index := int(r.Float32() * float32(len(left)))
-	right_index := int(r.Float32() * float32(len(right)))
+	leftIndex := int(r.Float32() * float32(len(left)))
+	rightIndex := int(r.Float32() * float32(len(right)))
 
-	return fmt.Sprintf("%s-%s", left[left_index], right[right_index])
+	return fmt.Sprintf("%s-%s", left[leftIndex], right[rightIndex])
 }

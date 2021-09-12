@@ -6,6 +6,7 @@ import (
 	"github.com/owncast/owncast/config"
 )
 
+// GetTranscoderLogFilePath returns the logging path for the transcoder log output.
 func GetTranscoderLogFilePath() string {
 	return filepath.Join(config.LogDirectory, "transcoder.log")
 }

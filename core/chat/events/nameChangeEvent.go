@@ -7,7 +7,7 @@ type NameChangeEvent struct {
 	NewName string `json:"newName"`
 }
 
-// NameChangeEventBroadcast is fired when a user changes their chat display name.
+// NameChangeBroadcast represents a user changing their chat display name.
 type NameChangeBroadcast struct {
 	Event
 	UserEvent
@@ -17,7 +17,7 @@ type NameChangeBroadcast struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *NameChangeBroadcast) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.Id,
+		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"user":      e.User,
 		"oldName":   e.Oldname,

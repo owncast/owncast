@@ -22,7 +22,7 @@ var VersionNumber = StaticVersionNumber
 // WebServerPort is the port for Owncast's webserver that is used for this execution of the service.
 var WebServerPort = 8080
 
-// Bind WebServer to this IP address. Be secure by default.
+// WebServerIP is the IP address to bind the web server to. All interfaces by default.
 var WebServerIP = "0.0.0.0"
 
 // InternalHLSListenerPort is the port for HLS writes that is used for this execution of the service.
@@ -34,6 +34,7 @@ var GitCommit = ""
 // BuildPlatform is the optional platform this release was built for.
 var BuildPlatform = "dev"
 
+// GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {
 	if GitCommit == "" {
 		GitCommit = time.Now().Format("20060102")
@@ -42,11 +43,12 @@ func GetCommit() string {
 	return GitCommit
 }
 
+// DefaultForbiddenUsernames are a list of usernames forbidden from being used in chat.
 var DefaultForbiddenUsernames = []string{
 	"owncast", "operator", "admin", "system",
 }
 
-// The maximum payload we will allow to to be received via the chat socket.
+// MaxSocketPayloadSize is the maximum payload we will allow to to be received via the chat socket.
 const MaxSocketPayloadSize = 2048
 
 // GetReleaseString gets the version string.

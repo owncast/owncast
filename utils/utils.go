@@ -42,6 +42,7 @@ func GetRelativePathFromAbsolutePath(path string) string {
 	return filepath.Join(variant, file)
 }
 
+// GetIndexFromFilePath is a utility that will return the index/key/variant name in a full path.
 func GetIndexFromFilePath(path string) string {
 	pathComponents := strings.Split(path, "/")
 	variant := pathComponents[len(pathComponents)-2]
@@ -51,7 +52,7 @@ func GetIndexFromFilePath(path string) string {
 
 // Copy copies the file to destination.
 func Copy(source, destination string) error {
-	input, err := ioutil.ReadFile(source)
+	input, err := ioutil.ReadFile(source) // nolint
 	if err != nil {
 		return err
 	}
@@ -108,6 +109,7 @@ func IsUserAgentAPlayer(userAgent string) bool {
 	return false
 }
 
+// RenderSimpleMarkdown will return HTML without sanitization or specific formatting rules.
 func RenderSimpleMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
@@ -135,6 +137,7 @@ func RenderSimpleMarkdown(raw string) string {
 	return buf.String()
 }
 
+// RenderPageContentMarkdown will return HTML specifically handled for the user-specified page content.
 func RenderPageContentMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
@@ -189,7 +192,8 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	return 60 * 10
 }
 
-func IsValidUrl(urlToTest string) bool {
+// IsValidURL will return if a URL string is a valid URL or not.
+func IsValidURL(urlToTest string) bool {
 	if _, err := url.ParseRequestURI(urlToTest); err != nil {
 		return false
 	}
@@ -207,9 +211,8 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 	if ffmpegPath != "" {
 		if err := VerifyFFMpegPath(ffmpegPath); err == nil {
 			return ffmpegPath
-		} else {
-			log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 		}
+		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 	}
 
 	// First look to see if ffmpeg is in the current working directory
@@ -255,17 +258,18 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-// Removes the directory and makes it again. Throws fatal error on failure.
+// CleanupDirectory removes the directory and makes it fresh again. Throws fatal error on failure.
 func CleanupDirectory(path string) {
 	log.Traceln("Cleaning", path)
 	if err := os.RemoveAll(path); err != nil {
 		log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
 	}
-	if err := os.MkdirAll(path, 0777); err != nil {
+	if err := os.MkdirAll(path, 0750); err != nil {
 		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
 	}
 }
 
+// FindInSlice will return the index if a string is located in a slice of strings.
 func FindInSlice(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {

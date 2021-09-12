@@ -169,7 +169,7 @@ func GetWebhooks() ([]models.Webhook, error) { //nolint
 			return webhooks, err
 		}
 
-		var lastUsed *time.Time = nil
+		var lastUsed *time.Time
 		if lastUsedString != nil {
 			lastUsedTime, _ := time.Parse(time.RFC3339, *lastUsedString)
 			lastUsed = &lastUsedTime

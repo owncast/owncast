@@ -76,6 +76,7 @@ func (v *VideoSize) getString() string {
 	return ""
 }
 
+// Stop will stop the transcoder and kill all processing.
 func (t *Transcoder) Stop() {
 	log.Traceln("Transcoder STOP requested.")
 	err := _commandExec.Process.Kill()
@@ -410,15 +411,17 @@ func (t *Transcoder) SetAppendToStream(append bool) {
 	t.appendToStream = append
 }
 
-// SetIdentifer enables appending a unique identifier to segment file name.
+// SetIdentifier enables appending a unique identifier to segment file name.
 func (t *Transcoder) SetIdentifier(output string) {
 	t.segmentIdentifier = output
 }
 
+// SetInternalHTTPPort will set the port to be used for internal communication.
 func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
 }
 
+// SetCodec will set the codec to be used for the transocder.
 func (t *Transcoder) SetCodec(codecName string) {
 	t.codec = getCodec(codecName)
 }
