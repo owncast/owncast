@@ -99,24 +99,24 @@ func createVariantDirectories() {
 
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
-			if err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0777); err != nil {
+			if err := os.MkdirAll(path.Join(config.PrivateHLSStoragePath, strconv.Itoa(index)), 0750); err != nil {
 				log.Fatalln(err)
 			}
 			dir := path.Join(config.PublicHLSStoragePath, strconv.Itoa(index))
 			log.Traceln("Creating", dir)
-			if err := os.MkdirAll(dir, 0777); err != nil {
+			if err := os.MkdirAll(dir, 0750); err != nil {
 				log.Fatalln(err)
 			}
 		}
 	} else {
 		dir := path.Join(config.PrivateHLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		if err := os.MkdirAll(dir, 0777); err != nil {
+		if err := os.MkdirAll(dir, 0750); err != nil {
 			log.Fatalln(err)
 		}
 		dir = path.Join(config.PublicHLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		if err := os.MkdirAll(dir, 0777); err != nil {
+		if err := os.MkdirAll(dir, 0750); err != nil {
 			log.Fatalln(err)
 		}
 	}

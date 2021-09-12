@@ -49,7 +49,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type registerAnonymousUserResponse struct {
-		Id          string `json:"id"`
+		ID          string `json:"id"`
 		AccessToken string `json:"accessToken"`
 		DisplayName string `json:"displayName"`
 	}
@@ -67,7 +67,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := registerAnonymousUserResponse{
-		Id:          newUser.Id,
+		ID:          newUser.ID,
 		AccessToken: newUser.AccessToken,
 		DisplayName: newUser.DisplayName,
 	}

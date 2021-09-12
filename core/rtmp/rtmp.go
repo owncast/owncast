@@ -60,6 +60,7 @@ func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models
 	}
 }
 
+// HandleConn is fired when an inbound RTMP connection takes place.
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
@@ -70,13 +71,13 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	if _hasInboundRTMPConnection {
 		log.Errorln("stream already running; can not overtake an existing stream")
-		nc.Close()
+		_ = nc.Close()
 		return
 	}
 
 	if !secretMatch(data.GetStreamKey(), c.URL.Path) {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
-		nc.Close()
+		_ = nc.Close()
 		return
 	}
 
@@ -129,8 +130,8 @@ func handleDisconnect(conn net.Conn) {
 	}
 
 	log.Infoln("Inbound stream disconnected.")
-	conn.Close()
-	_pipe.Close()
+	_ = conn.Close()
+	_ = _pipe.Close()
 	_hasInboundRTMPConnection = false
 }
 

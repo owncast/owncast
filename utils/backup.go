@@ -12,15 +12,15 @@ import (
 	"os"
 	"path/filepath"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/schollz/sqlite3dump"
 	log "github.com/sirupsen/logrus"
 )
 
+// Restore will attempt to restore the database using a specified backup file.
 func Restore(backupFile string, databaseFile string) error {
 	log.Printf("Restoring database backup %s to %s", backupFile, databaseFile)
 
-	data, err := ioutil.ReadFile(backupFile)
+	data, err := ioutil.ReadFile(backupFile) // nolint
 	if err != nil {
 		return fmt.Errorf("Unable to read backup file %s", err)
 	}
@@ -38,7 +38,7 @@ func Restore(backupFile string, databaseFile string) error {
 
 	defer gz.Close()
 
-	rawSql := b.String()
+	rawSQL := b.String()
 
 	if _, err := os.Create(databaseFile); err != nil {
 		return errors.New("Unable to write restored database")
@@ -49,13 +49,14 @@ func Restore(backupFile string, databaseFile string) error {
 	if err != nil {
 		return err
 	}
-	if _, err := db.Exec(rawSql); err != nil {
+	if _, err := db.Exec(rawSQL); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// Backup will backup the provided instance of the database to the specified file.
 func Backup(db *sql.DB, backupFile string) {
 	log.Traceln("Backing up database to", backupFile)
 
@@ -76,10 +77,10 @@ func Backup(db *sql.DB, backupFile string) {
 		handleError(err)
 		return
 	}
-	out.Flush()
+	_ = out.Flush()
 
 	// Create a new backup file
-	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE, 0600) // nolint
 	if err != nil {
 		handleError(err)
 		return

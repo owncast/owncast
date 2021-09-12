@@ -29,6 +29,7 @@ func GetStatus() models.Status {
 	}
 }
 
+// GetCurrentBroadcast will return the currently active broadcast.
 func GetCurrentBroadcast() *models.CurrentBroadcast {
 	return _currentBroadcast
 }
@@ -38,6 +39,7 @@ func setBroadcaster(broadcaster models.Broadcaster) {
 	_broadcaster = &broadcaster
 }
 
+// GetBroadcaster will return the details of the currently active broadcaster.
 func GetBroadcaster() *models.Broadcaster {
 	return _broadcaster
 }

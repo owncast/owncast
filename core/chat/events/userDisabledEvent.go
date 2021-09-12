@@ -10,7 +10,7 @@ type UserDisabledEvent struct {
 func (e *UserDisabledEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
 		"type":      ErrorUserDisabled,
-		"id":        e.Id,
+		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"user":      e.User,
 	}

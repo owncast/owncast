@@ -15,12 +15,13 @@ import (
 	"github.com/owncast/owncast/geoip"
 )
 
-type ChatClient struct {
+// Client represents a single chat client.
+type Client struct {
 	id          uint
 	accessToken string
 	conn        *websocket.Conn
 	User        *user.User `json:"user"`
-	server      *ChatServer
+	server      *Server
 	ipAddress   string `json:"-"`
 	// Buffered channel of outbound messages.
 	send         chan []byte
@@ -35,7 +36,7 @@ type ChatClient struct {
 
 type chatClientEvent struct {
 	data   []byte
-	client *ChatClient
+	client *Client
 }
 
 const (
@@ -64,7 +65,7 @@ var (
 	space   = []byte{' '}
 )
 
-func (c *ChatClient) sendConnectedClientInfo() {
+func (c *Client) sendConnectedClientInfo() {
 	payload := events.EventPayload{
 		"type": events.ConnectedUserInfo,
 		"user": c.User,
@@ -73,7 +74,7 @@ func (c *ChatClient) sendConnectedClientInfo() {
 	c.sendPayload(payload)
 }
 
-func (c *ChatClient) readPump() {
+func (c *Client) readPump() {
 	// Allow 3 messages every two seconds.
 	limit := rate.Every(2 * time.Second / 3)
 	c.rateLimiter = rate.NewLimiter(limit, 1)
@@ -122,11 +123,11 @@ func (c *ChatClient) readPump() {
 	}
 }
 
-func (c *ChatClient) writePump() {
+func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.conn.Close()
+		_ = c.conn.Close()
 	}()
 
 	for {
@@ -167,14 +168,14 @@ func (c *ChatClient) writePump() {
 	}
 }
 
-func (c *ChatClient) handleEvent(data []byte) {
+func (c *Client) handleEvent(data []byte) {
 	c.server.inbound <- chatClientEvent{data: data, client: c}
 }
 
-func (c *ChatClient) close() {
+func (c *Client) close() {
 	log.Traceln("client closed:", c.User.DisplayName, c.id, c.ipAddress)
 
-	c.conn.Close()
+	_ = c.conn.Close()
 	c.server.unregister <- c.id
 	if c.send != nil {
 		close(c.send)
@@ -182,18 +183,18 @@ func (c *ChatClient) close() {
 	}
 }
 
-func (c *ChatClient) passesRateLimit() bool {
+func (c *Client) passesRateLimit() bool {
 	return c.rateLimiter.Allow() && !c.inTimeout
 }
 
-func (c *ChatClient) startChatRejectionTimeout() {
+func (c *Client) startChatRejectionTimeout() {
 	if c.timeoutTimer != nil {
 		return
 	}
 
 	c.inTimeout = true
 	c.timeoutTimer = time.NewTimer(10 * time.Second)
-	go func(c *ChatClient) {
+	go func(c *Client) {
 		for range c.timeoutTimer.C {
 			c.inTimeout = false
 			c.timeoutTimer = nil
@@ -203,7 +204,7 @@ func (c *ChatClient) startChatRejectionTimeout() {
 	c.sendAction("You are temporarily blocked from sending chat messages due to perceived flooding.")
 }
 
-func (c *ChatClient) sendPayload(payload events.EventPayload) {
+func (c *Client) sendPayload(payload events.EventPayload) {
 	var data []byte
 	data, err := json.Marshal(payload)
 	if err != nil {
@@ -216,7 +217,7 @@ func (c *ChatClient) sendPayload(payload events.EventPayload) {
 	}
 }
 
-func (c *ChatClient) sendAction(message string) {
+func (c *Client) sendAction(message string) {
 	clientMessage := events.ActionEvent{
 		MessageEvent: events.MessageEvent{
 			Body: message,
