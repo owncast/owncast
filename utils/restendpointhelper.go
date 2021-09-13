@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const restUrlPatternHeaderKey = "Owncast-Resturl-Pattern"
+const restURLPatternHeaderKey = "Owncast-Resturl-Pattern"
 
 // takes the segment pattern of an Url string and returns the segment before the first dynamic REST parameter.
 func getPatternForRestEndpoint(pattern string) string {
@@ -27,18 +27,18 @@ func zip2D(iterable1 *[]string, iterable2 *[]string) map[string]string {
 	return dict
 }
 
-func mapPatternWithRequestUrl(pattern string, requestUrl string) (map[string]string, error) {
+func mapPatternWithRequestURL(pattern string, requestURL string) (map[string]string, error) {
 	patternSplit := strings.Split(pattern, "/")
-	requestUrlSplit := strings.Split(requestUrl, "/")
+	requestURLSplit := strings.Split(requestURL, "/")
 
-	if len(patternSplit) == len(requestUrlSplit) {
-		return zip2D(&patternSplit, &requestUrlSplit), nil
+	if len(patternSplit) == len(requestURLSplit) {
+		return zip2D(&patternSplit, &requestURLSplit), nil
 	}
 	return nil, errors.New("The length of pattern and request Url does not match")
 }
 
-func readParameter(pattern string, requestUrl string, paramName string) (string, error) {
-	all, err := mapPatternWithRequestUrl(pattern, requestUrl)
+func readParameter(pattern string, requestURL string, paramName string) (string, error) {
+	all, err := mapPatternWithRequestURL(pattern, requestURL)
 	if err != nil {
 		return "", err
 	}
@@ -49,8 +49,9 @@ func readParameter(pattern string, requestUrl string, paramName string) (string,
 	return "", fmt.Errorf("Parameter with name %s not found", paramName)
 }
 
-func ReadRestUrlParameter(r *http.Request, parameterName string) (string, error) {
-	pattern, found := r.Header[restUrlPatternHeaderKey]
+// ReadRestURLParameter will return the parameter from the request of the requested name.
+func ReadRestURLParameter(r *http.Request, parameterName string) (string, error) {
+	pattern, found := r.Header[restURLPatternHeaderKey]
 	if !found {
 		return "", fmt.Errorf("This HandlerFunc is not marked as REST-Endpoint. Cannot read Parameter '%s' from Request", parameterName)
 	}
@@ -58,10 +59,11 @@ func ReadRestUrlParameter(r *http.Request, parameterName string) (string, error)
 	return readParameter(pattern[0], r.URL.Path, parameterName)
 }
 
+// RestEndpoint wraps a handler to use the rest endpoint helper.
 func RestEndpoint(pattern string, handler http.HandlerFunc) (string, http.HandlerFunc) {
-	baseUrl := getPatternForRestEndpoint(pattern)
-	return baseUrl, func(w http.ResponseWriter, r *http.Request) {
-		r.Header[restUrlPatternHeaderKey] = []string{pattern}
+	baseURL := getPatternForRestEndpoint(pattern)
+	return baseURL, func(w http.ResponseWriter, r *http.Request) {
+		r.Header[restURLPatternHeaderKey] = []string{pattern}
 		handler(w, r)
 	}
 }

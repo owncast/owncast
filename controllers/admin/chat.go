@@ -128,15 +128,16 @@ func SendSystemMessage(integration user.ExternalAPIUser, w http.ResponseWriter, 
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
+// SendSystemMessageToConnectedClient will handle incoming requests to send a single message to a single connected client by ID.
 func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	clientIdText, err := utils.ReadRestUrlParameter(r, "clientId")
+	clientIDText, err := utils.ReadRestURLParameter(r, "clientId")
 	if err != nil {
 		controllers.BadRequestHandler(w, err)
 		return
 	}
 
-	clientIdNumeric, err := strconv.ParseUint(clientIdText, 10, 32)
+	clientIDNumeric, err := strconv.ParseUint(clientIDText, 10, 32)
 	if err != nil {
 		controllers.BadRequestHandler(w, err)
 		return
@@ -148,7 +149,7 @@ func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http
 		return
 	}
 
-	chat.SendSystemMessageToClient(uint(clientIdNumeric), message.Body)
+	chat.SendSystemMessageToClient(uint(clientIDNumeric), message.Body)
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
