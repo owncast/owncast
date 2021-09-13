@@ -22,18 +22,18 @@ func Restore(backupFile string, databaseFile string) error {
 
 	data, err := ioutil.ReadFile(backupFile) // nolint
 	if err != nil {
-		return fmt.Errorf("Unable to read backup file %s", err)
+		return fmt.Errorf("unable to read backup file %s", err)
 	}
 
 	gz, err := gzip.NewReader(bytes.NewBuffer(data))
 	if err != nil {
-		return fmt.Errorf("Unable to read backup file %s", err)
+		return fmt.Errorf("unable to read backup file %s", err)
 	}
 	defer gz.Close()
 
 	var b bytes.Buffer
 	if _, err := io.Copy(&b, gz); err != nil { // nolint
-		return fmt.Errorf("Unable to read backup file %s", err)
+		return fmt.Errorf("unable to read backup file %s", err)
 	}
 
 	defer gz.Close()
@@ -41,7 +41,7 @@ func Restore(backupFile string, databaseFile string) error {
 	rawSQL := b.String()
 
 	if _, err := os.Create(databaseFile); err != nil {
-		return errors.New("Unable to write restored database")
+		return errors.New("unable to write restored database")
 	}
 
 	// Create a new database by executing the raw SQL
