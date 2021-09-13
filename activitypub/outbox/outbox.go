@@ -20,7 +20,8 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-func SendLive() {
+// SendLive will send all followers the message saying you started a live stream.
+func SendLive() error {
 	textContent := data.GetFederationGoLiveMessage()
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
@@ -34,10 +35,9 @@ func SendLive() {
 
 	activity.SetActivityStreamsObject(object)
 
-	var tagStrings []string
+	tagStrings := []string{}
 	reg, _ := regexp.Compile("[^a-zA-Z0-9]+")
 
-	// TODO: Need to assign to a `hashtag` property, not `tag`
 	tagProp := streams.NewActivityStreamsTagProperty()
 	for _, tagString := range data.GetServerMetadataTags() {
 		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
@@ -49,7 +49,7 @@ func SendLive() {
 		tagStrings = append(tagStrings, tagString)
 	}
 
-	// Manualy add Owncast hashtag if it doesn't already exist so it shows up
+	// Manually add Owncast hashtag if it doesn't already exist so it shows up
 	// in Owncast search results.
 	// We can remove this down the road, but it'll be nice for now.
 	if _, exists := utils.FindInSlice(tagStrings, "owncast"); !exists {
@@ -92,15 +92,18 @@ func SendLive() {
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		log.Errorln("unable to serialize go live message activity", err)
-		return
+		return errors.New("unable to serialize go live message activity " + err.Error())
 	}
 
-	SendToFollowers(b)
-	Add(note, noteID)
+	if err := SendToFollowers(b); err != nil {
+		return err
+	}
+
+	return Add(note, noteID)
 }
 
 // SendPublicMessage will send a public message to all followers.
-func SendPublicMessage(textContent string) {
+func SendPublicMessage(textContent string) error {
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	id := shortid.MustGenerate()
 	activity := apmodels.CreateMessageActivity(id, textContent, localActor)
@@ -108,38 +111,42 @@ func SendPublicMessage(textContent string) {
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		log.Errorln("unable to serialize send public message activity", err)
-		return
+		return errors.New("unable to serialize the send public message activity")
 	}
-	SendToFollowers(b)
+	if err := SendToFollowers(b); err != nil {
+		return err
+	}
 
-	Add(message, message.GetJSONLDId().Get().String())
+	return Add(message, message.GetJSONLDId().Get().String())
 }
 
-func SendToFollowers(payload []byte) {
+// SendToFollowers will send an arbitrary payload to all follower inboxes.
+func SendToFollowers(payload []byte) error {
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
 		log.Errorln("unable to fetch followers to send to", err)
-		return
+		return errors.New("unable to fetch followers to send payload to")
 	}
 
 	for _, follower := range followers {
 		inbox, _ := url.Parse(follower.Inbox)
 		if _, err := requests.PostSignedRequest(payload, inbox, localActor); err != nil {
 			log.Errorln("unable to send to follower inbox", follower.Inbox, err)
-			return
+			return errors.New("unable to send to follower inbox: " + follower.Inbox)
 		}
 	}
+	return nil
 }
 
-func UpdateFollowersWithAccountUpdates() {
+// UpdateFollowersWithAccountUpdates will send an update to all followers alerting of a profile update.
+func UpdateFollowersWithAccountUpdates() error {
 	log.Println("Updating followers with new actor details")
 
 	id := shortid.MustGenerate()
-	objectId := apmodels.MakeLocalIRIForResource(id)
-	activity := apmodels.MakeUpdateActivity(objectId)
+	objectID := apmodels.MakeLocalIRIForResource(id)
+	activity := apmodels.MakeUpdateActivity(objectID)
 
 	actor := streams.NewActivityStreamsPerson()
 	actorID := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
@@ -158,12 +165,12 @@ func UpdateFollowersWithAccountUpdates() {
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		log.Errorln("unable to serialize send update actor activity", err)
-		return
+		return errors.New("unable to serialize send update actor activity")
 	}
-	SendToFollowers(b)
-
+	return SendToFollowers(b)
 }
 
+// Add will save an ActivityPub object to the datastore.
 func Add(item vocab.Type, id string) error {
 	iri := "/" + item.GetJSONLDId().GetIRI().Path
 	typeString := item.GetTypeName()
@@ -182,6 +189,7 @@ func Add(item vocab.Type, id string) error {
 	return persistence.AddToOutbox(id, iri, b, typeString)
 }
 
+// Get will return the outbox.
 func Get() vocab.ActivityStreamsOrderedCollectionPage {
 	orderedCollection, _ := persistence.GetOutbox()
 	return orderedCollection

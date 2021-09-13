@@ -29,12 +29,13 @@ func run() {
 	}
 }
 
+// Add will place an InboxRequest into the worker queue to be processed.
 func Add(request apmodels.InboxRequest) {
 	_queue <- request
 }
 
 func handle(request apmodels.InboxRequest) chan bool {
-	c := context.WithValue(context.Background(), "account", request.ForLocalAccount)
+	c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
 	r := make(chan bool)
 
 	if verified, err := Verify(request.Request); err != nil || !verified {
@@ -57,7 +58,7 @@ func handle(request apmodels.InboxRequest) chan bool {
 		return nil
 	}
 
-	if err := resolvers.Resolve(request.Body, c, createCallback, deleteCallback, handleUpdateRequest, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
+	if err := resolvers.Resolve(c, request.Body, createCallback, deleteCallback, handleUpdateRequest, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
 		log.Errorln("resolver error:", err)
 	}
 
@@ -70,12 +71,12 @@ func Verify(request *http.Request) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	pubKeyId, err := url.Parse(verifier.KeyId())
+	pubKeyID, err := url.Parse(verifier.KeyId())
 	if err != nil {
 		return false, err
 	}
 
-	log.Traceln("Fetching key", pubKeyId)
+	log.Traceln("Fetching key", pubKeyID)
 
 	signature := request.Header.Get("signature")
 	var algorithmString string
@@ -99,10 +100,12 @@ func Verify(request *http.Request) (bool, error) {
 		return nil
 	}
 
-	resolvers.ResolveIRI(pubKeyId.String(), context.TODO(), personCallback)
+	if err := resolvers.ResolveIRI(context.TODO(), pubKeyID.String(), personCallback); err != nil {
+		return false, err
+	}
 
 	if actor == nil {
-		return false, errors.New("unable to resolve actor to fetch key " + pubKeyId.String())
+		return false, errors.New("unable to resolve actor to fetch key " + pubKeyID.String())
 	}
 
 	key := actor.GetW3IDSecurityV1PublicKey().Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
@@ -131,7 +134,7 @@ func Verify(request *http.Request) (bool, error) {
 
 	// The verifier will verify the Digest in addition to the HTTP signature
 	if err := verifier.Verify(parsedKey, algorithm); err != nil {
-		log.Warnln("verification error for", pubKeyId, err)
+		log.Warnln("verification error for", pubKeyID, err)
 		return false, err
 	}
 

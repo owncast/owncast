@@ -16,6 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// WriteStreamResponse will write a ActivityPub object to the provided ResponseWriter and sign with the provided key.
 func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey crypto.PublicKey) error {
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(item)
@@ -27,6 +28,7 @@ func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey crypt
 	return WriteResponse(b, w, publicKey)
 }
 
+// WritePayloadResponse will write any arbitrary object to the provided ResponseWriter and sign with the provided key.
 func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey crypto.PublicKey) error {
 	b, err := json.Marshal(payload)
 	if err != nil {
@@ -36,6 +38,7 @@ func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey 
 	return WriteResponse(b, w, publicKey)
 }
 
+// WriteResponse will write any arbitrary payload to the provided ResponseWriter and sign with the provided key.
 func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.PublicKey) error {
 	w.Header().Set("Content-Type", "application/activity+json")
 
@@ -53,6 +56,7 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 	return nil
 }
 
+// PostSignedRequest will make a signed POST request of a payload to the provided destination.
 func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]byte, error) {
 	log.Println("Sending", string(payload), "to", url)
 
@@ -69,6 +73,7 @@ func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]b
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
 	body, _ := ioutil.ReadAll(response.Body)
 

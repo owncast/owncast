@@ -8,7 +8,7 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-// RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
+// RequireActivityPubOrRedirect will validate a provided user's access token and make sure the associated user is enabled.
 // Not to be used for validating 3rd party access.
 func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +42,5 @@ func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
 	})
 }

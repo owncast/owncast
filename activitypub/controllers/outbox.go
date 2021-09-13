@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// OutboxHandler will handle requests for the local ActivityPub outbox.
 func OutboxHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -66,6 +67,7 @@ func FollowersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ActorObjectHandler will handle the request for our local ActivityPub actor.
 func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
 	object, err := persistence.GetObjectByIRI(r.URL.Path)
 	if err != nil {
@@ -74,5 +76,7 @@ func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
 		// controllers.WriteSimpleResponse(w, false, err.Error())
 	}
 
-	w.Write([]byte(object))
+	if _, err := w.Write([]byte(object)); err != nil {
+		log.Errorln(err)
+	}
 }

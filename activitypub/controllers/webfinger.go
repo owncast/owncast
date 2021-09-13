@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// WebfingerHandler will handle webfinger lookup requests.
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	if !data.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)

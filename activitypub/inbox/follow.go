@@ -2,6 +2,7 @@ package inbox
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/go-fed/activity/streams/vocab"
@@ -14,7 +15,7 @@ import (
 )
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
-	follow, err := resolvers.MakeFollowRequest(activity, c)
+	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
 		log.Errorln("unable to create follow inbox request", err)
 		return err
@@ -44,9 +45,8 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	actorIRI := actorReference.Begin().GetIRI().String()
 
 	msg := fmt.Sprintf("[%s](%s) just **followed**!", actorName, actorIRI)
-	chat.SendSystemMessage(msg, false)
 
-	return nil
+	return chat.SendSystemMessage(msg, false)
 }
 
 func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
@@ -55,7 +55,9 @@ func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUnd
 	for iter := o.Begin(); iter != o.End(); iter = iter.Next() {
 		if iter.IsActivityStreamsFollow() {
 			// This is an Unfollow request
-			handleUnfollowRequest(c, activity)
+			if err := handleUnfollowRequest(c, activity); err != nil {
+				return err
+			}
 		} else {
 			log.Println("Undo", iter.GetType().GetTypeName(), "ignored")
 			continue
@@ -65,17 +67,17 @@ func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUnd
 	return nil
 }
 
-func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) {
-	request := resolvers.MakeUnFollowRequest(activity, c)
+func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
+	request := resolvers.MakeUnFollowRequest(c, activity)
 	if request == nil {
 		log.Errorf("unable to handle unfollow request")
-		return
+		return errors.New("unable to handle unfollow request")
 	}
 
 	unfollowRequest := *request
 	log.Println("unfollow request:", unfollowRequest)
 
-	persistence.RemoveFollow(unfollowRequest)
+	return persistence.RemoveFollow(unfollowRequest)
 }
 
 func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) error {
@@ -83,8 +85,7 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
-	handleEngagementActivity(object, actorReference, "liked")
-	return nil
+	return handleEngagementActivity(object, actorReference, "liked")
 }
 
 func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnnounce) error {
@@ -92,11 +93,10 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
-	handleEngagementActivity(object, actorReference, "re-posted")
-	return nil
+	return handleEngagementActivity(object, actorReference, "re-posted")
 }
 
-func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) {
+func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) error {
 	log.Debugln("handleEngagementActivity")
 
 	for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
@@ -105,6 +105,7 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 		post, err := persistence.GetObjectByIRI(postIRI)
 		if err != nil || post == "" {
 			log.Errorln("Could not find post locally:", postIRI, err)
+			// TODO: bail if this can't be found
 			// return
 		}
 
@@ -116,6 +117,11 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 		actorIRI := actorReference.Begin().GetIRI().String()
 
 		msg := fmt.Sprintf("[%s](%s) just **%s** [this post](%s)", actorName, actorIRI, action, postIRI)
-		chat.SendSystemMessage(msg, false)
+
+		if err := chat.SendSystemMessage(msg, false); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }

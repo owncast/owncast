@@ -17,7 +17,7 @@ import (
 )
 
 // Resolve will translate a raw ActivityPub payload and fire the callback associated with that activity type.
-func Resolve(data []byte, c context.Context, callbacks ...interface{}) error {
+func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 	jsonResolver, err := streams.NewJSONResolver(callbacks...)
 	if err != nil {
 		// Something in the setup was wrong. For example, a callback has an
@@ -46,7 +46,8 @@ func Resolve(data []byte, c context.Context, callbacks ...interface{}) error {
 	return nil
 }
 
-func ResolveIRI(iri string, c context.Context, callbacks ...interface{}) error {
+// ResolveIRI will resolve an IRI ahd call the correct callback for the resolved type.
+func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest("GET", iri, nil)
@@ -62,15 +63,18 @@ func ResolveIRI(iri string, c context.Context, callbacks ...interface{}) error {
 		return err
 	}
 
+	defer response.Body.Close()
+
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
 	// fmt.Println(string(data))
-	return Resolve(data, c, callbacks...)
+	return Resolve(c, data, callbacks...)
 }
 
+// GetResolvedPersonFromActor resolve a provied actor property to a fully populated person.
 func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab.ActivityStreamsPerson, error) {
 	var err error
 	var person vocab.ActivityStreamsPerson
@@ -84,7 +88,7 @@ func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab
 		if iter.IsIRI() {
 			iri := iter.GetIRI()
 			c := context.TODO()
-			if e := ResolveIRI(iri.String(), c, personCallback); e != nil {
+			if e := ResolveIRI(c, iri.String(), personCallback); e != nil {
 				err = e
 			}
 		} else if iter.IsActivityStreamsPerson() {

@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 )
 
+// ActorHandler handles requests for a single actor.
 func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	if !data.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)

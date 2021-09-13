@@ -4,22 +4,25 @@ import (
 	"fmt"
 )
 
-type Webfinger struct {
+// WebfingerResponse represents a Webfinger response.
+type WebfingerResponse struct {
 	Aliases []string `json:"aliases"`
 	Subject string   `json:"subject"`
 	Links   []Link   `json:"links"`
 }
 
+// Link represents a Webfinger response Link entity.
 type Link struct {
 	Rel  string `json:"rel"`
 	Type string `json:"type"`
 	Href string `json:"href"`
 }
 
-func MakeWebfingerResponse(account string, inbox string, host string) Webfinger {
+// MakeWebfingerResponse will create a new Webfinger response.
+func MakeWebfingerResponse(account string, inbox string, host string) WebfingerResponse {
 	accountIRI := MakeLocalIRIForAccount(account)
 
-	return Webfinger{
+	return WebfingerResponse{
 		Subject: fmt.Sprintf("acct:%s@%s", account, host),
 		Aliases: []string{
 			accountIRI.String(),

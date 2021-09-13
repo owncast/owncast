@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/router/middleware"
 )
 
+// StartRouter will start the federation specific http router.
 func StartRouter() {
 	// WebFinger
 	http.HandleFunc("/.well-known/webfinger", controllers.WebfingerHandler)

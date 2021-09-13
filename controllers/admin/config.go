@@ -48,7 +48,10 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	outbox.UpdateFollowersWithAccountUpdates()
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -104,7 +107,10 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	outbox.UpdateFollowersWithAccountUpdates()
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -126,7 +132,10 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	outbox.UpdateFollowersWithAccountUpdates()
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -244,7 +253,10 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	outbox.UpdateFollowersWithAccountUpdates()
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
@@ -518,7 +530,10 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	outbox.UpdateFollowersWithAccountUpdates()
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "social handles updated")
 }

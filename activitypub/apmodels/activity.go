@@ -8,12 +8,15 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 )
 
+// PrivacyAudience represents the audience for an activity.
 type PrivacyAudience = string
 
 const (
+	// PUBLIC is an audience meaning anybody can view the item.
 	PUBLIC PrivacyAudience = "https://www.w3.org/ns/activitystreams#Public"
 )
 
+// MakeCreateActivity will return a new Create activity with the provided ID.
 func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	activity := streams.NewActivityStreamsCreate()
 	id := streams.NewJSONLDIdProperty()
@@ -28,6 +31,7 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	return activity
 }
 
+// MakeUpdateActivity will return a new Update activity with the provided aID.
 func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
 	activity := streams.NewActivityStreamsUpdate()
 	id := streams.NewJSONLDIdProperty()
@@ -42,6 +46,7 @@ func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
 	return activity
 }
 
+// MakeNote will return a new Note object.
 func MakeNote(text string, noteIRI *url.URL, attributedToIRI *url.URL) vocab.ActivityStreamsNote {
 	note := streams.NewActivityStreamsNote()
 	content := streams.NewActivityStreamsContentProperty()
