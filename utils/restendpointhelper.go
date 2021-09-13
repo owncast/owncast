@@ -34,7 +34,7 @@ func mapPatternWithRequestURL(pattern string, requestURL string) (map[string]str
 	if len(patternSplit) == len(requestURLSplit) {
 		return zip2D(&patternSplit, &requestURLSplit), nil
 	}
-	return nil, errors.New("The length of pattern and request Url does not match")
+	return nil, errors.New("the length of pattern and request Url does not match")
 }
 
 func readParameter(pattern string, requestURL string, paramName string) (string, error) {
@@ -46,14 +46,14 @@ func readParameter(pattern string, requestURL string, paramName string) (string,
 	if value, exists := all[fmt.Sprintf("{%s}", paramName)]; exists {
 		return value, nil
 	}
-	return "", fmt.Errorf("Parameter with name %s not found", paramName)
+	return "", fmt.Errorf("parameter with name %s not found", paramName)
 }
 
 // ReadRestURLParameter will return the parameter from the request of the requested name.
 func ReadRestURLParameter(r *http.Request, parameterName string) (string, error) {
 	pattern, found := r.Header[restURLPatternHeaderKey]
 	if !found {
-		return "", fmt.Errorf("This HandlerFunc is not marked as REST-Endpoint. Cannot read Parameter '%s' from Request", parameterName)
+		return "", fmt.Errorf("this HandlerFunc is not marked as REST-Endpoint. Cannot read Parameter '%s' from Request", parameterName)
 	}
 
 	return readParameter(pattern[0], r.URL.Path, parameterName)
