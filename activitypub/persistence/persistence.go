@@ -15,17 +15,20 @@ import (
 
 var _datastore *data.Datastore
 
+// Setup will initialize the ActivityPub persistence layer with the provided datastore.
 func Setup(datastore *data.Datastore) {
 	_datastore = datastore
 	createFederationFollowersTable()
 	createFederationOutboxTable()
 }
 
+// AddFollow will save a follow to the datastore.
 func AddFollow(follow apmodels.ActivityPubActor) error {
 	log.Println("Saving", follow.ActorIri, "as a follower.")
 	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String())
 }
 
+// RemoveFollow will remove a follow from the datastore.
 func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
 	log.Println("Removing", unfollow.ActorIri, "as a follower.")
 	return removeFollow(unfollow.ActorIri)
@@ -58,6 +61,7 @@ func createFollow(actor string, inbox string, name string, username string, imag
 	return tx.Commit()
 }
 
+// UpdateFollower will update the details of a stored follower given an IRI.
 func UpdateFollower(actorIRI string, inbox string, name string, username string, image string) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -162,6 +166,7 @@ func createFederationFollowersTable() {
 	}
 }
 
+// GetOutbox will create an instance of the outbox populated by stored items.
 func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 	collection := streams.NewActivityStreamsOrderedCollectionPage()
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
@@ -187,7 +192,9 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 			return nil
 		}
 
-		resolvers.Resolve(value, context.TODO(), createCallback)
+		if err := resolvers.Resolve(context.TODO(), value, createCallback); err != nil {
+			return collection, err
+		}
 	}
 
 	if err := rows.Err(); err != nil {
@@ -204,7 +211,10 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 	defer rows.Close()
 	rows.Next()
 	var totalCount int
-	rows.Scan(&totalCount)
+	if err := rows.Scan(&totalCount); err != nil {
+		return collection, err
+	}
+
 	totalItems := streams.NewActivityStreamsTotalItemsProperty()
 	totalItems.Set(totalCount)
 	collection.SetActivityStreamsTotalItems(totalItems)
@@ -212,6 +222,7 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 	return collection, nil
 }
 
+// AddToOutbox will store a single payload to the persistence layer.
 func AddToOutbox(id string, iri string, itemData []byte, typeString string) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -239,7 +250,8 @@ func AddToOutbox(id string, iri string, itemData []byte, typeString string) erro
 	return tx.Commit()
 }
 
-func GetObjectById(id string) (string, error) {
+// GetObjectByID will return a string representation of a single object by the ID.
+func GetObjectByID(id string) (string, error) {
 	query := `SELECT value FROM ap_outbox WHERE id IS ?`
 	row := _datastore.DB.QueryRow(query, id)
 
@@ -249,6 +261,7 @@ func GetObjectById(id string) (string, error) {
 	return value, err
 }
 
+// GetObjectByIRI will return a string representation of a single object by the IRI.
 func GetObjectByIRI(IRI string) (string, error) {
 	query := `SELECT value FROM ap_outbox WHERE iri IS ?`
 	// log.Println(query, IRI)
@@ -260,6 +273,7 @@ func GetObjectByIRI(IRI string) (string, error) {
 	return value, err
 }
 
+// GetLocalPostCount will return the number of posts existing locally.
 func GetLocalPostCount() int {
 	var totalCount int
 
@@ -270,11 +284,14 @@ func GetLocalPostCount() int {
 	}
 	defer rows.Close()
 	rows.Next()
-	rows.Scan(&totalCount)
+	if err := rows.Scan(&totalCount); err != nil {
+		return 0
+	}
 
 	return totalCount
 }
 
+// GetFollowerCount will return the number of followers we're keeping track of.
 func GetFollowerCount() int {
 	var totalCount int
 
@@ -285,11 +302,14 @@ func GetFollowerCount() int {
 	}
 	defer rows.Close()
 	rows.Next()
-	rows.Scan(&totalCount)
+	if err := rows.Scan(&totalCount); err != nil {
+		return 0
+	}
 
 	return totalCount
 }
 
+// GetFederationFollowers will return a slice of the followers we keep track of locally.
 func GetFederationFollowers() ([]models.Follower, error) {
 	followers := make([]models.Follower, 0)
 

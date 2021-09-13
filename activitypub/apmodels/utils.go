@@ -38,6 +38,7 @@ func MakeLocalIRIForResource(resourcePath string) *url.URL {
 	return u
 }
 
+// MakeLocalIRIForAccount will return a full IRI for the local server account username.
 func MakeLocalIRIForAccount(account string) *url.URL {
 	host := data.GetServerURL()
 	u, err := url.Parse(host)
@@ -49,9 +50,9 @@ func MakeLocalIRIForAccount(account string) *url.URL {
 	u.Path = path.Join(u.Path, "federation", "user", account)
 
 	return u
-
 }
 
+// Serialize will serialize an ActivityPub object to a byte slice.
 func Serialize(obj vocab.Type) ([]byte, error) {
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(obj)
