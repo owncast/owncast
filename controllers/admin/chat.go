@@ -7,11 +7,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -123,6 +125,31 @@ func SendSystemMessage(integration user.ExternalAPIUser, w http.ResponseWriter, 
 		controllers.BadRequestHandler(w, err)
 	}
 
+	controllers.WriteSimpleResponse(w, true, "sent")
+}
+
+// SendSystemMessageToConnectedClient will handle incoming requests to send a single message to a single connected client by ID.
+func SendSystemMessageToConnectedClient(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	clientIDText, err := utils.ReadRestURLParameter(r, "clientId")
+	if err != nil {
+		controllers.BadRequestHandler(w, err)
+		return
+	}
+
+	clientIDNumeric, err := strconv.ParseUint(clientIDText, 10, 32)
+	if err != nil {
+		controllers.BadRequestHandler(w, err)
+		return
+	}
+
+	var message events.SystemMessageEvent
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+		controllers.InternalErrorHandler(w, err)
+		return
+	}
+
+	chat.SendSystemMessageToClient(uint(clientIDNumeric), message.Body)
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
 
