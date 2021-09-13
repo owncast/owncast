@@ -1398,6 +1398,58 @@ paths:
                     type: string
                     example: sent
 
+  /api/integrations/chat/system/client/{clientId}:
+    post:
+      summary: Send system chat message to a client, identified by its ClientId
+      description: Send a chat message on behalf of the system/server to a single client.
+      tags: ["Integrations"]
+      security:
+        - AccessToken: []
+      parameters:
+        - name: clientId
+          in: path
+          description: Client ID (a unique numeric Id, identifying the client connection)
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - "body"
+              properties:
+                body:
+                  type: string
+                  description: The message text that will be sent to the client.
+                  example: "What a beautiful day. I love it"
+      responses:
+        "200":
+          description: Message was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  messages:
+                    type: string
+                    example: sent
+        "500":
+          description: Message was not sent to the client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: 
+                    type: string
+                    description: message explaining what went wrong sending the message to the client
 
   /api/admin/accesstokens/create:
     post:

@@ -115,6 +115,7 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	userJoinedEvent := events.UserJoinedEvent{}
 	userJoinedEvent.SetDefaults()
 	userJoinedEvent.User = c.User
+	userJoinedEvent.ClientID = c.id
 
 	if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
 		log.Errorln("error adding client to chat server", err)
@@ -317,6 +318,7 @@ func (s *Server) sendSystemMessageToClient(c *Client, message string) {
 		},
 	}
 	clientMessage.SetDefaults()
+	clientMessage.RenderBody()
 	s.Send(clientMessage.GetBroadcastPayload(), c)
 }
 

@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
 
@@ -159,6 +160,9 @@ func Start() error {
 
 	// Send a system message to chat
 	http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
+
+	// Send a system message to a single client
+	http.HandleFunc(utils.RestEndpoint("/api/integrations/chat/system/client/{clientId}", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)))
 
 	// Send a user message to chat *NO LONGER SUPPORTED
 	http.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage))
