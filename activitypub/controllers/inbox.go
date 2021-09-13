@@ -12,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// InboxHandler handles inbound federated requests.
 func InboxHandler(w http.ResponseWriter, r *http.Request) {
 	if verified, err := inbox.Verify(r); err != nil || !verified {
 		log.Warnln("Unable to verify remote request", err)
@@ -21,8 +22,8 @@ func InboxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		acceptInboxRequest(w, r)
-	} else if r.Method == "GET" {
-		returnInbox(w, r)
+	} else if r.Method == "GET" { //nolint
+		returnInbox(w)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -57,6 +58,6 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func returnInbox(w http.ResponseWriter, r *http.Request) {
+func returnInbox(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
 }

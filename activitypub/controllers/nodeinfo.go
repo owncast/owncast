@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
 )
 
 // NodeInfoController returns the V1 node info response.
@@ -51,7 +52,9 @@ func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
-	writeResponse(res, w)
+	if err := writeResponse(res, w); err != nil {
+		log.Errorln(err)
+	}
 }
 
 // NodeInfoV2Controller returns the V2 node info response.
@@ -100,7 +103,9 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		Protocols:         []string{"activitypub"},
 	}
 
-	writeResponse(res, w)
+	if err := writeResponse(res, w); err != nil {
+		log.Errorln(err)
+	}
 }
 
 // XNodeInfo2Controller returns the x-nodeinfo2.
@@ -181,7 +186,9 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	writeResponse(res, w)
+	if err := writeResponse(res, w); err != nil {
+		log.Errorln(err)
+	}
 }
 
 // InstanceV1Controller returns the v1 instance details.
@@ -241,7 +248,9 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 		InvitesEnabled:   false,
 	}
 
-	writeResponse(res, w)
+	if err := writeResponse(res, w); err != nil {
+		log.Errorln(err)
+	}
 }
 
 func writeResponse(payload interface{}, w http.ResponseWriter) error {
@@ -265,5 +274,7 @@ func HostMetaController(w http.ResponseWriter, r *http.Request) {
 		<Link rel="lrdd" template="%s/.well-known/webfinger?resource={uri}"/>
 	</XRD>`, serverURL)
 
-	w.Write([]byte(res))
+	if _, err := w.Write([]byte(res)); err != nil {
+		log.Errorln(err)
+	}
 }

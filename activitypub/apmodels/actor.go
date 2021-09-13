@@ -12,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// ActivityPubActor represents a single actor.
 type ActivityPubActor struct {
 	ActorIri  *url.URL
 	FollowIri *url.URL
@@ -21,16 +22,19 @@ type ActivityPubActor struct {
 	Image     *url.URL
 }
 
+// DeleteRequest represents a request for delete.
 type DeleteRequest struct {
 	ActorIri string
 }
 
-func MakeActorPropertyWithId(idIRI *url.URL) vocab.ActivityStreamsActorProperty {
+// MakeActorPropertyWithID will return an actor property filled with the provided IRI.
+func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty {
 	actor := streams.NewActivityStreamsActorProperty()
 	actor.AppendIRI(idIRI)
 	return actor
 }
 
+// MakeActor will create a new local actor person withe the provided username.
 func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	actorIRI := MakeLocalIRIForAccount(accountName)
 
@@ -68,10 +72,10 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	publicKeyProp := streams.NewW3IDSecurityV1PublicKeyProperty()
 	publicKeyType := streams.NewW3IDSecurityV1PublicKey()
 
-	pubKeyIdProp := streams.NewJSONLDIdProperty()
-	pubKeyIdProp.Set(publicKey.Id)
+	pubKeyIDProp := streams.NewJSONLDIdProperty()
+	pubKeyIDProp.Set(publicKey.ID)
 
-	publicKeyType.SetJSONLDId(pubKeyIdProp)
+	publicKeyType.SetJSONLDId(pubKeyIDProp)
 
 	ownerProp := streams.NewW3IDSecurityV1OwnerProperty()
 	ownerProp.SetIRI(publicKey.Owner)
@@ -94,15 +98,15 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	// Profile properties
 
 	// Avatar
-	userAvatarUrlString := data.GetServerURL() + "/logo/external"
-	userAvatarUrl, err := url.Parse(userAvatarUrlString)
+	userAvatarURLString := data.GetServerURL() + "/logo/external"
+	userAvatarURL, err := url.Parse(userAvatarURLString)
 	if err != nil {
-		log.Errorln("unable to parse user avatar url", userAvatarUrlString, err)
+		log.Errorln("unable to parse user avatar url", userAvatarURLString, err)
 	}
 
 	image := streams.NewActivityStreamsImage()
 	imgProp := streams.NewActivityStreamsUrlProperty()
-	imgProp.AppendIRI(userAvatarUrl)
+	imgProp.AppendIRI(userAvatarURL)
 	image.SetActivityStreamsUrl(imgProp)
 	icon := streams.NewActivityStreamsIconProperty()
 	icon.AppendActivityStreamsImage(image)
@@ -117,9 +121,9 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	// Profile header
 
 	headerImage := streams.NewActivityStreamsImage()
-	headerImgPropUrl := streams.NewActivityStreamsUrlProperty()
-	headerImgPropUrl.AppendIRI(userAvatarUrl)
-	headerImage.SetActivityStreamsUrl(headerImgPropUrl)
+	headerImgPropURL := streams.NewActivityStreamsUrlProperty()
+	headerImgPropURL.AppendIRI(userAvatarURL)
+	headerImage.SetActivityStreamsUrl(headerImgPropURL)
 	headerImageProp := streams.NewActivityStreamsImageProperty()
 	headerImageProp.AppendActivityStreamsImage(headerImage)
 	person.SetActivityStreamsImage(headerImageProp)
@@ -165,6 +169,7 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	return person
 }
 
+// GetFullUsernameFromPerson will return the user@host.tld formatted user given a person object.
 func GetFullUsernameFromPerson(person vocab.ActivityStreamsPerson) string {
 	hostname := person.GetJSONLDId().GetIRI().Hostname()
 	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()

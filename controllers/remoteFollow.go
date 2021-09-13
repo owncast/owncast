@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
+// RemoteFollow handles a request to begin the remote follow redirect flow.
 func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	type followRequest struct {
 		Account string `json:"account"`
@@ -86,9 +87,12 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	fmt.Println(requestURL.String())
 
 	response, err := http.DefaultClient.Get(requestURL.String())
+
 	if err != nil {
 		return nil, err
 	}
+
+	defer response.Body.Close()
 
 	var links webfingerResponse
 	decoder := json.NewDecoder(response.Body)
@@ -99,6 +103,7 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	return links.Links, nil
 }
 
+// GetFollowers will handle an API request to fetch the list of followers (non-activitypub response).
 func GetFollowers(w http.ResponseWriter, r *http.Request) {
 	type followersResponse struct {
 		Followers []models.Follower `json:"followers"`

@@ -8,8 +8,10 @@ import (
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
 )
 
+// ObjectHandler handles requests for a single federated ActivityPub object.
 func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	if !data.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -26,5 +28,7 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
 
-	requests.WriteResponse([]byte(object), w, publicKey)
+	if err := requests.WriteResponse([]byte(object), w, publicKey); err != nil {
+		log.Errorln(err)
+	}
 }

@@ -167,7 +167,9 @@ func startFederatedLiveStreamMessageTimer() context.CancelFunc {
 		select {
 		case <-time.After(time.Minute * 2.0):
 			log.Traceln("Sending Federated Go Live message.")
-			activitypub.SendLive()
+			if err := activitypub.SendLive(); err != nil {
+				log.Errorln(err)
+			}
 		case <-c.Done():
 		}
 	}(c)

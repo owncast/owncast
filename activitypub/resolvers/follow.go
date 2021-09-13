@@ -9,12 +9,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func getPersonFromFollow(activity vocab.ActivityStreamsFollow, c context.Context) (vocab.ActivityStreamsPerson, error) {
+func getPersonFromFollow(activity vocab.ActivityStreamsFollow) (vocab.ActivityStreamsPerson, error) {
 	return GetResolvedPersonFromActor(activity.GetActivityStreamsActor())
 }
 
-func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) (*apmodels.ActivityPubActor, error) {
-	person, err := getPersonFromFollow(activity, c)
+// MakeFollowRequest will convert an inbound Follow request to our internal actor model.
+func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) (*apmodels.ActivityPubActor, error) {
+	person, err := getPersonFromFollow(activity)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +36,8 @@ func MakeFollowRequest(activity vocab.ActivityStreamsFollow, c context.Context) 
 	return &followRequest, nil
 }
 
-func MakeUnFollowRequest(activity vocab.ActivityStreamsUndo, c context.Context) *apmodels.ActivityPubActor {
+// MakeUnFollowRequest will convert an inbound Unfollow request to our internal actor model.
+func MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) *apmodels.ActivityPubActor {
 	person, err := GetResolvedPersonFromActor(activity.GetActivityStreamsActor())
 	if err != nil {
 		log.Errorln("unable to resolve person from actor iri", person.GetJSONLDId(), err)

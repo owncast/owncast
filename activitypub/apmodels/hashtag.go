@@ -7,6 +7,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 )
 
+// MakeHashtag will create and return a mastodon toot hashtag object with the provided name.
 func MakeHashtag(name string) vocab.TootHashtag {
 	u, _ := url.Parse("https://directory.owncast.online/tags/" + name)
 

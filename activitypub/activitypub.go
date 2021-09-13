@@ -8,11 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _datastore *data.Datastore
-
+// Start will initialize and start the federation support.
 func Start(datastore *data.Datastore) {
-	_datastore = datastore
-
 	persistence.Setup(datastore)
 	StartRouter()
 
@@ -27,14 +24,17 @@ func Start(datastore *data.Datastore) {
 	}
 }
 
-func SendLive() {
-	outbox.SendLive()
+// SendLive will send a "Go Live" message to followers.
+func SendLive() error {
+	return outbox.SendLive()
 }
 
-func SendPublicFederatedMessage(message string) {
-	outbox.SendPublicMessage(message)
+// SendPublicFederatedMessage will send an arbitrary provided message to followers.
+func SendPublicFederatedMessage(message string) error {
+	return outbox.SendPublicMessage(message)
 }
 
+// GetFollowerCount will return the local tracked follower count.
 func GetFollowerCount() int {
 	return persistence.GetFollowerCount()
 }

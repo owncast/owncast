@@ -7,9 +7,10 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 )
 
+// CreateCreateActivity will create a new Create Activity model with the provided ID and IRI.
 func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
-	objectId := MakeLocalIRIForResource("/create-" + id)
-	message := MakeCreateActivity(objectId)
+	objectID := MakeLocalIRIForResource("/create-" + id)
+	message := MakeCreateActivity(objectID)
 
 	actorProp := streams.NewActivityStreamsActorProperty()
 	actorProp.AppendIRI(localAccountIRI)
@@ -18,21 +19,22 @@ func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStr
 	return message
 }
 
+// CreateMessageActivity will create a new Create Activity model with a note object.
 func CreateMessageActivity(id string, content string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
 	toPublic, _ := url.Parse(PUBLIC)
 
-	objectId := MakeLocalIRIForResource(id)
-	noteId := localAccountIRI
-	noteId.Path = noteId.Path + "/note-" + id
+	objectID := MakeLocalIRIForResource(id)
+	noteID := localAccountIRI
+	noteID.Path = noteID.Path + "/note-" + id
 
 	actorProp := streams.NewActivityStreamsActorProperty()
 	actorProp.AppendIRI(localAccountIRI)
 
-	message := MakeCreateActivity(objectId)
+	message := MakeCreateActivity(objectID)
 
 	object := streams.NewActivityStreamsObjectProperty()
 
-	note := MakeNote(content, noteId, localAccountIRI)
+	note := MakeNote(content, noteID, localAccountIRI)
 	object.AppendActivityStreamsNote(note)
 
 	message.SetActivityStreamsActor(actorProp)
@@ -51,6 +53,7 @@ func CreateMessageActivity(id string, content string, localAccountIRI *url.URL) 
 	return message
 }
 
+// AddImageAttachmentToNote will add the provided image URL to the provided note object.
 func AddImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
 	imageURL, err := url.Parse(image)
 	if err != nil {

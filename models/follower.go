@@ -1,5 +1,6 @@
 package models
 
+// Follower represents a single remote follower of the instance.
 type Follower struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`

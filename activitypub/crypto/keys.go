@@ -13,6 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// GetPublicKey will return the public key for the provided actor.
 func GetPublicKey(actorIRI *url.URL) PublicKey {
 	key := data.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
@@ -21,12 +22,13 @@ func GetPublicKey(actorIRI *url.URL) PublicKey {
 	}
 
 	return PublicKey{
-		Id:           idURL,
+		ID:           idURL,
 		Owner:        actorIRI,
 		PublicKeyPem: key,
 	}
 }
 
+// GetPrivateKey will return the internal server private key.
 func GetPrivateKey() *rsa.PrivateKey {
 	key := data.GetPrivateKey()
 
@@ -45,6 +47,7 @@ func GetPrivateKey() *rsa.PrivateKey {
 	return priv
 }
 
+// GenerateKeys will generate the private/public key pair needed for federation.
 func GenerateKeys() ([]byte, []byte, error) {
 	// generate key
 	privatekey, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -54,7 +57,7 @@ func GenerateKeys() ([]byte, []byte, error) {
 	}
 	publickey := &privatekey.PublicKey
 
-	var privateKeyBytes []byte = x509.MarshalPKCS1PrivateKey(privatekey)
+	var privateKeyBytes = x509.MarshalPKCS1PrivateKey(privatekey)
 	privateKeyBlock := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: privateKeyBytes,

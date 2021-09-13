@@ -24,7 +24,10 @@ func SendFederationMessage(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, "unable to send message")
 	}
 
-	activitypub.SendPublicFederatedMessage(message)
+	if err := activitypub.SendPublicFederatedMessage(message); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
