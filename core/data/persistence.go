@@ -9,6 +9,7 @@ import (
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/owncast/owncast/db"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -36,6 +37,11 @@ func (ds *Datastore) warmCache() {
 		}
 		ds.cache[rowKey] = rowValue
 	}
+}
+
+// GetQueries will return the shared instance of the SQL query generator.
+func (ds *Datastore) GetQueries() *db.Queries {
+	return db.New(ds.DB)
 }
 
 // Get will query the database for the key and return the entry.
