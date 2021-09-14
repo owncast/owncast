@@ -45,9 +45,11 @@ func FollowersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	followerCount, _ := persistence.GetFollowerCount()
+
 	collection := streams.NewActivityStreamsOrderedCollectionPage()
 	totalItemsProperty := streams.NewActivityStreamsTotalItemsProperty()
-	totalItemsProperty.Set(persistence.GetFollowerCount())
+	totalItemsProperty.Set(int(followerCount))
 	collection.SetActivityStreamsTotalItems(totalItemsProperty)
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 
