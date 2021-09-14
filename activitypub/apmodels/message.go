@@ -9,7 +9,7 @@ import (
 
 // CreateCreateActivity will create a new Create Activity model with the provided ID and IRI.
 func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
-	objectID := MakeLocalIRIForResource("/create-" + id)
+	objectID := MakeLocalIRIForResource(id)
 	message := MakeCreateActivity(objectID)
 
 	actorProp := streams.NewActivityStreamsActorProperty()

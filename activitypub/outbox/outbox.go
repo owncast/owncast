@@ -30,9 +30,7 @@ func SendLive() error {
 	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
 	id := shortid.MustGenerate()
 	activity := apmodels.CreateCreateActivity(id, localActor)
-
 	object := streams.NewActivityStreamsObjectProperty()
-
 	activity.SetActivityStreamsObject(object)
 
 	tagStrings := []string{}
@@ -99,7 +97,14 @@ func SendLive() error {
 		return err
 	}
 
-	return Add(note, noteID)
+	if err := Add(activity, id); err != nil {
+		return err
+	}
+	if err := Add(note, noteID); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SendPublicMessage will send a public message to all followers.

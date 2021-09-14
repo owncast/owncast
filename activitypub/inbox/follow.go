@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -99,28 +100,27 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) error {
 	log.Debugln("handleEngagementActivity")
 
-	for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
-		postIRI := iter.GetIRI().String()
-		// Verify we actually sent this post.
-		post, err := persistence.GetObjectByIRI(postIRI)
-		if err != nil || post == "" {
-			log.Errorln("Could not find post locally:", postIRI, err)
-			// TODO: bail if this can't be found
-			// return
-		}
+	IRIPath := object.At(0).GetIRI().Path
 
-		// Get actor of the Like
-		actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
+	// for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
+	// Verify we actually sent this post.
+	post, err := persistence.GetObjectByIRI(IRIPath)
+	if err != nil || post == "" {
+		log.Errorln("Could not find post locally:", IRIPath, err)
+		return fmt.Errorf("Could not find post locally: %s", IRIPath)
+	}
 
-		// Send chat message
-		actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
-		actorIRI := actorReference.Begin().GetIRI().String()
+	// Get actor of the Like
+	actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
 
-		msg := fmt.Sprintf("[%s](%s) just **%s** [this post](%s)", actorName, actorIRI, action, postIRI)
+	// Send chat message
+	actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
+	actorIRI := actorReference.Begin().GetIRI().String()
 
-		if err := chat.SendSystemMessage(msg, false); err != nil {
-			return err
-		}
+	msg := fmt.Sprintf("[%s](%s) just **%s** one of %s's posts.", actorName, actorIRI, action, data.GetServerName())
+
+	if err := chat.SendSystemMessage(msg, false); err != nil {
+		return err
 	}
 
 	return nil

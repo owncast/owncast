@@ -169,7 +169,7 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
 		}
-		if err := resolvers.Resolve(context.TODO(), value, createCallback); err != nil {
+		if err := resolvers.Resolve(context.Background(), value, createCallback); err != nil {
 			return collection, err
 		}
 	}
