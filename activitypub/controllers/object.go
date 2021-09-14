@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,7 +19,13 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	object, err := persistence.GetObjectByIRI(r.URL.Path)
+	objectID, err := utils.ReadRestURLParameter(r, "object")
+	if err != nil || objectID == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	object, err := persistence.GetObjectByID(objectID)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
