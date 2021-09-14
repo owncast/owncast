@@ -85,6 +85,8 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	localPostCount, _ := persistence.GetLocalPostCount()
+
 	res := response{
 		Version: "2.0",
 		Software: software{
@@ -97,7 +99,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 				ActiveMonth:    1,
 				ActiveHalfyear: 1,
 			},
-			LocalPosts: persistence.GetLocalPostCount(),
+			LocalPosts: int(localPostCount),
 		},
 		OpenRegistrations: false,
 		Protocols:         []string{"activitypub"},
@@ -156,6 +158,8 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	localPostCount, _ := persistence.GetLocalPostCount()
+
 	res := &response{
 		Organization: Organization{
 			Name:    data.GetServerName(),
@@ -181,7 +185,7 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 				ActiveHalfyear: 1,
 			},
 
-			LocalPosts:    persistence.GetLocalPostCount(),
+			LocalPosts:    int(localPostCount),
 			LocalComments: 0,
 		},
 	}
@@ -230,6 +234,7 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	thumbnail.Path = "/logo/external"
+	localPostCount, _ := persistence.GetLocalPostCount()
 
 	res := response{
 		URI:              serverURL,
@@ -239,7 +244,7 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 		Version:          config.GetReleaseString(),
 		Stats: Stats{
 			UserCount:   1,
-			StatusCount: persistence.GetLocalPostCount(),
+			StatusCount: int(localPostCount),
 			DomainCount: 0,
 		},
 		Thumbnail:        thumbnail.String(),

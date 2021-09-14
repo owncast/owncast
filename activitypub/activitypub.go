@@ -35,6 +35,6 @@ func SendPublicFederatedMessage(message string) error {
 }
 
 // GetFollowerCount will return the local tracked follower count.
-func GetFollowerCount() int {
+func GetFollowerCount() (int64, error) {
 	return persistence.GetFollowerCount()
 }

@@ -2,6 +2,8 @@ package persistence
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"net/url"
 
 	"github.com/go-fed/activity/streams"
@@ -9,7 +11,9 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,15 +50,13 @@ func createFollow(actor string, inbox string, name string, username string, imag
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("INSERT INTO ap_followers(iri, inbox, name, username, image) values(?, ?, ?, ?, ?)")
-
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(actor, inbox, name, username, image)
-	if err != nil {
+	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
+		Iri:      actor,
+		Inbox:    inbox,
+		Name:     sql.NullString{String: name, Valid: true},
+		Username: username,
+		Image:    sql.NullString{String: image, Valid: true},
+	}); err != nil {
 		log.Errorln("error creating new federation follow", err)
 	}
 
@@ -74,15 +76,14 @@ func UpdateFollower(actorIRI string, inbox string, name string, username string,
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("UPDATE ap_followers SET inbox = ?, name = ?, username = ?, image = ? WHERE iri IS ?")
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(actorIRI)
-	if err != nil {
-		log.Errorln("error removing federation follow", err)
+	if err = _datastore.GetQueries().WithTx(tx).UpdateFollowerByIRI(context.Background(), db.UpdateFollowerByIRIParams{
+		Inbox:    inbox,
+		Name:     sql.NullString{String: name, Valid: true},
+		Username: username,
+		Image:    sql.NullString{String: image, Valid: true},
+		Iri:      actorIRI,
+	}); err != nil {
+		return fmt.Errorf("error updating follower %s %s", actorIRI, err)
 	}
 
 	return tx.Commit()
@@ -94,30 +95,18 @@ func removeFollow(actor *url.URL) error {
 
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
-		log.Debugln(err)
+		return err
 	}
 	defer func() {
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("DELETE FROM ap_followers WHERE iri IS ?")
-
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(actor.String())
-	if err != nil {
-		log.Errorln("error removing federation follow", err)
-	}
-
+	_datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), actor.String())
 	return tx.Commit()
 }
 
 func createFederationOutboxTable() {
 	log.Traceln("Creating federation followers table...")
-
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_outbox (
 		"id" TEXT NOT NULL,
 		"iri" TEXT NOT NULL,
@@ -170,53 +159,51 @@ func createFederationFollowersTable() {
 func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 	collection := streams.NewActivityStreamsOrderedCollectionPage()
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
-
-	query := `SELECT value FROM ap_outbox`
-
-	rows, err := _datastore.DB.Query(query)
+	rows, err := _datastore.GetQueries().GetOutbox(context.Background())
 	if err != nil {
 		return collection, err
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var value []byte
-		if err := rows.Scan(&value); err != nil {
-			log.Error("There is a problem reading the database.", err)
-			return collection, err
-		}
-
+	for _, value := range rows {
 		createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
-			// items = append(items, activity)
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
 		}
-
 		if err := resolvers.Resolve(context.TODO(), value, createCallback); err != nil {
 			return collection, err
 		}
 	}
+	// query := `SELECT value FROM ap_outbox`
 
-	if err := rows.Err(); err != nil {
-		return collection, err
-	}
+	// rows, err := _datastore.DB.Query(query)
+	// defer rows.Close()
+
+	// for rows.Next() {
+	// 	var value []byte
+	// 	if err := rows.Scan(&value); err != nil {
+	// 		log.Error("There is a problem reading the database.", err)
+	// 		return collection, err
+	// 	}
+
+	// 	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
+	// 		// items = append(items, activity)
+	// 		orderedItems.AppendActivityStreamsCreate(activity)
+	// 		return nil
+	// 	}
+
+	// 	if err := resolvers.Resolve(context.TODO(), value, createCallback); err != nil {
+	// 		return collection, err
+	// 	}
+	// }
+
+	// if err := rows.Err(); err != nil {
+	// 	return collection, err
+	// }
 
 	collection.SetActivityStreamsOrderedItems(orderedItems)
-
-	query = `SElECT count(*) FROM ap_outbox`
-	rows, err = _datastore.DB.Query(query)
-	if err != nil {
-		return collection, err
-	}
-	defer rows.Close()
-	rows.Next()
-	var totalCount int
-	if err := rows.Scan(&totalCount); err != nil {
-		return collection, err
-	}
-
+	totalCount, _ := _datastore.GetQueries().GetLocalPostCount(context.Background())
 	totalItems := streams.NewActivityStreamsTotalItemsProperty()
-	totalItems.Set(totalCount)
+	totalItems.Set(int(totalCount))
 	collection.SetActivityStreamsTotalItems(totalItems)
 
 	return collection, nil
@@ -235,117 +222,72 @@ func AddToOutbox(id string, iri string, itemData []byte, typeString string) erro
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("INSERT INTO ap_outbox(id, iri, value, type) values(?, ?, ?, ?)")
-
-	if err != nil {
-		log.Debugln(err)
+	if err = _datastore.GetQueries().WithTx(tx).AddToOutbox(context.Background(), db.AddToOutboxParams{
+		ID:    id,
+		Iri:   iri,
+		Value: itemData,
+		Type:  typeString,
+	}); err != nil {
+		return fmt.Errorf("error creating new item in federation outbox %s", err)
 	}
-	defer stmt.Close()
+	// stmt, err := tx.Prepare("INSERT INTO ap_outbox(id, iri, value, type) values(?, ?, ?, ?)")
 
-	_, err = stmt.Exec(id, iri, itemData, typeString)
-	if err != nil {
-		log.Errorln("error creating new item in federation outbox", err)
-	}
+	// if err != nil {
+	// 	log.Debugln(err)
+	// }
+	// defer stmt.Close()
+
+	// _, err = stmt.Exec(id, iri, itemData, typeString)
+	// if err != nil {
+	// 	log.Errorln("error creating new item in federation outbox", err)
+	// }
 
 	return tx.Commit()
 }
 
 // GetObjectByID will return a string representation of a single object by the ID.
 func GetObjectByID(id string) (string, error) {
-	query := `SELECT value FROM ap_outbox WHERE id IS ?`
-	row := _datastore.DB.QueryRow(query, id)
-
-	var value string
-	err := row.Scan(&value)
-
-	return value, err
+	value, err := _datastore.GetQueries().GetObjectFromOutboxByID(context.Background(), id)
+	return string(value), err
 }
 
 // GetObjectByIRI will return a string representation of a single object by the IRI.
 func GetObjectByIRI(IRI string) (string, error) {
-	query := `SELECT value FROM ap_outbox WHERE iri IS ?`
-	// log.Println(query, IRI)
-	row := _datastore.DB.QueryRow(query, IRI)
-
-	var value string
-	err := row.Scan(&value)
-
-	return value, err
+	value, err := _datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), IRI)
+	return string(value), err
 }
 
 // GetLocalPostCount will return the number of posts existing locally.
-func GetLocalPostCount() int {
-	var totalCount int
-
-	query := `SElECT count(*) FROM ap_outbox`
-	rows, err := _datastore.DB.Query(query)
-	if err != nil {
-		return totalCount
-	}
-	defer rows.Close()
-	rows.Next()
-	if err := rows.Scan(&totalCount); err != nil {
-		return 0
-	}
-
-	return totalCount
+func GetLocalPostCount() (int64, error) {
+	ctx := context.Background()
+	return _datastore.GetQueries().GetLocalPostCount(ctx)
 }
 
 // GetFollowerCount will return the number of followers we're keeping track of.
-func GetFollowerCount() int {
-	var totalCount int
-
-	query := `SElECT count(*) FROM ap_followers`
-	rows, err := _datastore.DB.Query(query)
-	if err != nil {
-		return totalCount
-	}
-	defer rows.Close()
-	rows.Next()
-	if err := rows.Scan(&totalCount); err != nil {
-		return 0
-	}
-
-	return totalCount
+func GetFollowerCount() (int64, error) {
+	ctx := context.Background()
+	return _datastore.GetQueries().GetFollowerCount(ctx)
 }
 
 // GetFederationFollowers will return a slice of the followers we keep track of locally.
 func GetFederationFollowers() ([]models.Follower, error) {
+	ctx := context.Background()
+	followersResult, err := _datastore.GetQueries().GetFederationFollowers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	followers := make([]models.Follower, 0)
 
-	var query = "SELECT iri, inbox, name, username, image FROM ap_followers"
-
-	rows, err := _datastore.DB.Query(query)
-	if err != nil {
-		return followers, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var iriString string
-		var inboxString string
-		var nameString string
-		var usernameString string
-		var imageString string
-
-		if err := rows.Scan(&iriString, &inboxString, &nameString, &usernameString, &imageString); err != nil {
-			log.Error("There is a problem reading the database.", err)
-			return followers, err
-		}
-
+	for _, row := range followersResult {
 		singleFollower := models.Follower{
-			Name:     nameString,
-			Username: usernameString,
-			Image:    imageString,
-			Link:     iriString,
-			Inbox:    inboxString,
+			Name:     row.Name.String,
+			Username: row.Username,
+			Image:    row.Image.String,
+			Link:     row.Iri,
+			Inbox:    row.Inbox,
 		}
-
 		followers = append(followers, singleFollower)
-	}
-
-	if err := rows.Err(); err != nil {
-		return followers, err
 	}
 
 	return followers, nil

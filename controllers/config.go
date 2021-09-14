@@ -57,13 +57,15 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 	var federationResponse federationConfigResponse
 	federationEnabled := data.GetFederationEnabled()
+
+	followerCount, _ := activitypub.GetFollowerCount()
 	if federationEnabled {
 		serverURLString := data.GetServerURL()
 		serverURL, _ := url.Parse(serverURLString)
 		account := fmt.Sprintf("%s@%s", data.GetDefaultFederationUsername(), serverURL.Host)
 		federationResponse = federationConfigResponse{
 			Enabled:       federationEnabled,
-			FollowerCount: activitypub.GetFollowerCount(),
+			FollowerCount: int(followerCount),
 			Account:       account,
 		}
 	}

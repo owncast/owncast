@@ -1,0 +1,9 @@
+{
+    "version": "1",
+    "packages": [{
+      "schema": "db/schema.sql",
+      "queries": "db/query.sql",
+      "name": "db",
+      "path": "db"
+    }]
+  } 
