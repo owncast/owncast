@@ -16,7 +16,7 @@ import (
 
 // OutboxHandler will handle requests for the local ActivityPub outbox.
 func OutboxHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
