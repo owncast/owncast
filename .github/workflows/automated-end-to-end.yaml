@@ -8,9 +8,9 @@ on:
     branches: develop
 
 jobs:
-  Jest:
+  API Tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup and run
-        run: cd test/automated && ./run.sh
+        run: cd test/automated/api && ./run.sh

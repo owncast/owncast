@@ -15,7 +15,7 @@ if [ ! -d "ffmpeg" ]; then
   popd > /dev/null
 fi
 
-pushd ../.. > /dev/null
+pushd ../../.. > /dev/null
 
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
