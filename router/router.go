@@ -119,6 +119,12 @@ func Start() error {
 	// Get a list of disabled users
 	http.HandleFunc("/api/admin/chat/users/disabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
 
+	// Get a list of pending follow requests
+	http.HandleFunc("/api/admin/followers/pending", middleware.RequireAdminAuth(admin.GetPendingFollowRequests))
+
+	// Approve a follower request.
+	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
+
 	// Update config values
 
 	// Change the current streaming key in memory

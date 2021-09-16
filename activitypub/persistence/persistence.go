@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -27,9 +28,9 @@ func Setup(datastore *data.Datastore) {
 }
 
 // AddFollow will save a follow to the datastore.
-func AddFollow(follow apmodels.ActivityPubActor) error {
+func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 	log.Println("Saving", follow.ActorIri, "as a follower.")
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String())
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String(), approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -38,7 +39,17 @@ func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
 	return removeFollow(unfollow.ActorIri)
 }
 
-func createFollow(actor string, inbox string, name string, username string, image string) error {
+func ApprovePreviousFollowRequest(iri string) error {
+	return _datastore.GetQueries().ApproveFederationFollower(context.Background(), db.ApproveFederationFollowerParams{
+		Iri: iri,
+		ApprovedAt: sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		},
+	})
+}
+
+func createFollow(actor string, inbox string, name string, username string, image string, approved bool) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -50,12 +61,21 @@ func createFollow(actor string, inbox string, name string, username string, imag
 		_ = tx.Rollback()
 	}()
 
+	var approvedAt sql.NullTime
+	if approved { // TODO: check auto-approval setting.
+		approvedAt = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		}
+	}
+
 	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
-		Iri:      actor,
-		Inbox:    inbox,
-		Name:     sql.NullString{String: name, Valid: true},
-		Username: username,
-		Image:    sql.NullString{String: image, Valid: true},
+		Iri:        actor,
+		Inbox:      inbox,
+		Name:       sql.NullString{String: name, Valid: true},
+		Username:   username,
+		Image:      sql.NullString{String: image, Valid: true},
+		ApprovedAt: approvedAt,
 	}); err != nil {
 		log.Errorln("error creating new federation follow", err)
 	}
@@ -139,6 +159,7 @@ func createFederationFollowersTable() {
 		"name" TEXT,
 		"username" TEXT NOT NULL,
 		"image" TEXT,
+		"approved_at" TIMESTAMP,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri ON ap_followers (iri);
@@ -280,6 +301,29 @@ func GetFederationFollowers() ([]models.Follower, error) {
 	followers := make([]models.Follower, 0)
 
 	for _, row := range followersResult {
+		singleFollower := models.Follower{
+			Name:     row.Name.String,
+			Username: row.Username,
+			Image:    row.Image.String,
+			Link:     row.Iri,
+			Inbox:    row.Inbox,
+		}
+		followers = append(followers, singleFollower)
+	}
+
+	return followers, nil
+}
+
+// GetPendingFollowRequests will return pending follow requests.
+func GetPendingFollowRequests() ([]models.Follower, error) {
+	pendingFollowersResult, err := _datastore.GetQueries().GetFederationFollowerApprovalRequests(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	followers := make([]models.Follower, 0)
+
+	for _, row := range pendingFollowersResult {
 		singleFollower := models.Follower{
 			Name:     row.Name.String,
 			Username: row.Username,
