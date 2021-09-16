@@ -26,18 +26,22 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return fmt.Errorf("unable to handle request")
 	}
 
+	approved := !data.GetFollowApprovalRequired()
+
 	followRequest := *follow
 	log.Println("follow request:", followRequest)
 
-	if err := persistence.AddFollow(followRequest); err != nil {
+	if err := persistence.AddFollow(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
 	}
 
 	localAccountName := c.Value("account").(string)
 
-	if err := requests.SendFollowAccept(followRequest, localAccountName); err != nil {
-		return err
+	if approved {
+		if err := requests.SendFollowAccept(followRequest, localAccountName); err != nil {
+			return err
+		}
 	}
 
 	actorReference := activity.GetActivityStreamsActor()

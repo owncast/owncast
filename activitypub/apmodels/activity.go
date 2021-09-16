@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/core/data"
 )
 
 // PrivacyAudience represents the audience for an activity.
@@ -23,10 +24,13 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	id.Set(activityID)
 	activity.SetJSONLDId(id)
 
-	public, _ := url.Parse(PUBLIC)
-	to := streams.NewActivityStreamsToProperty()
-	to.AppendIRI(public)
-	activity.SetActivityStreamsTo(to)
+	// CC the public if we're not treating ActivityPub as "private".
+	if !data.GetFederationIsPrivate() {
+		public, _ := url.Parse(PUBLIC)
+		cc := streams.NewActivityStreamsCcProperty()
+		cc.AppendIRI(public)
+		activity.SetActivityStreamsCc(cc)
+	}
 
 	return activity
 }
@@ -38,10 +42,13 @@ func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
 	id.Set(activityID)
 	activity.SetJSONLDId(id)
 
-	public, _ := url.Parse(PUBLIC)
-	to := streams.NewActivityStreamsToProperty()
-	to.AppendIRI(public)
-	activity.SetActivityStreamsTo(to)
+	// CC the public if we're not treating ActivityPub as "private".
+	if !data.GetFederationIsPrivate() {
+		public, _ := url.Parse(PUBLIC)
+		cc := streams.NewActivityStreamsCcProperty()
+		cc.AppendIRI(public)
+		activity.SetActivityStreamsCc(cc)
+	}
 
 	return activity
 }
@@ -65,10 +72,13 @@ func MakeNote(text string, noteIRI *url.URL, attributedToIRI *url.URL) vocab.Act
 	attr.AppendIRI(attributedTo)
 	note.SetActivityStreamsAttributedTo(attr)
 
-	public, _ := url.Parse(PUBLIC)
-	to := streams.NewActivityStreamsToProperty()
-	to.AppendIRI(public)
-	note.SetActivityStreamsTo(to)
+	// CC the public if we're not treating ActivityPub as "private".
+	if !data.GetFederationIsPrivate() {
+		public, _ := url.Parse(PUBLIC)
+		cc := streams.NewActivityStreamsCcProperty()
+		cc.AppendIRI(public)
+		note.SetActivityStreamsCc(cc)
+	}
 
 	return note
 }

@@ -9,7 +9,13 @@ SElECT count(*) FROM ap_followers;
 SElECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image FROM ap_followers;
+SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at <> null;
+
+-- name: GetFederationFollowerApprovalRequests :many
+SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null;
+
+-- name: ApproveFederationFollower :exec
+UPDATE ap_followers SET approved_at = $1 WHERE iri = $2;
 
 -- name: GetOutbox :many
 SELECT value FROM ap_outbox;
@@ -24,7 +30,7 @@ SELECT value FROM ap_outbox WHERE iri = $1;
 DELETE FROM ap_followers WHERE iri = $1;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, name, username, image) values($1, $2, $3, $4, $5);
+INSERT INTO ap_followers(iri, inbox, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(id, iri, value, type) values($1, $2, $3, $4);

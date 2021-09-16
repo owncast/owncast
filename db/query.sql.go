@@ -9,15 +9,16 @@ import (
 )
 
 const addFollower = `-- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, name, username, image) values($1, $2, $3, $4, $5)
+INSERT INTO ap_followers(iri, inbox, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6)
 `
 
 type AddFollowerParams struct {
-	Iri      string
-	Inbox    string
-	Name     sql.NullString
-	Username string
-	Image    sql.NullString
+	Iri        string
+	Inbox      string
+	Name       sql.NullString
+	Username   string
+	Image      sql.NullString
+	ApprovedAt sql.NullTime
 }
 
 func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error {
@@ -27,6 +28,7 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 		arg.Name,
 		arg.Username,
 		arg.Image,
+		arg.ApprovedAt,
 	)
 	return err
 }
@@ -52,8 +54,63 @@ func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error 
 	return err
 }
 
+const approveFederationFollower = `-- name: ApproveFederationFollower :exec
+UPDATE ap_followers SET approved_at = $1 WHERE iri = $2
+`
+
+type ApproveFederationFollowerParams struct {
+	ApprovedAt sql.NullTime
+	Iri        string
+}
+
+func (q *Queries) ApproveFederationFollower(ctx context.Context, arg ApproveFederationFollowerParams) error {
+	_, err := q.db.ExecContext(ctx, approveFederationFollower, arg.ApprovedAt, arg.Iri)
+	return err
+}
+
+const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
+SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null
+`
+
+type GetFederationFollowerApprovalRequestsRow struct {
+	Iri      string
+	Inbox    string
+	Name     sql.NullString
+	Username string
+	Image    sql.NullString
+}
+
+func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]GetFederationFollowerApprovalRequestsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFederationFollowerApprovalRequests)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFederationFollowerApprovalRequestsRow
+	for rows.Next() {
+		var i GetFederationFollowerApprovalRequestsRow
+		if err := rows.Scan(
+			&i.Iri,
+			&i.Inbox,
+			&i.Name,
+			&i.Username,
+			&i.Image,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFederationFollowers = `-- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image FROM ap_followers
+SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at <> null
 `
 
 type GetFederationFollowersRow struct {
@@ -94,9 +151,13 @@ func (q *Queries) GetFederationFollowers(ctx context.Context) ([]GetFederationFo
 }
 
 const getFollowerCount = `-- name: GetFollowerCount :one
+
+
 SElECT count(*) FROM ap_followers
 `
 
+// Queries added to query.sql must be compiled into Go code with sqlc. Read README.md for details.
+// Federation related queries.
 func (q *Queries) GetFollowerCount(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, getFollowerCount)
 	var count int64

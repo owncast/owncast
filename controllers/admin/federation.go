@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub"
+	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
 )
@@ -104,4 +105,34 @@ func SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	controllers.WriteSimpleResponse(w, true, "message saved")
+}
+
+// ApproveFollower will approve a federated follow request.
+func ApproveFollower(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	type approveFollowerRequest struct {
+		FederationIRI string `json:"federationIRI"`
+		Approved      bool   `json:"approved"`
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	approval := configValue.Value.(approveFollowerRequest)
+	if err := persistence.ApprovePreviousFollowRequest(approval.FederationIRI); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+	controllers.WriteSimpleResponse(w, true, "follow request approved")
+}
+
+// GetPendingFollowRequests will return a list of pending follow requests.
+func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+	//requests := activitypub.GetPendingFollowRequests()
+
 }
