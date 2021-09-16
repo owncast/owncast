@@ -54,7 +54,7 @@ func MakeActor(accountName string) vocab.ActivityStreamsPerson {
 	person.SetActivityStreamsInbox(inboxProp)
 
 	needsFollowApprovalProperty := streams.NewActivityStreamsManuallyApprovesFollowersProperty()
-	needsFollowApprovalProperty.Set(false)
+	needsFollowApprovalProperty.Set(data.GetFollowApprovalRequired())
 	person.SetActivityStreamsManuallyApprovesFollowers(needsFollowApprovalProperty)
 
 	outboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/outbox")

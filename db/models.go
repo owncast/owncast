@@ -7,12 +7,13 @@ import (
 )
 
 type ApFollower struct {
-	Iri       string
-	Inbox     string
-	Name      sql.NullString
-	Username  string
-	Image     sql.NullString
-	CreatedAt sql.NullTime
+	Iri        string
+	Inbox      string
+	Name       sql.NullString
+	Username   string
+	Image      sql.NullString
+	CreatedAt  sql.NullTime
+	ApprovedAt sql.NullTime
 }
 
 type ApOutbox struct {

@@ -112,6 +112,7 @@ func GetFollowers(w http.ResponseWriter, r *http.Request) {
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
 		WriteSimpleResponse(w, false, "unable to fetch followers")
+		return
 	}
 	response := followersResponse{Followers: followers}
 

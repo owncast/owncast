@@ -8,6 +8,7 @@ CREATE TABLE ap_followers (
 		"username" TEXT NOT NULL,
 		"image" TEXT,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		"approved_at" TIMESTAMP,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri ON ap_followers (iri);
 

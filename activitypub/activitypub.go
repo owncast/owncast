@@ -5,6 +5,7 @@ import (
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -37,4 +38,9 @@ func SendPublicFederatedMessage(message string) error {
 // GetFollowerCount will return the local tracked follower count.
 func GetFollowerCount() (int64, error) {
 	return persistence.GetFollowerCount()
+}
+
+// GetPendingFollowRequests will return the pending follow requests.
+func GetPendingFollowRequests() ([]models.Follower, error) {
+	return persistence.GetFederationFollowers()
 }
