@@ -19,7 +19,7 @@ pushd ../../.. > /dev/null
 
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
-./owncast -database $TEMP_DB &
+./owncast -rtmpport 9021 -webserverport 5309 -database $TEMP_DB &
 SERVER_PID=$!
 
 popd > /dev/null
@@ -27,7 +27,7 @@ sleep 5
 
 # Start streaming the test file over RTMP to
 # the local owncast instance.
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
+ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1:9021/live/abc123 &
 FFMPEG_PID=$!
 
 function finish {
@@ -37,7 +37,7 @@ function finish {
 trap finish EXIT
 
 echo "Waiting..."
-sleep 13
+sleep 15
 
 # Run the tests against the instance.
 npm test

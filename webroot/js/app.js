@@ -434,7 +434,11 @@ export default class App extends Component {
       this.setState({
         isPlaying: false,
       });
-      this.player.vjsPlayer.pause();
+      try {
+        this.player.vjsPlayer.pause();
+      } catch (err) {
+        console.warn(err);
+      }
     } else {
       this.setState({
         isPlaying: true,
@@ -447,11 +451,15 @@ export default class App extends Component {
     const muted = this.player.vjsPlayer.muted();
     const volume = this.player.vjsPlayer.volume();
 
-    if (volume === 0) {
-      this.player.vjsPlayer.volume(0.5);
-      this.player.vjsPlayer.muted(false);
-    } else {
-      this.player.vjsPlayer.muted(!muted);
+    try {
+      if (volume === 0) {
+        this.player.vjsPlayer.volume(0.5);
+        this.player.vjsPlayer.muted(false);
+      } else {
+        this.player.vjsPlayer.muted(!muted);
+      }
+    } catch (err) {
+      console.warn(err);
     }
   }
 
