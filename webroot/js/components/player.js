@@ -91,7 +91,11 @@ class OwncastPlayer {
     this.log('Start playing');
     const source = { ...VIDEO_SRC };
 
-    this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME) || 1);
+    try {
+      this.vjsPlayer.volume(getLocalStorage(PLAYER_VOLUME) || 1);
+    } catch (err) {
+      console.warn(err);
+    }
     this.vjsPlayer.src(source);
     // this.vjsPlayer.play();
   }
