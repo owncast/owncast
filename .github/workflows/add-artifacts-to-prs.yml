@@ -1,0 +1,20 @@
+name: add artifact links to pull request and related issues
+on:
+  workflow_run:
+    workflows: ["Automated browser tests"]
+    types: [completed]
+
+jobs:
+  artifacts-url-comments:
+    name: add artifact links to pull request and related issues job
+    runs-on: ubuntu-latest
+    steps:
+      - name: add artifact links to pull request and related issues step
+        uses: tonyhallett/artifacts-url-comments@v1.1.0
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            prefix: "The following are artifacts from the build."
+            suffix: "Thanks!"
+            format: name
+            addTo: pullandissues

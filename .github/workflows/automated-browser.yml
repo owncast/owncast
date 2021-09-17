@@ -1,0 +1,19 @@
+name: Automated browser tests
+on:
+on:
+  push:
+    branches:
+    - develop
+  pull_request:
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run browser tests
+        run: cd test/automated/browser && ./run.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: screenshots-${{ github.run_id }}
+          path: test/automated/browser/screenshots/*.png

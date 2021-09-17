@@ -11,4 +11,5 @@ import (
 func Ping(w http.ResponseWriter, r *http.Request) {
 	id := utils.GenerateClientIDFromRequest(r)
 	core.SetViewerIDActive(id)
+	WriteSimpleResponse(w, true, "OK")
 }
