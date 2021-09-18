@@ -19,7 +19,7 @@ pushd ../../.. > /dev/null
 
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
-./owncast -rtmpport 9021 -webserverport 5309 -database $TEMP_DB &
+BROWSER_TEST=true ./owncast -rtmpport 9021 -webserverport 5309 -database $TEMP_DB &
 SERVER_PID=$!
 
 popd > /dev/null
