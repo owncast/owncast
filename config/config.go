@@ -34,6 +34,9 @@ var GitCommit = ""
 // BuildPlatform is the optional platform this release was built for.
 var BuildPlatform = "dev"
 
+// EnableAutoUpdate will explicitly enable in-place auto-updates via the admin.
+var EnableAutoUpdate = false
+
 // GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {
 	if GitCommit == "" {
@@ -53,9 +56,9 @@ const MaxSocketPayloadSize = 2048
 
 // GetReleaseString gets the version string.
 func GetReleaseString() string {
-	var versionNumber = VersionNumber
-	var buildPlatform = BuildPlatform
-	var gitCommit = GetCommit()
+	versionNumber := VersionNumber
+	buildPlatform := BuildPlatform
+	gitCommit := GetCommit()
 
 	return fmt.Sprintf("Owncast v%s-%s (%s)", versionNumber, buildPlatform, gitCommit)
 }
