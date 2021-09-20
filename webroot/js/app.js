@@ -729,7 +729,7 @@ export default class App extends Component {
       </div>`;
 
     const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
-    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} />`;
+    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
 
     // modal component
     const externalActionModal =
