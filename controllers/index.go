@@ -35,7 +35,7 @@ type MetadataPage struct {
 // IndexHandler handles the default index route.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
+	isIndexRequest := r.URL.Path == "/" || r.URL.Path == "/test/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
 
 	// For search engine bots and social scrapers return a special
 	// server-rendered page.
@@ -65,8 +65,10 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
-	// Set our global HTTP headers
-	middleware.SetHeaders(w)
+	// Set our global HTTP headers except on our test page
+	if r.URL.Path != "/test/" {
+		middleware.SetHeaders(w)
+	}
 
 	http.ServeFile(w, r, path.Join(config.WebRoot, r.URL.Path))
 }

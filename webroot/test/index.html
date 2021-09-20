@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Owncast Player Test</title>
+    <link rel="icon" href="/logo" />
+    <!-- <link href="node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet" /> -->
+    <link href="/js/web_modules/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="/js/web_modules/videojs/video-js.min.css" rel="stylesheet" />
+    <style>
+        .form-check {
+            background-color: hsl(0, 0%, 90%);
+            margin-block: 0.5rem;
+            padding: 0.25em 0.25em 0.25em 1.75em;
+            width: 700px;
+            width: fit-content;
+        }
+
+        #player-fixture {
+            min-height: 250px;
+        }
+
+        #segment-metadata {
+            list-style: none;
+        }
+
+        #segment-metadata pre {
+            overflow: scroll;
+        }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player@3.2.0/dist/shaka-player.compiled.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mux.js@5.13.0/dist/mux.min.js"></script>
+    <script defer src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@videojs/http-streaming@2.10.3/dist/videojs-http-streaming.min.js"></script>
+</head>
+
+<body class="m-4">
+    <script>
+        // if we're on IE, load up the load index page
+        var result = /MSIE\s(\d+)\.\d/.exec(navigator.userAgent);
+        var version = result && parseFloat(result[1]);
+
+        if (
+            !version &&
+            /Trident\/7.0/i.test(navigator.userAgent) &&
+            /rv:11.0/.test(navigator.userAgent)
+        ) {
+            // IE 11 has a different user agent string than other IE versions
+            version = 11.0;
+        }
+
+        if (version) {
+            window.location.href = './old-index.html';
+        }
+    </script>
+
+    <nav class="flex items-center justify-between flex-wrap bg-purple-700 p-6">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <img class="fill-current h-8 w-8 mr-2" width="54" height="54" src="/logo">
+            <span class="font-semibold text-xl tracking-tight">Owncast Player Test</span>
+        </div>
+        <div class="block lg:hidden">
+            <button
+                class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                </svg>
+            </button>
+        </div>
+        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            <div class="text-sm lg:flex-grow">
+                <a href="https://owncast.onlline/docs"
+                    class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+                    Docs
+                </a>
+            </div>
+            <div id="clock">
+            </div>
+            &nbsp;
+            <div>
+                Displayed segment latency: <span id="displayedSegmentLatency"></span>s
+            <div>
+    </nav>
+
+    <div class="flex flex-wrap -mx-1 overflow-hidden">
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <div id="player-fixture" style="aspect-ratio: 16/9; min-height: initial;"></div>
+            VideoJS (VHS)
+        </div>
+
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <video id="shaka-player" muted autoplay poster="//shaka-player-demo.appspot.com/assets/poster.jpg"
+                controls></video>
+            Shaka (mux.js)
+        </div>
+
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <div id="clappr-player" style="width: 100%; height: 90%;"></div>
+            <script>
+                window.clapprPlayer = new Clappr.Player({
+                    source: window.currentSrc,
+                    parentId: '#clappr-player',
+                    mute: true,
+                    autoPlay: true,
+                    width: '100%',
+                    height: '100%'
+                });
+            </script>
+            Clappr Player (hls.js)
+        </div>
+
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <video id="native-player" muted autoplay controls></video>
+            Native HTML5 (Safari/iOS/Mac only)
+        </div>
+
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <!-- Column Content -->
+        </div>
+
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <!-- Column Content -->
+        </div>
+
+    </div>
+
+    <div class="flex flex-wrap -mx-1 overflow-hidden">
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <div class="input-group mb-2">
+                <span class="input-group-text"><label for="load-source">Test streams</label></span>
+                <select id="load-source" class="form-select">
+                    <optgroup label="hls"></optgroup>
+                    <optgroup label="live"></optgroup>
+                </select>
+            </div>
+
+            <label for="url" class="form-label">Source URL</label>
+            <div class="input-group">
+                <span class="input-group-text"><label for="url">Url</label></span>
+                <input id="url" type="url" class="form-control" />
+            </div>
+
+            <label for="type" class="form-label">Source Type</label>
+            <div class="input-group">
+                <span class="input-group-text"><label for="type">Type</label></span>
+                <input id="type" type="text" class="form-control" />
+            </div>
+
+            <select id="representations" class="form-select"></select>
+
+            <button id="load-url" type="button" class="btn btn-primary my-2">
+                Load
+            </button>
+        </div>
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            Current Segment
+            <ul id="segment-metadata" class="col-8"></ul>
+        </div>
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+            <div class="player-stats">
+                <dl>
+                    <dt>Current Time:</dt>
+                    <dd class="current-time-stat">0</dd>
+                    <dt>Buffered:</dt>
+                    <dd class="buffered-stat">-</dd>
+                    <dt>Video Buffered:</dt>
+                    <dd class="video-buffered-stat">-</dd>
+                    <dt>Audio Buffered:</dt>
+                    <dd class="audio-buffered-stat">-</dd>
+                    <dt>Seekable:</dt>
+                    <dd>
+                        <span class="seekable-start-stat">-</span> -
+                        <span class="seekable-end-stat">-</span>
+                    </dd>
+                    <dt>Video Bitrate:</dt>
+                    <dd class="video-bitrate-stat">0 kbps</dd>
+                    <dt>Measured Bitrate:</dt>
+                    <dd class="measured-bitrate-stat">0 kbps</dd>
+                    <dt>Video Timestamp Offset</dt>
+                    <dd class="video-timestampoffset">0</dd>
+                    <dt>Audio Timestamp Offset</dt>
+                    <dd class="audio-timestampoffset">0</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="my-1 px-1 w-1/3 overflow-hidden">
+
+            <div class="options">
+                <div class="form-check">
+                    <input id="minified" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="minified">Minified VHS (reloads player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="sync-workers" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="sync-workers">Synchronous Web Workers (reloads
+                        player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="liveui" type="checkbox" class="form-check-input" checked />
+                    <label class="form-check-label" for="liveui">Enable the live UI (reloads player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="fluid" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="fluid">Fluid mode</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="debug" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="debug">Debug Logging</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="muted" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="muted">Muted</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="autoplay" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="autoplay">Autoplay</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="llhls" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="llhls">[EXPERIMENTAL] Enables support for ll-hls (reloads
+                        player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="buffer-water" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="buffer-water">[EXPERIMENTAL] Use Buffer Level for ABR
+                        (reloads
+                        player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="exact-manifest-timings" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="exact-manifest-timings">[EXPERIMENTAL] Use exact manifest
+                        timings for segment choices
+                        (reloads player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="pixel-diff-selector" type="checkbox" class="form-check-input" />
+                    <label class="form-check-label" for="pixel-diff-selector">[EXPERIMENTAL] Use the Pixel
+                        difference
+                        resolution selector
+                        (reloads player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="override-native" type="checkbox" class="form-check-input" checked />
+                    <label class="form-check-label" for="override-native">Override Native (reloads player)</label>
+                </div>
+
+                <div class="form-check">
+                    <input id="mirror-source" type="checkbox" class="form-check-input" checked />
+                    <label class="form-check-label" for="mirror-source">Mirror sources from player.src (reloads
+                        player,
+                        uses EXPERIMENTAL
+                        sourceset option)</label>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-group-text"><label for="preload">Preload (reloads player)</label></span>
+                    <select id="preload" class="form-select">
+                        <option selected>auto</option>
+                        <option>none</option>
+                        <option>metadata</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/index.js"></script>
+    <script>
+        window.startDemo(function (player) {
+            // do something with setup player
+        });
+    </script>
+    <script>
+        async function setupShaka() {
+            shaka.polyfill.installAll();
+            const video = document.getElementById('shaka-player');
+            const player = new shaka.Player(video);
+            player.configure('manifest.defaultPresentationDelay', 6.0 /* seconds */);
+            player.configure('streaming.rebufferingGoal', 5.0 /* seconds */);
+
+            window.shaka = player;
+            try {
+                await player.load(window.currentSrc);
+            } catch (e) {
+                // onError is executed if the asynchronous load fails.
+                console.error(e);
+            }
+        }
+
+        setupShaka();
+    </script>
+
+    <script type="text/javascript">
+        function setupclock() {
+            var refresh = 1000; // Refresh rate in milli seconds
+            mytime = setTimeout('displayclock()', refresh)
+        }
+
+        function displayclock() {
+            var x = new Date().toLocaleTimeString();
+            document.getElementById('clock').innerHTML = x;
+            setupclock();
+        }
+        setupclock();
+    </script>
+</body>
+
+</html>

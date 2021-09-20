@@ -1,0 +1,76 @@
+[
+    {
+        "name": "This Owncast instance",
+        "uri": "/hls/stream.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": ["live"]
+    },    
+    {
+        "name": "Owncast Demo Server",
+        "uri": "https://watch.owncast.online/hls/stream.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": ["live"]
+    },
+    {
+        "name": "Big Buck Bunny - Adaptive",
+        "uri": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "Bipbop - Muxed TS with 1 alt Audio, 5 captions",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "Coit Tower drone footage - 4 8 second segment",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/CoitTower/master_ts_segtimes.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "Boat Video Only",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/video-only/out.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "Boat Misaligned - 3, 5, 7, second segment playlists",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/misaligned-playlists/master.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "BBB-CMIF: Big Buck Bunny Dark Truths - demuxed, fmp4",
+        "uri": "https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/hls.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "Pseudo-Live PDT test source",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/pdt-test-source/no-endlist.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": [
+            "live"
+        ]
+    },
+    {
+        "name": "PDT test source",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/pdt-test-source/endlist.m3u8",
+        "mimetype": "application/x-mpegurl",
+        "features": []
+    },
+    {
+        "name": "audio only dash, two groups",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/audio-only-dash/dash.mpd",
+        "mimetype": "application/dash+xml",
+        "features": []
+    },
+    {
+        "name": "video only dash, two renditions",
+        "uri": "https://d2zihajmogu5jn.cloudfront.net/video-only-dash/dash.mpd",
+        "mimetype": "application/dash+xml",
+        "features": []
+    }
+]
