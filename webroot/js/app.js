@@ -6,6 +6,8 @@ import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
+import Followers from './components/federation/followers.js'
+
 import Chat from './components/chat/chat.js';
 import Websocket, {
   CALLBACKS,
@@ -881,6 +883,9 @@ export default class App extends Component {
         </footer>
 
         ${chat} ${externalActionModal} ${fediverseFollowModal}
+        
+        <h3>Followers</h3>
+        <${Followers} />
       </div>
     `;
   }
