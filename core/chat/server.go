@@ -86,8 +86,9 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 		ConnectedAt: time.Now(),
 	}
 
+	// Do not send user re-joined broadcast message if they've been active within 5 minutes.
 	shouldSendJoinedMessages := true
-	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*10 {
+	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*5 {
 		shouldSendJoinedMessages = false
 	}
 
