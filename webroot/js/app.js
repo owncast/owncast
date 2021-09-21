@@ -666,6 +666,7 @@ export default class App extends Component {
       externalActions,
       customStyles,
       maxSocketPayloadSize,
+      useFediverseFollow = true, // MOCK
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -687,9 +688,9 @@ export default class App extends Component {
     const singleColMode = windowWidth <= WIDTH_SINGLE_COL && !shortHeight;
 
     const noVideoContent = !playerActive || (section === ROUTE_RECORDINGS && sectionId !== '');
-    const shouldDisplayChat = displayChat && !chatDisabled && !noVideoContent;
+    const shouldDisplayChat = displayChatPanel && !chatDisabled && !noVideoContent;
     const usernameStyle = chatDisabled ? 'none' : 'flex';
-    const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
+    // const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
 
     const extraAppClasses = classNames({
       'config-loading': configData.loading,
@@ -704,6 +705,7 @@ export default class App extends Component {
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
       'touch-screen': this.hasTouchScreen,
       'touch-keyboard-active': touchKeyboardActive,
+      'use-fediverse-follow': useFediverseFollow,
     });
 
     const poster = isPlaying
@@ -749,6 +751,13 @@ export default class App extends Component {
           />
         `
       : null;
+
+    const fediverseFollowButton = useFediverseFollow &&
+      html`
+        <button id="fediverse-follow-button" title="xyz@abc.blah" aria-label="Follow ${name}on the Fediverse" class="font-semibold text-sm rounded bg-gray-800 ">
+          <img class="fediverse-icon mr-2 inline-block" src="/img/platformlogos/bandcamp.svg"></span>abc@123.xyz
+        </button>
+      `;
 
     return html`
       <div
@@ -830,7 +839,7 @@ export default class App extends Component {
           </section>
         </main>
 
-        <section id="user-content" aria-label="User information" class="p-2">
+        <section id="user-content" aria-label="Owncast server information" class="p-2">
 
           ${externalActionButtons && html`${externalActionButtons}`}
 
@@ -847,8 +856,9 @@ export default class App extends Component {
             </div>
 
             <div class="user-content-header">
-              <h2 class="font-semibold text-5xl">
+              <h2 class="server-name font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
+                ${fediverseFollowButton}
               </h2>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}

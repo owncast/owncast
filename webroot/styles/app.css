@@ -104,6 +104,30 @@ header {
 }
 
 
+.use-fediverse-follow .user-content-header .server-name {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.use-fediverse-follow .user-content-header .streamer-name {
+  margin-right: .5em;
+}
+
+#fediverse-follow-button {
+  padding: .5em;
+  color: white;
+  text-align: center;
+
+}
+.fediverse-icon {
+  height: 1.75em;
+  width: 1.75em;
+  display: inline-block;
+  margin-right: .5em;
+}
+
 
 /* ************************************************ */
 

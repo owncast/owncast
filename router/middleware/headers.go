@@ -12,7 +12,7 @@ func SetHeaders(w http.ResponseWriter) {
 
 	// Content security policy
 	csp := []string{
-		"script-src 'self' 'sha256-2HPCfJIJHnY0NrRDPTOdC7AOSJIcQyNxzUuut3TsYRY='",
+		"script-src 'self' 'sha256-rnxPrBaD0OuYxsCdrll4QJwtDLcBJqFh0u27CoX5jZ8='",
 		"worker-src 'self' blob:", // No single quotes around blob:
 	}
 	w.Header().Set("Content-Security-Policy", strings.Join(csp, "; "))
