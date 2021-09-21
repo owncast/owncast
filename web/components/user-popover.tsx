@@ -1,10 +1,9 @@
 // This displays a clickable user name (or whatever children element you provide), and displays a simple tooltip of created time. OnClick a modal with more information about the user is displayed.
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Divider, Modal, Tooltip, Typography, Row, Col } from 'antd';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
-import { ReactNode } from 'react-markdown';
 import { uniq } from 'lodash';
 
 import BlockUserbutton from './ban-user-button';
