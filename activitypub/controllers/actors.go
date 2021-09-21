@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/utils"
 )
 
 // ActorHandler handles requests for a single actor.
@@ -19,12 +19,8 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accountName, err := utils.ReadRestURLParameter(r, "user")
-	if err != nil || accountName == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	resource, _ := utils.ReadRestURLParameter(r, "resource")
+	pathComponents := strings.Split(r.URL.Path, "/")
+	accountName := pathComponents[3]
 
 	if _, valid := data.GetFederatedInboxMap()[accountName]; !valid {
 		// User is not valid
@@ -34,17 +30,20 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 
 	// If this request is for an actor's inbox then pass
 	// the request to the inbox controller.
-	if resource == "inbox" {
+	if len(pathComponents) == 5 && pathComponents[4] == "inbox" {
 		InboxHandler(w, r)
 		return
-	} else if resource == "outbox" {
+	} else if len(pathComponents) == 5 && pathComponents[4] == "outbox" {
 		OutboxHandler(w, r)
 		return
-	} else if resource == "followers" {
+		// } else if len(pathComponents) == 5 {
+		// 	ActorObjectHandler(w, r)
+		// 	return
+	} else if len(pathComponents) == 5 && pathComponents[4] == "followers" {
 		// followers list
 		FollowersHandler(w, r)
 		return
-	} else if resource == "following" {
+	} else if len(pathComponents) == 5 && pathComponents[4] == "following" {
 		// following list (none)
 		w.WriteHeader(http.StatusNotFound)
 		return
