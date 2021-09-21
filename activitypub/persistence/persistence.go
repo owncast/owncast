@@ -50,6 +50,8 @@ func ApprovePreviousFollowRequest(iri string) error {
 }
 
 func createFollow(actor string, inbox string, name string, username string, image string, approved bool) error {
+	needsApproval := data.GetFollowApprovalRequired()
+
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -62,7 +64,7 @@ func createFollow(actor string, inbox string, name string, username string, imag
 	}()
 
 	var approvedAt sql.NullTime
-	if approved { // TODO: check auto-approval setting.
+	if !needsApproval {
 		approvedAt = sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,
@@ -307,6 +309,7 @@ func GetFederationFollowers() ([]models.Follower, error) {
 			Image:    row.Image.String,
 			Link:     row.Iri,
 			Inbox:    row.Inbox,
+			Followed: row.CreatedAt.Time,
 		}
 		followers = append(followers, singleFollower)
 	}
