@@ -666,7 +666,7 @@ export default class App extends Component {
       externalActions,
       customStyles,
       maxSocketPayloadSize,
-      useFediverseFollow = true, // MOCK
+      useFediverseFollow = false, // MOCK
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -754,7 +754,7 @@ export default class App extends Component {
 
     const fediverseFollowButton = useFediverseFollow &&
       html`
-        <button id="fediverse-follow-button" title="xyz@abc.blah" aria-label="Follow ${name}on the Fediverse" class="font-semibold text-sm rounded bg-gray-800 ">
+        <button id="fediverse-follow-button" title="xyz@abc.blah" aria-label="Follow ${name}'s server on the Fediverse" class="font-semibold text-sm rounded bg-gray-800 ">
           <img class="fediverse-icon mr-2 inline-block" src="/img/platformlogos/bandcamp.svg"></span>abc@123.xyz
         </button>
       `;
@@ -845,20 +845,23 @@ export default class App extends Component {
 
 
           <div class="user-content flex flex-row p-8">
-            <div class="flex flex-col align-center justify-start mr-8">
+            <div class="user-logo-icons flex flex-col items-center justify-start mr-8">
               <div
                 class="user-image rounded-full bg-white p-4 bg-no-repeat bg-center"
                 style=${bgUserLogo}
               >
                 <img class="logo visually-hidden" alt="" src=${logo} />
               </div>
-              <${SocialIconsList} handles=${socialHandles} />
+              <div class="social-actions">
+                <${SocialIconsList} handles=${socialHandles} />
+                <div id="fediverse-button-singlecol" class="hidden mx-4">${fediverseFollowButton}</div>
+              </div>
             </div>
 
             <div class="user-content-header">
               <h2 class="server-name font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
-                ${fediverseFollowButton}
+                <span id="fediverse-button-header" class="flex justify-center">${fediverseFollowButton}</span>
               </h2>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}

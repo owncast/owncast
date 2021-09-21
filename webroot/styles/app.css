@@ -262,6 +262,44 @@ header {
   max-height: 3em;
 }
 
+
+.single-col .user-logo-icons {
+  margin-right: 0;
+  margin-bottom: 1em;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+}
+.single-col.use-fediverse-follow.user-logo-icons {
+  align-items: center;
+}
+
+.single-col .social-list {
+  text-align: left;
+}
+.single-col .social-actions {
+  margin-left: 1em;
+}
+.single-col .follow-icon-list {
+   justify-content: flex-start;
+}
+.single-col.use-fediverse-follow #fediverse-button-singlecol {
+  display: inline-block;
+}
+.use-fediverse-follow #fediverse-button-header {
+  display: inline-block;
+}
+.single-col #fediverse-button-header {
+  display: none;
+}
+.single-col #external-actions-container {
+  justify-content: space-evenly;
+}
+.single-col.use-fediverse-follow .user-content-header .server-name {
+  justify-content: center;
+}
+
+
 @media screen and (max-height: 500px) {
   .single-col.touch-screen:not(.touch-keyboard-active) {
     --header-height: 0px;
@@ -283,7 +321,6 @@ header {
 @media screen and (max-width: 860px) {
   :root {
     --right-col-width: 20em;
-    --user-image-width: 6em;
   }
   #video-container {
     min-height: 240px;

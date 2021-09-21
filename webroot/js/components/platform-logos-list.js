@@ -18,7 +18,7 @@ function SocialIcon(props) {
     "flex": true,
     "justify-start": true,
     "items-center": true,
-    "mx-1": true,
+    "m-1": true,
   });
   const labelClass = classNames({
     "platform-label": true,
@@ -56,6 +56,6 @@ export default function (props) {
   return html`
     <ul id="social-list" class="social-list m-4 text-center">
       <p class="follow-label text-xs font-bold uppercase m-1">Follow me:</p>
-      <p class="flex flex-row items-center justify-center flex-wrap">${list}</p>
+      <p class="follow-icon-list flex flex-row items-center justify-center flex-wrap">${list}</p>
     </ul>`;
 }
