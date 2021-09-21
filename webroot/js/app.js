@@ -666,7 +666,7 @@ export default class App extends Component {
       externalActions,
       customStyles,
       maxSocketPayloadSize,
-      useFediverseFollow = false, // MOCK
+      useFediverseFollow = true, // MOCK
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -712,6 +712,14 @@ export default class App extends Component {
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
+    // fediverse button markup
+    const fediverseFollowButton = useFediverseFollow &&
+    html`
+      <button id="fediverse-follow-button" title="xyz@abc.blah" aria-label="Follow ${name}'s server on the Fediverse" class="font-semibold text-sm rounded bg-gray-800 ">
+        <img class="fediverse-icon mr-2 inline-block" src="/img/fediverse-white.png"></span>Follow
+      </button>
+    `;
+
     // modal buttons
     const externalActionButtons =
       externalActions &&
@@ -751,13 +759,6 @@ export default class App extends Component {
           />
         `
       : null;
-
-    const fediverseFollowButton = useFediverseFollow &&
-      html`
-        <button id="fediverse-follow-button" title="xyz@abc.blah" aria-label="Follow ${name}'s server on the Fediverse" class="font-semibold text-sm rounded bg-gray-800 ">
-          <img class="fediverse-icon mr-2 inline-block" src="/img/platformlogos/bandcamp.svg"></span>abc@123.xyz
-        </button>
-      `;
 
     return html`
       <div

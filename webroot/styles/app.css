@@ -287,7 +287,7 @@ header {
   display: inline-block;
 }
 .use-fediverse-follow #fediverse-button-header {
-  display: inline-block;
+  display: flex;
 }
 .single-col #fediverse-button-header {
   display: none;
