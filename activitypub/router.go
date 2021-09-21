@@ -5,7 +5,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub/controllers"
 	"github.com/owncast/owncast/router/middleware"
-	"github.com/owncast/owncast/utils"
 )
 
 // StartRouter will start the federation specific http router.
@@ -29,8 +28,8 @@ func StartRouter() {
 	http.HandleFunc("/api/v1/instance", controllers.InstanceV1Controller)
 
 	// Single ActivityPub Actor
-	http.HandleFunc(utils.RestEndpoint("/federation/user/{user}/{resource}", controllers.ActorHandler))
+	http.HandleFunc("/federation/user/", controllers.ActorHandler)
 
 	// Single AP object
-	http.HandleFunc(utils.RestEndpoint("/federation/{object}", middleware.RequireActivityPubOrRedirect(controllers.ObjectHandler)))
+	http.HandleFunc("/federation/", middleware.RequireActivityPubOrRedirect(controllers.ObjectHandler))
 }
