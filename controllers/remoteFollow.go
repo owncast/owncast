@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 // RemoteFollow handles a request to begin the remote follow redirect flow.
@@ -108,6 +109,8 @@ func GetFollowers(w http.ResponseWriter, r *http.Request) {
 	type followersResponse struct {
 		Followers []models.Follower `json:"followers"`
 	}
+
+	middleware.EnableCors(&w)
 
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {
