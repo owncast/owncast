@@ -12,7 +12,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.head_ref }}
+        ref: ${{ github.ref }}
         fetch-depth: 0
         
     - name: Prettier
