@@ -666,7 +666,11 @@ export default class App extends Component {
       externalActions,
       customStyles,
       maxSocketPayloadSize,
-      useFediverseFollow = true, // MOCK
+      federation = {
+        "enabled": true,
+        "account": "testing@ap-test.owncast.tv",
+        "followerCount": 12
+      }, // MOCK
     } = configData;
 
     const bgUserLogo = { backgroundImage: `url(${logo})` };
@@ -705,20 +709,20 @@ export default class App extends Component {
       'short-wide': shortHeight && windowWidth > WIDTH_SINGLE_COL,
       'touch-screen': this.hasTouchScreen,
       'touch-keyboard-active': touchKeyboardActive,
-      'use-fediverse-follow': useFediverseFollow,
     });
 
     const poster = isPlaying
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
-    // fediverse button markup
-    const fediverseFollowButton = useFediverseFollow &&
-    html`
-      <button id="fediverse-follow-button" title="xyz@abc.blah" aria-label="Follow ${name}'s server on the Fediverse" class="font-semibold text-sm rounded bg-gray-800 ">
-        <img class="fediverse-icon mr-2 inline-block" src="/img/fediverse-white.png"></span>Follow
-      </button>
-    `;
+    const fediverseFollowAction = {
+      color: 'rgba(28, 26, 59, 1)',
+      description: `Follow ${name} at ${federation.account}`,
+      icon: '/img/fediverse-color.png',
+      openExternally: false,
+      title: `Follow ${federation.followerCount > 10 ? ` (${federation.followerCount})` : ''}`,
+      url: "https://localhost:8080/",
+    };
 
     // modal buttons
     const externalActionButtons =
@@ -726,17 +730,25 @@ export default class App extends Component {
       externalActions.length > 0 &&
       html`<div
         id="external-actions-container"
-        class="flex flex-row justify-end"
+        class="flex flex-row flex-wrap justify-end"
       >
         ${externalActions.map(
           function (action) {
+            console.log(action)
             return html`<${ExternalActionButton}
               onClick=${this.displayExternalAction}
               action=${action}
             />`;
           }.bind(this)
         )}
-      </div>`;
+
+        ${federation.enabled && html`<span id="fediverse-follow-button-container">
+            <${ExternalActionButton}
+              onClick=${this.displayExternalAction}
+              action=${fediverseFollowAction}
+            />
+          </span>`}
+      </div>`
 
     // modal component
     const externalActionModal =
@@ -855,14 +867,12 @@ export default class App extends Component {
               </div>
               <div class="social-actions">
                 <${SocialIconsList} handles=${socialHandles} />
-                <div id="fediverse-button-singlecol" class="hidden mx-4">${fediverseFollowButton}</div>
               </div>
             </div>
 
             <div class="user-content-header">
               <h2 class="server-name font-semibold text-5xl">
                 <span class="streamer-name text-indigo-600">${name}</span>
-                <span id="fediverse-button-header" class="flex justify-center">${fediverseFollowButton}</span>
               </h2>
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}

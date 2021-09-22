@@ -96,7 +96,7 @@ export default class ExternalActionModal extends Component {
 }
 
 export function ExternalActionButton({ action, onClick }) {
-  const { title, icon, color = undefined } = action;
+  const { title, icon, color = undefined, description } = action;
   const logo =
     icon &&
     html`
@@ -109,6 +109,8 @@ export function ExternalActionButton({ action, onClick }) {
       class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden m-1 px-3 py-1 text-base  text-white bg-gray-800 rounded"
       onClick=${handleClick}
       style=${bgcolor}
+      aria-label=${description}
+      title=${description || title}
     >
       ${logo}
       <span class="external-action-label">${title}</span>
