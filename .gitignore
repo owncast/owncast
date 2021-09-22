@@ -37,3 +37,4 @@ backup/
 !webroot/js/web_modules/**/dist
 !core/data
 test/test.db
+test/automated/browser/screenshots

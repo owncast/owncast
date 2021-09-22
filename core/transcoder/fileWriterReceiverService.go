@@ -59,7 +59,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	}
 
 	path := r.URL.Path
-	writePath := filepath.Join(config.PrivateHLSStoragePath, path)
+	writePath := filepath.Join(config.HLSStoragePath, path)
 
 	var buf bytes.Buffer
 	defer r.Body.Close()

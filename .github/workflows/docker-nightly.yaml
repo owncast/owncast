@@ -1,6 +1,7 @@
 name: Build nightly docker
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 2 * * *"
 

@@ -94,5 +94,5 @@ func writeBytesAsImage(data []byte, contentType string, w http.ResponseWriter, c
 }
 
 func getImage(path string) ([]byte, error) {
-	return ioutil.ReadFile(path)
+	return ioutil.ReadFile(path) // nolint
 }

@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -46,6 +47,12 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
@@ -72,6 +79,7 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// ExternalSetStreamTitle will change the stream title on behalf of an external integration API request.
 func ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	SetStreamTitle(w, r)
 }
@@ -98,6 +106,12 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
@@ -113,6 +127,12 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetServerSummary(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -232,6 +252,12 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
@@ -298,11 +324,12 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		if err := data.SetHTTPPortNumber(port); err != nil {
 			controllers.WriteSimpleResponse(w, false, err.Error())
 			return
-		} else {
-			controllers.WriteSimpleResponse(w, true, "HTTP port set")
-			return
 		}
+
+		controllers.WriteSimpleResponse(w, true, "HTTP port set")
+		return
 	}
+
 	controllers.WriteSimpleResponse(w, false, "Invalid type or value, port must be a number")
 }
 
@@ -322,14 +349,14 @@ func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 			if err := data.SetHTTPListenAddress(ip.String()); err != nil {
 				controllers.WriteSimpleResponse(w, false, err.Error())
 				return
-			} else {
-				controllers.WriteSimpleResponse(w, true, "HTTP listen address set")
-				return
 			}
-		} else {
-			controllers.WriteSimpleResponse(w, false, "Invalid IP address")
+
+			controllers.WriteSimpleResponse(w, true, "HTTP listen address set")
 			return
 		}
+
+		controllers.WriteSimpleResponse(w, false, "Invalid IP address")
+		return
 	}
 	controllers.WriteSimpleResponse(w, false, "Invalid type or value, IP address must be a string")
 }
@@ -427,7 +454,7 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if newS3Config.Value.Enabled {
-		if newS3Config.Value.Endpoint == "" || !utils.IsValidUrl((newS3Config.Value.Endpoint)) {
+		if newS3Config.Value.Endpoint == "" || !utils.IsValidURL((newS3Config.Value.Endpoint)) {
 			controllers.WriteSimpleResponse(w, false, "s3 support requires an endpoint")
 			return
 		}
@@ -499,6 +526,12 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 
 	if err := data.SetSocialHandles(socialHandles.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
+		return
+	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 

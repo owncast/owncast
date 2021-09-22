@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
+func (s *Server) userNameChanged(eventData chatClientEvent) {
 	var receivedEvent events.NameChangeEvent
 	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
 		log.Errorln("error unmarshalling to NameChangeEvent", err)
@@ -43,7 +43,7 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 	oldName := savedUser.DisplayName
 
 	// Save the new name
-	user.ChangeUsername(eventData.client.User.Id, receivedEvent.NewName)
+	user.ChangeUsername(eventData.client.User.ID, receivedEvent.NewName)
 
 	// Update the connected clients associated user with the new name
 	now := time.Now()
@@ -66,10 +66,11 @@ func (s *ChatServer) userNameChanged(eventData chatClientEvent) {
 
 	// Send chat user name changed webhook
 	receivedEvent.User = savedUser
+	receivedEvent.ClientID = eventData.client.id
 	webhooks.SendChatEventUsernameChanged(receivedEvent)
 }
 
-func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
+func (s *Server) userMessageSent(eventData chatClientEvent) {
 	var event events.UserMessageEvent
 	if err := json.Unmarshal(eventData.data, &event); err != nil {
 		log.Errorln("error unmarshalling to UserMessageEvent", err)
@@ -77,6 +78,7 @@ func (s *ChatServer) userMessageSent(eventData chatClientEvent) {
 	}
 
 	event.SetDefaults()
+	event.ClientID = eventData.client.id
 
 	// Ignore empty messages
 	if event.Empty() {

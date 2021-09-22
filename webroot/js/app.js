@@ -6,6 +6,8 @@ import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
+import Followers from './components/federation/followers.js'
+
 import Chat from './components/chat/chat.js';
 import Websocket, {
   CALLBACKS,
@@ -17,11 +19,12 @@ import ExternalActionModal, {
   ExternalActionButton,
 } from './components/external-action-modal.js';
 
+import FediverseFollowModal, {FediverseFollowButton} from './components/fediverse-follow-modal.js';
+
 import {
   addNewlines,
   checkUrlPathForDisplay,
   classNames,
-  clearLocalStorage,
   debounce,
   getLocalStorage,
   getOrientation,
@@ -96,6 +99,7 @@ export default class App extends Component {
       // routing & tabbing
       section: '',
       sectionId: '',
+      showFediverseFollowModal: false,
     };
 
     // timers
@@ -122,6 +126,8 @@ export default class App extends Component {
     this.handleKeyPressed = this.handleKeyPressed.bind(this);
     this.displayExternalAction = this.displayExternalAction.bind(this);
     this.closeExternalActionModal = this.closeExternalActionModal.bind(this);
+    this.displayFediverseFollowModal = this.displayFediverseFollowModal.bind(this);
+    this.closeFediverseFollowModal = this.closeFediverseFollowModal.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -451,7 +457,11 @@ export default class App extends Component {
       this.setState({
         isPlaying: false,
       });
-      this.player.vjsPlayer.pause();
+      try {
+        this.player.vjsPlayer.pause();
+      } catch (err) {
+        console.warn(err);
+      }
     } else {
       this.setState({
         isPlaying: true,
@@ -464,11 +474,15 @@ export default class App extends Component {
     const muted = this.player.vjsPlayer.muted();
     const volume = this.player.vjsPlayer.volume();
 
-    if (volume === 0) {
-      this.player.vjsPlayer.volume(0.5);
-      this.player.vjsPlayer.muted(false);
-    } else {
-      this.player.vjsPlayer.muted(!muted);
+    try {
+      if (volume === 0) {
+        this.player.vjsPlayer.volume(0.5);
+        this.player.vjsPlayer.muted(false);
+      } else {
+        this.player.vjsPlayer.muted(!muted);
+      }
+    } catch (err) {
+      console.warn(err);
     }
   }
 
@@ -544,6 +558,13 @@ export default class App extends Component {
     this.setState({
       externalAction: null,
     });
+  }
+
+  displayFediverseFollowModal() {
+    this.setState({displayFediverseFollowModal: true});
+  }
+  closeFediverseFollowModal() {
+    this.setState({displayFediverseFollowModal: false});
   }
 
   handleWebsocketMessage(e) {
@@ -653,6 +674,7 @@ export default class App extends Component {
       lastDisconnectTime,
       section,
       sectionId,
+      displayFediverseFollowModal,
     } = state;
     const {
       version: appVersion,
@@ -749,6 +771,9 @@ export default class App extends Component {
             />
           </span>`}
       </div>`
+
+    const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
+    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
 
     // modal component
     const externalActionModal =
@@ -909,7 +934,10 @@ export default class App extends Component {
           </span>
         </footer>
 
-        ${chat} ${externalActionModal}
+        ${chat} ${externalActionModal} ${fediverseFollowModal}
+
+        <h3>Followers</h3>
+        <${Followers} />
       </div>
     `;
   }

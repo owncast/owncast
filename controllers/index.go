@@ -75,14 +75,6 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if path.Ext(r.URL.Path) == ".m3u8" {
-		middleware.DisableCache(w)
-
-		// Use this as an opportunity to mark this viewer as active.
-		id := utils.GenerateClientIDFromRequest(r)
-		core.SetViewerIdActive(id)
-	}
-
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
@@ -99,19 +91,19 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	scheme := "http"
 
-	if siteUrl := data.GetServerURL(); siteUrl != "" {
-		if parsed, err := url.Parse(siteUrl); err == nil && parsed.Scheme != "" {
+	if siteURL := data.GetServerURL(); siteURL != "" {
+		if parsed, err := url.Parse(siteURL); err == nil && parsed.Scheme != "" {
 			scheme = parsed.Scheme
 		}
 	}
 
 	fullURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, r.URL.Path))
 	if err != nil {
-		log.Panicln(err)
+		log.Errorln(err)
 	}
 	imageURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/logo/external"))
 	if err != nil {
-		log.Panicln(err)
+		log.Errorln(err)
 	}
 
 	status := core.GetStatus()
@@ -144,6 +136,6 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
 	if err := tmpl.Execute(w, metadata); err != nil {
-		log.Panicln(err)
+		log.Errorln(err)
 	}
 }

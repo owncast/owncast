@@ -42,6 +42,14 @@ const externalActionsKey = "external_actions"
 const customStylesKey = "custom_styles"
 const videoCodecKey = "video_codec"
 const blockedUsernamesKey = "blocked_usernames"
+const publicKeyKey = "public_key"
+const privateKeyKey = "private_key"
+const serverInitDateKey = "server_init_date"
+const federationEnabledKey = "federation_enabled"
+const federationUsernameKey = "federation_username"
+const federationPrivateKey = "federation_private"
+const federationGoLiveMessageKey = "federation_go_live_message"
+const federationFollowApprovalRequiredKey = "federation_follow_approval_required"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -516,6 +524,7 @@ func SetVideoCodec(codec string) error {
 	return _datastore.SetString(videoCodecKey, codec)
 }
 
+// GetVideoCodec returns the codec to use for transcoding video.
 func GetVideoCodec() string {
 	codec, err := _datastore.GetString(videoCodecKey)
 	if codec == "" || err != nil {
@@ -599,4 +608,106 @@ func GetForbiddenUsernameList() []string {
 func SetForbiddenUsernameList(usernames []string) error {
 	usernameListString := strings.Join(usernames, ",")
 	return _datastore.SetString(blockedUsernamesKey, usernameListString)
+}
+
+// GetServerInitTime will return when the server was first setup.
+func GetServerInitTime() (*utils.NullTime, error) {
+	var t utils.NullTime
+
+	configEntry, err := _datastore.Get(serverInitDateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := configEntry.getObject(&t); err != nil {
+		return nil, err
+	}
+
+	if !t.Valid {
+		return nil, err
+	}
+
+	return &t, nil
+}
+
+// SetServerInitTime will set when the server was first created.
+func SetServerInitTime(t time.Time) error {
+	nt := utils.NullTime{Time: t, Valid: true}
+	var configEntry = ConfigEntry{Key: serverInitDateKey, Value: nt}
+	return _datastore.Save(configEntry)
+}
+
+// SetFederationEnabled will enable federation if set to true.
+func SetFederationEnabled(enabled bool) error {
+	return _datastore.SetBool(federationEnabledKey, enabled)
+}
+
+// GetFederationEnabled will return if federation is enabled.
+func GetFederationEnabled() bool {
+	enabled, err := _datastore.GetBool(federationEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
+}
+
+// SetFederationUsername will set the username used in federated activities.
+func SetFederationUsername(username string) error {
+	return _datastore.SetString(federationUsernameKey, username)
+}
+
+// GetFederationUsername will return the username used in federated activities.
+func GetFederationUsername() string {
+	username, err := _datastore.GetString(federationUsernameKey)
+	if username == "" || err != nil {
+		return config.GetDefaults().FederationUsername
+	}
+
+	return username
+}
+
+// SetFederationGoLiveMessage will set the message sent when going live.
+func SetFederationGoLiveMessage(message string) error {
+	return _datastore.SetString(federationGoLiveMessageKey, message)
+}
+
+// GetFederationGoLiveMessage will return the message sent when going live.
+func GetFederationGoLiveMessage() string {
+	message, err := _datastore.GetString(federationGoLiveMessageKey)
+	if message == "" || err != nil {
+		return config.GetDefaults().FederationGoLiveMessage
+	}
+
+	return message
+}
+
+// SetFederationIsPrivate will return if federation activity is private.
+func SetFederationIsPrivate(isPrivate bool) error {
+	return _datastore.SetBool(federationPrivateKey, isPrivate)
+}
+
+// GetFederationIsPrivate will return if federation is private.
+func GetFederationIsPrivate() bool {
+	isPrivate, err := _datastore.GetBool(federationPrivateKey)
+	if err == nil {
+		return isPrivate
+	}
+
+	return false
+}
+
+// SetFollowApprovalRequired will set if manual approval of followers is required.
+func SetFollowApprovalRequired(approvalRequired bool) error {
+	return _datastore.SetBool(federationFollowApprovalRequiredKey, approvalRequired)
+}
+
+// GetFollowApprovalRequired will return if manual approval of followers is required.
+func GetFollowApprovalRequired() bool {
+	approvalRequired, err := _datastore.GetBool(federationFollowApprovalRequiredKey)
+	if err == nil {
+		return approvalRequired
+	}
+
+	return false
 }

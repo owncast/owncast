@@ -20,6 +20,7 @@ import (
 // EventPayload is a generic key/value map for sending out to chat clients.
 type EventPayload map[string]interface{}
 
+// OutboundEvent represents an event that is sent out to all listeners of the chat server.
 type OutboundEvent interface {
 	GetBroadcastPayload() EventPayload
 	GetMessageType() EventType
@@ -28,12 +29,14 @@ type OutboundEvent interface {
 // Event is any kind of event.  A type is required to be specified.
 type Event struct {
 	Type      EventType `json:"type,omitempty"`
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// UserEvent is an event with an associated user.
 type UserEvent struct {
 	User     *user.User `json:"user"`
+	ClientID uint       `json:"clientId"`
 	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
 }
 
@@ -44,6 +47,7 @@ type MessageEvent struct {
 	RawBody       string `json:"-"`
 }
 
+// SystemActionEvent is an event that represents an action that took place, not a chat message.
 type SystemActionEvent struct {
 	Event
 	MessageEvent
@@ -51,13 +55,13 @@ type SystemActionEvent struct {
 
 // SetDefaults will set default properties of all inbound events.
 func (e *Event) SetDefaults() {
-	e.Id = shortid.MustGenerate()
+	e.ID = shortid.MustGenerate()
 	e.Timestamp = time.Now()
 }
 
 // SetDefaults will set default properties of all inbound events.
 func (e *UserMessageEvent) SetDefaults() {
-	e.Id = shortid.MustGenerate()
+	e.ID = shortid.MustGenerate()
 	e.Timestamp = time.Now()
 	e.RenderAndSanitizeMessageBody()
 }
@@ -92,6 +96,7 @@ func RenderAndSanitize(raw string) string {
 	return strings.TrimSpace(safe)
 }
 
+// RenderMarkdown will return HTML rendered from the string body of a chat message.
 func RenderMarkdown(raw string) string {
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(

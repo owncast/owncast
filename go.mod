@@ -6,6 +6,8 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
 	github.com/aws/aws-sdk-go v1.40.0
+	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
+	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/grafov/m3u8 v0.11.1
@@ -26,7 +28,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
-	github.com/yuin/goldmark v1.4.0
+	github.com/yuin/goldmark v1.4.1
 	golang.org/x/mod v0.5.0
 	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
@@ -34,3 +36,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	mvdan.cc/xurls v1.1.0
 )
+
+replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20210908225327-e46ee45ec09c

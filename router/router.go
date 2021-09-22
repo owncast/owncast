@@ -7,12 +7,15 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
 
@@ -71,10 +74,19 @@ func Start() error {
 	// register a new chat user
 	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
 
+	// return remote follow details
+	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
+
+	// return followers
+	http.HandleFunc("/api/followers", controllers.GetFollowers)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
 	http.HandleFunc("/api/admin/status", middleware.RequireAdminAuth(admin.Status))
+
+	// Return HLS video
+	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
 
 	// Disconnect inbound stream
 	http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(admin.DisconnectInboundConnection))
@@ -108,6 +120,12 @@ func Start() error {
 
 	// Get a list of disabled users
 	http.HandleFunc("/api/admin/chat/users/disabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
+
+	// Get a list of pending follow requests
+	http.HandleFunc("/api/admin/followers/pending", middleware.RequireAdminAuth(admin.GetPendingFollowRequests))
+
+	// Approve a follower request.
+	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
 
 	// Update config values
 
@@ -158,6 +176,9 @@ func Start() error {
 
 	// Send a system message to chat
 	http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
+
+	// Send a system message to a single client
+	http.HandleFunc(utils.RestEndpoint("/api/integrations/chat/system/client/{clientId}", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)))
 
 	// Send a user message to chat *NO LONGER SUPPORTED
 	http.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage))
@@ -228,6 +249,26 @@ func Start() error {
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
+	// Configure Federation features
+
+	// enable/disable federation features
+	http.HandleFunc("/api/admin/config/federation/enable", middleware.RequireAdminAuth(admin.SetFederationEnabled))
+
+	// set if federation activities are private
+	http.HandleFunc("/api/admin/config/federation/private", middleware.RequireAdminAuth(admin.SetFederationActivityPrivate))
+
+	// set local federated username
+	http.HandleFunc("/api/admin/config/federation/username", middleware.RequireAdminAuth(admin.SetFederationUsername))
+
+	// set federated go live message
+	http.HandleFunc("/api/admin/config/federation/livemessage", middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage))
+
+	// send a public message to the Fediverse from the server's user
+	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederationMessage))
+
+	// ActivityPub has its own router
+	activitypub.Start(data.GetDatastore())
+
 	// websocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		chat.HandleClientConnection(w, r)
@@ -236,12 +277,12 @@ func Start() error {
 	port := config.WebServerPort
 	ip := config.WebServerIP
 
-	ip_addr := net.ParseIP(ip)
-	if ip_addr == nil {
+	ipAddr := net.ParseIP(ip)
+	if ipAddr == nil {
 		log.Fatalln("Invalid IP address", ip)
 	}
-	log.Infof("Web server is listening on IP %s port %d.", ip_addr.String(), port)
+	log.Infof("Web server is listening on IP %s port %d.", ipAddr.String(), port)
 	log.Infoln("The web admin interface is available at /admin.")
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", ip_addr.String(), port), nil)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", ipAddr.String(), port), nil)
 }

@@ -1,16 +1,15 @@
 package storageproviders
 
 import (
-	"path/filepath"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/transcoder"
-	"github.com/owncast/owncast/utils"
 )
 
+// LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
 }
 
@@ -24,7 +23,7 @@ func (s *LocalStorage) Setup() error {
 	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
 		for range _onlineCleanupTicker.C {
-			transcoder.CleanupOldContent(config.PublicHLSStoragePath)
+			transcoder.CleanupOldContent(config.HLSStoragePath)
 		}
 	}()
 	return nil
@@ -54,15 +53,5 @@ func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
 
 // Save will save a local filepath using the storage provider.
 func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
-	newPath := ""
-
-	// This is a hack
-	if filePath == "hls/stream.m3u8" {
-		newPath = filepath.Join(config.PublicHLSStoragePath, filepath.Base(filePath))
-	} else {
-		newPath = filepath.Join(config.WebRoot, filePath)
-	}
-
-	err := utils.Copy(filePath, newPath)
-	return newPath, err
+	return filePath, nil
 }

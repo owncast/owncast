@@ -10,8 +10,8 @@ const maxCPUAlertingThresholdPCT = 85
 const maxRAMAlertingThresholdPCT = 85
 const maxDiskAlertingThresholdPCT = 90
 
-var inCpuAlertingState = false
-var inRamAlertingState = false
+var inCPUAlertingState = false
+var inRAMAlertingState = false
 var inDiskAlertingState = false
 
 var errorResetDuration = time.Minute * 5
@@ -30,14 +30,14 @@ func handleCPUAlerting() {
 	}
 
 	avg := recentAverage(Metrics.CPUUtilizations)
-	if avg > maxCPUAlertingThresholdPCT && !inCpuAlertingState {
+	if avg > maxCPUAlertingThresholdPCT && !inCPUAlertingState {
 		log.Warnf(alertingError, "CPU", avg)
-		inCpuAlertingState = true
+		inCPUAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
 		go func() {
 			<-resetTimer.C
-			inCpuAlertingState = false
+			inCPUAlertingState = false
 		}()
 	}
 }
@@ -48,14 +48,14 @@ func handleRAMAlerting() {
 	}
 
 	avg := recentAverage(Metrics.RAMUtilizations)
-	if avg > maxRAMAlertingThresholdPCT && !inRamAlertingState {
+	if avg > maxRAMAlertingThresholdPCT && !inRAMAlertingState {
 		log.Warnf(alertingError, "memory", avg)
-		inRamAlertingState = true
+		inRAMAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
 		go func() {
 			<-resetTimer.C
-			inRamAlertingState = false
+			inRAMAlertingState = false
 		}()
 	}
 }

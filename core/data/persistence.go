@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"sync"
+	"time"
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/owncast/owncast/db"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,6 +37,11 @@ func (ds *Datastore) warmCache() {
 		}
 		ds.cache[rowKey] = rowValue
 	}
+}
+
+// GetQueries will return the shared instance of the SQL query generator.
+func (ds *Datastore) GetQueries() *db.Queries {
+	return db.New(ds.DB)
 }
 
 // Get will query the database for the key and return the entry.
@@ -125,6 +132,11 @@ func (ds *Datastore) Setup() {
 	if !HasPopulatedDefaults() {
 		PopulateDefaults()
 	}
+
+	// Set the server initialization date if needed.
+	// if hasSetInitDate, _ := GetServerInitTime(); hasSetInitDate == nil || !hasSetInitDate.Valid {
+	_ = SetServerInitTime(time.Now())
+	// }
 }
 
 // Reset will delete all config entries in the datastore and start over.
@@ -144,6 +156,7 @@ func (ds *Datastore) Reset() {
 	PopulateDefaults()
 }
 
+// GetDatastore returns the shared instance of the owncast datastore.
 func GetDatastore() *Datastore {
 	return _datastore
 }
