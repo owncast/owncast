@@ -1,45 +1,54 @@
 # TEMP TODO FILE
 
-# Mockup for Recordings and Scheduling
+# ~~Mockup for Recordings and Scheduling~~
+# Mockup for Fediverse Social, Tabbed User Content
+This used to be setting up to display Recordings, but the progress can be used towards Fediverse work.
+
+- Rearranges some logic around when to display the chat panel vs when video is playing
+- Improves user content styling for improved positioning across screen sizes.
+- Add accessible Tab Bar navigation
 
 ## Move some things around
 
-- [ ] move social icons under Profile image
-- [ ] move External Actions to top right, below video element
-- [ ] disable/hide chat panel + chat icon when there is no Recording, nor Live video playing
+- [x] move social icons under Profile image
+- [x] move External Actions to top right, below video element
+- [x] disable/hide chat panel + chat icon when there is no Recording, nor Live video playing
 - [ ] add tab bar below tags list
+- [ ] style Follow on Fediverse Modal
 
-### Add more local react States
-- [ ] add offline / no-video state
-- [ ] add recordings[] when comes in from config
-- [ ] add schedule[] when comes in from config
-- [ ] add route tracker
-- [ ] add tab tracker
+### Add more local React States
+- [ ] add offline / no-video state (? what was this again?)
+- [ ] add tab states
+- [ ] **DEFER** add route states
+- [ ] **DEFER** add recordings[] when comes in from config
+- [ ] **DEFER** add schedule[] when comes in from config
 
 ## Add Tab bar
 Tab bar includes:
 - `About` - User custom info
-- `Videos` - display if user has Recordings
-- `Schedule` - display tab if schedule info exists
+- `Followers` - display tab if schedule info exists
+- **DEFER** `Videos` - display if user has Recordings
+- **DEFER** `Schedule` - display tab if schedule info exists
 
 
-## Routing, Url Handling
+## **DEFER?** Routing, Url Handling
+- do we need it for Followers?
+  #### Recording urls
+  - `server.com/recordings`
+  - `server.com/recordings/id123`
 
-#### Recording urls
-- `server.com/recordings`
-- `server.com/recordings/id123`
+  #### Schedule urls
+  - `server.com/schedule`
+  - `server.com/schedule/id123`
+
+  #### Followers Url?
+
+  ### Todo
+  - [ ] modify server side go to just load up index.html/app.js when url routes to /recording or /schedule
+  - [ ] update app js to detect url route and display appropriate tab content
 
 
-#### Schedule urls
-- `server.com/schedule`
-- `server.com/schedule/id123`
-
-### Todo
-- [ ] modify server side go to just load up index.html/app.js when url routes to /recording or /schedule
-- [ ] update app js to detect url route and display appropriate tab content
-
-
-## Recordings
+## **DEFER** Recordings
 
 ### `server.com/recordings`
 - [ ] don't show chat elements
