@@ -694,7 +694,7 @@ export default class App extends Component {
         "followerCount": 12
       }, // MOCK
     } = configData;
-
+console.log(configData)
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
     const tagList = tags !== null && tags.length > 0 && tags.join(' #');
@@ -756,7 +756,6 @@ export default class App extends Component {
       >
         ${externalActions.map(
           function (action) {
-            console.log(action)
             return html`<${ExternalActionButton}
               onClick=${this.displayExternalAction}
               action=${action}
@@ -773,6 +772,7 @@ export default class App extends Component {
       </div>`
 
     const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
+
     const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
 
     // modal component
