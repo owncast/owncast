@@ -255,6 +255,13 @@ export default class App extends Component {
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
+
+        // TESTING
+        federation: {
+          "enabled": true,
+          "account": "testing@ap-test.owncast.tv",
+          "followerCount": 12
+        }, // MOCK
       },
     });
   }
@@ -676,6 +683,7 @@ export default class App extends Component {
       sectionId,
       displayFediverseFollowModal,
     } = state;
+
     const {
       version: appVersion,
       logo = TEMP_IMAGE,
@@ -688,13 +696,9 @@ export default class App extends Component {
       externalActions,
       customStyles,
       maxSocketPayloadSize,
-      federation = {
-        "enabled": true,
-        "account": "testing@ap-test.owncast.tv",
-        "followerCount": 12
-      }, // MOCK
+      federation = {},
     } = configData;
-console.log(configData)
+
     const bgUserLogo = { backgroundImage: `url(${logo})` };
 
     const tagList = tags !== null && tags.length > 0 && tags.join(' #');
@@ -737,14 +741,11 @@ console.log(configData)
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
-    const fediverseFollowAction = {
-      color: 'rgba(28, 26, 59, 1)',
-      description: `Follow ${name} at ${federation.account}`,
-      icon: '/img/fediverse-color.png',
-      openExternally: false,
-      title: `Follow ${federation.followerCount > 10 ? ` (${federation.followerCount})` : ''}`,
-      url: "https://localhost:8080/",
-    };
+    // FOLLOW BUTTON, MODAL
+    // const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
+
+    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
+
 
     // modal buttons
     const externalActionButtons =
@@ -763,17 +764,8 @@ console.log(configData)
           }.bind(this)
         )}
 
-        ${federation.enabled && html`<span id="fediverse-follow-button-container">
-            <${ExternalActionButton}
-              onClick=${this.displayExternalAction}
-              action=${fediverseFollowAction}
-            />
-          </span>`}
+        ${federation.enabled && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} federationInfo=${federation} serverName=${name} />`}
       </div>`
-
-    const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
-
-    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
 
     // modal component
     const externalActionModal =

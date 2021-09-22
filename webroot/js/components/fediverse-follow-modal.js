@@ -1,6 +1,8 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 import MicroModal from '/js/web_modules/micromodal/dist/micromodal.min.js';
+import { ExternalActionButton } from './external-action-modal.js';
+
 
 const html = htm.bind(h);
 
@@ -90,16 +92,16 @@ export default class FediverseFollowModal extends Component {
               </h2>
               <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
             </header>
-      
+
             <img src="/img/loading.gif" style=${loadingStyle} />
-      
+
             <div id="modal-content-content" class="modal-content-content rounded-b-lg bg-white shadow-md px-8 pt-6 pb-8 mb-3">
               <div class="w-full">
-      
+
                 <p class="text-gray-700 text-lg font-semibold">
                   By following ${name} on the Fediverse you'll get notified when the stream goes live.
                 </p>
-      
+
                 <div class="mb34">
                 <label class="block text-gray-700 text-sm font-semibold mt-6" for="username">
                   Account
@@ -108,11 +110,11 @@ export default class FediverseFollowModal extends Component {
                     class="border bg-white rounded w-full py-2 px-3 mb-2 mt-2 text-indigo-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="username" type="text" placeholder="account@instance.tld">
                 </div>
-      
+
                 <p class="text-gray-600 text-xs italic">
                   You'll be redirected to your Fediverse server and asked to confirm this action.
                 </p>
-      
+
                 <button
                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 mt-6 px-4 rounded focus:outline-none focus:shadow-outline ${buttonState}"
                   type="button" onClick=${this.remoteFollowButtonPressed}>
@@ -120,7 +122,7 @@ export default class FediverseFollowModal extends Component {
                 </button>
                 ${error}
               </div>
-      
+
             </div>
           </div>
         </div>
@@ -130,12 +132,25 @@ export default class FediverseFollowModal extends Component {
   }
 }
 
-export function FediverseFollowButton({ action, onClick }) {
-  const handleClick = () => onClick(action);
-  return html`
-    <button class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden bg-gray-800"
+
+
+
+export function FediverseFollowButton({ serverName, federationInfo, onClick }) {
+  const fediverseFollowAction = {
+    color: 'rgba(28, 26, 59, 1)',
+    description: `Follow ${serverName} at ${federationInfo.account}`,
+    icon: '/img/fediverse-color.png',
+    openExternally: false,
+    title: `Follow ${federationInfo.followerCount > 10 ? ` (${federationInfo.followerCount})` : ''}`,
+    url: "https://localhost:8080/",
+  };
+
+  const handleClick = () => onClick(fediverseFollowAction);
+  return html`<span id="fediverse-follow-button-container">
+    <${ExternalActionButton} onClick=${handleClick} action=${fediverseFollowAction} /></span>
+    <!-- <button class="external-action-button rounded-sm flex flex-row justify-center items-center overflow-hidden bg-gray-800"
       onClick=${handleClick}>
       <span class="external-action-label">Follow on the Fediverse</span>
-    </button>
+    </button> -->
   `;
 }
