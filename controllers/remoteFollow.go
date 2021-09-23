@@ -88,7 +88,6 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	fmt.Println(requestURL.String())
 
 	response, err := http.DefaultClient.Get(requestURL.String())
-
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +109,7 @@ func GetFollowers(w http.ResponseWriter, r *http.Request) {
 		Followers []models.Follower `json:"followers"`
 	}
 
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 
 	followers, err := persistence.GetFederationFollowers()
 	if err != nil {

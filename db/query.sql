@@ -12,7 +12,7 @@ SElECT count(*) FROM ap_outbox;
 SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null;
 
 -- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null;
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is null;
 
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = $1 WHERE iri = $2;
