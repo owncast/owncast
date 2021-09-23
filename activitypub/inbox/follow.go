@@ -26,7 +26,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return fmt.Errorf("unable to handle request")
 	}
 
-	approved := !data.GetFollowApprovalRequired()
+	approved := !data.GetFederationIsPrivate()
 
 	followRequest := *follow
 	log.Println("follow request:", followRequest)

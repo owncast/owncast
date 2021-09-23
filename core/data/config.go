@@ -49,7 +49,6 @@ const federationEnabledKey = "federation_enabled"
 const federationUsernameKey = "federation_username"
 const federationPrivateKey = "federation_private"
 const federationGoLiveMessageKey = "federation_go_live_message"
-const federationFollowApprovalRequiredKey = "federation_follow_approval_required"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -692,21 +691,6 @@ func GetFederationIsPrivate() bool {
 	isPrivate, err := _datastore.GetBool(federationPrivateKey)
 	if err == nil {
 		return isPrivate
-	}
-
-	return false
-}
-
-// SetFollowApprovalRequired will set if manual approval of followers is required.
-func SetFollowApprovalRequired(approvalRequired bool) error {
-	return _datastore.SetBool(federationFollowApprovalRequiredKey, approvalRequired)
-}
-
-// GetFollowApprovalRequired will return if manual approval of followers is required.
-func GetFollowApprovalRequired() bool {
-	approvalRequired, err := _datastore.GetBool(federationFollowApprovalRequiredKey)
-	if err == nil {
-		return approvalRequired
 	}
 
 	return false
