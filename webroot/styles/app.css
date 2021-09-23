@@ -356,7 +356,7 @@ header {
   max-width: 740px;
   height: 75vh;
   width: 50%;
-  border-radius: 0px;
+  /* border-radius: 0px; */
   overflow: hidden;
   box-sizing: border-box;
 }

@@ -94,12 +94,13 @@ export default class App extends Component {
       windowHeight: window.innerHeight,
       orientation: getOrientation(this.hasTouchScreen),
 
-      externalAction: null,
+      // modals
+      externalActionModalData: null,
+      fediverseModalData: null,
 
       // routing & tabbing
       section: '',
       sectionId: '',
-      showFediverseFollowModal: false,
     };
 
     // timers
@@ -555,7 +556,7 @@ export default class App extends Component {
       return;
     }
     this.setState({
-      externalAction: {
+      externalActionModalData: {
         ...action,
         url: fullUrl,
       },
@@ -563,15 +564,15 @@ export default class App extends Component {
   }
   closeExternalActionModal() {
     this.setState({
-      externalAction: null,
+      externalActionModalData: null,
     });
   }
 
-  displayFediverseFollowModal() {
-    this.setState({displayFediverseFollowModal: true});
+  displayFediverseFollowModal(data) {
+    this.setState({ fediverseModalData: data });
   }
   closeFediverseFollowModal() {
-    this.setState({displayFediverseFollowModal: false});
+    this.setState({ fediverseModalData: null });
   }
 
   handleWebsocketMessage(e) {
@@ -677,11 +678,11 @@ export default class App extends Component {
       websocket,
       windowHeight,
       windowWidth,
-      externalAction,
+      fediverseModalData,
+      externalActionModalData,
       lastDisconnectTime,
       section,
       sectionId,
-      displayFediverseFollowModal,
     } = state;
 
     const {
@@ -741,11 +742,6 @@ export default class App extends Component {
       ? null
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
-    // FOLLOW BUTTON, MODAL
-    // const fediverseFollowButton = true && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} />`;
-
-    const fediverseFollowModal = displayFediverseFollowModal && html`<${FediverseFollowModal} onClose=${this.closeFediverseFollowModal} name=${name} />`;
-
 
     // modal buttons
     const externalActionButtons =
@@ -764,16 +760,28 @@ export default class App extends Component {
           }.bind(this)
         )}
 
+        <!-- fediverse follow button -->
         ${federation.enabled && html`<${FediverseFollowButton} onClick=${this.displayFediverseFollowModal} federationInfo=${federation} serverName=${name} />`}
-      </div>`
+      </div>`;
+
 
     // modal component
     const externalActionModal =
-      externalAction &&
+      externalActionModalData &&
       html`<${ExternalActionModal}
-        action=${externalAction}
+        action=${externalActionModalData}
         onClose=${this.closeExternalActionModal}
       />`;
+
+    const fediverseFollowModal = fediverseModalData && html`
+      <${ExternalActionModal}
+        onClose=${this.closeFediverseFollowModal}
+        action=${fediverseModalData}
+        useIframe=${false}
+        customContent=${html`<${FediverseFollowModal} name=${name} logo=${logo} federationInfo=${federation} />`}
+      />
+    `;
+
 
     const chat = this.state.websocket
       ? html`
@@ -873,7 +881,6 @@ export default class App extends Component {
 
           ${externalActionButtons && html`${externalActionButtons}`}
 
-
           <div class="user-content flex flex-row p-8">
             <div class="user-logo-icons flex flex-col items-center justify-start mr-8">
               <div
@@ -926,7 +933,9 @@ export default class App extends Component {
           </span>
         </footer>
 
-        ${chat} ${externalActionModal} ${fediverseFollowModal}
+        ${chat}
+        ${externalActionModal}
+        ${fediverseFollowModal}
 
         <h3>Followers</h3>
         <${Followers} />
