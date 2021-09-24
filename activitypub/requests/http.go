@@ -61,6 +61,9 @@ func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]b
 	log.Println("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/activity+json")
+	req.Header.Set("Accept", "application/activity+json")
+
 	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
 	req.Header.Set("User-Agent", ua)
 

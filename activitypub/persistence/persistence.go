@@ -31,7 +31,11 @@ func Setup(datastore *data.Datastore) {
 // AddFollow will save a follow to the datastore.
 func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 	log.Println("Saving", follow.ActorIri, "as a follower.")
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String(), approved)
+	var image string
+	if follow.Image != nil {
+		image = follow.Image.String()
+	}
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, image, approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -72,12 +76,16 @@ func createFollow(actor string, inbox string, name string, username string, imag
 		}
 	}
 
+	var savedImage sql.NullString = sql.NullString{Valid: false}
+	if image != "" {
+		savedImage = sql.NullString{String: image, Valid: true}
+	}
 	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
 		Iri:        actor,
 		Inbox:      inbox,
 		Name:       sql.NullString{String: name, Valid: true},
 		Username:   username,
-		Image:      sql.NullString{String: image, Valid: true},
+		Image:      savedImage,
 		ApprovedAt: approvedAt,
 	}); err != nil {
 		log.Errorln("error creating new federation follow", err)
