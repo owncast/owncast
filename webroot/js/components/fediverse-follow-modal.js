@@ -1,8 +1,6 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
-import MicroModal from '/js/web_modules/micromodal/dist/micromodal.min.js';
 import { ExternalActionButton } from './external-action-modal.js';
-
 
 const html = htm.bind(h);
 
@@ -106,8 +104,6 @@ export default class FediverseFollowModal extends Component {
     `;
   }
 }
-
-
 
 
 export function FediverseFollowButton({ serverName, federationInfo, onClick }) {
