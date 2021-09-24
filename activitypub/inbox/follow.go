@@ -46,10 +46,9 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	actorReference := activity.GetActivityStreamsActor()
 	actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
-	actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
 	actorIRI := actorReference.Begin().GetIRI().String()
 
-	msg := fmt.Sprintf("[%s](%s) just **followed**!", actorName, actorIRI)
+	msg := fmt.Sprintf("[%s](%s) just **followed**!", actor.Username, actorIRI)
 
 	return chat.SendSystemMessage(msg, false)
 }
@@ -106,7 +105,6 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 
 	IRIPath := object.At(0).GetIRI().Path
 
-	// for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
 	// Verify we actually sent this post.
 	post, err := persistence.GetObjectByIRI(IRIPath)
 	if err != nil || post == "" {
@@ -118,10 +116,9 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 	actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
 
 	// Send chat message
-	actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
 	actorIRI := actorReference.Begin().GetIRI().String()
 
-	msg := fmt.Sprintf("[%s](%s) just **%s** one of %s's posts.", actorName, actorIRI, action, data.GetServerName())
+	msg := fmt.Sprintf("[%s](%s) just **%s** one of %s's posts.", actor.Username, actorIRI, action, data.GetServerName())
 
 	if err := chat.SendSystemMessage(msg, false); err != nil {
 		return err

@@ -178,6 +178,15 @@ func GetFullUsernameFromPerson(person vocab.ActivityStreamsPerson) string {
 	return fullUsername
 }
 
+// GetFullUsernameFromApplication will return the user@host.tld formatted user given an Application object.
+func GetFullUsernameFromApplication(application vocab.ActivityStreamsApplication) string {
+	hostname := application.GetJSONLDId().GetIRI().Hostname()
+	username := application.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
+	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
+
+	return fullUsername
+}
+
 func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, url string) {
 	var attachments = profile.GetActivityStreamsAttachment()
 	if attachments == nil {
