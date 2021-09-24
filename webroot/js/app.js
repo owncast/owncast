@@ -56,6 +56,7 @@ import {
   URL_VIEWER_PING,
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
+import TabBar from './components/tab-bar.js';
 
 export default class App extends Component {
   constructor(props, context) {
@@ -797,6 +798,25 @@ export default class App extends Component {
         `
       : null;
 
+
+    const TAB_CONTENT = [
+      {
+        label: 'About',
+        content: html`
+          <div
+            id="extra-user-content"
+            class="extra-user-content px-8"
+            dangerouslySetInnerHTML=${{ __html: extraPageContent }}
+          ></div>
+        `,
+      },
+      {
+        label: 'Followers',
+        content: html`<${Followers} />`,
+      },
+    ]
+
+
     return html`
       <div
         id="app-container"
@@ -914,15 +934,8 @@ export default class App extends Component {
 
 
           <!-- tab bar -->
-          <div class="mx-8 border-b border-gray-500 border-solid" id="tab-bar">
-            tab bar
-          </div>
+          <${TabBar} tabs=${TAB_CONTENT}/>
 
-          <div
-            id="extra-user-content"
-            class="extra-user-content px-8"
-            dangerouslySetInnerHTML=${{ __html: extraPageContent }}
-          ></div>
         </section>
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
@@ -937,8 +950,7 @@ export default class App extends Component {
         ${externalActionModal}
         ${fediverseFollowModal}
 
-        <h3>Followers</h3>
-        <${Followers} />
+
       </div>
     `;
   }
