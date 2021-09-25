@@ -803,11 +803,21 @@ export default class App extends Component {
       {
         label: 'About',
         content: html`
+          <div>
+          <div
+            id="stream-summary"
+            class="stream-summary my-4"
+            dangerouslySetInnerHTML=${{ __html: summary }}
+          ></div>
+          <div id="tag-list" class="tag-list text-gray-600 mb-3">
+            ${tagList && `#${tagList}`}
+          </div>
           <div
             id="extra-user-content"
             class="extra-user-content"
             dangerouslySetInnerHTML=${{ __html: extraPageContent }}
           ></div>
+      </div>
         `,
       },
       {
@@ -921,28 +931,29 @@ export default class App extends Component {
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
-              <div
+              <!-- <div
                 id="stream-summary"
                 class="stream-summary my-4"
                 dangerouslySetInnerHTML=${{ __html: summary }}
               ></div>
               <div id="tag-list" class="tag-list text-gray-600 mb-3">
                 ${tagList && `#${tagList}`}
-              </div>
-                <!-- tab bar -->
-              <!-- <div class="my-8">
-                <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
               </div> -->
+                <!-- tab bar -->
+              <div class="my-8">
+                <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
+              </div>
             </div>
 
 
           </div>
 
         <!-- tab bar -->
-        <div class="px-4">
+        <!-- <div class="px-4">
           <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
-        </div>
-        </section>
+        </div> -->
+
+      </section>
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
           <span class="mx-1 inline-block">
