@@ -837,10 +837,10 @@ export default class App extends Component {
           </div>
         `,
       },
-      {
-        label: 'Followers',
-        content: html`<${Followers} />`,
-      },
+      // {
+      //   label: 'Followers',
+      //   content: html`<${Followers} />`,
+      // },
     ];
 
     return html`
