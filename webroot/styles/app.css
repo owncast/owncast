@@ -221,7 +221,7 @@ header {
 }
 .single-col #user-content .user-content {
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .single-col.chat #user-content {
   display: none;
