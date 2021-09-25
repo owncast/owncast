@@ -812,7 +812,7 @@ export default class App extends Component {
       },
       {
         label: 'Followers',
-        content: html`<h3>Followers</h3><${Followers} />`,
+        content: html`<${Followers} />`,
       },
     ]
 
@@ -930,7 +930,7 @@ export default class App extends Component {
                 ${tagList && `#${tagList}`}
               </div>
                 <!-- tab bar -->
-              <div >
+              <div class="my-8">
                 <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
               </div>
             </div>

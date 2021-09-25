@@ -1,12 +1,8 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
-import SingleFollower from './single-follower.js';
+// import SingleFollower from './single-follower.js';
 
 const html = htm.bind(h);
-
-function followerClicked(link) {
-  window.open(link, '_blank');
-}
 
 export default class FollowerList extends Component {
   constructor(props) {
@@ -41,23 +37,35 @@ export default class FollowerList extends Component {
 
   render() {
     const { followers } = this.state;
-
-    const userViews = followers.map(follower => {
-      const {link} = follower;
-      return html`
-        <div class="w-1/4 m-3 cursor-pointer" onClick=${() => followerClicked(link)}>
-          <${SingleFollower} user=${follower} />
-        </div>
-      `;
-    });
-
     return html`
-      <div class="flex flex-wrap -mb-4">
-        ${userViews}
-        <div class="p-12 text-center" style=${{ height: '300px', width: '100%'}}>
-          things in stuff yo
+      <div id="followers" class="p-4 w-full">
+        <h3 class="text-3xl font-semibold mb-4">Followers</h3>
+        <div class="grid grid-flow-row grid-cols-4 gap-4 sm:grid-cols-2">
+          ${
+            followers.map(follower => {
+              return html`
+                <${SingleFollower} user=${follower} />
+              `;
+            })
+          }
         </div>
       </div>
     `;
   };
+}
+
+
+function SingleFollower(props) {
+  const { user } = props;
+  const { name, username, image, link } = user;
+
+  return html`
+    <a href=${link} class="follower m-3 block bg-white flex  items-center p-2 rounded-xl shadow border" target="_blank">
+      <img src="${image}" alt="My profile" class="w-16 h-16 rounded-full" />
+      <div class="p-3 truncate flex-grow">
+        <p class="font-semibold text-gray-700 truncate">${name}</p>
+        <p class="text-sm text-gray-500 truncate">${username}</p>
+      </div>
+    </a>
+  `;
 }
