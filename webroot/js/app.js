@@ -56,6 +56,7 @@ import {
   URL_VIEWER_PING,
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
+import TabBar from './components/tab-bar.js';
 
 export default class App extends Component {
   constructor(props, context) {
@@ -797,6 +798,35 @@ export default class App extends Component {
         `
       : null;
 
+
+    const TAB_CONTENT = [
+      {
+        label: 'About',
+        content: html`
+          <div>
+          <div
+            id="stream-summary"
+            class="stream-summary my-4"
+            dangerouslySetInnerHTML=${{ __html: summary }}
+          ></div>
+          <div id="tag-list" class="tag-list text-gray-600 mb-3">
+            ${tagList && `#${tagList}`}
+          </div>
+          <div
+            id="extra-user-content"
+            class="extra-user-content"
+            dangerouslySetInnerHTML=${{ __html: extraPageContent }}
+          ></div>
+      </div>
+        `,
+      },
+      // {
+      //   label: 'Followers',
+      //   content: html`<${Followers} />`,
+      // },
+    ]
+
+
     return html`
       <div
         id="app-container"
@@ -901,29 +931,14 @@ export default class App extends Component {
               <h3 class="font-semibold text-3xl">
                 ${streamOnline && streamTitle}
               </h3>
-              <div
-                id="stream-summary"
-                class="stream-summary my-4"
-                dangerouslySetInnerHTML=${{ __html: summary }}
-              ></div>
-              <div id="tag-list" class="tag-list text-gray-600 mb-3">
-                ${tagList && `#${tagList}`}
+
+                <!-- tab bar -->
+              <div class="my-8">
+                <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
               </div>
             </div>
           </div>
-
-
-          <!-- tab bar -->
-          <div class="mx-8 border-b border-gray-500 border-solid" id="tab-bar">
-            tab bar
-          </div>
-
-          <div
-            id="extra-user-content"
-            class="extra-user-content px-8"
-            dangerouslySetInnerHTML=${{ __html: extraPageContent }}
-          ></div>
-        </section>
+      </section>
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
           <span class="mx-1 inline-block">
@@ -936,9 +951,6 @@ export default class App extends Component {
         ${chat}
         ${externalActionModal}
         ${fediverseFollowModal}
-
-        <h3>Followers</h3>
-        <${Followers} />
       </div>
     `;
   }
