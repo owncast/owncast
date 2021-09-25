@@ -805,14 +805,14 @@ export default class App extends Component {
         content: html`
           <div
             id="extra-user-content"
-            class="extra-user-content px-8"
+            class="extra-user-content"
             dangerouslySetInnerHTML=${{ __html: extraPageContent }}
           ></div>
         `,
       },
       {
         label: 'Followers',
-        content: html`<${Followers} />`,
+        content: html`<h3>Followers</h3><${Followers} />`,
       },
     ]
 
@@ -929,12 +929,16 @@ export default class App extends Component {
               <div id="tag-list" class="tag-list text-gray-600 mb-3">
                 ${tagList && `#${tagList}`}
               </div>
+                <!-- tab bar -->
+              <div >
+                <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
+              </div>
             </div>
+
+
           </div>
 
 
-          <!-- tab bar -->
-          <${TabBar} tabs=${TAB_CONTENT}/>
 
         </section>
 

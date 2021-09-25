@@ -14,10 +14,6 @@ May have overrides for other components with own stylesheets.
   --novideo-container-height: 16em;
 
   --owncast-purple: rgba(120, 113, 255, 1);
-  /* $owncast-purple: rgba(120, 113, 255, 1);
-$owncast-purple-25: rgba(120, 113, 255, 0.25);
-$owncast-purple-50: rgba(120, 113, 255, 0.5);
-$owncast-purple-dark: rgba(28, 26, 59, 1); */
 }
 
 .no-video,
@@ -456,3 +452,27 @@ header {
     -webkit-overflow-scrolling: touch;
   }
 }
+
+
+/**************************
+  Tab Bar Base Styles
+**************************/
+.tab-bar [role="tab"] {
+  padding: .5rem 1rem;
+  border-radius: .25rem .25rem 0 0;
+  font-weight: bold;
+}
+.tab-bar [role="tab"]:hover {
+  background-color: rgba(255,255,255,.35);
+}
+.tab-bar [role="tab"][aria-selected="true"] {
+  color: var(--owncast-purple);
+  background-color: white;
+}
+.tab-bar [role="tabpanel"] {
+  padding: 1rem 0;
+  border-top: 1px solid var(--header-bg-color);
+  min-height: 15rem;
+}
+
+
