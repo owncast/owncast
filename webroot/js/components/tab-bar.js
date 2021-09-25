@@ -24,40 +24,47 @@ export default class TabBar extends Component {
       return null;
     }
 
-    return html`
-      <div class="tab-bar">
-        <div role="tablist" aria-label=${ariaLabel}>
+    if (tabs.length === 1) {
+      return html`
+        ${tabs[0].content}
+      `;
+
+    } else {
+      return html`
+        <div class="tab-bar">
+          <div role="tablist" aria-label=${ariaLabel}>
+            ${
+              tabs.map((tabItem, index) => {
+                const handleClick = () => this.handleTabClick(index);
+                return html`
+                  <button
+                    role="tab"
+                    aria-selected=${index === this.state.activeIndex}
+                    aria-controls=${`tabContent${index}`}
+                    id=${`tab-${tabItem.label}`}
+                    onclick=${handleClick}
+                  >${tabItem.label}</button>
+                `;
+              })
+            }
+          </div>
           ${
             tabs.map((tabItem, index) => {
-              const handleClick = () => this.handleTabClick(index);
               return html`
-                <button
-                  role="tab"
-                  aria-selected=${index === this.state.activeIndex}
-                  aria-controls=${`tabContent${index}`}
-                  id=${`tab-${tabItem.label}`}
-                  onclick=${handleClick}
-                >${tabItem.label}</button>
+                  <div
+                    tabindex="0"
+                    role="tabpanel"
+                    id=${`tabContent${index}`}
+                    aria-labelledby=${`tab-${tabItem.label}`}
+                    hidden=${index !== this.state.activeIndex}
+                  >
+                    ${tabItem.content}
+                  </div>
               `;
             })
           }
         </div>
-        ${
-          tabs.map((tabItem, index) => {
-            return html`
-                <div
-                  tabindex="0"
-                  role="tabpanel"
-                  id=${`tabContent${index}`}
-                  aria-labelledby=${`tab-${tabItem.label}`}
-                  hidden=${index !== this.state.activeIndex}
-                >
-                  ${tabItem.content}
-                </div>
-            `;
-          })
-        }
-        </div>
       `;
+    }
   }
 }
