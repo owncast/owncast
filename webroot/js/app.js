@@ -930,16 +930,18 @@ export default class App extends Component {
                 ${tagList && `#${tagList}`}
               </div>
                 <!-- tab bar -->
-              <div class="my-8">
+              <!-- <div class="my-8">
                 <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
-              </div>
+              </div> -->
             </div>
 
 
           </div>
 
-
-
+        <!-- tab bar -->
+        <div class="px-4">
+          <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
+        </div>
         </section>
 
         <footer class="flex flex-row justify-start p-8 opacity-50 text-xs">
@@ -953,6 +955,7 @@ export default class App extends Component {
         ${chat}
         ${externalActionModal}
         ${fediverseFollowModal}
+
 
 
       </div>

@@ -40,7 +40,7 @@ export default class FollowerList extends Component {
     return html`
       <div id="followers" class="p-4 w-full">
         <h3 class="text-3xl font-semibold mb-4">Followers</h3>
-        <div class="grid grid-flow-row grid-cols-4 gap-4 sm:grid-cols-2">
+        <div class="grid grid-flow-row sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:grid-cols-2">
           ${
             followers.map(follower => {
               return html`
