@@ -1,7 +1,8 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
-// import SingleFollower from './single-follower.js';
-
+import {
+  URL_FOLLOWERS,
+} from '/js/utils/constants.js';
 const html = htm.bind(h);
 
 export default class FollowerList extends Component {
@@ -22,17 +23,11 @@ export default class FollowerList extends Component {
   }
 
   async getFollowers() {
-    const response = await fetch("https://randomuser.me/api/?results=50");
-    const result = await response.json();
-    const followers = result.results.map(user => {
-      return {
-        name: `${user.name.first} ${user.name.last}`,
-        username: user.email,
-        image: user.picture.thumbnail,
-        link: 'https://botsin.space/@owncast'
-      };
-    });
-    this.setState({ followers: followers });
+    const response = await fetch(URL_FOLLOWERS);
+    const followers = await response.json();
+    console.log(followers);
+    
+    this.setState({ followers: followers.followers });
   }
 
   render() {
