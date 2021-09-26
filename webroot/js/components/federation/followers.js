@@ -56,7 +56,7 @@ function SingleFollower(props) {
 
   return html`
     <a href=${link} class="follower m-3 block bg-white flex  items-center p-2 rounded-xl shadow border" target="_blank">
-      <img src="${image}" alt="My profile" class="w-16 h-16 rounded-full" />
+      <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
       <div class="p-3 truncate flex-grow">
         <p class="font-semibold text-gray-700 truncate">${name}</p>
         <p class="text-sm text-gray-500 truncate">${username}</p>
