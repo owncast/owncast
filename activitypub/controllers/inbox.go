@@ -22,7 +22,7 @@ func InboxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		acceptInboxRequest(w, r)
-	} else if r.Method == "GET" { //nolint
+	} else if r.Method == http.MethodGet {
 		returnInbox(w)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
