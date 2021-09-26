@@ -38,10 +38,10 @@ func handle(request apmodels.InboxRequest) chan bool {
 	c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
 	r := make(chan bool)
 
-	if verified, err := Verify(request.Request); err != nil || !verified {
-		log.Warnln("Unable to verify remote request", err)
-		return nil
-	}
+	// if verified, err := Verify(request.Request); err != nil || !verified {
+	// 	log.Warnln("Unable to verify remote request", err)
+	// 	return nil
+	// }
 
 	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
 		r <- false
@@ -76,7 +76,7 @@ func Verify(request *http.Request) (bool, error) {
 		return false, err
 	}
 
-	log.Traceln("Fetching key", pubKeyID)
+	log.Println("Fetching key", pubKeyID)
 
 	signature := request.Header.Get("signature")
 	var algorithmString string
