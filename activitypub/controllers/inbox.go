@@ -50,7 +50,7 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Traceln("INBOX: ", string(data))
+	log.Println("INBOX: ", string(data))
 
 	inboxRequest := apmodels.InboxRequest{Request: r, ForLocalAccount: forLocalAccount, Body: data}
 
