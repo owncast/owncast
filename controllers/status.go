@@ -11,7 +11,7 @@ import (
 
 // GetStatus gets the status of the server.
 func GetStatus(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 
 	status := core.GetStatus()
 	response := webStatusResponse{

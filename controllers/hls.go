@@ -45,6 +45,6 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	}
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 	http.ServeFile(w, r, fullPath)
 }
