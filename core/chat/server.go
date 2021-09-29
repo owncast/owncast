@@ -38,6 +38,8 @@ type Server struct {
 
 	// unregister requests from clients.
 	unregister chan uint // the ChatClient id
+
+	geoipClient *geoip.Client
 }
 
 // NewChat will return a new instance of the chat server.
@@ -51,6 +53,7 @@ func NewChat() *Server {
 		inbound:                  make(chan chatClientEvent),
 		unregister:               make(chan uint),
 		maxSocketConnectionLimit: maximumConcurrentConnectionLimit,
+		geoipClient:              geoip.NewClient(),
 	}
 
 	return server
@@ -117,7 +120,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 
 	// Asynchronously, optionally, fetch GeoIP data.
 	go func(client *Client) {
-		client.Geo = geoip.GetGeoFromIP(ipAddress)
+		client.Geo = s.geoipClient.GetGeoFromIP(ipAddress)
 	}(client)
 
 	return client
