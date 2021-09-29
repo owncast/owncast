@@ -276,7 +276,7 @@ func HostMetaController(w http.ResponseWriter, r *http.Request) {
 
 	res := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
 	<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
-		<Link rel="lrdd" template="%s/.well-known/webfinger?resource={uri}"/>
+		<Link rel="lrdd" type="application/json" template="%s/.well-known/webfinger?resource={uri}"/>
 	</XRD>`, serverURL)
 
 	if _, err := w.Write([]byte(res)); err != nil {
