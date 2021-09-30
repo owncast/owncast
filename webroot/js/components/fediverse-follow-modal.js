@@ -67,7 +67,7 @@ export default class FediverseFollowModal extends Component {
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-4">
         <p class="text-gray-700 text-md">
-          By following <span class="font-semibold">${name}</span> on the Fediverse so you'll get notified when the stream goes live.
+          By following on the <a href="https://en.wikipedia.org/wiki/Fediverse" target="_blank" rel="noopener noreferrer">Fediverse</a> you'll get notified when the stream goes live.
         </p>
 
         <div class="p-4 my-2 rounded bg-gray-300 border border-indigo-400 border-solid flex items-center justify-start">
