@@ -25,13 +25,16 @@ export default class FollowerList extends Component {
   async getFollowers() {
     const response = await fetch(URL_FOLLOWERS);
     const followers = await response.json();
-    console.log(followers);
     
-    this.setState({ followers: followers.followers });
+    this.setState({ followers: followers });
   }
 
   render() {
     const { followers } = this.state;
+    if (!followers) {
+      return null;
+    }
+
     return html`
       <div id="followers" class="p-4 w-full">
         <h3 class="text-3xl font-semibold mb-4">Followers</h3>
@@ -54,12 +57,18 @@ function SingleFollower(props) {
   const { user } = props;
   const { name, username, image, link } = user;
 
+  var displayName = name;
+  var displayUsername = username;
+
+  if (!displayName) {
+    displayName = displayUsername.split('@', 1)[0];
+  }
   return html`
     <a href=${link} class="follower m-3 block bg-white flex  items-center p-2 rounded-xl shadow border" target="_blank">
       <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
       <div class="p-3 truncate flex-grow">
-        <p class="font-semibold text-gray-700 truncate">${name}</p>
-        <p class="text-sm text-gray-500 truncate">${username}</p>
+        <p class="font-semibold text-gray-700 truncate">${displayName}</p>
+        <p class="text-sm text-gray-500 truncate">${displayUsername}</p>
       </div>
     </a>
   `;
