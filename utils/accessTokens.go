@@ -1,9 +1,8 @@
 package utils
 
 import (
+	"crypto/rand"
 	"encoding/base64"
-	"math/rand"
-	"time"
 )
 
 const tokenLength = 32
@@ -19,8 +18,7 @@ func GenerateAccessToken() (string, error) {
 // case the caller should not continue.
 func generateRandomBytes(n int) ([]byte, error) {
 	b := make([]byte, n)
-	rand.Seed(time.Now().UTC().UnixNano())
-	_, err := rand.Read(b) //nolint
+	_, err := rand.Read(b)
 	// Note that err == nil only if we read len(b) bytes.
 	if err != nil {
 		return nil, err
