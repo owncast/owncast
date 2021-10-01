@@ -12,7 +12,7 @@ import (
 
 // ExternalGetChatMessages gets all of the chat messages.
 func ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 	GetChatMessages(w, r)
 }
 

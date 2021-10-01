@@ -29,7 +29,7 @@ type webConfigResponse struct {
 
 // GetWebConfig gets the status of the server.
 func GetWebConfig(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 	w.Header().Set("Content-Type", "application/json")
 
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
@@ -68,7 +68,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 // GetAllSocialPlatforms will return a list of all social platform types.
 func GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 	w.Header().Set("Content-Type", "application/json")
 
 	platforms := models.GetAllSocialHandles()
