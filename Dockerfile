@@ -1,6 +1,7 @@
 # Perform a build
 FROM golang:alpine AS build
-EXPOSE 8080 1935
+EXPOSE 8080
+EXPOSE 1935
 RUN mkdir /build
 ADD . /build
 WORKDIR /build
