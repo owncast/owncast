@@ -8,8 +8,8 @@
     <link href="/js/web_modules/videojs/video-js.min.css" rel="stylesheet"/>
     <link href="/js/web_modules/@videojs/themes/fantasy/index.css" rel="stylesheet" />
 
-    <link href="./styles/video.css" rel="stylesheet" />
-    <link href="./styles/video-only.css" rel="stylesheet" />
+    <link href="/styles/video.css" rel="stylesheet" />
+    <link href="/styles/video-only.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -21,7 +21,7 @@
       import htm from '/js/web_modules/htm.js';
       const html = htm.bind(h);
 
-      import VideoOnly from './js/app-video-only.js';
+      import VideoOnly from '/js/app-video-only.js';
       render(html`<${VideoOnly} />`, document.getElementById("video-only"));
     </script>
   </body>
