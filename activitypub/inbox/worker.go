@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -34,39 +35,42 @@ func Add(request apmodels.InboxRequest) {
 	_queue <- request
 }
 
-func handle(request apmodels.InboxRequest) chan bool {
+func handle(request apmodels.InboxRequest) {
+	fmt.Println("handle 1")
+
 	c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
-	r := make(chan bool)
+	// r := make(chan bool)
 
 	// if verified, err := Verify(request.Request); err != nil || !verified {
 	// 	log.Warnln("Unable to verify remote request", err)
 	// 	return nil
 	// }
 
-	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
-		r <- false
-		return nil
-	}
+	// createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
+	// 	return nil
+	// }
 
-	personCallback := func(c context.Context, activity vocab.ActivityStreamsPerson) error {
-		r <- false
-		return nil
-	}
+	// personCallback := func(c context.Context, activity vocab.ActivityStreamsPerson) error {
+	// 	return nil
+	// }
 
-	deleteCallback := func(c context.Context, activity vocab.ActivityStreamsDelete) error {
-		r <- false
-		return nil
-	}
+	// deleteCallback := func(c context.Context, activity vocab.ActivityStreamsDelete) error {
+	// 	return nil
+	// }
 
-	if err := resolvers.Resolve(c, request.Body, createCallback, deleteCallback, handleUpdateRequest, handleFollowInboxRequest, personCallback, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
+	if err := resolvers.Resolve(c, request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
 		log.Errorln("resolver error:", err)
 	}
 
-	return r
+	fmt.Println("handle 2")
+
+	// return r
 }
 
 // Verify will Verify the http signature of an inbound request.
 func Verify(request *http.Request) (bool, error) {
+	return true, nil
+
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
 		return false, err

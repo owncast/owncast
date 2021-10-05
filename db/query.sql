@@ -9,7 +9,7 @@ SElECT count(*) FROM ap_followers;
 SElECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at is not null;
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null;
 
 -- name: GetFederationFollowerApprovalRequests :many
 SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null;

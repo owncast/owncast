@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -30,7 +31,11 @@ func Setup(datastore *data.Datastore) {
 // AddFollow will save a follow to the datastore.
 func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 	log.Println("Saving", follow.ActorIri, "as a follower.")
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, follow.Image.String(), approved)
+	var image string
+	if follow.Image != nil {
+		image = follow.Image.String()
+	}
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, image, approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -50,7 +55,7 @@ func ApprovePreviousFollowRequest(iri string) error {
 }
 
 func createFollow(actor string, inbox string, name string, username string, image string, approved bool) error {
-	needsApproval := data.GetFollowApprovalRequired()
+	// needsApproval := data.GetFollowApprovalRequired()
 
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -64,7 +69,7 @@ func createFollow(actor string, inbox string, name string, username string, imag
 	}()
 
 	var approvedAt sql.NullTime
-	if !needsApproval {
+	if approved {
 		approvedAt = sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,
@@ -155,6 +160,10 @@ func createFederationOutboxTable() {
 func createFederationFollowersTable() {
 	log.Traceln("Creating federation followers table...")
 
+	if _, err := _datastore.DB.Exec("DROP TABLE ap_followers"); err != nil {
+		log.Errorln(err)
+	} // TODO: Remove!;
+
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
 		"inbox" TEXT NOT NULL,
@@ -165,6 +174,7 @@ func createFederationFollowersTable() {
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri ON ap_followers (iri);
+		CREATE INDEX approved_at ON ap_followers (approved_at);
 	);`
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
@@ -293,7 +303,7 @@ func GetFollowerCount() (int64, error) {
 }
 
 // GetFederationFollowers will return a slice of the followers we keep track of locally.
-func GetFederationFollowers() ([]models.Follower, error) {
+func GetFederationFollowers(timestamp bool) ([]models.Follower, error) {
 	ctx := context.Background()
 	followersResult, err := _datastore.GetQueries().GetFederationFollowers(ctx)
 	if err != nil {
@@ -309,6 +319,9 @@ func GetFederationFollowers() ([]models.Follower, error) {
 			Image:    row.Image.String,
 			Link:     row.Iri,
 			Inbox:    row.Inbox,
+		}
+		if timestamp {
+			singleFollower.Timestamp = utils.NullTime(row.CreatedAt)
 		}
 		followers = append(followers, singleFollower)
 	}

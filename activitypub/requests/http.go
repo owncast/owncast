@@ -61,8 +61,10 @@ func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]b
 	log.Println("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
+
 	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
 	req.Header.Set("User-Agent", ua)
+	req.Header.Set("Content-Type", "application/activity+json")
 
 	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
 		log.Errorln("error signing request:", err)

@@ -129,7 +129,7 @@ func SendPublicMessage(textContent string) error {
 func SendToFollowers(payload []byte) error {
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 
-	followers, err := persistence.GetFederationFollowers()
+	followers, err := persistence.GetFederationFollowers(false)
 	if err != nil {
 		log.Errorln("unable to fetch followers to send to", err)
 		return errors.New("unable to fetch followers to send payload to")
