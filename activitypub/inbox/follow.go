@@ -16,11 +16,16 @@ import (
 )
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
+	fmt.Println("handleFollowInboxRequest 1")
+	log.Printf("INBOX Follow: %v ", activity)
+
 	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
 		log.Errorln("unable to create follow inbox request", err)
 		return err
 	}
+
+	fmt.Println("handleFollowInboxRequest 2")
 
 	if follow == nil {
 		return fmt.Errorf("unable to handle request")
@@ -31,17 +36,26 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	followRequest := *follow
 	log.Println("follow request:", followRequest)
 
+	fmt.Println("handleFollowInboxRequest 3")
+
 	if err := persistence.AddFollow(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
 	}
 
-	localAccountName := c.Value("account").(string)
+	fmt.Println("handleFollowInboxRequest 4")
+
+	localAccountName := data.GetDefaultFederationUsername()
+	log.Println("1", localAccountName)
 
 	if approved {
+		log.Println("2")
+
 		if err := requests.SendFollowAccept(followRequest, localAccountName); err != nil {
+			log.Errorln("unable to send follow accept", err)
 			return err
 		}
+		log.Println("3")
 	}
 
 	actorReference := activity.GetActivityStreamsActor()

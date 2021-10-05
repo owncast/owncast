@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
@@ -23,14 +24,17 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 	hostname := person.GetJSONLDId().GetIRI().Hostname()
 	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
-
+	var image *url.URL
+	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 {
+		image = person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
+	}
 	followRequest := apmodels.ActivityPubActor{
 		ActorIri:  person.GetJSONLDId().Get(),
 		FollowIri: activity.GetJSONLDId().Get(),
 		Inbox:     person.GetActivityStreamsInbox().GetIRI(),
 		Name:      person.GetActivityStreamsName().At(0).GetXMLSchemaString(),
 		Username:  fullUsername,
-		Image:     person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI(),
+		Image:     image,
 	}
 
 	return &followRequest, nil
@@ -48,12 +52,17 @@ func MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) 
 		return nil
 	}
 
+	var image *url.URL
+	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 {
+		image = person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
+	}
+
 	request := apmodels.ActivityPubActor{
 		ActorIri:  person.GetJSONLDId().Get(),
 		FollowIri: activity.GetJSONLDId().Get(),
 		Inbox:     person.GetActivityStreamsInbox().GetIRI(),
 		Name:      person.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Image:     person.GetActivityStreamsImage().Begin().GetIRI(),
+		Image:     image,
 	}
 
 	return &request

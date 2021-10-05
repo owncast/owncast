@@ -7,18 +7,25 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/teris-io/shortid"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // SendFollowAccept will send an accept activity to a follow request from a specified local user.
 func SendFollowAccept(followRequest apmodels.ActivityPubActor, fromLocalAccountName string) error {
+	log.Println("SendFollowAccept 1")
+
 	followAccept := makeAcceptFollow(followRequest, fromLocalAccountName)
 	localAccountIRI := apmodels.MakeLocalIRIForAccount(fromLocalAccountName)
 
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(followAccept)
 	b, _ := json.Marshal(jsonmap)
+	log.Println("SendFollowAccept 2")
 
 	_, err := PostSignedRequest(b, followRequest.Inbox, localAccountIRI)
+	log.Println("SendFollowAccept 3")
+
 	if err != nil {
 		return err
 	}

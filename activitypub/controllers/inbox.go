@@ -14,13 +14,24 @@ import (
 
 // InboxHandler handles inbound federated requests.
 func InboxHandler(w http.ResponseWriter, r *http.Request) {
-	if verified, err := inbox.Verify(r); err != nil || !verified {
-		log.Warnln("Unable to verify remote request", err)
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
+	// if verified, err := inbox.Verify(r); err != nil || !verified {
+	// 	log.Warnln("Unable to verify remote request", err)
 
-	if r.Method == "POST" {
+	// 	// TODO: Remove testing
+	// 	data, err := ioutil.ReadAll(r.Body)
+	// 	if err != nil {
+	// 		log.Errorln("Unable to read inbox request payload", err)
+	// 		return
+	// 	}
+
+	// 	log.Println("ERRORED VERIFY PAYLOAD: ", string(data))
+	// 	//////
+
+	// 	w.WriteHeader(http.StatusForbidden)
+	// 	return
+	// }
+
+	if r.Method == http.MethodPost {
 		acceptInboxRequest(w, r)
 	} else if r.Method == http.MethodGet {
 		returnInbox(w)
@@ -49,8 +60,6 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 		log.Errorln("Unable to read inbox request payload", err)
 		return
 	}
-
-	log.Println("INBOX: ", string(data))
 
 	inboxRequest := apmodels.InboxRequest{Request: r, ForLocalAccount: forLocalAccount, Body: data}
 

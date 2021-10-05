@@ -39,7 +39,7 @@ func FollowersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	followers, err := persistence.GetFederationFollowers()
+	followers, err := persistence.GetFederationFollowers(false)
 	if err != nil {
 		w.WriteHeader(500)
 		return

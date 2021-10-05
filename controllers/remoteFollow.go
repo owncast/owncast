@@ -9,7 +9,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 // RemoteFollow handles a request to begin the remote follow redirect flow.
@@ -104,16 +104,24 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 
 // GetFollowers will handle an API request to fetch the list of followers (non-activitypub response).
 func GetFollowers(w http.ResponseWriter, r *http.Request) {
-	type followersResponse struct {
-		Followers []models.Follower `json:"followers"`
-	}
-
-	followers, err := persistence.GetFederationFollowers()
+	followers, err := persistence.GetFederationFollowers(false)
 	if err != nil {
 		WriteSimpleResponse(w, false, "unable to fetch followers")
 		return
 	}
-	response := followersResponse{Followers: followers}
 
-	WriteResponse(w, response)
+	WriteResponse(w, followers)
+}
+
+// GetAdminFollowers will handle an API request to fetch the list of followers (non-activitypub response).
+func GetAdminFollowers(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+
+	followers, err := persistence.GetFederationFollowers(true)
+	if err != nil {
+		WriteSimpleResponse(w, false, "unable to fetch followers")
+		return
+	}
+
+	WriteResponse(w, followers)
 }

@@ -22,6 +22,8 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	resourceComponents := strings.Split(resource, ":")
 	account := resourceComponents[1]
 
+	log.Println("Webfinger request for", account)
+
 	userComponents := strings.Split(account, "@")
 	if len(userComponents) < 2 {
 		return
@@ -32,6 +34,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	if _, valid := data.GetFederatedInboxMap()[user]; !valid {
 		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
+		log.Println("Webfinger request rejected")
 		return
 	}
 

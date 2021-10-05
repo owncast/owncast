@@ -110,15 +110,16 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowers = `-- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at is not null
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null
 `
 
 type GetFederationFollowersRow struct {
-	Iri      string
-	Inbox    string
-	Name     sql.NullString
-	Username string
-	Image    sql.NullString
+	Iri       string
+	Inbox     string
+	Name      sql.NullString
+	Username  string
+	Image     sql.NullString
+	CreatedAt sql.NullTime
 }
 
 func (q *Queries) GetFederationFollowers(ctx context.Context) ([]GetFederationFollowersRow, error) {
@@ -136,6 +137,7 @@ func (q *Queries) GetFederationFollowers(ctx context.Context) ([]GetFederationFo
 			&i.Name,
 			&i.Username,
 			&i.Image,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
