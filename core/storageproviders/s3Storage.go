@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/playlist"
@@ -130,11 +131,16 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 	defer file.Close()
 
+	// Convert the local path to the variant/file path by stripping the local storage location.
+	normalizedPath := strings.TrimPrefix(filePath, config.HLSStoragePath)
+	// Build the remote path by adding the "hls" path prefix.
+	remotePath := strings.Join([]string{"hls", normalizedPath}, "")
+
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
 	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
 	uploadInput := &s3manager.UploadInput{
 		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
-		Key:          aws.String(filePath),   // Name of the file to be saved
+		Key:          aws.String(remotePath), // Name of the file to be saved
 		Body:         file,                   // File
 		CacheControl: &cacheControlHeader,
 	}
