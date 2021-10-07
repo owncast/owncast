@@ -1,0 +1,28 @@
+name: Automated HLS tests
+
+on:
+  push:
+    paths-ignore:
+      - 'webroot/**'
+      - pkged.go
+  pull_request:
+    paths-ignore:
+      - 'webroot/**'
+      - pkged.go
+      
+env:
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+  S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+  S3_REGION: ${{ secrets.S3_REGION }}
+  S3_SECRET: ${{ secrets.S3_SECRET }}
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run HLS tests
+        run: cd test/automated/hls && ./run.sh
+
+  
