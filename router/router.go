@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-	"net"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -241,12 +240,8 @@ func Start() error {
 	port := config.WebServerPort
 	ip := config.WebServerIP
 
-	ipAddr := net.ParseIP(ip)
-	if ipAddr == nil {
-		log.Fatalln("Invalid IP address", ip)
-	}
-	log.Infof("Web server is listening on IP %s port %d.", ipAddr.String(), port)
+	log.Infof("Web server is listening on IP %s port %d.", ip, port)
 	log.Infoln("The web admin interface is available at /admin.")
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", ipAddr.String(), port), nil)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", ip, port), nil)
 }
