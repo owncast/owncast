@@ -2,7 +2,7 @@ package admin
 
 import (
 	"bytes"
-	_ "embed"
+	_ "embed" //nolint
 	"net/http"
 	"os"
 	"path/filepath"
@@ -24,6 +24,11 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	f, err := adminFiles.Open(path)
+	if os.IsNotExist(err) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	info, err := f.Stat()
 
 	if os.IsNotExist(err) {
@@ -40,8 +45,4 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(d))
-}
-
-func errorHandler(w http.ResponseWriter, status int) {
-	w.WriteHeader(status)
 }
