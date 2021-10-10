@@ -212,6 +212,9 @@ export default class Chat extends Component {
           );
         });
         updatedMessageList.splice(insertAtIndex + 1, 0, convertedMessage);
+        if (updatedMessageList.length > 300) {
+          updatedMessageList = updatedMessageList.slice(Math.max(updatedMessageList.length - 300, 0));
+        }
         this.setState({
           messages: updatedMessageList,
         });
