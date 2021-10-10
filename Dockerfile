@@ -1,6 +1,5 @@
 # Perform a build
 FROM golang:alpine AS build
-EXPOSE 8080 1935
 RUN mkdir /build
 ADD . /build
 WORKDIR /build
@@ -26,3 +25,4 @@ COPY --from=build /build/webroot /app/webroot
 COPY --from=build /build/static /app/static
 RUN mkdir /app/data
 CMD ["/app/owncast"]
+EXPOSE 8080 1935
