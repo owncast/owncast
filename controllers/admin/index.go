@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/static"
+	log "github.com/sirupsen/logrus"
 )
 
 // ServeAdmin will return admin web assets.
@@ -40,7 +41,9 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 
 	d, err := adminFiles.ReadFile(path)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(d))
