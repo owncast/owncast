@@ -2,7 +2,6 @@ package admin
 
 import (
 	"bytes"
-	_ "embed" //nolint
 	"net/http"
 	"os"
 	"path/filepath"
