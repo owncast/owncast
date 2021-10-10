@@ -1,47 +1,45 @@
 package admin
 
 import (
-	"io/ioutil"
-	"mime"
+	"bytes"
+	_ "embed"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/router/middleware"
-	log "github.com/sirupsen/logrus"
+	"github.com/owncast/owncast/static"
 )
 
 // ServeAdmin will return admin web assets.
 func ServeAdmin(w http.ResponseWriter, r *http.Request) {
-	// Set a cache control max-age header
-	middleware.SetCachingHeaders(w, r)
+	adminFiles := static.GetAdmin()
 
 	// Determine if the requested path is a directory.
 	// If so, append index.html to the request.
-	path := r.URL.Path
-	dirCheck, err := pkger.Stat(path)
-	if dirCheck != nil && err == nil && dirCheck.IsDir() {
+	path := strings.TrimPrefix(r.URL.Path, "/")
+	if strings.HasSuffix(path, "/") {
 		path = filepath.Join(path, "index.html")
 	}
 
-	f, err := pkger.Open(path)
-	if err != nil {
-		log.Debugln(err, path)
-		errorHandler(w, http.StatusNotFound)
+	f, err := adminFiles.Open(path)
+	info, err := f.Stat()
+
+	if os.IsNotExist(err) {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	b, err := ioutil.ReadAll(f)
+	// Set a cache control max-age header
+	middleware.SetCachingHeaders(w, r)
+
+	d, err := adminFiles.ReadFile(path)
 	if err != nil {
-		log.Warnln(err)
-		return
+		panic(err)
 	}
 
-	mimeType := mime.TypeByExtension(filepath.Ext(path))
-	w.Header().Set("Content-Type", mimeType)
-	if _, err = w.Write(b); err != nil {
-		log.Errorln(err)
-	}
+	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(d))
 }
 
 func errorHandler(w http.ResponseWriter, status int) {

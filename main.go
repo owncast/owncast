@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/markbates/pkger"
 	"github.com/owncast/owncast/logging"
 	log "github.com/sirupsen/logrus"
 
@@ -18,9 +17,6 @@ import (
 )
 
 func main() {
-	// Enable bundling of admin assets
-	_ = pkger.Include("/admin")
-
 	dbFile := flag.String("database", "", "Path to the database file.")
 	logDirectory := flag.String("logdir", "", "Directory where logs will be written to")
 	backupDirectory := flag.String("backupdir", "", "Directory where backups will be written to")
