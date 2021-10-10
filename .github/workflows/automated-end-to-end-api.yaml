@@ -4,11 +4,9 @@ on:
   push:
     paths-ignore:
       - 'webroot/**'
-      - pkged.go
   pull_request:
     paths-ignore:
       - 'webroot/**'
-      - pkged.go
       
 jobs:
   api:

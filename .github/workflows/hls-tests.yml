@@ -4,11 +4,9 @@ on:
   push:
     paths-ignore:
       - 'webroot/**'
-      - pkged.go
   pull_request:
     paths-ignore:
       - 'webroot/**'
-      - pkged.go
       
 env:
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
