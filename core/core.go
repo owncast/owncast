@@ -101,7 +101,9 @@ func transitionToOfflineVideoStreamContent() {
 	go _transcoder.Start()
 
 	d := static.GetOfflineSegment()
-	w.Write(d)
+	if _, err := w.Write(d); err != nil {
+		log.Errorln(err)
+	}
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()

@@ -89,6 +89,10 @@ func SetStreamAsDisconnected() {
 	offlineFileData := static.GetOfflineSegment()
 	offlineFilename := "offline.ts"
 	offlineTmpFile, err := ioutil.TempFile(os.TempDir(), offlineFilename)
+	if err != nil {
+		log.Errorln("unable to create temp file for offline video segment")
+	}
+
 	if _, err = offlineTmpFile.Write(offlineFileData); err != nil {
 		log.Errorln("unable to write offline segment to disk", err)
 	}
