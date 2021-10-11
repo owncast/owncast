@@ -1,6 +1,7 @@
 package core
 
 import (
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -79,13 +81,6 @@ func Start() error {
 }
 
 func createInitialOfflineState() error {
-	// Provide default files
-	if !utils.DoesFileExists(filepath.Join(config.WebRoot, "thumbnail.jpg")) {
-		if err := utils.Copy("static/logo.png", filepath.Join(config.WebRoot, "thumbnail.jpg")); err != nil {
-			return err
-		}
-	}
-
 	transitionToOfflineVideoStreamContent()
 
 	return nil
@@ -97,12 +92,18 @@ func createInitialOfflineState() error {
 func transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
-	offlineFilename := "offline.ts"
-	offlineFilePath := "static/" + offlineFilename
+	r, w := io.Pipe()
+
 	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetInput(offlineFilePath)
+	_transcoder.SetInput("pipe:0")
+	_transcoder.SetStdin(r)
 	_transcoder.SetIdentifier("offline")
-	_transcoder.Start()
+	go _transcoder.Start()
+
+	d := static.GetOfflineSegment()
+	if _, err := w.Write(d); err != nil {
+		log.Errorln(err)
+	}
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()

@@ -67,7 +67,6 @@ build() {
 
   # Copy the production pruned+minified css to the build's directory.
   cp "${TMPDIR}tailwind.min.css" ./dist/${NAME}/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
-  cp -R static/ dist/${NAME}/static
   cp README.md dist/${NAME}
 
   pushd dist/${NAME} >> /dev/null

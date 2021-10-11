@@ -386,8 +386,8 @@ func (t *Transcoder) SetInput(input string) {
 }
 
 // SetStdin sets the Stdin of the ffmpeg command.
-func (t *Transcoder) SetStdin(rtmp *io.PipeReader) {
-	t.stdin = rtmp
+func (t *Transcoder) SetStdin(pipe *io.PipeReader) {
+	t.stdin = pipe
 }
 
 // SetOutputPath sets the root directory that should include playlists and video segments.
