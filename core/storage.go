@@ -9,9 +9,9 @@ func setupStorage() error {
 	s3Config := data.GetS3Config()
 
 	if s3Config.Enabled {
-		_storage = &storageproviders.S3Storage{}
+		_storage = storageproviders.NewS3Storage()
 	} else {
-		_storage = &storageproviders.LocalStorage{}
+		_storage = storageproviders.NewLocalStorage()
 	}
 
 	if err := _storage.Setup(); err != nil {
