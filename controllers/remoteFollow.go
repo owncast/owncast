@@ -115,7 +115,7 @@ func GetFollowers(w http.ResponseWriter, r *http.Request) {
 
 // GetAdminFollowers will handle an API request to fetch the list of followers (non-activitypub response).
 func GetAdminFollowers(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
+	middleware.EnableCors(w)
 
 	followers, err := persistence.GetFederationFollowers(true)
 	if err != nil {
