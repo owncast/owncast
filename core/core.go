@@ -81,13 +81,6 @@ func Start() error {
 }
 
 func createInitialOfflineState() error {
-	// Provide default files
-	if !utils.DoesFileExists(filepath.Join(config.WebRoot, "thumbnail.jpg")) {
-		if err := utils.Copy("static/logo.png", filepath.Join(config.WebRoot, "thumbnail.jpg")); err != nil {
-			return err
-		}
-	}
-
 	transitionToOfflineVideoStreamContent()
 
 	return nil
