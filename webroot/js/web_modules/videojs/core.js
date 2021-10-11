@@ -30771,4 +30771,4 @@ videojs.addLanguage('en', {
 
 var core = videojs;
 
-export default core;
+export { core as default };
