@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,6 +18,7 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 
 	"github.com/grafov/m3u8"
@@ -84,8 +86,14 @@ func SetStreamAsDisconnected() {
 	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
+	offlineFileData := static.GetOfflineSegment()
 	offlineFilename := "offline.ts"
-	offlineFilePath := "static/" + offlineFilename
+	offlineTmpFile, err := ioutil.TempFile(os.TempDir(), offlineFilename)
+	if _, err = offlineTmpFile.Write(offlineFileData); err != nil {
+		log.Errorln("unable to write offline segment to disk", err)
+	}
+
+	offlineFilePath := offlineTmpFile.Name()
 
 	transcoder.StopThumbnailGenerator()
 	rtmp.Disconnect()

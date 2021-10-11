@@ -25,3 +25,10 @@ func GetBotMetadataTemplate() (*template.Template, error) {
 	tmpl := template.Must(t, err)
 	return tmpl, err
 }
+
+//go:embed offline.ts
+var offlineVideoSegment []byte
+
+func GetOfflineSegment() []byte {
+	return offlineVideoSegment
+}
