@@ -11,18 +11,22 @@ import (
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
+	// Cleanup old public HLS content every N min from the webroot.
+	onlineCleanupTicker *time.Ticker
 }
 
-// Cleanup old public HLS content every N min from the webroot.
-var _onlineCleanupTicker *time.Ticker
+// NewLocalStorage returns a new LocalStorage instance.
+func NewLocalStorage() *LocalStorage {
+	return &LocalStorage{}
+}
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
 	// NOTE: This cleanup timer will have to be disabled to support recordings in the future
 	// as all HLS segments have to be publicly available on disk to keep a recording of them.
-	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
+	s.onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
-		for range _onlineCleanupTicker.C {
+		for range s.onlineCleanupTicker.C {
 			transcoder.CleanupOldContent(config.HLSStoragePath)
 		}
 	}()
