@@ -77,7 +77,7 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 1. Ensure you have the gcc compiler configured.
 1. Install the [Go toolchain](https://golang.org/dl/).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
-1. `go run main.go pkged.go` will run from source.
+1. `go run main.go` will run from source.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
 There is also a supplied `Dockerfile` so you can spin it up from source with little effort. [Read more about running from source](https://owncast.online/docs/building/).
@@ -88,9 +88,8 @@ The admin ui is built at: https://github.com/owncast/owncast-admin it is bundled
 
 To bundle in the latest admin UI:
 
-1. Install pkger. `go install github.com/markbates/pkger/cmd/...`
 1. From the owncast directory run the packager script: `./build/admin/bundleAdmin.sh`
-1. Compile or run like above. `go run main.go pkged.go`
+1. Compile or run like above. `go run main.go`
 
 ## Contributing
 
@@ -110,7 +109,7 @@ Owncast consists of two repositories with two standalone projects. [The repo you
 
 1. Install [golangci-lint](https://golangci-lint.run/usage/install/) for helpful warnings and suggestions [directly in your editor](https://golangci-lint.run/usage/integrations/) when writing Go.
 1. If using VSCode install the [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) extension to aid in syntax highlighting of our frontend HTML + Preact.
-1. Run the project with `go run main.go pkged.go` to make sure the Admin (at `/admin`) is available to you in your development environment.
+1. Run the project with `go run main.go`.
 
 
 <!-- LICENSE -->

@@ -10,7 +10,6 @@ PROJECT_SOURCE_DIR=$(pwd)
 cd $INSTALL_TEMP_DIRECTORY
 
 shutdown () {
-  rm -rf "$PROJECT_SOURCE_DIR/admin"
   rm -rf "$INSTALL_TEMP_DIRECTORY"
 }
 trap shutdown INT TERM ABRT EXIT
@@ -31,10 +30,12 @@ ADMIN_BUILD_DIR=$(pwd)
 cd $PROJECT_SOURCE_DIR
 mkdir -p admin 2> /dev/null
 cd admin
-cp -R ${ADMIN_BUILD_DIR}/out/* .
 
-echo "Bundling admin into owncast codebase..."
-~/go/bin/pkger
+# Remove the old one
+rm -rf $PROJECT_SOURCE_DIR/static/admin
+
+# Copy over the new one
+mv ${ADMIN_BUILD_DIR}/out $PROJECT_SOURCE_DIR/static/admin
 
 shutdown
 echo "Done."
