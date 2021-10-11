@@ -23,6 +23,5 @@ RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates && updat
 WORKDIR /app
 COPY --from=build /build/owncast /app/owncast
 COPY --from=build /build/webroot /app/webroot
-COPY --from=build /build/static /app/static
 RUN mkdir /app/data
 CMD ["/app/owncast"]
