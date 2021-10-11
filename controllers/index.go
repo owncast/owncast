@@ -8,7 +8,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	log "github.com/sirupsen/logrus"
 
@@ -17,6 +16,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -74,7 +74,12 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 // Return a basic HTML page with server-rendered metadata from the config file
 // to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles(path.Join("static", "metadata.html")))
+	tmpl, err := static.GetBotMetadataTemplate()
+	if err != nil {
+		log.Errorln(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	scheme := "http"
 

@@ -1,6 +1,9 @@
 package static
 
-import "embed"
+import (
+	"embed"
+	"html/template"
+)
 
 //go:embed admin/*
 //go:embed admin/_next/static
@@ -11,4 +14,14 @@ var adminFiles embed.FS
 // GetAdmin will return an embedded filesystem reference to the admin web app.
 func GetAdmin() embed.FS {
 	return adminFiles
+}
+
+//go:embed metadata.html.tmpl
+var botMetadataTemplate embed.FS
+
+func GetBotMetadataTemplate() (*template.Template, error) {
+	name := "metadata.html.tmpl"
+	t, err := template.ParseFS(botMetadataTemplate, name)
+	tmpl := template.Must(t, err)
+	return tmpl, err
 }
