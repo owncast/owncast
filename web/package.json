@@ -38,7 +38,7 @@
     "@types/react": "^17.0.11",
     "@types/react-linkify": "^1.0.0",
     "@types/ua-parser-js": "^0.7.36",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^8.0.0",
     "eslint-config-airbnb": "^18.2.1",
