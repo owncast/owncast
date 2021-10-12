@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
-	github.com/aws/aws-sdk-go v1.40.0
+	github.com/aws/aws-sdk-go v1.41.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
