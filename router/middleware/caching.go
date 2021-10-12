@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/amalfra/etag"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -23,7 +24,7 @@ func setCacheSeconds(seconds int, w http.ResponseWriter) {
 
 // ProcessEtags gets and sets ETags for caching purposes.
 func ProcessEtags(w http.ResponseWriter, r *http.Request) int {
-	info, err := os.Stat(filepath.Join("webroot", r.URL.Path))
+	info, err := os.Stat(filepath.Join(config.WebRoot, r.URL.Path))
 	if err != nil {
 		return 0
 	}
