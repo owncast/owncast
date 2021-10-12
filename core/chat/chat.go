@@ -29,10 +29,11 @@ func Start(getStatusFunc func() models.Status) error {
 // GetClientsForUser will return chat connections that are owned by a specific user.
 func GetClientsForUser(userID string) ([]*Client, error) {
 	clients := map[string][]*Client{}
-
-	for _, client := range _server.clients {
+	_server.clients.Range(func(k, v interface{}) bool {
+		client := v.(*Client)
 		clients[client.User.ID] = append(clients[client.User.ID], client)
-	}
+		return true
+	})
 
 	if _, exists := clients[userID]; !exists {
 		return nil, errors.New("no connections for user found")
@@ -43,8 +44,8 @@ func GetClientsForUser(userID string) ([]*Client, error) {
 
 // FindClientByID will return a single connected client by ID.
 func FindClientByID(clientID uint) (*Client, bool) {
-	client, found := _server.clients[clientID]
-	return client, found
+	client, found := _server.clients.Load(clientID)
+	return client.(*Client), found
 }
 
 // GetClients will return all the current chat clients connected.
@@ -52,9 +53,11 @@ func GetClients() []*Client {
 	clients := []*Client{}
 
 	// Convert the keyed map to a slice.
-	for _, client := range _server.clients {
+	_server.clients.Range(func(k, v interface{}) bool {
+		client := v.(*Client)
 		clients = append(clients, client)
-	}
+		return true
+	})
 
 	sort.Slice(clients, func(i, j int) bool {
 		return clients[i].ConnectedAt.Before(clients[j].ConnectedAt)

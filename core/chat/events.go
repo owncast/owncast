@@ -86,7 +86,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	// Ignore if the stream has been offline
-	if !getStatus().Online && getStatus().LastDisconnectTime != nil {
+	if !getStatus().Online || getStatus().LastDisconnectTime != nil {
 		disconnectedTime := getStatus().LastDisconnectTime.Time
 		if time.Since(disconnectedTime) > 5*time.Minute {
 			return
@@ -112,5 +112,5 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	SaveUserMessage(event)
 
 	eventData.client.MessageCount = eventData.client.MessageCount + 1
-	_lastSeenCache[event.User.ID] = time.Now()
+	_lastSeenCache.Store(event.User.ID, time.Now())
 }
