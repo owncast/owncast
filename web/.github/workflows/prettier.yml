@@ -1,0 +1,25 @@
+name: javascript-formatter
+
+on: [push]
+
+jobs:
+  format:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+        fetch-depth: 0
+        
+    - name: Prettier
+      uses: creyD/prettier_action@v3.3
+      with:
+        # This part is also where you can pass other options, for example:
+        prettier_options: --write **/*.{js,tsx,jsx,css,scss}
+        ref: ${{ github.head_ref }}
+        only_changed: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

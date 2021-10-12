@@ -15,15 +15,6 @@ jobs:
         ref: ${{ github.ref }}
         fetch-depth: 0
         
-    - name: Prettier
-      uses: creyD/prettier_action@v3.3
-      with:
-        # This part is also where you can pass other options, for example:
-        prettier_options: --write **/*.{js,tsx,jsx,css,scss}
-        only_changed: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
     - name: Linter
       uses: tj-actions/eslint-changed-files@v6.5
       with:
