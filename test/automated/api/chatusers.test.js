@@ -97,7 +97,7 @@ test('verify user list is populated', async (done) => {
       expect(response.body.length).toBeGreaterThan(0);
 
       // Optionally, if GeoIP is configured, check the location property.
-      if (fs.existsSync('../../data/GeoLite2-City.mmdb')) {
+      if (fs.existsSync('../../../data/GeoLite2-City.mmdb')) {
         expect(response.body[0].geo.regionName).toBe('Localhost');
       } else {
         console.warn('GeoIP Data is not supplied. Skipping test. See https://owncast.online/docs/viewers/');
