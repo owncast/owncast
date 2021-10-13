@@ -16,7 +16,7 @@
     ·
     <a href="https://broadcast.owncast.online/">Use Our Server for Testing</a>
     ·
-    <a href="https://owncast.online/docs/faq/">FAQ</a>
+    <a href="https://owncast.online/faq/">FAQ</a>
     ·
     <a href="https://github.com/owncast/owncast/issues">Report Bug</a>
   </p>
