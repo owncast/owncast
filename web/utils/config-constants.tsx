@@ -233,14 +233,18 @@ export const FRAMERATE_DEFAULTS = {
 };
 export const FRAMERATE_SLIDER_MARKS = {
   [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min} ${FRAMERATE_DEFAULTS.unit}`,
+  25: '',
   30: '',
+  50: '',
   60: '',
   90: '',
   [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max} ${FRAMERATE_DEFAULTS.unit}`,
 };
 export const FRAMERATE_TOOLTIPS = {
   [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min}fps - Good for film, presentations, music, low power/bandwidth servers.`,
+  25: '25fps - Good for film, presentations, music, low power/bandwidth servers.',
   30: '30fps - Good for slow/casual games, chat, general purpose.',
+  50: '50fps - Good for fast/action games, sports, HD video.',
   60: '60fps - Good for fast/action games, sports, HD video.',
   90: '90fps - Good for newer fast games and hardware.',
   [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max}fps - Experimental, use at your own risk!`,
