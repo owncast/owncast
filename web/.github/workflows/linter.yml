@@ -18,6 +18,6 @@ jobs:
     - name: Linter
       uses: tj-actions/eslint-changed-files@v7.3
       with:
-        config-path: '.eslintrc.js'
+        config_path: '.eslintrc.js'
         ignore-path: '.eslintignore'
         extensions: 'ts,tsx,js,jsx'
