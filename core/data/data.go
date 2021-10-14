@@ -51,7 +51,7 @@ func SetupPersistence(file string) error {
 
 	// Some SQLite optimizations
 	_, _ = db.Exec("pragma journal_mode = WAL")
-	_, _ = db.Exec("pragma synchronous = normal")
+	_, _ = db.Exec("pragma synchronous = NORMAL")
 	_, _ = db.Exec("pragma temp_store = memory")
 	_, _ = db.Exec("pragma wal_checkpoint(full)")
 

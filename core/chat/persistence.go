@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -42,9 +43,6 @@ func saveEvent(id string, userID string, body string, eventType string, hidden *
 		_historyCache = nil
 	}()
 
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Errorln("error saving", eventType, err)
@@ -71,9 +69,9 @@ func saveEvent(id string, userID string, body string, eventType string, hidden *
 	}
 }
 
-func getChat(query string) []events.UserMessageEvent {
+func getChat(query *sql.Stmt) []events.UserMessageEvent {
 	history := make([]events.UserMessageEvent, 0)
-	rows, err := _datastore.DB.Query(query)
+	rows, err := query.Query()
 	if err != nil {
 		log.Errorln("error fetching chat history", err)
 		return history
@@ -154,6 +152,8 @@ func getChat(query string) []events.UserMessageEvent {
 
 var _historyCache *[]events.UserMessageEvent
 
+var _chatModerationHistoryQuery *sql.Stmt
+
 // GetChatModerationHistory will return all the chat messages suitable for moderation purposes.
 func GetChatModerationHistory() []events.UserMessageEvent {
 	if _historyCache != nil {
@@ -161,19 +161,38 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 	}
 
 	// Get all messages regardless of visibility
-	var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
-	result := getChat(query)
+	if _chatModerationHistoryQuery == nil {
+		var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
+		q, err := _datastore.DB.Prepare(query)
+		if err != nil {
+			log.Errorln(err)
+			return []events.UserMessageEvent{}
+		}
+		_chatModerationHistoryQuery = q
+	}
+	result := getChat(_chatModerationHistoryQuery)
 
 	_historyCache = &result
 
 	return result
 }
 
+var _getChatHistoryQuery *sql.Stmt
+
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []events.UserMessageEvent {
+	if _getChatHistoryQuery == nil {
+		var query = fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+		q, err := _datastore.DB.Prepare(query)
+		if err != nil {
+			log.Errorln(err)
+			return []events.UserMessageEvent{}
+		}
+		_getChatHistoryQuery = q
+	}
+
 	// Get all visible messages
-	var query = fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
-	m := getChat(query)
+	m := getChat(_getChatHistoryQuery)
 
 	// Invert order of messages
 	for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
@@ -192,7 +211,10 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 
 	// Get a list of IDs from this user within the 5hr window to send to the connected clients to hide
 	ids := make([]string, 0)
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
+	query, err := _datastore.DB.Prepare(fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID))
+	if err != nil {
+		return err
+	}
 	messages := getChat(query)
 
 	if len(messages) == 0 {
@@ -211,9 +233,6 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	defer func() {
 		_historyCache = nil
 	}()
-
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
 
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
@@ -290,9 +309,6 @@ func getMessageByID(messageID string) (*events.UserMessageEvent, error) {
 // Only keep recent messages so we don't keep more chat data than needed
 // for privacy and efficiency reasons.
 func runPruner() {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
 	log.Traceln("Removing chat messages older than", maxBacklogHours, "hours")
 
 	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`

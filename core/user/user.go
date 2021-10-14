@@ -71,9 +71,6 @@ func CreateAnonymousUser(username string) (*User, error) {
 
 // ChangeUsername will change the user associated to userID from one display name to another.
 func ChangeUsername(userID string, username string) {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
 	tx, err := _datastore.DB.Begin()
 
 	if err != nil {
@@ -103,9 +100,6 @@ func ChangeUsername(userID string, username string) {
 }
 
 func create(user *User) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
@@ -131,9 +125,6 @@ func create(user *User) error {
 
 // SetEnabled will will set the enabled flag on a single user assigned to userID.
 func SetEnabled(userID string, enabled bool) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		return err
@@ -161,24 +152,39 @@ func SetEnabled(userID string, enabled bool) error {
 	return tx.Commit()
 }
 
+var _getUserByTokenQuery *sql.Stmt
+
 // GetUserByToken will return a user by an access token.
 func GetUserByToken(token string) *User {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+	if _getUserByTokenQuery == nil {
+		query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE access_token = ?"
+		q, err := _datastore.DB.Prepare(query)
+		if err != nil {
+			return nil
+		}
+		_getUserByTokenQuery = q
+	}
 
-	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE access_token = ?"
-	row := _datastore.DB.QueryRow(query, token)
+	row := _getUserByTokenQuery.QueryRow(token)
 
-	return getUserFromRow(row)
+	u := getUserFromRow(row)
+
+	return u
 }
+
+var _getUserByIdQuery *sql.Stmt
 
 // GetUserByID will return a user by a user ID.
 func GetUserByID(id string) *User {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
-	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE id = ?"
-	row := _datastore.DB.QueryRow(query, id)
+	if _getUserByIdQuery == nil {
+		query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE id = ?"
+		q, err := _datastore.DB.Prepare(query)
+		if err != nil {
+			return nil
+		}
+		_getUserByIdQuery = q
+	}
+	row := _getUserByIdQuery.QueryRow(id)
 	if row == nil {
 		log.Errorln(row)
 		return nil

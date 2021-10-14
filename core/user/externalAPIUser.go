@@ -44,9 +44,6 @@ var validAccessTokenScopes = []string{
 func InsertExternalAPIUser(token string, name string, color int, scopes []string) error {
 	log.Traceln("Adding new API user:", name)
 
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
 	scopesString := strings.Join(scopes, ",")
 	id := shortid.MustGenerate()
 
@@ -75,9 +72,6 @@ func InsertExternalAPIUser(token string, name string, color int, scopes []string
 // DeleteExternalAPIUser will delete a token from the database.
 func DeleteExternalAPIUser(token string) error {
 	log.Traceln("Deleting access token:", token)
-
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
 
 	tx, err := _datastore.DB.Begin()
 	if err != nil {

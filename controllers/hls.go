@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
@@ -39,8 +38,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		middleware.DisableCache(w)
 
 		// Use this as an opportunity to mark this viewer as active.
-		id := utils.GenerateClientIDFromRequest(r)
-		core.SetViewerIDActive(id)
+		Ping(w, r)
 	} else {
 		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))

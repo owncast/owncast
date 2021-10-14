@@ -16,11 +16,12 @@ func CreateMessagesTable(db *sql.DB) {
 		"hidden_at" DATETIME,
 		"timestamp" DATETIME,
 		PRIMARY KEY (id)
-	);CREATE INDEX index ON messages (id, user_id, hidden_at, timestamp);
+	);CREATE UNIQUE INDEX index ON messages (id, user_id, hidden_at, timestamp);
 	CREATE INDEX id ON messages (id);
 	CREATE INDEX user_id ON messages (user_id);
 	CREATE INDEX hidden_at ON messages (hidden_at);
-	CREATE INDEX timestamp ON messages (timestamp);`
+	CREATE INDEX timestamp ON messages (timestamp);
+	CREATE UNIQUE INDEX userid_hidden ON messages (user_id, hidden_at);`
 
 	stmt, err := db.Prepare(createTableSQL)
 	if err != nil {

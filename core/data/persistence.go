@@ -13,9 +13,9 @@ import (
 
 // Datastore is the global key/value store for configuration values.
 type Datastore struct {
-	DB     *sql.DB
-	cache  map[string][]byte
-	DbLock *sync.Mutex
+	DB *sql.DB
+	//cache map[string][]byte
+	cache sync.Map
 }
 
 func (ds *Datastore) warmCache() {
@@ -33,7 +33,7 @@ func (ds *Datastore) warmCache() {
 		if err := res.Scan(&rowKey, &rowValue); err != nil {
 			log.Errorln("error pre-caching config row", err)
 		}
-		ds.cache[rowKey] = rowValue
+		ds.cache.Store(rowKey, rowValue)
 	}
 }
 
@@ -65,9 +65,6 @@ func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 
 // Save will save the ConfigEntry to the database.
 func (ds *Datastore) Save(e ConfigEntry) error {
-	ds.DbLock.Lock()
-	defer ds.DbLock.Unlock()
-
 	var dataGob bytes.Buffer
 	enc := gob.NewEncoder(&dataGob)
 	if err := enc.Encode(e.Value); err != nil {
@@ -101,9 +98,7 @@ func (ds *Datastore) Save(e ConfigEntry) error {
 
 // Setup will create the datastore table and perform initial initialization.
 func (ds *Datastore) Setup() {
-	ds.cache = make(map[string][]byte)
 	ds.DB = GetDatabase()
-	ds.DbLock = &sync.Mutex{}
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS datastore (
 		"key" string NOT NULL PRIMARY KEY,

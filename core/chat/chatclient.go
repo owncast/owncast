@@ -3,6 +3,7 @@ package chat
 import (
 	"bytes"
 	"encoding/json"
+	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -32,6 +33,7 @@ type Client struct {
 	MessageCount int               `json:"messageCount"`
 	UserAgent    string            `json:"userAgent"`
 	ConnectedAt  time.Time         `json:"connectedAt"`
+	mu           sync.Mutex
 }
 
 type chatClientEvent struct {
@@ -173,10 +175,18 @@ func (c *Client) handleEvent(data []byte) {
 }
 
 func (c *Client) close() {
+	defer func() {
+		if a := recover(); a != nil {
+			log.Println("RECOVER", a)
+		}
+	}()
+
 	log.Traceln("client closed:", c.User.DisplayName, c.id, c.ipAddress)
 
 	_ = c.conn.Close()
 	c.server.unregister <- c.id
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	if c.send != nil {
 		close(c.send)
 		c.send = nil
@@ -212,6 +222,8 @@ func (c *Client) sendPayload(payload events.EventPayload) {
 		return
 	}
 
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	if c.send != nil {
 		c.send <- data
 	}
