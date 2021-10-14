@@ -4,7 +4,7 @@ import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import { ServerStatusContext } from '../utils/server-status-context';
 import LogTable from '../components/log-table';
-import Offline from './offline-notice';
+import Offline from '../components/offline-notice';
 
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../utils/format';

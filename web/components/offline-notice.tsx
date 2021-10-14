@@ -8,9 +8,9 @@ import {
 import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { useContext } from 'react';
-import LogTable from '../components/log-table';
-import OwncastLogo from '../components/logo';
-import NewsFeed from '../components/news-feed';
+import LogTable from './log-table';
+import OwncastLogo from './logo';
+import NewsFeed from './news-feed';
 import { ConfigDetails } from '../types/config-section';
 import { ServerStatusContext } from '../utils/server-status-context';
 
