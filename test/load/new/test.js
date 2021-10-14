@@ -14,21 +14,13 @@ function randomSleep() {
   sleep(randomIntBetween(10, 60));
 }
 
-function pingViewerAPI() {
-  // Fake the user-agent so the server side mapping to agent+ip
-  // sees each user as unique.
-  var params = {
-    headers: {
-      'User-Agent': baseUserAgent + ' ' + randomNumber(),
-    },
-  };
-
+function pingViewerAPI(params) {
   const response = http.get('http://localhost:8080/api/ping', params);
   check(response, { 'status was 200': (r) => r.status == 200 });
 }
 
-function fetchHLSPlaylist() {
-  const response = http.get('http://localhost:8080/hls/stream.m3u8');
+function fetchHLSPlaylist(params) {
+  const response = http.get('http://localhost:8080/hls/0/stream.m3u8', params);
   check(response, { 'status was 200': (r) => r.status == 200 });
 }
 
@@ -47,14 +39,8 @@ function registerUser() {
   return accessToken;
 }
 
-function connectToChat(accessToken) {
+function connectToChat(accessToken, params) {
   // Connect to the chat server via web socket.
-  const params = {
-    headers: {
-      'User-Agent': `${baseUserAgent} (iteration ${__ITER}; virtual-user ${__VU})`,
-    },
-  };
-
   var wsResponse = ws.connect(
     `ws://127.0.0.1:8080/ws?accessToken=${accessToken}`,
     params,
@@ -76,23 +62,32 @@ function connectToChat(accessToken) {
 }
 
 export default function () {
-  const accessToken = registerUser();
+    // Fake the user-agent so the server side mapping to agent+ip
+  // sees each user as unique.
+  var params = {
+    headers: {
+      'User-Agent': baseUserAgent + ' ' + randomNumber(),
+    },
+  };
+
+
+  const accessToken = registerUser(params);
   // Fetch chat history once you have an access token.
   fetchChatHistory(accessToken);
 
   // A client hits the ping API every once in a while to
   // keep track of the number of viewers. So we can emulate
   // that.
-  pingViewerAPI();
+  pingViewerAPI(params);
 
   // Emulate loading the master HLS playlist
-  fetchHLSPlaylist();
+  fetchHLSPlaylist(params);
 
   // Register as a new chat user and connect.
-  connectToChat(accessToken);
+  connectToChat(accessToken, params);
 
   sleep(8); // Emulate the ping timer on the client.
-  pingViewerAPI();
+  pingViewerAPI(params);
 }
 
 export let options = {
