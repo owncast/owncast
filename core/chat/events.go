@@ -86,7 +86,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	// Ignore if the stream has been offline
-	if !getStatus().Online || getStatus().LastDisconnectTime != nil {
+	if !getStatus().Online && getStatus().LastDisconnectTime != nil {
 		disconnectedTime := getStatus().LastDisconnectTime.Time
 		if time.Since(disconnectedTime) > 5*time.Minute {
 			return
