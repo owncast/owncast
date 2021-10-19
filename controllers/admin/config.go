@@ -38,7 +38,7 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 
 	tagStrings := make([]string, 0)
 	for _, tag := range configValues {
-		tagStrings = append(tagStrings, tag.Value.(string))
+		tagStrings = append(tagStrings, strings.TrimLeft(tag.Value.(string), "#"))
 	}
 
 	if err := data.SetServerMetadataTags(tagStrings); err != nil {
