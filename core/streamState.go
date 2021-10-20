@@ -106,6 +106,15 @@ func SetStreamAsDisconnected() {
 		_yp.Stop()
 	}
 
+	// If there is no current broadcast available the previous stream
+	// likely failed for some reason. Don't try to append to it.
+	// Just transition to offline.
+	if _currentBroadcast == nil {
+		stopOnlineCleanupTimer()
+		transitionToOfflineVideoStreamContent()
+		return
+	}
+
 	for index := range _currentBroadcast.OutputSettings {
 		playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
 		segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
