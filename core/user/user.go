@@ -191,7 +191,7 @@ func SetModerator(userID string, isModerator bool) error {
 }
 
 func addScopeToUser(userID string, scope string) error {
-	u := GetUserById(userID)
+	u := GetUserByID(userID)
 	scopesString := u.Scopes
 	scopes := utils.StringSliceToMap(scopesString)
 	scopes[scope] = true
@@ -202,7 +202,7 @@ func addScopeToUser(userID string, scope string) error {
 }
 
 func removeScopeFromUser(userID string, scope string) error {
-	u := GetUserById(userID)
+	u := GetUserByID(userID)
 	scopesString := u.Scopes
 	scopes := utils.StringSliceToMap(scopesString)
 	delete(scopes, scope)
@@ -247,8 +247,8 @@ func setScopesOnUser(userID string, scopes []string) error {
 	return tx.Commit()
 }
 
-// GetUserById will return a user by a user ID.
-func GetUserById(id string) *User {
+// GetUserByID will return a user by a user ID.
+func GetUserByID(id string) *User {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 

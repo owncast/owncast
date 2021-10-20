@@ -289,7 +289,7 @@ func SendConnectedClientInfoToUser(userID string) error {
 	}
 
 	// Get an updated reference to the user.
-	user := user.GetUserById(userID)
+	user := user.GetUserByID(userID)
 	if user == nil {
 		return fmt.Errorf("user not found")
 	}
@@ -321,7 +321,7 @@ func SendActionToUser(userID string, text string) error {
 	return nil
 }
 
-func (s *ChatServer) eventReceived(event chatClientEvent) {
+func (s *Server) eventReceived(event chatClientEvent) {
 	var typecheck map[string]interface{}
 	if err := json.Unmarshal(event.data, &typecheck); err != nil {
 		log.Debugln(err)

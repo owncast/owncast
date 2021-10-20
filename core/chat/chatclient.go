@@ -65,7 +65,7 @@ var (
 	space   = []byte{' '}
 )
 
-func (c *ChatClient) sendConnectedClientInfo() {
+func (c *Client) sendConnectedClientInfo() {
 	payload := events.ConnectedClientInfo{
 		Event: events.Event{
 			Type: events.ConnectedUserInfo,
@@ -207,7 +207,7 @@ func (c *Client) startChatRejectionTimeout() {
 	c.sendAction("You are temporarily blocked from sending chat messages due to perceived flooding.")
 }
 
-func (c *ChatClient) sendPayload(payload interface{}) {
+func (c *Client) sendPayload(payload interface{}) {
 	var data []byte
 	data, err := json.Marshal(payload)
 	if err != nil {
