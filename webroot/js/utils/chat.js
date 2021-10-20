@@ -189,7 +189,6 @@ export function checkIsModerator(message) {
   const { user } = message;
   const { scopes } = user;
 
-  return true; // TEMP
   if (!scopes || scopes.length === 0) {
     return false;
   }

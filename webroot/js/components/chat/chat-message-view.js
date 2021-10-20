@@ -43,8 +43,7 @@ export default class ChatMessageView extends Component {
     const { message, isModerator } = this.props;
     const { user, timestamp } = message;
     const { displayName, displayColor, createdAt,
-      // mock field
-      isModerator: isAuthorModerator = true,
+      isModerator: isAuthorModerator,
      } = user;
 
      const isMessageModeratable = isModerator && message.type === SOCKET_MESSAGE_TYPES.CHAT;
