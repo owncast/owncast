@@ -14,12 +14,8 @@ function createCommonjsModule(fn, basedir, module) {
 	}, fn(module, module.exports), module.exports;
 }
 
-function getDefaultExportFromNamespaceIfNotNamed (n) {
-	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
-}
-
 function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
 
-export { commonjsGlobal as a, getDefaultExportFromNamespaceIfNotNamed as b, createCommonjsModule as c, getDefaultExportFromCjs as g };
+export { commonjsGlobal as a, createCommonjsModule as c, getDefaultExportFromCjs as g };
