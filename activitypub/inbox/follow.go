@@ -116,6 +116,11 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 }
 
 func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) error {
+	// Do nothing if displaying engagement actions has been turned off.
+	if !data.GetFederationShowEngagement() {
+		return nil
+	}
+
 	log.Debugln("handleEngagementActivity")
 
 	IRIPath := object.At(0).GetIRI().Path

@@ -67,10 +67,11 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ForbiddenUsernames: usernameBlocklist,
 		SuggestedUsernames: usernameSuggestions,
 		Federation: federationConfigResponse{
-			Enabled:       data.GetFederationEnabled(),
-			IsPrivate:     data.GetFederationIsPrivate(),
-			Username:      data.GetFederationUsername(),
-			GoLiveMessage: data.GetFederationGoLiveMessage(),
+			Enabled:        data.GetFederationEnabled(),
+			IsPrivate:      data.GetFederationIsPrivate(),
+			Username:       data.GetFederationUsername(),
+			GoLiveMessage:  data.GetFederationGoLiveMessage(),
+			ShowEngagement: data.GetFederationShowEngagement(),
 		},
 	}
 
@@ -127,8 +128,9 @@ type yp struct {
 }
 
 type federationConfigResponse struct {
-	Enabled       bool   `json:"enabled"`
-	IsPrivate     bool   `json:"isPrivate"`
-	Username      string `json:"username"`
-	GoLiveMessage string `json:"goLiveMessage"`
+	Enabled        bool   `json:"enabled"`
+	IsPrivate      bool   `json:"isPrivate"`
+	Username       string `json:"username"`
+	GoLiveMessage  string `json:"goLiveMessage"`
+	ShowEngagement bool   `json:"showEngagement"`
 }

@@ -69,6 +69,24 @@ func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "federation private saved")
 }
 
+// SetFederationShowEngagement will set if Fedivese engagement shows in chat.
+func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+	controllers.WriteSimpleResponse(w, true, "federation show engagement saved")
+}
+
 // SetFederationUsername will set the local actor username used for federation activities.
 func SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
