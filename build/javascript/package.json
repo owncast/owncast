@@ -11,7 +11,7 @@
     "mark.js": "^8.11.1",
     "micromodal": "^0.4.6",
     "preact": "10.5.10",
-    "tailwindcss": "^1.9.6",
+    "tailwindcss": "^2.2.17",
     "video.js": "7.15.4"
   },
   "devDependencies": {
