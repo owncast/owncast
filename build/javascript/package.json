@@ -20,25 +20,27 @@
     "postcss-cli": "^9.0.1"
   },
   "snowpack": {
-    "install": [
-      "video.js/core.js",
-      "@videojs/themes/fantasy/*",
-      "@videojs/http-streaming/dist/videojs-http-streaming.min.js",
-      "video.js/dist/video-js.min.css",
-      "@joeattardi/emoji-button",
-      "htm",
-      "preact",
-      "mark.js/dist/mark.es6.min.js",
-      "tailwindcss/dist/tailwind.min.css",
-      "micromodal/dist/micromodal.min.js"
-    ],
+    "packageOptions": {
+      "knownEntrypoints": [
+        "video.js/core.js",
+        "@videojs/themes/fantasy/*",
+        "@videojs/http-streaming/dist/videojs-http-streaming.min.js",
+        "video.js/dist/video-js.min.css",
+        "@joeattardi/emoji-button",
+        "htm",
+        "preact",
+        "mark.js/dist/mark.es6.min.js",
+        "tailwindcss/dist/tailwind.min.css",
+        "micromodal/dist/micromodal.min.js"
+      ]
+    },
     "alias": {
       "video.js": "video.js/core.js"
     }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm install && npx snowpack@2.18.4 install && cp node_modules/video.js/dist/video-js.min.css web_modules/videojs && rm -rf ../../webroot/js/web_modules && cp -R web_modules ../../webroot/js"
+    "build": "rm -rf build && npx snowpack build && rm -rf ../../webroot/js/web_modules && cp -R build/web_modules ../../webroot/js"
   },
   "author": "Owncast",
   "license": "ISC"
