@@ -18,7 +18,7 @@ require (
 	github.com/shirou/gopsutil v3.21.9+incompatible
 	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
-	github.com/yuin/goldmark v1.4.1
+	github.com/yuin/goldmark v1.4.2
 	golang.org/x/mod v0.5.1
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	mvdan.cc/xurls v1.1.0
