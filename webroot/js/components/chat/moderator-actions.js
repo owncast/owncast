@@ -36,6 +36,7 @@ export default class ModeratorActions extends Component {
     const { isMenuOpen } = this.state;
     const { message, accessToken } = this.props;
     const { id } = message;
+    const { user } = message;
 
     return html`
       <div class="moderator-actions-group flex flex-row text-xs p-3">
@@ -59,6 +60,7 @@ export default class ModeratorActions extends Component {
           onDismiss=${this.handleCloseMenu}
           accessToken=${accessToken}
           id=${id}
+          userId=${user.id}
         />`}
       </div>
     `;
@@ -104,6 +106,11 @@ class ModeratorMenu extends Component {
   }
 
   async handleHideMessage() {
+    if (!confirm("Are you sure you want to remove this message from chat?")) {
+      this.props.onDismiss();
+      return;
+    }
+
     const { accessToken, id } = this.props;
     const url = new URL(location.origin + URL_HIDE_MESSAGE);
     url.searchParams.append('accessToken', accessToken);
@@ -122,11 +129,36 @@ class ModeratorMenu extends Component {
     } catch(e) {
       console.error(e);
     }
+
+    this.props.onDismiss();
   }
 
-  handleBanUser() {
-    const { accessToken } = this.props;
-    console.log(accessToken);
+  async handleBanUser() {
+    if (!confirm("Are you sure you want to remove this user from chat?")) {
+      this.props.onDismiss();
+      return;
+    }
+
+    const { accessToken, userId } = this.props;
+    const url = new URL(location.origin + URL_BAN_USER);
+    url.searchParams.append('accessToken', accessToken);
+    const hideMessageUrl = url.toString();
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId }),
+    };
+
+    try {
+      await fetch(hideMessageUrl, options);
+    } catch(e) {
+      console.error(e);
+    }
+
+    this.props.onDismiss();
   }
 
   render() {
@@ -164,7 +196,7 @@ class ModeratorMenu extends Component {
           />
         </li>
         ${displayMoreInfo &&
-        html`<${ModeratorMoreInfoContainer} message=${message} />`}
+        html`<${ModeratorMoreInfoContainer} message=${message} handleBanUser=${this.handleBanUser} handleHideMessage=${this.handleHideMessage} />`}
       </ul>
     `;
   }
@@ -194,16 +226,15 @@ function ModeratorMenuItem({ icon, hoverIcon, label, onClick }) {
 }
 
 // more details panel that display message, prev usernames, actions
-function ModeratorMoreInfoContainer({ message }) {
+function ModeratorMoreInfoContainer({ message, handleHideMessage, handleBanUser }) {
   const { user, timestamp, body } = message;
   const {
     displayName,
     createdAt,
     previousNames,
     displayColor,
-    // mock field
-    isModerator: isAuthorModerator = true,
   } = user;
+  const isAuthorModerator = user.scopes && user.scopes.contains('MODERATOR');
 
   const authorTextColor = { color: textColorForHue(displayColor) };
   const createDate = new Date(createdAt);
@@ -230,7 +261,7 @@ function ModeratorMoreInfoContainer({ message }) {
         </p>
 
         <p className="text-xs text-gray-500 mt-2">
-          Viewer created at: ${createDate.toLocaleString()}
+          First joined: ${createDate.toLocaleString()}
         </p>
 
         ${previousNames.length > 1 &&
@@ -246,17 +277,17 @@ function ModeratorMoreInfoContainer({ message }) {
       <div
         className="moderator-more-info-actions pt-2 flex flex-row border-t border-gray-700 shadow-md"
       >
-        <${ModeratorMenuItem}
+        <${handleHideMessage && ModeratorMenuItem}
           icon=${HIDE_MESSAGE_ICON}
           hoverIcon=${HIDE_MESSAGE_ICON_HOVER}
           label="Hide message"
-          onClick=""
+          onClick="${handleHideMessage}"
         />
-        <${ModeratorMenuItem}
+        <${handleBanUser && ModeratorMenuItem}
           icon=${BAN_USER_ICON}
           hoverIcon=${BAN_USER_ICON_HOVER}
           label="Ban user"
-          onClick=""
+          onClick="${handleBanUser}"
         />
       </div>
     </div>
