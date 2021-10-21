@@ -30,8 +30,6 @@ func ServeAdmin(w http.ResponseWriter, r *http.Request) {
 		path = filepath.Join(path, "index.html")
 	} else if _, err := fs.Stat(adminFiles, path+"index.html"); err == nil {
 		path = filepath.Join(path, "index.html")
-	} else if err != nil {
-		log.Errorln(err)
 	}
 
 	f, err := adminFiles.Open(path)
