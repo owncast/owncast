@@ -24,6 +24,14 @@ var _server *Server
 // a map of user IDs and when they last were active.
 var _lastSeenCache = sync.Map{}
 
+type typeCheck struct {
+	Type string `json:"type"`
+}
+
+var _typeCheckPool = sync.Pool{
+	New: func() interface{} { return new(typeCheck) },
+}
+
 // Server represents an instance of the chat server.
 type Server struct {
 	seq                      uint
@@ -284,14 +292,14 @@ func (s *Server) DisconnectUser(userID string) {
 }
 
 func (s *Server) eventReceived(event chatClientEvent) {
-	var typecheck map[string]interface{}
-	if err := json.Unmarshal(event.data, &typecheck); err != nil {
+	tc := _typeCheckPool.Get().(*typeCheck)
+	defer _typeCheckPool.Put(tc)
+
+	if err := json.Unmarshal(event.data, tc); err != nil {
 		log.Debugln(err)
 	}
 
-	eventType := typecheck["type"]
-
-	switch eventType {
+	switch tc.Type {
 	case events.MessageSent:
 		s.userMessageSent(event)
 
@@ -299,7 +307,7 @@ func (s *Server) eventReceived(event chatClientEvent) {
 		s.userNameChanged(event)
 
 	default:
-		log.Debugln(eventType, "event not found:", typecheck)
+		log.Debugln(tc.Type, "event not found:", tc)
 	}
 }
 
