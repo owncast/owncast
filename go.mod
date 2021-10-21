@@ -14,7 +14,7 @@ require (
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
-	github.com/schollz/sqlite3dump v1.3.0
+	github.com/schollz/sqlite3dump v1.3.1
 	github.com/shirou/gopsutil v3.21.9+incompatible
 	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
