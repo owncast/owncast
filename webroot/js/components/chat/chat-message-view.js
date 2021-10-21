@@ -40,7 +40,7 @@ export default class ChatMessageView extends Component {
     }
   }
   render() {
-    const { message, isModerator } = this.props;
+    const { message, isModerator, accessToken } = this.props;
     const { user, timestamp } = message;
     const { displayName, displayColor, createdAt,
       isModerator: isAuthorModerator,
@@ -83,7 +83,7 @@ export default class ChatMessageView extends Component {
           >
             ${displayName}
           </div>
-          ${isMessageModeratable && html`<${ModeratorActions} message=${message} />`}
+          ${isMessageModeratable && html`<${ModeratorActions} message=${message} accessToken=${accessToken} />`}
           <div
             class="message-text text-gray-300 font-normal overflow-y-hidden pt-2"
             dangerouslySetInnerHTML=${{ __html: formattedMessage }}

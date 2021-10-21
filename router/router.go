@@ -238,6 +238,14 @@ func Start() error {
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
+	// Inline chat moderation actions
+
+	// Update chat message visibility
+	http.HandleFunc("/api/chat/updatemessagevisibility", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility))
+
+	// Enable/disable a user
+	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+
 	// websocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		chat.HandleClientConnection(w, r)

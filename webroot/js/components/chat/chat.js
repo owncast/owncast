@@ -383,7 +383,7 @@ export default class Chat extends Component {
   }
 
   render(props, state) {
-    const { username, readonly, chatInputEnabled, inputMaxBytes } = props;
+    const { username, readonly, chatInputEnabled, inputMaxBytes, accessToken } = props;
     const { messages, chatUserNames, webSocketConnected, isModerator } = state;
 
     this.forceRender = false;
@@ -397,6 +397,7 @@ export default class Chat extends Component {
             username=${username}
             key=${message.id}
             isModerator=${isModerator}
+            accessToken=${accessToken}
           />`
       );
 
