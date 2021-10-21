@@ -50,6 +50,7 @@ const federationUsernameKey = "federation_username"
 const federationPrivateKey = "federation_private"
 const federationGoLiveMessageKey = "federation_go_live_message"
 const federationFollowApprovalRequiredKey = "federation_follow_approval_required"
+const federationShowEngagementKey = "federation_show_engagement"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -682,7 +683,7 @@ func GetFederationGoLiveMessage() string {
 	return message
 }
 
-// SetFederationIsPrivate will return if federation activity is private.
+// SetFederationIsPrivate will set if federation activity is private.
 func SetFederationIsPrivate(isPrivate bool) error {
 	return _datastore.SetBool(federationPrivateKey, isPrivate)
 }
@@ -695,6 +696,21 @@ func GetFederationIsPrivate() bool {
 	}
 
 	return false
+}
+
+// SetFederationShowEngagement will set if fediverse engagement shows in chat.
+func SetFederationShowEngagement(showEngagement bool) error {
+	return _datastore.SetBool(federationShowEngagementKey, showEngagement)
+}
+
+// GetFederationShowEngagement will return if fediverse engagement shows in chat.
+func GetFederationShowEngagement() bool {
+	showEngagement, err := _datastore.GetBool(federationShowEngagementKey)
+	if err == nil {
+		return showEngagement
+	}
+
+	return true
 }
 
 // SetFollowApprovalRequired will set if manual approval of followers is required.

@@ -280,6 +280,9 @@ func Start() error {
 	// set if federation activities are private
 	http.HandleFunc("/api/admin/config/federation/private", middleware.RequireAdminAuth(admin.SetFederationActivityPrivate))
 
+	// set if fediverse engagement appears in chat
+	http.HandleFunc("/api/admin/config/federation/showengagement", middleware.RequireAdminAuth(admin.SetFederationShowEngagement))
+
 	// set local federated username
 	http.HandleFunc("/api/admin/config/federation/username", middleware.RequireAdminAuth(admin.SetFederationUsername))
 
