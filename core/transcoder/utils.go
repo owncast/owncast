@@ -34,6 +34,7 @@ var errorMap = map[string]string{
 	`Unknown encoder 'h264_x264'`:      "your copy of ffmpeg does not have support for the default x264 codec (h264_x264). download a version of ffmpeg that supports this.",
 	`Unrecognized option 'x264-params`: "your copy of ffmpeg does not have support for the default libx264 codec (h264_x264). download a version of ffmpeg that supports this.",
 	`Failed to set value '/dev/dri/renderD128' for option 'vaapi_device': Invalid argument`: "failed to set va-api device to /dev/dri/renderD128. your system is likely not properly configured for va-api",
+	`Stream map 'v:0' matches no streams`:                                                   "the stream provided looks to have no video included, it may be audio-only. owncast requires a video stream.",
 
 	// Generic error for a codec
 	"Unrecognized option": "error with codec. if your copy of ffmpeg or your hardware does not support your selected codec you may need to select another",
@@ -55,6 +56,7 @@ var ignoredErrors = []string{
 	"maybe the hls segment duration will not precise",
 	"Non-monotonous DTS in output",
 	"frames duplicated",
+	"To ignore this",
 }
 
 func handleTranscoderMessage(message string) {
