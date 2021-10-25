@@ -52,7 +52,7 @@ func removeHighValue(values []float64) []float64 {
 func avg(values []float64) float64 {
 	total := 0.0
 	for _, number := range values {
-		total = total + number
+		total += number
 	}
 	average := total / float64(len(values))
 	return average

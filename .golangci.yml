@@ -40,8 +40,44 @@ linters:
     - unconvert
     - unparam
     - whitespace
-
+    - nakedret
+    - cyclop
+    - gosimple
+    - varcheck
+    - unused
+    - deadcode
+    - exportloopref
+    - gocritic
+    - forbidigo
+    - unparam
+    - wastedassign
 linters-settings:
   govet:
     disable:
       - composite
+
+  cyclop:
+    # the maximal code complexity to report. default is 10. eventually work our way to that.
+    max-complexity: 20
+    # the max average package complexity. If it's higher than 0.0 (float) the check is enabled (default 0.0)
+    package-average: 0.0
+    # should ignore tests
+    skip-tests: true  
+
+  gosimple:
+    # Select the Go version to target. The default is '1.13'.
+    go: "1.17"
+    # https://staticcheck.io/docs/options#checks
+    checks: ["all"]
+
+  gocritic:
+    disabled-checks:
+      - ifElseChain
+      - exitAfterDefer
+
+  forbidigo:
+    # Forbid the following identifiers (identifiers are written using regexp):
+    forbid:
+        # Logging via Print bypasses our logging framework.
+      - ^(fmt\.Print(|f|ln)|print|println)
+      - ^panic.*$
