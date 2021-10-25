@@ -132,7 +132,7 @@ func RenderSimpleMarkdown(raw string) string {
 	trimmed := strings.TrimSpace(raw)
 	var buf bytes.Buffer
 	if err := markdown.Convert([]byte(trimmed), &buf); err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	return buf.String()
@@ -161,7 +161,7 @@ func RenderPageContentMarkdown(raw string) string {
 	trimmed := strings.TrimSpace(raw)
 	var buf bytes.Buffer
 	if err := markdown.Convert([]byte(trimmed), &buf); err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	return strings.TrimSpace(buf.String())
