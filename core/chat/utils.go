@@ -2,6 +2,7 @@ package chat
 
 import (
 	"syscall"
+
 	log "github.com/sirupsen/logrus"
 )
 

@@ -111,6 +111,6 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 
 	SaveUserMessage(event)
 
-	eventData.client.MessageCount = eventData.client.MessageCount + 1
+	eventData.client.MessageCount++
 	_lastSeenCache[event.User.ID] = time.Now()
 }

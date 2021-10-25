@@ -284,9 +284,8 @@ func (t *Transcoder) getVariantsString() string {
 
 	for _, variant := range t.variants {
 		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
-		singleVariantMap := ""
-		singleVariantMap = fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
-		variantsStreamMaps = variantsStreamMaps + singleVariantMap
+		singleVariantMap := fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
+		variantsStreamMaps += singleVariantMap
 	}
 	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
 

@@ -132,10 +132,8 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 	ffmpegCmd := strings.Join(animatedGifFlags, " ")
 	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
 		log.Errorln(err)
-	} else {
 		// rename temp file
-		if err := os.Rename(outputFileTemp, outputFile); err != nil {
-			log.Errorln(err)
-		}
+	} else if err := os.Rename(outputFileTemp, outputFile); err != nil {
+		log.Errorln(err)
 	}
 }
