@@ -12,13 +12,13 @@ import (
 func setSystemConcurrentConnectionLimit(limit int64) {
 	var rLimit syscall.Rlimit
 	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	originalLimit := rLimit.Cur
 	rLimit.Cur = uint64(limit)
 	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	log.Traceln("Max process connection count changed from system limit of", originalLimit, "to", limit)

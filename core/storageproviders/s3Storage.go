@@ -200,7 +200,7 @@ func (s *S3Storage) connectAWS() *session.Session {
 func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
 	f, err := os.Open(filePath) // nolint
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	p := m3u8.NewMasterPlaylist()

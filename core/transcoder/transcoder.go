@@ -105,7 +105,7 @@ func (t *Transcoder) Start() {
 
 	stdout, err := _commandExec.StderrPipe()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	if err := _commandExec.Start(); err != nil {
