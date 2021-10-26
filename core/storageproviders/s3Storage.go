@@ -184,9 +184,10 @@ func (s *S3Storage) connectAWS() *session.Session {
 
 	sess, err := session.NewSession(
 		&aws.Config{
-			Region:      aws.String(s.s3Region),
-			Credentials: creds,
-			Endpoint:    aws.String(s.s3Endpoint),
+			Region:           aws.String(s.s3Region),
+			Credentials:      creds,
+			Endpoint:         aws.String(s.s3Endpoint),
+			S3ForcePathStyle: aws.Bool(true),
 		},
 	)
 
