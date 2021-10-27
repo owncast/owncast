@@ -8,4 +8,6 @@ type StorageProvider interface {
 	SegmentWritten(localFilePath string)
 	VariantPlaylistWritten(localFilePath string)
 	MasterPlaylistWritten(localFilePath string)
+
+	CleanupOldContent(baseDirectory string)
 }

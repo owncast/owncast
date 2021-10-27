@@ -207,7 +207,7 @@ func startOnlineCleanupTimer() {
 	_onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
 		for range _onlineCleanupTicker.C {
-			transcoder.CleanupOldContent(config.HLSStoragePath)
+			_storage.CleanupOldContent(config.HLSStoragePath)
 		}
 	}()
 }

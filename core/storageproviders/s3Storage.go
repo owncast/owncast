@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/owncast/owncast/core/data"
@@ -15,6 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/owncast/owncast/config"
@@ -41,6 +43,7 @@ type S3Storage struct {
 	queuedPlaylistUpdates map[string]string
 
 	uploader *s3manager.Uploader
+	s3Client *s3.S3
 }
 
 // NewS3Storage returns a new S3Storage instance.
@@ -73,6 +76,7 @@ func (s *S3Storage) Setup() error {
 	s.sess = s.connectAWS()
 
 	s.uploader = s3manager.NewUploader(s.sess)
+	s.s3Client = s3.New(s.sess)
 
 	return nil
 }
@@ -197,6 +201,91 @@ func (s *S3Storage) connectAWS() *session.Session {
 		log.Panicln(err)
 	}
 	return sess
+}
+
+// CleanupOldContent will delete old files from the S3 Bucket that are no longer being referenced
+// in the stream.
+func (s *S3Storage) CleanupOldContent(baseDirectory string) {
+	keys := s.retrieveKeysToDeleteButLeftNewest(50)
+	s.deleteObjectsWithGiven(keys)
+}
+
+func (s *S3Storage) retrieveKeysToDeleteButLeftNewest(offset int) []*s3.ObjectIdentifier {
+
+	allObjects := s.retrieveAllObjects()
+	tsObjects := s.filterTsObjectsFrom(allObjects)
+	s.sortObjectsByModificationDateDescending(tsObjects)
+	objectsToDelete := s.ommitNewest(tsObjects, offset)
+
+	return s.retrieveKeysFrom(objectsToDelete)
+}
+
+func (s *S3Storage) deleteObjectsWithGiven(keys []*s3.ObjectIdentifier) {
+	deleteObjectsRequest := &s3.DeleteObjectsInput{
+		Bucket: aws.String(s.s3Bucket),
+		Delete: &s3.Delete{
+			Objects: keys,
+			Quiet:   aws.Bool(false),
+		},
+	}
+
+	deleteObjectsResponse, err := s.s3Client.DeleteObjects(deleteObjectsRequest)
+
+	if err != nil {
+		log.Debugf("Unable to delete objects from bucket %q, %v\n", s.s3Bucket, err)
+	}
+
+	log.Traceln(deleteObjectsResponse)
+}
+
+func (s *S3Storage) retrieveAllObjects() []*s3.Object {
+
+	allObjectsListRequest := &s3.ListObjectsInput{
+		Bucket: aws.String(s.s3Bucket),
+	}
+
+	allObjectsListResponse, err := s.s3Client.ListObjects(allObjectsListRequest)
+	if err != nil {
+		log.Debugf("Unable to list items in bucket %q, %v", s.s3Bucket, err)
+		return nil
+	}
+
+	return allObjectsListResponse.Contents
+}
+
+func (s *S3Storage) filterTsObjectsFrom(objects []*s3.Object) []*s3.Object {
+
+	var result []*s3.Object
+
+	for _, item := range objects {
+		if strings.HasSuffix(*item.Key, ".ts") {
+			result = append(result, item)
+		}
+	}
+
+	return result
+}
+
+func (s *S3Storage) sortObjectsByModificationDateDescending(objects []*s3.Object) {
+	sort.Slice(objects, func(i, j int) bool {
+		return objects[i].LastModified.After(*objects[j].LastModified)
+	})
+}
+
+func (s *S3Storage) ommitNewest(objects []*s3.Object, offset int) []*s3.Object {
+	return objects[offset:]
+}
+
+func (s *S3Storage) retrieveKeysFrom(objects []*s3.Object) []*s3.ObjectIdentifier {
+	var result []*s3.ObjectIdentifier
+
+	for _, item := range objects {
+		result = append(result, &s3.ObjectIdentifier{
+			Key: item.Key,
+		})
+	}
+
+	return result
 }
 
 // rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
