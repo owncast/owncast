@@ -29,6 +29,7 @@ const s3Config = {
   secret: randomString(),
   bucket: randomString(),
   region: randomString(),
+  forcePathStyle: true,
 };
 
 const forbiddenUsernames = [randomString(), randomString(), randomString()];
@@ -148,7 +149,7 @@ test('admin configuration is correct', (done) => {
       expect(res.body.s3.secret).toBe(s3Config.secret);
       expect(res.body.s3.bucket).toBe(s3Config.bucket);
       expect(res.body.s3.region).toBe(s3Config.region);
-
+      expect(res.body.s3.forcePathStyle).toBeTruthy();
       done();
     });
 });
