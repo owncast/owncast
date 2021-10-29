@@ -14,13 +14,15 @@ import (
 
 const unknownString = "Unknown"
 
+var _getInboundDetailsFromMetadataRE = regexp.MustCompile(`\{(.*?)\}`)
+
 func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMetadata, error) {
 	metadataComponentsString := fmt.Sprintf("%+v", metadata)
 	if !strings.Contains(metadataComponentsString, "onMetaData") {
 		return models.RTMPStreamMetadata{}, errors.New("Not a onMetaData message")
 	}
-	re := regexp.MustCompile(`\{(.*?)\}`)
-	submatchall := re.FindAllString(metadataComponentsString, 1)
+
+	submatchall := _getInboundDetailsFromMetadataRE.FindAllString(metadataComponentsString, 1)
 
 	if len(submatchall) == 0 {
 		return models.RTMPStreamMetadata{}, errors.New("unable to parse inbound metadata")
