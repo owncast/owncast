@@ -357,4 +357,9 @@ export const S3_TEXT_FIELDS_INFO = {
     pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
     useTrim: true,
   },
+  forcePathStyle: {
+    fieldName: 'forcePathStyle',
+    label: 'Force path-style',
+    tip: 'If your S3 provider doesn\'t support virtual-hosted-style URLs set this to ON (i.e. Oracle Cloud Object Storage)',
+  },
 };

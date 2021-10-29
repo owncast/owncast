@@ -34,6 +34,7 @@ export const initialServerConfigState: ConfigDetails = {
     region: '',
     secret: '',
     servingEndpoint: '',
+    forcePathStyle: false,
   },
   yp: {
     enabled: false,

@@ -79,6 +79,7 @@ export interface S3Field {
   region: string;
   secret: string;
   servingEndpoint?: string;
+  forcePathStyle: boolean;
 }
 
 export interface ExternalAction {

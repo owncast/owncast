@@ -28,7 +28,7 @@ const { Panel } = Collapse;
 // we could probably add more detailed checks here
 // `currentValues` is what's currently in the global store and in the db
 function checkSaveable(formValues: any, currentValues: any) {
-  const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl } = formValues;
+  const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl, forcePathStyle } = formValues;
   // if fields are filled out and different from what's in store, then return true
   if (enabled) {
     if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
@@ -41,7 +41,8 @@ function checkSaveable(formValues: any, currentValues: any) {
         (!currentValues.servingEndpoint && servingEndpoint !== '') ||
         (!!currentValues.servingEndpoint && servingEndpoint !== currentValues.servingEndpoint) ||
         (!currentValues.acl && acl !== '') ||
-        (!!currentValues.acl && acl !== currentValues.acl)
+        (!!currentValues.acl && acl !== currentValues.acl) ||
+        forcePathStyle !== currentValues.forcePathStyle
       ) {
         return true;
       }
@@ -72,6 +73,7 @@ export default function EditStorage() {
     region = '',
     secret = '',
     servingEndpoint = '',
+    forcePathStyle = false,
   } = s3;
 
   useEffect(() => {
@@ -84,6 +86,7 @@ export default function EditStorage() {
       region,
       secret,
       servingEndpoint,
+      forcePathStyle,
     });
     setShouldDisplayForm(enabled);
   }, [s3]);
@@ -134,6 +137,10 @@ export default function EditStorage() {
   const handleSwitchChange = (storageEnabled: boolean) => {
     setShouldDisplayForm(storageEnabled);
     handleFieldChange({ fieldName: 'enabled', value: storageEnabled });
+  };
+
+  const handleForcePathStyleSwitchChange = (forcePathStyleEnabled: boolean) => {
+    handleFieldChange({ fieldName: 'forcePathStyle', value: forcePathStyleEnabled });
   };
 
   const containerClass = classNames({
@@ -215,6 +222,14 @@ export default function EditStorage() {
                 {...S3_TEXT_FIELDS_INFO.servingEndpoint}
                 value={formDataValues.servingEndpoint}
                 onChange={handleFieldChange}
+              />
+            </div>
+            <div className="enable-switch">
+              <ToggleSwitch
+                {...S3_TEXT_FIELDS_INFO.forcePathStyle}
+                fieldName="forcePathStyle"
+                checked={formDataValues.forcePathStyle}
+                onChange={handleForcePathStyleSwitchChange}
               />
             </div>
           </Panel>
