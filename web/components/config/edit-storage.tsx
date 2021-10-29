@@ -28,7 +28,17 @@ const { Panel } = Collapse;
 // we could probably add more detailed checks here
 // `currentValues` is what's currently in the global store and in the db
 function checkSaveable(formValues: any, currentValues: any) {
-  const { endpoint, accessKey, secret, bucket, region, enabled, servingEndpoint, acl, forcePathStyle } = formValues;
+  const {
+    endpoint,
+    accessKey,
+    secret,
+    bucket,
+    region,
+    enabled,
+    servingEndpoint,
+    acl,
+    forcePathStyle,
+  } = formValues;
   // if fields are filled out and different from what's in store, then return true
   if (enabled) {
     if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
