@@ -124,6 +124,11 @@ func RenderMarkdown(raw string) string {
 	return buf.String()
 }
 
+var (
+	_sanitizeReSrcMatch      = regexp.MustCompile(`(?i)^/img/emoji`)
+	_sanitizeReAltTitleMatch = regexp.MustCompile(`:\S+:`)
+)
+
 func sanitize(raw string) string {
 	p := bluemonday.StrictPolicy()
 
@@ -146,8 +151,8 @@ func sanitize(raw string) string {
 	p.AllowElementsContent("p")
 
 	// Allow img tags from the the local emoji directory only
-	p.AllowAttrs("src").Matching(regexp.MustCompile(`(?i)^/img/emoji`)).OnElements("img")
-	p.AllowAttrs("alt", "title").Matching(regexp.MustCompile(`:\S+:`)).OnElements("img")
+	p.AllowAttrs("src").Matching(_sanitizeReSrcMatch).OnElements("img")
+	p.AllowAttrs("alt", "title").Matching(_sanitizeReAltTitleMatch).OnElements("img")
 	p.AllowAttrs("class").OnElements("img")
 
 	// Allow bold
