@@ -211,7 +211,6 @@ func (s *S3Storage) CleanupOldContent(baseDirectory string) {
 }
 
 func (s *S3Storage) retrieveKeysToDeleteButLeftNewest(offset int) []*s3.ObjectIdentifier {
-
 	allObjects := s.retrieveAllObjects()
 	tsObjects := s.filterTsObjectsFrom(allObjects)
 	s.sortObjectsByModificationDateDescending(tsObjects)
@@ -239,7 +238,6 @@ func (s *S3Storage) deleteObjectsWithGiven(keys []*s3.ObjectIdentifier) {
 }
 
 func (s *S3Storage) retrieveAllObjects() []*s3.Object {
-
 	allObjectsListRequest := &s3.ListObjectsInput{
 		Bucket: aws.String(s.s3Bucket),
 	}
@@ -254,8 +252,7 @@ func (s *S3Storage) retrieveAllObjects() []*s3.Object {
 }
 
 func (s *S3Storage) filterTsObjectsFrom(objects []*s3.Object) []*s3.Object {
-
-	var result []*s3.Object
+	result := make([]*s3.Object, len(objects))
 
 	for _, item := range objects {
 		if strings.HasSuffix(*item.Key, ".ts") {
@@ -277,7 +274,7 @@ func (s *S3Storage) ommitNewest(objects []*s3.Object, offset int) []*s3.Object {
 }
 
 func (s *S3Storage) retrieveKeysFrom(objects []*s3.Object) []*s3.ObjectIdentifier {
-	var result []*s3.ObjectIdentifier
+	result := make([]*s3.ObjectIdentifier, len(objects))
 
 	for _, item := range objects {
 		result = append(result, &s3.ObjectIdentifier{
