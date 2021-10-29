@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/nareix/joy5/format/flv/flvio"
@@ -13,39 +14,19 @@ import (
 
 const unknownString = "Unknown"
 
-func getMetadataComponents(metadata string) (string, bool) {
-	start := -1
-	ptr := 0
-
-	for ; ptr < len(metadata); ptr++ {
-		switch metadata[ptr] {
-		case '{':
-			if start == -1 {
-				start = ptr
-			}
-
-		case '}':
-			// Make sure there's actually been an opening '{' first
-			if start != -1 {
-				return metadata[start : ptr+1], true
-			}
-		}
-	}
-
-	return "", false
-}
-
 func getInboundDetailsFromMetadata(metadata []interface{}) (models.RTMPStreamMetadata, error) {
 	metadataComponentsString := fmt.Sprintf("%+v", metadata)
 	if !strings.Contains(metadataComponentsString, "onMetaData") {
 		return models.RTMPStreamMetadata{}, errors.New("Not a onMetaData message")
 	}
-	metadataJSONString, ok := getMetadataComponents(metadataComponentsString)
+	re := regexp.MustCompile(`\{(.*?)\}`)
+	submatchall := re.FindAllString(metadataComponentsString, 1)
 
-	if !ok {
+	if len(submatchall) == 0 {
 		return models.RTMPStreamMetadata{}, errors.New("unable to parse inbound metadata")
 	}
 
+	metadataJSONString := submatchall[0]
 	var details models.RTMPStreamMetadata
 	err := json.Unmarshal([]byte(metadataJSONString), &details)
 	return details, err
