@@ -160,6 +160,8 @@ components:
           type: string
         acl:
           type: string
+        forcePathStyle:
+          type: boolean
       required:
         - enabled
     StreamQuality:

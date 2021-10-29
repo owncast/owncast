@@ -10,4 +10,5 @@ type S3 struct {
 	Bucket          string `json:"bucket,omitempty"`
 	Region          string `json:"region,omitempty"`
 	ACL             string `json:"acl,omitempty"`
+	ForcePathStyle  bool   `json:"forcePathStyle"`
 }
