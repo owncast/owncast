@@ -80,6 +80,10 @@ func GetAllSocialHandles() map[string]SocialHandle {
 			Platform: "Spotify",
 			Icon:     "/img/platformlogos/spotify.svg",
 		},
+		"steam": {
+			Platform: "Steam",
+			Icon:     "/img/platformlogos/steam.svg",
+		},
 		"tiktok": {
 			Platform: "TikTok",
 			Icon:     "/img/platformlogos/tiktok.svg",
