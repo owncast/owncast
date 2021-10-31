@@ -1,5 +1,6 @@
 // nolint:goimports
-// +build !freebsd
+//go:build !freebsd && !windows
+// +build !freebsd,!windows
 
 package chat
 
