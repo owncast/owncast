@@ -2,7 +2,7 @@ const listenForErrors = require('./lib/errors.js').listenForErrors;
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'abc123';
 
-describe('Video embed page', () => {
+describe('Admin page', () => {
   beforeAll(async () => {
     await page.setViewport({ width: 1080, height: 720 });
     listenForErrors(browser, page);
@@ -24,5 +24,4 @@ describe('Video embed page', () => {
   it('should have rendered the admin home page', async () => {
     await page.waitForSelector('.home-container');
   });
-
 });
