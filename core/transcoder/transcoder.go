@@ -60,6 +60,28 @@ type VideoSize struct {
 	Height int
 }
 
+// For limiting the output bitrate
+// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
+// https://developer.apple.com/documentation/http_live_streaming/about_apple_s_http_live_streaming_tools
+// Adjust the max & buffer size until the output bitrate doesn't exceed the ~+10% that Apple's media validator
+// complains about.
+
+// getAllocatedVideoBitrate returns the video bitrate we allocate after making some room for audio.
+// 192 is pretty average.
+func (v *HLSVariant) getAllocatedVideoBitrate() int {
+	return int(float64(v.videoBitrate) - 192)
+}
+
+// getMaxVideoBitrate returns the maximum video bitrate we allow the encoder to support.
+func (v *HLSVariant) getMaxVideoBitrate() int {
+	return int(float64(v.getAllocatedVideoBitrate()) + float64(v.getAllocatedVideoBitrate())*0.07)
+}
+
+// getBufferSize returns how often it checks the bitrate of encoded segments to see if it's too high/low.
+func (v *HLSVariant) getBufferSize() int {
+	return int(float64(v.getAllocatedVideoBitrate()) * 0.5)
+}
+
 // getString returns a WxH formatted getString for scaling video output.
 func (v *VideoSize) getString() string {
 	widthString := strconv.Itoa(v.Width)
@@ -132,7 +154,7 @@ func (t *Transcoder) Start() {
 }
 
 func (t *Transcoder) getString() string {
-	var port = t.internalListenerPort
+	port := t.internalListenerPort
 	localListenerAddress := "http://127.0.0.1:" + port
 
 	hlsOptionFlags := []string{}
@@ -279,8 +301,8 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 
 // Get the command flags for the variants.
 func (t *Transcoder) getVariantsString() string {
-	var variantsCommandFlags = ""
-	var variantsStreamMaps = " -var_stream_map \""
+	variantsCommandFlags := ""
+	variantsStreamMaps := " -var_stream_map \""
 
 	for _, variant := range t.variants {
 		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
@@ -324,21 +346,13 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
 	}
 
 	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
-
-	// For limiting the output bitrate
-	// https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate
-	// https://developer.apple.com/documentation/http_live_streaming/about_apple_s_http_live_streaming_tools
-	// Adjust the max & buffer size until the output bitrate doesn't exceed the ~+10% that Apple's media validator
-	// complains about.
-	maxBitrate := int(float64(v.videoBitrate) * 1.06) // Max is a ~+10% over specified bitrate.
-
 	cmd := []string{
 		"-map v:0",
-		fmt.Sprintf("-c:v:%d %s", v.index, t.codec.Name()),    // Video codec used for this variant
-		fmt.Sprintf("-b:v:%d %dk", v.index, v.videoBitrate),   // The average bitrate for this variant
-		fmt.Sprintf("-maxrate:v:%d %dk", v.index, maxBitrate), // The max bitrate allowed for this variant
-		fmt.Sprintf("-g:v:%d %d", v.index, gop),               // Suggested interval where i-frames are encoded into the segments
-		fmt.Sprintf("-keyint_min:v:%d %d", v.index, gop),      // minimum i-keyframe interval
+		fmt.Sprintf("-c:v:%d %s", v.index, t.codec.Name()),                // Video codec used for this variant
+		fmt.Sprintf("-b:v:%d %dk", v.index, v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
+		fmt.Sprintf("-maxrate:v:%d %dk", v.index, v.getMaxVideoBitrate()), // The max bitrate allowed for this variant
+		fmt.Sprintf("-g:v:%d %d", v.index, gop),                           // Suggested interval where i-frames are encoded into the segments
+		fmt.Sprintf("-keyint_min:v:%d %d", v.index, gop),                  // minimum i-keyframe interval
 		fmt.Sprintf("-r:v:%d %d", v.index, v.framerate),
 		t.codec.VariantFlags(v),
 	}
