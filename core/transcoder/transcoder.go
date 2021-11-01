@@ -157,7 +157,10 @@ func (t *Transcoder) getString() string {
 	port := t.internalListenerPort
 	localListenerAddress := "http://127.0.0.1:" + port
 
-	hlsOptionFlags := []string{}
+	hlsOptionFlags := []string{
+		"program_date_time",
+		"independent_segments",
+	}
 
 	if t.appendToStream {
 		hlsOptionFlags = append(hlsOptionFlags, "append_list")
@@ -188,7 +191,7 @@ func (t *Transcoder) getString() string {
 		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
 		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
 		hlsOptionsString,
-		"-segment_format_options", "mpegts_flags=+initial_discontinuity:mpegts_copyts=1",
+		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",
 
 		// Video settings
 		t.codec.ExtraArguments(),
