@@ -38,6 +38,9 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		// Playlists should never be cached.
 		middleware.DisableCache(w)
 
+		// Force the correct content type
+		w.Header().Set("Content-Type", "application/x-mpegURL")
+
 		// Use this as an opportunity to mark this viewer as active.
 		id := utils.GenerateClientIDFromRequest(r)
 		core.SetViewerIDActive(id)
@@ -45,6 +48,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	}
+
 	middleware.EnableCors(w)
 	http.ServeFile(w, r, fullPath)
 }
