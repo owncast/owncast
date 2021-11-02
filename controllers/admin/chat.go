@@ -103,6 +103,7 @@ func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteResponse(w, users)
 }
 
+// UpdateUserModerator will set the moderator status for a user ID.
 func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		UserID      string `json:"userId"`

@@ -308,6 +308,8 @@ func SendConnectedClientInfoToUser(userID string) error {
 	return nil
 }
 
+// SendActionToUser will send system action text to all connected clients
+// assigned to a user ID.
 func SendActionToUser(userID string, text string) error {
 	clients, err := GetClientsForUser(userID)
 	if err != nil {

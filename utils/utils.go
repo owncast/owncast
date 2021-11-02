@@ -251,7 +251,7 @@ func VerifyFFMpegPath(path string) error {
 	}
 
 	mode := stat.Mode()
-	//source: https://stackoverflow.com/a/60128480
+	// source: https://stackoverflow.com/a/60128480
 	if mode&0111 == 0 {
 		return errors.New("ffmpeg path is not executable")
 	}
@@ -292,9 +292,10 @@ func StringSliceToMap(stringSlice []string) map[string]interface{} {
 	return stringMap
 }
 
+// StringMapKeys returns a slice of string keys from a map.
 func StringMapKeys(stringMap map[string]interface{}) []string {
 	stringSlice := []string{}
-	for k, _ := range stringMap {
+	for k := range stringMap {
 		stringSlice = append(stringSlice, k)
 	}
 	return stringSlice

@@ -56,7 +56,7 @@ func CreateAnonymousUser(username string) (*User, error) {
 		return nil, err
 	}
 
-	var displayName = username
+	displayName := username
 	if displayName == "" {
 		displayName = utils.GeneratePhrase()
 	}
@@ -84,7 +84,6 @@ func ChangeUsername(userID string, username string) {
 	defer _datastore.DbLock.Unlock()
 
 	tx, err := _datastore.DB.Begin()
-
 	if err != nil {
 		log.Debugln(err)
 	}
@@ -95,7 +94,6 @@ func ChangeUsername(userID string, username string) {
 	}()
 
 	stmt, err := tx.Prepare("UPDATE users SET display_name = ?, previous_names = previous_names || ?, namechanged_at = ? WHERE id = ?")
-
 	if err != nil {
 		log.Debugln(err)
 	}
@@ -124,7 +122,6 @@ func create(user *User) error {
 	}()
 
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
-
 	if err != nil {
 		log.Debugln(err)
 	}
@@ -185,9 +182,9 @@ func GetUserByToken(token string) *User {
 func SetModerator(userID string, isModerator bool) error {
 	if isModerator {
 		return addScopeToUser(userID, moderatorScopeKey)
-	} else {
-		return removeScopeFromUser(userID, moderatorScopeKey)
 	}
+
+	return removeScopeFromUser(userID, moderatorScopeKey)
 }
 
 func addScopeToUser(userID string, scope string) error {
@@ -210,7 +207,6 @@ func removeScopeFromUser(userID string, scope string) error {
 	scopesSlice := utils.StringMapKeys(scopes)
 
 	return setScopesOnUser(userID, scopesSlice)
-
 }
 
 func setScopesOnUser(userID string, scopes []string) error {
@@ -226,7 +222,6 @@ func setScopesOnUser(userID string, scopes []string) error {
 
 	scopesSliceString := strings.TrimSpace(strings.Join(scopes, ","))
 	stmt, err := tx.Prepare("UPDATE users SET scopes=? WHERE id IS ?")
-
 	if err != nil {
 		return err
 	}
@@ -283,7 +278,7 @@ func GetDisabledUsers() []*User {
 
 // GetModeratorUsers will return a list of users with moderator access.
 func GetModeratorUsers() []*User {
-	var query = `SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (
+	query := `SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (
 		WITH RECURSIVE split(id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, scope, rest) AS (
 		  SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, '', scopes || ',' FROM users
 		   UNION ALL
@@ -309,6 +304,7 @@ func GetModeratorUsers() []*User {
 
 	return users
 }
+
 func getUsersFromRows(rows *sql.Rows) []*User {
 	users := make([]*User, 0)
 
