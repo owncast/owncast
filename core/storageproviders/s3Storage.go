@@ -206,7 +206,11 @@ func (s *S3Storage) connectAWS() *session.Session {
 // CleanupOldContent will delete old files from the S3 Bucket that are no longer being referenced
 // in the stream.
 func (s *S3Storage) CleanupOldContent(baseDirectory string) {
-	keys := s.retrieveKeysToDeleteButLeftNewest(50)
+	// Determine how many files we should keep on S3 storage
+	maxNumber := data.GetStreamLatencyLevel().SegmentCount
+	buffer := 10
+
+	keys := s.retrieveKeysToDeleteButLeftNewest(maxNumber + buffer)
 	s.deleteObjectsWithGiven(keys)
 }
 
