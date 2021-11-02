@@ -102,15 +102,15 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	webhooks := make([]models.Webhook, 0)
 
 	var query = `SELECT * FROM (
-		WITH RECURSIVE split(url, event, rest) AS (
-		  SELECT url, '', events || ',' FROM webhooks
+		WITH RECURSIVE split(id, url, event, rest) AS (
+		  SELECT id, url, '', events || ',' FROM webhooks
 		   UNION ALL
-		  SELECT url, 
+		  SELECT id, url,
 				 substr(rest, 0, instr(rest, ',')),
 				 substr(rest, instr(rest, ',')+1)
 			FROM split
 		   WHERE rest <> '')
-		SELECT url, event 
+		SELECT id, url, event
 		  FROM split 
 		 WHERE event <> ''
 	  ) AS webhook WHERE event IS "` + event + `"`
@@ -123,15 +123,17 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	defer rows.Close()
 
 	for rows.Next() {
+		var id int
 		var url string
 
-		if err := rows.Scan(&url, &event); err != nil {
+		if err := rows.Scan(&id, &url, &event); err != nil {
 			log.Debugln(err)
 			log.Error("There is a problem with the database.")
 			break
 		}
 
 		singleWebhook := models.Webhook{
+			ID:  id,
 			URL: url,
 		}
 
@@ -194,7 +196,7 @@ func GetWebhooks() ([]models.Webhook, error) { //nolint
 }
 
 // SetWebhookAsUsed will update the last used time for a webhook.
-func SetWebhookAsUsed(id string) error {
+func SetWebhookAsUsed(webhook models.Webhook) error {
 	tx, err := _db.Begin()
 	if err != nil {
 		return err
@@ -206,7 +208,7 @@ func SetWebhookAsUsed(id string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(id); err != nil {
+	if _, err := stmt.Exec(webhook.ID); err != nil {
 		return err
 	}
 
