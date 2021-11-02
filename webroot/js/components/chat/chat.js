@@ -194,7 +194,7 @@ export default class Chat extends Component {
     const updatedMessageList = [...curMessages];
 
     // Change the visibility of messages by ID.
-    if (messageType === 'VISIBILITY_UPDATE') {
+    if (messageType === 'VISIBILITY-UPDATE') {
       const idsToUpdate = message.ids;
       const visible = message.visible;
 

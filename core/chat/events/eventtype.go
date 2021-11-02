@@ -11,7 +11,7 @@ const (
 	// UserNameChanged is the event sent when a chat username change takes place.
 	UserNameChanged EventType = "NAME_CHANGE"
 	// VisibiltyUpdate is the event sent when a chat message's visibility changes.
-	VisibiltyUpdate EventType = "VISIBILITY_UPDATE"
+	VisibiltyUpdate EventType = "VISIBILITY-UPDATE"
 	// PING is a ping message.
 	PING EventType = "PING"
 	// PONG is a pong message.
