@@ -111,3 +111,24 @@ func RequireUserAccessToken(handler http.HandlerFunc) http.HandlerFunc {
 		handler(w, r)
 	})
 }
+
+// RequireUserModerationScopeAccesstoken will validate a provided user's access token and make sure the associated user is enabled
+// and has "MODERATOR" scope assigned to the user.
+func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		accessToken := r.URL.Query().Get("accessToken")
+		if accessToken == "" {
+			accessDenied(w)
+			return
+		}
+
+		// A user is required to use the websocket
+		user := user.GetUserByToken(accessToken)
+		if user == nil || !user.IsEnabled() || !user.IsModerator() {
+			accessDenied(w)
+			return
+		}
+
+		handler(w, r)
+	})
+}

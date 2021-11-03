@@ -51,6 +51,7 @@ import {
   URL_VIEWER_PING,
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
+import { checkIsModerator } from './utils/chat.js';
 
 export default class App extends Component {
   constructor(props, context) {
@@ -67,6 +68,8 @@ export default class App extends Component {
       chatInputEnabled: false, // chat input box state
       accessToken: null,
       username: getLocalStorage(KEY_USERNAME),
+      isModerator: false,
+
       isRegistering: false,
       touchKeyboardActive: false,
 
@@ -558,7 +561,10 @@ export default class App extends Component {
       const { user } = e;
       const { displayName } = user;
 
-      this.setState({ username: displayName });
+      this.setState({
+        username: displayName,
+        isModerator: checkIsModerator(e),
+      });
     }
   }
 
@@ -627,6 +633,7 @@ export default class App extends Component {
       configData,
       displayChatPanel,
       canChat,
+      isModerator,
 
       isPlaying,
       orientation,
@@ -769,6 +776,7 @@ export default class App extends Component {
             >
               <${UsernameForm}
                 username=${username}
+                isModerator=${isModerator}
                 onUsernameChange=${this.handleUsernameChange}
                 onFocus=${this.handleFormFocus}
                 onBlur=${this.handleFormBlur}

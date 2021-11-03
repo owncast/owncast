@@ -6,6 +6,10 @@ export const URL_CUSTOM_EMOJIS = `/api/emoji`;
 export const URL_CONFIG = `/api/config`;
 export const URL_VIEWER_PING = `/api/ping`;
 
+// inline moderation actions
+export const URL_HIDE_MESSAGE = `/api/chat/updatemessagevisibility`;
+export const URL_BAN_USER = `/api/chat/users/setenabled`;
+
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
 export const URL_WEBSOCKET = `${

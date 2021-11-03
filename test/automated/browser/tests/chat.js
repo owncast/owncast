@@ -1,4 +1,10 @@
-async function interactiveChatTest(browser, page, newName, chatMessage, device) {
+async function interactiveChatTest(
+  browser,
+  page,
+  newName,
+  chatMessage,
+  device
+) {
   it('should have the chat input', async () => {
     await page.waitForSelector('#message-input');
   });
@@ -16,25 +22,29 @@ async function interactiveChatTest(browser, page, newName, chatMessage, device) 
 
   it('should allow changing the username on ' + device, async () => {
     await page.waitForSelector('#username-display');
-    await page.evaluate(()=>document.querySelector('#username-display').click())
-
+    await page.evaluate(() =>
+      document.querySelector('#username-display').click()
+    );
     await page.waitForSelector('#username-change-input');
-    await page.evaluate(()=>document.querySelector('#username-change-input').click())
-    await page.type('#username-change-input', 'a new name');
-
-    await page.evaluate(()=>document.querySelector('#username-change-input').click())
-    await page.type('#username-change-input', newName);
-
+    await page.evaluate(() =>
+      document.querySelector('#username-change-input').click()
+    );
+    await page.evaluate(() =>
+      document.querySelector('#username-change-input').click()
+    );
     await page.waitForSelector('#button-update-username');
-    await page.evaluate(()=>document.querySelector('#button-update-username').click())
+
+    await page.evaluate(() =>
+      document.querySelector('#button-update-username').click()
+    );
   });
 
   it('should allow typing a chat message', async () => {
     await page.waitForSelector('#message-input');
-    await page.evaluate(()=>document.querySelector('#message-input').click())
+    await page.evaluate(() => document.querySelector('#message-input').click());
     await page.waitForTimeout(1000);
-    await page.focus('#message-input')
-    await page.keyboard.type(chatMessage)
+    await page.focus('#message-input');
+    await page.keyboard.type(chatMessage);
     page.keyboard.press('Enter');
   });
 }

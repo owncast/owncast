@@ -110,6 +110,12 @@ func Start() error {
 	// Get a list of disabled users
 	http.HandleFunc("/api/admin/chat/users/disabled", middleware.RequireAdminAuth(admin.GetDisabledUsers))
 
+	// Set moderator status for a user
+	http.HandleFunc("/api/admin/chat/users/setmoderator", middleware.RequireAdminAuth(admin.UpdateUserModerator))
+
+	// Get a list of moderator users
+	http.HandleFunc("/api/admin/chat/users/moderators", middleware.RequireAdminAuth(admin.GetModerators))
+
 	// Update config values
 
 	// Change the current streaming key in memory
@@ -231,6 +237,14 @@ func Start() error {
 
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+
+	// Inline chat moderation actions
+
+	// Update chat message visibility
+	http.HandleFunc("/api/chat/updatemessagevisibility", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility))
+
+	// Enable/disable a user
+	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
 
 	// websocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
