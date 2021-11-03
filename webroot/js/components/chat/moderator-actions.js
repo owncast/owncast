@@ -106,7 +106,7 @@ class ModeratorMenu extends Component {
   }
 
   async handleHideMessage() {
-    if (!confirm("Are you sure you want to remove this message from chat?")) {
+    if (!confirm('Are you sure you want to remove this message from chat?')) {
       this.props.onDismiss();
       return;
     }
@@ -126,7 +126,7 @@ class ModeratorMenu extends Component {
 
     try {
       await fetch(hideMessageUrl, options);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
 
@@ -134,7 +134,7 @@ class ModeratorMenu extends Component {
   }
 
   async handleBanUser() {
-    if (!confirm("Are you sure you want to remove this user from chat?")) {
+    if (!confirm('Are you sure you want to remove this user from chat?')) {
       this.props.onDismiss();
       return;
     }
@@ -154,7 +154,7 @@ class ModeratorMenu extends Component {
 
     try {
       await fetch(hideMessageUrl, options);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
 
@@ -196,7 +196,11 @@ class ModeratorMenu extends Component {
           />
         </li>
         ${displayMoreInfo &&
-        html`<${ModeratorMoreInfoContainer} message=${message} handleBanUser=${this.handleBanUser} handleHideMessage=${this.handleHideMessage} />`}
+        html`<${ModeratorMoreInfoContainer}
+          message=${message}
+          handleBanUser=${this.handleBanUser}
+          handleHideMessage=${this.handleHideMessage}
+        />`}
       </ul>
     `;
   }
@@ -226,14 +230,13 @@ function ModeratorMenuItem({ icon, hoverIcon, label, onClick }) {
 }
 
 // more details panel that display message, prev usernames, actions
-function ModeratorMoreInfoContainer({ message, handleHideMessage, handleBanUser }) {
+function ModeratorMoreInfoContainer({
+  message,
+  handleHideMessage,
+  handleBanUser,
+}) {
   const { user, timestamp, body } = message;
-  const {
-    displayName,
-    createdAt,
-    previousNames,
-    displayColor,
-  } = user;
+  const { displayName, createdAt, previousNames, displayColor } = user;
   const isAuthorModerator = user.scopes && user.scopes.contains('MODERATOR');
 
   const authorTextColor = { color: textColorForHue(displayColor) };

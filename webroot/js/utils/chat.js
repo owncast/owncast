@@ -183,7 +183,6 @@ export function emojify(HTML, emojiList) {
   return HTML;
 }
 
-
 // MODERATOR UTILS
 export function checkIsModerator(message) {
   const { user } = message;
