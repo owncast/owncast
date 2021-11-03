@@ -74,7 +74,7 @@ func saveEvent(id string, userID string, body string, eventType string, hidden *
 func getChat(query string) []events.UserMessageEvent {
 	history := make([]events.UserMessageEvent, 0)
 	rows, err := _datastore.DB.Query(query)
-	if err != nil {
+	if err != nil || rows.Err() != nil {
 		log.Errorln("error fetching chat history", err)
 		return history
 	}
