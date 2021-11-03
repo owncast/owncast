@@ -10,9 +10,15 @@ import { checkIsModerator } from '../../utils/chat.js';
 function SystemMessage(props) {
   const { contents } = props;
   return html`
-    <div class="message message-name-change flex items-center justify-start p-3">
-      <div class="message-content flex flex-row items-center justify-center text-sm w-full">
-        <div class="text-white text-center opacity-50 overflow-hidden break-words">
+    <div
+      class="message message-name-change flex items-center justify-start p-3"
+    >
+      <div
+        class="message-content flex flex-row items-center justify-center text-sm w-full"
+      >
+        <div
+          class="text-white text-center opacity-50 overflow-hidden break-words"
+        >
           ${contents}
         </div>
       </div>
@@ -36,22 +42,25 @@ export default function Message(props) {
         <span class="font-bold">${displayName}</span>.
       </>
     `;
-    return html`<${SystemMessage} contents=${contents}/>`;
+    return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
     const { displayName } = user;
-    const contents = html`<span class="font-bold">${displayName}</span> joined the chat.`;
-    return html`<${SystemMessage} contents=${contents}/>`;
+    const contents = html`<span class="font-bold">${displayName}</span> joined
+      the chat.`;
+    return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {
     const contents = html`<span
       dangerouslySetInnerHTML=${{ __html: body }}
     ></span>`;
-    return html`<${SystemMessage} contents=${contents}/>`;
+    return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
     // moderator message
     const isModerator = checkIsModerator(message);
     if (isModerator) {
-      const contents = html`<span class="font-bold moderator-flag">You are now a moderator.</span>`;
-      return html`<${SystemMessage} contents=${contents}/>`;
+      const contents = html`<span class="font-bold moderator-flag"
+        >You are now a moderator.</span
+      >`;
+      return html`<${SystemMessage} contents=${contents} />`;
     }
   } else {
     console.log('Unknown message type:', type);
