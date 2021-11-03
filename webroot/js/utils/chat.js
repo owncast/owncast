@@ -182,3 +182,16 @@ export function emojify(HTML, emojiList) {
   }
   return HTML;
 }
+
+
+// MODERATOR UTILS
+export function checkIsModerator(message) {
+  const { user } = message;
+  const { scopes } = user;
+
+  if (!scopes || scopes.length === 0) {
+    return false;
+  }
+
+  return scopes.includes('MODERATOR');
+}

@@ -189,3 +189,134 @@
 /* MESSAGE TEXT CONTENT */
 /* MESSAGE TEXT CONTENT */
 
+
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */
+
+.moderator-flag:before {
+  content: '👑'; /* this can be a path to an svg */
+  display: inline-block;
+  margin-right: .5rem;
+  vertical-align: bottom;
+}
+
+.moderator-actions-group {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.message.moderatable .moderator-actions-group {
+  opacity: 0;
+}
+.message.moderatable:hover .moderator-actions-group {
+  opacity: 1;
+}
+.message.moderator-menu-open .moderator-actions-group {
+  opacity: 1;
+}
+
+.message.moderatable:focus-within .moderator-actions-group {
+  opacity: 1;
+}
+
+.moderator-menu-button {
+  padding: .15rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: 50%;
+  text-align: center;
+  margin-left: .05rem;
+  font-size: 1rem;
+  border: 1px solid transparent;
+  opacity: .5;
+}
+.moderator-menu-button:hover {
+  background-color: rgba(0,0,0,.5);
+  opacity: 1;
+}
+.moderator-menu-button:focus {
+  border-color: white;
+  opacity: 1;
+}
+.moderator-action {
+  padding: .15rem;
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  text-align: center;
+  margin-left: .05rem;
+  font-size: 1rem;
+}
+
+.message button:focus,
+.message button:active {
+  outline: none;
+}
+
+.message.moderatable:last-of-type .moderator-actions-menu,
+.moderator-actions-menu {
+  position: absolute;
+  bottom: 0;
+  right: .5rem;
+  z-index: 999;
+}
+.message.moderatable:first-of-type .moderator-actions-menu,
+.message.moderatable:nth-of-type(2) .moderator-actions-menu,
+.message.moderatable:first-of-type .moderator-more-info-container,
+.message.moderatable:nth-of-type(2) .moderator-more-info-container {
+  top: 0;
+  bottom: unset;
+}
+
+
+.moderator-menu-item {
+  font-size: .875rem;
+  position: relative;
+  border: 1px solid transparent;
+}
+.moderator-menu-item:focus {
+  border: 1px solid white;
+}
+.moderator-menu-item .moderator-menu-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  font-size: 1.5em;
+  vertical-align: text-bottom;
+  display: inline-block;
+}
+
+.moderator-menu-item .menu-icon-hover {
+  display: none;
+  z-index: 2;
+}
+.moderator-menu-item:hover .menu-icon-base {
+  display: none;
+}
+.moderator-menu-item:hover .menu-icon-hover {
+  display: inline-block;
+}
+
+.moderator-more-info-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 5;
+  width: calc(var(--right-col-width) - 2rem);
+}
+
+.moderator-more-info-message {
+  overflow-y: auto;
+  max-height: 6em;
+  padding: .75rem;
+}
+@media screen and (max-width: 729px) {
+  .moderator-more-info-container {
+    width: auto;
+  }
+}
+
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */
+/* MODERATOR STYLES */

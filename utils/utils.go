@@ -251,7 +251,7 @@ func VerifyFFMpegPath(path string) error {
 	}
 
 	mode := stat.Mode()
-	//source: https://stackoverflow.com/a/60128480
+	// source: https://stackoverflow.com/a/60128480
 	if mode&0111 == 0 {
 		return errors.New("ffmpeg path is not executable")
 	}
@@ -270,7 +270,7 @@ func CleanupDirectory(path string) {
 	}
 }
 
-// FindInSlice will return the index if a string is located in a slice of strings.
+// FindInSlice will return if a string is in a slice, and the index of that string.
 func FindInSlice(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {
@@ -278,6 +278,27 @@ func FindInSlice(slice []string, val string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// StringSliceToMap is a convinience function to convert a slice of strings into
+// a map using the string as the key.
+func StringSliceToMap(stringSlice []string) map[string]interface{} {
+	stringMap := map[string]interface{}{}
+
+	for _, str := range stringSlice {
+		stringMap[str] = true
+	}
+
+	return stringMap
+}
+
+// StringMapKeys returns a slice of string keys from a map.
+func StringMapKeys(stringMap map[string]interface{}) []string {
+	stringSlice := []string{}
+	for k := range stringMap {
+		stringSlice = append(stringSlice, k)
+	}
+	return stringSlice
 }
 
 // GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.

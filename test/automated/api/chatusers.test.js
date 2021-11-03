@@ -80,6 +80,26 @@ test('verify user is enabled', async (done) => {
   done();
 });
 
+test('can set the user as moderator', async (done) => {
+  await request
+    .post('/api/admin/chat/users/setmoderator')
+    .send({ userId: userId, isModerator: true })
+    .auth('admin', 'abc123')
+    .expect(200);
+  done();
+});
+
+test('verify user is a moderator', async (done) => {
+  const response = await request
+    .get('/api/admin/chat/users/moderators')
+    .auth('admin', 'abc123')
+    .expect(200);
+  const tokenCheck = response.body.filter((user) => user.id === userId);
+  expect(tokenCheck).toHaveLength(1);
+
+  done();
+});
+
 test('verify user list is populated', async (done) => {
     const ws = new WebSocket(
     `ws://localhost:8080/ws?accessToken=${accessToken}`,
