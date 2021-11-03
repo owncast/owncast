@@ -1,7 +1,7 @@
 // Updating a variant will post ALL the variants in an array as an update to the API.
 
 import React, { useContext, useState } from 'react';
-import { Typography, Table, Modal, Button } from 'antd';
+import { Typography, Table, Modal, Button, Alert } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -15,6 +15,7 @@ import {
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
   ENCODER_PRESET_TOOLTIPS,
+  ENCODER_RECOMMENDATION_THRESHOLD,
 } from '../../utils/config-constants';
 import {
   createInputStatus,
@@ -183,11 +184,30 @@ export default function CurrentVariantsTable() {
     ...variant,
   }));
 
+  const showSecondVariantRecommendation = (): boolean => {
+    if (videoQualityVariants.length !== 1) {
+      return false;
+    }
+
+    const [variant] = videoQualityVariants;
+
+    return (
+      ENCODER_RECOMMENDATION_THRESHOLD.VIDEO_HEIGHT <= variant.scaledHeight ||
+      ENCODER_RECOMMENDATION_THRESHOLD.VIDEO_BITRATE <= variant.videoBitrate
+    );
+  };
+
   return (
     <>
       <Title level={3} className="section-title">
         Stream output
       </Title>
+
+      {showSecondVariantRecommendation() && (
+        <>
+          <Alert message={ENCODER_RECOMMENDATION_THRESHOLD.HELP_TEXT} type="info" closable />
+        </>
+      )}
 
       <FormStatusIndicator status={submitStatus} />
 

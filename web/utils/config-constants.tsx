@@ -290,6 +290,13 @@ export const ENCODER_PRESET_TOOLTIPS = {
   5: 'Highest hardware usage - higher quality video',
 };
 
+export const ENCODER_RECOMMENDATION_THRESHOLD = {
+  VIDEO_HEIGHT: 1080,
+  VIDEO_BITRATE: 3000,
+  HELP_TEXT:
+    'You have only set one video quality variant. If your server has the computing resources, consider adding another, lower-quality variant, so more people can view your content!',
+};
+
 export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
   url: '',
   platform: '',
