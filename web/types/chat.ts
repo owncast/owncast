@@ -16,6 +16,7 @@ export interface User {
   disabledAt: Date;
   previousNames: [string];
   nameChangedAt: Date;
+  scopes?: [string];
 }
 
 export interface UsernameHistory {

@@ -7,6 +7,7 @@ import format from 'date-fns/format';
 import { uniq } from 'lodash';
 
 import BlockUserbutton from './ban-user-button';
+import ModeratorUserbutton from './moderator-user-button';
 
 import { User, UserConnectionInfo } from '../types/chat';
 import { formatDisplayDate } from './user-table';
@@ -136,6 +137,7 @@ export default function UserPopover({ user, connectionInfo, children }: UserPopo
               onClick={handleCloseModal}
             />
           )}
+          <ModeratorUserbutton user={user} onClick={handleCloseModal} />
         </div>
       </Modal>
     </>

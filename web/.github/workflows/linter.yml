@@ -19,5 +19,5 @@ jobs:
       uses: tj-actions/eslint-changed-files@v7.3
       with:
         config_path: '.eslintrc.js'
-        ignore-path: '.eslintignore'
+        ignore_path: '.eslintignore'
         extensions: 'ts,tsx,js,jsx'
