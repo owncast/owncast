@@ -3,6 +3,8 @@ package static
 import (
 	"embed"
 	"html/template"
+	"os"
+	"path/filepath"
 )
 
 //go:embed admin/*
@@ -32,5 +34,15 @@ var offlineVideoSegment []byte
 
 // GetOfflineSegment will return the offline video segment data.
 func GetOfflineSegment() []byte {
-	return offlineVideoSegment
+	return getFileSystemStaticFileOrDefault("offline.ts", offlineVideoSegment)
+}
+
+func getFileSystemStaticFileOrDefault(path string, defaultData []byte) []byte {
+	fullPath := filepath.Join("static", path)
+	data, err := os.ReadFile(fullPath) //nolint: gosec
+	if err != nil {
+		return defaultData
+	}
+
+	return data
 }
