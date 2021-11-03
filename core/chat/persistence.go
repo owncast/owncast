@@ -161,7 +161,7 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 	}
 
 	// Get all messages regardless of visibility
-	var query = "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
+	query := "SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
 	result := getChat(query)
 
 	_historyCache = &result
@@ -172,7 +172,7 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []events.UserMessageEvent {
 	// Get all visible messages
-	var query = fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
 	m := getChat(query)
 
 	// Invert order of messages
@@ -221,7 +221,6 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	}
 
 	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
-
 	if err != nil {
 		return err
 	}
@@ -250,41 +249,6 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	}
 
 	return nil
-}
-
-func getMessageByID(messageID string) (*events.UserMessageEvent, error) {
-	var query = "SELECT * FROM messages WHERE id = ?"
-	row := _datastore.DB.QueryRow(query, messageID)
-
-	var id string
-	var userID string
-	var body string
-	var eventType models.EventType
-	var hiddenAt *time.Time
-	var timestamp time.Time
-
-	err := row.Scan(&id, &userID, &body, &eventType, &hiddenAt, &timestamp)
-	if err != nil {
-		log.Errorln(err)
-		return nil, err
-	}
-
-	user := user.GetUserByID(userID)
-
-	return &events.UserMessageEvent{
-		events.Event{
-			Type:      eventType,
-			ID:        id,
-			Timestamp: timestamp,
-		},
-		events.UserEvent{
-			User:     user,
-			HiddenAt: hiddenAt,
-		},
-		events.MessageEvent{
-			Body: body,
-		},
-	}, nil
 }
 
 // Only keep recent messages so we don't keep more chat data than needed

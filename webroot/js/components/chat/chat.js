@@ -29,6 +29,7 @@ export default class Chat extends Component {
     this.receivedFirstMessages = false;
     this.receivedMessageUpdate = false;
     this.hasFetchedHistory = false;
+    this.forceRender = false;
 
     this.windowBlurred = false;
     this.numMessagesSinceBlur = 0;
@@ -69,6 +70,11 @@ export default class Chat extends Component {
 
     const { webSocketConnected, messages, chatUserNames, newMessagesReceived } =
       this.state;
+
+    if (this.forceRender) {
+      return true;
+    }
+
     const {
       webSocketConnected: nextSocket,
       messages: nextMessages,
@@ -185,42 +191,51 @@ export default class Chat extends Component {
       (item) => item.id === messageId
     );
 
-    // If the message already exists and this is an update event
-    // then update it.
+    const updatedMessageList = [...curMessages];
+
+    // Change the visibility of messages by ID.
     if (messageType === 'VISIBILITY-UPDATE') {
-      const updatedMessageList = [...curMessages];
+      const idsToUpdate = message.ids;
+      const visible = message.visible;
+
+      updatedMessageList.forEach((item) => {
+        if (idsToUpdate.includes(item.id)) {
+          item.visible = visible;
+        }
+
+        this.forceRender = true;
+        this.setState({
+          messages: updatedMessageList,
+        });
+      });
+      return;
+    } else if (existingIndex === -1 && messageVisible) {
       const convertedMessage = {
         ...message,
         type: 'CHAT',
       };
-      // if message exists and should now hide, take it out.
-      if (existingIndex >= 0 && !messageVisible) {
-        this.setState({
-          messages: curMessages.filter((item) => item.id !== messageId),
-        });
-      } else if (existingIndex === -1 && messageVisible) {
-        // insert message at timestamp
-        const insertAtIndex = curMessages.findIndex((item, index) => {
-          const time = item.timestamp || messageTimestamp;
-          const nextMessage =
-            index < curMessages.length - 1 && curMessages[index + 1];
-          const nextTime = nextMessage.timestamp || messageTimestamp;
-          const messageTimestampDate = new Date(messageTimestamp);
-          return (
-            messageTimestampDate > new Date(time) &&
-            messageTimestampDate <= new Date(nextTime)
-          );
-        });
-        updatedMessageList.splice(insertAtIndex + 1, 0, convertedMessage);
-        if (updatedMessageList.length > 300) {
-          updatedMessageList = updatedMessageList.slice(
-            Math.max(updatedMessageList.length - 300, 0)
-          );
-        }
-        this.setState({
-          messages: updatedMessageList,
-        });
+
+      // insert message at timestamp
+      const insertAtIndex = curMessages.findIndex((item, index) => {
+        const time = item.timestamp || messageTimestamp;
+        const nextMessage =
+          index < curMessages.length - 1 && curMessages[index + 1];
+        const nextTime = nextMessage.timestamp || messageTimestamp;
+        const messageTimestampDate = new Date(messageTimestamp);
+        return (
+          messageTimestampDate > new Date(time) &&
+          messageTimestampDate <= new Date(nextTime)
+        );
+      });
+      updatedMessageList.splice(insertAtIndex + 1, 0, convertedMessage);
+      if (updatedMessageList.length > 300) {
+        updatedMessageList = updatedMessageList.slice(
+          Math.max(updatedMessageList.length - 300, 0)
+        );
       }
+      this.setState({
+        messages: updatedMessageList,
+      });
     } else if (existingIndex === -1) {
       // else if message doesn't exist, add it and extra username
       const newState = {
@@ -353,6 +368,8 @@ export default class Chat extends Component {
   render(props, state) {
     const { username, readonly, chatInputEnabled, inputMaxBytes } = props;
     const { messages, chatUserNames, webSocketConnected } = state;
+
+    this.forceRender = false;
 
     const messageList = messages
       .filter((message) => message.visible !== false)
