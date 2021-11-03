@@ -1,6 +1,8 @@
 package chat
 
 import (
+	"errors"
+
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/webhooks"
 	log "github.com/sirupsen/logrus"
@@ -14,23 +16,26 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 		return err
 	}
 
-	// Send an update event to all clients for each message.
-	// Note: Our client expects a single message at a time, so we can't just
-	// send an array of messages in a single update.
-	for _, id := range messageIDs {
-		message, err := getMessageByID(id)
-		if err != nil {
-			log.Errorln(err)
-			continue
-		}
-		payload := message.GetBroadcastPayload()
-		payload["type"] = events.VisibiltyToggled
-		if err := _server.Broadcast(payload); err != nil {
-			log.Debugln(err)
-		}
-
-		go webhooks.SendChatEvent(message)
+	// Send an event letting the chat clients know to hide or show
+	// the messages.
+	event := events.SetMessageVisibilityEvent{
+		MessageIDs: messageIDs,
+		Visible:    visibility,
 	}
+	event.Event.SetDefaults()
+
+	payload := event.GetBroadcastPayload()
+	if err := _server.Broadcast(payload); err != nil {
+		return errors.New("error broadcasting message visibility payload " + err.Error())
+	}
+
+	// Send webhook
+	wh := webhooks.WebhookEvent{
+		EventData: event,
+		Type:      event.GetMessageType(),
+	}
+
+	webhooks.SendEventToWebhooks(wh)
 
 	return nil
 }
