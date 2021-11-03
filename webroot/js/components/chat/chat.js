@@ -205,30 +205,24 @@ export default class Chat extends Component {
       }
     }
 
-    // If the message already exists and this is an update event
-    // then update it.
+    const updatedMessageList = [...curMessages];
+
+    // Change the visibility of messages by ID.
     if (messageType === 'VISIBILITY-UPDATE') {
       const idsToUpdate = message.ids;
       const visible = message.visible;
-
       updatedMessageList.forEach((item) => {
         if (idsToUpdate.includes(item.id)) {
           item.visible = visible;
         }
-
-        this.forceRender = true;
-        this.setState({
-          messages: updatedMessageList,
-        });
       });
-      return;
+      this.forceRender = true;
     } else if (existingIndex === -1 && messageVisible) {
+      // insert message at timestamp
       const convertedMessage = {
         ...message,
         type: 'CHAT',
       };
-
-      // insert message at timestamp
       const insertAtIndex = curMessages.findIndex((item, index) => {
         const time = item.timestamp || messageTimestamp;
         const nextMessage =
@@ -383,10 +377,9 @@ export default class Chat extends Component {
   }
 
   render(props, state) {
-    const { username, readonly, chatInputEnabled, inputMaxBytes, accessToken } = props;
+    const { username, readonly, chatInputEnabled, inputMaxBytes, accessToken } =
+      props;
     const { messages, chatUserNames, webSocketConnected, isModerator } = state;
-
-    this.forceRender = false;
 
     const messageList = messages
       .filter((message) => message.visible !== false)

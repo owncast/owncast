@@ -561,8 +561,10 @@ export default class App extends Component {
       const { user } = e;
       const { displayName } = user;
 
-      console.log("====websocket message", e, checkIsModerator(e))
-      this.setState({ username: displayName, isModerator: checkIsModerator(e) });
+      this.setState({
+        username: displayName,
+        isModerator: checkIsModerator(e),
+      });
     }
   }
 
