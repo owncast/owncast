@@ -177,7 +177,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 		return 20
 	} else if fileExtension == ".js" || fileExtension == ".css" {
 		// Cache javascript & CSS
-		return 60 * 10
+		return 60 * 60 * 3
 	} else if fileExtension == ".ts" {
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
@@ -186,11 +186,11 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	} else if fileExtension == ".m3u8" {
 		return 0
 	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
-		return 60 * 60 * 24
+		return 60 * 60 * 24 * 7
 	}
 
 	// Default cache length in seconds
-	return 60 * 10
+	return 60 * 60 * 2
 }
 
 // IsValidURL will return if a URL string is a valid URL or not.
