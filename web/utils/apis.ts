@@ -37,6 +37,8 @@ export const USER_ENABLED_TOGGLE = `${API_LOCATION}chat/users/setenabled`;
 // Disable/enable a single user
 export const USER_SET_MODERATOR = `${API_LOCATION}chat/users/setmoderator`;
 
+// Get list of moderators
+export const MODERATORS = `${API_LOCATION}chat/users/moderators`;
 
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;

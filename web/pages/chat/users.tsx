@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Typography } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import { CONNECTED_CLIENTS, fetchData, DISABLED_USERS } from '../../utils/apis';
+import { CONNECTED_CLIENTS, fetchData, DISABLED_USERS, MODERATORS } from '../../utils/apis';
 import UserTable from '../../components/user-table';
 import ClientTable from '../../components/client-table';
 
@@ -15,6 +15,7 @@ export default function ChatUsers() {
 
   const [disabledUsers, setDisabledUsers] = useState([]);
   const [clients, setClients] = useState([]);
+  const [moderators, setModerators] = useState([]);
 
   const getInfo = async () => {
     try {
@@ -29,6 +30,13 @@ export default function ChatUsers() {
       setClients(result);
     } catch (error) {
       console.log('==== error', error);
+    }
+
+    try {
+      const result = await fetchData(MODERATORS);
+      setModerators(result);
+    } catch (error) {
+      console.error('error fetching moderators', error);
     }
   };
 
@@ -73,6 +81,9 @@ export default function ChatUsers() {
       <br />
       <Title>Banned Users</Title>
       <UserTable data={disabledUsers} />
+
+      <Title>Moderators</Title>
+      <UserTable data={moderators} />
     </>
   );
 }
