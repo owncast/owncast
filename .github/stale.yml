@@ -10,8 +10,11 @@ staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
   This issue has been automatically marked as stale because it has not had
-  recent activity. It will be closed if no further activity occurs. Thank you
-  for your contributions.
+  recent activity. It will be closed if no further activity occurs. If this
+  was a feature request that others have shown no interest in then it's
+  likely to not get implemented due to lack of interest. If others also
+  want to see this feature then now is the time to say something!
+  Thank you for your contributions.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: false
 exemptMilestones: true
