@@ -15,6 +15,7 @@ import {
 import { ServerStatusContext } from '../../utils/server-status-context';
 import FormStatusIndicator from './form-status-indicator';
 
+// eslint-disable-next-line react/function-component-definition
 export default function CodecSelector() {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
@@ -87,6 +88,8 @@ export default function CodecSelector() {
       title = 'Intel QuickSync';
     } else if (title === 'h264_v4l2m2m') {
       title = 'Video4Linux hardware encoding';
+    } else if (title === 'h264_omx') {
+      title = 'OpenMax (omx) for Raspberry Pi';
     }
 
     return (
@@ -112,6 +115,8 @@ export default function CodecSelector() {
   } else if (selectedCodec === 'h264_v4l2m2m') {
     description =
       'Video4Linux is an interface to multiple different hardware encoding platforms such as Intel and AMD.';
+  } else if (selectedCodec === 'h264_omx') {
+    description = 'OpenMax is a codec most often used with a Raspberry Pi.';
   }
 
   return (
