@@ -29,5 +29,27 @@ function sendChatMessage(message, accessToken, done) {
   ws.on('open', onOpen);
 }
 
+async function listenForEvent(name, accessToken, done) {
+  const ws = new WebSocket(
+    `ws://localhost:8080/ws?accessToken=${accessToken}`,
+    {
+      origin: 'http://localhost:8080',
+    }
+  );
+
+  ws.on('message', function incoming(message) {
+    const messages = message.split('\n');
+    messages.forEach(function (message) {
+      const event = JSON.parse(message);
+
+      if (event.type === name) {
+        done();
+        ws.close();
+      }
+    });
+  });
+}
+
 module.exports.sendChatMessage = sendChatMessage;
 module.exports.registerChat = registerChat;
+module.exports.listenForEvent = listenForEvent;
