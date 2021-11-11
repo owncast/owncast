@@ -30,6 +30,7 @@ import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 
 import { UpdateArgs } from '../types/config-section';
 
+// eslint-disable-next-line react/function-component-definition
 export default function MainLayout(props) {
   const { children } = props;
 
