@@ -27,9 +27,9 @@ test('can fetch chat messages', async (done) => {
     .auth('admin', 'abc123')
     .expect(200);
 
-    const expectedBody = `${testMessage.body}`
+  const expectedBody = `${testMessage.body}`;
   const message = res.body.filter(function (msg) {
-    return msg.body ===  expectedBody
+    return msg.body === expectedBody;
   })[0];
 
   expect(message.body).toBe(expectedBody);
