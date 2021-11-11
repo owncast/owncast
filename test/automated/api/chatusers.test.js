@@ -26,17 +26,17 @@ test('can send a chat message', async (done) => {
 });
 
 test('can disable a user', async (done) => {
-    // To allow for visually being able to see the test hiding the
-    // message add a short delay.
-    await new Promise((r) => setTimeout(r, 1500));
-  
-    await request
-      .post('/api/admin/chat/users/setenabled')
-      .send({ userId: userId, enabled: false })
-      .auth('admin', 'abc123')
-      .expect(200);
-    done();
-  });
+  // To allow for visually being able to see the test hiding the
+  // message add a short delay.
+  await new Promise((r) => setTimeout(r, 1500));
+
+  await request
+    .post('/api/admin/chat/users/setenabled')
+    .send({ userId: userId, enabled: false })
+    .auth('admin', 'abc123')
+    .expect(200);
+  done();
+});
 
 test('verify user is disabled', async (done) => {
   const response = await request
@@ -101,7 +101,7 @@ test('verify user is a moderator', async (done) => {
 });
 
 test('verify user list is populated', async (done) => {
-    const ws = new WebSocket(
+  const ws = new WebSocket(
     `ws://localhost:8080/ws?accessToken=${accessToken}`,
     {
       origin: 'http://localhost:8080',
@@ -114,14 +114,12 @@ test('verify user list is populated', async (done) => {
       .auth('admin', 'abc123')
       .expect(200);
 
-      expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body.length).toBeGreaterThan(0);
 
-      // Optionally, if GeoIP is configured, check the location property.
-      if (fs.existsSync('../../../data/GeoLite2-City.mmdb')) {
-        expect(response.body[0].geo.regionName).toBe('Localhost');
-      } else {
-        console.warn('GeoIP Data is not supplied. Skipping test. See https://owncast.online/docs/viewers/');
-      }
+    // Optionally, if GeoIP is configured, check the location property.
+    if (fs.existsSync('../../../data/GeoLite2-City.mmdb')) {
+      expect(response.body[0].geo.regionName).toBe('Localhost');
+    }
 
     ws.close();
   });
@@ -134,5 +132,4 @@ test('verify user list is populated', async (done) => {
   ws.on('close', function incoming(data) {
     done();
   });
-
 });
