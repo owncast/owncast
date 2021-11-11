@@ -223,15 +223,14 @@ export default class App extends Component {
 
     // If this is the first time setting the config
     // then setup chat if it's enabled.
-    const chatBlocked = getLocalStorage('owncast_chat_blocked');
-    if (!chatBlocked && !this.hasConfiguredChat && !chatDisabled) {
+    if (!this.hasConfiguredChat && !chatDisabled) {
       this.setupChatAuth();
     }
 
     this.hasConfiguredChat = true;
 
     this.setState({
-      canChat: !chatBlocked,
+      canChat: !chatDisabled,
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
@@ -569,7 +568,6 @@ export default class App extends Component {
   }
 
   handleBlockedChat() {
-    setLocalStorage('owncast_chat_blocked', true);
     this.disableChat();
   }
 
