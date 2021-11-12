@@ -13,6 +13,8 @@ const (
 	DataDirectory = "data"
 	// EmojiDir is relative to the webroot.
 	EmojiDir = "/img/emoji"
+	// WebhookWorkerPoolSize defines the number of concurrent HTTP webhook requests.
+	WebhookWorkerPoolSize = 10
 )
 
 var (
