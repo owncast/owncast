@@ -19,9 +19,8 @@ import (
 The auto-update relies on some guesses and hacks to determine how the binary
 is being run.
 
-The name of the service run under systemd must be "owncast" for
-the guess to be successful. No huge loss if it's not successful, it'll just
-not support the auto-update features.
+It determines if is running under systemd by asking systemd about the PID
+and hackingly checking if the `MainPID` property is set for it.
 
 It also determines if the binary is running under a container by figuring out
 the container ID as a fallback to refuse an in-place update within a container.
@@ -32,7 +31,6 @@ specific conditions are met.
 1. Cannot be run inside a container.
 2. Cannot be run from source (aka platform is "dev")
 3. Must be run under systemd to support auto-restart.
-4. Must be named "owncast" under systemd.
 */
 
 // AutoUpdateOptions will return what auto update options are available.
@@ -140,11 +138,14 @@ func downloadInstaller() (string, error) {
 }
 
 // Check to see if owncast is listed as a running service under systemd.
-// This is a guess and nothing more.
 func isRunningUnderSystemD() bool {
-	cmd := exec.Command("/bin/sh",
-		"-c",
-		"systemctl list-units --type=service --state=running | grep owncast",
+	// Our current PID
+	pid := os.Getpid()
+
+	cmd := exec.Command( //nolint:gosec
+		"systemctl",
+		"status",
+		fmt.Sprintf("%d", pid),
 	)
 
 	out, err := cmd.Output()
@@ -153,11 +154,10 @@ func isRunningUnderSystemD() bool {
 		return false
 	}
 
-	if out != nil {
-		return true
-	}
-
-	return false
+	// This is kind of a hack looking for "Main PID" to determine if this PID
+	// was launched via a systemd unit.
+	outStr := string(out)
+	return strings.Contains(outStr, "Main PID")
 }
 
 // Taken from https://stackoverflow.com/questions/23513045/how-to-check-if-a-process-is-running-inside-docker-container
@@ -186,10 +186,8 @@ func getContainerID() string {
 		if pos > 0 {
 			idLen := len(cgroupPath) - pos - 1
 			if idLen == 64 {
-				// p.InDocker = true
 				// docker id
 				containerID = cgroupPath[pos+1 : pos+1+64]
-				// logs.Debug("pid:%v in docker id:%v", pid, id)
 				return containerID
 			}
 		}
