@@ -1,0 +1,22 @@
+name: Repository Dispatch
+on:
+  repository_dispatch:
+    types: [bundle-admin-event]
+jobs:
+  bundle-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bundle admin
+        uses: actions/checkout@v2
+      - run: build/admin/bundleAdmin.sh
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: "Update admin to ${{ github.event.client_payload.sha }}"
+          add: "static/admin"
+          branch: "gek/bundle-admin-event"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_CR_PAT }}
