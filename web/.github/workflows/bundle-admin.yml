@@ -1,0 +1,13 @@
+name: Bundle admin into core
+on: [push]
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch event to owncast/owncast
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.ADMIN_BUNDLE_PAT }}
+          repository: owncast/owncast
+          event-type: bundle-admin-event
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
