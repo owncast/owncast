@@ -311,6 +311,11 @@
   max-height: 6em;
   padding: .75rem;
 }
+.moderator-more-info-message .text-sm img {
+  display: inline-block;
+  width: 2rem;
+}
+
 @media screen and (max-width: 729px) {
   .moderator-more-info-container {
     width: auto;
