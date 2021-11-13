@@ -1,9 +1,9 @@
-name: Repository Dispatch
+name: Bundle admin (owncast/owncast-admin)
 on:
   repository_dispatch:
     types: [bundle-admin-event]
 jobs:
-  bundle-admin:
+  bundle:
     runs-on: ubuntu-latest
     steps:
       - name: Bundle admin
@@ -17,6 +17,5 @@ jobs:
           author_email: owncast@owncast.online
           message: "Update admin to ${{ github.event.client_payload.sha }}"
           add: "static/admin"
-          branch: "gek/bundle-admin-event"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_CR_PAT }}
