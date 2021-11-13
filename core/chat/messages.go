@@ -31,7 +31,7 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 
 	// Send webhook
 	wh := webhooks.WebhookEvent{
-		EventData: event,
+		EventData: payload,
 		Type:      event.GetMessageType(),
 	}
 

@@ -19,3 +19,8 @@ func (e *SetMessageVisibilityEvent) GetBroadcastPayload() EventPayload {
 		"visible":   e.Visible,
 	}
 }
+
+// GetMessageType will return the event type for this message.
+func (e *SetMessageVisibilityEvent) GetMessageType() EventType {
+	return VisibiltyUpdate
+}
