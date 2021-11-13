@@ -79,10 +79,10 @@ export default function ChatUsers() {
       {connectedUsers}
       <br />
       <br />
-      <Title>Banned Users</Title>
+      <Title>Banned Users {online ? `(${disabledUsers.length})` : null}</Title>
       <UserTable data={disabledUsers} />
 
-      <Title>Moderators</Title>
+      <Title>Moderators {online ? `(${moderators.length})` : null}</Title>
       <UserTable data={moderators} />
     </>
   );
