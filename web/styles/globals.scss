@@ -142,3 +142,19 @@ input {
     text-align: right;
   }
 }
+
+.ant-tabs-tab {
+  color:var(--owncast-purple);
+
+  .ant-tabs-tab-active {
+    border-color: var(--nav-selected-text);
+  }
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--nav-selected-text);
+}
+
+.ant-tabs-ink-bar {
+  background: var(--nav-selected-text);
+}

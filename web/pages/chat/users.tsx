@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Typography } from 'antd';
+import { Typography, Tabs } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { CONNECTED_CLIENTS, fetchData, DISABLED_USERS, MODERATORS } from '../../utils/apis';
 import UserTable from '../../components/user-table';
 import ClientTable from '../../components/client-table';
 
 const { Title } = Typography;
+const { TabPane } = Tabs;
 
 export const FETCH_INTERVAL = 10 * 1000; // 10 sec
 
@@ -74,16 +75,16 @@ export default function ChatUsers() {
   );
 
   return (
-    <>
-      <Title>Connected Chat Participants {online ? `(${clients.length})` : null}</Title>
-      {connectedUsers}
-      <br />
-      <br />
-      <Title>Banned Users {online ? `(${disabledUsers.length})` : null}</Title>
-      <UserTable data={disabledUsers} />
-
-      <Title>Moderators {online ? `(${moderators.length})` : null}</Title>
-      <UserTable data={moderators} />
-    </>
+    <Tabs defaultActiveKey="1">
+      <TabPane tab={<span>Connected {online ? `(${clients.length})` : '(offline)'}</span>} key="1">
+        {connectedUsers}
+      </TabPane>
+      <TabPane tab={<span>Banned {online ? `(${disabledUsers.length})` : null}</span>} key="2">
+        <UserTable data={disabledUsers} />
+      </TabPane>
+      <TabPane tab={<span>Moderators {online ? `(${moderators.length})` : null}</span>} key="3">
+        <UserTable data={moderators} />
+      </TabPane>
+    </Tabs>
   );
 }
