@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
@@ -76,6 +77,8 @@ func Start() error {
 
 	rtmpPort := data.GetRTMPPortNumber()
 	log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
+
+	webhooks.InitWorkerPool()
 
 	return nil
 }
