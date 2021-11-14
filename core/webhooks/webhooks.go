@@ -1,11 +1,11 @@
 package webhooks
 
 import (
-  "time"
+	"time"
 
-  "github.com/owncast/owncast/core/data"
-  "github.com/owncast/owncast/core/user"
-  "github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 )
 
 // WebhookEvent represents an event sent as a webhook.
@@ -30,6 +30,6 @@ func SendEventToWebhooks(payload WebhookEvent) {
 	webhooks := data.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
-    go addToQueue(webhook, payload)
+		go addToQueue(webhook, payload)
 	}
 }
