@@ -17,7 +17,7 @@ function SystemMessage(props) {
         class="message-content flex flex-row items-center justify-center text-sm w-full"
       >
         <div
-          class="text-white text-center opacity-50 overflow-hidden break-words"
+          class="text-gray-300 text-center opacity-90 overflow-hidden break-words"
         >
           ${contents}
         </div>
@@ -57,9 +57,10 @@ export default function Message(props) {
     // moderator message
     const isModerator = checkIsModerator(message);
     if (isModerator) {
-      const contents = html`<span class="font-bold moderator-flag"
-        >You are now a moderator.</span
-      >`;
+      const contents = html`<div class="rounded-lg bg-gray-700 p-3">
+        <img src="/img/moderator.svg" class="moderator-flag" />You are now a
+        moderator.
+      </div>`;
       return html`<${SystemMessage} contents=${contents} />`;
     }
   } else {

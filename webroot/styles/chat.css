@@ -194,11 +194,12 @@
 /* MODERATOR STYLES */
 /* MODERATOR STYLES */
 
-.moderator-flag:before {
-  content: '👑'; /* this can be a path to an svg */
+.moderator-flag {
   display: inline-block;
   margin-right: .5rem;
-  vertical-align: bottom;
+  margin-top: -1px;
+  vertical-align: middle;
+  height: 1.5rem;
 }
 
 .moderator-actions-group {

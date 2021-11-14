@@ -5,10 +5,10 @@ import { URL_BAN_USER, URL_HIDE_MESSAGE } from '../../utils/constants.js';
 
 const html = htm.bind(h);
 
-const HIDE_MESSAGE_ICON = '🐵';
-const HIDE_MESSAGE_ICON_HOVER = '🙈';
-const BAN_USER_ICON = '👤';
-const BAN_USER_ICON_HOVER = '🚫';
+const HIDE_MESSAGE_ICON = `/img/hide-message-grey.svg`;
+const HIDE_MESSAGE_ICON_HOVER = '/img/hide-message.svg';
+const BAN_USER_ICON = '/img/ban-user-grey.svg';
+const BAN_USER_ICON_HOVER = '/img/ban-user.svg';
 
 export default class ModeratorActions extends Component {
   constructor(props) {
@@ -190,7 +190,7 @@ class ModeratorMenu extends Component {
         </li>
         <li>
           <${ModeratorMenuItem}
-            icon=${html`<img src="/img/menu.svg" alt="" />`}
+            icon="/img/menu.svg"
             label="More Info"
             onClick=${this.handleToggleMoreInfo}
           />
@@ -218,12 +218,12 @@ function ModeratorMenuItem({ icon, hoverIcon, label, onClick }) {
       ${icon &&
       html`<span
         className="moderator-menu-icon menu-icon-base inline-block align-bottom mr-4"
-        >${icon}</span
-      >`}
+        ><img src="${icon}"
+      /></span>`}
       <span
         className="moderator-menu-icon menu-icon-hover inline-block align-bottom mr-4"
-        >${hoverIcon || icon}</span
-      >
+        ><img src="${hoverIcon || icon}"
+      /></span>
       ${label}
     </button>
   `;
