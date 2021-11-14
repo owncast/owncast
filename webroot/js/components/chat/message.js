@@ -17,7 +17,7 @@ function SystemMessage(props) {
         class="message-content flex flex-row items-center justify-center text-sm w-full"
       >
         <div
-          class="text-gray-300 text-center opacity-90 overflow-hidden break-words"
+          class="text-gray-400 w-full text-center opacity-90 overflow-hidden break-words"
         >
           ${contents}
         </div>
