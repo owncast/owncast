@@ -21,8 +21,6 @@ on:
     branches: [ develop ]
     paths-ignore:
       - 'static/**'
-  schedule:
-    - cron: '36 7 * * 4'
 
 jobs:
   analyze:
