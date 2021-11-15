@@ -167,7 +167,7 @@ export default function EditStorage() {
         <ToggleSwitch
           apiPath=""
           fieldName="enabled"
-          label="Storage Enabled"
+          label="Use S3 Storage Provider"
           checked={formDataValues.enabled}
           onChange={handleSwitchChange}
         />

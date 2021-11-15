@@ -177,7 +177,7 @@ export default function MainLayout(props) {
               <Link href="/config-chat">Chat</Link>
             </Menu.Item>
             <Menu.Item key="config-storage">
-              <Link href="/config-storage">Storage</Link>
+              <Link href="/config-storage">S3 Storage</Link>
             </Menu.Item>
           </SubMenu>
 
