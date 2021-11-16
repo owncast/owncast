@@ -1,5 +1,8 @@
 name: Bundle admin into core
-on: [push]
+on:
+  push:
+    branches:
+      - develop
 jobs:
   dispatch:
     runs-on: ubuntu-latest
