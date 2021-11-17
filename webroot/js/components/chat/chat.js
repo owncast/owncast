@@ -217,7 +217,11 @@ export default class Chat extends Component {
         }
       });
       this.forceRender = true;
-    } else if (existingIndex === -1 && messageVisible) {
+    } else if (
+      messageType === 'CHAT' &&
+      existingIndex === -1 &&
+      messageVisible
+    ) {
       // insert message at timestamp
       const convertedMessage = {
         ...message,
@@ -243,7 +247,7 @@ export default class Chat extends Component {
       this.setState({
         messages: updatedMessageList,
       });
-    } else if (existingIndex === -1) {
+    } else if (messageType === 'CHAT' && existingIndex === -1) {
       // else if message doesn't exist, add it and extra username
       const newState = {
         messages: [...curMessages, message],
