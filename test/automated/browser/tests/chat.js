@@ -32,11 +32,17 @@ async function interactiveChatTest(
     await page.evaluate(() =>
       document.querySelector('#username-change-input').click()
     );
+
+    await page.type('#username-change-input', newName);
+
     await page.waitForSelector('#button-update-username');
 
     await page.evaluate(() =>
       document.querySelector('#button-update-username').click()
     );
+
+    // page.keyboard.press('Enter');
+    await page.waitForTimeout(3000);
   });
 
   it('should allow typing a chat message', async () => {
