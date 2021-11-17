@@ -23,24 +23,25 @@ const desktop = {
 const devices = [desktop, phone, tablet, tabletLandscape];
 
 describe('Frontend web page', () => {
-    beforeAll(async () => {
-        listenForErrors(browser, page);
-        await page.goto('http://localhost:5309');
-        await page.waitForTimeout(3000);
-    });
+  beforeAll(async () => {
+    listenForErrors(browser, page);
+    await page.goto('http://localhost:5309');
+    await page.waitForTimeout(3000);
+  });
 
-    devices.forEach(async function (device) {
-        const newName = 'frontend-browser-test-name-change-'+device.name;
-        const fakeMessage =
-          'this is a test chat message sent via the automated browser tests on the main web frontend from ' + device.name;
-    
-        interactiveChatTest(browser, page, newName, fakeMessage, device.name);
-        videoTest(browser, page);    
+  devices.forEach(async function (device) {
+    const newName = 'frontend-browser-test-name-change-' + device.name;
+    const fakeMessage =
+      'this is a test chat message sent via the automated browser tests on the main web frontend from ' +
+      device.name;
 
-        await page.waitForTimeout(2000);
-        await page.screenshot({
-            path: 'screenshots/screenshot_main-' + device.name + '.png',
-            fullPage: true,
-        });
+    interactiveChatTest(browser, page, newName, fakeMessage, device.name);
+    videoTest(browser, page);
+
+    await page.waitForTimeout(2000);
+    await page.screenshot({
+      path: 'screenshots/screenshot_main-' + device.name + '.png',
+      fullPage: true,
     });
+  });
 });
