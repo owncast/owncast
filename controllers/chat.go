@@ -37,8 +37,6 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 
 // RegisterAnonymousChatUser will register a new user.
 func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	if r.Method != POST {
 		WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
@@ -71,6 +69,9 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		AccessToken: newUser.AccessToken,
 		DisplayName: newUser.DisplayName,
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	middleware.DisableCache(w)
 
 	WriteResponse(w, response)
 }

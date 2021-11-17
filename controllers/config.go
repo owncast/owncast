@@ -30,6 +30,7 @@ type webConfigResponse struct {
 // GetWebConfig gets the status of the server.
 func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
+	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
