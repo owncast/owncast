@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -28,6 +29,8 @@ func Status(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.DisableCache(w)
+
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
 		log.Errorln(err)

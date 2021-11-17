@@ -24,6 +24,8 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.DisableCache(w)
+
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		InternalErrorHandler(w, err)
 	}

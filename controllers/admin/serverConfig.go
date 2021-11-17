@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,7 +18,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 	usernameBlocklist := data.GetForbiddenUsernameList()
 
-	var videoQualityVariants = make([]models.StreamOutputVariant, 0)
+	videoQualityVariants := make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
 		videoQualityVariants = append(videoQualityVariants, models.StreamOutputVariant{
 			Name:               variant.GetName(),
@@ -66,6 +67,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.DisableCache(w)
+
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Errorln(err)
 	}
