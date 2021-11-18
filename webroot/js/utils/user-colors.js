@@ -1,6 +1,6 @@
 export function messageBubbleColorForHue(hue) {
   // Tweak these to adjust the result of the color
-  const saturation = 45;
+  const saturation = 50;
   const lightness = 50;
   const alpha = 'var(--message-background-alpha)';
 
@@ -9,9 +9,9 @@ export function messageBubbleColorForHue(hue) {
 
 export function textColorForHue(hue) {
   // Tweak these to adjust the result of the color
-  const saturation = 80;
+  const saturation = 70;
   const lightness = 80;
-  const alpha = 0.8;
+  const alpha = 0.85;
 
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 }
