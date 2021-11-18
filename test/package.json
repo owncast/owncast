@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node-fetch": "^2.6.6",
+    "ws": "^8.2.3"
+  }
+}
