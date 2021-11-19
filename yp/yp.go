@@ -2,12 +2,11 @@ package yp
 
 import (
 	"bytes"
-	"io/ioutil"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
-
-	"encoding/json"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
@@ -107,7 +106,7 @@ func (yp *YP) ping() {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Errorln(err)
 	}
