@@ -1,7 +1,6 @@
 package transcoder
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -54,15 +53,20 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	previewGifFile := path.Join(config.WebRoot, "preview.gif")
 
 	framePath := path.Join(segmentPath, strconv.Itoa(variantIndex))
-	files, err := ioutil.ReadDir(framePath)
+	files, err := os.ReadDir(framePath)
 	if err != nil {
 		return err
 	}
 
 	var modTime time.Time
 	var names []string
-	for _, fi := range files {
-		if path.Ext(fi.Name()) != ".ts" {
+	for _, f := range files {
+		if path.Ext(f.Name()) != ".ts" {
+			continue
+		}
+
+		fi, err := f.Info()
+		if err != nil {
 			continue
 		}
 

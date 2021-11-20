@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -31,7 +30,7 @@ func getCustomEmojiList() []models.CustomEmoji {
 	}
 
 	if len(emojiCache) == 0 {
-		files, err := ioutil.ReadDir(fullPath)
+		files, err := os.ReadDir(fullPath)
 		if err != nil {
 			log.Errorln(err)
 			return emojiCache

@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -94,5 +94,5 @@ func writeBytesAsImage(data []byte, contentType string, w http.ResponseWriter, c
 }
 
 func getImage(path string) ([]byte, error) {
-	return ioutil.ReadFile(path) // nolint
+	return os.ReadFile(path) // nolint
 }

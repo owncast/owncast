@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net/url"
 	"os"
@@ -52,12 +51,12 @@ func GetIndexFromFilePath(path string) string {
 
 // Copy copies the file to destination.
 func Copy(source, destination string) error {
-	input, err := ioutil.ReadFile(source) // nolint
+	input, err := os.ReadFile(source) // nolint
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(destination, input, 0600)
+	return os.WriteFile(destination, input, 0600)
 }
 
 // Move moves the file to destination.

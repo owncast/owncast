@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -20,7 +19,7 @@ import (
 func Restore(backupFile string, databaseFile string) error {
 	log.Printf("Restoring database backup %s to %s", backupFile, databaseFile)
 
-	data, err := ioutil.ReadFile(backupFile) // nolint
+	data, err := os.ReadFile(backupFile) // nolint
 	if err != nil {
 		return fmt.Errorf("unable to read backup file %s", err)
 	}

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -88,7 +87,7 @@ func SetStreamAsDisconnected() {
 
 	offlineFileData := static.GetOfflineSegment()
 	offlineFilename := "offline.ts"
-	offlineTmpFile, err := ioutil.TempFile(os.TempDir(), offlineFilename)
+	offlineTmpFile, err := os.CreateTemp(os.TempDir(), offlineFilename)
 	if err != nil {
 		log.Errorln("unable to create temp file for offline video segment")
 	}
