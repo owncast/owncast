@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -223,7 +223,7 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imgPath := filepath.Join("data", "logo"+extension)
-	if err := ioutil.WriteFile(imgPath, bytes, 0600); err != nil {
+	if err := os.WriteFile(imgPath, bytes, 0600); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

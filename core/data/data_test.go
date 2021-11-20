@@ -2,13 +2,12 @@ package data
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	dbFile, err := ioutil.TempFile(os.TempDir(), "owncast-test-db.db")
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
 	if err != nil {
 		panic(err)
 	}
