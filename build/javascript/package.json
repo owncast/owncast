@@ -4,7 +4,7 @@
   "description": "Javascript dependencies for Owncast web app",
   "main": "index.js",
   "dependencies": {
-    "@joeattardi/emoji-button": "^4.6.0",
+    "@joeattardi/emoji-button": "^4.6.2",
     "@videojs/themes": "^1.0.1",
     "htm": "^3.1.0",
     "mark.js": "^8.11.1",
