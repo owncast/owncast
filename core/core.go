@@ -1,7 +1,6 @@
 package core
 
 import (
-	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,7 +15,6 @@ import (
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -29,8 +27,10 @@ var (
 	_broadcaster *models.Broadcaster
 )
 
-var handler transcoder.HLSHandler
-var fileWriter = transcoder.FileWriterReceiverService{}
+var (
+	handler    transcoder.HLSHandler
+	fileWriter = transcoder.FileWriterReceiverService{}
+)
 
 // Start starts up the core processing.
 func Start() error {
@@ -95,23 +95,22 @@ func createInitialOfflineState() error {
 func transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
-	r, w := io.Pipe()
-
 	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetInput("pipe:0")
-	_transcoder.SetStdin(r)
 	_transcoder.SetIdentifier("offline")
-	go _transcoder.Start()
+	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
+	_transcoder.SetIsEvent(true)
 
-	d := static.GetOfflineSegment()
-	if _, err := w.Write(d); err != nil {
-		log.Errorln(err)
+	offlineFilePath, err := saveOfflineClipToDisk("offline.ts")
+	if err != nil {
+		log.Fatalln("unable to save offline clip:", err)
 	}
+
+	_transcoder.SetInput(offlineFilePath)
+	go _transcoder.Start()
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()
-	err := utils.Copy(filepath.Join("data", logo), "webroot/thumbnail.jpg")
-	if err != nil {
+	if err = utils.Copy(filepath.Join("data", logo), "webroot/thumbnail.jpg"); err != nil {
 		log.Warnln(err)
 	}
 
