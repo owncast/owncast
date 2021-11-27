@@ -1,11 +1,7 @@
 package core
 
 import (
-	"bufio"
-	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -17,10 +13,7 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-
-	"github.com/grafov/m3u8"
 )
 
 // After the stream goes offline this timer fires a full cleanup after N min.
@@ -85,18 +78,13 @@ func SetStreamAsDisconnected() {
 	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
-	offlineFileData := static.GetOfflineSegment()
 	offlineFilename := "offline.ts"
-	offlineTmpFile, err := os.CreateTemp(os.TempDir(), offlineFilename)
+
+	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
 	if err != nil {
-		log.Errorln("unable to create temp file for offline video segment")
+		log.Errorln(err)
+		return
 	}
-
-	if _, err = offlineTmpFile.Write(offlineFileData); err != nil {
-		log.Errorln("unable to write offline segment to disk", err)
-	}
-
-	offlineFilePath := offlineTmpFile.Name()
 
 	transcoder.StopThumbnailGenerator()
 	rtmp.Disconnect()
@@ -111,69 +99,12 @@ func SetStreamAsDisconnected() {
 	if _currentBroadcast == nil {
 		stopOnlineCleanupTimer()
 		transitionToOfflineVideoStreamContent()
+		log.Errorln("unexpected nil _currentBroadcast")
 		return
 	}
 
 	for index := range _currentBroadcast.OutputSettings {
-		playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
-		segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
-
-		if err := utils.Copy(offlineFilePath, segmentFilePath); err != nil {
-			log.Warnln(err)
-		}
-		if _, err := _storage.Save(segmentFilePath, 0); err != nil {
-			log.Warnln(err)
-		}
-		if utils.DoesFileExists(playlistFilePath) {
-			f, err := os.OpenFile(playlistFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm) //nolint
-			if err != nil {
-				log.Errorln(err)
-			}
-			defer f.Close()
-
-			playlist, _, err := m3u8.DecodeFrom(bufio.NewReader(f), true)
-			if err != nil {
-				log.Fatalln(err)
-			}
-
-			variantPlaylist := playlist.(*m3u8.MediaPlaylist)
-			if len(variantPlaylist.Segments) > data.GetStreamLatencyLevel().SegmentCount {
-				variantPlaylist.Segments = variantPlaylist.Segments[:len(variantPlaylist.Segments)]
-			}
-
-			if err := variantPlaylist.Append(offlineFilename, 8.0, ""); err != nil {
-				log.Fatalln(err)
-			}
-			if err := variantPlaylist.SetDiscontinuity(); err != nil {
-				log.Fatalln(err)
-			}
-			if _, err := f.WriteAt(variantPlaylist.Encode().Bytes(), 0); err != nil {
-				log.Errorln(err)
-			}
-		} else {
-			p, err := m3u8.NewMediaPlaylist(1, 1)
-			if err != nil {
-				log.Errorln(err)
-			}
-
-			// If "offline" content gets changed then change the duration below
-			if err := p.Append(offlineFilename, 8.0, ""); err != nil {
-				log.Errorln(err)
-			}
-
-			p.Close()
-			f, err := os.Create(playlistFilePath)
-			if err != nil {
-				log.Errorln(err)
-			}
-			defer f.Close()
-			if _, err := f.Write(p.Encode().Bytes()); err != nil {
-				log.Errorln(err)
-			}
-		}
-		if _, err := _storage.Save(playlistFilePath, 0); err != nil {
-			log.Warnln(err)
-		}
+		makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
 	}
 
 	StartOfflineCleanupTimer()
