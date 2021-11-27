@@ -5,10 +5,10 @@ run:
 issues:
   # The linter has a default list of ignorable errors. Turning this on will enable that list.
   exclude-use-default: false
-  
+
   # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0
-  
+
   # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
   max-same-issues: 0
 
@@ -58,11 +58,11 @@ linters-settings:
 
   cyclop:
     # the maximal code complexity to report. default is 10. eventually work our way to that.
-    max-complexity: 20
+    max-complexity: 15
     # the max average package complexity. If it's higher than 0.0 (float) the check is enabled (default 0.0)
     package-average: 0.0
     # should ignore tests
-    skip-tests: true  
+    skip-tests: true
 
   gosimple:
     # Select the Go version to target. The default is '1.13'.
