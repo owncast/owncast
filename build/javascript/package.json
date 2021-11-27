@@ -9,7 +9,7 @@
     "htm": "^3.1.0",
     "mark.js": "^8.11.1",
     "micromodal": "^0.4.9",
-    "preact": "10.6.0",
+    "preact": "10.6.1",
     "tailwindcss": "^1.9.6",
     "video.js": "7.17.0"
   },
