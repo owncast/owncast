@@ -75,30 +75,22 @@ func AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fw := flushWriter{w: w}
+	if f, ok := w.(http.Flusher); ok {
+		fw.f = f
+	}
+
 	// Run the installer.
 	cmd := exec.Command("bash", updater)
 	cmd.Env = append(os.Environ(), "NO_COLOR=true")
-
-	pipeReader, pipeWriter := io.Pipe()
-	defer pipeWriter.Close() // nolint: errcheck
-	cmd.Stdout = pipeWriter
-	cmd.Stderr = pipeWriter
-	go func() {
-		_, err := io.Copy(w, pipeReader)
-		if err != nil {
-			log.Debugln(err)
-		}
-	}()
-
-	if err != nil {
-		log.Errorln(err)
-		controllers.WriteSimpleResponse(w, false, "unable to update: "+err.Error())
-		return
-	}
+	cmd.Stdout = &fw
+	cmd.Stderr = &fw
 
 	if err := cmd.Run(); err != nil {
 		log.Debugln(err)
-		controllers.WriteSimpleResponse(w, false, "unable to update: "+err.Error())
+		if _, err := w.Write([]byte("Unable to complete update: " + err.Error())); err != nil {
+			log.Errorln(err)
+		}
 		return
 	}
 }
@@ -195,4 +187,17 @@ func getContainerID() string {
 		}
 	}
 	return containerID
+}
+
+type flushWriter struct {
+	f http.Flusher
+	w io.Writer
+}
+
+func (fw *flushWriter) Write(p []byte) (n int, err error) {
+	n, err = fw.w.Write(p)
+	if fw.f != nil {
+		fw.f.Flush()
+	}
+	return
 }
