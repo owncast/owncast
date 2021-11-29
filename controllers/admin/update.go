@@ -140,24 +140,14 @@ func downloadInstaller() (string, error) {
 // Check to see if owncast is listed as a running service under systemd.
 func isRunningUnderSystemD() bool {
 	// Our current PID
-	pid := os.Getpid()
+	ppid := os.Getppid()
 
-	cmd := exec.Command( //nolint:gosec
-		"systemctl",
-		"status",
-		fmt.Sprintf("%d", pid),
-	)
+	// A randomized, unique 128-bit ID identifying each runtime cycle of the unit.
+	invocationID, hasInvocationID := os.LookupEnv("INVOCATION_ID")
 
-	out, err := cmd.Output()
-	if err != nil {
-		log.Errorln(err)
-		return false
-	}
-
-	// This is kind of a hack looking for "Main PID" to determine if this PID
-	// was launched via a systemd unit.
-	outStr := string(out)
-	return strings.Contains(outStr, "Main PID")
+	// systemd's pid should be 1, so if our process' parent pid is 1
+	// then we are running under systemd.
+	return ppid == 1 || (hasInvocationID && invocationID != "")
 }
 
 // Taken from https://stackoverflow.com/questions/23513045/how-to-check-if-a-process-is-running-inside-docker-container
