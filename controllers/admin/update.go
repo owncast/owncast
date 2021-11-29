@@ -20,7 +20,7 @@ The auto-update relies on some guesses and hacks to determine how the binary
 is being run.
 
 It determines if is running under systemd by asking systemd about the PID
-and hackingly checking if the `MainPID` property is set for it.
+and checking the parent pid or INVOCATION_ID property is set for it.
 
 It also determines if the binary is running under a container by figuring out
 the container ID as a fallback to refuse an in-place update within a container.
