@@ -26,6 +26,39 @@ function SystemMessage(props) {
   `;
 }
 
+function SingleFederatedUser(props) {
+  const { message } = props;
+  const { type, title, subtitle, image, link } = message;
+
+  let body = '';
+  switch (type) {
+    case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW:
+      body = `${title} just followed this stream.`;
+    case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE:
+      body = `${title} just liked a post.`;
+    case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST:
+      body = `${title} just shared a post.`;
+  }
+
+  return html`
+    <a
+      href=${link}
+      class="follower m-3 block bg-white flex items-center p-2 rounded-xl shadow border"
+      target="_blank"
+    >
+      <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
+      <div class="p-3 flex-grow">
+        <p class="font-semibold text-gray-700 truncate">${title}</p>
+        <p class=" text-gray-500 truncate">@${subtitle}</p>
+        <div
+          class="text-sm text-gray-500"
+          dangerouslySetInnerHTML=${{ __html: body }}
+        ></div>
+      </div>
+    </a>
+  `;
+}
+
 export default function Message(props) {
   const { message } = props;
   const { type, oldName, user, body } = message;
@@ -64,6 +97,8 @@ export default function Message(props) {
       </div>`;
       return html`<${SystemMessage} contents=${contents} />`;
     }
+  } else if (type === SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW) {
+    return html` <${SingleFederatedUser} message=${message} /> `;
   } else {
     console.log('Unknown message type:', type);
   }
