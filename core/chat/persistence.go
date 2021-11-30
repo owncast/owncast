@@ -34,16 +34,17 @@ func setupPersistence() {
 
 // SaveUserMessage will save a single chat event to the messages database.
 func SaveUserMessage(event events.UserMessageEvent) {
-	saveEvent(event.ID, event.User.ID, event.Body, event.Type, event.HiddenAt, event.Timestamp)
+	saveEvent(event.ID, &event.User.ID, event.Body, event.Type, event.HiddenAt, event.Timestamp, nil, nil, nil, nil)
 }
 
-func saveEvent(id string, userID string, body string, eventType string, hidden *time.Time, timestamp time.Time) {
+func saveFederatedAction(event events.FediverseEngagementEvent) {
+	saveEvent(event.ID, nil, event.Body, event.Type, nil, event.Timestamp, &event.Image, &event.Link, &event.Title, &event.Subtitle)
+}
+
+func saveEvent(id string, userID *string, body string, eventType string, hidden *time.Time, timestamp time.Time, image *string, link *string, title *string, subtitle *string) {
 	defer func() {
 		_historyCache = nil
 	}()
-
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
 
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
@@ -53,7 +54,7 @@ func saveEvent(id string, userID string, body string, eventType string, hidden *
 
 	defer tx.Rollback() // nolint
 
-	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp) values(?, ?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp, image, link, title, subtitle) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Errorln("error saving", eventType, err)
 		return
@@ -61,7 +62,7 @@ func saveEvent(id string, userID string, body string, eventType string, hidden *
 
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(id, userID, body, eventType, hidden, timestamp); err != nil {
+	if _, err = stmt.Exec(id, userID, body, eventType, hidden, timestamp, image, link, title, subtitle); err != nil {
 		log.Errorln("error saving", eventType, err)
 		return
 	}
@@ -71,8 +72,108 @@ func saveEvent(id string, userID string, body string, eventType string, hidden *
 	}
 }
 
-func getChat(query string) []events.UserMessageEvent {
-	history := make([]events.UserMessageEvent, 0)
+func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
+	u := user.User{
+		ID:            *row.userID,
+		AccessToken:   "",
+		DisplayName:   *row.userDisplayName,
+		DisplayColor:  *row.userDisplayColor,
+		CreatedAt:     *row.userCreatedAt,
+		DisabledAt:    row.userDisabledAt,
+		NameChangedAt: row.userNameChangedAt,
+		PreviousNames: strings.Split(*row.previousUsernames, ","),
+	}
+
+	message := events.UserMessageEvent{
+		Event: events.Event{
+			Type:      row.eventType,
+			ID:        row.id,
+			Timestamp: row.timestamp,
+		},
+		UserEvent: events.UserEvent{
+			User:     &u,
+			HiddenAt: row.hiddenAt,
+		},
+		MessageEvent: events.MessageEvent{
+			Body:    row.body,
+			RawBody: row.body,
+		},
+	}
+
+	return message
+}
+
+func makeSystemMessageChatEventFromRowData(row rowData) events.SystemMessageEvent {
+	message := events.SystemMessageEvent{
+		Event: events.Event{
+			Type:      row.eventType,
+			ID:        row.id,
+			Timestamp: row.timestamp,
+		},
+		MessageEvent: events.MessageEvent{
+			Body:    row.body,
+			RawBody: row.body,
+		},
+	}
+	return message
+}
+
+func makeActionMessageChatEventFromRowData(row rowData) events.ActionEvent {
+	message := events.ActionEvent{
+		Event: events.Event{
+			Type:      row.eventType,
+			ID:        row.id,
+			Timestamp: row.timestamp,
+		},
+		MessageEvent: events.MessageEvent{
+			Body:    row.body,
+			RawBody: row.body,
+		},
+	}
+	return message
+}
+
+func makeFederatedActionChatEventFromRowData(row rowData) events.FediverseEngagementEvent {
+	message := events.FediverseEngagementEvent{
+		Event: events.Event{
+			Type:      row.eventType,
+			ID:        row.id,
+			Timestamp: row.timestamp,
+		},
+		MessageEvent: events.MessageEvent{
+			Body:    row.body,
+			RawBody: row.body,
+		},
+		Image:    *row.image,
+		Link:     *row.link,
+		Title:    *row.title,
+		Subtitle: *row.subtitle,
+	}
+	return message
+}
+
+type rowData struct {
+	id        string
+	userID    *string
+	body      string
+	eventType models.EventType
+	hiddenAt  *time.Time
+	timestamp time.Time
+	title     *string
+	subtitle  *string
+	image     *string
+	link      *string
+
+	userDisplayName   *string
+	userDisplayColor  *int
+	userCreatedAt     *time.Time
+	userDisabledAt    *time.Time
+	previousUsernames *string
+	userNameChangedAt *time.Time
+}
+
+func getChat(query string) []interface{} {
+	history := make([]interface{}, 0)
 	rows, err := _datastore.DB.Query(query)
 	if err != nil || rows.Err() != nil {
 		log.Errorln("error fetching chat history", err)
@@ -81,69 +182,46 @@ func getChat(query string) []events.UserMessageEvent {
 	defer rows.Close()
 
 	for rows.Next() {
-		var id string
-		var userID string
-		var body string
-		var messageType models.EventType
-		var hiddenAt *time.Time
-		var timestamp time.Time
-
-		var userDisplayName *string
-		var userDisplayColor *int
-		var userCreatedAt *time.Time
-		var userDisabledAt *time.Time
-		var previousUsernames *string
-		var userNameChangedAt *time.Time
+		row := rowData{}
 
 		// Convert a database row into a chat event
-		err = rows.Scan(&id, &userID, &body, &messageType, &hiddenAt, &timestamp, &userDisplayName, &userDisplayColor, &userCreatedAt, &userDisabledAt, &previousUsernames, &userNameChangedAt)
-		if err != nil {
+		if err = rows.Scan(
+			&row.id,
+			&row.userID,
+			&row.body,
+			&row.title,
+			&row.subtitle,
+			&row.image,
+			&row.link,
+			&row.eventType,
+			&row.hiddenAt,
+			&row.timestamp,
+			&row.userDisplayName,
+			&row.userDisplayColor,
+			&row.userCreatedAt,
+			&row.userDisabledAt,
+			&row.previousUsernames,
+			&row.userNameChangedAt,
+		); err != nil {
 			log.Errorln("There is a problem converting query to chat objects. Please report this:", query)
 			break
 		}
 
-		// System messages and chat actions are special and are not from real users
-		if messageType == events.SystemMessageSent || messageType == events.ChatActionSent {
-			name := "Owncast"
-			userDisplayName = &name
-			color := 200
-			userDisplayColor = &color
-		}
+		var message interface{}
 
-		if previousUsernames == nil {
-			previousUsernames = userDisplayName
-		}
-
-		if userCreatedAt == nil {
-			now := time.Now()
-			userCreatedAt = &now
-		}
-
-		user := user.User{
-			ID:            userID,
-			AccessToken:   "",
-			DisplayName:   *userDisplayName,
-			DisplayColor:  *userDisplayColor,
-			CreatedAt:     *userCreatedAt,
-			DisabledAt:    userDisabledAt,
-			NameChangedAt: userNameChangedAt,
-			PreviousNames: strings.Split(*previousUsernames, ","),
-		}
-
-		message := events.UserMessageEvent{
-			Event: events.Event{
-				Type:      messageType,
-				ID:        id,
-				Timestamp: timestamp,
-			},
-			UserEvent: events.UserEvent{
-				User:     &user,
-				HiddenAt: hiddenAt,
-			},
-			MessageEvent: events.MessageEvent{
-				Body:    body,
-				RawBody: body,
-			},
+		switch row.eventType {
+		case events.MessageSent:
+			message = makeUserMessageEventFromRowData(row)
+		case events.SystemMessageSent:
+			message = makeSystemMessageChatEventFromRowData(row)
+		case events.ChatActionSent:
+			message = makeActionMessageChatEventFromRowData(row)
+		case events.FediverseEngagementFollow:
+			message = makeFederatedActionChatEventFromRowData(row)
+		case events.FediverseEngagementLike:
+			message = makeFederatedActionChatEventFromRowData(row)
+		case events.FediverseEngagementRepost:
+			message = makeFederatedActionChatEventFromRowData(row)
 		}
 
 		history = append(history, message)
@@ -152,10 +230,10 @@ func getChat(query string) []events.UserMessageEvent {
 	return history
 }
 
-var _historyCache *[]events.UserMessageEvent
+var _historyCache *[]interface{}
 
 // GetChatModerationHistory will return all the chat messages suitable for moderation purposes.
-func GetChatModerationHistory() []events.UserMessageEvent {
+func GetChatModerationHistory() []interface{} {
 	if _historyCache != nil {
 		return *_historyCache
 	}
@@ -170,9 +248,9 @@ func GetChatModerationHistory() []events.UserMessageEvent {
 }
 
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
-func GetChatHistory() []events.UserMessageEvent {
+func GetChatHistory() []interface{} {
 	// Get all visible messages
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at FROM messages, users WHERE messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+	query := fmt.Sprintf("SELECT messages.id,messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at FROM messages LEFT JOIN users ON messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
 	m := getChat(query)
 
 	// Invert order of messages
@@ -200,7 +278,7 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	}
 
 	for _, message := range messages {
-		ids = append(ids, message.ID)
+		ids = append(ids, message.(events.Event).ID)
 	}
 
 	// Tell the clients to hide/show these messages.
@@ -251,34 +329,36 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	return nil
 }
 
-// Only keep recent messages so we don't keep more chat data than needed
-// for privacy and efficiency reasons.
-func runPruner() {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func getMessageByID(messageID string) (*events.UserMessageEvent, error) {
+	query := "SELECT * FROM messages WHERE id = ?"
+	row := _datastore.DB.QueryRow(query, messageID)
 
-	log.Traceln("Removing chat messages older than", maxBacklogHours, "hours")
+	var id string
+	var userID string
+	var body string
+	var eventType models.EventType
+	var hiddenAt *time.Time
+	var timestamp time.Time
 
-	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		log.Debugln(err)
-		return
+	if err := row.Scan(&id, &userID, &body, &eventType, &hiddenAt, &timestamp); err != nil {
+		log.Errorln(err)
+		return nil, err
 	}
 
-	stmt, err := tx.Prepare(deleteStatement)
-	if err != nil {
-		log.Debugln(err)
-		return
-	}
-	defer stmt.Close()
+	user := user.GetUserByID(userID)
 
-	if _, err = stmt.Exec(fmt.Sprintf("-%d hours", maxBacklogHours)); err != nil {
-		log.Debugln(err)
-		return
-	}
-	if err = tx.Commit(); err != nil {
-		log.Debugln(err)
-		return
-	}
+	return &events.UserMessageEvent{
+		events.Event{
+			Type:      eventType,
+			ID:        id,
+			Timestamp: timestamp,
+		},
+		events.UserEvent{
+			User:     user,
+			HiddenAt: hiddenAt,
+		},
+		events.MessageEvent{
+			Body: body,
+		},
+	}, nil
 }
