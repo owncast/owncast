@@ -71,7 +71,7 @@ build() {
 
   pushd dist/${NAME} >> /dev/null
 
-  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X github.com/owncast/owncast/config.GitCommit=${GIT_COMMIT} -X github.com/owncast/owncast/config.BuildVersion=${VERSION} -X github.com/owncast/owncast/config.BuildPlatform=${NAME}" -targets "${OS}/${ARCH}" github.com/owncast/owncast
+  CGO_ENABLED=1 ~/go/bin/xgo --branch ${GIT_BRANCH} -ldflags "-s -w -X github.com/owncast/owncast/config.GitCommit=${GIT_COMMIT} -X github.com/owncast/owncast/config.BuildVersion=${VERSION} -X github.com/owncast/owncast/config.BuildPlatform=${NAME}" -tags enable_updates -targets "${OS}/${ARCH}" github.com/owncast/owncast
   mv owncast-*-${ARCH} owncast
 
   zip -r -q -8 ../owncast-$VERSION-$NAME.zip .
