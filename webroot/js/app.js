@@ -949,11 +949,7 @@ export default class App extends Component {
               </h3>
 
               <!-- tab bar -->
-<<<<<<< HEAD
-              <div class="my-8">
-=======
               <div class="${TAB_CONTENT.length > 1 ? 'my-8' : 'my-3'}">
->>>>>>> 7bc3b771 (Tweak web UI followers handling)
                 <${TabBar} tabs=${TAB_CONTENT} ariaLabel="User Content" />
               </div>
             </div>
