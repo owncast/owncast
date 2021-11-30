@@ -1,8 +1,6 @@
 import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
-import {
-  URL_FOLLOWERS,
-} from '/js/utils/constants.js';
+import { URL_FOLLOWERS } from '/js/utils/constants.js';
 const html = htm.bind(h);
 
 export default class FollowerList extends Component {
@@ -10,8 +8,8 @@ export default class FollowerList extends Component {
     super(props);
 
     this.state = {
-      followers: []
-    }
+      followers: [],
+    };
   }
 
   componentDidMount() {
@@ -25,7 +23,7 @@ export default class FollowerList extends Component {
   async getFollowers() {
     const response = await fetch(URL_FOLLOWERS);
     const followers = await response.json();
-    
+
     this.setState({ followers: followers });
   }
 
@@ -35,23 +33,25 @@ export default class FollowerList extends Component {
       return null;
     }
 
+    const noFollowersInfo = html`<div>
+      <p class="mb-5 text-2xl">No followers yet. Be the first.</p>
+      <p>Info about how to follow and what it means goes here.</p>
+    </div>`;
+
     return html`
       <div id="followers" class="p-4 w-full">
-        <h3 class="text-3xl font-semibold mb-4">Followers</h3>
-        <div class="grid grid-flow-row sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:grid-cols-2">
-          ${
-            followers.map(follower => {
-              return html`
-                <${SingleFollower} user=${follower} />
-              `;
-            })
-          }
+        <div
+          class="grid grid-flow-row sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        >
+          ${followers.length === 0 && noFollowersInfo}
+          ${followers.map((follower) => {
+            return html` <${SingleFollower} user=${follower} /> `;
+          })}
         </div>
       </div>
     `;
-  };
+  }
 }
-
 
 function SingleFollower(props) {
   const { user } = props;
@@ -64,7 +64,11 @@ function SingleFollower(props) {
     displayName = displayUsername.split('@', 1)[0];
   }
   return html`
-    <a href=${link} class="follower m-3 block bg-white flex  items-center p-2 rounded-xl shadow border" target="_blank">
+    <a
+      href=${link}
+      class="follower m-3 block bg-white flex  items-center p-2 rounded-xl shadow border"
+      target="_blank"
+    >
       <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
       <div class="p-3 truncate flex-grow">
         <p class="font-semibold text-gray-700 truncate">${displayName}</p>
