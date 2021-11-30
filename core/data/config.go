@@ -13,44 +13,46 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const extraContentKey = "extra_page_content"
-const streamTitleKey = "stream_title"
-const streamKeyKey = "stream_key"
-const logoPathKey = "logo_path"
-const serverSummaryKey = "server_summary"
-const serverWelcomeMessageKey = "server_welcome_message"
-const serverNameKey = "server_name"
-const serverURLKey = "server_url"
-const httpPortNumberKey = "http_port_number"
-const httpListenAddressKey = "http_listen_address"
-const rtmpPortNumberKey = "rtmp_port_number"
-const serverMetadataTagsKey = "server_metadata_tags"
-const directoryEnabledKey = "directory_enabled"
-const directoryRegistrationKeyKey = "directory_registration_key"
-const socialHandlesKey = "social_handles"
-const peakViewersSessionKey = "peak_viewers_session"
-const peakViewersOverallKey = "peak_viewers_overall"
-const lastDisconnectTimeKey = "last_disconnect_time"
-const ffmpegPathKey = "ffmpeg_path"
-const nsfwKey = "nsfw"
-const s3StorageEnabledKey = "s3_storage_enabled"
-const s3StorageConfigKey = "s3_storage_config"
-const videoLatencyLevel = "video_latency_level"
-const videoStreamOutputVariantsKey = "video_stream_output_variants"
-const chatDisabledKey = "chat_disabled"
-const externalActionsKey = "external_actions"
-const customStylesKey = "custom_styles"
-const videoCodecKey = "video_codec"
-const blockedUsernamesKey = "blocked_usernames"
-const publicKeyKey = "public_key"
-const privateKeyKey = "private_key"
-const serverInitDateKey = "server_init_date"
-const federationEnabledKey = "federation_enabled"
-const federationUsernameKey = "federation_username"
-const federationPrivateKey = "federation_private"
-const federationGoLiveMessageKey = "federation_go_live_message"
-const federationFollowApprovalRequiredKey = "federation_follow_approval_required"
-const federationShowEngagementKey = "federation_show_engagement"
+const (
+	extraContentKey                     = "extra_page_content"
+	streamTitleKey                      = "stream_title"
+	streamKeyKey                        = "stream_key"
+	logoPathKey                         = "logo_path"
+	serverSummaryKey                    = "server_summary"
+	serverWelcomeMessageKey             = "server_welcome_message"
+	serverNameKey                       = "server_name"
+	serverURLKey                        = "server_url"
+	httpPortNumberKey                   = "http_port_number"
+	httpListenAddressKey                = "http_listen_address"
+	rtmpPortNumberKey                   = "rtmp_port_number"
+	serverMetadataTagsKey               = "server_metadata_tags"
+	directoryEnabledKey                 = "directory_enabled"
+	directoryRegistrationKeyKey         = "directory_registration_key"
+	socialHandlesKey                    = "social_handles"
+	peakViewersSessionKey               = "peak_viewers_session"
+	peakViewersOverallKey               = "peak_viewers_overall"
+	lastDisconnectTimeKey               = "last_disconnect_time"
+	ffmpegPathKey                       = "ffmpeg_path"
+	nsfwKey                             = "nsfw"
+	s3StorageEnabledKey                 = "s3_storage_enabled"
+	s3StorageConfigKey                  = "s3_storage_config"
+	videoLatencyLevel                   = "video_latency_level"
+	videoStreamOutputVariantsKey        = "video_stream_output_variants"
+	chatDisabledKey                     = "chat_disabled"
+	externalActionsKey                  = "external_actions"
+	customStylesKey                     = "custom_styles"
+	videoCodecKey                       = "video_codec"
+	blockedUsernamesKey                 = "blocked_usernames"
+	publicKeyKey                        = "public_key"
+	privateKeyKey                       = "private_key"
+	serverInitDateKey                   = "server_init_date"
+	federationEnabledKey                = "federation_enabled"
+	federationUsernameKey               = "federation_username"
+	federationPrivateKey                = "federation_private"
+	federationGoLiveMessageKey          = "federation_go_live_message"
+	federationFollowApprovalRequiredKey = "federation_follow_approval_required"
+	federationShowEngagementKey         = "federation_show_engagement"
+)
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -303,7 +305,7 @@ func GetSocialHandles() []models.SocialHandle {
 
 // SetSocialHandles will set the external social links.
 func SetSocialHandles(socialHandles []models.SocialHandle) error {
-	var configEntry = ConfigEntry{Key: socialHandlesKey, Value: socialHandles}
+	configEntry := ConfigEntry{Key: socialHandlesKey, Value: socialHandles}
 	return _datastore.Save(configEntry)
 }
 
@@ -358,7 +360,7 @@ func GetLastDisconnectTime() (*utils.NullTime, error) {
 // SetLastDisconnectTime will set the time the last stream ended.
 func SetLastDisconnectTime(disconnectTime time.Time) error {
 	savedDisconnectTime := utils.NullTime{Time: disconnectTime, Valid: true}
-	var configEntry = ConfigEntry{Key: lastDisconnectTimeKey, Value: savedDisconnectTime}
+	configEntry := ConfigEntry{Key: lastDisconnectTimeKey, Value: savedDisconnectTime}
 	return _datastore.Save(configEntry)
 }
 
@@ -407,7 +409,7 @@ func GetS3Config() models.S3 {
 
 // SetS3Config will set the external storage configuration.
 func SetS3Config(config models.S3) error {
-	var configEntry = ConfigEntry{Key: s3StorageConfigKey, Value: config}
+	configEntry := ConfigEntry{Key: s3StorageConfigKey, Value: config}
 	return _datastore.Save(configEntry)
 }
 
@@ -465,7 +467,7 @@ func GetStreamOutputVariants() []models.StreamOutputVariant {
 
 // SetStreamOutputVariants will set the stream output variants.
 func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
-	var configEntry = ConfigEntry{Key: videoStreamOutputVariantsKey, Value: variants}
+	configEntry := ConfigEntry{Key: videoStreamOutputVariantsKey, Value: variants}
 	return _datastore.Save(configEntry)
 }
 
@@ -501,7 +503,7 @@ func GetExternalActions() []models.ExternalAction {
 
 // SetExternalActions will save external actions.
 func SetExternalActions(actions []models.ExternalAction) error {
-	var configEntry = ConfigEntry{Key: externalActionsKey, Value: actions}
+	configEntry := ConfigEntry{Key: externalActionsKey, Value: actions}
 	return _datastore.Save(configEntry)
 }
 
@@ -591,7 +593,6 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 // GetForbiddenUsernameList will return the blocked usernames as a comma separated string.
 func GetForbiddenUsernameList() []string {
 	usernameString, err := _datastore.GetString(blockedUsernamesKey)
-
 	if err != nil {
 		return config.DefaultForbiddenUsernames
 	}
@@ -634,7 +635,7 @@ func GetServerInitTime() (*utils.NullTime, error) {
 // SetServerInitTime will set when the server was first created.
 func SetServerInitTime(t time.Time) error {
 	nt := utils.NullTime{Time: t, Valid: true}
-	var configEntry = ConfigEntry{Key: serverInitDateKey, Value: nt}
+	configEntry := ConfigEntry{Key: serverInitDateKey, Value: nt}
 	return _datastore.Save(configEntry)
 }
 
@@ -675,9 +676,10 @@ func SetFederationGoLiveMessage(message string) error {
 
 // GetFederationGoLiveMessage will return the message sent when going live.
 func GetFederationGoLiveMessage() string {
+	// Empty message means it's disabled.
 	message, err := _datastore.GetString(federationGoLiveMessageKey)
-	if message == "" || err != nil {
-		return config.GetDefaults().FederationGoLiveMessage
+	if err != nil {
+		log.Traceln("unable to fetch go live message.", err)
 	}
 
 	return message
