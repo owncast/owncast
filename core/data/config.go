@@ -697,9 +697,10 @@ func SetFederationGoLiveMessage(message string) error {
 
 // GetFederationGoLiveMessage will return the message sent when going live.
 func GetFederationGoLiveMessage() string {
+	// Empty message means it's disabled.
 	message, err := _datastore.GetString(federationGoLiveMessageKey)
-	if message == "" || err != nil {
-		return config.GetDefaults().FederationGoLiveMessage
+	if err != nil {
+		log.Traceln("unable to fetch go live message.", err)
 	}
 
 	return message
