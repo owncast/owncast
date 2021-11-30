@@ -9,6 +9,25 @@ import (
 	"github.com/teris-io/shortid"
 )
 
+func migrateToSchema2(db *sql.DB) {
+	// Since it's just a backlog of chat messages let's wipe the old messages
+	// and recreate the table.
+
+	// Drop the old messages table
+	stmt, err := db.Prepare("DROP TABLE messages")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
+
+	// Recreate it
+	CreateMessagesTable(db)
+}
+
 func migrateToSchema1(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
 	// and recreate the table.

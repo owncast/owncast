@@ -17,11 +17,13 @@ import (
 )
 
 const (
-	schemaVersion = 1
+	schemaVersion = 2
 )
 
-var _db *sql.DB
-var _datastore *Datastore
+var (
+	_db        *sql.DB
+	_datastore *Datastore
+)
 
 // GetDatabase will return the shared instance of the actual database.
 func GetDatabase() *sql.DB {
@@ -117,10 +119,12 @@ func migrateDatabase(db *sql.DB, from, to int) error {
 	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
 	utils.Backup(db, dbBackupFile)
 	for v := from; v < to; v++ {
+		log.Tracef("Migration step from %d to %d\n", v, v+1)
 		switch v {
 		case 0:
-			log.Tracef("Migration step from %d to %d\n", v, v+1)
 			migrateToSchema1(db)
+		case 1:
+			migrateToSchema2(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}
