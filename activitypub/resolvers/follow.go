@@ -2,39 +2,36 @@ package resolvers
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"net/url"
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	log "github.com/sirupsen/logrus"
 )
 
-func getPersonFromFollow(activity vocab.ActivityStreamsFollow) (vocab.ActivityStreamsPerson, error) {
-	return GetResolvedPersonFromActor(activity.GetActivityStreamsActor())
+func getPersonFromFollow(activity vocab.ActivityStreamsFollow) (apmodels.ActivityPubActor, error) {
+	return GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 }
 
 // MakeFollowRequest will convert an inbound Follow request to our internal actor model.
 func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) (*apmodels.ActivityPubActor, error) {
 	person, err := getPersonFromFollow(activity)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("unable to resolve person from follow request: " + err.Error())
 	}
 
-	hostname := person.GetJSONLDId().GetIRI().Hostname()
-	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
+	hostname := person.ActorIri.Hostname()
+	username := person.Username
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
-	var image *url.URL
-	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 {
-		image = person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
+
 	followRequest := apmodels.ActivityPubActor{
-		ActorIri:  person.GetJSONLDId().Get(),
+		ActorIri:  person.ActorIri,
 		FollowIri: activity.GetJSONLDId().Get(),
-		Inbox:     person.GetActivityStreamsInbox().GetIRI(),
-		Name:      person.GetActivityStreamsName().At(0).GetXMLSchemaString(),
+		Inbox:     person.Inbox,
+		Name:      person.Name,
 		Username:  fullUsername,
-		Image:     image,
+		Image:     person.Image,
 	}
 
 	return &followRequest, nil
@@ -42,28 +39,19 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 
 // MakeUnFollowRequest will convert an inbound Unfollow request to our internal actor model.
 func MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) *apmodels.ActivityPubActor {
-	person, err := GetResolvedPersonFromActor(activity.GetActivityStreamsActor())
+	person, err := GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 	if err != nil {
-		log.Errorln("unable to resolve person from actor iri", person.GetJSONLDId(), err)
+		log.Errorln("unable to resolve person from actor iri", person.ActorIri, err)
 		return nil
 	}
 
-	if person == nil {
-		return nil
-	}
-
-	var image *url.URL
-	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 {
-		image = person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
-
-	request := apmodels.ActivityPubActor{
-		ActorIri:  person.GetJSONLDId().Get(),
+	unfollowRequest := apmodels.ActivityPubActor{
+		ActorIri:  person.ActorIri,
 		FollowIri: activity.GetJSONLDId().Get(),
-		Inbox:     person.GetActivityStreamsInbox().GetIRI(),
-		Name:      person.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Image:     image,
+		Inbox:     person.Inbox,
+		Name:      person.Name,
+		Image:     person.Image,
 	}
 
-	return &request
+	return &unfollowRequest
 }
