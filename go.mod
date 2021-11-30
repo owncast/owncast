@@ -46,4 +46,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/go-fed/activity => ../activity
+replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20210908225327-e46ee45ec09c
