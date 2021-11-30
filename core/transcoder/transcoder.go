@@ -75,12 +75,12 @@ func (v *HLSVariant) getAllocatedVideoBitrate() int {
 
 // getMaxVideoBitrate returns the maximum video bitrate we allow the encoder to support.
 func (v *HLSVariant) getMaxVideoBitrate() int {
-	return int(float64(v.getAllocatedVideoBitrate()) + float64(v.getAllocatedVideoBitrate())*0.07)
+	return int(float64(v.getAllocatedVideoBitrate()) * 1.08)
 }
 
 // getBufferSize returns how often it checks the bitrate of encoded segments to see if it's too high/low.
 func (v *HLSVariant) getBufferSize() int {
-	return int(float64(v.getAllocatedVideoBitrate()) * 0.5)
+	return int(float64(v.getMaxVideoBitrate()))
 }
 
 // getString returns a WxH formatted getString for scaling video output.
