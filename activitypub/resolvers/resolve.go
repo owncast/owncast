@@ -74,13 +74,18 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	return Resolve(c, data, callbacks...)
 }
 
-// GetResolvedPersonFromActor resolve a provied actor property to a fully populated person.
-func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab.ActivityStreamsPerson, error) {
+// GetResolvedActorFromActorProperty resolve a provied actor property to a fully populated person.
+func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
 	var err error
-	var person vocab.ActivityStreamsPerson
+	var apActor apmodels.ActivityPubActor
 
-	personCallback := func(c context.Context, p vocab.ActivityStreamsPerson) error {
-		person = p
+	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
+		apActor = apmodels.MakeActorFromPerson(person)
+		return nil
+	}
+
+	serviceCallback := func(c context.Context, s vocab.ActivityStreamsService) error {
+		apActor = apmodels.MakeActorFromService(s)
 		return nil
 	}
 
@@ -88,14 +93,14 @@ func GetResolvedPersonFromActor(actor vocab.ActivityStreamsActorProperty) (vocab
 		if iter.IsIRI() {
 			iri := iter.GetIRI()
 			c := context.TODO()
-			if e := ResolveIRI(c, iri.String(), personCallback); e != nil {
+			if e := ResolveIRI(c, iri.String(), personCallback, serviceCallback); e != nil {
 				err = e
 			}
 		} else if iter.IsActivityStreamsPerson() {
-			p := iter.GetActivityStreamsPerson()
-			person = p
+			person := iter.GetActivityStreamsPerson()
+			apActor = apmodels.MakeActorFromPerson(person)
 		}
 	}
 
-	return person, err
+	return apActor, err
 }

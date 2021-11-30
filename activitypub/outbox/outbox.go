@@ -23,6 +23,12 @@ import (
 // SendLive will send all followers the message saying you started a live stream.
 func SendLive() error {
 	textContent := data.GetFederationGoLiveMessage()
+
+	// If the message is empty then do not send it.
+	if textContent == "" {
+		return nil
+	}
+
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())

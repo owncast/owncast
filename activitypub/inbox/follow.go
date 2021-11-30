@@ -4,19 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
+	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
+	"github.com/teris-io/shortid"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
-	fmt.Println("handleFollowInboxRequest 1")
 	log.Printf("INBOX Follow: %v ", activity)
 
 	follow, err := resolvers.MakeFollowRequest(c, activity)
@@ -24,8 +27,6 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		log.Errorln("unable to create follow inbox request", err)
 		return err
 	}
-
-	fmt.Println("handleFollowInboxRequest 2")
 
 	if follow == nil {
 		return fmt.Errorf("unable to handle request")
@@ -36,36 +37,23 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	followRequest := *follow
 	log.Println("follow request:", followRequest)
 
-	fmt.Println("handleFollowInboxRequest 3")
-
 	if err := persistence.AddFollow(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
 	}
 
-	fmt.Println("handleFollowInboxRequest 4")
-
 	localAccountName := data.GetDefaultFederationUsername()
-	log.Println("1", localAccountName)
 
 	if approved {
-		log.Println("2")
-
 		if err := requests.SendFollowAccept(followRequest, localAccountName); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
-		log.Println("3")
 	}
 
 	actorReference := activity.GetActivityStreamsActor()
-	actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
-	actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
-	actorIRI := actorReference.Begin().GetIRI().String()
 
-	msg := fmt.Sprintf("[%s](%s) just **followed**!", actorName, actorIRI)
-
-	return chat.SendSystemMessage(msg, false)
+	return handleEngagementActivity(activity.GetActivityStreamsObject(), actorReference, activity.GetJSONLDId().Get(), "follow")
 }
 
 func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
@@ -104,7 +92,7 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
-	return handleEngagementActivity(object, actorReference, "liked")
+	return handleEngagementActivity(object, actorReference, activity.GetJSONLDId().Get(), "liked")
 }
 
 func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnnounce) error {
@@ -112,16 +100,14 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
-	return handleEngagementActivity(object, actorReference, "re-posted")
+	return handleEngagementActivity(object, actorReference, activity.GetJSONLDId().Get(), "re-posted")
 }
 
-func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, action string) error {
+func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
 	// Do nothing if displaying engagement actions has been turned off.
 	if !data.GetFederationShowEngagement() {
 		return nil
 	}
-
-	log.Debugln("handleEngagementActivity")
 
 	IRIPath := object.At(0).GetIRI().Path
 
@@ -130,19 +116,29 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 	post, err := persistence.GetObjectByIRI(IRIPath)
 	if err != nil || post == "" {
 		log.Errorln("Could not find post locally:", IRIPath, err)
-		return fmt.Errorf("Could not find post locally: %s", IRIPath)
+		// return err
 	}
 
 	// Get actor of the Like
-	actor, _ := resolvers.GetResolvedPersonFromActor(actorReference)
+	actor, _ := resolvers.GetResolvedActorFromActorProperty(actorReference)
 
 	// Send chat message
-	actorName := actor.GetActivityStreamsName().Begin().GetXMLSchemaString()
+	actorName := actor.Name
 	actorIRI := actorReference.Begin().GetIRI().String()
 
-	msg := fmt.Sprintf("[%s](%s) just **%s** one of %s's posts.", actorName, actorIRI, action, data.GetServerName())
+	body := fmt.Sprintf("[%s](%s) just **%s** one of %s's posts.", actorName, actorIRI, action, data.GetServerName())
+	var image string
+	if actor.Image != nil {
+		s := actor.Image.String()
+		image = s
+	}
 
-	if err := chat.SendSystemMessage(msg, false); err != nil {
+	internalID := shortid.MustGenerate()
+	if err := persistence.SaveFediverseActivity(internalID, activityIRI.String(), actorIRI, events.FediverseEngagementFollow, time.Now()); err != nil {
+		return err
+	}
+
+	if err := chat.SendFediverseAction(events.FediverseEngagementFollow, actorName, actor.Username, image, body, actorIRI); err != nil {
 		return err
 	}
 

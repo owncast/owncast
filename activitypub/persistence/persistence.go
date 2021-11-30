@@ -26,6 +26,7 @@ func Setup(datastore *data.Datastore) {
 	_datastore = datastore
 	createFederationFollowersTable()
 	createFederationOutboxTable()
+	createFederatedActivitiesTable()
 }
 
 // AddFollow will save a follow to the datastore.
@@ -132,6 +133,32 @@ func removeFollow(actor *url.URL) error {
 	return tx.Commit()
 }
 
+// createFederatedActivitiesTable will create the inbound federated
+// activities table if needed.
+func createFederatedActivitiesTable() {
+	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_inbound_activities (
+		"id" TEXT NOT NULL,
+    "iri" TEXT NOT NULL,
+		"account" TEXT,
+		"eventType" TEXT,
+		"timestamp" DATETIME,
+		PRIMARY KEY (id)
+	);CREATE INDEX index ON messages (id, account, hidden_at, timestamp);
+	CREATE INDEX id ON messages (id);
+  CREATE INDEX iri ON messages (iri);
+	CREATE INDEX eventType ON messages (eventType);
+	CREATE INDEX timestamp ON messages (timestamp);`
+
+	stmt, err := _datastore.DB.Prepare(createTableSQL)
+	if err != nil {
+		log.Fatal("error creating inbound federated activities table", err)
+	}
+	defer stmt.Close()
+	if _, err := stmt.Exec(); err != nil {
+		log.Fatal("error creating inbound federated activities table", err)
+	}
+}
+
 func createFederationOutboxTable() {
 	log.Traceln("Creating federation followers table...")
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_outbox (
@@ -160,9 +187,10 @@ func createFederationOutboxTable() {
 func createFederationFollowersTable() {
 	log.Traceln("Creating federation followers table...")
 
-	if _, err := _datastore.DB.Exec("DROP TABLE ap_followers"); err != nil {
-		log.Errorln(err)
-	} // TODO: Remove!;
+	// TODO: Here for resetting testing data. Remove.
+	// if _, err := _datastore.DB.Exec("DROP TABLE ap_followers"); err != nil {
+	// 	log.Errorln(err)
+	// } // TODO: Remove!;
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
@@ -188,7 +216,7 @@ func createFederationFollowersTable() {
 	}
 }
 
-// GetOutbox will create an instance of the outbox populated by stored items.
+// GetOutbox will return an instance of the outbox populated by stored items.
 func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 	collection := streams.NewActivityStreamsOrderedCollectionPage()
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
@@ -206,32 +234,6 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 			return collection, err
 		}
 	}
-	// query := `SELECT value FROM ap_outbox`
-
-	// rows, err := _datastore.DB.Query(query)
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	var value []byte
-	// 	if err := rows.Scan(&value); err != nil {
-	// 		log.Error("There is a problem reading the database.", err)
-	// 		return collection, err
-	// 	}
-
-	// 	createCallback := func(c context.Context, activity vocab.ActivityStreamsCreate) error {
-	// 		// items = append(items, activity)
-	// 		orderedItems.AppendActivityStreamsCreate(activity)
-	// 		return nil
-	// 	}
-
-	// 	if err := resolvers.Resolve(context.TODO(), value, createCallback); err != nil {
-	// 		return collection, err
-	// 	}
-	// }
-
-	// if err := rows.Err(); err != nil {
-	// 	return collection, err
-	// }
 
 	collection.SetActivityStreamsOrderedItems(orderedItems)
 	totalCount, _ := _datastore.GetQueries().GetLocalPostCount(context.Background())
@@ -350,4 +352,34 @@ func GetPendingFollowRequests() ([]models.Follower, error) {
 	}
 
 	return followers, nil
+}
+
+// SaveFediverseActivity will save an event to the ap_inbound_activities table.
+func SaveFediverseActivity(id string, iri string, accountIRI string, eventType string, timestamp time.Time) error {
+	tx, err := data.GetDatastore().DB.Begin()
+	if err != nil {
+		log.Errorln("error saving", eventType, err)
+		return err
+	}
+
+	defer tx.Rollback() // nolint
+
+	stmt, err := tx.Prepare("INSERT INTO ap_inbound_activities(id, iri, account, eventType, timestamp) values(?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Errorln("error saving", eventType, err)
+		return err
+	}
+
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(id, iri, accountIRI, eventType, timestamp); err != nil {
+		log.Errorln("error saving", eventType, err)
+		return err
+	}
+	if err = tx.Commit(); err != nil {
+		log.Errorln("error saving", eventType, err)
+		return err
+	}
+
+	return nil
 }
