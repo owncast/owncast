@@ -93,7 +93,7 @@ export default class UsernameForm extends Component {
     };
 
     const moderatorFlag = html`
-      <img src="/img/moderator.svg" class="moderator-flag rounded-lg" />
+      <img src="/img/moderator-nobackground.svg" class="moderator-flag" />
     `;
 
     return html`
