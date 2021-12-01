@@ -58,7 +58,7 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 
 // PostSignedRequest will make a signed POST request of a payload to the provided destination.
 func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]byte, error) {
-	log.Println("Sending", string(payload), "to", url)
+	log.Debugln("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
 

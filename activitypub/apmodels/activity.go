@@ -27,9 +27,9 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	// CC the public if we're not treating ActivityPub as "private".
 	if !data.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
-		cc := streams.NewActivityStreamsCcProperty()
-		cc.AppendIRI(public)
-		activity.SetActivityStreamsCc(cc)
+		to := streams.NewActivityStreamsToProperty()
+		to.AppendIRI(public)
+		activity.SetActivityStreamsTo(to)
 	}
 
 	return activity
