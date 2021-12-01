@@ -69,8 +69,6 @@ func SendLive() error {
 	}
 	textContent = fmt.Sprintf("<p>%s</p><a href=\"%s\">%s</a>%s<p>%s</p>", textContent, data.GetServerURL(), data.GetServerURL(), streamTitle, tagsString)
 
-	log.Println(textContent)
-
 	note := apmodels.MakeNote(textContent, noteIRI, localActor)
 	note.SetActivityStreamsTag(tagProp)
 	object.AppendActivityStreamsNote(note)
