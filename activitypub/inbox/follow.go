@@ -53,7 +53,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	actorReference := activity.GetActivityStreamsActor()
 
-	return handleEngagementActivity(activity.GetActivityStreamsObject(), actorReference, activity.GetJSONLDId().Get(), "follow")
+	return handleEngagementActivity(events.FediverseEngagementFollow, activity.GetActivityStreamsObject(), actorReference, activity.GetJSONLDId().Get(), "follow")
 }
 
 func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
@@ -92,7 +92,7 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
-	return handleEngagementActivity(object, actorReference, activity.GetJSONLDId().Get(), "liked")
+	return handleEngagementActivity(events.FediverseEngagementLike, object, actorReference, activity.GetJSONLDId().Get(), "liked")
 }
 
 func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnnounce) error {
@@ -100,10 +100,10 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
-	return handleEngagementActivity(object, actorReference, activity.GetJSONLDId().Get(), "re-posted")
+	return handleEngagementActivity(events.FediverseEngagementRepost, object, actorReference, activity.GetJSONLDId().Get(), "re-posted")
 }
 
-func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
+func handleEngagementActivity(eventType string, object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
 	// Do nothing if displaying engagement actions has been turned off.
 	if !data.GetFederationShowEngagement() {
 		return nil
@@ -138,7 +138,7 @@ func handleEngagementActivity(object vocab.ActivityStreamsObjectProperty, actorR
 		return err
 	}
 
-	if err := chat.SendFediverseAction(events.FediverseEngagementFollow, actorName, actor.Username, image, body, actorIRI); err != nil {
+	if err := chat.SendFediverseAction(eventType, actorName, actor.Username, image, body, actorIRI); err != nil {
 		return err
 	}
 

@@ -31,29 +31,37 @@ function SingleFederatedUser(props) {
   const { type, title, subtitle, image, link } = message;
 
   let body = '';
+  let icon = null;
   switch (type) {
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW:
-      body = `${title} just followed this stream.`;
+      body = html`<span>Just followed this stream.</span>`;
+      icon = html`<img src="/img/follow.svg" />`;
+      break;
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE:
-      body = `${title} just liked a post.`;
+      body = html`Just liked a post.`;
+      icon = html`<img src="/img/like.svg" />`;
+      break;
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST:
-      body = `${title} just shared a post.`;
+      body = html`just shared a post.`;
+      icon = html`<img src="/img/repost.svg" />`;
+      break;
+    default:
+      body = '';
+      break;
   }
 
   return html`
-    <a
-      href=${link}
-      class="follower m-3 block bg-white flex items-center p-2 rounded-xl shadow border"
-      target="_blank"
-    >
-      <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
-      <div class="p-3 flex-grow">
-        <p class="font-semibold text-gray-700 truncate">${title}</p>
-        <p class=" text-gray-500 truncate">@${subtitle}</p>
-        <div
-          class="text-sm text-gray-500"
-          dangerouslySetInnerHTML=${{ __html: body }}
-        ></div>
+    <a href=${link} target="_blank">
+      <div
+        class="follower m-3 bg-white flex items-center p-2 rounded-xl shadow border"
+      >
+        <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
+        <div class="p-3 flex-grow">
+          <p class="font-semibold text-gray-700 truncate">${title}</p>
+          <p class=" text-gray-500 truncate">@${subtitle}</p>
+          <div class="text-sm text-gray-500">${body}</div>
+        </div>
+        <div class="relative h-10 w-10 right-0">${icon}</div>
       </div>
     </a>
   `;
@@ -97,7 +105,11 @@ export default function Message(props) {
       </div>`;
       return html`<${SystemMessage} contents=${contents} />`;
     }
-  } else if (type === SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW) {
+  } else if (
+    type === SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW ||
+    SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE ||
+    SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST
+  ) {
     return html` <${SingleFederatedUser} message=${message} /> `;
   } else {
     console.log('Unknown message type:', type);
