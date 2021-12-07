@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Typography, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { CONNECTED_CLIENTS, fetchData, DISABLED_USERS, MODERATORS } from '../../utils/apis';
 import UserTable from '../../components/user-table';
 import ClientTable from '../../components/client-table';
 
-const { Title } = Typography;
 const { TabPane } = Tabs;
 
 export const FETCH_INTERVAL = 10 * 1000; // 10 sec

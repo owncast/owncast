@@ -204,9 +204,7 @@ export default function CurrentVariantsTable() {
       </Title>
 
       {showSecondVariantRecommendation() && (
-        <>
-          <Alert message={ENCODER_RECOMMENDATION_THRESHOLD.HELP_TEXT} type="info" closable />
-        </>
+        <Alert message={ENCODER_RECOMMENDATION_THRESHOLD.HELP_TEXT} type="info" closable />
       )}
 
       <FormStatusIndicator status={submitStatus} />

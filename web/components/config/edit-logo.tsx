@@ -58,6 +58,7 @@ export default function EditLogo() {
         setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setLoading(false);
+        // eslint-disable-next-line no-promise-executor-return
         return rej();
       }
 
