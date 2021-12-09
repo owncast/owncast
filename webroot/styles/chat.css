@@ -270,7 +270,16 @@
   top: 0;
   bottom: unset;
 }
+.message-author {
+  display: flex;
+  height: 20px;
+  align-items: center;
+}
 
+.message-author .flair {
+  height: 70%;
+  margin-right: 5px;
+}
 
 .moderator-menu-item {
   font-size: .875rem;

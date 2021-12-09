@@ -75,6 +75,14 @@ export default class ChatMessageView extends Component {
           isMessageModeratable ? 'moderatable' : ''
         }`;
 
+    const messageAuthorFlair = isModerator
+      ? html`<img
+          class="flair"
+          title="Moderator"
+          src="/img/moderator-nobackground.svg"
+        />`
+      : null;
+
     return html`
       <div
         style=${backgroundStyle}
@@ -84,12 +92,10 @@ export default class ChatMessageView extends Component {
         <div class="message-content break-words w-full">
           <div
             style=${authorTextColor}
-            class="message-author font-bold${isAuthorModerator
-              ? ' moderator-flag'
-              : ''}"
+            class="message-author font-bold"
             title=${userMetadata}
           >
-            ${displayName}
+            ${messageAuthorFlair} ${displayName}
           </div>
           ${isMessageModeratable &&
           html`<${ModeratorActions}
