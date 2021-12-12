@@ -169,10 +169,14 @@ export default class Chat extends Component {
         const chatUserNames = allChatUserNames.filter(
           (name) => name != username
         );
-        this.setState({
-          messages: data.concat(this.state.messages),
-          chatUserNames,
+        this.setState((previousState, currentProps) => {
+          return {
+            ...previousState,
+            messages: data.concat(previousState.messages),
+            chatUserNames,
+          };
         });
+
         this.scrollToBottom();
       })
       .catch((error) => {
@@ -208,8 +212,8 @@ export default class Chat extends Component {
     if (messageType === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
       const modStatusUpdate = checkIsModerator(message);
       if (modStatusUpdate !== this.state.isModerator) {
-        this.setState({
-          isModerator: modStatusUpdate,
+        this.setState((previousState, currentProps) => {
+          return { ...previousState, isModerator: modStatusUpdate };
         });
       }
     }
@@ -252,8 +256,8 @@ export default class Chat extends Component {
           Math.max(updatedMessageList.length - 300, 0)
         );
       }
-      this.setState({
-        messages: updatedMessageList,
+      this.setState((previousState, currentProps) => {
+        return { ...previousState, messages: updatedMessageList };
       });
     } else if (
       renderableChatStyleMessages.includes(messageType) &&
@@ -270,7 +274,10 @@ export default class Chat extends Component {
         );
         newState.chatUserNames = [...updatedChatUserNames];
       }
-      this.setState(newState);
+
+      this.setState((previousState, currentProps) => {
+        return { ...previousState, newState };
+      });
     }
 
     // if window is blurred and we get a new message, add 1 to title
