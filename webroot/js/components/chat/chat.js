@@ -15,7 +15,15 @@ import {
   MESSAGE_JUMPTOBOTTOM_BUFFER,
 } from '../../utils/constants.js';
 
-const renderableChatStyleMessages = ['CHAT', 'SYSTEM', 'USER_JOINED'];
+// Add message types that should be displayed in chat to this array.
+const renderableChatStyleMessages = [
+  SOCKET_MESSAGE_TYPES.NAME_CHANGE,
+  SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO,
+  SOCKET_MESSAGE_TYPES.USER_JOINED,
+  SOCKET_MESSAGE_TYPES.SYSTEM,
+  SOCKET_MESSAGE_TYPES.CHAT,
+];
+
 export default class Chat extends Component {
   constructor(props, context) {
     super(props, context);
