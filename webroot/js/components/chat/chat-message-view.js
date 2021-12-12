@@ -7,7 +7,7 @@ import {
   messageBubbleColorForHue,
   textColorForHue,
 } from '../../utils/user-colors.js';
-import { convertToText } from '../../utils/chat.js';
+import { convertToText, checkIsModerator } from '../../utils/chat.js';
 import { SOCKET_MESSAGE_TYPES } from '../../utils/websocket.js';
 import { getDiffInDaysFromNow } from '../../utils/helpers.js';
 import ModeratorActions from './moderator-actions.js';
@@ -42,12 +42,8 @@ export default class ChatMessageView extends Component {
   render() {
     const { message, isModerator, accessToken } = this.props;
     const { user, timestamp } = message;
-    const {
-      displayName,
-      displayColor,
-      createdAt,
-      isModerator: isAuthorModerator,
-    } = user;
+    const { displayName, displayColor, createdAt } = user;
+    const isAuthorModerator = checkIsModerator(message);
 
     const isMessageModeratable =
       isModerator && message.type === SOCKET_MESSAGE_TYPES.CHAT;
@@ -75,7 +71,7 @@ export default class ChatMessageView extends Component {
           isMessageModeratable ? 'moderatable' : ''
         }`;
 
-    const messageAuthorFlair = isModerator
+    const messageAuthorFlair = isAuthorModerator
       ? html`<img
           class="flair"
           title="Moderator"
