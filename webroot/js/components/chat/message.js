@@ -35,12 +35,13 @@ export default function Message(props) {
   ) {
     return html`<${ChatMessageView} ...${props} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.NAME_CHANGE) {
+    // User changed their name
     const { displayName } = user;
     const contents = html`
-      <>
+      <div>
         <span class="font-bold">${oldName}</span> is now known as ${' '}
         <span class="font-bold">${displayName}</span>.
-      </>
+      </div>
     `;
     return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
