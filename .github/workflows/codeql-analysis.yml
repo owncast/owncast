@@ -16,6 +16,8 @@ on:
     branches: [ develop ]
     paths-ignore:
       - 'static/**'
+      - 'webroot/js/web_modules/**'
+      - 'build/javascript/**'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ develop ]
