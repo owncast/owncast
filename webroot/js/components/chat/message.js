@@ -34,16 +34,16 @@ function SingleFederatedUser(props) {
   let icon = null;
   switch (type) {
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW:
-      body = html`<span>Just followed this stream.</span>`;
-      icon = html`<img src="/img/follow.svg" />`;
+      body = html`<span>just followed this stream.</span>`;
+      icon = '/img/follow.svg';
       break;
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE:
-      body = html`Just liked a post.`;
-      icon = html`<img src="/img/like.svg" />`;
+      body = html`just liked a post.`;
+      icon = '/img/like.svg';
       break;
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST:
       body = html`just shared a post.`;
-      icon = html`<img src="/img/repost.svg" />`;
+      icon = '/img/repost.svg';
       break;
     default:
       body = '';
@@ -53,15 +53,25 @@ function SingleFederatedUser(props) {
   return html`
     <a href=${link} target="_blank">
       <div
-        class="follower m-3 bg-white flex items-center p-2 rounded-xl shadow border"
+        class="federated-action m-2 bg-white flex items-center p-1 px-2 rounded-xl shadow border"
       >
-        <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
-        <div class="p-3 flex-grow">
-          <p class="font-semibold text-gray-700 truncate">${title}</p>
-          <p class=" text-gray-500 truncate">@${subtitle}</p>
-          <div class="text-sm text-gray-500">${body}</div>
+        <div class="relative flex items-center space-x-4">
+          <img
+            src="${image || '/img/logo.svg'}"
+            class="w-12 h-12 rounded-full"
+          />
+          <span
+            style=${{
+              backgroundImage: `url(${icon})`,
+            }}
+            class="absolute h-6 w-6 rounded-full border-2 border-white action-icon"
+          ></span>
         </div>
-        <div class="relative h-10 w-10 right-0">${icon}</div>
+        <div class="p-3 flex-grow">
+          <span class="font-semibold text-gray-700 truncate"> ${title} </span>
+          ${body}
+          <p class=" text-gray-500 truncate">@${subtitle}</p>
+        </div>
       </div>
     </a>
   `;

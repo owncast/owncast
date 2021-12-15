@@ -342,3 +342,13 @@
 /* MODERATOR STYLES */
 /* MODERATOR STYLES */
 /* MODERATOR STYLES */
+
+.action-icon {
+  bottom: -6px;
+  right: -5px;
+  animation: spin 0.4s ease 1.0;
+  animation-fill-mode: forwards;
+  background-color: white;
+  background-size: cover;
+}
+
