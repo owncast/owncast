@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.42.0
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
-	github.com/go-ole/go-ole v1.2.4 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
@@ -29,7 +29,6 @@ require (
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect

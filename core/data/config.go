@@ -52,6 +52,7 @@ const (
 	federationGoLiveMessageKey          = "federation_go_live_message"
 	federationFollowApprovalRequiredKey = "federation_follow_approval_required"
 	federationShowEngagementKey         = "federation_show_engagement"
+	federationBlockedDomainsKey         = "federation_blocked_domains"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -713,6 +714,25 @@ func GetFederationShowEngagement() bool {
 	}
 
 	return true
+}
+
+// SetBlockedFederatedDomains will set the blocked federated domains.
+func SetBlockedFederatedDomains(domains []string) error {
+	return _datastore.SetString(federationBlockedDomainsKey, strings.Join(domains, ","))
+}
+
+// GetBlockedFederatedDomains will return a list of blocked federated domains.
+func GetBlockedFederatedDomains() []string {
+	domains, err := _datastore.GetString(federationBlockedDomainsKey)
+	if err != nil {
+		return []string{}
+	}
+
+	if domains == "" {
+		return []string{}
+	}
+
+	return strings.Split(domains, ",")
 }
 
 // SetFollowApprovalRequired will set if manual approval of followers is required.

@@ -4,15 +4,16 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
-	"errors"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/go-fed/activity/streams/vocab"
+	"github.com/pkg/errors"
+
 	"github.com/go-fed/httpsig"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
+	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -42,19 +43,29 @@ func handle(request apmodels.InboxRequest) {
 	}
 }
 
-// Verify will Verify the http signature of an inbound request.
+// Verify will Verify the http signature of an inbound request as well as
+// check it against the list of blocked domains.
 func Verify(request *http.Request) (bool, error) {
-	// TODO: TURN THIS BACK ON
-	return true, nil
+	blockedDomains := data.GetBlockedFederatedDomains()
 
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, "failed to create key verifier for request")
 	}
 	pubKeyID, err := url.Parse(verifier.KeyId())
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, "failed to parse key to get key ID")
 	}
+
+	// Test to see if the key is in the blocked federated domains.
+	for _, blockedDomain := range blockedDomains {
+		if strings.Contains(pubKeyID.Host, blockedDomain) {
+			return false, errors.New("blocked domain in public key: " + blockedDomain)
+		}
+	}
+
+	// TODO: TURN THIS BACK ON
+	return true, nil
 
 	log.Println("Fetching key", pubKeyID)
 
@@ -74,21 +85,19 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.New("Unable to determine algorithm to verify request")
 	}
 
-	var actor vocab.ActivityStreamsPerson
-	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
-		actor = person
-		return nil
+	actor, err := resolvers.GetResolvedActorFromIRI(pubKeyID.String())
+	if err != nil {
+		return false, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
 	}
 
-	if err := resolvers.ResolveIRI(context.TODO(), pubKeyID.String(), personCallback); err != nil {
-		return false, err
+	// Test to see if the actor is in the list of blocked federated domains.
+	for _, blockedDomain := range blockedDomains {
+		if strings.Contains(actor.ActorIri.Host, blockedDomain) {
+			return false, errors.New("actor domain is blocked: " + blockedDomain)
+		}
 	}
 
-	if actor == nil {
-		return false, errors.New("unable to resolve actor to fetch key " + pubKeyID.String())
-	}
-
-	key := actor.GetW3IDSecurityV1PublicKey().Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
+	key := actor.W3IDSecurityV1PublicKey.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
 		log.Errorln("failed to parse PEM block containing the public key")
@@ -98,24 +107,15 @@ func Verify(request *http.Request) (bool, error) {
 	parsedKey, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
 		log.Errorln("failed to parse DER encoded public key: " + err.Error())
-		return false, errors.New("failed to parse DER encoded public key: " + err.Error())
+		return false, errors.Wrap(err, "failed to parse DER encoded public key")
 	}
 
-	if err != nil {
-		return false, err
-	}
-
-	var algorithm httpsig.Algorithm
-
-	switch algorithmString {
-	case "rsa-sha256":
-		algorithm = httpsig.RSA_SHA256
-	}
+	var algorithm httpsig.Algorithm = httpsig.Algorithm(algorithmString)
 
 	// The verifier will verify the Digest in addition to the HTTP signature
 	if err := verifier.Verify(parsedKey, algorithm); err != nil {
 		log.Warnln("verification error for", pubKeyID, err)
-		return false, err
+		return false, errors.Wrap(err, "verification error: "+pubKeyID.String())
 	}
 
 	return true, nil

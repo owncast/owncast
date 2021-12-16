@@ -292,6 +292,9 @@ func Start() error {
 	// send a public message to the Fediverse from the server's user
 	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederationMessage))
 
+	// Federation blocked domains
+	http.HandleFunc("/api/admin/config/federation/blockdomains", middleware.RequireAdminAuth(admin.SetFederationBlockDomains))
+
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
 
