@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-
 	"net/http"
 
 	"github.com/go-fed/activity/streams"
@@ -12,7 +11,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/core/data"
-
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -58,7 +57,6 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	}
 
 	response, err := http.DefaultClient.Do(req)
-
 	if err != nil {
 		return err
 	}
@@ -74,7 +72,7 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	return Resolve(c, data, callbacks...)
 }
 
-// GetResolvedActorFromActorProperty resolve a provied actor property to a fully populated person.
+// GetResolvedActorFromActorProperty resolve an actor property to a fully populated person.
 func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
 	var err error
 	var apActor apmodels.ActivityPubActor
@@ -102,5 +100,27 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 		}
 	}
 
-	return apActor, err
+	return apActor, errors.Wrap(err, "unable to resolve actor from actor property")
+}
+
+// GetResolvedActorFromIRI will resolve an IRI string to a fully populated actor.
+func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubActor, error) {
+	var err error
+	var apActor apmodels.ActivityPubActor
+
+	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
+		apActor = apmodels.MakeActorFromPerson(person)
+		return nil
+	}
+
+	serviceCallback := func(c context.Context, s vocab.ActivityStreamsService) error {
+		apActor = apmodels.MakeActorFromService(s)
+		return nil
+	}
+
+	if e := ResolveIRI(context.TODO(), personOrServiceIRI, personCallback, serviceCallback); e != nil {
+		err = e
+	}
+
+	return apActor, errors.Wrap(err, "unable to resolve actor from IRI string")
 }

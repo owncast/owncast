@@ -151,6 +151,28 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 
 // GetPendingFollowRequests will return a list of pending follow requests.
 func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	//requests := activitypub.GetPendingFollowRequests()
+	// requests := activitypub.GetPendingFollowRequests()
+}
 
+// SetFederationBlockDomains saves a list of domains to block on the Fediverse.
+func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValues, success := getValuesFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	domainStrings := make([]string, 0)
+	for _, domain := range configValues {
+		domainStrings = append(domainStrings, domain.Value.(string))
+	}
+
+	if err := data.SetBlockedFederatedDomains(domainStrings); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+	}
+
+	controllers.WriteSimpleResponse(w, true, "saved")
 }

@@ -14,13 +14,14 @@ import (
 
 // ActivityPubActor represents a single actor.
 type ActivityPubActor struct {
-	ActorIri     *url.URL
-	FollowIri    *url.URL
-	Inbox        *url.URL
-	Name         string
-	Username     string
-	FullUsername string
-	Image        *url.URL
+	ActorIri                *url.URL
+	FollowIri               *url.URL
+	Inbox                   *url.URL
+	Name                    string
+	Username                string
+	FullUsername            string
+	Image                   *url.URL
+	W3IDSecurityV1PublicKey vocab.W3IDSecurityV1PublicKeyProperty
 }
 
 // DeleteRequest represents a request for delete.
@@ -30,11 +31,12 @@ type DeleteRequest struct {
 
 func MakeActorFromPerson(person vocab.ActivityStreamsPerson) ActivityPubActor {
 	apActor := ActivityPubActor{
-		ActorIri:     person.GetJSONLDId().Get(),
-		Inbox:        person.GetActivityStreamsInbox().GetIRI(),
-		Name:         person.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Username:     person.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername: GetFullUsernameFromPerson(person),
+		ActorIri:                person.GetJSONLDId().Get(),
+		Inbox:                   person.GetActivityStreamsInbox().GetIRI(),
+		Name:                    person.GetActivityStreamsName().Begin().GetXMLSchemaString(),
+		Username:                person.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
+		FullUsername:            GetFullUsernameFromPerson(person),
+		W3IDSecurityV1PublicKey: person.GetW3IDSecurityV1PublicKey(),
 	}
 
 	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 {
@@ -46,11 +48,12 @@ func MakeActorFromPerson(person vocab.ActivityStreamsPerson) ActivityPubActor {
 
 func MakeActorFromService(service vocab.ActivityStreamsService) ActivityPubActor {
 	apActor := ActivityPubActor{
-		ActorIri:     service.GetJSONLDId().Get(),
-		Inbox:        service.GetActivityStreamsInbox().GetIRI(),
-		Name:         service.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Username:     service.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername: GetFullUsernameFromService(service),
+		ActorIri:                service.GetJSONLDId().Get(),
+		Inbox:                   service.GetActivityStreamsInbox().GetIRI(),
+		Name:                    service.GetActivityStreamsName().Begin().GetXMLSchemaString(),
+		Username:                service.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
+		FullUsername:            GetFullUsernameFromService(service),
+		W3IDSecurityV1PublicKey: service.GetW3IDSecurityV1PublicKey(),
 	}
 
 	if service.GetActivityStreamsIcon() != nil && service.GetActivityStreamsIcon().Len() > 0 {
@@ -221,7 +224,7 @@ func GetFullUsernameFromService(person vocab.ActivityStreamsService) string {
 }
 
 func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, url string) {
-	var attachments = profile.GetActivityStreamsAttachment()
+	attachments := profile.GetActivityStreamsAttachment()
 	if attachments == nil {
 		attachments = streams.NewActivityStreamsAttachmentProperty()
 	}
