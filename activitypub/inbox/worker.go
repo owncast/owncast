@@ -57,6 +57,11 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.Wrap(err, "failed to parse key to get key ID")
 	}
 
+	// Force federation only via servers using https.
+	if pubKeyID.Scheme != "https" {
+		return false, errors.New("federated servers must use https")
+	}
+
 	// Test to see if the key is in the blocked federated domains.
 	for _, blockedDomain := range blockedDomains {
 		if strings.Contains(pubKeyID.Host, blockedDomain) {
