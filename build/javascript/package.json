@@ -14,7 +14,7 @@
     "video.js": "7.17.0"
   },
   "devDependencies": {
-    "cssnano": "^5.0.12",
+    "cssnano": "^5.0.13",
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0"
   },
