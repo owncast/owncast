@@ -24,7 +24,8 @@ pulls:
   daysUntilStale: 30
   markComment: >
     This pull request has not had any activity in 30 days. Since things move fast it's best 
-    to get PRs merged in, or to allow somebody else to work on it so the change can get in.
+    to get PRs merged in. If this PR addresses a previously filed issue that needs to be
+    resolved please work to get it merged in, or allow somebody else to work on a fix.
     This PR will be closed if no further activity occurs. Thank you for your contributions!
   exemptLabels:
       - bot
