@@ -23,7 +23,6 @@ const renderableChatStyleMessages = [
   SOCKET_MESSAGE_TYPES.SYSTEM,
   SOCKET_MESSAGE_TYPES.CHAT,
 ];
-
 export default class Chat extends Component {
   constructor(props, context) {
     super(props, context);
@@ -199,7 +198,6 @@ export default class Chat extends Component {
       id: messageId,
       type: messageType,
       timestamp: messageTimestamp,
-      visible: messageVisible,
     } = message;
     const { messages: curMessages } = this.state;
     const { username, readonly } = this.props;
@@ -207,6 +205,10 @@ export default class Chat extends Component {
     const existingIndex = curMessages.findIndex(
       (item) => item.id === messageId
     );
+
+    // Allow non-user chat messages to be visible by default.
+    const messageVisible =
+      message.visible || messageType !== SOCKET_MESSAGE_TYPES.CHAT;
 
     // check moderator status
     if (messageType === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
