@@ -33,14 +33,6 @@ func SendLive() error {
 
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
-	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
-	noteID := shortid.MustGenerate()
-	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
-	id := shortid.MustGenerate()
-	activity := apmodels.CreateCreateActivity(id, localActor)
-	object := streams.NewActivityStreamsObjectProperty()
-	activity.SetActivityStreamsObject(object)
-
 	tagStrings := []string{}
 	reg, _ := regexp.Compile("[^a-zA-Z0-9]+")
 
@@ -72,9 +64,9 @@ func SendLive() error {
 	}
 	textContent = fmt.Sprintf("<p>%s</p><a href=\"%s\">%s</a>%s<p>%s</p>", textContent, data.GetServerURL(), data.GetServerURL(), streamTitle, tagsString)
 
-	note := apmodels.MakeNote(textContent, noteIRI, localActor)
+	activity, id, note, noteID := createBaseOutboundMessage(textContent)
+
 	note.SetActivityStreamsTag(tagProp)
-	object.AppendActivityStreamsNote(note)
 
 	// Attach an image along with the Federated message.
 	previewURL, err := url.Parse(data.GetServerURL())
@@ -116,20 +108,43 @@ func SendLive() error {
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) error {
-	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
-	id := shortid.MustGenerate()
-	activity := apmodels.CreateMessageActivity(id, textContent, localActor)
-	message := activity.GetActivityStreamsObject().Begin().GetActivityStreamsNote()
+	textContent = utils.RenderSimpleMarkdown(textContent)
+
+	activity, id, note, noteID := createBaseOutboundMessage(textContent)
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		return errors.New("unable to serialize the send public message activity")
+		log.Errorln("unable to serialize custom fediverse message activity", err)
+		return errors.New("unable to serialize custom fediverse message activity " + err.Error())
 	}
+
 	if err := SendToFollowers(b); err != nil {
 		return err
 	}
 
-	return Add(message, message.GetJSONLDId().Get().String())
+	if err := Add(activity, id); err != nil {
+		return err
+	}
+	if err := Add(note, noteID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
+	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	noteID := shortid.MustGenerate()
+	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
+	id := shortid.MustGenerate()
+	activity := apmodels.CreateCreateActivity(id, localActor)
+	object := streams.NewActivityStreamsObjectProperty()
+	activity.SetActivityStreamsObject(object)
+
+	note := apmodels.MakeNote(textContent, noteIRI, localActor)
+	object.AppendActivityStreamsNote(note)
+
+	return activity, id, note, noteID
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
