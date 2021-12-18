@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -14,27 +14,8 @@ import (
 
 // InboxHandler handles inbound federated requests.
 func InboxHandler(w http.ResponseWriter, r *http.Request) {
-	// if verified, err := inbox.Verify(r); err != nil || !verified {
-	// 	log.Warnln("Unable to verify remote request", err)
-
-	// 	// TODO: Remove testing
-	// 	data, err := ioutil.ReadAll(r.Body)
-	// 	if err != nil {
-	// 		log.Errorln("Unable to read inbox request payload", err)
-	// 		return
-	// 	}
-
-	// 	log.Println("ERRORED VERIFY PAYLOAD: ", string(data))
-	// 	//////
-
-	// 	w.WriteHeader(http.StatusForbidden)
-	// 	return
-	// }
-
 	if r.Method == http.MethodPost {
 		acceptInboxRequest(w, r)
-	} else if r.Method == http.MethodGet {
-		returnInbox(w)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -52,21 +33,24 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 		forLocalAccount = urlPathComponents[3]
 	} else {
 		log.Errorln("Unable to determine username from url path", r.URL.Path)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	data, err := ioutil.ReadAll(r.Body)
+	// The account this request is for must match the account name we have set
+	// for federation.
+	if forLocalAccount != data.GetFederationUsername() {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Errorln("Unable to read inbox request payload", err)
 		return
 	}
 
 	inboxRequest := apmodels.InboxRequest{Request: r, ForLocalAccount: forLocalAccount, Body: data}
-
-	inbox.Add(inboxRequest)
+	inbox.AddToQueue(inboxRequest)
 	w.WriteHeader(http.StatusAccepted)
-}
-
-func returnInbox(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNotFound)
 }

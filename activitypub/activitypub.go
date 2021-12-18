@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"github.com/owncast/owncast/activitypub/crypto"
+	"github.com/owncast/owncast/activitypub/inbox"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/workerpool"
@@ -15,6 +16,7 @@ import (
 func Start(datastore *data.Datastore) {
 	persistence.Setup(datastore)
 	workerpool.InitOutboundWorkerPool()
+	inbox.InitInboxWorkerPool()
 	StartRouter()
 
 	// Test

@@ -9,14 +9,10 @@ import (
 	"github.com/owncast/owncast/activitypub/workerpool"
 
 	"github.com/teris-io/shortid"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // SendFollowAccept will send an accept activity to a follow request from a specified local user.
 func SendFollowAccept(followRequest apmodels.ActivityPubActor, fromLocalAccountName string) error {
-	log.Println("SendFollowAccept 1")
-
 	followAccept := makeAcceptFollow(followRequest, fromLocalAccountName)
 	localAccountIRI := apmodels.MakeLocalIRIForAccount(fromLocalAccountName)
 
