@@ -58,10 +58,11 @@ func SendLive() error {
 	// Manually add Owncast hashtag if it doesn't already exist so it shows up
 	// in Owncast search results.
 	// We can remove this down the road, but it'll be nice for now.
-	if _, exists := utils.FindInSlice(tagStrings, "owncast"); !exists {
-		hashtag := apmodels.MakeHashtag("owncast")
-		tagProp.AppendTootHashtag(hashtag)
-	}
+	// TODO: Re-enable?
+	// if _, exists := utils.FindInSlice(tagStrings, "owncast"); !exists {
+	// 	hashtag := apmodels.MakeHashtag("owncast")
+	// 	tagProp.AppendTootHashtag(hashtag)
+	// }
 
 	tagsString := strings.Join(tagStrings, " ")
 
