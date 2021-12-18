@@ -6,6 +6,8 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/workerpool"
+
 	"github.com/teris-io/shortid"
 
 	log "github.com/sirupsen/logrus"
@@ -21,14 +23,12 @@ func SendFollowAccept(followRequest apmodels.ActivityPubActor, fromLocalAccountN
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(followAccept)
 	b, _ := json.Marshal(jsonmap)
-	log.Println("SendFollowAccept 2")
-
-	_, err := PostSignedRequest(b, followRequest.Inbox, localAccountIRI)
-	log.Println("SendFollowAccept 3")
-
+	req, err := CreateSignedRequest(b, followRequest.Inbox, localAccountIRI)
 	if err != nil {
 		return err
 	}
+
+	workerpool.AddToOutboundQueue(req)
 
 	return nil
 }

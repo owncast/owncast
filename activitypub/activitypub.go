@@ -4,6 +4,8 @@ import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/workerpool"
+
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
@@ -12,6 +14,7 @@ import (
 // Start will initialize and start the federation support.
 func Start(datastore *data.Datastore) {
 	persistence.Setup(datastore)
+	workerpool.InitOutboundWorkerPool()
 	StartRouter()
 
 	// Test

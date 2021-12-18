@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/crypto"
+
 	"github.com/owncast/owncast/config"
 
 	log "github.com/sirupsen/logrus"
@@ -56,8 +56,8 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 	return nil
 }
 
-// PostSignedRequest will make a signed POST request of a payload to the provided destination.
-func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]byte, error) {
+// CreateSignedRequest will create a signed POST request of a payload to the provided destination.
+func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
 	log.Debugln("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
@@ -71,14 +71,5 @@ func PostSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) ([]b
 		return nil, err
 	}
 
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-
-	body, _ := ioutil.ReadAll(response.Body)
-
-	// fmt.Println("Response: ", response.StatusCode, string(body))
-	return body, nil
+	return req, nil
 }
