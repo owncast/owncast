@@ -18,24 +18,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _queue = make(chan apmodels.InboxRequest, 5)
-
-func init() {
-	go run()
-}
-
-func run() {
-	for r := range _queue {
-		handle(r)
-	}
-}
-
-// Add will place an InboxRequest into the worker queue to be processed.
-func Add(request apmodels.InboxRequest) {
-	_queue <- request
-}
-
 func handle(request apmodels.InboxRequest) {
+	if verified, err := Verify(request.Request); err != nil {
+		log.Errorln("Error in attempting to verify request", err)
+		return
+	} else if !verified {
+		log.Errorln("Request failed verification")
+		return
+	}
+
 	c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
 
 	if err := resolvers.Resolve(c, request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
