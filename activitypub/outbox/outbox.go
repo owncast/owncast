@@ -13,6 +13,8 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
+	"github.com/owncast/owncast/activitypub/workerpool"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
@@ -141,10 +143,13 @@ func SendToFollowers(payload []byte) error {
 
 	for _, follower := range followers {
 		inbox, _ := url.Parse(follower.Inbox)
-		if _, err := requests.PostSignedRequest(payload, inbox, localActor); err != nil {
-			log.Errorln("unable to send to follower inbox", follower.Inbox, err)
-			return errors.New("unable to send to follower inbox: " + follower.Inbox)
+		req, err := requests.CreateSignedRequest(payload, inbox, localActor)
+		if err != nil {
+			log.Errorln("unable to create outbox request", follower.Inbox, err)
+			return errors.New("unable to create outbox request: " + follower.Inbox)
 		}
+
+		workerpool.AddToOutboundQueue(req)
 	}
 	return nil
 }
