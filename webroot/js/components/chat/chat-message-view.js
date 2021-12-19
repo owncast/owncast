@@ -25,7 +25,10 @@ export default class ChatMessageView extends Component {
     const { formattedMessage } = this.state;
     const { formattedMessage: nextFormattedMessage } = nextState;
 
-    return formattedMessage !== nextFormattedMessage;
+    return (
+      formattedMessage !== nextFormattedMessage ||
+      (!this.props.isModerator && nextProps.isModerator)
+    );
   }
 
   async componentDidMount() {
