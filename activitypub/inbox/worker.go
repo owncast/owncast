@@ -60,9 +60,6 @@ func Verify(request *http.Request) (bool, error) {
 		}
 	}
 
-	// TODO: TURN THIS BACK ON
-	return true, nil
-
 	signature := request.Header.Get("signature")
 	var algorithmString string
 	signatureComponents := strings.Split(signature, ",")
