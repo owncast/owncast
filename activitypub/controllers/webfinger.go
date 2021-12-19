@@ -22,8 +22,6 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	resourceComponents := strings.Split(resource, ":")
 	account := resourceComponents[1]
 
-	log.Println("Webfinger request for", account)
-
 	userComponents := strings.Split(account, "@")
 	if len(userComponents) < 2 {
 		return

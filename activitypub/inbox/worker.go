@@ -50,7 +50,7 @@ func Verify(request *http.Request) (bool, error) {
 
 	// Force federation only via servers using https.
 	if pubKeyID.Scheme != "https" {
-		return false, errors.New("federated servers must use https")
+		return false, errors.New("federated servers must use https: " + pubKeyID.String())
 	}
 
 	// Test to see if the key is in the blocked federated domains.
@@ -62,8 +62,6 @@ func Verify(request *http.Request) (bool, error) {
 
 	// TODO: TURN THIS BACK ON
 	return true, nil
-
-	log.Println("Fetching key", pubKeyID)
 
 	signature := request.Header.Get("signature")
 	var algorithmString string
