@@ -265,17 +265,6 @@ func AddToOutbox(id string, iri string, itemData []byte, typeString string) erro
 	}); err != nil {
 		return fmt.Errorf("error creating new item in federation outbox %s", err)
 	}
-	// stmt, err := tx.Prepare("INSERT INTO ap_outbox(id, iri, value, type) values(?, ?, ?, ?)")
-
-	// if err != nil {
-	// 	log.Debugln(err)
-	// }
-	// defer stmt.Close()
-
-	// _, err = stmt.Exec(id, iri, itemData, typeString)
-	// if err != nil {
-	// 	log.Errorln("error creating new item in federation outbox", err)
-	// }
 
 	return tx.Commit()
 }
@@ -287,8 +276,8 @@ func GetObjectByID(id string) (string, error) {
 }
 
 // GetObjectByIRI will return a string representation of a single object by the IRI.
-func GetObjectByIRI(IRI string) (string, error) {
-	value, err := _datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), IRI)
+func GetObjectByIRI(iri string) (string, error) {
+	value, err := _datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), iri)
 	return string(value), err
 }
 
