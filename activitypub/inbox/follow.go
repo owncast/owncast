@@ -136,7 +136,8 @@ func handleEngagementActivity(eventType string, object vocab.ActivityStreamsObje
 		return err
 	}
 
-	if err := chat.SendFediverseAction(eventType, actorName, actor.Username, image, body, actorIRI); err != nil {
+	actorAccountName := fmt.Sprintf("%s@%s", actor.Username, actor.ActorIri.Host)
+	if err := chat.SendFediverseAction(eventType, actorName, actorAccountName, image, body, actorIRI); err != nil {
 		return err
 	}
 
