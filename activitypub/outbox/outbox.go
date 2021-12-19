@@ -202,7 +202,7 @@ func UpdateFollowersWithAccountUpdates() error {
 
 // Add will save an ActivityPub object to the datastore.
 func Add(item vocab.Type, id string) error {
-	iri := "/" + item.GetJSONLDId().GetIRI().Path
+	iri := item.GetJSONLDId().GetIRI().String()
 	typeString := item.GetTypeName()
 
 	if iri == "" {
