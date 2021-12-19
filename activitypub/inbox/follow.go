@@ -109,14 +109,12 @@ func handleEngagementActivity(eventType string, object vocab.ActivityStreamsObje
 		return nil
 	}
 
-	IRIPath := object.At(0).GetIRI().Path
+	IRI := object.At(0).GetIRI().String()
 
-	// for iter := object.Begin(); iter != object.End(); iter = iter.Next() {
-	// Verify we actually sent this post.
-	post, err := persistence.GetObjectByIRI(IRIPath)
+	post, err := persistence.GetObjectByIRI(IRI)
 	if err != nil || post == "" {
-		log.Errorln("Could not find post locally:", IRIPath, err)
-		// return err
+		log.Errorln("Could not find post locally:", IRI, err)
+		return err
 	}
 
 	// Get actor of the Like
