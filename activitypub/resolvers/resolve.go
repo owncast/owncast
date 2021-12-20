@@ -122,5 +122,5 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 		err = e
 	}
 
-	return apActor, errors.Wrap(err, "unable to resolve actor from IRI string")
+	return apActor, errors.Wrap(err, "unable to resolve actor from IRI string: "+personOrServiceIRI)
 }
