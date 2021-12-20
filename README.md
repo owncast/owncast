@@ -74,10 +74,11 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 
 ## Building from Source
 
-1. Ensure you have the gcc compiler configured.
+1. Ensure you have the gcc compiler installed.
 1. Install the [Go toolchain](https://golang.org/dl/) (1.16 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from source.
+1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
 There is also a supplied `Dockerfile` so you can spin it up from source with little effort. [Read more about running from source](https://owncast.online/docs/building/).
