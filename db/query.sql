@@ -8,8 +8,8 @@ SElECT count(*) FROM ap_followers;
 -- name: GetLocalPostCount :one
 SElECT count(*) FROM ap_outbox;
 
--- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null;
+-- name: GetFederationFollowersWithOffset :many
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null LIMIT $1 OFFSET $2;
 
 -- name: GetFederationFollowerApprovalRequests :many
 SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null;

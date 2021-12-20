@@ -109,11 +109,16 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 	return items, nil
 }
 
-const getFederationFollowers = `-- name: GetFederationFollowers :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null
+const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null LIMIT $1 OFFSET $2
 `
 
-type GetFederationFollowersRow struct {
+type GetFederationFollowersWithOffsetParams struct {
+	Limit  int32
+	Offset int32
+}
+
+type GetFederationFollowersWithOffsetRow struct {
 	Iri       string
 	Inbox     string
 	Name      sql.NullString
@@ -122,15 +127,15 @@ type GetFederationFollowersRow struct {
 	CreatedAt sql.NullTime
 }
 
-func (q *Queries) GetFederationFollowers(ctx context.Context) ([]GetFederationFollowersRow, error) {
-	rows, err := q.db.QueryContext(ctx, getFederationFollowers)
+func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetFederationFollowersWithOffsetParams) ([]GetFederationFollowersWithOffsetRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFederationFollowersWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetFederationFollowersRow
+	var items []GetFederationFollowersWithOffsetRow
 	for rows.Next() {
-		var i GetFederationFollowersRow
+		var i GetFederationFollowersWithOffsetRow
 		if err := rows.Scan(
 			&i.Iri,
 			&i.Inbox,
