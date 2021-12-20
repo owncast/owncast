@@ -294,9 +294,12 @@ func GetFollowerCount() (int64, error) {
 }
 
 // GetFederationFollowers will return a slice of the followers we keep track of locally.
-func GetFederationFollowers(timestamp bool) ([]models.Follower, error) {
+func GetFederationFollowers(limit int, offset int) ([]models.Follower, error) {
 	ctx := context.Background()
-	followersResult, err := _datastore.GetQueries().GetFederationFollowers(ctx)
+	followersResult, err := _datastore.GetQueries().GetFederationFollowersWithOffset(ctx, db.GetFederationFollowersWithOffsetParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -305,15 +308,14 @@ func GetFederationFollowers(timestamp bool) ([]models.Follower, error) {
 
 	for _, row := range followersResult {
 		singleFollower := models.Follower{
-			Name:     row.Name.String,
-			Username: row.Username,
-			Image:    row.Image.String,
-			Link:     row.Iri,
-			Inbox:    row.Inbox,
+			Name:      row.Name.String,
+			Username:  row.Username,
+			Image:     row.Image.String,
+			Link:      row.Iri,
+			Inbox:     row.Inbox,
+			Timestamp: utils.NullTime(row.CreatedAt),
 		}
-		if timestamp {
-			singleFollower.Timestamp = utils.NullTime(row.CreatedAt)
-		}
+
 		followers = append(followers, singleFollower)
 	}
 

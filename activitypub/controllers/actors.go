@@ -36,9 +36,6 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	} else if len(pathComponents) == 5 && pathComponents[4] == "outbox" {
 		OutboxHandler(w, r)
 		return
-		// } else if len(pathComponents) == 5 {
-		// 	ActorObjectHandler(w, r)
-		// 	return
 	} else if len(pathComponents) == 5 && pathComponents[4] == "followers" {
 		// followers list
 		FollowersHandler(w, r)

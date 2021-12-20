@@ -103,18 +103,7 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 
 // GetFollowers will handle an API request to fetch the list of followers (non-activitypub response).
 func GetFollowers(w http.ResponseWriter, r *http.Request) {
-	followers, err := persistence.GetFederationFollowers(false)
-	if err != nil {
-		WriteSimpleResponse(w, false, "unable to fetch followers")
-		return
-	}
-
-	WriteResponse(w, followers)
-}
-
-// GetAdminFollowers will handle an API request to fetch the list of followers (non-activitypub response).
-func GetAdminFollowers(w http.ResponseWriter, r *http.Request) {
-	followers, err := persistence.GetFederationFollowers(true)
+	followers, err := persistence.GetFederationFollowers(-1, 0)
 	if err != nil {
 		WriteSimpleResponse(w, false, "unable to fetch followers")
 		return
