@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 0
         
     - name: Linter
-      uses: tj-actions/eslint-changed-files@v7.3
+      uses: tj-actions/eslint-changed-files@v8.1
       with:
         config_path: '.eslintrc.js'
         ignore_path: '.eslintignore'
