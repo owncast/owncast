@@ -883,7 +883,9 @@ export default class App extends Component {
                 id="chat-toggle"
                 onClick=${this.handleChatPanelToggle}
                 class="flex cursor-pointer text-center justify-center items-center min-w-12 h-full bg-gray-800 hover:bg-gray-700"
-                style=${{ display: chatDisabled ? 'none' : 'block' }}
+                style=${{
+                  display: chatDisabled || noVideoContent ? 'none' : 'block',
+                }}
               >
                 💬
               </button>
