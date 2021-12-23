@@ -78,7 +78,7 @@ export const TEXTFIELD_PROPS_SERVER_SUMMARY = {
 export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
   apiPath: API_SERVER_WELCOME_MESSAGE,
   configPath: 'instanceDetails',
-  maxLength: 500,
+  maxLength: 2500,
   placeholder: '',
   label: 'Welcome Message',
   tip: 'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
