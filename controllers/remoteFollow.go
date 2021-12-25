@@ -83,7 +83,6 @@ func getWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	query := requestURL.Query()
 	query.Add("resource", fmt.Sprintf("acct:%s", account))
 	requestURL.RawQuery = query.Encode()
-	fmt.Println(requestURL.String())
 
 	response, err := http.DefaultClient.Get(requestURL.String())
 	if err != nil {
