@@ -70,11 +70,11 @@ func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty 
 	return actor
 }
 
-// MakePersonForAccount will create a new local actor person withe the provided username.
-func MakePersonForAccount(accountName string) vocab.ActivityStreamsPerson {
+// MakeServiceForAccount will create a new local actor service withe the provided username.
+func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	actorIRI := MakeLocalIRIForAccount(accountName)
 
-	person := streams.NewActivityStreamsPerson()
+	person := streams.NewActivityStreamsService()
 	nameProperty := streams.NewActivityStreamsNameProperty()
 	nameProperty.AppendXMLSchemaString(data.GetServerName())
 	person.SetActivityStreamsName(nameProperty)
@@ -223,7 +223,7 @@ func GetFullUsernameFromService(person vocab.ActivityStreamsService) string {
 	return fullUsername
 }
 
-func addMetadataLinkToProfile(profile vocab.ActivityStreamsPerson, name string, url string) {
+func addMetadataLinkToProfile(profile vocab.ActivityStreamsService, name string, url string) {
 	attachments := profile.GetActivityStreamsAttachment()
 	if attachments == nil {
 		attachments = streams.NewActivityStreamsAttachmentProperty()
