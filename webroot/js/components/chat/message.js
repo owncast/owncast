@@ -28,25 +28,20 @@ function SystemMessage(props) {
 
 function SingleFederatedUser(props) {
   const { message } = props;
-  const { type, title, subtitle, image, link } = message;
+  const { type, body, title, image, link } = message;
 
-  let body = '';
   let icon = null;
   switch (type) {
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW:
-      body = html`<span>just followed this stream.</span>`;
       icon = '/img/follow.svg';
       break;
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE:
-      body = html`just liked a post.`;
       icon = '/img/like.svg';
       break;
     case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST:
-      body = html`just shared a post.`;
       icon = '/img/repost.svg';
       break;
     default:
-      body = '';
       break;
   }
 
@@ -55,11 +50,8 @@ function SingleFederatedUser(props) {
       <div
         class="federated-action m-2 bg-white flex items-center p-1 px-2 rounded-xl shadow border"
       >
-        <div class="relative flex items-center space-x-4">
-          <img
-            src="${image || '/img/logo.svg'}"
-            class="w-12 h-12 rounded-full"
-          />
+        <div class="relative w-18" style="top: -6px">
+          <img src="${image || '/img/logo.svg'}" class="w-16 rounded-full" />
           <span
             style=${{
               backgroundImage: `url(${icon})`,
@@ -67,10 +59,12 @@ function SingleFederatedUser(props) {
             class="absolute h-6 w-6 rounded-full border-2 border-white action-icon"
           ></span>
         </div>
-        <div class="p-3 flex-grow">
-          <span class="font-semibold text-gray-700 truncate"> ${title} </span>
-          ${body}
-          <p class=" text-gray-500 truncate">@${subtitle}</p>
+        <div class="p-4">
+          <span class=" text-gray-500 truncate"> ${title} </span>
+          <p
+            class=" text-gray-700 mt-1 w-full"
+            dangerouslySetInnerHTML=${{ __html: body }}
+          ></p>
         </div>
       </div>
     </a>
