@@ -64,7 +64,7 @@ func SendLive() error {
 	}
 	textContent = fmt.Sprintf("<p>%s</p><a href=\"%s\">%s</a>%s<p>%s</p>", textContent, data.GetServerURL(), data.GetServerURL(), streamTitle, tagsString)
 
-	activity, id, note, noteID := createBaseOutboundMessage(textContent)
+	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
 	note.SetActivityStreamsTag(tagProp)
 
@@ -96,9 +96,6 @@ func SendLive() error {
 		return err
 	}
 
-	if err := Add(activity, id, true); err != nil {
-		return err
-	}
 	if err := Add(note, noteID, true); err != nil {
 		return err
 	}
@@ -110,7 +107,7 @@ func SendLive() error {
 func SendPublicMessage(textContent string) error {
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
-	activity, id, note, noteID := createBaseOutboundMessage(textContent)
+	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
@@ -122,9 +119,6 @@ func SendPublicMessage(textContent string) error {
 		return err
 	}
 
-	if err := Add(activity, id, false); err != nil {
-		return err
-	}
 	if err := Add(note, noteID, false); err != nil {
 		return err
 	}
