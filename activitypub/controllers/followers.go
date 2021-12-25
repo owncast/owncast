@@ -63,7 +63,7 @@ func getInitialFollowersRequest(r *http.Request) (vocab.ActivityStreamsOrderedCo
 	followerCount, _ := persistence.GetFollowerCount()
 	collection := streams.NewActivityStreamsOrderedCollection()
 	idProperty := streams.NewJSONLDIdProperty()
-	id, err := createFollowersPageURL(r, nil)
+	id, err := createPageURL(r, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create followers page property")
 	}
@@ -76,7 +76,7 @@ func getInitialFollowersRequest(r *http.Request) (vocab.ActivityStreamsOrderedCo
 
 	first := streams.NewActivityStreamsFirstProperty()
 	page := "1"
-	firstIRI, err := createFollowersPageURL(r, &page)
+	firstIRI, err := createPageURL(r, &page)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create first page property")
 	}
@@ -105,7 +105,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 
 	collectionPage := streams.NewActivityStreamsOrderedCollectionPage()
 	idProperty := streams.NewJSONLDIdProperty()
-	id, err := createFollowersPageURL(r, &page)
+	id, err := createPageURL(r, &page)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create followers page ID")
 	}
@@ -121,7 +121,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 	collectionPage.SetActivityStreamsOrderedItems(orderedItems)
 
 	partOf := streams.NewActivityStreamsPartOfProperty()
-	partOfIRI, err := createFollowersPageURL(r, nil)
+	partOfIRI, err := createPageURL(r, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create part of property")
 	}
@@ -132,7 +132,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 	if pageInt*followersPageSize < int(followerCount) {
 		next := streams.NewActivityStreamsNextProperty()
 		nextPage := fmt.Sprintf("%d", pageInt+1)
-		nextIRI, err := createFollowersPageURL(r, &nextPage)
+		nextIRI, err := createPageURL(r, &nextPage)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to create next page property")
 		}
@@ -144,7 +144,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 	return collectionPage, nil
 }
 
-func createFollowersPageURL(r *http.Request, page *string) (*url.URL, error) {
+func createPageURL(r *http.Request, page *string) (*url.URL, error) {
 	domain := data.GetServerURL()
 	if domain == "" {
 		return nil, errors.New("unable to get server URL")
