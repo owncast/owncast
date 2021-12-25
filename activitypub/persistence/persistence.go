@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -133,25 +134,21 @@ func removeFollow(actor *url.URL) error {
 	return tx.Commit()
 }
 
-// createFederatedActivitiesTable will create the inbound federated
+// createFederatedActivitiesTable will create the accepted
 // activities table if needed.
 func createFederatedActivitiesTable() {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_inbound_activities (
-		"id" TEXT NOT NULL,
-    "iri" TEXT NOT NULL,
-		"account" TEXT,
-		"eventType" TEXT,
-		"timestamp" DATETIME,
-		PRIMARY KEY (id)
-	);CREATE INDEX index ON messages (id, account, hidden_at, timestamp);
-	CREATE INDEX id ON messages (id);
-  CREATE INDEX iri ON messages (iri);
-	CREATE INDEX eventType ON messages (eventType);
-	CREATE INDEX timestamp ON messages (timestamp);`
+	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_accepted_activities (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+		"iri" TEXT NOT NULL,
+    "actor" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+		"timestamp" DATETIME
+	);
+	CREATE INDEX iri_actor_index ON ap_accepted_activities (iri,actor);`
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
 	if err != nil {
-		log.Fatal("error creating inbound federated activities table", err)
+		log.Fatal("error creating inbox table", err)
 	}
 	defer stmt.Close()
 	if _, err := stmt.Exec(); err != nil {
@@ -160,18 +157,17 @@ func createFederatedActivitiesTable() {
 }
 
 func createFederationOutboxTable() {
-	log.Traceln("Creating federation followers table...")
+	log.Traceln("Creating federation outbox table...")
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_outbox (
-		"id" TEXT NOT NULL,
 		"iri" TEXT NOT NULL,
 		"value" BLOB,
 		"type" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		PRIMARY KEY (id));
-		CREATE INDEX id ON ap_outbox (id);
+    "live_notification" BOOLEAN DEFAULT FALSE,
+		PRIMARY KEY (iri));
 		CREATE INDEX iri ON ap_outbox (iri);
 		CREATE INDEX type ON ap_outbox (type);
-	);`
+    CREATE INDEX live_notification ON ap_outbox (live_notification);`
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
 	if err != nil {
@@ -186,11 +182,6 @@ func createFederationOutboxTable() {
 
 func createFederationFollowersTable() {
 	log.Traceln("Creating federation followers table...")
-
-	// TODO: Here for resetting testing data. Remove.
-	// if _, err := _datastore.DB.Exec("DROP TABLE ap_followers"); err != nil {
-	// 	log.Errorln(err)
-	// } // TODO: Remove!;
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
@@ -216,11 +207,20 @@ func createFederationFollowersTable() {
 	}
 }
 
+// GetOutboxPostCount will return the number of posts in the outbox.
+func GetOutboxPostCount() (int64, error) {
+	ctx := context.Background()
+	return _datastore.GetQueries().GetLocalPostCount(ctx)
+}
+
 // GetOutbox will return an instance of the outbox populated by stored items.
-func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
-	collection := streams.NewActivityStreamsOrderedCollectionPage()
+func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, error) {
+	collection := streams.NewActivityStreamsOrderedCollection()
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
-	rows, err := _datastore.GetQueries().GetOutbox(context.Background())
+	rows, err := _datastore.GetQueries().GetOutboxWithOffset(
+		context.Background(),
+		db.GetOutboxWithOffsetParams{Limit: int32(limit), Offset: int32(offset)},
+	)
 	if err != nil {
 		return collection, err
 	}
@@ -235,20 +235,11 @@ func GetOutbox() (vocab.ActivityStreamsOrderedCollectionPage, error) {
 		}
 	}
 
-	collection.SetActivityStreamsOrderedItems(orderedItems)
-	totalCount, _ := _datastore.GetQueries().GetLocalPostCount(context.Background())
-	totalItems := streams.NewActivityStreamsTotalItemsProperty()
-	totalItems.Set(int(totalCount))
-	collection.SetActivityStreamsTotalItems(totalItems)
-
 	return collection, nil
 }
 
 // AddToOutbox will store a single payload to the persistence layer.
-func AddToOutbox(id string, iri string, itemData []byte, typeString string) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
+func AddToOutbox(iri string, itemData []byte, typeString string, isLiveNotification bool) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
@@ -258,10 +249,10 @@ func AddToOutbox(id string, iri string, itemData []byte, typeString string) erro
 	}()
 
 	if err = _datastore.GetQueries().WithTx(tx).AddToOutbox(context.Background(), db.AddToOutboxParams{
-		ID:    id,
-		Iri:   iri,
-		Value: itemData,
-		Type:  typeString,
+		Iri:              iri,
+		Value:            itemData,
+		Type:             typeString,
+		LiveNotification: sql.NullBool{Bool: isLiveNotification, Valid: true},
 	}); err != nil {
 		return fmt.Errorf("error creating new item in federation outbox %s", err)
 	}
@@ -276,9 +267,9 @@ func GetObjectByID(id string) (string, error) {
 }
 
 // GetObjectByIRI will return a string representation of a single object by the IRI.
-func GetObjectByIRI(iri string) (string, error) {
-	value, err := _datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), iri)
-	return string(value), err
+func GetObjectByIRI(iri string) (string, bool, error) {
+	row, err := _datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), iri)
+	return string(row.Value), row.LiveNotification.Bool, err
 }
 
 // GetLocalPostCount will return the number of posts existing locally.
@@ -345,32 +336,31 @@ func GetPendingFollowRequests() ([]models.Follower, error) {
 	return followers, nil
 }
 
-// SaveFediverseActivity will save an event to the ap_inbound_activities table.
-func SaveFediverseActivity(id string, iri string, accountIRI string, eventType string, timestamp time.Time) error {
-	tx, err := data.GetDatastore().DB.Begin()
-	if err != nil {
-		log.Errorln("error saving", eventType, err)
-		return err
-	}
-
-	defer tx.Rollback() // nolint
-
-	stmt, err := tx.Prepare("INSERT INTO ap_inbound_activities(id, iri, account, eventType, timestamp) values(?, ?, ?, ?, ?)")
-	if err != nil {
-		log.Errorln("error saving", eventType, err)
-		return err
-	}
-
-	defer stmt.Close()
-
-	if _, err = stmt.Exec(id, iri, accountIRI, eventType, timestamp); err != nil {
-		log.Errorln("error saving", eventType, err)
-		return err
-	}
-	if err = tx.Commit(); err != nil {
-		log.Errorln("error saving", eventType, err)
-		return err
+// SaveInboundFediverseActivity will save an event to the ap_inbound_activities table.
+func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType string, timestamp time.Time) error {
+	if err := _datastore.GetQueries().AddToAcceptedActivities(context.Background(), db.AddToAcceptedActivitiesParams{
+		Iri:       objectIRI,
+		Actor:     actorIRI,
+		Type:      eventType,
+		Timestamp: sql.NullTime{Time: timestamp, Valid: true},
+	}); err != nil {
+		return errors.Wrap(err, "error saving event "+objectIRI)
 	}
 
 	return nil
+}
+
+// HasPreviouslyHandledInboundActivity will return if we have previously handled
+// an inbound federated activity.
+func HasPreviouslyHandledInboundActivity(iri string, actorIRI string, eventType string) (bool, error) {
+	exists, err := _datastore.GetQueries().DoesInboundActivityExist(context.Background(), db.DoesInboundActivityExistParams{
+		Iri:   iri,
+		Actor: actorIRI,
+		Type:  eventType,
+	})
+	if err != nil {
+		return false, err
+	}
+
+	return exists > 0, nil
 }

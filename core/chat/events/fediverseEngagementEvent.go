@@ -6,10 +6,9 @@ import "github.com/owncast/owncast/core/data"
 type FediverseEngagementEvent struct {
 	Event
 	MessageEvent
-	Image    string `json:"image"`
-	Title    string `json:"title"`
-	Subtitle string `json:"subtitle"`
-	Link     string `json:"link"`
+	Image           *string `json:"image"`
+	Link            string  `json:"link"`
+	UserAccountName string  `json:"title"`
 }
 
 // GetBroadcastPayload will return the object to send to all chat users.
@@ -18,10 +17,9 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
-		"title":     e.Title,
-		"subtitle":  e.Subtitle,
 		"image":     e.Image,
 		"type":      e.Event.Type,
+		"title":     e.UserAccountName,
 		"user": EventPayload{
 			"displayName": data.GetServerName(),
 		},

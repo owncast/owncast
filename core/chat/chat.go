@@ -85,7 +85,7 @@ func SendSystemMessage(text string, ephemeral bool) error {
 }
 
 // SendFediverseAction will send a message indicating some Fediverse engagement took place.
-func SendFediverseAction(eventType string, userDisplayName string, userAccountName string, image string, body string, link string) error {
+func SendFediverseAction(eventType string, userAccountName string, image *string, body string, link string) error {
 	message := events.FediverseEngagementEvent{
 		Event: events.Event{
 			Type: eventType,
@@ -93,10 +93,9 @@ func SendFediverseAction(eventType string, userDisplayName string, userAccountNa
 		MessageEvent: events.MessageEvent{
 			Body: body,
 		},
-		Title:    userDisplayName,
-		Subtitle: userAccountName,
-		Image:    image,
-		Link:     link,
+		UserAccountName: userAccountName,
+		Image:           image,
+		Link:            link,
 	}
 
 	message.SetDefaults()
