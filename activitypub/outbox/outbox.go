@@ -96,10 +96,10 @@ func SendLive() error {
 		return err
 	}
 
-	if err := Add(activity, id); err != nil {
+	if err := Add(activity, id, true); err != nil {
 		return err
 	}
-	if err := Add(note, noteID); err != nil {
+	if err := Add(note, noteID, true); err != nil {
 		return err
 	}
 
@@ -122,10 +122,10 @@ func SendPublicMessage(textContent string) error {
 		return err
 	}
 
-	if err := Add(activity, id); err != nil {
+	if err := Add(activity, id, false); err != nil {
 		return err
 	}
-	if err := Add(note, noteID); err != nil {
+	if err := Add(note, noteID, false); err != nil {
 		return err
 	}
 
@@ -201,7 +201,7 @@ func UpdateFollowersWithAccountUpdates() error {
 }
 
 // Add will save an ActivityPub object to the datastore.
-func Add(item vocab.Type, id string) error {
+func Add(item vocab.Type, id string, isLiveNotification bool) error {
 	iri := item.GetJSONLDId().GetIRI().String()
 	typeString := item.GetTypeName()
 
@@ -216,11 +216,5 @@ func Add(item vocab.Type, id string) error {
 		return err
 	}
 
-	return persistence.AddToOutbox(id, iri, b, typeString)
-}
-
-// Get will return the outbox.
-func Get() vocab.ActivityStreamsOrderedCollectionPage {
-	orderedCollection, _ := persistence.GetOutbox()
-	return orderedCollection
+	return persistence.AddToOutbox(iri, b, typeString, isLiveNotification)
 }

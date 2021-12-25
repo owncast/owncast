@@ -123,7 +123,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 	partOf := streams.NewActivityStreamsPartOfProperty()
 	partOfIRI, err := createPageURL(r, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to create part of property")
+		return nil, errors.Wrap(err, "unable to create partOf property for followers page")
 	}
 
 	partOf.SetIRI(partOfIRI)

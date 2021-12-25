@@ -33,23 +33,44 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 	return err
 }
 
+const addToAcceptedActivities = `-- name: AddToAcceptedActivities :exec
+INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values($1, $2, $3, $4)
+`
+
+type AddToAcceptedActivitiesParams struct {
+	Iri       string
+	Actor     string
+	Type      string
+	Timestamp interface{}
+}
+
+func (q *Queries) AddToAcceptedActivities(ctx context.Context, arg AddToAcceptedActivitiesParams) error {
+	_, err := q.db.ExecContext(ctx, addToAcceptedActivities,
+		arg.Iri,
+		arg.Actor,
+		arg.Type,
+		arg.Timestamp,
+	)
+	return err
+}
+
 const addToOutbox = `-- name: AddToOutbox :exec
-INSERT INTO ap_outbox(id, iri, value, type) values($1, $2, $3, $4)
+INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4)
 `
 
 type AddToOutboxParams struct {
-	ID    string
-	Iri   string
-	Value []byte
-	Type  string
+	Iri              string
+	Value            []byte
+	Type             string
+	LiveNotification sql.NullBool
 }
 
 func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error {
 	_, err := q.db.ExecContext(ctx, addToOutbox,
-		arg.ID,
 		arg.Iri,
 		arg.Value,
 		arg.Type,
+		arg.LiveNotification,
 	)
 	return err
 }
@@ -66,6 +87,23 @@ type ApproveFederationFollowerParams struct {
 func (q *Queries) ApproveFederationFollower(ctx context.Context, arg ApproveFederationFollowerParams) error {
 	_, err := q.db.ExecContext(ctx, approveFederationFollower, arg.ApprovedAt, arg.Iri)
 	return err
+}
+
+const doesInboundActivityExist = `-- name: DoesInboundActivityExist :one
+SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3
+`
+
+type DoesInboundActivityExistParams struct {
+	Iri   string
+	Actor string
+	Type  string
+}
+
+func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundActivityExistParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, doesInboundActivityExist, arg.Iri, arg.Actor, arg.Type)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
@@ -184,33 +222,43 @@ func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
 }
 
 const getObjectFromOutboxByID = `-- name: GetObjectFromOutboxByID :one
-SELECT value FROM ap_outbox WHERE id = $1
+SELECT value FROM ap_outbox WHERE iri = $1
 `
 
-func (q *Queries) GetObjectFromOutboxByID(ctx context.Context, id string) ([]byte, error) {
-	row := q.db.QueryRowContext(ctx, getObjectFromOutboxByID, id)
+func (q *Queries) GetObjectFromOutboxByID(ctx context.Context, iri string) ([]byte, error) {
+	row := q.db.QueryRowContext(ctx, getObjectFromOutboxByID, iri)
 	var value []byte
 	err := row.Scan(&value)
 	return value, err
 }
 
 const getObjectFromOutboxByIRI = `-- name: GetObjectFromOutboxByIRI :one
-SELECT value FROM ap_outbox WHERE iri = $1
+SELECT value, live_notification FROM ap_outbox WHERE iri = $1
 `
 
-func (q *Queries) GetObjectFromOutboxByIRI(ctx context.Context, iri string) ([]byte, error) {
-	row := q.db.QueryRowContext(ctx, getObjectFromOutboxByIRI, iri)
-	var value []byte
-	err := row.Scan(&value)
-	return value, err
+type GetObjectFromOutboxByIRIRow struct {
+	Value            []byte
+	LiveNotification sql.NullBool
 }
 
-const getOutbox = `-- name: GetOutbox :many
-SELECT value FROM ap_outbox
+func (q *Queries) GetObjectFromOutboxByIRI(ctx context.Context, iri string) (GetObjectFromOutboxByIRIRow, error) {
+	row := q.db.QueryRowContext(ctx, getObjectFromOutboxByIRI, iri)
+	var i GetObjectFromOutboxByIRIRow
+	err := row.Scan(&i.Value, &i.LiveNotification)
+	return i, err
+}
+
+const getOutboxWithOffset = `-- name: GetOutboxWithOffset :many
+SELECT value FROM ap_outbox LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) GetOutbox(ctx context.Context) ([][]byte, error) {
-	rows, err := q.db.QueryContext(ctx, getOutbox)
+type GetOutboxWithOffsetParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffsetParams) ([][]byte, error) {
+	rows, err := q.db.QueryContext(ctx, getOutboxWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

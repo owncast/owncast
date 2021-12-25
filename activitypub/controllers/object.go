@@ -18,7 +18,7 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	object, err := persistence.GetObjectByIRI(r.URL.Path)
+	object, _, err := persistence.GetObjectByIRI(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

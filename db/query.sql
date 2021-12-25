@@ -17,14 +17,14 @@ SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = n
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = $1 WHERE iri = $2;
 
--- name: GetOutbox :many
-SELECT value FROM ap_outbox;
+-- name: GetOutboxWithOffset :many
+SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
 
 -- name: GetObjectFromOutboxByID :one
-SELECT value FROM ap_outbox WHERE id = $1;
+SELECT value FROM ap_outbox WHERE iri = $1;
 
 -- name: GetObjectFromOutboxByIRI :one
-SELECT value FROM ap_outbox WHERE iri = $1;
+SELECT value, live_notification FROM ap_outbox WHERE iri = $1;
 
 -- name: RemoveFollowerByIRI :exec
 DELETE FROM ap_followers WHERE iri = $1;
@@ -33,7 +33,13 @@ DELETE FROM ap_followers WHERE iri = $1;
 INSERT INTO ap_followers(iri, inbox, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6);
 
 -- name: AddToOutbox :exec
-INSERT INTO ap_outbox(id, iri, value, type) values($1, $2, $3, $4);
+INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4);
+
+-- name: AddToAcceptedActivities :exec
+INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values($1, $2, $3, $4);
+
+-- name: DoesInboundActivityExist :one
+SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3;
 
 -- name: UpdateFollowerByIRI :exec
 UPDATE ap_followers SET inbox = $1, name = $2, username = $3, image = $4 WHERE iri = $5;

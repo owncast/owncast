@@ -38,7 +38,7 @@ func SaveUserMessage(event events.UserMessageEvent) {
 }
 
 func saveFederatedAction(event events.FediverseEngagementEvent) {
-	saveEvent(event.ID, nil, event.Body, event.Type, nil, event.Timestamp, &event.Image, &event.Link, &event.Title, &event.Subtitle)
+	saveEvent(event.ID, nil, event.Body, event.Type, nil, event.Timestamp, event.Image, &event.Link, &event.UserAccountName, nil)
 }
 
 func saveEvent(id string, userID *string, body string, eventType string, hidden *time.Time, timestamp time.Time, image *string, link *string, title *string, subtitle *string) {
@@ -150,10 +150,9 @@ func makeFederatedActionChatEventFromRowData(row rowData) events.FediverseEngage
 			Body:    row.body,
 			RawBody: row.body,
 		},
-		Image:    *row.image,
-		Link:     *row.link,
-		Title:    *row.title,
-		Subtitle: *row.subtitle,
+		Image:           row.image,
+		Link:            *row.link,
+		UserAccountName: *row.title,
 	}
 	return message
 }

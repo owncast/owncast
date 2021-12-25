@@ -20,7 +20,7 @@ import (
 
 func handle(request apmodels.InboxRequest) {
 	if verified, err := Verify(request.Request); err != nil {
-		log.Errorln("Error in attempting to verify request", err)
+		log.Debugln("Error in attempting to verify request", err)
 		return
 	} else if !verified {
 		log.Errorln("Request failed verification")
