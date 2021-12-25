@@ -11,30 +11,30 @@ import (
 	"github.com/owncast/owncast/core/data"
 )
 
-func makeFakePerson() vocab.ActivityStreamsPerson {
+func makeFakeService() vocab.ActivityStreamsService {
 	iri, _ := url.Parse("https://fake.fediverse.server/user/mrfoo")
 	name := "Mr Foo"
 	username := "foodawg"
 	inbox, _ := url.Parse("https://fake.fediverse.server/user/mrfoo/inbox")
 	userAvatarURL, _ := url.Parse("https://fake.fediverse.server/user/mrfoo/avatar.png")
 
-	person := streams.NewActivityStreamsPerson()
+	service := streams.NewActivityStreamsService()
 
 	id := streams.NewJSONLDIdProperty()
 	id.Set(iri)
-	person.SetJSONLDId(id)
+	service.SetJSONLDId(id)
 
 	nameProperty := streams.NewActivityStreamsNameProperty()
 	nameProperty.AppendXMLSchemaString(name)
-	person.SetActivityStreamsName(nameProperty)
+	service.SetActivityStreamsName(nameProperty)
 
 	preferredUsernameProperty := streams.NewActivityStreamsPreferredUsernameProperty()
 	preferredUsernameProperty.SetXMLSchemaString(username)
-	person.SetActivityStreamsPreferredUsername(preferredUsernameProperty)
+	service.SetActivityStreamsPreferredUsername(preferredUsernameProperty)
 
 	inboxProp := streams.NewActivityStreamsInboxProperty()
 	inboxProp.SetIRI(inbox)
-	person.SetActivityStreamsInbox(inboxProp)
+	service.SetActivityStreamsInbox(inboxProp)
 
 	image := streams.NewActivityStreamsImage()
 	imgProp := streams.NewActivityStreamsUrlProperty()
@@ -42,9 +42,9 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 	image.SetActivityStreamsUrl(imgProp)
 	icon := streams.NewActivityStreamsIconProperty()
 	icon.AppendActivityStreamsImage(image)
-	person.SetActivityStreamsIcon(icon)
+	service.SetActivityStreamsIcon(icon)
 
-	return person
+	return service
 }
 
 func TestMain(m *testing.M) {
@@ -59,28 +59,28 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestMakeActorFromPerson(t *testing.T) {
-	person := makeFakePerson()
-	actor := MakeActorFromPerson(person)
+func TestMakeActorFromService(t *testing.T) {
+	service := makeFakeService()
+	actor := MakeActorFromService(service)
 
-	if actor.ActorIri != person.GetJSONLDId().GetIRI() {
-		t.Errorf("actor.ID = %v, want %v", actor.ActorIri, person.GetJSONLDId().GetIRI())
+	if actor.ActorIri != service.GetJSONLDId().GetIRI() {
+		t.Errorf("actor.ID = %v, want %v", actor.ActorIri, service.GetJSONLDId().GetIRI())
 	}
 
-	if actor.Name != person.GetActivityStreamsName().At(0).GetXMLSchemaString() {
-		t.Errorf("actor.Name = %v, want %v", actor.Name, person.GetActivityStreamsName().At(0).GetXMLSchemaString())
+	if actor.Name != service.GetActivityStreamsName().At(0).GetXMLSchemaString() {
+		t.Errorf("actor.Name = %v, want %v", actor.Name, service.GetActivityStreamsName().At(0).GetXMLSchemaString())
 	}
 
-	if actor.Username != person.GetActivityStreamsPreferredUsername().GetXMLSchemaString() {
-		t.Errorf("actor.Username = %v, want %v", actor.Username, person.GetActivityStreamsPreferredUsername().GetXMLSchemaString())
+	if actor.Username != service.GetActivityStreamsPreferredUsername().GetXMLSchemaString() {
+		t.Errorf("actor.Username = %v, want %v", actor.Username, service.GetActivityStreamsPreferredUsername().GetXMLSchemaString())
 	}
 
-	if actor.Inbox != person.GetActivityStreamsInbox().GetIRI() {
-		t.Errorf("actor.Inbox = %v, want %v", actor.Inbox.String(), person.GetActivityStreamsInbox().GetIRI())
+	if actor.Inbox != service.GetActivityStreamsInbox().GetIRI() {
+		t.Errorf("actor.Inbox = %v, want %v", actor.Inbox.String(), service.GetActivityStreamsInbox().GetIRI())
 	}
 
-	if actor.Image != person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().At(0).GetIRI() {
-		t.Errorf("actor.Image = %v, want %v", actor.Image, person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().At(0).GetIRI())
+	if actor.Image != service.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().At(0).GetIRI() {
+		t.Errorf("actor.Image = %v, want %v", actor.Image, service.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().At(0).GetIRI())
 	}
 }
 
@@ -95,8 +95,8 @@ func TestMakeActorPropertyWithID(t *testing.T) {
 
 func TestGetFullUsernameFromPerson(t *testing.T) {
 	expected := "foodawg@fake.fediverse.server"
-	person := makeFakePerson()
-	username := GetFullUsernameFromPerson(person)
+	person := makeFakeService()
+	username := GetFullUsernameFromService(person)
 
 	if username != expected {
 		t.Errorf("actor.Username = %v, want %v", username, expected)
@@ -104,7 +104,7 @@ func TestGetFullUsernameFromPerson(t *testing.T) {
 }
 
 func TestAddMetadataLinkToProfile(t *testing.T) {
-	person := makeFakePerson()
+	person := makeFakeService()
 	addMetadataLinkToProfile(person, "my site", "https://my.cool.site.biz")
 	attchment := person.GetActivityStreamsAttachment().At(0)
 
@@ -121,8 +121,8 @@ func TestAddMetadataLinkToProfile(t *testing.T) {
 	}
 }
 
-func TestMakePersonForAccount(t *testing.T) {
-	person := MakePersonForAccount("accountname")
+func TestMakeServiceForAccount(t *testing.T) {
+	person := MakeServiceForAccount("accountname")
 	expectedIRI := "https://my.cool.site.biz/federation/user/accountname"
 	if person.GetJSONLDId().Get().String() != expectedIRI {
 		t.Errorf("actor.IRI = %v, want %v", person.GetJSONLDId().Get().String(), expectedIRI)

@@ -48,7 +48,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 
 	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
-	person := apmodels.MakePersonForAccount(accountName)
+	person := apmodels.MakeServiceForAccount(accountName)
 
 	if err := requests.WriteStreamResponse(person, w, publicKey); err != nil {
 		log.Errorln("unable to write stream response for actor handler", err)
