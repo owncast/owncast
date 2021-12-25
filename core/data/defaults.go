@@ -32,6 +32,7 @@ func PopulateDefaults() {
 	_ = SetServerName("Owncast")
 	_ = SetStreamKey(defaults.StreamKey)
 	_ = SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
+	_ = SetFederationGoLiveMessage("I've gone live!")
 	_ = SetSocialHandles([]models.SocialHandle{
 		{
 			Platform: "github",
