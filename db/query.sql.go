@@ -6,6 +6,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const addFollower = `-- name: AddFollower :exec
@@ -43,7 +44,7 @@ type AddToAcceptedActivitiesParams struct {
 	Iri       string
 	Actor     string
 	Type      string
-	Timestamp interface{}
+	Timestamp time.Time
 }
 
 func (q *Queries) AddToAcceptedActivities(ctx context.Context, arg AddToAcceptedActivitiesParams) error {
@@ -232,6 +233,50 @@ func (q *Queries) GetFollowerCount(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getInboundActivitiesWithOffset = `-- name: GetInboundActivitiesWithOffset :many
+SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestamp DESC LIMIT $1 OFFSET $2
+`
+
+type GetInboundActivitiesWithOffsetParams struct {
+	Limit  int32
+	Offset int32
+}
+
+type GetInboundActivitiesWithOffsetRow struct {
+	Iri       string
+	Actor     string
+	Type      string
+	Timestamp time.Time
+}
+
+func (q *Queries) GetInboundActivitiesWithOffset(ctx context.Context, arg GetInboundActivitiesWithOffsetParams) ([]GetInboundActivitiesWithOffsetRow, error) {
+	rows, err := q.db.QueryContext(ctx, getInboundActivitiesWithOffset, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetInboundActivitiesWithOffsetRow
+	for rows.Next() {
+		var i GetInboundActivitiesWithOffsetRow
+		if err := rows.Scan(
+			&i.Iri,
+			&i.Actor,
+			&i.Type,
+			&i.Timestamp,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getLocalPostCount = `-- name: GetLocalPostCount :one
