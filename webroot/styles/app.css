@@ -169,6 +169,9 @@ header {
   width: var(--content-width);
 }
 
+.user-content-header {
+  width: 100%;
+}
 .chat #video-container {
   height: calc((9 / 16) * var(--content-width));
 }
@@ -473,4 +476,9 @@ header {
   padding: 1rem 0;
   border-top: 1px solid var(--header-bg-color);
   min-height: 15rem;
+}
+
+.follower {
+  min-width: 250px;
+  max-width: 350px;
 }
