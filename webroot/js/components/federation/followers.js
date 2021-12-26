@@ -41,7 +41,7 @@ export default class FollowerList extends Component {
     return html`
       <div id="followers" class="p-4 w-full">
         <div
-          class="grid grid-flow-row sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           ${followers.length === 0 && noFollowersInfo}
           ${followers.map((follower) => {
@@ -66,7 +66,7 @@ function SingleFollower(props) {
   return html`
     <a
       href=${link}
-      class="follower m-3 block bg-white flex  items-center p-2 rounded-xl shadow border"
+      class="follower m-3 block bg-white flex items-center p-2 rounded-xl shadow border"
       target="_blank"
     >
       <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
