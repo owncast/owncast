@@ -26,12 +26,12 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 
 	followRequest := apmodels.ActivityPubActor{
-		ActorIri:  person.ActorIri,
-		FollowIri: activity.GetJSONLDId().Get(),
-		Inbox:     person.Inbox,
-		Name:      person.Name,
-		Username:  fullUsername,
-		Image:     person.Image,
+		ActorIri:         person.ActorIri,
+		FollowRequestIri: activity.GetJSONLDId().Get(),
+		Inbox:            person.Inbox,
+		Name:             person.Name,
+		Username:         fullUsername,
+		Image:            person.Image,
 	}
 
 	return &followRequest, nil
@@ -46,11 +46,11 @@ func MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) 
 	}
 
 	unfollowRequest := apmodels.ActivityPubActor{
-		ActorIri:  person.ActorIri,
-		FollowIri: activity.GetJSONLDId().Get(),
-		Inbox:     person.Inbox,
-		Name:      person.Name,
-		Image:     person.Image,
+		ActorIri:         person.ActorIri,
+		FollowRequestIri: activity.GetJSONLDId().Get(),
+		Inbox:            person.Inbox,
+		Name:             person.Name,
+		Image:            person.Image,
 	}
 
 	return &unfollowRequest

@@ -115,7 +115,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 
 	for _, follower := range followers {
-		u, _ := url.Parse(follower.Link)
+		u, _ := url.Parse(follower.ActorIRI)
 		orderedItems.AppendIRI(u)
 	}
 	collectionPage.SetActivityStreamsOrderedItems(orderedItems)

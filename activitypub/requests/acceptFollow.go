@@ -2,6 +2,7 @@ package requests
 
 import (
 	"encoding/json"
+	"net/url"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -12,14 +13,14 @@ import (
 )
 
 // SendFollowAccept will send an accept activity to a follow request from a specified local user.
-func SendFollowAccept(followRequest apmodels.ActivityPubActor, fromLocalAccountName string) error {
-	followAccept := makeAcceptFollow(followRequest, fromLocalAccountName)
+func SendFollowAccept(inbox *url.URL, followRequestIRI *url.URL, fromLocalAccountName string) error {
+	followAccept := makeAcceptFollow(followRequestIRI, fromLocalAccountName)
 	localAccountIRI := apmodels.MakeLocalIRIForAccount(fromLocalAccountName)
 
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(followAccept)
 	b, _ := json.Marshal(jsonmap)
-	req, err := CreateSignedRequest(b, followRequest.Inbox, localAccountIRI)
+	req, err := CreateSignedRequest(b, inbox, localAccountIRI)
 	if err != nil {
 		return err
 	}
@@ -29,7 +30,7 @@ func SendFollowAccept(followRequest apmodels.ActivityPubActor, fromLocalAccountN
 	return nil
 }
 
-func makeAcceptFollow(follow apmodels.ActivityPubActor, fromAccountName string) vocab.ActivityStreamsAccept {
+func makeAcceptFollow(followRequestIri *url.URL, fromAccountName string) vocab.ActivityStreamsAccept {
 	acceptIDString := shortid.MustGenerate()
 	acceptID := apmodels.MakeLocalIRIForResource(acceptIDString)
 	actorID := apmodels.MakeLocalIRIForAccount(fromAccountName)
@@ -43,7 +44,7 @@ func makeAcceptFollow(follow apmodels.ActivityPubActor, fromAccountName string) 
 	accept.SetActivityStreamsActor(actor)
 
 	object := streams.NewActivityStreamsObjectProperty()
-	object.AppendIRI(follow.FollowIri)
+	object.AppendIRI(followRequestIri)
 	accept.SetActivityStreamsObject(object)
 
 	return accept

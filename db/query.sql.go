@@ -9,12 +9,13 @@ import (
 )
 
 const addFollower = `-- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6)
+INSERT INTO ap_followers(iri, inbox, request, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7)
 `
 
 type AddFollowerParams struct {
 	Iri        string
 	Inbox      string
+	Request    string
 	Name       sql.NullString
 	Username   string
 	Image      sql.NullString
@@ -25,6 +26,7 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 	_, err := q.db.ExecContext(ctx, addFollower,
 		arg.Iri,
 		arg.Inbox,
+		arg.Request,
 		arg.Name,
 		arg.Username,
 		arg.Image,
@@ -107,15 +109,16 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 }
 
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null
 `
 
 type GetFederationFollowerApprovalRequestsRow struct {
-	Iri      string
-	Inbox    string
-	Name     sql.NullString
-	Username string
-	Image    sql.NullString
+	Iri       string
+	Inbox     string
+	Name      sql.NullString
+	Username  string
+	Image     sql.NullString
+	CreatedAt sql.NullTime
 }
 
 func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]GetFederationFollowerApprovalRequestsRow, error) {
@@ -133,6 +136,7 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 			&i.Name,
 			&i.Username,
 			&i.Image,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -193,6 +197,26 @@ func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetF
 		return nil, err
 	}
 	return items, nil
+}
+
+const getFollowerByIRI = `-- name: GetFollowerByIRI :one
+SELECT iri, inbox, name, username, image, request, created_at, approved_at FROM ap_followers WHERE iri = $1
+`
+
+func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (ApFollower, error) {
+	row := q.db.QueryRowContext(ctx, getFollowerByIRI, iri)
+	var i ApFollower
+	err := row.Scan(
+		&i.Iri,
+		&i.Inbox,
+		&i.Name,
+		&i.Username,
+		&i.Image,
+		&i.Request,
+		&i.CreatedAt,
+		&i.ApprovedAt,
+	)
+	return i, err
 }
 
 const getFollowerCount = `-- name: GetFollowerCount :one
