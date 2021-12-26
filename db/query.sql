@@ -12,10 +12,13 @@ SElECT count(*) FROM ap_outbox;
 SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null LIMIT $1 OFFSET $2;
 
 -- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image FROM ap_followers WHERE approved_at = null;
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null;
 
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = $1 WHERE iri = $2;
+
+-- name: GetFollowerByIRI :one
+SELECT iri, inbox, name, username, image, request, created_at, approved_at FROM ap_followers WHERE iri = $1;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
@@ -30,7 +33,7 @@ SELECT value, live_notification FROM ap_outbox WHERE iri = $1;
 DELETE FROM ap_followers WHERE iri = $1;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6);
+INSERT INTO ap_followers(iri, inbox, request, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4);

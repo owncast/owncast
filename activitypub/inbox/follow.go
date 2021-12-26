@@ -26,7 +26,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return fmt.Errorf("unable to handle request")
 	}
 
-	approved := !data.GetFollowApprovalRequired()
+	approved := !data.GetFederationIsPrivate()
 
 	followRequest := *follow
 
@@ -38,7 +38,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	localAccountName := data.GetDefaultFederationUsername()
 
 	if approved {
-		if err := requests.SendFollowAccept(followRequest, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(follow.Inbox, follow.FollowRequestIri, localAccountName); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
@@ -46,7 +46,11 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	actorReference := activity.GetActivityStreamsActor()
 
-	return handleEngagementActivity(events.FediverseEngagementFollow, activity.GetActivityStreamsObject(), actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementFollow)
+	if approved {
+		return handleEngagementActivity(events.FediverseEngagementFollow, activity.GetActivityStreamsObject(), actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementFollow)
+	}
+
+	return nil
 }
 
 func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
@@ -57,7 +61,7 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 	}
 
 	unfollowRequest := *request
-	log.Println("unfollow request:", unfollowRequest)
+	log.Traceln("unfollow request:", unfollowRequest)
 
 	return persistence.RemoveFollow(unfollowRequest)
 }

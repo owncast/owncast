@@ -12,15 +12,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ActivityPubActor represents a single actor.
+// ActivityPubActor represents a single actor in handling ActivityPub activity.
 type ActivityPubActor struct {
-	ActorIri                *url.URL
-	FollowIri               *url.URL
-	Inbox                   *url.URL
-	Name                    string
-	Username                string
-	FullUsername            string
-	Image                   *url.URL
+	// ActorIRI is the IRI of the remote actor.
+	ActorIri *url.URL
+	// FollowRequestIRI is the unique identifier of the follow request.
+	FollowRequestIri *url.URL
+	// Inbox is the inbox URL of the remote follower
+	Inbox *url.URL
+	// Name is the display name of the follower.
+	Name string
+	// Username is the account username of the remote actor.
+	Username string
+	// FullUsername is the username@account.tld representation of the user.
+	FullUsername string
+	// Image is the avatar image of the Actor.
+	Image *url.URL
+	// W3IDSecurityV1PublicKey is the public key of the actor.
 	W3IDSecurityV1PublicKey vocab.W3IDSecurityV1PublicKeyProperty
 }
 
@@ -70,7 +78,7 @@ func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty 
 	return actor
 }
 
-// MakeServiceForAccount will create a new local actor service withe the provided username.
+// MakeServiceForAccount will create a new local actor service with the the provided username.
 func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	actorIRI := MakeLocalIRIForAccount(accountName)
 
@@ -90,7 +98,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	person.SetActivityStreamsInbox(inboxProp)
 
 	needsFollowApprovalProperty := streams.NewActivityStreamsManuallyApprovesFollowersProperty()
-	needsFollowApprovalProperty.Set(data.GetFollowApprovalRequired())
+	needsFollowApprovalProperty.Set(data.GetFederationIsPrivate())
 	person.SetActivityStreamsManuallyApprovesFollowers(needsFollowApprovalProperty)
 
 	outboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/outbox")

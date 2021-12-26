@@ -10,7 +10,7 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	log "github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 )
 
 func handleEngagementActivity(eventType events.EventType, object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
@@ -29,12 +29,11 @@ func handleEngagementActivity(eventType events.EventType, object vocab.ActivityS
 	// Allow all Follows to be handled, otherwise the object IRI must match something
 	// we have sent before.
 	post, isLiveNotification, err := persistence.GetObjectByIRI(IRI)
-	if action != "follow" && (err != nil || post == "") {
-		log.Errorln("Could not find post locally:", IRI, err)
-		return err
+	if action != events.FediverseEngagementFollow && (err != nil || post == "") {
+		return errors.Wrap(err, "Could not find post locally")
 	}
 
-	// Get actor of the Like
+	// Get actor of the action
 	actor, _ := resolvers.GetResolvedActorFromActorProperty(actorReference)
 
 	// Send chat message

@@ -1,16 +1,19 @@
 -- Schema update to query.sql must be referenced in queries located in query.sql
 -- and compiled into code with sqlc. Read README.md for details.
 
-CREATE TABLE ap_followers (
+CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
 		"inbox" TEXT NOT NULL,
 		"name" TEXT,
 		"username" TEXT NOT NULL,
 		"image" TEXT,
+    "request" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		"approved_at" TIMESTAMP,
 		PRIMARY KEY (iri));
-		CREATE INDEX iri ON ap_followers (iri);
+		CREATE INDEX iri_index ON ap_followers (iri);
+    CREATE INDEX approved_at_index ON ap_followers (approved_at);
+
 
 CREATE TABLE IF NOT EXISTS ap_outbox (
 		"iri" TEXT NOT NULL,

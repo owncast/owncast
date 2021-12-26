@@ -32,20 +32,57 @@ func Setup(datastore *data.Datastore) {
 
 // AddFollow will save a follow to the datastore.
 func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
-	log.Println("Saving", follow.ActorIri, "as a follower.")
+	log.Traceln("Saving", follow.ActorIri, "as a follower.")
 	var image string
 	if follow.Image != nil {
 		image = follow.Image.String()
 	}
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.Name, follow.Username, image, approved)
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
 func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
-	log.Println("Removing", unfollow.ActorIri, "as a follower.")
+	log.Traceln("Removing", unfollow.ActorIri, "as a follower.")
 	return removeFollow(unfollow.ActorIri)
 }
 
+// GetFollower will return a single follower/request given an IRI.
+func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
+	result, err := _datastore.GetQueries().GetFollowerByIRI(context.Background(), iri)
+	if err != nil {
+		return nil, err
+	}
+
+	followIRI, err := url.Parse(result.Request)
+	if err != nil {
+		return nil, errors.Wrap(err, "error parsing follow request IRI")
+	}
+
+	iriUrl, err := url.Parse(result.Iri)
+	if err != nil {
+		return nil, errors.Wrap(err, "error parsing actor IRI")
+	}
+
+	inbox, err := url.Parse(result.Inbox)
+	if err != nil {
+		return nil, errors.Wrap(err, "error parsing acting inbox")
+	}
+
+	image, _ := url.Parse(result.Image.String)
+
+	follower := apmodels.ActivityPubActor{
+		ActorIri:         iriUrl,
+		Inbox:            inbox,
+		Name:             result.Name.String,
+		Username:         result.Username,
+		Image:            image,
+		FollowRequestIri: followIRI,
+	}
+
+	return &follower, nil
+}
+
+// ApprovePreviousFollowRequest will approve a follow request.
 func ApprovePreviousFollowRequest(iri string) error {
 	return _datastore.GetQueries().ApproveFederationFollower(context.Background(), db.ApproveFederationFollowerParams{
 		Iri: iri,
@@ -56,12 +93,7 @@ func ApprovePreviousFollowRequest(iri string) error {
 	})
 }
 
-func createFollow(actor string, inbox string, name string, username string, image string, approved bool) error {
-	// needsApproval := data.GetFollowApprovalRequired()
-
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
+func createFollow(actor string, inbox string, request string, name string, username string, image string, approved bool) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
@@ -85,6 +117,7 @@ func createFollow(actor string, inbox string, name string, username string, imag
 		Username:   username,
 		Image:      sql.NullString{String: image, Valid: true},
 		ApprovedAt: approvedAt,
+		Request:    request,
 	}); err != nil {
 		log.Errorln("error creating new federation follow", err)
 	}
@@ -189,12 +222,12 @@ func createFederationFollowersTable() {
 		"name" TEXT,
 		"username" TEXT NOT NULL,
 		"image" TEXT,
-		"approved_at" TIMESTAMP,
+    "request" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		"approved_at" TIMESTAMP,
 		PRIMARY KEY (iri));
-		CREATE INDEX iri ON ap_followers (iri);
-		CREATE INDEX approved_at ON ap_followers (approved_at);
-	);`
+		CREATE INDEX iri_index ON ap_followers (iri);
+    CREATE INDEX approved_at_index ON ap_followers (approved_at);`
 
 	stmt, err := _datastore.DB.Prepare(createTableSQL)
 	if err != nil {
@@ -302,7 +335,7 @@ func GetFederationFollowers(limit int, offset int) ([]models.Follower, error) {
 			Name:      row.Name.String,
 			Username:  row.Username,
 			Image:     row.Image.String,
-			Link:      row.Iri,
+			ActorIRI:  row.Iri,
 			Inbox:     row.Inbox,
 			Timestamp: utils.NullTime(row.CreatedAt),
 		}
@@ -324,11 +357,12 @@ func GetPendingFollowRequests() ([]models.Follower, error) {
 
 	for _, row := range pendingFollowersResult {
 		singleFollower := models.Follower{
-			Name:     row.Name.String,
-			Username: row.Username,
-			Image:    row.Image.String,
-			Link:     row.Iri,
-			Inbox:    row.Inbox,
+			Name:      row.Name.String,
+			Username:  row.Username,
+			Image:     row.Image.String,
+			ActorIRI:  row.Iri,
+			Inbox:     row.Inbox,
+			Timestamp: utils.NullTime{Time: row.CreatedAt.Time, Valid: true},
 		}
 		followers = append(followers, singleFollower)
 	}
