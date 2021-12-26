@@ -289,11 +289,14 @@ func Start() error {
 	// set federated go live message
 	http.HandleFunc("/api/admin/config/federation/livemessage", middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage))
 
+	// Federation blocked domains
+	http.HandleFunc("/api/admin/config/federation/blockdomains", middleware.RequireAdminAuth(admin.SetFederationBlockDomains))
+
 	// send a public message to the Fediverse from the server's user
 	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederationMessage))
 
-	// Federation blocked domains
-	http.HandleFunc("/api/admin/config/federation/blockdomains", middleware.RequireAdminAuth(admin.SetFederationBlockDomains))
+	// Return federated activities
+	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(admin.GetFederatedActions))
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())

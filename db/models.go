@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type ApAcceptedActivity struct {
@@ -11,7 +12,7 @@ type ApAcceptedActivity struct {
 	Iri       string
 	Actor     string
 	Type      string
-	Timestamp interface{}
+	Timestamp time.Time
 }
 
 type ApFollower struct {

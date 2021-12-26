@@ -186,6 +186,7 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 
 	configValues, success := getValuesFromRequest(w, r)
 	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to handle provided domains")
 		return
 	}
 
@@ -196,7 +197,20 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 
 	if err := data.SetBlockedFederatedDomains(domainStrings); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "saved")
+}
+
+// GetFederatedActions will return the saved list of accepted inbound
+// federated activities.
+func GetFederatedActions(w http.ResponseWriter, r *http.Request) {
+	activities, err := persistence.GetInboundActivities(100, 0)
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteResponse(w, activities)
 }

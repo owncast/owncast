@@ -175,7 +175,7 @@ func createFederatedActivitiesTable() {
 		"iri" TEXT NOT NULL,
     "actor" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-		"timestamp" DATETIME
+		"timestamp" TIMESTAMP NOT NULL
 	);
 	CREATE INDEX iri_actor_index ON ap_accepted_activities (iri,actor);`
 
@@ -376,12 +376,37 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 		Iri:       objectIRI,
 		Actor:     actorIRI,
 		Type:      eventType,
-		Timestamp: sql.NullTime{Time: timestamp, Valid: true},
+		Timestamp: timestamp,
 	}); err != nil {
 		return errors.Wrap(err, "error saving event "+objectIRI)
 	}
 
 	return nil
+}
+
+func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, error) {
+	ctx := context.Background()
+	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	activities := make([]models.FederatedActivity, 0)
+
+	for _, row := range rows {
+		singleActivity := models.FederatedActivity{
+			IRI:       row.Iri,
+			ActorIRI:  row.Actor,
+			Type:      row.Type,
+			Timestamp: row.Timestamp,
+		}
+		activities = append(activities, singleActivity)
+	}
+
+	return activities, nil
 }
 
 // HasPreviouslyHandledInboundActivity will return if we have previously handled

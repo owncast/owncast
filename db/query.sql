@@ -41,6 +41,9 @@ INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4
 -- name: AddToAcceptedActivities :exec
 INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values($1, $2, $3, $4);
 
+-- name: GetInboundActivitiesWithOffset :many
+SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestamp DESC LIMIT $1 OFFSET $2;
+
 -- name: DoesInboundActivityExist :one
 SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3;
 

@@ -31,6 +31,6 @@ CREATE TABLE IF NOT EXISTS ap_accepted_activities (
 		"iri" TEXT NOT NULL,
     "actor" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-		"timestamp" DATETIME
+		"timestamp" TIMESTAMP NOT NULL
 	);
 	CREATE INDEX iri_actor_index ON ap_accepted_activities (iri,actor);
