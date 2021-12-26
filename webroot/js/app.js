@@ -506,12 +506,13 @@ export default class App extends Component {
   }
 
   handleKeyPressed(e) {
-    if (
-      e.target !== document.getElementById('message-input') &&
-      e.target !== document.getElementById('username-change-input') &&
-      e.target !== document.getElementsByClassName('emoji-picker__search')[0] &&
-      this.state.streamOnline
-    ) {
+    // Only handle shortcuts if the focus is on the general page body,
+    // not a specific input field.
+    if (e.target !== document.getElementById('app-body')) {
+      return;
+    }
+
+    if (this.state.streamOnline) {
       switch (e.code) {
         case 'MediaPlayPause':
         case 'KeyP':
