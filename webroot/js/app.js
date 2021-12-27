@@ -790,6 +790,7 @@ export default class App extends Component {
             name=${name}
             logo=${logo}
             federationInfo=${federation}
+            onClose=${this.closeFediverseFollowModal}
           />`}
         />
       `;

@@ -28,6 +28,8 @@ export default class FediverseFollowModal extends Component {
   async remoteFollowButtonPressed() {
     this.setState({ loading: true, errorMessage: null });
     const { value } = this.state;
+    const { onClose } = this.props;
+
     const account = value.replace(/^@+/, '');
     const request = { account: account };
     const requestURL = '/api/remotefollow';
@@ -43,7 +45,7 @@ export default class FediverseFollowModal extends Component {
     }
 
     window.open(result.redirectUrl, '_blank');
-    this.props.onClose();
+    onClose();
   }
 
   onInput = (e) => {
@@ -55,7 +57,7 @@ export default class FediverseFollowModal extends Component {
   render() {
     const { name, federationInfo = {}, logo } = this.props;
     const { account } = federationInfo;
-    const { errorMessage, value, valid } = this.state;
+    const { errorMessage, value, valid, loading } = this.state;
     const buttonState = valid ? '' : 'cursor-not-allowed opacity-50';
 
     const error = errorMessage
@@ -70,17 +72,20 @@ export default class FediverseFollowModal extends Component {
         `
       : null;
 
+    const loaderStyle = loading ? 'flex' : 'none';
+
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-4">
         <p class="text-gray-700 text-md">
-          By following on the
+          By following on the ${' '}
           <a
+            class=" text-blue-500"
             href="https://en.wikipedia.org/wiki/Fediverse"
             target="_blank"
             rel="noopener noreferrer"
             >Fediverse</a
           >
-          you'll get notified when the stream goes live.
+          ${' '} you'll get notified when the stream goes live.
         </p>
 
         <div
@@ -124,6 +129,14 @@ export default class FediverseFollowModal extends Component {
           Follow
         </button>
         ${error}
+        <div
+          id="follow-loading-spinner-container"
+          style="display: ${loaderStyle}"
+        >
+          <img id="follow-loading-spinner" src="/img/loading.gif" />
+          <p class="text-gray-700 text-lg">Contacting your server.</p>
+          <p class="text-gray-600 text-lg">Please wait...</p>
+        </div>
       </div>
     `;
   }
