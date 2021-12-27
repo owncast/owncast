@@ -60,7 +60,10 @@ export default class ExternalActionModal extends Component {
               id="modal-header"
               class="modal__header flex flex-row justify-between items-center bg-gray-300 p-3 rounded-t-md"
             >
-              <h2 id="external-action-modal-header" class="modal__title text-indigo-600 font-semibold">
+              <h2
+                id="external-action-modal-header"
+                class="modal__title text-indigo-600 font-semibold"
+              >
                 ${title || description}
               </h2>
               <button
@@ -69,28 +72,31 @@ export default class ExternalActionModal extends Component {
                 data-micromodal-close
               ></button>
             </header>
-            <div id="modal-content-content" class="modal-content-content rounded-b-md">
-              ${useIframe ? html`
-                <div
-                  id="modal-content"
-                  class="modal__content text-gray-600 overflow-y-auto overflow-x-hidden"
-                >
-                  <iframe
-                    id="external-modal-iframe"
-                    style=${iframeStyle}
-                    class="bg-gray-100 bg-center bg-no-repeat"
-                    width="100%"
-                    allowpaymentrequest="true"
-                    allowfullscreen="false"
-                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                    src=${url}
-                    onload=${this.setIframeLoaded}
-                  />
-                </div>
-              ` : customContent
-            }
+            <div
+              id="modal-content-content"
+              class="modal-content-content rounded-b-md"
+            >
+              ${useIframe
+                ? html`
+                    <div
+                      id="modal-content"
+                      class="modal__content text-gray-600 overflow-y-auto overflow-x-hidden"
+                    >
+                      <iframe
+                        id="external-modal-iframe"
+                        style=${iframeStyle}
+                        class="bg-gray-100 bg-center bg-no-repeat"
+                        width="100%"
+                        allowpaymentrequest="true"
+                        allowfullscreen="false"
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                        src=${url}
+                        onload=${this.setIframeLoaded}
+                      />
+                    </div>
+                  `
+                : customContent}
             </div>
-            <footer class="rounded-b-md h-4 bg-white"></footer>
           </div>
         </div>
       </div>
