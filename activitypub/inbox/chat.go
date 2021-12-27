@@ -47,8 +47,12 @@ func handleEngagementActivity(eventType events.EventType, object vocab.ActivityS
 	var suffix string
 	if isLiveNotification && action == events.FediverseEngagementLike {
 		suffix = fmt.Sprintf("liked that %s went live.", data.GetServerName())
+	} else if action == events.FediverseEngagementLike {
+		suffix = fmt.Sprintf("liked a post from %s.", data.GetServerName())
 	} else if isLiveNotification && action == events.FediverseEngagementRepost {
 		suffix = fmt.Sprintf("shared that %s went live.", data.GetServerName())
+	} else if action == events.FediverseEngagementRepost {
+		suffix = fmt.Sprintf("shared a post from %s.", data.GetServerName())
 	} else if action == events.FediverseEngagementFollow {
 		suffix = fmt.Sprintf("followed %s.", data.GetServerName())
 	} else {
