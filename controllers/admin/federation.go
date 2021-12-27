@@ -11,8 +11,8 @@ import (
 	"github.com/owncast/owncast/core/data"
 )
 
-// SendFederationMessage will send a manual message to the fediverse.
-func SendFederationMessage(w http.ResponseWriter, r *http.Request) {
+// SendFederatedMessage will send a manual message to the fediverse.
+func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
