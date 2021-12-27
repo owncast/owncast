@@ -43,7 +43,7 @@ func SendLive() error {
 		tagProp.AppendTootHashtag(hashtag)
 
 		// TODO: Do we want to display tags or just assign them?
-		tagString := fmt.Sprintf("<a class=\"hashtag\" href=\"https://directory.owncast.online/tags/%s\">#%s</a>", tagWithoutSpecialCharacters, tagWithoutSpecialCharacters)
+		tagString := getHashtagLinkHTMLFromTagString(tagWithoutSpecialCharacters)
 		tagStrings = append(tagStrings, tagString)
 	}
 
@@ -105,9 +105,29 @@ func SendLive() error {
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) error {
+	originalContent := textContent
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
+	tagProp := streams.NewActivityStreamsTagProperty()
+
+	// Iterate through the post text and find #Hashtags.
+	words := strings.Split(originalContent, " ")
+	for _, word := range words {
+		if strings.HasPrefix(word, "#") {
+			tagWithoutHashtag := strings.TrimPrefix(word, "#")
+
+			// Replace the instances of the tag with a link to the tag page.
+			tagHTML := getHashtagLinkHTMLFromTagString(tagWithoutHashtag)
+			textContent = strings.ReplaceAll(textContent, word, tagHTML)
+
+			// Create Hashtag object for the tag.
+			hashtag := apmodels.MakeHashtag(tagWithoutHashtag)
+			tagProp.AppendTootHashtag(hashtag)
+		}
+	}
+
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
+	note.SetActivityStreamsTag(tagProp)
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
@@ -139,6 +159,11 @@ func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate,
 	object.AppendActivityStreamsNote(note)
 
 	return activity, id, note, noteID
+}
+
+// Get Hashtag HTML link for a given tag (without # prefix).
+func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
+	return fmt.Sprintf("<a class=\"hashtag\" href=\"https://directory.owncast.online/tags/%s\">#%s</a>", baseHashtag, baseHashtag)
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
