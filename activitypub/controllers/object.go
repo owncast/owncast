@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
@@ -18,7 +19,8 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	object, _, err := persistence.GetObjectByIRI(r.URL.Path)
+	iri := strings.Join([]string{strings.TrimSuffix(data.GetServerURL(), "/"), r.URL.Path}, "")
+	object, _, err := persistence.GetObjectByIRI(iri)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
