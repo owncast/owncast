@@ -5,15 +5,13 @@ import (
 	"net/url"
 
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/pkg/errors"
 )
 
-func handleEngagementActivity(eventType events.EventType, object vocab.ActivityStreamsObjectProperty, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
+func handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
 	// Do nothing if displaying engagement actions has been turned off.
 	if !data.GetFederationShowEngagement() {
 		return nil
@@ -22,15 +20,6 @@ func handleEngagementActivity(eventType events.EventType, object vocab.ActivityS
 	// Do nothing if chat is disabled
 	if data.GetChatDisabled() {
 		return nil
-	}
-
-	IRI := object.At(0).GetIRI().String()
-
-	// Allow all Follows to be handled, otherwise the object IRI must match something
-	// we have sent before.
-	post, isLiveNotification, err := persistence.GetObjectByIRI(IRI)
-	if action != events.FediverseEngagementFollow && (err != nil || post == "") {
-		return errors.Wrap(err, "Could not find post locally")
 	}
 
 	// Get actor of the action

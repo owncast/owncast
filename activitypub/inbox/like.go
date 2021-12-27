@@ -20,10 +20,16 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 		return errors.Wrap(err, "inbound activity of like has already been handled")
 	}
 
+	// Likes need to match a post we had already sent.
+	_, isLiveNotification, err := persistence.GetObjectByIRI(objectIRI)
+	if err != nil {
+		return errors.Wrap(err, "Could not find post locally")
+	}
+
 	// Save as an accepted activity
 	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementLike, time.Now()); err != nil {
 		return errors.Wrap(err, "unable to save inbound like activity")
 	}
 
-	return handleEngagementActivity(events.FediverseEngagementLike, object, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementLike)
+	return handleEngagementActivity(events.FediverseEngagementLike, isLiveNotification, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementLike)
 }

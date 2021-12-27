@@ -20,10 +20,16 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 		return errors.Wrap(err, "inbound activity of share/re-post has already been handled")
 	}
 
+	// Shares need to match a post we had already sent.
+	_, isLiveNotification, err := persistence.GetObjectByIRI(objectIRI)
+	if err != nil {
+		return errors.Wrap(err, "Could not find post locally")
+	}
+
 	// Save as an accepted activity
 	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementRepost, time.Now()); err != nil {
 		return errors.Wrap(err, "unable to save inbound share/re-post activity")
 	}
 
-	return handleEngagementActivity(events.FediverseEngagementRepost, object, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementRepost)
+	return handleEngagementActivity(events.FediverseEngagementRepost, isLiveNotification, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementRepost)
 }
