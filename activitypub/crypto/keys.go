@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"net/url"
 
 	"github.com/owncast/owncast/core/data"
@@ -52,12 +51,12 @@ func GenerateKeys() ([]byte, []byte, error) {
 	// generate key
 	privatekey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		fmt.Printf("Cannot generate RSA key\n")
+		log.Errorln("Cannot generate RSA key", err)
 		return nil, nil, err
 	}
 	publickey := &privatekey.PublicKey
 
-	var privateKeyBytes = x509.MarshalPKCS1PrivateKey(privatekey)
+	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privatekey)
 	privateKeyBlock := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: privateKeyBytes,
@@ -66,7 +65,7 @@ func GenerateKeys() ([]byte, []byte, error) {
 
 	publicKeyBytes, err := x509.MarshalPKIXPublicKey(publickey)
 	if err != nil {
-		fmt.Printf("error when dumping publickey: %s \n", err)
+		log.Errorln("error when dumping publickey:", err)
 		return nil, nil, err
 	}
 	publicKeyBlock := &pem.Block{

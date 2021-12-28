@@ -47,7 +47,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	actorReference := activity.GetActivityStreamsActor()
 
 	if approved {
-		return handleEngagementActivity(events.FediverseEngagementFollow, false, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementFollow)
+		return handleEngagementActivity(events.FediverseEngagementFollow, false, actorReference, events.FediverseEngagementFollow)
 	}
 
 	return nil

@@ -31,5 +31,5 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 		return errors.Wrap(err, "unable to save inbound like activity")
 	}
 
-	return handleEngagementActivity(events.FediverseEngagementLike, isLiveNotification, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementLike)
+	return handleEngagementActivity(events.FediverseEngagementLike, isLiveNotification, actorReference, events.FediverseEngagementLike)
 }

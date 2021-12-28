@@ -31,5 +31,5 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 		return errors.Wrap(err, "unable to save inbound share/re-post activity")
 	}
 
-	return handleEngagementActivity(events.FediverseEngagementRepost, isLiveNotification, actorReference, activity.GetJSONLDId().Get(), events.FediverseEngagementRepost)
+	return handleEngagementActivity(events.FediverseEngagementRepost, isLiveNotification, actorReference, events.FediverseEngagementRepost)
 }
