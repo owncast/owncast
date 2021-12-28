@@ -37,12 +37,8 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
 	// Treat recordings and schedule as index requests
-	pathRequest := "/"
 	pathComponents := strings.Split(r.URL.Path, "/")
-	if len(pathComponents) > 1 {
-		pathRequest = pathComponents[1]
-	}
-	pathRequest = pathComponents[1]
+	pathRequest := pathComponents[1]
 
 	if pathRequest == "recordings" || pathRequest == "schedule" {
 		r.URL.Path = "index.html"
