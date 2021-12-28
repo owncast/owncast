@@ -37,6 +37,8 @@ type DeleteRequest struct {
 	ActorIri string
 }
 
+// MakeActorFromPerson takes a full ActivityPub Person and returns our internal
+// representation of an actor.
 func MakeActorFromPerson(person vocab.ActivityStreamsPerson) ActivityPubActor {
 	apActor := ActivityPubActor{
 		ActorIri:                person.GetJSONLDId().Get(),
@@ -54,6 +56,8 @@ func MakeActorFromPerson(person vocab.ActivityStreamsPerson) ActivityPubActor {
 	return apActor
 }
 
+// MakeActorFromService takes a full ActivityPub Service and returns our internal
+// representation of an actor.
 func MakeActorFromService(service vocab.ActivityStreamsService) ActivityPubActor {
 	apActor := ActivityPubActor{
 		ActorIri:                service.GetJSONLDId().Get(),
@@ -157,13 +161,11 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	person.SetActivityStreamsIcon(icon)
 
 	// Actor  URL
-
 	urlProperty := streams.NewActivityStreamsUrlProperty()
 	urlProperty.AppendIRI(actorIRI)
 	person.SetActivityStreamsUrl(urlProperty)
 
 	// Profile header
-
 	headerImage := streams.NewActivityStreamsImage()
 	headerImgPropURL := streams.NewActivityStreamsUrlProperty()
 	headerImgPropURL.AppendIRI(userAvatarURL)
@@ -173,7 +175,6 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	person.SetActivityStreamsImage(headerImageProp)
 
 	// Profile bio
-
 	summaryProperty := streams.NewActivityStreamsSummaryProperty()
 	summaryProperty.AppendXMLSchemaString(data.GetServerSummary())
 	person.SetActivityStreamsSummary(summaryProperty)
@@ -188,14 +189,14 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	discoverableProperty.Set(true)
 	person.SetTootDiscoverable(discoverableProperty)
 
-	// followers
+	// Followers
 	followersProperty := streams.NewActivityStreamsFollowersProperty()
 	followersURL := *actorIRI
 	followersURL.Path = actorIRI.Path + "/followers"
 	followersProperty.SetIRI(&followersURL)
 	person.SetActivityStreamsFollowers(followersProperty)
 
-	// tags
+	// Tags
 	tagProp := streams.NewActivityStreamsTagProperty()
 	for _, tagString := range data.GetServerMetadataTags() {
 		hashtag := MakeHashtag(tagString)

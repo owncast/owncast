@@ -27,9 +27,9 @@ func handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
+	// c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
 
-	if err := resolvers.Resolve(c, request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
+	if err := resolvers.Resolve(context.Background(), request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
 		log.Errorln("resolver error:", err)
 	}
 }

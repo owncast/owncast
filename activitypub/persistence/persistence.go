@@ -58,7 +58,7 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 		return nil, errors.Wrap(err, "error parsing follow request IRI")
 	}
 
-	iriUrl, err := url.Parse(result.Iri)
+	iriURL, err := url.Parse(result.Iri)
 	if err != nil {
 		return nil, errors.Wrap(err, "error parsing actor IRI")
 	}
@@ -71,7 +71,7 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 	image, _ := url.Parse(result.Image.String)
 
 	follower := apmodels.ActivityPubActor{
-		ActorIri:         iriUrl,
+		ActorIri:         iriURL,
 		Inbox:            inbox,
 		Name:             result.Name.String,
 		Username:         result.Username,
@@ -163,7 +163,10 @@ func removeFollow(actor *url.URL) error {
 		_ = tx.Rollback()
 	}()
 
-	_datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), actor.String())
+	if err := _datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), actor.String()); err != nil {
+		return err
+	}
+
 	return tx.Commit()
 }
 
@@ -384,6 +387,8 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 	return nil
 }
 
+// GetInboundActivities will return a collection of saved, federated activities
+// limited and offset by the values provided to support pagination.
 func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{

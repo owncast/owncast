@@ -90,8 +90,7 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
 		if iter.IsIRI() {
 			iri := iter.GetIRI()
-			c := context.TODO()
-			if e := ResolveIRI(c, iri.String(), personCallback, serviceCallback); e != nil {
+			if e := ResolveIRI(context.Background(), iri.String(), personCallback, serviceCallback); e != nil {
 				err = e
 			}
 		} else if iter.IsActivityStreamsPerson() {
@@ -118,7 +117,7 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 		return nil
 	}
 
-	if e := ResolveIRI(context.TODO(), personOrServiceIRI, personCallback, serviceCallback); e != nil {
+	if e := ResolveIRI(context.Background(), personOrServiceIRI, personCallback, serviceCallback); e != nil {
 		err = e
 	}
 

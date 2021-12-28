@@ -2,7 +2,6 @@ package inbox
 
 import (
 	"fmt"
-	"net/url"
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/resolvers"
@@ -11,7 +10,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 )
 
-func handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, activityIRI *url.URL, action string) error {
+func handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, action string) error {
 	// Do nothing if displaying engagement actions has been turned off.
 	if !data.GetFederationShowEngagement() {
 		return nil

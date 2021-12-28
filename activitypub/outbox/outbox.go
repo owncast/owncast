@@ -34,7 +34,7 @@ func SendLive() error {
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
 	tagStrings := []string{}
-	reg, _ := regexp.Compile("[^a-zA-Z0-9]+")
+	reg := regexp.MustCompile("[^a-zA-Z0-9]+")
 
 	tagProp := streams.NewActivityStreamsTagProperty()
 	for _, tagString := range data.GetServerMetadataTags() {
@@ -146,6 +146,7 @@ func SendPublicMessage(textContent string) error {
 	return nil
 }
 
+// nolint: unparam
 func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	noteID := shortid.MustGenerate()

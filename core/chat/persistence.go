@@ -41,6 +41,7 @@ func saveFederatedAction(event events.FediverseEngagementEvent) {
 	saveEvent(event.ID, nil, event.Body, event.Type, nil, event.Timestamp, event.Image, &event.Link, &event.UserAccountName, nil)
 }
 
+// nolint: unparam
 func saveEvent(id string, userID *string, body string, eventType string, hidden *time.Time, timestamp time.Time, image *string, link *string, title *string, subtitle *string) {
 	defer func() {
 		_historyCache = nil
@@ -334,38 +335,4 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 	}
 
 	return nil
-}
-
-func getMessageByID(messageID string) (*events.UserMessageEvent, error) {
-	query := "SELECT * FROM messages WHERE id = ?"
-	row := _datastore.DB.QueryRow(query, messageID)
-
-	var id string
-	var userID string
-	var body string
-	var eventType models.EventType
-	var hiddenAt *time.Time
-	var timestamp time.Time
-
-	if err := row.Scan(&id, &userID, &body, &eventType, &hiddenAt, &timestamp); err != nil {
-		log.Errorln(err)
-		return nil, err
-	}
-
-	user := user.GetUserByID(userID)
-
-	return &events.UserMessageEvent{
-		events.Event{
-			Type:      eventType,
-			ID:        id,
-			Timestamp: timestamp,
-		},
-		events.UserEvent{
-			User:     user,
-			HiddenAt: hiddenAt,
-		},
-		events.MessageEvent{
-			Body: body,
-		},
-	}, nil
 }
