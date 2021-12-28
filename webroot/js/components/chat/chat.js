@@ -15,6 +15,8 @@ import {
   MESSAGE_JUMPTOBOTTOM_BUFFER,
 } from '../../utils/constants.js';
 
+const MAX_RENDER_BACKLOG = 300;
+
 // Add message types that should be displayed in chat to this array.
 const renderableChatStyleMessages = [
   SOCKET_MESSAGE_TYPES.NAME_CHANGE,
@@ -30,7 +32,9 @@ export default class Chat extends Component {
 
     this.state = {
       chatUserNames: [],
-      messages: [],
+      // Ordered array of messages sorted by timestamp.
+      sortedMessages: [],
+
       newMessagesReceived: false,
       webSocketConnected: true,
       isModerator: false,
@@ -42,7 +46,13 @@ export default class Chat extends Component {
     this.receivedFirstMessages = false;
     this.receivedMessageUpdate = false;
     this.hasFetchedHistory = false;
+
+    // Force render is a state to force the messages to re-render when visibility
+    // changes for messages. This overrides componentShouldUpdate logic.
     this.forceRender = false;
+
+    // Unordered dictionary of messages keyed by ID.
+    this.messages = {};
 
     this.windowBlurred = false;
     this.numMessagesSinceBlur = 0;
@@ -81,8 +91,12 @@ export default class Chat extends Component {
     const { username: nextUserName, chatInputEnabled: nextChatEnabled } =
       nextProps;
 
-    const { webSocketConnected, messages, chatUserNames, newMessagesReceived } =
-      this.state;
+    const {
+      webSocketConnected,
+      chatUserNames,
+      newMessagesReceived,
+      sortedMessages,
+    } = this.state;
 
     if (this.forceRender) {
       return true;
@@ -90,34 +104,34 @@ export default class Chat extends Component {
 
     const {
       webSocketConnected: nextSocket,
-      messages: nextMessages,
       chatUserNames: nextUserNames,
       newMessagesReceived: nextMessagesReceived,
     } = nextState;
+
+    // If there are an updated number of sorted message then a render pass
+    // needs to take place to render these new messages.
+    if (
+      Object.keys(sortedMessages).length !==
+      Object.keys(nextState.sortedMessages).length
+    ) {
+      return true;
+    }
+
+    if (newMessagesReceived) {
+      return true;
+    }
 
     return (
       username !== nextUserName ||
       chatInputEnabled !== nextChatEnabled ||
       webSocketConnected !== nextSocket ||
-      messages.length !== nextMessages.length ||
       chatUserNames.length !== nextUserNames.length ||
       newMessagesReceived !== nextMessagesReceived
     );
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { username: prevName } = prevProps;
-    const { username, accessToken } = this.props;
-
-    const { messages: prevMessages } = prevState;
-    const { messages } = this.state;
-
-    // scroll to bottom of messages list when new ones come in
-    if (messages.length !== prevMessages.length) {
-      this.setState({
-        newMessagesReceived: true,
-      });
-    }
+    const { accessToken } = this.props;
 
     // Fetch chat history
     if (!this.hasFetchedHistory && accessToken) {
@@ -154,34 +168,31 @@ export default class Chat extends Component {
   }
 
   // fetch chat history
-  getChatHistory(accessToken) {
+  async getChatHistory(accessToken) {
     const { username } = this.props;
-    fetch(URL_CHAT_HISTORY + `?accessToken=${accessToken}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok ${response.ok}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // extra user names
-        const allChatUserNames = extraUserNamesFromMessageHistory(data);
-        const chatUserNames = allChatUserNames.filter(
-          (name) => name != username
-        );
-        this.setState((previousState, currentProps) => {
-          return {
-            ...previousState,
-            messages: data.concat(previousState.messages),
-            chatUserNames,
-          };
-        });
+    try {
+      const response = await fetch(
+        URL_CHAT_HISTORY + `?accessToken=${accessToken}`
+      );
+      const data = await response.json();
 
-        this.scrollToBottom();
-      })
-      .catch((error) => {
-        this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
+      // Backlog of usernames from history
+      const allChatUserNames = extraUserNamesFromMessageHistory(data);
+      const chatUserNames = allChatUserNames.filter((name) => name != username);
+
+      this.addNewRenderableMessages(data);
+
+      this.setState((previousState) => {
+        return {
+          ...previousState,
+          chatUserNames,
+        };
       });
+    } catch (error) {
+      this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
+    }
+
+    this.scrollToBottom();
   }
 
   receivedWebsocketMessage(message) {
@@ -193,96 +204,38 @@ export default class Chat extends Component {
     console.error('chat error', error);
   }
 
-  // handle any incoming message
-  handleMessage(message) {
-    const {
-      id: messageId,
-      type: messageType,
-      timestamp: messageTimestamp,
-    } = message;
-    const { messages: curMessages } = this.state;
-    const { username, readonly } = this.props;
+  // Give a list of message IDs and the visibility state they should change to.
+  updateMessagesVisibility(idsToUpdate, visible) {
+    let messageList = { ...this.messages };
 
-    const existingIndex = curMessages.findIndex(
-      (item) => item.id === messageId
-    );
-
-    // Allow non-user chat messages to be visible by default.
-    const messageVisible =
-      message.visible || messageType !== SOCKET_MESSAGE_TYPES.CHAT;
-
-    // check moderator status
-    if (messageType === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
-      const modStatusUpdate = checkIsModerator(message);
-      if (modStatusUpdate !== this.state.isModerator) {
-        this.setState((previousState, currentProps) => {
-          return { ...previousState, isModerator: modStatusUpdate };
-        });
+    // Iterate through each ID and mark the associated ID in our messages
+    // dictionary with the new visibility.
+    for (const id of idsToUpdate) {
+      const message = messageList[id];
+      if (message) {
+        message.visible = visible;
+        messageList[id] = message;
       }
     }
 
-    const updatedMessageList = [...curMessages];
+    const updatedMessagesList = {
+      ...this.messages,
+      ...messageList,
+    };
 
-    // Change the visibility of messages by ID.
-    if (messageType === 'VISIBILITY-UPDATE') {
-      const idsToUpdate = message.ids;
-      const visible = message.visible;
-      updatedMessageList.forEach((item) => {
-        if (idsToUpdate.includes(item.id)) {
-          item.visible = visible;
-        }
-      });
-      this.forceRender = true;
-    } else if (
-      renderableChatStyleMessages.includes(messageType) &&
-      existingIndex === -1 &&
-      messageVisible
-    ) {
-      // insert message at timestamp
-      const convertedMessage = {
-        ...message,
-      };
-      const insertAtIndex = curMessages.findIndex((item, index) => {
-        const time = item.timestamp || messageTimestamp;
-        const nextMessage =
-          index < curMessages.length - 1 && curMessages[index + 1];
-        const nextTime = nextMessage.timestamp || messageTimestamp;
-        const messageTimestampDate = new Date(messageTimestamp);
-        return (
-          messageTimestampDate > new Date(time) &&
-          messageTimestampDate <= new Date(nextTime)
-        );
-      });
-      updatedMessageList.splice(insertAtIndex + 1, 0, convertedMessage);
-      if (updatedMessageList.length > 300) {
-        updatedMessageList = updatedMessageList.slice(
-          Math.max(updatedMessageList.length - 300, 0)
-        );
-      }
-      this.setState((previousState, currentProps) => {
-        return { ...previousState, messages: updatedMessageList };
-      });
-    } else if (
-      renderableChatStyleMessages.includes(messageType) &&
-      existingIndex === -1
-    ) {
-      // else if message doesn't exist, add it and extra username
-      const newState = {
-        messages: [...curMessages, message],
-      };
-      const updatedAllChatUserNames = this.updateAuthorList(message);
-      if (updatedAllChatUserNames.length) {
-        const updatedChatUserNames = updatedAllChatUserNames.filter(
-          (name) => name != username
-        );
-        newState.chatUserNames = [...updatedChatUserNames];
-      }
+    this.messages = updatedMessagesList;
+    this.forceRender = true;
+  }
 
-      this.setState((previousState, currentProps) => {
-        return { ...previousState, newState };
+  handleChangeModeratorStatus(isModerator) {
+    if (isModerator !== this.state.isModerator) {
+      this.setState((previousState) => {
+        return { ...previousState, isModerator: isModerator };
       });
     }
+  }
 
+  handleWindowFocusNotificationCount(readonly, messageType) {
     // if window is blurred and we get a new message, add 1 to title
     if (
       !readonly &&
@@ -293,15 +246,110 @@ export default class Chat extends Component {
     }
   }
 
+  addNewRenderableMessages(messagesArray) {
+    // Convert the array of chat history messages into an object
+    // to be merged with the existing chat messages.
+    const newMessages = messagesArray.reduce(
+      (o, message) => ({ ...o, [message.id]: message }),
+      {}
+    );
+
+    // Keep our unsorted collection of messages keyed by ID.
+    const updatedMessagesList = {
+      ...newMessages,
+      ...this.messages,
+    };
+    this.messages = updatedMessagesList;
+
+    // Convert the unordered dictionary of messages to an ordered array.
+    // NOTE: This sorts the entire collection of messages on every new message
+    // because the order a message comes in cannot be trusted that it's the order
+    // it was sent, you need to sort by timestamp. I don't know if there
+    // is a  performance problem waiting to occur here for larger chat feeds.
+    var sortedMessages = Object.values(updatedMessagesList)
+      // Filter out messages set to not be visible
+      .filter((message) => message.visible !== false)
+      .sort((a, b) => {
+        return Date.parse(a.timestamp) - Date.parse(b.timestamp);
+      });
+
+    // Cap this list to 300 items to improve browser performance.
+    if (sortedMessages.length >= MAX_RENDER_BACKLOG) {
+      sortedMessages = sortedMessages.slice(
+        sortedMessages.length - MAX_RENDER_BACKLOG
+      );
+    }
+
+    this.setState((previousState) => {
+      return {
+        ...previousState,
+        newMessagesReceived: true,
+        sortedMessages,
+      };
+    });
+  }
+
+  // handle any incoming message
+  handleMessage(message) {
+    const { type: messageType } = message;
+    const { readonly, username } = this.props;
+
+    // Allow non-user chat messages to be visible by default.
+    const messageVisible =
+      message.visible || messageType !== SOCKET_MESSAGE_TYPES.CHAT;
+
+    // Show moderator status
+    if (messageType === SOCKET_MESSAGE_TYPES.CONNECTED_USER_INFO) {
+      const modStatusUpdate = checkIsModerator(message);
+      this.handleChangeModeratorStatus(modStatusUpdate);
+    }
+
+    // Change the visibility of messages by ID.
+    if (messageType === SOCKET_MESSAGE_TYPES.VISIBILITY_UPDATE) {
+      const idsToUpdate = message.ids;
+      const visible = message.visible;
+      this.updateMessagesVisibility(idsToUpdate, visible);
+    } else if (
+      renderableChatStyleMessages.includes(messageType) &&
+      messageVisible
+    ) {
+      // Add new message to the chat feed.
+      this.addNewRenderableMessages([message]);
+
+      // Update the usernames list, filtering out our own name.
+      const updatedAllChatUserNames = this.updateAuthorList(message);
+      if (updatedAllChatUserNames.length) {
+        const updatedChatUserNames = updatedAllChatUserNames.filter(
+          (name) => name != username
+        );
+        this.setState((previousState) => {
+          return {
+            ...previousState,
+            chatUserNames: [...updatedChatUserNames],
+          };
+        });
+      }
+    }
+
+    // Update the window title if needed.
+    this.handleWindowFocusNotificationCount(readonly, messageType);
+  }
+
   websocketConnected() {
-    this.setState({
-      webSocketConnected: true,
+    this.setState((previousState) => {
+      return {
+        ...previousState,
+        webSocketConnected: true,
+      };
     });
   }
 
   websocketDisconnected() {
-    this.setState({
-      webSocketConnected: false,
+    this.setState((previousState) => {
+      return {
+        ...previousState,
+        webSocketConnected: false,
+      };
     });
   }
 
@@ -309,7 +357,6 @@ export default class Chat extends Component {
     if (!content) {
       return;
     }
-    const { username } = this.props;
     const message = {
       body: content,
       type: SOCKET_MESSAGE_TYPES.CHAT,
@@ -333,6 +380,7 @@ export default class Chat extends Component {
       nameList.splice(oldNameIndex, 1, user.displayName);
       return nameList;
     }
+
     return [];
   }
 
@@ -379,8 +427,12 @@ export default class Chat extends Component {
           } else if (this.checkShouldScroll()) {
             this.scrollToBottom();
           }
-          this.setState({
-            newMessagesReceived: false,
+
+          this.setState((previousState) => {
+            return {
+              ...previousState,
+              newMessagesReceived: false,
+            };
           });
         }
       }
@@ -404,20 +456,19 @@ export default class Chat extends Component {
   render(props, state) {
     const { username, readonly, chatInputEnabled, inputMaxBytes, accessToken } =
       props;
-    const { messages, chatUserNames, webSocketConnected, isModerator } = state;
+    const { sortedMessages, chatUserNames, webSocketConnected, isModerator } =
+      state;
 
-    const messageList = messages
-      .filter((message) => message.visible !== false)
-      .map(
-        (message) =>
-          html`<${Message}
-            message=${message}
-            username=${username}
-            key=${message.id}
-            isModerator=${isModerator}
-            accessToken=${accessToken}
-          />`
-      );
+    const messageList = sortedMessages.map(
+      (message) =>
+        html`<${Message}
+          message=${message}
+          username=${username}
+          key=${message.id}
+          isModerator=${isModerator}
+          accessToken=${accessToken}
+        />`
+    );
 
     if (readonly) {
       return html`
