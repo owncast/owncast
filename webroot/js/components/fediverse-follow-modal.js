@@ -66,8 +66,19 @@ export default class FediverseFollowModal extends Component {
             class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
             role="alert"
           >
-            <div class="font-bold">Error</div>
-            <span class="block sm:inline">${errorMessage}</span>
+            <div class="font-bold mb-2">
+              There was an error following this Owncast server.
+            </div>
+            <span class="block"
+              >Unable to fetch the details to send you to your Fediverse server.
+              Your server may not support remote following, so you may want to
+              manually follow ${' '}
+              <span class="font-semibold">${account}</span> using your service's
+              own interface.
+            </span>
+            <div class="block mt-2">
+              Server error: <span class="">${errorMessage}</span>
+            </div>
           </div>
         `
       : null;
@@ -99,6 +110,8 @@ export default class FediverseFollowModal extends Component {
           </p>
         </div>
 
+        ${error}
+
         <div class="mb34">
           <label
             class="block text-gray-700 text-sm font-semibold mt-6"
@@ -128,7 +141,6 @@ export default class FediverseFollowModal extends Component {
         >
           Follow
         </button>
-        ${error}
         <div
           id="follow-loading-spinner-container"
           style="display: ${loaderStyle}"
