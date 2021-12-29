@@ -19,6 +19,12 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If private federation mode is enabled do not allow access to objects.
+	if data.GetFederationIsPrivate() {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	iri := strings.Join([]string{strings.TrimSuffix(data.GetServerURL(), "/"), r.URL.Path}, "")
 	object, _, err := persistence.GetObjectByIRI(iri)
 	if err != nil {
