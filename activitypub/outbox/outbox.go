@@ -86,6 +86,18 @@ func SendLive() error {
 		}
 	}
 
+	if data.GetNSFW() {
+		// Content warning is done via the summary property.
+		summary := streams.NewActivityStreamsSummaryProperty()
+		summary.AppendXMLSchemaString("Potentially NSFW")
+		note.SetActivityStreamsSummary(summary)
+
+		// Mark content as sensitive.
+		sensitive := streams.NewActivityStreamsSensitiveProperty()
+		sensitive.AppendXMLSchemaBoolean(true)
+		note.SetActivityStreamsSensitive(sensitive)
+	}
+
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		log.Errorln("unable to serialize go live message activity", err)

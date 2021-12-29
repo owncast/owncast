@@ -51,6 +51,8 @@ github.com/oschwald/maxminddb-golang v1.8.0 h1:Uh/DSnGoxsyp/KYbY1AuP0tYEwfs0sCph
 github.com/oschwald/maxminddb-golang v1.8.0/go.mod h1:RXZtst0N6+FY/3qCNmZMBApR19cdQj43/NM9VkrNAis=
 github.com/owncast/activity v1.0.1-0.20210908225327-e46ee45ec09c h1:lk78BK8sLYn8nwy4ZZdQqcRdkagxQI//wF/DXuxsg1Y=
 github.com/owncast/activity v1.0.1-0.20210908225327-e46ee45ec09c/go.mod h1:v4QoPaAzjWZ8zN2VFVGL5ep9C02mst0hQYHUpQwso4Q=
+github.com/owncast/activity v1.0.1-0.20211229051252-7821289d4026 h1:E1nxiX44BcMQTSSs8MHLm2rXnqXNedYZkFI31gXMsJc=
+github.com/owncast/activity v1.0.1-0.20211229051252-7821289d4026/go.mod h1:v4QoPaAzjWZ8zN2VFVGL5ep9C02mst0hQYHUpQwso4Q=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
