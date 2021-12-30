@@ -56,7 +56,7 @@ test('verify messages from user are hidden', async (done) => {
   const message = response.body.filter((obj) => {
     return obj.user.id === userId;
   });
-  expect(message[0].hiddenAt).toBeTruthy();
+  expect(message[0].user.disabledAt).toBeTruthy();
   done();
 });
 
