@@ -79,15 +79,35 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 		scopes = *row.userScopes
 	}
 
+	previousUsernames := []string{}
+	if row.previousUsernames != nil {
+		previousUsernames = strings.Split(*row.previousUsernames, ",")
+	}
+
+	displayName := ""
+	if row.userDisplayName != nil {
+		displayName = *row.userDisplayName
+	}
+
+	displayColor := 0
+	if row.userDisplayColor != nil {
+		displayColor = *row.userDisplayColor
+	}
+
+	createdAt := time.Time{}
+	if row.userCreatedAt != nil {
+		createdAt = *row.userCreatedAt
+	}
+
 	u := user.User{
 		ID:            *row.userID,
 		AccessToken:   "",
-		DisplayName:   *row.userDisplayName,
-		DisplayColor:  *row.userDisplayColor,
-		CreatedAt:     *row.userCreatedAt,
+		DisplayName:   displayName,
+		DisplayColor:  displayColor,
+		CreatedAt:     createdAt,
 		DisabledAt:    row.userDisabledAt,
 		NameChangedAt: row.userNameChangedAt,
-		PreviousNames: strings.Split(*row.previousUsernames, ","),
+		PreviousNames: previousUsernames,
 		Scopes:        strings.Split(scopes, ","),
 	}
 
