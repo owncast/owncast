@@ -278,7 +278,7 @@ func GetChatModerationHistory() []interface{} {
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []interface{} {
 	// Get all visible messages
-	query := fmt.Sprintf("SELECT messages.id,messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.scopes FROM messages LEFT JOIN users ON messages.user_id = users.id AND hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+	query := fmt.Sprintf("SELECT messages.id,messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.scopes FROM messages LEFT JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
 	m := getChat(query)
 
 	// Invert order of messages
