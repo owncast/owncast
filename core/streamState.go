@@ -82,7 +82,9 @@ func SetStreamAsDisconnected() {
 	_ = chat.SendSystemAction("The stream is ending.", true)
 
 	now := utils.NullTime{Time: time.Now(), Valid: true}
-	_onlineTimerCancelFunc()
+	if _onlineTimerCancelFunc != nil {
+		_onlineTimerCancelFunc()
+	}
 
 	_stats.StreamConnected = false
 	_stats.LastDisconnectTime = &now
