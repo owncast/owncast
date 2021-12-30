@@ -46,12 +46,21 @@ function SingleFederatedUser(props) {
   }
 
   return html`
-    <a href=${link} target="_blank">
+    <a
+      href=${link}
+      target="_blank"
+      class="hover:no-underline"
+      title="Visit profile"
+    >
       <div
-        class="federated-action m-2 bg-white flex items-center p-1 px-2 rounded-xl shadow border"
+        class="federated-action m-2 bg-white flex items-center px-2 rounded-xl shadow border"
       >
-        <div class="relative w-18" style="top: -6px">
-          <img src="${image || '/img/logo.svg'}" class="w-16 rounded-full" />
+        <div class="relative" style="top: -6px">
+          <img
+            src="${image || '/img/logo.svg'}"
+            style="max-width: unset"
+            class="rounded-full border border-slate-500	w-16"
+          />
           <span
             style=${{
               backgroundImage: `url(${icon})`,
@@ -59,10 +68,12 @@ function SingleFederatedUser(props) {
             class="absolute h-6 w-6 rounded-full border-2 border-white action-icon"
           ></span>
         </div>
-        <div class="p-4">
-          <span class=" text-gray-500 truncate"> ${title} </span>
+        <div class="px-4 py-2">
+          <span class=" text-gray-500 text-sm hover:no-underline truncate">
+            ${title}
+          </span>
           <p
-            class=" text-gray-700 mt-1 w-full"
+            class=" text-gray-700 mt-1 w-full text-base "
             dangerouslySetInnerHTML=${{ __html: body }}
           ></p>
         </div>
