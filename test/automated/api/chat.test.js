@@ -38,3 +38,24 @@ test('can fetch chat messages', async (done) => {
 
   done();
 });
+
+test('can derive display name from user header', async (done) => {
+  const res = await request
+    .post('/api/chat/register')
+    .set('X-Forwarded-User', 'test-user')
+    .expect(200);
+
+  expect(res.body.displayName).toBe('test-user');
+  done();
+});
+
+test('can overwrite user header derived display name with body', async (done) => {
+  const res = await request
+    .post('/api/chat/register')
+    .send({displayName: 'TestUserChat'})
+    .set('X-Forwarded-User', 'test-user')
+    .expect(200);
+
+  expect(res.body.displayName).toBe('TestUserChat');
+  done();
+});
