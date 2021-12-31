@@ -58,6 +58,10 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		// this is fine. register a new user anyway.
 	}
 
+	if request.DisplayName == "" {
+		request.DisplayName = r.Header.Get("X-Forwarded-User")
+	}
+
 	newUser, err := user.CreateAnonymousUser(request.DisplayName)
 	if err != nil {
 		WriteSimpleResponse(w, false, err.Error())
