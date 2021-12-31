@@ -9,7 +9,7 @@ require (
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.10
-	github.com/microcosm-cc/bluemonday v1.0.16
+	github.com/microcosm-cc/bluemonday v1.0.17
 	github.com/mssola/user_agent v0.5.3
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
 	github.com/oschwald/geoip2-golang v1.5.0
