@@ -48,7 +48,7 @@ func SetupUsers() {
 }
 
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
-func CreateAnonymousUser(username string) (*User, error) {
+func CreateAnonymousUser(displayName string) (*User, error) {
 	id := shortid.MustGenerate()
 	accessToken, err := utils.GenerateAccessToken()
 	if err != nil {
@@ -56,9 +56,15 @@ func CreateAnonymousUser(username string) (*User, error) {
 		return nil, err
 	}
 
-	displayName := username
 	if displayName == "" {
-		displayName = utils.GeneratePhrase()
+		suggestedUsernamesList := data.GetSuggestedUsernamesList()
+
+		if len(suggestedUsernamesList) != 0 {
+			index := utils.RandomIndex(len(suggestedUsernamesList))
+			displayName = suggestedUsernamesList[index]
+		} else {
+			displayName = utils.GeneratePhrase()
+		}
 	}
 
 	displayColor := utils.GenerateRandomDisplayColor()
@@ -287,8 +293,8 @@ func GetModeratorUsers() []*User {
 				 substr(rest, instr(rest, ',')+1)
 			FROM split
 		   WHERE rest <> '')
-		SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, scope 
-		  FROM split 
+		SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, scope
+		  FROM split
 		 WHERE scope <> ''
 		 ORDER BY created_at
 	  ) AS token WHERE token.scope = ?`
