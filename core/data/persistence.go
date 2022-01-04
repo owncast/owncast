@@ -9,6 +9,7 @@ import (
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/db"
 	log "github.com/sirupsen/logrus"
 )
@@ -131,6 +132,11 @@ func (ds *Datastore) Setup() {
 
 	if !HasPopulatedDefaults() {
 		PopulateDefaults()
+	}
+
+	if !hasPopulatedFederationDefaults() {
+		SetFederationGoLiveMessage(config.GetDefaults().FederationGoLiveMessage)
+		_ = _datastore.SetBool("HAS_POPULATED_FEDERATION_DEFAULTS", true)
 	}
 
 	// Set the server initialization date if needed.
