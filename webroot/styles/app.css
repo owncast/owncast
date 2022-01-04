@@ -479,8 +479,8 @@ header {
 }
 
 .follower {
-  min-width: 250px;
-  max-width: 350px;
+  width: 20vw;
+  max-width: 300px
 }
 
 #follow-loading-spinner-container {

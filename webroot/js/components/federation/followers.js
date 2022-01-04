@@ -39,15 +39,11 @@ export default class FollowerList extends Component {
     </div>`;
 
     return html`
-      <div id="followers" class="p-4 w-full">
-        <div
-          class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
-          ${followers.length === 0 && noFollowersInfo}
-          ${followers.map((follower) => {
-            return html` <${SingleFollower} user=${follower} /> `;
-          })}
-        </div>
+      <div class="p-4 flex flex-wrap">
+        ${followers.length === 0 && noFollowersInfo}
+        ${followers.map((follower) => {
+          return html` <${SingleFollower} user=${follower} /> `;
+        })}
       </div>
     `;
   }
@@ -66,7 +62,7 @@ function SingleFollower(props) {
   return html`
     <a
       href=${link}
-      class="follower m-3 block bg-white flex items-center p-2 rounded-xl shadow border"
+      class="block bg-white flex p-2 rounded-xl shadow border hover:no-underline m-5"
       target="_blank"
     >
       <img
