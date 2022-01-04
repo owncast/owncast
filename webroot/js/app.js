@@ -177,7 +177,6 @@ export default class App extends Component {
     this.player.init();
 
     // check routing
-    console.log('==== did mount');
     this.getRoute();
   }
 
