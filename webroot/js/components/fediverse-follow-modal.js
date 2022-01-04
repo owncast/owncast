@@ -69,10 +69,10 @@ export default class FediverseFollowModal extends Component {
             <div class="font-bold mb-2">
               There was an error following this Owncast server.
             </div>
-            <span class="block"
-              >Unable to fetch the details to send you to your Fediverse server.
-              Your server may not support remote following, so you may want to
-              manually follow ${' '}
+            <span class="block">
+              Please verify you entered the correct user account. It's also
+              possible your server may not support remote following, so you may
+              want to manually follow ${' '}
               <span class="font-semibold">${account}</span> using your service's
               own interface.
             </span>
@@ -88,15 +88,8 @@ export default class FediverseFollowModal extends Component {
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-4">
         <p class="text-gray-700 text-md">
-          By following on the ${' '}
-          <a
-            class=" text-blue-500"
-            href="https://en.wikipedia.org/wiki/Fediverse"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Fediverse</a
-          >
-          ${' '} you'll get notified when the stream goes live.
+          By following this stream you'll get posts and notifications such as
+          when it goes live.
         </p>
 
         <div
@@ -125,13 +118,20 @@ export default class FediverseFollowModal extends Component {
             class="border bg-white rounded w-full py-2 px-3 mb-2 mt-2 text-indigo-700 leading-tight focus:outline-none focus:shadow-outline"
             id="username"
             type="text"
-            placeholder="account@instance.tld"
+            placeholder="Fediverse account@instance.tld"
           />
         </div>
 
         <p class="text-gray-600 text-xs italic">
           You'll be redirected to your Fediverse server and asked to confirm
-          this action.
+          this action. ${'  '}
+          <a
+            class=" text-blue-500"
+            href="https://owncast.online/docs/social"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Learn more about Owncast follow support.</a
+          >
         </p>
 
         <button
