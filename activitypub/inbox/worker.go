@@ -24,7 +24,7 @@ func handle(request apmodels.InboxRequest) {
 		log.Debugln("Error in attempting to verify request", err)
 		return
 	} else if !verified {
-		log.Errorln("Request failed verification")
+		log.Errorln("Request failed verification", err)
 		return
 	}
 
@@ -75,14 +75,12 @@ func Verify(request *http.Request) (bool, error) {
 
 	// Test to see if the actor is in the list of blocked federated domains.
 	if isBlockedDomain(actor.ActorIri.Hostname()) {
-		return false, errors.New("actor is blocked")
+		return false, errors.New("domain is blocked")
 	}
 
 	// If actor is specifically blocked, then fail validation.
-	if blocked, err := isBlockedActor(actor.ActorIri); err != nil {
+	if blocked, err := isBlockedActor(actor.ActorIri); err != nil || blocked {
 		return false, err
-	} else if blocked {
-		return true, nil
 	}
 
 	key := actor.W3IDSecurityV1PublicKey.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
@@ -123,9 +121,7 @@ func isBlockedDomain(domain string) bool {
 
 func isBlockedActor(actorIRI *url.URL) (bool, error) {
 	blockedactor, err := persistence.GetFollower(actorIRI.String())
-	if err != nil {
-		return false, errors.Wrap(err, "error validating actor against blocked actors")
-	}
+
 	if blockedactor != nil && blockedactor.DisabledAt != nil {
 		return true, errors.Wrap(err, "remote actor is blocked")
 	}
