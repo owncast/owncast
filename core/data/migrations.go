@@ -4,17 +4,28 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
 
-func migrateToSchema3(_ *sql.DB) {
-	// Set default values for Federation settings when migrating to 0.0.11
-	if err := SetFederationGoLiveMessage(config.GetDefaults().FederationGoLiveMessage); err != nil {
-		log.Errorln("error setting default to live message", err)
+func migrateToSchema3(db *sql.DB) {
+	// Since it's just a backlog of chat messages let's wipe the old messages
+	// and recreate the table.
+
+	// Drop the old messages table
+	stmt, err := db.Prepare("DROP TABLE messages")
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
+
+	// Recreate it
+	CreateMessagesTable(db)
 }
 
 func migrateToSchema2(db *sql.DB) {
