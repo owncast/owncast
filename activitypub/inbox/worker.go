@@ -38,8 +38,6 @@ func handle(request apmodels.InboxRequest) {
 // Verify will Verify the http signature of an inbound request as well as
 // check it against the list of blocked domains.
 func Verify(request *http.Request) (bool, error) {
-	blockedDomains := data.GetBlockedFederatedDomains()
-
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to create key verifier for request")
@@ -76,19 +74,15 @@ func Verify(request *http.Request) (bool, error) {
 	}
 
 	// Test to see if the actor is in the list of blocked federated domains.
-	for _, blockedDomain := range blockedDomains {
-		if strings.Contains(actor.ActorIri.Host, blockedDomain) {
-			return false, errors.New("actor domain is blocked: " + blockedDomain)
-		}
+	if isBlockedDomain(actor.ActorIri.Hostname()) {
+		return false, errors.New("actor is blocked")
 	}
 
 	// If actor is specifically blocked, then fail validation.
-	blockedactor, err := persistence.GetFollower(actor.ActorIri.String())
-	if err != nil {
-		return false, errors.Wrap(err, "error validating actor against blocked actors")
-	}
-	if blockedactor != nil && blockedactor.DisabledAt != nil {
-		return false, errors.Wrap(err, "remote actor is blocked")
+	if blocked, err := isBlockedActor(actor.ActorIri); err != nil {
+		return false, err
+	} else if blocked {
+		return true, nil
 	}
 
 	key := actor.W3IDSecurityV1PublicKey.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
@@ -113,4 +107,28 @@ func Verify(request *http.Request) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func isBlockedDomain(domain string) bool {
+	blockedDomains := data.GetBlockedFederatedDomains()
+
+	for _, blockedDomain := range blockedDomains {
+		if strings.Contains(domain, blockedDomain) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func isBlockedActor(actorIRI *url.URL) (bool, error) {
+	blockedactor, err := persistence.GetFollower(actorIRI.String())
+	if err != nil {
+		return false, errors.Wrap(err, "error validating actor against blocked actors")
+	}
+	if blockedactor != nil && blockedactor.DisabledAt != nil {
+		return true, errors.Wrap(err, "remote actor is blocked")
+	}
+
+	return false, nil
 }
