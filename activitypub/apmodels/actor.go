@@ -3,6 +3,7 @@ package apmodels
 import (
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -30,6 +31,8 @@ type ActivityPubActor struct {
 	Image *url.URL
 	// W3IDSecurityV1PublicKey is the public key of the actor.
 	W3IDSecurityV1PublicKey vocab.W3IDSecurityV1PublicKeyProperty
+	// DisabledAt is the time, if any, this follower was blocked/removed.
+	DisabledAt *time.Time
 }
 
 // DeleteRequest represents a request for delete.

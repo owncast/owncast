@@ -24,7 +24,7 @@ UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
 UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, name, username, image, request, created_at, approved_at FROM ap_followers WHERE iri = $1;
+SELECT iri, inbox, name, username, image, request, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;

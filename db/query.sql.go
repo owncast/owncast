@@ -201,23 +201,12 @@ func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetF
 }
 
 const getFollowerByIRI = `-- name: GetFollowerByIRI :one
-SELECT iri, inbox, name, username, image, request, created_at, approved_at FROM ap_followers WHERE iri = $1
+SELECT iri, inbox, name, username, image, request, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1
 `
 
-type GetFollowerByIRIRow struct {
-	Iri        string
-	Inbox      string
-	Name       sql.NullString
-	Username   string
-	Image      sql.NullString
-	Request    string
-	CreatedAt  sql.NullTime
-	ApprovedAt sql.NullTime
-}
-
-func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollowerByIRIRow, error) {
+func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (ApFollower, error) {
 	row := q.db.QueryRowContext(ctx, getFollowerByIRI, iri)
-	var i GetFollowerByIRIRow
+	var i ApFollower
 	err := row.Scan(
 		&i.Iri,
 		&i.Inbox,
@@ -227,6 +216,7 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollower
 		&i.Request,
 		&i.CreatedAt,
 		&i.ApprovedAt,
+		&i.DisabledAt,
 	)
 	return i, err
 }

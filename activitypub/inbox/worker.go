@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-fed/httpsig"
 	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/data"
 
@@ -53,13 +54,6 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.New("federated servers must use https: " + pubKeyID.String())
 	}
 
-	// Test to see if the key is in the blocked federated domains.
-	for _, blockedDomain := range blockedDomains {
-		if strings.Contains(pubKeyID.Host, blockedDomain) {
-			return false, errors.New("blocked domain in public key: " + blockedDomain)
-		}
-	}
-
 	signature := request.Header.Get("signature")
 	var algorithmString string
 	signatureComponents := strings.Split(signature, ",")
@@ -86,6 +80,15 @@ func Verify(request *http.Request) (bool, error) {
 		if strings.Contains(actor.ActorIri.Host, blockedDomain) {
 			return false, errors.New("actor domain is blocked: " + blockedDomain)
 		}
+	}
+
+	// If actor is specifically blocked, then fail validation.
+	blockedactor, err := persistence.GetFollower(actor.ActorIri.String())
+	if err != nil {
+		return false, errors.Wrap(err, "error validating actor against blocked actors")
+	}
+	if blockedactor != nil && blockedactor.DisabledAt != nil {
+		return false, errors.Wrap(err, "remote actor is blocked")
 	}
 
 	key := actor.W3IDSecurityV1PublicKey.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
