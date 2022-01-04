@@ -14,7 +14,6 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
@@ -87,6 +86,17 @@ func ApprovePreviousFollowRequest(iri string) error {
 	return _datastore.GetQueries().ApproveFederationFollower(context.Background(), db.ApproveFederationFollowerParams{
 		Iri: iri,
 		ApprovedAt: sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		},
+	})
+}
+
+// BlockOrRejectFollower will block an existing follower or reject a follow request.
+func BlockOrRejectFollower(iri string) error {
+	return _datastore.GetQueries().RejectFederationFollower(context.Background(), db.RejectFederationFollowerParams{
+		Iri: iri,
+		DisabledAt: sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,
 		},
@@ -216,33 +226,6 @@ func createFederationOutboxTable() {
 	}
 }
 
-func createFederationFollowersTable() {
-	log.Traceln("Creating federation followers table...")
-
-	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_followers (
-		"iri" TEXT NOT NULL,
-		"inbox" TEXT NOT NULL,
-		"name" TEXT,
-		"username" TEXT NOT NULL,
-		"image" TEXT,
-    "request" TEXT NOT NULL,
-		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		"approved_at" TIMESTAMP,
-		PRIMARY KEY (iri));
-		CREATE INDEX iri_index ON ap_followers (iri);
-    CREATE INDEX approved_at_index ON ap_followers (approved_at);`
-
-	stmt, err := _datastore.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln("error executing sql creating followers table", createTableSQL, err)
-	}
-}
-
 // GetOutboxPostCount will return the number of posts in the outbox.
 func GetOutboxPostCount() (int64, error) {
 	ctx := context.Background()
@@ -312,65 +295,6 @@ func GetObjectByIRI(iri string) (string, bool, error) {
 func GetLocalPostCount() (int64, error) {
 	ctx := context.Background()
 	return _datastore.GetQueries().GetLocalPostCount(ctx)
-}
-
-// GetFollowerCount will return the number of followers we're keeping track of.
-func GetFollowerCount() (int64, error) {
-	ctx := context.Background()
-	return _datastore.GetQueries().GetFollowerCount(ctx)
-}
-
-// GetFederationFollowers will return a slice of the followers we keep track of locally.
-func GetFederationFollowers(limit int, offset int) ([]models.Follower, error) {
-	ctx := context.Background()
-	followersResult, err := _datastore.GetQueries().GetFederationFollowersWithOffset(ctx, db.GetFederationFollowersWithOffsetParams{
-		Limit:  int32(limit),
-		Offset: int32(offset),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	followers := make([]models.Follower, 0)
-
-	for _, row := range followersResult {
-		singleFollower := models.Follower{
-			Name:      row.Name.String,
-			Username:  row.Username,
-			Image:     row.Image.String,
-			ActorIRI:  row.Iri,
-			Inbox:     row.Inbox,
-			Timestamp: utils.NullTime(row.CreatedAt),
-		}
-
-		followers = append(followers, singleFollower)
-	}
-
-	return followers, nil
-}
-
-// GetPendingFollowRequests will return pending follow requests.
-func GetPendingFollowRequests() ([]models.Follower, error) {
-	pendingFollowersResult, err := _datastore.GetQueries().GetFederationFollowerApprovalRequests(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	followers := make([]models.Follower, 0)
-
-	for _, row := range pendingFollowersResult {
-		singleFollower := models.Follower{
-			Name:      row.Name.String,
-			Username:  row.Username,
-			Image:     row.Image.String,
-			ActorIRI:  row.Iri,
-			Inbox:     row.Inbox,
-			Timestamp: utils.NullTime{Time: row.CreatedAt.Time, Valid: true},
-		}
-		followers = append(followers, singleFollower)
-	}
-
-	return followers, nil
 }
 
 // SaveInboundFediverseActivity will save an event to the ap_inbound_activities table.

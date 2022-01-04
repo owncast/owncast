@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS ap_followers (
     "request" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		"approved_at" TIMESTAMP,
+    "disabled_at" TIMESTAMP,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri_index ON ap_followers (iri);
     CREATE INDEX approved_at_index ON ap_followers (approved_at);

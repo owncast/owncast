@@ -3,7 +3,7 @@
 -- Federation related queries.
 
 -- name: GetFollowerCount :one
-SElECT count(*) FROM ap_followers;
+SElECT count(*) FROM ap_followers WHERE approved_at is not null;
 
 -- name: GetLocalPostCount :one
 SElECT count(*) FROM ap_outbox;
@@ -11,11 +11,17 @@ SElECT count(*) FROM ap_outbox;
 -- name: GetFederationFollowersWithOffset :many
 SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null LIMIT $1 OFFSET $2;
 
+-- name: GetRejectedAndBlockedFollowers :many
+SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
+
 -- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null;
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null;
 
 -- name: ApproveFederationFollower :exec
-UPDATE ap_followers SET approved_at = $1 WHERE iri = $2;
+UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
+
+-- name: RejectFederationFollower :exec
+UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2;
 
 -- name: GetFollowerByIRI :one
 SELECT iri, inbox, name, username, image, request, created_at, approved_at FROM ap_followers WHERE iri = $1;
