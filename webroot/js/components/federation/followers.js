@@ -55,7 +55,7 @@ export default class FollowerList extends Component {
 
 function SingleFollower(props) {
   const { user } = props;
-  const { name, username, image, link } = user;
+  const { name, username, link, image } = user;
 
   var displayName = name;
   var displayUsername = username;
@@ -69,7 +69,14 @@ function SingleFollower(props) {
       class="follower m-3 block bg-white flex items-center p-2 rounded-xl shadow border"
       target="_blank"
     >
-      <img src="${image || '/img/logo.svg'}" class="w-16 h-16 rounded-full" />
+      <img
+        src="${image || '/img/logo.svg'}"
+        class="w-16 h-16 rounded-full"
+        onError=${({ currentTarget }) => {
+          currentTarget.onerror = null;
+          currentTarget.src = '/img/logo.svg';
+        }}
+      />
       <div class="p-3 truncate flex-grow">
         <p class="font-semibold text-gray-700 truncate">${displayName}</p>
         <p class="text-sm text-gray-500 truncate">${displayUsername}</p>
