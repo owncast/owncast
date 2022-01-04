@@ -34,8 +34,17 @@ export default class FollowerList extends Component {
     }
 
     const noFollowersInfo = html`<div>
-      <p class="mb-5 text-2xl">No followers yet. Be the first.</p>
-      <p>Info about how to follow and what it means goes here.</p>
+      <p class="mb-5 text-2xl">Be the first to follow this live stream.</p>
+      <p class="text-md">
+        By following this stream you'll get updates when it goes live, receive
+        posts from the streamer, and be featured here as a follower.
+      </p>
+      <p class="text-md mt-5">
+        Learn more about ${' '}
+        <a class="underline" href="https://en.wikipedia.org/wiki/Fediverse"
+          >The Fediverse</a
+        >, where you can follow this server as well as so much more.
+      </p>
     </div>`;
 
     return html`
