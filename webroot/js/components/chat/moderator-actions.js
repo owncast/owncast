@@ -237,7 +237,7 @@ function ModeratorMoreInfoContainer({
 }) {
   const { user, timestamp, body } = message;
   const { displayName, createdAt, previousNames, displayColor } = user;
-  const isAuthorModerator = user.scopes && user.scopes.contains('MODERATOR');
+  const isAuthorModerator = user.scopes && user.scopes.includes('MODERATOR');
 
   const authorTextColor = { color: textColorForHue(displayColor) };
   const createDate = new Date(createdAt);
