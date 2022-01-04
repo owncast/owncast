@@ -4,10 +4,18 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
+
+func migrateToSchema3(_ *sql.DB) {
+	// Set default values for Federation settings when migrating to 0.0.11
+	if err := SetFederationGoLiveMessage(config.GetDefaults().FederationGoLiveMessage); err != nil {
+		log.Errorln("error setting default to live message", err)
+	}
+}
 
 func migrateToSchema2(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
@@ -119,7 +127,6 @@ func insertAPIToken(db *sql.DB, token string, name string, color int, scopes str
 		return err
 	}
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, scopes, type) values(?, ?, ?, ?, ?, ?)")
-
 	if err != nil {
 		return err
 	}
