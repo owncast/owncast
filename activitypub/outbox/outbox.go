@@ -31,8 +31,6 @@ func SendLive() error {
 		return nil
 	}
 
-	textContent = utils.RenderSimpleMarkdown(textContent)
-
 	tagStrings := []string{}
 	reg := regexp.MustCompile("[^a-zA-Z0-9]+")
 
@@ -59,7 +57,7 @@ func SendLive() error {
 	if title := data.GetStreamTitle(); title != "" {
 		streamTitle = fmt.Sprintf("<p>%s</p>", title)
 	}
-	textContent = fmt.Sprintf("<p>%s</p><a href=\"%s\">%s</a>%s<p>%s</p>", textContent, data.GetServerURL(), data.GetServerURL(), streamTitle, tagsString)
+	textContent = fmt.Sprintf("<p>%s</p><p>%s</p><p>%s</p><a href=\"%s\">%s</a>", textContent, streamTitle, tagsString, data.GetServerURL(), data.GetServerURL())
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
@@ -84,11 +82,6 @@ func SendLive() error {
 	}
 
 	if data.GetNSFW() {
-		// Content warning is done via the summary property.
-		summary := streams.NewActivityStreamsSummaryProperty()
-		summary.AppendXMLSchemaString("Potentially NSFW")
-		note.SetActivityStreamsSummary(summary)
-
 		// Mark content as sensitive.
 		sensitive := streams.NewActivityStreamsSensitiveProperty()
 		sensitive.AppendXMLSchemaBoolean(true)
