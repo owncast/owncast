@@ -16,4 +16,6 @@ type Follower struct {
 	Image string `json:"image"`
 	// Timestamp is when this follow request was created.
 	Timestamp utils.NullTime `json:"timestamp,omitempty"`
+	// DisabledAt is when this follower was rejected or disabled.
+	DisabledAt utils.NullTime `json:"disabledAt,omitempty"`
 }

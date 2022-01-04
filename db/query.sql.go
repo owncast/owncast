@@ -79,7 +79,7 @@ func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error 
 }
 
 const approveFederationFollower = `-- name: ApproveFederationFollower :exec
-UPDATE ap_followers SET approved_at = $1 WHERE iri = $2
+UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2
 `
 
 type ApproveFederationFollowerParams struct {
@@ -110,7 +110,7 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 }
 
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null
 `
 
 type GetFederationFollowerApprovalRequestsRow struct {
@@ -204,9 +204,20 @@ const getFollowerByIRI = `-- name: GetFollowerByIRI :one
 SELECT iri, inbox, name, username, image, request, created_at, approved_at FROM ap_followers WHERE iri = $1
 `
 
-func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (ApFollower, error) {
+type GetFollowerByIRIRow struct {
+	Iri        string
+	Inbox      string
+	Name       sql.NullString
+	Username   string
+	Image      sql.NullString
+	Request    string
+	CreatedAt  sql.NullTime
+	ApprovedAt sql.NullTime
+}
+
+func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollowerByIRIRow, error) {
 	row := q.db.QueryRowContext(ctx, getFollowerByIRI, iri)
-	var i ApFollower
+	var i GetFollowerByIRIRow
 	err := row.Scan(
 		&i.Iri,
 		&i.Inbox,
@@ -223,7 +234,7 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (ApFollower,
 const getFollowerCount = `-- name: GetFollowerCount :one
 
 
-SElECT count(*) FROM ap_followers
+SElECT count(*) FROM ap_followers WHERE approved_at is not null
 `
 
 // Queries added to query.sql must be compiled into Go code with sqlc. Read README.md for details.
@@ -347,6 +358,63 @@ func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffs
 		return nil, err
 	}
 	return items, nil
+}
+
+const getRejectedAndBlockedFollowers = `-- name: GetRejectedAndBlockedFollowers :many
+SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null
+`
+
+type GetRejectedAndBlockedFollowersRow struct {
+	Iri        string
+	Name       sql.NullString
+	Username   string
+	Image      sql.NullString
+	CreatedAt  sql.NullTime
+	DisabledAt sql.NullTime
+}
+
+func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetRejectedAndBlockedFollowersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getRejectedAndBlockedFollowers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRejectedAndBlockedFollowersRow
+	for rows.Next() {
+		var i GetRejectedAndBlockedFollowersRow
+		if err := rows.Scan(
+			&i.Iri,
+			&i.Name,
+			&i.Username,
+			&i.Image,
+			&i.CreatedAt,
+			&i.DisabledAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const rejectFederationFollower = `-- name: RejectFederationFollower :exec
+UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2
+`
+
+type RejectFederationFollowerParams struct {
+	DisabledAt sql.NullTime
+	Iri        string
+}
+
+func (q *Queries) RejectFederationFollower(ctx context.Context, arg RejectFederationFollowerParams) error {
+	_, err := q.db.ExecContext(ctx, rejectFederationFollower, arg.DisabledAt, arg.Iri)
+	return err
 }
 
 const removeFollowerByIRI = `-- name: RemoveFollowerByIRI :exec

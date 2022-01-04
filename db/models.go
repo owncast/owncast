@@ -24,6 +24,7 @@ type ApFollower struct {
 	Request    string
 	CreatedAt  sql.NullTime
 	ApprovedAt sql.NullTime
+	DisabledAt sql.NullTime
 }
 
 type ApOutbox struct {
