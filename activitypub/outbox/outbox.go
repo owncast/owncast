@@ -41,8 +41,6 @@ func SendLive() error {
 		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
 		hashtag := apmodels.MakeHashtag(tagWithoutSpecialCharacters)
 		tagProp.AppendTootHashtag(hashtag)
-
-		// TODO: Do we want to display tags or just assign them?
 		tagString := getHashtagLinkHTMLFromTagString(tagWithoutSpecialCharacters)
 		tagStrings = append(tagStrings, tagString)
 	}
@@ -50,11 +48,10 @@ func SendLive() error {
 	// Manually add Owncast hashtag if it doesn't already exist so it shows up
 	// in Owncast search results.
 	// We can remove this down the road, but it'll be nice for now.
-	// TODO: Re-enable?
-	// if _, exists := utils.FindInSlice(tagStrings, "owncast"); !exists {
-	// 	hashtag := apmodels.MakeHashtag("owncast")
-	// 	tagProp.AppendTootHashtag(hashtag)
-	// }
+	if _, exists := utils.FindInSlice(tagStrings, "owncast"); !exists {
+		hashtag := apmodels.MakeHashtag("owncast")
+		tagProp.AppendTootHashtag(hashtag)
+	}
 
 	tagsString := strings.Join(tagStrings, " ")
 
