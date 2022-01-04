@@ -69,6 +69,11 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 
 	image, _ := url.Parse(result.Image.String)
 
+	var disabledAt *time.Time
+	if result.DisabledAt.Valid {
+		disabledAt = &result.DisabledAt.Time
+	}
+
 	follower := apmodels.ActivityPubActor{
 		ActorIri:         iriURL,
 		Inbox:            inbox,
@@ -76,6 +81,7 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 		Username:         result.Username,
 		Image:            image,
 		FollowRequestIri: followIRI,
+		DisabledAt:       disabledAt,
 	}
 
 	return &follower, nil
