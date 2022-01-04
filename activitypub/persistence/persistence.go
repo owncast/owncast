@@ -135,7 +135,7 @@ func createFollow(actor string, inbox string, request string, name string, usern
 		ApprovedAt: approvedAt,
 		Request:    request,
 	}); err != nil {
-		log.Errorln("error creating new federation follow", err)
+		log.Errorln("error creating new federation follow: ", err)
 	}
 
 	return tx.Commit()
