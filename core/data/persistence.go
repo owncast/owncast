@@ -135,8 +135,12 @@ func (ds *Datastore) Setup() {
 	}
 
 	if !hasPopulatedFederationDefaults() {
-		SetFederationGoLiveMessage(config.GetDefaults().FederationGoLiveMessage)
-		_ = _datastore.SetBool("HAS_POPULATED_FEDERATION_DEFAULTS", true)
+		if err := SetFederationGoLiveMessage(config.GetDefaults().FederationGoLiveMessage); err != nil {
+			log.Errorln(err)
+		}
+		if err := _datastore.SetBool("HAS_POPULATED_FEDERATION_DEFAULTS", true); err != nil {
+			log.Errorln(err)
+		}
 	}
 
 	// Set the server initialization date if needed.
