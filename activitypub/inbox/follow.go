@@ -3,6 +3,7 @@ package inbox
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/persistence"
@@ -44,8 +45,14 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		}
 	}
 
+	// Save as an accepted activity
 	actorReference := activity.GetActivityStreamsActor()
-
+	object := activity.GetActivityStreamsObject()
+	objectIRI := object.At(0).GetIRI().String()
+	actorIRI := actorReference.At(0).GetIRI().String()
+	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementFollow, time.Now()); err != nil {
+		return errors.Wrap(err, "unable to save inbound share/re-post activity")
+	}
 	if approved {
 		return handleEngagementActivity(events.FediverseEngagementFollow, false, actorReference, events.FediverseEngagementFollow)
 	}
