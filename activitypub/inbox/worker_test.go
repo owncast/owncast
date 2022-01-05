@@ -1,9 +1,7 @@
 package inbox
 
 import (
-	"io/ioutil"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/go-fed/activity/streams"
@@ -50,12 +48,7 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 }
 
 func TestMain(m *testing.M) {
-	dbFile, err := ioutil.TempFile(os.TempDir(), ":memory:")
-	if err != nil {
-		panic(err)
-	}
-
-	data.SetupPersistence(dbFile.Name())
+	data.SetupPersistence(":memory:")
 	data.SetServerURL("https://my.cool.site.biz")
 	persistence.Setup(data.GetDatastore())
 	m.Run()
