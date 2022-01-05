@@ -194,7 +194,10 @@ func SendToFollowers(payload []byte) error {
 
 // UpdateFollowersWithAccountUpdates will send an update to all followers alerting of a profile update.
 func UpdateFollowersWithAccountUpdates() error {
-	log.Println("Updating followers with new actor details")
+	// Don't do anything if federation is disabled.
+	if !data.GetFederationEnabled() {
+		return nil
+	}
 
 	id := shortid.MustGenerate()
 	objectID := apmodels.MakeLocalIRIForResource(id)
