@@ -31,7 +31,7 @@ func handleEngagementActivity(eventType events.EventType, isLiveNotification boo
 	}
 	actorIRI := actorReference.Begin().GetIRI().String()
 
-	userPrefix := fmt.Sprintf("%s just", actorName)
+	userPrefix := fmt.Sprintf("%s ", actorName)
 	var suffix string
 	if isLiveNotification && action == events.FediverseEngagementLike {
 		suffix = fmt.Sprintf("liked that %s went live.", data.GetServerName())
