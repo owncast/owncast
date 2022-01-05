@@ -30,6 +30,10 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 		to := streams.NewActivityStreamsToProperty()
 		to.AppendIRI(public)
 		activity.SetActivityStreamsTo(to)
+
+		cc := streams.NewActivityStreamsCcProperty()
+		cc.AppendIRI(public)
+		activity.SetActivityStreamsCc(cc)
 	}
 
 	return activity
