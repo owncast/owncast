@@ -78,6 +78,7 @@ func IsUserAgentABot(userAgent string) bool {
 		"matrix",
 		"synapse",
 		"element",
+		"rocket.chat",
 	}
 
 	for _, botString := range botStrings {
