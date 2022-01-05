@@ -8,6 +8,8 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
 )
 
@@ -48,14 +50,14 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 }
 
 func TestMain(m *testing.M) {
-	dbFile, err := ioutil.TempFile(os.TempDir(), "owncast-test-db.db")
+	dbFile, err := ioutil.TempFile(os.TempDir(), ":memory:")
 	if err != nil {
 		panic(err)
 	}
 
 	data.SetupPersistence(dbFile.Name())
 	data.SetServerURL("https://my.cool.site.biz")
-
+	persistence.Setup(data.GetDatastore())
 	m.Run()
 }
 
@@ -75,4 +77,31 @@ func TestBlockedDomains(t *testing.T) {
 	}
 
 	t.Error("Failed to catch blocked domain")
+}
+
+func TestBlockedActors(t *testing.T) {
+	person := makeFakePerson()
+	persistence.AddFollow(apmodels.ActivityPubActor{
+		ActorIri:         person.GetJSONLDId().GetIRI(),
+		Inbox:            person.GetJSONLDId().GetIRI(),
+		FollowRequestIri: person.GetJSONLDId().GetIRI(),
+	}, false)
+	persistence.BlockOrRejectFollower(person.GetJSONLDId().GetIRI().String())
+
+	blocked, err := isBlockedActor(person.GetJSONLDId().GetIRI())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !blocked {
+		t.Error("Failed to block actor")
+	}
+
+	failedBlockIRI, _ := url.Parse("https://freedom.eagle/user/mrbar")
+	failedBlock, err := isBlockedActor(failedBlockIRI)
+
+	if failedBlock {
+		t.Error("Invalid blocking of unblocked actor IRI")
+	}
 }
