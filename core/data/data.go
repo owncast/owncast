@@ -37,18 +37,34 @@ func GetStore() *Datastore {
 
 // SetupPersistence will open the datastore and make it available.
 func SetupPersistence(file string) error {
-	// Create empty DB file if it doesn't exist.
-	if !utils.DoesFileExists(file) {
-		log.Traceln("Creating new database at", file)
+	// Allow support for in-memory databases for tests.
 
-		_, err := os.Create(file)
+	var db *sql.DB
+
+	if file == ":memory:" {
+		inMemoryDb, err := sql.Open("sqlite3", file)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-	}
+		db = inMemoryDb
+	} else {
+		// Create empty DB file if it doesn't exist.
+		if !utils.DoesFileExists(file) {
+			log.Traceln("Creating new database at", file)
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_cache_size=10000&cache=shared&_journal_mode=WAL", file))
-	db.SetMaxOpenConns(1)
+			_, err := os.Create(file)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+		}
+
+		onDiskDb, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_cache_size=10000&cache=shared&_journal_mode=WAL", file))
+		if err != nil {
+			return err
+		}
+		db = onDiskDb
+		db.SetMaxOpenConns(1)
+	}
 	_db = db
 
 	// Some SQLite optimizations
@@ -60,10 +76,6 @@ func SetupPersistence(file string) error {
 	createWebhooksTable()
 	createUsersTable(db)
 
-	if err != nil {
-		return err
-	}
-
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS config (
 		"key" string NOT NULL PRIMARY KEY,
 		"value" TEXT
@@ -72,7 +84,7 @@ func SetupPersistence(file string) error {
 	}
 
 	var version int
-	err = db.QueryRow("SELECT value FROM config WHERE key='version'").
+	err := db.QueryRow("SELECT value FROM config WHERE key='version'").
 		Scan(&version)
 	if err != nil {
 		if err != sql.ErrNoRows {
