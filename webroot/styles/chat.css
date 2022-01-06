@@ -138,12 +138,11 @@
   word-break: break-word;
 }
 .message-text a {
-  color: #ccd;
-  transition: color .2s;
-}
-.message-text a:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255, 255, 255, 0.25);
   color: #fff;
+  transition: color .2s;
 }
 
 .message-text img {
