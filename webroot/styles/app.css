@@ -483,6 +483,10 @@ header {
   max-width: 300px
 }
 
+.following-list-follower {
+  max-width: 280px;
+}
+
 #follow-loading-spinner-container {
   position: absolute;
   display: flex;

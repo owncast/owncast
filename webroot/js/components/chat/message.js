@@ -53,7 +53,7 @@ function SingleFederatedUser(props) {
       title="Visit profile"
     >
       <div
-        class="federated-action m-2 bg-white flex items-center px-2 rounded-xl shadow border"
+        class="federated-action m-2 mt-3 bg-white flex items-center px-2 rounded-xl shadow border"
       >
         <div class="relative" style="top: -6px">
           <img
@@ -73,7 +73,7 @@ function SingleFederatedUser(props) {
             ${title}
           </span>
           <p
-            class=" text-gray-700 mt-1 w-full text-base "
+            class=" text-gray-700 mt-1 w-full text-base leading-6"
             dangerouslySetInnerHTML=${{ __html: body }}
           ></p>
         </div>

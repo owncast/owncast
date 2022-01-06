@@ -48,7 +48,7 @@ export default class FollowerList extends Component {
     </div>`;
 
     return html`
-      <div class="p-4 flex flex-wrap">
+      <div class="flex flex-wrap">
         ${followers.length === 0 && noFollowersInfo}
         ${followers.map((follower) => {
           return html` <${SingleFollower} user=${follower} /> `;
@@ -71,7 +71,7 @@ function SingleFollower(props) {
   return html`
     <a
       href=${link}
-      class="block bg-white flex p-2 rounded-xl shadow border hover:no-underline m-5"
+      class="following-list-follower block bg-white flex p-2 rounded-xl shadow border hover:no-underline m-4"
       target="_blank"
     >
       <img
