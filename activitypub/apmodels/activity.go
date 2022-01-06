@@ -31,6 +31,9 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 		to.AppendIRI(public)
 		activity.SetActivityStreamsTo(to)
 
+		audience := streams.NewActivityStreamsAudienceProperty()
+		audience.AppendIRI(public)
+		activity.SetActivityStreamsAudience(audience)
 	}
 
 	return activity
