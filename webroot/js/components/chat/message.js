@@ -73,7 +73,7 @@ function SingleFederatedUser(props) {
             ${title}
           </span>
           <p
-            class=" text-gray-700 mt-1 w-full text-base leading-6"
+            class=" text-gray-700 w-full text-base leading-6"
             dangerouslySetInnerHTML=${{ __html: body }}
           ></p>
         </div>
