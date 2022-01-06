@@ -107,7 +107,7 @@ export default class UsernameForm extends Component {
         >
           <span
             id="username-display"
-            class="text-indigo-600 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap ${isModerator &&
+            class="text-indigo-100 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap ${isModerator &&
             'moderator-flag'}"
             >${isModerator && moderatorFlag}${username}</span
           >
