@@ -91,7 +91,7 @@ header {
   max-width: 250px;
 }
 .external-action-button:hover {
-  text-decoration: underline;
+  box-shadow: var(--owncast-purple) 0px 0px 5px;
 }
 .external-action-icon {
   margin: .25em .5em .25em 0;
