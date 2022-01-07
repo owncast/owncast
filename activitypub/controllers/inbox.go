@@ -32,7 +32,7 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 	if len(urlPathComponents) == 5 {
 		forLocalAccount = urlPathComponents[3]
 	} else {
-		log.Errorln("Unable to determine username from url path", r.URL.Path)
+		log.Errorln("Unable to determine username from url path")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
