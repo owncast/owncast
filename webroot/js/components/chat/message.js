@@ -102,8 +102,18 @@ export default function Message(props) {
     return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
     const { displayName } = user;
-    const contents = html`<span class="font-bold">${displayName}</span> joined
-      the chat.`;
+    const isAuthorModerator = checkIsModerator(message);
+    const messageAuthorFlair = isAuthorModerator
+      ? html`<img
+          title="Moderator"
+          class="inline-block mr-1 w-3 h-3"
+          src="/img/moderator-nobackground.svg"
+        />`
+      : null;
+    const contents = html`<div>
+      <span class="font-bold">${messageAuthorFlair}${displayName}</span>
+      ${' '}joined the chat.
+    </div>`;
     return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {
     const contents = html`<span
