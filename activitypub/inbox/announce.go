@@ -21,9 +21,14 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 	}
 
 	// Shares need to match a post we had already sent.
-	_, isLiveNotification, err := persistence.GetObjectByIRI(objectIRI)
+	_, isLiveNotification, timestamp, err := persistence.GetObjectByIRI(objectIRI)
 	if err != nil {
 		return errors.Wrap(err, "Could not find post locally")
+	}
+
+	// Don't allow old activities to be liked
+	if time.Since(timestamp) > maxAgeForEngagement {
+		return errors.New("Activity is too old to be shared")
 	}
 
 	// Save as an accepted activity

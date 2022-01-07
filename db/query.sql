@@ -33,7 +33,7 @@ SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
 SELECT value FROM ap_outbox WHERE iri = $1;
 
 -- name: GetObjectFromOutboxByIRI :one
-SELECT value, live_notification FROM ap_outbox WHERE iri = $1;
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1;
 
 -- name: RemoveFollowerByIRI :exec
 DELETE FROM ap_followers WHERE iri = $1;
