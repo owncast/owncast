@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub"
+	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/data"
@@ -66,6 +67,13 @@ func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "federation private saved")
 }
 
