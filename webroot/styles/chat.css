@@ -345,3 +345,6 @@
   background-size: cover;
 }
 
+.federated-action {
+  min-height: 76px;
+}
