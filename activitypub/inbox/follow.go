@@ -50,10 +50,24 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	object := activity.GetActivityStreamsObject()
 	objectIRI := object.At(0).GetIRI().String()
 	actorIRI := actorReference.At(0).GetIRI().String()
+
+	// If this request is approved and we have not previously sent an action to
+	// chat due to a previous follow request, then do so.
+	hasPreviouslyhandled := true // Default so we don't send anything if it fails.
+	if approved {
+		hasPreviouslyhandled, err = persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementFollow)
+		if err != nil {
+			log.Errorln("error checking for previously handled follow activity", err)
+		}
+	}
+
+	// Save this follow action to our activities table.
 	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementFollow, time.Now()); err != nil {
 		return errors.Wrap(err, "unable to save inbound share/re-post activity")
 	}
-	if approved {
+
+	// Send action to chat if it has not been previously handled.
+	if !hasPreviouslyhandled {
 		return handleEngagementActivity(events.FediverseEngagementFollow, false, actorReference, events.FediverseEngagementFollow)
 	}
 
