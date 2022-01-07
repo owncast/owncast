@@ -48,6 +48,10 @@ export default class FediverseFollowModal extends Component {
     onClose();
   }
 
+  navigateToFediverseJoinPage() {
+    window.open('https://owncast.online/join-fediverse', '_blank');
+  }
+
   onInput = (e) => {
     const { value } = e.target;
     const valid = validateAccount(value);
@@ -127,19 +131,26 @@ export default class FediverseFollowModal extends Component {
           this action. ${'  '}
           <a
             class=" text-blue-500"
-            href="https://owncast.online/docs/social"
+            href="https://owncast.online/join-fediverse"
             target="_blank"
             rel="noopener noreferrer"
-            >Learn more about Owncast follow support.</a
+            >Join the Fediverse if you haven't.</a
           >
         </p>
 
         <button
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 mt-6 px-4 rounded focus:outline-none focus:shadow-outline ${buttonState}"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 mt-6 px-4 rounded focus:outline-none focus:shadow-outline ${buttonState}"
           type="button"
           onClick=${this.remoteFollowButtonPressed}
         >
           Follow
+        </button>
+        <button
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 ml-4 mt-6 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="button"
+          onClick=${this.navigateToFediverseJoinPage}
+        >
+          Join the Fediverse
         </button>
         <div
           id="follow-loading-spinner-container"
@@ -160,7 +171,7 @@ export function FediverseFollowButton({ serverName, federationInfo, onClick }) {
     description: `Follow ${serverName} at ${federationInfo.account}`,
     icon: '/img/fediverse-color.png',
     openExternally: false,
-    title: `Follow ${serverName} on the Fediverse`,
+    title: `Follow ${serverName}`,
     url: '',
   };
 
