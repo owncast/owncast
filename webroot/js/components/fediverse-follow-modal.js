@@ -26,6 +26,10 @@ export default class FediverseFollowModal extends Component {
   }
 
   async remoteFollowButtonPressed() {
+    if (!this.state.valid) {
+      return;
+    }
+
     this.setState({ loading: true, errorMessage: null });
     const { value } = this.state;
     const { onClose } = this.props;
