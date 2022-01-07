@@ -278,6 +278,7 @@
 .message-author .flair {
   height: 70%;
   margin-right: 5px;
+  margin-top: 1px;
 }
 
 .moderator-menu-item {
