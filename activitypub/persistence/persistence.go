@@ -292,9 +292,9 @@ func GetObjectByID(id string) (string, error) {
 }
 
 // GetObjectByIRI will return a string representation of a single object by the IRI.
-func GetObjectByIRI(iri string) (string, bool, error) {
+func GetObjectByIRI(iri string) (string, bool, time.Time, error) {
 	row, err := _datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), iri)
-	return string(row.Value), row.LiveNotification.Bool, err
+	return string(row.Value), row.LiveNotification.Bool, row.CreatedAt.Time, err
 }
 
 // GetLocalPostCount will return the number of posts existing locally.

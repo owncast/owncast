@@ -303,18 +303,19 @@ func (q *Queries) GetObjectFromOutboxByID(ctx context.Context, iri string) ([]by
 }
 
 const getObjectFromOutboxByIRI = `-- name: GetObjectFromOutboxByIRI :one
-SELECT value, live_notification FROM ap_outbox WHERE iri = $1
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1
 `
 
 type GetObjectFromOutboxByIRIRow struct {
 	Value            []byte
 	LiveNotification sql.NullBool
+	CreatedAt        sql.NullTime
 }
 
 func (q *Queries) GetObjectFromOutboxByIRI(ctx context.Context, iri string) (GetObjectFromOutboxByIRIRow, error) {
 	row := q.db.QueryRowContext(ctx, getObjectFromOutboxByIRI, iri)
 	var i GetObjectFromOutboxByIRIRow
-	err := row.Scan(&i.Value, &i.LiveNotification)
+	err := row.Scan(&i.Value, &i.LiveNotification, &i.CreatedAt)
 	return i, err
 }
 

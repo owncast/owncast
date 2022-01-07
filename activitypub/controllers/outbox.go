@@ -58,7 +58,7 @@ func OutboxHandler(w http.ResponseWriter, r *http.Request) {
 
 // ActorObjectHandler will handle the request for a single ActivityPub object.
 func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
-	object, _, err := persistence.GetObjectByIRI(r.URL.Path)
+	object, _, _, err := persistence.GetObjectByIRI(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

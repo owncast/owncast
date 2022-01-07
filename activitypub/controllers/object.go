@@ -26,7 +26,7 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	iri := strings.Join([]string{strings.TrimSuffix(data.GetServerURL(), "/"), r.URL.Path}, "")
-	object, _, err := persistence.GetObjectByIRI(iri)
+	object, _, _, err := persistence.GetObjectByIRI(iri)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
