@@ -604,6 +604,7 @@ func SetForbiddenUsernameList(usernames []string) error {
 }
 
 // GetSuggestedUsernamesList will return the suggested usernames as a comma separated string.
+// If the number of suggested usernames is smaller than 10, the number pool is not used (see code in the CreateAnonymousUser function).
 func GetSuggestedUsernamesList() []string {
 	usernameString, err := _datastore.GetString(suggestedUsernamesKey)
 

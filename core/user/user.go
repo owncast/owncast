@@ -17,6 +17,7 @@ import (
 var _datastore *data.Datastore
 
 const moderatorScopeKey = "MODERATOR"
+const minSuggestedUsernamePoolLength = 10
 
 // User represents a single chat user.
 type User struct {
@@ -59,7 +60,7 @@ func CreateAnonymousUser(displayName string) (*User, error) {
 	if displayName == "" {
 		suggestedUsernamesList := data.GetSuggestedUsernamesList()
 
-		if len(suggestedUsernamesList) != 0 {
+		if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
 			index := utils.RandomIndex(len(suggestedUsernamesList))
 			displayName = suggestedUsernamesList[index]
 		} else {
