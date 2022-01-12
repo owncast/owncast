@@ -42,6 +42,7 @@ const externalActionsKey = "external_actions"
 const customStylesKey = "custom_styles"
 const videoCodecKey = "video_codec"
 const blockedUsernamesKey = "blocked_usernames"
+const suggestedUsernamesKey = "suggested_usernames"
 
 // GetExtraPageBodyContent will return the user-supplied body content.
 func GetExtraPageBodyContent() string {
@@ -600,4 +601,24 @@ func GetForbiddenUsernameList() []string {
 func SetForbiddenUsernameList(usernames []string) error {
 	usernameListString := strings.Join(usernames, ",")
 	return _datastore.SetString(blockedUsernamesKey, usernameListString)
+}
+
+// GetSuggestedUsernamesList will return the suggested usernames as a comma separated string.
+// If the number of suggested usernames is smaller than 10, the number pool is not used (see code in the CreateAnonymousUser function).
+func GetSuggestedUsernamesList() []string {
+	usernameString, err := _datastore.GetString(suggestedUsernamesKey)
+
+	if err != nil || usernameString == "" {
+		return []string{}
+	}
+
+	suggestionList := strings.Split(usernameString, ",")
+
+	return suggestionList
+}
+
+// SetSuggestedUsernamesList sets the username suggestion list as a comma separated string.
+func SetSuggestedUsernamesList(usernames []string) error {
+	usernameListString := strings.Join(usernames, ",")
+	return _datastore.SetString(suggestedUsernamesKey, usernameListString)
 }
