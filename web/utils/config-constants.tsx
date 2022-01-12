@@ -31,6 +31,7 @@ export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 export const API_CHAT_DISABLE = '/chat/disable';
 export const API_CHAT_FORBIDDEN_USERNAMES = '/chat/forbiddenusernames';
+export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
 export const API_VIDEO_CODEC = '/video/codec';
 
@@ -188,6 +189,15 @@ export const TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES = {
   placeholder: 'username',
   label: 'Forbidden usernames',
   tip: 'A list of words in chat usernames you disallow.',
+};
+
+export const TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES = {
+  apiPath: API_CHAT_SUGGESTED_USERNAMES,
+  placeholder: 'username',
+  label: 'Default usernames',
+  tip: 'An optional list of chat usernames that new users get assigned. If the list holds less then 10 items, random names will be generated.  Users can change their usernames afterwards and the same username may be given out multple times.',
+  min_not_reached: 'At least 10 items are required for this feature.',
+  no_entries: 'The default name generator is used.',
 };
 
 export const VIDEO_VARIANT_SETTING_DEFAULTS = {

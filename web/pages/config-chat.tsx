@@ -4,28 +4,35 @@ import { TEXTFIELD_TYPE_TEXTAREA } from '../components/config/form-textfield';
 import TextFieldWithSubmit from '../components/config/form-textfield-with-submit';
 import ToggleSwitch from '../components/config/form-toggleswitch';
 import EditValueArray from '../components/config/edit-string-array';
-import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../utils/input-statuses';
+import {
+  createInputStatus,
+  StatusState,
+  STATUS_ERROR,
+  STATUS_SUCCESS,
+} from '../utils/input-statuses';
 
 import { UpdateArgs } from '../types/config-section';
 import {
-  FIELD_PROPS_DISABLE_CHAT,
-  TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES,
-  TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
   API_CHAT_FORBIDDEN_USERNAMES,
+  API_CHAT_SUGGESTED_USERNAMES,
+  FIELD_PROPS_DISABLE_CHAT,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
+  TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES,
+  TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES,
+  TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
 } from '../utils/config-constants';
 import { ServerStatusContext } from '../utils/server-status-context';
 
 export default function ConfigChat() {
   const { Title } = Typography;
   const [formDataValues, setFormDataValues] = useState(null);
-  const [forbiddenUsernameSaveState, setForbidenUsernameSaveState] = useState(null);
+  const [forbiddenUsernameSaveState, setForbiddenUsernameSaveState] = useState(null);
+  const [suggestedUsernameSaveState, setSuggestedUsernameSaveState] = useState(null);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
 
-  const { chatDisabled, forbiddenUsernames } = serverConfig;
-  const { instanceDetails } = serverConfig;
+  const { chatDisabled, forbiddenUsernames, instanceDetails, suggestedUsernames } = serverConfig;
   const { welcomeMessage } = instanceDetails;
 
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
@@ -40,7 +47,7 @@ export default function ConfigChat() {
   }
 
   function resetForbiddenUsernameState() {
-    setForbidenUsernameSaveState(null);
+    setForbiddenUsernameSaveState(null);
   }
 
   function saveForbiddenUsernames() {
@@ -52,22 +59,22 @@ export default function ConfigChat() {
           fieldName: 'forbiddenUsernames',
           value: formDataValues.forbiddenUsernames,
         });
-        setForbidenUsernameSaveState(STATUS_SUCCESS);
+        setForbiddenUsernameSaveState(STATUS_SUCCESS);
         setTimeout(resetForbiddenUsernameState, RESET_TIMEOUT);
       },
       onError: (message: string) => {
-        setForbidenUsernameSaveState(createInputStatus(STATUS_ERROR, message));
+        setForbiddenUsernameSaveState(createInputStatus(STATUS_ERROR, message));
         setTimeout(resetForbiddenUsernameState, RESET_TIMEOUT);
       },
     });
   }
 
-  function handleDeleteUsername(index: number) {
+  function handleDeleteForbiddenUsernameIndex(index: number) {
     formDataValues.forbiddenUsernames.splice(index, 1);
     saveForbiddenUsernames();
   }
 
-  function handleCreateUsername(tag: string) {
+  function handleCreateForbiddenUsername(tag: string) {
     formDataValues.forbiddenUsernames.push(tag);
     handleFieldChange({
       fieldName: 'forbiddenUsernames',
@@ -76,10 +83,56 @@ export default function ConfigChat() {
     saveForbiddenUsernames();
   }
 
+  function resetSuggestedUsernameState() {
+    setSuggestedUsernameSaveState(null);
+  }
+
+  function saveSuggestedUsernames() {
+    postConfigUpdateToAPI({
+      apiPath: API_CHAT_SUGGESTED_USERNAMES,
+      data: { value: formDataValues.suggestedUsernames },
+      onSuccess: () => {
+        setFieldInConfigState({
+          fieldName: 'suggestedUsernames',
+          value: formDataValues.suggestedUsernames,
+        });
+        setSuggestedUsernameSaveState(STATUS_SUCCESS);
+        setTimeout(resetSuggestedUsernameState, RESET_TIMEOUT);
+      },
+      onError: (message: string) => {
+        setForbiddenUsernameSaveState(createInputStatus(STATUS_ERROR, message));
+        setTimeout(resetSuggestedUsernameState, RESET_TIMEOUT);
+      },
+    });
+  }
+
+  function handleDeleteSuggestedUsernameIndex(index: number) {
+    formDataValues.suggestedUsernames.splice(index, 1);
+    saveSuggestedUsernames();
+  }
+
+  function handleCreateSuggestedUsername(tag: string) {
+    formDataValues.suggestedUsernames.push(tag);
+    handleFieldChange({
+      fieldName: 'suggestedUsernames',
+      value: formDataValues.suggestedUsernames,
+    });
+    saveSuggestedUsernames();
+  }
+
+  function getSuggestedUsernamesLimitWarning(length: number): StatusState | null {
+    if (length === 0)
+      return createInputStatus('success', TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.no_entries);
+    if (length > 0 && length < 10)
+      return createInputStatus('warning', TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.min_not_reached);
+    return null;
+  }
+
   useEffect(() => {
     setFormDataValues({
       chatDisabled,
       forbiddenUsernames,
+      suggestedUsernames,
       welcomeMessage,
     });
   }, [serverConfig]);
@@ -114,9 +167,23 @@ export default function ConfigChat() {
           placeholder={TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES.placeholder}
           description={TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES.tip}
           values={formDataValues.forbiddenUsernames}
-          handleDeleteIndex={handleDeleteUsername}
-          handleCreateString={handleCreateUsername}
+          handleDeleteIndex={handleDeleteForbiddenUsernameIndex}
+          handleCreateString={handleCreateForbiddenUsername}
           submitStatus={createInputStatus(forbiddenUsernameSaveState)}
+        />
+        <br />
+        <br />
+        <EditValueArray
+          title={TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.label}
+          placeholder={TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.placeholder}
+          description={TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.tip}
+          values={formDataValues.suggestedUsernames}
+          handleDeleteIndex={handleDeleteSuggestedUsernameIndex}
+          handleCreateString={handleCreateSuggestedUsername}
+          submitStatus={createInputStatus(suggestedUsernameSaveState)}
+          continuousStatusMessage={getSuggestedUsernamesLimitWarning(
+            formDataValues.suggestedUsernames.length,
+          )}
         />
       </div>
     </div>

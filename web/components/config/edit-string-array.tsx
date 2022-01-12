@@ -5,6 +5,7 @@ import { Typography, Tag } from 'antd';
 import TextField from './form-textfield';
 import { UpdateArgs } from '../../types/config-section';
 import { StatusState } from '../../utils/input-statuses';
+import FormStatusIndicator from './form-status-indicator';
 
 const { Title } = Typography;
 
@@ -17,6 +18,7 @@ interface EditStringArrayProps {
   maxLength?: number;
   values: string[];
   submitStatus?: StatusState;
+  continuousStatusMessage?: StatusState;
   handleDeleteIndex: (index: number) => void;
   handleCreateString: (arg: string) => void;
 }
@@ -32,6 +34,7 @@ export default function EditValueArray(props: EditStringArrayProps) {
     handleDeleteIndex,
     handleCreateString,
     submitStatus,
+    continuousStatusMessage,
   } = props;
 
   const handleInputChange = ({ value }: UpdateArgs) => {
@@ -63,7 +66,11 @@ export default function EditValueArray(props: EditStringArrayProps) {
           );
         })}
       </div>
-
+      {continuousStatusMessage && (
+        <div className="continuous-status-section">
+          <FormStatusIndicator status={continuousStatusMessage} />
+        </div>
+      )}
       <div className="add-new-string-section">
         <TextField
           fieldName="string-input"
@@ -83,4 +90,5 @@ EditValueArray.defaultProps = {
   maxLength: 50,
   description: null,
   submitStatus: null,
+  continuousStatusMessage: null,
 };

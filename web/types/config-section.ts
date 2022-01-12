@@ -102,5 +102,6 @@ export interface ConfigDetails {
   supportedCodecs: string[];
   videoCodec: string;
   forbiddenUsernames: string[];
+  suggestedUsernames: string[];
   chatDisabled: boolean;
 }
