@@ -178,7 +178,6 @@ export function makeLastOnlineString(timestamp) {
   return `Last live: ${string}`;
 }
 
-
 // Routing & Tabs
 export const ROUTE_RECORDINGS = 'recordings';
 export const ROUTE_SCHEDULE = 'schedule';
