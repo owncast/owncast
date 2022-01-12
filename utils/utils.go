@@ -231,7 +231,7 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 	cmd := exec.Command("which", "ffmpeg")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatalln("Unable to determine path to ffmpeg. Please make sure it is installed either globally or a copy exists in the owncast directory.")
+		log.Fatalln("Unable to determine path to ffmpeg. Please specify it in the config file.")
 	}
 
 	path := strings.TrimSpace(string(out))
@@ -311,4 +311,20 @@ func GenerateRandomDisplayColor() int {
 	rangeLower := 0
 	rangeUpper := 360
 	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
+}
+
+// GetHostnameFromURL will return the hostname component from a URL string.
+func GetHostnameFromURL(u url.URL) string {
+	return u.Host
+}
+
+// GetHostnameFromURLString will return the hostname component from a URL object.
+func GetHostnameFromURLString(s string) string {
+	u, err := url.Parse(s)
+
+	if err != nil {
+		return ""
+	}
+
+	return u.Host
 }

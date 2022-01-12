@@ -6,10 +6,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
@@ -20,6 +22,8 @@ import (
 func Start() error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
+	http.HandleFunc("/recordings", controllers.IndexHandler)
+	http.HandleFunc("/schedule", controllers.IndexHandler)
 
 	// admin static files
 	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
@@ -69,6 +73,12 @@ func Start() error {
 	// register a new chat user
 	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
 
+	// return remote follow details
+	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
+
+	// return followers
+	http.HandleFunc("/api/followers", controllers.GetFollowers)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
@@ -115,6 +125,18 @@ func Start() error {
 
 	// Get a list of moderator users
 	http.HandleFunc("/api/admin/chat/users/moderators", middleware.RequireAdminAuth(admin.GetModerators))
+
+	// return followers
+	http.HandleFunc("/api/admin/followers", middleware.RequireAdminAuth(controllers.GetFollowers))
+
+	// Get a list of pending follow requests
+	http.HandleFunc("/api/admin/followers/pending", middleware.RequireAdminAuth(admin.GetPendingFollowRequests))
+
+	// Get a list of rejected or blocked follows
+	http.HandleFunc("/api/admin/followers/blocked", middleware.RequireAdminAuth(admin.GetBlockedAndRejectedFollowers))
+
+	// Set the following state of a follower or follow request.
+	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
 
 	// Update config values
 
@@ -257,6 +279,34 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+	// Configure Federation features
+
+	// enable/disable federation features
+	http.HandleFunc("/api/admin/config/federation/enable", middleware.RequireAdminAuth(admin.SetFederationEnabled))
+
+	// set if federation activities are private
+	http.HandleFunc("/api/admin/config/federation/private", middleware.RequireAdminAuth(admin.SetFederationActivityPrivate))
+
+	// set if fediverse engagement appears in chat
+	http.HandleFunc("/api/admin/config/federation/showengagement", middleware.RequireAdminAuth(admin.SetFederationShowEngagement))
+
+	// set local federated username
+	http.HandleFunc("/api/admin/config/federation/username", middleware.RequireAdminAuth(admin.SetFederationUsername))
+
+	// set federated go live message
+	http.HandleFunc("/api/admin/config/federation/livemessage", middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage))
+
+	// Federation blocked domains
+	http.HandleFunc("/api/admin/config/federation/blockdomains", middleware.RequireAdminAuth(admin.SetFederationBlockDomains))
+
+	// send a public message to the Fediverse from the server's user
+	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederatedMessage))
+
+	// Return federated activities
+	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(admin.GetFederatedActions))
+
+	// ActivityPub has its own router
+	activitypub.Start(data.GetDatastore())
 
 	// websocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
