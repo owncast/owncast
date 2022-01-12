@@ -34,3 +34,10 @@ type ApOutbox struct {
 	CreatedAt        sql.NullTime
 	LiveNotification sql.NullBool
 }
+
+type Notification struct {
+	ID          int32
+	Channel     string
+	Destination string
+	CreatedAt   sql.NullTime
+}

@@ -14,44 +14,50 @@ import (
 )
 
 const (
-	extraContentKey              = "extra_page_content"
-	streamTitleKey               = "stream_title"
-	streamKeyKey                 = "stream_key"
-	logoPathKey                  = "logo_path"
-	serverSummaryKey             = "server_summary"
-	serverWelcomeMessageKey      = "server_welcome_message"
-	serverNameKey                = "server_name"
-	serverURLKey                 = "server_url"
-	httpPortNumberKey            = "http_port_number"
-	httpListenAddressKey         = "http_listen_address"
-	rtmpPortNumberKey            = "rtmp_port_number"
-	serverMetadataTagsKey        = "server_metadata_tags"
-	directoryEnabledKey          = "directory_enabled"
-	directoryRegistrationKeyKey  = "directory_registration_key"
-	socialHandlesKey             = "social_handles"
-	peakViewersSessionKey        = "peak_viewers_session"
-	peakViewersOverallKey        = "peak_viewers_overall"
-	lastDisconnectTimeKey        = "last_disconnect_time"
-	ffmpegPathKey                = "ffmpeg_path"
-	nsfwKey                      = "nsfw"
-	s3StorageEnabledKey          = "s3_storage_enabled"
-	s3StorageConfigKey           = "s3_storage_config"
-	videoLatencyLevel            = "video_latency_level"
-	videoStreamOutputVariantsKey = "video_stream_output_variants"
-	chatDisabledKey              = "chat_disabled"
-	externalActionsKey           = "external_actions"
-	customStylesKey              = "custom_styles"
-	videoCodecKey                = "video_codec"
-	blockedUsernamesKey          = "blocked_usernames"
-	publicKeyKey                 = "public_key"
-	privateKeyKey                = "private_key"
-	serverInitDateKey            = "server_init_date"
-	federationEnabledKey         = "federation_enabled"
-	federationUsernameKey        = "federation_username"
-	federationPrivateKey         = "federation_private"
-	federationGoLiveMessageKey   = "federation_go_live_message"
-	federationShowEngagementKey  = "federation_show_engagement"
-	federationBlockedDomainsKey  = "federation_blocked_domains"
+	extraContentKey                      = "extra_page_content"
+	streamTitleKey                       = "stream_title"
+	streamKeyKey                         = "stream_key"
+	logoPathKey                          = "logo_path"
+	serverSummaryKey                     = "server_summary"
+	serverWelcomeMessageKey              = "server_welcome_message"
+	serverNameKey                        = "server_name"
+	serverURLKey                         = "server_url"
+	httpPortNumberKey                    = "http_port_number"
+	httpListenAddressKey                 = "http_listen_address"
+	rtmpPortNumberKey                    = "rtmp_port_number"
+	serverMetadataTagsKey                = "server_metadata_tags"
+	directoryEnabledKey                  = "directory_enabled"
+	directoryRegistrationKeyKey          = "directory_registration_key"
+	socialHandlesKey                     = "social_handles"
+	peakViewersSessionKey                = "peak_viewers_session"
+	peakViewersOverallKey                = "peak_viewers_overall"
+	lastDisconnectTimeKey                = "last_disconnect_time"
+	ffmpegPathKey                        = "ffmpeg_path"
+	nsfwKey                              = "nsfw"
+	s3StorageConfigKey                   = "s3_storage_config"
+	videoLatencyLevel                    = "video_latency_level"
+	videoStreamOutputVariantsKey         = "video_stream_output_variants"
+	chatDisabledKey                      = "chat_disabled"
+	externalActionsKey                   = "external_actions"
+	customStylesKey                      = "custom_styles"
+	videoCodecKey                        = "video_codec"
+	blockedUsernamesKey                  = "blocked_usernames"
+	publicKeyKey                         = "public_key"
+	privateKeyKey                        = "private_key"
+	serverInitDateKey                    = "server_init_date"
+	federationEnabledKey                 = "federation_enabled"
+	federationUsernameKey                = "federation_username"
+	federationPrivateKey                 = "federation_private"
+	federationGoLiveMessageKey           = "federation_go_live_message"
+	federationShowEngagementKey          = "federation_show_engagement"
+	federationBlockedDomainsKey          = "federation_blocked_domains"
+	notificationsEnabledKey              = "notifications_enabled"
+	twilioConfigurationKey               = "twilio_configuration"
+	discordConfigurationKey              = "discord_configuration"
+	browserPushConfigurationKey          = "browser_push_configuration"
+	browserPushPublicKeyKey              = "browser_push_public_key"
+	browserPushPrivateKeyKey             = "browser_push_private_key"
+	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -413,22 +419,6 @@ func SetS3Config(config models.S3) error {
 	return _datastore.Save(configEntry)
 }
 
-// GetS3StorageEnabled will return if external storage is enabled.
-func GetS3StorageEnabled() bool {
-	enabled, err := _datastore.GetBool(s3StorageEnabledKey)
-	if err != nil {
-		log.Traceln(err)
-		return false
-	}
-
-	return enabled
-}
-
-// SetS3StorageEnabled will enable or disable external storage.
-func SetS3StorageEnabled(enabled bool) error {
-	return _datastore.SetBool(s3StorageEnabledKey, enabled)
-}
-
 // GetStreamLatencyLevel will return the stream latency level.
 func GetStreamLatencyLevel() models.LatencyLevel {
 	level, err := _datastore.GetNumber(videoLatencyLevel)
@@ -732,4 +722,109 @@ func GetBlockedFederatedDomains() []string {
 	}
 
 	return strings.Split(domains, ",")
+}
+
+// SetNotificationsEnabled will save the enabled state of notifications.
+func SetNotificationsEnabled(enabled bool) error {
+	return _datastore.SetBool(notificationsEnabledKey, enabled)
+}
+
+// GetNotificationsEnabled will return the enabled state of notifications.
+func GetNotificationsEnabled() bool {
+	enabled, _ := _datastore.GetBool(notificationsEnabledKey)
+	return enabled
+}
+
+// GetTwilioConfig will return the Twilio configuration.
+func GetTwilioConfig() models.TwilioConfiguration {
+	configEntry, err := _datastore.Get(twilioConfigurationKey)
+	if err != nil {
+		return models.TwilioConfiguration{Enabled: false}
+	}
+
+	var config models.TwilioConfiguration
+	if err := configEntry.getObject(&config); err != nil {
+		return models.TwilioConfiguration{Enabled: false}
+	}
+
+	return config
+}
+
+// SetTwilioConfig will set the Twilio configuration.
+func SetTwilioConfig(config models.TwilioConfiguration) error {
+	configEntry := ConfigEntry{Key: twilioConfigurationKey, Value: config}
+	return _datastore.Save(configEntry)
+}
+
+// GetDiscordConfig will return the Discord configuration.
+func GetDiscordConfig() models.DiscordConfiguration {
+	configEntry, err := _datastore.Get(discordConfigurationKey)
+	if err != nil {
+		return models.DiscordConfiguration{Enabled: false}
+	}
+
+	var config models.DiscordConfiguration
+	if err := configEntry.getObject(&config); err != nil {
+		return models.DiscordConfiguration{Enabled: false}
+	}
+
+	return config
+}
+
+// SetDiscordConfig will set the Discord configuration.
+func SetDiscordConfig(config models.DiscordConfiguration) error {
+	configEntry := ConfigEntry{Key: discordConfigurationKey, Value: config}
+	return _datastore.Save(configEntry)
+}
+
+// GetDiscordConfig will return the browser push configuration.
+func GetBrowserPushConfig() models.BrowserNotificationConfiguration {
+	configEntry, err := _datastore.Get(browserPushConfigurationKey)
+	if err != nil {
+		return models.BrowserNotificationConfiguration{Enabled: false}
+	}
+
+	var config models.BrowserNotificationConfiguration
+	if err := configEntry.getObject(&config); err != nil {
+		return models.BrowserNotificationConfiguration{Enabled: false}
+	}
+
+	return config
+}
+
+// SetBrowserPushConfig will set the browser push configuration.
+func SetBrowserPushConfig(config models.BrowserNotificationConfiguration) error {
+	configEntry := ConfigEntry{Key: browserPushConfigurationKey, Value: config}
+	return _datastore.Save(configEntry)
+}
+
+// SetBrowserPushPublicKey will set the public key for browser pushes.
+func SetBrowserPushPublicKey(key string) error {
+	return _datastore.SetString(browserPushPublicKeyKey, key)
+}
+
+// GetBrowserPushPublicKey will return the public key for browser pushes.
+func GetBrowserPushPublicKey() (string, error) {
+	return _datastore.GetString(browserPushPublicKeyKey)
+}
+
+// SetBrowserPushPrivateKey will set the private key for browser pushes.
+func SetBrowserPushPrivateKey(key string) error {
+	return _datastore.SetString(browserPushPrivateKeyKey, key)
+}
+
+// GetBrowserPushPrivateKey will return the private key for browser pushes.
+func GetBrowserPushPrivateKey() (string, error) {
+	return _datastore.GetString(browserPushPrivateKeyKey)
+}
+
+// SetHasPerformedInitialNotificationsConfig sets when performed initial setup.
+func SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
+	return _datastore.SetBool(hasConfiguredInitialNotificationsKey, true)
+}
+
+// GetHasPerformedInitialNotificationsConfig gets when performed initial setup.
+func GetHasPerformedInitialNotificationsConfig() bool {
+	configured, _ := _datastore.GetBool(hasConfiguredInitialNotificationsKey)
+	return configured
 }

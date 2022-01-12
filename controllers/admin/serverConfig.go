@@ -72,6 +72,11 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			ShowEngagement: data.GetFederationShowEngagement(),
 			BlockedDomains: data.GetBlockedFederatedDomains(),
 		},
+		Notifications: notificationsConfigResponse{
+			Discord: data.GetDiscordConfig(),
+			Twilio:  data.GetTwilioConfig(),
+			Browser: data.GetBrowserPushConfig(),
+		},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -83,21 +88,22 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 type serverConfigAdminResponse struct {
-	InstanceDetails    webConfigResponse        `json:"instanceDetails"`
-	FFmpegPath         string                   `json:"ffmpegPath"`
-	StreamKey          string                   `json:"streamKey"`
-	WebServerPort      int                      `json:"webServerPort"`
-	WebServerIP        string                   `json:"webServerIP"`
-	RTMPServerPort     int                      `json:"rtmpServerPort"`
-	S3                 models.S3                `json:"s3"`
-	VideoSettings      videoSettings            `json:"videoSettings"`
-	YP                 yp                       `json:"yp"`
-	ChatDisabled       bool                     `json:"chatDisabled"`
-	ExternalActions    []models.ExternalAction  `json:"externalActions"`
-	SupportedCodecs    []string                 `json:"supportedCodecs"`
-	VideoCodec         string                   `json:"videoCodec"`
-	ForbiddenUsernames []string                 `json:"forbiddenUsernames"`
-	Federation         federationConfigResponse `json:"federation"`
+	InstanceDetails    webConfigResponse           `json:"instanceDetails"`
+	FFmpegPath         string                      `json:"ffmpegPath"`
+	StreamKey          string                      `json:"streamKey"`
+	WebServerPort      int                         `json:"webServerPort"`
+	WebServerIP        string                      `json:"webServerIP"`
+	RTMPServerPort     int                         `json:"rtmpServerPort"`
+	S3                 models.S3                   `json:"s3"`
+	VideoSettings      videoSettings               `json:"videoSettings"`
+	YP                 yp                          `json:"yp"`
+	ChatDisabled       bool                        `json:"chatDisabled"`
+	ExternalActions    []models.ExternalAction     `json:"externalActions"`
+	SupportedCodecs    []string                    `json:"supportedCodecs"`
+	VideoCodec         string                      `json:"videoCodec"`
+	ForbiddenUsernames []string                    `json:"forbiddenUsernames"`
+	Federation         federationConfigResponse    `json:"federation"`
+	Notifications      notificationsConfigResponse `json:"notifications"`
 }
 
 type videoSettings struct {
@@ -106,17 +112,18 @@ type videoSettings struct {
 }
 
 type webConfigResponse struct {
-	Name             string                `json:"name"`
-	Summary          string                `json:"summary"`
-	WelcomeMessage   string                `json:"welcomeMessage"`
-	Logo             string                `json:"logo"`
-	Tags             []string              `json:"tags"`
-	Version          string                `json:"version"`
-	NSFW             bool                  `json:"nsfw"`
-	ExtraPageContent string                `json:"extraPageContent"`
-	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
-	SocialHandles    []models.SocialHandle `json:"socialHandles"`
-	CustomStyles     string                `json:"customStyles"`
+	Name             string                      `json:"name"`
+	Summary          string                      `json:"summary"`
+	WelcomeMessage   string                      `json:"welcomeMessage"`
+	Logo             string                      `json:"logo"`
+	Tags             []string                    `json:"tags"`
+	Version          string                      `json:"version"`
+	NSFW             bool                        `json:"nsfw"`
+	ExtraPageContent string                      `json:"extraPageContent"`
+	StreamTitle      string                      `json:"streamTitle"` // What's going on with the current stream
+	SocialHandles    []models.SocialHandle       `json:"socialHandles"`
+	CustomStyles     string                      `json:"customStyles"`
+	Notifications    notificationsConfigResponse `json:"notifications"`
 }
 
 type yp struct {
@@ -132,4 +139,10 @@ type federationConfigResponse struct {
 	GoLiveMessage  string   `json:"goLiveMessage"`
 	ShowEngagement bool     `json:"showEngagement"`
 	BlockedDomains []string `json:"blockedDomains"`
+}
+
+type notificationsConfigResponse struct {
+	Browser models.BrowserNotificationConfiguration `json:"browser"`
+	Twilio  models.TwilioConfiguration              `json:"twilio"`
+	Discord models.DiscordConfiguration             `json:"discord"`
 }

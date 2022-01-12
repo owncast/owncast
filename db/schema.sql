@@ -35,3 +35,10 @@ CREATE TABLE IF NOT EXISTS ap_accepted_activities (
 		"timestamp" TIMESTAMP NOT NULL
 	);
 	CREATE INDEX iri_actor_index ON ap_accepted_activities (iri,actor);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    "id" INTEGER NOT NULL PRIMARY KEY,
+		"channel" TEXT NOT NULL,
+		"destination" TEXT NOT NULL,
+		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+		CREATE INDEX channel_index ON notifications (channel);

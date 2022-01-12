@@ -55,3 +55,9 @@ SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TY
 
 -- name: UpdateFollowerByIRI :exec
 UPDATE ap_followers SET inbox = $1, name = $2, username = $3, image = $4 WHERE iri = $5;
+
+-- name: AddNotification :exec
+INSERT INTO notifications (channel, destination) VALUES($1, $2);
+
+-- name: GetNotificationDestinationsForChannel :many
+SELECT destination FROM notifications WHERE channel = $1;

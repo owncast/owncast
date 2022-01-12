@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/notifications"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -27,6 +28,8 @@ var _onlineCleanupTicker *time.Ticker
 var _currentBroadcast *models.CurrentBroadcast
 
 var _onlineTimerCancelFunc context.CancelFunc
+
+var _lastNotified *time.Time
 
 // setStreamAsConnected sets the stream as connected.
 func setStreamAsConnected(rtmpOut *io.PipeReader) {
@@ -74,6 +77,15 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	// Send a delayed live Federated message.
 	if data.GetFederationEnabled() {
 		_onlineTimerCancelFunc = startFederatedLiveStreamMessageTimer()
+	}
+
+	// Send alerts to those who have registered for notifications.
+	if notifier, err := notifications.New(data.GetDatastore()); err != nil {
+		log.Errorln(err)
+	} else if _lastNotified == nil || time.Since(*_lastNotified) > 5*time.Minute {
+		notifier.Notify()
+		now := time.Now()
+		_lastNotified = &now
 	}
 }
 

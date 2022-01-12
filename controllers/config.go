@@ -12,29 +12,45 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type webConfigResponse struct {
-	Name                 string                   `json:"name"`
-	Summary              string                   `json:"summary"`
-	Logo                 string                   `json:"logo"`
-	Tags                 []string                 `json:"tags"`
-	Version              string                   `json:"version"`
-	NSFW                 bool                     `json:"nsfw"`
-	ExtraPageContent     string                   `json:"extraPageContent"`
-	StreamTitle          string                   `json:"streamTitle,omitempty"` // What's going on with the current stream
-	SocialHandles        []models.SocialHandle    `json:"socialHandles"`
-	ChatDisabled         bool                     `json:"chatDisabled"`
-	ExternalActions      []models.ExternalAction  `json:"externalActions"`
-	CustomStyles         string                   `json:"customStyles"`
-	MaxSocketPayloadSize int                      `json:"maxSocketPayloadSize"`
-	Federation           federationConfigResponse `json:"federation"`
+	Name                 string                      `json:"name"`
+	Summary              string                      `json:"summary"`
+	Logo                 string                      `json:"logo"`
+	Tags                 []string                    `json:"tags"`
+	Version              string                      `json:"version"`
+	NSFW                 bool                        `json:"nsfw"`
+	ExtraPageContent     string                      `json:"extraPageContent"`
+	StreamTitle          string                      `json:"streamTitle,omitempty"` // What's going on with the current stream
+	SocialHandles        []models.SocialHandle       `json:"socialHandles"`
+	ChatDisabled         bool                        `json:"chatDisabled"`
+	ExternalActions      []models.ExternalAction     `json:"externalActions"`
+	CustomStyles         string                      `json:"customStyles"`
+	MaxSocketPayloadSize int                         `json:"maxSocketPayloadSize"`
+	Federation           federationConfigResponse    `json:"federation"`
+	Notifications        notificationsConfigResponse `json:"notifications"`
 }
 
 type federationConfigResponse struct {
 	Enabled       bool   `json:"enabled"`
 	Account       string `json:"account,omitempty"`
 	FollowerCount int    `json:"followerCount,omitempty"`
+}
+
+type browserNotificationsConfigResponse struct {
+	Enabled   bool   `json:"enabled"`
+	PublicKey string `json:"publicKey,omitempty"`
+}
+
+type textMessageNotificatoinsConfigResponse struct {
+	Enabled bool `json:"enabled"`
+}
+
+type notificationsConfigResponse struct {
+	Browser      browserNotificationsConfigResponse     `json:"browser"`
+	TextMessages textMessageNotificatoinsConfigResponse `json:"textMessages"`
 }
 
 // GetWebConfig gets the status of the server.
@@ -71,6 +87,23 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	browserPushEnabled := data.GetBrowserPushConfig().Enabled
+	browserPushPublicKey, err := data.GetBrowserPushPublicKey()
+	if err != nil {
+		log.Errorln("unable to fetch browser push notifications public key", err)
+		browserPushEnabled = false
+	}
+
+	notificationsResponse := notificationsConfigResponse{
+		Browser: browserNotificationsConfigResponse{
+			Enabled:   browserPushEnabled,
+			PublicKey: browserPushPublicKey,
+		},
+		TextMessages: textMessageNotificatoinsConfigResponse{
+			Enabled: data.GetTwilioConfig().Enabled,
+		},
+	}
+
 	configuration := webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
@@ -86,6 +119,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		CustomStyles:         data.GetCustomStyles(),
 		MaxSocketPayloadSize: config.MaxSocketPayloadSize,
 		Federation:           federationResponse,
+		Notifications:        notificationsResponse,
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {

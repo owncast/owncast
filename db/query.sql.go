@@ -36,6 +36,20 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 	return err
 }
 
+const addNotification = `-- name: AddNotification :exec
+INSERT INTO notifications (channel, destination) VALUES($1, $2)
+`
+
+type AddNotificationParams struct {
+	Channel     string
+	Destination string
+}
+
+func (q *Queries) AddNotification(ctx context.Context, arg AddNotificationParams) error {
+	_, err := q.db.ExecContext(ctx, addNotification, arg.Channel, arg.Destination)
+	return err
+}
+
 const addToAcceptedActivities = `-- name: AddToAcceptedActivities :exec
 INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values($1, $2, $3, $4)
 `
@@ -289,6 +303,33 @@ func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getNotificationDestinationsForChannel = `-- name: GetNotificationDestinationsForChannel :many
+SELECT destination FROM notifications WHERE channel = $1
+`
+
+func (q *Queries) GetNotificationDestinationsForChannel(ctx context.Context, channel string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getNotificationDestinationsForChannel, channel)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var destination string
+		if err := rows.Scan(&destination); err != nil {
+			return nil, err
+		}
+		items = append(items, destination)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getObjectFromOutboxByID = `-- name: GetObjectFromOutboxByID :one
