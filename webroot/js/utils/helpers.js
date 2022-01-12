@@ -177,3 +177,24 @@ export function makeLastOnlineString(timestamp) {
 
   return `Last live: ${string}`;
 }
+
+
+// Routing & Tabs
+export const ROUTE_RECORDINGS = 'recordings';
+export const ROUTE_SCHEDULE = 'schedule';
+// looks for `/recording|schedule/id` pattern to determine what to display from the tab view
+export function checkUrlPathForDisplay() {
+  const pathTest = [ROUTE_RECORDINGS, ROUTE_SCHEDULE];
+  const pathParts = window.location.pathname.split('/');
+
+  if (pathParts.length >= 2) {
+    const part = pathParts[1].toLowerCase();
+    if (pathTest.includes(part)) {
+      return {
+        section: part,
+        sectionId: pathParts[2] || '',
+      };
+    }
+  }
+  return null;
+}

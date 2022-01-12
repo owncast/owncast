@@ -24,6 +24,7 @@ func createUsersTable(db *sql.DB) {
 		PRIMARY KEY (id)
 	);CREATE INDEX index ON users (id, access_token, disabled_at);
 	CREATE INDEX id ON users (id);
+  CREATE INDEX id_disabled ON users (id, disabled_at);
 	CREATE INDEX access_token ON users (access_token);
 	CREATE INDEX disabled_at ON USERS (disabled_at);`
 

@@ -78,8 +78,35 @@ func SendSystemMessage(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		saveEvent(message.ID, "system", message.Body, message.GetMessageType(), nil, message.Timestamp)
+		saveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
+
+	return nil
+}
+
+// SendFediverseAction will send a message indicating some Fediverse engagement took place.
+func SendFediverseAction(eventType string, userAccountName string, image *string, body string, link string) error {
+	message := events.FediverseEngagementEvent{
+		Event: events.Event{
+			Type: eventType,
+		},
+		MessageEvent: events.MessageEvent{
+			Body: body,
+		},
+		UserAccountName: userAccountName,
+		Image:           image,
+		Link:            link,
+	}
+
+	message.SetDefaults()
+	message.RenderBody()
+
+	if err := Broadcast(&message); err != nil {
+		log.Errorln("error sending system message", err)
+		return err
+	}
+
+	saveFederatedAction(message)
 
 	return nil
 }
@@ -100,7 +127,7 @@ func SendSystemAction(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		saveEvent(message.ID, "action", message.Body, message.GetMessageType(), nil, message.Timestamp)
+		saveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
 
 	return nil

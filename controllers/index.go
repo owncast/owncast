@@ -35,6 +35,15 @@ type MetadataPage struct {
 // IndexHandler handles the default index route.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
+
+	// Treat recordings and schedule as index requests
+	pathComponents := strings.Split(r.URL.Path, "/")
+	pathRequest := pathComponents[1]
+
+	if pathRequest == "recordings" || pathRequest == "schedule" {
+		r.URL.Path = "index.html"
+	}
+
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
 
 	// For search engine bots and social scrapers return a special
@@ -91,11 +100,11 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	fullURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, r.URL.Path))
 	if err != nil {
-		log.Panicln(err)
+		log.Errorln(err)
 	}
 	imageURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/logo/external"))
 	if err != nil {
-		log.Panicln(err)
+		log.Errorln(err)
 	}
 
 	status := core.GetStatus()
@@ -128,6 +137,6 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
 	if err := tmpl.Execute(w, metadata); err != nil {
-		log.Panicln(err)
+		log.Errorln(err)
 	}
 }

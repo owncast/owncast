@@ -26,6 +26,62 @@ function SystemMessage(props) {
   `;
 }
 
+function SingleFederatedUser(props) {
+  const { message } = props;
+  const { type, body, title, image, link } = message;
+
+  let icon = null;
+  switch (type) {
+    case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW:
+      icon = '/img/follow.svg';
+      break;
+    case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE:
+      icon = '/img/like.svg';
+      break;
+    case SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST:
+      icon = '/img/repost.svg';
+      break;
+    default:
+      break;
+  }
+
+  return html`
+    <a
+      href=${link}
+      target="_blank"
+      class="hover:no-underline"
+      title="Visit profile"
+    >
+      <div
+        class="federated-action m-2 mt-3 bg-white flex items-center px-2 rounded-xl shadow border"
+      >
+        <div class="relative" style="top: -6px">
+          <img
+            src="${image || '/img/logo.svg'}"
+            style="max-width: unset"
+            class="rounded-full border border-slate-500	w-16"
+          />
+          <span
+            style=${{
+              backgroundImage: `url(${icon})`,
+            }}
+            class="absolute h-6 w-6 rounded-full border-2 border-white action-icon"
+          ></span>
+        </div>
+        <div class="px-4 py-2">
+          <span class=" text-gray-500 text-sm hover:no-underline truncate">
+            ${title}
+          </span>
+          <p
+            class=" text-gray-700 w-full text-base leading-6"
+            dangerouslySetInnerHTML=${{ __html: body }}
+          ></p>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
 export default function Message(props) {
   const { message } = props;
   const { type, oldName, user, body } = message;
@@ -46,8 +102,18 @@ export default function Message(props) {
     return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
     const { displayName } = user;
-    const contents = html`<span class="font-bold">${displayName}</span> joined
-      the chat.`;
+    const isAuthorModerator = checkIsModerator(message);
+    const messageAuthorFlair = isAuthorModerator
+      ? html`<img
+          title="Moderator"
+          class="inline-block mr-1 w-3 h-3"
+          src="/img/moderator-nobackground.svg"
+        />`
+      : null;
+    const contents = html`<div>
+      <span class="font-bold">${messageAuthorFlair}${displayName}</span>
+      ${' '}joined the chat.
+    </div>`;
     return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.CHAT_ACTION) {
     const contents = html`<span
@@ -64,6 +130,12 @@ export default function Message(props) {
       </div>`;
       return html`<${SystemMessage} contents=${contents} />`;
     }
+  } else if (
+    type === SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW ||
+    SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE ||
+    SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST
+  ) {
+    return html` <${SingleFederatedUser} message=${message} /> `;
   } else {
     console.log('Unknown message type:', type);
   }

@@ -10,6 +10,15 @@ May have overrides for other components with own stylesheets.
   --video-container-height: calc((9 / 16) * 100vw);
   --header-bg-color: rgba(20,0,40,1);
   --user-image-width: 10em;
+
+  --novideo-container-height: 16em;
+
+  --owncast-purple: rgba(120, 113, 255, 1);
+}
+
+.no-video,
+.single-col.no-video {
+  --video-container-height: var(--novideo-container-height);
 }
 
 html {
@@ -78,23 +87,11 @@ header {
   display: none;
 }
 
-#external-actions-container {
-  margin: 1em 0;
-
-}
 .external-action-button {
-  border-radius: 4px;
-  color: #fff;
-  font-size: .88em;
-  padding: .25em .75em;
-  margin: .35em;
-  margin-left: 0;
-  display: flex;
   max-width: 250px;
-  padding-top: .3em;
 }
 .external-action-button:hover {
-  text-decoration: underline;
+  box-shadow: var(--owncast-purple) 0px 0px 5px;
 }
 .external-action-icon {
   margin: .25em .5em .25em 0;
@@ -108,7 +105,9 @@ header {
   overflow: hidden;
 }
 
-
+#fediverse-follow-button-container .external-action-button {
+  border: 2px solid var(--owncast-purple);
+}
 
 /* ************************************************ */
 
@@ -170,6 +169,9 @@ header {
   width: var(--content-width);
 }
 
+.user-content-header {
+  width: 100%;
+}
 .chat #video-container {
   height: calc((9 / 16) * var(--content-width));
 }
@@ -218,7 +220,7 @@ header {
 }
 .single-col #user-content .user-content {
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .single-col.chat #user-content {
   display: none;
@@ -243,6 +245,36 @@ header {
   max-height: 3em;
 }
 
+
+.single-col .user-logo-icons {
+  margin-right: 0;
+  margin-bottom: 1em;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+}
+.single-col.use-fediverse-follow.user-logo-icons {
+  align-items: center;
+}
+
+.single-col .social-list {
+  text-align: left;
+}
+.single-col .social-actions {
+  margin-left: 1em;
+}
+.single-col .follow-icon-list {
+   justify-content: flex-start;
+}
+.single-col.use-fediverse-follow #fediverse-button-singlecol {
+  display: inline-block;
+}
+
+.single-col #external-actions-container {
+  justify-content: flex-start;
+}
+
+
 @media screen and (max-height: 500px) {
   .single-col.touch-screen:not(.touch-keyboard-active) {
     --header-height: 0px;
@@ -251,7 +283,12 @@ header {
     display: none;
   }
 }
+/* ************************************************ */
 
+
+.no-video #video-container {
+  min-height: var(--video-container-height);
+}
 
 /* ************************************************ */
 
@@ -259,7 +296,6 @@ header {
 @media screen and (max-width: 860px) {
   :root {
     --right-col-width: 20em;
-    --user-image-width: 6em;
   }
   #video-container {
     min-height: 240px;
@@ -314,14 +350,14 @@ header {
 }
 
 .modal__container {
+  position: relative;
   background-color: transparent;
   padding: 0px;
   max-width: 740px;
-  height: 75vh;
   width: 50%;
-  border-radius: 0px;
   overflow: hidden;
   box-sizing: border-box;
+  top: -15%;
 }
 .modal__close {
   background: transparent;
@@ -418,4 +454,53 @@ header {
   .modal__content {
     -webkit-overflow-scrolling: touch;
   }
+}
+
+
+/**************************
+  Tab Bar Base Styles
+**************************/
+.tab-bar [role="tab"] {
+  padding: .5rem 1rem;
+  border-radius: .25rem .25rem 0 0;
+  font-weight: bold;
+}
+.tab-bar [role="tab"]:hover {
+  background-color: rgba(255,255,255,.35);
+}
+.tab-bar [role="tab"][aria-selected="true"] {
+  color: var(--owncast-purple);
+  background-color: white;
+}
+.tab-bar [role="tabpanel"] {
+  padding: 1rem 0;
+  border-top: 1px solid var(--header-bg-color);
+  min-height: 15rem;
+}
+
+.follower {
+  width: 20vw;
+  max-width: 300px
+}
+
+.following-list-follower {
+  max-width: 280px;
+}
+
+#follow-loading-spinner-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+
+#follow-loading-spinner {
+  width: 100px;
+  height: 100px;
 }

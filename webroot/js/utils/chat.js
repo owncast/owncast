@@ -43,11 +43,13 @@ export function generatePlaceholderText(isEnabled, hasSentFirstChatMessage) {
 export function extraUserNamesFromMessageHistory(messages) {
   const list = [];
   if (messages) {
-    messages.forEach(function (message) {
-      if (!list.includes(message.user.displayName)) {
-        list.push(message.user.displayName);
-      }
-    });
+    messages
+      .filter((m) => m.user && m.user.displayName)
+      .forEach(function (message) {
+        if (!list.includes(message.user.displayName)) {
+          list.push(message.user.displayName);
+        }
+      });
   }
   return list;
 }

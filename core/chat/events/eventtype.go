@@ -34,4 +34,10 @@ const (
 	ErrorMaxConnectionsExceeded EventType = "ERROR_MAX_CONNECTIONS_EXCEEDED"
 	// ErrorUserDisabled is an error returned when the connecting user has been previously banned/disabled.
 	ErrorUserDisabled EventType = "ERROR_USER_DISABLED"
+	// FediverseEngagementFollow is an event representing a follow action that took place on the fediverse.
+	FediverseEngagementFollow EventType = "FEDIVERSE_ENGAGEMENT_FOLLOW"
+	// FediverseEngagementLike is an event representing a like action that took place on the fediverse.
+	FediverseEngagementLike EventType = "FEDIVERSE_ENGAGEMENT_LIKE"
+	// FediverseEngagementRepost is an event representing a re-post action that took place on the fediverse.
+	FediverseEngagementRepost EventType = "FEDIVERSE_ENGAGEMENT_REPOST"
 )

@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -42,6 +43,12 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetServerMetadataTags(tagStrings); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -99,6 +106,12 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
@@ -114,6 +127,12 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetServerSummary(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -229,6 +248,12 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := data.SetLogoPath("logo" + extension); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -501,6 +526,12 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 
 	if err := data.SetSocialHandles(socialHandles.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
+		return
+	}
+
+	// Update Fediverse followers about this change.
+	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 

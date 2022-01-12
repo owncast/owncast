@@ -15,6 +15,10 @@ func CreateMessagesTable(db *sql.DB) {
 		"eventType" TEXT,
 		"hidden_at" DATETIME,
 		"timestamp" DATETIME,
+    "title" TEXT,
+    "subtitle" TEXT,
+    "image" TEXT,
+    "link" TEXT,
 		PRIMARY KEY (id)
 	);CREATE INDEX index ON messages (id, user_id, hidden_at, timestamp);
 	CREATE INDEX id ON messages (id);

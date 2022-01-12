@@ -81,3 +81,7 @@ linters-settings:
         # Logging via Print bypasses our logging framework.
       - ^(fmt\.Print(|f|ln)|print|println)
       - ^panic.*$
+
+  dupl:
+    # tokens count to trigger issue, 150 by default
+    threshold: 160

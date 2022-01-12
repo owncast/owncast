@@ -21,7 +21,7 @@ func SetHeaders(w http.ResponseWriter) {
 	}
 	// Content security policy
 	csp := []string{
-		fmt.Sprintf("script-src 'self' %s 'sha256-2HPCfJIJHnY0NrRDPTOdC7AOSJIcQyNxzUuut3TsYRY=' 'sha256-PzXGlTLvNFZ7et6GkP2nD3XuSaAKQVBSYiHzU2ZKm8o=' 'sha256-/wqazZOqIpFSIrNVseblbKCXrezG73X7CMqRSTf+8zw=' 'sha256-jCj2f+ICtd8fvdb0ngc+Hkr/ZnZOMvNkikno/XR6VZs='", unsafeEval),
+		fmt.Sprintf("script-src 'self' %s 'sha256-rnxPrBaD0OuYxsCdrll4QJwtDLcBJqFh0u27CoX5jZ8=' 'sha256-PzXGlTLvNFZ7et6GkP2nD3XuSaAKQVBSYiHzU2ZKm8o=' 'sha256-/wqazZOqIpFSIrNVseblbKCXrezG73X7CMqRSTf+8zw=' 'sha256-jCj2f+ICtd8fvdb0ngc+Hkr/ZnZOMvNkikno/XR6VZs='", unsafeEval),
 		"worker-src 'self' blob:", // No single quotes around blob:
 	}
 	w.Header().Set("Content-Security-Policy", strings.Join(csp, "; "))

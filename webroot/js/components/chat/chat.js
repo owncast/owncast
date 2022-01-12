@@ -25,6 +25,9 @@ const renderableChatStyleMessages = [
   SOCKET_MESSAGE_TYPES.CHAT_ACTION,
   SOCKET_MESSAGE_TYPES.SYSTEM,
   SOCKET_MESSAGE_TYPES.CHAT,
+  SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_FOLLOW,
+  SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_LIKE,
+  SOCKET_MESSAGE_TYPES.FEDIVERSE_ENGAGEMENT_REPOST,
 ];
 export default class Chat extends Component {
   constructor(props, context) {
@@ -46,10 +49,6 @@ export default class Chat extends Component {
     this.receivedFirstMessages = false;
     this.receivedMessageUpdate = false;
     this.hasFetchedHistory = false;
-
-    // Force render is a state to force the messages to re-render when visibility
-    // changes for messages. This overrides componentShouldUpdate logic.
-    this.forceRender = false;
 
     // Unordered dictionary of messages keyed by ID.
     this.messages = {};
@@ -97,10 +96,6 @@ export default class Chat extends Component {
       newMessagesReceived,
       sortedMessages,
     } = this.state;
-
-    if (this.forceRender) {
-      return true;
-    }
 
     const {
       webSocketConnected: nextSocket,
@@ -224,7 +219,8 @@ export default class Chat extends Component {
     };
 
     this.messages = updatedMessagesList;
-    this.forceRender = true;
+
+    this.resortAndRenderMessages();
   }
 
   handleChangeModeratorStatus(isModerator) {
@@ -261,12 +257,16 @@ export default class Chat extends Component {
     };
     this.messages = updatedMessagesList;
 
+    this.resortAndRenderMessages();
+  }
+
+  resortAndRenderMessages() {
     // Convert the unordered dictionary of messages to an ordered array.
     // NOTE: This sorts the entire collection of messages on every new message
     // because the order a message comes in cannot be trusted that it's the order
     // it was sent, you need to sort by timestamp. I don't know if there
     // is a  performance problem waiting to occur here for larger chat feeds.
-    var sortedMessages = Object.values(updatedMessagesList)
+    var sortedMessages = Object.values(this.messages)
       // Filter out messages set to not be visible
       .filter((message) => message.visible !== false)
       .sort((a, b) => {

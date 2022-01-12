@@ -24,6 +24,9 @@ type Defaults struct {
 	SegmentLengthSeconds int
 	SegmentsInPlaylist   int
 	StreamVariants       []models.StreamOutputVariant
+
+	FederationUsername      string
+	FederationGoLiveMessage string
 }
 
 // GetDefaults will return default configuration values.
@@ -59,5 +62,8 @@ func GetDefaults() Defaults {
 				CPUUsageLevel:      2,
 			},
 		},
+
+		FederationUsername:      "streamer",
+		FederationGoLiveMessage: "I've gone live!",
 	}
 }
