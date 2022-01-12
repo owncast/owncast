@@ -30,8 +30,10 @@ export default function ClientTable({ data }: ClientTableProps) {
       dataIndex: 'messageCount',
       key: 'messageCount',
       className: 'number-col',
+      width: '12%',
       sorter: (a: any, b: any) => a.messageCount - b.messageCount,
       sortDirections: ['descend', 'ascend'] as SortOrder[],
+      render: (count: number) => <div style={{ textAlign: 'center' }}>{count}</div>,
     },
     {
       title: 'Connected Time',

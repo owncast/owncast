@@ -4,8 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Popover, Alert, Typography } from 'antd';
-
+import { Layout, Menu, Popover, Alert, Typography, Button, Space, Tooltip } from 'antd';
 import {
   SettingOutlined,
   HomeOutlined,
@@ -16,6 +15,7 @@ import {
   QuestionCircleOutlined,
   MessageOutlined,
   ExperimentOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import classNames from 'classnames';
 import { upgradeVersionAvailable } from '../utils/apis';
@@ -27,7 +27,7 @@ import { AlertMessageContext } from '../utils/alert-message-context';
 
 import TextFieldWithSubmit from './config/form-textfield-with-submit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
-
+import ComposeFederatedPost from './compose-federated-post';
 import { UpdateArgs } from '../types/config-section';
 
 // eslint-disable-next-line react/function-component-definition
@@ -36,9 +36,11 @@ export default function MainLayout(props) {
 
   const context = useContext(ServerStatusContext);
   const { serverConfig, online, broadcaster, versionNumber } = context || {};
-  const { instanceDetails, chatDisabled } = serverConfig;
+  const { instanceDetails, chatDisabled, federation } = serverConfig;
+  const { enabled: federationEnabled } = federation;
 
   const [currentStreamTitle, setCurrentStreamTitle] = useState('');
+  const [postModalDisplayed, setPostModalDisplayed] = useState(false);
 
   const alertMessage = useContext(AlertMessageContext);
 
@@ -70,6 +72,10 @@ export default function MainLayout(props) {
     setCurrentStreamTitle(value);
   };
 
+  const handleCreatePostButtonPressed = () => {
+    setPostModalDisplayed(true);
+  };
+
   const appClass = classNames({
     'app-container': true,
     online,
@@ -94,12 +100,7 @@ export default function MainLayout(props) {
     ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time)))
     : '';
   const currentThumbnail = online ? (
-    <img
-      src="/thumbnail.jpg"
-      className="online-thumbnail"
-      alt="current thumbnail"
-      style={{ width: '10rem' }}
-    />
+    <img src="/thumbnail.jpg" className="online-thumbnail" alt="current thumbnail" width="1rem" />
   ) : null;
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : 'Offline';
@@ -162,6 +163,22 @@ export default function MainLayout(props) {
             </Menu.Item>
           </SubMenu>
 
+          <Menu.Item
+            style={{ display: federationEnabled ? 'block' : 'none' }}
+            key="federation-followers"
+            title="Fediverse followers"
+            icon={
+              <img
+                alt="fediverse icon"
+                src="/admin/fediverse-white.png"
+                width="15rem"
+                style={{ opacity: 0.6, position: 'relative', top: '-1px' }}
+              />
+            }
+          >
+            <Link href="/federation/followers">Followers</Link>
+          </Menu.Item>
+
           <SubMenu key="configuration" title="Configuration" icon={<SettingOutlined />}>
             <Menu.Item key="config-public-details">
               <Link href="/config-public-details">General</Link>
@@ -171,11 +188,15 @@ export default function MainLayout(props) {
               <Link href="/config-server-details">Server Setup</Link>
             </Menu.Item>
             <Menu.Item key="config-video">
-              <Link href="/config-video">Video Configuration</Link>
+              <Link href="/config-video">Video</Link>
             </Menu.Item>
             <Menu.Item key="config-chat">
               <Link href="/config-chat">Chat</Link>
             </Menu.Item>
+            <Menu.Item key="config-federation">
+              <Link href="/config-federation">Social</Link>
+            </Menu.Item>
+
             <Menu.Item key="config-storage">
               <Link href="/config-storage">S3 Storage</Link>
             </Menu.Item>
@@ -187,6 +208,9 @@ export default function MainLayout(props) {
             </Menu.Item>
             <Menu.Item key="logs">
               <Link href="/logs">Logs</Link>
+            </Menu.Item>
+            <Menu.Item key="federation-activities" title="Social Actions">
+              <Link href="/federation/actions">Social Actions</Link>
             </Menu.Item>
             <Menu.Item key="upgrade" style={{ display: upgradeMenuItemStyle }}>
               <Link href="/upgrade">{upgradeMessage}</Link>
@@ -211,6 +235,18 @@ export default function MainLayout(props) {
 
       <Layout className="layout-main">
         <Header className="layout-header">
+          <Space direction="horizontal">
+            <Tooltip title="Compose post to your followers">
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<EditOutlined />}
+                size="large"
+                onClick={handleCreatePostButtonPressed}
+                style={{ display: federationEnabled ? 'block' : 'none' }}
+              />
+            </Tooltip>
+          </Space>
           <div className="global-stream-title-container">
             <TextFieldWithSubmit
               fieldName="streamTitle"
@@ -221,8 +257,7 @@ export default function MainLayout(props) {
               onChange={handleStreamTitleChanged}
             />
           </div>
-
-          {statusIndicatorWithThumb}
+          <Space direction="horizontal">{statusIndicatorWithThumb}</Space>
         </Header>
 
         {headerAlertMessage}
@@ -235,6 +270,11 @@ export default function MainLayout(props) {
           </a>
         </Footer>
       </Layout>
+
+      <ComposeFederatedPost
+        visible={postModalDisplayed}
+        handleClose={() => setPostModalDisplayed(false)}
+      />
     </Layout>
   );
 }

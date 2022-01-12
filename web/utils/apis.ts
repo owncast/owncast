@@ -79,6 +79,24 @@ export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms
 // set external action links
 export const EXTERNAL_ACTIONS = `${API_LOCATION}api/externalactions`;
 
+// send a message to the fediverse
+export const FEDERATION_MESSAGE_SEND = `${API_LOCATION}federation/send`;
+
+// Get followers
+export const FOLLOWERS = `${API_LOCATION}followers`;
+
+// Get followers pending approval
+export const FOLLOWERS_PENDING = `${API_LOCATION}followers/pending`;
+
+// Get followers who were blocked or rejected
+export const FOLLOWERS_BLOCKED = `${API_LOCATION}followers/blocked`;
+
+// Approve, reject a follow request
+export const SET_FOLLOWER_APPROVAL = `${API_LOCATION}followers/approve`;
+
+// List of inbound federated actions that took place.
+export const FEDERATION_ACTIONS = `${API_LOCATION}federation/actions`;
+
 export const API_YP_RESET = `${API_LOCATION}yp/reset`;
 
 export const TEMP_UPDATER_API = LOGS_ALL;

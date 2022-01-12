@@ -89,6 +89,15 @@ export interface ExternalAction {
   openExternally: boolean;
 }
 
+export interface Federation {
+  enabled: boolean;
+  isPrivate: boolean;
+  username: string;
+  goLiveMessage: string;
+  showEngagement: boolean;
+  blockedDomains: string[];
+}
+
 export interface ConfigDetails {
   externalActions: ExternalAction[];
   ffmpegPath: string;
@@ -104,4 +113,5 @@ export interface ConfigDetails {
   forbiddenUsernames: string[];
   suggestedUsernames: string[];
   chatDisabled: boolean;
+  federation: Federation;
 }

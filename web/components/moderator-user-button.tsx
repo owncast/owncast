@@ -1,5 +1,10 @@
 import { Modal, Button } from 'antd';
-import { ExclamationCircleFilled, QuestionCircleFilled, StopTwoTone } from '@ant-design/icons';
+import {
+  ExclamationCircleFilled,
+  QuestionCircleFilled,
+  StopTwoTone,
+  SafetyCertificateTwoTone,
+} from '@ant-design/icons';
 import { USER_SET_MODERATOR, fetchData } from '../utils/apis';
 import { User } from '../types/chat';
 
@@ -70,7 +75,13 @@ export default function ModeratorUserButton({ user, onClick }: ModeratorUserButt
     <Button
       onClick={confirmBlockAction}
       size="small"
-      icon={isModerator ? <StopTwoTone twoToneColor="#ff4d4f" /> : null}
+      icon={
+        isModerator ? (
+          <StopTwoTone twoToneColor="#ff4d4f" />
+        ) : (
+          <SafetyCertificateTwoTone twoToneColor="#22bb44" />
+        )
+      }
       className="block-user-button"
     >
       {actionString}

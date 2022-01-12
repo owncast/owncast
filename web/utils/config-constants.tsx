@@ -35,6 +35,14 @@ export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
 export const API_VIDEO_CODEC = '/video/codec';
 
+// Federation
+export const API_FEDERATION_ENABLED = '/federation/enable';
+export const API_FEDERATION_PRIVATE = '/federation/private';
+export const API_FEDERATION_USERNAME = '/federation/username';
+export const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
+export const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
+export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
+
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;
   const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
@@ -198,6 +206,76 @@ export const TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES = {
   tip: 'An optional list of chat usernames that new users get assigned. If the list holds less then 10 items, random names will be generated.  Users can change their usernames afterwards and the same username may be given out multple times.',
   min_not_reached: 'At least 10 items are required for this feature.',
   no_entries: 'The default name generator is used.',
+};
+
+export const FIELD_PROPS_ENABLE_FEDERATION = {
+  apiPath: API_FEDERATION_ENABLED,
+  configPath: 'federation',
+  label: 'Enable Social Features',
+  tip: 'Send and receive activities on the Fediverse.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_FEDERATION_IS_PRIVATE = {
+  apiPath: API_FEDERATION_PRIVATE,
+  configPath: 'federation',
+  label: 'Private',
+  tip: 'Follow requests will require approval and only followers will see your activity.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT = {
+  apiPath: API_FEDERATION_SHOW_ENGAGEMENT,
+  configPath: 'showEngagement',
+  label: 'Show engagement',
+  tip: 'Following, liking and sharing will appear in the chat feed.',
+  useSubmit: true,
+};
+
+export const TEXTFIELD_PROPS_FEDERATION_LIVE_MESSAGE = {
+  apiPath: API_FEDERATION_GOLIVE_MESSAGE,
+  configPath: 'federation',
+  maxLength: 500,
+  placeholder: 'My stream has started, tune in!',
+  label: 'Now Live message',
+  tip: 'The message sent announcing that your live stream has begun. Tags will be automatically added. Leave blank to disable.',
+};
+
+export const TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER = {
+  apiPath: API_FEDERATION_USERNAME,
+  configPath: 'federation',
+  maxLength: 10,
+  placeholder: 'owncast',
+  default: 'owncast',
+  label: 'Username',
+  tip: 'The username used for sending and receiving activities from the Fediverse. For example, if you use "bob" as a username you would send messages to the fediverse from @bob@yourserver. Once people start following your instance you should not change this.',
+};
+
+export const TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL = {
+  apiPath: API_INSTANCE_URL,
+  configPath: 'yp',
+  maxLength: 255,
+  placeholder: 'https://owncast.mysite.com',
+  label: 'Server URL',
+  tip: 'The full url to your Owncast server is required to enable social features. Must use SSL (https). Once people start following your instance you should not change this.',
+  type: TEXTFIELD_TYPE_URL,
+  pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+  useTrim: true,
+};
+
+export const FIELD_PROPS_FEDERATION_NSFW = {
+  apiPath: API_NSFW_SWITCH,
+  configPath: 'instanceDetails',
+  label: 'Potentially NSFW',
+  tip: 'Turn this ON if you plan to steam explicit or adult content so previews of your stream can be marked as potentially sensitive.',
+};
+
+export const FIELD_PROPS_FEDERATION_BLOCKED_DOMAINS = {
+  apiPath: API_FEDERATION_BLOCKED_DOMAINS,
+  configPath: 'federation',
+  label: 'Blocked domains',
+  placeholder: 'bad.domain.biz',
+  tip: 'You can block specific domains from interacting with you.',
 };
 
 export const VIDEO_VARIANT_SETTING_DEFAULTS = {

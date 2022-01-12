@@ -32,7 +32,7 @@ p,
 p.description,
 .description,
 .ant-typography {
-  font-weight: 300;
+  font-weight: 500;
   margin: 1em 0;
   color: var(--white-75);
 }
@@ -157,4 +157,20 @@ input {
 
 .ant-tabs-ink-bar {
   background: var(--nav-selected-text);
+}
+
+#fediverse-post-container {
+  max-width: 50vw;
+  width: 100%;
+
+  #fediverse-post-input {
+    color: var(--white-75);
+    border-color: var(--owncast-purple);
+    background-color: var(--default-bg-color);
+    height: 250px;
+  }
+
+  .ant-input-textarea-show-count::after{
+    color: var(--owncast-purple);
+  }
 }

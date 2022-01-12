@@ -1,7 +1,7 @@
 // This displays a clickable user name (or whatever children element you provide), and displays a simple tooltip of created time. OnClick a modal with more information about the user is displayed.
 
 import { useState, ReactNode } from 'react';
-import { Divider, Modal, Tooltip, Typography, Row, Col } from 'antd';
+import { Divider, Modal, Tooltip, Typography, Row, Col, Space } from 'antd';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
 import { uniq } from 'lodash';
@@ -117,27 +117,29 @@ export default function UserPopover({ user, connectionInfo, children }: UserPopo
             )}
           </Row>
           <Divider />
-          {disabledAt ? (
-            <>
-              This user was banned on <code>{formatDisplayDate(disabledAt)}</code>.
-              <br />
-              <br />
+          <Space direction="horizontal">
+            {disabledAt ? (
+              <>
+                This user was banned on <code>{formatDisplayDate(disabledAt)}</code>.
+                <br />
+                <br />
+                <BlockUserbutton
+                  label="Unban this user"
+                  user={user}
+                  isEnabled={false}
+                  onClick={handleCloseModal}
+                />
+              </>
+            ) : (
               <BlockUserbutton
-                label="Unban this user"
+                label="Ban this user"
                 user={user}
-                isEnabled={false}
+                isEnabled
                 onClick={handleCloseModal}
               />
-            </>
-          ) : (
-            <BlockUserbutton
-              label="Ban this user"
-              user={user}
-              isEnabled
-              onClick={handleCloseModal}
-            />
-          )}
-          <ModeratorUserbutton user={user} onClick={handleCloseModal} />
+            )}
+            <ModeratorUserbutton user={user} onClick={handleCloseModal} />
+          </Space>
         </div>
       </Modal>
     </>

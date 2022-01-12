@@ -55,7 +55,7 @@ export default function EditValueArray(props: EditStringArrayProps) {
       <p className="description">{description}</p>
 
       <div className="edit-current-strings">
-        {values.map((tag, index) => {
+        {values?.map((tag, index) => {
           const handleClose = () => {
             handleDeleteIndex(index);
           };
