@@ -10,7 +10,7 @@ import (
 
 var (
 	// taken from https://github.com/docker/docker/blob/master/pkg/namesgenerator/names-generator.go
-	left = [...]string{
+	left = []string{
 		"admiring",
 		"adoring",
 		"affectionate",
@@ -115,7 +115,7 @@ var (
 
 	// Docker, starting from 0.7.x, generates names from notable scientists and hackers.
 	// Please, for any amazing man that you add to the list, consider adding an equally amazing woman to it, and vice versa.
-	right = [...]string{
+	right = []string{
 		// Muhammad ibn Jābir al-Ḥarrānī al-Battānī was a founding father of astronomy. https://en.wikipedia.org/wiki/Mu%E1%B8%A5ammad_ibn_J%C4%81bir_al-%E1%B8%A4arr%C4%81n%C4%AB_al-Batt%C4%81n%C4%AB
 		"albattani",
 
@@ -628,10 +628,15 @@ var (
 
 // GeneratePhrase will generate and return a random string consisting of our word list.
 func GeneratePhrase() string {
-	r := rand.New(rand.NewSource(time.Now().UnixNano())) //nolint
-
-	leftIndex := int(r.Float32() * float32(len(left)))
-	rightIndex := int(r.Float32() * float32(len(right)))
+	leftIndex := RandomIndex(len(left))
+	rightIndex := RandomIndex(len(right))
 
 	return fmt.Sprintf("%s-%s", left[leftIndex], right[rightIndex])
+}
+
+// RandomIndex returns a random integer that is at most the `max` parameter.
+func RandomIndex(max int) int {
+	r := rand.New(rand.NewSource(time.Now().UnixNano())) //nolint
+
+	return int(r.Float32() * float32(max))
 }
