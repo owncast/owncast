@@ -167,6 +167,9 @@ func Start() error {
 	// Set chat usernames that are not allowed
 	http.HandleFunc("/api/admin/config/chat/forbiddenusernames", middleware.RequireAdminAuth(admin.SetForbiddenUsernameList))
 
+	// Set the suggested chat usernames that will be assigned automatically
+	http.HandleFunc("/api/admin/config/chat/suggestedusernames", middleware.RequireAdminAuth(admin.SetSuggestedUsernameList))
+
 	// Set video codec
 	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
 

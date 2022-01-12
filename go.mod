@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.42.0
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
@@ -42,7 +43,6 @@ require github.com/twilio/twilio-go v0.19.0
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/mock v1.6.0 // indirect

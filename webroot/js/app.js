@@ -61,6 +61,7 @@ import {
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
 import { checkIsModerator } from './utils/chat.js';
+import TabBar from './components/tab-bar.js';
 
 import TabBar from './components/tab-bar.js';
 

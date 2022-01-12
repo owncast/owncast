@@ -634,6 +634,27 @@ func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "forbidden username list updated")
 }
 
+// SetSuggestedUsernameList will set the list of suggested usernames that newly registered users are assigned if it isn't inferred otherwise (i.e. through a proxy).
+func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
+	type suggestedUsernameListRequest struct {
+		Value []string `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var request suggestedUsernameListRequest
+
+	if err := decoder.Decode(&request); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update suggested usernames with provided values")
+		return
+	}
+
+	if err := data.SetSuggestedUsernamesList(request.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+	}
+
+	controllers.WriteSimpleResponse(w, true, "suggested username list updated")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")

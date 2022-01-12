@@ -17,6 +17,7 @@ import (
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 	usernameBlocklist := data.GetForbiddenUsernameList()
+	usernameSuggestions := data.GetSuggestedUsernamesList()
 
 	videoQualityVariants := make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
@@ -64,6 +65,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		SupportedCodecs:    transcoder.GetCodecs(ffmpeg),
 		VideoCodec:         data.GetVideoCodec(),
 		ForbiddenUsernames: usernameBlocklist,
+		SuggestedUsernames: usernameSuggestions,
 		Federation: federationConfigResponse{
 			Enabled:        data.GetFederationEnabled(),
 			IsPrivate:      data.GetFederationIsPrivate(),
@@ -103,6 +105,7 @@ type serverConfigAdminResponse struct {
 	VideoCodec         string                      `json:"videoCodec"`
 	ForbiddenUsernames []string                    `json:"forbiddenUsernames"`
 	Federation         federationConfigResponse    `json:"federation"`
+	SuggestedUsernames []string                    `json:"suggestedUsernames"`
 	Notifications      notificationsConfigResponse `json:"notifications"`
 }
 
