@@ -83,6 +83,9 @@ func Start() error {
 	// save client video playback metrics
 	http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
 
+	// Register for notifications
+	http.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications))
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
@@ -338,6 +341,11 @@ func Start() error {
 	http.Handle("/api/admin/prometheus", middleware.RequireAdminAuth(func(rw http.ResponseWriter, r *http.Request) {
 		promhttp.Handler().ServeHTTP(rw, r)
 	}))
+
+	// Configure outbound notification channels.
+	http.HandleFunc("/api/admin/config/notifications/discord", middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration))
+	http.HandleFunc("/api/admin/config/notifications/twilio", middleware.RequireAdminAuth(admin.SetTwilioNotificationConfiguration))
+	http.HandleFunc("/api/admin/config/notifications/browser", middleware.RequireAdminAuth(admin.SetBrowserNotificationConfiguration))
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())

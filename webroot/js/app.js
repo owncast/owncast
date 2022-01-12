@@ -25,6 +25,8 @@ import FediverseFollowModal, {
   FediverseFollowButton,
 } from './components/fediverse-follow-modal.js';
 
+import { NotifyButton, NotifyModal } from './components/notification.js';
+
 import {
   addNewlines,
   checkUrlPathForDisplay,
@@ -61,6 +63,7 @@ import {
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
 import { checkIsModerator } from './utils/chat.js';
+
 import TabBar from './components/tab-bar.js';
 
 export default class App extends Component {
@@ -138,6 +141,8 @@ export default class App extends Component {
     this.displayFediverseFollowModal =
       this.displayFediverseFollowModal.bind(this);
     this.closeFediverseFollowModal = this.closeFediverseFollowModal.bind(this);
+    this.displayNotificationModal = this.displayNotificationModal.bind(this);
+    this.closeNotificationModal = this.closeNotificationModal.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -178,6 +183,8 @@ export default class App extends Component {
       onError: this.handlePlayerError,
     });
     this.player.init();
+
+    this.registerServiceWorker();
 
     // check routing
     this.getRoute();
@@ -248,7 +255,8 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary, chatDisabled, socketHostOverride } = data;
+    const { name, summary, chatDisabled, socketHostOverride, notifications } =
+      data;
     window.document.title = name;
 
     this.socketHostOverride = socketHostOverride;
@@ -263,6 +271,7 @@ export default class App extends Component {
 
     this.setState({
       canChat: !chatDisabled,
+      notifications,
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
@@ -579,6 +588,23 @@ export default class App extends Component {
     this.setState({ fediverseModalData: null });
   }
 
+  displayNotificationModal(data) {
+    this.setState({ notificationModalData: data });
+  }
+  closeNotificationModal() {
+    this.setState({ notificationModalData: null });
+  }
+
+  async registerServiceWorker() {
+    try {
+      const reg = await navigator.serviceWorker.register('/serviceWorker.js', {
+        scope: '/',
+      });
+    } catch (err) {
+      console.error('Owncast service worker registration failed!', err);
+    }
+  }
+
   handleWebsocketMessage(e) {
     if (e.type === SOCKET_MESSAGE_TYPES.ERROR_USER_DISABLED) {
       // User has been actively disabled on the backend. Turn off chat for them.
@@ -670,6 +696,7 @@ export default class App extends Component {
 
   render(props, state) {
     const {
+      accessToken,
       chatInputEnabled,
       configData,
       displayChatPanel,
@@ -690,6 +717,8 @@ export default class App extends Component {
       windowWidth,
       fediverseModalData,
       externalActionModalData,
+      notificationModalData,
+      notifications,
       lastDisconnectTime,
       section,
       sectionId,
@@ -753,6 +782,11 @@ export default class App extends Component {
       : html` <${VideoPoster} offlineImage=${logo} active=${streamOnline} /> `;
 
     // modal buttons
+    const notificationsButton =
+      notifications &&
+      ((notifications.browser.enabled && !!window.chrome) ||
+        notifications.textMessages.enabled) &&
+      html`<${NotifyButton} onClick=${this.displayNotificationModal} />`;
     const externalActionButtons = html`<div
       id="external-actions-container"
       class="flex flex-row flex-wrap justify-end"
@@ -774,6 +808,7 @@ export default class App extends Component {
         federationInfo=${federation}
         serverName=${name}
       />`}
+      ${notificationsButton}
     </div>`;
 
     // modal component
@@ -800,6 +835,19 @@ export default class App extends Component {
         />
       `;
 
+    const notificationModal =
+      notificationModalData &&
+      html` <${ExternalActionModal}
+        onClose=${this.closeNotificationModal}
+        action=${notificationModalData}
+        useIframe=${false}
+        customContent=${html`<${NotifyModal}
+          notifications=${notifications}
+          streamName=${name}
+          accessToken=${accessToken}
+        />`}
+      />`;
+
     const chat = this.state.websocket
       ? html`
           <${Chat}
@@ -807,7 +855,7 @@ export default class App extends Component {
             username=${username}
             chatInputEnabled=${chatInputEnabled && !chatDisabled}
             instanceTitle=${name}
-            accessToken=${this.state.accessToken}
+            accessToken=${accessToken}
             inputMaxBytes=${maxSocketPayloadSize - EST_SOCKET_PAYLOAD_BUFFER ||
             CHAT_MAX_MESSAGE_LENGTH}
           />
@@ -977,6 +1025,7 @@ export default class App extends Component {
         </footer>
 
         ${chat} ${externalActionModal} ${fediverseFollowModal}
+        ${notificationModal}
       </div>
     `;
   }
