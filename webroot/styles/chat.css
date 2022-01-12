@@ -201,6 +201,13 @@
   height: 1.5rem;
 }
 
+.user-icon-flag {
+  display: inline-block;
+  margin-right: .5rem;
+  vertical-align: middle;
+  height: 0.8rem;
+}
+
 .moderator-actions-group {
   position: absolute;
   top: 0;
