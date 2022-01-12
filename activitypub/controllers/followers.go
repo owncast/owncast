@@ -25,7 +25,7 @@ const (
 
 // FollowersHandler will return the list of remote followers on the Fediverse.
 func FollowersHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}

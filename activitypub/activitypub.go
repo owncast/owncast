@@ -19,7 +19,7 @@ func Start(datastore *data.Datastore) {
 	inbox.InitInboxWorkerPool()
 	StartRouter()
 
-	// Test
+	// Generate the keys for signing federated activity if needed.
 	if data.GetPrivateKey() == "" {
 		privateKey, publicKey, err := crypto.GenerateKeys()
 		_ = data.SetPrivateKey(string(privateKey))
