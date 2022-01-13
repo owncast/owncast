@@ -20,7 +20,13 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 
 	resource := r.URL.Query().Get("resource")
 	resourceComponents := strings.Split(resource, ":")
-	account := resourceComponents[1]
+
+	var account string
+	if len(resourceComponents) == 2 {
+		account = resourceComponents[1]
+	} else {
+		account = resourceComponents[0]
+	}
 
 	userComponents := strings.Split(account, "@")
 	if len(userComponents) < 2 {
@@ -32,7 +38,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	if _, valid := data.GetFederatedInboxMap()[user]; !valid {
 		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
-		log.Println("Webfinger request rejected")
+		log.Errorln("webfinger request rejected for user:", user)
 		return
 	}
 
