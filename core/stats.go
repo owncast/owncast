@@ -11,8 +11,10 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-var l = &sync.RWMutex{}
-var _activeViewerPurgeTimeout = time.Second * 10
+var (
+	l                         = &sync.RWMutex{}
+	_activeViewerPurgeTimeout = time.Second * 15
+)
 
 func setupStats() error {
 	s := getSavedStats()
