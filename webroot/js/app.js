@@ -723,9 +723,7 @@ export default class App extends Component {
     const noVideoContent =
       !playerActive || (section === ROUTE_RECORDINGS && sectionId !== '');
     const shouldDisplayChat =
-      displayChatPanel && !chatDisabled && !noVideoContent;
-    const usernameStyle = chatDisabled ? 'none' : 'flex';
-    // const shouldDisplayChat = displayChatPanel && canChat && !chatDisabled;
+      displayChatPanel && !chatDisabled && chatInputEnabled;
 
     const extraAppClasses = classNames({
       'config-loading': configData.loading,
