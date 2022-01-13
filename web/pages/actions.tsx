@@ -73,7 +73,11 @@ function NewActionModal(props: Props) {
         Add the URL for the external action you want to present.{' '}
         <strong>Only HTTPS urls are supported.</strong>
         <p>
-          <a href="https://owncast.online/docs" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://owncast.online/thirdparty/actions/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Read more about external actions.
           </a>
         </p>
