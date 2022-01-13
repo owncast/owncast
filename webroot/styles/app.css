@@ -357,7 +357,6 @@ header {
   width: 50%;
   overflow: hidden;
   box-sizing: border-box;
-  top: -15%;
 }
 .modal__close {
   background: transparent;
