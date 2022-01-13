@@ -24,14 +24,12 @@ func handle(request apmodels.InboxRequest) {
 		log.Debugln("Error in attempting to verify request", err)
 		return
 	} else if !verified {
-		log.Errorln("Request failed verification", err)
+		log.Debugln("Request failed verification", err)
 		return
 	}
 
-	// c := context.WithValue(context.Background(), "account", request.ForLocalAccount) //nolint
-
-	if err := resolvers.Resolve(context.Background(), request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest); err != nil {
-		log.Errorln("resolver error:", err)
+	if err := resolvers.Resolve(context.Background(), request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest); err != nil {
+		log.Debugln("resolver error:", err)
 	}
 }
 
