@@ -84,4 +84,4 @@ linters-settings:
 
   dupl:
     # tokens count to trigger issue, 150 by default
-    threshold: 160
+    threshold: 200
