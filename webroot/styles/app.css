@@ -358,6 +358,13 @@ header {
   overflow: hidden;
   box-sizing: border-box;
 }
+
+@media screen and (max-width: 600px) {
+  .modal__container {
+    width: 100%;
+  }
+}
+
 .modal__close {
   background: transparent;
   border: 0;
