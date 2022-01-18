@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Typography, Modal, Button, Row, Col } from 'antd';
+import { Typography, Modal, Button, Row, Col, Alert } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -226,7 +226,26 @@ export default function ConfigFederation() {
 
   const hasInstanceUrl = instanceUrl !== '';
   const isInstanceUrlSecure = instanceUrl.startsWith('https://');
-
+  const configurationWarning = !isInstanceUrlSecure && (
+    <>
+      <Alert
+        message="You must set your server URL before you can enable this feature."
+        type="warning"
+        showIcon
+      />
+      <br />
+      <TextFieldWithSubmit
+        fieldName="instanceUrl"
+        {...TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL}
+        value={formDataValues.instanceUrl}
+        initialValue={yp.instanceUrl}
+        type={TEXTFIELD_TYPE_URL}
+        onChange={handleFieldChange}
+        onSubmit={handleSubmitInstanceUrl}
+        required
+      />
+    </>
+  );
   return (
     <div>
       <Title>Configure Social Features</Title>
@@ -245,21 +264,13 @@ export default function ConfigFederation() {
       </p>
       <Row>
         <Col span={15} className="form-module" style={{ marginRight: '15px' }}>
+          {configurationWarning}
           <ToggleSwitch
             fieldName="enabled"
             onChange={handleEnabledSwitchChange}
             {...FIELD_PROPS_ENABLE_FEDERATION}
             checked={formDataValues.enabled}
             disabled={!hasInstanceUrl || !isInstanceUrlSecure}
-          />
-          <TextFieldWithSubmit
-            fieldName="instanceUrl"
-            {...TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL}
-            value={formDataValues.instanceUrl}
-            initialValue={yp.instanceUrl}
-            type={TEXTFIELD_TYPE_URL}
-            onChange={handleFieldChange}
-            onSubmit={handleSubmitInstanceUrl}
           />
           <ToggleSwitch
             fieldName="isPrivate"
