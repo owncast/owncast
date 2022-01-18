@@ -279,6 +279,7 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+
 	// Configure Federation features
 
 	// enable/disable federation features

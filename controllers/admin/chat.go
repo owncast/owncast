@@ -68,13 +68,15 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 
 	if err := decoder.Decode(&request); err != nil {
 		log.Errorln(err)
-		controllers.WriteSimpleResponse(w, false, "")
+		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Disable/enable the user
 	if err := user.SetEnabled(request.UserID, request.Enabled); err != nil {
 		log.Errorln("error changing user enabled status", err)
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
 	}
 
 	// Hide/show the user's chat messages if disabling.
@@ -82,6 +84,8 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	if !request.Enabled {
 		if err := chat.SetMessageVisibilityForUserID(request.UserID, request.Enabled); err != nil {
 			log.Errorln("error changing user messages visibility", err)
+			controllers.WriteSimpleResponse(w, false, err.Error())
+			return
 		}
 	}
 
