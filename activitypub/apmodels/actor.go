@@ -183,6 +183,9 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	person.SetActivityStreamsSummary(summaryProperty)
 
 	// Links
+	if serverURL := data.GetServerURL(); serverURL != "" {
+		addMetadataLinkToProfile(person, "Stream", serverURL)
+	}
 	for _, link := range data.GetSocialHandles() {
 		addMetadataLinkToProfile(person, link.Platform, link.URL)
 	}
