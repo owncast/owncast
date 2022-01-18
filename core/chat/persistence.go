@@ -296,9 +296,9 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 		_historyCache = nil
 	}()
 
-	// Get a list of IDs from this user within the 5hr window to send to the connected clients to hide
+	// Get a list of IDs to send to the connected clients to hide
 	ids := make([]string, 0)
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
+	query := fmt.Sprintf("SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, scopes FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
 	messages := getChat(query)
 
 	if len(messages) == 0 {
@@ -306,7 +306,7 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	}
 
 	for _, message := range messages {
-		ids = append(ids, message.(events.Event).ID)
+		ids = append(ids, message.(events.UserMessageEvent).ID)
 	}
 
 	// Tell the clients to hide/show these messages.
