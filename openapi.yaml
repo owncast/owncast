@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Owncast
   description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development branch.
-  version: '0.0.10-dev'
+  version: '0.0.11'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -11,7 +11,6 @@ info:
     url: >-
       data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAEvmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjEyOCIKICAgZXhpZjpQaXhlbFlEaW1lbnNpb249IjEyOCIKICAgZXhpZjpDb2xvclNwYWNlPSIxIgogICB0aWZmOkltYWdlV2lkdGg9IjEyOCIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMTI4IgogICB0aWZmOlJlc29sdXRpb25Vbml0PSIyIgogICB0aWZmOlhSZXNvbHV0aW9uPSI5Ni4wIgogICB0aWZmOllSZXNvbHV0aW9uPSI5Ni4wIgogICBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIgogICBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiCiAgIHhtcDpNb2RpZnlEYXRlPSIyMDIw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
 servers: []
-
 tags:
   - name: Admin
     description: Admin operations requiring authentication.
@@ -19,34 +18,41 @@ tags:
     description: Endpoints related to the chat interface.
   - name: Integrations
     description: APIs built to allow 3rd parties to interact with an Owncast server.
+  - name: Moderation
+    description: Chat-related actions that can take place by a moderator.
 
 components:
   schemas:
     ClientArray:
       type: array
       items:
-        $ref: "#/components/schemas/Client"
+        $ref: '#/components/schemas/Client'
 
     UserArray:
       type: array
       items:
-        $ref: "#/components/schemas/User"
+        $ref: '#/components/schemas/User'
 
     LogEntryArray:
       type: array
       items:
-        $ref: "#/components/schemas/LogEntry"
+        $ref: '#/components/schemas/LogEntry'
+
+    FollowerArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Follower'
 
     Client:
       type: object
       description: A single representation of a client.
       example:
-        connectedAt: "2020-10-06T23:20:44.588649-07:00"
+        connectedAt: '2020-10-06T23:20:44.588649-07:00'
         messageCount: 0
         userAgent: >-
           Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
-        ipAddress: "::1"
+        ipAddress: '::1'
         clientID: 2ba20dd34f911c198df3218ddc64c740
         geo:
           countryCode: US
@@ -62,7 +68,7 @@ components:
         userAgent:
           description: The web client used to connect to this server
           type: string
-          example: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+          example: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         ipAddress:
           description: The public IP address of this client
           type: string
@@ -80,7 +86,7 @@ components:
             timeZone:
               type: string
         user:
-          $ref: "#/components/schemas/User"
+          $ref: '#/components/schemas/User'
       x-last-modified: 1602052347511
 
     BasicResponse:
@@ -123,7 +129,7 @@ components:
         extraPageContent:
           type: string
           description: Additional HTML content to render in the body of the web interface.
-          example: "<p>This page is <strong>super</strong> cool!"
+          example: '<p>This page is <strong>super</strong> cool!'
         version:
           type: string
           example: Owncast v0.0.3-macOS (ef3796a033b32a312ebf5b334851cbf9959e7ecb)
@@ -190,8 +196,8 @@ components:
           description: The target frames per second of the video.
         cpuUsageLevel:
           type: integer
-          description: "The amount of hardware utilization selected for this HLS variant."
-    
+          description: 'The amount of hardware utilization selected for this HLS variant.'
+
     TimestampedValue:
       type: object
       properties:
@@ -212,19 +218,28 @@ components:
             - type: object
             - type: boolean
 
+    BooleanValue:
+      description: A wrapper object used to set boolean values in many config endpoints.
+      type: object
+      properties:
+        value:
+          type: boolean
+      example:
+        value: true
+
     LogEntry:
       type: object
       properties:
         time:
           type: string
           format: date-time
-          description: "Timestamp for this log entry"
+          description: 'Timestamp for this log entry'
         level:
           type: string
-          description: "The level of this log entry"
+          description: 'The level of this log entry'
         message:
           type: string
-          description: "The log entry contents"
+          description: 'The log entry contents'
     Webhook:
       type: object
       properties:
@@ -270,8 +285,57 @@ components:
         previousNames:
           type: string
           description: Comma separated list of names previously used by this user.
-          example: "awesome-pizza,user42"
-        
+          example: 'awesome-pizza,user42'
+        scopes:
+          type: array
+          items:
+            description: A specific attribute assigned to this user
+            type: string
+            example: 'MODERATOR'
+
+    Follower:
+      type: object
+      required:
+        - link
+        - username
+        - timestamp
+      properties:
+        link:
+          type: string
+          description: URL linking to this follower
+          example: https://mastodon.cloud/users/gabektest
+        name:
+          type: string
+          description: Optional display name for this follower
+          example: John Smith
+        image:
+          type: string
+          description: Optional image for this follower
+          example: http://mastodon.cloud/users/gabektest/avatar.png
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of when the follow occured
+        disabledAt:
+          type: string
+          format: date-time
+          description: Timestamp when the follow was removed
+
+    FederatedAction:
+      type: object
+      properties:
+        iri:
+          type: string
+          description: The unique identifier for this action.
+          example: https://fediverse.server/jfk-3827
+        actorIRI:
+          type: string
+          description: The identifier for the actor that performed this action.
+          example: https://mastodon.cloud/users/gabektest
+        type:
+          type: string
+          enum: [FEDIVERSE_ENGAGEMENT_FOLLOW, FEDIVERSE_ENGAGEMENT_LIKE, FEDIVERSE_ENGAGEMENT_REPOST]
+
   securitySchemes:
     AdminBasicAuth:
       type: http
@@ -285,7 +349,12 @@ components:
       type: apiKey
       name: accessToken
       in: query
-      description: 3rd party integration auth where a service user must provide an access token.
+      description: A standard user must provide a valid access token.
+    ModeratorUserToken:
+      type: apiKey
+      name: accessToken
+      in: query
+      description: A moderator user must provide a valid access token.
 
   responses:
     UsersResponse:
@@ -293,21 +362,28 @@ components:
       content:
         application/json:
           schema:
-            $ref:  "#/components/schemas/UserArray"
+            $ref: '#/components/schemas/UserArray'
+
+    FollowersResponse:
+      description: A collection of users.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FollowerArray'
 
     ClientsResponse:
       description: Successful response of an array of clients
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ClientArray"
+            $ref: '#/components/schemas/ClientArray'
           example:
-            - connectedAt: "2020-10-06T23:20:44.588649-07:00"
+            - connectedAt: '2020-10-06T23:20:44.588649-07:00'
               messageCount: 3
               userAgent: >-
                 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36
                 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36
-              ipAddress: "172.217.164.110"
+              ipAddress: '172.217.164.110'
               geo:
                 countryCode: US
                 regionName: California
@@ -316,34 +392,34 @@ components:
                 id: yklw5Imng
                 displayName: awesome-pizza
                 displayColor: 42
-                createdAt: "2021-07-08T20:21:25.303402404-07:00"
-                previousNames: "awesome-pizza,coolPerson23"
+                createdAt: '2021-07-08T20:21:25.303402404-07:00'
+                previousNames: 'awesome-pizza,coolPerson23'
 
     LogsResponse:
       description: Response of server log entries
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/LogEntryArray"
+            $ref: '#/components/schemas/LogEntryArray'
           examples:
             success:
               summary: Logs returned
               value:
                 [
                   {
-                    "message": "Owncast v0.0.0-localdev (unknown)",
-                    "level": "info",
-                    "time": "2020-10-29T18:35:34.422386-07:00",
+                    'message': 'Owncast v0.0.0-localdev (unknown)',
+                    'level': 'info',
+                    'time': '2020-10-29T18:35:34.422386-07:00',
                   },
                   {
-                    "message": "Web server running on port: 8080",
-                    "level": "info",
-                    "time": "2020-10-29T18:35:35.011731-07:00",
+                    'message': 'Web server running on port: 8080',
+                    'level': 'info',
+                    'time': '2020-10-29T18:35:35.011731-07:00',
                   },
                   {
-                    "message": "RTMP server is listening for incoming stream on port: 1935",
-                    "level": "info",
-                    "time": "2020-10-29T18:35:35.011823-07:00",
+                    'message': 'RTMP server is listening for incoming stream on port: 1935',
+                    'level': 'info',
+                    'time': '2020-10-29T18:35:35.011823-07:00',
                   },
                 ]
 
@@ -352,21 +428,21 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/BasicResponse"
+            $ref: '#/components/schemas/BasicResponse'
           examples:
             success:
               summary: Operation succeeded.
               value:
                 {
-                  "success": true,
-                  "message": "context specific success message",
+                  'success': true,
+                  'message': 'context specific success message',
                 }
             failure:
               summary: Operation failed.
               value:
                 {
-                  "success": false,
-                  "message": "context specific failure message",
+                  'success': false,
+                  'message': 'context specific failure message',
                 }
 
 paths:
@@ -374,32 +450,32 @@ paths:
     get:
       summary: Information
       description: The client configuration. Information useful for the user interface.
-      tags: ["Server"]
+      tags: ['Server']
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceDetails"
+                $ref: '#/components/schemas/InstanceDetails'
 
   /api/ping:
     get:
       summary: Mark the current viewer as active.
       description: For tracking viewer count, periodically hit the ping endpoint.
-      tags: ["Server"]
+      tags: ['Server']
       responses:
-        "200":
-          description: "Successful ping"
+        '200':
+          description: 'Successful ping'
 
   /api/status:
     get:
       summary: Current Status
       description: This endpoint is used to discover when a server is broadcasting, the number of active viewers as well as other useful information for updating the user interface.
-      tags: ["Server"]
+      tags: ['Server']
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -424,7 +500,7 @@ paths:
               examples:
                 online:
                   value:
-                    lastConnectTime: "2020-10-03T21:36:22-05:00"
+                    lastConnectTime: '2020-10-03T21:36:22-05:00'
                     lastDisconnectTime: null
                     online: true
                     overallMaxViewerCount: 420
@@ -435,9 +511,9 @@ paths:
     post:
       summary: Register a chat user
       description: Register a user that returns an access token for accessing chat.
-      tags: ["Chat"]
+      tags: ['Chat']
       security:
-      - UserToken: []
+        - UserToken: []
       requestBody:
         required: false
         content:
@@ -449,8 +525,8 @@ paths:
                   type: string
                   description: Optionally provide a display name you want to assign to this user when registering.
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -470,12 +546,12 @@ paths:
     get:
       summary: Chat Messages Backlog
       description: Used to get chat messages prior to connecting to the websocket.
-      tags: ["Chat"]
+      tags: ['Chat']
       security:
-      - UserToken: []
+        - UserToken: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -484,7 +560,7 @@ paths:
                   type: object
                   properties:
                     user:
-                      $ref: "#/components/schemas/User"
+                      $ref: '#/components/schemas/User'
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
@@ -493,7 +569,7 @@ paths:
                       description: Unique ID of the chat message.
                     visible:
                       type: boolean
-                      description: "Should chat message be visibly rendered."
+                      description: 'Should chat message be visibly rendered.'
                     timestamp:
                       type: string
                       format: date-time
@@ -502,10 +578,10 @@ paths:
     get:
       summary: Yellow Pages Information
       description: Information to be used in the Yellow Pages service, a global directory of Owncast servers.
-      tags: ["Server"]
+      tags: ['Server']
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -540,10 +616,10 @@ paths:
     get:
       summary: Get Custom Emoji
       description: Get a list of custom emoji that are supported in chat.
-      tags: ["Chat"]
+      tags: ['Chat']
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -566,14 +642,100 @@ paths:
                       - name: parrot
                         emoji: /img/emoji/parrot.gif
 
+  /api/followers:
+    get:
+      summary: Get the public followers of this instance
+      responses:
+        '200':
+          description: Followers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Follower'
+
+  /api/remotefollow:
+    post:
+      summary: Return the information needed to redirect a user to a fediverse server to perform a remote follow action.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  description: The fediverse username@server.tld account that wants to perform the remote follow action.
+                  type: string
+                  example: johnsmith@fediverse.biz
+      responses:
+        '200':
+          description: Remote follow redirect details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    description: The URL the frontend should redirect to
+                    type: string
+                    example: https://fediverse.biz/authorize_interaction?uri=https://my.owncast.server/federation/user/streamer
+
+  /api/chat/updatemessagevisibility:
+    post:
+      summary: Update the visibility of chat messages.
+      description: Pass an array of IDs you want to change the chat visibility of.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visible:
+                  type: boolean
+                  description: Are these messages visible.
+                idArray:
+                  type: array
+                  items:
+                    type: string
+                    description: IDs of the chat messages you wish to change the visibility of.
+      tags: ['Moderation']
+      security:
+        - ModeratorUserToken: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+
+  /api/chat/users/setenabled:
+    post:
+      summary: Disable (block) or re-enable a chat user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: User ID of the chat user you're changing.
+                enabled:
+                  type: boolean
+                  description: State of this user. False to block/disable.
+      tags: ['Moderation']
+      security:
+        - ModeratorUserToken: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+
   /api/admin/status:
     get:
-      summary: "Server status and broadcaster"
-      tags: ["Admin"]
+      summary: 'Server status and broadcaster'
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
+        '200':
           description: Server status and broadcaster details
           content:
             application/json:
@@ -624,109 +786,109 @@ paths:
                     description: The current version of the owncast software
               examples:
                 connected:
-                  summary: "Broadcaster Connected"
+                  summary: 'Broadcaster Connected'
                   value:
                     broadcaster:
                       remoteAddr: 172.217.164.110
-                      time: "2020-10-06T23:20:44.588649-07:00"
+                      time: '2020-10-06T23:20:44.588649-07:00'
                       streamDetails:
                         width: 640
                         height: 480
                         frameRate: 24
                         videoBitrate: 1500
-                        videoCodec: "mp4a"
+                        videoCodec: 'mp4a'
                         audioBitrate: 256
-                        audioCodec: "aac"
-                        encoder: "obs-output module (libobs version 25.0.8)"
+                        audioCodec: 'aac'
+                        encoder: 'obs-output module (libobs version 25.0.8)'
                     online: true
                     viewerCount: 3
                     overallPeakViewerCount: 4
                     sessionPeakViewerCount: 4
-                    versionNumber: "0.0.3"
+                    versionNumber: '0.0.3'
 
   /api/admin/disconnect:
     post:
       summary: Disconnect Broadcaster
       description: Disconnect the active inbound stream, if one exists, and terminate the broadcast.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          $ref: "#/components/responses/BasicResponse"
+        '200':
+          $ref: '#/components/responses/BasicResponse'
 
   /api/admin/yp/reset:
     post:
       summary: Reset your YP registration key.
       description: Used when there is a problem with your registration to the Owncast Directory via the YP APIs.  This will reset your local registration key.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"
+          $ref: '#/components/responses/BasicResponse'
 
   /api/admin/chat/clients:
     get:
       summary: Return a list of currently connected clients
       description: Return a list of currently connected clients with optional geo details.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          $ref: "#/components/responses/ClientsResponse"
+        '200':
+          $ref: '#/components/responses/ClientsResponse'
 
   /api/admin/users/disabled:
-      get:
-        summary: Return a list of currently connected clients
-        description: Return a list of currently connected clients with optional geo details.
-        tags: ["Admin"]
-        security:
-          - AdminBasicAuth: []
-        responses:
-          "200":
-            $ref: "#/components/responses/UsersResponse"
+    get:
+      summary: Return a list of currently connected clients
+      description: Return a list of currently connected clients with optional geo details.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/UsersResponse'
 
   /api/admin/logs:
     get:
       summary: Return recent log entries
       description: Returns server logs.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          $ref: "#/components/responses/LogsResponse"
+        '200':
+          $ref: '#/components/responses/LogsResponse'
 
   /api/admin/logs/warnings:
     get:
       summary: Return recent warning and error logs.
       description: Return recent warning and error logs.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          $ref: "#/components/responses/LogsResponse"
+        '200':
+          $ref: '#/components/responses/LogsResponse'
 
   /api/admin/serverconfig:
     get:
       summary: Server Configuration
       description: Get the current configuration of the Owncast server.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   instanceDetails:
-                    $ref: "#/components/schemas/InstanceDetails"
+                    $ref: '#/components/schemas/InstanceDetails'
                   ffmpegPath:
                     type: string
                     description: The path to the copy of ffmpeg that this server is using.
@@ -737,7 +899,7 @@ paths:
                     type: integer
                     description: The port the inbound RTMP broadcast should be sent to.
                   s3:
-                    $ref: "#/components/schemas/S3"
+                    $ref: '#/components/schemas/S3'
                   videoSettings:
                     type: object
                     description: How the different variants of video streams are configured.
@@ -745,23 +907,23 @@ paths:
                       videoQualityVariants:
                         type: array
                         items:
-                          $ref: "#/components/schemas/StreamQuality"
+                          $ref: '#/components/schemas/StreamQuality'
                       latencyLevel:
                         type: integer
                         description: The level of latency selected for streaming.  Lower latency can create more buffering.
                   yp:
-                    $ref: "#/components/schemas/YP"
+                    $ref: '#/components/schemas/YP'
 
   /api/admin/chat/messages:
     get:
       summary: Chat messages, unfiltered.
       description: Get a list of all chat messages with no filters applied.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -770,7 +932,7 @@ paths:
                   type: object
                   properties:
                     user:
-                      $ref: "#/components/schemas/User"
+                      $ref: '#/components/schemas/User'
                     body:
                       type: string
                       description: Escaped HTML of the chat message content.
@@ -779,7 +941,7 @@ paths:
                       description: Unique ID of the chat message.
                     visible:
                       type: boolean
-                      description: "Should chat message be visibly rendered."
+                      description: 'Should chat message be visibly rendered.'
                     timestamp:
                       type: string
                       format: date-time
@@ -802,13 +964,12 @@ paths:
                   items:
                     type: string
                     description: IDs of the chat messages you wish to change the visibility of.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          $ref: "#/components/responses/BasicResponse"
-
+        '200':
+          $ref: '#/components/responses/BasicResponse'
 
   /api/admin/chat/users/setenabled:
     post:
@@ -823,67 +984,65 @@ paths:
                 userId:
                   type: string
                   description: User ID to act upon.
-                  example: "yklw5Imng"
+                  example: 'yklw5Imng'
                 enabled:
                   type: boolean
                   description: Set the enabled state of this user.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          $ref: "#/components/responses/BasicResponse"
-
+        '200':
+          $ref: '#/components/responses/BasicResponse'
 
   /api/admin/config/key:
     post:
       summary: Set the stream key.
       description: Set the stream key.  Also used as the admin password.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
 
   /api/admin/config/pagecontent:
     post:
       summary: Set the custom page content.
       description: Set the custom page content using markdown.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
-            example:
-              "# Welcome to my cool server!<br><br>I _hope_ you enjoy it."
+              $ref: '#/components/schemas/ConfigValue'
+            example: '# Welcome to my cool server!<br><br>I _hope_ you enjoy it.'
 
   /api/admin/config/streamtitle:
     post:
       summary: Set the stream title.
       description: Set the title of the currently streaming content.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: Streaming my favorite game, Desert Bus.
 
@@ -891,108 +1050,108 @@ paths:
     post:
       summary: Set the server name.
       description: Set the name associated with your server.  Often is your name, username or identity.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
 
   /api/admin/config/serversummary:
     post:
       summary: Set the server summary.
       description: Set the summary of your server's streaming content.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
-              value: The best in Desert Bus Streaming  
+              value: The best in Desert Bus Streaming
 
   /api/admin/config/logo:
     post:
       summary: Set the server logo.
       description: Set the logo for your server.  Path is relative to webroot.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"    
+              $ref: '#/components/schemas/ConfigValue'
             example:
-              value: "/img/mylogo.png"
+              value: '/img/mylogo.png'
 
   /api/admin/config/tags:
     post:
       summary: Set the server tags.
       description: Set the tags displayed for your server and the categories you can show up in on the directory.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"   
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value:
                 - games
                 - music
-                - streaming             
+                - streaming
 
   /api/admin/config/ffmpegpath:
     post:
       summary: Set the ffmpeg binary path
       description: Set the path for a specific copy of ffmpeg on your system.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"  
+              $ref: '#/components/schemas/ConfigValue'
             example:
-              value: "/home/owncast/ffmpeg"
+              value: '/home/owncast/ffmpeg'
 
   /api/admin/config/webserverport:
     post:
       summary: Set the owncast web port.
       description: Set the port the owncast web server should listen on.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"    
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: 8080
 
@@ -1000,17 +1159,17 @@ paths:
     post:
       summary: Set the inbound rtmp server port.
       description: Set the port where owncast service will listen for inbound broadcasts.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: 1935
 
@@ -1018,17 +1177,17 @@ paths:
     post:
       summary: Mark if your stream is not safe for work
       description: Mark if your stream can be consitered not safe for work.  Used in different contexts, including the directory for filtering purposes.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: false
 
@@ -1036,17 +1195,17 @@ paths:
     post:
       summary: Set if this server supports the Owncast directory.
       description: If set to true the server will attempt to register itself with the [Owncast Directory](https://directory.owncast.online).  Off by default.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: true
 
@@ -1054,17 +1213,17 @@ paths:
     post:
       summary: Set the public url of this owncast server.
       description: Set the public url of this owncast server.  Used for the directory and optional integrations.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"  
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: https://live.mycoolserver.biz
 
@@ -1072,12 +1231,12 @@ paths:
     post:
       summary: Set the latency level for the stream.
       description: Sets the latency level that determines how much video is buffered between the server and viewer.  Less latency can end up with more buffering.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
@@ -1089,23 +1248,22 @@ paths:
                   type: integer
               example:
                 value: 4
- 
 
   /api/admin/config/video/streamoutputvariants:
     post:
       summary: Set the configuration of your stream output.
       description: Sets the detailed configuration for all of the stream variants you support.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value:
                 - framerate: 30
@@ -1123,12 +1281,12 @@ paths:
     post:
       summary: Set the video codec.
       description: Sets the specific video codec that will be used for video encoding. Some codecs will support hardware acceleration. Not all codecs will be supported for all systems.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
@@ -1142,100 +1300,100 @@ paths:
                 value: libx264
 
   /api/admin/config/s3:
-      post:
-        summary: Set your storage configration. 
-        description: Sets your S3 storage provider configuration details to enable external storage.
-        tags: ["Admin"]
-        security:
-          - AdminBasicAuth: []
-        responses:
-          '200':
-            $ref: "#/components/responses/BasicResponse"      
-        requestBody:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ConfigValue"
-              example:
-                value:
-                  enabled: true
-                  endpoint: https://s3.us-west-000.backblazeb2.com
-                  accessKey: e1ac500y7000500047156bd060
-                  secret: "H8FH8eSxM2K/S42CUg5K000Tt4WY2fI"
-                  bucket: "video"
-                  region: us-west-000
-
-  /api/admin/config/socialhandles:
-      post:
-        summary: Set your social handles.
-        description: Sets the external links to social networks and profiles.
-        tags: ["Admin"]
-        security:
-          - AdminBasicAuth: []
-        responses:
-          '200':
-            $ref: "#/components/responses/BasicResponse"      
-        requestBody:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ConfigValue"
-              example:
-                value:
-                  - platform: github
-                    url: https://github.com/owncast/owncast
-                  - platform: mastodon
-                    url: https://mastodon.social/@gabek
-  /api/admin/config/customstyles:
     post:
-      summary: Custom CSS styles to be used in the web front endpoints.
-      description: Save a string containing CSS to be inserted in to the web frontend page.
-      tags: ["Admin"]
+      summary: Set your storage configration.
+      description: Sets your S3 storage provider configuration details to enable external storage.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
-              value: "body { color: orange; background: black; }"
-                  
+              value:
+                enabled: true
+                endpoint: https://s3.us-west-000.backblazeb2.com
+                accessKey: e1ac500y7000500047156bd060
+                secret: 'H8FH8eSxM2K/S42CUg5K000Tt4WY2fI'
+                bucket: 'video'
+                region: us-west-000
+
+  /api/admin/config/socialhandles:
+    post:
+      summary: Set your social handles.
+      description: Sets the external links to social networks and profiles.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+            example:
+              value:
+                - platform: github
+                  url: https://github.com/owncast/owncast
+                - platform: mastodon
+                  url: https://mastodon.social/@gabek
+  /api/admin/config/customstyles:
+    post:
+      summary: Custom CSS styles to be used in the web front endpoints.
+      description: Save a string containing CSS to be inserted in to the web frontend page.
+      tags: ['Admin']
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+            example:
+              value: 'body { color: orange; background: black; }'
+
   /api/admin/viewersOverTime:
     get:
       summary: Viewers Over Time
       description: Get the tracked viewer count over the collected period.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TimestampedValue"
+                  $ref: '#/components/schemas/TimestampedValue'
               examples:
                 default:
                   value:
-                    - time: "2020-10-03T21:41:00.381996-05:00"
+                    - time: '2020-10-03T21:41:00.381996-05:00'
                       value: 50
-                    - time: "2020-10-03T21:42:00.381996-05:00"
+                    - time: '2020-10-03T21:42:00.381996-05:00'
                       value: 52
 
   /api/admin/hardwarestats:
     get:
       summary: Hardware Stats
-      description: "Get the CPU, Memory and Disk utilization levels over the collected period."
-      tags: ["Admin"]
+      description: 'Get the CPU, Memory and Disk utilization levels over the collected period.'
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -1244,64 +1402,193 @@ paths:
                   cpu:
                     type: array
                     items:
-                      $ref: "#/components/schemas/TimestampedValue"
+                      $ref: '#/components/schemas/TimestampedValue'
                   memory:
                     type: array
                     items:
-                      $ref: "#/components/schemas/TimestampedValue"
+                      $ref: '#/components/schemas/TimestampedValue'
                   disk:
                     type: array
                     items:
-                      $ref: "#/components/schemas/TimestampedValue"
+                      $ref: '#/components/schemas/TimestampedValue'
               examples:
                 default:
                   value:
                     cpu:
-                      - time: "2020-10-03T21:41:00.381996-05:00"
+                      - time: '2020-10-03T21:41:00.381996-05:00'
                         value: 23
-                      - time: "2020-10-03T21:42:00.381996-05:00"
+                      - time: '2020-10-03T21:42:00.381996-05:00'
                         value: 27
-                      - time: "2020-10-03T21:43:00.381996-05:00"
+                      - time: '2020-10-03T21:43:00.381996-05:00'
                         value: 22
                     memory:
-                      - time: "2020-10-03T21:41:00.381996-05:00"
+                      - time: '2020-10-03T21:41:00.381996-05:00'
                         value: 65
-                      - time: "2020-10-03T21:42:00.381996-05:00"
+                      - time: '2020-10-03T21:42:00.381996-05:00'
                         value: 66
-                      - time: "2020-10-03T21:43:00.381996-05:00"
+                      - time: '2020-10-03T21:43:00.381996-05:00'
                         value: 72
                     disk:
-                      - time: "2020-10-03T21:41:00.381996-05:00"
+                      - time: '2020-10-03T21:41:00.381996-05:00'
                         value: 11
-                      - time: "2020-10-03T21:42:00.381996-05:00"
+                      - time: '2020-10-03T21:42:00.381996-05:00'
                         value: 11
-                      - time: "2020-10-03T21:43:00.381996-05:00"
+                      - time: '2020-10-03T21:43:00.381996-05:00'
                         value: 11
+
+  /api/admin/config/federation/enable:
+    post:
+      summary: Enable or disable federated social features.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooleanValue'
+
+
+  /api/admin/config/federation/private:
+    post:
+      summary: Enable or disable private federation mode.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooleanValue'
+
+
+  /api/admin/config/federation/showengagement:
+    post:
+      summary: Enable or disable Federation activity showing in chat.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooleanValue'
+
+  /api/admin/config/federation/username:
+    post:
+      summary: Set the username you are seen as on the fediverse.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+
+  /api/admin/config/federation/livemessage:
+    post:
+      summary: Set the message sent to the fediverse when this instance goes live.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+
+  /api/admin/config/federation/blockdomains:
+    post:
+      summary: Save a collection of domains that should be ignored on the fediverse.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+            example:
+              value:
+                - guns.eagles.biz
+                - freedom.us
+
+  /api/admin/federation/send:
+    post:
+      summary: Manually send a message to the fediverse from this instance.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+            example:
+              value: I'm still streaming, you should come visit.
+
+  /api/admin/federation/actions:
+    get:
+      summary: Get a list of accepted actions that took place on the Fediverse.
+      tags: ["Admin"]
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          description: Actions previously handled.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FederatedAction'
+
 
   /api/integrations/streamtitle:
     post:
       summary: Set the stream title.
       description: Set the title of the currently streaming content.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       responses:
         '200':
-          $ref: "#/components/responses/BasicResponse"      
+          $ref: '#/components/responses/BasicResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConfigValue"
+              $ref: '#/components/schemas/ConfigValue'
             example:
               value: Streaming my favorite game, Desert Bus.
-
 
   /api/integrations/chat/send:
     post:
       summary: Send a chat message.
       description: Send a chat message on behalf of a 3rd party integration, bot or service.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       requestBody:
@@ -1315,7 +1602,7 @@ paths:
                   type: string
                   description: The message text that will be sent as the user.
       responses:
-        "200":
+        '200':
           description: Message was sent.
           content:
             application/json:
@@ -1333,7 +1620,7 @@ paths:
     post:
       summary: Send a system chat message.
       description: Send a chat message on behalf of the system/server.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       requestBody:
@@ -1347,7 +1634,7 @@ paths:
                   type: string
                   description: The message text that will be sent as the system user.
       responses:
-        "200":
+        '200':
           description: Message was sent.
           content:
             application/json:
@@ -1365,7 +1652,7 @@ paths:
     post:
       summary: Send a chat action.
       description: Send an action that took place to the chat.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       requestBody:
@@ -1375,18 +1662,18 @@ paths:
             schema:
               type: object
               required:
-                - "body"
+                - 'body'
               properties:
                 body:
                   type: string
                   description: The message text that will be sent as the system user.
-                  example: "rolled a 15 on the dice"
+                  example: 'rolled a 15 on the dice'
                 author:
                   type: string
                   description: An optional user name that performed the action.
-                  example: "JohnSmith"
+                  example: 'JohnSmith'
       responses:
-        "200":
+        '200':
           description: Message was sent.
           content:
             application/json:
@@ -1404,7 +1691,7 @@ paths:
     post:
       summary: Send system chat message to a client, identified by its ClientId
       description: Send a chat message on behalf of the system/server to a single client.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       parameters:
@@ -1422,14 +1709,14 @@ paths:
             schema:
               type: object
               required:
-                - "body"
+                - 'body'
               properties:
                 body:
                   type: string
                   description: The message text that will be sent to the client.
-                  example: "What a beautiful day. I love it"
+                  example: 'What a beautiful day. I love it'
       responses:
-        "200":
+        '200':
           description: Message was sent.
           content:
             application/json:
@@ -1442,14 +1729,14 @@ paths:
                   messages:
                     type: string
                     example: sent
-        "500":
+        '500':
           description: Message was not sent to the client
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error: 
+                  error:
                     type: string
                     description: message explaining what went wrong sending the message to the client
 
@@ -1457,7 +1744,7 @@ paths:
     post:
       summary: Create an access token.
       description: Create a single access token that has access to the access scopes provided.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -1476,7 +1763,7 @@ paths:
                     type: string
 
       responses:
-        "200":
+        '200':
           description: Token was created.
           content:
             application/json:
@@ -1488,13 +1775,13 @@ paths:
                     example: your new token
                   token:
                     type: string
-                    example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
+                    example: 'zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI='
 
   /api/admin/accesstokens/delete:
     post:
       summary: Delete an access token.
       description: Delete a single access token.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -1509,7 +1796,7 @@ paths:
                   description: The token to delete
 
       responses:
-        "200":
+        '200':
           description: Token was deleted.
           content:
             application/json:
@@ -1527,11 +1814,11 @@ paths:
     get:
       summary: Return all access tokens.
       description: Return all of the available access tokens.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
+        '200':
           description: Tokens are returned
           content:
             application/json:
@@ -1544,60 +1831,60 @@ paths:
     get:
       summary: Return all webhooks.
       description: Return all of the configured webhooks for external events.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
-        "200":
+        '200':
           description: Webhooks are returned
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Webhook"
+                $ref: '#/components/schemas/Webhook'
 
   /api/admin/config/externalactions:
     post:
       summary: Set external action URLs.
       description: Set a collection of external action URLs that are displayed in the UI.
-      tags: ["Admin", "Integrations"]
+      tags: ['Admin', 'Integrations']
       security:
         - AdminBasicAuth: []
       requestBody:
         required: true
         content:
           application/json:
-              schema:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      url:
-                        type: string
-                        description: URL of the external action content.
-                      title:
-                        type: string
-                        description: The title to put on the external action button.
-                      description:
-                        type: string
-                        description: Optional additional description to display in the UI.
-                      icon:
-                        type: string
-                        description: The URL to an image to place on the external action button.
-                      color:
-                        type: string
-                        description: Optional color to use for drawing the action button.
-                      openExternally:
-                        type: boolean
-                        description: If set this action will open in a new browser tab instead of an internal modal.
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL of the external action content.
+                  title:
+                    type: string
+                    description: The title to put on the external action button.
+                  description:
+                    type: string
+                    description: Optional additional description to display in the UI.
+                  icon:
+                    type: string
+                    description: The URL to an image to place on the external action button.
+                  color:
+                    type: string
+                    description: Optional color to use for drawing the action button.
+                  openExternally:
+                    type: boolean
+                    description: If set this action will open in a new browser tab instead of an internal modal.
       responses:
-        "200":
+        '200':
           description: Actions have been updated.
 
   /api/admin/webhooks/delete:
     post:
       summary: Delete a single webhook.
       description: Delete a single webhook by its ID.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -1611,14 +1898,14 @@ paths:
                   type: string
                   description: The webhook id to delete
       responses:
-        "200":
+        '200':
           description: Webhook is deleted
 
   /api/admin/webhooks/create:
     post:
       summary: Create a webhook.
       description: Create a single webhook that acts on the requested events.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       requestBody:
@@ -1638,7 +1925,7 @@ paths:
                     type: string
 
       responses:
-        "200":
+        '200':
           description: Token was created.
           content:
             application/json:
@@ -1650,51 +1937,50 @@ paths:
                     example: your new token
                   token:
                     type: string
-                    example: "zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI="
-
+                    example: 'zG2xO-mHTFnelCp5xaIkYEFWcPhoOswOSRmFC1BkI='
 
   /api/integrations/clients:
     get:
       summary: Return a list of currently connected clients
       description: Return a list of currently connected clients with optional geo details.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       responses:
-        "200":
-          $ref: "#/components/responses/ClientsResponse"
+        '200':
+          $ref: '#/components/responses/ClientsResponse'
 
   /api/integrations/chat:
-      get:
-        summary: Historical Chat Messages
-        description: Used to get the backlog of chat messages.
-        tags: ["Integrations"]
-        security:
-          - AccessToken: []
-        responses:
-          "200":
-            description: ""
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      user:
-                        $ref: "#/components/schemas/User"
-                      body:
-                        type: string
-                        description: Escaped HTML of the chat message content.
-                      id:
-                        type: string
-                        description: Unique ID of the chat message.
-                      visible:
-                        type: boolean
-                        description: "Should chat message be visibly rendered."
-                      timestamp:
-                        type: string
-                        format: date-time
+    get:
+      summary: Historical Chat Messages
+      description: Used to get the backlog of chat messages.
+      tags: ['Integrations']
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user:
+                      $ref: '#/components/schemas/User'
+                    body:
+                      type: string
+                      description: Escaped HTML of the chat message content.
+                    id:
+                      type: string
+                      description: Unique ID of the chat message.
+                    visible:
+                      type: boolean
+                      description: 'Should chat message be visibly rendered.'
+                    timestamp:
+                      type: string
+                      format: date-time
 
   /api/integrations/chat/updatemessagevisibility:
     post:
@@ -1714,9 +2000,129 @@ paths:
                   items:
                     type: string
                     description: IDs of the chat messages you wish to change the visibility of.
-      tags: ["Integrations"]
+      tags: ['Integrations']
       security:
         - AccessToken: []
       responses:
-        "200":
-          $ref: "#/components/responses/BasicResponse"
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+
+  /api/admin/chat/users/setmoderator:
+    post:
+      summary: Set moderator priviledges on a chat users.
+      description: Give a chat user ID and be able to grant or remove moderator priviledges to this user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: User ID of the chat user you want to change moderation status of.
+                  example: xJ84_48Ghj
+                isModerator:
+                  type: boolean
+                  description: The moderator status of this user.
+                  example: true
+      tags: ['Admin', 'Moderation']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+
+  /api/admin/chat/users/moderators:
+    get:
+      tags: ['Admin', 'Moderation']
+      security:
+        - AdminBasicAuth: []
+      summary: Get a list of chat moderator users.
+      responses:
+        '200':
+          description: List of moderators
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /api/admin/followers:
+    get:
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      summary: Get the followers of this instance
+      responses:
+        '200':
+          description: Followers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Follower'
+
+  /api/admin/followers/pending:
+    get:
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      summary: Get a list of follow requests that are pending.
+      responses:
+        '200':
+          description: Followers
+          $ref: '#/components/schemas/FollowerArray'
+
+  /api/admin/followers/blocked:
+    get:
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      summary: Get a list of follow requests that have been blocked/rejected.
+      responses:
+        '200':
+          description: Follower requests that have been rejected or blocked.
+          $ref: '#/components/schemas/FollowerArray'
+
+  /api/admin/followers/approve:
+    post:
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      summary: Approve a pending follow request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actorIRI:
+                  type: string
+                  description: The requestor's remote IRI used to identify the user.
+      responses:
+        '200':
+          description: The request has been successfully approved.
+          $ref: '#/components/responses/BasicResponse'
+
+  /api/admin/config/chat/suggestedusernames:
+    post:
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      summary: A list of names to select from randomly for new chat users.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: The list of default names have been updated.
+          $ref: '#/components/responses/BasicResponse'
