@@ -33,19 +33,19 @@ var (
 )
 
 // Start starts up the core processing.
-func Start() error {
+func Start() (err error) {
 	resetDirectories()
 
 	data.PopulateDefaults()
 
-	if err := data.VerifySettings(); err != nil {
+	if err = data.VerifySettings(); err != nil {
 		log.Error(err)
-		return err
+		return
 	}
 
-	if err := setupStats(); err != nil {
-		log.Error("failed to setup the stats")
-		return err
+	if err = setupStats(); err != nil {
+		log.Errorln("failed to setup the stats")
+		return
 	}
 
 	// The HLS handler takes the written HLS playlists and segments
@@ -53,23 +53,25 @@ func Start() error {
 	// but will play more useful when recordings come into play.
 	handler = transcoder.HLSHandler{}
 
-	if err := setupStorage(); err != nil {
+	if err = setupStorage(); err != nil {
 		log.Errorln("storage error", err)
+		return
 	}
 
 	user.SetupUsers()
 
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
-	if err := createInitialOfflineState(); err != nil {
-		log.Error("failed to create the initial offline state")
-		return err
+	if err = createInitialOfflineState(); err != nil {
+		log.Errorln("failed to create the initial offline state", err)
+		return
 	}
 
 	_yp = yp.NewYP(GetStatus)
 
-	if err := chat.Start(GetStatus); err != nil {
+	if err = chat.Start(GetStatus); err != nil {
 		log.Errorln(err)
+		return
 	}
 
 	// start the rtmp server
@@ -80,7 +82,7 @@ func Start() error {
 
 	webhooks.InitWorkerPool()
 
-	return nil
+	return
 }
 
 func createInitialOfflineState() error {
