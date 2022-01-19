@@ -12,6 +12,11 @@ const testVisibilityMessage = {
   type: 'CHAT',
 };
 
+const establishedUserFailedChatMessage = {
+  body: 'this message should fail to send ' + Math.floor(Math.random() * 100),
+  type: 'CHAT',
+};
+
 test('can send a chat message', async (done) => {
   const registration = await registerChat();
   const accessToken = registration.accessToken;
@@ -63,9 +68,39 @@ test('verify message has become hidden', async (done) => {
     .auth('admin', 'abc123');
 
   const message = res.body.filter((obj) => {
-    return obj.body === `${testVisibilityMessage.body}`;
+    return obj.body === testVisibilityMessage.body;
   });
   expect(message.length).toBe(1);
   // expect(message[0].hiddenAt).toBeTruthy();
+  done();
+});
+
+test('can enable established chat user mode', async (done) => {
+  await request
+    .post('/api/admin/config/chat/establishedusermode')
+    .auth('admin', 'abc123')
+    .send({ value: true })
+    .expect(200);
+  done();
+});
+
+test('can send a message after established user mode is enabled', async (done) => {
+  const registration = await registerChat();
+  const accessToken = registration.accessToken;
+
+  sendChatMessage(establishedUserFailedChatMessage, accessToken, done);
+});
+
+test('verify message is not in the chat feed', async (done) => {
+  const res = await request
+    .get('/api/admin/chat/messages')
+    .expect(200)
+    .auth('admin', 'abc123');
+
+  const message = res.body.filter((obj) => {
+    return obj.body === establishedUserFailedChatMessage.body;
+  });
+
+  expect(message.length).toBe(0);
   done();
 });

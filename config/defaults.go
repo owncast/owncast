@@ -1,6 +1,10 @@
 package config
 
-import "github.com/owncast/owncast/models"
+import (
+	"time"
+
+	"github.com/owncast/owncast/models"
+)
 
 // Defaults will hold default configuration values.
 type Defaults struct {
@@ -27,6 +31,8 @@ type Defaults struct {
 
 	FederationUsername      string
 	FederationGoLiveMessage string
+
+	ChatEstablishedUserModeTimeDuration time.Duration
 }
 
 // GetDefaults will return default configuration values.
@@ -53,6 +59,8 @@ func GetDefaults() Defaults {
 		WebServerIP:    "0.0.0.0",
 		RTMPServerPort: 1935,
 		StreamKey:      "abc123",
+
+		ChatEstablishedUserModeTimeDuration: time.Minute * 15,
 
 		StreamVariants: []models.StreamOutputVariant{
 			{

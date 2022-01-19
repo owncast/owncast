@@ -54,6 +54,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
+		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -98,6 +99,7 @@ type serverConfigAdminResponse struct {
 	YP                      yp                       `json:"yp"`
 	ChatDisabled            bool                     `json:"chatDisabled"`
 	ChatJoinMessagesEnabled bool                     `json:"chatJoinMessagesEnabled"`
+	ChatEstablishedUserMode bool                     `json:"chatEstablishedUserMode"`
 	ExternalActions         []models.ExternalAction  `json:"externalActions"`
 	SupportedCodecs         []string                 `json:"supportedCodecs"`
 	VideoCodec              string                   `json:"videoCodec"`

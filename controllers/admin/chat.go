@@ -345,3 +345,24 @@ func SendChatAction(integration user.ExternalAPIUser, w http.ResponseWriter, r *
 
 	controllers.WriteSimpleResponse(w, true, "sent")
 }
+
+// SetEnableEstablishedChatUserMode sets the requirement for a chat user
+// to be "established" for some time before taking part in chat.
+func SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update chat established user only mode")
+		return
+	}
+
+	if err := data.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "chat established users only mode updated")
+}

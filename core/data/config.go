@@ -14,47 +14,48 @@ import (
 )
 
 const (
-	extraContentKey              = "extra_page_content"
-	streamTitleKey               = "stream_title"
-	streamKeyKey                 = "stream_key"
-	logoPathKey                  = "logo_path"
-	serverSummaryKey             = "server_summary"
-	serverWelcomeMessageKey      = "server_welcome_message"
-	serverNameKey                = "server_name"
-	serverURLKey                 = "server_url"
-	httpPortNumberKey            = "http_port_number"
-	httpListenAddressKey         = "http_listen_address"
-	websocketHostOverrideKey     = "websocket_host_override"
-	rtmpPortNumberKey            = "rtmp_port_number"
-	serverMetadataTagsKey        = "server_metadata_tags"
-	directoryEnabledKey          = "directory_enabled"
-	directoryRegistrationKeyKey  = "directory_registration_key"
-	socialHandlesKey             = "social_handles"
-	peakViewersSessionKey        = "peak_viewers_session"
-	peakViewersOverallKey        = "peak_viewers_overall"
-	lastDisconnectTimeKey        = "last_disconnect_time"
-	ffmpegPathKey                = "ffmpeg_path"
-	nsfwKey                      = "nsfw"
-	s3StorageEnabledKey          = "s3_storage_enabled"
-	s3StorageConfigKey           = "s3_storage_config"
-	videoLatencyLevel            = "video_latency_level"
-	videoStreamOutputVariantsKey = "video_stream_output_variants"
-	chatDisabledKey              = "chat_disabled"
-	externalActionsKey           = "external_actions"
-	customStylesKey              = "custom_styles"
-	videoCodecKey                = "video_codec"
-	blockedUsernamesKey          = "blocked_usernames"
-	publicKeyKey                 = "public_key"
-	privateKeyKey                = "private_key"
-	serverInitDateKey            = "server_init_date"
-	federationEnabledKey         = "federation_enabled"
-	federationUsernameKey        = "federation_username"
-	federationPrivateKey         = "federation_private"
-	federationGoLiveMessageKey   = "federation_go_live_message"
-	federationShowEngagementKey  = "federation_show_engagement"
-	federationBlockedDomainsKey  = "federation_blocked_domains"
-	suggestedUsernamesKey        = "suggested_usernames"
-	chatJoinMessagesEnabledKey   = "chat_join_messages_enabled"
+	extraContentKey                 = "extra_page_content"
+	streamTitleKey                  = "stream_title"
+	streamKeyKey                    = "stream_key"
+	logoPathKey                     = "logo_path"
+	serverSummaryKey                = "server_summary"
+	serverWelcomeMessageKey         = "server_welcome_message"
+	serverNameKey                   = "server_name"
+	serverURLKey                    = "server_url"
+	httpPortNumberKey               = "http_port_number"
+	httpListenAddressKey            = "http_listen_address"
+	websocketHostOverrideKey        = "websocket_host_override"
+	rtmpPortNumberKey               = "rtmp_port_number"
+	serverMetadataTagsKey           = "server_metadata_tags"
+	directoryEnabledKey             = "directory_enabled"
+	directoryRegistrationKeyKey     = "directory_registration_key"
+	socialHandlesKey                = "social_handles"
+	peakViewersSessionKey           = "peak_viewers_session"
+	peakViewersOverallKey           = "peak_viewers_overall"
+	lastDisconnectTimeKey           = "last_disconnect_time"
+	ffmpegPathKey                   = "ffmpeg_path"
+	nsfwKey                         = "nsfw"
+	s3StorageEnabledKey             = "s3_storage_enabled"
+	s3StorageConfigKey              = "s3_storage_config"
+	videoLatencyLevel               = "video_latency_level"
+	videoStreamOutputVariantsKey    = "video_stream_output_variants"
+	chatDisabledKey                 = "chat_disabled"
+	externalActionsKey              = "external_actions"
+	customStylesKey                 = "custom_styles"
+	videoCodecKey                   = "video_codec"
+	blockedUsernamesKey             = "blocked_usernames"
+	publicKeyKey                    = "public_key"
+	privateKeyKey                   = "private_key"
+	serverInitDateKey               = "server_init_date"
+	federationEnabledKey            = "federation_enabled"
+	federationUsernameKey           = "federation_username"
+	federationPrivateKey            = "federation_private"
+	federationGoLiveMessageKey      = "federation_go_live_message"
+	federationShowEngagementKey     = "federation_show_engagement"
+	federationBlockedDomainsKey     = "federation_blocked_domains"
+	suggestedUsernamesKey           = "suggested_usernames"
+	chatJoinMessagesEnabledKey      = "chat_join_messages_enabled"
+	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -496,6 +497,21 @@ func GetChatDisabled() bool {
 	disabled, err := _datastore.GetBool(chatDisabledKey)
 	if err == nil {
 		return disabled
+	}
+
+	return false
+}
+
+// SetChatEstablishedUsersOnlyMode sets the state of established user only mode.
+func SetChatEstablishedUsersOnlyMode(enabled bool) error {
+	return _datastore.SetBool(chatEstablishedUsersOnlyModeKey, enabled)
+}
+
+// GetChatEstbalishedUsersOnlyMode returns the state of established user only mode.
+func GetChatEstbalishedUsersOnlyMode() bool {
+	enabled, err := _datastore.GetBool(chatEstablishedUsersOnlyModeKey)
+	if err == nil {
+		return enabled
 	}
 
 	return false
