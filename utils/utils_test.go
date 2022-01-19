@@ -30,14 +30,29 @@ func TestSanitizeString(t *testing.T) {
 	for _, s := range testStrings {
 		r := SanitizeString(s)
 		if r != targetString {
-			t.Error("Incorrect sanitization of string", s, "got", r)
+      t.Errorf("Incorrect sanitization of string. Expected '%s', got '%s'.", targetString, r)
 		}
 	}
 
+	// zwspStr has a zero-width space.
 	zwspStr := "str1​str2"
 	zwspStrExpected := "str1str2"
 	r := SanitizeString(zwspStr)
 	if r != zwspStrExpected {
-		t.Error("Incorrect sanitization of string", zwspStr, "got", r)
+    t.Errorf("Incorrect sanitization of string. Expected '%s', got '%s'.", zwspStr, r)
 	}
+
+	legitStrings := []string{
+	  "Thomas Müller",
+	  "Łukasz",
+	  "Gießkanne",
+	  "Tromsø",
+	  "ру́сский алфави́т", // 'Russian Alphabet' according to Wikipedia
+	  "日本語の文字", // 'Japanese characters' according to Google Translate
+  }
+  for _, s := range legitStrings {
+    if clean:=SanitizeString(s); clean != s {
+      t.Errorf("Incorrect sanitization of string. Expected '%s', got '%s'.", s, clean)
+    }
+  }
 }
