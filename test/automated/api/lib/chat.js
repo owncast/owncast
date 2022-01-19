@@ -11,7 +11,7 @@ async function registerChat() {
   }
 }
 
-function sendChatMessage(message, accessToken, done) {
+async function sendChatMessage(message, accessToken, done) {
   const ws = new WebSocket(
     `ws://localhost:8080/ws?accessToken=${accessToken}`,
     {
@@ -19,9 +19,10 @@ function sendChatMessage(message, accessToken, done) {
     }
   );
 
-  function onOpen() {
-    ws.send(JSON.stringify(message), function () {
+  async function onOpen() {
+    ws.send(JSON.stringify(message), async function () {
       ws.close();
+      await new Promise((r) => setTimeout(r, 2000));
       done();
     });
   }

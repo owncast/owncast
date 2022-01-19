@@ -63,6 +63,8 @@ test('verify we can make API call to mark message as hidden', async (done) => {
 });
 
 test('verify message has become hidden', async (done) => {
+  await new Promise((r) => setTimeout(r, 2000));
+
   const res = await request
     .get('/api/admin/chat/messages')
     .expect(200)
