@@ -35,12 +35,13 @@ test('verify we can make API call to mark message as hidden', async (done) => {
   );
 
   // Verify the visibility change comes through the websocket
-  ws.on('message', function incoming(message) {
+  ws.on('message', async function incoming(message) {
     const messages = message.split('\n');
-    messages.forEach(function (message) {
+    messages.forEach(async function (message) {
       const event = JSON.parse(message);
 
       if (event.type === 'VISIBILITY-UPDATE') {
+        await new Promise((r) => setTimeout(r, 2000));
         done();
         ws.close();
       }
@@ -91,7 +92,7 @@ test('can send a message after established user mode is enabled', async (done) =
   sendChatMessage(establishedUserFailedChatMessage, accessToken, done);
 });
 
-test('verify message is not in the chat feed', async (done) => {
+test('verify rejected message is not in the chat feed', async (done) => {
   const res = await request
     .get('/api/admin/chat/messages')
     .expect(200)

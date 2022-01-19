@@ -27,7 +27,7 @@ test('can fetch chat messages', async (done) => {
     .auth('admin', 'abc123')
     .expect(200);
 
-  const expectedBody = `${testMessage.body}`;
+  const expectedBody = testMessage.body;
   const message = res.body.filter(function (msg) {
     return msg.body === expectedBody;
   })[0];
@@ -52,7 +52,7 @@ test('can derive display name from user header', async (done) => {
 test('can overwrite user header derived display name with body', async (done) => {
   const res = await request
     .post('/api/chat/register')
-    .send({displayName: 'TestUserChat'})
+    .send({ displayName: 'TestUserChat' })
     .set('X-Forwarded-User', 'test-user')
     .expect(200);
 
