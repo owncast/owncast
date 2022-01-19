@@ -2,6 +2,8 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 const html = htm.bind(h);
 
+import { URL_WEBSOCKET } from './utils/constants.js';
+
 import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
@@ -154,6 +156,7 @@ export default class App extends Component {
     this.hasConfiguredChat = false;
     this.setupChatAuth = this.setupChatAuth.bind(this);
     this.disableChat = this.disableChat.bind(this);
+    this.socketHostOverride = null;
   }
 
   componentDidMount() {
@@ -245,8 +248,10 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary, chatDisabled } = data;
+    const { name, summary, chatDisabled, socketHostOverride } = data;
     window.document.title = name;
+
+    this.socketHostOverride = socketHostOverride;
 
     // If this is the first time setting the config
     // then setup chat if it's enabled.
@@ -638,8 +643,11 @@ export default class App extends Component {
       });
     }
 
-    // Without a valid access token he websocket connection will be rejected.
-    const websocket = new Websocket(accessToken);
+    // Without a valid access token the websocket connection will be rejected.
+    const websocket = new Websocket(
+      accessToken,
+      this.socketHostOverride || URL_WEBSOCKET
+    );
     websocket.addListener(
       CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED,
       this.handleWebsocketMessage
