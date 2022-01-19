@@ -17,6 +17,8 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"mvdan.cc/xurls"
 )
 
@@ -321,10 +323,21 @@ func GetHostnameFromURL(u url.URL) string {
 // GetHostnameFromURLString will return the hostname component from a URL object.
 func GetHostnameFromURLString(s string) string {
 	u, err := url.Parse(s)
-
 	if err != nil {
 		return ""
 	}
 
 	return u.Host
+}
+
+// SanitizeString will strip control characters and extended unicode from a
+// string. See https://go.dev/blog/normalization.
+func SanitizeString(str string) string {
+	isOk := func(r rune) bool {
+		return r < 32 || r >= 127
+	}
+
+	t := transform.Chain(norm.NFKD, transform.RemoveFunc(isOk))
+	str, _, _ = transform.String(t, str)
+	return str
 }

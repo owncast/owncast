@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,7 +21,12 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	proposedUsername := receivedEvent.NewName
+	proposedUsername := utils.SanitizeString(receivedEvent.NewName)
+	if proposedUsername == "" {
+		// Empty string is rejected.
+		return
+	}
+
 	blocklist := data.GetForbiddenUsernameList()
 
 	for _, blockedName := range blocklist {
@@ -43,7 +49,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	oldName := savedUser.DisplayName
 
 	// Save the new name
-	user.ChangeUsername(eventData.client.User.ID, receivedEvent.NewName)
+	user.ChangeUsername(eventData.client.User.ID, proposedUsername)
 
 	// Update the connected clients associated user with the new name
 	now := time.Now()
@@ -51,7 +57,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	eventData.client.User.NameChangedAt = &now
 
 	// Send chat event letting everyone about about the name change
-	savedUser.DisplayName = receivedEvent.NewName
+	savedUser.DisplayName = proposedUsername
 
 	broadcastEvent := events.NameChangeBroadcast{
 		Oldname: oldName,
