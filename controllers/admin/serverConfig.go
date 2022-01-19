@@ -79,7 +79,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		},
 		Notifications: notificationsConfigResponse{
 			Discord: data.GetDiscordConfig(),
-			Twilio:  data.GetTwilioConfig(),
 			Browser: data.GetBrowserPushConfig(),
 		},
 	}
@@ -152,6 +151,5 @@ type federationConfigResponse struct {
 
 type notificationsConfigResponse struct {
 	Browser models.BrowserNotificationConfiguration `json:"browser"`
-	Twilio  models.TwilioConfiguration              `json:"twilio"`
 	Discord models.DiscordConfiguration             `json:"discord"`
 }

@@ -58,7 +58,6 @@ const (
 	chatJoinMessagesEnabledKey           = "chat_join_messages_enabled"
 	chatEstablishedUsersOnlyModeKey      = "chat_established_users_only_mode"
 	notificationsEnabledKey              = "notifications_enabled"
-	twilioConfigurationKey               = "twilio_configuration"
 	discordConfigurationKey              = "discord_configuration"
 	browserPushConfigurationKey          = "browser_push_configuration"
 	browserPushPublicKeyKey              = "browser_push_public_key"
@@ -817,27 +816,6 @@ func SetNotificationsEnabled(enabled bool) error {
 func GetNotificationsEnabled() bool {
 	enabled, _ := _datastore.GetBool(notificationsEnabledKey)
 	return enabled
-}
-
-// GetTwilioConfig will return the Twilio configuration.
-func GetTwilioConfig() models.TwilioConfiguration {
-	configEntry, err := _datastore.Get(twilioConfigurationKey)
-	if err != nil {
-		return models.TwilioConfiguration{Enabled: false}
-	}
-
-	var config models.TwilioConfiguration
-	if err := configEntry.getObject(&config); err != nil {
-		return models.TwilioConfiguration{Enabled: false}
-	}
-
-	return config
-}
-
-// SetTwilioConfig will set the Twilio configuration.
-func SetTwilioConfig(config models.TwilioConfiguration) error {
-	configEntry := ConfigEntry{Key: twilioConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
 }
 
 // GetDiscordConfig will return the Discord configuration.

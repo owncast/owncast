@@ -52,25 +52,3 @@ func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		controllers.WriteSimpleResponse(w, false, "unable to update browser push config with provided values")
 	}
 }
-
-// SetTwilioNotificationConfiguration will set the twilio notification configuration.
-func SetTwilioNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
-		return
-	}
-
-	type request struct {
-		Value models.TwilioConfiguration `json:"value"`
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	var config request
-	if err := decoder.Decode(&config); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to update s3 config with provided values")
-		return
-	}
-
-	if err := data.SetTwilioConfig(config.Value); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to update twilio config with provided values")
-	}
-}

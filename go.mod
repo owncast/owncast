@@ -61,17 +61,13 @@ require (
 
 require github.com/SherClockHolmes/webpush-go v1.1.3
 
-require github.com/twilio/twilio-go v0.19.0
-
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
 replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20211229051252-7821289d4026

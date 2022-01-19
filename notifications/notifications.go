@@ -6,7 +6,6 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
-	"github.com/owncast/owncast/notifications/twilio"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,7 +15,6 @@ type Notifier struct {
 	datastore *data.Datastore
 	browser   *browser.Browser
 	discord   *discord.Discord
-	twilio    *twilio.Twilio
 }
 
 // Setup will perform any pre-use setup for the notifier.
@@ -92,15 +90,6 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 		notifier.discord = discordNotifier
 	}
 
-	// Add Twilio notifier
-	if twilioConfig := data.GetTwilioConfig(); twilioConfig.Enabled {
-		twilioNotifier, err := twilio.New(twilioConfig.PhoneNumber, twilioConfig.AccountSid, twilioConfig.AuthToken)
-		if err != nil {
-			return nil, errors.Wrap(err, "error creating twilio notifier")
-		}
-		notifier.twilio = twilioNotifier
-	}
-
 	return &notifier, nil
 }
 
@@ -112,18 +101,6 @@ func (n *Notifier) notifyBrowserDestinations() {
 	for _, destination := range destinations {
 		if err := n.browser.Send(destination, data.GetServerName(), data.GetBrowserPushConfig().GoLiveMessage); err != nil {
 			log.Errorln(err)
-		}
-	}
-}
-
-func (n *Notifier) notifyTwilioDestinations() {
-	destinations, err := GetNotificationDestinationsForChannel(TextMessageNotification)
-	if err != nil {
-		log.Errorln("error getting browser push notification destinations", err)
-	}
-	for _, destination := range destinations {
-		if err := n.twilio.Send(data.GetTwilioConfig().GoLiveMessage, destination); err != nil {
-			log.Errorln("error sending twilio message", err)
 		}
 	}
 }
@@ -142,9 +119,5 @@ func (n *Notifier) Notify() {
 
 	if n.discord != nil {
 		n.notifyDiscord()
-	}
-
-	if n.twilio != nil {
-		n.notifyTwilioDestinations()
 	}
 }

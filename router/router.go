@@ -344,7 +344,6 @@ func Start() error {
 
 	// Configure outbound notification channels.
 	http.HandleFunc("/api/admin/config/notifications/discord", middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration))
-	http.HandleFunc("/api/admin/config/notifications/twilio", middleware.RequireAdminAuth(admin.SetTwilioNotificationConfiguration))
 	http.HandleFunc("/api/admin/config/notifications/browser", middleware.RequireAdminAuth(admin.SetBrowserNotificationConfiguration))
 
 	// ActivityPub has its own router

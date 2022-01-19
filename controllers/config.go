@@ -100,9 +100,6 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 			Enabled:   browserPushEnabled,
 			PublicKey: browserPushPublicKey,
 		},
-		TextMessages: textMessageNotificatoinsConfigResponse{
-			Enabled: data.GetTwilioConfig().Enabled,
-		},
 	}
 
 	configuration := webConfigResponse{
