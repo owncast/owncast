@@ -66,8 +66,8 @@ function FederationInfoModal({ cancelPressed, okPressed }) {
         <li>You must always host your Owncast server with SSL using a https url.</li>
         <li>
           You should not change your server name URL or social username once people begin following
-          you, as you will be seen as a completely different user on the Fediverse, and the old user
-          will disappear.
+          you, as your server will be seen as a completely different user on the Fediverse, and the
+          old user will disappear.
         </li>
         <li>
           Turning on <i>Private mode</i> will allow you to manually approve each follower and limit
