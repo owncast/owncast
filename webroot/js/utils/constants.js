@@ -60,7 +60,7 @@ export const CHAT_KEY_MODIFIERS = ['Control', 'Shift', 'Meta', 'Alt'];
 export const MESSAGE_JUMPTOBOTTOM_BUFFER = 500;
 
 // app styling
-export const WIDTH_SINGLE_COL = 730;
+export const WIDTH_SINGLE_COL = 780;
 export const HEIGHT_SHORT_WIDE = 500;
 export const ORIENTATION_PORTRAIT = 'portrait';
 export const ORIENTATION_LANDSCAPE = 'landscape';

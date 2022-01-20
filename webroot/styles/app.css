@@ -354,12 +354,13 @@ header {
   background-color: transparent;
   padding: 0px;
   max-width: 740px;
+  min-width: 500px;
   width: 50%;
   overflow: hidden;
   box-sizing: border-box;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
   .modal__container {
     width: 100%;
   }
