@@ -74,19 +74,8 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
 	chat.SendAllWelcomeMessage()
 
-	// Send a delayed live Federated message.
-	if data.GetFederationEnabled() {
-		_onlineTimerCancelFunc = startFederatedLiveStreamMessageTimer()
-	}
-
-	// Send alerts to those who have registered for notifications.
-	if notifier, err := notifications.New(data.GetDatastore()); err != nil {
-		log.Errorln(err)
-	} else if _lastNotified == nil || time.Since(*_lastNotified) > 5*time.Minute {
-		notifier.Notify()
-		now := time.Now()
-		_lastNotified = &now
-	}
+	// Send delayed notification messages.
+	_onlineTimerCancelFunc = startLiveStreamNotificationsTimer()
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
@@ -173,19 +162,37 @@ func stopOnlineCleanupTimer() {
 	}
 }
 
-func startFederatedLiveStreamMessageTimer() context.CancelFunc {
-	// Send a delayed live Federated message.
+func startLiveStreamNotificationsTimer() context.CancelFunc {
+	// Send delayed notification messages.
 	c, cancelFunc := context.WithCancel(context.Background())
 	_onlineTimerCancelFunc = cancelFunc
 	go func(c context.Context) {
 		select {
 		case <-time.After(time.Minute * 2.0):
-			log.Traceln("Sending Federated Go Live message.")
-			if err := activitypub.SendLive(); err != nil {
-				log.Errorln(err)
+			if _lastNotified != nil && time.Since(*_lastNotified) < 10*time.Minute {
+				return
 			}
+
+			// Send Fediverse message.
+			if data.GetFederationEnabled() {
+				log.Traceln("Sending Federated Go Live message.")
+				if err := activitypub.SendLive(); err != nil {
+					log.Errorln(err)
+				}
+			}
+
+			// Send notification to those who have registered for them.
+			if notifier, err := notifications.New(data.GetDatastore()); err != nil {
+				log.Errorln(err)
+			} else {
+				notifier.Notify()
+			}
+
+			now := time.Now()
+			_lastNotified = &now
 		case <-c.Done():
 		}
 	}(c)
+
 	return cancelFunc
 }

@@ -6,8 +6,16 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
+	"github.com/owncast/owncast/notifications/email"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	smtpServer = "in-v3.mailjet.com"
+	smtpPort   = "587"
+	username   = "username"
+	password   = "password"
 )
 
 // Notifier is an instance of the live stream notifier.
@@ -15,6 +23,7 @@ type Notifier struct {
 	datastore *data.Datastore
 	browser   *browser.Browser
 	discord   *discord.Discord
+	email     *email.Email
 }
 
 // Setup will perform any pre-use setup for the notifier.
@@ -90,6 +99,12 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 		notifier.discord = discordNotifier
 	}
 
+	// Add email notifications
+	if emailConfig := data.GetMailjetConfiguration(); emailConfig.Enabled && emailConfig.FromAddress != "" && emailConfig.ListAddress != "" {
+		e := email.New(emailConfig.FromAddress, emailConfig.SMTPServer, "587", emailConfig.Username, emailConfig.Password)
+		notifier.email = e
+	}
+
 	return &notifier, nil
 }
 
@@ -111,6 +126,29 @@ func (n *Notifier) notifyDiscord() {
 	}
 }
 
+func (n *Notifier) notifyEmail() {
+	content, err := email.GenerateEmailContent()
+	if err != nil {
+		log.Errorln("unable to generate email notification content: ", err)
+		return
+	}
+
+	emailConfig := data.GetMailjetConfiguration()
+	if !emailConfig.Enabled {
+		return
+	}
+
+	subject := emailConfig.GoLiveSubject
+	if data.GetStreamTitle() != "" {
+		subject += " - " + data.GetStreamTitle()
+	}
+
+	if err := n.email.Send([]string{emailConfig.ListAddress}, content, subject); err != nil {
+		log.Errorln("unable to send email notification: ", err)
+		return
+	}
+}
+
 // Notify will fire the different notification channels.
 func (n *Notifier) Notify() {
 	if n.browser != nil {
@@ -119,5 +157,9 @@ func (n *Notifier) Notify() {
 
 	if n.discord != nil {
 		n.notifyDiscord()
+	}
+
+	if n.email != nil {
+		n.notifyEmail()
 	}
 }

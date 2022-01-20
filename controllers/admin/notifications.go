@@ -52,3 +52,25 @@ func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		controllers.WriteSimpleResponse(w, false, "unable to update browser push config with provided values")
 	}
 }
+
+// SetMailjetNotificationConfiguration will set the browser notification configuration.
+func SetMailjetNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	type request struct {
+		Value models.MailjetConfiguration `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var config request
+	if err := decoder.Decode(&config); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update mailjet config with provided values")
+		return
+	}
+
+	if err := data.SetMailjetConfiguration(config.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update mailjet config with provided values")
+	}
+}

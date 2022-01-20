@@ -80,6 +80,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		Notifications: notificationsConfigResponse{
 			Discord: data.GetDiscordConfig(),
 			Browser: data.GetBrowserPushConfig(),
+			Email:   data.GetMailjetConfiguration(),
 		},
 	}
 
@@ -120,18 +121,17 @@ type videoSettings struct {
 }
 
 type webConfigResponse struct {
-	Name             string                      `json:"name"`
-	Summary          string                      `json:"summary"`
-	WelcomeMessage   string                      `json:"welcomeMessage"`
-	Logo             string                      `json:"logo"`
-	Tags             []string                    `json:"tags"`
-	Version          string                      `json:"version"`
-	NSFW             bool                        `json:"nsfw"`
-	ExtraPageContent string                      `json:"extraPageContent"`
-	StreamTitle      string                      `json:"streamTitle"` // What's going on with the current stream
-	SocialHandles    []models.SocialHandle       `json:"socialHandles"`
-	CustomStyles     string                      `json:"customStyles"`
-	Notifications    notificationsConfigResponse `json:"notifications"`
+	Name             string                `json:"name"`
+	Summary          string                `json:"summary"`
+	WelcomeMessage   string                `json:"welcomeMessage"`
+	Logo             string                `json:"logo"`
+	Tags             []string              `json:"tags"`
+	Version          string                `json:"version"`
+	NSFW             bool                  `json:"nsfw"`
+	ExtraPageContent string                `json:"extraPageContent"`
+	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
+	SocialHandles    []models.SocialHandle `json:"socialHandles"`
+	CustomStyles     string                `json:"customStyles"`
 }
 
 type yp struct {
@@ -152,4 +152,5 @@ type federationConfigResponse struct {
 type notificationsConfigResponse struct {
 	Browser models.BrowserNotificationConfiguration `json:"browser"`
 	Discord models.DiscordConfiguration             `json:"discord"`
+	Email   models.MailjetConfiguration             `json:"email"`
 }

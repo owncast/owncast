@@ -62,6 +62,8 @@ const (
 	browserPushConfigurationKey          = "browser_push_configuration"
 	browserPushPublicKeyKey              = "browser_push_public_key"
 	browserPushPrivateKeyKey             = "browser_push_private_key"
+	mailjetConfigurationKey              = "mailjet_configuration"
+	mailjetEmailListIDKey                = "mailjet_email_list_id"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 )
 
@@ -839,7 +841,7 @@ func SetDiscordConfig(config models.DiscordConfiguration) error {
 	return _datastore.Save(configEntry)
 }
 
-// GetDiscordConfig will return the browser push configuration.
+// GetBrowserPushConfig will return the browser push configuration.
 func GetBrowserPushConfig() models.BrowserNotificationConfiguration {
 	configEntry, err := _datastore.Get(browserPushConfigurationKey)
 	if err != nil {
@@ -878,6 +880,27 @@ func SetBrowserPushPrivateKey(key string) error {
 // GetBrowserPushPrivateKey will return the private key for browser pushes.
 func GetBrowserPushPrivateKey() (string, error) {
 	return _datastore.GetString(browserPushPrivateKeyKey)
+}
+
+// GetMailjetConfiguration will return the browser push configuration.
+func GetMailjetConfiguration() models.MailjetConfiguration {
+	configEntry, err := _datastore.Get(mailjetConfigurationKey)
+	if err != nil {
+		return models.MailjetConfiguration{Enabled: false}
+	}
+
+	var config models.MailjetConfiguration
+	if err := configEntry.getObject(&config); err != nil {
+		return models.MailjetConfiguration{Enabled: false}
+	}
+
+	return config
+}
+
+// SetMailjetConfiguration will set the mailjet configuration.
+func SetMailjetConfiguration(config models.MailjetConfiguration) error {
+	configEntry := ConfigEntry{Key: mailjetConfigurationKey, Value: config}
+	return _datastore.Save(configEntry)
 }
 
 // SetHasPerformedInitialNotificationsConfig sets when performed initial setup.
