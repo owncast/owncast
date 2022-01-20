@@ -9,6 +9,7 @@ import {
   addNewlines,
   makeLastOnlineString,
   pluralize,
+  parseSecondsToDurationString,
 } from './utils/helpers.js';
 import {
   URL_CONFIG,
@@ -47,6 +48,7 @@ export default class VideoOnly extends Component {
 
     this.handleOfflineMode = this.handleOfflineMode.bind(this);
     this.handleOnlineMode = this.handleOnlineMode.bind(this);
+    this.setCurrentStreamDuration = this.setCurrentStreamDuration.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -139,7 +141,7 @@ export default class VideoOnly extends Component {
     if (!status) {
       return;
     }
-    const { viewerCount, online, lastDisconnectTime } = status;
+    const { viewerCount, online, lastConnectTime, lastDisconnectTime } = status;
 
     if (status.online && !curStreamOnline) {
       // stream has just come online.
@@ -152,6 +154,7 @@ export default class VideoOnly extends Component {
       viewerCount,
       streamOnline: online,
       lastDisconnectTime,
+      lastConnectTime,
     });
   }
 
@@ -191,6 +194,17 @@ export default class VideoOnly extends Component {
     });
   }
 
+  setCurrentStreamDuration() {
+    let streamDurationString = '';
+    if (this.state.lastConnectTime) {
+      const diff = (Date.now() - Date.parse(this.state.lastConnectTime)) / 1000;
+      streamDurationString = parseSecondsToDurationString(diff);
+    }
+    this.setState({
+      streamStatusMessage: `${MESSAGE_ONLINE} ${streamDurationString}`,
+    });
+  }
+
   // play video!
   handleOnlineMode() {
     this.player.startPlayer();
@@ -208,7 +222,7 @@ export default class VideoOnly extends Component {
   }
 
   handleNetworkingError(error) {
-    console.log(`>>> App Error: ${error}`);
+    console.error(`>>> App Error: ${error}`);
   }
 
   render(props, state) {
