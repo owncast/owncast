@@ -52,7 +52,7 @@ func MakeActorFromPerson(person vocab.ActivityStreamsPerson) ActivityPubActor {
 		W3IDSecurityV1PublicKey: person.GetW3IDSecurityV1PublicKey(),
 	}
 
-	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 {
+	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 && person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
 		apActor.Image = person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
 	}
 
@@ -71,7 +71,7 @@ func MakeActorFromService(service vocab.ActivityStreamsService) ActivityPubActor
 		W3IDSecurityV1PublicKey: service.GetW3IDSecurityV1PublicKey(),
 	}
 
-	if service.GetActivityStreamsIcon() != nil && service.GetActivityStreamsIcon().Len() > 0 {
+	if service.GetActivityStreamsIcon() != nil && service.GetActivityStreamsIcon().Len() > 0 && service.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
 		apActor.Image = service.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
 	}
 
