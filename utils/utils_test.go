@@ -1,6 +1,8 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestUserAgent(t *testing.T) {
 	testAgents := []string{
@@ -14,5 +16,17 @@ func TestUserAgent(t *testing.T) {
 		if !IsUserAgentABot(agent) {
 			t.Error("Incorrect parsing of useragent", agent)
 		}
+	}
+}
+
+func TestGetHashtagsFromText(t *testing.T) {
+	text := `Some text with a #hashtag goes here.\n\n
+	Another #secondhashtag, goes here.\n\n
+	#thirdhashtag`
+
+	hashtags := GetHashtagsFromText(text)
+
+	if hashtags[0] != "#hashtag" || hashtags[1] != "#secondhashtag" || hashtags[2] != "#thirdhashtag" {
+		t.Error("Incorrect hashtags fetched from text.")
 	}
 }
