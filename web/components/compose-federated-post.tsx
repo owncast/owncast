@@ -20,6 +20,12 @@ export default function ComposeFederatedPost({ visible, handleClose }: ComposeFe
     setContent(e.target.value);
   }
 
+  function close() {
+    setPostPending(false);
+    setPostSuccessState(null);
+    handleClose();
+  }
+
   async function sendButtonClicked() {
     setPostPending(true);
 
@@ -33,7 +39,7 @@ export default function ComposeFederatedPost({ visible, handleClose }: ComposeFe
         auth: true,
       });
       setPostSuccessState(STATUS_SUCCESS);
-      setTimeout(handleClose, 1000);
+      setTimeout(close, 1000);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
