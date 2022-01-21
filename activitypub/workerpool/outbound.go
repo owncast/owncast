@@ -46,13 +46,6 @@ func worker(workerID int, queue <-chan Job) {
 }
 
 func sendActivityPubMessageToInbox(job Job) error {
-	// req, err := http.NewRequest("POST", job.inbox.String(), bytes.NewReader(job.payload))
-	// if err != nil {
-	// 	return err
-	// }
-
-	// req.Header.Set("Content-Type", "application/json")
-
 	client := &http.Client{}
 
 	resp, err := client.Do(job.request)

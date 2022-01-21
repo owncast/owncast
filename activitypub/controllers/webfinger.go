@@ -38,7 +38,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	if _, valid := data.GetFederatedInboxMap()[user]; !valid {
 		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
-		log.Errorln("webfinger request rejected for user:", user)
+		log.Debugln("webfinger request rejected for user:", user)
 		return
 	}
 
