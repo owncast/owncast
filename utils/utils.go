@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/mssola/user_agent"
@@ -321,10 +322,15 @@ func GetHostnameFromURL(u url.URL) string {
 // GetHostnameFromURLString will return the hostname component from a URL object.
 func GetHostnameFromURLString(s string) string {
 	u, err := url.Parse(s)
-
 	if err != nil {
 		return ""
 	}
 
 	return u.Host
+}
+
+// GetHashtagsFromText returns all the #Hashtags from a string.
+func GetHashtagsFromText(text string) []string {
+	re := regexp.MustCompile(`#[a-zA-Z0-9_]+`)
+	return re.FindAllString(text, -1)
 }

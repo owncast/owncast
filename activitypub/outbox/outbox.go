@@ -112,20 +112,18 @@ func SendPublicMessage(textContent string) error {
 
 	tagProp := streams.NewActivityStreamsTagProperty()
 
-	// Iterate through the post text and find #Hashtags.
-	words := strings.Split(originalContent, " ")
-	for _, word := range words {
-		if strings.HasPrefix(word, "#") {
-			tagWithoutHashtag := strings.TrimPrefix(word, "#")
+	hashtagStrings := utils.GetHashtagsFromText(originalContent)
 
-			// Replace the instances of the tag with a link to the tag page.
-			tagHTML := getHashtagLinkHTMLFromTagString(tagWithoutHashtag)
-			textContent = strings.ReplaceAll(textContent, word, tagHTML)
+	for _, hashtag := range hashtagStrings {
+		tagWithoutHashtag := strings.TrimPrefix(hashtag, "#")
 
-			// Create Hashtag object for the tag.
-			hashtag := apmodels.MakeHashtag(tagWithoutHashtag)
-			tagProp.AppendTootHashtag(hashtag)
-		}
+		// Replace the instances of the tag with a link to the tag page.
+		tagHTML := getHashtagLinkHTMLFromTagString(tagWithoutHashtag)
+		textContent = strings.ReplaceAll(textContent, hashtag, tagHTML)
+
+		// Create Hashtag object for the tag.
+		hashtag := apmodels.MakeHashtag(tagWithoutHashtag)
+		tagProp.AppendTootHashtag(hashtag)
 	}
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
