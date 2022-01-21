@@ -391,7 +391,16 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerURL(configValue.Value.(string)); err != nil {
+	rawValue, ok := configValue.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "server url value invalid")
+		return
+	}
+
+	// Trim any trailing slash
+	serverURL := strings.TrimRight(rawValue, "/")
+
+	if err := data.SetServerURL(serverURL); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
