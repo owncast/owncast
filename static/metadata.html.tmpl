@@ -18,16 +18,21 @@
   <meta property="og:image:url" content="{{.Thumbnail}}">
   <meta property="og:image:alt" content="{{.Image}}">
 
-  <meta property="og:video" content='{{.RequestedURL}}hls/stream.m3u8' />
-  <meta property="og:video:height" content="640" />
-  <meta property="og:video:width" content="385" />
-  <meta property="og:video:type" content="application/x-mpegURL" />
+  <meta property="og:video" content='{{.RequestedURL}}embed/video' />
+  <meta property="og:video:secure_url" content='{{.RequestedURL}}embed/video' />
+  <meta property="og:video:height" content="315" />
+  <meta property="og:video:width" content="560" />
+  <meta property="og:video:type" content="text/html" />
   <meta property="og:video:actor" content="{{.Name}}" />
 
   <meta property="twitter:title" content="{{.Name}}">
   <meta property="twitter:url" content="{{.RequestedURL}}">
   <meta property="twitter:description" content="{{.Summary}}">
   <meta property="twitter:image" content="{{.Image}}">
+  <meta property="twitter:card" content="player" />
+  <meta property="twitter:player" content='{{.RequestedURL}}embed/video' />
+  <meta property="twitter:player:width" content="560" />
+  <meta property="twitter:player:height" content="315" />
 
   <link rel="apple-touch-icon" sizes="57x57" href="/img/favicon/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/img/favicon/apple-icon-60x60.png">
@@ -65,7 +70,7 @@
 
   <br/>
 
-  <h3>Connect with {{.Name}} elsewhere by visiting:</h3>
+  <h3>Links for {{.Name}}:</h3>
 
   {{range .SocialHandles}}
     <li><a href="{{.URL}}">{{.Platform}}</a></li>
