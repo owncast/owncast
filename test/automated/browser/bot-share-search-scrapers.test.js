@@ -30,10 +30,10 @@ describe('Video embed page', () => {
     await page.waitForSelector('h3');
 
     const ogVideo = await getMetaTagContent('og:video');
-    expect(ogVideo).toBe('http://localhost:5309/hls/stream.m3u8');
+    expect(ogVideo).toBe('http://localhost:5309/embed/video');
 
     const ogVideoType = await getMetaTagContent('og:video:type');
-    expect(ogVideoType).toBe('application/x-mpegURL');
+    expect(ogVideoType).toBe('text/html');
 
     // When stream is live the thumbnail is provided as the image.
     const ogImage = await getMetaTagContent('og:image');
