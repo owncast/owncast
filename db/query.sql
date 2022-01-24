@@ -9,7 +9,7 @@ SElECT count(*) FROM ap_followers WHERE approved_at is not null;
 SElECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null LIMIT $1 OFFSET $2;
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT $1 OFFSET $2;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
