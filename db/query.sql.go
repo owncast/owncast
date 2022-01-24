@@ -153,7 +153,7 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null LIMIT $1 OFFSET $2
+SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT $1 OFFSET $2
 `
 
 type GetFederationFollowersWithOffsetParams struct {
