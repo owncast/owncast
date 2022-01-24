@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "m3u8-parser": "^4.7.0",
-    "node-fetch": "^2.6.5"
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "jest": "^26.6.3"
