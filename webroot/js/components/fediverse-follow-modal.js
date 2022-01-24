@@ -185,11 +185,7 @@ export function FediverseFollowButton({ serverName, federationInfo, onClick }) {
       <${ExternalActionButton}
         onClick=${handleClick}
         action=${fediverseFollowAction}
-        label=${`Follow ${
-          federationInfo.followerCount > 10
-            ? ` (${federationInfo.followerCount})`
-            : ''
-        }`}
+        label="Follow"
       />
     </span>
   `;

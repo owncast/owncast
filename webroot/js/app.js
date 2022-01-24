@@ -831,7 +831,10 @@ export default class App extends Component {
 
     if (federation.enabled) {
       TAB_CONTENT.push({
-        label: 'Followers',
+        label: html`Followers
+        ${federation.followerCount > 10
+          ? `${' '}(${federation.followerCount})`
+          : null}`,
         content: html`<${Followers} />`,
       });
     }
