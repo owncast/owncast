@@ -20,6 +20,7 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 		"image":     e.Image,
 		"type":      e.Event.Type,
 		"title":     e.UserAccountName,
+		"link":      e.Link,
 		"user": EventPayload{
 			"displayName": data.GetServerName(),
 		},
