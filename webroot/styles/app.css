@@ -491,7 +491,7 @@ header {
 }
 
 .following-list-follower {
-  max-width: 280px;
+  width: 280px;
 }
 
 #follow-loading-spinner-container {
@@ -511,3 +511,4 @@ header {
   width: 100px;
   height: 100px;
 }
+
