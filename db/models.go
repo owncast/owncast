@@ -34,3 +34,9 @@ type ApOutbox struct {
 	CreatedAt        sql.NullTime
 	LiveNotification sql.NullBool
 }
+
+type IpBan struct {
+	IpAddress string
+	Notes     sql.NullString
+	CreatedAt sql.NullTime
+}

@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -51,6 +52,56 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// BanIPAddress will manually ban an IP address.
+func BanIPAddress(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to ban IP address")
+		return
+	}
+
+	if err := data.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
+		controllers.WriteSimpleResponse(w, false, "error saving IP address ban")
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "IP address banned")
+}
+
+// UnBanIPAddress will remove an IP address ban.
+func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to unban IP address")
+		return
+	}
+
+	if err := data.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, "error removing IP address ban")
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "IP address unbanned")
+}
+
+// GetIPAddressBans will return all the banned IP addresses.
+func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
+	bans, err := data.GetIPAddressBans()
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+	}
+
+	controllers.WriteResponse(w, bans)
+}
+
 // UpdateUserEnabled enable or disable a single user by ID.
 func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	type blockUserRequest struct {
@@ -69,6 +120,11 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	if err := decoder.Decode(&request); err != nil {
 		log.Errorln(err)
 		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	if request.UserID == "" {
+		controllers.WriteSimpleResponse(w, false, "must provide userId")
 		return
 	}
 
@@ -91,9 +147,30 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 
 	// Forcefully disconnect the user from the chat
 	if !request.Enabled {
-		chat.DisconnectUser(request.UserID)
+		clients, err := chat.GetClientsForUser(request.UserID)
+		if len(clients) == 0 {
+			// Nothing to do
+			return
+		}
+
+		if err != nil {
+			log.Errorln("error fetching clients for user: ", err)
+			controllers.WriteSimpleResponse(w, false, err.Error())
+			return
+		}
+
+		chat.DisconnectClients(clients)
 		disconnectedUser := user.GetUserByID(request.UserID)
 		_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
+
+		// Ban this user's IP address.
+		for _, client := range clients {
+			ipAddress := client.IpAddress
+			reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
+			if err := data.BanIPAddress(ipAddress, reason); err != nil {
+				log.Errorln("error banning IP address: ", err)
+			}
+		}
 	}
 
 	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", request.UserID, request.Enabled))

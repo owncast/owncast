@@ -22,6 +22,7 @@ const (
 func setupPersistence() {
 	_datastore = data.GetDatastore()
 	data.CreateMessagesTable(_datastore.DB)
+	data.CreateBanIPTable(_datastore.DB)
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {
