@@ -2,13 +2,14 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 import { URL_FOLLOWERS } from '/js/utils/constants.js';
 const html = htm.bind(h);
-
+import { paginateArray } from '../../utils/helpers.js';
 export default class FollowerList extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       followers: [],
+      followersPage: 0,
     };
   }
 
@@ -24,10 +25,19 @@ export default class FollowerList extends Component {
     const response = await fetch(URL_FOLLOWERS);
     const followers = await response.json();
 
-    this.setState({ followers: followers });
+    this.setState({
+      followers: followers,
+    });
+  }
+
+  changeFollowersPage(page) {
+    this.setState({ followersPage: page });
   }
 
   render() {
+    const FOLLOWER_PAGE_SIZE = 15;
+    const { followersPage } = this.state;
+
     const { followers } = this.state;
     if (!followers) {
       return null;
@@ -47,12 +57,45 @@ export default class FollowerList extends Component {
       </p>
     </div>`;
 
+    const paginatedFollowers = paginateArray(
+      followers,
+      followersPage + 1,
+      FOLLOWER_PAGE_SIZE
+    );
+
+    const paginationControls =
+      paginatedFollowers.totalPages > 1 &&
+      Array(paginatedFollowers.totalPages)
+        .fill()
+        .map((x, n) => {
+          const activePageClass =
+            n === followersPage &&
+            'bg-indigo-600 rounded-full shadow-md focus:shadow-md text-white';
+          return html` <li class="page-item active">
+            <a
+              class="page-link relative block cursor-pointer hover:no-underline py-1.5 px-3 border-0 rounded-full hover:text-gray-800 hover:bg-gray-200 outline-none transition-all duration-300 ${activePageClass}"
+              onClick=${() => this.changeFollowersPage(n)}
+            >
+              ${n + 1}
+            </a>
+          </li>`;
+        });
+
     return html`
-      <div class="flex flex-wrap">
-        ${followers.length === 0 && noFollowersInfo}
-        ${followers.map((follower) => {
-          return html` <${SingleFollower} user=${follower} /> `;
-        })}
+      <div>
+        <div class="flex flex-wrap">
+          ${followers.length === 0 && noFollowersInfo}
+          ${paginatedFollowers.items.map((follower) => {
+            return html` <${SingleFollower} user=${follower} /> `;
+          })}
+        </div>
+        <div class="flex">
+          <nav aria-label="Page navigation example">
+            <ul class="flex list-style-none">
+              ${paginationControls}
+            </ul>
+          </nav>
+        </div>
       </div>
     `;
   }
@@ -71,7 +114,7 @@ function SingleFollower(props) {
   return html`
     <a
       href=${link}
-      class="following-list-follower block bg-white flex p-2 rounded-xl shadow border hover:no-underline m-4"
+      class="following-list-follower block bg-white flex p-2 rounded-xl shadow border hover:no-underline mb-3 mr-3"
       target="_blank"
     >
       <img
