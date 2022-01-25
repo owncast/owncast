@@ -104,7 +104,7 @@ export default function FediverseFollowers() {
         columns={tableColumns}
         size="small"
         rowKey={row => row.link}
-        pagination={{ pageSize: 20 }}
+        pagination={{ pageSize: 20, hideOnSinglePage: true }}
       />
     );
   }
