@@ -36,7 +36,7 @@ type Event struct {
 // UserEvent is an event with an associated user.
 type UserEvent struct {
 	User     *user.User `json:"user"`
-	ClientID uint       `json:"clientId"`
+	ClientID uint       `json:"clientId,omitempty"`
 	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
 }
 
