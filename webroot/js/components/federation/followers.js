@@ -35,7 +35,7 @@ export default class FollowerList extends Component {
   }
 
   render() {
-    const FOLLOWER_PAGE_SIZE = 15;
+    const FOLLOWER_PAGE_SIZE = 16;
     const { followersPage } = this.state;
 
     const { followers } = this.state;
