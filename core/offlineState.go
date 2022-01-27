@@ -1,7 +1,6 @@
 package core
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,22 +13,11 @@ import (
 )
 
 func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
-	f, err := os.OpenFile(playlistFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm) //nolint
+	existingPlaylistContents, err := os.ReadFile(playlistFilePath) // nolint: gosec
 	if err != nil {
-		log.Fatalln(err)
+		log.Debugln("unable to read existing playlist file", err)
+		return
 	}
-
-	playlist, _, err := m3u8.DecodeFrom(bufio.NewReader(f), true)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := f.Close(); err != nil {
-		log.Errorln("error closing playlist file", err)
-	}
-
-	variantPlaylist := playlist.(*m3u8.MediaPlaylist)
-	variantPlaylist.MediaType = m3u8.EVENT
 
 	tmpFileName := fmt.Sprintf("tmp-stream-%d.m3u8", index)
 	atomicWriteTmpPlaylistFile, err := os.CreateTemp(os.TempDir(), tmpFileName)
@@ -38,11 +26,13 @@ func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
 		return
 	}
 
-	if _, err := atomicWriteTmpPlaylistFile.Write(variantPlaylist.Encode().Bytes()); err != nil {
-		log.Errorln(err)
+	// Write the existing playlist contents
+	if _, err := atomicWriteTmpPlaylistFile.Write(existingPlaylistContents); err != nil {
+		log.Debugln("error writing existing playlist contents to tmp playlist file", err)
+		return
 	}
 
-	// Manually add the offline clip to the end of the media playlist.
+	// Manually append the offline clip to the end of the media playlist.
 	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXT-X-DISCONTINUITY\n")
 	// If "offline" content gets changed then change the duration below
 	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXTINF:8.000000,\n")
