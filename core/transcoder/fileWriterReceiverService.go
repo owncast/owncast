@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"io"
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"net/http"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
@@ -67,7 +66,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	_, _ = io.Copy(&buf, r.Body)
 	data := buf.Bytes()
 
-	f, err := os.Create(writePath)
+	f, err := os.Create(writePath) //nolint: gosec
 	if err != nil {
 		returnError(err, w)
 		return
