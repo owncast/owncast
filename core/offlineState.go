@@ -82,7 +82,7 @@ func createEmptyOfflinePlaylist(playlistFilePath string, offlineFilename string)
 	}
 
 	p.Close()
-	f, err := os.Create(playlistFilePath)
+	f, err := os.Create(playlistFilePath) //nolint:gosec
 	if err != nil {
 		log.Errorln(err)
 	}

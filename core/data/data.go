@@ -52,7 +52,7 @@ func SetupPersistence(file string) error {
 		if !utils.DoesFileExists(file) {
 			log.Traceln("Creating new database at", file)
 
-			_, err := os.Create(file)
+			_, err := os.Create(file) //nolint: gosec
 			if err != nil {
 				log.Fatal(err.Error())
 			}
