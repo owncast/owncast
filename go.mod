@@ -15,7 +15,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.17
 	github.com/mssola/user_agent v0.5.3
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
-	github.com/oschwald/geoip2-golang v1.5.0
+	github.com/oschwald/geoip2-golang v1.6.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
 	github.com/shirou/gopsutil v3.21.11+incompatible
