@@ -1,4 +1,4 @@
-import { h, Component } from '/js/web_modules/preact.js';
+import { h } from '/js/web_modules/preact.js';
 import { useState } from '/js/web_modules/preact/hooks.js';
 
 import htm from '/js/web_modules/htm.js';
@@ -35,14 +35,8 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
   const { browser, email } = notifications;
   const { publicKey } = browser;
 
-  let browserPushEnabled = browser.enabled;
+  const browserPushEnabled = browser.enabled && isPushNotificationSupported();
   let emailEnabled = email.enabled;
-
-  // Browser push notifications are only supported on Chrome currently.
-  // Also make sure the browser supports them.
-  if (!window.chrome || !isPushNotificationSupported()) {
-    browserPushEnabled = false;
-  }
 
   async function saveNotificationRegistration(channel, destination) {
     const options = {
@@ -76,7 +70,7 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
       setError(null);
     } catch (e) {
       setError(
-        `Error registering for notifications: ${e.message}. Check your browser notification permissions and try again.`
+        `Error registering for live notifications: ${e.message}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.`
       );
     }
   }

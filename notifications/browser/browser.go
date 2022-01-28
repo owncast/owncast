@@ -69,7 +69,11 @@ func (b *Browser) Send(
 		VAPIDPrivateKey: b.privateKey,
 		Topic:           "owncast-go-live",
 		TTL:             10,
+		// Not really the subscriber, but a contact point for the sender.
+		Subscriber: "owncast@owncast.online",
 	})
+	// TODO: Check if this this notification failed due to unsubscription.
+	// If so, remove their subscription from our notifications table.
 	if err != nil {
 		return errors.Wrap(err, "error sending browser push notification")
 	}

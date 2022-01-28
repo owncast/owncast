@@ -26,7 +26,7 @@ import FediverseFollowModal, {
 } from './components/fediverse-follow-modal.js';
 
 import { NotifyButton, NotifyModal } from './components/notification.js';
-
+import { isPushNotificationSupported } from './notification/registerWeb.js';
 import {
   addNewlines,
   checkUrlPathForDisplay,
@@ -784,7 +784,7 @@ export default class App extends Component {
     // modal buttons
     const notificationsButton =
       notifications &&
-      ((notifications.browser.enabled && !!window.chrome) ||
+      ((notifications.browser.enabled && isPushNotificationSupported()) ||
         notifications.textMessages.enabled) &&
       html`<${NotifyButton} onClick=${this.displayNotificationModal} />`;
     const externalActionButtons = html`<div
