@@ -1,7 +1,6 @@
 package transcoder
 
 import (
-	"bytes"
 	"io"
 	"net"
 	"net/http"
@@ -35,7 +34,6 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 
 	localListenerAddress := "127.0.0.1:0"
 
-	// go func() {
 	listener, err := net.Listen("tcp", localListenerAddress)
 	if err != nil {
 		log.Fatalln("Unable to start internal video writing service", err)
@@ -59,13 +57,6 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 
 	path := r.URL.Path
 	writePath := filepath.Join(config.HLSStoragePath, path)
-
-	var buf bytes.Buffer
-	defer r.Body.Close()
-
-	_, _ = io.Copy(&buf, r.Body)
-	data := buf.Bytes()
-
 	f, err := os.Create(writePath) //nolint: gosec
 	if err != nil {
 		returnError(err, w)
@@ -73,7 +64,8 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	}
 
 	defer f.Close()
-	if _, err := f.Write(data); err != nil {
+
+	if _, err := io.Copy(f, r.Body); err != nil {
 		returnError(err, w)
 		return
 	}
