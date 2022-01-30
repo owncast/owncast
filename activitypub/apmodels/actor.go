@@ -78,6 +78,25 @@ func MakeActorFromService(service vocab.ActivityStreamsService) ActivityPubActor
 	return apActor
 }
 
+// MakeActorFromApplication takes a full ActivityPub application and returns
+// our internal representation of an actor.
+func MakeActorFromApplication(application vocab.ActivityStreamsApplication) ActivityPubActor {
+	apActor := ActivityPubActor{
+		ActorIri:                application.GetJSONLDId().Get(),
+		Inbox:                   application.GetActivityStreamsInbox().GetIRI(),
+		Name:                    application.GetActivityStreamsName().Begin().GetXMLSchemaString(),
+		Username:                application.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
+		FullUsername:            GetFullUsernameFromApplication(application),
+		W3IDSecurityV1PublicKey: application.GetW3IDSecurityV1PublicKey(),
+	}
+
+	if application.GetActivityStreamsIcon() != nil && application.GetActivityStreamsIcon().Len() > 0 && application.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
+		apActor.Image = application.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
+	}
+
+	return apActor
+}
+
 // MakeActorPropertyWithID will return an actor property filled with the provided IRI.
 func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty {
 	actor := streams.NewActivityStreamsActorProperty()
@@ -231,6 +250,15 @@ func GetFullUsernameFromPerson(person vocab.ActivityStreamsPerson) string {
 
 // GetFullUsernameFromService will return the user@host.tld formatted user given a service object.
 func GetFullUsernameFromService(person vocab.ActivityStreamsService) string {
+	hostname := person.GetJSONLDId().GetIRI().Hostname()
+	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
+	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
+
+	return fullUsername
+}
+
+// GetFullUsernameFromApplication will return the user@host.tld formatted user given a service object.
+func GetFullUsernameFromApplication(person vocab.ActivityStreamsApplication) string {
 	hostname := person.GetJSONLDId().GetIRI().Hostname()
 	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)

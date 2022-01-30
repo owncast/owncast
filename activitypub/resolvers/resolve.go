@@ -76,6 +76,7 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
 	var err error
 	var apActor apmodels.ActivityPubActor
+	resolved := false
 
 	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
 		apActor = apmodels.MakeActorFromPerson(person)
@@ -84,42 +85,80 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 
 	serviceCallback := func(c context.Context, s vocab.ActivityStreamsService) error {
 		apActor = apmodels.MakeActorFromService(s)
+		return nil
+	}
+
+	applicationCallback := func(c context.Context, s vocab.ActivityStreamsApplication) error {
+		apActor = apmodels.MakeActorFromApplication(s)
+		resolved = true
 		return nil
 	}
 
 	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
 		if iter.IsIRI() {
 			iri := iter.GetIRI()
-			if e := ResolveIRI(context.Background(), iri.String(), personCallback, serviceCallback); e != nil {
+			if e := ResolveIRI(context.Background(), iri.String(), personCallback, serviceCallback, applicationCallback); e != nil {
 				err = e
 			}
 		} else if iter.IsActivityStreamsPerson() {
 			person := iter.GetActivityStreamsPerson()
 			apActor = apmodels.MakeActorFromPerson(person)
+			resolved = true
+		} else if iter.IsActivityStreamsService() {
+			person := iter.GetActivityStreamsService()
+			apActor = apmodels.MakeActorFromService(person)
+			resolved = true
+		} else if iter.IsActivityStreamsApplication() {
+			person := iter.GetActivityStreamsApplication()
+			apActor = apmodels.MakeActorFromApplication(person)
+			resolved = true
 		}
 	}
 
-	return apActor, errors.Wrap(err, "unable to resolve actor from actor property")
+	if err != nil {
+		err = errors.Wrap(err, "error resolving actor from property value")
+	}
+
+	if !resolved {
+		err = errors.New("error resolving actor from property value")
+	}
+	return apActor, err
 }
 
 // GetResolvedActorFromIRI will resolve an IRI string to a fully populated actor.
 func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubActor, error) {
 	var err error
 	var apActor apmodels.ActivityPubActor
-
+	resolved := false
 	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
 		apActor = apmodels.MakeActorFromPerson(person)
+		resolved = true
 		return nil
 	}
 
 	serviceCallback := func(c context.Context, s vocab.ActivityStreamsService) error {
 		apActor = apmodels.MakeActorFromService(s)
+		resolved = true
 		return nil
 	}
 
-	if e := ResolveIRI(context.Background(), personOrServiceIRI, personCallback, serviceCallback); e != nil {
+	applicationCallback := func(c context.Context, s vocab.ActivityStreamsApplication) error {
+		apActor = apmodels.MakeActorFromApplication(s)
+		resolved = true
+		return nil
+	}
+
+	if e := ResolveIRI(context.Background(), personOrServiceIRI, personCallback, serviceCallback, applicationCallback); e != nil {
 		err = e
 	}
 
-	return apActor, errors.Wrap(err, "unable to resolve actor from IRI string: "+personOrServiceIRI)
+	if err != nil {
+		err = errors.Wrap(err, "error resolving actor from property value")
+	}
+
+	if !resolved {
+		err = errors.New("error resolving actor from property value")
+	}
+
+	return apActor, err
 }
