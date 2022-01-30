@@ -71,6 +71,10 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
 	}
 
+	if actor.ActorIri == nil {
+		return false, errors.New("actor IRI is empty")
+	}
+
 	// Test to see if the actor is in the list of blocked federated domains.
 	if isBlockedDomain(actor.ActorIri.Hostname()) {
 		return false, errors.New("domain is blocked")
