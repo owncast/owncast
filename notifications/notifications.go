@@ -11,13 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	smtpServer = "in-v3.mailjet.com"
-	smtpPort   = "587"
-	username   = "username"
-	password   = "password"
-)
-
 // Notifier is an instance of the live stream notifier.
 type Notifier struct {
 	datastore *data.Datastore
@@ -100,9 +93,11 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 	}
 
 	// Add email notifications
-	if emailConfig := data.GetMailjetConfiguration(); emailConfig.Enabled && emailConfig.FromAddress != "" && emailConfig.ListAddress != "" {
-		e := email.New(emailConfig.FromAddress, emailConfig.SMTPServer, "587", emailConfig.Username, emailConfig.Password)
-		notifier.email = e
+	if emailConfig := data.GetSMTPConfiguration(); emailConfig.Enabled && emailConfig.FromAddress != "" && emailConfig.ListAddress != "" {
+		e, err := email.New()
+		if err == nil {
+			notifier.email = e
+		}
 	}
 
 	return &notifier, nil
@@ -133,7 +128,7 @@ func (n *Notifier) notifyEmail() {
 		return
 	}
 
-	emailConfig := data.GetMailjetConfiguration()
+	emailConfig := data.GetSMTPConfiguration()
 	if !emailConfig.Enabled {
 		return
 	}

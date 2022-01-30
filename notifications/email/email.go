@@ -25,7 +25,7 @@ type Email struct {
 }
 
 // New creates a new instance of the Email notifier.
-func New(from, server, port, username, password string) *Email {
+func new(from, server, port, username, password string) *Email {
 	return &Email{
 		From:       from,
 		SMTPServer: server,
@@ -33,6 +33,17 @@ func New(from, server, port, username, password string) *Email {
 		Username:   username,
 		Password:   password,
 	}
+}
+
+// New creates a new instance of the email notifier.
+func New() (*Email, error) {
+	smtpConfig := data.GetSMTPConfiguration()
+	if smtpConfig.Enabled && smtpConfig.FromAddress != "" {
+		e := new(smtpConfig.FromAddress, smtpConfig.Server, "587", smtpConfig.Username, smtpConfig.Password)
+		return e, nil
+	}
+
+	return nil, errors.New("email delivery not configured")
 }
 
 // Send will send an email notification.

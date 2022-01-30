@@ -63,7 +63,7 @@ const (
 	browserPushPublicKeyKey              = "browser_push_public_key"
 	browserPushPrivateKeyKey             = "browser_push_private_key"
 	mailjetConfigurationKey              = "mailjet_configuration"
-	mailjetEmailListIDKey                = "mailjet_email_list_id"
+	smtpConfigurationKey                 = "smtp_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 )
 
@@ -901,6 +901,27 @@ func GetMailjetConfiguration() models.MailjetConfiguration {
 func SetMailjetConfiguration(config models.MailjetConfiguration) error {
 	configEntry := ConfigEntry{Key: mailjetConfigurationKey, Value: config}
 	return _datastore.Save(configEntry)
+}
+
+// SetSMTPConfiguration will set the SMTP email configuration.
+func SetSMTPConfiguration(config models.SMTPConfiguration) error {
+	configEntry := ConfigEntry{Key: smtpConfigurationKey, Value: config}
+	return _datastore.Save(configEntry)
+}
+
+// GetSMTPConfiguration will return the SMTP email configuration.
+func GetSMTPConfiguration() models.SMTPConfiguration {
+	configEntry, err := _datastore.Get(smtpConfigurationKey)
+	if err != nil {
+		return models.SMTPConfiguration{Enabled: false}
+	}
+
+	var config models.SMTPConfiguration
+	if err := configEntry.getObject(&config); err != nil {
+		return models.SMTPConfiguration{Enabled: false}
+	}
+
+	return config
 }
 
 // SetHasPerformedInitialNotificationsConfig sets when performed initial setup.

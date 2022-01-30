@@ -6,7 +6,7 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/notifications"
-	"github.com/owncast/owncast/notifications/mailjet"
+	"github.com/owncast/owncast/notifications/email"
 
 	"github.com/owncast/owncast/utils"
 
@@ -34,30 +34,10 @@ func RegisterForEmailNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m := mailjet.New(emailConfig.Username, emailConfig.Password)
-
-	// If we have not previously created an email list for Owncast then create
-	// a new one now, and add the requested email address to it.
-	if emailConfig.ListID == 0 {
-		listAddress, listID, err := m.CreateListAndAddAddress(req.EmailAddress)
-		if err != nil {
-			log.Errorln(err)
-			WriteSimpleResponse(w, false, "unable to register address for notifications")
-			return
-		}
-		emailConfig.ListAddress = listAddress
-		emailConfig.ListID = listID
-		if err := data.SetMailjetConfiguration(emailConfig); err != nil {
-			log.Errorln(err)
-			WriteSimpleResponse(w, false, "error in saving email configuration")
-			return
-		}
-	} else {
-		if err := m.AddEmailToList(req.EmailAddress, emailConfig.ListID); err != nil {
-			log.Errorln(err)
-			WriteSimpleResponse(w, false, "error in adding email address to list")
-			return
-		}
+	_, err := email.CreateDoubleOptInRequest(req.EmailAddress)
+	if err != nil {
+		WriteSimpleResponse(w, false, "unable to register for email notifications")
+		return
 	}
 
 	WriteSimpleResponse(w, true, "added")
@@ -87,7 +67,7 @@ func RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make sure the requested channel is one we want to handle.
-	validTypes := []string{notifications.BrowserPushNotification, notifications.TextMessageNotification}
+	validTypes := []string{notifications.BrowserPushNotification}
 	_, validChannel := utils.FindInSlice(validTypes, req.Channel)
 	if !validChannel {
 		WriteSimpleResponse(w, false, "invalid notification channel: "+req.Channel)

@@ -80,7 +80,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		Notifications: notificationsConfigResponse{
 			Discord: data.GetDiscordConfig(),
 			Browser: data.GetBrowserPushConfig(),
-			Email:   data.GetMailjetConfiguration(),
+			Email:   data.GetSMTPConfiguration(),
+			Mailjet: data.GetMailjetConfiguration(),
 		},
 	}
 
@@ -152,5 +153,6 @@ type federationConfigResponse struct {
 type notificationsConfigResponse struct {
 	Browser models.BrowserNotificationConfiguration `json:"browser"`
 	Discord models.DiscordConfiguration             `json:"discord"`
-	Email   models.MailjetConfiguration             `json:"email"`
+	Email   models.SMTPConfiguration                `json:"email"`
+	Mailjet models.MailjetConfiguration             `json:"mailjet"`
 }

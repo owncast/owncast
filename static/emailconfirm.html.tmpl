@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <!-- utf-8 works for most cases -->
+    <meta name="viewport" content="width=device-width" />
+    <!-- Forcing initial-scale shouldn't be necessary -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Use the latest (edge) version of IE rendering engine -->
+    <meta name="x-apple-disable-message-reformatting" />
+    <!-- Disable auto-scale in iOS 10 Mail entirely -->
+    <title>{{.Title}}</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <style>
+      /* What it does: Remove spaces around the email design added by some email clients. */
+      /* Beware: It can remove the padding / margin and add a background color to the compose a reply window. */
+      html,
+      body {
+        margin: 0 auto !important;
+        padding: 0 !important;
+        height: 100% !important;
+        width: 100% !important;
+        background: #f1f1f1;
+      }
+
+      /* What it does: Stops email clients resizing small text. */
+      * {
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* What it does: Centers email on Android 4.4 */
+      div[style*='margin: 16px 0'] {
+        margin: 0 !important;
+      }
+    </style>
+    <div
+      style="
+        background-image: url('http://localhost:8080/img/owncast-background.png');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+      class="flex flex-col items-center justify-center min-h-screen p-5 min-w-screen"
+    >
+      <div
+        class="max-w-xl p-8 text-center text-gray-800 bg-white shadow-xl lg:max-w-3xl rounded-3xl lg:p-12 opacity-95"
+      >
+        <div class="flex justify-center">
+          <img src="/logo" width="20%" />
+        </div>
+        <h3 class="text-2xl">{{.Title}}</h3>
+
+        <div class="mt-4">
+          <p class="mt-4">{{.Subtitle}}</p>
+          {{if (ne .Button "")}}
+          <a
+            href="{{.ButtonLink}}"
+            class="px-2 py-2 text-blue-200 bg-blue-600 rounded"
+          >
+            Click to Verify Email
+          </a>
+          {{ end }}
+          <p class="mt-4 text-sm text-gray-600">{{.SecondaryText}}</p>
+        </div>
+      </div>
+      {{ if .ShowFooter }}
+      <div
+        class="w-full mt-3 flex justify-center flex-col"
+        style="color: rgba(231, 231, 231, 0.911); align-items: center"
+      >
+        <p>
+          No longer want to receive emails? You should
+          <a
+            href="[[UNSUB_LINK_EN]]"
+            class="underline"
+            style="color: rgb(235, 235, 235)"
+            >unsubscribe here</a
+          >.
+        </p>
+        <p class="m-2 text-sm">
+          This stream is powered by
+          <a href="https://owncast.online"
+            ><img
+              class="inline"
+              src="https://owncast.online/images/logo-glare-outlined.png"
+              width="20px"
+            />Owncast</a
+          >
+          and you can run your own, too.
+        </p>
+      </div>
+      {{ end }}
+    </div>
+  </body>
+</html>
