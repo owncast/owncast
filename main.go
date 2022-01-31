@@ -16,16 +16,18 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var dbFile = flag.String("database", "", "Path to the database file.")
-var logDirectory = flag.String("logdir", "", "Directory where logs will be written to")
-var backupDirectory = flag.String("backupdir", "", "Directory where backups will be written to")
-var enableDebugOptions = flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
-var enableVerboseLogging = flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
-var restoreDatabaseFile = flag.String("restoreDatabase", "", "Restore an Owncast database backup")
-var newStreamKey = flag.String("streamkey", "", "Set your stream key/admin password")
-var webServerPortOverride = flag.String("webserverport", "", "Force the web server to listen on a specific port")
-var webServerIPOverride = flag.String("webserverip", "", "Force web server to listen on this IP address")
-var rtmpPortOverride = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
+var (
+	dbFile                = flag.String("database", "", "Path to the database file.")
+	logDirectory          = flag.String("logdir", "", "Directory where logs will be written to")
+	backupDirectory       = flag.String("backupdir", "", "Directory where backups will be written to")
+	enableDebugOptions    = flag.Bool("enableDebugFeatures", false, "Enable additional debugging options.")
+	enableVerboseLogging  = flag.Bool("enableVerboseLogging", false, "Enable additional logging.")
+	restoreDatabaseFile   = flag.String("restoreDatabase", "", "Restore an Owncast database backup")
+	newStreamKey          = flag.String("streamkey", "", "Set your stream key/admin password")
+	webServerPortOverride = flag.String("webserverport", "", "Force the web server to listen on a specific port")
+	webServerIPOverride   = flag.String("webserverip", "", "Force web server to listen on this IP address")
+	rtmpPortOverride      = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
+)
 
 func main() {
 	flag.Parse()
@@ -93,7 +95,7 @@ func handleCommandLineFlags() {
 			log.Errorln("Error setting your stream key.", err)
 			log.Exit(1)
 		} else {
-			log.Infoln("Stream key changed to", *newStreamKey)
+			log.Infoln("Stream key changed")
 		}
 	}
 
