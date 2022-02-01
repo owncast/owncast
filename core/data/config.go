@@ -541,7 +541,7 @@ func GetVideoCodec() string {
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
 	if GetStreamKey() == "" {
-		return errors.New("no stream key set. Please set one via the admin or command line arguments.")
+		return errors.New("no stream key set. Please set one via the admin or command line arguments")
 	}
 
 	logoPath := GetLogoPath()
