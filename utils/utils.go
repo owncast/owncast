@@ -232,7 +232,7 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 	cmd := exec.Command("which", "ffmpeg")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatalln("Unable to determine path to ffmpeg. Please specify it in the config file.")
+		log.Fatalln("Unable to determine path to ffmpeg. Please specify it in the admin or place a copy in the Owncast directory.")
 	}
 
 	path := strings.TrimSpace(string(out))
