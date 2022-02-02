@@ -2,7 +2,22 @@
   "extends": [
     "config:base"
   ],
+  "timezone": "America/Los_Angeles",
+  "schedule": [
+    "before 8am on Monday"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
   "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    },
     {
       "matchDepTypes": [
         "devDependencies"
