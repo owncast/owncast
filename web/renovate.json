@@ -10,6 +10,9 @@
     "enabled": true,
     "automerge": true
   },
+  "npm": {
+    "stabilityDays": 3
+  },
   "packageRules": [
     {
       "matchUpdateTypes": [
