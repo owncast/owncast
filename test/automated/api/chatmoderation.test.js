@@ -12,6 +12,8 @@ const testVisibilityMessage = {
   type: 'CHAT',
 };
 
+var messageId;
+
 const establishedUserFailedChatMessage = {
   body: 'this message should fail to send ' + Math.floor(Math.random() * 100),
   type: 'CHAT',
@@ -41,9 +43,8 @@ test('verify we can make API call to mark message as hidden', async (done) => {
       const event = JSON.parse(message);
 
       if (event.type === 'VISIBILITY-UPDATE') {
-        await new Promise((r) => setTimeout(r, 2000));
-        done();
         ws.close();
+        done();
       }
     });
   });
@@ -54,7 +55,7 @@ test('verify we can make API call to mark message as hidden', async (done) => {
     .expect(200);
 
   const message = res.body[0];
-  const messageId = message.id;
+  messageId = message.id;
   await request
     .post('/api/admin/chat/updatemessagevisibility')
     .auth('admin', 'abc123')
@@ -71,7 +72,7 @@ test('verify message has become hidden', async (done) => {
     .auth('admin', 'abc123');
 
   const message = res.body.filter((obj) => {
-    return obj.body === testVisibilityMessage.body;
+    return obj.id === messageId;
   });
   expect(message.length).toBe(1);
   // expect(message[0].hiddenAt).toBeTruthy();

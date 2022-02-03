@@ -6,6 +6,7 @@ const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 
 var userDisplayName;
+var messageId;
 const message = Math.floor(Math.random() * 100) + ' test 123';
 
 const testMessage = {
@@ -19,6 +20,15 @@ test('can send a chat message', async (done) => {
   userDisplayName = registration.displayName;
 
   sendChatMessage(testMessage, accessToken, done);
+  await new Promise((r) => setTimeout(r, 2000));
+
+  const res = await request
+    .get('/api/admin/chat/messages')
+    .auth('admin', 'abc123')
+    .expect(200);
+
+  const message = res.body[0];
+  messageId = message.id;
 });
 
 test('can fetch chat messages', async (done) => {
@@ -29,7 +39,7 @@ test('can fetch chat messages', async (done) => {
 
   const expectedBody = testMessage.body;
   const message = res.body.filter(function (msg) {
-    return msg.body === expectedBody;
+    return msg.id === messageId;
   })[0];
 
   expect(message.body).toBe(expectedBody);
