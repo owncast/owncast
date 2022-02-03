@@ -165,7 +165,7 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 
 		// Ban this user's IP address.
 		for _, client := range clients {
-			ipAddress := client.IpAddress
+			ipAddress := client.IPAddress
 			reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
 			if err := data.BanIPAddress(ipAddress, reason); err != nil {
 				log.Errorln("error banning IP address: ", err)

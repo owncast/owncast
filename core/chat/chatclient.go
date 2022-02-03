@@ -22,7 +22,7 @@ type Client struct {
 	conn        *websocket.Conn
 	User        *user.User `json:"user"`
 	server      *Server
-	IpAddress   string `json:"-"`
+	IPAddress   string `json:"-"`
 	// Buffered channel of outbound messages.
 	send         chan []byte
 	rateLimiter  *rate.Limiter
@@ -175,7 +175,7 @@ func (c *Client) handleEvent(data []byte) {
 }
 
 func (c *Client) close() {
-	log.Traceln("client closed:", c.User.DisplayName, c.id, c.IpAddress)
+	log.Traceln("client closed:", c.User.DisplayName, c.id, c.IPAddress)
 
 	_ = c.conn.Close()
 	c.server.unregister <- c.id

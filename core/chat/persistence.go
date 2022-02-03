@@ -333,7 +333,7 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 		return err
 	}
 
-	//nolint:gosec
+	// nolint:gosec
 	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
 	if err != nil {
 		return err

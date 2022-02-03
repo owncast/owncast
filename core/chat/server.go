@@ -83,7 +83,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 		server:      s,
 		conn:        conn,
 		User:        user,
-		IpAddress:   ipAddress,
+		IPAddress:   ipAddress,
 		accessToken: accessToken,
 		send:        make(chan []byte, 256),
 		UserAgent:   userAgent,

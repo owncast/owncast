@@ -39,7 +39,8 @@ func Restore(backupFile string, databaseFile string) error {
 
 	rawSQL := b.String()
 
-	if _, err := os.Create(databaseFile); err != nil { //nolint: gosec
+	// nolint:gosec
+	if _, err := os.Create(databaseFile); err != nil {
 		return errors.New("unable to write restored database")
 	}
 
@@ -62,7 +63,7 @@ func Backup(db *sql.DB, backupFile string) {
 	backupDirectory := filepath.Dir(backupFile)
 
 	if !DoesFileExists(backupDirectory) {
-		err := os.MkdirAll(backupDirectory, 0700)
+		err := os.MkdirAll(backupDirectory, 0o700)
 		if err != nil {
 			log.Errorln("unable to create backup directory. check permissions and ownership.", backupDirectory, err)
 			return
@@ -79,7 +80,7 @@ func Backup(db *sql.DB, backupFile string) {
 	_ = out.Flush()
 
 	// Create a new backup file
-	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE, 0600) // nolint
+	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE, 0o600) // nolint
 	if err != nil {
 		handleError(err)
 		return
