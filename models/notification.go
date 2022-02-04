@@ -31,3 +31,14 @@ type SMTPConfiguration struct {
 	FromAddress   string `json:"fromAddress,omitempty"`
 	GoLiveSubject string `json:"goLiveSubject,omitempty"`
 }
+
+// TwitterConfiguration represents the configuration for Twitter access.
+type TwitterConfiguration struct {
+	Enabled           bool   `json:"enabled"`
+	APIKey            string `json:"apiKey"`    // aka consumer key
+	APISecret         string `json:"apiSecret"` // aka consumer secret
+	AccessToken       string `json:"accessToken"`
+	AccessTokenSecret string `json:"accessTokenSecret"`
+	BearerToken       string `json:"bearerToken"`
+	GoLiveMessage     string `json:"goLiveMessage,omitempty"`
+}

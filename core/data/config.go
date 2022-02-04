@@ -64,6 +64,7 @@ const (
 	browserPushPrivateKeyKey             = "browser_push_private_key"
 	mailjetConfigurationKey              = "mailjet_configuration"
 	smtpConfigurationKey                 = "smtp_configuration"
+	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 )
 
@@ -919,6 +920,27 @@ func GetSMTPConfiguration() models.SMTPConfiguration {
 	var config models.SMTPConfiguration
 	if err := configEntry.getObject(&config); err != nil {
 		return models.SMTPConfiguration{Enabled: false}
+	}
+
+	return config
+}
+
+// SetTwitterConfiguration will set the Twitter configuration.
+func SetTwitterConfiguration(config models.TwitterConfiguration) error {
+	configEntry := ConfigEntry{Key: twitterConfigurationKey, Value: config}
+	return _datastore.Save(configEntry)
+}
+
+// GetTwitterConfiguration will return the Twitter configuration.
+func GetTwitterConfiguration() models.TwitterConfiguration {
+	configEntry, err := _datastore.Get(twitterConfigurationKey)
+	if err != nil {
+		return models.TwitterConfiguration{Enabled: false}
+	}
+
+	var config models.TwitterConfiguration
+	if err := configEntry.getObject(&config); err != nil {
+		return models.TwitterConfiguration{Enabled: false}
 	}
 
 	return config

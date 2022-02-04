@@ -1,12 +1,16 @@
 package notifications
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
 	"github.com/owncast/owncast/notifications/email"
+	"github.com/owncast/owncast/notifications/twitter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,12 +21,16 @@ type Notifier struct {
 	browser   *browser.Browser
 	discord   *discord.Discord
 	email     *email.Email
+	twitter   *twitter.Twitter
 }
 
 // Setup will perform any pre-use setup for the notifier.
 func Setup(datastore *data.Datastore) {
 	createNotificationsTable(datastore.DB)
+	initializeBrowserPushIfNeeded()
+}
 
+func initializeBrowserPushIfNeeded() {
 	pubKey, _ := data.GetBrowserPushPublicKey()
 	privKey, _ := data.GetBrowserPushPrivateKey()
 
@@ -55,26 +63,56 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 		datastore: datastore,
 	}
 
-	// Add browser push notifications
+	if err := notifier.setupBrowserPush(); err != nil {
+		log.Error(err)
+	}
+	if err := notifier.setupDiscord(); err != nil {
+		log.Error(err)
+	}
+	if err := notifier.setupEmail(); err != nil {
+		log.Error(err)
+	}
+	if err := notifier.setupTwitter(); err != nil {
+		log.Errorln(err)
+	}
+
+	return &notifier, nil
+}
+
+func (n *Notifier) setupBrowserPush() error {
 	if data.GetBrowserPushConfig().Enabled {
 		publicKey, err := data.GetBrowserPushPublicKey()
 		if err != nil || publicKey == "" {
-			return nil, errors.Wrap(err, "notifier disabled, failed to get browser push public key")
+			return errors.Wrap(err, "browser notifier disabled, failed to get browser push public key")
 		}
 
 		privateKey, err := data.GetBrowserPushPrivateKey()
 		if err != nil || privateKey == "" {
-			return nil, errors.Wrap(err, "notifier disabled, failed to get browser push private key")
+			return errors.Wrap(err, "browser notifier disabled, failed to get browser push private key")
 		}
 
-		browserNotifier, err := browser.New(datastore, publicKey, privateKey)
+		browserNotifier, err := browser.New(n.datastore, publicKey, privateKey)
 		if err != nil {
-			return nil, errors.Wrap(err, "error creating browser notifier")
+			return errors.Wrap(err, "error creating browser notifier")
 		}
-		notifier.browser = browserNotifier
+		n.browser = browserNotifier
 	}
+	return nil
+}
 
-	// Add discord notifications
+func (n *Notifier) notifyBrowserPush() {
+	destinations, err := GetNotificationDestinationsForChannel(BrowserPushNotification)
+	if err != nil {
+		log.Errorln("error getting browser push notification destinations", err)
+	}
+	for _, destination := range destinations {
+		if err := n.browser.Send(destination, data.GetServerName(), data.GetBrowserPushConfig().GoLiveMessage); err != nil {
+			log.Errorln(err)
+		}
+	}
+}
+
+func (n *Notifier) setupDiscord() error {
 	discordConfig := data.GetDiscordConfig()
 	if discordConfig.Enabled && discordConfig.Webhook != "" {
 		var image string
@@ -87,38 +125,54 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 			discordConfig.Webhook,
 		)
 		if err != nil {
-			return nil, errors.Wrap(err, "error creating discord notifier")
+			return errors.Wrap(err, "error creating discord notifier")
 		}
-		notifier.discord = discordNotifier
+		n.discord = discordNotifier
 	}
-
-	// Add email notifications
-	if emailConfig := data.GetSMTPConfiguration(); emailConfig.Enabled && emailConfig.FromAddress != "" && emailConfig.ListAddress != "" {
-		e, err := email.New()
-		if err == nil {
-			notifier.email = e
-		}
-	}
-
-	return &notifier, nil
-}
-
-func (n *Notifier) notifyBrowserDestinations() {
-	destinations, err := GetNotificationDestinationsForChannel(BrowserPushNotification)
-	if err != nil {
-		log.Errorln("error getting browser push notification destinations", err)
-	}
-	for _, destination := range destinations {
-		if err := n.browser.Send(destination, data.GetServerName(), data.GetBrowserPushConfig().GoLiveMessage); err != nil {
-			log.Errorln(err)
-		}
-	}
+	return nil
 }
 
 func (n *Notifier) notifyDiscord() {
 	if err := n.discord.Send(data.GetDiscordConfig().GoLiveMessage); err != nil {
 		log.Errorln("error sending discord message", err)
 	}
+}
+
+func (n *Notifier) setupTwitter() error {
+	if twitterConfig := data.GetTwitterConfiguration(); twitterConfig.Enabled {
+		if t, err := twitter.New(twitterConfig.APIKey, twitterConfig.APISecret, twitterConfig.AccessToken, twitterConfig.AccessTokenSecret, twitterConfig.BearerToken); err == nil {
+			n.twitter = t
+		} else if err != nil {
+			return errors.Wrap(err, "error creating twitter notifier")
+		}
+	}
+	return nil
+}
+
+func (n *Notifier) notifyTwitter() {
+	goLiveMessage := data.GetTwitterConfiguration().GoLiveMessage
+	tagString := ""
+	for _, tag := range data.GetServerMetadataTags() {
+		tagString += fmt.Sprintf("%s #%s", tagString, tag)
+	}
+	tagString = strings.TrimSpace(tagString)
+
+	message := fmt.Sprintf("%s\n\n%s\n\n%s", goLiveMessage, data.GetServerURL(), tagString)
+	if err := n.twitter.Notify(message); err != nil {
+		log.Errorln("error sending twitter message", err)
+	}
+}
+
+func (n *Notifier) setupEmail() error {
+	if emailConfig := data.GetSMTPConfiguration(); emailConfig.Enabled && emailConfig.FromAddress != "" && emailConfig.ListAddress != "" {
+		e, err := email.New()
+		if err != nil {
+			return errors.Wrap(err, "error creating email notifier")
+		}
+		n.email = e
+	}
+
+	return nil
 }
 
 func (n *Notifier) notifyEmail() {
@@ -147,7 +201,7 @@ func (n *Notifier) notifyEmail() {
 // Notify will fire the different notification channels.
 func (n *Notifier) Notify() {
 	if n.browser != nil {
-		n.notifyBrowserDestinations()
+		n.notifyBrowserPush()
 	}
 
 	if n.discord != nil {
@@ -156,5 +210,9 @@ func (n *Notifier) Notify() {
 
 	if n.email != nil {
 		n.notifyEmail()
+	}
+
+	if n.twitter != nil {
+		n.notifyTwitter()
 	}
 }

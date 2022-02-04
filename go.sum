@@ -63,10 +63,14 @@ github.com/dave/jennifer v1.3.0/go.mod h1:fIb+770HOpJ2fmN9EPPKOqm1vMGhB+TwXKMZhr
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dghubble/oauth1 v0.7.1 h1:JjbOVSVVkms9A4h/sTQy5Jb2nFuAAVb2qVYgenJPyrE=
+github.com/dghubble/oauth1 v0.7.1/go.mod h1:0eEzON0UY/OLACQrmnjgJjmvCGXzjBCsZqL1kWDXtF0=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
+github.com/g8rswimmer/go-twitter v1.1.5-0.20220129031223-e62b74626b0a h1:WFj29uFGJL56FyeXEgw8oLOhL5UmQsLU7C29BjCT3F4=
+github.com/g8rswimmer/go-twitter v1.1.5-0.20220129031223-e62b74626b0a/go.mod h1:2fqT4zKHjUTOd2C8YneuRJFieYfbA3NWVSEeD+qIYHs=
 github.com/go-fed/httpsig v0.1.1-0.20190914113940-c2de3672e5b5/go.mod h1:T56HUNYZUQ1AGUzhAYPugZfp36sKApVnGBgKlIY+aIE=
 github.com/go-fed/httpsig v1.1.0 h1:9M+hb0jkEICD8/cAiNqEB66R87tTINszBRTjwjQzWcI=
 github.com/go-fed/httpsig v1.1.0/go.mod h1:RCMrTZvN1bJYtofsG4rd5NaO5obxQ5xBkdiS7xsT7bM=

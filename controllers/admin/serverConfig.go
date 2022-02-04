@@ -82,6 +82,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Browser: data.GetBrowserPushConfig(),
 			Email:   data.GetSMTPConfiguration(),
 			Mailjet: data.GetMailjetConfiguration(),
+			Twitter: data.GetTwitterConfiguration(),
 		},
 	}
 
@@ -155,4 +156,5 @@ type notificationsConfigResponse struct {
 	Discord models.DiscordConfiguration             `json:"discord"`
 	Email   models.SMTPConfiguration                `json:"email"`
 	Mailjet models.MailjetConfiguration             `json:"mailjet"`
+	Twitter models.TwitterConfiguration             `json:"twitter"`
 }

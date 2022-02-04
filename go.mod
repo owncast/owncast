@@ -63,6 +63,8 @@ require github.com/SherClockHolmes/webpush-go v1.1.3
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/dghubble/oauth1 v0.7.1
+	github.com/g8rswimmer/go-twitter v1.1.5-0.20220129031223-e62b74626b0a
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/gorilla/css v1.0.0 // indirect
