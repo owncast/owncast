@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/notifications/discord"
 	"github.com/owncast/owncast/notifications/email"
 	"github.com/owncast/owncast/notifications/twitter"
+	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -133,7 +134,14 @@ func (n *Notifier) setupDiscord() error {
 }
 
 func (n *Notifier) notifyDiscord() {
-	if err := n.discord.Send(data.GetDiscordConfig().GoLiveMessage); err != nil {
+	goLiveMessage := data.GetDiscordConfig().GoLiveMessage
+	streamTitle := data.GetStreamTitle()
+	if streamTitle != "" {
+		goLiveMessage += "\n" + streamTitle
+	}
+	message := fmt.Sprintf("%s\n\n%s", goLiveMessage, data.GetServerURL())
+
+	if err := n.discord.Send(message); err != nil {
 		log.Errorln("error sending discord message", err)
 	}
 }
@@ -151,13 +159,18 @@ func (n *Notifier) setupTwitter() error {
 
 func (n *Notifier) notifyTwitter() {
 	goLiveMessage := data.GetTwitterConfiguration().GoLiveMessage
+	streamTitle := data.GetStreamTitle()
+	if streamTitle != "" {
+		goLiveMessage += "\n" + streamTitle
+	}
 	tagString := ""
-	for _, tag := range data.GetServerMetadataTags() {
-		tagString += fmt.Sprintf("%s #%s", tagString, tag)
+	for _, tag := range utils.ShuffleStringSlice(data.GetServerMetadataTags()) {
+		tagString = fmt.Sprintf("%s #%s", tagString, tag)
 	}
 	tagString = strings.TrimSpace(tagString)
 
-	message := fmt.Sprintf("%s\n\n%s\n\n%s", goLiveMessage, data.GetServerURL(), tagString)
+	message := fmt.Sprintf("%s\n%s\n\n%s", goLiveMessage, data.GetServerURL(), tagString)
+
 	if err := n.twitter.Notify(message); err != nil {
 		log.Errorln("error sending twitter message", err)
 	}
