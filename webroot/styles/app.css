@@ -8,7 +8,7 @@ May have overrides for other components with own stylesheets.
   --header-height: 3.5em;
   --right-col-width: 24em;
   --video-container-height: calc((9 / 16) * 100vw);
-  --header-bg-color: rgba(20,0,40,1);
+  --header-bg-color: rgba(20, 0, 40, 1);
   --user-image-width: 10em;
 
   --novideo-container-height: 16em;
@@ -51,7 +51,7 @@ a:hover {
 }
 
 button[disabled] {
-  opacity: .5;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -65,7 +65,6 @@ button[disabled] {
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap; /* added line */
 }
-
 
 header {
   height: var(--header-height);
@@ -94,7 +93,7 @@ header {
   box-shadow: var(--owncast-purple) 0px 0px 5px;
 }
 .external-action-icon {
-  margin: .25em .5em .25em 0;
+  margin: 0.25em 0.5em 0.25em 0;
 }
 .external-action-icon img {
   height: 1.5em;
@@ -122,7 +121,7 @@ header {
   background-size: 30%;
 }
 #video-container #video {
-  transition: opacity .5s;
+  transition: opacity 0.5s;
   opacity: 0;
   pointer-events: none;
 }
@@ -146,7 +145,7 @@ header {
 }
 
 .chat-hidden #chat-toggle {
-  opacity: .75;
+  opacity: 0.75;
 }
 
 /* hide chat by default */
@@ -182,10 +181,9 @@ header {
 }
 
 /* display `send` button on mobile */
-.touch-screen #send-message-button{
+.touch-screen #send-message-button {
   display: inline-block;
 }
-
 
 /* *********** single col layout ***************************** */
 
@@ -245,7 +243,6 @@ header {
   max-height: 3em;
 }
 
-
 .single-col .user-logo-icons {
   margin-right: 0;
   margin-bottom: 1em;
@@ -264,7 +261,7 @@ header {
   margin-left: 1em;
 }
 .single-col .follow-icon-list {
-   justify-content: flex-start;
+  justify-content: flex-start;
 }
 .single-col.use-fediverse-follow #fediverse-button-singlecol {
   display: inline-block;
@@ -273,7 +270,6 @@ header {
 .single-col #external-actions-container {
   justify-content: flex-start;
 }
-
 
 @media screen and (max-height: 500px) {
   .single-col.touch-screen:not(.touch-keyboard-active) {
@@ -285,13 +281,11 @@ header {
 }
 /* ************************************************ */
 
-
 .no-video #video-container {
   min-height: var(--video-container-height);
 }
 
 /* ************************************************ */
-
 
 @media screen and (max-width: 860px) {
   :root {
@@ -307,7 +301,6 @@ header {
 
 /* ************************************************ */
 
-
 @media screen and (max-width: 600px) {
   #user-info-change {
     width: 75vw;
@@ -319,11 +312,9 @@ header {
   }
 }
 
-
 #external-modal-iframe {
   height: 70vh;
 }
-
 
 /**************************
   Basic Modal Styles
@@ -342,7 +333,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -353,9 +344,8 @@ header {
   position: relative;
   background-color: transparent;
   padding: 0px;
-  max-width: 740px;
-  min-width: 500px;
-  width: 50%;
+  max-width: 780px;
+  width: 60%;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -373,22 +363,25 @@ header {
   margin: 0px;
   padding: 0px;
   outline: none;
-	cursor: pointer !important;
+  cursor: pointer !important;
 }
-.modal__close:before { content: "\2715"; font-size: 1.25rem; }
+.modal__close:before {
+  content: '\2715';
+  font-size: 1.25rem;
+}
 
 @supports (display: flex) {
-	.modal__header {
+  .modal__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-	  height:initial;
-	}
+    height: initial;
+  }
   .modal__title {
-	  position: static;
+    position: static;
   }
   .modal__close {
-	  position: static;
+    position: static;
   }
 }
 
@@ -397,23 +390,39 @@ header {
 **************************/
 
 @keyframes mmfadeIn {
-    from { opacity: 0; }
-      to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes mmfadeOut {
-    from { opacity: 1; }
-      to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes mmslideIn {
-  from { transform: translateY(15%); }
-    to { transform: translateY(0); }
+  from {
+    transform: translateY(15%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes mmslideOut {
-    from { transform: translateY(0); }
-    to { transform: translateY(-10%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-10%);
+  }
 }
 
 .micromodal-slide {
@@ -424,20 +433,20 @@ header {
   display: block;
 }
 
-.micromodal-slide[aria-hidden="false"] .modal__overlay {
-  animation: mmfadeIn .3s cubic-bezier(0.0, 0.0, 0.2, 1);
+.micromodal-slide[aria-hidden='false'] .modal__overlay {
+  animation: mmfadeIn 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
-.micromodal-slide[aria-hidden="false"] .modal__container {
-  animation: mmslideIn .3s cubic-bezier(0, 0, .2, 1);
+.micromodal-slide[aria-hidden='false'] .modal__container {
+  animation: mmslideIn 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
-.micromodal-slide[aria-hidden="true"] .modal__overlay {
-  animation: mmfadeOut .3s cubic-bezier(0.0, 0.0, 0.2, 1);
+.micromodal-slide[aria-hidden='true'] .modal__overlay {
+  animation: mmfadeOut 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
-.micromodal-slide[aria-hidden="true"] .modal__container {
-  animation: mmslideOut .3s cubic-bezier(0, 0, .2, 1);
+.micromodal-slide[aria-hidden='true'] .modal__container {
+  animation: mmslideOut 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .micromodal-slide .modal__container,
@@ -446,40 +455,39 @@ header {
 }
 
 /* Miromodal mobile styling */
-@media only screen and (min-device-width : 600px) and (max-device-width : 480px) {
-	.modal__container {
-	  width: 90% !important;
-	  min-width: 90% !important;
-	}
-	@supports (display: flex) {
-		.modal__container {
-			width: 90% !important;
-			min-width: 90% !important;
+@media only screen and (min-device-width: 600px) and (max-device-width: 480px) {
+  .modal__container {
+    width: 90% !important;
+    min-width: 90% !important;
+  }
+  @supports (display: flex) {
+    .modal__container {
+      width: 90% !important;
+      min-width: 90% !important;
       height: 85vh;
-		}
-	}
+    }
+  }
   .modal__content {
     -webkit-overflow-scrolling: touch;
   }
 }
 
-
 /**************************
   Tab Bar Base Styles
 **************************/
-.tab-bar [role="tab"] {
-  padding: .5rem 1rem;
-  border-radius: .25rem .25rem 0 0;
+.tab-bar [role='tab'] {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem 0.25rem 0 0;
   font-weight: bold;
 }
-.tab-bar [role="tab"]:hover {
-  background-color: rgba(255,255,255,.35);
+.tab-bar [role='tab']:hover {
+  background-color: rgba(255, 255, 255, 0.35);
 }
-.tab-bar [role="tab"][aria-selected="true"] {
+.tab-bar [role='tab'][aria-selected='true'] {
   color: var(--owncast-purple);
   background-color: white;
 }
-.tab-bar [role="tabpanel"] {
+.tab-bar [role='tabpanel'] {
   padding: 1rem 0;
   border-top: 1px solid var(--header-bg-color);
   min-height: 15rem;
@@ -487,7 +495,7 @@ header {
 
 .follower {
   width: 20vw;
-  max-width: 300px
+  max-width: 300px;
 }
 
 .following-list-follower {
@@ -512,3 +520,60 @@ header {
   height: 100px;
 }
 
+/* CHECKBOX TOGGLE SWITCH */
+/* @apply rules for documentation, these do not work as inline style */
+.toggle-checkbox:checked {
+  /* @apply: right-0 #5A67D8; */
+  left: 63%;
+  /* border-color:var(--owncast-purple); */
+}
+
+#toggle:checked {
+  background-color: var(--owncast-purple);
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  outline: 1px solid var(--owncast-purple);
+}
+
+#browser-push-preview-box {
+  outline-offset: 10px;
+  outline: 2px dashed #acafb4;
+  box-shadow: 2px 6px 7px 0px #87898d;
+}
+
+#push-notification-arrow {
+  position: relative;
+  -webkit-animation: cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+  -webkit-animation-name: left-right-bounce;
+  -webkit-animation-duration: 1.5s;
+  margin-right: 2px;
+}
+
+@-webkit-keyframes left-right-bounce {
+  0% {
+    left: 0;
+  }
+  50% {
+    left: -6px;
+  }
+  100% {
+    left: 0;
+  }
+}
+
+#notify-button-container #follow-button-popup {
+  position: absolute;
+  z-index: 1;
+  right: 30px;
+  bottom: 42px;
+}
+
+#notify-button-container .external-action-icon {
+  margin: 0.25em 0.5em 0.25em 0.5em;
+}
+
+#notify-button-container button {
+  border-color: #b8bbc2;
+  border-width: 1px;
+}

@@ -61,6 +61,7 @@ import {
   URL_STATUS,
   URL_VIEWER_PING,
   WIDTH_SINGLE_COL,
+  USER_VISIT_COUNT_KEY,
 } from './utils/constants.js';
 import { checkIsModerator } from './utils/chat.js';
 
@@ -188,6 +189,18 @@ export default class App extends Component {
 
     // check routing
     this.getRoute();
+
+    // Increment the visit counter
+    this.incrementVisitCounter();
+  }
+
+  incrementVisitCounter() {
+    let visits = parseInt(getLocalStorage(USER_VISIT_COUNT_KEY));
+    if (isNaN(visits)) {
+      visits = 0;
+    }
+
+    setLocalStorage(USER_VISIT_COUNT_KEY, visits + 1);
   }
 
   componentWillUnmount() {
