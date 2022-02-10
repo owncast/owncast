@@ -44,6 +44,9 @@ func makeFakeService() vocab.ActivityStreamsService {
 	icon.AppendActivityStreamsImage(image)
 	service.SetActivityStreamsIcon(icon)
 
+	publicKeyProperty := streams.NewW3IDSecurityV1PublicKeyProperty()
+	service.SetW3IDSecurityV1PublicKey(publicKeyProperty)
+
 	return service
 }
 
@@ -59,9 +62,12 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestMakeActorFromService(t *testing.T) {
+func TestMakeActorFromExternalAPEntity(t *testing.T) {
 	service := makeFakeService()
-	actor := MakeActorFromService(service)
+	actor, err := MakeActorFromExernalAPEntity(service)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if actor.ActorIri != service.GetJSONLDId().GetIRI() {
 		t.Errorf("actor.ID = %v, want %v", actor.ActorIri, service.GetJSONLDId().GetIRI())
@@ -96,7 +102,7 @@ func TestMakeActorPropertyWithID(t *testing.T) {
 func TestGetFullUsernameFromPerson(t *testing.T) {
 	expected := "foodawg@fake.fediverse.server"
 	person := makeFakeService()
-	username := GetFullUsernameFromService(person)
+	username := GetFullUsernameFromExternalEntity(person)
 
 	if username != expected {
 		t.Errorf("actor.Username = %v, want %v", username, expected)

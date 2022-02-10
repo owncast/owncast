@@ -49,7 +49,7 @@ func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	log.Debugln("Resolving", iri)
 
-	req, _ := http.NewRequest("GET", iri, nil)
+	req, _ := http.NewRequest(http.MethodGet, iri, nil)
 
 	actor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
@@ -72,56 +72,53 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	return Resolve(c, data, callbacks...)
 }
 
-// GetResolvedActorFromActorProperty resolve an actor property to a fully populated person.
+// GetResolvedActorFromActorProperty resolve an external actor property to a
+// fully populated internal actor representation.
 func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
 	var err error
 	var apActor apmodels.ActivityPubActor
 	resolved := false
 
-	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
-		apActor = apmodels.MakeActorFromPerson(person)
-		return nil
-	}
+	if !actor.Empty() && actor.Len() > 0 && actor.At(0) != nil {
+		// Explicitly use only the first actor that might be listed.
+		actorObjectOrIRI := actor.At(0)
+		var actorEntity apmodels.ExternalEntity
 
-	serviceCallback := func(c context.Context, s vocab.ActivityStreamsService) error {
-		apActor = apmodels.MakeActorFromService(s)
-		return nil
-	}
+		// If the actor is an unresolved IRI then we need to resolve it.
+		if actorObjectOrIRI.IsIRI() {
+			iri := actorObjectOrIRI.GetIRI().String()
+			return GetResolvedActorFromIRI(iri)
+		}
 
-	applicationCallback := func(c context.Context, s vocab.ActivityStreamsApplication) error {
-		apActor = apmodels.MakeActorFromApplication(s)
-		resolved = true
-		return nil
-	}
+		if actorObjectOrIRI.IsActivityStreamsPerson() {
+			actorEntity = actorObjectOrIRI.GetActivityStreamsPerson()
+		} else if actorObjectOrIRI.IsActivityStreamsService() {
+			actorEntity = actorObjectOrIRI.GetActivityStreamsService()
+		} else if actorObjectOrIRI.IsActivityStreamsApplication() {
+			actorEntity = actorObjectOrIRI.GetActivityStreamsApplication()
+		} else {
+			err = errors.New("unrecognized external ActivityPub type: " + actorObjectOrIRI.Name())
+			return apActor, err
+		}
 
-	for iter := actor.Begin(); iter != actor.End(); iter = iter.Next() {
-		if iter.IsIRI() {
-			iri := iter.GetIRI()
-			if e := ResolveIRI(context.Background(), iri.String(), personCallback, serviceCallback, applicationCallback); e != nil {
-				err = e
-			}
-		} else if iter.IsActivityStreamsPerson() {
-			person := iter.GetActivityStreamsPerson()
-			apActor = apmodels.MakeActorFromPerson(person)
-			resolved = true
-		} else if iter.IsActivityStreamsService() {
-			person := iter.GetActivityStreamsService()
-			apActor = apmodels.MakeActorFromService(person)
-			resolved = true
-		} else if iter.IsActivityStreamsApplication() {
-			person := iter.GetActivityStreamsApplication()
-			apActor = apmodels.MakeActorFromApplication(person)
+		// If any of the resolution or population failed then return the error.
+		if err != nil {
+			return apActor, err
+		}
+
+		// Convert the external AP entity into an internal actor representation.
+		apa, e := apmodels.MakeActorFromExernalAPEntity(actorEntity)
+		if apa != nil {
+			apActor = *apa
 			resolved = true
 		}
+		err = e
 	}
 
-	if err != nil {
-		err = errors.Wrap(err, "error resolving actor from property value")
+	if !resolved && err == nil {
+		err = errors.New("unknown error resolving actor from property value")
 	}
 
-	if !resolved {
-		err = errors.New("error resolving actor from property value")
-	}
 	return apActor, err
 }
 
@@ -131,21 +128,30 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 	var apActor apmodels.ActivityPubActor
 	resolved := false
 	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
-		apActor = apmodels.MakeActorFromPerson(person)
-		resolved = true
-		return nil
+		apa, e := apmodels.MakeActorFromExernalAPEntity(person)
+		if apa != nil {
+			apActor = *apa
+			resolved = true
+		}
+		return e
 	}
 
-	serviceCallback := func(c context.Context, s vocab.ActivityStreamsService) error {
-		apActor = apmodels.MakeActorFromService(s)
-		resolved = true
-		return nil
+	serviceCallback := func(c context.Context, service vocab.ActivityStreamsService) error {
+		apa, e := apmodels.MakeActorFromExernalAPEntity(service)
+		if apa != nil {
+			apActor = *apa
+			resolved = true
+		}
+		return e
 	}
 
-	applicationCallback := func(c context.Context, s vocab.ActivityStreamsApplication) error {
-		apActor = apmodels.MakeActorFromApplication(s)
-		resolved = true
-		return nil
+	applicationCallback := func(c context.Context, app vocab.ActivityStreamsApplication) error {
+		apa, e := apmodels.MakeActorFromExernalAPEntity(app)
+		if apa != nil {
+			apActor = *apa
+			resolved = true
+		}
+		return e
 	}
 
 	if e := ResolveIRI(context.Background(), personOrServiceIRI, personCallback, serviceCallback, applicationCallback); e != nil {
