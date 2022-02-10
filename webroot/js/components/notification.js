@@ -143,8 +143,11 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
 
   return html`
     <div class="bg-gray-100 bg-center bg-no-repeat p-6">
-      <div class="grid grid-cols-2 gap-10 px-5 py-8">
-        <div style=${{ display: emailEnabled ? 'block' : 'none' }}>
+      <div
+        style=${{ display: emailEnabled ? 'grid' : 'none' }}
+        class="grid grid-cols-2 gap-10 px-5 py-8"
+      >
+        <div>
           <h2 class="text-slate-600 text-2xl mb-2 font-semibold">
             Email Notifications
           </h2>
