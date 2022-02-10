@@ -1,6 +1,7 @@
 package apmodels
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -40,61 +41,53 @@ type DeleteRequest struct {
 	ActorIri string
 }
 
-// MakeActorFromPerson takes a full ActivityPub Person and returns our internal
-// representation of an actor.
-func MakeActorFromPerson(person vocab.ActivityStreamsPerson) ActivityPubActor {
-	apActor := ActivityPubActor{
-		ActorIri:                person.GetJSONLDId().Get(),
-		Inbox:                   person.GetActivityStreamsInbox().GetIRI(),
-		Name:                    person.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Username:                person.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername:            GetFullUsernameFromPerson(person),
-		W3IDSecurityV1PublicKey: person.GetW3IDSecurityV1PublicKey(),
-	}
-
-	if person.GetActivityStreamsIcon() != nil && person.GetActivityStreamsIcon().Len() > 0 && person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
-		apActor.Image = person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
-
-	return apActor
+// ExternalEntity represents an ActivityPub Person, Service or Application.
+type ExternalEntity interface {
+	GetJSONLDId() vocab.JSONLDIdProperty
+	GetActivityStreamsInbox() vocab.ActivityStreamsInboxProperty
+	GetActivityStreamsName() vocab.ActivityStreamsNameProperty
+	GetActivityStreamsPreferredUsername() vocab.ActivityStreamsPreferredUsernameProperty
+	GetActivityStreamsIcon() vocab.ActivityStreamsIconProperty
+	GetW3IDSecurityV1PublicKey() vocab.W3IDSecurityV1PublicKeyProperty
 }
 
-// MakeActorFromService takes a full ActivityPub Service and returns our internal
-// representation of an actor.
-func MakeActorFromService(service vocab.ActivityStreamsService) ActivityPubActor {
+// MakeActorFromExernalAPEntity takes a full ActivityPub entity and returns our
+// internal representation of an actor.
+func MakeActorFromExernalAPEntity(entity ExternalEntity) (*ActivityPubActor, error) {
+	// Username is required (but not a part of the official ActivityPub spec)
+	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
+		return nil, errors.New("remote activitypub entity does not have a preferred username set, rejecting")
+	}
+	username := GetFullUsernameFromExternalEntity(entity)
+
+	// Key is required
+	if entity.GetW3IDSecurityV1PublicKey() == nil {
+		return nil, errors.New("remote activitypub entity does not have a public key set, rejecting")
+	}
+
+	// Name is optional
+	var name string
+	if entity.GetActivityStreamsName() != nil && !entity.GetActivityStreamsName().Empty() {
+		name = entity.GetActivityStreamsName().At(0).GetXMLSchemaString()
+	}
+
+	// Image is optional
+	var image *url.URL
+	if entity.GetActivityStreamsIcon() != nil && !entity.GetActivityStreamsIcon().Empty() && entity.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
+		image = entity.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
+	}
+
 	apActor := ActivityPubActor{
-		ActorIri:                service.GetJSONLDId().Get(),
-		Inbox:                   service.GetActivityStreamsInbox().GetIRI(),
-		Name:                    service.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Username:                service.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername:            GetFullUsernameFromService(service),
-		W3IDSecurityV1PublicKey: service.GetW3IDSecurityV1PublicKey(),
+		ActorIri:                entity.GetJSONLDId().Get(),
+		Inbox:                   entity.GetActivityStreamsInbox().GetIRI(),
+		Name:                    name,
+		Username:                entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
+		FullUsername:            username,
+		W3IDSecurityV1PublicKey: entity.GetW3IDSecurityV1PublicKey(),
+		Image:                   image,
 	}
 
-	if service.GetActivityStreamsIcon() != nil && service.GetActivityStreamsIcon().Len() > 0 && service.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
-		apActor.Image = service.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
-
-	return apActor
-}
-
-// MakeActorFromApplication takes a full ActivityPub application and returns
-// our internal representation of an actor.
-func MakeActorFromApplication(application vocab.ActivityStreamsApplication) ActivityPubActor {
-	apActor := ActivityPubActor{
-		ActorIri:                application.GetJSONLDId().Get(),
-		Inbox:                   application.GetActivityStreamsInbox().GetIRI(),
-		Name:                    application.GetActivityStreamsName().Begin().GetXMLSchemaString(),
-		Username:                application.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername:            GetFullUsernameFromApplication(application),
-		W3IDSecurityV1PublicKey: application.GetW3IDSecurityV1PublicKey(),
-	}
-
-	if application.GetActivityStreamsIcon() != nil && application.GetActivityStreamsIcon().Len() > 0 && application.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
-		apActor.Image = application.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
-
-	return apActor
+	return &apActor, nil
 }
 
 // MakeActorPropertyWithID will return an actor property filled with the provided IRI.
@@ -239,28 +232,11 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	return person
 }
 
-// GetFullUsernameFromPerson will return the user@host.tld formatted user given a person object.
-func GetFullUsernameFromPerson(person vocab.ActivityStreamsPerson) string {
-	hostname := person.GetJSONLDId().GetIRI().Hostname()
-	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
-	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
-
-	return fullUsername
-}
-
-// GetFullUsernameFromService will return the user@host.tld formatted user given a service object.
-func GetFullUsernameFromService(person vocab.ActivityStreamsService) string {
-	hostname := person.GetJSONLDId().GetIRI().Hostname()
-	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
-	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
-
-	return fullUsername
-}
-
-// GetFullUsernameFromApplication will return the user@host.tld formatted user given a service object.
-func GetFullUsernameFromApplication(person vocab.ActivityStreamsApplication) string {
-	hostname := person.GetJSONLDId().GetIRI().Hostname()
-	username := person.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
+// GetFullUsernameFromExternalEntity will return the full username from an
+// internal representation of an ExternalEntity. Returns user@host.tld.
+func GetFullUsernameFromExternalEntity(entity ExternalEntity) string {
+	hostname := entity.GetJSONLDId().GetIRI().Hostname()
+	username := entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 
 	return fullUsername
