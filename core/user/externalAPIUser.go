@@ -22,6 +22,7 @@ type ExternalAPIUser struct {
 	Scopes       []string   `json:"scopes"`
 	Type         string     `json:"type,omitempty"` // Should be API
 	LastUsedAt   *time.Time `json:"lastUsedAt,omitempty"`
+	IsBot        bool       `json:"isBot"`
 }
 
 const (
@@ -55,7 +56,6 @@ func InsertExternalAPIUser(token string, name string, color int, scopes []string
 		return err
 	}
 	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, scopes, type, previous_names) values(?, ?, ?, ?, ?, ?, ?)")
-
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,6 @@ func DeleteExternalAPIUser(token string) error {
 		return err
 	}
 	stmt, err := tx.Prepare("UPDATE users SET disabled_at = ? WHERE access_token = ?")
-
 	if err != nil {
 		return err
 	}
@@ -113,7 +112,7 @@ func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*Exte
 	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
 	// backends we need to support other methods.
-	var query = `SELECT id, access_token, scopes, display_name, display_color, created_at, last_used FROM (
+	query := `SELECT id, access_token, scopes, display_name, display_color, created_at, last_used FROM (
 		WITH RECURSIVE split(id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, scope, rest) AS (
 		  SELECT id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, '', scopes || ',' FROM users
 		   UNION ALL
@@ -122,8 +121,8 @@ func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*Exte
 				 substr(rest, instr(rest, ',')+1)
 			FROM split
 		   WHERE rest <> '')
-		SELECT id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, scope 
-		  FROM split 
+		SELECT id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, scope
+		  FROM split
 		 WHERE scope <> ''
 		 ORDER BY access_token, scope
 	  ) AS token WHERE token.access_token = ? AND token.scope = ?`
@@ -141,7 +140,6 @@ func GetIntegrationNameForAccessToken(token string) *string {
 
 	var name string
 	err := row.Scan(&name)
-
 	if err != nil {
 		log.Warnln(err)
 		return nil
@@ -153,7 +151,7 @@ func GetIntegrationNameForAccessToken(token string) *string {
 // GetExternalAPIUser will return all access tokens.
 func GetExternalAPIUser() ([]ExternalAPIUser, error) { //nolint
 	// Get all messages sent within the past day
-	var query = "SELECT id, access_token, display_name, display_color, scopes, created_at, last_used FROM users WHERE type IS 'API' AND disabled_at IS NULL"
+	query := "SELECT id, access_token, display_name, display_color, scopes, created_at, last_used FROM users WHERE type IS 'API' AND disabled_at IS NULL"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
@@ -173,7 +171,6 @@ func SetExternalAPIUserAccessTokenAsUsed(token string) error {
 		return err
 	}
 	stmt, err := tx.Prepare("UPDATE users SET last_used = CURRENT_TIMESTAMP WHERE access_token = ?")
-
 	if err != nil {
 		return err
 	}
@@ -244,6 +241,7 @@ func makeExternalAPIUsersFromRows(rows *sql.Rows) ([]ExternalAPIUser, error) {
 			CreatedAt:    createdAt,
 			Scopes:       strings.Split(scopes, ","),
 			LastUsedAt:   lastUsedAt,
+			IsBot:        true,
 		}
 		integrations = append(integrations, integration)
 	}

@@ -101,7 +101,7 @@ export default function Message(props) {
     `;
     return html`<${SystemMessage} contents=${contents} />`;
   } else if (type === SOCKET_MESSAGE_TYPES.USER_JOINED) {
-    const { displayName } = user;
+    const { displayName, isBot } = user;
     const isAuthorModerator = checkIsModerator(message);
     const messageAuthorFlair = isAuthorModerator
       ? html`<img
@@ -110,6 +110,7 @@ export default function Message(props) {
           src="/img/moderator-nobackground.svg"
         />`
       : null;
+
     const contents = html`<div>
       <span class="font-bold">${messageAuthorFlair}${displayName}</span>
       ${' '}joined the chat.
