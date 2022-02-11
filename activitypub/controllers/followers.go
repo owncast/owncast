@@ -98,7 +98,7 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 		return nil, errors.Wrap(err, "unable to get follower count")
 	}
 
-	followers, err := persistence.GetFederationFollowers(followersPageSize, (pageInt-1)*followersPageSize)
+	followers, _, err := persistence.GetFederationFollowers(followersPageSize, (pageInt-1)*followersPageSize)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get federation followers")
 	}
