@@ -304,7 +304,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederatedMessage))
 
 	// Return federated activities
-	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(admin.GetFederatedActions))
+	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions)))
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
