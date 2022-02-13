@@ -62,16 +62,14 @@ function SingleFederatedUser(props) {
             class="rounded-full border border-slate-500	w-16"
           />
           <span
-            style=${{
-              backgroundImage: `url(${icon})`,
-            }}
+            style=${{ backgroundImage: `url(${icon})` }}
             class="absolute h-6 w-6 rounded-full border-2 border-white action-icon"
           ></span>
         </div>
-        <div class="px-4 py-2">
-          <span class=" text-gray-500 text-sm hover:no-underline truncate">
+        <div class="px-4 py-2 min-w-0">
+          <div class="text-gray-500 text-sm hover:no-underline truncate">
             ${title}
-          </span>
+          </div>
           <p
             class=" text-gray-700 w-full text-base leading-6"
             dangerouslySetInnerHTML=${{ __html: body }}
