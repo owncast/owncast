@@ -73,4 +73,6 @@ require (
 	github.com/oschwald/maxminddb-golang v1.9.0 // indirect
 )
 
+require github.com/andybalholm/cascadia v1.3.1
+
 replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20211229051252-7821289d4026

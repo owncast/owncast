@@ -201,10 +201,10 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	// A user is required to use the websocket
 	user := user.GetUserByToken(accessToken)
 	if user == nil {
+		// Send error that registration is required
 		_ = conn.WriteJSON(events.EventPayload{
 			"type": events.ErrorNeedsRegistration,
 		})
-		// Send error that registration is required
 		_ = conn.Close()
 		return
 	}

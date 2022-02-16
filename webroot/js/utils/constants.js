@@ -21,6 +21,7 @@ export const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
 
 export const URL_REGISTER_NOTIFICATION = `/api/notifications/register`;
 export const URL_REGISTER_EMAIL_NOTIFICATION = `/api/notifications/register/email`;
+export const URL_CHAT_INDIEAUTH_BEGIN = `/api/auth/indieauth`;
 
 export const TIMER_STATUS_UPDATE = 5000; // ms
 export const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins

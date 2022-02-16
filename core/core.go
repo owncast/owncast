@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/auth"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -56,6 +57,7 @@ func Start() error {
 	}
 
 	user.SetupUsers()
+	auth.Setup(data.GetDatastore())
 
 	fileWriter.SetupFileWriterReceiverService(&handler)
 

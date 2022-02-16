@@ -27,6 +27,8 @@ import FediverseFollowModal, {
 
 import { NotifyButton, NotifyModal } from './components/notification.js';
 import { isPushNotificationSupported } from './notification/registerWeb.js';
+import IndieAuthForm from './components/chat/indieauth.js';
+
 import {
   addNewlines,
   checkUrlPathForDisplay,
