@@ -113,7 +113,7 @@ test('send an external integration action using access token', async (done) => {
   const payload = {
     body: 'This is a test external action from the automated integration test',
   };
-  const res = await request
+  await request
     .post('/api/integrations/chat/action')
     .set('Authorization', 'Bearer ' + accessToken)
     .send(payload)
