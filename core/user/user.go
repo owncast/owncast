@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"sort"
@@ -8,7 +9,9 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 
 	log "github.com/sirupsen/logrus"
@@ -24,7 +27,6 @@ const (
 // User represents a single chat user.
 type User struct {
 	ID            string     `json:"id"`
-	AccessToken   string     `json:"-"`
 	DisplayName   string     `json:"displayName"`
 	DisplayColor  int        `json:"displayColor"`
 	CreatedAt     time.Time  `json:"createdAt"`
@@ -52,13 +54,8 @@ func SetupUsers() {
 }
 
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
-func CreateAnonymousUser(displayName string) (*User, error) {
+func CreateAnonymousUser(displayName string) (*User, string, error) {
 	id := shortid.MustGenerate()
-	accessToken, err := utils.GenerateAccessToken()
-	if err != nil {
-		log.Errorln("Unable to create access token for new user")
-		return nil, err
-	}
 
 	if displayName == "" {
 		suggestedUsernamesList := data.GetSuggestedUsernamesList()
@@ -75,17 +72,27 @@ func CreateAnonymousUser(displayName string) (*User, error) {
 
 	user := &User{
 		ID:           id,
-		AccessToken:  accessToken,
 		DisplayName:  displayName,
 		DisplayColor: displayColor,
 		CreatedAt:    time.Now(),
 	}
 
+	// Create new user.
 	if err := create(user); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return user, nil
+	// Assign it an access token.
+	accessToken, err := utils.GenerateAccessToken()
+	if err != nil {
+		log.Errorln("Unable to create access token for new user")
+		return nil, "", err
+	}
+	if err := addAccessTokenForUser(accessToken, id); err != nil {
+		return nil, "", errors.Wrap(err, "unable to save access token for new user")
+	}
+
+	return user, accessToken, nil
 }
 
 // ChangeUsername will change the user associated to userID from one display name to another.
@@ -119,6 +126,13 @@ func ChangeUsername(userID string, username string) {
 	}
 }
 
+func addAccessTokenForUser(accessToken, userID string) error {
+	return _datastore.GetQueries().AddAccessTokenForUser(context.Background(), db.AddAccessTokenForUserParams{
+		Token:  accessToken,
+		UserID: userID,
+	})
+}
+
 func create(user *User) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
@@ -131,13 +145,13 @@ func create(user *User) error {
 		_ = tx.Rollback()
 	}()
 
-	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO users(id, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Debugln(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.ID, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
+	_, err = stmt.Exec(user.ID, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
 		log.Errorln("error creating new user", err)
 	}
@@ -179,13 +193,39 @@ func SetEnabled(userID string, enabled bool) error {
 
 // GetUserByToken will return a user by an access token.
 func GetUserByToken(token string) *User {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+	u, err := _datastore.GetQueries().GetUserByAccessToken(context.Background(), token)
+	if err != nil {
+		return nil
+	}
 
-	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes FROM users WHERE access_token = ?"
-	row := _datastore.DB.QueryRow(query, token)
+	var scopes []string
+	if u.Scopes.Valid {
+		scopes = strings.Split(u.Scopes.String, ",")
+	}
 
-	return getUserFromRow(row)
+	var disabledAt *time.Time
+	if u.DisabledAt.Valid {
+		disabledAt = &u.DisabledAt.Time
+	}
+	return &User{
+		ID:            u.ID,
+		DisplayName:   u.DisplayName,
+		DisplayColor:  int(u.DisplayColor),
+		CreatedAt:     u.CreatedAt.Time,
+		DisabledAt:    disabledAt,
+		PreviousNames: strings.Split(u.PreviousNames.String, ","),
+		NameChangedAt: &u.NamechangedAt.Time,
+		Scopes:        scopes,
+	}
+}
+
+// SetAccessTokenToOwner will reassign an access token to be owned by a
+// different user. Used for logging in with external auth.
+func SetAccessTokenToOwner(token, userID string) error {
+	return _datastore.GetQueries().SetAccessTokenToOwner(context.Background(), db.SetAccessTokenToOwnerParams{
+		UserID: userID,
+		Token:  token,
+	})
 }
 
 // SetModerator will add or remove moderator status for a single user by ID.
@@ -199,6 +239,10 @@ func SetModerator(userID string, isModerator bool) error {
 
 func addScopeToUser(userID string, scope string) error {
 	u := GetUserByID(userID)
+	if u == nil {
+		return errors.New("user not found when modifying scope")
+	}
+
 	scopesString := u.Scopes
 	scopes := utils.StringSliceToMap(scopesString)
 	scopes[scope] = true

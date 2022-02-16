@@ -105,7 +105,6 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 
 	u := user.User{
 		ID:            *row.userID,
-		AccessToken:   "",
 		DisplayName:   displayName,
 		DisplayColor:  displayColor,
 		CreatedAt:     createdAt,

@@ -1,12 +1,13 @@
 package user
 
 import (
+	"context"
 	"database/sql"
-	"errors"
 	"strings"
 	"time"
 
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
@@ -55,18 +56,22 @@ func InsertExternalAPIUser(token string, name string, color int, scopes []string
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare("INSERT INTO users(id, access_token, display_name, display_color, scopes, type, previous_names) values(?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO users(id, display_name, display_color, scopes, type, previous_names) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(id, token, name, color, scopesString, "API", name); err != nil {
+	if _, err = stmt.Exec(id, name, color, scopesString, "API", name); err != nil {
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
 		return err
+	}
+
+	if err := addAccessTokenForUser(token, id); err != nil {
+		return errors.Wrap(err, "unable to save access token for new external api user")
 	}
 
 	return nil
@@ -83,13 +88,13 @@ func DeleteExternalAPIUser(token string) error {
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare("UPDATE users SET disabled_at = ? WHERE access_token = ?")
+	stmt, err := tx.Prepare("UPDATE users SET disabled_at = CURRENT_TIMESTAMP WHERE id = (SELECT user_id FROM user_access_tokens WHERE token = ?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(time.Now(), token)
+	result, err := stmt.Exec(token)
 	if err != nil {
 		return err
 	}
@@ -112,20 +117,20 @@ func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*Exte
 	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
 	// backends we need to support other methods.
-	query := `SELECT id, access_token, scopes, display_name, display_color, created_at, last_used FROM (
-		WITH RECURSIVE split(id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, scope, rest) AS (
-		  SELECT id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, '', scopes || ',' FROM users
+	query := `SELECT id, scopes, display_name, display_color, created_at, last_used FROM user_access_tokens, (
+		WITH RECURSIVE split(id, scopes, display_name, display_color, created_at, last_used, disabled_at, scope, rest) AS (
+		  SELECT id, scopes, display_name, display_color, created_at, last_used, disabled_at, '', scopes || ',' FROM users
 		   UNION ALL
-		  SELECT id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at,
+		  SELECT id, scopes, display_name, display_color, created_at, last_used, disabled_at,
 				 substr(rest, 0, instr(rest, ',')),
 				 substr(rest, instr(rest, ',')+1)
 			FROM split
 		   WHERE rest <> '')
-		SELECT id, access_token, scopes, display_name, display_color, created_at, last_used, disabled_at, scope
+		SELECT id, scopes, display_name, display_color, created_at, last_used, disabled_at, scope
 		  FROM split
 		 WHERE scope <> ''
-		 ORDER BY access_token, scope
-	  ) AS token WHERE token.access_token = ? AND token.scope = ?`
+		 ORDER BY scope
+	  ) AS token WHERE user_access_tokens.token = ? AND token.scope = ?`
 
 	row := _datastore.DB.QueryRow(query, token, scope)
 	integration, err := makeExternalAPIUserFromRow(row)
@@ -135,23 +140,18 @@ func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*Exte
 
 // GetIntegrationNameForAccessToken will return the integration name associated with a specific access token.
 func GetIntegrationNameForAccessToken(token string) *string {
-	query := "SELECT display_name FROM users WHERE access_token IS ? AND disabled_at IS NULL"
-	row := _datastore.DB.QueryRow(query, token)
-
-	var name string
-	err := row.Scan(&name)
+	name, err := _datastore.GetQueries().GetUserDisplayNameByToken(context.Background(), token)
 	if err != nil {
-		log.Warnln(err)
 		return nil
 	}
 
 	return &name
 }
 
-// GetExternalAPIUser will return all access tokens.
+// GetExternalAPIUser will return all API users with access tokens.
 func GetExternalAPIUser() ([]ExternalAPIUser, error) { //nolint
 	// Get all messages sent within the past day
-	query := "SELECT id, access_token, display_name, display_color, scopes, created_at, last_used FROM users WHERE type IS 'API' AND disabled_at IS NULL"
+	query := "SELECT id, token, display_name, display_color, scopes, created_at, last_used FROM users, user_access_tokens WHERE user_access_tokens.user_id = id  AND type IS 'API' AND disabled_at IS NULL"
 
 	rows, err := _datastore.DB.Query(query)
 	if err != nil {
@@ -170,7 +170,8 @@ func SetExternalAPIUserAccessTokenAsUsed(token string) error {
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare("UPDATE users SET last_used = CURRENT_TIMESTAMP WHERE access_token = ?")
+	// stmt, err := tx.Prepare("UPDATE users SET last_used = CURRENT_TIMESTAMP WHERE access_token = ?")
+	stmt, err := tx.Prepare("UPDATE users SET last_used = CURRENT_TIMESTAMP WHERE id = (SELECT user_id FROM user_access_tokens WHERE token = ?)")
 	if err != nil {
 		return err
 	}
@@ -189,14 +190,13 @@ func SetExternalAPIUserAccessTokenAsUsed(token string) error {
 
 func makeExternalAPIUserFromRow(row *sql.Row) (*ExternalAPIUser, error) {
 	var id string
-	var accessToken string
 	var displayName string
 	var displayColor int
 	var scopes string
 	var createdAt time.Time
 	var lastUsedAt *time.Time
 
-	err := row.Scan(&id, &accessToken, &scopes, &displayName, &displayColor, &createdAt, &lastUsedAt)
+	err := row.Scan(&id, &scopes, &displayName, &displayColor, &createdAt, &lastUsedAt)
 	if err != nil {
 		log.Debugln("unable to convert row to api user", err)
 		return nil, err
@@ -204,7 +204,6 @@ func makeExternalAPIUserFromRow(row *sql.Row) (*ExternalAPIUser, error) {
 
 	integration := ExternalAPIUser{
 		ID:           id,
-		AccessToken:  accessToken,
 		DisplayName:  displayName,
 		DisplayColor: displayColor,
 		CreatedAt:    createdAt,

@@ -78,3 +78,20 @@ SELECT destination FROM notifications WHERE channel = $1;
 
 -- name: RemoveNotificationDestinationForChannel :exec
 DELETE FROM notifications WHERE channel = $1 AND destination = $2;
+-- name: AddAuthForUser :exec
+INSERT INTO auth(user_id, token, type) values($1, $2, $3);
+
+-- name: GetUserByAuth :one
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id;
+
+-- name: AddAccessTokenForUser :exec
+INSERT INTO user_access_tokens(token, user_id) values($1, $2);
+
+-- name: GetUserByAccessToken :one
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id;
+
+-- name: GetUserDisplayNameByToken :one
+SELECT display_name FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id AND disabled_at = NULL;
+
+-- name: SetAccessTokenToOwner :exec
+UPDATE user_access_tokens SET user_id = $1 WHERE token = $2;
