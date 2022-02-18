@@ -20,7 +20,7 @@ const { Title } = Typography;
 const { Meta } = Card;
 
 function generateStreamURL(serverURL, rtmpServerPort) {
-  return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}:${rtmpServerPort}/live/`;
+  return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}:${rtmpServerPort}/live`;
 }
 
 type OfflineProps = {
