@@ -20,4 +20,8 @@ jobs:
       with:
         config_path: '.eslintrc.js'
         ignore_path: '.eslintignore'
-        file_extensions: 'ts,tsx,js,jsx'
+        file_extensions: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
