@@ -38,8 +38,6 @@ func StartAuthFlow(u user.User, w http.ResponseWriter, r *http.Request) {
 
 	accessToken := r.URL.Query().Get("accessToken")
 
-	// destination := "http://gabek.micro.blog"
-	// destination := "https://wp.real-ity.com"
 	redirectURL, err := ia.StartAuthFlow(authRequest.AuthHost, u.ID, accessToken, u.DisplayName)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
@@ -50,7 +48,6 @@ func StartAuthFlow(u user.User, w http.ResponseWriter, r *http.Request) {
 		Redirect: redirectURL.String(),
 	}
 	controllers.WriteResponse(w, redirectResponse)
-	// http.Redirect(w, r, redirectURL.String(), http.StatusTemporaryRedirect)
 }
 
 // HandleRedirect will handle the redirect from an IndieAuth server to
