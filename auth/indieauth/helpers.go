@@ -33,7 +33,7 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 	callbackURL.Path = "/api/auth/indieauth/callback"
 
 	codeChallenge := createCodeChallenge()
-	state := "mystatestring"
+	state := shortid.MustGenerate()
 	responseType := "code"
 	clientID := baseServerURL.String() // Our local URL
 	codeChallengeMethod := "S256"
@@ -57,7 +57,7 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 		CurrentAccessToken: accessToken,
 		Endpoint:           authEndpointURL,
 		ClientID:           baseServer,
-		CodeVerifier:       "randomstring",
+		CodeVerifier:       shortid.MustGenerate(),
 		CodeChallenge:      codeChallenge,
 		State:              state,
 		Redirect:           &redirect,

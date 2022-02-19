@@ -356,6 +356,9 @@ func Start() error {
 	http.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(indieauth.StartAuthFlow))
 	http.HandleFunc("/api/auth/indieauth/callback", indieauth.HandleRedirect)
 
+	// Handle auth provider requests
+	http.HandleFunc("/api/auth/provider/indieauth", indieauth.HandleAuthEndpoint)
+
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
 
