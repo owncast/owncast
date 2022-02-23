@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/activitypub"
@@ -305,6 +306,9 @@ func Start() error {
 
 	// Return federated activities
 	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(admin.GetFederatedActions))
+
+	// Prometheus metrics
+	http.Handle("/api/admin/prometheus", promhttp.Handler())
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
