@@ -308,7 +308,9 @@ func Start() error {
 	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(admin.GetFederatedActions))
 
 	// Prometheus metrics
-	http.Handle("/api/admin/prometheus", promhttp.Handler())
+	http.Handle("/api/admin/prometheus", middleware.RequireAdminAuth(func(rw http.ResponseWriter, r *http.Request) {
+		promhttp.Handler().ServeHTTP(rw, r)
+	}))
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
