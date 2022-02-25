@@ -69,10 +69,7 @@ export function hasTouchScreen() {
       hasTouch = true; // deprecated, but good fallback
     } else {
       // Only as a last resort, fall back to user agent sniffing
-      var UA = navigator.userAgent;
-      hasTouch =
-        /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
-        /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+      hasTouch = navigator.userAgentData.mobile;
     }
   }
   return hasTouch;
