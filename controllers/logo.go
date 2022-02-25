@@ -72,7 +72,7 @@ func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
 		referrer = "an external site"
 	}
 	if !_hasWarnedSVGLogo {
-		log.Warnf("%s requested your logo. because many social networks do not support SVGs we returned a placeholder instead. change your current logo to a png or jpeg to be most compatible with external social networking sites.", referrer)
+		log.Warnf("an external site requested your logo. because many social networks do not support SVGs we returned a placeholder instead. change your current logo to a png or jpeg to be most compatible with external social networking sites.")
 		_hasWarnedSVGLogo = true
 	}
 }

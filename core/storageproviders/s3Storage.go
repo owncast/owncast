@@ -162,15 +162,13 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 
 	response, err := s.uploader.Upload(uploadInput)
-
 	if err != nil {
-		log.Traceln("error uploading:", filePath, err.Error())
+		log.Traceln("error uploading segment", err.Error())
 		if retryCount < 4 {
 			log.Traceln("Retrying...")
 			return s.Save(filePath, retryCount+1)
 		}
 
-		log.Warnln("Giving up on", filePath, err)
 		return "", fmt.Errorf("Giving up on %s", filePath)
 	}
 
@@ -192,7 +190,6 @@ func (s *S3Storage) connectAWS() *session.Session {
 			S3ForcePathStyle: aws.Bool(s.s3ForcePathStyle),
 		},
 	)
-
 	if err != nil {
 		log.Panicln(err)
 	}
