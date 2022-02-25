@@ -18,7 +18,7 @@ func createWebhooksTable() {
 		"url" string NOT NULL,
 		"events" TEXT NOT NULL,
 		"timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		"last_used" DATETIME 
+		"last_used" DATETIME
 	);`
 
 	stmt, err := _db.Prepare(createTableSQL)
@@ -33,7 +33,7 @@ func createWebhooksTable() {
 
 // InsertWebhook will add a new webhook to the database.
 func InsertWebhook(url string, events []models.EventType) (int, error) {
-	log.Traceln("Adding new webhook:", url)
+	log.Traceln("Adding new webhook")
 
 	eventsString := strings.Join(events, ",")
 
@@ -66,7 +66,7 @@ func InsertWebhook(url string, events []models.EventType) (int, error) {
 
 // DeleteWebhook will delete a webhook from the database.
 func DeleteWebhook(id int) error {
-	log.Traceln("Deleting webhook:", id)
+	log.Traceln("Deleting webhook")
 
 	tx, err := _db.Begin()
 	if err != nil {
@@ -109,7 +109,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 			FROM split
 		   WHERE rest <> '')
 		SELECT id, url, event
-		  FROM split 
+		  FROM split
 		 WHERE event <> ''
 	  ) AS webhook WHERE event IS "` + event + `"`
 
