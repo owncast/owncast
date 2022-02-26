@@ -8,12 +8,14 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 )
 
 var (
 	l                         = &sync.RWMutex{}
 	_activeViewerPurgeTimeout = time.Second * 15
+	_geoIPClient              = geoip.NewClient()
 )
 
 func setupStats() error {
@@ -63,30 +65,45 @@ func RemoveChatClient(clientID string) {
 	l.Unlock()
 }
 
-// SetViewerIDActive sets a client as active and connected.
-func SetViewerIDActive(id string) {
+// SetViewerActive sets a client as active and connected.
+func SetViewerActive(viewer *models.Viewer) {
+	// Don't update viewer counts if a live stream session is not active.
+	if !_stats.StreamConnected {
+		return
+	}
+
 	l.Lock()
 	defer l.Unlock()
 
-	_stats.Viewers[id] = time.Now()
+	// Asynchronously, optionally, fetch GeoIP data.
+	go func(viewer *models.Viewer) {
+		viewer.Geo = _geoIPClient.GetGeoFromIP(viewer.IPAddress)
+	}(viewer)
 
-	// Don't update viewer counts if a live stream session is not active.
-	if _stats.StreamConnected {
-		_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Viewers)), float64(_stats.SessionMaxViewerCount)))
-		_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+	if _, exists := _stats.Viewers[viewer.ClientID]; exists {
+		_stats.Viewers[viewer.ClientID].LastSeen = time.Now()
+	} else {
+		_stats.Viewers[viewer.ClientID] = viewer
 	}
+	_stats.SessionMaxViewerCount = int(math.Max(float64(len(_stats.Viewers)), float64(_stats.SessionMaxViewerCount)))
+	_stats.OverallMaxViewerCount = int(math.Max(float64(_stats.SessionMaxViewerCount), float64(_stats.OverallMaxViewerCount)))
+}
+
+// GetActiveViewers will return the active viewers.
+func GetActiveViewers() map[string]*models.Viewer {
+	return _stats.Viewers
 }
 
 func pruneViewerCount() {
-	viewers := make(map[string]time.Time)
+	viewers := make(map[string]*models.Viewer)
 
 	l.Lock()
 	defer l.Unlock()
 
-	for viewerID := range _stats.Viewers {
-		viewerLastSeenTime := _stats.Viewers[viewerID]
+	for viewerID, viewer := range _stats.Viewers {
+		viewerLastSeenTime := _stats.Viewers[viewerID].LastSeen
 		if time.Since(viewerLastSeenTime) < _activeViewerPurgeTimeout {
-			viewers[viewerID] = viewerLastSeenTime
+			viewers[viewerID] = viewer
 		}
 	}
 
@@ -112,7 +129,7 @@ func getSavedStats() models.Stats {
 
 	result := models.Stats{
 		ChatClients:           make(map[string]models.Client),
-		Viewers:               make(map[string]time.Time),
+		Viewers:               make(map[string]*models.Viewer),
 		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
 		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
 		LastDisconnectTime:    savedLastDisconnectTime,
