@@ -13,8 +13,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _lastTranscoderLogMessage = ""
-var l = &sync.RWMutex{}
+var (
+	_lastTranscoderLogMessage = ""
+	l                         = &sync.RWMutex{}
+)
 
 var errorMap = map[string]string{
 	"Unrecognized option 'vaapi_device'":        "you are likely trying to utilize a vaapi codec, but your version of ffmpeg or your hardware doesn't support it. change your codec to libx264 and restart your stream",
@@ -60,8 +62,6 @@ var ignoredErrors = []string{
 }
 
 func handleTranscoderMessage(message string) {
-	log.Debugln(message)
-
 	l.Lock()
 	defer l.Unlock()
 
@@ -73,25 +73,26 @@ func handleTranscoderMessage(message string) {
 	}
 
 	// Convert specific transcoding messages to human-readable messages.
+	humanizedMessage := ""
 	for error, displayMessage := range errorMap {
 		if strings.Contains(message, error) {
-			message = displayMessage
+			humanizedMessage = displayMessage
 			break
 		}
 	}
 
-	if message == "" {
+	if humanizedMessage == "" {
 		return
 	}
 
 	// No good comes from a flood of repeated messages.
-	if message == _lastTranscoderLogMessage {
+	if humanizedMessage == _lastTranscoderLogMessage {
 		return
 	}
 
-	log.Error(message)
+	log.Error(humanizedMessage)
 
-	_lastTranscoderLogMessage = message
+	_lastTranscoderLogMessage = humanizedMessage
 }
 
 func createVariantDirectories() {

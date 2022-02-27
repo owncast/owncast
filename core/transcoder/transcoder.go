@@ -7,8 +7,11 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	log "github.com/sirupsen/logrus"
+
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/config"
@@ -24,6 +27,7 @@ var _commandExec *exec.Cmd
 type Transcoder struct {
 	input                string
 	stdin                *io.PipeReader
+	logwriter            *rotatelogs.RotateLogs
 	segmentOutputPath    string
 	playlistOutputPath   string
 	variants             []HLSVariant
@@ -112,6 +116,14 @@ func (t *Transcoder) Stop() {
 func (t *Transcoder) Start() {
 	_lastTranscoderLogMessage = ""
 
+	path := logging.GetTranscoderLogFilePath()
+	t.logwriter, _ = rotatelogs.New(
+		path+".%Y%m%d%H%M",
+		rotatelogs.WithLinkName(path),
+		rotatelogs.WithMaxAge(time.Duration(86400)*time.Second),
+		rotatelogs.WithRotationTime(time.Duration(604800)*time.Second),
+	)
+
 	command := t.getString()
 	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.DisplayName(), len(t.variants))
 	createVariantDirectories()
@@ -126,6 +138,7 @@ func (t *Transcoder) Start() {
 		_commandExec.Stdin = t.stdin
 	}
 
+	// ffmpeg logs to stderr, not stdout, so that's why this is weird.
 	stdout, err := _commandExec.StderrPipe()
 	if err != nil {
 		log.Fatalln(err)
@@ -140,6 +153,13 @@ func (t *Transcoder) Start() {
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
 			line := scanner.Text()
+
+			// Log to the transcoder.log file on disk
+			if _, err := t.logwriter.Write([]byte(line + "\n")); err != nil {
+				log.Errorln("error writing transcoder log file:", err)
+			}
+
+			// Log to our logger for optionally displaying in the console
 			handleTranscoderMessage(line)
 		}
 	}()
@@ -194,10 +214,9 @@ func (t *Transcoder) getString() string {
 		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
 	}
 	ffmpegFlags := []string{
-		fmt.Sprintf(`FFREPORT=file="%s":level=32`, logging.GetTranscoderLogFilePath()),
 		t.ffmpegPath,
 		"-hide_banner",
-		"-loglevel warning",
+		"-loglevel info",
 		t.codec.GlobalFlags(),
 		"-fflags +genpts", // Generate presentation time stamp if missing
 		"-i ", t.input,
