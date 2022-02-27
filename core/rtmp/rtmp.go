@@ -1,6 +1,7 @@
 package rtmp
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -26,7 +27,7 @@ var _setStreamAsConnected func(*io.PipeReader)
 var _setBroadcaster func(models.Broadcaster)
 
 // Start starts the rtmp service, listening on specified RTMP port.
-func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
+func Start(listenersWithNames map[string][]net.Listener, setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
@@ -34,8 +35,19 @@ func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models
 	s := rtmp.NewServer()
 	var lis net.Listener
 	var err error
-	if lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port)); err != nil {
-		log.Fatal(err)
+
+	listener, exist := listenersWithNames["rtmp"]
+	if exist {
+		if len(listener) == 1 {
+			log.Infoln("systemd socket with FileDescriptorName=rtmp detected")
+			lis = listener[0]
+		} else {
+			log.Fatal(errors.New("At most one systemd socket with FileDescriptorName=rtmp is supported"))
+		}
+	} else {
+		if lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port)); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	s.LogEvent = func(c *rtmp.Conn, nc net.Conn, e int) {

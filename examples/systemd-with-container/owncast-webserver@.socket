@@ -1,0 +1,12 @@
+[Unit]
+Description=owncast with socket activation for %I
+PartOf=owncast@%i.target
+
+[Socket]
+
+FileDescriptorName=webserver
+
+Service=owncast@%i.service
+
+[Install]
+WantedBy=default.target

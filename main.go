@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/coreos/go-systemd/v22/activation"
 	"github.com/owncast/owncast/logging"
 	log "github.com/sirupsen/logrus"
 
@@ -79,12 +80,16 @@ func main() {
 
 	handleCommandLineFlags()
 
+	listenersWithNames, err := activation.ListenersWithNames()
+	if err != nil {
+		log.Fatalln("failed to run activation.ListenersWithNames()", err)
+	}
 	// starts the core
-	if err := core.Start(); err != nil {
+	if err := core.Start(listenersWithNames); err != nil {
 		log.Fatalln("failed to start the core package", err)
 	}
 
-	if err := router.Start(); err != nil {
+	if err := router.Start(listenersWithNames); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

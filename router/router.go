@@ -1,9 +1,10 @@
 package router
 
 import (
+	"errors"
 	"fmt"
+	"net"
 	"net/http"
-
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/activitypub"
@@ -19,7 +20,7 @@ import (
 )
 
 // Start starts the router for the http, ws, and rtmp.
-func Start() error {
+func Start(listenersWithNames map[string][]net.Listener) error {
 	// static files
 	http.HandleFunc("/", controllers.IndexHandler)
 	http.HandleFunc("/recordings", controllers.IndexHandler)
@@ -314,11 +315,26 @@ func Start() error {
 		chat.HandleClientConnection(w, r)
 	})
 
-	port := config.WebServerPort
-	ip := config.WebServerIP
+	var err error
+	listener, exist := listenersWithNames["webserver"]
+	if exist {
+		if len(listener) == 1 {
+			log.Infoln("systemd socket with FileDescriptorName=webserver detected")
+			err = http.Serve(listener[0], nil)
+		} else {
+			log.Fatal(errors.New("At most one systemd socket with FileDescriptorName=webserver is supported"))
+		}
+	} else {
+		port := config.WebServerPort
+		ip := config.WebServerIP
 
-	log.Infof("Web server is listening on IP %s port %d.", ip, port)
-	log.Infoln("The web admin interface is available at /admin.")
+		log.Infof("Web server is listening on IP %s port %d.", ip, port)
+		log.Infoln("The web admin interface is available at /admin.")
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", ip, port), nil)
+		err = http.ListenAndServe(fmt.Sprintf("%s:%d", ip, port), nil)
+	}
+	if err == http.ErrServerClosed {
+		err = nil
+	}
+	return err
 }

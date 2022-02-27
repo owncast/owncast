@@ -1,0 +1,8 @@
+[Unit]
+Description=All owncast sockets
+
+Requires=owncast-rtmp@%i.socket
+Requires=owncast-webserver@%i.socket
+
+#[Install]
+#WantedBy=multi-user.target default.target

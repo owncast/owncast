@@ -1,6 +1,7 @@
 package core
 
 import (
+	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -33,7 +34,7 @@ var (
 )
 
 // Start starts up the core processing.
-func Start() error {
+func Start(listenersWithNames map[string][]net.Listener) error {
 	resetDirectories()
 
 	data.PopulateDefaults()
@@ -73,7 +74,7 @@ func Start() error {
 	}
 
 	// start the rtmp server
-	go rtmp.Start(setStreamAsConnected, setBroadcaster)
+	go rtmp.Start(listenersWithNames, setStreamAsConnected, setBroadcaster)
 
 	rtmpPort := data.GetRTMPPortNumber()
 	log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
