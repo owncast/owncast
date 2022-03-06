@@ -53,6 +53,7 @@ const (
 	federationShowEngagementKey  = "federation_show_engagement"
 	federationBlockedDomainsKey  = "federation_blocked_domains"
 	suggestedUsernamesKey        = "suggested_usernames"
+	chatJoinMessagesEnabledKey   = "chat_join_messages_enabled"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -753,4 +754,19 @@ func GetBlockedFederatedDomains() []string {
 	}
 
 	return strings.Split(domains, ",")
+}
+
+// SetChatJoinMessagesEnabled will set if chat join messages are enabled.
+func SetChatJoinMessagesEnabled(enabled bool) error {
+	return _datastore.SetBool(chatJoinMessagesEnabledKey, enabled)
+}
+
+// GetChatJoinMessagesEnabled will return if chat join messages are enabled.
+func GetChatJoinMessagesEnabled() bool {
+	enabled, err := _datastore.GetBool(chatJoinMessagesEnabledKey)
+	if err != nil {
+		return true
+	}
+
+	return enabled
 }
