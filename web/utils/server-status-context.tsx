@@ -59,6 +59,7 @@ export const initialServerConfigState: ConfigDetails = {
   forbiddenUsernames: [],
   suggestedUsernames: [],
   chatDisabled: false,
+  chatJoinMessagesEnabled: true,
 };
 
 const initialServerStatusState = {

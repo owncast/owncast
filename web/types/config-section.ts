@@ -113,5 +113,6 @@ export interface ConfigDetails {
   forbiddenUsernames: string[];
   suggestedUsernames: string[];
   chatDisabled: boolean;
+  chatJoinMessagesEnabled: boolean;
   federation: Federation;
 }

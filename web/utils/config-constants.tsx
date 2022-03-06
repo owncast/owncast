@@ -30,6 +30,7 @@ export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 export const API_CHAT_DISABLE = '/chat/disable';
+export const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 export const API_CHAT_FORBIDDEN_USERNAMES = '/chat/forbiddenusernames';
 export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
@@ -189,6 +190,14 @@ export const FIELD_PROPS_DISABLE_CHAT = {
   configPath: '',
   label: 'Chat',
   tip: 'Turn the chat functionality on/off on your Owncast server.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED = {
+  apiPath: API_CHAT_JOIN_MESSAGES_ENABLED,
+  configPath: '',
+  label: 'Join Messages',
+  tip: 'Show when a viewer joins the chat.',
   useSubmit: true,
 };
 

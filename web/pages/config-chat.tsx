@@ -15,6 +15,7 @@ import { UpdateArgs } from '../types/config-section';
 import {
   API_CHAT_FORBIDDEN_USERNAMES,
   API_CHAT_SUGGESTED_USERNAMES,
+  FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED,
   FIELD_PROPS_DISABLE_CHAT,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
@@ -32,7 +33,13 @@ export default function ConfigChat() {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
 
-  const { chatDisabled, forbiddenUsernames, instanceDetails, suggestedUsernames } = serverConfig;
+  const {
+    chatDisabled,
+    chatJoinMessagesEnabled,
+    forbiddenUsernames,
+    instanceDetails,
+    suggestedUsernames,
+  } = serverConfig;
   const { welcomeMessage } = instanceDetails;
 
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
@@ -44,6 +51,10 @@ export default function ConfigChat() {
 
   function handleChatDisableChange(disabled: boolean) {
     handleFieldChange({ fieldName: 'chatDisabled', value: !disabled });
+  }
+
+  function handleChatJoinMessagesEnabledChange(enabled: boolean) {
+    handleFieldChange({ fieldName: 'chatJoinMessagesEnabled', value: enabled });
   }
 
   function resetForbiddenUsernameState() {
@@ -131,6 +142,7 @@ export default function ConfigChat() {
   useEffect(() => {
     setFormDataValues({
       chatDisabled,
+      chatJoinMessagesEnabled,
       forbiddenUsernames,
       suggestedUsernames,
       welcomeMessage,
@@ -151,6 +163,12 @@ export default function ConfigChat() {
           checked={!formDataValues.chatDisabled}
           reversed
           onChange={handleChatDisableChange}
+        />
+        <ToggleSwitch
+          fieldName="chatJoinMessagesEnabled"
+          {...FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED}
+          checked={formDataValues.chatJoinMessagesEnabled}
+          onChange={handleChatJoinMessagesEnabledChange}
         />
         <TextFieldWithSubmit
           fieldName="welcomeMessage"
