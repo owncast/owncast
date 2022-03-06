@@ -79,6 +79,12 @@ export default class UsernameForm extends Component {
     }
   }
 
+  componentDidUpdate({ }, { displayForm }) {
+    if (this.state.displayForm && !displayForm ) {
+      document.getElementById('username-change-input').select();
+    }
+  }
+
   render(props, state) {
     const { username, isModerator } = props;
     const { displayForm } = state;
