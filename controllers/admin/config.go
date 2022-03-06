@@ -664,6 +664,26 @@ func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "suggested username list updated")
 }
 
+// SetChatJoinMessagesEnabled will enable or disable the chat join messages.
+func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update chat join messages enabled")
+		return
+	}
+
+	if err := data.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "chat join message status updated")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
