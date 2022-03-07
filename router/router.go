@@ -264,6 +264,15 @@ func Start() error {
 	// Websocket host override
 	http.HandleFunc("/api/admin/config/sockethostoverride", middleware.RequireAdminAuth(admin.SetSocketHostOverride))
 
+	// RTMP TLS enabled
+	http.HandleFunc("/api/admin/config/rtmptlsenabled", middleware.RequireAdminAuth(admin.SetRTMPTLSEnabled))
+
+	// RTMP TLS certificate path
+	http.HandleFunc("/api/admin/config/rtmptlscertpath", middleware.RequireAdminAuth(admin.SetRTMPTLSCertificatePath))
+
+	// RTMP TLS certificate key path
+	http.HandleFunc("/api/admin/config/rtmptlscertkeypath", middleware.RequireAdminAuth(admin.SetRTMPTLSCertificateKeyPath))
+
 	// Is server marked as NSFW
 	http.HandleFunc("/api/admin/config/nsfw", middleware.RequireAdminAuth(admin.SetNSFW))
 

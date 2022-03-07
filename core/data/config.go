@@ -26,6 +26,9 @@ const (
 	httpListenAddressKey            = "http_listen_address"
 	websocketHostOverrideKey        = "websocket_host_override"
 	rtmpPortNumberKey               = "rtmp_port_number"
+	rtmpTLSEnabled                  = "rtmp_tls_enabled"
+	rtmpTLSCertificatePath          = "rtmp_tls_certificate_path"
+	rtmpTLSCertificateKeyPath       = "rtmp_tls_certificate_key_path"
 	serverMetadataTagsKey           = "server_metadata_tags"
 	directoryEnabledKey             = "directory_enabled"
 	directoryRegistrationKeyKey     = "directory_registration_key"
@@ -252,6 +255,51 @@ func GetRTMPPortNumber() int {
 // SetRTMPPortNumber will set the server RTMP port.
 func SetRTMPPortNumber(port float64) error {
 	return _datastore.SetNumber(rtmpPortNumberKey, port)
+}
+
+// GetRTMPTLSEnabled will return if RTMP TLS is enabled.
+func GetRTMPTLSEnabled() bool {
+	enabled, err := _datastore.GetBool(rtmpTLSEnabled)
+	if err != nil {
+		log.Traceln(rtmpTLSEnabled, err)
+		return config.GetDefaults().RTMPTLSEnabled
+	}
+	return enabled
+}
+
+// SetRTMPTLSEnabled will set if RTMP TLS is enabled.
+func SetRTMPTLSEnabled(enabled bool) error {
+	return _datastore.SetBool(rtmpTLSEnabled, enabled)
+}
+
+// GetRTMPTLSCertificatePath will return the RTMP TLS certificate path.
+func GetRTMPTLSCertificatePath() string {
+	path, err := _datastore.GetString(rtmpTLSCertificatePath)
+	if err != nil {
+		log.Traceln(rtmpTLSCertificatePath, err)
+		return config.GetDefaults().RTMPTLSCertificatePath
+	}
+	return path
+}
+
+// SetRTMPTLSCertificatePath will set the RTMP TLS certificate path.
+func SetRTMPTLSCertificatePath(path string) error {
+	return _datastore.SetString(rtmpTLSCertificatePath, path)
+}
+
+// GetRTMPTLSCertificateKeyPath will return the RTMP TLS certificate key path.
+func GetRTMPTLSCertificateKeyPath() string {
+	path, err := _datastore.GetString(rtmpTLSCertificateKeyPath)
+	if err != nil {
+		log.Traceln(rtmpTLSCertificateKeyPath, err)
+		return config.GetDefaults().RTMPTLSCertificateKeyPath
+	}
+	return path
+}
+
+// SetRTMPTLSCertificateKeyPath will set the RTMP TLS certificate key path.
+func SetRTMPTLSCertificateKeyPath(path string) error {
+	return _datastore.SetString(rtmpTLSCertificateKeyPath, path)
 }
 
 // GetServerMetadataTags will return the metadata tags.

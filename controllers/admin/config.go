@@ -380,6 +380,81 @@ func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "rtmp port set")
 }
 
+// SetRTMPTLSEnabled sets rtmp tls enabled
+func SetRTMPTLSEnabled(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetRTMPTLSEnabled(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "rtmp tls enabled set")
+}
+
+// SetRTMPTLSCertificatePath sets rtmp tls certificate path
+func SetRTMPTLSCertificatePath(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	rawValue, ok := configValue.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "rtmp tls certificate path value invalid")
+		return
+	}
+
+	// Trim any trailing slash
+	certPath := strings.TrimRight(rawValue, "/")
+
+	if err := data.SetRTMPTLSCertificatePath(certPath); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "rtmp tls certificate path set")
+}
+
+// SetRTMPTLSCertificateKeyPath sets rtmp tls certificate key path
+func SetRTMPTLSCertificateKeyPath(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	rawValue, ok := configValue.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "rtmp tls certificate key path value invalid")
+		return
+	}
+
+	// Trim any trailing slash
+	certKeyPath := strings.TrimRight(rawValue, "/")
+
+	if err := data.SetRTMPTLSCertificateKeyPath(certKeyPath); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "rtmp tls certificate key path set")
+}
+
 // SetServerURL will handle the web config request to set the full server URL.
 func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {

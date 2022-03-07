@@ -1,6 +1,7 @@
 package rtmp
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
@@ -25,18 +26,14 @@ var _rtmpConnection net.Conn
 var _setStreamAsConnected func(*io.PipeReader)
 var _setBroadcaster func(models.Broadcaster)
 
-// Start starts the rtmp service, listening on specified RTMP port.
+// Start starts the rtmp service, listening on specified RTMP port with or without tls (according to config).
 func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
+	tlsEnabled := data.GetRTMPTLSEnabled()
 	port := data.GetRTMPPortNumber()
 	s := rtmp.NewServer()
-	var lis net.Listener
-	var err error
-	if lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port)); err != nil {
-		log.Fatal(err)
-	}
 
 	s.LogEvent = func(c *rtmp.Conn, nc net.Conn, e int) {
 		es := rtmp.EventString[e]
@@ -45,11 +42,52 @@ func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models
 
 	s.HandleConn = HandleConn
 
+	if tlsEnabled {
+		startRtmpTlsServer(port, s)
+	} else {
+		startRtmpServer(port, s)
+	}
+}
+
+// startRtmpTlsServer starts the rtmp tls server.
+func startRtmpTlsServer(port int, s *rtmp.Server) {
+	tlsCert := data.GetRTMPTLSCertificatePath()
+	tlsCertKey := data.GetRTMPTLSCertificateKeyPath()
+
+	cer, err := tls.LoadX509KeyPair(tlsCert, tlsCertKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+	lis, err := tls.Listen("tcp", fmt.Sprintf(":%d", port), config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer lis.Close()
+
+	serverLoop(lis, s)
+}
+
+// startRtmpServer starts the rtmp server.
+func startRtmpServer(port int, s *rtmp.Server) {
+	var lis net.Listener
+	var err error
+	if lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port)); err != nil {
+		log.Fatal(err)
+	}
+
 	if err != nil {
 		log.Panicln(err)
 	}
 	log.Tracef("RTMP server is listening for incoming stream on port: %d", port)
 
+	serverLoop(lis, s)
+}
+
+// serverLoop runs the main server loop.
+func serverLoop(lis net.Listener, s *rtmp.Server) {
 	for {
 		nc, err := lis.Accept()
 		if err != nil {

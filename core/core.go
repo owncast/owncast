@@ -74,13 +74,21 @@ func Start() error {
 
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)
-
-	rtmpPort := data.GetRTMPPortNumber()
-	log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
+	logRtmpStart()
 
 	webhooks.InitWorkerPool()
 
 	return nil
+}
+
+func logRtmpStart() {
+	rtmpPort := data.GetRTMPPortNumber()
+	tlsEnabled := data.GetRTMPTLSEnabled()
+	tlsString := ""
+	if tlsEnabled {
+		tlsString = " tls"
+	}
+	log.Infof("RTMP is accepting inbound"+tlsString+" streams on port %d.", rtmpPort)
 }
 
 func createInitialOfflineState() error {

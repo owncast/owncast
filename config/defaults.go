@@ -19,8 +19,13 @@ type Defaults struct {
 	DatabaseFilePath string
 	WebServerPort    int
 	WebServerIP      string
-	RTMPServerPort   int
-	StreamKey        string
+
+	RTMPServerPort int
+	StreamKey      string
+
+	RTMPTLSEnabled            bool
+	RTMPTLSCertificatePath    string
+	RTMPTLSCertificateKeyPath string
 
 	YPEnabled bool
 	YPServer  string
@@ -55,12 +60,17 @@ func GetDefaults() Defaults {
 		YPEnabled: false,
 		YPServer:  "https://directory.owncast.online",
 
-		WebServerPort:  8080,
-		WebServerIP:    "0.0.0.0",
+		WebServerPort: 8080,
+		WebServerIP:   "0.0.0.0",
+
 		RTMPServerPort: 1935,
 		StreamKey:      "abc123",
 
 		ChatEstablishedUserModeTimeDuration: time.Minute * 15,
+
+		RTMPTLSEnabled:            false,
+		RTMPTLSCertificatePath:    "ssl/fullchain.pem",
+		RTMPTLSCertificateKeyPath: "ssl/privkey.pem",
 
 		StreamVariants: []models.StreamOutputVariant{
 			{

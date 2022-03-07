@@ -51,6 +51,9 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		WebServerPort:           config.WebServerPort,
 		WebServerIP:             config.WebServerIP,
 		RTMPServerPort:          data.GetRTMPPortNumber(),
+		RTMPTLSEnabled:          data.GetRTMPTLSEnabled(),
+		RTMPTLSCertPath:         data.GetRTMPTLSCertificatePath(),
+		RTMPTLSCertKeyPath:      data.GetRTMPTLSCertificateKeyPath(),
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
@@ -94,6 +97,9 @@ type serverConfigAdminResponse struct {
 	WebServerPort           int                      `json:"webServerPort"`
 	WebServerIP             string                   `json:"webServerIP"`
 	RTMPServerPort          int                      `json:"rtmpServerPort"`
+	RTMPTLSEnabled          bool                     `json:"rtmpTlsEnabled"`
+	RTMPTLSCertPath         string                   `json:"rtmpTlsCertPath"`
+	RTMPTLSCertKeyPath      string                   `json:"rtmpTlsCertKeyPath"`
 	S3                      models.S3                `json:"s3"`
 	VideoSettings           videoSettings            `json:"videoSettings"`
 	YP                      yp                       `json:"yp"`
