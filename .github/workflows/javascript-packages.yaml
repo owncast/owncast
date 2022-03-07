@@ -17,11 +17,10 @@ jobs:
             ref: ${{ github.head_ref }}
 
         - name: Build dependencies
-        - uses: actions/setup-node@v2
+          uses: actions/setup-node@v2
           with:
             node-version: '12'
-        - run: cd build/javascript
-        - run: npm run build
+        - run: cd build/javascript && npm run build
 
         - name: Commit changes
           uses: EndBug/add-and-commit@v5
