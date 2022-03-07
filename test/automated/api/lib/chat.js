@@ -12,17 +12,11 @@ async function registerChat() {
 }
 
 async function sendChatMessage(message, accessToken, done) {
-  const ws = new WebSocket(
-    `ws://localhost:8080/ws?accessToken=${accessToken}`,
-    {
-      origin: 'http://localhost:8080',
-    }
-  );
+  const ws = new WebSocket(`ws://localhost:8080/ws?accessToken=${accessToken}`);
 
   async function onOpen() {
     ws.send(JSON.stringify(message), async function () {
       ws.close();
-      await new Promise((r) => setTimeout(r, 2000));
       done();
     });
   }
@@ -31,12 +25,7 @@ async function sendChatMessage(message, accessToken, done) {
 }
 
 async function listenForEvent(name, accessToken, done) {
-  const ws = new WebSocket(
-    `ws://localhost:8080/ws?accessToken=${accessToken}`,
-    {
-      origin: 'http://localhost:8080',
-    }
-  );
+  const ws = new WebSocket(`ws://localhost:8080/ws?accessToken=${accessToken}`);
 
   ws.on('message', function incoming(message) {
     const messages = message.split('\n');

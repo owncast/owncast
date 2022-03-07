@@ -5,7 +5,6 @@ const WebSocket = require('ws');
 
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
-const listenForEvent = require('./lib/chat').listenForEvent;
 
 const testVisibilityMessage = {
   body: 'message ' + Math.floor(Math.random() * 100),
@@ -106,5 +105,14 @@ test('verify rejected message is not in the chat feed', async (done) => {
   });
 
   expect(message.length).toBe(0);
+  done();
+});
+
+test('can disable established chat user mode', async (done) => {
+  await request
+    .post('/api/admin/config/chat/establishedusermode')
+    .auth('admin', 'abc123')
+    .send({ value: false })
+    .expect(200);
   done();
 });
