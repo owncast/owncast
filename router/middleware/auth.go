@@ -7,6 +7,7 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -99,6 +100,16 @@ func RequireUserAccessToken(handler http.HandlerFunc) http.HandlerFunc {
 		if accessToken == "" {
 			accessDenied(w)
 			return
+		}
+
+		ipAddress := utils.GetIPAddressFromRequest(r)
+		// Check if this client's IP address is banned.
+		if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
+			log.Debugln("Client ip address has been blocked. Rejecting.")
+			accessDenied(w)
+			return
+		} else if err != nil {
+			log.Errorln("error determining if IP address is blocked: ", err)
 		}
 
 		// A user is required to use the websocket

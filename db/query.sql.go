@@ -92,6 +92,20 @@ func (q *Queries) ApproveFederationFollower(ctx context.Context, arg ApproveFede
 	return err
 }
 
+const banIPAddress = `-- name: BanIPAddress :exec
+INSERT INTO ip_bans(ip_address, notes) values($1, $2)
+`
+
+type BanIPAddressParams struct {
+	IpAddress string
+	Notes     sql.NullString
+}
+
+func (q *Queries) BanIPAddress(ctx context.Context, arg BanIPAddressParams) error {
+	_, err := q.db.ExecContext(ctx, banIPAddress, arg.IpAddress, arg.Notes)
+	return err
+}
+
 const doesInboundActivityExist = `-- name: DoesInboundActivityExist :one
 SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3
 `
@@ -234,6 +248,33 @@ func (q *Queries) GetFollowerCount(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getIPAddressBans = `-- name: GetIPAddressBans :many
+SELECT ip_address, notes, created_at FROM ip_bans
+`
+
+func (q *Queries) GetIPAddressBans(ctx context.Context) ([]IpBan, error) {
+	rows, err := q.db.QueryContext(ctx, getIPAddressBans)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []IpBan
+	for rows.Next() {
+		var i IpBan
+		if err := rows.Scan(&i.IpAddress, &i.Notes, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getInboundActivitiesWithOffset = `-- name: GetInboundActivitiesWithOffset :many
@@ -405,6 +446,17 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 	return items, nil
 }
 
+const isIPAddressBlocked = `-- name: IsIPAddressBlocked :one
+SELECT count(*) FROM ip_bans WHERE ip_address = $1
+`
+
+func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, isIPAddressBlocked, ipAddress)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const rejectFederationFollower = `-- name: RejectFederationFollower :exec
 UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2
 `
@@ -425,6 +477,15 @@ DELETE FROM ap_followers WHERE iri = $1
 
 func (q *Queries) RemoveFollowerByIRI(ctx context.Context, iri string) error {
 	_, err := q.db.ExecContext(ctx, removeFollowerByIRI, iri)
+	return err
+}
+
+const removeIPAddressBan = `-- name: RemoveIPAddressBan :exec
+DELETE FROM ip_bans WHERE ip_address = $1
+`
+
+func (q *Queries) RemoveIPAddressBan(ctx context.Context, ipAddress string) error {
+	_, err := q.db.ExecContext(ctx, removeIPAddressBan, ipAddress)
 	return err
 }
 

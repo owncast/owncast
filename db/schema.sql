@@ -35,3 +35,9 @@ CREATE TABLE IF NOT EXISTS ap_accepted_activities (
 		"timestamp" TIMESTAMP NOT NULL
 	);
 	CREATE INDEX iri_actor_index ON ap_accepted_activities (iri,actor);
+
+  CREATE TABLE IF NOT EXISTS ip_bans (
+    "ip_address" TEXT NOT NULL PRIMARY KEY,
+    "notes" TEXT,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );

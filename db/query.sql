@@ -58,3 +58,15 @@ SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TY
 
 -- name: UpdateFollowerByIRI :exec
 UPDATE ap_followers SET inbox = $1, name = $2, username = $3, image = $4 WHERE iri = $5;
+
+-- name: BanIPAddress :exec
+INSERT INTO ip_bans(ip_address, notes) values($1, $2);
+
+-- name: RemoveIPAddressBan :exec
+DELETE FROM ip_bans WHERE ip_address = $1;
+
+-- name: IsIPAddressBlocked :one
+SELECT count(*) FROM ip_bans WHERE ip_address = $1;
+
+-- name: GetIPAddressBans :many
+SELECT * FROM ip_bans;

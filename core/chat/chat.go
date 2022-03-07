@@ -44,6 +44,9 @@ func Start(getStatusFunc func() models.Status) error {
 
 // GetClientsForUser will return chat connections that are owned by a specific user.
 func GetClientsForUser(userID string) ([]*Client, error) {
+	_server.mu.Lock()
+	defer _server.mu.Unlock()
+
 	clients := map[string][]*Client{}
 
 	for _, client := range _server.clients {
@@ -175,7 +178,7 @@ func HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	_server.HandleClientConnection(w, r)
 }
 
-// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
-func DisconnectUser(userID string) {
-	_server.DisconnectUser(userID)
+// DisconnectClients will forcefully disconnect all clients belonging to a user by ID.
+func DisconnectClients(clients []*Client) {
+	_server.DisconnectClients(clients)
 }
