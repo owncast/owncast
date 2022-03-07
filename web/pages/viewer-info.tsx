@@ -3,10 +3,11 @@ import { Row, Col, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import Chart from '../components/chart';
 import StatisticItem from '../components/statistic';
+import ViewerTable from '../components/viewer-table';
 
 import { ServerStatusContext } from '../utils/server-status-context';
 
-import { VIEWERS_OVER_TIME, fetchData } from '../utils/apis';
+import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../utils/apis';
 
 const FETCH_INTERVAL = 60 * 1000; // 1 min
 
@@ -15,11 +16,19 @@ export default function ViewersOverTime() {
   const { online, viewerCount, overallPeakViewerCount, sessionPeakViewerCount } = context || {};
 
   const [viewerInfo, setViewerInfo] = useState([]);
+  const [viewerDetails, setViewerDetails] = useState([]);
 
   const getInfo = async () => {
     try {
       const result = await fetchData(VIEWERS_OVER_TIME);
       setViewerInfo(result);
+    } catch (error) {
+      console.log('==== error', error);
+    }
+
+    try {
+      const result = await fetchData(ACTIVE_VIEWER_DETAILS);
+      setViewerDetails(result);
     } catch (error) {
       console.log('==== error', error);
     }
@@ -75,6 +84,7 @@ export default function ViewersOverTime() {
       </Row>
 
       <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
+      <ViewerTable data={viewerDetails} />
     </>
   );
 }

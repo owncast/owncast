@@ -56,6 +56,9 @@ export function formatUAstring(uaString: string) {
   const { version: osVersion, name: osName } = os;
   const { model, type } = device;
 
+  if (uaString === 'libmpv') {
+    return 'mpv media player';
+  }
   // Fallback to just displaying the raw agent string.
   if (!name || !browserVersion || !osName) {
     return uaString;
