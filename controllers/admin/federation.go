@@ -160,12 +160,19 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 
 // GetFederatedActions will return the saved list of accepted inbound
 // federated activities.
-func GetFederatedActions(w http.ResponseWriter, r *http.Request) {
-	activities, err := persistence.GetInboundActivities(100, 0)
+func GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
+	offset := pageSize * page
+
+	activities, total, err := persistence.GetInboundActivities(pageSize, offset)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteResponse(w, activities)
+	response := controllers.PaginatedResponse{
+		Total:   total,
+		Results: activities,
+	}
+
+	controllers.WriteResponse(w, response)
 }

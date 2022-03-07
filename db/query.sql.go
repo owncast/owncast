@@ -280,6 +280,17 @@ func (q *Queries) GetInboundActivitiesWithOffset(ctx context.Context, arg GetInb
 	return items, nil
 }
 
+const getInboundActivityCount = `-- name: GetInboundActivityCount :one
+SELECT count(*) FROM ap_accepted_activities
+`
+
+func (q *Queries) GetInboundActivityCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getInboundActivityCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getLocalPostCount = `-- name: GetLocalPostCount :one
 SElECT count(*) FROM ap_outbox
 `

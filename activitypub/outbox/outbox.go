@@ -171,7 +171,7 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 func SendToFollowers(payload []byte) error {
 	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
 
-	followers, err := persistence.GetFederationFollowers(-1, 0)
+	followers, _, err := persistence.GetFederationFollowers(-1, 0)
 	if err != nil {
 		log.Errorln("unable to fetch followers to send to", err)
 		return errors.New("unable to fetch followers to send payload to")

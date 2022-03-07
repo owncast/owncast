@@ -319,17 +319,22 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 
 // GetInboundActivities will return a collection of saved, federated activities
 // limited and offset by the values provided to support pagination.
-func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, error) {
+func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, int, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
 		Limit:  int32(limit),
 		Offset: int32(offset),
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	activities := make([]models.FederatedActivity, 0)
+
+	total, err := _datastore.GetQueries().GetInboundActivityCount(context.Background())
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "unable to fetch total activity count")
+	}
 
 	for _, row := range rows {
 		singleActivity := models.FederatedActivity{
@@ -341,7 +346,7 @@ func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, er
 		activities = append(activities, singleActivity)
 	}
 
-	return activities, nil
+	return activities, int(total), nil
 }
 
 // HasPreviouslyHandledInboundActivity will return if we have previously handled
