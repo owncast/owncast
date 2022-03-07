@@ -83,7 +83,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 		server:      s,
 		conn:        conn,
 		User:        user,
-		ipAddress:   ipAddress,
+		IPAddress:   ipAddress,
 		accessToken: accessToken,
 		send:        make(chan []byte, 256),
 		UserAgent:   userAgent,
@@ -160,6 +160,22 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	ipAddress := utils.GetIPAddressFromRequest(r)
+	// Check if this client's IP address is banned. If so send a rejection.
+	if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
+		log.Debugln("Client ip address has been blocked. Rejecting.")
+		event := events.UserDisabledEvent{}
+		event.SetDefaults()
+
+		w.WriteHeader(http.StatusForbidden)
+		// Send this disabled event specifically to this single connected client
+		// to let them know they've been banned.
+		// _server.Send(event.GetBroadcastPayload(), client)
+		return
+	} else if err != nil {
+		log.Errorln("error determining if IP address is blocked: ", err)
+	}
+
 	// Limit concurrent chat connections
 	if int64(len(s.clients)) >= s.maxSocketConnectionLimit {
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxSocketConnectionLimit)
@@ -203,7 +219,6 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	}
 
 	userAgent := r.UserAgent()
-	ipAddress := utils.GetIPAddressFromRequest(r)
 
 	s.Addclient(conn, user, accessToken, userAgent, ipAddress)
 }
@@ -245,17 +260,8 @@ func (s *Server) Send(payload events.EventPayload, client *Client) {
 	client.send <- data
 }
 
-// DisconnectUser will forcefully disconnect all clients belonging to a user by ID.
-func (s *Server) DisconnectUser(userID string) {
-	s.mu.Lock()
-	clients, err := GetClientsForUser(userID)
-	s.mu.Unlock()
-
-	if err != nil || clients == nil || len(clients) == 0 {
-		log.Debugln("Requested to disconnect user", userID, err)
-		return
-	}
-
+// DisconnectClients will forcefully disconnect all clients belonging to a user by ID.
+func (s *Server) DisconnectClients(clients []*Client) {
 	for _, client := range clients {
 		log.Traceln("Disconnecting client", client.User.ID, "owned by", client.User.DisplayName)
 

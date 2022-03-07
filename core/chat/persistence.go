@@ -22,6 +22,7 @@ const (
 func setupPersistence() {
 	_datastore = data.GetDatastore()
 	data.CreateMessagesTable(_datastore.DB)
+	data.CreateBanIPTable(_datastore.DB)
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {
@@ -332,7 +333,7 @@ func saveMessageVisibility(messageIDs []string, visible bool) error {
 		return err
 	}
 
-	//nolint:gosec
+	// nolint:gosec
 	stmt, err := tx.Prepare("UPDATE messages SET hidden_at=? WHERE id IN (?" + strings.Repeat(",?", len(messageIDs)-1) + ")")
 	if err != nil {
 		return err

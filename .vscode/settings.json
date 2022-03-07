@@ -2,9 +2,11 @@
     "cSpell.words": [
         "Debugln",
         "Errorln",
+        "Fediverse",
         "Ffmpeg",
         "ffmpegpath",
         "ffmpg",
+        "geoip",
         "gosec",
         "mattn",
         "Mbps",
@@ -17,6 +19,8 @@
         "sqlite",
         "Tracef",
         "Traceln",
+        "upgrader",
+        "Upgrader",
         "videojs",
         "Warnf",
         "Warnln"
