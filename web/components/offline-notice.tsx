@@ -1,10 +1,4 @@
-import {
-  BookTwoTone,
-  MessageTwoTone,
-  PlaySquareTwoTone,
-  ProfileTwoTone,
-  QuestionCircleTwoTone,
-} from '@ant-design/icons';
+import { BookTwoTone, MessageTwoTone, PlaySquareTwoTone, ProfileTwoTone } from '@ant-design/icons';
 import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { useContext } from 'react';
@@ -104,16 +98,19 @@ export default function Offline({ logs = [], config }: OfflineProps) {
     });
   }
 
-  data.push({
-    icon: <QuestionCircleTwoTone twoToneColor="#ffd33d" />,
-    title: 'Not sure what to do next?',
-    content: (
-      <div>
-        If you&apos;re having issues or would like to know how to customize and configure your
-        Owncast server visit <Link href="/help">the help page.</Link>
-      </div>
-    ),
-  });
+  if (!config?.federation?.enabled) {
+    data.push({
+      icon: <img alt="fediverse" width="20px" src="fediverse-white.png" />,
+      title: 'Add your Owncast instance to the Fediverse',
+      content: (
+        <div>
+          <Link href="/config-federation">Enable Owncast social</Link> features to have your
+          instance join the Fediverse, allowing people to follow, share and engage with your live
+          stream.
+        </div>
+      ),
+    });
+  }
 
   return (
     <>
