@@ -4,14 +4,14 @@ go 1.17
 
 require (
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
-	github.com/aws/aws-sdk-go v1.43.0
+	github.com/aws/aws-sdk-go v1.43.12
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gorilla/websocket v1.5.0
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/mattn/go-sqlite3 v1.14.10
+	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/mssola/user_agent v0.5.3
 	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
@@ -20,7 +20,7 @@ require (
 	github.com/schollz/sqlite3dump v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
-	github.com/yuin/goldmark v1.4.7
+	github.com/yuin/goldmark v1.4.8
 	golang.org/x/mod v0.5.1
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	mvdan.cc/xurls v1.1.0
@@ -39,7 +39,7 @@ require (
 	github.com/tklauser/numcpus v0.3.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
-	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f // indirect
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 )
 
