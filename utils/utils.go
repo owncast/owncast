@@ -61,9 +61,19 @@ func Copy(source, destination string) error {
 	return os.WriteFile(destination, input, 0600)
 }
 
-// Move moves a file using a copy followed by a delete, which works across file systems.
-// source: https://gist.github.com/var23rav/23ae5d0d4d830aff886c3c970b8f6c6b
+// Move moves the file at source to destination.
 func Move(source, destination string) error {
+	err := os.Rename(source, destination)
+	if err != nil {
+		log.Warnln("Moving with os.Rename failed, falling back to copy and delete!", err)
+		return moveFallback(source, destination)
+	}
+	return nil
+}
+
+// moveFallback moves a file using a copy followed by a delete, which works across file systems.
+// source: https://gist.github.com/var23rav/23ae5d0d4d830aff886c3c970b8f6c6b
+func moveFallback(source, destination string) error {
 	inputFile, err := os.Open(source)
 	if err != nil {
 		return fmt.Errorf("Couldn't open source file: %s", err)
