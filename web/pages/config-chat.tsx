@@ -16,6 +16,7 @@ import {
   API_CHAT_FORBIDDEN_USERNAMES,
   API_CHAT_SUGGESTED_USERNAMES,
   FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED,
+  CHAT_ESTABLISHED_USER_MODE,
   FIELD_PROPS_DISABLE_CHAT,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
@@ -39,6 +40,7 @@ export default function ConfigChat() {
     forbiddenUsernames,
     instanceDetails,
     suggestedUsernames,
+    chatEstablishedUserMode,
   } = serverConfig;
   const { welcomeMessage } = instanceDetails;
 
@@ -55,6 +57,10 @@ export default function ConfigChat() {
 
   function handleChatJoinMessagesEnabledChange(enabled: boolean) {
     handleFieldChange({ fieldName: 'chatJoinMessagesEnabled', value: enabled });
+  }
+
+  function handleEstablishedUserModeChange(enabled: boolean) {
+    handleFieldChange({ fieldName: 'chatEstablishedUserMode', value: enabled });
   }
 
   function resetForbiddenUsernameState() {
@@ -146,6 +152,7 @@ export default function ConfigChat() {
       forbiddenUsernames,
       suggestedUsernames,
       welcomeMessage,
+      chatEstablishedUserMode,
     });
   }, [serverConfig]);
 
@@ -169,6 +176,12 @@ export default function ConfigChat() {
           {...FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED}
           checked={formDataValues.chatJoinMessagesEnabled}
           onChange={handleChatJoinMessagesEnabledChange}
+        />
+        <ToggleSwitch
+          fieldName="establishedUserMode"
+          {...CHAT_ESTABLISHED_USER_MODE}
+          checked={formDataValues.chatEstablishedUserMode}
+          onChange={handleEstablishedUserModeChange}
         />
         <TextFieldWithSubmit
           fieldName="welcomeMessage"

@@ -115,5 +115,6 @@ export interface ConfigDetails {
   suggestedUsernames: string[];
   chatDisabled: boolean;
   chatJoinMessagesEnabled: boolean;
+  chatEstablishedUserMode: boolean;
   federation: Federation;
 }

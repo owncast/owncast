@@ -61,6 +61,7 @@ export const initialServerConfigState: ConfigDetails = {
   suggestedUsernames: [],
   chatDisabled: false,
   chatJoinMessagesEnabled: true,
+  chatEstablishedUserMode: false,
 };
 
 const initialServerStatusState = {
