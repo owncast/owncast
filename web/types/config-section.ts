@@ -107,6 +107,7 @@ export interface ConfigDetails {
   streamKey: string;
   videoSettings: VideoSettingsFields;
   webServerPort: string;
+  socketHostOverride: string;
   yp: ConfigDirectoryFields;
   supportedCodecs: string[];
   videoCodec: string;

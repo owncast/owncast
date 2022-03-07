@@ -35,6 +35,7 @@ export const API_CHAT_FORBIDDEN_USERNAMES = '/chat/forbiddenusernames';
 export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
 export const API_VIDEO_CODEC = '/video/codec';
+export const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 
 // Federation
 export const API_FEDERATION_ENABLED = '/federation/enable';
@@ -148,6 +149,19 @@ export const TEXTFIELD_PROPS_INSTANCE_URL = {
   pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
   useTrim: true,
 };
+
+export const TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE = {
+  apiPath: API_SOCKET_HOST_OVERRIDE,
+  configPath: '',
+  maxLength: 255,
+  placeholder: 'https://owncast.mysite.com',
+  label: 'Websocket host override',
+  tip: 'The direct URL of your Owncast server.',
+  type: TEXTFIELD_TYPE_URL,
+  pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+  useTrim: true,
+};
+
 // MISC FIELDS
 export const FIELD_PROPS_TAGS = {
   apiPath: API_TAGS,

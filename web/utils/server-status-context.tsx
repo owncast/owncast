@@ -25,6 +25,7 @@ export const initialServerConfigState: ConfigDetails = {
   ffmpegPath: '',
   rtmpServerPort: '',
   webServerPort: '',
+  socketHostOverride: null,
   s3: {
     accessKey: '',
     acl: '',

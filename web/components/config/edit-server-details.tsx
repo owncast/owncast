@@ -1,8 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Tooltip, Collapse } from 'antd';
+import { Button, Tooltip, Collapse, Typography } from 'antd';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 
-import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD } from './form-textfield';
+import {
+  TEXTFIELD_TYPE_NUMBER,
+  TEXTFIELD_TYPE_PASSWORD,
+  TEXTFIELD_TYPE_URL,
+} from './form-textfield';
 import TextFieldWithSubmit from './form-textfield-with-submit';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -11,6 +15,7 @@ import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
   TEXTFIELD_PROPS_FFMPEG,
   TEXTFIELD_PROPS_RTMP_PORT,
+  TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE,
   TEXTFIELD_PROPS_STREAM_KEY,
   TEXTFIELD_PROPS_WEB_PORT,
 } from '../../utils/config-constants';
@@ -27,7 +32,8 @@ export default function EditInstanceDetails() {
 
   const { serverConfig } = serverStatusData || {};
 
-  const { streamKey, ffmpegPath, rtmpServerPort, webServerPort, yp } = serverConfig;
+  const { streamKey, ffmpegPath, rtmpServerPort, webServerPort, yp, socketHostOverride } =
+    serverConfig;
 
   const [copyIsVisible, setCopyVisible] = useState(false);
 
@@ -39,6 +45,7 @@ export default function EditInstanceDetails() {
       ffmpegPath,
       rtmpServerPort,
       webServerPort,
+      socketHostOverride,
     });
   }, [serverConfig]);
 
@@ -138,13 +145,23 @@ export default function EditInstanceDetails() {
         onChange={handleFieldChange}
         onSubmit={showConfigurationRestartMessage}
       />
-      {yp.enabled && (
-        <Collapse className="advanced-settings">
-          <Panel header="Advanced Settings" key="1">
-            <ResetYP />
-          </Panel>
-        </Collapse>
-      )}
+      <Collapse className="advanced-settings">
+        <Panel header="Advanced Settings" key="1">
+          <Typography.Paragraph>
+            If you have a CDN in front of your entire Owncast instance, specify your origin server
+            here for the websocket to connect to. Most people will never need to set this.
+          </Typography.Paragraph>
+          <TextFieldWithSubmit
+            fieldName="socketHostOverride"
+            {...TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE}
+            value={formDataValues.socketHostOverride}
+            initialValue={socketHostOverride || ''}
+            type={TEXTFIELD_TYPE_URL}
+            onChange={handleFieldChange}
+          />
+          {yp.enabled && <ResetYP />}
+        </Panel>
+      </Collapse>
     </div>
   );
 }
