@@ -5,10 +5,16 @@ const WebSocket = require('ws');
 
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
-const listenForEvent = require('./lib/chat').listenForEvent;
 
 const testVisibilityMessage = {
   body: 'message ' + Math.floor(Math.random() * 100),
+  type: 'CHAT',
+};
+
+var messageId;
+
+const establishedUserFailedChatMessage = {
+  body: 'this message should fail to send ' + Math.floor(Math.random() * 100),
   type: 'CHAT',
 };
 
@@ -30,14 +36,14 @@ test('verify we can make API call to mark message as hidden', async (done) => {
   );
 
   // Verify the visibility change comes through the websocket
-  ws.on('message', function incoming(message) {
+  ws.on('message', async function incoming(message) {
     const messages = message.split('\n');
-    messages.forEach(function (message) {
+    messages.forEach(async function (message) {
       const event = JSON.parse(message);
 
       if (event.type === 'VISIBILITY-UPDATE') {
-        done();
         ws.close();
+        done();
       }
     });
   });
@@ -48,7 +54,7 @@ test('verify we can make API call to mark message as hidden', async (done) => {
     .expect(200);
 
   const message = res.body[0];
-  const messageId = message.id;
+  messageId = message.id;
   await request
     .post('/api/admin/chat/updatemessagevisibility')
     .auth('admin', 'abc123')
@@ -57,15 +63,56 @@ test('verify we can make API call to mark message as hidden', async (done) => {
 });
 
 test('verify message has become hidden', async (done) => {
+  await new Promise((r) => setTimeout(r, 2000));
+
   const res = await request
     .get('/api/admin/chat/messages')
     .expect(200)
     .auth('admin', 'abc123');
 
   const message = res.body.filter((obj) => {
-    return obj.body === `${testVisibilityMessage.body}`;
+    return obj.id === messageId;
   });
   expect(message.length).toBe(1);
   // expect(message[0].hiddenAt).toBeTruthy();
+  done();
+});
+
+test('can enable established chat user mode', async (done) => {
+  await request
+    .post('/api/admin/config/chat/establishedusermode')
+    .auth('admin', 'abc123')
+    .send({ value: true })
+    .expect(200);
+  done();
+});
+
+test('can send a message after established user mode is enabled', async (done) => {
+  const registration = await registerChat();
+  const accessToken = registration.accessToken;
+
+  sendChatMessage(establishedUserFailedChatMessage, accessToken, done);
+});
+
+test('verify rejected message is not in the chat feed', async (done) => {
+  const res = await request
+    .get('/api/admin/chat/messages')
+    .expect(200)
+    .auth('admin', 'abc123');
+
+  const message = res.body.filter((obj) => {
+    return obj.body === establishedUserFailedChatMessage.body;
+  });
+
+  expect(message.length).toBe(0);
+  done();
+});
+
+test('can disable established chat user mode', async (done) => {
+  await request
+    .post('/api/admin/config/chat/establishedusermode')
+    .auth('admin', 'abc123')
+    .send({ value: false })
+    .expect(200);
   done();
 });
