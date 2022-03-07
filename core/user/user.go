@@ -16,8 +16,10 @@ import (
 
 var _datastore *data.Datastore
 
-const moderatorScopeKey = "MODERATOR"
-const minSuggestedUsernamePoolLength = 10
+const (
+	moderatorScopeKey              = "MODERATOR"
+	minSuggestedUsernamePoolLength = 10
+)
 
 // User represents a single chat user.
 type User struct {
@@ -29,7 +31,8 @@ type User struct {
 	DisabledAt    *time.Time `json:"disabledAt,omitempty"`
 	PreviousNames []string   `json:"previousNames"`
 	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
-	Scopes        []string   `json:"scopes"`
+	Scopes        []string   `json:"scopes,omitempty"`
+	IsBot         bool       `json:"isBot"`
 }
 
 // IsEnabled will return if this single user is enabled.

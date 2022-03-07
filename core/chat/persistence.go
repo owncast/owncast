@@ -99,6 +99,9 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 		createdAt = *row.userCreatedAt
 	}
 
+	isBot := (row.userType != nil && *row.userType == "API")
+	scopeSlice := strings.Split(scopes, ",")
+
 	u := user.User{
 		ID:            *row.userID,
 		AccessToken:   "",
@@ -108,7 +111,8 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 		DisabledAt:    row.userDisabledAt,
 		NameChangedAt: row.userNameChangedAt,
 		PreviousNames: previousUsernames,
-		Scopes:        strings.Split(scopes, ","),
+		Scopes:        scopeSlice,
+		IsBot:         isBot,
 	}
 
 	message := events.UserMessageEvent{
@@ -197,6 +201,7 @@ type rowData struct {
 	previousUsernames *string
 	userNameChangedAt *time.Time
 	userScopes        *string
+	userType          *string
 }
 
 func getChat(query string) []interface{} {
@@ -230,6 +235,7 @@ func getChat(query string) []interface{} {
 			&row.previousUsernames,
 			&row.userNameChangedAt,
 			&row.userScopes,
+			&row.userType,
 		); err != nil {
 			log.Errorln("There is a problem converting query to chat objects. Please report this:", query)
 			break
@@ -267,7 +273,7 @@ func GetChatModerationHistory() []interface{} {
 	}
 
 	// Get all messages regardless of visibility
-	query := "SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
+	query := "SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes, users.type FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
 	result := getChat(query)
 
 	_historyCache = &result
@@ -278,7 +284,7 @@ func GetChatModerationHistory() []interface{} {
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []interface{} {
 	// Get all visible messages
-	query := fmt.Sprintf("SELECT messages.id,messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.scopes FROM messages LEFT JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
+	query := fmt.Sprintf("SELECT messages.id,messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.scopes, users.type FROM messages LEFT JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
 	m := getChat(query)
 
 	// Invert order of messages
@@ -298,7 +304,7 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 
 	// Get a list of IDs to send to the connected clients to hide
 	ids := make([]string, 0)
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, scopes FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
+	query := fmt.Sprintf("SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
 	messages := getChat(query)
 
 	if len(messages) == 0 {
