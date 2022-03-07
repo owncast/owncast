@@ -37,6 +37,12 @@ export const DISABLED_USERS = `${API_LOCATION}chat/users/disabled`;
 // Disable/enable a single user
 export const USER_ENABLED_TOGGLE = `${API_LOCATION}chat/users/setenabled`;
 
+// Get banned IP addresses
+export const BANNED_IPS = `${API_LOCATION}chat/users/ipbans`;
+
+// Remove IP ban
+export const BANNED_IP_REMOVE = `${API_LOCATION}chat/users/ipbans/remove`;
+
 // Disable/enable a single user
 export const USER_SET_MODERATOR = `${API_LOCATION}chat/users/setmoderator`;
 

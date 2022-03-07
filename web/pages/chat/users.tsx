@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Tabs } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import { CONNECTED_CLIENTS, fetchData, DISABLED_USERS, MODERATORS } from '../../utils/apis';
+import {
+  CONNECTED_CLIENTS,
+  fetchData,
+  DISABLED_USERS,
+  MODERATORS,
+  BANNED_IPS,
+} from '../../utils/apis';
 import UserTable from '../../components/user-table';
 import ClientTable from '../../components/client-table';
+import BannedIPsTable from '../../components/banned-ips-table';
 
 const { TabPane } = Tabs;
 
@@ -14,6 +21,7 @@ export default function ChatUsers() {
   const { online } = context || {};
 
   const [disabledUsers, setDisabledUsers] = useState([]);
+  const [ipBans, setIPBans] = useState([]);
   const [clients, setClients] = useState([]);
   const [moderators, setModerators] = useState([]);
 
@@ -37,6 +45,13 @@ export default function ChatUsers() {
       setModerators(result);
     } catch (error) {
       console.error('error fetching moderators', error);
+    }
+
+    try {
+      const result = await fetchData(BANNED_IPS);
+      setIPBans(result);
+    } catch (error) {
+      console.error('error fetching banned ips', error);
     }
   };
 
@@ -78,10 +93,13 @@ export default function ChatUsers() {
       <TabPane tab={<span>Connected {online ? `(${clients.length})` : '(offline)'}</span>} key="1">
         {connectedUsers}
       </TabPane>
-      <TabPane tab={<span>Banned {online ? `(${disabledUsers.length})` : null}</span>} key="2">
+      <TabPane tab={<span>Banned Users ({disabledUsers.length})</span>} key="2">
         <UserTable data={disabledUsers} />
       </TabPane>
-      <TabPane tab={<span>Moderators {online ? `(${moderators.length})` : null}</span>} key="3">
+      <TabPane tab={<span>IP Bans ({ipBans.length})</span>} key="3">
+        <BannedIPsTable data={ipBans} />
+      </TabPane>
+      <TabPane tab={<span>Moderators ({moderators.length})</span>} key="4">
         <UserTable data={moderators} />
       </TabPane>
     </Tabs>
