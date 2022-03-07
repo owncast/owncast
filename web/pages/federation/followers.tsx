@@ -27,6 +27,8 @@ export default function FediverseFollowers() {
   const [followersPending, setFollowersPending] = useState<Follower[]>([]);
   const [followersBlocked, setFollowersBlocked] = useState<Follower[]>([]);
   const [followers, setFollowers] = useState<Follower[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
@@ -35,12 +37,19 @@ export default function FediverseFollowers() {
 
   const getFollowers = async () => {
     try {
+      const limit = 50;
+      const offset = currentPage * limit;
+      const u = `${FOLLOWERS}?offset=${offset}&limit=${limit}`;
+
       // Active followers
-      const followersResult = await fetchData(FOLLOWERS, { auth: true });
-      if (isEmptyObject(followersResult)) {
+      const result = await fetchData(u, { auth: true });
+      const { results, total } = result;
+
+      if (isEmptyObject(results)) {
         setFollowers([]);
       } else {
-        setFollowers(followersResult);
+        setTotalCount(total);
+        setFollowers(results);
       }
 
       // Pending follow requests
@@ -104,7 +113,16 @@ export default function FediverseFollowers() {
         columns={tableColumns}
         size="small"
         rowKey={row => row.link}
-        pagination={{ pageSize: 20, hideOnSinglePage: true }}
+        pagination={{
+          pageSize: 50,
+          hideOnSinglePage: true,
+          showSizeChanger: false,
+          total: totalCount,
+        }}
+        onChange={pagination => {
+          const page = pagination.current;
+          setCurrentPage(page);
+        }}
       />
     );
   }
