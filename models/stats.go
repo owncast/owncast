@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"github.com/owncast/owncast/utils"
 )
 
@@ -12,8 +10,8 @@ type Stats struct {
 	OverallMaxViewerCount int             `json:"overallMaxViewerCount"`
 	LastDisconnectTime    *utils.NullTime `json:"lastDisconnectTime"`
 
-	StreamConnected bool                 `json:"-"`
-	LastConnectTime *utils.NullTime      `json:"-"`
-	ChatClients     map[string]Client    `json:"-"`
-	Viewers         map[string]time.Time `json:"-"`
+	StreamConnected bool               `json:"-"`
+	LastConnectTime *utils.NullTime    `json:"-"`
+	ChatClients     map[string]Client  `json:"-"`
+	Viewers         map[string]*Viewer `json:"-"`
 }
