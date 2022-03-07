@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/url"
 	"os"
@@ -60,9 +61,30 @@ func Copy(source, destination string) error {
 	return os.WriteFile(destination, input, 0600)
 }
 
-// Move moves the file to destination.
+// Move moves a file using a copy followed by a delete, which works across file systems.
+// source: https://gist.github.com/var23rav/23ae5d0d4d830aff886c3c970b8f6c6b
 func Move(source, destination string) error {
-	return os.Rename(source, destination)
+	inputFile, err := os.Open(source)
+	if err != nil {
+		return fmt.Errorf("Couldn't open source file: %s", err)
+	}
+	outputFile, err := os.Create(destination)
+	if err != nil {
+		inputFile.Close()
+		return fmt.Errorf("Couldn't open dest file: %s", err)
+	}
+	defer outputFile.Close()
+	_, err = io.Copy(outputFile, inputFile)
+	inputFile.Close()
+	if err != nil {
+		return fmt.Errorf("Writing to output file failed: %s", err)
+	}
+	// The copy was successful, so now delete the original file
+	err = os.Remove(source)
+	if err != nil {
+		return fmt.Errorf("Failed removing original file: %s", err)
+	}
+	return nil
 }
 
 // IsUserAgentABot returns if a web client user-agent is seen as a bot.
