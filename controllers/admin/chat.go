@@ -235,6 +235,7 @@ func SendIntegrationChatMessage(integration user.ExternalAPIUser, w http.Respons
 		DisplayName:  name,
 		DisplayColor: integration.DisplayColor,
 		CreatedAt:    integration.CreatedAt,
+		IsBot:        true,
 	}
 
 	if err := chat.Broadcast(&event); err != nil {

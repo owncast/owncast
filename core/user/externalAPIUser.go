@@ -22,6 +22,7 @@ type ExternalAPIUser struct {
 	Scopes       []string   `json:"scopes"`
 	Type         string     `json:"type,omitempty"` // Should be API
 	LastUsedAt   *time.Time `json:"lastUsedAt,omitempty"`
+	IsBot        bool       `json:"isBot"`
 }
 
 const (
@@ -240,6 +241,7 @@ func makeExternalAPIUsersFromRows(rows *sql.Rows) ([]ExternalAPIUser, error) {
 			CreatedAt:    createdAt,
 			Scopes:       strings.Split(scopes, ","),
 			LastUsedAt:   lastUsedAt,
+			IsBot:        true,
 		}
 		integrations = append(integrations, integration)
 	}
