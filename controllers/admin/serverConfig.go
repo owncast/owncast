@@ -53,6 +53,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		RTMPServerPort:          data.GetRTMPPortNumber(),
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
+		SocketHostOverride:      data.GetWebsocketOverrideHost(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -103,6 +104,7 @@ type serverConfigAdminResponse struct {
 	ForbiddenUsernames      []string                 `json:"forbiddenUsernames"`
 	Federation              federationConfigResponse `json:"federation"`
 	SuggestedUsernames      []string                 `json:"suggestedUsernames"`
+	SocketHostOverride      string                   `json:"socketHostOverride,omitempty"`
 }
 
 type videoSettings struct {

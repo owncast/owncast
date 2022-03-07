@@ -24,6 +24,7 @@ const (
 	serverURLKey                 = "server_url"
 	httpPortNumberKey            = "http_port_number"
 	httpListenAddressKey         = "http_listen_address"
+	websocketHostOverrideKey     = "websocket_host_override"
 	rtmpPortNumberKey            = "rtmp_port_number"
 	serverMetadataTagsKey        = "server_metadata_tags"
 	directoryEnabledKey          = "directory_enabled"
@@ -198,6 +199,18 @@ func GetHTTPPortNumber() int {
 		return config.GetDefaults().WebServerPort
 	}
 	return int(port)
+}
+
+// SetWebsocketOverrideHost will set the host override for websockets.
+func SetWebsocketOverrideHost(host string) error {
+	return _datastore.SetString(websocketHostOverrideKey, host)
+}
+
+// GetWebsocketOverrideHost will return the host override for websockets.
+func GetWebsocketOverrideHost() string {
+	host, _ := _datastore.GetString(websocketHostOverrideKey)
+
+	return host
 }
 
 // SetHTTPPortNumber will set the server HTTP port.

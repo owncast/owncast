@@ -20,6 +20,7 @@ import {
   URL_CONFIG,
   TIMER_STATUS_UPDATE,
 } from './utils/constants.js';
+import { URL_WEBSOCKET } from './utils/constants.js';
 
 export default class StandaloneChat extends Component {
   constructor(props, context) {
@@ -52,6 +53,8 @@ export default class StandaloneChat extends Component {
     this.disableChatInput = this.disableChatInput.bind(this);
     this.setupChatAuth = this.setupChatAuth.bind(this);
     this.disableChat = this.disableChat.bind(this);
+
+    this.socketHostOverride = null;
 
     // user events
     this.handleWebsocketMessage = this.handleWebsocketMessage.bind(this);
@@ -98,7 +101,7 @@ export default class StandaloneChat extends Component {
   }
 
   setConfigData(data = {}) {
-    const { chatDisabled } = data;
+    const { chatDisabled, socketHostOverride } = data;
 
     // If this is the first time setting the config
     // then setup chat if it's enabled.
@@ -107,7 +110,7 @@ export default class StandaloneChat extends Component {
     }
 
     this.hasConfiguredChat = true;
-
+    this.socketHostOverride = socketHostOverride;
     this.setState({
       canChat: !chatDisabled,
       configData: {
@@ -277,7 +280,10 @@ export default class StandaloneChat extends Component {
     }
 
     // Without a valid access token he websocket connection will be rejected.
-    const websocket = new Websocket(accessToken);
+    const websocket = new Websocket(
+      accessToken,
+      this.socketHostOverride || URL_WEBSOCKET
+    );
     websocket.addListener(
       CALLBACKS.RAW_WEBSOCKET_MESSAGE_RECEIVED,
       this.handleWebsocketMessage

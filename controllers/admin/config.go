@@ -408,6 +408,25 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "server url set")
 }
 
+// SetSocketHostOverride will set the host override for the websocket.
+func SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetWebsocketOverrideHost(configValue.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "websocket host override set")
+}
+
 // SetDirectoryEnabled will handle the web config request to enable or disable directory registration.
 func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
