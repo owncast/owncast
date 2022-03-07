@@ -6,6 +6,7 @@ import (
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -44,14 +45,19 @@ func GetFollowerCount() (int64, error) {
 }
 
 // GetFederationFollowers will return a slice of the followers we keep track of locally.
-func GetFederationFollowers(limit int, offset int) ([]models.Follower, error) {
+func GetFederationFollowers(limit int, offset int) ([]models.Follower, int, error) {
 	ctx := context.Background()
+	total, err := _datastore.GetQueries().GetFollowerCount(ctx)
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "unable to fetch total number of followers")
+	}
+
 	followersResult, err := _datastore.GetQueries().GetFederationFollowersWithOffset(ctx, db.GetFederationFollowersWithOffsetParams{
 		Limit:  int32(limit),
 		Offset: int32(offset),
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	followers := make([]models.Follower, 0)
@@ -69,7 +75,7 @@ func GetFederationFollowers(limit int, offset int) ([]models.Follower, error) {
 		followers = append(followers, singleFollower)
 	}
 
-	return followers, nil
+	return followers, int(total), nil
 }
 
 // GetPendingFollowRequests will return pending follow requests.

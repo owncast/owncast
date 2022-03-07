@@ -2,7 +2,6 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 import { URL_FOLLOWERS } from '/js/utils/constants.js';
 const html = htm.bind(h);
-import { paginateArray } from '../../utils/helpers.js';
 export default class FollowerList extends Component {
   constructor(props) {
     super(props);
@@ -10,6 +9,8 @@ export default class FollowerList extends Component {
     this.state = {
       followers: [],
       followersPage: 0,
+      currentPage: 0,
+      total: 0,
     };
   }
 
@@ -22,23 +23,26 @@ export default class FollowerList extends Component {
   }
 
   async getFollowers() {
-    const response = await fetch(URL_FOLLOWERS);
+    const { currentPage } = this.state;
+    const limit = 16;
+    const offset = currentPage * limit;
+    const u = `${URL_FOLLOWERS}?offset=${offset}&limit=${limit}`;
+    const response = await fetch(u);
     const followers = await response.json();
 
     this.setState({
-      followers: followers,
+      followers: followers.results,
+      total: response.total,
     });
   }
 
   changeFollowersPage(page) {
-    this.setState({ followersPage: page });
+    this.setState({ currentPage: page });
+    this.getFollowers();
   }
 
   render() {
-    const FOLLOWER_PAGE_SIZE = 16;
-    const { followersPage } = this.state;
-
-    const { followers } = this.state;
+    const { followers, total, currentPage } = this.state;
     if (!followers) {
       return null;
     }
@@ -57,21 +61,15 @@ export default class FollowerList extends Component {
       </p>
     </div>`;
 
-    const paginatedFollowers = paginateArray(
-      followers,
-      followersPage + 1,
-      FOLLOWER_PAGE_SIZE
-    );
-
     const paginationControls =
-      paginatedFollowers.totalPages > 1 &&
-      Array(paginatedFollowers.totalPages)
+      total > 1 &&
+      Array(total)
         .fill()
         .map((x, n) => {
           const activePageClass =
-            n === followersPage &&
+            n === currentPage &&
             'bg-indigo-600 rounded-full shadow-md focus:shadow-md text-white';
-          return html` <li class="page-item active">
+          return html` <li class="page-item active w-10">
             <a
               class="page-link relative block cursor-pointer hover:no-underline py-1.5 px-3 border-0 rounded-full hover:text-gray-800 hover:bg-gray-200 outline-none transition-all duration-300 ${activePageClass}"
               onClick=${() => this.changeFollowersPage(n)}
@@ -85,13 +83,13 @@ export default class FollowerList extends Component {
       <div>
         <div class="flex flex-wrap">
           ${followers.length === 0 && noFollowersInfo}
-          ${paginatedFollowers.items.map((follower) => {
+          ${followers.map((follower) => {
             return html` <${SingleFollower} user=${follower} /> `;
           })}
         </div>
         <div class="flex">
-          <nav aria-label="Page navigation example">
-            <ul class="flex list-style-none">
+          <nav aria-label="Tab pages">
+            <ul class="flex list-style-none flex-wrap">
               ${paginationControls}
             </ul>
           </nav>

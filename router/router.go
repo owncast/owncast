@@ -77,7 +77,7 @@ func Start() error {
 	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
 
 	// return followers
-	http.HandleFunc("/api/followers", controllers.GetFollowers)
+	http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
 
 	// Authenticated admin requests
 
@@ -127,7 +127,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/chat/users/moderators", middleware.RequireAdminAuth(admin.GetModerators))
 
 	// return followers
-	http.HandleFunc("/api/admin/followers", middleware.RequireAdminAuth(controllers.GetFollowers))
+	http.HandleFunc("/api/admin/followers", middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers)))
 
 	// Get a list of pending follow requests
 	http.HandleFunc("/api/admin/followers/pending", middleware.RequireAdminAuth(admin.GetPendingFollowRequests))
@@ -310,7 +310,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederatedMessage))
 
 	// Return federated activities
-	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(admin.GetFederatedActions))
+	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions)))
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
