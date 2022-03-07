@@ -4,24 +4,15 @@ name: linter
 on: [push, pull_request]
 
 jobs:
-  format:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+  run-test:
     runs-on: ubuntu-latest
-
+    name: Run linter on changed files
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ github.ref }}
-        fetch-depth: 0
-        
-    - name: Linter
-      uses: tj-actions/eslint-changed-files@v9
-      with:
-        config_path: '.eslintrc.js'
-        ignore_path: '.eslintignore'
-        file_extensions: |
-            **/*.ts
-            **/*.tsx
-            **/*.js
-            **/*.jsx
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
