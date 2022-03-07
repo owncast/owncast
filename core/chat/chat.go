@@ -5,12 +5,19 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	log "github.com/sirupsen/logrus"
 )
 
-var getStatus func() models.Status
+var (
+	getStatus               func() models.Status
+	chatMessagesSentCounter prometheus.Gauge
+)
 
 // Start begins the chat server.
 func Start(getStatusFunc func() models.Status) error {
@@ -22,6 +29,15 @@ func Start(getStatusFunc func() models.Status) error {
 	go _server.Run()
 
 	log.Traceln("Chat server started with max connection count of", _server.maxSocketConnectionLimit)
+
+	chatMessagesSentCounter = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "total_chat_message_count",
+		Help: "The number of chat messages incremented over time.",
+		ConstLabels: map[string]string{
+			"version": config.VersionNumber,
+			"host":    data.GetServerURL(),
+		},
+	})
 
 	return nil
 }
@@ -50,6 +66,10 @@ func FindClientByID(clientID uint) (*Client, bool) {
 // GetClients will return all the current chat clients connected.
 func GetClients() []*Client {
 	clients := []*Client{}
+
+	if _server == nil {
+		return clients
+	}
 
 	// Convert the keyed map to a slice.
 	for _, client := range _server.clients {

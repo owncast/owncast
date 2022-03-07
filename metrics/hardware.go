@@ -26,6 +26,7 @@ func collectCPUUtilization() {
 
 	metricValue := timestampedValue{time.Now(), int(v[0])}
 	Metrics.CPUUtilizations = append(Metrics.CPUUtilizations, metricValue)
+	cpuUsage.Set(float64(metricValue.Value))
 }
 
 func collectRAMUtilization() {

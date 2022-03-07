@@ -71,8 +71,6 @@ func main() {
 		config.DatabaseFilePath = *dbFile
 	}
 
-	go metrics.Start()
-
 	if err := data.SetupPersistence(config.DatabaseFilePath); err != nil {
 		log.Fatalln("failed to open database", err)
 	}
@@ -83,6 +81,8 @@ func main() {
 	if err := core.Start(); err != nil {
 		log.Fatalln("failed to start the core package", err)
 	}
+
+	go metrics.Start(core.GetStatus)
 
 	if err := router.Start(); err != nil {
 		log.Fatalln("failed to start/run the router", err)

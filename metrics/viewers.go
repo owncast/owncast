@@ -3,7 +3,8 @@ package metrics
 import (
 	"time"
 
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 )
 
 // How often we poll for updates.
@@ -22,10 +23,26 @@ func collectViewerCount() {
 		Metrics.Viewers = Metrics.Viewers[1:]
 	}
 
-	count := core.GetStatus().ViewerCount
+	count := _getStatus().ViewerCount
 	value := timestampedValue{
 		Value: count,
 		Time:  time.Now(),
 	}
 	Metrics.Viewers = append(Metrics.Viewers, value)
+
+	// Save to our Prometheus collector.
+	activeViewerCount.Set(float64(count))
+
+	// Total message count
+	cmc := data.GetMessagesCount()
+	currentChatMessageCount.Set(float64(cmc))
+
+	// Total user count
+	uc := data.GetUsersCount()
+	chatUserCount.Set(float64(uc))
+}
+
+func collectChatClientCount() {
+	count := len(chat.GetClients())
+	activeChatClientCount.Set(float64(count))
 }
