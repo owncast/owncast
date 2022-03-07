@@ -193,10 +193,7 @@ export default function MainLayout(props) {
             <Menu.Item key="config-chat">
               <Link href="/config-chat">Chat</Link>
             </Menu.Item>
-            <Menu.Item
-              key="config-federation"
-              style={{ display: federationEnabled ? 'block' : 'none' }}
-            >
+            <Menu.Item key="config-federation">
               <Link href="/config-federation">Social</Link>
             </Menu.Item>
 
