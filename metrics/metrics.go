@@ -13,8 +13,6 @@ import (
 // How often we poll for updates.
 const metricsPollingInterval = 1 * time.Minute
 
-var _getStatus func() models.Status
-
 // CollectedMetrics stores different collected + timestamped values.
 type CollectedMetrics struct {
 	CPUUtilizations  []timestampedValue `json:"cpu"`
@@ -27,8 +25,6 @@ var Metrics *CollectedMetrics
 
 // Start will begin the metrics collection and alerting.
 func Start(getStatus func() models.Status) {
-	_getStatus = getStatus
-
 	host := data.GetServerURL()
 	if host == "" {
 		host = "unknown"
@@ -70,7 +66,6 @@ func Start(getStatus func() models.Status) {
 
 	Metrics = new(CollectedMetrics)
 	go startViewerCollectionMetrics()
-	handlePolling()
 
 	for range time.Tick(metricsPollingInterval) {
 		handlePolling()

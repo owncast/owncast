@@ -23,6 +23,7 @@ func startViewerCollectionMetrics() {
 	defer storage.Close()
 
 	collectViewerCount()
+	handlePolling()
 
 	for range time.Tick(viewerMetricsPollingInterval) {
 		collectViewerCount()
