@@ -11,20 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repo
-          uses: actions/checkout@v2
+          uses: actions/checkout@v3
           with:
           # Make sure the actual branch is checked out when running on pull requests
             ref: ${{ github.head_ref }}
 
         - name: Build dependencies
-        - uses: actions/setup-node@v2
+        - uses: actions/setup-node@v3
           with:
             node-version: '12'
         - run: cd build/javascript
         - run: npm run build
 
         - name: Commit changes
-          uses: EndBug/add-and-commit@v5
+          uses: EndBug/add-and-commit@v8
           with:
             author_name: Owncast
             author_email: owncast@owncast.online

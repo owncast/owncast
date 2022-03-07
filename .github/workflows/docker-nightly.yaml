@@ -16,7 +16,7 @@ jobs:
         run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
         if: env.GH_CR_PAT != null
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup and run
         env: 
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
