@@ -13,6 +13,7 @@
 
   h1.owncast-title {
     padding: 1rem;
+    padding-bottom: 4px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -20,7 +21,9 @@
 
     .logo-container {
       background-color: var(--white);
-      padding: 0.35rem;
+      padding-top: 4px;
+      padding-right: 6px;
+      padding-left: 6px;
       border-radius: 9999px;
     }
 

@@ -128,18 +128,18 @@ export default function MainLayout(props) {
       </Head>
 
       <Sider width={240} className="side-nav">
+        <h1 className="owncast-title">
+          <span className="logo-container">
+            <OwncastLogo />
+          </span>
+          <span className="title-label">Owncast Admin</span>
+        </h1>
         <Menu
           defaultSelectedKeys={[route.substring(1) || 'home']}
           defaultOpenKeys={openMenuItems}
           mode="inline"
           className="menu-container"
         >
-          <h1 className="owncast-title">
-            <span className="logo-container">
-              <OwncastLogo />
-            </span>
-            <span className="title-label">Owncast Admin</span>
-          </h1>
           <Menu.Item key="home" icon={<HomeOutlined />}>
             <Link href="/">Home</Link>
           </Menu.Item>
