@@ -193,7 +193,10 @@ export default function MainLayout(props) {
             <Menu.Item key="config-chat">
               <Link href="/config-chat">Chat</Link>
             </Menu.Item>
-            <Menu.Item key="config-federation">
+            <Menu.Item
+              key="config-federation"
+              style={{ display: federationEnabled ? 'block' : 'none' }}
+            >
               <Link href="/config-federation">Social</Link>
             </Menu.Item>
 
@@ -209,7 +212,11 @@ export default function MainLayout(props) {
             <Menu.Item key="logs">
               <Link href="/logs">Logs</Link>
             </Menu.Item>
-            <Menu.Item key="federation-activities" title="Social Actions">
+            <Menu.Item
+              key="federation-activities"
+              title="Social Actions"
+              style={{ display: federationEnabled ? 'block' : 'none' }}
+            >
               <Link href="/federation/actions">Social Actions</Link>
             </Menu.Item>
             <Menu.Item key="upgrade" style={{ display: upgradeMenuItemStyle }}>

@@ -17,14 +17,21 @@ export interface Action {
 
 export default function FediverseActions() {
   const [actions, setActions] = useState<Action[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
   const getActions = async () => {
     try {
-      const result = await fetchData(FEDERATION_ACTIONS, { auth: true });
-      if (isEmptyObject(result)) {
+      const limit = 50;
+      const offset = currentPage * limit;
+      const u = `${FEDERATION_ACTIONS}?offset=${offset}&limit=${limit}`;
+      const result = await fetchData(u, { auth: true });
+      const { results, total } = result;
+      setTotalCount(total);
+      if (isEmptyObject(results)) {
         setActions([]);
       } else {
-        setActions(result);
+        setActions(results);
       }
     } catch (error) {
       console.log('==== error', error);
@@ -33,7 +40,7 @@ export default function FediverseActions() {
 
   useEffect(() => {
     getActions();
-  }, []);
+  }, [currentPage]);
 
   const columns: ColumnsType<Action> = [
     {
@@ -102,7 +109,16 @@ export default function FediverseActions() {
         columns={tableColumns}
         size="small"
         rowKey={row => row.iri}
-        pagination={{ pageSize: 50 }}
+        pagination={{
+          pageSize: 50,
+          hideOnSinglePage: true,
+          showSizeChanger: false,
+          total: totalCount,
+        }}
+        onChange={pagination => {
+          const page = pagination.current;
+          setCurrentPage(page);
+        }}
       />
     );
   }
