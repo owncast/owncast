@@ -22,6 +22,9 @@
         "digest"
       ],
       "automerge": true,
+      "major": {
+        "dependencyDashboardApproval": true
+      },
       "matchCurrentVersion": "!/^0/",
       "automergeType": "branch"
     },
@@ -33,23 +36,6 @@
       "major": {
         "dependencyDashboardApproval": true
       }
-    },
-    {
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "major": {
-        "dependencyDashboardApproval": true
-      },
-      "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch",
-      "labels": [
-        "dependencies"
-      ]
     }
   ]
 }
