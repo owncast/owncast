@@ -21,6 +21,7 @@ type webConfigResponse struct {
 	Tags                 []string                 `json:"tags"`
 	Version              string                   `json:"version"`
 	NSFW                 bool                     `json:"nsfw"`
+	SocketHostOverride   string                   `json:"socketHostOverride,omitempty"`
 	ExtraPageContent     string                   `json:"extraPageContent"`
 	StreamTitle          string                   `json:"streamTitle,omitempty"` // What's going on with the current stream
 	SocialHandles        []models.SocialHandle    `json:"socialHandles"`
@@ -78,6 +79,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Tags:                 data.GetServerMetadataTags(),
 		Version:              config.GetReleaseString(),
 		NSFW:                 data.GetNSFW(),
+		SocketHostOverride:   data.GetWebsocketOverrideHost(),
 		ExtraPageContent:     pageContent,
 		StreamTitle:          data.GetStreamTitle(),
 		SocialHandles:        socialHandles,
