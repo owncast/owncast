@@ -16,7 +16,7 @@ type Codec interface {
 	DisplayName() string
 	GlobalFlags() string
 	PixelFormat() string
-	ExtraArgumentsForLevel(l int) string
+	ExtraArguments() string
 	ExtraFilters() string
 	VariantFlags(v *HLSVariant) string
 	GetPresetForLevel(l int) string
@@ -54,8 +54,8 @@ func (c *Libx264Codec) PixelFormat() string {
 	return "yuv420p" //nolint:goconst
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *Libx264Codec) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *Libx264Codec) ExtraArguments() string {
 	return strings.Join([]string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 	}, " ")
@@ -116,8 +116,8 @@ func (c *OmxCodec) PixelFormat() string {
 	return "yuv420p"
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *OmxCodec) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *OmxCodec) ExtraArguments() string {
 	return strings.Join([]string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 	}, " ")
@@ -183,8 +183,8 @@ func (c *VaapiCodec) ExtraFilters() string {
 	return "format=nv12,hwupload"
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *VaapiCodec) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *VaapiCodec) ExtraArguments() string {
 	return ""
 }
 
@@ -238,8 +238,8 @@ func (c *NvencCodec) PixelFormat() string {
 	return "yuv420p"
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *NvencCodec) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *NvencCodec) ExtraArguments() string {
 	return ""
 }
 
@@ -295,8 +295,8 @@ func (c *QuicksyncCodec) PixelFormat() string {
 	return "nv12"
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *QuicksyncCodec) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *QuicksyncCodec) ExtraArguments() string {
 	return ""
 }
 
@@ -350,8 +350,8 @@ func (c *Video4Linux) PixelFormat() string {
 	return "nv21"
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *Video4Linux) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *Video4Linux) ExtraArguments() string {
 	return ""
 }
 
@@ -413,32 +413,32 @@ func (c *VideoToolboxCodec) ExtraFilters() string {
 	return ""
 }
 
-// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
-func (c *VideoToolboxCodec) ExtraArgumentsForLevel(l int) string {
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *VideoToolboxCodec) ExtraArguments() string {
+	return ""
+}
+
+// VariantFlags returns a string representing a single variant processed by this codec.
+func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
 	arguments := []string{
 		"-realtime true",
 		"-realtime true",
 		"-realtime true",
 	}
 
-	if l >= len(arguments) {
+	if v.cpuUsageLevel >= len(arguments) {
 		return ""
 	}
 
-	return arguments[l]
-}
-
-// VariantFlags returns a string representing a single variant processed by this codec.
-func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+	return arguments[v.cpuUsageLevel]
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VideoToolboxCodec) GetPresetForLevel(l int) string {
 	presetMapping := []string{
-		"ultrafast -realtime true",
-		"superfast -realtime true",
-		"veryfast -realtime true",
+		"ultrafast",
+		"superfast",
+		"veryfast",
 		"faster",
 		"fast",
 	}
