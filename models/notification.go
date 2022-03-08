@@ -27,7 +27,7 @@ type SMTPConfiguration struct {
 	ListAddress   string `json:"listAddress,omitempty"`
 	Username      string `json:"username,omitempty"`
 	Password      string `json:"password,omitempty"`
-	Server        string `json:"smtpServer,omitempty"`
+	Server        string `json:"server,omitempty"`
 	FromAddress   string `json:"fromAddress,omitempty"`
 	GoLiveSubject string `json:"goLiveSubject,omitempty"`
 }
