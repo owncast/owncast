@@ -214,7 +214,6 @@ func (t *Transcoder) getString() string {
 		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",
 
 		// Video settings
-		t.codec.ExtraArguments(),
 		"-pix_fmt", t.codec.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
@@ -316,6 +315,11 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 	preset := t.codec.GetPresetForLevel(v.cpuUsageLevel)
 	if preset != "" {
 		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-preset %s", preset))
+	}
+
+	extraArguments := t.codec.ExtraArgumentsForLevel(v.cpuUsageLevel)
+	if extraArguments != "" {
+		variantEncoderCommands = append(variantEncoderCommands, extraArguments)
 	}
 
 	return strings.Join(variantEncoderCommands, " ")

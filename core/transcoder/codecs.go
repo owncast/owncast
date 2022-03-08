@@ -16,7 +16,7 @@ type Codec interface {
 	DisplayName() string
 	GlobalFlags() string
 	PixelFormat() string
-	ExtraArguments() string
+	ExtraArgumentsForLevel(l int) string
 	ExtraFilters() string
 	VariantFlags(v *HLSVariant) string
 	GetPresetForLevel(l int) string
@@ -54,8 +54,8 @@ func (c *Libx264Codec) PixelFormat() string {
 	return "yuv420p" //nolint:goconst
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *Libx264Codec) ExtraArguments() string {
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *Libx264Codec) ExtraArgumentsForLevel(l int) string {
 	return strings.Join([]string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 	}, " ")
@@ -116,8 +116,8 @@ func (c *OmxCodec) PixelFormat() string {
 	return "yuv420p"
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *OmxCodec) ExtraArguments() string {
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *OmxCodec) ExtraArgumentsForLevel(l int) string {
 	return strings.Join([]string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
 	}, " ")
@@ -183,8 +183,8 @@ func (c *VaapiCodec) ExtraFilters() string {
 	return "format=nv12,hwupload"
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *VaapiCodec) ExtraArguments() string {
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *VaapiCodec) ExtraArgumentsForLevel(l int) string {
 	return ""
 }
 
@@ -238,8 +238,8 @@ func (c *NvencCodec) PixelFormat() string {
 	return "yuv420p"
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *NvencCodec) ExtraArguments() string {
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *NvencCodec) ExtraArgumentsForLevel(l int) string {
 	return ""
 }
 
@@ -295,8 +295,8 @@ func (c *QuicksyncCodec) PixelFormat() string {
 	return "nv12"
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *QuicksyncCodec) ExtraArguments() string {
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *QuicksyncCodec) ExtraArgumentsForLevel(l int) string {
 	return ""
 }
 
@@ -350,8 +350,8 @@ func (c *Video4Linux) PixelFormat() string {
 	return "nv21"
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *Video4Linux) ExtraArguments() string {
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *Video4Linux) ExtraArgumentsForLevel(l int) string {
 	return ""
 }
 
@@ -413,9 +413,19 @@ func (c *VideoToolboxCodec) ExtraFilters() string {
 	return ""
 }
 
-// ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *VideoToolboxCodec) ExtraArguments() string {
-	return ""
+// ExtraArgumentsForLevel are the extra arguments used with this codec in the transcoder.
+func (c *VideoToolboxCodec) ExtraArgumentsForLevel(l int) string {
+	arguments := []string{
+		"-realtime true",
+		"-realtime true",
+		"-realtime true",
+	}
+
+	if l >= len(arguments) {
+		return ""
+	}
+
+	return arguments[l]
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
