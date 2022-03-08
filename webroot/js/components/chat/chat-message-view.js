@@ -49,7 +49,7 @@ export default class ChatMessageView extends Component {
     if (!user) {
       return null;
     }
-    const { displayName, displayColor, createdAt } = user;
+    const { displayName, displayColor, createdAt, isBot } = user;
     const isAuthorModerator = checkIsModerator(message);
 
     const isMessageModeratable =
