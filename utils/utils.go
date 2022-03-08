@@ -58,7 +58,7 @@ func Copy(source, destination string) error {
 		return err
 	}
 
-	return os.WriteFile(destination, input, 0600)
+	return os.WriteFile(destination, input, 0o600)
 }
 
 // Move moves the file at source to destination.
@@ -74,18 +74,18 @@ func Move(source, destination string) error {
 // moveFallback moves a file using a copy followed by a delete, which works across file systems.
 // source: https://gist.github.com/var23rav/23ae5d0d4d830aff886c3c970b8f6c6b
 func moveFallback(source, destination string) error {
-	inputFile, err := os.Open(source)
+	inputFile, err := os.Open(source) // nolint: gosec
 	if err != nil {
 		return fmt.Errorf("Couldn't open source file: %s", err)
 	}
-	outputFile, err := os.Create(destination)
+	outputFile, err := os.Create(destination) // nolint: gosec
 	if err != nil {
-		inputFile.Close()
+		_ = inputFile.Close()
 		return fmt.Errorf("Couldn't open dest file: %s", err)
 	}
 	defer outputFile.Close()
 	_, err = io.Copy(outputFile, inputFile)
-	inputFile.Close()
+	_ = inputFile.Close()
 	if err != nil {
 		return fmt.Errorf("Writing to output file failed: %s", err)
 	}
@@ -289,7 +289,7 @@ func VerifyFFMpegPath(path string) error {
 
 	mode := stat.Mode()
 	// source: https://stackoverflow.com/a/60128480
-	if mode&0111 == 0 {
+	if mode&0o111 == 0 {
 		return errors.New("ffmpeg path is not executable")
 	}
 
@@ -302,7 +302,7 @@ func CleanupDirectory(path string) {
 	if err := os.RemoveAll(path); err != nil {
 		log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
 	}
-	if err := os.MkdirAll(path, 0750); err != nil {
+	if err := os.MkdirAll(path, 0o750); err != nil {
 		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
 	}
 }
