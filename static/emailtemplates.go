@@ -9,9 +9,17 @@ import (
 //go:embed "emailconfirm.html.tmpl"
 var emailConfirmTemplate []byte
 
+//go:embed "golive.html.tmpl"
+var goLiveTemplate []byte
+
 // GetEmailConfirmTemplate will return the email confirmation template.
 func GetEmailConfirmTemplate() string {
 	return string(getFileSystemStaticFileOrDefault("emailconfirm.html.tmpl", emailConfirmTemplate))
+}
+
+// GetEmailLiveTemplate will return the email live template.
+func GetEmailLiveTemplate() string {
+	return string(getFileSystemStaticFileOrDefault("golive.html.tmpl", goLiveTemplate))
 }
 
 // GetEmailConfirmTemplateWithContent will return the email confirmation

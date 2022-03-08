@@ -9,11 +9,9 @@ import (
 	"text/template"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/static"
 	"github.com/pkg/errors"
 )
-
-//go:embed "golive.tmpl.html"
-var goLiveTemplate string
 
 // Email represents an instance of the Email notifier.
 type Email struct {
@@ -79,7 +77,7 @@ func GenerateEmailContent() (string, error) {
 		StreamDescription: data.GetStreamTitle(),
 	}
 
-	t, err := template.New("goLive").Parse(goLiveTemplate)
+	t, err := template.New("goLive").Parse(static.GetEmailLiveTemplate())
 	if err != nil {
 		return "", errors.Wrap(err, "failed to parse go live email template")
 	}
