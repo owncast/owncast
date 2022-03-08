@@ -107,7 +107,13 @@ func (n *Notifier) notifyBrowserPush() {
 		log.Errorln("error getting browser push notification destinations", err)
 	}
 	for _, destination := range destinations {
-		if err := n.browser.Send(destination, data.GetServerName(), data.GetBrowserPushConfig().GoLiveMessage); err != nil {
+		unsubscribed, err := n.browser.Send(destination, data.GetServerName(), data.GetBrowserPushConfig().GoLiveMessage)
+		if unsubscribed {
+			// If the error is "unsubscribed", then remove the destination from the database.
+			if err := RemoveNotificationForChannel(BrowserPushNotification, destination); err != nil {
+				log.Errorln(err)
+			}
+		} else if err != nil {
 			log.Errorln(err)
 		}
 	}

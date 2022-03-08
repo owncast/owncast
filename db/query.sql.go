@@ -530,6 +530,20 @@ func (q *Queries) RemoveIPAddressBan(ctx context.Context, ipAddress string) erro
 	return err
 }
 
+const removeNotificationDestinationForChannel = `-- name: RemoveNotificationDestinationForChannel :exec
+DELETE FROM notifications WHERE channel = $1 AND destination = $2
+`
+
+type RemoveNotificationDestinationForChannelParams struct {
+	Channel     string
+	Destination string
+}
+
+func (q *Queries) RemoveNotificationDestinationForChannel(ctx context.Context, arg RemoveNotificationDestinationForChannelParams) error {
+	_, err := q.db.ExecContext(ctx, removeNotificationDestinationForChannel, arg.Channel, arg.Destination)
+	return err
+}
+
 const updateFollowerByIRI = `-- name: UpdateFollowerByIRI :exec
 UPDATE ap_followers SET inbox = $1, name = $2, username = $3, image = $4 WHERE iri = $5
 `

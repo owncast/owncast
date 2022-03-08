@@ -32,8 +32,17 @@ func createNotificationsTable(db *sql.DB) {
 }
 
 // AddNotification saves a new user notification destination.
-func AddNotification(channel string, destination string) error {
+func AddNotification(channel, destination string) error {
 	return data.GetDatastore().GetQueries().AddNotification(context.Background(), db.AddNotificationParams{
+		Channel:     channel,
+		Destination: destination,
+	})
+}
+
+// RemoveNotificationForChannel removes a notification destination..
+func RemoveNotificationForChannel(channel, destination string) error {
+	log.Println("Removing notification for channel", channel)
+	return data.GetDatastore().GetQueries().RemoveNotificationDestinationForChannel(context.Background(), db.RemoveNotificationDestinationForChannelParams{
 		Channel:     channel,
 		Destination: destination,
 	})

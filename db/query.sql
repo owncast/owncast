@@ -75,3 +75,6 @@ INSERT INTO notifications (channel, destination) VALUES($1, $2);
 
 -- name: GetNotificationDestinationsForChannel :many
 SELECT destination FROM notifications WHERE channel = $1;
+
+-- name: RemoveNotificationDestinationForChannel :exec
+DELETE FROM notifications WHERE channel = $1 AND destination = $2;

@@ -39,7 +39,7 @@ func (b *Browser) Send(
 	subscription string,
 	title string,
 	body string,
-) error {
+) (bool, error) {
 	type message struct {
 		Title string `json:"title"`
 		Body  string `json:"body"`
@@ -54,13 +54,13 @@ func (b *Browser) Send(
 
 	d, err := json.Marshal(m)
 	if err != nil {
-		return errors.Wrap(err, "error marshalling web push message")
+		return false, errors.Wrap(err, "error marshalling web push message")
 	}
 
 	// Decode subscription
 	s := &webpush.Subscription{}
 	if err := json.Unmarshal([]byte(subscription), s); err != nil {
-		return errors.Wrap(err, "error decoding destination subscription")
+		return false, errors.Wrap(err, "error decoding destination subscription")
 	}
 
 	// Send Notification
@@ -72,12 +72,12 @@ func (b *Browser) Send(
 		// Not really the subscriber, but a contact point for the sender.
 		Subscriber: "owncast@owncast.online",
 	})
-	// TODO: Check if this this notification failed due to unsubscription.
-	// If so, remove their subscription from our notifications table.
-	if err != nil {
-		return errors.Wrap(err, "error sending browser push notification")
+	if resp.StatusCode == 410 {
+		return true, nil
+	} else if err != nil {
+		return false, errors.Wrap(err, "error sending browser push notification")
 	}
 	defer resp.Body.Close()
 
-	return err
+	return false, err
 }
