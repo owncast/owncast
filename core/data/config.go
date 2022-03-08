@@ -36,7 +36,6 @@ const (
 	lastDisconnectTimeKey                = "last_disconnect_time"
 	ffmpegPathKey                        = "ffmpeg_path"
 	nsfwKey                              = "nsfw"
-	s3StorageEnabledKey                  = "s3_storage_enabled"
 	s3StorageConfigKey                   = "s3_storage_config"
 	videoLatencyLevel                    = "video_latency_level"
 	videoStreamOutputVariantsKey         = "video_stream_output_variants"
