@@ -29,6 +29,11 @@ export default function Offline({ logs = [], config }: OfflineProps) {
   const { streamKey, rtmpServerPort } = serverConfig;
   const instanceUrl = global.window?.location.hostname || '';
 
+  let rtmpURL;
+  if (instanceUrl && rtmpServerPort) {
+    rtmpURL = generateStreamURL(instanceUrl, rtmpServerPort);
+  }
+
   const data = [
     {
       icon: <BookTwoTone twoToneColor="#6f42c1" />,
@@ -47,9 +52,11 @@ export default function Offline({ logs = [], config }: OfflineProps) {
             <Text strong className="stream-info-label">
               Streaming URL:
             </Text>
-            <Paragraph className="stream-info-box" copyable>
-              {generateStreamURL(instanceUrl, rtmpServerPort)}
-            </Paragraph>
+            {rtmpURL && (
+              <Paragraph className="stream-info-box" copyable>
+                {rtmpURL}
+              </Paragraph>
+            )}
             <Text strong className="stream-info-label">
               Stream Key:
             </Text>
