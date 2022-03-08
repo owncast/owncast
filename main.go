@@ -47,6 +47,17 @@ func main() {
 		}
 	}
 
+	// Recreate the temp dir
+	if utils.DoesFileExists(config.TempDir) {
+		err := os.RemoveAll(config.TempDir)
+		if err != nil {
+			log.Fatalln("Unable to remove temp dir!")
+		}
+	}
+	if err := os.Mkdir(config.TempDir, 0700); err != nil {
+		log.Fatalln("Unable to create temp dir!", err)
+	}
+
 	configureLogging(*enableDebugOptions, *enableVerboseLogging)
 	log.Infoln(config.GetReleaseString())
 
