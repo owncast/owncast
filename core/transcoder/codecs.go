@@ -23,10 +23,11 @@ type Codec interface {
 }
 
 var supportedCodecs = map[string]string{
-	(&Libx264Codec{}).Name(): "libx264",
-	(&OmxCodec{}).Name():     "omx",
-	(&VaapiCodec{}).Name():   "vaapi",
-	(&NvencCodec{}).Name():   "NVIDIA nvenc",
+	(&Libx264Codec{}).Name():      "libx264",
+	(&OmxCodec{}).Name():          "omx",
+	(&VaapiCodec{}).Name():        "vaapi",
+	(&NvencCodec{}).Name():        "NVIDIA nvenc",
+	(&VideoToolboxCodec{}).Name(): "videotoolbox",
 }
 
 // Libx264Codec represents an instance of the Libx264 Codec.
@@ -381,6 +382,64 @@ func (c *Video4Linux) GetPresetForLevel(l int) string {
 	return presetMapping[l]
 }
 
+// VideoToolboxCodec represents an instance of the VideoToolbox codec.
+type VideoToolboxCodec struct {
+}
+
+// Name returns the codec name.
+func (c *VideoToolboxCodec) Name() string {
+	return "h264_videotoolbox"
+}
+
+// DisplayName returns the human readable name of the codec.
+func (c *VideoToolboxCodec) DisplayName() string {
+	return "VideoToolbox"
+}
+
+// GlobalFlags are the global flags used with this codec in the transcoder.
+func (c *VideoToolboxCodec) GlobalFlags() string {
+	var flags []string
+
+	return strings.Join(flags, " ")
+}
+
+// PixelFormat is the pixel format required for this codec.
+func (c *VideoToolboxCodec) PixelFormat() string {
+	return "nv12"
+}
+
+// ExtraFilters are the extra filters required for this codec in the transcoder.
+func (c *VideoToolboxCodec) ExtraFilters() string {
+	return ""
+}
+
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *VideoToolboxCodec) ExtraArguments() string {
+	return ""
+}
+
+// VariantFlags returns a string representing a single variant processed by this codec.
+func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
+	return ""
+}
+
+// GetPresetForLevel returns the string preset for this codec given an integer level.
+func (c *VideoToolboxCodec) GetPresetForLevel(l int) string {
+	presetMapping := []string{
+		"ultrafast",
+		"superfast",
+		"veryfast",
+		"faster",
+		"fast",
+	}
+
+	if l >= len(presetMapping) {
+		return "superfast"
+	}
+
+	return presetMapping[l]
+}
+
 // GetCodecs will return the supported codecs available on the system.
 func GetCodecs(ffmpegPath string) []string {
 	codecs := make([]string, 0)
@@ -419,6 +478,8 @@ func getCodec(name string) Codec {
 		return &OmxCodec{}
 	case (&Video4Linux{}).Name():
 		return &Video4Linux{}
+	case (&VideoToolboxCodec{}).Name():
+		return &VideoToolboxCodec{}
 	default:
 		return &Libx264Codec{}
 	}
