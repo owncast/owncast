@@ -426,9 +426,9 @@ func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VideoToolboxCodec) GetPresetForLevel(l int) string {
 	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
+		"ultrafast -realtime true",
+		"superfast -realtime true",
+		"veryfast -realtime true",
 		"faster",
 		"fast",
 	}
