@@ -125,8 +125,9 @@ func RenderMarkdown(raw string) string {
 }
 
 var (
-	_sanitizeReSrcMatch      = regexp.MustCompile(`(?i)^/img/emoji`)
+	_sanitizeReSrcMatch      = regexp.MustCompile(`(?i)^/img/emoji/[^\.%]*.[A-Z]*$`)
 	_sanitizeReAltTitleMatch = regexp.MustCompile(`:\S+:`)
+	_sanitizeReClassMatch    = regexp.MustCompile(`(?i)^(emoji)[A-Z_]*?$`)
 )
 
 func sanitize(raw string) string {
@@ -153,7 +154,7 @@ func sanitize(raw string) string {
 	// Allow img tags from the the local emoji directory only
 	p.AllowAttrs("src").Matching(_sanitizeReSrcMatch).OnElements("img")
 	p.AllowAttrs("alt", "title").Matching(_sanitizeReAltTitleMatch).OnElements("img")
-	p.AllowAttrs("class").OnElements("img")
+	p.AllowAttrs("class").Matching(_sanitizeReClassMatch).OnElements("img")
 
 	// Allow bold
 	p.AllowElements("strong")
