@@ -154,6 +154,7 @@ func create(user *User) error {
 	_, err = stmt.Exec(user.ID, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
 		log.Errorln("error creating new user", err)
+		return err
 	}
 
 	return tx.Commit()
