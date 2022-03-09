@@ -9,6 +9,19 @@ import (
 	"github.com/teris-io/shortid"
 )
 
+func migrateToSchema4(db *sql.DB) {
+	// Access tokens have been broken into its own table.
+	stmt, err := db.Prepare("ALTER TABLE users DROP COLUMN access_token")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
+}
+
 func migrateToSchema3(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
 	// and recreate the table.
