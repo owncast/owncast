@@ -10,7 +10,8 @@ import (
 )
 
 func migrateToSchema4(db *sql.DB) {
-	stmt, err := db.Prepare("ALTER TABLE ap_followers ADD COLUMN request_object BLOB")
+	// Access tokens have been broken into its own table.
+	stmt, err := db.Prepare("ALTER TABLE users DROP COLUMN access_token;ALTER TABLE ap_followers ADD COLUMN request_object BLOB")
 	if err != nil {
 		log.Fatal(err)
 	}
