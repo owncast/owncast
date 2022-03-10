@@ -35,31 +35,31 @@ func Start(getStatus func() models.Status) {
 	}
 
 	activeViewerCount = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:        "active_viewer_count",
+		Name:        "owncast_instance_active_viewer_count",
 		Help:        "The number of viewers.",
 		ConstLabels: labels,
 	})
 
 	activeChatClientCount = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:        "active_chat_client_count",
+		Name:        "owncast_instance_active_chat_client_count",
 		Help:        "The number of connected chat clients.",
 		ConstLabels: labels,
 	})
 
 	chatUserCount = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:        "total_chat_users",
+		Name:        "owncast_instance_total_chat_users",
 		Help:        "The total number of chat users on this Owncast instance.",
 		ConstLabels: labels,
 	})
 
 	currentChatMessageCount = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:        "current_chat_message_count",
+		Name:        "owncast_instance_current_chat_message_count",
 		Help:        "The number of chat messages currently saved before cleanup.",
 		ConstLabels: labels,
 	})
 
 	cpuUsage = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:        "cpu_use_pct",
+		Name:        "owncast_instance_cpu_use_pct",
 		Help:        "CPU percentage used as seen within Owncast",
 		ConstLabels: labels,
 	})
@@ -77,7 +77,6 @@ func handlePolling() {
 	collectCPUUtilization()
 	collectRAMUtilization()
 	collectDiskUtilization()
-	collectChatClientCount()
 
 	// Alerting
 	handleAlerting()
