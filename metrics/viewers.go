@@ -23,10 +23,10 @@ func startViewerCollectionMetrics() {
 	defer storage.Close()
 
 	collectViewerCount()
-	handlePolling()
 
 	for range time.Tick(viewerMetricsPollingInterval) {
 		collectViewerCount()
+		collectChatClientCount()
 	}
 }
 
@@ -35,14 +35,14 @@ func collectViewerCount() {
 	if !core.GetStatus().Online {
 		return
 	}
+
+	// Save to our Prometheus collector.
+	activeViewerCount.Set(float64(core.GetStatus().ViewerCount))
 }
 
 func collectChatClientCount() {
 	count := len(chat.GetClients())
 	activeChatClientCount.Set(float64(count))
-
-	// Save to our Prometheus collector.
-	activeViewerCount.Set(float64(count))
 
 	// Total message count
 	cmc := data.GetMessagesCount()
