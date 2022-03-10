@@ -3,6 +3,7 @@
 import videojs from '/js/web_modules/videojs/dist/video.min.js';
 import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
+import PlaybackMetrics from '../metrics/playback.js';
 
 const VIDEO_ID = 'video';
 
@@ -37,9 +38,42 @@ const VIDEO_OPTIONS = {
 export const POSTER_DEFAULT = `/img/logo.png`;
 export const POSTER_THUMB = `/thumbnail.jpg`;
 
+function getCurrentlyPlayingSegment(obj, old_segment = null) {
+  var target_media = obj.tech().hls.playlists.media();
+  var snapshot_time = obj.currentTime();
+
+  var segment;
+  var segment_time;
+
+  // Itinerate trough available segments and get first within which snapshot_time is
+  for (var i = 0, l = target_media.segments.length; i < l; i++) {
+    // Note: segment.end may be undefined or is not properly set
+    if (snapshot_time < target_media.segments[i].end) {
+      segment = target_media.segments[i];
+      break;
+    }
+  }
+
+  // Null segment_time in case it's lower then 0.
+  if (segment) {
+    segment_time = Math.max(
+      0,
+      snapshot_time - (segment.end - segment.duration)
+    );
+    // Because early segments don't have end property
+  } else {
+    segment = target_media.segments[0];
+    segment_time = 0;
+  }
+
+  return segment;
+}
+
 class OwncastPlayer {
   constructor() {
     window.VIDEOJS_NO_DYNAMIC_STYLE = true; // style override
+
+    this.playbackMetrics = new PlaybackMetrics();
 
     this.vjsPlayer = null;
 
@@ -55,7 +89,6 @@ class OwncastPlayer {
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
     this.addQualitySelector = this.addQualitySelector.bind(this);
-
     this.qualitySelectionMenu = null;
   }
 
@@ -63,11 +96,33 @@ class OwncastPlayer {
     this.addAirplay();
     this.addQualitySelector();
 
+    // Keep a reference of the standard vjs xhr function.
+    const old = videojs.xhr;
+
+    // Override the xhr function to track segment download time.
+    videojs.Vhs.xhr = (...args) => {
+      const start = new Date();
+
+      if (args[0].uri.match('.ts')) {
+        const cb = args[1];
+        args[1] = (request, error, response) => {
+          const end = new Date();
+          const delta = end.getTime() - start.getTime();
+          this.playbackMetrics.trackSegmentDownloadTime(delta);
+          cb(request, error, response);
+        };
+      }
+
+      return old(...args);
+    };
+
+    // Add a cachebuster param to playlist URLs.
     videojs.Vhs.xhr.beforeRequest = (options) => {
       if (options.uri.match('m3u8')) {
         const cachebuster = Math.random().toString(16).substr(2, 8);
         options.uri = `${options.uri}?cachebust=${cachebuster}`;
       }
+
       return options;
     };
 
@@ -100,16 +155,43 @@ class OwncastPlayer {
   }
 
   handleReady() {
-    this.log('on Ready');
     this.vjsPlayer.on('error', this.handleError);
     this.vjsPlayer.on('playing', this.handlePlaying);
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
 
+    this.vjsPlayer.on('ready', () => {
+      const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
+      tech.on('usage', (e) => {
+        console.log(e.name);
+      });
+
+      this.vjsPlayer.on('error', (e) => {
+        console.log(e);
+      });
+
+      // Variant changed
+      const trackElements = this.vjsPlayer.textTracks();
+      trackElements.addEventListener('cuechange', function (c) {
+        console.log(c);
+      });
+
+      // this.vjsPlayer.on('progress', () => {
+      //   const segment = getCurrentlyPlayingSegment(this.vjsPlayer);
+      //   const segmentTime = segment.dateTimeObject.getTime();
+      //   const now = new Date().getTime();
+      //   const latancy = now - segmentTime;
+
+      //   this.playbackMetrics.trackLatancy(latancy);
+      // });
+    });
+
     if (this.appPlayerReadyCallback) {
       // start polling
       this.appPlayerReadyCallback();
     }
+
+    this.vjsPlayer.log.level('debug');
   }
 
   handleVolume() {
@@ -125,6 +207,41 @@ class OwncastPlayer {
       // start polling
       this.appPlayerPlayingCallback();
     }
+
+    // Latancy management
+    // setInterval(() => {
+    //   this.vjsPlayer.playbackRate(1.2);
+    //   setTimeout(() => {
+    //     this.vjsPlayer.playbackRate(1);
+    //   }, 1400);
+    // }, 1500);
+
+    setInterval(() => {
+      const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
+
+      // const requestsErrored = this.vjsPlayer.vhs.stats.mediaRequestsErrored;
+      // console.log('errored', requestsErrored);
+
+      // const requestsTimedOut = this.vjsPlayer.vhs.stats.mediaRequestsTimedout;
+      // console.log('timedOut', requestsTimedOut);
+
+      // const requestsAborted = this.vjsPlayer.vhs.stats.mediaRequestsAborted;
+      // console.log('aborted', requestsAborted);
+
+      const bandwidth = tech.vhs.systemBandwidth;
+      this.playbackMetrics.trackBandwidth(bandwidth);
+
+      const segment = getCurrentlyPlayingSegment(this.vjsPlayer);
+      const segmentTime = segment.dateTimeObject.getTime();
+      const now = new Date().getTime();
+      const latancy = now - segmentTime;
+      this.playbackMetrics.trackLatancy(latancy);
+
+      // const aveSec =
+      //   this.vjsPlayer.vhs.stats.mediaSecondsLoaded /
+      //   this.vjsPlayer.vhs.stats.mediaRequests;
+      // console.log('ave seconds per request', aveSec);
+    }, 5000);
   }
 
   handleEnded() {

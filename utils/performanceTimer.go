@@ -41,7 +41,7 @@ func GetAveragePerformance(key string) float64 {
 	}
 	_durationStorage[key] = removeHighValue(_durationStorage[key])
 
-	return avg(_durationStorage[key])
+	return Avg(_durationStorage[key])
 }
 
 func removeHighValue(values []float64) []float64 {
@@ -49,7 +49,7 @@ func removeHighValue(values []float64) []float64 {
 	return values[:len(values)-1]
 }
 
-func avg(values []float64) float64 {
+func Avg(values []float64) float64 {
 	total := 0.0
 	for _, number := range values {
 		total += number

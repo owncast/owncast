@@ -11,4 +11,5 @@ var (
 	cpuUsage                prometheus.Gauge
 	chatUserCount           prometheus.Gauge
 	currentChatMessageCount prometheus.Gauge
+	playbackErrorCount      prometheus.Gauge
 )

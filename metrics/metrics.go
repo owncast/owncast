@@ -21,7 +21,7 @@ type CollectedMetrics struct {
 }
 
 // Metrics is the shared Metrics instance.
-var Metrics *CollectedMetrics
+var metrics *CollectedMetrics
 
 // Start will begin the metrics collection and alerting.
 func Start(getStatus func() models.Status) {
@@ -34,6 +34,7 @@ func Start(getStatus func() models.Status) {
 		"host":    host,
 	}
 
+	// Setup the Prometheus collectors.
 	activeViewerCount = promauto.NewGauge(prometheus.GaugeOpts{
 		Name:        "owncast_instance_active_viewer_count",
 		Help:        "The number of viewers.",
@@ -58,13 +59,19 @@ func Start(getStatus func() models.Status) {
 		ConstLabels: labels,
 	})
 
-	cpuUsage = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:        "owncast_instance_cpu_use_pct",
-		Help:        "CPU percentage used as seen within Owncast",
+	playbackErrorCount = promauto.NewGauge(prometheus.GaugeOpts{
+		Name:        "owncast_instance_playback_error_count",
+		Help:        "Errors collected from players within this window",
 		ConstLabels: labels,
 	})
 
-	Metrics = new(CollectedMetrics)
+	cpuUsage = promauto.NewGauge(prometheus.GaugeOpts{
+		Name:        "owncast_instance_cpu_usage",
+		Help:        "CPU usage as seen internally to Owncast.",
+		ConstLabels: labels,
+	})
+
+	metrics = new(CollectedMetrics)
 	go startViewerCollectionMetrics()
 
 	for range time.Tick(metricsPollingInterval) {
@@ -78,6 +85,13 @@ func handlePolling() {
 	collectRAMUtilization()
 	collectDiskUtilization()
 
+	collectPlaybackErrorCount()
+
 	// Alerting
 	handleAlerting()
+}
+
+// GetMetrics will return the collected metrics.
+func GetMetrics() *CollectedMetrics {
+	return metrics
 }
