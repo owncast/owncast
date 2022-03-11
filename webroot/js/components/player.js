@@ -65,7 +65,7 @@ class OwncastPlayer {
 
     videojs.Vhs.xhr.beforeRequest = (options) => {
       if (options.uri.match('m3u8')) {
-        const cachebuster = Math.round(new Date().getTime() / 1000);
+        const cachebuster = Math.random().toString(16).substr(2, 8);
         options.uri = `${options.uri}?cachebust=${cachebuster}`;
       }
       return options;
