@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.10
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/mssola/user_agent v0.5.3
-	github.com/nareix/joy5 v0.0.0-20200712071056-a55089207c88
+	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oschwald/geoip2-golang v1.6.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
