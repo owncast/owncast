@@ -11,7 +11,7 @@
     "micromodal": "^0.4.10",
     "preact": "10.6.6",
     "tailwindcss": "^1.9.6",
-    "video.js": "7.17.0"
+    "video.js": "7.18.1"
   },
   "devDependencies": {
     "cssnano": "5.1.0",
