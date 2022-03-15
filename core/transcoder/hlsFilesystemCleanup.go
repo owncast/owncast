@@ -23,6 +23,11 @@ func CleanupOldContent(baseDirectory string) {
 		return
 	}
 
+	if data.GetKeepWholeStream() {
+		log.Debugln("Skipping data removal because KeepWholeStream is active.")
+		return
+	}
+
 	// Delete old private HLS files on disk
 	for directory := range files {
 		files := files[directory]

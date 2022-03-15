@@ -77,6 +77,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			ShowEngagement: data.GetFederationShowEngagement(),
 			BlockedDomains: data.GetBlockedFederatedDomains(),
 		},
+		KeepWholeStream: data.GetKeepWholeStream(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -107,6 +108,7 @@ type serverConfigAdminResponse struct {
 	Federation              federationConfigResponse `json:"federation"`
 	SuggestedUsernames      []string                 `json:"suggestedUsernames"`
 	SocketHostOverride      string                   `json:"socketHostOverride,omitempty"`
+	KeepWholeStream         bool                     `json:"keepWholeStream"`
 }
 
 type videoSettings struct {

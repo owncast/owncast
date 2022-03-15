@@ -17,7 +17,7 @@ const VIDEO_OPTIONS = {
   preload: 'auto',
   controlBar: {
     progressControl: {
-      seekBar: false,
+      seekBar: true,
     },
   },
   html5: {

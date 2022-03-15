@@ -193,6 +193,12 @@ func (t *Transcoder) getString() string {
 	if len(hlsOptionFlags) > 0 {
 		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
 	}
+
+	hlsListSize := 0
+	if !data.GetKeepWholeStream() {
+		hlsListSize = t.currentLatencyLevel.SegmentCount
+	}
+
 	ffmpegFlags := []string{
 		fmt.Sprintf(`FFREPORT=file="%s":level=32`, logging.GetTranscoderLogFilePath()),
 		t.ffmpegPath,
@@ -208,7 +214,7 @@ func (t *Transcoder) getString() string {
 		"-f", "hls",
 
 		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
-		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
+		"-hls_list_size", strconv.Itoa(hlsListSize), // Max # in variant playlist
 		hlsOptionsString,
 		hlsEventString,
 		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",

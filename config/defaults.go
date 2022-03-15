@@ -33,6 +33,8 @@ type Defaults struct {
 	FederationGoLiveMessage string
 
 	ChatEstablishedUserModeTimeDuration time.Duration
+
+	KeepWholeStream bool
 }
 
 // GetDefaults will return default configuration values.
@@ -73,5 +75,7 @@ func GetDefaults() Defaults {
 
 		FederationUsername:      "streamer",
 		FederationGoLiveMessage: "I've gone live!",
+
+		KeepWholeStream: false,
 	}
 }

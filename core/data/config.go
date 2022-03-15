@@ -56,6 +56,7 @@ const (
 	suggestedUsernamesKey           = "suggested_usernames"
 	chatJoinMessagesEnabledKey      = "chat_join_messages_enabled"
 	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
+  keepWholeStreamKey              = "keep_whole_stream"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -443,6 +444,22 @@ func GetS3StorageEnabled() bool {
 // SetS3StorageEnabled will enable or disable external storage.
 func SetS3StorageEnabled(enabled bool) error {
 	return _datastore.SetBool(s3StorageEnabledKey, enabled)
+}
+
+// GetKeepWholeStream will return if the whole stream should be saved.
+func GetKeepWholeStream() bool {
+	enabled, err := _datastore.GetBool(keepWholeStreamKey)
+	if err != nil {
+		log.Traceln(err)
+		return false
+	}
+
+	return enabled
+}
+
+// SetKeepWholeStream will toggle if the whole stream should be kept.
+func SetKeepWholeStream(enabled bool) error {
+	return _datastore.SetBool(keepWholeStreamKey, enabled)
 }
 
 // GetStreamLatencyLevel will return the stream latency level.

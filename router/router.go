@@ -189,6 +189,9 @@ func Start() error {
 	// Set video codec
 	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
 
+	// Enable keeping the whole stream
+	http.HandleFunc("/api/admin/config/video/keepwholestream", middleware.RequireAdminAuth(admin.SetKeepWholeStream))
+
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
 
