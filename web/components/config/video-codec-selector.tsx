@@ -90,6 +90,8 @@ export default function CodecSelector() {
       title = 'Video4Linux hardware encoding';
     } else if (title === 'h264_omx') {
       title = 'OpenMax (omx) for Raspberry Pi';
+    } else if (title === 'h264_videotoolbox') {
+      title = 'Apple VideoToolbox (hardware)';
     }
 
     return (
@@ -102,7 +104,7 @@ export default function CodecSelector() {
   let description = '';
   if (selectedCodec === 'libx264') {
     description =
-      'libx264 is the default codec and generally the only working choice for shared VPS enviornments. This is likely what you should be using unless you know you have set up other options.';
+      'libx264 is the default codec and generally the only working choice for shared VPS environments. This is likely what you should be using unless you know you have set up other options.';
   } else if (selectedCodec === 'h264_nvenc') {
     description =
       'You can use your NVIDIA GPU for encoding if you have a modern NVIDIA card with encoding cores.';
@@ -117,6 +119,9 @@ export default function CodecSelector() {
       'Video4Linux is an interface to multiple different hardware encoding platforms such as Intel and AMD.';
   } else if (selectedCodec === 'h264_omx') {
     description = 'OpenMax is a codec most often used with a Raspberry Pi.';
+  } else if (selectedCodec === 'h264_videotoolbox') {
+    description =
+      'Apple VideoToolbox is a low-level framework that provides direct access to hardware encoders and decoders.';
   }
 
   return (
