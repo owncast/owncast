@@ -20,7 +20,7 @@ var (
 
 var errorResetDuration = time.Minute * 5
 
-const alertingError = "The %s utilization of %d%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
+const alertingError = "The %s utilization of %f%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
 
 func handleAlerting() {
 	handleCPUAlerting()
@@ -83,6 +83,6 @@ func handleDiskAlerting() {
 	}
 }
 
-func recentAverage(values []timestampedValue) int {
+func recentAverage(values []TimestampedValue) float64 {
 	return (values[len(values)-1].Value + values[len(values)-2].Value) / 2
 }

@@ -4,8 +4,35 @@ import videojs from '/js/web_modules/videojs/dist/video.min.js';
 import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
 import PlaybackMetrics from '../metrics/playback.js';
+import LatencyCompensator from './latencyCompensator.js';
 
 const VIDEO_ID = 'video';
+
+const EVENTS = [
+  'loadstart',
+  'progress',
+  'suspend',
+  'abort',
+  'error',
+  'emptied',
+  'stalled',
+  'loadedmetadata',
+  'loadeddata',
+  'canplay',
+  'canplaythrough',
+  'playing',
+  'waiting',
+  'seeking',
+  'seeked',
+  'ended',
+  'durationchange',
+  'timeupdate',
+  'play',
+  'pause',
+  'ratechange',
+  'resize',
+  'volumechange',
+];
 
 // Video setup
 const VIDEO_SRC = {
@@ -38,9 +65,9 @@ const VIDEO_OPTIONS = {
 export const POSTER_DEFAULT = `/img/logo.png`;
 export const POSTER_THUMB = `/thumbnail.jpg`;
 
-function getCurrentlyPlayingSegment(obj, old_segment = null) {
-  var target_media = obj.tech().hls.playlists.media();
-  var snapshot_time = obj.currentTime();
+function getCurrentlyPlayingSegment(tech, old_segment = null) {
+  var target_media = tech.vhs.playlists.media();
+  var snapshot_time = tech.currentTime();
 
   var segment;
   var segment_time;
@@ -76,6 +103,7 @@ class OwncastPlayer {
     this.playbackMetrics = new PlaybackMetrics();
 
     this.vjsPlayer = null;
+    this.latencyCompensator = null;
 
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
@@ -88,6 +116,8 @@ class OwncastPlayer {
     this.handleVolume = this.handleVolume.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.handleWaiting = this.handleWaiting.bind(this);
+    this.handleNoLongerBuffering = this.handleNoLongerBuffering.bind(this);
     this.addQualitySelector = this.addQualitySelector.bind(this);
     this.qualitySelectionMenu = null;
   }
@@ -97,13 +127,13 @@ class OwncastPlayer {
     this.addQualitySelector();
 
     // Keep a reference of the standard vjs xhr function.
-    const old = videojs.xhr;
+    const oldVjsXhrCallback = videojs.xhr;
 
     // Override the xhr function to track segment download time.
     videojs.Vhs.xhr = (...args) => {
-      const start = new Date();
-
       if (args[0].uri.match('.ts')) {
+        const start = new Date();
+
         const cb = args[1];
         args[1] = (request, error, response) => {
           const end = new Date();
@@ -113,7 +143,7 @@ class OwncastPlayer {
         };
       }
 
-      return old(...args);
+      return oldVjsXhrCallback(...args);
     };
 
     // Add a cachebuster param to playlist URLs.
@@ -157,17 +187,28 @@ class OwncastPlayer {
   handleReady() {
     this.vjsPlayer.on('error', this.handleError);
     this.vjsPlayer.on('playing', this.handlePlaying);
+    this.vjsPlayer.on('waiting', this.handleWaiting);
+    this.vjsPlayer.on('canplaythrough', this.handleNoLongerBuffering);
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
+
+    this.vjsPlayer.on(EVENTS, (e) => {
+      // console.log(e.type);
+    });
 
     this.vjsPlayer.on('ready', () => {
       const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
       tech.on('usage', (e) => {
-        console.log(e.name);
-      });
+        // console.log(e.name);
+        if (e.name === 'vhs-unknown-waiting') {
+          console.log('----', 'buffering');
+          this.playbackMetrics.incrementErrorCount(1);
+        }
 
-      this.vjsPlayer.on('error', (e) => {
-        console.log(e);
+        if (e.name === 'vhs-rendition-change-abr') {
+          // Quality variant has changed
+          this.playbackMetrics.incrementQualityVariantChanges();
+        }
       });
 
       // Variant changed
@@ -175,15 +216,6 @@ class OwncastPlayer {
       trackElements.addEventListener('cuechange', function (c) {
         console.log(c);
       });
-
-      // this.vjsPlayer.on('progress', () => {
-      //   const segment = getCurrentlyPlayingSegment(this.vjsPlayer);
-      //   const segmentTime = segment.dateTimeObject.getTime();
-      //   const now = new Date().getTime();
-      //   const latancy = now - segmentTime;
-
-      //   this.playbackMetrics.trackLatancy(latancy);
-      // });
     });
 
     if (this.appPlayerReadyCallback) {
@@ -208,39 +240,20 @@ class OwncastPlayer {
       this.appPlayerPlayingCallback();
     }
 
-    // Latancy management
-    // setInterval(() => {
-    //   this.vjsPlayer.playbackRate(1.2);
-    //   setTimeout(() => {
-    //     this.vjsPlayer.playbackRate(1);
-    //   }, 1400);
-    // }, 1500);
-
     setInterval(() => {
       const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
-
-      // const requestsErrored = this.vjsPlayer.vhs.stats.mediaRequestsErrored;
-      // console.log('errored', requestsErrored);
-
-      // const requestsTimedOut = this.vjsPlayer.vhs.stats.mediaRequestsTimedout;
-      // console.log('timedOut', requestsTimedOut);
-
-      // const requestsAborted = this.vjsPlayer.vhs.stats.mediaRequestsAborted;
-      // console.log('aborted', requestsAborted);
-
       const bandwidth = tech.vhs.systemBandwidth;
       this.playbackMetrics.trackBandwidth(bandwidth);
 
-      const segment = getCurrentlyPlayingSegment(this.vjsPlayer);
-      const segmentTime = segment.dateTimeObject.getTime();
-      const now = new Date().getTime();
-      const latancy = now - segmentTime;
-      this.playbackMetrics.trackLatancy(latancy);
-
-      // const aveSec =
-      //   this.vjsPlayer.vhs.stats.mediaSecondsLoaded /
-      //   this.vjsPlayer.vhs.stats.mediaRequests;
-      // console.log('ave seconds per request', aveSec);
+      try {
+        const segment = getCurrentlyPlayingSegment(tech);
+        const segmentTime = segment.dateTimeObject.getTime();
+        const now = new Date().getTime();
+        const latency = now - segmentTime;
+        this.playbackMetrics.trackLatency(latency);
+      } catch (err) {
+        console.warn(err);
+      }
     }, 5000);
   }
 
@@ -256,6 +269,17 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
+
+    this.playbackMetrics.incrementErrorCount(1);
+  }
+
+  handleWaiting(e) {
+    // this.playbackMetrics.incrementErrorCount(1);
+    this.playbackMetrics.isBuffering = true;
+  }
+
+  handleNoLongerBuffering() {
+    this.playbackMetrics.isBuffering = false;
   }
 
   log(message) {

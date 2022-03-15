@@ -17,6 +17,7 @@ export const URL_WEBSOCKET = `${
 }://${location.host}/ws`;
 export const URL_CHAT_REGISTRATION = `/api/chat/register`;
 export const URL_FOLLOWERS = `/api/followers`;
+export const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
 
 export const TIMER_STATUS_UPDATE = 5000; // ms
 export const TIMER_DISABLE_CHAT_AFTER_OFFLINE = 5 * 60 * 1000; // 5 mins

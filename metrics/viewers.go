@@ -10,14 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	// How often we poll for updates.
-	viewerMetricsPollingInterval = 2 * time.Minute
-	activeChatClientCountKey     = "chat_client_count"
-	activeViewerCountKey         = "viewer_count"
-	playbackErrorCountKey        = "playback_error_count"
-)
-
 var storage tstorage.Storage
 
 func startViewerCollectionMetrics() {
@@ -83,7 +75,7 @@ func collectChatClientCount() {
 }
 
 // GetViewersOverTime will return a window of viewer counts over time.
-func GetViewersOverTime(start, end time.Time) []timestampedValue {
+func GetViewersOverTime(start, end time.Time) []TimestampedValue {
 	p, err := storage.Select(activeViewerCountKey, nil, start.Unix(), end.Unix())
 	if err != nil && err != tstorage.ErrNoDataPoints {
 		log.Errorln(err)
@@ -94,7 +86,7 @@ func GetViewersOverTime(start, end time.Time) []timestampedValue {
 }
 
 // GetChatClientCountOverTime will return a window of connected chat clients over time.
-func GetChatClientCountOverTime(start, end time.Time) []timestampedValue {
+func GetChatClientCountOverTime(start, end time.Time) []TimestampedValue {
 	p, err := storage.Select(activeChatClientCountKey, nil, start.Unix(), end.Unix())
 	if err != nil && err != tstorage.ErrNoDataPoints {
 		log.Errorln(err)

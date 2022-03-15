@@ -1,47 +1,49 @@
-const MAX_METRICS_COUNT = 20;
-const METRICS_SEND_INTERVAL = 3000;
+import { URL_PLAYBACK_METRICS } from '../utils/constants.js';
+const METRICS_SEND_INTERVAL = 10000;
 
 class PlaybackMetrics {
   constructor() {
+    this.hasPerformedInitialVariantChange = false;
+
     this.segmentDownloadTime = [];
     this.bandwidthTracking = [];
-    this.latancyTracking = [];
-    this.errors;
+    this.latencyTracking = [];
+    this.errors = 0;
+    this.qualityVariantChanges = 0;
+    this.isBuffering = false;
 
     setInterval(() => {
       this.send();
     }, METRICS_SEND_INTERVAL);
   }
 
-  trackError(error) {
-    console.log(error);
+  incrementErrorCount(count) {
+    this.errors += count;
+  }
+
+  incrementQualityVariantChanges() {
+    // We always start the player at the lowest quality, so let's just not
+    // count the first change.
+    if (!this.hasPerformedInitialVariantChange) {
+      this.hasPerformedInitialVariantChange = true;
+      return;
+    }
+    this.qualityVariantChanges++;
   }
 
   trackSegmentDownloadTime(seconds) {
-    if (this.segmentDownloadTime.length > MAX_METRICS_COUNT) {
-      this.segmentDownloadTime.shift();
-    }
-
     this.segmentDownloadTime.push(seconds);
   }
 
   trackBandwidth(bps) {
-    if (this.bandwidthTracking.length > MAX_METRICS_COUNT) {
-      this.bandwidthTracking.shift();
-    }
-
     this.bandwidthTracking.push(bps);
   }
 
-  trackLatancy(latency) {
-    if (this.latancyTracking.length > MAX_METRICS_COUNT) {
-      this.latancyTracking.shift();
-    }
-
-    this.latancyTracking.push(latency);
+  trackLatency(latency) {
+    this.latencyTracking.push(latency);
   }
 
-  send() {
+  async send() {
     if (
       this.segmentDownloadTime.length < 4 ||
       this.bandwidthTracking.length < 4
@@ -49,6 +51,7 @@ class PlaybackMetrics {
       return;
     }
 
+    const errorCount = this.errors;
     const average = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
 
     const averageDownloadDuration = average(this.segmentDownloadTime) / 1000;
@@ -58,14 +61,35 @@ class PlaybackMetrics {
     const averageBandwidth = average(this.bandwidthTracking) / 1000;
     const roundedAverageBandwidth = Math.round(averageBandwidth * 1000) / 1000;
 
-    const averageLatancy = average(this.latancyTracking) / 1000;
-    const roundedAverageLatancy = Math.round(averageLatancy * 1000) / 1000;
+    const averageLatency = average(this.latencyTracking) / 1000;
+    const roundedAverageLatency = Math.round(averageLatency * 1000) / 1000;
 
     const data = {
       bandwidth: roundedAverageBandwidth,
-      latancy: roundedAverageLatancy,
+      latency: roundedAverageLatency,
       downloadDuration: roundedAverageDownloadDuration,
+      errors: errorCount + this.isBuffering ? 1 : 0,
+      qualityVariantChanges: this.qualityVariantChanges,
     };
+    this.errors = 0;
+    this.qualityVariantChanges = 0;
+    this.segmentDownloadTime = [];
+    this.bandwidthTracking = [];
+    this.latencyTracking = [];
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+
+    try {
+      fetch(URL_PLAYBACK_METRICS, options);
+    } catch (e) {
+      console.error(e);
+    }
 
     console.log(data);
   }

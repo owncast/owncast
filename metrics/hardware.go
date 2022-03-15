@@ -24,9 +24,9 @@ func collectCPUUtilization() {
 		return
 	}
 
-	metricValue := timestampedValue{time.Now(), int(v[0])}
+	metricValue := TimestampedValue{time.Now(), v[0]}
 	metrics.CPUUtilizations = append(metrics.CPUUtilizations, metricValue)
-	cpuUsage.Set(float64(metricValue.Value))
+	cpuUsage.Set(metricValue.Value)
 }
 
 func collectRAMUtilization() {
@@ -35,7 +35,7 @@ func collectRAMUtilization() {
 	}
 
 	memoryUsage, _ := mem.VirtualMemory()
-	metricValue := timestampedValue{time.Now(), int(memoryUsage.UsedPercent)}
+	metricValue := TimestampedValue{time.Now(), memoryUsage.UsedPercent}
 	metrics.RAMUtilizations = append(metrics.RAMUtilizations, metricValue)
 }
 
@@ -47,6 +47,6 @@ func collectDiskUtilization() {
 		metrics.DiskUtilizations = metrics.DiskUtilizations[1:]
 	}
 
-	metricValue := timestampedValue{time.Now(), int(diskUse.UsedPercent)}
+	metricValue := TimestampedValue{time.Now(), diskUse.UsedPercent}
 	metrics.DiskUtilizations = append(metrics.DiskUtilizations, metricValue)
 }
