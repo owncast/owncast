@@ -703,23 +703,23 @@ func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "chat join message status updated")
 }
 
-// SetKeepWholeStream sets keep whole stream enabled
+// SetKeepWholeStream sets keep whole stream enabled.
 func SetKeepWholeStream(w http.ResponseWriter, r *http.Request) {
-  if !requirePOST(w, r) {
-    return
-  }
+	if !requirePOST(w, r) {
+		return
+	}
 
-  configValue, success := getValueFromRequest(w, r)
-  if !success {
-    return
-  }
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
 
-  if err := data.SetKeepWholeStream(configValue.Value.(bool)); err != nil {
-    controllers.WriteSimpleResponse(w, false, err.Error())
-    return
-  }
+	if err := data.SetKeepWholeStream(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
-  controllers.WriteSimpleResponse(w, true, "keep whole stream enabled set")
+	controllers.WriteSimpleResponse(w, true, "keep whole stream enabled set")
 }
 
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {

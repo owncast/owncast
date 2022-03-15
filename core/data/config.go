@@ -56,7 +56,7 @@ const (
 	suggestedUsernamesKey           = "suggested_usernames"
 	chatJoinMessagesEnabledKey      = "chat_join_messages_enabled"
 	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
-  keepWholeStreamKey              = "keep_whole_stream"
+	keepWholeStreamKey              = "keep_whole_stream"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
