@@ -59,9 +59,9 @@ class OwncastPlayer {
     this.qualitySelectionMenu = null;
   }
 
-  init() {
+  async init() {
     this.addAirplay();
-    this.addQualitySelector();
+    await this.addQualitySelector();
 
     videojs.Vhs.xhr.beforeRequest = (options) => {
       if (options.uri.match('m3u8')) {
@@ -70,6 +70,14 @@ class OwncastPlayer {
       }
       return options;
     };
+
+    try {
+      const response = await fetch('/api/video/keepwholestream');
+      let seekBarEnabled = await response.json();
+      VIDEO_OPTIONS.controlBar.progressControl.seekBar = seekBarEnabled === true;
+    } catch (e) {
+      console.error(e);
+    }
 
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
 

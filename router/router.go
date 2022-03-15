@@ -192,6 +192,9 @@ func Start() error {
 	// Enable keeping the whole stream
 	http.HandleFunc("/api/admin/config/video/keepwholestream", middleware.RequireAdminAuth(admin.SetKeepWholeStream))
 
+	// return if the whole stream is being kept
+	http.HandleFunc("/api/video/keepwholestream", controllers.GetKeepWholeStream)
+
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
 

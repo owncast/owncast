@@ -57,3 +57,8 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 
 	WriteResponse(w, response)
 }
+
+// GetKeepWholeStream will return the current value of the keep whole stream setting.
+func GetKeepWholeStream(w http.ResponseWriter, r *http.Request) {
+	WriteResponse(w, data.GetKeepWholeStream())
+}
