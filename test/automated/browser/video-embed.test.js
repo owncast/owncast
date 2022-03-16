@@ -10,7 +10,10 @@ describe('Video embed page', () => {
 
   afterAll(async () => {
     await page.waitForTimeout(3000);
-    await page.screenshot({ path: 'screenshots/screenshot_video_embed.png', fullPage: true });
+    await page.screenshot({
+      path: 'screenshots/screenshot_video_embed.png',
+      fullPage: true,
+    });
   });
 
   videoTest(browser, page);
