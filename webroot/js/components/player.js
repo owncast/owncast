@@ -192,16 +192,10 @@ class OwncastPlayer {
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
 
-    this.vjsPlayer.on(EVENTS, (e) => {
-      // console.log(e.type);
-    });
-
     this.vjsPlayer.on('ready', () => {
       const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
       tech.on('usage', (e) => {
-        // console.log(e.name);
         if (e.name === 'vhs-unknown-waiting') {
-          console.log('----', 'buffering');
           this.playbackMetrics.incrementErrorCount(1);
         }
 

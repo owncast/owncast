@@ -91,7 +91,7 @@ class PlaybackMetrics {
       console.error(e);
     }
 
-    console.log(data);
+    // console.log(data);
   }
 }
 
