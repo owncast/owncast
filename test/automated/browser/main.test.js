@@ -26,7 +26,7 @@ describe('Frontend web page', () => {
   beforeAll(async () => {
     listenForErrors(browser, page);
     await page.goto('http://localhost:5309');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(3000);
   });
 
   devices.forEach(async function (device) {
@@ -38,7 +38,7 @@ describe('Frontend web page', () => {
     interactiveChatTest(browser, page, newName, fakeMessage, device.name);
     videoTest(browser, page);
 
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
     await page.screenshot({
       path: 'screenshots/screenshot_main-' + device.name + '.png',
       fullPage: true,

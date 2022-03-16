@@ -1,11 +1,12 @@
 const listenForErrors = require('./lib/errors.js').listenForErrors;
 
 describe('Video embed page', () => {
+  
   async function getMetaTagContent(property) {
     const selector = `meta[property="${property}"]`;
 
     const tag = await page.evaluate((selector) => {
-      return document.head.querySelector(selector).getAttribute('content');
+      return document.head.querySelector(selector).getAttribute("content");
     }, selector);
     return tag;
   }
@@ -13,16 +14,15 @@ describe('Video embed page', () => {
   beforeAll(async () => {
     await page.setViewport({ width: 1080, height: 720 });
     listenForErrors(browser, page);
-    page.setUserAgent('Mastodon');
+    page.setUserAgent(
+      "Mastodon"
+    );
     await page.goto('http://localhost:5309');
   });
 
   afterAll(async () => {
-    await page.waitForTimeout(5000);
-    await page.screenshot({
-      path: 'screenshots/screenshot_bots_share_search_scrapers.png',
-      fullPage: true,
-    });
+    await page.waitForTimeout(3000);
+    await page.screenshot({ path: 'screenshots/screenshot_bots_share_search_scrapers.png', fullPage: true });
   });
 
   it('should have rendered the simple bot accessible html page', async () => {

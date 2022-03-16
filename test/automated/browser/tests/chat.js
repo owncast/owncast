@@ -41,13 +41,14 @@ async function interactiveChatTest(
       document.querySelector('#button-update-username').click()
     );
 
-    await page.waitForTimeout(5000);
+    // page.keyboard.press('Enter');
+    await page.waitForTimeout(3000);
   });
 
   it('should allow typing a chat message', async () => {
     await page.waitForSelector('#message-input');
     await page.evaluate(() => document.querySelector('#message-input').click());
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(1000);
     await page.focus('#message-input');
     await page.keyboard.type(chatMessage);
     page.keyboard.press('Enter');
