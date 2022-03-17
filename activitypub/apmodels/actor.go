@@ -161,8 +161,10 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	// Profile properties
 
 	// Avatar
+	uniquenessString := data.GetLogoUniquenessString()
 	userAvatarURLString := data.GetServerURL() + "/logo/external"
 	userAvatarURL, err := url.Parse(userAvatarURLString)
+	userAvatarURL.RawQuery = "uc=" + uniquenessString
 	if err != nil {
 		log.Errorln("unable to parse user avatar url", userAvatarURLString, err)
 	}

@@ -18,6 +18,7 @@ const (
 	streamTitleKey                  = "stream_title"
 	streamKeyKey                    = "stream_key"
 	logoPathKey                     = "logo_path"
+	logoUniquenessKey               = "logo_uniqueness"
 	serverSummaryKey                = "server_summary"
 	serverWelcomeMessageKey         = "server_welcome_message"
 	serverNameKey                   = "server_name"
@@ -123,6 +124,22 @@ func GetLogoPath() string {
 // SetLogoPath will set the path for the logo, relative to webroot.
 func SetLogoPath(logo string) error {
 	return _datastore.SetString(logoPathKey, logo)
+}
+
+// SetLogoUniquenessString will set the logo cache busting string.
+func SetLogoUniquenessString(uniqueness string) error {
+	return _datastore.SetString(logoUniquenessKey, uniqueness)
+}
+
+// GetLogoUniquenessString will return the logo cache busting string.
+func GetLogoUniquenessString() string {
+	uniqueness, err := _datastore.GetString(logoUniquenessKey)
+	if err != nil {
+		log.Traceln(logoUniquenessKey, err)
+		return ""
+	}
+
+	return uniqueness
 }
 
 // GetServerSummary will return the server summary text.

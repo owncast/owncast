@@ -19,6 +19,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 )
 
 // ConfigValue is a container object that holds a value, is encoded, and saved to the database.
@@ -242,7 +243,7 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imgPath := filepath.Join("data", "logo"+extension)
-	if err := os.WriteFile(imgPath, bytes, 0600); err != nil {
+	if err := os.WriteFile(imgPath, bytes, 0o600); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -250,6 +251,10 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	if err := data.SetLogoPath("logo" + extension); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
+	}
+
+	if err := data.SetLogoUniquenessString(shortid.MustGenerate()); err != nil {
+		log.Error("Error saving logo uniqueness string: ", err)
 	}
 
 	// Update Fediverse followers about this change.
