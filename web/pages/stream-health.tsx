@@ -28,9 +28,23 @@ function DescriptionBox({ title, description }: DescriptionBoxProps) {
 export default function StreamHealth() {
   const [errors, setErrors] = useState<TimedValue[]>([]);
   const [qualityVariantChanges, setQualityVariantChanges] = useState<TimedValue[]>([]);
-  const [latency, setLatency] = useState<TimedValue[]>([]);
-  const [segmentDownloadDurations, setSegmentDownloadDurations] = useState<TimedValue[]>([]);
+
+  const [lowestLatency, setLowestLatency] = useState<TimedValue[]>();
+  const [highestLatency, setHighestLatency] = useState<TimedValue[]>();
+  const [medianLatency, setMedianLatency] = useState<TimedValue[]>([]);
+
+  const [medianSegmentDownloadDurations, setMedianSegmentDownloadDurations] = useState<
+    TimedValue[]
+  >([]);
+  const [maximumSegmentDownloadDurations, setMaximumSegmentDownloadDurations] = useState<
+    TimedValue[]
+  >([]);
+  const [minimumSegmentDownloadDurations, setMinimumSegmentDownloadDurations] = useState<
+    TimedValue[]
+  >([]);
   const [minimumPlayerBitrate, setMinimumPlayerBitrate] = useState<TimedValue[]>([]);
+  const [medianPlayerBitrate, setMedianPlayerBitrate] = useState<TimedValue[]>([]);
+  const [maximumPlayerBitrate, setMaximumPlayerBitrate] = useState<TimedValue[]>([]);
   const [availableBitrates, setAvailableBitrates] = useState<Number[]>([]);
   const [segmentLength, setSegmentLength] = useState(0);
 
@@ -39,9 +53,19 @@ export default function StreamHealth() {
       const result = await fetchData(API_STREAM_HEALTH_METRICS);
       setErrors(result.errors);
       setQualityVariantChanges(result.qualityVariantChanges);
-      setLatency(result.latency);
-      setSegmentDownloadDurations(result.segmentDownloadDuration);
+
+      setHighestLatency(result.highestLatency);
+      setLowestLatency(result.lowestLatency);
+      setMedianLatency(result.medianLatency);
+
+      setMedianSegmentDownloadDurations(result.medianSegmentDownloadDuration);
+      setMaximumSegmentDownloadDurations(result.maximumSegmentDownloadDuration);
+      setMinimumSegmentDownloadDurations(result.minimumSegmentDownloadDuration);
+
       setMinimumPlayerBitrate(result.minPlayerBitrate);
+      setMedianPlayerBitrate(result.medianPlayerBitrate);
+      setMaximumPlayerBitrate(result.maxPlayerBitrate);
+
       setAvailableBitrates(result.availableBitrates);
       setSegmentLength(result.segmentLength - 0.3);
     } catch (error) {
@@ -74,11 +98,11 @@ export default function StreamHealth() {
     return noData;
   }
 
-  if (!latency?.length) {
+  if (!medianLatency?.length) {
     return noData;
   }
 
-  if (!segmentDownloadDurations?.length) {
+  if (!medianSegmentDownloadDurations?.length) {
     return noData;
   }
 
@@ -99,24 +123,48 @@ export default function StreamHealth() {
 
   const latencyChart = [
     {
-      name: 'Average stream latency',
+      name: 'Median stream latency',
+      color: '#00FFFF',
+      options: { radius: 2 },
+      data: medianLatency,
+    },
+    {
+      name: 'Lowest stream latency',
+      color: '#02FD0D',
+      options: { radius: 2 },
+      data: lowestLatency,
+    },
+    {
+      name: 'Highest stream latency',
       color: '#B63FFF',
       options: { radius: 2 },
-      data: latency,
+      data: highestLatency,
     },
   ];
 
   const segmentDownloadDurationChart = [
     {
-      name: 'Average download duration',
+      name: 'Median download duration',
+      color: '#00FFFF',
+      options: { radius: 2 },
+      data: medianSegmentDownloadDurations,
+    },
+    {
+      name: 'Max download duration',
       color: '#B63FFF',
       options: { radius: 2 },
-      data: segmentDownloadDurations,
+      data: maximumSegmentDownloadDurations,
+    },
+    {
+      name: 'Min download duration',
+      color: '#02FD0D',
+      options: { radius: 2 },
+      data: minimumSegmentDownloadDurations,
     },
     {
       name: `Approximate limit`,
       color: '#003FFF',
-      data: segmentDownloadDurations.map(item => ({
+      data: medianSegmentDownloadDurations.map(item => ({
         time: item.time,
         value: segmentLength,
       })),
@@ -129,6 +177,18 @@ export default function StreamHealth() {
       name: 'Lowest viewer bitrate',
       color: '#B63FFF',
       data: minimumPlayerBitrate,
+      options: { radius: 2 },
+    },
+    {
+      name: 'Median viewer bitrate',
+      color: '#00FFFF',
+      data: medianPlayerBitrate,
+      options: { radius: 2 },
+    },
+    {
+      name: 'Maximum viewer bitrate',
+      color: '#02FD0D',
+      data: maximumPlayerBitrate,
       options: { radius: 2 },
     },
   ];
@@ -147,9 +207,13 @@ export default function StreamHealth() {
 
   const currentSpeed = bitrateChart[0]?.data[bitrateChart[0].data.length - 1]?.value;
   const currentDownloadSeconds =
-    segmentDownloadDurations[segmentDownloadDurations.length - 1]?.value;
+    medianSegmentDownloadDurations[medianSegmentDownloadDurations.length - 1]?.value;
   const lowestVariant = availableBitrates[0]; // TODO: get lowest bitrate from available bitrates
-  const latencyStat = latencyChart[0]?.data[latencyChart[0].data.length - 1]?.value || 0;
+
+  const latencyMedian = medianLatency[medianLatency.length - 1]?.value || 0;
+  const latencyMax = highestLatency[highestLatency.length - 1]?.value || 0;
+  const latencyMin = lowestLatency[lowestLatency.length - 1]?.value || 0;
+  const latencyStat = (Number(latencyMax) + Number(latencyMin) + Number(latencyMedian)) / 3;
 
   let recentErrorCount = 0;
   const errorValueCount = errorChart[0]?.data.length || 0;
@@ -202,7 +266,7 @@ export default function StreamHealth() {
             <Card type="inner">
               <div style={statStyle}>
                 <Statistic
-                  title="Slowest Viewer Speed"
+                  title="Viewer Playback Speed"
                   value={`${currentSpeed}`}
                   prefix={<WifiOutlined style={{ marginRight: '5px' }} />}
                   precision={0}
@@ -215,7 +279,7 @@ export default function StreamHealth() {
             <Card type="inner">
               <div style={statStyle}>
                 <Statistic
-                  title="Average Latency"
+                  title="Viewer Latency"
                   value={`${latencyStat}`}
                   prefix={<ClockCircleOutlined style={{ marginRight: '5px' }} />}
                   precision={0}
@@ -275,10 +339,10 @@ export default function StreamHealth() {
             description={
               <>
                 <Typography.Paragraph>
-                  The slowest bitrate of any of your viewers. Once somebody's bitrate drops below
-                  the lowest video variant bitrate they will experience buffering. If you see
-                  viewers with slow connections trying to play your video you should consider
-                  offering an additional, lower quality.
+                  The playback bitrate of your viewers. Once somebody's bitrate drops below the
+                  lowest video variant bitrate they will experience buffering. If you see viewers
+                  with slow connections trying to play your video you should consider offering an
+                  additional, lower quality.
                 </Typography.Paragraph>
                 <Typography.Paragraph>
                   In short, once the pink line gets near the lowest blue line, your stream is likely
@@ -324,8 +388,8 @@ export default function StreamHealth() {
         </Card>
         <Card>
           <DescriptionBox
-            title="Average Latency"
-            description="An approximate, averaged, seconds across all your viewers that they are behind your live video. The more people buffer the further behind they will be. High latency itself is not a problem, but some people care about this more than others."
+            title="Viewer Latency"
+            description="An approximate number of seconds that your viewers are behind your live video. The more people buffer the further behind they will be. High latency itself is not a problem, but some people care about this more than others."
           />
           <Chart title="Seconds" dataCollections={latencyChart} color="#FF7700" unit="s" />
         </Card>
