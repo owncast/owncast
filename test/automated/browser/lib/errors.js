@@ -1,5 +1,10 @@
 async function listenForErrors(browser, page) {
-  const ignoredErrors = ['ERR_ABORTED', 'MEDIA_ERR_SRC_NOT_SUPPORTED', '404'];
+  const ignoredErrors = [
+    'ERR_ABORTED',
+    'MEDIA_ERR_SRC_NOT_SUPPORTED',
+    '404',
+    'JSHandle@error',
+  ];
 
   // Emitted when the page emits an error event (for example, the page crashes)
   page.on('error', (error) => {
