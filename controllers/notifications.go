@@ -4,44 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/notifications"
-	"github.com/owncast/owncast/notifications/email"
 
 	"github.com/owncast/owncast/utils"
 
 	log "github.com/sirupsen/logrus"
 )
-
-// RegisterForEmailNotifications will register a single email address with
-// an email list, creating the list if necessary.
-func RegisterForEmailNotifications(w http.ResponseWriter, r *http.Request) {
-	type request struct {
-		EmailAddress string `json:"emailAddress"`
-	}
-
-	emailConfig := data.GetMailjetConfiguration()
-	if !emailConfig.Enabled {
-		WriteSimpleResponse(w, false, "email notifications are not enabled")
-		return
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	var req request
-	if err := decoder.Decode(&req); err != nil {
-		log.Errorln(err)
-		WriteSimpleResponse(w, false, "unable to register for email notifications")
-		return
-	}
-
-	_, err := email.CreateDoubleOptInRequest(req.EmailAddress)
-	if err != nil {
-		WriteSimpleResponse(w, false, "unable to register for email notifications")
-		return
-	}
-
-	WriteSimpleResponse(w, true, "added")
-}
 
 // RegisterForLiveNotifications will register a channel + destination to be
 // notified when a stream goes live.

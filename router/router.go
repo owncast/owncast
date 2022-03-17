@@ -11,7 +11,6 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
-	"github.com/owncast/owncast/controllers/email"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -86,9 +85,6 @@ func Start() error {
 
 	// Register for notifications
 	http.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications))
-
-	// Email notifications have a special handler due to the 3rd party delivery
-	http.HandleFunc("/api/notifications/register/email", middleware.RequireUserAccessToken(controllers.RegisterForEmailNotifications))
 
 	// Authenticated admin requests
 
@@ -350,11 +346,6 @@ func Start() error {
 	http.HandleFunc("/api/admin/config/notifications/discord", middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration))
 	http.HandleFunc("/api/admin/config/notifications/browser", middleware.RequireAdminAuth(admin.SetBrowserNotificationConfiguration))
 	http.HandleFunc("/api/admin/config/notifications/twitter", middleware.RequireAdminAuth(admin.SetTwitterConfiguration))
-	http.HandleFunc("/api/admin/config/notifications/email", middleware.RequireAdminAuth(admin.SetSMTPNotificationConfiguration))
-	http.HandleFunc("/api/admin/config/notifications/email/mailjet", middleware.RequireAdminAuth(admin.SetMailjetConfiguration))
-
-	// Email double opt-in verification
-	http.HandleFunc("/email/confirm", email.ConfirmEmailDoubleOptIn)
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())

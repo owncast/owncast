@@ -9,7 +9,6 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
-	"github.com/owncast/owncast/notifications/email"
 	"github.com/owncast/owncast/notifications/twitter"
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
@@ -21,7 +20,6 @@ type Notifier struct {
 	datastore *data.Datastore
 	browser   *browser.Browser
 	discord   *discord.Discord
-	email     *email.Email
 	twitter   *twitter.Twitter
 }
 
@@ -68,9 +66,6 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 		log.Error(err)
 	}
 	if err := notifier.setupDiscord(); err != nil {
-		log.Error(err)
-	}
-	if err := notifier.setupEmail(); err != nil {
 		log.Error(err)
 	}
 	if err := notifier.setupTwitter(); err != nil {
@@ -182,41 +177,6 @@ func (n *Notifier) notifyTwitter() {
 	}
 }
 
-func (n *Notifier) setupEmail() error {
-	if emailConfig := data.GetSMTPConfiguration(); emailConfig.Enabled && emailConfig.FromAddress != "" && emailConfig.ListAddress != "" {
-		e, err := email.New()
-		if err != nil {
-			return errors.Wrap(err, "error creating email notifier")
-		}
-		n.email = e
-	}
-
-	return nil
-}
-
-func (n *Notifier) notifyEmail() {
-	content, err := email.GenerateEmailContent()
-	if err != nil {
-		log.Errorln("unable to generate email notification content: ", err)
-		return
-	}
-
-	emailConfig := data.GetSMTPConfiguration()
-	if !emailConfig.Enabled {
-		return
-	}
-
-	subject := emailConfig.GoLiveSubject
-	if data.GetStreamTitle() != "" {
-		subject += " - " + data.GetStreamTitle()
-	}
-
-	if err := n.email.Send([]string{emailConfig.ListAddress}, content, subject); err != nil {
-		log.Errorln("unable to send email notification: ", err)
-		return
-	}
-}
-
 // Notify will fire the different notification channels.
 func (n *Notifier) Notify() {
 	if n.browser != nil {
@@ -225,10 +185,6 @@ func (n *Notifier) Notify() {
 
 	if n.discord != nil {
 		n.notifyDiscord()
-	}
-
-	if n.email != nil {
-		n.notifyEmail()
 	}
 
 	if n.twitter != nil {
