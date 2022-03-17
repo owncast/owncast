@@ -13,7 +13,7 @@ It will:
 
 const BUFFER_LIMIT = 10; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 300; // Min duration a buffer event must last to be counted.
-const SPEEDUP_RATE = 1.06; // The playback rate when compensating for latency.
+const MAX_SPEEDUP_RATE = 1.07; // The playback rate when compensating for latency.
 const TIMEOUT_DURATION = 20_000; // The amount of time we stop handling latency after certain events.
 const CHECK_TIMER_INTERVAL = 5_000; // How often we check if we should be compensating for latency.
 const BUFFERING_AMNESTY_DURATION = 2 * 1000 * 60; // How often until a buffering event expires.
@@ -63,6 +63,14 @@ class LatencyCompensator {
       return;
     }
 
+    let proposedPlaybackRate = bandwidthRatio * 0.2;
+    console.log('proposed rate', proposedPlaybackRate, this.running);
+
+    proposedPlaybackRate = Math.max(
+      Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
+      1.0
+    );
+    console.log('playback rate', proposedPlaybackRate, this.running);
     try {
       const segment = getCurrentlyPlayingSegment(tech);
       if (!segment) {
@@ -85,7 +93,7 @@ class LatencyCompensator {
       const latency = now - segmentTime;
 
       if (latency > this.maxLatencyThreshold) {
-        this.start();
+        this.start(proposedPlaybackRate);
       } else if (latency < this.minLatencyThreshold) {
         this.stop();
       }
@@ -94,13 +102,13 @@ class LatencyCompensator {
     }
   }
 
-  start() {
-    if (this.running || this.disabled) {
+  start(rate = 1.0) {
+    if (this.inTimeout || this.disabled) {
       return;
     }
 
     this.running = true;
-    this.player.playbackRate(SPEEDUP_RATE);
+    this.player.playbackRate(rate);
   }
 
   stop() {
@@ -129,7 +137,6 @@ class LatencyCompensator {
   endTimeout() {
     clearTimeout(this.timeoutTimer);
     this.inTimeout = false;
-    this.start();
   }
 
   handlePlaying() {
