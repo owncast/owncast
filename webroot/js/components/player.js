@@ -209,6 +209,8 @@ class OwncastPlayer {
       trackElements.addEventListener('cuechange', function (c) {
         console.log(c);
       });
+
+      this.latencyCompensator = new LatencyCompensator(this.vjsPlayer);
     });
 
     if (this.appPlayerReadyCallback) {
