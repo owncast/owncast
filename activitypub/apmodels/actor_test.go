@@ -159,7 +159,12 @@ func TestMakeServiceForAccount(t *testing.T) {
 	}
 
 	expectedAvatar := "https://my.cool.site.biz/logo/external"
-	if person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI().String() != expectedAvatar {
+	u, err := url.Parse(person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI().String())
+	if err != nil {
+		t.Error(err)
+	}
+	u.RawQuery = ""
+	if u.String() != expectedAvatar {
 		t.Errorf("actor.Avatar = %v, want %v", person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI().String(), expectedAvatar)
 	}
 

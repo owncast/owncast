@@ -69,7 +69,7 @@ func SendLive() error {
 		var imageToAttach string
 		previewGif := filepath.Join(config.WebRoot, "preview.gif")
 		thumbnailJpg := filepath.Join(config.WebRoot, "thumbnail.jpg")
-
+		uniquenessString := shortid.MustGenerate()
 		if utils.DoesFileExists(previewGif) {
 			imageToAttach = "preview.gif"
 		} else if utils.DoesFileExists(thumbnailJpg) {
@@ -77,6 +77,7 @@ func SendLive() error {
 		}
 		if imageToAttach != "" {
 			previewURL.Path = imageToAttach
+			previewURL.RawQuery = "us=" + uniquenessString
 			apmodels.AddImageAttachmentToNote(note, previewURL.String())
 		}
 	}
