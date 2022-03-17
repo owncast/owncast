@@ -80,6 +80,9 @@ func Start() error {
 	// return followers
 	http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
 
+	// save client video playback metrics
+	http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
+
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
@@ -293,6 +296,9 @@ func Start() error {
 
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+
+	// Video playback metrics
+	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
 
 	// Inline chat moderation actions
 

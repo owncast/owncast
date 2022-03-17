@@ -6,17 +6,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const maxCPUAlertingThresholdPCT = 85
-const maxRAMAlertingThresholdPCT = 85
-const maxDiskAlertingThresholdPCT = 90
+const (
+	maxCPUAlertingThresholdPCT  = 85
+	maxRAMAlertingThresholdPCT  = 85
+	maxDiskAlertingThresholdPCT = 90
+)
 
-var inCPUAlertingState = false
-var inRAMAlertingState = false
-var inDiskAlertingState = false
+var (
+	inCPUAlertingState  = false
+	inRAMAlertingState  = false
+	inDiskAlertingState = false
+)
 
 var errorResetDuration = time.Minute * 5
 
-const alertingError = "The %s utilization of %d%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
+const alertingError = "The %s utilization of %f%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
 
 func handleAlerting() {
 	handleCPUAlerting()
@@ -25,11 +29,11 @@ func handleAlerting() {
 }
 
 func handleCPUAlerting() {
-	if len(Metrics.CPUUtilizations) < 2 {
+	if len(metrics.CPUUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(Metrics.CPUUtilizations)
+	avg := recentAverage(metrics.CPUUtilizations)
 	if avg > maxCPUAlertingThresholdPCT && !inCPUAlertingState {
 		log.Warnf(alertingError, "CPU", avg)
 		inCPUAlertingState = true
@@ -43,11 +47,11 @@ func handleCPUAlerting() {
 }
 
 func handleRAMAlerting() {
-	if len(Metrics.RAMUtilizations) < 2 {
+	if len(metrics.RAMUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(Metrics.RAMUtilizations)
+	avg := recentAverage(metrics.RAMUtilizations)
 	if avg > maxRAMAlertingThresholdPCT && !inRAMAlertingState {
 		log.Warnf(alertingError, "memory", avg)
 		inRAMAlertingState = true
@@ -61,11 +65,11 @@ func handleRAMAlerting() {
 }
 
 func handleDiskAlerting() {
-	if len(Metrics.DiskUtilizations) < 2 {
+	if len(metrics.DiskUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(Metrics.DiskUtilizations)
+	avg := recentAverage(metrics.DiskUtilizations)
 
 	if avg > maxDiskAlertingThresholdPCT && !inDiskAlertingState {
 		log.Warnf(alertingError, "disk", avg)
@@ -79,6 +83,6 @@ func handleDiskAlerting() {
 	}
 }
 
-func recentAverage(values []timestampedValue) int {
+func recentAverage(values []TimestampedValue) float64 {
 	return (values[len(values)-1].Value + values[len(values)-2].Value) / 2
 }

@@ -10,9 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// How often we poll for updates.
-const viewerMetricsPollingInterval = 2 * time.Minute
-
 var storage tstorage.Storage
 
 func startViewerCollectionMetrics() {
@@ -36,8 +33,20 @@ func collectViewerCount() {
 		return
 	}
 
-	// Save to our Prometheus collector.
-	activeViewerCount.Set(float64(core.GetStatus().ViewerCount))
+	count := core.GetStatus().ViewerCount
+
+	// Save active viewer count to our Prometheus collector.
+	activeViewerCount.Set(float64(count))
+
+	// Insert active viewer count into our on-disk time series storage.
+	if err := storage.InsertRows([]tstorage.Row{
+		{
+			Metric:    activeViewerCountKey,
+			DataPoint: tstorage.DataPoint{Timestamp: time.Now().Unix(), Value: float64(count)},
+		},
+	}); err != nil {
+		log.Errorln(err)
+	}
 }
 
 func collectChatClientCount() {
@@ -46,15 +55,18 @@ func collectChatClientCount() {
 
 	// Total message count
 	cmc := data.GetMessagesCount()
+	// Insert message count into Prometheus collector.
 	currentChatMessageCount.Set(float64(cmc))
 
 	// Total user count
 	uc := data.GetUsersCount()
+	// Insert user count into Prometheus collector.
 	chatUserCount.Set(float64(uc))
 
+	// Insert active chat user count into our on-disk time series storage.
 	if err := storage.InsertRows([]tstorage.Row{
 		{
-			Metric:    "viewercount",
+			Metric:    activeChatClientCountKey,
 			DataPoint: tstorage.DataPoint{Timestamp: time.Now().Unix(), Value: float64(count)},
 		},
 	}); err != nil {
@@ -63,8 +75,19 @@ func collectChatClientCount() {
 }
 
 // GetViewersOverTime will return a window of viewer counts over time.
-func GetViewersOverTime(start, end time.Time) []timestampedValue {
-	p, err := storage.Select("viewercount", nil, start.Unix(), end.Unix())
+func GetViewersOverTime(start, end time.Time) []TimestampedValue {
+	p, err := storage.Select(activeViewerCountKey, nil, start.Unix(), end.Unix())
+	if err != nil && err != tstorage.ErrNoDataPoints {
+		log.Errorln(err)
+	}
+	datapoints := makeTimestampedValuesFromDatapoints(p)
+
+	return datapoints
+}
+
+// GetChatClientCountOverTime will return a window of connected chat clients over time.
+func GetChatClientCountOverTime(start, end time.Time) []TimestampedValue {
+	p, err := storage.Select(activeChatClientCountKey, nil, start.Unix(), end.Unix())
 	if err != nil && err != tstorage.ErrNoDataPoints {
 		log.Errorln(err)
 	}

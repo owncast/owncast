@@ -6,15 +6,16 @@ import (
 	"github.com/nakabonne/tstorage"
 )
 
-type timestampedValue struct {
+// TimestampedValue is a value with a timestamp.
+type TimestampedValue struct {
 	Time  time.Time `json:"time"`
-	Value int       `json:"value"`
+	Value float64   `json:"value"`
 }
 
-func makeTimestampedValuesFromDatapoints(dp []*tstorage.DataPoint) []timestampedValue {
-	tv := []timestampedValue{}
+func makeTimestampedValuesFromDatapoints(dp []*tstorage.DataPoint) []TimestampedValue {
+	tv := []TimestampedValue{}
 	for _, d := range dp {
-		tv = append(tv, timestampedValue{Time: time.Unix(d.Timestamp, 0), Value: int(d.Value)})
+		tv = append(tv, TimestampedValue{Time: time.Unix(d.Timestamp, 0), Value: d.Value})
 	}
 
 	return tv

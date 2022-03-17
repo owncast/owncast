@@ -10,7 +10,7 @@ import (
 
 // GetHardwareStats will return hardware utilization over time.
 func GetHardwareStats(w http.ResponseWriter, r *http.Request) {
-	m := metrics.Metrics
+	m := metrics.GetMetrics()
 
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(m)

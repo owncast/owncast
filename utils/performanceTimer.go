@@ -41,7 +41,7 @@ func GetAveragePerformance(key string) float64 {
 	}
 	_durationStorage[key] = removeHighValue(_durationStorage[key])
 
-	return avg(_durationStorage[key])
+	return Avg(_durationStorage[key])
 }
 
 func removeHighValue(values []float64) []float64 {
@@ -49,11 +49,36 @@ func removeHighValue(values []float64) []float64 {
 	return values[:len(values)-1]
 }
 
-func avg(values []float64) float64 {
+// Avg will return the average value from a slice of float64s.
+func Avg(values []float64) float64 {
 	total := 0.0
 	for _, number := range values {
 		total += number
 	}
 	average := total / float64(len(values))
 	return average
+}
+
+// Sum returns the sum of a slice of values.
+func Sum(values []float64) float64 {
+	total := 0.0
+	for _, number := range values {
+		total += number
+	}
+	return total
+}
+
+// MinMax will return the min and max values from a slice of float64s.
+func MinMax(array []float64) (float64, float64) {
+	max := array[0]
+	min := array[0]
+	for _, value := range array {
+		if max < value {
+			max = value
+		}
+		if min > value {
+			min = value
+		}
+	}
+	return min, max
 }
