@@ -4,6 +4,7 @@ import videojs from '/js/web_modules/videojs/dist/video.min.js';
 import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
 import PlaybackMetrics from '../metrics/playback.js';
+import LatencyCompensator from './latencyCompensator.js';
 
 const VIDEO_ID = 'video';
 
