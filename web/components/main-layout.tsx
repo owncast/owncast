@@ -206,6 +206,9 @@ export default function MainLayout(props) {
             <Menu.Item key="hardware-info">
               <Link href="/hardware-info">Hardware</Link>
             </Menu.Item>
+            <Menu.Item key="stream-health">
+              <Link href="/stream-health">Stream Health</Link>
+            </Menu.Item>
             <Menu.Item key="logs">
               <Link href="/logs">Logs</Link>
             </Menu.Item>

@@ -106,6 +106,8 @@ export const SET_FOLLOWER_APPROVAL = `${API_LOCATION}followers/approve`;
 // List of inbound federated actions that took place.
 export const FEDERATION_ACTIONS = `${API_LOCATION}federation/actions`;
 
+export const API_STREAM_HEALTH_METRICS = `${API_LOCATION}metrics/video`;
+
 export const API_YP_RESET = `${API_LOCATION}yp/reset`;
 
 export const TEMP_UPDATER_API = LOGS_ALL;

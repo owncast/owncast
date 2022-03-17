@@ -9,6 +9,7 @@ interface StatisticItemProps {
   title?: string;
   value?: any;
   prefix?: any;
+  suffix?: string;
   color?: string;
   progress?: boolean;
   centered?: boolean;
@@ -18,13 +19,14 @@ const defaultProps = {
   title: '',
   value: 0,
   prefix: null,
+  suffix: null,
   color: '',
   progress: false,
   centered: false,
   formatter: null,
 };
 
-function ProgressView({ title, value, prefix, color }: StatisticItemProps) {
+function ProgressView({ title, value, prefix, suffix, color }: StatisticItemProps) {
   const endColor = value > 90 ? 'red' : color;
   const content = (
     <div>
@@ -33,7 +35,10 @@ function ProgressView({ title, value, prefix, color }: StatisticItemProps) {
         <Text type="secondary">{title}</Text>
       </div>
       <div>
-        <Text type="secondary">{value}%</Text>
+        <Text type="secondary">
+          {value}
+          {suffix || '%'}
+        </Text>
       </div>
     </div>
   );

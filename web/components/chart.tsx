@@ -16,6 +16,8 @@ interface ChartProps {
   title?: string;
   color: string;
   unit: string;
+  yFlipped?: boolean;
+  yLogarithmic?: boolean;
   dataCollections?: any[];
 }
 
@@ -29,7 +31,15 @@ function createGraphDataset(dataArray) {
   return dataValues;
 }
 
-export default function Chart({ data, title, color, unit, dataCollections }: ChartProps) {
+export default function Chart({
+  data,
+  title,
+  color,
+  unit,
+  dataCollections,
+  yFlipped,
+  yLogarithmic,
+}: ChartProps) {
   const renderData = [];
 
   if (data && data.length > 0) {
@@ -45,8 +55,23 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
       name: collection.name,
       data: createGraphDataset(collection.data),
       color: collection.color,
+      dataset: collection.options,
     });
   });
+
+  // ChartJs.defaults.scales.linear.reverse = true;
+
+  const options = {
+    scales: {
+      y: { reverse: false, type: 'linear' },
+      x: {
+        type: 'time',
+      },
+    },
+  };
+
+  options.scales.y.reverse = yFlipped;
+  options.scales.y.type = yLogarithmic ? 'logarithmic' : 'linear';
 
   return (
     <div className="line-chart-container">
@@ -58,6 +83,7 @@ export default function Chart({ data, title, color, unit, dataCollections }: Cha
         color={color}
         data={renderData}
         download={title}
+        library={options}
       />
     </div>
   );
@@ -67,4 +93,6 @@ Chart.defaultProps = {
   dataCollections: [],
   data: [],
   title: '',
+  yFlipped: false,
+  yLogarithmic: false,
 };
