@@ -18,7 +18,7 @@ import {
 } from '../../utils/input-statuses';
 import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
-const ACCEPTED_FILE_TYPES = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/gif'];
+const ACCEPTED_FILE_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
 
 function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer) => void) {
   const reader = new FileReader();
