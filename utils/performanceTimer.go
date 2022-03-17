@@ -82,3 +82,29 @@ func MinMax(array []float64) (float64, float64) {
 	}
 	return min, max
 }
+
+func mean(input []float64) float64 {
+	sum := Sum(input)
+
+	return sum / float64(len(input))
+}
+
+// Median gets the median number in a slice of numbers.
+func Median(input []float64) float64 {
+	if len(input) == 1 {
+		return input[0]
+	}
+
+	c := make([]float64, len(input))
+	copy(c, input)
+
+	var median float64
+	l := len(c)
+	if l%2 == 0 {
+		median = mean(c[l/2-1 : l/2+1])
+	} else {
+		median = c[l/2]
+	}
+
+	return median
+}
