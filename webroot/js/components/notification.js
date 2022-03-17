@@ -239,9 +239,11 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
             style=${{ display: !pushEnabled ? 'none' : 'block' }}
           >
             To disable push notifications from ${window.location.hostname}
-            ${' '} access the browser permissions for this site and turn off
+            ${' '} access your browser permissions for this site and turn off
             notifications.
-            <a href="">Learn more.</a>
+            <div style=${{ 'margin-top': '5px' }}>
+              <a href="">Learn more.</a>
+            </div>
           </div>
           <div
             id="browser-push-preview-box"
@@ -310,7 +312,7 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
   `;
 }
 
-export function NotifyButton({ serverName, federationInfo, onClick }) {
+export function NotifyButton({ serverName, onClick }) {
   const hasDisplayedNotificationModal = getLocalStorage(
     HAS_DISPLAYED_NOTIFICATION_MODAL_KEY
   );

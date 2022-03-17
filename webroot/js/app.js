@@ -797,9 +797,12 @@ export default class App extends Component {
     // modal buttons
     const notificationsButton =
       notifications &&
-      ((notifications.browser.enabled && isPushNotificationSupported()) ||
-        notifications.textMessages.enabled) &&
-      html`<${NotifyButton} onClick=${this.displayNotificationModal} />`;
+      notifications.browser.enabled &&
+      isPushNotificationSupported() &&
+      html`<${NotifyButton}
+        serverName=${name}
+        onClick=${this.displayNotificationModal}
+      />`;
     const externalActionButtons = html`<div
       id="external-actions-container"
       class="flex flex-row flex-wrap justify-end"

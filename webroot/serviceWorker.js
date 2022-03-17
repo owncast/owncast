@@ -7,8 +7,6 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-  console.log('Received push event', event);
-
   const data = JSON.parse(event.data.text());
   const { title, body, icon, tag } = data;
   const options = {
@@ -22,7 +20,5 @@ self.addEventListener('push', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
-  let notification = event.notification;
-  console.log(notification);
   clients.openWindow('/');
 });
