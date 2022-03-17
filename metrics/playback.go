@@ -65,25 +65,57 @@ func collectPlaybackErrorCount() {
 }
 
 func collectSegmentDownloadDuration() {
-	val := 0.0
+	median := 0.0
+	max := 0.0
+	min := 0.0
 
 	if len(windowedDownloadDurations) > 0 {
-		val = utils.Avg(windowedDownloadDurations)
+		median = utils.Median(windowedDownloadDurations)
+		min, max = utils.MinMax(windowedDownloadDurations)
 		windowedDownloadDurations = []float64{}
 	}
-	metrics.segmentDownloadSeconds = append(metrics.segmentDownloadSeconds, TimestampedValue{
+
+	metrics.medianSegmentDownloadSeconds = append(metrics.medianSegmentDownloadSeconds, TimestampedValue{
 		Time:  time.Now(),
-		Value: val,
+		Value: median,
 	})
 
-	if len(metrics.segmentDownloadSeconds) > maxCollectionValues {
-		metrics.segmentDownloadSeconds = metrics.segmentDownloadSeconds[1:]
+	if len(metrics.medianSegmentDownloadSeconds) > maxCollectionValues {
+		metrics.medianSegmentDownloadSeconds = metrics.medianSegmentDownloadSeconds[1:]
+	}
+
+	metrics.minimumSegmentDownloadSeconds = append(metrics.minimumSegmentDownloadSeconds, TimestampedValue{
+		Time:  time.Now(),
+		Value: min,
+	})
+
+	if len(metrics.minimumSegmentDownloadSeconds) > maxCollectionValues {
+		metrics.minimumSegmentDownloadSeconds = metrics.minimumSegmentDownloadSeconds[1:]
+	}
+
+	metrics.maximumSegmentDownloadSeconds = append(metrics.maximumSegmentDownloadSeconds, TimestampedValue{
+		Time:  time.Now(),
+		Value: max,
+	})
+
+	if len(metrics.maximumSegmentDownloadSeconds) > maxCollectionValues {
+		metrics.maximumSegmentDownloadSeconds = metrics.maximumSegmentDownloadSeconds[1:]
 	}
 }
 
-// GetDownloadDurationsOverTime will return a window of durations errors over time.
-func GetDownloadDurationsOverTime() []TimestampedValue {
-	return metrics.segmentDownloadSeconds
+// GetMedianDownloadDurationsOverTime will return a window of durations errors over time.
+func GetMedianDownloadDurationsOverTime() []TimestampedValue {
+	return metrics.medianSegmentDownloadSeconds
+}
+
+// GetMaximumDownloadDurationsOverTime will return a maximum durations errors over time.
+func GetMaximumDownloadDurationsOverTime() []TimestampedValue {
+	return metrics.maximumSegmentDownloadSeconds
+}
+
+// GetMinimumDownloadDurationsOverTime will return a maximum durations errors over time.
+func GetMinimumDownloadDurationsOverTime() []TimestampedValue {
+	return metrics.minimumSegmentDownloadSeconds
 }
 
 // GetPlaybackErrorCountOverTime will return a window of playback errors over time.
@@ -92,52 +124,112 @@ func GetPlaybackErrorCountOverTime() []TimestampedValue {
 }
 
 func collectLatencyValues() {
-	val := 0.0
+	median := 0.0
+	min := 0.0
+	max := 0.0
 
 	if len(windowedLatencies) > 0 {
-		val = utils.Avg(windowedLatencies)
-		val = math.Round(val)
+		median = utils.Median(windowedLatencies)
+		min, max = utils.MinMax(windowedLatencies)
 		windowedLatencies = []float64{}
 	}
 
-	metrics.averageLatency = append(metrics.averageLatency, TimestampedValue{
+	metrics.medianLatency = append(metrics.medianLatency, TimestampedValue{
 		Time:  time.Now(),
-		Value: val,
+		Value: median,
 	})
 
-	if len(metrics.averageLatency) > maxCollectionValues {
-		metrics.averageLatency = metrics.averageLatency[1:]
+	if len(metrics.medianLatency) > maxCollectionValues {
+		metrics.medianLatency = metrics.medianLatency[1:]
+	}
+
+	metrics.minimumLatency = append(metrics.minimumLatency, TimestampedValue{
+		Time:  time.Now(),
+		Value: min,
+	})
+
+	if len(metrics.minimumLatency) > maxCollectionValues {
+		metrics.minimumLatency = metrics.minimumLatency[1:]
+	}
+
+	metrics.maximumLatency = append(metrics.maximumLatency, TimestampedValue{
+		Time:  time.Now(),
+		Value: max,
+	})
+
+	if len(metrics.maximumLatency) > maxCollectionValues {
+		metrics.maximumLatency = metrics.maximumLatency[1:]
 	}
 }
 
-// GetLatencyOverTime will return the min, max and avg latency values over time.
-func GetLatencyOverTime() []TimestampedValue {
-	if len(metrics.averageLatency) == 0 {
+// GetMedianLatencyOverTime will return the median latency values over time.
+func GetMedianLatencyOverTime() []TimestampedValue {
+	if len(metrics.medianLatency) == 0 {
 		return []TimestampedValue{}
 	}
 
-	return metrics.averageLatency
+	return metrics.medianLatency
 }
 
-// collectLowestBandwidth will collect the lowest bandwidth currently collected
+// GetMinimumLatencyOverTime will return the min latency values over time.
+func GetMinimumLatencyOverTime() []TimestampedValue {
+	if len(metrics.minimumLatency) == 0 {
+		return []TimestampedValue{}
+	}
+
+	return metrics.minimumLatency
+}
+
+// GetMaximumLatencyOverTime will return the max latency values over time.
+func GetMaximumLatencyOverTime() []TimestampedValue {
+	if len(metrics.maximumLatency) == 0 {
+		return []TimestampedValue{}
+	}
+
+	return metrics.maximumLatency
+}
+
+// collectLowestBandwidth will collect the bandwidth currently collected
 // so we can report to the streamer the worst possible streaming condition
 // being experienced.
 func collectLowestBandwidth() {
-	val := 0.0
+	min := 0.0
+	median := 0.0
+	max := 0.0
 
 	if len(windowedBandwidths) > 0 {
-		val, _ = utils.MinMax(windowedBandwidths)
-		val = math.Round(val)
+		min, max = utils.MinMax(windowedBandwidths)
+		min = math.Round(min)
+		max = math.Round(max)
+		median = utils.Median(windowedBandwidths)
 		windowedBandwidths = []float64{}
 	}
 
 	metrics.lowestBitrate = append(metrics.lowestBitrate, TimestampedValue{
 		Time:  time.Now(),
-		Value: math.Round(val),
+		Value: math.Round(min),
 	})
 
 	if len(metrics.lowestBitrate) > maxCollectionValues {
 		metrics.lowestBitrate = metrics.lowestBitrate[1:]
+	}
+
+	metrics.medianBitrate = append(metrics.medianBitrate, TimestampedValue{
+		Time:  time.Now(),
+		Value: math.Round(median),
+	})
+
+	if len(metrics.medianBitrate) > maxCollectionValues {
+		metrics.medianBitrate = metrics.medianBitrate[1:]
+	}
+
+	metrics.highestBitrate = append(metrics.highestBitrate, TimestampedValue{
+		Time:  time.Now(),
+		Value: math.Round(max),
+	})
+
+	if len(metrics.highestBitrate) > maxCollectionValues {
+		metrics.highestBitrate = metrics.highestBitrate[1:]
 	}
 }
 
@@ -149,6 +241,38 @@ func GetSlowestDownloadRateOverTime() []TimestampedValue {
 	}
 
 	return metrics.lowestBitrate
+}
+
+// GetMedianDownloadRateOverTime will return the collected median bandwidth values.
+func GetMedianDownloadRateOverTime() []TimestampedValue {
+	if len(metrics.medianBitrate) == 0 {
+		return []TimestampedValue{}
+	}
+	return metrics.medianBitrate
+}
+
+// GetMaximumDownloadRateOverTime will return the collected maximum bandwidth values.
+func GetMaximumDownloadRateOverTime() []TimestampedValue {
+	if len(metrics.maximumLatency) == 0 {
+		return []TimestampedValue{}
+	}
+	return metrics.maximumLatency
+}
+
+// GetMinimumDownloadRateOverTime will return the collected minimum bandwidth values.
+func GetMinimumDownloadRateOverTime() []TimestampedValue {
+	if len(metrics.minimumLatency) == 0 {
+		return []TimestampedValue{}
+	}
+	return metrics.minimumLatency
+}
+
+// GetMaxDownloadRateOverTime will return the collected highest bandwidth values.
+func GetMaxDownloadRateOverTime() []TimestampedValue {
+	if len(metrics.highestBitrate) == 0 {
+		return []TimestampedValue{}
+	}
+	return metrics.highestBitrate
 }
 
 func collectQualityVariantChanges() {

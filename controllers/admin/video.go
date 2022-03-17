@@ -13,13 +13,22 @@ import (
 // GetVideoPlaybackMetrics returns video playback metrics.
 func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	type response struct {
-		Errors                  []metrics.TimestampedValue `json:"errors"`
-		QualityVariantChanges   []metrics.TimestampedValue `json:"qualityVariantChanges"`
-		Latency                 []metrics.TimestampedValue `json:"latency"`
-		SegmentDownloadDuration []metrics.TimestampedValue `json:"segmentDownloadDuration"`
-		SlowestDownloadRate     []metrics.TimestampedValue `json:"minPlayerBitrate"`
-		AvailableBitrates       []int                      `json:"availableBitrates"`
-		SegmentLength           int                        `json:"segmentLength"`
+		Errors                []metrics.TimestampedValue `json:"errors"`
+		QualityVariantChanges []metrics.TimestampedValue `json:"qualityVariantChanges"`
+
+		HighestLatency []metrics.TimestampedValue `json:"highestLatency"`
+		MedianLatency  []metrics.TimestampedValue `json:"medianLatency"`
+		LowestLatency  []metrics.TimestampedValue `json:"lowestLatency"`
+
+		MedianDownloadDuration  []metrics.TimestampedValue `json:"medianSegmentDownloadDuration"`
+		MaximumDownloadDuration []metrics.TimestampedValue `json:"maximumSegmentDownloadDuration"`
+		MinimumDownloadDuration []metrics.TimestampedValue `json:"minimumSegmentDownloadDuration"`
+
+		SlowestDownloadRate  []metrics.TimestampedValue `json:"minPlayerBitrate"`
+		MedianDownloadRate   []metrics.TimestampedValue `json:"medianPlayerBitrate"`
+		HighestDownloadRater []metrics.TimestampedValue `json:"maxPlayerBitrate"`
+		AvailableBitrates    []int                      `json:"availableBitrates"`
+		SegmentLength        int                        `json:"segmentLength"`
 	}
 
 	availableBitrates := []int{}
@@ -37,18 +46,32 @@ func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	}
 
 	errors := metrics.GetPlaybackErrorCountOverTime()
-	latency := metrics.GetLatencyOverTime()
-	durations := metrics.GetDownloadDurationsOverTime()
+	medianLatency := metrics.GetMedianLatencyOverTime()
+	minimumLatency := metrics.GetMinimumLatencyOverTime()
+	maximumLatency := metrics.GetMaximumLatencyOverTime()
+
+	medianDurations := metrics.GetMedianDownloadDurationsOverTime()
+	maximumDurations := metrics.GetMaximumDownloadDurationsOverTime()
+	minimumDurations := metrics.GetMinimumDownloadDurationsOverTime()
+
 	minPlayerBitrate := metrics.GetSlowestDownloadRateOverTime()
+	medianPlayerBitrate := metrics.GetMedianDownloadRateOverTime()
+	maxPlayerBitrate := metrics.GetMaxDownloadRateOverTime()
 	qualityVariantChanges := metrics.GetQualityVariantChangesOverTime()
 
 	resp := response{
 		AvailableBitrates:       availableBitrates,
 		Errors:                  errors,
-		Latency:                 latency,
+		MedianLatency:           medianLatency,
+		HighestLatency:          maximumLatency,
+		LowestLatency:           minimumLatency,
 		SegmentLength:           segmentLength,
-		SegmentDownloadDuration: durations,
+		MedianDownloadDuration:  medianDurations,
+		MaximumDownloadDuration: maximumDurations,
+		MinimumDownloadDuration: minimumDurations,
 		SlowestDownloadRate:     minPlayerBitrate,
+		MedianDownloadRate:      medianPlayerBitrate,
+		HighestDownloadRater:    maxPlayerBitrate,
 		QualityVariantChanges:   qualityVariantChanges,
 	}
 
