@@ -11,7 +11,7 @@ It will:
   - Completely give up on all compensation if too many buffering events occur.
 */
 
-const BUFFER_LIMIT = 10; // Max number of buffering events before we stop compensating for latency.
+const REBUFFER_EVENT_LIMIT = 8; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 300; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.07; // The playback rate when compensating for latency.
 const TIMEOUT_DURATION = 20_000; // The amount of time we stop handling latency after certain events.
@@ -63,7 +63,7 @@ class LatencyCompensator {
       return;
     }
 
-    let proposedPlaybackRate = bandwidthRatio * 0.2;
+    let proposedPlaybackRate = bandwidthRatio * 0.34;
     console.log('proposed rate', proposedPlaybackRate, this.running);
 
     proposedPlaybackRate = Math.max(
@@ -176,7 +176,7 @@ class LatencyCompensator {
 
   countBufferingEvent() {
     this.bufferingCounter++;
-    if (this.bufferingCounter > BUFFER_LIMIT) {
+    if (this.bufferingCounter > REBUFFER_EVENT_LIMIT) {
       this.disable();
       return;
     }
