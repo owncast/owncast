@@ -45,13 +45,8 @@ type browserNotificationsConfigResponse struct {
 	PublicKey string `json:"publicKey,omitempty"`
 }
 
-type emailNotificationsConfigResponse struct {
-	Enabled bool `json:"enabled"`
-}
-
 type notificationsConfigResponse struct {
 	Browser browserNotificationsConfigResponse `json:"browser"`
-	Email   emailNotificationsConfigResponse   `json:"email"`
 }
 
 // GetWebConfig gets the status of the server.
@@ -99,9 +94,6 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Browser: browserNotificationsConfigResponse{
 			Enabled:   browserPushEnabled,
 			PublicKey: browserPushPublicKey,
-		},
-		Email: emailNotificationsConfigResponse{
-			Enabled: data.GetMailjetConfiguration().Enabled,
 		},
 	}
 

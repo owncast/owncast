@@ -61,8 +61,6 @@ const (
 	browserPushConfigurationKey          = "browser_push_configuration"
 	browserPushPublicKeyKey              = "browser_push_public_key"
 	browserPushPrivateKeyKey             = "browser_push_private_key"
-	mailjetConfigurationKey              = "mailjet_configuration"
-	smtpConfigurationKey                 = "smtp_configuration"
 	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 )
@@ -880,48 +878,6 @@ func SetBrowserPushPrivateKey(key string) error {
 // GetBrowserPushPrivateKey will return the private key for browser pushes.
 func GetBrowserPushPrivateKey() (string, error) {
 	return _datastore.GetString(browserPushPrivateKeyKey)
-}
-
-// GetMailjetConfiguration will return the browser push configuration.
-func GetMailjetConfiguration() models.MailjetConfiguration {
-	configEntry, err := _datastore.Get(mailjetConfigurationKey)
-	if err != nil {
-		return models.MailjetConfiguration{Enabled: false}
-	}
-
-	var config models.MailjetConfiguration
-	if err := configEntry.getObject(&config); err != nil {
-		return models.MailjetConfiguration{Enabled: false}
-	}
-
-	return config
-}
-
-// SetMailjetConfiguration will set the mailjet configuration.
-func SetMailjetConfiguration(config models.MailjetConfiguration) error {
-	configEntry := ConfigEntry{Key: mailjetConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
-}
-
-// SetSMTPConfiguration will set the SMTP email configuration.
-func SetSMTPConfiguration(config models.SMTPConfiguration) error {
-	configEntry := ConfigEntry{Key: smtpConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
-}
-
-// GetSMTPConfiguration will return the SMTP email configuration.
-func GetSMTPConfiguration() models.SMTPConfiguration {
-	configEntry, err := _datastore.Get(smtpConfigurationKey)
-	if err != nil {
-		return models.SMTPConfiguration{Enabled: false}
-	}
-
-	var config models.SMTPConfiguration
-	if err := configEntry.getObject(&config); err != nil {
-		return models.SMTPConfiguration{Enabled: false}
-	}
-
-	return config
 }
 
 // SetTwitterConfiguration will set the Twitter configuration.
