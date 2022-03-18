@@ -18,28 +18,38 @@ var (
 
 // RegisterPlaybackErrorCount will add to the windowed playback error count.
 func RegisterPlaybackErrorCount(count float64) {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
 	windowedErrorCounts = append(windowedErrorCounts, count)
 }
 
 // RegisterQualityVariantChangesCount will add to the windowed quality variant
 // change count.
 func RegisterQualityVariantChangesCount(count float64) {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
 	windowedQualityVariantChanges = append(windowedQualityVariantChanges, count)
 }
 
 // RegisterPlayerBandwidth will add to the windowed playback bandwidth.
 func RegisterPlayerBandwidth(kbps float64) {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
 	windowedBandwidths = append(windowedBandwidths, kbps)
 }
 
 // RegisterPlayerLatency will add to the windowed player latency values.
 func RegisterPlayerLatency(seconds float64) {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
 	windowedLatencies = append(windowedLatencies, seconds)
 }
 
 // RegisterPlayerSegmentDownloadDuration will add to the windowed player segment
 // download duration values.
 func RegisterPlayerSegmentDownloadDuration(seconds float64) {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
 	windowedDownloadDurations = append(windowedDownloadDurations, seconds)
 }
 
