@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"sync"
 	"time"
 
 	"github.com/owncast/owncast/config"
@@ -20,6 +21,8 @@ const (
 
 // CollectedMetrics stores different collected + timestamped values.
 type CollectedMetrics struct {
+	m sync.Mutex `json:"-"`
+
 	CPUUtilizations  []TimestampedValue `json:"cpu"`
 	RAMUtilizations  []TimestampedValue `json:"memory"`
 	DiskUtilizations []TimestampedValue `json:"disk"`
@@ -65,6 +68,9 @@ func Start(getStatus func() models.Status) {
 }
 
 func handlePolling() {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
+
 	// Collect hardware stats
 	collectCPUUtilization()
 	collectRAMUtilization()
