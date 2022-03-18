@@ -40,3 +40,10 @@ type IpBan struct {
 	Notes     sql.NullString
 	CreatedAt sql.NullTime
 }
+
+type Notification struct {
+	ID          int32
+	Channel     string
+	Destination string
+	CreatedAt   sql.NullTime
+}

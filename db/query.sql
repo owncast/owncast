@@ -70,3 +70,11 @@ SELECT count(*) FROM ip_bans WHERE ip_address = $1;
 
 -- name: GetIPAddressBans :many
 SELECT * FROM ip_bans;
+-- name: AddNotification :exec
+INSERT INTO notifications (channel, destination) VALUES($1, $2);
+
+-- name: GetNotificationDestinationsForChannel :many
+SELECT destination FROM notifications WHERE channel = $1;
+
+-- name: RemoveNotificationDestinationForChannel :exec
+DELETE FROM notifications WHERE channel = $1 AND destination = $2;
