@@ -24,9 +24,10 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 	id.Set(activityID)
 	activity.SetJSONLDId(id)
 
-	// CC the public if we're not treating ActivityPub as "private".
+	// TO the public if we're not treating ActivityPub as "private".
 	if !data.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
+
 		to := streams.NewActivityStreamsToProperty()
 		to.AppendIRI(public)
 		activity.SetActivityStreamsTo(to)
@@ -76,12 +77,16 @@ func MakeNote(text string, noteIRI *url.URL, attributedToIRI *url.URL) vocab.Act
 	attr.AppendIRI(attributedTo)
 	note.SetActivityStreamsAttributedTo(attr)
 
-	// CC the public if we're not treating ActivityPub as "private".
+	// To the public if we're not treating ActivityPub as "private".
 	if !data.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
-		cc := streams.NewActivityStreamsCcProperty()
-		cc.AppendIRI(public)
-		note.SetActivityStreamsCc(cc)
+		to := streams.NewActivityStreamsToProperty()
+		to.AppendIRI(public)
+		note.SetActivityStreamsTo(to)
+
+		audience := streams.NewActivityStreamsAudienceProperty()
+		audience.AppendIRI(public)
+		note.SetActivityStreamsAudience(audience)
 	}
 
 	return note
