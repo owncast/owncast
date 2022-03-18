@@ -84,7 +84,7 @@ export default class ExternalActionModal extends Component {
                     >
                       <iframe
                         id="external-modal-iframe"
-                        style=${iframeStyle}
+                        style=${{ iframeStyle }}
                         class="bg-gray-100 bg-center bg-no-repeat"
                         width="100%"
                         allowpaymentrequest="true"

@@ -26,6 +26,7 @@
       "@joeattardi/emoji-button",
       "htm",
       "preact",
+      "preact/hooks",
       "mark.js/dist/mark.es6.min.js",
       "tailwindcss/dist/tailwind.min.css",
       "micromodal/dist/micromodal.min.js"

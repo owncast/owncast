@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/mssola/user_agent"
 	log "github.com/sirupsen/logrus"
@@ -365,4 +366,13 @@ func GetHostnameFromURLString(s string) string {
 func GetHashtagsFromText(text string) []string {
 	re := regexp.MustCompile(`#[a-zA-Z0-9_]+`)
 	return re.FindAllString(text, -1)
+}
+
+// ShuffleStringSlice will shuffle a slice of strings.
+func ShuffleStringSlice(s []string) []string {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(s), func(i, j int) {
+		s[i], s[j] = s[j], s[i]
+	})
+	return s
 }

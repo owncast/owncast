@@ -6,6 +6,7 @@
     "mark.js/dist/mark.es6.min.js": "./markjs/dist/mark.es6.min.js",
     "micromodal/dist/micromodal.min.js": "./micromodal/dist/micromodal.min.js",
     "preact": "./preact.js",
+    "preact/hooks": "./preact/hooks.js",
     "tailwindcss/dist/tailwind.min.css": "./tailwindcss/dist/tailwind.min.css",
     "video.js/dist/video-js.min.css": "./videojs/dist/video-js.min.css",
     "video.js/dist/video.min.js": "./videojs/dist/video.min.js"
