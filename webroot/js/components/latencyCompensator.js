@@ -11,7 +11,7 @@ It will:
   - Completely give up on all compensation if too many buffering events occur.
 */
 
-const REBUFFER_EVENT_LIMIT = 8; // Max number of buffering events before we stop compensating for latency.
+const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 300; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.07; // The playback rate when compensating for latency.
 const TIMEOUT_DURATION = 20_000; // The amount of time we stop handling latency after certain events.
@@ -24,7 +24,7 @@ const REQUIRED_BANDWIDTH_RATIO = 2.0; // The player:bitrate ratio required to en
 class LatencyCompensator {
   constructor(player) {
     this.player = player;
-    this.enabled = true;
+    this.enabled = false;
     this.running = false;
     this.inTimeout = false;
     this.timeoutTimer = 0;
@@ -64,13 +64,24 @@ class LatencyCompensator {
     }
 
     let proposedPlaybackRate = bandwidthRatio * 0.34;
-    console.log('proposed rate', proposedPlaybackRate, this.running);
+    console.log('proposed rate', proposedPlaybackRate);
 
     proposedPlaybackRate = Math.max(
       Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
       1.0
     );
-    console.log('playback rate', proposedPlaybackRate, this.running);
+    console.log(
+      'playback rate',
+      proposedPlaybackRate,
+      'enabled:',
+      this.enabled,
+      'running: ',
+      this.running,
+      'timedout: ',
+      this.inTimeout,
+      'buffer count:',
+      this.bufferingCounter
+    );
     try {
       const segment = getCurrentlyPlayingSegment(tech);
       if (!segment) {
@@ -103,7 +114,7 @@ class LatencyCompensator {
   }
 
   start(rate = 1.0) {
-    if (this.inTimeout || this.disabled) {
+    if (this.inTimeout || !this.enabled) {
       return;
     }
 
@@ -114,6 +125,16 @@ class LatencyCompensator {
   stop() {
     this.running = false;
     this.player.playbackRate(1);
+  }
+
+  enable() {
+    this.enabled = true;
+    clearInterval(this.checkTimer);
+    clearTimeout(this.bufferingTimer);
+
+    this.checkTimer = setInterval(() => {
+      this.check();
+    }, CHECK_TIMER_INTERVAL);
   }
 
   // Disable means we're done for good and should no longer compensate for latency.
@@ -158,25 +179,28 @@ class LatencyCompensator {
         this.endTimeout();
       }
     }
-    clearInterval(this.checkTimer);
-    clearTimeout(this.bufferingTimer);
-
-    this.checkTimer = setInterval(() => {
-      this.check();
-    }, CHECK_TIMER_INTERVAL);
   }
 
   handleEnded() {
+    if (!this.enabled) {
+      return;
+    }
+
     this.disable();
   }
 
   handleError() {
+    if (!this.enabled) {
+      return;
+    }
+
     this.timeout();
   }
 
   countBufferingEvent() {
     this.bufferingCounter++;
     if (this.bufferingCounter > REBUFFER_EVENT_LIMIT) {
+      console.log('disabling latency compensation');
       this.disable();
       return;
     }
@@ -192,6 +216,10 @@ class LatencyCompensator {
   }
 
   handleBuffering() {
+    if (!this.enabled) {
+      return;
+    }
+
     this.bufferStartedTimestamp = new Date().getTime();
     this.timeout();
   }
