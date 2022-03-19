@@ -236,21 +236,27 @@ class OwncastPlayer {
       this.appPlayerPlayingCallback();
     }
 
-    setInterval(() => {
-      const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
-      const bandwidth = tech.vhs.systemBandwidth;
-      this.playbackMetrics.trackBandwidth(bandwidth);
+    this.latencyCompensator.enable();
 
-      try {
-        const segment = getCurrentlyPlayingSegment(tech);
-        const segmentTime = segment.dateTimeObject.getTime();
-        const now = new Date().getTime();
-        const latency = now - segmentTime;
-        this.playbackMetrics.trackLatency(latency);
-      } catch (err) {
-        console.warn(err);
-      }
+    setInterval(() => {
+      this.collectPlaybackMetrics();
     }, 5000);
+  }
+
+  collectPlaybackMetrics() {
+    const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
+    const bandwidth = tech.vhs.systemBandwidth;
+    this.playbackMetrics.trackBandwidth(bandwidth);
+
+    try {
+      const segment = getCurrentlyPlayingSegment(tech);
+      const segmentTime = segment.dateTimeObject.getTime();
+      const now = new Date().getTime();
+      const latency = now - segmentTime;
+      this.playbackMetrics.trackLatency(latency);
+    } catch (err) {
+      console.warn(err);
+    }
   }
 
   handleEnded() {
@@ -258,6 +264,7 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
+    this.latencyCompensator.disable();
   }
 
   handleError(e) {
