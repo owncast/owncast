@@ -14,7 +14,7 @@ jobs:
 
         - name: Run redoc on openapi.yaml
           run: |
-            npx redoc-cli bundle openapi.yaml -o doc/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}'
+            npx redoc-cli bundle openapi.yaml -o docs/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}'
 
         - name: Commit changes
           uses: EndBug/add-and-commit@v5
@@ -22,6 +22,6 @@ jobs:
             author_name: Owncast
             author_email: owncast@owncast.online
             message: "Commit updated API documentation"
-            add: "doc/api/index.html"
+            add: "docs/api/index.html"
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
