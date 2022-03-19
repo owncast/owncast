@@ -10,7 +10,7 @@ webroot/js/web_modules/videojs/* linguist-vendored
 webroot/js/web_modules/micromodal/dist/* linguist-vendored
 static/* linguist-vendored
 static/admin/* linguist-vendored
-doc/api/* linguist-documentation
+docs/api/* linguist-documentation
 static/* linguist-vendored
 static/admin/* linguist-vendored
 static/admin/logs/* linguist-vendored
