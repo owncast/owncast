@@ -30,11 +30,11 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
   const [browserPushPermissionsPending, setBrowserPushPermissionsPending] =
     useState(false);
 
-  const { browser, email } = notifications;
+  const { browser } = notifications;
   const { publicKey } = browser;
 
   const browserPushEnabled = browser.enabled && isPushNotificationSupported();
-  let emailEnabled = email.enabled;
+  let emailEnabled = false;
 
   // Store that the user has opened the notifications modal at least once
   // so we don't ever need to remind them to do it again.
