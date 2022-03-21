@@ -283,9 +283,8 @@
 }
 
 .message-author .flair {
-  height: 70%;
+  height: 15px;
   margin-right: 5px;
-  margin-top: 1px;
 }
 
 .moderator-menu-item {
