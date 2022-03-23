@@ -36,6 +36,12 @@ p.description,
   margin: 1em 0;
   color: var(--white-75);
 }
+
+.description.reduced-margins {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 pre {
   display: block;
   padding: 1rem;
@@ -84,6 +90,11 @@ strong {
       margin-top: 0;
     }
   }
+}
+
+.form-module.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .row {

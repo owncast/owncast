@@ -98,6 +98,33 @@ export interface Federation {
   blockedDomains: string[];
 }
 
+export interface BrowserNotification {
+  enabled: boolean;
+  goLiveMessage: string;
+}
+
+export interface DiscordNotification {
+  enabled: boolean;
+  webhook: string;
+  goLiveMessage: string;
+}
+
+export interface TwitterNotification {
+  enabled: boolean;
+  apiKey: string;
+  apiSecret: string;
+  accessToken: string;
+  accessTokenSecret: string;
+  bearerToken: string;
+  goLiveMessage: string;
+}
+
+export interface NotificationsConfig {
+  browser: BrowserNotification;
+  discord: DiscordNotification;
+  twitter: TwitterNotification;
+}
+
 export interface ConfigDetails {
   externalActions: ExternalAction[];
   ffmpegPath: string;
@@ -114,7 +141,8 @@ export interface ConfigDetails {
   forbiddenUsernames: string[];
   suggestedUsernames: string[];
   chatDisabled: boolean;
+  federation: Federation;
+  notifications: NotificationsConfig;
   chatJoinMessagesEnabled: boolean;
   chatEstablishedUserMode: boolean;
-  federation: Federation;
 }

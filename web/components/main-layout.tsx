@@ -196,6 +196,9 @@ export default function MainLayout(props) {
             <Menu.Item key="config-federation">
               <Link href="/config-federation">Social</Link>
             </Menu.Item>
+            <Menu.Item key="config-notify">
+              <Link href="/config-notify">Notifications</Link>
+            </Menu.Item>
 
             <Menu.Item key="config-storage">
               <Link href="/config-storage">S3 Storage</Link>

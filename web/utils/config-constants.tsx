@@ -489,3 +489,78 @@ export const S3_TEXT_FIELDS_INFO = {
     tip: "If your S3 provider doesn't support virtual-hosted-style URLs set this to ON (i.e. Oracle Cloud Object Storage)",
   },
 };
+
+export const DISCORD_CONFIG_FIELDS = {
+  webhookUrl: {
+    fieldName: 'webhook',
+    label: 'Webhook URL',
+    maxLength: 255,
+    placeholder: 'https://discord.com/api/webhooks/837/jf38-6iNEv',
+    tip: 'The webhook assigned to your channel.',
+    type: TEXTFIELD_TYPE_URL,
+    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+    useTrim: true,
+  },
+  goLiveMessage: {
+    fieldName: 'goLiveMessage',
+    label: 'Go Live Text',
+    maxLength: 300,
+    tip: 'The text to send when you go live.',
+    placeholder: `I've gone live! Come watch!`,
+  },
+};
+
+export const BROWSER_PUSH_CONFIG_FIELDS = {
+  goLiveMessage: {
+    fieldName: 'goLiveMessage',
+    label: 'Go Live Text',
+    maxLength: 200,
+    tip: 'The text to send when you go live.',
+    placeholder: `I've gone live! Come watch!`,
+  },
+};
+
+export const TWITTER_CONFIG_FIELDS = {
+  apiKey: {
+    fieldName: 'apiKey',
+    label: 'API Key',
+    maxLength: 200,
+    tip: '',
+    placeholder: `gaUQhRC2lqfrEFfElBXJgOctU`,
+  },
+  apiSecret: {
+    fieldName: 'apiSecret',
+    label: 'API Secret',
+    maxLength: 200,
+    tip: '',
+    placeholder: `IIz4jFZMWbUKdFOEGUprFjRwIslG56d1SPQlolJYjXwJ2y2qKS`,
+  },
+  accessToken: {
+    fieldName: 'accessToken',
+    label: 'Access Token',
+    maxLength: 200,
+    tip: '',
+    placeholder: `952540400-EEiwe9fkuSvWjnNC82YFa9kgpqbyAP3J7FjE2dkka`,
+  },
+  accessTokenSecret: {
+    fieldName: 'accessTokenSecret',
+    label: 'Access Token Secret',
+    maxLength: 200,
+    tip: '',
+    placeholder: `xO0AZWNGfZxpNsYPg3zNEKhAsPPGvNZFlzQArA2khI9Kg`,
+  },
+  bearerToken: {
+    fieldName: 'bearerToken',
+    label: 'Bearer Token',
+    maxLength: 200,
+    tip: '',
+    placeholder: `AAAAAAAAAAAAAAFqpXwEAAnnepHkjA8XD5ftx5jUadYIRtPtaq7AAAAwpXPpDWKDcdhiWr0tVDjsgW%2B4awGOM9VQ%3XPoMFuWcHsE42TK`,
+  },
+  goLiveMessage: {
+    fieldName: 'goLiveMessage',
+    label: 'Go Live Text',
+    maxLength: 200,
+    tip: 'The text to send when you go live.',
+    placeholder: `I've gone live! Come watch!`,
+  },
+};
