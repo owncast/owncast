@@ -144,16 +144,16 @@ export default function StreamHealth() {
 
   const segmentDownloadDurationChart = [
     {
-      name: 'Median download duration',
-      color: '#00FFFF',
-      options: { radius: 2 },
-      data: medianSegmentDownloadDurations,
-    },
-    {
       name: 'Max download duration',
       color: '#B63FFF',
       options: { radius: 2 },
       data: maximumSegmentDownloadDurations,
+    },
+    {
+      name: 'Median download duration',
+      color: '#00FFFF',
+      options: { radius: 2 },
+      data: medianSegmentDownloadDurations,
     },
     {
       name: 'Min download duration',
@@ -195,11 +195,11 @@ export default function StreamHealth() {
 
   availableBitrates.forEach(bitrate => {
     bitrateChart.push({
-      name: `${bitrate} kbps stream`,
+      name: `Available bitrate`,
       color: '#003FFF',
       data: minimumPlayerBitrate.map(item => ({
         time: item.time,
-        value: 1200,
+        value: bitrate,
       })),
       options: { radius: 0 },
     });
@@ -228,12 +228,12 @@ export default function StreamHealth() {
   let speedError = null;
 
   if (currentSpeed !== 0 && currentSpeed < lowestVariant) {
-    bitrateError = `At least one of your viewers is playing your stream at ${currentSpeed}kbps, slower than ${lowestVariant}kbps, the lowest quality you made available, experiencing buffering. Consider adding a lower quality with a lower bitrate if the errors over time warrant this.`;
+    bitrateError = `One of your viewers is playing your stream at ${currentSpeed}kbps, slower than ${lowestVariant}kbps, the lowest quality you made available. Consider adding a lower quality with a lower bitrate if the errors over time warrant this.`;
   }
 
   if (currentDownloadSeconds > segmentLength) {
     speedError =
-      'Your viewers may be consuming your video slower than required. This may be due to slow networks or your latency configuration. Consider adding a lower quality with a lower bitrate or experiment with increasing the latency buffer setting.';
+      'Your viewers may be consuming your video slower than required. This may be due to slow networks or your latency configuration. You need to decrease the amount of time viewers are taking to consume your video. Consider adding a lower quality with a lower bitrate or experiment with increasing the latency buffer setting.';
   }
 
   const errorStatColor = recentErrorCount > 0 ? '#B63FFF' : '#FFFFFF';
