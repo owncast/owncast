@@ -5,6 +5,7 @@ import { formatDistanceToNow, formatRelative } from 'date-fns';
 import { ServerStatusContext } from '../utils/server-status-context';
 import LogTable from '../components/log-table';
 import Offline from '../components/offline-notice';
+import StreamHealthOverview from '../components/stream-health-overview';
 
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../utils/format';
@@ -132,6 +133,7 @@ export default function Home() {
                 />
               </Col>
             </Row>
+            <StreamHealthOverview />
           </Card>
         </div>
 
@@ -165,6 +167,7 @@ export default function Home() {
               />
             </Card>
           </Col>
+
           <Col span={12} xs={24} sm={24} md={24} lg={12}>
             <NewsFeed />
           </Col>

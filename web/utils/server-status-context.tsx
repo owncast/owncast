@@ -89,6 +89,11 @@ const initialServerStatusState = {
   versionNumber: '0.0.0',
   streamTitle: '',
   chatDisabled: false,
+  health: {
+    healthy: true,
+    healthPercentage: 100,
+    message: '',
+  },
 };
 
 export const ServerStatusContext = React.createContext({

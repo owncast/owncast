@@ -125,6 +125,12 @@ export interface NotificationsConfig {
   twitter: TwitterNotification;
 }
 
+export interface Health {
+  healthy: boolean;
+  healthyPercentage: number;
+  message: string;
+}
+
 export interface ConfigDetails {
   externalActions: ExternalAction[];
   ffmpegPath: string;
