@@ -10,8 +10,8 @@ import (
 )
 
 // How often we poll for updates.
-const hardwareMetricsPollingInterval = 1 * time.Minute
-const playbackMetricsPollingInterval = 3 * time.Minute
+const hardwareMetricsPollingInterval = 2 * time.Minute
+const playbackMetricsPollingInterval = 2 * time.Minute
 
 const (
 	// How often we poll for updates.
