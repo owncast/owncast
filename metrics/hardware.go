@@ -11,7 +11,7 @@ import (
 )
 
 // Max number of metrics we want to keep.
-const maxCollectionValues = 500
+const maxCollectionValues = 300
 
 func collectCPUUtilization() {
 	if len(metrics.CPUUtilizations) > maxCollectionValues {

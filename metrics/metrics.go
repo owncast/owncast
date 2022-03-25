@@ -11,6 +11,7 @@ import (
 
 // How often we poll for updates.
 const hardwareMetricsPollingInterval = 1 * time.Minute
+const playbackMetricsPollingInterval = 3 * time.Minute
 
 const (
 	// How often we poll for updates.
@@ -41,13 +42,18 @@ type CollectedMetrics struct {
 	medianLatency  []TimestampedValue `json:"-"`
 
 	qualityVariantChanges []TimestampedValue `json:"-"`
+
+	streamHealthOverview *models.StreamHealthOverview
 }
 
 // Metrics is the shared Metrics instance.
 var metrics *CollectedMetrics
 
+var _getStatus func() models.Status
+
 // Start will begin the metrics collection and alerting.
 func Start(getStatus func() models.Status) {
+	_getStatus = getStatus
 	host := data.GetServerURL()
 	if host == "" {
 		host = "unknown"
@@ -62,9 +68,17 @@ func Start(getStatus func() models.Status) {
 	metrics = new(CollectedMetrics)
 	go startViewerCollectionMetrics()
 
-	for range time.Tick(hardwareMetricsPollingInterval) {
-		handlePolling()
-	}
+	go func() {
+		for range time.Tick(hardwareMetricsPollingInterval) {
+			handlePolling()
+		}
+	}()
+
+	go func() {
+		for range time.Tick(playbackMetricsPollingInterval) {
+			handlePlaybackPolling()
+		}
+	}()
 }
 
 func handlePolling() {
@@ -75,12 +89,6 @@ func handlePolling() {
 	collectCPUUtilization()
 	collectRAMUtilization()
 	collectDiskUtilization()
-
-	collectPlaybackErrorCount()
-	collectLatencyValues()
-	collectSegmentDownloadDuration()
-	collectLowestBandwidth()
-	collectQualityVariantChanges()
 
 	// Alerting
 	handleAlerting()

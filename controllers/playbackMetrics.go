@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,9 +33,11 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	metrics.RegisterPlaybackErrorCount(request.Errors)
-	metrics.RegisterPlayerBandwidth(request.Bandwidth)
-	metrics.RegisterPlayerLatency(request.Latency)
-	metrics.RegisterPlayerSegmentDownloadDuration(request.DownloadDuration)
-	metrics.RegisterQualityVariantChangesCount(request.QualityVariantChanges)
+	clientID := utils.GenerateClientIDFromRequest(r)
+
+	metrics.RegisterPlaybackErrorCount(clientID, request.Errors)
+	metrics.RegisterPlayerBandwidth(clientID, request.Bandwidth)
+	metrics.RegisterPlayerLatency(clientID, request.Latency)
+	metrics.RegisterPlayerSegmentDownloadDuration(clientID, request.DownloadDuration)
+	metrics.RegisterQualityVariantChangesCount(clientID, request.QualityVariantChanges)
 }
