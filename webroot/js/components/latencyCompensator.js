@@ -13,10 +13,10 @@ It will:
 
 const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 300; // Min duration a buffer event must last to be counted.
-const MAX_SPEEDUP_RATE = 1.07; // The playback rate when compensating for latency.
+const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
 const TIMEOUT_DURATION = 20_000; // The amount of time we stop handling latency after certain events.
 const CHECK_TIMER_INTERVAL = 5_000; // How often we check if we should be compensating for latency.
-const BUFFERING_AMNESTY_DURATION = 2 * 1000 * 60; // How often until a buffering event expires.
+const BUFFERING_AMNESTY_DURATION = 4 * 1000 * 60; // How often until a buffering event expires.
 const HIGH_LATENCY_ENABLE_THRESHOLD = 20_000; // ms;
 const LOW_LATENCY_DISABLE_THRESHOLD = 4500; // ms;
 const REQUIRED_BANDWIDTH_RATIO = 2.0; // The player:bitrate ratio required to enable compensating for latency.
@@ -33,7 +33,7 @@ class LatencyCompensator {
     this.minLatencyThreshold = 8000;
     this.bufferingCounter = 0;
     this.bufferingTimer = 0;
-    this.bufferStartedTimestamp = 0;
+    this.playbackRate = 1.0;
     this.player.on('playing', this.handlePlaying.bind(this));
     this.player.on('error', this.handleError.bind(this));
     this.player.on('waiting', this.handleBuffering.bind(this));
@@ -44,11 +44,42 @@ class LatencyCompensator {
 
   // This is run on a timer to check if we should be compensating for latency.
   check() {
+    console.log(
+      'playback rate',
+      this.playbackRate,
+      'enabled:',
+      this.enabled,
+      'running: ',
+      this.running,
+      'timeout: ',
+      this.inTimeout,
+      'buffer count:',
+      this.bufferingCounter
+    );
+
     if (this.inTimeout) {
       return;
     }
 
     const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
+
+    try {
+      // Check the player buffers to make sure there's enough playable content
+      // that we can safely play.
+      if (tech.vhs.stats.buffered.length === 0) {
+        this.timeout();
+      }
+
+      let totalBuffered = 0;
+
+      tech.vhs.stats.buffered.forEach((buffer) => {
+        totalBuffered += buffer.end - buffer.start;
+      });
+
+      if (totalBuffered < 20) {
+        this.timeout();
+      }
+    } catch (e) {}
 
     // Determine how much of the current playlist's bandwidth requirements
     // we're utilizing. If it's too high then we can't afford to push
@@ -70,18 +101,7 @@ class LatencyCompensator {
       Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
       1.0
     );
-    console.log(
-      'playback rate',
-      proposedPlaybackRate,
-      'enabled:',
-      this.enabled,
-      'running: ',
-      this.running,
-      'timedout: ',
-      this.inTimeout,
-      'buffer count:',
-      this.bufferingCounter
-    );
+
     try {
       const segment = getCurrentlyPlayingSegment(tech);
       if (!segment) {
@@ -113,18 +133,23 @@ class LatencyCompensator {
     }
   }
 
+  setPlaybackRate(rate) {
+    this.playbackRate = rate;
+    this.player.playbackRate(rate);
+  }
+
   start(rate = 1.0) {
-    if (this.inTimeout || !this.enabled) {
+    if (this.inTimeout || !this.enabled || rate === this.playbackRate) {
       return;
     }
 
     this.running = true;
-    this.player.playbackRate(rate);
+    this.setPlaybackRate(rate);
   }
 
   stop() {
     this.running = false;
-    this.player.playbackRate(1);
+    this.setPlaybackRate(1.0);
   }
 
   enable() {
@@ -161,23 +186,10 @@ class LatencyCompensator {
   }
 
   handlePlaying() {
+    clearTimeout(this.bufferingTimer);
+
     if (!this.enabled) {
       return;
-    }
-
-    if (this.bufferStartedTimestamp !== 0) {
-      const bufferingDuration =
-        new Date().getTime() - this.bufferStartedTimestamp;
-      this.bufferStartedTimestamp = 0;
-
-      // If the buffering event lasted long enough then we will stay in
-      // a timeout and count it as a real buffering event. Otherwise
-      // we will ignore it.
-      if (bufferingDuration > MIN_BUFFER_DURATION) {
-        this.countBufferingEvent();
-      } else {
-        this.endTimeout();
-      }
     }
   }
 
@@ -189,18 +201,18 @@ class LatencyCompensator {
     this.disable();
   }
 
-  handleError() {
+  handleError(e) {
     if (!this.enabled) {
       return;
     }
 
+    console.log('handle error', e);
     this.timeout();
   }
 
   countBufferingEvent() {
     this.bufferingCounter++;
     if (this.bufferingCounter > REBUFFER_EVENT_LIMIT) {
-      console.log('disabling latency compensation');
       this.disable();
       return;
     }
@@ -220,8 +232,11 @@ class LatencyCompensator {
       return;
     }
 
-    this.bufferStartedTimestamp = new Date().getTime();
     this.timeout();
+
+    this.bufferingTimer = setTimeout(() => {
+      this.countBufferingEvent();
+    }, MIN_BUFFER_DURATION);
   }
 }
 
