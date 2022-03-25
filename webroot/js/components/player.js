@@ -8,32 +8,6 @@ import LatencyCompensator from './latencyCompensator.js';
 
 const VIDEO_ID = 'video';
 
-const EVENTS = [
-  'loadstart',
-  'progress',
-  'suspend',
-  'abort',
-  'error',
-  'emptied',
-  'stalled',
-  'loadedmetadata',
-  'loadeddata',
-  'canplay',
-  'canplaythrough',
-  'playing',
-  'waiting',
-  'seeking',
-  'seeked',
-  'ended',
-  'durationchange',
-  'timeupdate',
-  'play',
-  'pause',
-  'ratechange',
-  'resize',
-  'volumechange',
-];
-
 // Video setup
 const VIDEO_SRC = {
   src: URL_STREAM,
@@ -108,6 +82,7 @@ class OwncastPlayer {
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
     this.appPlayerEndedCallback = null;
+    this.hasStartedPlayback = false;
 
     // bind all the things because safari
     this.startPlayer = this.startPlayer.bind(this);
@@ -236,7 +211,10 @@ class OwncastPlayer {
       this.appPlayerPlayingCallback();
     }
 
-    this.latencyCompensator.enable();
+    if (!this.hasStartedPlayback) {
+      this.latencyCompensator.enable();
+      this.hasStartedPlayback = true;
+    }
 
     setInterval(() => {
       this.collectPlaybackMetrics();
