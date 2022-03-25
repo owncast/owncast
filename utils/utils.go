@@ -318,7 +318,7 @@ func FindInSlice(slice []string, val string) (int, bool) {
 	return -1, false
 }
 
-// StringSliceToMap is a convinience function to convert a slice of strings into
+// StringSliceToMap is a convenience function to convert a slice of strings into
 // a map using the string as the key.
 func StringSliceToMap(stringSlice []string) map[string]interface{} {
 	stringMap := map[string]interface{}{}
@@ -328,6 +328,17 @@ func StringSliceToMap(stringSlice []string) map[string]interface{} {
 	}
 
 	return stringMap
+}
+
+// Float64MapToSlice is a convenience function to convert a map of floats into.
+func Float64MapToSlice(float64Map map[string]float64) []float64 {
+	float64Slice := []float64{}
+
+	for _, val := range float64Map {
+		float64Slice = append(float64Slice, val)
+	}
+
+	return float64Slice
 }
 
 // StringMapKeys returns a slice of string keys from a map.

@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
@@ -16,11 +17,12 @@ func Status(w http.ResponseWriter, r *http.Request) {
 	broadcaster := core.GetBroadcaster()
 	status := core.GetStatus()
 	currentBroadcast := core.GetCurrentBroadcast()
-
+	health := metrics.GetStreamHealthOverview()
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,
 		CurrentBroadcast:       currentBroadcast,
 		Online:                 status.Online,
+		Health:                 health,
 		ViewerCount:            status.ViewerCount,
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
@@ -38,12 +40,13 @@ func Status(w http.ResponseWriter, r *http.Request) {
 }
 
 type adminStatusResponse struct {
-	Broadcaster            *models.Broadcaster      `json:"broadcaster"`
-	CurrentBroadcast       *models.CurrentBroadcast `json:"currentBroadcast"`
-	Online                 bool                     `json:"online"`
-	ViewerCount            int                      `json:"viewerCount"`
-	OverallPeakViewerCount int                      `json:"overallPeakViewerCount"`
-	SessionPeakViewerCount int                      `json:"sessionPeakViewerCount"`
-	StreamTitle            string                   `json:"streamTitle"`
-	VersionNumber          string                   `json:"versionNumber"`
+	Broadcaster            *models.Broadcaster          `json:"broadcaster"`
+	CurrentBroadcast       *models.CurrentBroadcast     `json:"currentBroadcast"`
+	Online                 bool                         `json:"online"`
+	ViewerCount            int                          `json:"viewerCount"`
+	OverallPeakViewerCount int                          `json:"overallPeakViewerCount"`
+	SessionPeakViewerCount int                          `json:"sessionPeakViewerCount"`
+	StreamTitle            string                       `json:"streamTitle"`
+	Health                 *models.StreamHealthOverview `json:"health"`
+	VersionNumber          string                       `json:"versionNumber"`
 }
