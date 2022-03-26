@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 var errorMessages = map[string]string{
@@ -82,6 +83,19 @@ func generateStreamHealthOverview() {
 		}
 		if unhealthyClientCount > 0 {
 			overview.Message = fmt.Sprintf(errorMessages["PLAYBACK_ERRORS"], unhealthyClientCount, totalNumberOfClients, int((float64(unhealthyClientCount)/float64(totalNumberOfClients))*100))
+		}
+	}
+
+	// Report high CPU use.
+	if unhealthyClientCount == 0 && len(metrics.CPUUtilizations) > 2 {
+		recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
+		values := make([]float64, len(recentCPUUses))
+		for i, val := range recentCPUUses {
+			values[i] = val.Value
+		}
+		recentCPUUse := utils.Avg(values)
+		if recentCPUUse > 90 {
+			overview.Message = "The CPU usage on your server is over 90%. This may cause video to be provided slower than necessarily, causing buffering for your viewers. Consider increasing the resources available or reducing the number of output variants you made available."
 		}
 	}
 
