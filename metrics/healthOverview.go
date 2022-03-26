@@ -9,10 +9,10 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var errorMessages = map[string]string{
-	"LOWSPEED":        "%d of %d clients (%d%%) are consuming video slower than, or too close to your bitrate of %d kbps.",
-	"PLAYBACK_ERRORS": "%d of %d clients (%d%%) are experiencing different, unspecified, playback issues.",
-}
+const (
+	healthyPercentageValue = 75
+	maxCPUUsage            = 90
+)
 
 // GetStreamHealthOverview will return the stream health overview.
 func GetStreamHealthOverview() *models.StreamHealthOverview {
@@ -20,15 +20,24 @@ func GetStreamHealthOverview() *models.StreamHealthOverview {
 }
 
 func generateStreamHealthOverview() {
-	overview := models.StreamHealthOverview{
+	overview := &models.StreamHealthOverview{
 		Healthy:           true,
 		HealthyPercentage: 100,
+		Message:           "",
 	}
 
-	defer func() {
-		metrics.streamHealthOverview = &overview
-	}()
+	if cpuUseOverview := cpuUsageHealthOverview(); cpuUseOverview != nil {
+		overview = cpuUseOverview
+	} else if networkSpeedOverview := networkSpeedHealthOverview(); networkSpeedOverview != nil {
+		overview = networkSpeedOverview
+	} else if errorCountOverview := errorCountHealthOverview(); errorCountOverview != nil {
+		overview = errorCountOverview
+	}
 
+	metrics.streamHealthOverview = overview
+}
+
+func networkSpeedHealthOverview() *models.StreamHealthOverview {
 	type singleVariant struct {
 		isVideoPassthrough bool
 		bitrate            int
@@ -61,49 +70,87 @@ func generateStreamHealthOverview() {
 	totalNumberOfClients := len(windowedBandwidths)
 
 	if totalNumberOfClients == 0 {
-		return
+		return nil
 	}
 
 	// Determine healthy status based on bandwidth speeds of clients.
 	unhealthyClientCount := 0
+
 	for _, speed := range windowedBandwidths {
 		if int(speed) < int(lowestSupportedBitrate*1.1) {
 			unhealthyClientCount++
 		}
 	}
-	if unhealthyClientCount > 0 {
-		overview.Message = fmt.Sprintf(errorMessages["LOWSPEED"], unhealthyClientCount, totalNumberOfClients, int((float64(unhealthyClientCount)/float64(totalNumberOfClients))*100), int(lowestSupportedBitrate))
-	}
-
-	// If bandwidth is ok, determine healthy status based on error
-	// counts of clients.
-	if unhealthyClientCount == 0 {
-		for _, errors := range windowedErrorCounts {
-			unhealthyClientCount += int(errors)
-		}
-		if unhealthyClientCount > 0 {
-			overview.Message = fmt.Sprintf(errorMessages["PLAYBACK_ERRORS"], unhealthyClientCount, totalNumberOfClients, int((float64(unhealthyClientCount)/float64(totalNumberOfClients))*100))
-		}
-	}
-
-	// Report high CPU use.
-	if unhealthyClientCount == 0 && len(metrics.CPUUtilizations) > 2 {
-		recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
-		values := make([]float64, len(recentCPUUses))
-		for i, val := range recentCPUUses {
-			values[i] = val.Value
-		}
-		recentCPUUse := utils.Avg(values)
-		if recentCPUUse > 90 {
-			overview.Message = "The CPU usage on your server is over 90%. This may cause video to be provided slower than necessarily, causing buffering for your viewers. Consider increasing the resources available or reducing the number of output variants you made available."
-		}
-	}
 
 	if unhealthyClientCount == 0 {
-		return
+		return nil
 	}
 
 	percentUnhealthy := 100 - ((float64(unhealthyClientCount) / float64(totalNumberOfClients)) * 100)
-	overview.HealthyPercentage = int(percentUnhealthy)
-	overview.Healthy = overview.HealthyPercentage > 95
+	healthyPercentage := int(percentUnhealthy)
+
+	return &models.StreamHealthOverview{
+		Healthy:           healthyPercentage > healthyPercentageValue,
+		Message:           fmt.Sprintf("%d of %d clients (%d%%) are consuming video slower than, or too close to your bitrate of %d kbps.", unhealthyClientCount, totalNumberOfClients, int((float64(unhealthyClientCount)/float64(totalNumberOfClients))*100), int(lowestSupportedBitrate)),
+		HealthyPercentage: healthyPercentage,
+	}
+}
+
+func cpuUsageHealthOverview() *models.StreamHealthOverview {
+	if len(metrics.CPUUtilizations) < 2 {
+		return nil
+	}
+
+	totalNumberOfClients := len(windowedBandwidths)
+
+	recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
+	values := make([]float64, len(recentCPUUses))
+	for i, val := range recentCPUUses {
+		values[i] = val.Value
+	}
+	recentCPUUse := utils.Avg(values)
+	if recentCPUUse < maxCPUUsage {
+		return nil
+	}
+
+	clientsWithErrors := 0
+	for _, errors := range windowedErrorCounts {
+		if errors > 0 {
+			clientsWithErrors++
+		}
+	}
+
+	healthyPercentage := int(100 - ((float64(clientsWithErrors) / float64(totalNumberOfClients)) * 100))
+
+	return &models.StreamHealthOverview{
+		Healthy:           false,
+		Message:           fmt.Sprintf("The CPU usage on your server is over %d%%. This may cause video to be provided slower than necessary, causing buffering for your viewers. Consider increasing the resources available or reducing the number of output variants you made available.", maxCPUUsage),
+		HealthyPercentage: healthyPercentage,
+	}
+}
+
+func errorCountHealthOverview() *models.StreamHealthOverview {
+	totalNumberOfClients := len(windowedBandwidths)
+	if totalNumberOfClients == 0 {
+		return nil
+	}
+
+	clientsWithErrors := 0
+	for _, errors := range windowedErrorCounts {
+		if errors > 0 {
+			clientsWithErrors++
+		}
+	}
+
+	if clientsWithErrors == 0 {
+		return nil
+	}
+
+	healthyPercentage := int(100 - ((float64(clientsWithErrors) / float64(totalNumberOfClients)) * 100))
+
+	return &models.StreamHealthOverview{
+		Healthy:           healthyPercentage > healthyPercentageValue,
+		Message:           fmt.Sprintf("%d of %d clients (%d%%) are experiencing different, unspecified, playback issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage),
+		HealthyPercentage: healthyPercentage,
+	}
 }
