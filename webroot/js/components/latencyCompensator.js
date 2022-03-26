@@ -75,8 +75,9 @@ class LatencyCompensator {
       tech.vhs.stats.buffered.forEach((buffer) => {
         totalBuffered += buffer.end - buffer.start;
       });
+      console.log('buffered', totalBuffered);
 
-      if (totalBuffered < 20) {
+      if (totalBuffered < 18) {
         this.timeout();
       }
     } catch (e) {}
