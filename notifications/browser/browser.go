@@ -68,7 +68,7 @@ func (b *Browser) Send(
 		VAPIDPublicKey:  b.publicKey,
 		VAPIDPrivateKey: b.privateKey,
 		Topic:           "owncast-go-live",
-		TTL:             10,
+		TTL:             120,
 		// Not really the subscriber, but a contact point for the sender.
 		Subscriber: "owncast@owncast.online",
 	})
