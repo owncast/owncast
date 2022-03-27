@@ -7,20 +7,22 @@ possible, without causing any buffering events.
 It will:
   - Determine the start (max) and end (min) latency values.
   - Keep an eye on download speed and stop compensating if it drops too low.
+  - Dynamically calculate the speedup rate based on network speed.
   - Pause the compensation if buffering events occur.
   - Completely give up on all compensation if too many buffering events occur.
 */
 
 const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
-const MIN_BUFFER_DURATION = 300; // Min duration a buffer event must last to be counted.
+const MIN_BUFFER_DURATION = 500; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
-const TIMEOUT_DURATION = 20_000; // The amount of time we stop handling latency after certain events.
+const TIMEOUT_DURATION = 30 * 1000; // The amount of time we stop handling latency after certain events.
 const CHECK_TIMER_INTERVAL = 5_000; // How often we check if we should be compensating for latency.
-const BUFFERING_AMNESTY_DURATION = 4 * 1000 * 60; // How often until a buffering event expires.
-const HIGH_LATENCY_ENABLE_THRESHOLD = 20_000; // ms;
-const LOW_LATENCY_DISABLE_THRESHOLD = 4500; // ms;
+const BUFFERING_AMNESTY_DURATION = 3 * 1000 * 60; // How often until a buffering event expires.
 const REQUIRED_BANDWIDTH_RATIO = 2.0; // The player:bitrate ratio required to enable compensating for latency.
-
+const HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 2.4; // Segment length * this value is when we start compensating.
+const LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 1.7; // Segment length * this value is when we stop compensating.
+const MIN_LATENCY = 4 * 1000; // The lowest we'll continue compensation to be running at.
+const MAX_LATENCY = 8 * 1000; // The highest we'll allow a target latency to be before we start compensating.
 class LatencyCompensator {
   constructor(player) {
     this.player = player;
@@ -29,8 +31,6 @@ class LatencyCompensator {
     this.inTimeout = false;
     this.timeoutTimer = 0;
     this.checkTimer = 0;
-    this.maxLatencyThreshold = 10000;
-    this.minLatencyThreshold = 8000;
     this.bufferingCounter = 0;
     this.bufferingTimer = 0;
     this.playbackRate = 1.0;
@@ -114,27 +114,37 @@ class LatencyCompensator {
       }
 
       // How far away from live edge do we start the compensator.
-      this.maxLatencyThreshold = Math.min(
-        segment.duration * 1000 * 4,
-        HIGH_LATENCY_ENABLE_THRESHOLD
+      const maxLatencyThreshold = Math.min(
+        MAX_LATENCY,
+        segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
       );
 
       // How far away from live edge do we stop the compensator.
-      this.minLatencyThreshold = Math.max(
-        segment.duration * 1000 * 2,
-        LOW_LATENCY_DISABLE_THRESHOLD
+      const minLatencyThreshold = Math.max(
+        MIN_LATENCY,
+        segment.duration * 1000 * LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
       );
+
       const segmentTime = segment.dateTimeObject.getTime();
       const now = new Date().getTime();
       const latency = now - segmentTime;
 
-      if (latency > this.maxLatencyThreshold) {
+      console.log(
+        'latency',
+        latency / 1000,
+        'min',
+        minLatencyThreshold / 1000,
+        'max',
+        maxLatencyThreshold / 1000
+      );
+
+      if (latency > maxLatencyThreshold) {
         this.start(proposedPlaybackRate);
-      } else if (latency < this.minLatencyThreshold) {
+      } else if (latency < minLatencyThreshold) {
         this.stop();
       }
     } catch (err) {
-      console.warn(err);
+      // console.warn(err);
     }
   }
 
