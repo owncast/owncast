@@ -238,7 +238,7 @@ class OwncastPlayer {
       const latency = now - segmentTime;
       this.playbackMetrics.trackLatency(latency);
     } catch (err) {
-      console.warn(err);
+      // console.warn(err);
     }
   }
 
@@ -261,12 +261,12 @@ class OwncastPlayer {
   }
 
   handleWaiting(e) {
-    // this.playbackMetrics.incrementErrorCount(1);
-    this.playbackMetrics.isBuffering = true;
+    this.playbackMetrics.incrementErrorCount(1);
+    this.playbackMetrics.setIsBuffering(true);
   }
 
   handleNoLongerBuffering() {
-    this.playbackMetrics.isBuffering = false;
+    this.playbackMetrics.setIsBuffering(false);
   }
 
   log(message) {

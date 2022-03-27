@@ -11,6 +11,7 @@ class PlaybackMetrics {
     this.errors = 0;
     this.qualityVariantChanges = 0;
     this.isBuffering = false;
+    this.bufferingDurationTimer = 0;
 
     setInterval(() => {
       this.send();
@@ -29,6 +30,19 @@ class PlaybackMetrics {
       return;
     }
     this.qualityVariantChanges++;
+  }
+
+  setIsBuffering(isBuffering) {
+    this.isBuffering = isBuffering;
+
+    if (!isBuffering) {
+      clearTimeout(this.bufferingDurationTimer);
+      return;
+    }
+
+    this.bufferingDurationTimer = setTimeout(() => {
+      this.incrementErrorCount(1);
+    }, 500);
   }
 
   trackSegmentDownloadTime(seconds) {
