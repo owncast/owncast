@@ -93,6 +93,7 @@ const initialServerStatusState = {
     healthy: true,
     healthPercentage: 100,
     message: '',
+    representation: 0,
   },
 };
 

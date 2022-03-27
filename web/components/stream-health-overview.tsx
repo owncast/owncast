@@ -1,5 +1,5 @@
 import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Col, Row, Statistic } from 'antd';
+import { Alert, Button, Col, Row, Statistic, Typography } from 'antd';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 import { ServerStatusContext } from '../utils/server-status-context';
@@ -12,7 +12,7 @@ export default function StreamHealthOverview() {
     return null;
   }
 
-  const { healthy, healthPercentage, message } = health;
+  const { healthy, healthPercentage, message, representation } = health;
   console.log(healthPercentage);
   let color = '#3f8600';
   let icon: 'success' | 'info' | 'warning' | 'error' = 'info';
@@ -43,6 +43,15 @@ export default function StreamHealthOverview() {
             suffix="%"
           />
         </Col>
+      </Row>
+      <Row style={{ display: representation < 100 ? 'grid' : 'none' }}>
+        <Typography.Text
+          type="secondary"
+          style={{ textAlign: 'center', fontSize: '0.7em', opacity: '0.3' }}
+        >
+          Stream health represents {representation}% of all known players. Other player status is
+          unknown.
+        </Typography.Text>
       </Row>
       <Row gutter={16} style={{ display: message ? 'grid' : 'none', marginTop: '10px' }}>
         <Col span={24}>

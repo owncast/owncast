@@ -47,6 +47,7 @@ export default function StreamHealth() {
   const [maximumPlayerBitrate, setMaximumPlayerBitrate] = useState<TimedValue[]>([]);
   const [availableBitrates, setAvailableBitrates] = useState<Number[]>([]);
   const [segmentLength, setSegmentLength] = useState(0);
+  const [representation, setRepresentation] = useState(0);
 
   const getMetrics = async () => {
     try {
@@ -68,6 +69,7 @@ export default function StreamHealth() {
 
       setAvailableBitrates(result.availableBitrates);
       setSegmentLength(result.segmentLength - 0.3);
+      setRepresentation(result.representation);
     } catch (error) {
       console.error(error);
     }
@@ -302,6 +304,13 @@ export default function StreamHealth() {
             </Card>
           </Col>
         </Row>
+
+        <div style={{ textAlign: 'center', display: representation < 100 ? 'grid' : 'none' }}>
+          <Typography.Paragraph style={{ opacity: '0.7', fontSize: '0.7em' }}>
+            Provided playback metrics represent {representation}% of all known players. Specifics
+            around other players consuming this video stream are unknown.
+          </Typography.Paragraph>
+        </div>
 
         <Card>
           <DescriptionBox

@@ -129,6 +129,7 @@ export interface Health {
   healthy: boolean;
   healthyPercentage: number;
   message: string;
+  representation: number;
 }
 
 export interface ConfigDetails {
