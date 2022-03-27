@@ -387,3 +387,8 @@ func ShuffleStringSlice(s []string) []string {
 	})
 	return s
 }
+
+// IntPercentage returns  an int percentage of a number.
+func IntPercentage(x, total int) int {
+	return int(float64(x) / float64(total) * 100)
+}
