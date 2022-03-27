@@ -4,6 +4,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -325,4 +326,12 @@ func collectQualityVariantChanges() {
 // changes.
 func GetQualityVariantChangesOverTime() []TimestampedValue {
 	return metrics.qualityVariantChanges
+}
+
+// GetPlaybackMetricsRepresentation returns what percentage of all known players
+// the metrics represent.
+func GetPlaybackMetricsRepresentation() int {
+	totalPlayerCount := len(core.GetActiveViewers())
+	representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
+	return representation
 }

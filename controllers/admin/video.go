@@ -29,6 +29,7 @@ func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 		HighestDownloadRater []metrics.TimestampedValue `json:"maxPlayerBitrate"`
 		AvailableBitrates    []int                      `json:"availableBitrates"`
 		SegmentLength        int                        `json:"segmentLength"`
+		Representation       int                        `json:"representation"`
 	}
 
 	availableBitrates := []int{}
@@ -59,6 +60,8 @@ func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	maxPlayerBitrate := metrics.GetMaxDownloadRateOverTime()
 	qualityVariantChanges := metrics.GetQualityVariantChangesOverTime()
 
+	representation := metrics.GetPlaybackMetricsRepresentation()
+
 	resp := response{
 		AvailableBitrates:       availableBitrates,
 		Errors:                  errors,
@@ -73,6 +76,7 @@ func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 		MedianDownloadRate:      medianPlayerBitrate,
 		HighestDownloadRater:    maxPlayerBitrate,
 		QualityVariantChanges:   qualityVariantChanges,
+		Representation:          representation,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

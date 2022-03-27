@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -33,6 +34,11 @@ func generateStreamHealthOverview() {
 	} else if errorCountOverview := errorCountHealthOverview(); errorCountOverview != nil {
 		overview = errorCountOverview
 	}
+
+	// Determine what percentage of total players are represented in our overview.
+	totalPlayerCount := len(core.GetActiveViewers())
+	representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
+	overview.Representation = representation
 
 	metrics.streamHealthOverview = overview
 }
@@ -146,7 +152,7 @@ func errorCountHealthOverview() *models.StreamHealthOverview {
 		return nil
 	}
 
-	healthyPercentage := int(100 - ((float64(clientsWithErrors) / float64(totalNumberOfClients)) * 100))
+	healthyPercentage := 100 - utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
 
 	return &models.StreamHealthOverview{
 		Healthy:           healthyPercentage > healthyPercentageValue,
