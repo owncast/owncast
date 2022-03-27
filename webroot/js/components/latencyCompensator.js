@@ -63,6 +63,10 @@ class LatencyCompensator {
 
     const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
 
+    if (!tech || !tech.vhs) {
+      return;
+    }
+
     try {
       // Check the player buffers to make sure there's enough playable content
       // that we can safely play.

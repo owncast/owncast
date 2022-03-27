@@ -211,10 +211,11 @@ class OwncastPlayer {
       this.appPlayerPlayingCallback();
     }
 
-    if (!this.hasStartedPlayback) {
+    if (this.latencyCompensator && !this.hasStartedPlayback) {
       this.latencyCompensator.enable();
-      this.hasStartedPlayback = true;
     }
+
+    this.hasStartedPlayback = true;
 
     setInterval(() => {
       this.collectPlaybackMetrics();
@@ -223,6 +224,10 @@ class OwncastPlayer {
 
   collectPlaybackMetrics() {
     const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
+    if (!tech || !tech.vhs) {
+      return;
+    }
+
     const bandwidth = tech.vhs.systemBandwidth;
     this.playbackMetrics.trackBandwidth(bandwidth);
 
@@ -242,6 +247,7 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
+
     this.latencyCompensator.disable();
   }
 
