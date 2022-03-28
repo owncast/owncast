@@ -59,7 +59,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.22.2
 )
 
-require github.com/SherClockHolmes/webpush-go v1.1.3
+require github.com/SherClockHolmes/webpush-go v1.2.0
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
