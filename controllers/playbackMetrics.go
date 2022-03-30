@@ -36,8 +36,17 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	clientID := utils.GenerateClientIDFromRequest(r)
 
 	metrics.RegisterPlaybackErrorCount(clientID, request.Errors)
-	metrics.RegisterPlayerBandwidth(clientID, request.Bandwidth)
-	metrics.RegisterPlayerLatency(clientID, request.Latency)
-	metrics.RegisterPlayerSegmentDownloadDuration(clientID, request.DownloadDuration)
+	if request.Bandwidth != 0.0 {
+		metrics.RegisterPlayerBandwidth(clientID, request.Bandwidth)
+	}
+
+	if request.Latency != 0.0 {
+		metrics.RegisterPlayerLatency(clientID, request.Latency)
+	}
+
+	if request.DownloadDuration != 0.0 {
+		metrics.RegisterPlayerSegmentDownloadDuration(clientID, request.DownloadDuration)
+	}
+
 	metrics.RegisterQualityVariantChangesCount(clientID, request.QualityVariantChanges)
 }
