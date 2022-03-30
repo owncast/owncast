@@ -153,10 +153,22 @@ func errorCountHealthOverview() *models.StreamHealthOverview {
 	}
 
 	healthyPercentage := 100 - utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
+	message := fmt.Sprintf("%d of %d clients (%d%%) are experiencing different, unspecified, playback issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 
+	isUsingPassthrough := false
+	outputVariants := data.GetStreamOutputVariants()
+	for _, variant := range outputVariants {
+		if variant.IsVideoPassthrough {
+			isUsingPassthrough = true
+		}
+	}
+
+	if isUsingPassthrough {
+		message = fmt.Sprintf("%d of %d clients (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
+	}
 	return &models.StreamHealthOverview{
 		Healthy:           healthyPercentage > healthyPercentageValue,
-		Message:           fmt.Sprintf("%d of %d clients (%d%%) are experiencing different, unspecified, playback issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage),
+		Message:           message,
 		HealthyPercentage: healthyPercentage,
 	}
 }
