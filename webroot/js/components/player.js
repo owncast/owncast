@@ -39,45 +39,13 @@ const VIDEO_OPTIONS = {
 export const POSTER_DEFAULT = `/img/logo.png`;
 export const POSTER_THUMB = `/thumbnail.jpg`;
 
-function getCurrentlyPlayingSegment(tech, old_segment = null) {
-  var target_media = tech.vhs.playlists.media();
-  var snapshot_time = tech.currentTime();
-
-  var segment;
-  var segment_time;
-
-  // Itinerate trough available segments and get first within which snapshot_time is
-  for (var i = 0, l = target_media.segments.length; i < l; i++) {
-    // Note: segment.end may be undefined or is not properly set
-    if (snapshot_time < target_media.segments[i].end) {
-      segment = target_media.segments[i];
-      break;
-    }
-  }
-
-  // Null segment_time in case it's lower then 0.
-  if (segment) {
-    segment_time = Math.max(
-      0,
-      snapshot_time - (segment.end - segment.duration)
-    );
-    // Because early segments don't have end property
-  } else {
-    segment = target_media.segments[0];
-    segment_time = 0;
-  }
-
-  return segment;
-}
-
 class OwncastPlayer {
   constructor() {
     window.VIDEOJS_NO_DYNAMIC_STYLE = true; // style override
 
-    this.playbackMetrics = new PlaybackMetrics();
-
     this.vjsPlayer = null;
     this.latencyCompensator = null;
+    this.playbackMetrics = null;
 
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
@@ -91,8 +59,6 @@ class OwncastPlayer {
     this.handleVolume = this.handleVolume.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
-    this.handleWaiting = this.handleWaiting.bind(this);
-    this.handleNoLongerBuffering = this.handleNoLongerBuffering.bind(this);
     this.addQualitySelector = this.addQualitySelector.bind(this);
     this.qualitySelectionMenu = null;
   }
@@ -100,26 +66,6 @@ class OwncastPlayer {
   init() {
     this.addAirplay();
     this.addQualitySelector();
-
-    // Keep a reference of the standard vjs xhr function.
-    const oldVjsXhrCallback = videojs.xhr;
-
-    // Override the xhr function to track segment download time.
-    videojs.Vhs.xhr = (...args) => {
-      if (args[0].uri.match('.ts')) {
-        const start = new Date();
-
-        const cb = args[1];
-        args[1] = (request, error, response) => {
-          const end = new Date();
-          const delta = end.getTime() - start.getTime();
-          this.playbackMetrics.trackSegmentDownloadTime(delta);
-          cb(request, error, response);
-        };
-      }
-
-      return oldVjsXhrCallback(...args);
-    };
 
     // Add a cachebuster param to playlist URLs.
     videojs.Vhs.xhr.beforeRequest = (options) => {
@@ -156,37 +102,27 @@ class OwncastPlayer {
       console.warn(err);
     }
     this.vjsPlayer.src(source);
-    // this.vjsPlayer.play();
+  }
+
+  setupPlaybackMetrics() {
+    this.playbackMetrics = new PlaybackMetrics(this.vjsPlayer, videojs);
+  }
+
+  setupLatencyCompensator() {
+    this.latencyCompensator = new LatencyCompensator(this.vjsPlayer);
   }
 
   handleReady() {
+    console.log('handleReady');
     this.vjsPlayer.on('error', this.handleError);
     this.vjsPlayer.on('playing', this.handlePlaying);
-    this.vjsPlayer.on('waiting', this.handleWaiting);
-    this.vjsPlayer.on('canplaythrough', this.handleNoLongerBuffering);
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
 
-    this.vjsPlayer.on('ready', () => {
-      const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
-      tech.on('usage', (e) => {
-        if (e.name === 'vhs-unknown-waiting') {
-          this.playbackMetrics.incrementErrorCount(1);
-        }
-
-        if (e.name === 'vhs-rendition-change-abr') {
-          // Quality variant has changed
-          this.playbackMetrics.incrementQualityVariantChanges();
-        }
-      });
-
-      // Variant changed
-      const trackElements = this.vjsPlayer.textTracks();
-      trackElements.addEventListener('cuechange', function (c) {
-        console.log(c);
-      });
-
-      this.latencyCompensator = new LatencyCompensator(this.vjsPlayer);
+    this.vjsPlayer.on('loadeddata', () => {
+      console.log('player loadeddata event');
+      this.setupPlaybackMetrics();
+      this.setupLatencyCompensator();
     });
 
     if (this.appPlayerReadyCallback) {
@@ -205,7 +141,6 @@ class OwncastPlayer {
   }
 
   handlePlaying() {
-    this.log('on Playing');
     if (this.appPlayerPlayingCallback) {
       // start polling
       this.appPlayerPlayingCallback();
@@ -216,30 +151,6 @@ class OwncastPlayer {
     }
 
     this.hasStartedPlayback = true;
-
-    setInterval(() => {
-      this.collectPlaybackMetrics();
-    }, 5000);
-  }
-
-  collectPlaybackMetrics() {
-    const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
-    if (!tech || !tech.vhs) {
-      return;
-    }
-
-    const bandwidth = tech.vhs.systemBandwidth;
-    this.playbackMetrics.trackBandwidth(bandwidth);
-
-    try {
-      const segment = getCurrentlyPlayingSegment(tech);
-      const segmentTime = segment.dateTimeObject.getTime();
-      const now = new Date().getTime();
-      const latency = now - segmentTime;
-      this.playbackMetrics.trackLatency(latency);
-    } catch (err) {
-      // console.warn(err);
-    }
   }
 
   handleEnded() {
@@ -256,17 +167,6 @@ class OwncastPlayer {
     if (this.appPlayerEndedCallback) {
       this.appPlayerEndedCallback();
     }
-
-    this.playbackMetrics.incrementErrorCount(1);
-  }
-
-  handleWaiting(e) {
-    this.playbackMetrics.incrementErrorCount(1);
-    this.playbackMetrics.setIsBuffering(true);
-  }
-
-  handleNoLongerBuffering() {
-    this.playbackMetrics.setIsBuffering(false);
   }
 
   log(message) {
