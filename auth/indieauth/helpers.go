@@ -66,24 +66,44 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 }
 
 func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
-	r, err := http.Get(urlstring) // nolint:gosec
+	htmlDocScrapeURL, err := url.Parse(urlstring)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to parse URL")
+	}
+
+	r, err := http.Get(htmlDocScrapeURL.String()) // nolint:gosec
 	if err != nil {
 		return nil, err
 	}
 	defer r.Body.Close()
 
-	doc, err := html.Parse(r.Body)
+	scrapedHTMLDocument, err := html.Parse(r.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to parse html at remote auth host")
 	}
-	authorizationEndpointTag := cascadia.MustCompile("link[rel=authorization_endpoint]").MatchAll(doc)
+	authorizationEndpointTag := cascadia.MustCompile("link[rel=authorization_endpoint]").MatchAll(scrapedHTMLDocument)
 	if len(authorizationEndpointTag) == 0 {
 		return nil, fmt.Errorf("url does not support indieauth")
 	}
 
 	for _, attr := range authorizationEndpointTag[len(authorizationEndpointTag)-1].Attr {
 		if attr.Key == "href" {
-			return url.Parse(attr.Val)
+			u, err := url.Parse(attr.Val)
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to parse authorization endpoint")
+			}
+
+			// If it is a relative URL we an fill in the missing components
+			// by using the original URL we scraped, since it is the same host.
+			if u.Scheme == "" {
+				u.Scheme = htmlDocScrapeURL.Scheme
+			}
+
+			if u.Host == "" {
+				u.Host = htmlDocScrapeURL.Host
+			}
+
+			return u, nil
 		}
 	}
 

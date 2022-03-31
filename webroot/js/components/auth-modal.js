@@ -39,12 +39,22 @@ export default class AuthModal extends Component {
         },
         body: JSON.stringify(data),
       });
+
       const content = await rawResponse.json();
+      if (content.error) {
+        this.setState({ errorMessage: content.error });
+      } else if (!content.redirect) {
+        this.setState({
+          errorMessage: 'Auth provider did not return a redirect URL.',
+          loading: false,
+        });
+      }
+
       const redirect = content.redirect;
       window.location = redirect;
     } catch (e) {
       console.error(e);
-      this.setState({ errorMessage: e });
+      this.setState({ errorMessage: e, loading: false });
     }
   }
 
@@ -68,21 +78,16 @@ export default class AuthModal extends Component {
       : `You are already authenticated, however you can add other external sites or accounts to your chat account or log in as a different user.`;
 
     const error = errorMessage
-      ? html`
-          <div
-            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <div class="font-bold mb-2">
-              There was an error.
-            </div>
-            <span class="block">
-              Please verify you entered a valid url.
-            <div class="block mt-2">
-              Server error: <span class="">${errorMessage}</span>
-            </div>
+      ? html` <div
+          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <div class="font-bold mb-2">There was an error.</div>
+          <div class="block mt-2">
+            Server error:
+            <div>${errorMessage}</div>
           </div>
-        `
+        </div>`
       : null;
 
     return html`
