@@ -74,8 +74,11 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		loginMessage := fmt.Sprintf("%s logged in as %s", request.DisplayName, u.DisplayName)
-		chat.SendSystemAction(loginMessage, true)
+		loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", request.DisplayName, u.DisplayName)
+		if err := chat.SendSystemAction(loginMessage, true); err != nil {
+			log.Errorln(err)
+		}
+
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 
 		return
@@ -86,6 +89,12 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	if err := auth.AddAuth(request.UserID, response.Me, auth.IndieAuth); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
+	}
+
+	// Update the current user's authenticated flag so we can show it in
+	// the chat UI.
+	if err := user.SetUserAsAuthenticated(request.UserID); err != nil {
+		log.Errorln(err)
 	}
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
