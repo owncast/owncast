@@ -1,7 +1,7 @@
 package indieauth
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // nolint:gosec
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func createAuthRequest(authDestination, userID, displayName, accessToken, baseServer string) (*IndieAuthRequest, error) {
+func createAuthRequest(authDestination, userID, displayName, accessToken, baseServer string) (*Request, error) {
 	authURL, err := url.Parse(authDestination)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to parse IndieAuth destination")
@@ -50,7 +50,7 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 	q.Add("redirect_uri", callbackURL.String())
 	redirect.RawQuery = q.Encode()
 
-	return &IndieAuthRequest{
+	return &Request{
 		Me:                 authURL,
 		UserID:             userID,
 		DisplayName:        displayName,

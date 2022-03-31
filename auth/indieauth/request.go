@@ -2,7 +2,8 @@ package indieauth
 
 import "net/url"
 
-type IndieAuthRequest struct {
+// Request represents a single in-flight IndieAuth request.
+type Request struct {
 	UserID             string
 	DisplayName        string
 	CurrentAccessToken string
