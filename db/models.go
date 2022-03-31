@@ -68,6 +68,7 @@ type User struct {
 	PreviousNames sql.NullString
 	NamechangedAt sql.NullTime
 	Scopes        sql.NullString
+	Authenticated sql.NullBool
 	Type          sql.NullString
 	LastUsed      interface{}
 }

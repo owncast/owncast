@@ -522,7 +522,7 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id
 `
 
 type GetUserByAccessTokenRow struct {
@@ -533,6 +533,7 @@ type GetUserByAccessTokenRow struct {
 	DisabledAt    sql.NullTime
 	PreviousNames sql.NullString
 	NamechangedAt sql.NullTime
+	Authenticated sql.NullBool
 	Scopes        sql.NullString
 }
 
@@ -547,13 +548,14 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 		&i.DisabledAt,
 		&i.PreviousNames,
 		&i.NamechangedAt,
+		&i.Authenticated,
 		&i.Scopes,
 	)
 	return i, err
 }
 
 const getUserByAuth = `-- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id
 `
 
 type GetUserByAuthParams struct {
@@ -569,6 +571,7 @@ type GetUserByAuthRow struct {
 	DisabledAt    sql.NullTime
 	PreviousNames sql.NullString
 	NamechangedAt sql.NullTime
+	Authenticated sql.NullBool
 	Scopes        sql.NullString
 }
 
@@ -583,6 +586,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 		&i.DisabledAt,
 		&i.PreviousNames,
 		&i.NamechangedAt,
+		&i.Authenticated,
 		&i.Scopes,
 	)
 	return i, err
@@ -667,6 +671,15 @@ type SetAccessTokenToOwnerParams struct {
 
 func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenToOwnerParams) error {
 	_, err := q.db.ExecContext(ctx, setAccessTokenToOwner, arg.UserID, arg.Token)
+	return err
+}
+
+const setUserAsAuthenticated = `-- name: SetUserAsAuthenticated :exec
+UPDATE users SET authenticated = true WHERE id = $1
+`
+
+func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, setUserAsAuthenticated, id)
 	return err
 }
 

@@ -11,7 +11,9 @@ import (
 
 func migrateToSchema4(db *sql.DB) {
 	// Access tokens have been broken into its own table.
-	stmt, err := db.Prepare("ALTER TABLE users DROP COLUMN access_token;ALTER TABLE ap_followers ADD COLUMN request_object BLOB")
+	// Authenticated bool added to the users table.
+	// Saving the full ActivityPub request object to followers table.
+	stmt, err := db.Prepare("ALTER TABLE users DROP COLUMN access_token; ALTER TABLE ap_followers ADD COLUMN request_object BLOB; ALTER TABLE ADD authenticated BOOLEAN DEFAULT FALSE")
 	if err != nil {
 		log.Fatal(err)
 	}

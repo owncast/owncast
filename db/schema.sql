@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS users (
 		"previous_names" TEXT DEFAULT '',
 		"namechanged_at" TIMESTAMP,
 		"scopes" TEXT,
+    "authenticated" BOOLEAN DEFAULT FALSE,
 		"type" TEXT DEFAULT 'STANDARD',
 		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (id)

@@ -35,6 +35,7 @@ type User struct {
 	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
 	Scopes        []string   `json:"scopes,omitempty"`
 	IsBot         bool       `json:"isBot"`
+	Authenticated bool       `json:"authenticated"`
 }
 
 // IsEnabled will return if this single user is enabled.
@@ -216,6 +217,7 @@ func GetUserByToken(token string) *User {
 		DisabledAt:    disabledAt,
 		PreviousNames: strings.Split(u.PreviousNames.String, ","),
 		NameChangedAt: &u.NamechangedAt.Time,
+		Authenticated: u.Authenticated.Bool,
 		Scopes:        scopes,
 	}
 }
@@ -227,6 +229,12 @@ func SetAccessTokenToOwner(token, userID string) error {
 		UserID: userID,
 		Token:  token,
 	})
+}
+
+// SetUserAsAuthenticated will mark that a user has been authenticated
+// in some way.
+func SetUserAsAuthenticated(userID string) error {
+	return errors.Wrap(_datastore.GetQueries().SetUserAsAuthenticated(context.Background(), userID), "unable to set user as authenticated")
 }
 
 // SetModerator will add or remove moderator status for a single user by ID.

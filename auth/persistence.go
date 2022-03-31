@@ -72,6 +72,7 @@ func GetUserByAuth(authToken string, authType Type) *user.User {
 		DisabledAt:    &u.DisabledAt.Time,
 		PreviousNames: strings.Split(u.PreviousNames.String, ","),
 		NameChangedAt: &u.NamechangedAt.Time,
+		Authenticated: u.Authenticated.Bool,
 		Scopes:        scopes,
 	}
 }
