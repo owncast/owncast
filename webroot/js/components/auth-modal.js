@@ -4,13 +4,6 @@ import { ExternalActionButton } from './external-action-modal.js';
 
 const html = htm.bind(h);
 
-function validateAccount(account) {
-  account = account.replace(/^@+/, '');
-  var regex =
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return regex.test(String(account).toLowerCase());
-}
-
 export default class AuthModal extends Component {
   constructor(props) {
     super(props);
@@ -20,17 +13,23 @@ export default class AuthModal extends Component {
     this.state = {
       errorMessage: null,
       loading: false,
-      valid: true,
+      valid: false,
     };
   }
 
   async submitButtonPressed() {
     const { accessToken } = this.props;
-    const { host } = this.state;
+    const { host, valid } = this.state;
+
+    if (!valid) {
+      return;
+    }
 
     const url = `/api/auth/indieauth?accessToken=${accessToken}`;
     const data = { authHost: host };
-    console.log(data);
+
+    this.setState({ loading: true });
+
     try {
       const rawResponse = await fetch(url, {
         method: 'POST',
@@ -45,12 +44,14 @@ export default class AuthModal extends Component {
       window.location = redirect;
     } catch (e) {
       console.error(e);
+      this.setState({ errorMessage: e });
     }
   }
 
   onInput = (e) => {
     const { value } = e.target;
-    this.setState({ host: value });
+    let valid = validateURL(value);
+    this.setState({ host: value, valid });
   };
 
   render() {
@@ -64,13 +65,31 @@ export default class AuthModal extends Component {
       ? `While you can chat completely anonymously you can also add
     authentication so you can rejoin with the same chat persona from any
     device or browser.`
-      : `You are already authenticated, however, if you'd like, you can add other external sites or accounts to your chat account.`;
+      : `You are already authenticated, however you can add other external sites or accounts to your chat account or log in as a different user.`;
+
+    const error = errorMessage
+      ? html`
+          <div
+            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
+            <div class="font-bold mb-2">
+              There was an error.
+            </div>
+            <span class="block">
+              Please verify you entered a valid url.
+            <div class="block mt-2">
+              Server error: <span class="">${errorMessage}</span>
+            </div>
+          </div>
+        `
+      : null;
 
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-4">
         <p class="text-gray-700 text-md">${message}</p>
 
-        ${authenticated}
+        ${error}
 
         <div class="mb34">
           <label
@@ -106,10 +125,31 @@ export default class AuthModal extends Component {
           style="display: ${loaderStyle}"
         >
           <img id="follow-loading-spinner" src="/img/loading.gif" />
-          <p class="text-gray-700 text-lg">Contacting your server.</p>
+          <p class="text-gray-700 text-lg">Authenticating.</p>
           <p class="text-gray-600 text-lg">Please wait...</p>
         </div>
       </div>
     `;
   }
+}
+
+function validateURL(url) {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    const u = new URL(url);
+    if (!u) {
+      return false;
+    }
+
+    if (u.protocol !== 'https:') {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return true;
 }
