@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var pendingAuthRequests = make(map[string]*IndieAuthRequest)
+var pendingAuthRequests = make(map[string]*Request)
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
 func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
@@ -33,7 +33,7 @@ func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL,
 
 // HandleCallbackCode will handle the callback from the IndieAuth server
 // to continue the next step of the auth flow.
-func HandleCallbackCode(code, state string) (*IndieAuthRequest, *IndieAuthResponse, error) {
+func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 	request, exists := pendingAuthRequests[state]
 	if !exists {
 		return nil, nil, errors.New("no auth requests pending")
@@ -64,7 +64,7 @@ func HandleCallbackCode(code, state string) (*IndieAuthRequest, *IndieAuthRespon
 		return nil, nil, err
 	}
 
-	var response IndieAuthResponse
+	var response Response
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, nil, err
 	}
