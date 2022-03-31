@@ -14,6 +14,7 @@ import (
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
 type ExternalAccessTokenHandlerFunc func(user.ExternalAPIUser, http.ResponseWriter, *http.Request)
 
+// UserAccessTokenHandlerFunc is a function that is called after validing access.
 type UserAccessTokenHandlerFunc func(user.User, http.ResponseWriter, *http.Request)
 
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given

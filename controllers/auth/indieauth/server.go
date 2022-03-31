@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 )
 
+// HandleAuthEndpoint will handle the IndieAuth auth endpoint.
 func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// Require the GET request for IndieAuth to be behind admin login.
