@@ -49,7 +49,8 @@ export default class ChatMessageView extends Component {
     if (!user) {
       return null;
     }
-    const { displayName, displayColor, createdAt, isBot } = user;
+
+    const { displayName, displayColor, createdAt, isBot, authenticated } = user;
     const isAuthorModerator = checkIsModerator(message);
 
     const isMessageModeratable =
@@ -92,6 +93,14 @@ export default class ChatMessageView extends Component {
           class="inline-block mr-1 w-4 h-4 relative"
           style=${{ bottom: '1px' }}
           src="/img/bot.svg"
+        />`
+      : null;
+
+    const authorAuthenticatedFlair = authenticated
+      ? html`<img
+          class="flair"
+          title="Authenticated"
+          src="/img/authenticated.svg"
         />`
       : null;
 
