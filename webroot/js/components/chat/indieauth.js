@@ -17,34 +17,6 @@ export default class IndieAuthForm extends Component {
     this.setState({ host: value });
   };
 
-  async submitButtonPressed() {
-    const { accessToken } = this.props;
-    const { host } = this.state;
-
-    if (!accessToken || !host) {
-      return;
-    }
-
-    const url = `/api/auth/indieauth?accessToken=${accessToken}`;
-    const data = { authHost: host };
-    console.log(data);
-    try {
-      const rawResponse = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      const content = await rawResponse.json();
-      const redirect = content.redirect;
-      window.location = redirect;
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   render(props, state) {
     return html`
       <div>

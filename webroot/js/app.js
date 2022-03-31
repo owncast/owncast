@@ -28,6 +28,7 @@ import FediverseFollowModal, {
 import { NotifyButton, NotifyModal } from './components/notification.js';
 import { isPushNotificationSupported } from './notification/registerWeb.js';
 import IndieAuthForm from './components/chat/indieauth.js';
+import AuthModal from './components/auth-modal.js';
 
 import {
   addNewlines,
@@ -146,6 +147,8 @@ export default class App extends Component {
     this.closeFediverseFollowModal = this.closeFediverseFollowModal.bind(this);
     this.displayNotificationModal = this.displayNotificationModal.bind(this);
     this.closeNotificationModal = this.closeNotificationModal.bind(this);
+    this.showAuthModal = this.showAuthModal.bind(this);
+    this.closeAuthModal = this.closeAuthModal.bind(this);
 
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
@@ -620,6 +623,17 @@ export default class App extends Component {
     }
   }
 
+  showAuthModal() {
+    const data = {
+      title: 'Authenticate with chat',
+    };
+    this.setState({ authModalData: data });
+  }
+
+  closeAuthModal() {
+    this.setState({ authModalData: null });
+  }
+
   handleWebsocketMessage(e) {
     if (e.type === SOCKET_MESSAGE_TYPES.ERROR_USER_DISABLED) {
       // User has been actively disabled on the backend. Turn off chat for them.
@@ -639,10 +653,11 @@ export default class App extends Component {
       // When connected the user will return an event letting us know what our
       // user details are so we can display them properly.
       const { user } = e;
-      const { displayName } = user;
+      const { displayName, authenticated } = user;
 
       this.setState({
         username: displayName,
+        authenticated,
         isModerator: checkIsModerator(e),
       });
     }
@@ -726,11 +741,13 @@ export default class App extends Component {
       streamTitle,
       touchKeyboardActive,
       username,
+      authenticated,
       viewerCount,
       websocket,
       windowHeight,
       windowWidth,
       fediverseModalData,
+      authModalData,
       externalActionModalData,
       notificationModalData,
       notifications,
@@ -866,11 +883,29 @@ export default class App extends Component {
         />`}
       />`;
 
+    const authModal =
+      authModalData &&
+      html`
+        <${ExternalActionModal}
+          onClose=${this.closeAuthModal}
+          action=${authModalData}
+          useIframe=${false}
+          customContent=${html`<${AuthModal}
+            name=${name}
+            logo=${logo}
+            accessToken=${this.state.accessToken}
+            authenticated=${authenticated}
+            onClose=${this.closeAuthModal}
+          />`}
+        />
+      `;
+
     const chat = this.state.websocket
       ? html`
           <${Chat}
             websocket=${websocket}
             username=${username}
+            authenticated=${authenticated}
             chatInputEnabled=${chatInputEnabled && !chatDisabled}
             instanceTitle=${name}
             accessToken=${accessToken}
@@ -912,6 +947,8 @@ export default class App extends Component {
         content: html`<${Followers} />`,
       });
     }
+
+    const authIcon = authenticated ? '/img/locked.svg' : '/img/unlocked.svg';
 
     return html`
       <div
@@ -1029,7 +1066,7 @@ export default class App extends Component {
         </footer>
 
         ${chat} ${externalActionModal} ${fediverseFollowModal}
-        ${notificationModal}
+        ${notificationModal} ${authModal}
       </div>
     `;
   }
