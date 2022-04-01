@@ -57,6 +57,7 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	request, response, err := ia.HandleCallbackCode(code, state)
 	if err != nil {
+		log.Debugln(err)
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

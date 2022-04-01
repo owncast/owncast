@@ -46,6 +46,11 @@ func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 	data.Set("redirect_uri", request.Callback.String())
 	data.Set("code_verifier", request.CodeVerifier)
 
+	codeChallenge := createCodeChallenge(request.CodeVerifier)
+	if codeChallenge != request.CodeChallenge {
+		return nil, nil, errors.New("code challenge mismatch")
+	}
+
 	client := &http.Client{}
 	r, err := http.NewRequest("POST", request.Endpoint.String(), strings.NewReader(data.Encode())) // URL-encoded payload
 	if err != nil {

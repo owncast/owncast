@@ -32,7 +32,8 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 	callbackURL := *baseServerURL
 	callbackURL.Path = "/api/auth/indieauth/callback"
 
-	codeChallenge := createCodeChallenge()
+	codeVerifier := shortid.MustGenerate()
+	codeChallenge := createCodeChallenge(codeVerifier)
 	state := shortid.MustGenerate()
 	responseType := "code"
 	clientID := baseServerURL.String() // Our local URL
@@ -57,7 +58,7 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 		CurrentAccessToken: accessToken,
 		Endpoint:           authEndpointURL,
 		ClientID:           baseServer,
-		CodeVerifier:       shortid.MustGenerate(),
+		CodeVerifier:       codeVerifier,
 		CodeChallenge:      codeChallenge,
 		State:              state,
 		Redirect:           &redirect,
@@ -110,8 +111,7 @@ func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
 	return nil, fmt.Errorf("unable to find href value for authorization_endpoint")
 }
 
-func createCodeChallenge() string {
-	codeVerifier := shortid.MustGenerate()
+func createCodeChallenge(codeVerifier string) string {
 	hasher := sha1.New() // nolint:gosec
 	hasher.Write([]byte(codeVerifier))
 	encodedHashedCode := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
