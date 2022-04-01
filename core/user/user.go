@@ -96,35 +96,32 @@ func CreateAnonymousUser(displayName string) (*User, string, error) {
 	return user, accessToken, nil
 }
 
+// IsDisplayNameAvailable will check if the proposed name is available for use.
+func IsDisplayNameAvailable(displayName string) (bool, error) {
+	if available, err := _datastore.GetQueries().IsDisplayNameAvailable(context.Background(), displayName); err != nil {
+		return false, errors.Wrap(err, "unable to check if display name is available")
+	} else if available != 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 // ChangeUsername will change the user associated to userID from one display name to another.
-func ChangeUsername(userID string, username string) {
+func ChangeUsername(userID string, username string) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			log.Debugln(err)
-		}
-	}()
-
-	stmt, err := tx.Prepare("UPDATE users SET display_name = ?, previous_names = previous_names || ?, namechanged_at = ? WHERE id = ?")
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(username, fmt.Sprintf(",%s", username), time.Now(), userID)
-	if err != nil {
-		log.Errorln(err)
+	if err := _datastore.GetQueries().ChangeDisplayName(context.Background(), db.ChangeDisplayNameParams{
+		DisplayName:   username,
+		ID:            userID,
+		PreviousNames: sql.NullString{String: fmt.Sprintf(",%s", username), Valid: true},
+		NamechangedAt: sql.NullTime{Time: time.Now(), Valid: true},
+	}); err != nil {
+		return errors.Wrap(err, "unable to change display name")
 	}
 
-	if err := tx.Commit(); err != nil {
-		log.Errorln("error changing display name of user", userID, err)
-	}
+	return nil
 }
 
 func addAccessTokenForUser(accessToken, userID string) error {

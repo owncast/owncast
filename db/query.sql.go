@@ -153,6 +153,27 @@ func (q *Queries) BanIPAddress(ctx context.Context, arg BanIPAddressParams) erro
 	return err
 }
 
+const changeDisplayName = `-- name: ChangeDisplayName :exec
+UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4
+`
+
+type ChangeDisplayNameParams struct {
+	DisplayName   string
+	PreviousNames sql.NullString
+	NamechangedAt sql.NullTime
+	ID            string
+}
+
+func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNameParams) error {
+	_, err := q.db.ExecContext(ctx, changeDisplayName,
+		arg.DisplayName,
+		arg.PreviousNames,
+		arg.NamechangedAt,
+		arg.ID,
+	)
+	return err
+}
+
 const doesInboundActivityExist = `-- name: DoesInboundActivityExist :one
 SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3
 `
@@ -601,6 +622,17 @@ func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (
 	var display_name string
 	err := row.Scan(&display_name)
 	return display_name, err
+}
+
+const isDisplayNameAvailable = `-- name: IsDisplayNameAvailable :one
+SELECT count(*) FROM users WHERE display_name = $1 AND authenticated = true AND disabled_at is NULL
+`
+
+func (q *Queries) IsDisplayNameAvailable(ctx context.Context, displayName string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, isDisplayNameAvailable, displayName)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const isIPAddressBlocked = `-- name: IsIPAddressBlocked :one
