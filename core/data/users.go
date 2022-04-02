@@ -36,7 +36,7 @@ func createUsersTable(db *sql.DB) {
 		"disabled_at" TIMESTAMP,
 		"previous_names" TEXT DEFAULT '',
 		"namechanged_at" TIMESTAMP,
-    "authenticated" BOOLEAN DEFAULT FALSE,
+    "authenticated_at" TIMESTAMP,
 		"scopes" TEXT,
 		"type" TEXT DEFAULT 'STANDARD',
 		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP,

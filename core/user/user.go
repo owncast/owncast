@@ -26,16 +26,16 @@ const (
 
 // User represents a single chat user.
 type User struct {
-	ID            string     `json:"id"`
-	DisplayName   string     `json:"displayName"`
-	DisplayColor  int        `json:"displayColor"`
-	CreatedAt     time.Time  `json:"createdAt"`
-	DisabledAt    *time.Time `json:"disabledAt,omitempty"`
-	PreviousNames []string   `json:"previousNames"`
-	NameChangedAt *time.Time `json:"nameChangedAt,omitempty"`
-	Scopes        []string   `json:"scopes,omitempty"`
-	IsBot         bool       `json:"isBot"`
-	Authenticated bool       `json:"authenticated"`
+	ID              string     `json:"id"`
+	DisplayName     string     `json:"displayName"`
+	DisplayColor    int        `json:"displayColor"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	DisabledAt      *time.Time `json:"disabledAt,omitempty"`
+	PreviousNames   []string   `json:"previousNames"`
+	NameChangedAt   *time.Time `json:"nameChangedAt,omitempty"`
+	Scopes          []string   `json:"scopes,omitempty"`
+	IsBot           bool       `json:"isBot"`
+	AuthenticatedAt *time.Time `json:"authenticatedAt"`
 }
 
 // IsEnabled will return if this single user is enabled.
@@ -206,16 +206,22 @@ func GetUserByToken(token string) *User {
 	if u.DisabledAt.Valid {
 		disabledAt = &u.DisabledAt.Time
 	}
+
+	var authenticatedAt *time.Time
+	if u.AuthenticatedAt.Valid {
+		authenticatedAt = &u.AuthenticatedAt.Time
+	}
+
 	return &User{
-		ID:            u.ID,
-		DisplayName:   u.DisplayName,
-		DisplayColor:  int(u.DisplayColor),
-		CreatedAt:     u.CreatedAt.Time,
-		DisabledAt:    disabledAt,
-		PreviousNames: strings.Split(u.PreviousNames.String, ","),
-		NameChangedAt: &u.NamechangedAt.Time,
-		Authenticated: u.Authenticated.Bool,
-		Scopes:        scopes,
+		ID:              u.ID,
+		DisplayName:     u.DisplayName,
+		DisplayColor:    int(u.DisplayColor),
+		CreatedAt:       u.CreatedAt.Time,
+		DisabledAt:      disabledAt,
+		PreviousNames:   strings.Split(u.PreviousNames.String, ","),
+		NameChangedAt:   &u.NamechangedAt.Time,
+		AuthenticatedAt: authenticatedAt,
+		Scopes:          scopes,
 	}
 }
 
