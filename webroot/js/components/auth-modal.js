@@ -50,8 +50,10 @@ export default class AuthModal extends Component {
         });
       }
 
-      const redirect = content.redirect;
-      window.location = redirect;
+      if(content.redirect) {
+        const redirect = content.redirect;
+        window.location = redirect;
+      }
     } catch (e) {
       console.error(e);
       this.setState({ errorMessage: e, loading: false });
