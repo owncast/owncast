@@ -1,8 +1,10 @@
 package indieauth
 
 import (
+  "fmt"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
+  "github.com/owncast/owncast/core/data"
 )
 
 // ServerAuthRequest is n inbound request to authenticate against
@@ -67,11 +69,11 @@ func CompleteServerAuth(code, redirectURI, clientID string) (*ServerProfileRespo
 	}
 
 	response := ServerProfileResponse{
-		Me: request.Me,
+		Me: data.GetServerURL(),
 		Profile: ServerProfile{
-			Name:  "name",
-			URL:   "URL",
-			Photo: "photo",
+			Name:  data.GetServerName(),
+			URL:   data.GetServerURL(),
+			Photo: fmt.Sprintf("%s/%s", data.GetServerURL(), data.GetLogoPath()),
 		},
 	}
 
