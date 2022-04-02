@@ -65,14 +65,14 @@ func GetUserByAuth(authToken string, authType Type) *user.User {
 	}
 
 	return &user.User{
-		ID:            u.ID,
-		DisplayName:   u.DisplayName,
-		DisplayColor:  int(u.DisplayColor),
-		CreatedAt:     u.CreatedAt.Time,
-		DisabledAt:    &u.DisabledAt.Time,
-		PreviousNames: strings.Split(u.PreviousNames.String, ","),
-		NameChangedAt: &u.NamechangedAt.Time,
-		Authenticated: u.Authenticated.Bool,
-		Scopes:        scopes,
+		ID:              u.ID,
+		DisplayName:     u.DisplayName,
+		DisplayColor:    int(u.DisplayColor),
+		CreatedAt:       u.CreatedAt.Time,
+		DisabledAt:      &u.DisabledAt.Time,
+		PreviousNames:   strings.Split(u.PreviousNames.String, ","),
+		NameChangedAt:   &u.NamechangedAt.Time,
+		AuthenticatedAt: &u.AuthenticatedAt.Time,
+		Scopes:          scopes,
 	}
 }

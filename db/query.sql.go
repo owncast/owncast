@@ -543,19 +543,19 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id
 `
 
 type GetUserByAccessTokenRow struct {
-	ID            string
-	DisplayName   string
-	DisplayColor  int32
-	CreatedAt     sql.NullTime
-	DisabledAt    sql.NullTime
-	PreviousNames sql.NullString
-	NamechangedAt sql.NullTime
-	Authenticated sql.NullBool
-	Scopes        sql.NullString
+	ID              string
+	DisplayName     string
+	DisplayColor    int32
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
 }
 
 func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUserByAccessTokenRow, error) {
@@ -569,14 +569,14 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 		&i.DisabledAt,
 		&i.PreviousNames,
 		&i.NamechangedAt,
-		&i.Authenticated,
+		&i.AuthenticatedAt,
 		&i.Scopes,
 	)
 	return i, err
 }
 
 const getUserByAuth = `-- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id
 `
 
 type GetUserByAuthParams struct {
@@ -585,15 +585,15 @@ type GetUserByAuthParams struct {
 }
 
 type GetUserByAuthRow struct {
-	ID            string
-	DisplayName   string
-	DisplayColor  int32
-	CreatedAt     sql.NullTime
-	DisabledAt    sql.NullTime
-	PreviousNames sql.NullString
-	NamechangedAt sql.NullTime
-	Authenticated sql.NullBool
-	Scopes        sql.NullString
+	ID              string
+	DisplayName     string
+	DisplayColor    int32
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
 }
 
 func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (GetUserByAuthRow, error) {
@@ -607,7 +607,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 		&i.DisabledAt,
 		&i.PreviousNames,
 		&i.NamechangedAt,
-		&i.Authenticated,
+		&i.AuthenticatedAt,
 		&i.Scopes,
 	)
 	return i, err
@@ -625,7 +625,7 @@ func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (
 }
 
 const isDisplayNameAvailable = `-- name: IsDisplayNameAvailable :one
-SELECT count(*) FROM users WHERE display_name = $1 AND authenticated = true AND disabled_at is NULL
+SELECT count(*) FROM users WHERE display_name = $1 AND authenticated_at is not null AND disabled_at is NULL
 `
 
 func (q *Queries) IsDisplayNameAvailable(ctx context.Context, displayName string) (int64, error) {
@@ -707,7 +707,7 @@ func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenT
 }
 
 const setUserAsAuthenticated = `-- name: SetUserAsAuthenticated :exec
-UPDATE users SET authenticated = true WHERE id = $1
+UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = $1
 `
 
 func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {

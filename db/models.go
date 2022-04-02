@@ -60,17 +60,17 @@ type Notification struct {
 }
 
 type User struct {
-	ID            string
-	DisplayName   string
-	DisplayColor  int32
-	CreatedAt     sql.NullTime
-	DisabledAt    sql.NullTime
-	PreviousNames sql.NullString
-	NamechangedAt sql.NullTime
-	Scopes        sql.NullString
-	Authenticated sql.NullBool
-	Type          sql.NullString
-	LastUsed      interface{}
+	ID              string
+	DisplayName     string
+	DisplayColor    int32
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	Scopes          sql.NullString
+	AuthenticatedAt sql.NullTime
+	Type            sql.NullString
+	LastUsed        interface{}
 }
 
 type UserAccessToken struct {
