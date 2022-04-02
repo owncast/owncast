@@ -1,15 +1,15 @@
 package indieauth
 
 import (
-	"crypto/sha1" // nolint:gosec
+	"crypto/sha256" // nolint:gosec
 	"encoding/base64"
 	"fmt"
+  "strings"
 	"net/http"
 	"net/url"
 
 	"github.com/andybalholm/cascadia"
 	"github.com/pkg/errors"
-	"github.com/teris-io/shortid"
 	"golang.org/x/net/html"
 )
 
@@ -32,9 +32,9 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 	callbackURL := *baseServerURL
 	callbackURL.Path = "/api/auth/indieauth/callback"
 
-	codeVerifier := shortid.MustGenerate()
+	codeVerifier := randString(50)
 	codeChallenge := createCodeChallenge(codeVerifier)
-	state := shortid.MustGenerate()
+	state := randString(20)
 	responseType := "code"
 	clientID := baseServerURL.String() // Our local URL
 	codeChallengeMethod := "S256"
@@ -112,9 +112,9 @@ func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
 }
 
 func createCodeChallenge(codeVerifier string) string {
-	hasher := sha1.New() // nolint:gosec
-	hasher.Write([]byte(codeVerifier))
-	encodedHashedCode := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	sha256hash := sha256.Sum256([]byte(codeVerifier))
+
+	encodedHashedCode := strings.TrimRight(base64.URLEncoding.EncodeToString(sha256hash[:]),"=")
 
 	return encodedHashedCode
 }
