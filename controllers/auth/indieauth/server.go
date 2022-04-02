@@ -23,11 +23,12 @@ func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	clientID := r.URL.Query().Get("client_id")
-	redirectURI := r.URL.Query().Get("redirect_uri")
+  redirectURI := r.URL.Query().Get("redirect_uri")
+	codeChallenge := r.URL.Query().Get("code_challenge")
 	state := r.URL.Query().Get("state")
 	me := r.URL.Query().Get("me")
 
-	request, err := ia.StartServerAuth(clientID, redirectURI, state, me)
+	request, err := ia.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
 	if err != nil {
 		// Return a human readable, HTML page as an error. JSON is no use here.
 		return
@@ -56,9 +57,10 @@ func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 
 	code := r.PostForm.Get("code")
 	redirectURI := r.PostForm.Get("redirect_uri")
-	clientID := r.PostForm.Get("client_id")
+  clientID := r.PostForm.Get("client_id")
+	codeVerifier := r.PostForm.Get("code_verifier")
 
-	response, err := ia.CompleteServerAuth(code, redirectURI, clientID)
+	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
