@@ -44,6 +44,8 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
 github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5 h1:+ty4KYpIDUhjzsVsV+HiTeYEfufBc/4FLNiqIGU1A1U=
 github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5/go.mod h1:Qk51jPgvIaO549MR+IvLP/uMZbZGs05QJSzEhDVZ1jc=
+github.com/amalfra/etag v1.0.0 h1:3PNsV45JS4C8SaQ97jxCoUZv22tGlSRF7dgsP9C7yww=
+github.com/amalfra/etag v1.0.0/go.mod h1:NROjmbfRufDsrJFWcnYxGJSlCtTKn4tXTp2zwyqdSbU=
 github.com/aws/aws-sdk-go v1.43.0 h1:y4UrPbxU/mIL08qksVPE/nwH9IXuC1udjOaNyhEe+pI=
 github.com/aws/aws-sdk-go v1.43.0/go.mod h1:OGr6lGMAKGlG9CVrYnWYDKIyb829c6EVBRjxqjmPepc=
 github.com/aws/aws-sdk-go v1.43.26 h1:/ABcm/2xp+Vu+iUx8+TmlwXMGjO7fmZqJMoZjml4y/4=
