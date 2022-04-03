@@ -35,7 +35,8 @@ type User struct {
 	NameChangedAt   *time.Time `json:"nameChangedAt,omitempty"`
 	Scopes          []string   `json:"scopes,omitempty"`
 	IsBot           bool       `json:"isBot"`
-	AuthenticatedAt *time.Time `json:"authenticatedAt"`
+	AuthenticatedAt *time.Time `json:"-"`
+	Authenticated   bool       `json:"authenticated"`
 }
 
 // IsEnabled will return if this single user is enabled.
@@ -221,6 +222,7 @@ func GetUserByToken(token string) *User {
 		PreviousNames:   strings.Split(u.PreviousNames.String, ","),
 		NameChangedAt:   &u.NamechangedAt.Time,
 		AuthenticatedAt: authenticatedAt,
+		Authenticated:   authenticatedAt != nil,
 		Scopes:          scopes,
 	}
 }

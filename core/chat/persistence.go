@@ -112,6 +112,7 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 		NameChangedAt:   row.userNameChangedAt,
 		PreviousNames:   previousUsernames,
 		AuthenticatedAt: row.userAuthenticatedAt,
+		Authenticated:   row.userAuthenticatedAt != nil,
 		Scopes:          scopeSlice,
 		IsBot:           isBot,
 	}

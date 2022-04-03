@@ -79,7 +79,7 @@ export default class ChatMessageView extends Component {
           isMessageModeratable ? 'moderatable' : ''
         }`;
 
-    const messageAuthorFlair = isAuthorModerator
+    const isModeratorFlair = isAuthorModerator
       ? html`<img
           class="flair"
           title="Moderator"
@@ -116,7 +116,8 @@ export default class ChatMessageView extends Component {
             class="message-author font-bold"
             title=${userMetadata}
           >
-            ${isBotFlair} ${messageAuthorFlair} ${displayName}
+            ${isBotFlair} ${authorAuthenticatedFlair} ${isModeratorFlair}
+            ${displayName}
           </div>
           ${isMessageModeratable &&
           html`<${ModeratorActions}
