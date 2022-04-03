@@ -18,7 +18,7 @@ var pendingAuthRequests = make(map[string]*Request)
 func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
 	serverURL := data.GetServerURL()
 	if serverURL == "" {
-		return nil, errors.New("server URL must be set to use auth")
+		return nil, errors.New("server URL must be set to use IndieAuth")
 	}
 
 	r, err := createAuthRequest(authHost, userID, displayName, accessToken, serverURL)

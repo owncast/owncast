@@ -41,13 +41,15 @@ export default class AuthModal extends Component {
       });
 
       const content = await rawResponse.json();
-      if (content.error) {
-        this.setState({ errorMessage: content.error });
+      if (content.message) {
+        this.setState({ errorMessage: content.message, loading: false });
+        return;
       } else if (!content.redirect) {
         this.setState({
           errorMessage: 'Auth provider did not return a redirect URL.',
           loading: false,
         });
+        return;
       }
 
       const redirect = content.redirect;
