@@ -106,7 +106,7 @@ export default function ViewersOverTime() {
         )}
         <Col md={online ? 8 : 12}>
           <StatisticItem
-            title={online ? 'Max viewers this session' : 'Max viewers last session'}
+            title={online ? 'Max viewers this stream' : 'Max viewers last stream'}
             value={sessionPeakViewerCount.toString()}
             prefix={<UserOutlined />}
           />
@@ -119,29 +119,30 @@ export default function ViewersOverTime() {
           />
         </Col>
       </Row>
-      <Dropdown overlay={menu} trigger={['click']}>
-        <button
-          type="button"
-          style={{ float: 'right', background: 'transparent', border: 'unset' }}
-        >
-          {timeWindowStart.title} <DownOutlined />
-        </button>
-      </Dropdown>
-      {viewerInfo.length > 0 && (
-        <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="viewers" />
+      {!viewerInfo.length && (
+        <Alert
+          style={{ marginTop: '10px' }}
+          banner
+          message="Please wait"
+          description="No viewer data has been collected yet."
+          type="info"
+        />
       )}
 
-      <ViewerTable data={viewerDetails} />
-
-      <Spin spinning={loadingChart}>
-        {viewerInfo.length === 0 && (
-          <Alert
-            banner
-            message="Please wait"
-            description="No viewer data has been collected yet."
-            type="info"
-          />
+      <Spin spinning={!viewerInfo.length || loadingChart}>
+        <Dropdown overlay={menu} trigger={['click']}>
+          <button
+            type="button"
+            style={{ float: 'right', background: 'transparent', border: 'unset' }}
+          >
+            {timeWindowStart.title} <DownOutlined />
+          </button>
+        </Dropdown>
+        {viewerInfo.length > 0 && (
+          <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
         )}
+
+        <ViewerTable data={viewerDetails} />
       </Spin>
     </>
   );
