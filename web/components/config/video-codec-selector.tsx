@@ -149,6 +149,7 @@ export default function CodecSelector() {
           visible={confirmPopupVisible}
           placement="leftBottom"
           onConfirm={save}
+          onCancel={() => setConfirmPopupVisible(false)}
           okText="Yes"
           cancelText="No"
         >
