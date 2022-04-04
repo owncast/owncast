@@ -7,6 +7,7 @@ possible, without causing any buffering events.
 It will:
   - Determine the start (max) and end (min) latency values.
   - Keep an eye on download speed and stop compensating if it drops too low.
+  - Limit the playback speedup so it doesn't sound weird by jumping rates.
   - Dynamically calculate the speedup rate based on network speed.
   - Pause the compensation if buffering events occur.
   - Completely give up on all compensation if too many buffering events occur.
@@ -14,12 +15,13 @@ It will:
 
 const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 500; // Min duration a buffer event must last to be counted.
-const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
+const MAX_SPEEDUP_RATE = 1.07; // The playback rate when compensating for latency.
+const MAX_SPEEDUP_RAMP = 0.005; // The max amount we will increase the playback rate at once.
 const TIMEOUT_DURATION = 30 * 1000; // The amount of time we stop handling latency after certain events.
 const CHECK_TIMER_INTERVAL = 5_000; // How often we check if we should be compensating for latency.
 const BUFFERING_AMNESTY_DURATION = 3 * 1000 * 60; // How often until a buffering event expires.
 const REQUIRED_BANDWIDTH_RATIO = 2.0; // The player:bitrate ratio required to enable compensating for latency.
-const HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 2.4; // Segment length * this value is when we start compensating.
+const HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 2.5; // Segment length * this value is when we start compensating.
 const LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 1.7; // Segment length * this value is when we stop compensating.
 const MIN_LATENCY = 4 * 1000; // The lowest we'll continue compensation to be running at.
 const MAX_LATENCY = 8 * 1000; // The highest we'll allow a target latency to be before we start compensating.
@@ -94,18 +96,30 @@ class LatencyCompensator {
     const playerBandwidth = tech.vhs.systemBandwidth;
     const bandwidthRatio = playerBandwidth / currentPlaylistBandwidth;
 
+    // If we don't think we have the bandwidth to play faster, then don't do it.
     if (bandwidthRatio < REQUIRED_BANDWIDTH_RATIO) {
       this.timeout();
       return;
     }
 
-    let proposedPlaybackRate = bandwidthRatio * 0.34;
+    // Using our bandwidth ratio determine a wide guess at how fast we can play.
+    let proposedPlaybackRate = bandwidthRatio * 0.33;
     console.log('proposed rate', proposedPlaybackRate);
 
+    // But limit the playback rate to a max value.
     proposedPlaybackRate = Math.max(
       Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
       1.0
     );
+
+    // If this proposed speed is substantially faster than the current rate,
+    // then allow us to ramp up by using a slower value for now.
+    if (proposedPlaybackRate > this.playbackRate + MAX_SPEEDUP_RAMP) {
+      proposedPlaybackRate = this.playbackRate + MAX_SPEEDUP_RAMP;
+    }
+
+    proposedPlaybackRate =
+      Math.round(proposedPlaybackRate * Math.pow(10, 3)) / Math.pow(10, 3);
 
     try {
       const segment = getCurrentlyPlayingSegment(tech);
