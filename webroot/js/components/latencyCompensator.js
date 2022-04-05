@@ -15,10 +15,10 @@ It will:
 
 const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 500; // Min duration a buffer event must last to be counted.
-const MAX_SPEEDUP_RATE = 1.07; // The playback rate when compensating for latency.
-const MAX_SPEEDUP_RAMP = 0.005; // The max amount we will increase the playback rate at once.
+const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
+const MAX_SPEEDUP_RAMP = 0.02; // The max amount we will increase the playback rate at once.
 const TIMEOUT_DURATION = 30 * 1000; // The amount of time we stop handling latency after certain events.
-const CHECK_TIMER_INTERVAL = 5_000; // How often we check if we should be compensating for latency.
+const CHECK_TIMER_INTERVAL = 5 * 1000; // How often we check if we should be compensating for latency.
 const BUFFERING_AMNESTY_DURATION = 3 * 1000 * 60; // How often until a buffering event expires.
 const REQUIRED_BANDWIDTH_RATIO = 2.0; // The player:bitrate ratio required to enable compensating for latency.
 const HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 2.5; // Segment length * this value is when we start compensating.
@@ -46,20 +46,13 @@ class LatencyCompensator {
 
   // This is run on a timer to check if we should be compensating for latency.
   check() {
-    console.log(
-      'playback rate',
-      this.playbackRate,
-      'enabled:',
-      this.enabled,
-      'running: ',
-      this.running,
-      'timeout: ',
-      this.inTimeout,
-      'buffer count:',
-      this.bufferingCounter
-    );
-
     if (this.inTimeout) {
+      console.log('in timeout...');
+      return;
+    }
+
+    if (!this.enabled) {
+      console.log('not enabled...');
       return;
     }
 
@@ -102,25 +95,6 @@ class LatencyCompensator {
       return;
     }
 
-    // Using our bandwidth ratio determine a wide guess at how fast we can play.
-    let proposedPlaybackRate = bandwidthRatio * 0.33;
-    console.log('proposed rate', proposedPlaybackRate);
-
-    // But limit the playback rate to a max value.
-    proposedPlaybackRate = Math.max(
-      Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
-      1.0
-    );
-
-    // If this proposed speed is substantially faster than the current rate,
-    // then allow us to ramp up by using a slower value for now.
-    if (proposedPlaybackRate > this.playbackRate + MAX_SPEEDUP_RAMP) {
-      proposedPlaybackRate = this.playbackRate + MAX_SPEEDUP_RAMP;
-    }
-
-    proposedPlaybackRate =
-      Math.round(proposedPlaybackRate * Math.pow(10, 3)) / Math.pow(10, 3);
-
     try {
       const segment = getCurrentlyPlayingSegment(tech);
       if (!segment) {
@@ -143,6 +117,35 @@ class LatencyCompensator {
       const now = new Date().getTime();
       const latency = now - segmentTime;
 
+      // Using our bandwidth ratio determine a wide guess at how fast we can play.
+      var proposedPlaybackRate = bandwidthRatio * 0.33;
+
+      // But limit the playback rate to a max value.
+      proposedPlaybackRate = Math.max(
+        Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
+        1.0
+      );
+
+      if (latency < minLatencyThreshold * 1.2) {
+        // If nearing the end of our latency compensation window, then ramp down
+        // the speed.
+        proposedPlaybackRate = proposedPlaybackRate - 0.01;
+      } else if (proposedPlaybackRate > this.playbackRate + MAX_SPEEDUP_RAMP) {
+        // If this proposed speed is substantially faster than the current rate,
+        // then allow us to ramp up by using a slower value for now.
+        proposedPlaybackRate = this.playbackRate + MAX_SPEEDUP_RAMP;
+      }
+
+      // Limit to 3 decimal places of precision.
+      proposedPlaybackRate =
+        Math.round(proposedPlaybackRate * Math.pow(10, 3)) / Math.pow(10, 3);
+
+      if (latency > maxLatencyThreshold) {
+        this.start(proposedPlaybackRate);
+      } else if (latency < minLatencyThreshold) {
+        this.stop();
+      }
+
       console.log(
         'latency',
         latency / 1000,
@@ -152,11 +155,18 @@ class LatencyCompensator {
         maxLatencyThreshold / 1000
       );
 
-      if (latency > maxLatencyThreshold) {
-        this.start(proposedPlaybackRate);
-      } else if (latency < minLatencyThreshold) {
-        this.stop();
-      }
+      console.log(
+        'playback rate',
+        this.playbackRate,
+        'enabled:',
+        this.enabled,
+        'running: ',
+        this.running,
+        'timeout: ',
+        this.inTimeout,
+        'buffer count:',
+        this.bufferingCounter
+      );
     } catch (err) {
       // console.warn(err);
     }
@@ -177,6 +187,8 @@ class LatencyCompensator {
   }
 
   stop() {
+    console.log('stopping latency compensator...');
+
     this.running = false;
     this.setPlaybackRate(1.0);
   }
