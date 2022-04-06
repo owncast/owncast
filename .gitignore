@@ -38,3 +38,4 @@ backup/
 !core/data
 test/test.db
 test/automated/browser/screenshots
+lefthook.yaml
