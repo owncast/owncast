@@ -6,6 +6,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
@@ -358,8 +360,14 @@ func Start() error {
 	port := config.WebServerPort
 	ip := config.WebServerIP
 
+	h2s := &http2.Server{}
+	server := &http.Server{
+		Addr:    fmt.Sprintf("%s:%d", ip, port),
+		Handler: h2c.NewHandler(http.DefaultServeMux, h2s),
+	}
+
 	log.Infof("Web server is listening on IP %s port %d.", ip, port)
 	log.Infoln("The web admin interface is available at /admin.")
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", ip, port), nil)
+	return server.ListenAndServe()
 }
