@@ -30,6 +30,8 @@ type ActivityPubActor struct {
 	FullUsername string
 	// Image is the avatar image of the Actor.
 	Image *url.URL
+	// RequestObject is the actual follow request object.
+	RequestObject vocab.ActivityStreamsFollow
 	// W3IDSecurityV1PublicKey is the public key of the actor.
 	W3IDSecurityV1PublicKey vocab.W3IDSecurityV1PublicKeyProperty
 	// DisabledAt is the time, if any, this follower was blocked/removed.

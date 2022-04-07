@@ -36,7 +36,13 @@ func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 	if follow.Image != nil {
 		image = follow.Image.String()
 	}
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, approved)
+
+	followRequestObject, err := apmodels.Serialize(follow.RequestObject)
+	if err != nil {
+		return errors.Wrap(err, "error serializing follow request object")
+	}
+
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, followRequestObject, approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -109,7 +115,7 @@ func BlockOrRejectFollower(iri string) error {
 	})
 }
 
-func createFollow(actor string, inbox string, request string, name string, username string, image string, approved bool) error {
+func createFollow(actor, inbox, request, name, username, image string, requestObject []byte, approved bool) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
@@ -127,13 +133,14 @@ func createFollow(actor string, inbox string, request string, name string, usern
 	}
 
 	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
-		Iri:        actor,
-		Inbox:      inbox,
-		Name:       sql.NullString{String: name, Valid: true},
-		Username:   username,
-		Image:      sql.NullString{String: image, Valid: true},
-		ApprovedAt: approvedAt,
-		Request:    request,
+		Iri:           actor,
+		Inbox:         inbox,
+		Name:          sql.NullString{String: name, Valid: true},
+		Username:      username,
+		Image:         sql.NullString{String: image, Valid: true},
+		ApprovedAt:    approvedAt,
+		Request:       request,
+		RequestObject: requestObject,
 	}); err != nil {
 		log.Errorln("error creating new federation follow: ", err)
 	}
