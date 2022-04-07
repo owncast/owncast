@@ -1,5 +1,6 @@
 /*
 The Owncast Latency Compensator.
+
 It will try to slowly adjust the playback rate to enable the player to get
 further into the future, with the goal of being as close to the live edge as
 possible, without causing any buffering events.
@@ -12,22 +13,22 @@ live when you begin playback.
 Second is your media player.
 The player tries to play every segment as it comes in.
 However, your computer is not always 100% in playing things in real time, and
-there are natural stutters in playback So if one frame is delayed in playback
+there are natural stutters in playback. So if one frame is delayed in playback
 you may not see it visually, but now you're one frame behind. Eventually this
-can build up and you can be many seconds behind.
+can compound and you can be many seconds behind.
 
 How to help with this? The Owncast Latency Compensator will:
   - Determine the start (max) and end (min) latency values.
   - Keep an eye on download speed and stop compensating if it drops too low.
-  - Limit the playback speedup so it doesn't sound weird by jumping rates.
-  - Force jump to the live edge once compensation begins.
+  - Limit the playback speedup rate so it doesn't sound weird by jumping speeds.
+  - Force a large jump to into the future once compensation begins.
   - Dynamically calculate the speedup rate based on network speed.
   - Pause the compensation if buffering events occur.
   - Completely give up on all compensation if too many buffering events occur.
 */
 
 const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
-const MIN_BUFFER_DURATION = 500; // Min duration a buffer event must last to be counted.
+const MIN_BUFFER_DURATION = 200; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
 const MAX_SPEEDUP_RAMP = 0.02; // The max amount we will increase the playback rate at once.
 const TIMEOUT_DURATION = 30 * 1000; // The amount of time we stop handling latency after certain events.
@@ -178,8 +179,9 @@ class LatencyCompensator {
           this.shouldJumpToLive() &&
           latency > maxLatencyThreshold + MAX_JUMP_LATENCY
         ) {
-          const seekPosition =
-            this.player.currentTime() + segment.duration * 2.0;
+          const jumpAmount = latency / 1000 - segment.duration * 3;
+          console.log('jump amount', jumpAmount);
+          const seekPosition = this.player.currentTime() + jumpAmount;
           console.log(
             'latency',
             latency / 1000,
