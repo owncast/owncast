@@ -39,7 +39,7 @@ const HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 2.6; // Segment length * this 
 const LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER = 1.8; // Segment length * this value is when we stop compensating.
 const MIN_LATENCY = 4 * 1000; // The absolute lowest we'll continue compensation to be running at.
 const MAX_LATENCY = 15 * 1000; // The absolute highest we'll allow a target latency to be before we start compensating.
-const MAX_JUMP_LATENCY = 7 * 1000; // How much behind the max latency we need to be behind before we allow a jump.
+const MAX_JUMP_LATENCY = 5 * 1000; // How much behind the max latency we need to be behind before we allow a jump.
 const MAX_JUMP_FREQUENCY = 20 * 1000; // How often we'll allow a time jump.
 const STARTUP_WAIT_TIME = 10 * 1000; // The amount of time after we start up that we'll allow monitoring to occur.
 
@@ -58,9 +58,11 @@ class LatencyCompensator {
     this.playbackRate = 1.0;
     this.lastJumpOccurred = null;
     this.startupTime = new Date();
+
     this.player.on('playing', this.handlePlaying.bind(this));
     this.player.on('error', this.handleError.bind(this));
     this.player.on('waiting', this.handleBuffering.bind(this));
+    this.player.on('stalled', this.handleBuffering.bind(this));
     this.player.on('ended', this.handleEnded.bind(this));
     this.player.on('canplaythrough', this.handlePlaying.bind(this));
     this.player.on('canplay', this.handlePlaying.bind(this));
@@ -68,6 +70,9 @@ class LatencyCompensator {
 
   // This is run on a timer to check if we should be compensating for latency.
   check() {
+    // We have an arbitrary delay at startup to allow the player to run
+    // normally and hopefully get a bit of a buffer of segments before we
+    // start messing with it.
     if (new Date().getTime() - this.startupTime.getTime() < STARTUP_WAIT_TIME) {
       return;
     }
@@ -87,34 +92,40 @@ class LatencyCompensator {
     }
 
     if (!this.enabled) {
-      console.log('not enabled...');
       return;
     }
 
     const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
 
+    // We need access to the internal tech of VHS to move forward.
+    // If running under an Apple browser that uses CoreMedia (Safari)
+    // we do not have access to this as the tech is internal to the OS.
     if (!tech || !tech.vhs) {
       return;
     }
+
+    // Network state 2 means we're actively using the network.
+    // We only want to attempt latency compensation if we're continuing to
+    // download new segments.
+    const networkState = this.player.networkState();
+    if (networkState !== 2) {
+      return;
+    }
+
+    let totalBuffered = 0;
 
     try {
       // Check the player buffers to make sure there's enough playable content
       // that we can safely play.
       if (tech.vhs.stats.buffered.length === 0) {
-        console.log('timeout due to zero buffers');
         this.timeout();
+        return;
       }
-
-      let totalBuffered = 0;
 
       tech.vhs.stats.buffered.forEach((buffer) => {
         totalBuffered += buffer.end - buffer.start;
       });
       console.log('buffered', totalBuffered);
-
-      if (totalBuffered < 18) {
-        this.timeout();
-      }
     } catch (e) {}
 
     // Determine how much of the current playlist's bandwidth requirements
@@ -125,15 +136,19 @@ class LatencyCompensator {
     const playerBandwidth = tech.vhs.systemBandwidth;
     const bandwidthRatio = playerBandwidth / currentPlaylistBandwidth;
 
-    // If we don't think we have the bandwidth to play faster, then don't do it.
-    if (bandwidthRatio < REQUIRED_BANDWIDTH_RATIO) {
-      this.timeout();
-      return;
-    }
-
     try {
       const segment = getCurrentlyPlayingSegment(tech);
       if (!segment) {
+        return;
+      }
+
+      // If we're downloading media fast enough or we feel like we have a large
+      // enough buffer then continue. Otherwise timeout for a bit.
+      if (
+        bandwidthRatio < REQUIRED_BANDWIDTH_RATIO &&
+        totalBuffered < segment.duration * 6
+      ) {
+        this.timeout();
         return;
       }
 
@@ -167,6 +182,13 @@ class LatencyCompensator {
         // then allow us to ramp up by using a slower value for now.
         proposedPlaybackRate = this.playbackRate + MAX_SPEEDUP_RAMP;
       }
+
+      console.log(
+        'proposedPlaybackRate',
+        proposedPlaybackRate,
+        'previous',
+        this.playbackRate
+      );
 
       // Limit to 3 decimal places of precision.
       proposedPlaybackRate =
@@ -352,6 +374,8 @@ class LatencyCompensator {
     setTimeout(() => {
       if (this.bufferingCounter > 0) {
         this.bufferingCounter--;
+        // Allow a time jump after a long buffer if applicable.
+        this.lastJumpOccurred = null;
       }
     }, BUFFERING_AMNESTY_DURATION);
   }
