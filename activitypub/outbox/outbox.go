@@ -11,8 +11,8 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
-	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/workerpool"
 
 	"github.com/owncast/owncast/config"
@@ -180,7 +180,7 @@ func SendToFollowers(payload []byte) error {
 
 	for _, follower := range followers {
 		inbox, _ := url.Parse(follower.Inbox)
-		req, err := requests.CreateSignedRequest(payload, inbox, localActor)
+		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
 			log.Errorln("unable to create outbox request", follower.Inbox, err)
 			return errors.New("unable to create outbox request: " + follower.Inbox)

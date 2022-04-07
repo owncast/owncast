@@ -1,17 +1,12 @@
 package requests
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/crypto"
-
-	"github.com/owncast/owncast/config"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -54,22 +49,4 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 	}
 
 	return nil
-}
-
-// CreateSignedRequest will create a signed POST request of a payload to the provided destination.
-func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
-	log.Debugln("Sending", string(payload), "to", url)
-
-	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
-
-	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
-	req.Header.Set("User-Agent", ua)
-	req.Header.Set("Content-Type", "application/activity+json")
-
-	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
-		log.Errorln("error signing request:", err)
-		return nil, err
-	}
-
-	return req, nil
 }
