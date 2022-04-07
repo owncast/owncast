@@ -7,6 +7,7 @@ import PlaybackMetrics from '../metrics/playback.js';
 import LatencyCompensator from './latencyCompensator.js';
 
 const VIDEO_ID = 'video';
+const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
 
 // Video setup
 const VIDEO_SRC = {
@@ -32,6 +33,7 @@ const VIDEO_OPTIONS = {
   },
   liveTracker: {
     trackingThreshold: 0,
+    liveTolerance: 15,
   },
   sources: [VIDEO_SRC],
 };
@@ -115,23 +117,40 @@ class OwncastPlayer {
     this.playbackMetrics = new PlaybackMetrics(this.vjsPlayer, videojs);
   }
 
+  setupLatencyCompensator() {
+    const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
+
+    // VHS is required.
+    if (!tech || !tech.vhs) {
+      return;
+    }
+
+    const latencyCompensatorEnabledSaved = getLocalStorage(
+      LATENCY_COMPENSATION_ENABLED
+    );
+
+    if (latencyCompensatorEnabledSaved === 'true' && tech && tech.vhs) {
+      this.startLatencyCompensator();
+    } else {
+      this.stopLatencyCompensator();
+    }
+  }
+
   startLatencyCompensator() {
-    console.log('starting');
     this.latencyCompensator = new LatencyCompensator(this.vjsPlayer);
     this.latencyCompensator.enable();
     this.latencyCompensatorEnabled = true;
-    this.setLatencyCompensatorItemTitle('disable lower latency');
+    this.setLatencyCompensatorItemTitle('disable minimized latency');
   }
 
   stopLatencyCompensator() {
-    console.log('stopping');
     if (this.latencyCompensator) {
       this.latencyCompensator.disable();
     }
     this.LatencyCompensator = null;
     this.latencyCompensatorEnabled = false;
     this.setLatencyCompensatorItemTitle(
-      '<span style="font-size: 0.8em">lower latency (experimental)</span>'
+      '<span style="font-size: 0.8em">minimize latency (experimental)</span>'
     );
   }
 
@@ -144,17 +163,7 @@ class OwncastPlayer {
 
     this.vjsPlayer.on('loadeddata', () => {
       this.setupPlaybackMetrics();
-
-      const latencyCompensatorEnabledSaved = getLocalStorage(
-        'latencyCompensatorEnabled'
-      );
-
-      const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
-      if (latencyCompensatorEnabledSaved === 'true' && tech && tech.vhs) {
-        this.startLatencyCompensator();
-      } else {
-        this.stopLatencyCompensator();
-      }
+      this.setupLatencyCompensator();
     });
 
     if (this.appPlayerReadyCallback) {
@@ -203,10 +212,10 @@ class OwncastPlayer {
   toggleLatencyCompensator() {
     if (this.latencyCompensatorEnabled) {
       this.stopLatencyCompensator();
-      setLocalStorage('latencyCompensatorEnabled', false);
+      setLocalStorage(LATENCY_COMPENSATION_ENABLED, false);
     } else {
       this.startLatencyCompensator();
-      setLocalStorage('latencyCompensatorEnabled', true);
+      setLocalStorage(LATENCY_COMPENSATION_ENABLED, true);
     }
   }
 
@@ -214,6 +223,10 @@ class OwncastPlayer {
     const item = document.querySelector(
       '.latency-toggle-item > .vjs-menu-item-text'
     );
+    if (!item) {
+      return;
+    }
+
     item.innerHTML = title;
   }
 
@@ -243,13 +256,16 @@ class OwncastPlayer {
 
         const lowLatencyItem = new MenuItem(player, {
           selectable: true,
-          // label: 'Lower latency ✓',
         });
         lowLatencyItem.setAttribute('class', 'latency-toggle-item');
         lowLatencyItem.on('click', () => {
           this.toggleLatencyCompensator();
         });
         this.latencyCompensatorToggleButton = lowLatencyItem;
+
+        const separator = new MenuSeparator(player, {
+          selectable: false,
+        });
 
         var MenuButton = videojs.extend(MenuButtonClass, {
           // The `init()` method will also work for constructor logic here, but it is
@@ -261,10 +277,6 @@ class OwncastPlayer {
 
           createItems: function () {
             const tech = this.player_.tech({ IWillNotUseThisInPlugins: true });
-
-            const separator = new MenuSeparator(player, {
-              selectable: false,
-            });
 
             const defaultAutoItem = new MenuItem(player, {
               selectable: true,
@@ -297,13 +309,15 @@ class OwncastPlayer {
               defaultAutoItem.selected(false);
             });
 
-            const supportsLatencyCompensator = tech && tech.vhs;
+            const supportsLatencyCompensator = !!tech && !!tech.vhs;
 
             // Only show the quality selector if there is more than one option.
             if (qualities.length < 2 && supportsLatencyCompensator) {
               return [lowLatencyItem];
-            } else if (supportsLatencyCompensator) {
-              return [defaultAutoItem, ...items];
+            } else if (qualities.length > 1 && supportsLatencyCompensator) {
+              return [defaultAutoItem, ...items, separator, lowLatencyItem];
+            } else if (!supportsLatencyCompensator && qualities.length == 1) {
+              return [];
             }
 
             return [defaultAutoItem, ...items];
