@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	schemaVersion = 3
+	schemaVersion = 4
 )
 
 var (
@@ -139,6 +139,8 @@ func migrateDatabase(db *sql.DB, from, to int) error {
 			migrateToSchema2(db)
 		case 2:
 			migrateToSchema3(db)
+		case 3:
+			migrateToSchema4(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}

@@ -24,7 +24,7 @@ UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
 UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, name, username, image, request, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
+SELECT iri, inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
@@ -39,7 +39,7 @@ SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1;
 DELETE FROM ap_followers WHERE iri = $1;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, request, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7);
+INSERT INTO ap_followers(iri, inbox, request, request_object, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7, $8);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4);

@@ -14,8 +14,8 @@ import (
 )
 
 // SendFollowAccept will send an accept activity to a follow request from a specified local user.
-func SendFollowAccept(inbox *url.URL, followRequestIRI *url.URL, fromLocalAccountName string) error {
-	followAccept := makeAcceptFollow(followRequestIRI, fromLocalAccountName)
+func SendFollowAccept(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string) error {
+	followAccept := makeAcceptFollow(originalFollowActivity, fromLocalAccountName)
 	localAccountIRI := apmodels.MakeLocalIRIForAccount(fromLocalAccountName)
 
 	var jsonmap map[string]interface{}
@@ -31,7 +31,7 @@ func SendFollowAccept(inbox *url.URL, followRequestIRI *url.URL, fromLocalAccoun
 	return nil
 }
 
-func makeAcceptFollow(followRequestIri *url.URL, fromAccountName string) vocab.ActivityStreamsAccept {
+func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string) vocab.ActivityStreamsAccept {
 	acceptIDString := shortid.MustGenerate()
 	acceptID := apmodels.MakeLocalIRIForResource(acceptIDString)
 	actorID := apmodels.MakeLocalIRIForAccount(fromAccountName)
@@ -45,7 +45,7 @@ func makeAcceptFollow(followRequestIri *url.URL, fromAccountName string) vocab.A
 	accept.SetActivityStreamsActor(actor)
 
 	object := streams.NewActivityStreamsObjectProperty()
-	object.AppendIRI(followRequestIri)
+	object.AppendActivityStreamsFollow(originalFollowActivity)
 	accept.SetActivityStreamsObject(object)
 
 	return accept

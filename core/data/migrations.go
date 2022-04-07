@@ -9,6 +9,18 @@ import (
 	"github.com/teris-io/shortid"
 )
 
+func migrateToSchema4(db *sql.DB) {
+	stmt, err := db.Prepare("ALTER TABLE ap_followers ADD COLUMN request_object BLOB")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
+}
+
 func migrateToSchema3(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
 	// and recreate the table.
