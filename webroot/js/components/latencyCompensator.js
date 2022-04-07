@@ -228,6 +228,8 @@ class LatencyCompensator {
 
   jump(seekPosition) {
     this.jumpingToLiveIgnoreBuffer = true;
+    this.performedInitialLiveJump = true;
+
     this.lastJumpOccurred = new Date();
 
     console.log(
@@ -240,7 +242,6 @@ class LatencyCompensator {
 
     setTimeout(() => {
       this.jumpingToLiveIgnoreBuffer = false;
-      this.performedInitialLiveJump = true;
     }, 5000);
   }
 
