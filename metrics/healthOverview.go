@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	healthyPercentageValue = 75
-	maxCPUUsage            = 90
+	healthyPercentageValue   = 75
+	maxCPUUsage              = 90
+	minClientCountForDetails = 3
 )
 
 // GetStreamHealthOverview will return the stream health overview.
@@ -37,9 +38,10 @@ func generateStreamHealthOverview() {
 
 	// Determine what percentage of total players are represented in our overview.
 	totalPlayerCount := len(core.GetActiveViewers())
-	representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
-	overview.Representation = representation
-
+	if totalPlayerCount > 0 && len(windowedBandwidths) > 0 {
+		representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
+		overview.Representation = representation
+	}
 	metrics.streamHealthOverview = overview
 }
 
@@ -152,20 +154,29 @@ func errorCountHealthOverview() *models.StreamHealthOverview {
 		return nil
 	}
 
-	healthyPercentage := 100 - utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
-	message := fmt.Sprintf("%d of %d clients (%d%%) are experiencing different, unspecified, playback issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
+	// Only return these detailed values and messages if we feel we have enough
+	// clients to be able to make a reasonable assessment. This is an arbitrary
+	// number but 1 out of 1 isn't helpful.
+	message := ""
+	healthyPercentage := 0
 
-	isUsingPassthrough := false
-	outputVariants := data.GetStreamOutputVariants()
-	for _, variant := range outputVariants {
-		if variant.IsVideoPassthrough {
-			isUsingPassthrough = true
+	if totalNumberOfClients >= minClientCountForDetails {
+		healthyPercentage := utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
+		message = fmt.Sprintf("%d of %d clients (%d%%) may be experiencing some issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
+
+		isUsingPassthrough := false
+		outputVariants := data.GetStreamOutputVariants()
+		for _, variant := range outputVariants {
+			if variant.IsVideoPassthrough {
+				isUsingPassthrough = true
+			}
+		}
+
+		if isUsingPassthrough {
+			message = fmt.Sprintf("%d of %d clients (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
 	}
 
-	if isUsingPassthrough {
-		message = fmt.Sprintf("%d of %d clients (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
-	}
 	return &models.StreamHealthOverview{
 		Healthy:           healthyPercentage > healthyPercentageValue,
 		Message:           message,
