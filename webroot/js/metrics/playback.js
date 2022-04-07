@@ -154,6 +154,14 @@ class PlaybackMetrics {
       return;
     }
 
+    // Network state 2 means we're actively using the network.
+    // We only care about reporting metrics with network activity stats
+    // if it's actively being used, so don't report otherwise.
+    const networkState = this.player.networkState();
+    if (networkState !== 2) {
+      return;
+    }
+
     const bandwidth = tech.vhs.systemBandwidth;
     this.trackBandwidth(bandwidth);
 
