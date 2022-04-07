@@ -149,6 +149,11 @@ class PlaybackMetrics {
       return;
     }
 
+    // If we're paused then do nothing.
+    if (this.player.paused()) {
+      return;
+    }
+
     const bandwidth = tech.vhs.systemBandwidth;
     this.trackBandwidth(bandwidth);
 
