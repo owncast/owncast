@@ -181,6 +181,10 @@ class PlaybackMetrics {
   }
 
   async send() {
+    if (this.segmentDownloadTime.length === 0) {
+      return;
+    }
+
     const errorCount = this.errors;
 
     var data;
