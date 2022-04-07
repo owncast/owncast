@@ -1,12 +1,16 @@
 package crypto
 
 import (
+	"bytes"
 	"crypto"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
 
 	"github.com/go-fed/httpsig"
+	"github.com/owncast/owncast/config"
+	log "github.com/sirupsen/logrus"
 )
 
 // SignResponse will sign a response using the provided response body and public key.
@@ -27,7 +31,6 @@ func signResponse(privateKey crypto.PrivateKey, pubKeyID url.URL, body []byte, w
 	}
 
 	signer, _, err := httpsig.NewSigner(prefs, digestAlgorithm, headersToSign, httpsig.Signature, 0)
-
 	if err != nil {
 		return err
 	}
@@ -60,11 +63,28 @@ func signRequest(privateKey crypto.PrivateKey, pubKeyID string, body []byte, r *
 	}
 
 	signer, _, err := httpsig.NewSigner(prefs, digestAlgorithm, headersToSign, httpsig.Signature, 0)
-
 	if err != nil {
 		return err
 	}
 
 	// If r were a http.ResponseWriter, call SignResponse instead.
 	return signer.SignRequest(privateKey, pubKeyID, r, body)
+}
+
+// CreateSignedRequest will create a signed POST request of a payload to the provided destination.
+func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
+	log.Debugln("Sending", string(payload), "to", url)
+
+	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
+
+	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
+	req.Header.Set("User-Agent", ua)
+	req.Header.Set("Content-Type", "application/activity+json")
+
+	if err := SignRequest(req, payload, fromActorIRI); err != nil {
+		log.Errorln("error signing request:", err)
+		return nil, err
+	}
+
+	return req, nil
 }

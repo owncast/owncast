@@ -7,6 +7,7 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/workerpool"
 
 	"github.com/teris-io/shortid"
@@ -20,7 +21,7 @@ func SendFollowAccept(inbox *url.URL, followRequestIRI *url.URL, fromLocalAccoun
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(followAccept)
 	b, _ := json.Marshal(jsonmap)
-	req, err := CreateSignedRequest(b, inbox, localAccountIRI)
+	req, err := crypto.CreateSignedRequest(b, inbox, localAccountIRI)
 	if err != nil {
 		return err
 	}
