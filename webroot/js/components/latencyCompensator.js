@@ -76,6 +76,10 @@ class LatencyCompensator {
       return;
     }
 
+    if (this.player.seeking()) {
+      return;
+    }
+
     if (this.inTimeout) {
       console.log('in timeout...');
       return;
@@ -175,7 +179,7 @@ class LatencyCompensator {
           latency > maxLatencyThreshold + MAX_JUMP_LATENCY
         ) {
           const seekPosition =
-            this.player.currentTime() + segment.duration * 2.4;
+            this.player.currentTime() + segment.duration * 2.0;
           console.log(
             'latency',
             latency / 1000,
