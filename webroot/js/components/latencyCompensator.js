@@ -125,7 +125,6 @@ class LatencyCompensator {
       tech.vhs.stats.buffered.forEach((buffer) => {
         totalBuffered += buffer.end - buffer.start;
       });
-      console.log('buffered', totalBuffered);
     } catch (e) {}
 
     // Determine how much of the current playlist's bandwidth requirements
@@ -152,47 +151,24 @@ class LatencyCompensator {
         return;
       }
 
-      // How far away from live edge do we start the compensator.
-      const maxLatencyThreshold = Math.min(
-        MAX_LATENCY,
-        segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
-      );
-
       // How far away from live edge do we stop the compensator.
       const minLatencyThreshold = Math.max(
         MIN_LATENCY,
         segment.duration * 1000 * LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
       );
 
+      // How far away from live edge do we start the compensator.
+      const maxLatencyThreshold = Math.max(
+        minLatencyThreshold * 1.4,
+        Math.min(
+          segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER,
+          MAX_LATENCY
+        )
+      );
+
       const segmentTime = segment.dateTimeObject.getTime();
       const now = new Date().getTime();
       const latency = now - segmentTime;
-
-      // Using our bandwidth ratio determine a wide guess at how fast we can play.
-      var proposedPlaybackRate = bandwidthRatio * 0.33;
-
-      // But limit the playback rate to a max value.
-      proposedPlaybackRate = Math.max(
-        Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
-        1.0
-      );
-
-      if (proposedPlaybackRate > this.playbackRate + MAX_SPEEDUP_RAMP) {
-        // If this proposed speed is substantially faster than the current rate,
-        // then allow us to ramp up by using a slower value for now.
-        proposedPlaybackRate = this.playbackRate + MAX_SPEEDUP_RAMP;
-      }
-
-      console.log(
-        'proposedPlaybackRate',
-        proposedPlaybackRate,
-        'previous',
-        this.playbackRate
-      );
-
-      // Limit to 3 decimal places of precision.
-      proposedPlaybackRate =
-        Math.round(proposedPlaybackRate * Math.pow(10, 3)) / Math.pow(10, 3);
 
       if (latency > maxLatencyThreshold) {
         // If the current latency exceeds the max jump amount then
@@ -212,8 +188,39 @@ class LatencyCompensator {
             ' to ',
             seekPosition
           );
-          this.jump(seekPosition);
+
+          // Verify we have the seek position buffered before jumping.
+          const availableBufferedTimeEnd = tech.vhs.stats.buffered[0].end;
+          const availableBufferedTimeStart = tech.vhs.stats.buffered[0].start;
+          if (
+            seekPosition >
+            availableBufferedTimeStart <
+            availableBufferedTimeEnd
+          ) {
+            this.jump(seekPosition);
+
+            return;
+          }
         }
+
+        // Using our bandwidth ratio determine a wide guess at how fast we can play.
+        var proposedPlaybackRate = bandwidthRatio * 0.33;
+
+        // But limit the playback rate to a max value.
+        proposedPlaybackRate = Math.max(
+          Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
+          1.0
+        );
+
+        if (proposedPlaybackRate > this.playbackRate + MAX_SPEEDUP_RAMP) {
+          // If this proposed speed is substantially faster than the current rate,
+          // then allow us to ramp up by using a slower value for now.
+          proposedPlaybackRate = this.playbackRate + MAX_SPEEDUP_RAMP;
+        }
+
+        // Limit to 3 decimal places of precision.
+        proposedPlaybackRate =
+          Math.round(proposedPlaybackRate * Math.pow(10, 3)) / Math.pow(10, 3);
 
         // Otherwise start the playback rate adjustment.
         this.start(proposedPlaybackRate);
@@ -240,7 +247,7 @@ class LatencyCompensator {
         this.bufferingCounter
       );
     } catch (err) {
-      console.error(err);
+      // console.error(err);
     }
   }
 
