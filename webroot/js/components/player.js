@@ -150,7 +150,7 @@ class OwncastPlayer {
     this.LatencyCompensator = null;
     this.latencyCompensatorEnabled = false;
     this.setLatencyCompensatorItemTitle(
-      '<span style="font-size: 0.8em">minimize latency (experimental)</span>'
+      '<span style="font-size: 0.8em">enable minimized latency (experimental)</span>'
     );
   }
 

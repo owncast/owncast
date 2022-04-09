@@ -376,8 +376,6 @@ class LatencyCompensator {
     setTimeout(() => {
       if (this.bufferingCounter > 0) {
         this.bufferingCounter--;
-        // Allow a time jump after a long buffer if applicable.
-        this.lastJumpOccurred = null;
       }
     }, BUFFERING_AMNESTY_DURATION);
   }
