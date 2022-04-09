@@ -50,7 +50,6 @@ class LatencyCompensator {
     this.running = false;
     this.inTimeout = false;
     this.jumpingToLiveIgnoreBuffer = false;
-    this.performedInitialLiveJump = false;
     this.timeoutTimer = 0;
     this.checkTimer = 0;
     this.bufferingCounter = 0;
@@ -321,10 +320,6 @@ class LatencyCompensator {
       return;
     }
 
-    if (!this.performedInitialLiveJump) {
-      return;
-    }
-
     if (this.jumpingToLiveIgnoreBuffer) {
       return;
     }
@@ -389,10 +384,6 @@ class LatencyCompensator {
 
   handleBuffering() {
     if (!this.enabled) {
-      return;
-    }
-
-    if (!this.performedInitialLiveJump) {
       return;
     }
 
