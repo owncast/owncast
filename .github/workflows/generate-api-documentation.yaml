@@ -17,7 +17,7 @@ jobs:
             npx redoc-cli bundle openapi.yaml -o docs/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}'
 
         - name: Commit changes
-          uses: EndBug/add-and-commit@v5
+          uses: EndBug/add-and-commit@v9
           with:
             author_name: Owncast
             author_email: owncast@owncast.online
