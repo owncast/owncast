@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 // import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
-import { Row, Col, Typography, Space, Statistic, Card, Alert } from 'antd';
+import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { ClockCircleOutlined, WarningOutlined, WifiOutlined } from '@ant-design/icons';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../utils/apis';
 import Chart from '../components/chart';
+import StreamHealthOverview from '../components/stream-health-overview';
 
 interface TimedValue {
   time: Date;
@@ -90,10 +91,15 @@ export default function StreamHealth() {
   const noData = (
     <div>
       <Typography.Title>Stream Performance</Typography.Title>
-      <Typography.Paragraph>
+      <Alert
+        type="info"
+        message="
         Data has not yet been collected. Once a stream has begun and viewers are watching this page
-        will be available.
-      </Typography.Paragraph>
+        will be available."
+      />
+      <Spin size="large">
+        <div style={{ marginTop: '50px', height: '100px' }} />
+      </Spin>
     </div>
   );
   if (!errors?.length) {
@@ -259,6 +265,13 @@ export default function StreamHealth() {
         insight into external players people may be using such as VLC, MPV, QuickTime, etc.
       </Typography.Paragraph>
       <Space direction="vertical" size="middle">
+        <Row justify="space-around">
+          <Col style={{ width: '100%' }}>
+            <Card type="inner">
+              <StreamHealthOverview showTroubleshootButton={false} />
+            </Card>
+          </Col>
+        </Row>
         <Row
           gutter={[16, 16]}
           justify="space-around"
@@ -299,17 +312,19 @@ export default function StreamHealth() {
                   valueStyle={{ color: errorStatColor }}
                   prefix={<WarningOutlined style={{ marginRight: '5px' }} />}
                   suffix=""
-                />{' '}
+                />
               </div>
             </Card>
           </Col>
         </Row>
 
         <div style={{ textAlign: 'center', display: representation < 100 ? 'grid' : 'none' }}>
-          <Typography.Paragraph style={{ opacity: '0.7', fontSize: '0.7em' }}>
-            Provided playback metrics represent {representation}% of all known players. Specifics
-            around other players consuming this video stream are unknown.
-          </Typography.Paragraph>
+          {representation !== 0 && (
+            <Typography.Paragraph style={{ opacity: '0.7', fontSize: '0.7em' }}>
+              Provided playback metrics represent {representation}% of all known players. Specifics
+              around other players consuming this video stream are unknown.
+            </Typography.Paragraph>
+          )}
         </div>
 
         <Card>

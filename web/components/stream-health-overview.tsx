@@ -4,16 +4,19 @@ import Link from 'next/link';
 import React, { useContext } from 'react';
 import { ServerStatusContext } from '../utils/server-status-context';
 
-export default function StreamHealthOverview() {
+interface StreamHealthOverviewProps {
+  showTroubleshootButton?: Boolean;
+}
+export default function StreamHealthOverview({
+  showTroubleshootButton,
+}: StreamHealthOverviewProps) {
   const serverStatusData = useContext(ServerStatusContext);
   const { health } = serverStatusData;
-
   if (!health) {
     return null;
   }
 
   const { healthy, healthPercentage, message, representation } = health;
-  console.log(healthPercentage);
   let color = '#3f8600';
   let icon: 'success' | 'info' | 'warning' | 'error' = 'info';
   if (healthPercentage < 80) {
@@ -26,7 +29,7 @@ export default function StreamHealthOverview() {
 
   return (
     <div>
-      <Row gutter={16}>
+      <Row gutter={8}>
         <Col span={12}>
           <Statistic
             title="Healthy Stream"
@@ -44,7 +47,7 @@ export default function StreamHealthOverview() {
           />
         </Col>
       </Row>
-      <Row style={{ display: representation < 100 ? 'grid' : 'none' }}>
+      <Row style={{ display: representation < 100 && representation !== 0 ? 'grid' : 'none' }}>
         <Typography.Text
           type="secondary"
           style={{ textAlign: 'center', fontSize: '0.7em', opacity: '0.3' }}
@@ -53,18 +56,23 @@ export default function StreamHealthOverview() {
           unknown.
         </Typography.Text>
       </Row>
-      <Row gutter={16} style={{ display: message ? 'grid' : 'none', marginTop: '10px' }}>
+      <Row
+        gutter={16}
+        style={{ width: '100%', display: message ? 'grid' : 'none', marginTop: '10px' }}
+      >
         <Col span={24}>
           <Alert
             message={message}
             type={icon}
             showIcon
             action={
-              <Link passHref href="/stream-health">
-                <Button size="small" type="text" style={{ color: 'black' }}>
-                  TROUBLESHOOT
-                </Button>
-              </Link>
+              showTroubleshootButton && (
+                <Link passHref href="/stream-health">
+                  <Button size="small" type="text" style={{ color: 'black' }}>
+                    TROUBLESHOOT
+                  </Button>
+                </Link>
+              )
             }
           />
         </Col>
@@ -72,3 +80,7 @@ export default function StreamHealthOverview() {
     </div>
   );
 }
+
+StreamHealthOverview.defaultProps = {
+  showTroubleshootButton: true,
+};
