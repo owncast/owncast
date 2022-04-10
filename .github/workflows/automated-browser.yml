@@ -13,7 +13,7 @@ jobs:
       - name: Run browser tests
         run: cd test/automated/browser && ./run.sh
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: screenshots-${{ github.run_id }}
           path: test/automated/browser/screenshots/*.png
