@@ -23,7 +23,7 @@ jobs:
         - run: cd build/javascript && npm run build
 
         - name: Commit changes
-          uses: EndBug/add-and-commit@v5
+          uses: EndBug/add-and-commit@v9
           with:
             author_name: Owncast
             author_email: owncast@owncast.online
