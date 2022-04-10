@@ -1,12 +1,12 @@
 package indieauth
 
 import (
-	"crypto/sha256" // nolint:gosec
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-  "strings"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/andybalholm/cascadia"
 	"github.com/pkg/errors"
@@ -114,7 +114,7 @@ func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
 func createCodeChallenge(codeVerifier string) string {
 	sha256hash := sha256.Sum256([]byte(codeVerifier))
 
-	encodedHashedCode := strings.TrimRight(base64.URLEncoding.EncodeToString(sha256hash[:]),"=")
+	encodedHashedCode := strings.TrimRight(base64.URLEncoding.EncodeToString(sha256hash[:]), "=")
 
 	return encodedHashedCode
 }

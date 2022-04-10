@@ -1,10 +1,11 @@
 package indieauth
 
 import (
-  "fmt"
+	"fmt"
+
+	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
-  "github.com/owncast/owncast/core/data"
 )
 
 // ServerAuthRequest is n inbound request to authenticate against
@@ -12,7 +13,7 @@ import (
 type ServerAuthRequest struct {
 	ClientID      string
 	RedirectURI   string
-  CodeChallenge string
+	CodeChallenge string
 	State         string
 	Me            string
 	Code          string
@@ -41,12 +42,12 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 	code := shortid.MustGenerate()
 
 	r := ServerAuthRequest{
-		ClientID:    clientID,
-		RedirectURI: redirectURI,
-    CodeChallenge: codeChallenge,
-		State:       state,
-		Me:          me,
-		Code:        code,
+		ClientID:      clientID,
+		RedirectURI:   redirectURI,
+		CodeChallenge: codeChallenge,
+		State:         state,
+		Me:            me,
+		Code:          code,
 	}
 
 	pendingServerAuthRequests[code] = r
@@ -70,10 +71,10 @@ func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string)
 		return nil, errors.New("client ID does not match")
 	}
 
-  codeChallengeFromRequest := createCodeChallenge(codeVerifier)
-  if request.CodeChallenge != codeChallengeFromRequest {
-    return nil, errors.New("code verifier is incorrect")
-  }
+	codeChallengeFromRequest := createCodeChallenge(codeVerifier)
+	if request.CodeChallenge != codeChallengeFromRequest {
+		return nil, errors.New("code verifier is incorrect")
+	}
 
 	response := ServerProfileResponse{
 		Me: data.GetServerURL(),
