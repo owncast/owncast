@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	healthyPercentageValue   = 75
-	maxCPUUsage              = 90
-	minClientCountForDetails = 3
+	healthyPercentageMinValue = 75
+	maxCPUUsage               = 90
+	minClientCountForDetails  = 3
 )
 
 // GetStreamHealthOverview will return the stream health overview.
@@ -22,30 +22,48 @@ func GetStreamHealthOverview() *models.StreamHealthOverview {
 }
 
 func generateStreamHealthOverview() {
-	overview := &models.StreamHealthOverview{
-		Healthy:           true,
-		HealthyPercentage: 100,
-		Message:           "",
-	}
-
-	if cpuUseOverview := cpuUsageHealthOverview(); cpuUseOverview != nil {
-		overview = cpuUseOverview
-	} else if networkSpeedOverview := networkSpeedHealthOverview(); networkSpeedOverview != nil {
-		overview = networkSpeedOverview
-	} else if errorCountOverview := errorCountHealthOverview(); errorCountOverview != nil {
-		overview = errorCountOverview
-	}
-
 	// Determine what percentage of total players are represented in our overview.
 	totalPlayerCount := len(core.GetActiveViewers())
+	if totalPlayerCount == 0 {
+		metrics.streamHealthOverview = nil
+		return
+	}
+
+	pct := getClientErrorHeathyPercentage()
+	if pct == -1 {
+		metrics.streamHealthOverview = nil
+		return
+	}
+
+	overview := &models.StreamHealthOverview{
+		Healthy:           pct > healthyPercentageMinValue,
+		HealthyPercentage: pct,
+		Message:           getStreamHealthOverviewMessage(),
+	}
+
 	if totalPlayerCount > 0 && len(windowedBandwidths) > 0 {
 		representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
 		overview.Representation = representation
 	}
+
 	metrics.streamHealthOverview = overview
 }
 
-func networkSpeedHealthOverview() *models.StreamHealthOverview {
+func getStreamHealthOverviewMessage() string {
+	if message := wastefulBitrateOverviewMessage(); message != "" {
+		return message
+	} else if message := cpuUsageHealthOverviewMessage(); message != "" {
+		return message
+	} else if message := networkSpeedHealthOverviewMessage(); message != "" {
+		return message
+	} else if message := errorCountHealthOverviewMessage(); message != "" {
+		return message
+	}
+
+	return ""
+}
+
+func networkSpeedHealthOverviewMessage() string {
 	type singleVariant struct {
 		isVideoPassthrough bool
 		bitrate            int
@@ -74,11 +92,11 @@ func networkSpeedHealthOverview() *models.StreamHealthOverview {
 		return streamSortVariants[i].bitrate > streamSortVariants[j].bitrate
 	})
 
-	lowestSupportedBitrate := float64(streamSortVariants[0].bitrate)
+	lowestSupportedBitrate := float64(streamSortVariants[len(streamSortVariants)-1].bitrate)
 	totalNumberOfClients := len(windowedBandwidths)
 
 	if totalNumberOfClients == 0 {
-		return nil
+		return ""
 	}
 
 	// Determine healthy status based on bandwidth speeds of clients.
@@ -91,25 +109,59 @@ func networkSpeedHealthOverview() *models.StreamHealthOverview {
 	}
 
 	if unhealthyClientCount == 0 {
-		return nil
+		return ""
 	}
 
-	percentUnhealthy := 100 - ((float64(unhealthyClientCount) / float64(totalNumberOfClients)) * 100)
-	healthyPercentage := int(percentUnhealthy)
-
-	return &models.StreamHealthOverview{
-		Healthy:           healthyPercentage > healthyPercentageValue,
-		Message:           fmt.Sprintf("%d of %d clients (%d%%) are consuming video slower than, or too close to your bitrate of %d kbps.", unhealthyClientCount, totalNumberOfClients, int((float64(unhealthyClientCount)/float64(totalNumberOfClients))*100), int(lowestSupportedBitrate)),
-		HealthyPercentage: healthyPercentage,
-	}
+	return fmt.Sprintf("%d of %d viewers (%d%%) are consuming video slower than, or too close to your bitrate of %d kbps.", unhealthyClientCount, totalNumberOfClients, int((float64(unhealthyClientCount)/float64(totalNumberOfClients))*100), int(lowestSupportedBitrate))
 }
 
-func cpuUsageHealthOverview() *models.StreamHealthOverview {
+// wastefulBitrateOverviewMessage attempts to determine if a streamer is sending to
+// Owncast at a bitrate higher than they're streaming to their viewers leading
+// to wasted CPU by having to compress it.
+func wastefulBitrateOverviewMessage() string {
 	if len(metrics.CPUUtilizations) < 2 {
-		return nil
+		return ""
 	}
 
-	totalNumberOfClients := len(windowedBandwidths)
+	// Only return an alert if the CPU usage is around the max cpu threshold.
+	recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
+	values := make([]float64, len(recentCPUUses))
+	for i, val := range recentCPUUses {
+		values[i] = val.Value
+	}
+	recentCPUUse := utils.Avg(values)
+
+	if recentCPUUse < maxCPUUsage-10 {
+		return ""
+	}
+
+	currentBroadcast := core.GetCurrentBroadcast()
+	if currentBroadcast == nil {
+		return ""
+	}
+
+	currentBroadcaster := core.GetBroadcaster()
+	if currentBroadcast == nil {
+		return ""
+	}
+
+	if currentBroadcaster.StreamDetails.AudioBitrate == 0 {
+		return ""
+	}
+
+	inboundBitrate := currentBroadcaster.StreamDetails.VideoBitrate
+	maxBitrate := 0
+	if inboundBitrate > maxBitrate {
+		return fmt.Sprintf("You're broadcasting to Owncast at %dkbps but only sending to your viewers at %dkbps, requiring unnecessary work to be performed. You may want to decrease what you're sending to Owncast or increase what you send to your viewers to match.", inboundBitrate, maxBitrate)
+	}
+
+	return ""
+}
+
+func cpuUsageHealthOverviewMessage() string {
+	if len(metrics.CPUUtilizations) < 2 {
+		return ""
+	}
 
 	recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
 	values := make([]float64, len(recentCPUUses))
@@ -118,51 +170,30 @@ func cpuUsageHealthOverview() *models.StreamHealthOverview {
 	}
 	recentCPUUse := utils.Avg(values)
 	if recentCPUUse < maxCPUUsage {
-		return nil
+		return ""
 	}
 
-	clientsWithErrors := 0
-	for _, errors := range windowedErrorCounts {
-		if errors > 0 {
-			clientsWithErrors++
-		}
-	}
-
-	healthyPercentage := int(100 - ((float64(clientsWithErrors) / float64(totalNumberOfClients)) * 100))
-
-	return &models.StreamHealthOverview{
-		Healthy:           false,
-		Message:           fmt.Sprintf("The CPU usage on your server is over %d%%. This may cause video to be provided slower than necessary, causing buffering for your viewers. Consider increasing the resources available or reducing the number of output variants you made available.", maxCPUUsage),
-		HealthyPercentage: healthyPercentage,
-	}
+	return fmt.Sprintf("The CPU usage on your server is over %d%%. This may cause video to be provided slower than necessary, causing buffering for your viewers. Consider increasing the resources available or reducing the number of output variants you made available.", maxCPUUsage)
 }
 
-func errorCountHealthOverview() *models.StreamHealthOverview {
+func errorCountHealthOverviewMessage() string {
 	totalNumberOfClients := len(windowedBandwidths)
 	if totalNumberOfClients == 0 {
-		return nil
+		return ""
 	}
 
-	clientsWithErrors := 0
-	for _, errors := range windowedErrorCounts {
-		if errors > 0 {
-			clientsWithErrors++
-		}
-	}
+	clientsWithErrors := getClientsWithErrorsCount()
 
 	if clientsWithErrors == 0 {
-		return nil
+		return ""
 	}
 
 	// Only return these detailed values and messages if we feel we have enough
 	// clients to be able to make a reasonable assessment. This is an arbitrary
 	// number but 1 out of 1 isn't helpful.
-	message := ""
-	healthyPercentage := 0
 
 	if totalNumberOfClients >= minClientCountForDetails {
 		healthyPercentage := utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
-		message = fmt.Sprintf("%d of %d clients (%d%%) may be experiencing some issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 
 		isUsingPassthrough := false
 		outputVariants := data.GetStreamOutputVariants()
@@ -173,13 +204,38 @@ func errorCountHealthOverview() *models.StreamHealthOverview {
 		}
 
 		if isUsingPassthrough {
-			message = fmt.Sprintf("%d of %d clients (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
+			return fmt.Sprintf("%d of %d viewers (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
+
+		return fmt.Sprintf("%d of %d viewers (%d%%) may be experiencing some issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 	}
 
-	return &models.StreamHealthOverview{
-		Healthy:           healthyPercentage > healthyPercentageValue,
-		Message:           message,
-		HealthyPercentage: healthyPercentage,
+	return ""
+}
+
+func getClientsWithErrorsCount() int {
+	clientsWithErrors := 0
+	for _, errors := range windowedErrorCounts {
+		if errors > 0 {
+			clientsWithErrors++
+		}
 	}
+	return clientsWithErrors
+}
+
+func getClientErrorHeathyPercentage() int {
+	totalNumberOfClients := len(windowedErrorCounts)
+	if totalNumberOfClients == 0 {
+		return -1
+	}
+
+	clientsWithErrors := getClientsWithErrorsCount()
+
+	if clientsWithErrors == 0 {
+		return 100
+	}
+
+	pct := 100 - utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
+
+	return pct
 }
