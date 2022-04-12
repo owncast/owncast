@@ -1,0 +1,29 @@
+name: Mayhem for API
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Start API
+      run: |
+        docker build . -t owncast
+        docker run -p 8080:8080 owncast&
+        sleep 5s
+        curl -vv http://localhost:8080/api/ping
+
+
+    - name: Run Mayhem for API to check for vulnerabilities
+      uses: ForAllSecure/mapi-action@v1
+      with:
+        api-url: http://localhost:8080
+        api-spec: openapi.yaml
+        target: rossimo/owncast
+        duration: 90sec
+        run-args: |
+          --header-auth
+          Authorization: Basic YWRtaW46YWJjMTIz
