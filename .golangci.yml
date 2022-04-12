@@ -2,6 +2,11 @@ run:
   tests: false
   modules-download-mode: readonly
 
+  # Define the Go version limit.
+  # Mainly related to generics support in go1.18.
+  # Default: use Go version from the go.mod file, fallback on the env var `GOVERSION`, fallback on 1.17
+  go: '1.17'
+
 issues:
   # The linter has a default list of ignorable errors. Turning this on will enable that list.
   exclude-use-default: false
