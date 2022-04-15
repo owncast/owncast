@@ -27,8 +27,7 @@ import FediverseFollowModal, {
 
 import { NotifyButton, NotifyModal } from './components/notification.js';
 import { isPushNotificationSupported } from './notification/registerWeb.js';
-import IndieAuthForm from './components/chat/indieauth.js';
-import AuthModal from './components/auth-modal.js';
+import ChatSettingsModal from './components/chat-settings-modal.js';
 
 import {
   addNewlines,
@@ -625,7 +624,7 @@ export default class App extends Component {
 
   showAuthModal() {
     const data = {
-      title: 'Authenticate with chat',
+      title: 'Chat',
     };
     this.setState({ authModalData: data });
   }
@@ -654,7 +653,6 @@ export default class App extends Component {
       // user details are so we can display them properly.
       const { user } = e;
       const { displayName, authenticated } = user;
-
       this.setState({
         username: displayName,
         authenticated,
@@ -890,9 +888,11 @@ export default class App extends Component {
           onClose=${this.closeAuthModal}
           action=${authModalData}
           useIframe=${false}
-          customContent=${html`<${AuthModal}
+          customContent=${html`<${ChatSettingsModal}
             name=${name}
             logo=${logo}
+            onUsernameChange=${this.handleUsernameChange}
+            username=${username}
             accessToken=${this.state.accessToken}
             authenticated=${authenticated}
             onClose=${this.closeAuthModal}
@@ -948,7 +948,7 @@ export default class App extends Component {
       });
     }
 
-    const authIcon = authenticated ? '/img/locked.svg' : '/img/unlocked.svg';
+    const authIcon = '/img/user-settings.svg';
 
     return html`
       <div
