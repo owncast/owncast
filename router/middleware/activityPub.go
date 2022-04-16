@@ -21,7 +21,7 @@ func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 			handler(w, r)
 		}
 
-		acceptedContentTypes := []string{"application/json", "application/json+ld", "application/activity+json"}
+		acceptedContentTypes := []string{"application/json", "application/json+ld", "application/activity+json", `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`}
 		acceptString := r.Header.Get("Accept")
 		accept := strings.Split(acceptString, ",")
 
