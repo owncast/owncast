@@ -112,6 +112,9 @@ export default class App extends Component {
       externalActionModalData: null,
       fediverseModalData: null,
 
+      // authentication options
+      indieAuthEnabled: false,
+
       // routing & tabbing
       section: '',
       sectionId: '',
@@ -272,8 +275,14 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary, chatDisabled, socketHostOverride, notifications } =
-      data;
+    const {
+      name,
+      summary,
+      chatDisabled,
+      socketHostOverride,
+      notifications,
+      authentication,
+    } = data;
     window.document.title = name;
 
     this.socketHostOverride = socketHostOverride;
@@ -285,10 +294,12 @@ export default class App extends Component {
     }
 
     this.hasConfiguredChat = true;
+    const { indieAuthEnabled } = authentication;
 
     this.setState({
       canChat: !chatDisabled,
       notifications,
+      indieAuthEnabled,
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
@@ -752,6 +763,7 @@ export default class App extends Component {
       lastDisconnectTime,
       section,
       sectionId,
+      indieAuthEnabled,
     } = state;
 
     const {
@@ -896,6 +908,7 @@ export default class App extends Component {
             accessToken=${this.state.accessToken}
             authenticated=${authenticated}
             onClose=${this.closeAuthModal}
+            indieAuthEnabled=${indieAuthEnabled}
           />`}
         />
       `;

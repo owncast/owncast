@@ -8,8 +8,13 @@ const html = htm.bind(h);
 
 export default class ChatSettingsModal extends Component {
   render() {
-    const { accessToken, authenticated, username, onUsernameChange } =
-      this.props;
+    const {
+      accessToken,
+      authenticated,
+      username,
+      onUsernameChange,
+      indieAuthEnabled,
+    } = this.props;
 
     const TAB_CONTENT = [
       {
@@ -23,7 +28,10 @@ export default class ChatSettingsModal extends Component {
           </div>
         `,
       },
-      {
+    ];
+
+    if (indieAuthEnabled) {
+      TAB_CONTENT.push({
         label: html`<span style=${{ display: 'flex', alignItems: 'center' }}
           ><img
             style=${{
@@ -39,8 +47,8 @@ export default class ChatSettingsModal extends Component {
           accessToken=${accessToken}
           authenticated=${authenticated}
         />`,
-      },
-    ];
+      });
+    }
 
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-5">
