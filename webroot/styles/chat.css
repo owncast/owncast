@@ -64,6 +64,7 @@
 #message-input:empty:before {
   content: attr(placeholderText);
   pointer-events: none;
+  position: absolute; /* Fixes firefox positioning caret on the right */
   display: block; /* For Firefox */
   color: rgba(0, 0, 0, 0.5);
 }
