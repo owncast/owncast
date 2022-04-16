@@ -77,7 +77,9 @@ func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 	}
 
 	if response.Error != "" || response.ErrorDescription != "" {
-		return nil, nil, fmt.Errorf("IndieAuth error: %s - %s", response.Error, response.ErrorDescription)
+		errorText := makeIndieAuthClientErrorText(response.Error)
+		log.Debugln("IndieAuth error:", response.Error, response.ErrorDescription)
+		return nil, nil, fmt.Errorf("IndieAuth error: %s - %s", errorText, response.ErrorDescription)
 	}
 
 	// In case this IndieAuth server does not use OAuth error keys or has internal
@@ -97,4 +99,19 @@ func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 	}
 
 	return request, &response, nil
+}
+
+// Error value should be from this list:
+// https://datatracker.ietf.org/doc/html/rfc6749#section-5.2
+func makeIndieAuthClientErrorText(err string) string {
+	switch err {
+	case "invalid_request", "invalid_client":
+		return "The authentication request was invalid. Please report this to the Owncast project."
+	case "invalid_grant", "unauthorized_client":
+		return "This authorization request is unauthorized."
+	case "unsupported_grant_type":
+		return "The authorization grant type is not supported by the authorization server."
+	default:
+		return err
+	}
 }
