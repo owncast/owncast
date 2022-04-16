@@ -2,6 +2,7 @@ package indieauth
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 var pendingAuthRequests = make(map[string]*Request)
@@ -72,6 +74,17 @@ func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 	var response Response
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, nil, err
+	}
+
+	if response.Error != "" || response.ErrorDescription != "" {
+		return nil, nil, fmt.Errorf("IndieAuth error: %s - %s", response.Error, response.ErrorDescription)
+	}
+
+	// In case this IndieAuth server does not use OAuth error keys or has internal
+	// issues resulting in unstructured errors.
+	if res.StatusCode >= 200 && res.StatusCode < 300 {
+		log.Debugln("IndieAuth error. status code:", res.StatusCode, "body:", string(body))
+		return nil, nil, errors.New("there was an error authenticating against IndieAuth server")
 	}
 
 	// Trim any trailing slash so we can accurately compare the two "me" values
