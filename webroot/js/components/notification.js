@@ -321,17 +321,12 @@ export function NotifyButton({ serverName, onClick }) {
     USER_DISMISSED_ANNOYING_NOTIFICATION_POPUP_KEY
   );
 
-  let visits = parseInt(getLocalStorage(USER_VISIT_COUNT_KEY));
-  if (isNaN(visits)) {
-    visits = 0;
-  }
 
   // Only show the annoying popup if the user has never opened the notification
-  // modal previously _and_ they've visited more than 3 times.
+  // modal previously 
   const [showPopup, setShowPopup] = useState(
     !hasPreviouslyDismissedAnnoyingPopup &&
-      !hasDisplayedNotificationModal &&
-      visits > 3
+      !hasDisplayedNotificationModal
   );
 
   const notifyAction = {
