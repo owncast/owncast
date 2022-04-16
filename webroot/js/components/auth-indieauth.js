@@ -76,7 +76,18 @@ export default class IndieAuthForm extends Component {
       ? `While you can chat completely anonymously you can also add
   authentication so you can rejoin with the same chat persona from any
   device or browser.`
-      : `You are already authenticated, however you can add other external sites or accounts to your chat account or log in as a different user.`;
+      : html`<span
+          ><b>You are already authenticated</b>. However, you can add other
+          external sites or log in as a different user.</span
+        >`;
+
+    let errorMessageText = errorMessage;
+    if (!!errorMessageText) {
+      if (errorMessageText.includes('url does not support indieauth')) {
+        errorMessageText =
+          'The provided URL is either invalid or does not support IndieAuth.';
+      }
+    }
 
     const error = errorMessage
       ? html` <div
@@ -85,23 +96,35 @@ export default class IndieAuthForm extends Component {
         >
           <div class="font-bold mb-2">There was an error.</div>
           <div class="block mt-2">
-            Server error:
-            <div>${errorMessage}</div>
+            <div>${errorMessageText}</div>
           </div>
         </div>`
       : null;
 
     return html` <div>
-      <p class="text-gray-700 text-md">${message}</p>
+      <p class="">
+        IndieAuth allows for a completely independent and decentralized way of
+        identifying yourself using your own domain.
+      </p>
 
-      ${error}
+      <p class="text-gray-700 mt-4">${message}</p>
+
+      <p class="mt-4">
+        If you run an Owncast instance, you can use that domain here. Otherwise,
+        ${' '}
+        <a class="underline" href="https://indieauth.net/#providers"
+          >learn more about how you can support IndieAuth</a
+        >.
+      </p>
+
+      <p>${error}</p>
 
       <div class="mb34">
         <label
           class="block text-gray-700 text-sm font-semibold mt-6"
           for="username"
         >
-          IndieAuth with your own site
+          Your domain
         </label>
         <input
           onInput=${this.onInput}
@@ -119,11 +142,12 @@ export default class IndieAuthForm extends Component {
         >
           Authenticate with your domain
         </button>
-        <p>
-          Learn more about
-          <a class="underline" href="https://indieauth.net/">IndieAuth</a>.
-        </p>
       </div>
+
+      <p class="mt-4">
+        <b>Note:</b> This is for authentication purposes only, and no personal
+        information will be accessed or stored.
+      </p>
 
       <div
         id="follow-loading-spinner-container"

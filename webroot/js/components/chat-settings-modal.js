@@ -26,7 +26,11 @@ export default class ChatSettingsModal extends Component {
       {
         label: html`<span style=${{ display: 'flex', alignItems: 'center' }}
           ><img
-            style=${{ display: 'inline', height: '1.4em' }}
+            style=${{
+              display: 'inline',
+              height: '0.8em',
+              marginRight: '5px',
+            }}
             src="/img/indieauth.png"
           />
           IndieAuth</span
