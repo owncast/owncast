@@ -36,11 +36,16 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect the client browser with the values we generated to continue
 	// the IndieAuth flow.
+	// If the URL is invalid then return with specific "invalid_request" error.
 	u, err := url.Parse(redirectURI)
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		controllers.WriteResponse(w, ia.Response{
+			Error:            "invalid_request",
+			ErrorDescription: err.Error(),
+		})
 		return
 	}
+
 	redirectParams := u.Query()
 	redirectParams.Set("code", request.Code)
 	redirectParams.Set("state", request.State)
@@ -60,9 +65,14 @@ func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	clientID := r.PostForm.Get("client_id")
 	codeVerifier := r.PostForm.Get("code_verifier")
 
+	// If the server auth flow cannot be completed then return with specific
+	// "invalid_client" error.
 	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		controllers.WriteResponse(w, ia.Response{
+			Error:            "invalid_client",
+			ErrorDescription: err.Error(),
+		})
 		return
 	}
 

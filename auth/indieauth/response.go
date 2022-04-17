@@ -11,8 +11,8 @@ type Profile struct {
 // Response the response returned when completing
 // the IndieAuth flow.
 type Response struct {
-	Me               string  `json:"me"`
-	Profile          Profile `json:"profile"`
-	Error            string  `json:"error"`
-	ErrorDescription string  `json:"error_description"`
+	Me               string  `json:"me,omitempty"`
+	Profile          Profile `json:"profile,omitempty"`
+	Error            string  `json:"error,omitempty"`
+	ErrorDescription string  `json:"error_description,omitempty"`
 }
