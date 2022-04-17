@@ -572,7 +572,7 @@ header {
 #notify-button-container #notify-button-popup {
   position: absolute;
   background-color: var(--owncast-purple);
-  z-index: 1;
+  z-index: 50;
   right: 0px;
   min-width: 14rem;
   bottom: calc(100% + .5rem);
