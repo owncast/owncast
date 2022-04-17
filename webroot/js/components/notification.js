@@ -346,7 +346,8 @@ export function NotifyButton({ serverName, onClick }) {
     setShowPopup(false);
   };
 
-  const notifyPopupDismissedClicked = () => {
+  const notifyPopupDismissedClicked = (e) => {
+    e.stopPropagation();
     setShowPopup(false);
     setLocalStorage(USER_DISMISSED_ANNOYING_NOTIFICATION_POPUP_KEY, true);
   };
@@ -354,9 +355,10 @@ export function NotifyButton({ serverName, onClick }) {
   return html`
     <span id="notify-button-container" class="relative">
       <div
-        id="follow-button-popup"
-        class="text-gray-200 p-4 rounded-md"
+        id="notify-button-popup"
+        class="text-gray-200 p-4 rounded-md cursor-pointer"
         style=${{ display: showPopup ? 'block' : 'none' }}
+        onClick=${buttonClicked}
       >
         <div class="flex justify-between items-center mb-2">
           <div class="font-bold">Stay updated!</div>
@@ -379,9 +381,7 @@ export function NotifyButton({ serverName, onClick }) {
             </svg>
           </button>
         </div>
-        <button onClick=${buttonClicked} class="text-left hover:underline">
-          <div>Click and never miss future streams!</div>
-        </button>
+        <div>Click and never miss future streams!</div>
       </div>
       <${ExternalActionButton}
         onClick=${buttonClicked}
