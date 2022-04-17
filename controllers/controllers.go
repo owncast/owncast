@@ -65,3 +65,11 @@ func WriteResponse(w http.ResponseWriter, response interface{}) {
 		InternalErrorHandler(w, err)
 	}
 }
+
+// WriteString will return a basic string and a status code to the client.
+func WriteString(w http.ResponseWriter, text string, status int) error {
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(status)
+	_, err := w.Write([]byte(text))
+	return err
+}
