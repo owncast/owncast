@@ -29,8 +29,11 @@ type ServerProfile struct {
 // ServerProfileResponse is returned when an auth flow requests the final
 // confirmation of the IndieAuth flow.
 type ServerProfileResponse struct {
-	Me      string        `json:"me"`
-	Profile ServerProfile `json:"profile"`
+	Me      string        `json:"me,omitempty"`
+	Profile ServerProfile `json:"profile,omitempty"`
+	// Error keys need to match the OAuth spec.
+	Error            string `json:"error,omitempty"`
+	ErrorDescription string `json:"error_description,omitempty"`
 }
 
 var pendingServerAuthRequests = map[string]ServerAuthRequest{}
