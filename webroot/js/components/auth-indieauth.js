@@ -102,20 +102,7 @@ export default class IndieAuthForm extends Component {
       : null;
 
     return html` <div>
-      <p class="">
-        IndieAuth allows for a completely independent and decentralized way of
-        identifying yourself using your own domain.
-      </p>
-
-      <p class="text-gray-700 mt-4">${message}</p>
-
-      <p class="mt-4">
-        If you run an Owncast instance, you can use that domain here. Otherwise,
-        ${' '}
-        <a class="underline" href="https://indieauth.net/#providers"
-          >learn more about how you can support IndieAuth</a
-        >.
-      </p>
+      <p class="text-gray-700">${message}</p>
 
       <p>${error}</p>
 
@@ -143,6 +130,28 @@ export default class IndieAuthForm extends Component {
           Authenticate with your domain
         </button>
       </div>
+
+      <p class="mt-4">
+        <details>
+          <summary class="cursor-pointer">
+            Learn more about <span class="text-blue-500">IndieAuth</span>
+          </summary>
+          <div class="inline">
+            <p class="mt-4">
+              IndieAuth allows for a completely independent and decentralized
+              way of identifying yourself using your own domain.
+            </p>
+
+            <p class="mt-4">
+              If you run an Owncast instance, you can use that domain here.
+              Otherwise, ${' '}
+              <a class="underline" href="https://indieauth.net/#providers"
+                >learn more about how you can support IndieAuth</a
+              >.
+            </p>
+          </div>
+        </details>
+      </p>
 
       <p class="mt-4">
         <b>Note:</b> This is for authentication purposes only, and no personal
