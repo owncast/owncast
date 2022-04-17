@@ -355,31 +355,13 @@ export function NotifyButton({ serverName, onClick }) {
     <span id="notify-button-container" class="relative">
       <div
         id="follow-button-popup"
+        class="text-gray-200 p-4"
         style=${{ display: showPopup ? 'block' : 'none' }}
+
       >
-        <svg
-          width="192"
-          height="113"
-          viewBox="0 0 192 113"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M8 0C3.58172 0 0 3.58172 0 8V91C0 95.4183 3.58173 99 8 99H172L188.775 112.001C190.089 113.019 192 112.082 192 110.42V99V8C192 3.58172 188.418 0 184 0H8Z"
-            fill="#6965F0"
-          />
-          <text x="20" y="55" fill="white" font-size="13px">
-            Click and never miss
-          </text>
-          <text x="20" y="75" fill="white" font-size="13px">
-            future streams.
-          </text>
-        </svg>
+      <div class="flex justify-between items-center mb-2">
+        <div class="font-bold">Stay updated!</div>
         <button
-          class="absolute"
-          style=${{ top: '6px', right: '6px' }}
           onClick=${notifyPopupDismissedClicked}
         >
           <svg
@@ -394,6 +376,13 @@ export function NotifyButton({ serverName, onClick }) {
               fill="#A5A3F6"
             />
           </svg>
+        </button>
+        </div>
+        <button 
+          onClick=${buttonClicked}
+          class="text-left hover:underline"
+        >
+          <div>Click and never miss future streams!</div>
         </button>
       </div>
       <${ExternalActionButton}
