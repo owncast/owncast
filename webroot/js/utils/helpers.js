@@ -32,7 +32,7 @@ export function jumpToBottom(element) {
       element.scrollTo({
         top: element.scrollHeight,
         left: 0,
-        behavior: 'smooth',
+        behavior: document.visibilityState === 'visible' ? 'smooth' : 'instant',
       });
     },
     50,
