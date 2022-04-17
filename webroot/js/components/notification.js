@@ -357,24 +357,29 @@ export function NotifyButton({ serverName, onClick }) {
         id="follow-button-popup"
         class="text-gray-200 p-4 rounded-md"
         style=${{ display: showPopup ? 'block' : 'none' }}
-
       >
-      <div class="flex justify-between items-center mb-2">
-        <div class="font-bold">Stay updated!</div>
-        <button
-          class="popout-close-button rounded-md p-1 color-gray-500"
-          onClick=${notifyPopupDismissedClicked}
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-            </path>
-          </svg>        
-        </button>
+        <div class="flex justify-between items-center mb-2">
+          <div class="font-bold">Stay updated!</div>
+          <button
+            class="popout-close-button rounded-md p-1 color-gray-500"
+            onClick=${notifyPopupDismissedClicked}
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
         </div>
-        <button 
-          onClick=${buttonClicked}
-          class="text-left hover:underline"
-        >
+        <button onClick=${buttonClicked} class="text-left hover:underline">
           <div>Click and never miss future streams!</div>
         </button>
       </div>
