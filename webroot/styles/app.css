@@ -614,3 +614,7 @@ header {
   transition-property: transform;
 }
 
+#follow-button-popup .popout-close-button {
+  background-color: #fdf9f91c;
+}
+

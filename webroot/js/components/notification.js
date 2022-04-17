@@ -328,10 +328,10 @@ export function NotifyButton({ serverName, onClick }) {
 
   // Only show the annoying popup if the user has never opened the notification
   // modal previously _and_ they've visited more than 3 times.
-  const [showPopup, setShowPopup] = useState(
-    !hasPreviouslyDismissedAnnoyingPopup &&
-      !hasDisplayedNotificationModal &&
-      visits > 3
+  const [showPopup, setShowPopup] = useState(true
+    // !hasPreviouslyDismissedAnnoyingPopup &&
+    //   !hasDisplayedNotificationModal &&
+    //   visits > 3
   );
 
   const notifyAction = {
@@ -355,27 +355,20 @@ export function NotifyButton({ serverName, onClick }) {
     <span id="notify-button-container" class="relative">
       <div
         id="follow-button-popup"
-        class="text-gray-200 p-4"
+        class="text-gray-200 p-4 rounded-md"
         style=${{ display: showPopup ? 'block' : 'none' }}
 
       >
       <div class="flex justify-between items-center mb-2">
         <div class="font-bold">Stay updated!</div>
         <button
+          class="popout-close-button rounded-md p-1 color-gray-500"
           onClick=${notifyPopupDismissedClicked}
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M17.7071 7.70711C18.0976 7.31658 18.0976 6.68342 17.7071 6.29289C17.3166 5.90237 16.6834 5.90237 16.2929 6.29289L12 10.5858L7.70711 6.29289C7.31658 5.90237 6.68342 5.90237 6.29289 6.29289C5.90237 6.68342 5.90237 7.31658 6.29289 7.70711L10.5858 12L6.29289 16.2929C5.90237 16.6834 5.90237 17.3166 6.29289 17.7071C6.68342 18.0976 7.31658 18.0976 7.70711 17.7071L12 13.4142L16.2929 17.7071C16.6834 18.0976 17.3166 18.0976 17.7071 17.7071C18.0976 17.3166 18.0976 16.6834 17.7071 16.2929L13.4142 12L17.7071 7.70711Z"
-              fill="#A5A3F6"
-            />
-          </svg>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+            </path>
+          </svg>        
         </button>
         </div>
         <button 
