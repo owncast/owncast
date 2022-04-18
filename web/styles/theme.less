@@ -3,38 +3,37 @@
 // These overrides are only used for customizing the style of Ant Design
 // components and do not impact any custom components. Therefore CSS variables
 // should be set in a centralized place and used here so changes only need
-// to be made once.
+// to be made once. See variables.scss.
 
 // Variable names can be found in
 // https://github.com/ant-design/ant-design/blob/master/components/style/themes/dark.less
 
-// From color palette
-@green-1: #D15AD5;
-@green-2: #6CE9A6;
-@green-3: #12B76A;
-@green-4: #027A48;
-@green-5: #054F31;
-// Defaults
-@green-6: mix(@green-base, @component-background, 85%);
-@green-7: mix(color(~`colorPalette('@{green-base}', 5) `), @component-background, 90%);
-@green-8: mix(color(~`colorPalette('@{green-base}', 4) `), @component-background, 95%);
-@green-9: mix(color(~`colorPalette('@{green-base}', 3) `), @component-background, 97%);
-@green-10: mix(color(~`colorPalette('@{green-base}', 2) `), @component-background, 98%);
+// From color palette in variables.scss.
+@green-1: --var(green-100);
+@green-2: --var(green-300);
+@green-3: --var(green-500);
+@green-4: --var(green-700);
+@green-5: --var(green-900);
 
-// From color palette
-@purple-1: #F4EBFF;
-@purple-2: #D6BBFB;
-@purple-3: #9E77ED;
-@purple-4: #6941C6;
-@purple-5: #42307D;
-// Defaults
-@purple-6: mix(@purple-base, @component-background, 85%);
-@purple-7: mix(color(~`colorPalette('@{purple-base}', 5) `), @component-background, 90%);
-@purple-8: mix(color(~`colorPalette('@{purple-base}', 4) `), @component-background, 95%);
-@purple-9: mix(color(~`colorPalette('@{purple-base}', 3) `), @component-background, 97%);
-@purple-10: mix(color(~`colorPalette('@{purple-base}', 2) `), @component-background, 98%);
+@purple-1: --var(purple-100);
+@purple-2: --var(purple-300);
+@purple-3: --var(purple-500);
+@purple-4: --var(purple-700);
+@purple-5: --var(purple-900);
 
-
-@primary-color: #d62222; // split border inside a component
+// Random colors for testing
+@primary-color: #d62222;
 @text-color: green;
 @text-color-secondary: orange;
+@link-color: #1890ff; // link color
+@success-color: #52c41a; // success state color
+@warning-color: #faad14; // warning state color
+@error-color: #f5222d; // error state color
+@font-size-base: 14px; // major text font size
+@heading-color: rgba(177, 168, 44, 0.85); // heading text color
+@text-color-secondary: rgba(224, 8, 231, 0.45); // secondary text color
+@disabled-color: rgba(134, 123, 123, 0.25); // disable state color
+@border-radius-base: 2px; // major border radius
+@border-color-base: #d9d9d9; // major border color
+@box-shadow-base: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+  0 9px 28px 8px rgba(0, 0, 0, 0.05); // major shadow for layers

@@ -1,6 +1,6 @@
 // See theme.less for specific Ant Design overrides.
 :root {
-  // colors
+  // old colors
   --white: rgba(255, 255, 255, 1);
   --white-15: rgba(255, 255, 255, 0.15);
   --white-25: rgba(255, 255, 255, 0.25);
@@ -14,9 +14,40 @@
   --black-50: rgba(0, 0, 0, 0.5);
   --black-75: rgba(0, 0, 0, 0.75);
 
+  // New colors
+  --purple-100: #F4EBFF;
+  --purple-300: #D6BBFB;
+  --purple-500: #9E77ED;
+  --purple-700: #6941C6;
+  --purple-900: #42307D;
+
+  --green-100: #D15AD5;
+  --green-300: #6CE9A6;
+  --green-500: #12B76A;
+  --green-700: #027A48;
+  --green-900: #054F31;
+
+  --red-100: #FEE4E2;
+  --red-300: #FDA29B;
+  --red-500: #F04438;
+  --red-700: #B42318;
+  --red-900: #7A271A;
+
+  --orange-100: #FEF0C7;
+  --orange-300: #FEC84B;
+  --orange-500: #F79009;
+  --orange-700: #B54708;
+  --orange-900: #93370D;
+
+  --gray-100: #F2F4F7;
+  --gray-300: #D0D5DD;
+  --gray-500: #667085;
+  --gray-700: #344054;
+  --gray-900: #101828;
+
   // owncast logo color family
-  --owncast-purple: rgba(120, 113, 255, 1); // #7871FF;
-  --purple-dark: rgba(28, 26, 59, 1); // #1c1a3b;//
+  --owncast-purple: rgba(120, 113, 255, 1); 
+  --purple-dark: rgba(28, 26, 59, 1); // #1c1a3b;
   --pink: rgba(201, 139, 254, 1); // #D18BFE;
   --blue: rgba(32, 134, 225, 1); // #2086E1;
 
@@ -32,10 +63,6 @@
   --online-color: #73dd3f;
   --offline-color: #999;
 
-  --ant-error: #ff4d4f;
-  --ant-success: #52c41a;
-  --ant-warning: #faad14;
-  --ant-transition-duration: 0.15s;
 
   // ////////////////////////////////
   --default-text-color: var(--white-88);

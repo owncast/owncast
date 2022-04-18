@@ -1,3 +1,4 @@
+import '../styles/variables.scss';
 import '../styles/global.less';
 
 export const parameters = {

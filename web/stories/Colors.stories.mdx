@@ -1,21 +1,23 @@
 import { Meta } from '@storybook/addon-docs';
-import Code from './assets/code-brackets.svg';
-import Colors from './assets/colors.svg';
-import Comments from './assets/comments.svg';
-import Direction from './assets/direction.svg';
-import Flow from './assets/flow.svg';
-import Plugin from './assets/plugin.svg';
-import Repo from './assets/repo.svg';
-import StackAlt from './assets/stackalt.svg';
+import {Color, ColorRow} from './Color';
 
 <Meta title="owncast/Colors" />
 
 <style>{`
-  
-
+ 
   
 `}</style>
 
 # Colors
 
-Put color pallete here.
+## Gray
+<ColorRow colors={['gray-100', 'gray-300', 'gray-500', 'gray-700', 'gray-900']} />
+
+## Owncast Purple
+<ColorRow colors={['purple-100', 'purple-300', 'purple-500', 'purple-700', 'purple-900']} />
+
+## Green (success)
+<ColorRow colors={['green-100', 'green-300', 'green-500', 'green-700', 'green-900']} />
+
+## Orange (warning)
+<ColorRow colors={['orange-100', 'orange-300', 'orange-500', 'orange-700', 'orange-900']} />
