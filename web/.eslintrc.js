@@ -19,6 +19,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['react', 'prettier', '@typescript-eslint'],
+  ignorePatterns: ['!./storybook/**'],
   rules: {
     'prettier/prettier': 'error',
     'react/react-in-jsx-scope': 'off',

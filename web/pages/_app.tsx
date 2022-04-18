@@ -1,9 +1,9 @@
 // order matters!
-import 'antd/dist/antd.css';
+import '../styles/global.less';
+// import '../styles/globals.scss';
 import '../styles/variables.scss';
-import '../styles/ant-overrides.scss';
+// import '../styles/ant-overrides.scss';
 import '../styles/markdown-editor.scss';
-import '../styles/globals.scss';
 
 import '../styles/main-layout.scss';
 

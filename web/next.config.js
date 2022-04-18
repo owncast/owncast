@@ -1,4 +1,6 @@
-module.exports = {
-  basePath: "/admin",
+const withLess = require('next-with-less');
+
+module.exports = withLess({
+  basePath: '/admin',
   trailingSlash: true,
-};
+});

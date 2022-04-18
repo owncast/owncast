@@ -1,0 +1,40 @@
+@theme: owncast;
+
+// These overrides are only used for customizing the style of Ant Design
+// components and do not impact any custom components. Therefore CSS variables
+// should be set in a centralized place and used here so changes only need
+// to be made once.
+
+// Variable names can be found in
+// https://github.com/ant-design/ant-design/blob/master/components/style/themes/dark.less
+
+// From color palette
+@green-1: #D15AD5;
+@green-2: #6CE9A6;
+@green-3: #12B76A;
+@green-4: #027A48;
+@green-5: #054F31;
+// Defaults
+@green-6: mix(@green-base, @component-background, 85%);
+@green-7: mix(color(~`colorPalette('@{green-base}', 5) `), @component-background, 90%);
+@green-8: mix(color(~`colorPalette('@{green-base}', 4) `), @component-background, 95%);
+@green-9: mix(color(~`colorPalette('@{green-base}', 3) `), @component-background, 97%);
+@green-10: mix(color(~`colorPalette('@{green-base}', 2) `), @component-background, 98%);
+
+// From color palette
+@purple-1: #F4EBFF;
+@purple-2: #D6BBFB;
+@purple-3: #9E77ED;
+@purple-4: #6941C6;
+@purple-5: #42307D;
+// Defaults
+@purple-6: mix(@purple-base, @component-background, 85%);
+@purple-7: mix(color(~`colorPalette('@{purple-base}', 5) `), @component-background, 90%);
+@purple-8: mix(color(~`colorPalette('@{purple-base}', 4) `), @component-background, 95%);
+@purple-9: mix(color(~`colorPalette('@{purple-base}', 3) `), @component-background, 97%);
+@purple-10: mix(color(~`colorPalette('@{purple-base}', 2) `), @component-background, 98%);
+
+
+@primary-color: #d62222; // split border inside a component
+@text-color: green;
+@text-color-secondary: orange;
