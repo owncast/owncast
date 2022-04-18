@@ -3,7 +3,13 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['plugin:react/recommended', 'airbnb', 'prettier', 'plugin:@next/next/recommended'],
+  extends: [
+    'plugin:react/recommended',
+    'airbnb',
+    'prettier',
+    'plugin:@next/next/recommended',
+    'plugin:storybook/recommended',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -16,21 +22,28 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'react/react-in-jsx-scope': 'off',
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.tsx'] }],
+    'react/jsx-filename-extension': [
+      1,
+      {
+        extensions: ['.js', '.jsx', '.tsx'],
+      },
+    ],
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-no-bind': 'off',
     'react/function-component-definition': 'off',
-
     '@next/next/no-img-element': 'off',
-
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     'no-console': 'off',
-
     'no-use-before-define': [0],
     '@typescript-eslint/no-use-before-define': [1],
-
-    'react/jsx-no-target-blank': [1, { allowReferrer: false, enforceDynamicLinks: 'always' }],
+    'react/jsx-no-target-blank': [
+      1,
+      {
+        allowReferrer: false,
+        enforceDynamicLinks: 'always',
+      },
+    ],
     'import/extensions': [
       'error',
       'ignorePackages',
