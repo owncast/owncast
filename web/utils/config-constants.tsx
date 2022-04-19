@@ -213,6 +213,7 @@ export const FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED = {
   configPath: '',
   label: 'Join Messages',
   tip: 'Show when a viewer joins the chat.',
+  useSubmit: true,
 };
 
 export const CHAT_ESTABLISHED_USER_MODE = {
