@@ -575,7 +575,7 @@ header {
   z-index: 50;
   right: 0px;
   min-width: 14rem;
-  bottom: calc(100% + .5rem);
+  bottom: calc(100% + 0.5rem);
   opacity: 0;
   transform: translateY(0%);
   animation: fade-in 300ms forwards;
@@ -586,7 +586,8 @@ header {
   from {
     opacity: 0;
     transform: translateY(-20%);
-  } to {
+  }
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -604,11 +605,11 @@ header {
 #notify-button-popup::before {
   position: absolute;
   z-index: -1;
-  content: "";
+  content: '';
   right: 1.5rem;
   top: 100%;
   border-style: solid;
-  border-width: .5rem .5rem .0rem;
+  border-width: 0.5rem 0.5rem 0rem;
   border-color: var(--owncast-purple) transparent transparent;
   transition-duration: 0.3s;
   transition-property: transform;
@@ -617,4 +618,3 @@ header {
 #notify-button-popup .popout-close-button {
   border-style: none;
 }
-
