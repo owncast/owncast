@@ -24,15 +24,19 @@ export function clearLocalStorage(key) {
 }
 
 // jump down to the max height of a div, with a slight delay
-export function jumpToBottom(element) {
+export function jumpToBottom(element, behavior) {
   if (!element) return;
+
+  if (!behavior) {
+    behavior = document.visibilityState === 'visible' ? 'smooth' : 'instant';
+  }
 
   setTimeout(
     () => {
       element.scrollTo({
         top: element.scrollHeight,
         left: 0,
-        behavior: document.visibilityState === 'visible' ? 'smooth' : 'instant',
+        behavior: behavior,
       });
     },
     50,

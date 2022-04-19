@@ -187,7 +187,7 @@ export default class Chat extends Component {
       this.handleNetworkingError(`Fetch getChatHistory: ${error}`);
     }
 
-    this.scrollToBottom();
+    jumpToBottom(this.scrollableMessagesContainer.current, 'instant');
   }
 
   receivedWebsocketMessage(message) {
