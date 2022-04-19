@@ -39,7 +39,7 @@ func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) 
 func ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
 	request, ok := pendingAuthRequests[accessToken]
 
-	if !ok || request.Code != code || time.Since(request.Timestamp) > time.Minute*3 {
+	if !ok || request.Code != code || time.Since(request.Timestamp) > time.Minute*10 {
 		return false, nil
 	}
 
