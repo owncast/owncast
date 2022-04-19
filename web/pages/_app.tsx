@@ -1,7 +1,7 @@
 // order matters!
-import '../styles/global.less';
-// import '../styles/globals.scss';
 import '../styles/variables.scss';
+import '../styles/global.less';
+import '../styles/globals.scss';
 // import '../styles/ant-overrides.scss';
 import '../styles/markdown-editor.scss';
 
