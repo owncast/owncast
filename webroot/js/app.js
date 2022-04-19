@@ -29,7 +29,7 @@ import { NotifyButton, NotifyModal } from './components/notification.js';
 import { isPushNotificationSupported } from './notification/registerWeb.js';
 import IndieAuthForm from './components/chat/indieauth.js';
 import AuthModal from './components/auth-modal.js';
-
+import FediverseAuth from './components/auth-fediverse.js';
 import {
   addNewlines,
   checkUrlPathForDisplay,
@@ -1093,6 +1093,8 @@ export default class App extends Component {
 
         ${chat} ${externalActionModal} ${fediverseFollowModal}
         ${notificationModal} ${authModal}
+
+        <${FediverseAuth} accessToken=${accessToken} />
       </div>
     `;
   }

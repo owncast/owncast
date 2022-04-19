@@ -40,6 +40,11 @@ func SendPublicFederatedMessage(message string) error {
 	return outbox.SendPublicMessage(message)
 }
 
+// SendDirectFederatedMessage will send a direct message to a single account.
+func SendDirectFederatedMessage(message, account string) error {
+	return outbox.SendDirectMessageToAccount(message, account)
+}
+
 // GetFollowerCount will return the local tracked follower count.
 func GetFollowerCount() (int64, error) {
 	return persistence.GetFollowerCount()

@@ -60,7 +60,7 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
 	log.Debugln("Sending", string(payload), "to", url)
 
-	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
+	req, _ := http.NewRequest(http.MethodPost, url.String(), bytes.NewBuffer(payload))
 
 	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
 	req.Header.Set("User-Agent", ua)
