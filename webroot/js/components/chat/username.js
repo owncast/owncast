@@ -116,7 +116,7 @@ export default class UsernameForm extends Component {
           class="flex flex-row justify-end items-center align-middle cursor-pointer py-2 px-4 overflow-hidden w-full"
           onClick=${this.handleDisplayForm}
         >
-          <span>Change Username</span>
+          <span id="username-display">Change Username</span>
           <span><${EditIcon} /></span>
         </button> 
 
