@@ -1,8 +1,8 @@
 import { Col, Collapse, Row, Typography } from 'antd';
 import React from 'react';
-import VideoCodecSelector from '../components/config/video-codec-selector';
-import VideoLatency from '../components/config/video-latency';
-import VideoVariantsTable from '../components/config/video-variants-table';
+import VideoCodecSelector from '../../components/config/video-codec-selector';
+import VideoLatency from '../../components/config/video-latency';
+import VideoVariantsTable from '../../components/config/video-variants-table';
 
 const { Panel } = Collapse;
 const { Title } = Typography;

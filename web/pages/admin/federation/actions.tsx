@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { FEDERATION_ACTIONS, fetchData } from '../../utils/apis';
+import { FEDERATION_ACTIONS, fetchData } from '../../../utils/apis';
 
-import { isEmptyObject } from '../../utils/format';
+import { isEmptyObject } from '../../../utils/format';
 
 const { Title, Paragraph } = Typography;
 

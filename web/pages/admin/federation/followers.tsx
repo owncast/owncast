@@ -3,15 +3,15 @@ import { Table, Avatar, Button, Tabs } from 'antd';
 import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
 import { UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
-import { ServerStatusContext } from '../../utils/server-status-context';
+import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   FOLLOWERS,
   FOLLOWERS_PENDING,
   SET_FOLLOWER_APPROVAL,
   FOLLOWERS_BLOCKED,
   fetchData,
-} from '../../utils/apis';
-import { isEmptyObject } from '../../utils/format';
+} from '../../../utils/apis';
+import { isEmptyObject } from '../../../utils/format';
 
 const { TabPane } = Tabs;
 export interface Follower {

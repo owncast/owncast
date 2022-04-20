@@ -141,11 +141,11 @@ export default function MainLayout(props) {
           className="menu-container"
         >
           <Menu.Item key="home" icon={<HomeOutlined />}>
-            <Link href="/">Home</Link>
+            <Link href="/admin">Home</Link>
           </Menu.Item>
 
           <Menu.Item key="viewer-info" icon={<LineChartOutlined />} title="Current stream">
-            <Link href="/viewer-info">Viewers</Link>
+            <Link href="/admin/viewer-info">Viewers</Link>
           </Menu.Item>
 
           <SubMenu
@@ -155,11 +155,11 @@ export default function MainLayout(props) {
             style={{ display: chatMenuItemStyle }}
           >
             <Menu.Item key="messages" title="Chat utilities">
-              <Link href="/chat/messages">Messages</Link>
+              <Link href="/admin/chat/messages">Messages</Link>
             </Menu.Item>
 
             <Menu.Item key="chat-users" title="Chat utilities">
-              <Link href="/chat/users">Users</Link>
+              <Link href="/admin/chat/users">Users</Link>
             </Menu.Item>
           </SubMenu>
 
@@ -176,51 +176,51 @@ export default function MainLayout(props) {
               />
             }
           >
-            <Link href="/federation/followers">Followers</Link>
+            <Link href="/admin/federation/followers">Followers</Link>
           </Menu.Item>
 
           <SubMenu key="configuration" title="Configuration" icon={<SettingOutlined />}>
             <Menu.Item key="config-public-details">
-              <Link href="/config-public-details">General</Link>
+              <Link href="/admin/config-public-details">General</Link>
             </Menu.Item>
 
             <Menu.Item key="config-server-details">
-              <Link href="/config-server-details">Server Setup</Link>
+              <Link href="/admin/config-server-details">Server Setup</Link>
             </Menu.Item>
             <Menu.Item key="config-video">
-              <Link href="/config-video">Video</Link>
+              <Link href="/admin/config-video">Video</Link>
             </Menu.Item>
             <Menu.Item key="config-chat">
-              <Link href="/config-chat">Chat</Link>
+              <Link href="/admin/config-chat">Chat</Link>
             </Menu.Item>
             <Menu.Item key="config-federation">
-              <Link href="/config-federation">Social</Link>
+              <Link href="/admin/config-federation">Social</Link>
             </Menu.Item>
             <Menu.Item key="config-notify">
-              <Link href="/config-notify">Notifications</Link>
+              <Link href="/admin/config-notify">Notifications</Link>
             </Menu.Item>
 
             <Menu.Item key="config-storage">
-              <Link href="/config-storage">S3 Storage</Link>
+              <Link href="/admin/config-storage">S3 Storage</Link>
             </Menu.Item>
           </SubMenu>
 
           <SubMenu key="utilities-menu" icon={<ToolOutlined />} title="Utilities">
             <Menu.Item key="hardware-info">
-              <Link href="/hardware-info">Hardware</Link>
+              <Link href="/admin/hardware-info">Hardware</Link>
             </Menu.Item>
             <Menu.Item key="stream-health">
-              <Link href="/stream-health">Stream Health</Link>
+              <Link href="/admin/stream-health">Stream Health</Link>
             </Menu.Item>
             <Menu.Item key="logs">
-              <Link href="/logs">Logs</Link>
+              <Link href="/admin/logs">Logs</Link>
             </Menu.Item>
             <Menu.Item
               key="federation-activities"
               title="Social Actions"
               style={{ display: federationEnabled ? 'block' : 'none' }}
             >
-              <Link href="/federation/actions">Social Actions</Link>
+              <Link href="/admin/federation/actions">Social Actions</Link>
             </Menu.Item>
             <Menu.Item key="upgrade" style={{ display: upgradeMenuItemStyle }}>
               <Link href="/upgrade">{upgradeMessage}</Link>
@@ -228,17 +228,17 @@ export default function MainLayout(props) {
           </SubMenu>
           <SubMenu key="integrations-menu" icon={<ExperimentOutlined />} title="Integrations">
             <Menu.Item key="webhooks">
-              <Link href="/webhooks">Webhooks</Link>
+              <Link href="/admin/webhooks">Webhooks</Link>
             </Menu.Item>
             <Menu.Item key="access-tokens">
-              <Link href="/access-tokens">Access Tokens</Link>
+              <Link href="/admin/access-tokens">Access Tokens</Link>
             </Menu.Item>
             <Menu.Item key="actions">
-              <Link href="/actions">External Actions</Link>
+              <Link href="/admin/actions">External Actions</Link>
             </Menu.Item>
           </SubMenu>
           <Menu.Item key="help" icon={<QuestionCircleOutlined />} title="Help">
-            <Link href="/help">Help</Link>
+            <Link href="/admin/help">Help</Link>
           </Menu.Item>
         </Menu>
       </Sider>

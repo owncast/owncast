@@ -16,7 +16,12 @@ import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
 
-import { fetchData, ACCESS_TOKENS, DELETE_ACCESS_TOKEN, CREATE_ACCESS_TOKEN } from '../utils/apis';
+import {
+  fetchData,
+  ACCESS_TOKENS,
+  DELETE_ACCESS_TOKEN,
+  CREATE_ACCESS_TOKEN,
+} from '../../utils/apis';
 
 const { Title, Paragraph } = Typography;
 

@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Tabs } from 'antd';
-import { ServerStatusContext } from '../../utils/server-status-context';
+import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   CONNECTED_CLIENTS,
   fetchData,
   DISABLED_USERS,
   MODERATORS,
   BANNED_IPS,
-} from '../../utils/apis';
-import UserTable from '../../components/user-table';
-import ClientTable from '../../components/client-table';
-import BannedIPsTable from '../../components/banned-ips-table';
+} from '../../../utils/apis';
+import UserTable from '../../../components/user-table';
+import ClientTable from '../../../components/client-table';
+import BannedIPsTable from '../../../components/banned-ips-table';
 
 const { TabPane } = Tabs;
 

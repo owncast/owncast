@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Typography, Menu, Dropdown, Spin, Alert } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { getUnixTime, sub } from 'date-fns';
-import Chart from '../components/chart';
-import StatisticItem from '../components/statistic';
-import ViewerTable from '../components/viewer-table';
+import Chart from '../../components/chart';
+import StatisticItem from '../../components/statistic';
+import ViewerTable from '../../components/viewer-table';
 
-import { ServerStatusContext } from '../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 
-import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../utils/apis';
+import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../../utils/apis';
 
 const FETCH_INTERVAL = 60 * 1000; // 1 min
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Typography } from 'antd';
 
-import EditInstanceDetails from '../components/config/edit-instance-details';
-import EditInstanceTags from '../components/config/edit-tags';
-import EditSocialLinks from '../components/config/edit-social-links';
-import EditPageContent from '../components/config/edit-page-content';
-import EditCustomStyles from '../components/config/edit-custom-css';
+import EditInstanceDetails from '../../components/config/edit-instance-details';
+import EditInstanceTags from '../../components/config/edit-tags';
+import EditSocialLinks from '../../components/config/edit-social-links';
+import EditPageContent from '../../components/config/edit-page-content';
+import EditCustomStyles from '../../components/config/edit-custom-css';
 
 const { Title } = Typography;
 

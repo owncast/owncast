@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd';
-import EditServerDetails from '../components/config/edit-server-details';
+import EditServerDetails from '../../components/config/edit-server-details';
 
 const { Title } = Typography;
 

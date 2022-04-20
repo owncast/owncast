@@ -21,21 +21,17 @@ import '../styles/pages.scss';
 import '../styles/offline-notice.scss';
 
 import { AppProps } from 'next/app';
-import ServerStatusProvider from '../utils/server-status-context';
-import AlertMessageProvider from '../utils/alert-message-context';
+import { useRouter } from 'next/router';
 
-import MainLayout from '../components/main-layout';
+import AdminLayout from './admin/admin-layout';
+import SimpleLayout from '../components/layouts/simple-layout';
 
 function App({ Component, pageProps }: AppProps) {
-  return (
-    <ServerStatusProvider>
-      <AlertMessageProvider>
-        <MainLayout>
-          <Component {...pageProps} />
-        </MainLayout>
-      </AlertMessageProvider>
-    </ServerStatusProvider>
-  );
+  const router = useRouter();
+  if (router.pathname.startsWith('/admin')) {
+    return <AdminLayout pageProps={pageProps} Component={Component} router={router} />;
+  }
+  return <SimpleLayout pageProps={pageProps} Component={Component} router={router} />;
 }
 
 export default App;

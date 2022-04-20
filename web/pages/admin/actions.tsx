@@ -1,15 +1,15 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Modal, Space, Table, Typography } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
-import FormStatusIndicator from '../components/config/form-status-indicator';
+import FormStatusIndicator from '../../components/config/form-status-indicator';
 import {
   API_EXTERNAL_ACTIONS,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
-} from '../utils/config-constants';
-import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../utils/input-statuses';
-import { ServerStatusContext } from '../utils/server-status-context';
-import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../utils/urls';
+} from '../../utils/config-constants';
+import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
+import { ServerStatusContext } from '../../utils/server-status-context';
+import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
 
 const { Title, Paragraph } = Typography;
 let resetTimer = null;

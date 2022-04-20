@@ -14,8 +14,8 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../utils/apis';
-import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../utils/urls';
+import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
+import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
 
 const { Title, Paragraph } = Typography;
 

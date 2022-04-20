@@ -6,11 +6,11 @@ import {
   TEXTFIELD_TYPE_TEXT,
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
-} from '../components/config/form-textfield';
-import TextFieldWithSubmit from '../components/config/form-textfield-with-submit';
-import ToggleSwitch from '../components/config/form-toggleswitch';
-import EditValueArray from '../components/config/edit-string-array';
-import { UpdateArgs } from '../types/config-section';
+} from '../../components/config/form-textfield';
+import TextFieldWithSubmit from '../../components/config/form-textfield-with-submit';
+import ToggleSwitch from '../../components/config/form-toggleswitch';
+import EditValueArray from '../../components/config/edit-string-array';
+import { UpdateArgs } from '../../types/config-section';
 import {
   FIELD_PROPS_ENABLE_FEDERATION,
   TEXTFIELD_PROPS_FEDERATION_LIVE_MESSAGE,
@@ -23,9 +23,9 @@ import {
   RESET_TIMEOUT,
   API_FEDERATION_BLOCKED_DOMAINS,
   FIELD_PROPS_FEDERATION_NSFW,
-} from '../utils/config-constants';
-import { ServerStatusContext } from '../utils/server-status-context';
-import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../utils/input-statuses';
+} from '../../utils/config-constants';
+import { ServerStatusContext } from '../../utils/server-status-context';
+import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 
 function FederationInfoModal({ cancelPressed, okPressed }) {
   return (

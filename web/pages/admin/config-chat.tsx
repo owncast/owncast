@@ -1,17 +1,17 @@
 import { Typography } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
-import { TEXTFIELD_TYPE_TEXTAREA } from '../components/config/form-textfield';
-import TextFieldWithSubmit from '../components/config/form-textfield-with-submit';
-import ToggleSwitch from '../components/config/form-toggleswitch';
-import EditValueArray from '../components/config/edit-string-array';
+import { TEXTFIELD_TYPE_TEXTAREA } from '../../components/config/form-textfield';
+import TextFieldWithSubmit from '../../components/config/form-textfield-with-submit';
+import ToggleSwitch from '../../components/config/form-toggleswitch';
+import EditValueArray from '../../components/config/edit-string-array';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
   STATUS_SUCCESS,
-} from '../utils/input-statuses';
+} from '../../utils/input-statuses';
 
-import { UpdateArgs } from '../types/config-section';
+import { UpdateArgs } from '../../types/config-section';
 import {
   API_CHAT_FORBIDDEN_USERNAMES,
   API_CHAT_SUGGESTED_USERNAMES,
@@ -23,8 +23,8 @@ import {
   TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES,
   TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES,
   TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
-} from '../utils/config-constants';
-import { ServerStatusContext } from '../utils/server-status-context';
+} from '../../utils/config-constants';
+import { ServerStatusContext } from '../../utils/server-status-context';
 
 export default function ConfigChat() {
   const { Title } = Typography;
