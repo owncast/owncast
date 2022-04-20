@@ -29,6 +29,7 @@ export const ChatMenu = (props) => {
   <${Context.Provider} value=${props}>
     <div class="chat-menu p-2 relative mr-4 shadow-lg" ref=${chatMenuRef}>
       <button
+        id="chat-menu-button"
         class="flex items-center p-1 bg-transparent rounded-md overflow-hidden text-gray-200 transition duration-150"
         onClick="${() => setChatMenuOpen(!chatMenuOpen)}"
       >
