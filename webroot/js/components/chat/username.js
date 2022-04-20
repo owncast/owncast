@@ -64,6 +64,8 @@ export default class UsernameForm extends Component {
         onUsernameChange(newName);
       }
       this.handleHideForm();
+    } else {
+      this.handleHideForm();
     }
   }
 
@@ -138,7 +140,7 @@ export default class UsernameForm extends Component {
           <div class="username-buttons-wrapper flex ml-2">
             <button
               id="button-update-username"
-              onClick=${this.handleUpdateUsername}
+              onClick=${(e) => this.handleUpdateUsername(e.value)}
               type="button"
               class="bg-purple-500 hover:bg-purple-700 text-white uppercase p-1 ml-1 rounded-md cursor-pointer transition duration-100 user-btn"
             >
