@@ -27,21 +27,21 @@ export const ChatMenu = (props) => {
 
   return html`
   <${Context.Provider} value=${props}>
-    <div class="chat-menu p-2 relative mr-4 shadow-lg" ref=${chatMenuRef}>
+    <div class="chat-menu p-2 relative shadow-lg" ref=${chatMenuRef}>
       <button
         id="chat-menu-button"
         class="flex items-center p-1 bg-transparent rounded-md overflow-hidden text-gray-200 transition duration-150"
         onClick="${() => setChatMenuOpen(!chatMenuOpen)}"
       >
-      ${!isModerator ? html`<${UserIcon} className="w-6 h-6 mr-4" />` : moderatorFlag}
+      ${!isModerator ? html`<${UserIcon} className="w-6 h-6 mr-2" />` : moderatorFlag}
       <span
         id="username-display"
-        class="text-indigo-100 text-md font-bold truncate overflow-hidden whitespace-no-wrap ${isModerator &&
+        class="text-indigo-100 text-sm font-bold truncate overflow-hidden whitespace-no-wrap ${isModerator &&
     'moderator-flag'}"
       >
         ${username}
       </span>
-       <${CaretDownIcon} className="ml-2 w-8 h-8"/> 
+       <${CaretDownIcon} className="w-8 h-8"/> 
       </button>
       ${chatMenuOpen && html`
      <div
