@@ -326,13 +326,8 @@ header {
 /* ************************************************ */
 
 @media screen and (max-width: 600px) {
-  #user-info-change {
-    /* width: 75vw; */
-  }
   #user-info-display {
     max-width: none;
-    /* overflow: hidden; */
-    /* text-overflow: ellipsis; */
   }
 }
 

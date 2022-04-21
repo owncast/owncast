@@ -102,13 +102,6 @@ export default class UsernameForm extends Component {
       },
     };
 
-    // const moderatorFlag = html`
-    //   <img src="/img/moderator-nobackground.svg" class="moderator-flag" />
-    // `;
-    // const userIcon = html`
-    //   <img src="/img/user-icon.svg" class="user-icon-flag" />
-    // `;
-
     return html`
       <div id="user-info">
         <button

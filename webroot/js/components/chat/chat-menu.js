@@ -96,22 +96,6 @@ const SubMenuView = ({ view, setView }) => {
   `
 }
 
-// const ChangeUsernameView = ({ className }) => {
-//   const props = useContext(Context)
-//   const { username, isModerator, onUsernameChange, onFocus, onBlur } = props
-//   return html`
-//     <div className=${className}>
-//       <${UsernameForm}
-//         username=${username}
-//         isModerator=${isModerator}
-//         onUsernameChange=${onUsernameChange}
-//         onFocus=${onFocus}
-//         onBlur=${onBlur}
-//       />
-//     </div>
-//   `
-// }
-
 function closeOnOutsideClick(ref, setter) {
   useEffect(() => {
     function handleClickOutside(event) {
