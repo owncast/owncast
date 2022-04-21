@@ -9,8 +9,8 @@ import SocialIconsList from './components/platform-logos-list.js';
 import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Followers from './components/federation/followers.js';
-
 import Chat from './components/chat/chat.js';
+import { ChatMenu } from './components/chat/chat-menu.js'
 import Websocket, {
   CALLBACKS,
   SOCKET_MESSAGE_TYPES,
@@ -941,36 +941,22 @@ export default class App extends Component {
                 >${streamOnline && streamTitle ? streamTitle : name}</span
               >
             </h1>
-            <div
+            <!-- <div
               id="user-options-container"
               class="flex flex-row justify-end items-center flex-no-wrap"
-            >
-              <${UsernameForm}
-                username=${username}
-                isModerator=${isModerator}
-                onUsernameChange=${this.handleUsernameChange}
-                onFocus=${this.handleFormFocus}
-                onBlur=${this.handleFormBlur}
-              />
-              <button
-                type="button"
-                id="chat-toggle"
-                onClick=${this.handleChatPanelToggle}
-                class="flex cursor-pointer text-center justify-center items-center min-w-12 h-full bg-gray-800 hover:bg-gray-700"
-                style=${{
-                  display: chatDisabled || noVideoContent ? 'none' : 'block',
-                }}
-              >
-                💬
-              </button>
+            >  -->
+            <${ChatMenu} username=${username} isModerator=${false} onUsernameChange=${this.handleUsernameChange} onFocus=${this.handleFormFocus} onBlur=${this.handleFormBlur} chatDisabled=${chatDisabled} noVideoContent=${noVideoContent} handleChatPanelToggle=${this.handleChatPanelToggle}>
+            </${ChatMenu}>
+            <!--
             </div>
+            -->
           </header>
         </div>
 
         <main class=${mainClass}>
           <div
             id="video-container"
-            class="flex owncast-video-container bg-black w-full bg-center bg-no-repeat flex flex-col items-center justify-start"
+            class="flex owncast-video-container bg-black w-full bg-center bg-no-repeat flex-col items-center justify-start"
           >
             <video
               class="video-js vjs-big-play-centered display-block w-full h-full"

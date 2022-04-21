@@ -8,6 +8,8 @@ import {
   KEY_CUSTOM_USERNAME_SET,
 } from '../../utils/constants.js';
 
+import { CheckIcon, CloseIcon, EditIcon } from '../icons/index.js'
+
 export default class UsernameForm extends Component {
   constructor(props, context) {
     super(props, context);
@@ -62,6 +64,8 @@ export default class UsernameForm extends Component {
         onUsernameChange(newName);
       }
       this.handleHideForm();
+    } else {
+      this.handleHideForm();
     }
   }
 
@@ -98,65 +102,54 @@ export default class UsernameForm extends Component {
       },
     };
 
-    const moderatorFlag = html`
-      <img src="/img/moderator-nobackground.svg" class="moderator-flag" />
-    `;
-    const userIcon = html`
-      <img src="/img/user-icon.svg" class="user-icon-flag" />
-    `;
-
     return html`
-      <div id="user-info" class="whitespace-nowrap">
-        <div
+      <div id="user-info">
+        <button
           id="user-info-display"
           style=${styles.info}
           title="Click to update user name"
-          class="flex flex-row justify-end items-center align-middle cursor-pointer py-2 px-4 overflow-hidden w-full opacity-1 transition-opacity duration-200 hover:opacity-75"
+          class="flex flex-row justify-end items-center align-middle cursor-pointer py-2 px-4 overflow-hidden w-full"
           onClick=${this.handleDisplayForm}
         >
-          <span
-            id="username-display"
-            class="text-indigo-100 text-xs font-semibold truncate overflow-hidden whitespace-no-wrap ${isModerator &&
-            'moderator-flag'}"
-            >${isModerator ? moderatorFlag : userIcon}${username}</span
-          >
-        </div>
+          <span id="username-display">Change Username</span>
+          <span><${EditIcon} /></span>
+        </button> 
 
         <div
           id="user-info-change"
-          class="flex flex-row flex-no-wrap p-1 items-center justify-end"
-          style=${styles.form}
+          class="${displayForm ? 'flex' : 'hidden'} flex-row flex-no-wrap h-full items-center justify-end"
         >
           <input
             type="text"
             id="username-change-input"
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-black-500 rounded py-1 px-1 leading-tight text-xs focus:bg-white"
+            class="appearance-none block w-full bg-transparent rounded-md text-white p-2"
             maxlength="60"
             placeholder="Update username"
             defaultValue=${username}
             onKeydown=${this.handleKeydown}
-            onFocus=${this.handleFocus}
             onBlur=${this.handleBlur}
             ref=${this.textInput}
           />
-          <button
-            id="button-update-username"
-            onClick=${this.handleUpdateUsername}
-            type="button"
-            class="bg-blue-500 hover:bg-blue-700 text-white text-xs uppercase p-1 mx-1 rounded cursor-pointer user-btn"
-          >
-            Update
-          </button>
+          <div class="username-buttons-wrapper flex ml-2">
+            <button
+              id="button-update-username"
+              onClick=${this.handleUpdateUsername}
+              type="button"
+              class="bg-purple-500 hover:bg-purple-700 text-white uppercase p-1 ml-1 rounded-md cursor-pointer transition duration-100 user-btn"
+            >
+              <${CheckIcon } />
+            </button>
 
-          <button
-            id="button-cancel-change"
-            onClick=${this.handleHideForm}
-            type="button"
-            class="bg-gray-900 hover:bg-gray-800 py-1 px-2 mx-1 rounded cursor-pointer user-btn text-white text-xs uppercase text-opacity-50"
-            title="cancel"
-          >
-            X
-          </button>
+            <button
+              id="button-cancel-change"
+              onClick=${this.handleHideForm}
+              type="button"
+              class="bg-gray-700 hover:bg-gray-500 text-white uppercase p-1 ml-1 rounded-md cursor-pointer transition duration-100 user-btn"
+              title="cancel"
+            >
+              <${CloseIcon} /> 
+            </button>
+          </div>
         </div>
       </div>
     `;
