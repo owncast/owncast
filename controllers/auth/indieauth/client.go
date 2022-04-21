@@ -58,7 +58,8 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	request, response, err := ia.HandleCallbackCode(code, state)
 	if err != nil {
 		log.Debugln(err)
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		msg := fmt.Sprintf("Unable to complete authentication. <a href=\"/\">Go back.</a><hr/> %s", err.Error())
+		_ = controllers.WriteString(w, msg, http.StatusBadRequest)
 		return
 	}
 

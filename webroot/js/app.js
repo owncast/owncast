@@ -30,6 +30,8 @@ import { isPushNotificationSupported } from './notification/registerWeb.js';
 import IndieAuthForm from './components/chat/indieauth.js';
 import AuthModal from './components/auth-modal.js';
 import FediverseAuth from './components/auth-fediverse.js';
+import ChatSettingsModal from './components/chat-settings-modal.js';
+
 import {
   addNewlines,
   checkUrlPathForDisplay,
@@ -112,6 +114,9 @@ export default class App extends Component {
       // modals
       externalActionModalData: null,
       fediverseModalData: null,
+
+      // authentication options
+      indieAuthEnabled: false,
 
       // routing & tabbing
       section: '',
@@ -273,8 +278,14 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary, chatDisabled, socketHostOverride, notifications } =
-      data;
+    const {
+      name,
+      summary,
+      chatDisabled,
+      socketHostOverride,
+      notifications,
+      authentication,
+    } = data;
     window.document.title = name;
 
     this.socketHostOverride = socketHostOverride;
@@ -286,10 +297,12 @@ export default class App extends Component {
     }
 
     this.hasConfiguredChat = true;
+    const { indieAuthEnabled } = authentication;
 
     this.setState({
       canChat: !chatDisabled,
       notifications,
+      indieAuthEnabled,
       configData: {
         ...data,
         summary: summary && addNewlines(summary),
@@ -754,6 +767,7 @@ export default class App extends Component {
       lastDisconnectTime,
       section,
       sectionId,
+      indieAuthEnabled,
     } = state;
 
     const {
@@ -890,12 +904,15 @@ export default class App extends Component {
           onClose=${this.closeAuthModal}
           action=${authModalData}
           useIframe=${false}
-          customContent=${html`<${AuthModal}
+          customContent=${html`<${ChatSettingsModal}
             name=${name}
             logo=${logo}
+            onUsernameChange=${this.handleUsernameChange}
+            username=${username}
             accessToken=${this.state.accessToken}
             authenticated=${authenticated}
             onClose=${this.closeAuthModal}
+            indieAuthEnabled=${indieAuthEnabled}
           />`}
         />
       `;
@@ -948,7 +965,7 @@ export default class App extends Component {
       });
     }
 
-    const authIcon = authenticated ? '/img/locked.svg' : '/img/unlocked.svg';
+    const authIcon = '/img/user-settings.svg';
 
     return html`
       <div
@@ -981,9 +998,11 @@ export default class App extends Component {
               >
             </h1>
 
-            <${ChatMenu} username=${username} isModerator=${isModerator} onUsernameChange=${
-      this.handleUsernameChange
-    } onFocus=${this.handleFormFocus} onBlur=${
+            <${ChatMenu} username=${username} isModerator=${isModerator} showAuthModal=${
+      indieAuthEnabled && this.showAuthModal
+    } onUsernameChange=${this.handleUsernameChange} onFocus=${
+      this.handleFormFocus
+    } onBlur=${
       this.handleFormBlur
     } chatDisabled=${chatDisabled} noVideoContent=${noVideoContent} handleChatPanelToggle=${
       this.handleChatPanelToggle
@@ -1068,7 +1087,6 @@ export default class App extends Component {
         ${chat} ${externalActionModal} ${fediverseFollowModal}
         ${notificationModal} ${authModal}
 
-        <${FediverseAuth} accessToken=${accessToken} />
       </div>
     `;
   }

@@ -24,10 +24,11 @@ func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
+	codeChallenge := r.URL.Query().Get("code_challenge")
 	state := r.URL.Query().Get("state")
 	me := r.URL.Query().Get("me")
 
-	request, err := ia.StartServerAuth(clientID, redirectURI, state, me)
+	request, err := ia.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
 	if err != nil {
 		// Return a human readable, HTML page as an error. JSON is no use here.
 		return
@@ -35,11 +36,16 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect the client browser with the values we generated to continue
 	// the IndieAuth flow.
+	// If the URL is invalid then return with specific "invalid_request" error.
 	u, err := url.Parse(redirectURI)
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		controllers.WriteResponse(w, ia.Response{
+			Error:            "invalid_request",
+			ErrorDescription: err.Error(),
+		})
 		return
 	}
+
 	redirectParams := u.Query()
 	redirectParams.Set("code", request.Code)
 	redirectParams.Set("state", request.State)
@@ -57,10 +63,16 @@ func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	code := r.PostForm.Get("code")
 	redirectURI := r.PostForm.Get("redirect_uri")
 	clientID := r.PostForm.Get("client_id")
+	codeVerifier := r.PostForm.Get("code_verifier")
 
-	response, err := ia.CompleteServerAuth(code, redirectURI, clientID)
+	// If the server auth flow cannot be completed then return with specific
+	// "invalid_client" error.
+	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		controllers.WriteResponse(w, ia.Response{
+			Error:            "invalid_client",
+			ErrorDescription: err.Error(),
+		})
 		return
 	}
 
