@@ -214,10 +214,7 @@ header {
   z-index: 40;
 }
 .single-col #chat-container {
-  position: fixed;
-  bottom: 0;
   width: 100%;
-  height: 100%;
 }
 
 .single-col.chat #video-container,
