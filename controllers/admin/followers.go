@@ -37,14 +37,14 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 
 		localAccountName := data.GetDefaultFederationUsername()
 
-		follower, err := persistence.GetFollower(approval.ActorIRI)
+		followRequest, err := persistence.GetFollower(approval.ActorIRI)
 		if err != nil {
 			controllers.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(follower.Inbox, follower.FollowRequestIri, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
 			controllers.WriteSimpleResponse(w, false, err.Error())
 			return
 		}

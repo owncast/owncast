@@ -74,10 +74,12 @@ func TestBlockedDomains(t *testing.T) {
 
 func TestBlockedActors(t *testing.T) {
 	person := makeFakePerson()
+	fakeRequest := streams.NewActivityStreamsFollow()
 	persistence.AddFollow(apmodels.ActivityPubActor{
 		ActorIri:         person.GetJSONLDId().GetIRI(),
 		Inbox:            person.GetJSONLDId().GetIRI(),
 		FollowRequestIri: person.GetJSONLDId().GetIRI(),
+		RequestObject:    fakeRequest,
 	}, false)
 	persistence.BlockOrRejectFollower(person.GetJSONLDId().GetIRI().String())
 

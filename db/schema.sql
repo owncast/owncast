@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS ap_followers (
 		"username" TEXT NOT NULL,
 		"image" TEXT,
     "request" TEXT NOT NULL,
+    "request_object" BLOB,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		"approved_at" TIMESTAMP,
     "disabled_at" TIMESTAMP,

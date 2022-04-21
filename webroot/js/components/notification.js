@@ -346,7 +346,8 @@ export function NotifyButton({ serverName, onClick }) {
     setShowPopup(false);
   };
 
-  const notifyPopupDismissedClicked = () => {
+  const notifyPopupDismissedClicked = (e) => {
+    e.stopPropagation();
     setShowPopup(false);
     setLocalStorage(USER_DISMISSED_ANNOYING_NOTIFICATION_POPUP_KEY, true);
   };
@@ -354,47 +355,33 @@ export function NotifyButton({ serverName, onClick }) {
   return html`
     <span id="notify-button-container" class="relative">
       <div
-        id="follow-button-popup"
+        id="notify-button-popup"
+        class="text-gray-200 p-4 rounded-md cursor-pointer"
         style=${{ display: showPopup ? 'block' : 'none' }}
+        onClick=${buttonClicked}
       >
-        <svg
-          width="192"
-          height="113"
-          viewBox="0 0 192 113"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M8 0C3.58172 0 0 3.58172 0 8V91C0 95.4183 3.58173 99 8 99H172L188.775 112.001C190.089 113.019 192 112.082 192 110.42V99V8C192 3.58172 188.418 0 184 0H8Z"
-            fill="#6965F0"
-          />
-          <text x="20" y="55" fill="white" font-size="13px">
-            Click and never miss
-          </text>
-          <text x="20" y="75" fill="white" font-size="13px">
-            future streams.
-          </text>
-        </svg>
-        <button
-          class="absolute"
-          style=${{ top: '6px', right: '6px' }}
-          onClick=${notifyPopupDismissedClicked}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        <div class="flex justify-between items-center mb-2">
+          <div class="font-bold">Stay updated!</div>
+          <button
+            class="popout-close-button rounded-md p-1 color-gray-500"
+            onClick=${notifyPopupDismissedClicked}
           >
-            <path
-              d="M17.7071 7.70711C18.0976 7.31658 18.0976 6.68342 17.7071 6.29289C17.3166 5.90237 16.6834 5.90237 16.2929 6.29289L12 10.5858L7.70711 6.29289C7.31658 5.90237 6.68342 5.90237 6.29289 6.29289C5.90237 6.68342 5.90237 7.31658 6.29289 7.70711L10.5858 12L6.29289 16.2929C5.90237 16.6834 5.90237 17.3166 6.29289 17.7071C6.68342 18.0976 7.31658 18.0976 7.70711 17.7071L12 13.4142L16.2929 17.7071C16.6834 18.0976 17.3166 18.0976 17.7071 17.7071C18.0976 17.3166 18.0976 16.6834 17.7071 16.2929L13.4142 12L17.7071 7.70711Z"
-              fill="#A5A3F6"
-            />
-          </svg>
-        </button>
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div>Click and never miss future streams!</div>
       </div>
       <${ExternalActionButton}
         onClick=${buttonClicked}

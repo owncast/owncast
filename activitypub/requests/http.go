@@ -10,7 +10,6 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/crypto"
-
 	"github.com/owncast/owncast/config"
 
 	log "github.com/sirupsen/logrus"

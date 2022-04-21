@@ -78,12 +78,33 @@ header {
   background-image: url(/img/logo.svg);
 }
 
+.chat-menu-options li button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: .25rem;
+  padding: .5rem .3rem;
+  color: #dbdbdb;
+  animation: fadeIn 150ms;
+}
+
+.chat-view li button {
+  animation: slideInRight 150ms;
+}
+
+.chat-menu-options li button:hover {
+  background-color: var(--owncast-purple);
+}
+
+
 #chat-toggle {
   min-width: 3rem;
 }
 
 #user-info-change {
-  display: none;
+  background-color: transparent;
 }
 
 .external-action-button {
@@ -144,10 +165,6 @@ header {
   justify-content: center;
 }
 
-.chat-hidden #chat-toggle {
-  opacity: 0.75;
-}
-
 /* hide chat by default */
 #chat-container-wrap {
   display: none;
@@ -197,10 +214,7 @@ header {
   z-index: 40;
 }
 .single-col #chat-container {
-  position: fixed;
-  bottom: 0;
   width: 100%;
-  height: auto;
 }
 
 .single-col.chat #video-container,
@@ -270,6 +284,13 @@ header {
 .single-col #external-actions-container {
   justify-content: flex-start;
 }
+.single-col #notify-button-popup {
+  left: 0px;
+}
+.single-col #notify-button-popup::before {
+  left: 24px;
+  right: auto;
+}
 
 @media screen and (max-height: 500px) {
   .single-col.touch-screen:not(.touch-keyboard-active) {
@@ -302,13 +323,8 @@ header {
 /* ************************************************ */
 
 @media screen and (max-width: 600px) {
-  #user-info-change {
-    width: 75vw;
-  }
   #user-info-display {
-    max-width: 30vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: none;
   }
 }
 
@@ -388,6 +404,30 @@ header {
 /**************************
   Modal Animation Style
 **************************/
+.fadeIn {
+  animation: mmfadeIn 150ms forwards;
+}
+
+.fadeOut {
+  animation: mmfadeOut 150ms forwards;
+}
+
+.slideInTop {
+  animation: mmslideIn 150ms forwards;
+}
+
+.slideOutBottom {
+  animation: mmslideOut 150ms forwards;
+}
+
+.slideInLeft {
+  animation: mmslideInLeft 150ms forwards;
+}
+
+.slideInRight {
+  animation: mmslideInRight 150ms forwards;
+}
+
 
 @keyframes mmfadeIn {
   from {
@@ -404,6 +444,25 @@ header {
   }
   to {
     opacity: 0;
+  }
+}
+
+
+@keyframes mmslideInRight {
+  from {
+    transform: translateX(15%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes mmslideInLeft {
+  from {
+    transform: translateX(-15%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -563,11 +622,17 @@ header {
   }
 }
 
-#notify-button-container #follow-button-popup {
+#notify-button-container #notify-button-popup {
   position: absolute;
-  z-index: 1;
-  right: 30px;
-  bottom: 42px;
+  background-color: var(--owncast-purple);
+  z-index: 50;
+  right: 0px;
+  min-width: 14rem;
+  bottom: calc(100% + 0.5rem);
+  opacity: 0;
+  transform: translateY(0%);
+  animation: mmfadeIn 300ms forwards;
+  animation-delay: 1s;
 }
 
 #notify-button-container .external-action-icon {
@@ -577,4 +642,21 @@ header {
 #notify-button-container button {
   border-color: #b8bbc2;
   border-width: 1px;
+}
+
+#notify-button-popup::before {
+  position: absolute;
+  z-index: -1;
+  content: '';
+  right: 1.5rem;
+  top: 100%;
+  border-style: solid;
+  border-width: 0.5rem 0.5rem 0rem;
+  border-color: var(--owncast-purple) transparent transparent;
+  transition-duration: 0.3s;
+  transition-property: transform;
+}
+
+#notify-button-popup .popout-close-button {
+  border-style: none;
 }

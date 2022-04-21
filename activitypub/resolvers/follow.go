@@ -2,11 +2,11 @@ package resolvers
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,6 +32,7 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 		Name:             person.Name,
 		Username:         fullUsername,
 		Image:            person.Image,
+		RequestObject:    activity,
 	}
 
 	return &followRequest, nil

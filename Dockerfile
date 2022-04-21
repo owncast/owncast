@@ -23,5 +23,5 @@ WORKDIR /app
 COPY --from=build /build/owncast /app/owncast
 COPY --from=build /build/webroot /app/webroot
 RUN mkdir /app/data
-CMD ["/app/owncast"]
+ENTRYPOINT ["/app/owncast"]
 EXPOSE 8080 1935

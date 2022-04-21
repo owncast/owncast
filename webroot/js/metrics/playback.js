@@ -149,6 +149,19 @@ class PlaybackMetrics {
       return;
     }
 
+    // If we're paused then do nothing.
+    if (this.player.paused()) {
+      return;
+    }
+
+    // Network state 2 means we're actively using the network.
+    // We only care about reporting metrics with network activity stats
+    // if it's actively being used, so don't report otherwise.
+    const networkState = this.player.networkState();
+    if (networkState !== 2) {
+      return;
+    }
+
     const bandwidth = tech.vhs.systemBandwidth;
     this.trackBandwidth(bandwidth);
 
@@ -168,6 +181,10 @@ class PlaybackMetrics {
   }
 
   async send() {
+    if (this.segmentDownloadTime.length === 0) {
+      return;
+    }
+
     const errorCount = this.errors;
 
     var data;
