@@ -49,3 +49,33 @@ CREATE TABLE IF NOT EXISTS notifications (
 		"destination" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 		CREATE INDEX channel_index ON notifications (channel);
+
+CREATE TABLE IF NOT EXISTS users (
+		"id" TEXT,
+		"display_name" TEXT NOT NULL,
+		"display_color" INTEGER NOT NULL,
+		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		"disabled_at" TIMESTAMP,
+		"previous_names" TEXT DEFAULT '',
+		"namechanged_at" TIMESTAMP,
+		"scopes" TEXT,
+    "authenticated_at" TIMESTAMP,
+		"type" TEXT DEFAULT 'STANDARD',
+		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (id)
+	);
+
+CREATE TABLE IF NOT EXISTS user_access_tokens (
+  "token" TEXT NOT NULL PRIMARY KEY,
+  "user_id" TEXT NOT NULL,
+  "timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS auth (
+    "id" INTEGER NOT NULL PRIMARY KEY,
+		"user_id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+		"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL
+	);
+  CREATE INDEX auth_token ON auth (token);

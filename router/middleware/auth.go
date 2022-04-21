@@ -14,6 +14,9 @@ import (
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
 type ExternalAccessTokenHandlerFunc func(user.ExternalAPIUser, http.ResponseWriter, *http.Request)
 
+// UserAccessTokenHandlerFunc is a function that is called after validing user access.
+type UserAccessTokenHandlerFunc func(user.User, http.ResponseWriter, *http.Request)
+
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
@@ -94,7 +97,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 
 // RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
 // Not to be used for validating 3rd party access.
-func RequireUserAccessToken(handler http.HandlerFunc) http.HandlerFunc {
+func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {
@@ -119,7 +122,7 @@ func RequireUserAccessToken(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		handler(w, r)
+		handler(*user, w, r)
 	})
 }
 

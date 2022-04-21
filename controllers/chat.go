@@ -13,11 +13,15 @@ import (
 // ExternalGetChatMessages gets all of the chat messages.
 func ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-	GetChatMessages(w, r)
+	getChatMessages(w, r)
 }
 
 // GetChatMessages gets all of the chat messages.
-func GetChatMessages(w http.ResponseWriter, r *http.Request) {
+func GetChatMessages(u user.User, w http.ResponseWriter, r *http.Request) {
+	getChatMessages(w, r)
+}
+
+func getChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	switch r.Method {
@@ -62,7 +66,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		request.DisplayName = r.Header.Get("X-Forwarded-User")
 	}
 
-	newUser, err := user.CreateAnonymousUser(request.DisplayName)
+	newUser, accessToken, err := user.CreateAnonymousUser(request.DisplayName)
 	if err != nil {
 		WriteSimpleResponse(w, false, err.Error())
 		return
@@ -70,7 +74,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 
 	response := registerAnonymousUserResponse{
 		ID:          newUser.ID,
-		AccessToken: newUser.AccessToken,
+		AccessToken: accessToken,
 		DisplayName: newUser.DisplayName,
 	}
 

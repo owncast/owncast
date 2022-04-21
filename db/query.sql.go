@@ -11,6 +11,35 @@ import (
 	"time"
 )
 
+const addAccessTokenForUser = `-- name: AddAccessTokenForUser :exec
+INSERT INTO user_access_tokens(token, user_id) values($1, $2)
+`
+
+type AddAccessTokenForUserParams struct {
+	Token  string
+	UserID string
+}
+
+func (q *Queries) AddAccessTokenForUser(ctx context.Context, arg AddAccessTokenForUserParams) error {
+	_, err := q.db.ExecContext(ctx, addAccessTokenForUser, arg.Token, arg.UserID)
+	return err
+}
+
+const addAuthForUser = `-- name: AddAuthForUser :exec
+INSERT INTO auth(user_id, token, type) values($1, $2, $3)
+`
+
+type AddAuthForUserParams struct {
+	UserID string
+	Token  string
+	Type   string
+}
+
+func (q *Queries) AddAuthForUser(ctx context.Context, arg AddAuthForUserParams) error {
+	_, err := q.db.ExecContext(ctx, addAuthForUser, arg.UserID, arg.Token, arg.Type)
+	return err
+}
+
 const addFollower = `-- name: AddFollower :exec
 INSERT INTO ap_followers(iri, inbox, request, request_object, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7, $8)
 `
@@ -121,6 +150,27 @@ type BanIPAddressParams struct {
 
 func (q *Queries) BanIPAddress(ctx context.Context, arg BanIPAddressParams) error {
 	_, err := q.db.ExecContext(ctx, banIPAddress, arg.IpAddress, arg.Notes)
+	return err
+}
+
+const changeDisplayName = `-- name: ChangeDisplayName :exec
+UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4
+`
+
+type ChangeDisplayNameParams struct {
+	DisplayName   string
+	PreviousNames sql.NullString
+	NamechangedAt sql.NullTime
+	ID            string
+}
+
+func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNameParams) error {
+	_, err := q.db.ExecContext(ctx, changeDisplayName,
+		arg.DisplayName,
+		arg.PreviousNames,
+		arg.NamechangedAt,
+		arg.ID,
+	)
 	return err
 }
 
@@ -492,6 +542,99 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 	return items, nil
 }
 
+const getUserByAccessToken = `-- name: GetUserByAccessToken :one
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id
+`
+
+type GetUserByAccessTokenRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int32
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+}
+
+func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUserByAccessTokenRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByAccessToken, token)
+	var i GetUserByAccessTokenRow
+	err := row.Scan(
+		&i.ID,
+		&i.DisplayName,
+		&i.DisplayColor,
+		&i.CreatedAt,
+		&i.DisabledAt,
+		&i.PreviousNames,
+		&i.NamechangedAt,
+		&i.AuthenticatedAt,
+		&i.Scopes,
+	)
+	return i, err
+}
+
+const getUserByAuth = `-- name: GetUserByAuth :one
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id
+`
+
+type GetUserByAuthParams struct {
+	Token string
+	Type  string
+}
+
+type GetUserByAuthRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int32
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+}
+
+func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (GetUserByAuthRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByAuth, arg.Token, arg.Type)
+	var i GetUserByAuthRow
+	err := row.Scan(
+		&i.ID,
+		&i.DisplayName,
+		&i.DisplayColor,
+		&i.CreatedAt,
+		&i.DisabledAt,
+		&i.PreviousNames,
+		&i.NamechangedAt,
+		&i.AuthenticatedAt,
+		&i.Scopes,
+	)
+	return i, err
+}
+
+const getUserDisplayNameByToken = `-- name: GetUserDisplayNameByToken :one
+SELECT display_name FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id AND disabled_at = NULL
+`
+
+func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getUserDisplayNameByToken, token)
+	var display_name string
+	err := row.Scan(&display_name)
+	return display_name, err
+}
+
+const isDisplayNameAvailable = `-- name: IsDisplayNameAvailable :one
+SELECT count(*) FROM users WHERE display_name = $1 AND authenticated_at is not null AND disabled_at is NULL
+`
+
+func (q *Queries) IsDisplayNameAvailable(ctx context.Context, displayName string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, isDisplayNameAvailable, displayName)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const isIPAddressBlocked = `-- name: IsIPAddressBlocked :one
 SELECT count(*) FROM ip_bans WHERE ip_address = $1
 `
@@ -546,6 +689,29 @@ type RemoveNotificationDestinationForChannelParams struct {
 
 func (q *Queries) RemoveNotificationDestinationForChannel(ctx context.Context, arg RemoveNotificationDestinationForChannelParams) error {
 	_, err := q.db.ExecContext(ctx, removeNotificationDestinationForChannel, arg.Channel, arg.Destination)
+	return err
+}
+
+const setAccessTokenToOwner = `-- name: SetAccessTokenToOwner :exec
+UPDATE user_access_tokens SET user_id = $1 WHERE token = $2
+`
+
+type SetAccessTokenToOwnerParams struct {
+	UserID string
+	Token  string
+}
+
+func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenToOwnerParams) error {
+	_, err := q.db.ExecContext(ctx, setAccessTokenToOwner, arg.UserID, arg.Token)
+	return err
+}
+
+const setUserAsAuthenticated = `-- name: SetUserAsAuthenticated :exec
+UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = $1
+`
+
+func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, setUserAsAuthenticated, id)
 	return err
 }
 

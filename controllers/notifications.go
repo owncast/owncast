@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/notifications"
 
 	"github.com/owncast/owncast/utils"
@@ -13,7 +14,7 @@ import (
 
 // RegisterForLiveNotifications will register a channel + destination to be
 // notified when a stream goes live.
-func RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request) {
+func RegisterForLiveNotifications(u user.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != POST {
 		WriteSimpleResponse(w, false, r.Method+" not supported")
 		return

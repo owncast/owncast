@@ -21,6 +21,8 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	}
 
 	proposedUsername := receivedEvent.NewName
+
+	// Check if name is on the blocklist
 	blocklist := data.GetForbiddenUsernameList()
 
 	for _, blockedName := range blocklist {
@@ -39,11 +41,27 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		}
 	}
 
+	// Check if the name is not already assigned to a registered user.
+	if available, err := user.IsDisplayNameAvailable(proposedUsername); err != nil {
+		log.Errorln("error checking if name is available", err)
+		return
+	} else if !available {
+		message := fmt.Sprintf("You cannot change your name to **%s**, it is already in use.", proposedUsername)
+		s.sendActionToClient(eventData.client, message)
+
+		// Resend the client's user so their username is in sync.
+		eventData.client.sendConnectedClientInfo()
+
+		return
+	}
+
 	savedUser := user.GetUserByToken(eventData.client.accessToken)
 	oldName := savedUser.DisplayName
 
 	// Save the new name
-	user.ChangeUsername(eventData.client.User.ID, receivedEvent.NewName)
+	if err := user.ChangeUsername(eventData.client.User.ID, receivedEvent.NewName); err != nil {
+		log.Errorln("error changing username", err)
+	}
 
 	// Update the connected clients associated user with the new name
 	now := time.Now()
