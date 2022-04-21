@@ -2,6 +2,7 @@ import { h, Component } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 import TabBar from './tab-bar.js';
 import IndieAuthForm from './auth-indieauth.js';
+import FediverseAuth from './auth-fediverse.js';
 
 const html = htm.bind(h);
 
@@ -29,6 +30,23 @@ export default class ChatSettingsModal extends Component {
           IndieAuth</span
         >`,
         content: html`<${IndieAuthForm}}
+          accessToken=${accessToken}
+          authenticated=${authenticated}
+        />`,
+      },
+      {
+        label: html`<span style=${{ display: 'flex', alignItems: 'center' }}
+          ><img
+            style=${{
+              display: 'inline',
+              height: '0.8em',
+              marginRight: '5px',
+            }}
+            src="/img/fediverse-black.png"
+          />
+          FediAuth</span
+        >`,
+        content: html`<${FediverseAuth}}
           accessToken=${accessToken}
           authenticated=${authenticated}
         />`,
