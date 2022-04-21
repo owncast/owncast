@@ -8,7 +8,7 @@ import {
   KEY_CUSTOM_USERNAME_SET,
 } from '../../utils/constants.js';
 
-import { CheckIcon, CloseIcon, EditIcon } from '../icons/index.js'
+import { CheckIcon, CloseIcon, EditIcon } from '../icons/index.js';
 
 export default class UsernameForm extends Component {
   constructor(props, context) {
@@ -113,11 +113,13 @@ export default class UsernameForm extends Component {
         >
           <span id="username-display">Change Username</span>
           <span><${EditIcon} /></span>
-        </button> 
+        </button>
 
         <div
           id="user-info-change"
-          class="${displayForm ? 'flex' : 'hidden'} flex-row flex-no-wrap h-full items-center justify-end"
+          class="${displayForm
+            ? 'flex'
+            : 'hidden'} flex-row flex-no-wrap h-full items-center justify-end"
         >
           <input
             type="text"
@@ -137,7 +139,7 @@ export default class UsernameForm extends Component {
               type="button"
               class="bg-purple-500 hover:bg-purple-700 text-white uppercase p-1 ml-1 rounded-md cursor-pointer transition duration-100 user-btn"
             >
-              <${CheckIcon } />
+              <${CheckIcon} />
             </button>
 
             <button
@@ -147,7 +149,7 @@ export default class UsernameForm extends Component {
               class="bg-gray-700 hover:bg-gray-500 text-white uppercase p-1 ml-1 rounded-md cursor-pointer transition duration-100 user-btn"
               title="cancel"
             >
-              <${CloseIcon} /> 
+              <${CloseIcon} />
             </button>
           </div>
         </div>

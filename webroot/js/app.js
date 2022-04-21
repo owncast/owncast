@@ -10,7 +10,7 @@ import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Followers from './components/federation/followers.js';
 import Chat from './components/chat/chat.js';
-import { ChatMenu } from './components/chat/chat-menu.js'
+import { ChatMenu } from './components/chat/chat-menu.js';
 import Websocket, {
   CALLBACKS,
   SOCKET_MESSAGE_TYPES,
@@ -945,7 +945,13 @@ export default class App extends Component {
               id="user-options-container"
               class="flex flex-row justify-end items-center flex-no-wrap"
             >  -->
-            <${ChatMenu} username=${username} isModerator=${false} onUsernameChange=${this.handleUsernameChange} onFocus=${this.handleFormFocus} onBlur=${this.handleFormBlur} chatDisabled=${chatDisabled} noVideoContent=${noVideoContent} handleChatPanelToggle=${this.handleChatPanelToggle}>
+            <${ChatMenu} username=${username} isModerator=${false} onUsernameChange=${
+      this.handleUsernameChange
+    } onFocus=${this.handleFormFocus} onBlur=${
+      this.handleFormBlur
+    } chatDisabled=${chatDisabled} noVideoContent=${noVideoContent} handleChatPanelToggle=${
+      this.handleChatPanelToggle
+    }>
             </${ChatMenu}>
             <!--
             </div>
