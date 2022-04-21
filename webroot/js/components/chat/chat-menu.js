@@ -20,6 +20,7 @@ export const ChatMenu = (props) => {
     noVideoContent,
     handleChatPanelToggle,
     onUsernameChange,
+    showAuthModal,
     onFocus,
     onBlur,
   } = props;
@@ -33,6 +34,15 @@ export const ChatMenu = (props) => {
   useEffect(() => {
     if (chatMenuOpen) setView('main');
   }, [chatMenuOpen]);
+
+  const authMenuItem =
+    showAuthModal &&
+    html`<li>
+      <button type="button" id="chat-auth" onClick=${showAuthModal}>
+        Authenticate
+        <span><${ChatIcon} /></span>
+      </button>
+    </li>`;
 
   return html`
   <${Context.Provider} value=${props}>
@@ -55,7 +65,7 @@ export const ChatMenu = (props) => {
       >
         ${username}
       </span>
-       <${CaretDownIcon} className="w-8 h-8"/> 
+       <${CaretDownIcon} className="w-8 h-8"/>
       </button>
       ${
         chatMenuOpen &&
@@ -74,6 +84,7 @@ export const ChatMenu = (props) => {
                 onBlur=${onBlur}
               />
             </li>
+            ${authMenuItem}
             <li>
               <button
                 type="button"

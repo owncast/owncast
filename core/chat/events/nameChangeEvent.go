@@ -10,6 +10,7 @@ type NameChangeEvent struct {
 // NameChangeBroadcast represents a user changing their chat display name.
 type NameChangeBroadcast struct {
 	Event
+	OutboundEvent
 	UserEvent
 	Oldname string `json:"oldName"`
 }

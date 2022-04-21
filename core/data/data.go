@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	schemaVersion = 4
+	schemaVersion = 5
 )
 
 var (
@@ -75,6 +75,7 @@ func SetupPersistence(file string) error {
 
 	createWebhooksTable()
 	createUsersTable(db)
+	createAccessTokenTable(db)
 
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS config (
 		"key" string NOT NULL PRIMARY KEY,
@@ -141,6 +142,8 @@ func migrateDatabase(db *sql.DB, from, to int) error {
 			migrateToSchema3(db)
 		case 3:
 			migrateToSchema4(db)
+		case 4:
+			migrateToSchema5(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}
