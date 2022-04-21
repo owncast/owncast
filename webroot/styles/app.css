@@ -78,12 +78,33 @@ header {
   background-image: url(/img/logo.svg);
 }
 
+.chat-menu-options li button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: .25rem;
+  padding: .5rem .3rem;
+  color: #dbdbdb;
+  animation: fadeIn 150ms;
+}
+
+.chat-view li button {
+  animation: slideInRight 150ms;
+}
+
+.chat-menu-options li button:hover {
+  background-color: var(--owncast-purple);
+}
+
+
 #chat-toggle {
   min-width: 3rem;
 }
 
 #user-info-change {
-  display: none;
+  background-color: transparent;
 }
 
 .external-action-button {
@@ -142,10 +163,6 @@ header {
 .chat-disabled footer,
 .chat-hidden footer {
   justify-content: center;
-}
-
-.chat-hidden #chat-toggle {
-  opacity: 0.75;
 }
 
 /* hide chat by default */
@@ -309,13 +326,8 @@ header {
 /* ************************************************ */
 
 @media screen and (max-width: 600px) {
-  #user-info-change {
-    width: 75vw;
-  }
   #user-info-display {
-    max-width: 30vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: none;
   }
 }
 
@@ -395,6 +407,30 @@ header {
 /**************************
   Modal Animation Style
 **************************/
+.fadeIn {
+  animation: mmfadeIn 150ms forwards;
+}
+
+.fadeOut {
+  animation: mmfadeOut 150ms forwards;
+}
+
+.slideInTop {
+  animation: mmslideIn 150ms forwards;
+}
+
+.slideOutBottom {
+  animation: mmslideOut 150ms forwards;
+}
+
+.slideInLeft {
+  animation: mmslideInLeft 150ms forwards;
+}
+
+.slideInRight {
+  animation: mmslideInRight 150ms forwards;
+}
+
 
 @keyframes mmfadeIn {
   from {
@@ -411,6 +447,25 @@ header {
   }
   to {
     opacity: 0;
+  }
+}
+
+
+@keyframes mmslideInRight {
+  from {
+    transform: translateX(15%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes mmslideInLeft {
+  from {
+    transform: translateX(-15%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -578,19 +633,8 @@ header {
   bottom: calc(100% + 0.5rem);
   opacity: 0;
   transform: translateY(0%);
-  animation: fade-in 300ms forwards;
+  animation: mmfadeIn 300ms forwards;
   animation-delay: 1s;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-20%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 #notify-button-container .external-action-icon {
