@@ -941,11 +941,8 @@ export default class App extends Component {
                 >${streamOnline && streamTitle ? streamTitle : name}</span
               >
             </h1>
-            <!-- <div
-              id="user-options-container"
-              class="flex flex-row justify-end items-center flex-no-wrap"
-            >  -->
-            <${ChatMenu} username=${username} isModerator=${false} onUsernameChange=${
+
+            <${ChatMenu} username=${username} isModerator=${isModerator} onUsernameChange=${
       this.handleUsernameChange
     } onFocus=${this.handleFormFocus} onBlur=${
       this.handleFormBlur
@@ -953,9 +950,6 @@ export default class App extends Component {
       this.handleChatPanelToggle
     }>
             </${ChatMenu}>
-            <!--
-            </div>
-            -->
           </header>
         </div>
 
