@@ -994,9 +994,11 @@ export default class App extends Component {
               >
             </h1>
 
-            <${ChatMenu} username=${username} isModerator=${isModerator} onUsernameChange=${
-      this.handleUsernameChange
-    } onFocus=${this.handleFormFocus} onBlur=${
+            <${ChatMenu} username=${username} isModerator=${isModerator} showAuthModal=${
+      indieAuthEnabled && this.showAuthModal
+    } onUsernameChange=${this.handleUsernameChange} onFocus=${
+      this.handleFormFocus
+    } onBlur=${
       this.handleFormBlur
     } chatDisabled=${chatDisabled} noVideoContent=${noVideoContent} handleChatPanelToggle=${
       this.handleChatPanelToggle
