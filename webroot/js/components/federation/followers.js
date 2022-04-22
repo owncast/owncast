@@ -24,7 +24,7 @@ export default class FollowerList extends Component {
 
   async getFollowers() {
     const { currentPage } = this.state;
-    const limit = 16;
+    const limit = 24;
     const offset = currentPage * limit;
     const u = `${URL_FOLLOWERS}?offset=${offset}&limit=${limit}`;
     const response = await fetch(u);
@@ -81,7 +81,7 @@ export default class FollowerList extends Component {
 
     return html`
       <div>
-        <div class="flex flex-wrap">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           ${followers.length === 0 && noFollowersInfo}
           ${followers.map((follower) => {
             return html` <${SingleFollower} user=${follower} /> `;
