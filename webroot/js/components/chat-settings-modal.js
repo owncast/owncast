@@ -13,7 +13,6 @@ export default class ChatSettingsModal extends Component {
       authenticated,
       federationEnabled,
       username,
-      onUsernameChange,
       indieAuthEnabled,
     } = this.props;
 
@@ -34,6 +33,7 @@ export default class ChatSettingsModal extends Component {
         content: html`<${IndieAuthForm}}
           accessToken=${accessToken}
           authenticated=${authenticated}
+          username=${username}
         />`,
       });
     }
@@ -55,6 +55,7 @@ export default class ChatSettingsModal extends Component {
           authenticated=${authenticated}
           accessToken=${accessToken}
           authenticated=${authenticated}
+          username=${username}
         />`,
       });
     }

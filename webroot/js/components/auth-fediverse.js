@@ -108,14 +108,16 @@ export default class FediverseAuth extends Component {
   render() {
     const { errorMessage, account, code, valid, loading, verifying } =
       this.state;
-    const { authenticated } = this.props;
+    const { authenticated, username } = this.props;
     const buttonState = valid ? '' : 'cursor-not-allowed opacity-50';
 
     const loaderStyle = loading ? 'flex' : 'none';
     const message = verifying
       ? 'Paste in the code that was sent to your Fediverse account. If you did not receive a code, make sure you can accept direct messages.'
       : !authenticated
-      ? `Receive a direct message from this server on the Fediverse to authenticate your identity.`
+      ? html`Receive a direct message from on the Fediverse to ${' '} link your
+          account to ${' '} <span class="font-bold">${username}</span>, or login
+          as a previously linked chat user.`
       : html`<span
           ><b>You are already authenticated</b>. However, you can add other
           accounts or log in as a different user.</span

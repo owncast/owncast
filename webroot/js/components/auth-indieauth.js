@@ -16,7 +16,7 @@ export default class IndieAuthForm extends Component {
   }
 
   async submitButtonPressed() {
-    const { accessToken, authenticated } = this.props;
+    const { accessToken } = this.props;
     const { host, valid } = this.state;
 
     if (!valid) {
@@ -68,12 +68,14 @@ export default class IndieAuthForm extends Component {
 
   render() {
     const { errorMessage, loading, host, valid } = this.state;
-    const { authenticated } = this.props;
+    const { authenticated, username } = this.props;
     const buttonState = valid ? '' : 'cursor-not-allowed opacity-50';
     const loaderStyle = loading ? 'flex' : 'none';
 
     const message = !authenticated
-      ? `Use your own domain to authenticate using IndieAuth.`
+      ? html`Use your own domain to authenticate ${' '}
+          <span class="font-bold">${username}</span> or login as a previously
+          ${' '} authenticated chat user using IndieAuth.`
       : html`<span
           ><b>You are already authenticated</b>. However, you can add other
           domains or log in as a different user.</span
