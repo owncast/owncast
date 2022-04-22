@@ -47,7 +47,7 @@ export default class FollowerList extends Component {
       return null;
     }
 
-    const noFollowersInfo = html`<div>
+    const noFollowersInfo = html`<div class="col-span-4">
       <p class="mb-5 text-2xl">Be the first to follow this live stream.</p>
       <p class="text-md">
         By following this stream you'll get updates when it goes live, receive
