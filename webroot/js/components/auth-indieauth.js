@@ -73,12 +73,10 @@ export default class IndieAuthForm extends Component {
     const loaderStyle = loading ? 'flex' : 'none';
 
     const message = !authenticated
-      ? `While you can chat completely anonymously you can also add
-  authentication so you can rejoin with the same chat persona from any
-  device or browser.`
+      ? `Use your own domain to authenticate using IndieAuth.`
       : html`<span
           ><b>You are already authenticated</b>. However, you can add other
-          external sites or log in as a different user.</span
+          domains or log in as a different user.</span
         >`;
 
     let errorMessageText = errorMessage;
@@ -134,7 +132,7 @@ export default class IndieAuthForm extends Component {
       <p class="mt-4">
         <details>
           <summary class="cursor-pointer">
-            Learn more about <span class="text-blue-500">IndieAuth</span>
+            Learn more about using IndieAuth to authenticate with chat.
           </summary>
           <div class="inline">
             <p class="mt-4">
@@ -151,11 +149,6 @@ export default class IndieAuthForm extends Component {
             </p>
           </div>
         </details>
-      </p>
-
-      <p class="mt-4">
-        <b>Note:</b> This is for authentication purposes only, and no personal
-        information will be accessed or stored.
       </p>
 
       <div

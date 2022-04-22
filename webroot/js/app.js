@@ -6,7 +6,6 @@ import { URL_WEBSOCKET } from './utils/constants.js';
 
 import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/platform-logos-list.js';
-import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Followers from './components/federation/followers.js';
 import Chat from './components/chat/chat.js';
@@ -27,9 +26,6 @@ import FediverseFollowModal, {
 
 import { NotifyButton, NotifyModal } from './components/notification.js';
 import { isPushNotificationSupported } from './notification/registerWeb.js';
-import IndieAuthForm from './components/chat/indieauth.js';
-import AuthModal from './components/auth-modal.js';
-import FediverseAuth from './components/auth-fediverse.js';
 import ChatSettingsModal from './components/chat-settings-modal.js';
 
 import {
@@ -913,6 +909,7 @@ export default class App extends Component {
             authenticated=${authenticated}
             onClose=${this.closeAuthModal}
             indieAuthEnabled=${indieAuthEnabled}
+            federationEnabled=${federation.enabled}
           />`}
         />
       `;

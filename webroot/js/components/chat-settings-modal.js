@@ -11,13 +11,15 @@ export default class ChatSettingsModal extends Component {
     const {
       accessToken,
       authenticated,
+      federationEnabled,
       username,
       onUsernameChange,
       indieAuthEnabled,
     } = this.props;
 
-    const TAB_CONTENT = [
-      {
+    const TAB_CONTENT = [];
+    if (indieAuthEnabled) {
+      TAB_CONTENT.push({
         label: html`<span style=${{ display: 'flex', alignItems: 'center' }}
           ><img
             style=${{
@@ -33,8 +35,11 @@ export default class ChatSettingsModal extends Component {
           accessToken=${accessToken}
           authenticated=${authenticated}
         />`,
-      },
-      {
+      });
+    }
+
+    if (federationEnabled) {
+      TAB_CONTENT.push({
         label: html`<span style=${{ display: 'flex', alignItems: 'center' }}
           ><img
             style=${{
@@ -47,15 +52,20 @@ export default class ChatSettingsModal extends Component {
           FediAuth</span
         >`,
         content: html`<${FediverseAuth}}
+          authenticated=${authenticated}
           accessToken=${accessToken}
           authenticated=${authenticated}
         />`,
-      },
-    ];
+      });
+    }
 
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-5">
         <${TabBar} tabs=${TAB_CONTENT} ariaLabel="Chat settings" />
+        <p class="mt-4">
+          <b>Note:</b> This is for authentication purposes only, and no personal
+          information will be accessed or stored.
+        </p>
       </div>
     `;
   }

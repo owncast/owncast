@@ -15,7 +15,7 @@ export default class FediverseAuth extends Component {
       errorMessage: null,
       loading: false,
       verifying: false,
-      valid: true,
+      valid: false,
     };
   }
 
@@ -69,7 +69,8 @@ export default class FediverseAuth extends Component {
     }
 
     const url = `/api/auth/fediverse?accessToken=${accessToken}`;
-    const data = { account: account };
+    const normalizedAccount = account.replace(/^@+/, '');
+    const data = { account: normalizedAccount };
 
     this.setState({ loading: true, errorMessage: null });
 
@@ -100,22 +101,28 @@ export default class FediverseAuth extends Component {
       return;
     }
 
-    let valid = true;
+    const valid = validateAccount(value);
     this.setState({ account: value, valid });
   };
 
   render() {
     const { errorMessage, account, code, valid, loading, verifying } =
       this.state;
+    const { authenticated } = this.props;
     const buttonState = valid ? '' : 'cursor-not-allowed opacity-50';
 
     const loaderStyle = loading ? 'flex' : 'none';
     const message = verifying
-      ? 'Please paste in the code that was sent to your Fediverse account.'
-      : 'By supplying your Fediverse account you can log into chat.';
+      ? 'Paste in the code that was sent to your Fediverse account. If you did not receive a code, make sure you can accept direct messages.'
+      : !authenticated
+      ? `Receive a direct message from this server on the Fediverse to authenticate your identity.`
+      : html`<span
+          ><b>You are already authenticated</b>. However, you can add other
+          accounts or log in as a different user.</span
+        >`;
     const label = verifying ? 'Code' : 'Your fediverse account';
     const placeholder = verifying ? '123456' : 'youraccount@fediverse.server';
-    const buttonText = verifying ? 'Verify' : 'Authenticate';
+    const buttonText = verifying ? 'Verify' : 'Authenticate with Fediverse';
 
     const error = errorMessage
       ? html` <div
@@ -131,7 +138,7 @@ export default class FediverseAuth extends Component {
       : null;
 
     return html`
-      <div class="bg-gray-100 bg-center bg-no-repeat p-4">
+      <div class="bg-gray-100 bg-center bg-no-repeat">
         <p class="text-gray-700 text-md">${message}</p>
 
         ${error}
@@ -161,6 +168,21 @@ export default class FediverseAuth extends Component {
           </button>
         </div>
 
+        <p class="mt-4">
+          <details>
+            <summary class="cursor-pointer">
+              Learn more about using the Fediverse to authenticate with chat.
+            </summary>
+            <div class="inline">
+              <p class="mt-4">
+                You can link your chat identity with your Fediverse identity.
+                Next time you want to use this chat identity you can again go
+                through the Fediverse authentication.
+              </p>
+            </div>
+          </details>
+        </p>
+
         <div
           id="follow-loading-spinner-container"
           style="display: ${loaderStyle}"
@@ -174,23 +196,9 @@ export default class FediverseAuth extends Component {
   }
 }
 
-function validateURL(url) {
-  if (!url) {
-    return false;
-  }
-
-  try {
-    const u = new URL(url);
-    if (!u) {
-      return false;
-    }
-
-    if (u.protocol !== 'https:') {
-      return false;
-    }
-  } catch (e) {
-    return false;
-  }
-
-  return true;
+function validateAccount(account) {
+  account = account.replace(/^@+/, '');
+  var regex =
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return regex.test(String(account).toLowerCase());
 }
