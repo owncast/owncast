@@ -558,7 +558,7 @@ header {
 }
 
 .following-list-follower {
-  width: 280px;
+  width: auto;
 }
 
 #follow-loading-spinner-container {
