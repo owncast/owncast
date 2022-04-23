@@ -29,8 +29,8 @@ import { ServerStatusContext } from '../utils/server-status-context';
 export default function ConfigChat() {
   const { Title } = Typography;
   const [formDataValues, setFormDataValues] = useState(null);
-  const [forbiddenUsernameSaveState, setForbiddenUsernameSaveState] = useState(null);
-  const [suggestedUsernameSaveState, setSuggestedUsernameSaveState] = useState(null);
+  const [forbiddenUsernameSaveState, setForbiddenUsernameSaveState] = useState<StatusState>(null);
+  const [suggestedUsernameSaveState, setSuggestedUsernameSaveState] = useState<StatusState>(null);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
 
@@ -76,7 +76,7 @@ export default function ConfigChat() {
           fieldName: 'forbiddenUsernames',
           value: formDataValues.forbiddenUsernames,
         });
-        setForbiddenUsernameSaveState(STATUS_SUCCESS);
+        setForbiddenUsernameSaveState(createInputStatus(STATUS_SUCCESS));
         setTimeout(resetForbiddenUsernameState, RESET_TIMEOUT);
       },
       onError: (message: string) => {
@@ -113,7 +113,7 @@ export default function ConfigChat() {
           fieldName: 'suggestedUsernames',
           value: formDataValues.suggestedUsernames,
         });
-        setSuggestedUsernameSaveState(STATUS_SUCCESS);
+        setSuggestedUsernameSaveState(createInputStatus(STATUS_SUCCESS));
         setTimeout(resetSuggestedUsernameState, RESET_TIMEOUT);
       },
       onError: (message: string) => {
@@ -200,7 +200,7 @@ export default function ConfigChat() {
           values={formDataValues.forbiddenUsernames}
           handleDeleteIndex={handleDeleteForbiddenUsernameIndex}
           handleCreateString={handleCreateForbiddenUsername}
-          submitStatus={createInputStatus(forbiddenUsernameSaveState)}
+          submitStatus={forbiddenUsernameSaveState}
         />
         <br />
         <br />
@@ -211,7 +211,7 @@ export default function ConfigChat() {
           values={formDataValues.suggestedUsernames}
           handleDeleteIndex={handleDeleteSuggestedUsernameIndex}
           handleCreateString={handleCreateSuggestedUsername}
-          submitStatus={createInputStatus(suggestedUsernameSaveState)}
+          submitStatus={suggestedUsernameSaveState}
           continuousStatusMessage={getSuggestedUsernamesLimitWarning(
             formDataValues.suggestedUsernames.length,
           )}
