@@ -626,6 +626,7 @@ func SetExternalActions(w http.ResponseWriter, r *http.Request) {
 
 	if err := data.SetExternalActions(actions.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "external actions update")
@@ -662,6 +663,7 @@ func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 
 	if err := data.SetForbiddenUsernameList(request.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "forbidden username list updated")
@@ -683,6 +685,7 @@ func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 
 	if err := data.SetSuggestedUsernamesList(request.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
 	}
 
 	controllers.WriteSimpleResponse(w, true, "suggested username list updated")

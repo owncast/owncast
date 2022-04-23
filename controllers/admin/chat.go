@@ -97,6 +97,7 @@ func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
 	bans, err := data.GetIPAddressBans()
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
 	}
 
 	controllers.WriteResponse(w, bans)
