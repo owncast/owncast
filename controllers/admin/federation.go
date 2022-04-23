@@ -24,6 +24,7 @@ func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	message, ok := configValue.Value.(string)
 	if !ok {
 		controllers.WriteSimpleResponse(w, false, "unable to send message")
+		return
 	}
 
 	if err := activitypub.SendPublicFederatedMessage(message); err != nil {
