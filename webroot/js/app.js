@@ -6,7 +6,6 @@ import { URL_WEBSOCKET } from './utils/constants.js';
 
 import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/platform-logos-list.js';
-import UsernameForm from './components/chat/username.js';
 import VideoPoster from './components/video-poster.js';
 import Followers from './components/federation/followers.js';
 import Chat from './components/chat/chat.js';
@@ -635,7 +634,7 @@ export default class App extends Component {
 
   showAuthModal() {
     const data = {
-      title: 'Chat',
+      title: 'Authenticate with chat',
     };
     this.setState({ authModalData: data });
   }
@@ -664,6 +663,7 @@ export default class App extends Component {
       // user details are so we can display them properly.
       const { user } = e;
       const { displayName, authenticated } = user;
+
       this.setState({
         username: displayName,
         authenticated,
@@ -909,6 +909,7 @@ export default class App extends Component {
             authenticated=${authenticated}
             onClose=${this.closeAuthModal}
             indieAuthEnabled=${indieAuthEnabled}
+            federationEnabled=${federation.enabled}
           />`}
         />
       `;
@@ -1082,6 +1083,7 @@ export default class App extends Component {
 
         ${chat} ${externalActionModal} ${fediverseFollowModal}
         ${notificationModal} ${authModal}
+
       </div>
     `;
   }

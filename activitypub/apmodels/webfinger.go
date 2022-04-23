@@ -11,6 +11,11 @@ type WebfingerResponse struct {
 	Links   []Link   `json:"links"`
 }
 
+// WebfingerProfileRequestResponse represents a Webfinger profile request response.
+type WebfingerProfileRequestResponse struct {
+	Self string
+}
+
 // Link represents a Webfinger response Link entity.
 type Link struct {
 	Rel  string `json:"rel"`
@@ -40,4 +45,19 @@ func MakeWebfingerResponse(account string, inbox string, host string) WebfingerR
 			},
 		},
 	}
+}
+
+// MakeWebFingerRequestResponseFromData converts WebFinger data to an easier
+// to use model.
+func MakeWebFingerRequestResponseFromData(data []map[string]interface{}) WebfingerProfileRequestResponse {
+	response := WebfingerProfileRequestResponse{}
+	for _, link := range data {
+		if link["rel"] == "self" {
+			return WebfingerProfileRequestResponse{
+				Self: link["href"].(string),
+			}
+		}
+	}
+
+	return response
 }
