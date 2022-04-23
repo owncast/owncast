@@ -69,8 +69,14 @@ export default function ConfigNotify() {
     <>
       <Title>Notifications</Title>
       <p className="description">
-        Let your viewers know when you go live by supporting some of the following notification
-        channels.
+        Let your viewers know when you go live by supporting any of the below notification channels.{' '}
+        <a
+          href="https://owncast.online/docs/notifications/?source=admin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn more about live notifications.
+        </a>
       </p>
 
       {configurationWarning}
