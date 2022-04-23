@@ -9,6 +9,10 @@ module.exports = {
     '@storybook/addon-interactions',
     '@storybook/preset-scss',
     '@storybook/addon-postcss',
+    '@storybook/addon-a11y',
+    '@storybook/addon-viewport',
+    'storybook-dark-mode',
+    'addon-screen-reader',
   ],
   webpackFinal: async (config, { configType }) => {
     config.module.rules.push({
