@@ -1,6 +1,7 @@
-import { Table } from 'antd';
-import { SortOrder } from 'antd/lib/table/interface';
+import { Input, Table } from 'antd';
+import { FilterDropdownProps, SortOrder } from 'antd/lib/table/interface';
 import { ColumnsType } from 'antd/es/table';
+import { SearchOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { Client } from '../types/chat';
 import UserPopover from './user-popover';
@@ -22,7 +23,22 @@ export default function ClientTable({ data }: ClientTableProps) {
           </UserPopover>
         );
       },
-      sorter: (a: any, b: any) => a.user.displayName - b.user.displayName,
+      sorter: (a: any, b: any) => b.user.displayName.localeCompare(a.user.displayName),
+      filterIcon: <SearchOutlined />,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }: FilterDropdownProps) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Search display names..."
+            value={selectedKeys[0]}
+            onChange={e => {
+              setSelectedKeys(e.target.value ? [e.target.value] : []);
+              confirm({ closeDropdown: false });
+            }}
+          />
+        </div>
+      ),
+      onFilter: (value: string, record: Client) => record.user.displayName.includes(value),
       sortDirections: ['descend', 'ascend'] as SortOrder[],
     },
     {
@@ -42,7 +58,7 @@ export default function ClientTable({ data }: ClientTableProps) {
       defaultSortOrder: 'ascend',
       render: (time: Date) => formatDistanceToNow(new Date(time)),
       sorter: (a: any, b: any) =>
-        new Date(a.connectedAt).getTime() - new Date(b.connectedAt).getTime(),
+        new Date(b.connectedAt).getTime() - new Date(a.connectedAt).getTime(),
       sortDirections: ['descend', 'ascend'] as SortOrder[],
     },
     {

@@ -308,6 +308,7 @@ textarea.ant-input {
 
 // ANT TABLE
 .ant-table-thead > tr > th,
+.ant-table-filter-dropdown,
 .ant-table-small .ant-table-thead > tr > th {
   transition-duration: var(--ant-transition-duration);
   background-color: var(--purple-dark);
@@ -349,7 +350,8 @@ textarea.ant-input {
     background-color: var(--textfield-border);
   }
 }
-.ant-table-thead th.ant-table-column-sort {
+.ant-table-thead th.ant-table-column-sort,
+.ant-dropdown-trigger.active {
   background-color: var(--owncast-purple-25);
   opacity: 0.75;
 }
