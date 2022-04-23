@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
+	fediverseauth "github.com/owncast/owncast/controllers/auth/fediverse"
 	"github.com/owncast/owncast/controllers/auth/indieauth"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -355,9 +356,10 @@ func Start() error {
 	// Start auth flow
 	http.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(indieauth.StartAuthFlow))
 	http.HandleFunc("/api/auth/indieauth/callback", indieauth.HandleRedirect)
-
-	// Handle auth provider requests
 	http.HandleFunc("/api/auth/provider/indieauth", indieauth.HandleAuthEndpoint)
+
+	http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
+	http.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())

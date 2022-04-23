@@ -1,7 +1,6 @@
 package outbox
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -13,7 +12,11 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/requests"
+	"github.com/owncast/owncast/activitypub/resolvers"
+	"github.com/owncast/owncast/activitypub/webfinger"
 	"github.com/owncast/owncast/activitypub/workerpool"
+	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
@@ -61,6 +64,12 @@ func SendLive() error {
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
+	// To the public if we're not treating ActivityPub as "private".
+	if !data.GetFederationIsPrivate() {
+		note = apmodels.MakeNotePublic(note)
+		activity = apmodels.MakeActivityPublic(activity)
+	}
+
 	note.SetActivityStreamsTag(tagProp)
 
 	// Attach an image along with the Federated message.
@@ -104,6 +113,37 @@ func SendLive() error {
 	}
 
 	return nil
+}
+
+// SendDirectMessageToAccount will send a direct message to a single account.
+func SendDirectMessageToAccount(textContent, account string) error {
+	links, err := webfinger.GetWebfingerLinks(account)
+	if err != nil {
+		return errors.Wrap(err, "unable to get webfinger links when sending private message")
+	}
+	user := apmodels.MakeWebFingerRequestResponseFromData(links)
+
+	iri := user.Self
+	actor, err := resolvers.GetResolvedActorFromIRI(iri)
+	if err != nil {
+		return errors.Wrap(err, "unable to resolve actor to send message to")
+	}
+
+	activity, _, note, _ := createBaseOutboundMessage(textContent)
+
+	// Set direct message visibility
+	activity = apmodels.MakeActivityDirect(activity, actor.ActorIri)
+	note = apmodels.MakeNoteDirect(note, actor.ActorIri)
+	object := activity.GetActivityStreamsObject()
+	object.SetActivityStreamsNote(0, note)
+
+	b, err := apmodels.Serialize(activity)
+	if err != nil {
+		log.Errorln("unable to serialize custom fediverse message activity", err)
+		return errors.Wrap(err, "unable to serialize custom fediverse message activity")
+	}
+
+	return SendToUser(actor.Inbox, b)
 }
 
 // SendPublicMessage will send a public message to all followers.
@@ -188,6 +228,20 @@ func SendToFollowers(payload []byte) error {
 
 		workerpool.AddToOutboundQueue(req)
 	}
+	return nil
+}
+
+// SendToUser will send a payload to a single specific inbox.
+func SendToUser(inbox *url.URL, payload []byte) error {
+	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+
+	req, err := requests.CreateSignedRequest(payload, inbox, localActor)
+	if err != nil {
+		return errors.Wrap(err, "unable to create outbox request")
+	}
+
+	workerpool.AddToOutboundQueue(req)
+
 	return nil
 }
 
