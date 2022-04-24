@@ -48,7 +48,6 @@ export default function StreamHealth() {
   const [maximumPlayerBitrate, setMaximumPlayerBitrate] = useState<TimedValue[]>([]);
   const [availableBitrates, setAvailableBitrates] = useState<Number[]>([]);
   const [segmentLength, setSegmentLength] = useState(0);
-  const [representation, setRepresentation] = useState(0);
 
   const getMetrics = async () => {
     try {
@@ -70,7 +69,6 @@ export default function StreamHealth() {
 
       setAvailableBitrates(result.availableBitrates);
       setSegmentLength(result.segmentLength - 0.3);
-      setRepresentation(result.representation);
     } catch (error) {
       console.error(error);
     }
@@ -182,19 +180,19 @@ export default function StreamHealth() {
 
   const bitrateChart = [
     {
-      name: 'Lowest viewer bitrate',
+      name: 'Lowest player speed',
       color: '#B63FFF',
       data: minimumPlayerBitrate,
       options: { radius: 2 },
     },
     {
-      name: 'Median viewer bitrate',
+      name: 'Median player speed',
       color: '#00FFFF',
       data: medianPlayerBitrate,
       options: { radius: 2 },
     },
     {
-      name: 'Maximum viewer bitrate',
+      name: 'Maximum player speed',
       color: '#02FD0D',
       data: maximumPlayerBitrate,
       options: { radius: 2 },
@@ -318,15 +316,6 @@ export default function StreamHealth() {
           </Col>
         </Row>
 
-        <div style={{ textAlign: 'center', display: representation < 100 ? 'grid' : 'none' }}>
-          {representation !== 0 && (
-            <Typography.Paragraph style={{ opacity: '0.7', fontSize: '0.7em' }}>
-              Provided playback metrics represent {representation}% of all known players. Specifics
-              around other players consuming this video stream are unknown.
-            </Typography.Paragraph>
-          )}
-        </div>
-
         <Card>
           <DescriptionBox
             title="Video Segment Download"
@@ -413,7 +402,7 @@ export default function StreamHealth() {
         <Card>
           <DescriptionBox
             title="Viewer Latency"
-            description="An approximate number of seconds that your viewers are behind your live video. The more people buffer the further behind they will be. High latency itself is not a problem, but some people care about this more than others."
+            description="An approximate number of seconds that your viewers are behind your live video. The largest cause of latency spikes is buffering. High latency itself is not a problem, and optimizing for low latency can result in buffering, resulting in even higher latency."
           />
           <Chart title="Seconds" dataCollections={latencyChart} color="#FF7700" unit="s" />
         </Card>
