@@ -1,5 +1,20 @@
 package data
 
+// GetStringSlice will return the string slice value for a key.
+func (ds *Datastore) GetStringSlice(key string) ([]string, error) {
+	configEntry, err := ds.Get(key)
+	if err != nil {
+		return []string{}, err
+	}
+	return configEntry.getStringSlice()
+}
+
+// SetStringSlice will set the string slice value for a key.
+func (ds *Datastore) SetStringSlice(key string, value []string) error {
+	configEntry := ConfigEntry{key, value}
+	return ds.Save(configEntry)
+}
+
 // GetString will return the string value for a key.
 func (ds *Datastore) GetString(key string) (string, error) {
 	configEntry, err := ds.Get(key)
