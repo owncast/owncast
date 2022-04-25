@@ -1,5 +1,6 @@
 import { URL_PLAYBACK_METRICS } from '../utils/constants.js';
 const METRICS_SEND_INTERVAL = 10000;
+const MAX_VALID_LATENCY_SECONDS = 40; // Anything > this gets thrown out.
 
 class PlaybackMetrics {
   constructor(player, videojs) {
@@ -174,6 +175,12 @@ class PlaybackMetrics {
       const segmentTime = segment.dateTimeObject.getTime();
       const now = new Date().getTime();
       const latency = now - segmentTime;
+
+      // Throw away values that seem invalid.
+      if (latency < 0 || latency / 1000 >= MAX_VALID_LATENCY_SECONDS) {
+        return;
+      }
+
       this.trackLatency(latency);
     } catch (err) {
       console.warn(err);
