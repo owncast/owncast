@@ -2,12 +2,45 @@ package data
 
 import (
 	"database/sql"
+	"fmt"
+	"path/filepath"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
+
+func migrateDatabaseSchema(db *sql.DB, from, to int) error {
+	log.Printf("Migrating database from version %d to %d", from, to)
+	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
+	utils.Backup(db, dbBackupFile)
+	for v := from; v < to; v++ {
+		log.Tracef("Migration step from %d to %d\n", v, v+1)
+		switch v {
+		case 0:
+			migrateToSchema1(db)
+		case 1:
+			migrateToSchema2(db)
+		case 2:
+			migrateToSchema3(db)
+		case 3:
+			migrateToSchema4(db)
+		case 4:
+			migrateToSchema5(db)
+		default:
+			log.Fatalln("missing database migration step")
+		}
+	}
+
+	_, err := db.Exec("UPDATE config SET value = ? WHERE key = ?", to, "version")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // nolint:cyclop
 func migrateToSchema5(db *sql.DB) {

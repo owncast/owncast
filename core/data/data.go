@@ -108,7 +108,7 @@ func SetupPersistence(file string) error {
 
 	// is database schema outdated?
 	if version < schemaVersion {
-		if err := migrateDatabase(db, version, schemaVersion); err != nil {
+		if err := migrateDatabaseSchema(db, version, schemaVersion); err != nil {
 			return err
 		}
 	}
@@ -123,36 +123,6 @@ func SetupPersistence(file string) error {
 			utils.Backup(_db, backupFile)
 		}
 	}()
-
-	return nil
-}
-
-func migrateDatabase(db *sql.DB, from, to int) error {
-	log.Printf("Migrating database from version %d to %d", from, to)
-	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
-	utils.Backup(db, dbBackupFile)
-	for v := from; v < to; v++ {
-		log.Tracef("Migration step from %d to %d\n", v, v+1)
-		switch v {
-		case 0:
-			migrateToSchema1(db)
-		case 1:
-			migrateToSchema2(db)
-		case 2:
-			migrateToSchema3(db)
-		case 3:
-			migrateToSchema4(db)
-		case 4:
-			migrateToSchema5(db)
-		default:
-			log.Fatalln("missing database migration step")
-		}
-	}
-
-	_, err := db.Exec("UPDATE config SET value = ? WHERE key = ?", to, "version")
-	if err != nil {
-		return err
-	}
 
 	return nil
 }

@@ -12,6 +12,13 @@ type ConfigEntry struct {
 	Value interface{}
 }
 
+func (c *ConfigEntry) getStringSlice() ([]string, error) {
+	decoder := c.getDecoder()
+	var result []string
+	err := decoder.Decode(&result)
+	return result, err
+}
+
 func (c *ConfigEntry) getString() (string, error) {
 	decoder := c.getDecoder()
 	var result string
