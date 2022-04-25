@@ -242,7 +242,9 @@ export function NotifyModal({ notifications, streamName, accessToken }) {
             ${' '} access your browser permissions for this site and turn off
             notifications.
             <div style=${{ 'margin-top': '5px' }}>
-              <a href="">Learn more.</a>
+              <a href="https://owncast.online/docs/notifications"
+                >Learn more.</a
+              >
             </div>
           </div>
           <div
