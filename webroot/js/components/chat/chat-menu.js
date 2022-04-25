@@ -2,7 +2,7 @@ import { h, createContext } from '/js/web_modules/preact.js';
 import htm from '/js/web_modules/htm.js';
 import { useState, useEffect, useRef } from '/js/web_modules/preact/hooks.js';
 import UsernameForm from './username.js';
-import { ChatIcon, UserIcon, CaretDownIcon } from '../icons/index.js';
+import { ChatIcon, UserIcon, CaretDownIcon, AuthIcon } from '../icons/index.js';
 
 const html = htm.bind(h);
 
@@ -40,7 +40,7 @@ export const ChatMenu = (props) => {
     html`<li>
       <button type="button" id="chat-auth" onClick=${showAuthModal}>
         Authenticate
-        <span><${ChatIcon} /></span>
+        <span><${AuthIcon} /></span>
       </button>
     </li>`;
 
