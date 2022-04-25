@@ -207,6 +207,11 @@ func errorCountHealthOverviewMessage() string {
 			return fmt.Sprintf("%d of %d viewers (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
 
+		currentBroadcast := core.GetCurrentBroadcast()
+		if currentBroadcast != nil && currentBroadcast.LatencyLevel.SecondsPerSegment < 3 {
+			return fmt.Sprintf("%d of %d viewers (%d%%) may be experiencing some issues. You may want to increase your latency buffer level in your video configuration to see if it helps.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
+		}
+
 		return fmt.Sprintf("%d of %d viewers (%d%%) may be experiencing some issues.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 	}
 
