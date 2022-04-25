@@ -26,15 +26,21 @@ export default function ConfigNotify() {
   const { notifications } = serverConfig || {};
   const { twitter } = notifications || {};
 
-  const { enabled, apiKey, apiSecret, accessToken, accessTokenSecret, bearerToken, goLiveMessage } =
-    twitter || {};
-
   const [formDataValues, setFormDataValues] = useState<any>({});
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const [enableSaveButton, setEnableSaveButton] = useState<boolean>(false);
 
   useEffect(() => {
+    const {
+      enabled,
+      apiKey,
+      apiSecret,
+      accessToken,
+      accessTokenSecret,
+      bearerToken,
+      goLiveMessage,
+    } = twitter || {};
     setFormDataValues({
       enabled,
       apiKey,
@@ -46,7 +52,27 @@ export default function ConfigNotify() {
     });
   }, [twitter]);
 
-  const canSave = (): boolean => true;
+  const canSave = (): boolean => {
+    const {
+      enabled,
+      apiKey,
+      apiSecret,
+      accessToken,
+      accessTokenSecret,
+      bearerToken,
+      goLiveMessage,
+    } = formDataValues;
+
+    return (
+      enabled &&
+      !!apiKey &&
+      !!apiSecret &&
+      !!accessToken &&
+      !!accessTokenSecret &&
+      !!bearerToken &&
+      !!goLiveMessage
+    );
+  };
 
   // update individual values in state
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
@@ -60,7 +86,11 @@ export default function ConfigNotify() {
 
   // toggle switch.
   const handleSwitchChange = (switchEnabled: boolean) => {
+    const previouslySaved = formDataValues.enabled;
+
     handleFieldChange({ fieldName: 'enabled', value: switchEnabled });
+
+    return switchEnabled !== previouslySaved;
   };
 
   let resetTimer = null;
@@ -68,6 +98,7 @@ export default function ConfigNotify() {
     setSubmitStatus(null);
     resetTimer = null;
     clearTimeout(resetTimer);
+    setEnableSaveButton(false);
   };
 
   const save = async () => {
@@ -100,11 +131,7 @@ export default function ConfigNotify() {
       </p>
       <div style={{ display: formDataValues.enabled ? 'block' : 'none' }}>
         <p className="description reduced-margins">
-          <a
-            href="https://developer.twitter.com/en/portal/dashboard"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="https://owncast.online/docs/notifications" target="_blank" rel="noreferrer">
             Read how to configure your Twitter account
           </a>{' '}
           to support posting from Owncast.

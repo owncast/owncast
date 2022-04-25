@@ -12,6 +12,7 @@ import TextFieldWithSubmit, {
 import { TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL } from '../utils/config-constants';
 import { ServerStatusContext } from '../utils/server-status-context';
 import { UpdateArgs } from '../types/config-section';
+import isValidUrl from '../utils/urls';
 
 const { Title } = Typography;
 
@@ -21,6 +22,7 @@ export default function ConfigNotify() {
   const { serverConfig } = serverStatusData || {};
   const { yp } = serverConfig;
   const { instanceUrl } = yp;
+  const [urlValid, setUrlValid] = useState(false);
 
   useEffect(() => {
     setFormDataValues({
@@ -29,6 +31,10 @@ export default function ConfigNotify() {
   }, [yp]);
 
   const handleSubmitInstanceUrl = () => {
+    if (!urlValid) {
+      return;
+    }
+
     setFormDataValues({
       ...formDataValues,
       enabled: false,
@@ -36,6 +42,8 @@ export default function ConfigNotify() {
   };
 
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
+    setUrlValid(isValidUrl(value));
+
     setFormDataValues({
       ...formDataValues,
       [fieldName]: value,
@@ -43,7 +51,6 @@ export default function ConfigNotify() {
   };
 
   const enabled = instanceUrl !== '';
-  console.log(enabled);
   const configurationWarning = !enabled && (
     <>
       <Alert
