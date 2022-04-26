@@ -1,0 +1,12 @@
+name: Build admin app
+on: [push, pull_request]
+jobs:
+  run:
+    name: npm run build
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout repo
+          uses: actions/checkout@v2
+
+        - name: Install dependencies
+          run: npm install && npm run build

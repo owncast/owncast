@@ -1,0 +1,26 @@
+.stream-info-box {
+  background-color: var(--purple-dark);
+  color: var(--white);
+  padding: 0.25rem 0.5rem;
+  .ant-typography-copy {
+    margin-left: 0.25rem;
+  }
+  margin: 0 !important;
+}
+
+.stream-info-label {
+  align-self: center;
+  text-align: right;
+  margin: 0;
+}
+
+.stream-info-container {
+  margin: 8px 0 4px 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  grid-template-rows: min-content min-content;
+  gap: 8px 8px;
+  grid-template-areas:
+    '. .'
+    '. .';
+}

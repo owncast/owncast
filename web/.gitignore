@@ -1,0 +1,8 @@
+node_modules
+.env*.local
+
+.next
+out
+
+lefthook.yml
+storybook-static
