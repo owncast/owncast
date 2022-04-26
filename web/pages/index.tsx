@@ -1,8 +1,10 @@
+import { RecoilRoot } from 'recoil';
+import Main from '../components/layouts/main';
+
 export default function Home() {
   return (
-    <div>
-      This is where v2 of the Owncast web UI will be built. Begin with the layout component
-      https://ant.design/components/layout/ and edit pages/index.tsx.
-    </div>
+    <RecoilRoot>
+      <Main />
+    </RecoilRoot>
   );
 }
