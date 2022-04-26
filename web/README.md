@@ -8,7 +8,7 @@ The Owncast web frontend is a [Next.js](https://nextjs.org/) project with [React
 
 **First**, install the dependencies.
 
-```npm install```
+```npm install --include=dev```
 
 ### Run the web project
 
