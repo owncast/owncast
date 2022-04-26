@@ -1,0 +1,93 @@
+// dealiing with some general layout on the public details page
+
+.config-public-details-page {
+  width: 100%;
+  .top-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    @media (max-width: 1200px) {
+      flex-wrap: wrap;
+      .social-items-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        flex-wrap: nowrap;
+        margin: 1em 0;
+        width: 100%;
+        max-width: none;
+        .tags-module {
+          margin-right: 1em;
+        }
+        .form-module {
+          max-width: none;
+        }
+
+        @media (max-width: 980px) {
+          flex-direction: column;
+          .form-module {
+            width: 100%;
+          }
+          .tags-module {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+  .instance-details-container {
+    width: 100%;
+  }
+  .social-items-container {
+    background-color: var(--container-bg-color-alt);
+    padding: 0 0.75em;
+    margin-left: 1em;
+    max-width: 450px;
+    .form-module {
+      background-color: var(--black);
+    }
+
+    .social-handles-container {
+      min-width: 350px;
+    }
+  }
+  .instance-details-container,
+  .page-content-module {
+    margin: 1em 0;
+  }
+
+  .field-summary {
+    textarea {
+      height: 6em !important;
+    }
+  }
+
+  .edit-custom-css {
+    #field-customStyles {
+      height: 15em;
+      width: 100%;
+      font-family: monospace;
+      resize: auto;
+    }
+  }
+}
+
+.other-field-container {
+  margin: 0.5em 0;
+}
+
+.logo-upload-container {
+  .input-group {
+    align-items: center;
+  }
+  img.logo-preview {
+    min-height: 120px;
+    min-width: 120px;
+    max-height: 256px;
+    max-width: 256px;
+    margin-right: 1em;
+    display: inline-block;
+    border: 1px solid var(--white-25);
+  }
+}

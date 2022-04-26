@@ -1,0 +1,185 @@
+// @import "~antd/dist/antd.dark";
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+
+  background-color: var(--default-bg-color);
+  color: var(--default-text-color);
+}
+
+// a {
+//   color: inherit;
+//   text-decoration: none;
+//   color: var(--default-link-color);
+
+//   &:hover {
+//     color: var(--default-text-color);
+//   }
+// }
+
+// * {
+//   box-sizing: border-box;
+// }
+
+// p,
+// p.description,
+// .description,
+// .ant-typography {
+//   font-weight: 500;
+//   margin: 1em 0;
+//   color: var(--white-75);
+// }
+
+// .description.reduced-margins {
+//   margin-top: 5px;
+//   margin-bottom: 5px;
+// }
+
+// pre {
+//   display: block;
+//   padding: 1rem;
+//   margin: 0.5rem 0;
+//   background-color: var(--code-bg-color);
+//   color: var(--white-50);
+// }
+
+// code {
+//   color: var(--code-color);
+//   background-color: var(--white-15);
+//   display: inline-block;
+//   padding: 2px 4px;
+//   border-radius: 4px;
+//   font-size: 0.88em;
+// }
+
+// strong {
+//   font-weight: 600;
+// }
+
+// .logo-svg {
+//   height: 2rem;
+//   width: 2rem;
+// }
+
+// .line-chart-container {
+//   margin: 2em auto;
+//   margin-bottom: 0px;
+//   padding: 1em;
+//   border: 1px solid var(--gray-dark);
+
+//   canvas {
+//     max-width: 100%;
+//   }
+// }
+
+// .form-module {
+//   margin: 1em 0;
+//   background-color: var(--container-bg-color);
+//   padding: 2em;
+//   border-radius: var(--container-border-radius);
+
+//   h3 {
+//     &:first-of-type {
+//       margin-top: 0;
+//     }
+//   }
+// }
+
+// .form-module.disabled {
+//   opacity: 0.4;
+//   cursor: not-allowed;
+// }
+
+// .row {
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: space-between;
+//   align-items: flex-start;
+
+//   @media (max-width: 980px) {
+//     flex-direction: column;
+//     .form-module {
+//       width: 100%;
+//     }
+//   }
+// }
+
+// input {
+//   &:not(:focus) {
+//     &:invalid {
+//       color: var(--ant-error);
+//     }
+//   }
+// }
+
+// .table-container {
+//   .ant-table-tbody > tr > td {
+//     transition: background-color 0.15s;
+//   }
+//   .ant-table-tbody > tr.ant-table-row:hover > td {
+//     background-color: var(--gray);
+//   }
+//   .ant-table-small {
+//     .ant-table-cell {
+//       font-size: 12px;
+//     }
+//     .ant-table-selection-column {
+//       width: 20px;
+//       min-width: 20px;
+//     }
+//   }
+//   .ant-table-row.hidden {
+//     .ant-table-cell {
+//       color: var(--black-35);
+//     }
+//     @media (prefers-color-scheme: dark) {
+//       .ant-table-cell {
+//         color: var(--white-25);
+//       }
+//     }
+//   }
+//   .ant-table-cell {
+//     &.actions-col {
+//       text-align: right;
+//     }
+//   }
+//   td.number-col {
+//     text-align: right;
+//   }
+// }
+
+// .ant-tabs-tab {
+//   color: var(--owncast-purple);
+
+//   .ant-tabs-tab-active {
+//     border-color: var(--nav-selected-text);
+//   }
+// }
+
+// .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+//   color: var(--nav-selected-text);
+// }
+
+// .ant-tabs-ink-bar {
+//   background: var(--nav-selected-text);
+// }
+
+// #fediverse-post-container {
+//   max-width: 50vw;
+//   width: 100%;
+
+//   #fediverse-post-input {
+//     color: var(--white-75);
+//     border-color: var(--owncast-purple);
+//     background-color: var(--default-bg-color);
+//     height: 250px;
+//   }
+
+//   .ant-input-textarea-show-count::after {
+//     color: var(--owncast-purple);
+//   }
+// }

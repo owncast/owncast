@@ -1,0 +1,169 @@
+/* 
+Base styles for 
+- form-textfield, 
+- form-textfield-with-submit
+- form-toggleswitch
+
+  Both text and toggle use this class for base layout.
+*/
+.formfield-container {
+  --form-label-container-width: 15em;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 600px;
+  .label-side {
+    padding-right: 1.25em;
+    text-align: right;
+    width: var(--form-label-container-width);
+    margin: .2em 0;
+  }
+  .formfield-label {
+    font-weight: 500;
+    font-size: 1em;
+    color: var(--owncast-purple);
+
+    &::after {
+      content: ':';
+    }
+  }
+  &.required {
+    .formfield-label {
+      &::before {
+        content: '*';
+        display: inline-block;
+        margin-right: .25em;
+        color: var(--ant-error);
+      }
+    }
+  }
+
+  .input-side {
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .status-container {
+    margin: .25em;
+    width: 100%;
+    display: block;
+    &.empty {
+      display: none;
+      visibility: visible;
+    }
+  }
+  
+  .field-tip {
+    margin: .5em .5em;
+  }
+
+  @media (max-width: 800px) {
+    flex-wrap: wrap;
+    .label-side {
+      width: 100%;
+      text-align: left;
+    }
+  }
+}
+
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
+/* TEXTFIELD-WITH-SUBMIT-CONTAINER BASE */
+.textfield-with-submit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1em;
+
+  .textfield-component {
+    width: 100%;
+    .textfield-container {
+      .field-tip,
+      .status-container {
+        display: none;
+      }
+    }
+  }
+
+  // for lack of a better name
+  .lower-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    .label-spacer {
+      width: var(--form-label-container-width); 
+    }
+    .lower-content {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-end;
+      width: 100%;
+
+      .field-tip {
+        margin-right: 1em;
+        width: 100%;
+      }
+      .status-container {
+        margin: .5em;
+        &.empty {
+          display: none;
+        }
+      }
+    }
+    .update-button-container {
+      visibility: hidden;
+      margin: .25em 0;
+    }
+  }
+
+  &.submittable {
+    .lower-container {
+      .update-button-container {
+        visibility: visible;
+      }
+    }
+  }
+
+
+  @media (max-width: 800px) {
+    .label-spacer {
+      display: none;
+    }
+  }
+}
+
+
+/* TOGGLE SWITCH CONTAINER BASE */
+.toggleswitch-container {
+  margin: 2em 0 1em;
+
+  .label-side { 
+    margin-top: 0;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    
+    .status-container {
+      width: auto;
+      margin: 0 0 0 1em;
+      display: inline-block;
+    }
+  }
+}
