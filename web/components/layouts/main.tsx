@@ -60,34 +60,6 @@ function Main() {
       </Layout>
     </>
   );
-  // return (
-  //   <div>
-
-  //     <Layout>
-  //       <Header className="header">
-  //         {name}
-  //         <button onClick={toggleChatCollapsed}>Toggle Chat</button>
-  //       </Header>
-  //       <Content>
-  //         <Layout>
-  //           <Row>
-  //             <Col span={24}>Video player goes here</Col>
-  //           </Row>
-  //           <Row>
-  //             <Col span={24}>
-  //               <Content dangerouslySetInnerHTML={{ __html: extraPageContent }} />
-  //             </Col>
-  //           </Row>
-
-  //           <Sider collapsed={chatCollapsed} width={300}>
-  //             chat
-  //           </Sider>
-  //         </Layout>
-  //       </Content>
-  //       <Footer>Footer: Owncast {version}</Footer>
-  //     </Layout>
-  //   </div>
-  // );
 }
 
 export default Main;
