@@ -45,7 +45,7 @@ class TabsExample extends React.Component {
 }
 
 export default {
-  title: 'owncast/Tabs',
+  title: 'example/Tabs',
   component: Tabs,
 } as ComponentMeta<typeof Tabs>;
 

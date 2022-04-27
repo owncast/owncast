@@ -25,7 +25,7 @@ const DropdownExample = () => (
 );
 
 export default {
-  title: 'owncast/Dropdown',
+  title: 'example/Dropdown',
   component: Dropdown,
   parameters: {},
 } as ComponentMeta<typeof Dropdown>;
