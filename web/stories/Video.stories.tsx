@@ -1,16 +1,32 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import VideoPoster from '../components/video/VideoPoster';
+import OwncastPlayer from '../components/video/owncastplayer';
+
+const streams = {
+  DemoServer: `https://watch.owncast.online`,
+  RetroStrangeTV: `https://live.retrostrange.com`,
+  localhost: `http://localhost:8080`,
+};
 
 export default {
-  title: 'owncast/VideoPoster',
-  component: VideoPoster,
+  title: 'owncast/Player',
+  component: OwncastPlayer,
+  argTypes: {
+    source: {
+      options: Object.keys(streams),
+      mapping: streams,
+      control: {
+        type: 'select',
+      },
+    },
+  },
   parameters: {},
-} as ComponentMeta<typeof VideoPoster>;
+} as ComponentMeta<typeof OwncastPlayer>;
 
-const VideoPosterExample = () => <VideoPoster />;
+const Template: ComponentStory<typeof OwncastPlayer> = args => <OwncastPlayer {...args} />;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof VideoPoster> = args => <VideoPosterExample />;
-
-export const Basic = Template.bind({});
+export const LiveDemo = Template.bind({});
+LiveDemo.args = {
+  online: true,
+  source: 'https://watch.owncast.online',
+};
