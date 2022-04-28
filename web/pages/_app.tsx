@@ -24,7 +24,7 @@ import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 
 import AdminLayout from './admin/admin-layout';
-import SimpleLayout from '../components/layouts/simple-layout';
+import SimpleLayout from '../components/layouts/SimpleLayout';
 
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
