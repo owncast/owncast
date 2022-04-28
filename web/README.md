@@ -18,6 +18,15 @@ Make sure you're running an instance of Owncast on localhost:8080, as your copy 
   
   ```npm run dev```
 
+### Components and Styles
+
+You can start the [Storybook](https://storybook.js.org/) UI for exploring, testing, and developing components by running:
+
+```npm run storybook```
+
+This allows for components to be made available without the need of the server to be running and changes to be made in
+isolation.
+
 ### Update the project
 
 You can add or edit a pages by modifying `pages/something.js`. The page auto-updates as you edit the file.

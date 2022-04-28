@@ -3,6 +3,7 @@ import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { atom, useRecoilState } from 'recoil';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
 import ClientConfigService from '../../services/client-config-service';
+import { ChatMessage } from '../../interfaces/chat-message.model';
 
 // The config that comes from the API.
 export const clientConfigState = atom({
@@ -15,9 +16,14 @@ export const chatCurrentlyVisible = atom({
   default: false,
 });
 
-export const chatDislayName = atom({
+export const chatDisplayName = atom({
   key: 'chatDisplayName',
   default: '',
+});
+
+export const chatMessages = atom({
+  key: 'chatMessages',
+  default: [] as ChatMessage[],
 });
 
 export function ClientConfigStore(): ReactElement {
