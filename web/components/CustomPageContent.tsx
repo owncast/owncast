@@ -4,5 +4,5 @@ interface Props {
 
 export default function CustomPageContent(props: Props) {
   const { content } = props;
-  return <div>{content}</div>;
+  return <div dangerouslySetInnerHTML={{ __html: content }} />;
 }

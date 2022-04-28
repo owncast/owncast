@@ -1,12 +1,15 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
-import { chatCurrentlyVisible } from '../../stores/ClientConfigStore';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
+import ChatContainer from '../../chat/ChatContainer';
+import { chatMessages } from '../../stores/ClientConfigStore';
 
 export default function Sidebar() {
-  let chatOpen = useRecoilValue(chatCurrentlyVisible);
+  const messages = useRecoilValue<ChatMessage[]>(chatMessages);
+
   return (
     <Sider
-      collapsed={!chatOpen}
+      collapsed={false}
       width={300}
       style={{
         position: 'fixed',
@@ -14,6 +17,8 @@ export default function Sidebar() {
         top: 0,
         bottom: 0,
       }}
-    />
+    >
+      <ChatContainer messages={messages} />
+    </Sider>
   );
 }

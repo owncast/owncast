@@ -5,5 +5,5 @@ interface Props {
 }
 
 export default function ChatContainer(props: Props) {
-  return <div>Component goes here</div>;
+  return <div>Chat container goes here</div>;
 }
