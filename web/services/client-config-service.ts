@@ -1,4 +1,4 @@
-import { ClientConfig } from '../models/ClientConfig';
+import { ClientConfig } from '../interfaces/client-config.model';
 const ENDPOINT = `http://localhost:8080/api/config`;
 
 class ClientConfigService {

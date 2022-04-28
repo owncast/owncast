@@ -1,10 +1,10 @@
 import { useRecoilValue } from 'recoil';
 import { Layout, Row, Col } from 'antd';
 import { useState } from 'react';
-import { ServerStatus } from '../../models/ServerStatus';
+import { ServerStatus } from '../../interfaces/server-status.model';
 import { ServerStatusStore, serverStatusState } from '../stores/ServerStatusStore';
 import { ClientConfigStore, clientConfigState } from '../stores/ClientConfigStore';
-import { ClientConfig } from '../../models/ClientConfig';
+import { ClientConfig } from '../../interfaces/client-config.model';
 
 const { Header, Content, Footer, Sider } = Layout;
 

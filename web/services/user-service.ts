@@ -15,7 +15,7 @@ class UserService {
       },
       body: JSON.stringify({ displayName: username }),
     };
-  
+
     try {
       const response = await fetch(URL_CHAT_REGISTRATION, options);
       const result = await response.json();

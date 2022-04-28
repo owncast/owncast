@@ -99,7 +99,7 @@ const FormExample = () => {
 };
 
 export default {
-  title: 'owncast/Form',
+  title: 'example/Form',
   component: Form,
   // parameters: {},
 } as ComponentMeta<typeof Form>;
