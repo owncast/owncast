@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import OwncastPlayer from '../components/video/owncastplayer';
+import OwncastPlayer from '../components/video/OwncastPlayer';
 
 const streams = {
   DemoServer: `https://watch.owncast.online`,

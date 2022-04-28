@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { atom, useRecoilState } from 'recoil';
-import { ServerStatus, makeEmptyServerStatus } from '../../models/ServerStatus';
-import ServerStatusService from '../../services/StatusService';
+import { ServerStatus, makeEmptyServerStatus } from '../../interfaces/server-status.model';
+import ServerStatusService from '../../services/status-service';
 
 export const serverStatusState = atom({
   key: 'serverStatusState',

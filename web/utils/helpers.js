@@ -40,7 +40,7 @@ export function jumpToBottom(element, behavior) {
       });
     },
     50,
-    element
+    element,
   );
 }
 

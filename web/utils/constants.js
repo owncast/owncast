@@ -12,9 +12,9 @@ export const URL_BAN_USER = `/api/chat/users/setenabled`;
 
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
-export const URL_WEBSOCKET = `${
-  location.protocol === 'https:' ? 'wss' : 'ws'
-}://${location.host}/ws`;
+export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
+  location.host
+}/ws`;
 export const URL_CHAT_REGISTRATION = `/api/chat/register`;
 export const URL_FOLLOWERS = `/api/followers`;
 export const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
@@ -43,8 +43,7 @@ export const KEY_USERNAME = 'owncast_username';
 export const KEY_CUSTOM_USERNAME_SET = 'owncast_custom_username_set';
 export const KEY_CHAT_DISPLAYED = 'owncast_chat';
 export const KEY_CHAT_FIRST_MESSAGE_SENT = 'owncast_first_message_sent';
-export const CHAT_INITIAL_PLACEHOLDER_TEXT =
-  'Type here to chat, no account necessary.';
+export const CHAT_INITIAL_PLACEHOLDER_TEXT = 'Type here to chat, no account necessary.';
 export const CHAT_PLACEHOLDER_TEXT = 'Message';
 export const CHAT_PLACEHOLDER_OFFLINE = 'Chat is offline.';
 export const CHAT_MAX_MESSAGE_LENGTH = 500;
@@ -71,8 +70,7 @@ export const ORIENTATION_PORTRAIT = 'portrait';
 export const ORIENTATION_LANDSCAPE = 'landscape';
 
 // localstorage keys
-export const HAS_DISPLAYED_NOTIFICATION_MODAL_KEY =
-  'HAS_DISPLAYED_NOTIFICATION_MODAL';
+export const HAS_DISPLAYED_NOTIFICATION_MODAL_KEY = 'HAS_DISPLAYED_NOTIFICATION_MODAL';
 export const USER_VISIT_COUNT_KEY = 'USER_VISIT_COUNT';
 export const USER_DISMISSED_ANNOYING_NOTIFICATION_POPUP_KEY =
   'USER_DISMISSED_ANNOYING_NOTIFICATION_POPUP_KEY';

@@ -1,4 +1,4 @@
-import ServerStatus from '../models/ServerStatus';
+import ServerStatus from '../interfaces/server-status.model';
 
 const ENDPOINT = `http://localhost:8080/api/status`;
 
