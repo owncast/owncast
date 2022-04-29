@@ -1,3 +1,5 @@
+import { ChatMessage } from '../interfaces/chat-message.model';
+const ENDPOINT = `http://localhost:8080/api/chat`;
 const URL_CHAT_REGISTRATION = `http://localhost:8080/api/chat/register`;
 
 interface UserRegistrationResponse {
@@ -6,8 +8,14 @@ interface UserRegistrationResponse {
   displayName: string;
 }
 
-class UserService {
-  registerUser(username: string): Promise<UserRegistrationResponse> {
+class ChatService {
+  public static async getChatHistory(accessToken: string): Promise<ChatMessage[]> {
+    const response = await fetch(`${ENDPOINT}?accessToken=${accessToken}`);
+    const status = await response.json();
+    return status;
+  }
+
+  public static async registerUser(username: string): Promise<UserRegistrationResponse> {
     const options = {
       method: 'POST',
       headers: {
@@ -27,3 +35,5 @@ class UserService {
     return null;
   }
 }
+
+export default ChatService;
