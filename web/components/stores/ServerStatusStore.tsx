@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { atom, useRecoilState } from 'recoil';
 import { ServerStatus, makeEmptyServerStatus } from '../../interfaces/server-status.model';
 import ServerStatusService from '../../services/status-service';
@@ -9,7 +8,7 @@ export const serverStatusState = atom({
   default: makeEmptyServerStatus(),
 });
 
-export function ServerStatusStore(): ReactElement {
+export function ServerStatusStore() {
   const [, setServerStatus] = useRecoilState<ServerStatus>(serverStatusState);
 
   const updateServerStatus = async () => {

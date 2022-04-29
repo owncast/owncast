@@ -12,9 +12,9 @@ export const URL_BAN_USER = `/api/chat/users/setenabled`;
 
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
 export const URL_STREAM = `/hls/stream.m3u8`;
-export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
-  location.host
-}/ws`;
+// export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
+//   location.host
+// }/ws`;
 export const URL_CHAT_REGISTRATION = `/api/chat/register`;
 export const URL_FOLLOWERS = `/api/followers`;
 export const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
