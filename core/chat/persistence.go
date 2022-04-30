@@ -15,7 +15,7 @@ import (
 var _datastore *data.Datastore
 
 const (
-	maxBacklogHours  = 5  // Keep backlog max hours worth of messages
+	maxBacklogHours  = 2  // Keep backlog max hours worth of messages
 	maxBacklogNumber = 50 // Return max number of messages in history request
 )
 
