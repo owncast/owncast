@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -207,9 +209,9 @@ type rowData struct {
 	userType            *string
 }
 
-func getChat(query string) []interface{} {
+func getChat(query *sql.Stmt) []interface{} {
 	history := make([]interface{}, 0)
-	rows, err := _datastore.DB.Query(query)
+	rows, err := query.Query()
 	if err != nil || rows.Err() != nil {
 		log.Errorln("error fetching chat history", err)
 		return history
@@ -271,31 +273,46 @@ func getChat(query string) []interface{} {
 
 var _historyCache *[]interface{}
 
+var cachedAdminChatHistoryStatement *sql.Stmt
+
 // GetChatModerationHistory will return all the chat messages suitable for moderation purposes.
 func GetChatModerationHistory() []interface{} {
 	if _historyCache != nil {
 		return *_historyCache
 	}
 
+	if cachedAdminChatHistoryStatement == nil {
+		stmt, err := _datastore.DB.Prepare(`SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes, users.type FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC`)
+		if err != nil {
+			log.Errorln("error preparing chat moderation history statement", err)
+			return nil
+		}
+		cachedAdminChatHistoryStatement = stmt
+	}
+
 	// Get all messages regardless of visibility
-	query := "SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
-	result := getChat(query)
+	result := getChat(cachedAdminChatHistoryStatement)
 
 	_historyCache = &result
 
 	return result
 }
 
+var cachedChatHistoryStatement *sql.Stmt
+
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []interface{} {
-	// Get all visible messages
-	query := fmt.Sprintf("SELECT messages.id,messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.authenticated_at, users.scopes, users.type FROM messages LEFT JOIN users ON messages.user_id = users.id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
-	m := getChat(query)
-
-	// Invert order of messages
-	for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
-		m[i], m[j] = m[j], m[i]
+	if cachedChatHistoryStatement == nil {
+		stmt, err := _datastore.DB.Prepare(fmt.Sprintf("SELECT messages.id, messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.scopes, users.type FROM users JOIN messages ON users.id = messages.user_id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber))
+		if err != nil {
+			log.Errorln("error preparing chat history statement", err)
+			return nil
+		}
+		cachedChatHistoryStatement = stmt
 	}
+
+	// Get all visible messages
+	m := getChat(cachedChatHistoryStatement)
 
 	return m
 }
@@ -309,8 +326,12 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 
 	// Get a list of IDs to send to the connected clients to hide
 	ids := make([]string, 0)
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, authenticated, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
-	messages := getChat(query)
+	query := fmt.Sprintf("SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
+	stmt, err := _datastore.DB.Prepare(query)
+	if err != nil {
+		return errors.Wrap(err, "error preparing chat history statement when setting message visibility")
+	}
+	messages := getChat(stmt)
 
 	if len(messages) == 0 {
 		return nil
