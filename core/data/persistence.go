@@ -67,6 +67,7 @@ func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 		Key:   resultKey,
 		Value: resultValue,
 	}
+	ds.SetCachedValue(resultKey, resultValue)
 
 	return result, nil
 }
