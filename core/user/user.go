@@ -132,31 +132,26 @@ func addAccessTokenForUser(accessToken, userID string) error {
 	})
 }
 
+var createUserStatement *sql.Stmt
+
 func create(user *User) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	stmt, err := tx.Prepare("INSERT INTO users(id, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?)")
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(user.ID, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
-	if err != nil {
-		log.Errorln("error creating new user", err)
-		return err
+	if createUserStatement == nil {
+		stmt, err := _datastore.DB.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			return errors.Wrap(err, "error preparing create user statement")
+		}
+		createUserStatement = stmt
 	}
 
-	return tx.Commit()
+	_, err := createUserStatement.Exec(user.ID, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
+	if err != nil {
+		return errors.Wrap(err, "error creating user")
+	}
+
+	return nil
 }
 
 // SetEnabled will set the enabled status of a single user by ID.
@@ -191,6 +186,8 @@ func SetEnabled(userID string, enabled bool) error {
 	return tx.Commit()
 }
 
+var cachedGUserByTokenStatement *sql.Stmt
+
 // GetUserByToken will return a user by an access token.
 func GetUserByToken(token string) *User {
 	u, err := _datastore.GetQueries().GetUserByAccessToken(context.Background(), token)
@@ -198,10 +195,15 @@ func GetUserByToken(token string) *User {
 		return nil
 	}
 
-	var scopes []string
-	if u.Scopes.Valid {
-		scopes = strings.Split(u.Scopes.String, ",")
+	if cachedGUserByTokenStatement == nil {
+		stmt, err := _datastore.DB.Prepare("SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes FROM users WHERE access_token = ?")
+		if err != nil {
+			log.Errorln(err)
+			return nil
+		}
+		cachedGUserByTokenStatement = stmt
 	}
+	row := cachedGUserByTokenStatement.QueryRow(token)
 
 	var disabledAt *time.Time
 	if u.DisabledAt.Valid {
