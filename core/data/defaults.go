@@ -24,6 +24,8 @@ func hasPopulatedFederationDefaults() bool {
 
 // PopulateDefaults will set default values in the database.
 func PopulateDefaults() {
+	_datastore.warmCache()
+
 	defaults := config.GetDefaults()
 
 	if HasPopulatedDefaults() {
@@ -48,6 +50,5 @@ func PopulateDefaults() {
 		},
 	})
 
-	_datastore.warmCache()
 	_ = _datastore.SetBool("HAS_POPULATED_DEFAULTS", true)
 }
