@@ -22,3 +22,5 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           only-new-issues: true
+          args: --timeout=2m
+
