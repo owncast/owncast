@@ -17,7 +17,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _datastore *data.Datastore
+var (
+	_datastore                     *data.Datastore
+	_cachedGetUserByTokenStatement *sql.Stmt
+)
 
 const (
 	moderatorScopeKey              = "MODERATOR"
@@ -139,14 +142,14 @@ func create(user *User) error {
 	defer _datastore.DbLock.Unlock()
 
 	if createUserStatement == nil {
-		stmt, err := _datastore.DB.Prepare("INSERT INTO users(id, access_token, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
+		stmt, err := _datastore.DB.Prepare("INSERT INTO users(id, display_name, display_color, previous_names, created_at) values(?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			return errors.Wrap(err, "error preparing create user statement")
 		}
 		createUserStatement = stmt
 	}
 
-	_, err := createUserStatement.Exec(user.ID, user.AccessToken, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
+	_, err := createUserStatement.Exec(user.ID, user.DisplayName, user.DisplayColor, user.DisplayName, user.CreatedAt)
 	if err != nil {
 		return errors.Wrap(err, "error creating user")
 	}
@@ -186,8 +189,6 @@ func SetEnabled(userID string, enabled bool) error {
 	return tx.Commit()
 }
 
-var cachedGUserByTokenStatement *sql.Stmt
-
 // GetUserByToken will return a user by an access token.
 func GetUserByToken(token string) *User {
 	u, err := _datastore.GetQueries().GetUserByAccessToken(context.Background(), token)
@@ -195,15 +196,19 @@ func GetUserByToken(token string) *User {
 		return nil
 	}
 
-	if cachedGUserByTokenStatement == nil {
+	if _cachedGetUserByTokenStatement == nil {
 		stmt, err := _datastore.DB.Prepare("SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes FROM users WHERE access_token = ?")
 		if err != nil {
 			log.Errorln(err)
 			return nil
 		}
-		cachedGUserByTokenStatement = stmt
+		_cachedGetUserByTokenStatement = stmt
 	}
-	row := cachedGUserByTokenStatement.QueryRow(token)
+
+	var scopes []string
+	if u.Scopes.Valid {
+		scopes = strings.Split(u.Scopes.String, ",")
+	}
 
 	var disabledAt *time.Time
 	if u.DisabledAt.Valid {
