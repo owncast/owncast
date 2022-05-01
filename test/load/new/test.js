@@ -13,12 +13,13 @@ function randomNumber() {
   return randomIntBetween(1, 10000);
 }
 
-function randomSleep() {
-  sleep(randomIntBetween(10, 60));
-}
-
 function pingViewerAPI(params) {
   const response = http.get('http://localhost:8080/api/ping', params);
+  check(response, { 'status was 200': (r) => r.status == 200 });
+}
+
+function fetchStatusAPI(params) {
+  const response = http.get('http://localhost:8080/api/status', params);
   check(response, { 'status was 200': (r) => r.status == 200 });
 }
 
@@ -42,26 +43,15 @@ function registerUser() {
   return accessToken;
 }
 
-function connectToChat(accessToken, params) {
+function connectToChat(accessToken, params, callback) {
   // Connect to the chat server via web socket.
-  var wsResponse = ws.connect(
+  var chatSocket = ws.connect(
     `ws://127.0.0.1:8080/ws?accessToken=${accessToken}`,
     params,
-    function (socket) {
-      socket.on('open', function (data) {
-        const testMessage = {
-          body: `${randomString(randomIntBetween(10, 1000))} ${randomNumber()}`,
-          type: 'CHAT',
-        };
-
-        randomSleep(); // After a user joins they wait to send a message
-        socket.send(JSON.stringify(testMessage));
-        randomSleep(); // The user waits after sending a message to leave.
-        socket.close();
-      });
-    }
+    callback
   );
-  check(wsResponse, { 'status was 200': (r) => r.status == 200 });
+  check(chatSocket, { 'status was 200': (r) => r.status == 200 });
+  return chatSocket;
 }
 
 export default function () {
@@ -73,23 +63,36 @@ export default function () {
     },
   };
 
+  // Register a new chat user.
   const accessToken = registerUser(params);
+
   // Fetch chat history once you have an access token.
   fetchChatHistory(accessToken);
 
-  // A client hits the ping API every once in a while to
-  // keep track of the number of viewers. So we can emulate
-  // that.
-  pingViewerAPI(params);
+  // Connect to websocket and send messages
+  const callback = (chatSocket) => {
+    chatSocket.on('open', function (data) {
+      const testMessage = {
+        body: `${randomString(randomIntBetween(10, 1000))} ${randomNumber()}`,
+        type: 'CHAT',
+      };
 
-  // Emulate loading the master HLS playlist
+      chatSocket.send(JSON.stringify(testMessage));
+      sleep(4);
+      chatSocket.send(JSON.stringify(testMessage));
+      sleep(4);
+      chatSocket.send(JSON.stringify(testMessage));
+      sleep(4);
+
+      chatSocket.close();
+    });
+  };
+  connectToChat(accessToken, params, callback);
+
+  // Emulate a user playing back video and hitting the ping api.
+  pingViewerAPI(params);
   fetchHLSPlaylist(params);
-
-  // Register as a new chat user and connect.
-  connectToChat(accessToken, params);
-
-  sleep(8); // Emulate the ping timer on the client.
-  pingViewerAPI(params);
+  fetchStatusAPI(params);
 }
 
 export let options = {
@@ -97,14 +100,12 @@ export let options = {
   scenarios: {
     loadstages: {
       executor: 'ramping-vus',
-      startVUs: 0,
-      gracefulStop: '120s',
+      gracefulStop: '10s',
       stages: [
-        { duration: '10s', target: 20 },
-        { duration: '120s', target: 1000 },
-        { duration: '300s', target: 4000 },
+        { duration: '10s', target: 200 },
+        { duration: '25s', target: 3000 },
+        { duration: '10s', target: 0 },
       ],
-      gracefulRampDown: '10s',
     },
   },
 };
