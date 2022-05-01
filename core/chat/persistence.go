@@ -21,6 +21,13 @@ const (
 	maxBacklogNumber = 50 // Return max number of messages in history request
 )
 
+var (
+	_chatHistoryCache                *[]interface{}
+	_adminChatHistoryCache           *[]interface{}
+	_cachedAdminChatHistoryStatement *sql.Stmt
+	_cachedSaveEventStatement        *sql.Stmt
+)
+
 func setupPersistence() {
 	_datastore = data.GetDatastore()
 	data.CreateMessagesTable(_datastore.DB)
@@ -47,30 +54,23 @@ func saveFederatedAction(event events.FediverseEngagementEvent) {
 // nolint: unparam
 func saveEvent(id string, userID *string, body string, eventType string, hidden *time.Time, timestamp time.Time, image *string, link *string, title *string, subtitle *string) {
 	defer func() {
-		_historyCache = nil
+		_adminChatHistoryCache = nil
+		_chatHistoryCache = nil
 	}()
 
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		log.Errorln("error saving", eventType, err)
-		return
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	if _cachedSaveEventStatement == nil {
+		stmt, err := _datastore.DB.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp, image, link, title, subtitle) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			log.Errorln("error preparing save event statement", err)
+			return
+		}
+		_cachedSaveEventStatement = stmt
 	}
 
-	defer tx.Rollback() // nolint
-
-	stmt, err := tx.Prepare("INSERT INTO messages(id, user_id, body, eventType, hidden_at, timestamp, image, link, title, subtitle) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	if err != nil {
-		log.Errorln("error saving", eventType, err)
-		return
-	}
-
-	defer stmt.Close()
-
-	if _, err = stmt.Exec(id, userID, body, eventType, hidden, timestamp, image, link, title, subtitle); err != nil {
-		log.Errorln("error saving", eventType, err)
-		return
-	}
-	if err = tx.Commit(); err != nil {
+	if _, err := _cachedSaveEventStatement.Exec(id, userID, body, eventType, hidden, timestamp, image, link, title, subtitle); err != nil {
 		log.Errorln("error saving", eventType, err)
 		return
 	}
@@ -212,11 +212,15 @@ type rowData struct {
 func getChat(query *sql.Stmt) []interface{} {
 	history := make([]interface{}, 0)
 	rows, err := query.Query()
+
 	if err != nil || rows.Err() != nil {
 		log.Errorln("error fetching chat history", err)
 		return history
 	}
+
 	defer rows.Close()
+
+	rowDatas := []rowData{}
 
 	for rows.Next() {
 		row := rowData{}
@@ -248,6 +252,10 @@ func getChat(query *sql.Stmt) []interface{} {
 			break
 		}
 
+		rowDatas = append(rowDatas, row)
+	}
+
+	for _, row := range rowDatas {
 		var message interface{}
 
 		switch row.eventType {
@@ -271,29 +279,25 @@ func getChat(query *sql.Stmt) []interface{} {
 	return history
 }
 
-var _historyCache *[]interface{}
-
-var cachedAdminChatHistoryStatement *sql.Stmt
-
 // GetChatModerationHistory will return all the chat messages suitable for moderation purposes.
 func GetChatModerationHistory() []interface{} {
-	if _historyCache != nil {
-		return *_historyCache
+	if _adminChatHistoryCache != nil {
+		return *_adminChatHistoryCache
 	}
 
-	if cachedAdminChatHistoryStatement == nil {
+	if _cachedAdminChatHistoryStatement == nil {
 		stmt, err := _datastore.DB.Prepare(`SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes, users.type FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC`)
 		if err != nil {
 			log.Errorln("error preparing chat moderation history statement", err)
 			return nil
 		}
-		cachedAdminChatHistoryStatement = stmt
+		_cachedAdminChatHistoryStatement = stmt
 	}
 
 	// Get all messages regardless of visibility
-	result := getChat(cachedAdminChatHistoryStatement)
+	result := getChat(_cachedAdminChatHistoryStatement)
 
-	_historyCache = &result
+	_adminChatHistoryCache = &result
 
 	return result
 }
@@ -302,6 +306,10 @@ var cachedChatHistoryStatement *sql.Stmt
 
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []interface{} {
+	if _chatHistoryCache != nil {
+		return *_chatHistoryCache
+	}
+
 	if cachedChatHistoryStatement == nil {
 		stmt, err := _datastore.DB.Prepare(fmt.Sprintf("SELECT messages.id, messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.scopes, users.type FROM users JOIN messages ON users.id = messages.user_id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber))
 		if err != nil {
@@ -313,6 +321,7 @@ func GetChatHistory() []interface{} {
 
 	// Get all visible messages
 	m := getChat(cachedChatHistoryStatement)
+	_chatHistoryCache = &m
 
 	return m
 }
@@ -321,7 +330,8 @@ func GetChatHistory() []interface{} {
 // and then send out visibility changed events to chat clients.
 func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	defer func() {
-		_historyCache = nil
+		_adminChatHistoryCache = nil
+		_chatHistoryCache = nil
 	}()
 
 	// Get a list of IDs to send to the connected clients to hide
@@ -347,7 +357,8 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {
 	defer func() {
-		_historyCache = nil
+		_adminChatHistoryCache = nil
+		_chatHistoryCache = nil
 	}()
 
 	_datastore.DbLock.Lock()
