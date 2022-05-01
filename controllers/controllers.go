@@ -16,7 +16,6 @@ func InternalErrorHandler(w http.ResponseWriter, err error) {
 		return
 	}
 
-	w.WriteHeader(http.StatusInternalServerError)
 	if err := json.NewEncoder(w).Encode(j{"error": err.Error()}); err != nil {
 		InternalErrorHandler(w, err)
 	}
