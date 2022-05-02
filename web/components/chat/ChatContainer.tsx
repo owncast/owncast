@@ -28,7 +28,7 @@ export default function ChatContainer(props: Props) {
         itemContent={(index, message) => (
           <ChatUserMessage message={message} showModeratorMenu={false} />
         )}
-        followOutput="auto"
+        followOutput="smooth"
       />
     </div>
   );
