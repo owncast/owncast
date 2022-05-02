@@ -4,6 +4,7 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 import ChatContainer from '../../chat/ChatContainer';
 import { chatMessages, chatVisibility as chatVisibilityAtom } from '../../stores/ClientConfigStore';
 import { ChatVisibilityState } from '../../../interfaces/application-state';
+import ChatTextField from '../../chat/ChatTextField';
 
 export default function Sidebar() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessages);
@@ -21,6 +22,7 @@ export default function Sidebar() {
       }}
     >
       <ChatContainer messages={messages} />
+      <ChatTextField />
     </Sider>
   );
 }
