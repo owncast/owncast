@@ -1,8 +1,6 @@
 import { message } from 'antd';
 import { SocketMessageType } from '../interfaces/socket-events';
 
-
-
 interface SocketMessage {
   type: SocketMessageType;
   data: any;
@@ -61,7 +59,7 @@ export default class WebsocketService {
 
   // On ws error just close the socket and let it re-connect again for now.
   onError(e) {
-    console.error(e)
+    console.error(e);
     handleNetworkingError(`Socket error: ${e}`);
     this.websocket.close();
     // if (!this.isShutdown) {
