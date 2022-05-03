@@ -3,6 +3,7 @@ import videojs from 'video.js';
 
 require('video.js/dist/video-js.css');
 
+// TODO: Restore volume that was saved in local storage.
 // import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
 // import { PLAYER_VOLUME, URL_STREAM } from '../../utils/constants.js';
 
@@ -22,6 +23,8 @@ export function VideoJS(props) {
         player.log('player is ready');
         onReady && onReady(player);
       }));
+
+      // TODO: Add airplay support, video settings menu, latency compensator, etc.
 
       // You can update player in the `else` block here, for example:
       // } else {
