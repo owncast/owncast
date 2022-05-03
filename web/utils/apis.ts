@@ -120,6 +120,8 @@ interface FetchOptions {
   auth?: boolean;
 }
 
+
+
 export async function fetchData(url: string, options?: FetchOptions) {
   const { data, method = 'GET', auth = true } = options || {};
 
@@ -151,10 +153,20 @@ export async function fetchData(url: string, options?: FetchOptions) {
     }
     return json;
   } catch (error) {
+    console.error(error);
     return error;
     // console.log(error)
     // throw new Error(error)
   }
+}
+
+export async function getUnauthedData(url: string, options?: FetchOptions) {
+  const opts = {
+    method: 'GET',
+    auth: false,
+    ...options,
+  };
+  return fetchData(url, opts);
 }
 
 export async function fetchExternalData(url: string) {

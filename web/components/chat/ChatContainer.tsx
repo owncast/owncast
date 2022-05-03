@@ -21,7 +21,7 @@ export default function ChatContainer(props: Props) {
       <Spin spinning={loading} />
 
       <Virtuoso
-        style={{ height: 400 }}
+        style={{ height: '400px' }}
         ref={chatContainerRef}
         initialTopMostItemIndex={999}
         data={messages}

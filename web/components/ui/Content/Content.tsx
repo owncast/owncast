@@ -1,6 +1,6 @@
 import { useRecoilValue } from 'recoil';
 import { Layout, Row, Col, Tabs } from 'antd';
-import { clientConfigState } from '../../stores/ClientConfigStore';
+import { clientConfigStateAtom } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../../CustomPageContent';
 import OwncastPlayer from '../../video/OwncastPlayer';
@@ -11,7 +11,7 @@ const { TabPane } = Tabs;
 const { Content } = Layout;
 
 export default function FooterComponent() {
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigState);
+  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { extraPageContent } = clientConfig;
 
   return (

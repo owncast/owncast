@@ -1,5 +1,6 @@
 export enum AppState {
   Loading, // Initial loading state as config + status is loading.
+  Registering, // Creating a default anonymous chat account.
   Online, // Stream is active.
   Offline, // Stream is not active.
   OfflineWaiting, // Period of time after going offline chat is still available.
@@ -30,6 +31,8 @@ export function getChatState(state: AppState): ChatState {
       return ChatState.NotAvailable;
     case AppState.OfflineWaiting:
       return ChatState.Available;
+    case AppState.Registering:
+      return ChatState.Loading;
     default:
       return ChatState.Offline;
   }
@@ -46,6 +49,8 @@ export function getChatVisibilityState(state: AppState): ChatVisibilityState {
     case AppState.Offline:
       return ChatVisibilityState.Hidden;
     case AppState.OfflineWaiting:
+      return ChatVisibilityState.Visible;
+    case AppState.Registering:
       return ChatVisibilityState.Visible;
     default:
       return ChatVisibilityState.Hidden;
