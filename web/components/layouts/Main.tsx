@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import { ServerStatusStore } from '../stores/ServerStatusStore';
 import { ClientConfigStore } from '../stores/ClientConfigStore';
-import { Content, Footer, Header, Sidebar } from '../ui';
+import { Content, Header } from '../ui';
 
 function Main() {
   return (
@@ -9,12 +9,8 @@ function Main() {
       <ServerStatusStore />
       <ClientConfigStore />
       <Layout>
-        <Sidebar />
         <Header />
-        <Layout className="site-layout" style={{ marginRight: 200 }}>
-          <Content />
-          <Footer />
-        </Layout>
+        <Content />
       </Layout>
     </>
   );
