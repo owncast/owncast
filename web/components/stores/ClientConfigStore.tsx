@@ -63,7 +63,7 @@ export function ClientConfigStore() {
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
   const setChatVisibility = useSetRecoilState<ChatVisibilityState>(chatVisibilityAtom);
   const setChatState = useSetRecoilState<ChatState>(chatStateAtom);
-  const setChatMessages = useSetRecoilState<ChatMessage[]>(chatMessagesAtom);
+  const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
@@ -106,7 +106,7 @@ export function ClientConfigStore() {
         handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent);
         break;
       case SocketMessageType.CHAT:
-        handleChatMessage(message as ChatEvent);
+        handleChatMessage(message as ChatEvent, chatMessages, setChatMessages);
         break;
       default:
         console.error('Unknown socket message type: ', message.type);
@@ -116,8 +116,8 @@ export function ClientConfigStore() {
   const getChatHistory = async () => {
     try {
       const messages = await ChatService.getChatHistory(accessToken);
-      // console.log(`ChatService -> getChatHistory() messages: \n${JSON.stringify(messages)}`);
-      setChatMessages(messages);
+      const updatedChatMessages = [...messages, ...chatMessages];
+      setChatMessages(updatedChatMessages);
     } catch (error) {
       console.error(`ChatService -> getChatHistory() ERROR: \n${error}`);
     }

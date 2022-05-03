@@ -1,8 +1,11 @@
-import {
-  ChatEvent,
-  SocketEvent,
-} from '../../../interfaces/socket-events';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { ChatEvent } from '../../../interfaces/socket-events';
 
-export default function handleChatMessage(message: ChatEvent) {
-  console.log('chat message', message);
+export default function handleChatMessage(
+  message: ChatEvent,
+  messages: ChatMessage[],
+  setChatMessages,
+) {
+  const updatedMessages = [...messages, message];
+  setChatMessages(updatedMessages);
 }
