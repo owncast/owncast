@@ -115,7 +115,7 @@ export default class FediverseAuth extends Component {
     const message = verifying
       ? 'Paste in the code that was sent to your Fediverse account. If you did not receive a code, make sure you can accept direct messages.'
       : !authenticated
-      ? html`Receive a direct message from on the Fediverse to ${' '} link your
+      ? html`Receive a direct message on the Fediverse to ${' '} link your
           account to ${' '} <span class="font-bold">${username}</span>, or login
           as a previously linked chat user.`
       : html`<span

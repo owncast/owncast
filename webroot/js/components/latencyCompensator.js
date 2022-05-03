@@ -402,7 +402,7 @@ function getCurrentlyPlayingSegment(tech) {
 
   var segment;
 
-  // Itinerate trough available segments and get first within which snapshot_time is
+  // Iterate trough available segments and get first within which snapshot_time is
   for (var i = 0, l = target_media.segments.length; i < l; i++) {
     // Note: segment.end may be undefined or is not properly set
     if (snapshot_time < target_media.segments[i].end) {

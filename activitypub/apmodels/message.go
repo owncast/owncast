@@ -20,7 +20,7 @@ func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStr
 }
 
 // AddImageAttachmentToNote will add the provided image URL to the provided note object.
-func AddImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
+func AddImageAttachmentToNote(note vocab.ActivityStreamsNote, image, mediaType string) {
 	imageURL, err := url.Parse(image)
 	if err != nil {
 		return
@@ -40,9 +40,13 @@ func AddImageAttachmentToNote(note vocab.ActivityStreamsNote, image string) {
 	imageProp := streams.NewActivityStreamsImageProperty()
 	imageProp.AppendActivityStreamsImage(apImage)
 
-	imageDescription := streams.NewActivityStreamsContentProperty()
+	imageDescription := streams.NewActivityStreamsNameProperty()
 	imageDescription.AppendXMLSchemaString("Live stream preview")
-	apImage.SetActivityStreamsContent(imageDescription)
+	apImage.SetActivityStreamsName(imageDescription)
+
+	mediaTypeProperty := streams.NewActivityStreamsMediaTypeProperty()
+	mediaTypeProperty.Set(mediaType)
+	apImage.SetActivityStreamsMediaType(mediaTypeProperty)
 
 	attachments.AppendActivityStreamsImage(apImage)
 
