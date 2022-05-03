@@ -1,6 +1,4 @@
 import React from 'react';
-
-// This imports the functional component from the previous sample.
 import VideoJS from './player';
 
 export default function OwncastPlayer(props) {
