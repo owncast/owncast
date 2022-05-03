@@ -8,6 +8,7 @@ interface Props {}
 export default function ChatTextField(props: Props) {
   const [value, setValue] = useState('');
   const [showEmojis, setShowEmojis] = useState(false);
+  // large is 40px
   const size = 'large';
 
   useEffect(() => {
