@@ -1,9 +1,7 @@
-import { User } from './user';
+import { SocketEvent } from './socket-events';
+import { User } from './user.model';
 
-export interface ChatMessage {
-  id: string;
-  type: string;
-  timestamp: Date;
+export interface ChatMessage extends SocketEvent {
   user: User;
   body: string;
 }

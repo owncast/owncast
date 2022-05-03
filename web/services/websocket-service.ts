@@ -1,22 +1,7 @@
-import { message } from "antd";
+import { message } from 'antd';
+import { SocketMessageType } from '../interfaces/socket-events';
 
-enum SocketMessageType {
-  CHAT = 'CHAT',
-  PING = 'PING',
-  NAME_CHANGE = 'NAME_CHANGE',
-  PONG = 'PONG',
-  SYSTEM = 'SYSTEM',
-  USER_JOINED = 'USER_JOINED',
-  CHAT_ACTION = 'CHAT_ACTION',
-  FEDIVERSE_ENGAGEMENT_FOLLOW = 'FEDIVERSE_ENGAGEMENT_FOLLOW',
-  FEDIVERSE_ENGAGEMENT_LIKE = 'FEDIVERSE_ENGAGEMENT_LIKE',
-  FEDIVERSE_ENGAGEMENT_REPOST = 'FEDIVERSE_ENGAGEMENT_REPOST',
-  CONNECTED_USER_INFO = 'CONNECTED_USER_INFO',
-  ERROR_USER_DISABLED = 'ERROR_USER_DISABLED',
-  ERROR_NEEDS_REGISTRATION = 'ERROR_NEEDS_REGISTRATION',
-  ERROR_MAX_CONNECTIONS_EXCEEDED = 'ERROR_MAX_CONNECTIONS_EXCEEDED',
-  VISIBILITY_UPDATE = 'VISIBILITY-UPDATE',
-};
+
 
 interface SocketMessage {
   type: SocketMessageType;
@@ -32,9 +17,11 @@ export default class WebsocketService {
 
   websocketReconnectTimer: ReturnType<typeof setTimeout>;
 
+  handleMessage?: (message: SocketMessage) => void;
+
   constructor(accessToken, path) {
     this.accessToken = accessToken;
-    this.path = 'http://localhost:8080/ws';
+    this.path = path;
     // this.websocketReconnectTimer = null;
     // this.accessToken = accessToken;
 
@@ -53,9 +40,10 @@ export default class WebsocketService {
   }
 
   createAndConnect() {
-    const url = new URL(this.path);
+    const url = new URL('ws://localhost:8080/ws');
     url.searchParams.append('accessToken', this.accessToken);
 
+    console.log('connecting to ', url.toString());
     const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
     // ws.onclose = this.onClose.bind(this);
@@ -73,7 +61,8 @@ export default class WebsocketService {
 
   // On ws error just close the socket and let it re-connect again for now.
   onError(e) {
-    handleNetworkingError(`Socket error: ${JSON.parse(e)}`);
+    console.error(e)
+    handleNetworkingError(`Socket error: ${e}`);
     this.websocket.close();
     // if (!this.isShutdown) {
     //   this.scheduleReconnect();
@@ -95,6 +84,9 @@ export default class WebsocketService {
     for (let i = 0; i < messages.length; i++) {
       try {
         message = JSON.parse(messages[i]);
+        if (this.handleMessage) {
+          this.handleMessage(message);
+        }
       } catch (e) {
         console.error(e, e.data);
         return;
@@ -133,6 +125,6 @@ export default class WebsocketService {
 
 function handleNetworkingError(error) {
   console.error(
-    `Chat has been disconnected and is likely not working for you. It's possible you were removed from chat. If this is a server configuration issue, visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`
+    `Chat has been disconnected and is likely not working for you. It's possible you were removed from chat. If this is a server configuration issue, visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`,
   );
 }

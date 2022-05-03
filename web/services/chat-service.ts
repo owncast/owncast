@@ -24,8 +24,8 @@ class ChatService {
       body: JSON.stringify({ displayName: username }),
     };
 
-      const response = await getUnauthedData(URL_CHAT_REGISTRATION, options);
-      return response;
+    const response = await getUnauthedData(URL_CHAT_REGISTRATION, options);
+    return response;
   }
 }
 

@@ -120,8 +120,6 @@ interface FetchOptions {
   auth?: boolean;
 }
 
-
-
 export async function fetchData(url: string, options?: FetchOptions) {
   const { data, method = 'GET', auth = true } = options || {};
 
