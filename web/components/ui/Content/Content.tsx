@@ -1,6 +1,12 @@
 import { useRecoilValue } from 'recoil';
-import { Layout, Tabs } from 'antd';
-import { chatVisibilityAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
+import { Layout, Tabs, Layout, Row, Col, Tabs } from 'antd';
+import Grid from 'antd/lib/card/Grid';
+import {
+  chatVisibilityAtom,
+  clientConfigStateAtom,
+  chatMessagesAtom,
+  chatStateAtom,
+} from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../../CustomPageContent';
 import OwncastPlayer from '../../video/OwncastPlayer';
@@ -10,7 +16,6 @@ import Sidebar from '../Sidebar';
 import Footer from '../Footer';
 import ChatContainer from '../../chat/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { chatMessagesAtom, chatStateAtom } from '../../stores/ClientConfigStore';
 import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
 import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 
@@ -26,6 +31,10 @@ export default function FooterComponent() {
 
   const { extraPageContent } = clientConfig;
 
+  const followers: Follower[] = [];
+
+  const total = 0;
+
   return (
     <Content className={`${s.root}`} data-columns={chatOpen ? 2 : 1}>
       <div className={`${s.leftCol}`}>
@@ -36,7 +45,7 @@ export default function FooterComponent() {
               <CustomPageContent content={extraPageContent} />
             </TabPane>
             <TabPane tab="Followers" key="2">
-              <FollowerCollection />
+              <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
           {chatOpen && (

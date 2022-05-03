@@ -1,14 +1,14 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import * as FollowerComponent from '../components/Follower';
+import SingleFollower from '../components/Follower';
 
 export default {
   title: 'owncast/Follower',
-  component: FollowerComponent,
+  component: SingleFollower,
   parameters: {},
-} as ComponentMeta<typeof FollowerComponent>;
+} as ComponentMeta<typeof SingleFollower>;
 
-const Template: ComponentStory<typeof FollowerComponent> = args => <FollowerComponent {...args} />;
+const Template: ComponentStory<typeof SingleFollower> = args => <SingleFollower {...args} />;
 
 export const Example = Template.bind({});
 Example.args = {

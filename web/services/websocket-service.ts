@@ -1,8 +1,8 @@
 import { message } from 'antd';
-import { SocketMessageType } from '../interfaces/socket-events';
+import { MessageType } from '../interfaces/socket-events';
 
 interface SocketMessage {
-  type: SocketMessageType;
+  type: MessageType;
   data: any;
 }
 
@@ -96,7 +96,7 @@ export default class WebsocketService {
       }
 
       // Send PONGs
-      if (message.type === SocketMessageType.PING) {
+      if (message.type === MessageType.PING) {
         this.sendPong();
         return;
       }
@@ -106,7 +106,7 @@ export default class WebsocketService {
   // Outbound: Other components can pass an object to `send`.
   send(message: any) {
     // Sanity check that what we're sending is a valid type.
-    if (!message.type || !SocketMessageType[message.type]) {
+    if (!message.type || !MessageType[message.type]) {
       console.warn(`Outbound message: Unknown socket message type: "${message.type}" sent.`);
     }
 
@@ -116,7 +116,7 @@ export default class WebsocketService {
 
   // Reply to a PING as a keep alive.
   sendPong() {
-    const pong = { type: SocketMessageType.PONG };
+    const pong = { type: MessageType.PONG };
     this.send(pong);
   }
 }

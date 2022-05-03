@@ -1,6 +1,6 @@
 import { User } from './user.model';
 
-export enum SocketMessageType {
+export enum MessageType {
   CHAT = 'CHAT',
   PING = 'PING',
   NAME_CHANGE = 'NAME_CHANGE',
@@ -21,7 +21,7 @@ export enum SocketMessageType {
 export interface SocketEvent {
   id: string;
   timestamp: Date;
-  type: SocketMessageType;
+  type: MessageType;
 }
 
 export interface ConnectedClientInfoEvent extends SocketEvent {
