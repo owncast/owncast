@@ -38,6 +38,8 @@ module.exports = {
     'no-console': 'off',
     'no-use-before-define': [0],
     '@typescript-eslint/no-use-before-define': [1],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
     'react/jsx-no-target-blank': [
       1,
       {
