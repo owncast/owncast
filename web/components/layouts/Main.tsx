@@ -11,10 +11,8 @@ function Main() {
       <Layout>
         <Sidebar />
         <Header />
-        <Layout className="site-layout" style={{ marginRight: 200 }}>
-          <Content />
-          <Footer />
-        </Layout>
+        <Content />
+        <Footer />
       </Layout>
     </>
   );

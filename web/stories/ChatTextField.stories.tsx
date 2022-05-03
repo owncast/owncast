@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatTextField from '../components/chat/ChatTextField';
+import ChatTextField from '../components/chat/ChatTextField/ChatTextField';
 
 export default {
   title: 'owncast/Chat/Input text field',

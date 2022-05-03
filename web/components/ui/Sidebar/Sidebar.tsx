@@ -9,7 +9,7 @@ import {
   chatStateAtom,
 } from '../../stores/ClientConfigStore';
 import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
-import ChatTextField from '../../chat/ChatTextField';
+import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 
 export default function Sidebar() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
