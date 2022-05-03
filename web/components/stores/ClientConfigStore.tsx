@@ -17,7 +17,7 @@ import {
 import {
   SocketEvent,
   ConnectedClientInfoEvent,
-  SocketMessageType,
+  MessageType,
   ChatEvent,
 } from '../../interfaces/socket-events';
 import handleConnectedClientInfoMessage from './eventhandlers/connectedclientinfo';
@@ -102,10 +102,10 @@ export function ClientConfigStore() {
 
   const handleMessage = (message: SocketEvent) => {
     switch (message.type) {
-      case SocketMessageType.CONNECTED_USER_INFO:
+      case MessageType.CONNECTED_USER_INFO:
         handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent);
         break;
-      case SocketMessageType.CHAT:
+      case MessageType.CHAT:
         handleChatMessage(message as ChatEvent, chatMessages, setChatMessages);
         break;
       default:
