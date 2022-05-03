@@ -9,7 +9,7 @@ import {
   chatStateAtom,
 } from '../../stores/ClientConfigStore';
 import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
-import ChatTextField from '../../chat/ChatTextField';
+import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 
 export default function Sidebar() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
@@ -20,13 +20,7 @@ export default function Sidebar() {
     <Sider
       collapsed={chatVisibility === ChatVisibilityState.Hidden}
       collapsedWidth={0}
-      width={300}
-      style={{
-        position: 'fixed',
-        right: 0,
-        top: 0,
-        bottom: 0,
-      }}
+      width="100%"
     >
       <ChatContainer messages={messages} state={chatState} />
       <ChatTextField />

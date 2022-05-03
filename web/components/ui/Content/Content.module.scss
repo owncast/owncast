@@ -1,0 +1,14 @@
+.root {
+    display: grid;
+    grid-template-columns: 8fr 4fr;
+}
+
+.leftCol {
+    display: grid;
+    // -64px, which is the header
+    grid-template-rows: 50vh calc(50vh - 64px);
+}
+.lowerRow {
+    display: grid;
+    grid-template-rows: 1fr 64px;
+}

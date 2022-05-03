@@ -17,11 +17,9 @@ export default function ChatContainer(props: Props) {
   const chatContainerRef = useRef(null);
 
   return (
-    <div>
+    <div style={{ height: 'calc(100vh - 104.5px)' }}>
       <Spin spinning={loading} />
-
       <Virtuoso
-        style={{ height: '400px' }}
         ref={chatContainerRef}
         initialTopMostItemIndex={999}
         data={messages}

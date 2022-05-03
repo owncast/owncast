@@ -47,7 +47,11 @@ export function VideoJS(props) {
 
   return (
     <div data-vjs-player>
-      <video ref={videoRef} className="video-js vjs-big-play-centered" />
+      <video
+        ref={videoRef}
+        className="video-js vjs-big-play-centered"
+        style={{ width: '100%', height: '100%' }}
+      />
     </div>
   );
 }
