@@ -183,7 +183,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return
 	}
-
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Debugln(err)

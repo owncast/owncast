@@ -11,7 +11,8 @@ export default function OwncastPlayer(props) {
     autoplay: false,
     controls: true,
     responsive: true,
-    fluid: true,
+    fluid: false,
+    playsInline: true,
     liveui: true,
     preload: 'auto',
     controlBar: {

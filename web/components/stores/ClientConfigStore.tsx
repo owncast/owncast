@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { useEffect, useLayoutEffect } from 'react';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
@@ -13,6 +14,14 @@ import {
   getChatState,
   getChatVisibilityState,
 } from '../../interfaces/application-state';
+import {
+  SocketEvent,
+  ConnectedClientInfoEvent,
+  SocketMessageType,
+  ChatEvent,
+} from '../../interfaces/socket-events';
+import handleConnectedClientInfoMessage from './eventhandlers/connectedclientinfo';
+import handleChatMessage from './eventhandlers/handleChatMessage';
 
 // The config that comes from the API.
 export const clientConfigStateAtom = atom({
@@ -52,12 +61,14 @@ export const chatMessagesAtom = atom<ChatMessage[]>({
 
 export function ClientConfigStore() {
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
-  const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
   const setChatVisibility = useSetRecoilState<ChatVisibilityState>(chatVisibilityAtom);
-  const [chatState, setChatState] = useRecoilState<ChatState>(chatStateAtom);
+  const setChatState = useSetRecoilState<ChatState>(chatStateAtom);
   const setChatMessages = useSetRecoilState<ChatMessage[]>(chatMessagesAtom);
-  const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
+  const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
+  const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
+
+  let websocketService: WebsocketService;
 
   const updateClientConfig = async () => {
     try {
@@ -89,14 +100,36 @@ export function ClientConfigStore() {
     }
   };
 
+  const handleMessage = (message: SocketEvent) => {
+    switch (message.type) {
+      case SocketMessageType.CONNECTED_USER_INFO:
+        handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent);
+        break;
+      case SocketMessageType.CHAT:
+        handleChatMessage(message as ChatEvent);
+        break;
+      default:
+        console.error('Unknown socket message type: ', message.type);
+    }
+  };
+
   const getChatHistory = async () => {
-    setChatState(ChatState.Loading);
     try {
       const messages = await ChatService.getChatHistory(accessToken);
       // console.log(`ChatService -> getChatHistory() messages: \n${JSON.stringify(messages)}`);
       setChatMessages(messages);
     } catch (error) {
       console.error(`ChatService -> getChatHistory() ERROR: \n${error}`);
+    }
+  };
+
+  const startChat = async () => {
+    setChatState(ChatState.Loading);
+    try {
+      websocketService = new WebsocketService(accessToken, '/ws');
+      websocketService.handleMessage = handleMessage;
+    } catch (error) {
+      console.error(`ChatService -> startChat() ERROR: \n${error}`);
     }
     setChatState(ChatState.Available);
   };
@@ -111,8 +144,8 @@ export function ClientConfigStore() {
       return;
     }
 
-    console.log('access token changed', accessToken);
     getChatHistory();
+    startChat();
   }, [accessToken]);
 
   useEffect(() => {
