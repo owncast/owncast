@@ -26,15 +26,14 @@ export default function ChatContainer(props: Props) {
       default:
         return null;
     }
-    return null;
   };
 
-  console.log(messages);
   return (
     <div>
       <h1>Chat</h1>
       <Spin spinning={loading} indicator={spinIcon} />
       <Virtuoso
+        style={{ height: '80vh' }}
         ref={chatContainerRef}
         initialTopMostItemIndex={999}
         data={messages}

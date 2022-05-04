@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { Layout, Tabs, Layout, Row, Col, Tabs } from 'antd';
+import { Layout, Row, Col, Tabs } from 'antd';
 import Grid from 'antd/lib/card/Grid';
 import {
   chatVisibilityAtom,
