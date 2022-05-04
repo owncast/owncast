@@ -1,14 +1,33 @@
 .root {
     display: grid;
-    grid-template-columns: 8fr 4fr;
+    grid-template-columns: 1fr;
+}
+
+.mobileChat {
+    display: block;
+    position: absolute;
+    background-color: white;
+    top: 0px;
+    width: 100%;
+    height: calc(50vh - var(--header-h));
 }
 
 .leftCol {
     display: grid;
     // -64px, which is the header
-    grid-template-rows: 50vh calc(50vh - 64px);
+    grid-template-rows: 50vh calc(50vh - var(--header-h));
 }
 .lowerRow {
+    position: relative;
     display: grid;
-    grid-template-rows: 1fr 64px;
+    grid-template-rows: 1fr var(--header-h);
+}
+
+@media (min-width: 768px) {
+    .mobileChat {
+        display: none;
+    }
+    .root[data-columns='2'] {
+        grid-template-columns: 1fr var(--chat-w);
+    }
 }

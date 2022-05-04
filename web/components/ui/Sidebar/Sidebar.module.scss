@@ -1,0 +1,12 @@
+.root {
+  background-color: var(--gray-700);
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .root {
+    display: flex;
+  }
+}
+
+
