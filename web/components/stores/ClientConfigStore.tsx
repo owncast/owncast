@@ -59,6 +59,11 @@ export const chatMessagesAtom = atom<ChatMessage[]>({
   default: [] as ChatMessage[],
 });
 
+export const websocketServiceAtom = atom<WebsocketService>({
+  key: 'websocketServiceAtom',
+  default: null,
+});
+
 export function ClientConfigStore() {
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
   const setChatVisibility = useSetRecoilState<ChatVisibilityState>(chatVisibilityAtom);
@@ -67,8 +72,10 @@ export function ClientConfigStore() {
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
+  const [websocketService, setWebsocketService] =
+    useRecoilState<WebsocketService>(websocketServiceAtom);
 
-  let websocketService: WebsocketService;
+  // let websocketService: WebsocketService;
 
   const updateClientConfig = async () => {
     try {
@@ -126,8 +133,9 @@ export function ClientConfigStore() {
   const startChat = async () => {
     setChatState(ChatState.Loading);
     try {
-      websocketService = new WebsocketService(accessToken, '/ws');
-      websocketService.handleMessage = handleMessage;
+      const ws = new WebsocketService(accessToken, '/ws');
+      ws.handleMessage = handleMessage;
+      setWebsocketService(ws);
     } catch (error) {
       console.error(`ChatService -> startChat() ERROR: \n${error}`);
     }
