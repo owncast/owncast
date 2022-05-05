@@ -1,27 +1,101 @@
 import { SmileOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import React, { useRef, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
-import ContentEditable from 'react-contenteditable';
+import { Transforms, createEditor, Node, BaseEditor, Text } from 'slate';
+import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { getCaretPosition, convertToText, convertOnPaste } from '../chat';
 import { MessageType } from '../../../interfaces/socket-events';
 import s from './ChatTextField.module.scss';
 
+type CustomElement = { type: 'paragraph'; children: CustomText[] };
+type CustomText = { text: string };
+
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor & ReactEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
+}
+
 interface Props {
   value?: string;
 }
 
+const Image = ({ element }) => (
+  <img
+    src={element.url}
+    alt="emoji"
+    style={{ display: 'inline', position: 'relative', width: '30px', bottom: '10px' }}
+  />
+);
+
+const insertImage = (editor, url) => {
+  const text = { text: '' };
+  const image: ImageElement = { type: 'image', url, children: [text] };
+  Transforms.insertNodes(editor, image);
+};
+
+const withImages = editor => {
+  const { isVoid } = editor;
+
+  editor.isVoid = element => (element.type === 'image' ? true : isVoid(element));
+  editor.isInline = element => element.type === 'image';
+
+  return editor;
+};
+
+export type EmptyText = {
+  text: string;
+};
+
+type ImageElement = {
+  type: 'image';
+  url: string;
+  children: EmptyText[];
+};
+
+const Element = props => {
+  const { attributes, children, element } = props;
+
+  switch (element.type) {
+    case 'image':
+      return <Image {...props} />;
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
+const serialize = node => {
+  if (Text.isText(node)) {
+    let string = node.text; // escapeHtml(node.text);
+    if (node.bold) {
+      string = `<strong>${string}</strong>`;
+    }
+    return string;
+  }
+
+  const children = node.children.map(n => serialize(n)).join('');
+
+  switch (node.type) {
+    case 'paragraph':
+      return `<p>${children}</p>`;
+    case 'image':
+      return `<img src="${node.url}" alt="emoji" />`;
+    default:
+      return children;
+  }
+};
+
 export default function ChatTextField(props: Props) {
   const { value: originalValue } = props;
-  const [value, setValue] = useState(originalValue);
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
+  const [editor] = useState(() => withImages(withReact(createEditor())));
 
-  const text = useRef(value);
-
-  // large is 40px
   const size = 'small';
 
   const sendMessage = () => {
@@ -30,41 +104,46 @@ export default function ChatTextField(props: Props) {
       return;
     }
 
-    const message = convertToText(value);
+    const message = serialize(editor);
+
     websocketService.send({ type: MessageType.CHAT, body: message });
-    setValue('');
+
+    // Clear the editor.
+    Transforms.select(editor, [0, editor.children.length - 1]);
+    Transforms.delete(editor);
   };
 
-  const handleChange = evt => {
-    text.current = evt.target.value;
-    setValue(evt.target.value);
-  };
+  const handleChange = e => {};
 
-  const handleKeyDown = event => {
-    const key = event && event.key;
-
-    if (key === 'Enter') {
+  const onKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
+  const initialValue = [
+    {
+      type: 'paragraph',
+      children: [{ text: originalValue }],
+    },
+  ];
+
   return (
     <div>
-      <Input.Group compact style={{ display: 'flex', width: '100%', position: 'absolute' }}>
-        <ContentEditable
-          style={{ width: '60%', maxHeight: '50px', padding: '5px' }}
-          html={text.current}
-          onChange={handleChange}
-          onKeyDown={e => {
-            handleKeyDown(e);
-          }}
+      <Slate editor={editor} value={initialValue} onChange={handleChange}>
+        <Editable
+          onKeyDown={onKeyDown}
+          renderElement={props => <Element {...props} />}
+          placeholder="Chat message goes here..."
         />
-        <Button type="default" ghost title="Emoji" onClick={() => setShowEmojis(!showEmojis)}>
-          <SmileOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-        </Button>
-        <Button size={size} type="primary" onClick={sendMessage}>
-          Submit
-        </Button>
-      </Input.Group>
+      </Slate>
+      <Button type="default" ghost title="Emoji" onClick={() => setShowEmojis(!showEmojis)}>
+        <SmileOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+      </Button>
+      <Button size={size} type="primary" onClick={sendMessage}>
+        Submit
+      </Button>
     </div>
   );
 }
