@@ -1,12 +1,12 @@
 import { SmileOutlined } from '@ant-design/icons';
-import { Button, Input } from 'antd';
-import React, { useState, useMemo } from 'react';
+import { Button, Popover } from 'antd';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, Node, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
+import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
-import { getCaretPosition, convertToText, convertOnPaste } from '../chat';
 import { MessageType } from '../../../interfaces/socket-events';
 import s from './ChatTextField.module.scss';
 
@@ -71,7 +71,7 @@ const Element = props => {
 
 const serialize = node => {
   if (Text.isText(node)) {
-    let string = node.text; // escapeHtml(node.text);
+    let string = node.text;
     if (node.bold) {
       string = `<strong>${string}</strong>`;
     }
@@ -115,6 +115,19 @@ export default function ChatTextField(props: Props) {
 
   const handleChange = e => {};
 
+  const handleEmojiSelect = emoji => {
+    console.log(emoji);
+    if (!emoji.native) {
+      // Custom emoji
+      const { src } = emoji;
+      insertImage(editor, src);
+    } else {
+      // Native emoji
+      const { native } = emoji;
+      Transforms.insertText(editor, native);
+    }
+  };
+
   const onKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -141,9 +154,18 @@ export default function ChatTextField(props: Props) {
       <Button type="default" ghost title="Emoji" onClick={() => setShowEmojis(!showEmojis)}>
         <SmileOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
       </Button>
+
       <Button size={size} type="primary" onClick={sendMessage}>
         Submit
       </Button>
+
+      <Popover
+        content={<EmojiPicker onEmojiSelect={handleEmojiSelect} />}
+        trigger="click"
+        onVisibleChange={visible => setShowEmojis(visible)}
+        visible={showEmojis}
+        placement="bottomLeft"
+      />
     </div>
   );
 }
