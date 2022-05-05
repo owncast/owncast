@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ExternalActionButton from '../components/ExternalActionButton';
+import ExternalActionButton from '../components/action-buttons/ExternalActionButton';
 
 export default {
   title: 'owncast/External action button',

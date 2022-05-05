@@ -18,6 +18,7 @@ import ChatContainer from '../../chat/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
 import ChatTextField from '../../chat/ChatTextField/ChatTextField';
+import ExternalActionButtonRow from '../../action-buttons/ExternalActionButtonRow';
 
 const { TabPane } = Tabs;
 
@@ -39,6 +40,18 @@ export default function FooterComponent() {
     <Content className={`${s.root}`} data-columns={chatOpen ? 2 : 1}>
       <div className={`${s.leftCol}`}>
         <OwncastPlayer source="https://watch.owncast.online" />
+        <ExternalActionButtonRow
+          actions={[
+            {
+              url: 'https://owncast.online/docs',
+              title: 'Example button',
+              description: 'Example button description',
+              icon: 'https://owncast.online/images/logo.svg',
+              color: '#5232c8',
+              openExternally: true,
+            },
+          ]}
+        />
         <div className={`${s.lowerRow}`}>
           <Tabs defaultActiveKey="1" type="card">
             <TabPane tab="About" key="1">
