@@ -75,12 +75,11 @@ export function ClientConfigStore() {
   const [websocketService, setWebsocketService] =
     useRecoilState<WebsocketService>(websocketServiceAtom);
 
-  // let websocketService: WebsocketService;
+  let ws: WebsocketService;
 
   const updateClientConfig = async () => {
     try {
       const config = await ClientConfigService.getConfig();
-      // console.log(`ClientConfig: ${JSON.stringify(config)}`);
       setClientConfig(config);
       setAppState(AppState.Online);
     } catch (error) {
@@ -133,7 +132,7 @@ export function ClientConfigStore() {
   const startChat = async () => {
     setChatState(ChatState.Loading);
     try {
-      const ws = new WebsocketService(accessToken, '/ws');
+      ws = new WebsocketService(accessToken, '/ws');
       ws.handleMessage = handleMessage;
       setWebsocketService(ws);
     } catch (error) {
