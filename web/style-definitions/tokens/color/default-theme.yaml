@@ -1,7 +1,7 @@
 # These are the variables used in the user interface.
 # They can be overwritten to customize the look and feel.
 # We should write some documentation on how to do that when the time comes.
-# The fewer there are the better as it'll be easier to customize and document.
+# The fewer there are the easier it'll be easier to customize and document.
 
 theme:
   primary-color:
@@ -24,7 +24,7 @@ theme:
     comment: "A secondary background color used in sections and controls."
   rounded-corners:
     value: "5px"
-    comment: "The radius of rounded corners."
+    comment: "The radius of rounded corners used in places."
 
   success-color:
     value: "{color.owncast.green.500.value}"

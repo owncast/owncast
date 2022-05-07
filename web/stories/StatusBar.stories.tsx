@@ -1,25 +1,25 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import StatusBar from '../components/video/StatusBar';
+import { subHours } from 'date-fns';
+import Statusbar from '../components/ui/Statusbar/Statusbar';
 
 export default {
   title: 'owncast/Status bar',
-  component: StatusBar,
+  component: Statusbar,
   parameters: {},
-} as ComponentMeta<typeof StatusBar>;
+} as ComponentMeta<typeof Statusbar>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof StatusBar> = args => <StatusBar {...args} />;
+const Template: ComponentStory<typeof Statusbar> = args => <Statusbar {...args} />;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Online = Template.bind({});
 Online.args = {
   online: true,
-  viewers: 42,
-  timer: '10:42',
+  viewerCount: 42,
+  lastConnectTime: subHours(new Date(), 3),
 };
 
 export const Offline = Template.bind({});
 Offline.args = {
   online: false,
+  lastDisconnectTime: subHours(new Date(), 3),
 };

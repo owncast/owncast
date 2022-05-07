@@ -1,17 +1,15 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ExternalActionButton from '../components/action-buttons/ExternalActionButton';
+import ActionButton from '../components/action-buttons/ActionButton';
 
 export default {
   title: 'owncast/External action button',
-  component: ExternalActionButton,
+  component: ActionButton,
   parameters: {},
-} as ComponentMeta<typeof ExternalActionButton>;
+} as ComponentMeta<typeof ActionButton>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ExternalActionButton> = args => (
-  <ExternalActionButton {...args} />
-);
+const Template: ComponentStory<typeof ActionButton> = args => <ActionButton {...args} />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Example1 = Template.bind({});
