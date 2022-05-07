@@ -11,7 +11,7 @@ link-color:
 popover-background:
   value: "var(--theme-background)"
 background-color-light:
-  value: "{color.owncast.purple.100.value}"
+  value: "var(--theme-background-secondary)"
 
 # These values require explicit colors and cannot take css variables.
 primary-color: 

@@ -2,7 +2,7 @@
 import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/globals.scss';
-// import '../styles/ant-overrides.scss';
+import '../styles/ant-overrides.scss';
 import '../styles/markdown-editor.scss';
 
 import '../styles/main-layout.scss';

@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Sat, 07 May 2022 06:21:28 GMT
+ * Generated on Sat, 07 May 2022 17:24:18 GMT
  */
 
 :root {
@@ -8,7 +8,7 @@
   --text-color-secondry: var(--theme-text-color-secondary);
   --link-color: var(--theme-link-color);
   --popover-background: var(--theme-background);
-  --background-color-light: #f4ebff;
+  --background-color-light: var(--theme-background-secondary);
   --primary-color: #9e77ed;
   --info-color: #667085;
   --success-color: #12b76a;
@@ -18,18 +18,18 @@
   --green-base: #12b76a;
   --red-base: #f04438;
   --orange-base: #f79009;
-  --theme-primary-color: #9e77ed;
-  --theme-text-color: #d0d5dd;
+  --theme-primary-color: #9e77ed; /* The primary color of the application used for rendering controls. */
+  --theme-text-color: #d0d5dd; /* The color of the text in the application. */
   --theme-text-color-secondary: #667085;
   --theme-link-color: #9e77ed;
+  --theme-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-background: #1b1a26; /* The main background color of the page. */
+  --theme-background-secondary: #16151f; /* A secondary background color used in sections and controls. */
+  --theme-rounded-corners: 5px; /* The radius of rounded corners. */
   --theme-success-color: #12b76a;
   --theme-info-color: #d6bbfb;
   --theme-warning-color: #f79009;
   --theme-error-color: #f04438;
-  --theme-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --theme-background: #171523;
   --color-owncast-purple-100: #f4ebff;
   --color-owncast-purple-300: #d6bbfb;
   --color-owncast-purple-500: #9e77ed;
@@ -58,22 +58,20 @@
   --color-owncast-logo-purple: #7871ff;
   --color-owncast-logo-pink: #c98bfe;
   --color-owncast-logo-blue: #2086e1;
-  --color-owncast-background-light: #1b1a26;
-  --color-owncast-background: #171523;
-  --font-owncast-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  --color-owncast-background: #1b1a26;
+  --color-owncast-background-secondary: #16151f;
+  --font-owncast-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --owncast-purple: #7871ff;
   --owncast-purple-25: rgba(120, 113, 255, 0.25);
   --owncast-purple-50: rgba(120, 113, 255, 0.5);
   --online-color: #73dd3f;
   --offline-color: #999;
   --pink: #c98bfe;
-  --purple: #7871ff;
+  --purple: #9e77ed;
   --blue: #2086e1;
   --white-88: #667085;
-  --purple-dark: rgba(28, 26, 59, 1);
-  --default-link-color: #c98bfe;
-  --default-bg-color: black;
-  --default-text-color: rgba(255, 255, 255, 0.88);
+  --purple-dark: #42307d;
+  --default-link-color: #6941c6;
+  --default-bg-color: #1b1a26;
+  --default-text-color: #f2f4f7;
 }

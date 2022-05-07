@@ -23,6 +23,14 @@
     grid-template-rows: 1fr var(--header-h);
 }
 
+.pageContentSection {
+  background-color: var(--theme-background-secondary);
+  border-radius: var(--theme-rounded-corners);
+  margin: 1vw;
+  padding: 1vw;
+  width: 100%;
+}
+
 @media (min-width: 768px) {
     .mobileChat {
         display: none;

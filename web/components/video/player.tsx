@@ -1,5 +1,6 @@
 import React from 'react';
 import videojs from 'video.js';
+import s from './Player.module.scss';
 
 require('video.js/dist/video-js.css');
 
@@ -47,11 +48,7 @@ export function VideoJS(props) {
 
   return (
     <div data-vjs-player>
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered"
-        style={{ width: '100%', height: '100%' }}
-      />
+      <video ref={videoRef} className={`video-js vjs-big-play-centered ${s.player}`} />
     </div>
   );
 }
