@@ -14,6 +14,7 @@ export function Color(props) {
     borderStyle: 'solid',
     borderColor: 'lightgray',
     overflow: 'hidden',
+    margin: '0.3vw',
   };
 
   const colorBlockStyle = {
@@ -25,6 +26,8 @@ export function Color(props) {
   const colorDescriptionStyle = {
     margin: '5px',
     textAlign: 'center',
+    color: 'gray',
+    fontSize: '0.8em',
   };
 
   return (
