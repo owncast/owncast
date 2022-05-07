@@ -1,23 +1,52 @@
-import { Meta } from '@storybook/addon-docs';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
 import {Color, ColorRow} from './Color';
 
-<Meta title="owncast/Colors" />
+<Meta title="owncast/Style Guide" />
 
 <style>{`
  
   
 `}</style>
 
+# Images
+
+<Story name="Images">
+</Story>
+
 # Colors
 
+<Story name="Colors">
+</Story>
+
+<ColorRow colors={['theme-primary-color', 'theme-text-color-secondary']} />
+
+## Text
+<ColorRow colors={['theme-text-color', 'theme-text-color-secondary', 'theme-link-color']} />
+
+## Backgrounds
+<ColorRow colors={['theme-background', 'popover-background']} />
+
+## Status
+<ColorRow colors={['theme-success-color', 'theme-info-color', 'theme-warning-color', 'theme-error-color']} />
+
 ## Gray
-<ColorRow colors={['gray-100', 'gray-300', 'gray-500', 'gray-700', 'gray-900']} />
+<ColorRow colors={['color-owncast-gray-100', 'color-owncast-gray-300', 'color-owncast-gray-500', 'color-owncast-gray-700', 'color-owncast-gray-900']} />
 
-## Owncast Purple
-<ColorRow colors={['purple-100', 'purple-300', 'purple-500', 'purple-700', 'purple-900']} />
+## Purple
+<ColorRow colors={['color-owncast-purple-100', 'color-owncast-purple-300', 'color-owncast-purple-500', 'color-owncast-purple-700', 'color-owncast-purple-900']} />
 
-## Green (success)
-<ColorRow colors={['green-100', 'green-300', 'green-500', 'green-700', 'green-900']} />
+## Green
+<ColorRow colors={['color-owncast-green-100', 'color-owncast-green-300', 'color-owncast-green-500', 'color-owncast-green-700', 'color-owncast-green-900']} />
 
-## Orange (warning)
-<ColorRow colors={['orange-100', 'orange-300', 'orange-500', 'orange-700', 'orange-900']} />
+## Orange
+<ColorRow colors={['color-owncast-orange-100', 'color-owncast-orange-300', 'color-owncast-orange-500', 'color-owncast-orange-700', 'color-owncast-orange-900']} />
+
+# Font
+
+<Story name="Fonts">
+  <Canvas style={{color: 'var(--theme-text-color-secondary)'}}>
+    {getComputedStyle(document.documentElement).getPropertyValue('--theme-font-family')}
+  </Canvas>
+</Story>
+
+[Inter font](https://rsms.me/inter/)

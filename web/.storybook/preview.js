@@ -1,4 +1,4 @@
-import '../styles/variables.scss';
+import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/theme.less';
 import '../stories/preview.scss';

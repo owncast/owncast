@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint --ext .js,.ts,.tsx types/ pages/ components/ stories/",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -"
   },
   "dependencies": {
     "@ant-design/icons": "4.7.0",
@@ -89,7 +90,9 @@
     "sb": "^6.4.22",
     "storybook-dark-mode": "^1.0.9",
     "storybook-preset-less": "^1.1.2",
+    "style-dictionary": "^3.7.0",
     "style-loader": "^2.0.0",
-    "typescript": "4.5.5"
+    "typescript": "4.5.5",
+    "yaml": "^2.0.1"
   }
 }

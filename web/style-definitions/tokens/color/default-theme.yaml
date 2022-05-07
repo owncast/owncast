@@ -1,0 +1,26 @@
+# These are the variables used in the user interface.
+# They can be overwritten to customize the look and feel.
+# We should write some documentation on how to do that when the time comes.
+
+theme:
+  primary-color:
+    value: "{color.owncast.purple.500.value}"
+  text-color:
+    value: "{color.owncast.gray.300.value}"
+  text-color-secondary:
+    value: "{color.owncast.gray.500.value}"
+  link-color:
+    value: "{color.owncast.purple.500.value}"
+  success-color:
+    value: "{color.owncast.green.500.value}"
+  info-color:
+    value: "{color.owncast.purple.300.value}"
+  warning-color:
+    value: "{color.owncast.orange.500.value}"
+  error-color:
+    value: "{color.owncast.red.500.value}"
+  font-family:
+    value: "{font.owncast.family.value}"
+  background:
+    value: "{color.owncast.background.value}"
+  
