@@ -2,7 +2,7 @@ import { Menu, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useRecoilState } from 'recoil';
 import { ChatVisibilityState, ChatState } from '../interfaces/application-state';
-import { chatVisibilityAtom as chatVisibilityAtom } from './stores/ClientConfigStore';
+import { chatVisibilityAtom } from './stores/ClientConfigStore';
 
 interface Props {
   username: string;
