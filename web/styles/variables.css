@@ -1,0 +1,79 @@
+/**
+ * Do not edit directly
+ * Generated on Sat, 07 May 2022 06:21:28 GMT
+ */
+
+:root {
+  --text-color: var(--theme-text-color);
+  --text-color-secondry: var(--theme-text-color-secondary);
+  --link-color: var(--theme-link-color);
+  --popover-background: var(--theme-background);
+  --background-color-light: #f4ebff;
+  --primary-color: #9e77ed;
+  --info-color: #667085;
+  --success-color: #12b76a;
+  --warning-color: #f79009;
+  --error-color: #f04438;
+  --purple-base: #9e77ed;
+  --green-base: #12b76a;
+  --red-base: #f04438;
+  --orange-base: #f79009;
+  --theme-primary-color: #9e77ed;
+  --theme-text-color: #d0d5dd;
+  --theme-text-color-secondary: #667085;
+  --theme-link-color: #9e77ed;
+  --theme-success-color: #12b76a;
+  --theme-info-color: #d6bbfb;
+  --theme-warning-color: #f79009;
+  --theme-error-color: #f04438;
+  --theme-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-background: #171523;
+  --color-owncast-purple-100: #f4ebff;
+  --color-owncast-purple-300: #d6bbfb;
+  --color-owncast-purple-500: #9e77ed;
+  --color-owncast-purple-700: #6941c6;
+  --color-owncast-purple-900: #42307d;
+  --color-owncast-green-100: #d15ad5;
+  --color-owncast-green-300: #6ce9a6;
+  --color-owncast-green-500: #12b76a;
+  --color-owncast-green-700: #027a48;
+  --color-owncast-green-900: #054f31;
+  --color-owncast-red-100: #fee4e2;
+  --color-owncast-red-300: #fda29b;
+  --color-owncast-red-500: #f04438;
+  --color-owncast-red-700: #b42318;
+  --color-owncast-red-900: #7a271a;
+  --color-owncast-orange-100: #fef0c7;
+  --color-owncast-orange-300: #fec84b;
+  --color-owncast-orange-500: #f79009;
+  --color-owncast-orange-700: #b54708;
+  --color-owncast-orange-900: #93370d;
+  --color-owncast-gray-100: #f2f4f7;
+  --color-owncast-gray-300: #d0d5dd;
+  --color-owncast-gray-500: #667085;
+  --color-owncast-gray-700: #344054;
+  --color-owncast-gray-900: #101828;
+  --color-owncast-logo-purple: #7871ff;
+  --color-owncast-logo-pink: #c98bfe;
+  --color-owncast-logo-blue: #2086e1;
+  --color-owncast-background-light: #1b1a26;
+  --color-owncast-background: #171523;
+  --font-owncast-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --owncast-purple: #7871ff;
+  --owncast-purple-25: rgba(120, 113, 255, 0.25);
+  --owncast-purple-50: rgba(120, 113, 255, 0.5);
+  --online-color: #73dd3f;
+  --offline-color: #999;
+  --pink: #c98bfe;
+  --purple: #7871ff;
+  --blue: #2086e1;
+  --white-88: #667085;
+  --purple-dark: rgba(28, 26, 59, 1);
+  --default-link-color: #c98bfe;
+  --default-bg-color: black;
+  --default-text-color: rgba(255, 255, 255, 0.88);
+}
