@@ -54,13 +54,14 @@ export default function FooterComponent() {
         />
         <div className={`${s.lowerRow}`}>
           <Tabs defaultActiveKey="1" type="card">
-            <TabPane tab="About" key="1">
+            <TabPane tab="About" key="1" className={`${s.pageContentSection}`}>
               <CustomPageContent content={extraPageContent} />
             </TabPane>
-            <TabPane tab="Followers" key="2">
+            <TabPane tab="Followers" key="2" className={`${s.pageContentSection}`}>
               <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
+
           {chatOpen && (
             <div className={`${s.mobileChat}`}>
               <ChatContainer messages={messages} state={chatState} />
