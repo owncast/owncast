@@ -1,23 +1,23 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import UserDropdownMenu from '../components/UserDropdownMenu';
+import { UserDropdown } from '../components/common';
 import { ChatState } from '../interfaces/application-state';
 
 export default {
   title: 'owncast/User settings menu',
-  component: UserDropdownMenu,
+  component: UserDropdown,
   parameters: {},
-} as ComponentMeta<typeof UserDropdownMenu>;
+} as ComponentMeta<typeof UserDropdown>;
 
 // This component uses Recoil internally so wrap it in a RecoilRoot.
 const Example = args => (
   <RecoilRoot>
-    <UserDropdownMenu {...args} />
+    <UserDropdown {...args} />
   </RecoilRoot>
 );
 
-const Template: ComponentStory<typeof UserDropdownMenu> = args => <Example {...args} />;
+const Template: ComponentStory<typeof UserDropdown> = args => <Example {...args} />;
 
 export const ChatEnabled = Template.bind({});
 ChatEnabled.args = {

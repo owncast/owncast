@@ -1,4 +1,19 @@
 .header {
-  @apply fixed w-full bg-red;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   z-index: 1;
+  padding: .5rem 1rem;
+  .logo {
+    display: flex;
+    align-items: center;
+    svg {
+      height: 60px;
+    }
+    span {
+      margin-left: 1rem;
+      font-size: 1.7rem;
+      font-weight: 600;
+    }
+  }
 }
