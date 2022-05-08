@@ -30,7 +30,7 @@ func generateStreamHealthOverview() {
 	}
 
 	pct := getClientErrorHeathyPercentage()
-	if pct == -1 {
+	if pct < 1 {
 		metrics.streamHealthOverview = nil
 		return
 	}
