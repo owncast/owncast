@@ -1,17 +1,16 @@
-import { Menu, Dropdown } from 'antd';
+import { Menu, Dropdown, Button, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useRecoilState } from 'recoil';
-import { ChatVisibilityState, ChatState } from '../interfaces/application-state';
-import { chatVisibilityAtom } from './stores/ClientConfigStore';
+import { chatVisibilityAtom } from '../../stores/ClientConfigStore';
+import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
+import s from './UserDropdown.module.scss';
 
 interface Props {
-  username: string;
-  chatState: ChatState;
+  username?: string;
+  chatState?: ChatState;
 }
 
-export default function UserDropdown(props: Props) {
-  const { username, chatState } = props;
-
+export default function UserDropdown({ username = 'test-user', chatState }: Props) {
   const chatEnabled = chatState !== ChatState.NotAvailable;
   const [chatVisibility, setChatVisibility] =
     useRecoilState<ChatVisibilityState>(chatVisibilityAtom);
@@ -37,10 +36,20 @@ export default function UserDropdown(props: Props) {
   );
 
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
+    <div className={`${s.root}`}>
+      <Dropdown overlay={menu} trigger={['click']}>
+        <Button>
+          <Space>
+            {username}
+            <DownOutlined />
+          </Space>
+        </Button>
+        {/*
       <button type="button" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
         {username} <DownOutlined />
       </button>
-    </Dropdown>
+      */}
+      </Dropdown>
+    </div>
   );
 }
