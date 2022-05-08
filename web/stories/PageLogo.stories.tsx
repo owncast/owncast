@@ -1,15 +1,15 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import PageLogo from '../components/PageLogo';
+import { OwncastLogo } from '../components/common';
 
 export default {
-  title: 'owncast/Page Logo',
-  component: PageLogo,
+  title: 'owncast/Logo',
+  component: OwncastLogo,
   parameters: {},
-} as ComponentMeta<typeof PageLogo>;
+} as ComponentMeta<typeof OwncastLogo>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof PageLogo> = args => <PageLogo {...args} />;
+const Template: ComponentStory<typeof OwncastLogo> = args => <OwncastLogo {...args} />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Logo = Template.bind({});

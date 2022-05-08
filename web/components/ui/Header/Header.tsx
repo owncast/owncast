@@ -1,6 +1,5 @@
 import { Layout } from 'antd';
-import { UserDropdown } from '../../common';
-import Logo from '../../logo';
+import { OwncastLogo, UserDropdown } from '../../common';
 import s from './Header.module.scss';
 
 const { Header } = Layout;
@@ -13,7 +12,7 @@ export default function HeaderComponent({ name = 'Your stream title' }: Props) {
   return (
     <Header className={`${s.header}`}>
       <div className={`${s.logo}`}>
-        <Logo />
+        <OwncastLogo variant='contrast'/>
         <span>{name}</span>
       </div>
       <UserDropdown />
