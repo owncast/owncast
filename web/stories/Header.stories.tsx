@@ -1,6 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import Header from '../components/ui/Header/Header';
+import { RecoilRoot } from 'recoil';
 
 export default {
   title: 'owncast/Header',
@@ -8,7 +9,11 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof Header>;
 
-const Template: ComponentStory<typeof Header> = args => <Header {...args} />;
+const Template: ComponentStory<typeof Header> = args => (
+  <RecoilRoot>
+    <Header {...args} />
+  </RecoilRoot>
+);
 
 export const Example = Template.bind({});
 Example.args = {
