@@ -27,7 +27,7 @@ import { ServerStatus } from '../../../interfaces/server-status.model';
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
-export default function FooterComponent() {
+export default function ContentComponent() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const chatOpen = useRecoilValue<ChatVisibilityState>(chatVisibilityAtom);
