@@ -1,7 +1,7 @@
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { getUnauthedData } from '../utils/apis';
-const ENDPOINT = `http://localhost:8080/api/chat`;
-const URL_CHAT_REGISTRATION = `http://localhost:8080/api/chat/register`;
+const ENDPOINT = `/api/chat`;
+const URL_CHAT_REGISTRATION = `/api/chat/register`;
 
 interface UserRegistrationResponse {
   id: string;
