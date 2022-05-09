@@ -356,47 +356,6 @@ textarea.ant-input {
   opacity: 0.75;
 }
 
-// MODAL
-.ant-modal,
-.ant-modal-body {
-  font-size: 1em;
-}
-.ant-modal-content {
-  border-radius: var(--container-border-radius);
-  border: 1px solid var(--owncast-purple);
-  background-color: var(--black);
-}
-.ant-modal-header {
-  border-radius: var(--container-border-radius) var(--container-border-radius) 0 0;
-}
-.ant-modal-close-x {
-  color: var(--white);
-}
-.ant-modal-title {
-  font-weight: 500;
-  font-size: 1.25em;
-  color: var(--nav-selected-text);
-}
-.ant-modal-body {
-  background-color: var(--gray);
-  color: var(--default-text-color);
-}
-.ant-modal-header,
-.ant-modal-footer {
-  background: var(--black);
-}
-.ant-modal-content,
-.ant-modal-header,
-.ant-modal-footer {
-  border-color: var(--white-50);
-}
-
-.ant-modal-confirm-body {
-  .ant-modal-confirm-title,
-  .ant-modal-confirm-content {
-    color: var(--default-text-color);
-  }
-}
 
 // SELECT
 .ant-select-dropdown {
