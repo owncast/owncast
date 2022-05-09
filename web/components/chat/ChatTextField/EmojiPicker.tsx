@@ -1,5 +1,4 @@
 import data from '@emoji-mart/data';
-import { Picker } from 'emoji-mart';
 import React, { useRef, useEffect } from 'react';
 
 export default function EmojiPicker(props) {
@@ -19,10 +18,12 @@ export default function EmojiPicker(props) {
     },
   ];
 
+  // TODO: Fix the emoji picker from throwing errors.
   // useEffect(() => {
-  //   // eslint-disable-next-line no-new
-  //   new Picker({ ...props, data, custom, ref });
+  //   import('emoji-mart').then(EmojiMart => {
+  //     new EmojiMart.Picker({ ...props, data, ref });
+  //   });
   // }, []);
 
-  return <div>emoji picker goes here</div>;
+  return <div ref={ref} />;
 }
