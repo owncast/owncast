@@ -1,6 +1,6 @@
 import ServerStatus from '../interfaces/server-status.model';
 
-const ENDPOINT = `http://localhost:8080/api/status`;
+const ENDPOINT = `/api/status`;
 
 class ServerStatusService {
   public static async getStatus(): Promise<ServerStatus> {
