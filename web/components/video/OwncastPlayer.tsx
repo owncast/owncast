@@ -1,9 +1,27 @@
 import React from 'react';
 import VideoJS from './player';
+import ViewerPing from './viewer-ping';
+import { getLocalStorage, setLocalStorage } from '../../utils/helpers';
+
+const PLAYER_VOLUME = 'owncast_volume';
+
+const ping = new ViewerPing();
 
 export default function OwncastPlayer(props) {
   const playerRef = React.useRef(null);
   const { source } = props;
+
+  const setSavedVolume = () => {
+    try {
+      playerRef.current.volume(getLocalStorage(PLAYER_VOLUME) || 1);
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const handleVolume = () => {
+    setLocalStorage(PLAYER_VOLUME, playerRef.current.muted() ? 0 : playerRef.current.volume());
+  };
 
   const videoJsOptions = {
     autoplay: false,
@@ -42,6 +60,8 @@ export default function OwncastPlayer(props) {
   const handlePlayerReady = player => {
     playerRef.current = player;
 
+    setSavedVolume();
+
     // You can handle player events here, for example:
     player.on('waiting', () => {
       player.log('player is waiting');
@@ -49,7 +69,25 @@ export default function OwncastPlayer(props) {
 
     player.on('dispose', () => {
       player.log('player will dispose');
+      ping.stop();
     });
+
+    player.on('playing', () => {
+      player.log('player is playing');
+      ping.start();
+    });
+
+    player.on('pause', () => {
+      player.log('player is paused');
+      ping.stop();
+    });
+
+    player.on('ended', () => {
+      player.log('player is ended');
+      ping.stop();
+    });
+
+    player.on('volumechange', handleVolume);
   };
 
   return <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />;
