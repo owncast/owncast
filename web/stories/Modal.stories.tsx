@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Modal, Button } from 'antd';
-
-const Usage = () => (
-  <Modal title="Basic Modal" visible>
-    <p>Some contents...</p>
-    <p>Some contents...</p>
-    <p>Some contents...</p>
-  </Modal>
-);
+import Modal from '../components/ui/Modal/Modal';
 
 export default {
   title: 'owncast/Modal container',
@@ -16,7 +8,21 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof Modal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof Modal> = args => <Usage />;
+const Template: ComponentStory<typeof Modal> = args => {
+  const { children } = args;
+  return <Modal {...args}>{children}</Modal>;
+};
 
 export const Example = Template.bind({});
+Example.args = {
+  title: 'Modal example with content nodes',
+  visible: true,
+  children: <div>Test 123</div>,
+};
+
+export const UrlExample = Template.bind({});
+UrlExample.args = {
+  title: 'Modal example with URL',
+  visible: true,
+  url: 'https://owncast.online',
+};

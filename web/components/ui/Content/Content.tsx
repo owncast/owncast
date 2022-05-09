@@ -49,7 +49,7 @@ export default function ContentComponent() {
       description: 'Example button description',
       icon: 'https://owncast.online/images/logo.svg',
       color: '#5232c8',
-      openExternally: true,
+      openExternally: false,
     },
   ];
 
