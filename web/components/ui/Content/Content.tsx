@@ -60,7 +60,7 @@ export default function ContentComponent() {
   return (
     <Content className={`${s.root}`} data-columns={chatOpen ? 2 : 1}>
       <div className={`${s.leftCol}`}>
-        <OwncastPlayer source="https://watch.owncast.online" />
+        <OwncastPlayer source="/hls/stream.m3u8" online={online} />
         <Statusbar
           online={online}
           lastConnectTime={lastConnectTime}

@@ -1,15 +1,26 @@
 import React from 'react';
+import { useSetRecoilState } from 'recoil';
 import VideoJS from './player';
 import ViewerPing from './viewer-ping';
+import VideoPoster from './VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers';
+import { videoStateAtom } from '../stores/ClientConfigStore';
+import { VideoState } from '../../interfaces/application-state';
 
 const PLAYER_VOLUME = 'owncast_volume';
 
 const ping = new ViewerPing();
 
-export default function OwncastPlayer(props) {
+interface Props {
+  source: string;
+  online: boolean;
+}
+
+export default function OwncastPlayer(props: Props) {
   const playerRef = React.useRef(null);
-  const { source } = props;
+  const { source, online } = props;
+
+  const setVideoState = useSetRecoilState<VideoState>(videoStateAtom);
 
   const setSavedVolume = () => {
     try {
@@ -51,7 +62,7 @@ export default function OwncastPlayer(props) {
     },
     sources: [
       {
-        src: `${source}/hls/stream.m3u8`,
+        src: source,
         type: 'application/x-mpegURL',
       },
     ],
@@ -75,6 +86,7 @@ export default function OwncastPlayer(props) {
     player.on('playing', () => {
       player.log('player is playing');
       ping.start();
+      setVideoState(VideoState.Playing);
     });
 
     player.on('pause', () => {
@@ -85,10 +97,26 @@ export default function OwncastPlayer(props) {
     player.on('ended', () => {
       player.log('player is ended');
       ping.stop();
+      setVideoState(VideoState.Unavailable);
     });
 
     player.on('volumechange', handleVolume);
   };
 
-  return <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />;
+  return (
+    <div style={{ display: 'grid' }}>
+      {online && (
+        <div style={{ gridColumn: 1, gridRow: 1 }}>
+          <VideoJS
+            style={{ gridColumn: 1, gridRow: 1 }}
+            options={videoJsOptions}
+            onReady={handlePlayerReady}
+          />
+        </div>
+      )}
+      <div style={{ gridColumn: 1, gridRow: 1 }}>
+        <VideoPoster online={online} initialSrc="/logo" src="/thumbnail.jpg" />
+      </div>
+    </div>
+  );
 }

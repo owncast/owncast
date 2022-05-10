@@ -45,7 +45,7 @@ export default function Statusbar(props: Props) {
   } else {
     onlineMessage = 'Offline';
     if (lastDisconnectTime) {
-      rightSideMessage = `Last live ${formatDistanceToNow(lastDisconnectTime)} ago.`;
+      rightSideMessage = `Last live ${formatDistanceToNow(new Date(lastDisconnectTime))} ago.`;
     }
   }
 

@@ -3,9 +3,9 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import OwncastPlayer from '../components/video/OwncastPlayer';
 
 const streams = {
-  DemoServer: `https://watch.owncast.online`,
-  RetroStrangeTV: `https://live.retrostrange.com`,
-  localhost: `http://localhost:8080`,
+  DemoServer: `https://watch.owncast.online/hls/stream.m3u8`,
+  RetroStrangeTV: `https://live.retrostrange.com/hls/stream.m3u8`,
+  localhost: `http://localhost:8080/hls/stream.m3u8`,
 };
 
 export default {
@@ -28,5 +28,5 @@ const Template: ComponentStory<typeof OwncastPlayer> = args => <OwncastPlayer {.
 export const LiveDemo = Template.bind({});
 LiveDemo.args = {
   online: true,
-  source: 'https://watch.owncast.online',
+  source: 'https://watch.owncast.online/hls/stream.m3u8',
 };

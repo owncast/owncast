@@ -19,6 +19,12 @@ export enum ChatState {
   Offline, // Chat is offline/disconnected for some reason but is visible.
 }
 
+export enum VideoState {
+  Available, // Play button should be visible and the user can begin playback.
+  Unavailable, // Play button not be visible and video is not available.
+  Playing, // Playback is taking place and the play button should not be shown.
+}
+
 export function getChatState(state: AppState): ChatState {
   switch (state) {
     case AppState.Loading:
