@@ -10,6 +10,7 @@ import { getLocalStorage, setLocalStorage } from '../../utils/helpers';
 import {
   AppState,
   ChatState,
+  VideoState,
   ChatVisibilityState,
   getChatState,
   getChatVisibilityState,
@@ -37,6 +38,11 @@ export const appStateAtom = atom<AppState>({
 export const chatStateAtom = atom<ChatState>({
   key: 'chatStateAtom',
   default: ChatState.Offline,
+});
+
+export const videoStateAtom = atom<VideoState>({
+  key: 'videoStateAtom',
+  default: VideoState.Unavailable,
 });
 
 export const chatVisibilityAtom = atom<ChatVisibilityState>({
@@ -71,6 +77,7 @@ export function ClientConfigStore() {
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
+  const [videoState, setVideoState] = useRecoilState<VideoState>(videoStateAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
   const [websocketService, setWebsocketService] =
     useRecoilState<WebsocketService>(websocketServiceAtom);
@@ -81,7 +88,6 @@ export function ClientConfigStore() {
     try {
       const config = await ClientConfigService.getConfig();
       setClientConfig(config);
-      setAppState(AppState.Online);
     } catch (error) {
       console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
     }
@@ -100,7 +106,6 @@ export function ClientConfigStore() {
       setAccessToken(newAccessToken);
       // setLocalStorage('accessToken', newAccessToken);
       setChatDisplayName(newDisplayName);
-      setAppState(AppState.Online);
     } catch (e) {
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
     }
