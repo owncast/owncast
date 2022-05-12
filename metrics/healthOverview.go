@@ -145,14 +145,47 @@ func wastefulBitrateOverviewMessage() string {
 		return ""
 	}
 
-	if currentBroadcaster.StreamDetails.AudioBitrate == 0 {
+	if currentBroadcaster.StreamDetails.VideoBitrate == 0 {
 		return ""
 	}
 
+	// Not all streams report their inbound bitrate.
 	inboundBitrate := currentBroadcaster.StreamDetails.VideoBitrate
-	maxBitrate := 0
+	if inboundBitrate == 0 {
+		return ""
+	}
+
+	outputVariants := data.GetStreamOutputVariants()
+
+	type singleVariant struct {
+		isVideoPassthrough bool
+		bitrate            int
+	}
+
+	streamSortVariants := make([]singleVariant, len(outputVariants))
+	for i, variant := range outputVariants {
+		variantSort := singleVariant{
+			bitrate:            variant.VideoBitrate,
+			isVideoPassthrough: variant.IsVideoPassthrough,
+		}
+		streamSortVariants[i] = variantSort
+	}
+
+	sort.Slice(streamSortVariants, func(i, j int) bool {
+		if streamSortVariants[i].isVideoPassthrough && !streamSortVariants[j].isVideoPassthrough {
+			return true
+		}
+
+		if !streamSortVariants[i].isVideoPassthrough && streamSortVariants[j].isVideoPassthrough {
+			return false
+		}
+
+		return streamSortVariants[i].bitrate > streamSortVariants[j].bitrate
+	})
+
+	maxBitrate := streamSortVariants[0].bitrate
 	if inboundBitrate > maxBitrate {
-		return fmt.Sprintf("You're broadcasting to Owncast at %dkbps but only sending to your viewers at %dkbps, requiring unnecessary work to be performed. You may want to decrease what you're sending to Owncast or increase what you send to your viewers to match.", inboundBitrate, maxBitrate)
+		return fmt.Sprintf("You're streaming to Owncast at %dkbps but only broadcasting to your viewers at %dkbps, requiring unnecessary work to be performed and possible excessive CPU use. You may want to decrease what you're sending to Owncast or increase what you send to your viewers so the highest bitrate matches.", inboundBitrate, maxBitrate)
 	}
 
 	return ""
