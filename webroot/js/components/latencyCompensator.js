@@ -41,6 +41,7 @@ const MIN_LATENCY = 4 * 1000; // The absolute lowest we'll continue compensation
 const MAX_LATENCY = 15 * 1000; // The absolute highest we'll allow a target latency to be before we start compensating.
 const MAX_JUMP_LATENCY = 5 * 1000; // How much behind the max latency we need to be behind before we allow a jump.
 const MAX_JUMP_FREQUENCY = 20 * 1000; // How often we'll allow a time jump.
+const MAX_ACTIONABLE_LATENCY = 80 * 1000; // If latency is seen to be greater than this then something is wrong.
 const STARTUP_WAIT_TIME = 10 * 1000; // The amount of time after we start up that we'll allow monitoring to occur.
 
 class LatencyCompensator {
@@ -168,6 +169,18 @@ class LatencyCompensator {
       const segmentTime = segment.dateTimeObject.getTime();
       const now = new Date().getTime();
       const latency = now - segmentTime;
+
+      // Since the calculation of latency is based on clock times, it's possible
+      // things can be reported incorrectly. So we use a sanity check here to
+      // simply bail if the latency is reported to so high we think the whole
+      // thing is wrong. We can't make decisions based on bad data, so give up.
+      // This can also occur if somebody pauses for a long time and hits play
+      // again but it's not really possible to know the difference between
+      // the two scenarios.
+      if (Math.abs(latency) > MAX_ACTIONABLE_LATENCY) {
+        this.timeout();
+        return;
+      }
 
       if (latency > maxLatencyThreshold) {
         // If the current latency exceeds the max jump amount then
@@ -340,10 +353,19 @@ class LatencyCompensator {
 
   handlePlaying() {
     clearTimeout(this.bufferingTimer);
-
     if (!this.enabled) {
       return;
     }
+
+    if (!this.shouldJumpToLive()) {
+      return;
+    }
+
+    // Seek to live immediately on starting playback to handle any long-pause
+    // scenarios or somebody starting far back from the live edge.
+    this.jumpingToLiveIgnoreBuffer = true;
+    this.player.liveTracker.seekToLiveEdge();
+    this.lastJumpOccurred = new Date();
   }
 
   handleEnded() {
@@ -369,6 +391,7 @@ class LatencyCompensator {
       this.disable();
       return;
     }
+
     console.log('timeout due to buffering');
     this.timeout();
 
