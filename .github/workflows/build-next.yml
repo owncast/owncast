@@ -1,4 +1,4 @@
-name: Build admin app
+name: Build web app
 on: [push, pull_request]
 jobs:
   run:

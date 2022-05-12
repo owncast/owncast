@@ -27,9 +27,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Dispatch event to owncast/owncast
-        uses: peter-evans/repository-dispatch@v1
+      - name: Dispatch event to web site
+        uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.ADMIN_BUNDLE_PAT }}
+          token: ${{ secrets.BUNDLE_STORYBOOK_OWNCAST_ONLINE }}
           repository: owncast/owncast.github.io
           event-type: bundle-components-library
