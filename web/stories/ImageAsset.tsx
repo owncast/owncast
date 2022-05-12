@@ -1,6 +1,4 @@
-import PropTypes from 'prop-types';
-
-export function ImageAsset(props) {
+export function ImageAsset(props: ImageAssetProps) {
   const { name, src } = props;
 
   const containerStyle = {
@@ -23,7 +21,7 @@ export function ImageAsset(props) {
   };
 
   const colorDescriptionStyle = {
-    textAlign: 'center',
+    textAlign: 'center' as 'center',
     color: 'gray',
     fontSize: '0.8em',
   };
@@ -48,19 +46,20 @@ export function ImageAsset(props) {
   );
 }
 
-Image.propTypes = {
-  name: PropTypes.string.isRequired,
-};
+interface ImageAssetProps {
+  name: string;
+  src: string;
+}
 
 const rowStyle = {
   display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
+  flexDirection: 'row' as 'row',
+  flexWrap: 'wrap' as 'wrap',
   // justifyContent: 'space-around',
   alignItems: 'center',
 };
 
-export function ImageRow(props) {
+export function ImageRow(props: ImageRowProps) {
   const { images } = props;
 
   return (
@@ -72,6 +71,6 @@ export function ImageRow(props) {
   );
 }
 
-ImageRow.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
+interface ImageRowProps {
+  images: ImageAssetProps[];
+}

@@ -1,1 +1,1 @@
-export { default } from './UserDropdown'
+export { default } from './UserDropdown';

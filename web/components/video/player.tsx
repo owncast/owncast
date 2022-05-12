@@ -7,8 +7,12 @@ require('video.js/dist/video-js.css');
 // TODO: Restore volume that was saved in local storage.
 // import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
 // import { PLAYER_VOLUME, URL_STREAM } from '../../utils/constants.js';
+interface Props {
+  options: any;
+  onReady: (player: videojs.Player) => void;
+}
 
-export function VideoJS(props) {
+export function VideoJS(props: Props) {
   const videoRef = React.useRef(null);
   const playerRef = React.useRef(null);
   const { options, onReady } = props;
@@ -18,11 +22,10 @@ export function VideoJS(props) {
     if (!playerRef.current) {
       const videoElement = videoRef.current;
 
-      // if (!videoElement) return;
-
+      // eslint-disable-next-line no-multi-assign
       const player = (playerRef.current = videojs(videoElement, options, () => {
         player.log('player is ready');
-        onReady && onReady(player);
+        return onReady && onReady(player);
       }));
 
       // TODO: Add airplay support, video settings menu, latency compensator, etc.
@@ -48,6 +51,7 @@ export function VideoJS(props) {
 
   return (
     <div data-vjs-player>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video ref={videoRef} className={`video-js vjs-big-play-centered ${s.player}`} />
     </div>
   );

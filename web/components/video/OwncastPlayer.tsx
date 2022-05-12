@@ -107,11 +107,7 @@ export default function OwncastPlayer(props: Props) {
     <div style={{ display: 'grid' }}>
       {online && (
         <div style={{ gridColumn: 1, gridRow: 1 }}>
-          <VideoJS
-            style={{ gridColumn: 1, gridRow: 1 }}
-            options={videoJsOptions}
-            onReady={handlePlayerReady}
-          />
+          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
         </div>
       )}
       <div style={{ gridColumn: 1, gridRow: 1 }}>

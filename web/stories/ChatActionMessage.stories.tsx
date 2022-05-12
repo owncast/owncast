@@ -9,7 +9,7 @@ export default {
 } as ComponentMeta<typeof ChatActionMessage>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ChatActionMessage> = args => <ChatActionMessage />;
+const Template: ComponentStory<typeof ChatActionMessage> = args => <ChatActionMessage {...args} />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Basic = Template.bind({});

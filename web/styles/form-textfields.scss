@@ -19,7 +19,7 @@ Base styles for
     padding-right: 1.25em;
     text-align: right;
     width: var(--form-label-container-width);
-    margin: .2em 0;
+    margin: 0.2em 0;
   }
   .formfield-label {
     font-weight: 500;
@@ -35,7 +35,7 @@ Base styles for
       &::before {
         content: '*';
         display: inline-block;
-        margin-right: .25em;
+        margin-right: 0.25em;
         color: var(--ant-error);
       }
     }
@@ -54,7 +54,7 @@ Base styles for
   }
 
   .status-container {
-    margin: .25em;
+    margin: 0.25em;
     width: 100%;
     display: block;
     &.empty {
@@ -62,9 +62,9 @@ Base styles for
       visibility: visible;
     }
   }
-  
+
   .field-tip {
-    margin: .5em .5em;
+    margin: 0.5em 0.5em;
   }
 
   @media (max-width: 800px) {
@@ -103,7 +103,7 @@ Base styles for
     justify-content: flex-start;
 
     .label-spacer {
-      width: var(--form-label-container-width); 
+      width: var(--form-label-container-width);
     }
     .lower-content {
       display: flex;
@@ -117,7 +117,7 @@ Base styles for
         width: 100%;
       }
       .status-container {
-        margin: .5em;
+        margin: 0.5em;
         &.empty {
           display: none;
         }
@@ -125,7 +125,7 @@ Base styles for
     }
     .update-button-container {
       visibility: hidden;
-      margin: .25em 0;
+      margin: 0.25em 0;
     }
   }
 
@@ -137,7 +137,6 @@ Base styles for
     }
   }
 
-
   @media (max-width: 800px) {
     .label-spacer {
       display: none;
@@ -145,12 +144,11 @@ Base styles for
   }
 }
 
-
 /* TOGGLE SWITCH CONTAINER BASE */
 .toggleswitch-container {
   margin: 2em 0 1em;
 
-  .label-side { 
+  .label-side {
     margin-top: 0;
   }
 
@@ -159,7 +157,7 @@ Base styles for
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    
+
     .status-container {
       width: auto;
       margin: 0 0 0 1em;

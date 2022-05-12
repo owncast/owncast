@@ -1,6 +1,6 @@
 import { Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { ChatMessage } from '../../interfaces/chat-message.model';
 import { ChatState } from '../../interfaces/application-state';

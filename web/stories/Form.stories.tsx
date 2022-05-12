@@ -12,6 +12,7 @@ import {
   TreeSelect,
   Switch,
 } from 'antd';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 const FormExample = () => {
   const [componentSize, setComponentSize] = useState('default');
@@ -33,7 +34,7 @@ const FormExample = () => {
         size: componentSize,
       }}
       onValuesChange={onFormLayoutChange}
-      size={componentSize}
+      size={componentSize as SizeType}
     >
       <Form.Item label="Form Size" name="size">
         <Radio.Group>

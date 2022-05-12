@@ -2,33 +2,33 @@
 # You can find the variable names to override at:
 # https://github.com/ant-design/ant-design/blob/master/components/style/themes/dark.less
 
-text-color: 
-  value: "var(--theme-text-color)"
+text-color:
+  value: 'var(--theme-text-color)'
 text-color-secondry:
-  value: "var(--theme-text-color-secondary)"
+  value: 'var(--theme-text-color-secondary)'
 link-color:
-  value: "var(--theme-link-color)"
+  value: 'var(--theme-link-color)'
 popover-background:
-  value: "var(--theme-background)"
+  value: 'var(--theme-background)'
 background-color-light:
-  value: "var(--theme-background-secondary)"
+  value: 'var(--theme-background-secondary)'
 
 # These values require explicit colors and cannot take css variables.
-primary-color: 
-  value: "{color.owncast.purple.500.value}"
+primary-color:
+  value: '{color.owncast.purple.500.value}'
 info-color:
-  value: "{color.owncast.gray.500.value}"
+  value: '{color.owncast.gray.500.value}'
 success-color:
-  value: "{color.owncast.green.500.value}"
+  value: '{color.owncast.green.500.value}'
 warning-color:
-  value: "{color.owncast.orange.500.value}"
+  value: '{color.owncast.orange.500.value}'
 error-color:
-  value: "{color.owncast.red.500.value}"
+  value: '{color.owncast.red.500.value}'
 purple-base:
-  value: "{color.owncast.purple.500.value}"
+  value: '{color.owncast.purple.500.value}'
 green-base:
-  value: "{color.owncast.green.500.value}"
+  value: '{color.owncast.green.500.value}'
 red-base:
-  value: "{color.owncast.red.500.value}"
+  value: '{color.owncast.red.500.value}'
 orange-base:
-  value: "{color.owncast.orange.500.value}"
+  value: '{color.owncast.orange.500.value}'

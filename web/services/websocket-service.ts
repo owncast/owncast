@@ -1,7 +1,7 @@
 import { message } from 'antd';
-import { MessageType } from '../interfaces/socket-events';
+import { MessageType, SocketEvent } from '../interfaces/socket-events';
 
-interface SocketMessage {
+export interface SocketMessage {
   type: MessageType;
   data: any;
 }
@@ -15,7 +15,7 @@ export default class WebsocketService {
 
   websocketReconnectTimer: ReturnType<typeof setTimeout>;
 
-  handleMessage?: (message: SocketMessage) => void;
+  handleMessage?: (message: SocketEvent) => void;
 
   constructor(accessToken, path) {
     this.accessToken = accessToken;
@@ -76,7 +76,7 @@ export default class WebsocketService {
     // Optimization where multiple events can be sent within a
     // single websocket message. So split them if needed.
     const messages = e.data.split('\n');
-    let message: SocketMessage;
+    let message: SocketEvent;
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < messages.length; i++) {

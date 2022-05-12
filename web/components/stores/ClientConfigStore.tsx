@@ -6,7 +6,6 @@ import ClientConfigService from '../../services/client-config-service';
 import ChatService from '../../services/chat-service';
 import WebsocketService from '../../services/websocket-service';
 import { ChatMessage } from '../../interfaces/chat-message.model';
-import { getLocalStorage, setLocalStorage } from '../../utils/helpers';
 import {
   AppState,
   ChatState,
@@ -16,10 +15,10 @@ import {
   getChatVisibilityState,
 } from '../../interfaces/application-state';
 import {
-  SocketEvent,
   ConnectedClientInfoEvent,
   MessageType,
   ChatEvent,
+  SocketEvent,
 } from '../../interfaces/socket-events';
 import handleConnectedClientInfoMessage from './eventhandlers/connectedclientinfo';
 import handleChatMessage from './eventhandlers/handleChatMessage';
@@ -77,10 +76,8 @@ export function ClientConfigStore() {
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
-  const [videoState, setVideoState] = useRecoilState<VideoState>(videoStateAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
-  const [websocketService, setWebsocketService] =
-    useRecoilState<WebsocketService>(websocketServiceAtom);
+  const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
 
   let ws: WebsocketService;
 

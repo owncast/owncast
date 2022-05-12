@@ -10,9 +10,10 @@ export default {
 } as ComponentMeta<typeof ActionButtonRow>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ActionButtonRow> = args => (
-  <ActionButtonRow>{args.buttons}</ActionButtonRow>
-);
+const Template: ComponentStory<typeof ActionButtonRow> = args => {
+  const { buttons } = args as any;
+  return <ActionButtonRow>{buttons}</ActionButtonRow>;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actions = [

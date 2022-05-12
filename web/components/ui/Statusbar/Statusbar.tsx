@@ -40,7 +40,7 @@ export default function Statusbar(props: Props) {
     const duration = makeDurationString(new Date(lastConnectTime));
     onlineMessage = online ? `Live for  ${duration}` : 'Offline';
     rightSideMessage = `${viewerCount > 0 ? `${viewerCount}` : 'No'} ${
-      viewerCount == 1 ? 'viewer' : 'viewers'
+      viewerCount === 1 ? 'viewer' : 'viewers'
     }`;
   } else {
     onlineMessage = 'Offline';

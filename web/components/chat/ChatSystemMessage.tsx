@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unused-prop-types */
 import { ChatMessage } from '../../interfaces/chat-message.model';
 
 interface Props {

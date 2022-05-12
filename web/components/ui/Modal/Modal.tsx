@@ -29,7 +29,6 @@ export default function Modal(props: Props) {
       width="100%"
       height="100%"
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-      allowpaymentrequest="true"
       frameBorder="0"
       allowFullScreen
       onLoad={() => setLoading(false)}

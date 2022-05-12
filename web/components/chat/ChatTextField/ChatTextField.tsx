@@ -1,14 +1,13 @@
 import { SmileOutlined } from '@ant-design/icons';
 import { Button, Popover } from 'antd';
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Transforms, createEditor, Node, BaseEditor, Text } from 'slate';
+import { Transforms, createEditor, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
 import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
-import s from './ChatTextField.module.scss';
 
 type CustomElement = { type: 'paragraph'; children: CustomText[] };
 type CustomText = { text: string };
@@ -25,24 +24,30 @@ interface Props {
   value?: string;
 }
 
+// eslint-disable-next-line react/prop-types
 const Image = ({ element }) => (
   <img
+    // eslint-disable-next-line no-undef
+    // eslint-disable-next-line react/prop-types
     src={element.url}
     alt="emoji"
     style={{ display: 'inline', position: 'relative', width: '30px', bottom: '10px' }}
   />
 );
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const insertImage = (editor, url) => {
-  const text = { text: '' };
-  const image: ImageElement = { type: 'image', url, children: [text] };
-  Transforms.insertNodes(editor, image);
+  // const text = { text: '' };
+  // const image: ImageElement = { type: 'image', url, children: [text] };
+  // Transforms.insertNodes(editor, image);
 };
 
 const withImages = editor => {
   const { isVoid } = editor;
 
+  // eslint-disable-next-line no-param-reassign
   editor.isVoid = element => (element.type === 'image' ? true : isVoid(element));
+  // eslint-disable-next-line no-param-reassign
   editor.isInline = element => element.type === 'image';
 
   return editor;
@@ -52,13 +57,13 @@ export type EmptyText = {
   text: string;
 };
 
-type ImageElement = {
-  type: 'image';
-  url: string;
-  children: EmptyText[];
-};
+// type ImageElement = {
+//   type: 'image';
+//   url: string;
+//   children: EmptyText[];
+// };
 
-const Element = props => {
+const Element = (props: any) => {
   const { attributes, children, element } = props;
 
   switch (element.type) {
@@ -71,10 +76,10 @@ const Element = props => {
 
 const serialize = node => {
   if (Text.isText(node)) {
-    let string = node.text;
-    if (node.bold) {
-      string = `<strong>${string}</strong>`;
-    }
+    const string = node.text;
+    // if (node.bold) {
+    //   string = `<strong>${string}</strong>`;
+    // }
     return string;
   }
 
@@ -90,8 +95,9 @@ const serialize = node => {
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function ChatTextField(props: Props) {
-  const { value: originalValue } = props;
+  // const { value: originalValue } = props;
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [editor] = useState(() => withImages(withReact(createEditor())));
@@ -113,7 +119,7 @@ export default function ChatTextField(props: Props) {
     Transforms.delete(editor);
   };
 
-  const handleChange = e => {};
+  const handleChange = () => {};
 
   const handleEmojiSelect = emoji => {
     console.log(emoji);
@@ -135,19 +141,12 @@ export default function ChatTextField(props: Props) {
     }
   };
 
-  const initialValue = [
-    {
-      type: 'paragraph',
-      children: [{ text: originalValue }],
-    },
-  ];
-
   return (
     <div>
-      <Slate editor={editor} value={initialValue} onChange={handleChange}>
+      <Slate editor={editor} value={[]} onChange={handleChange}>
         <Editable
           onKeyDown={onKeyDown}
-          renderElement={props => <Element {...props} />}
+          renderElement={p => <Element {...p} />}
           placeholder="Chat message goes here..."
         />
       </Slate>

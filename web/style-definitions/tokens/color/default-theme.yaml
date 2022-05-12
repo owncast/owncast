@@ -5,32 +5,32 @@
 
 theme:
   primary-color:
-    value: "{color.owncast.purple.500.value}"
-    comment: "The primary color of the application used for rendering controls."
+    value: '{color.owncast.purple.500.value}'
+    comment: 'The primary color of the application used for rendering controls.'
   text-color:
-    value: "{color.owncast.gray.300.value}"
-    comment: "The color of the text in the application."
+    value: '{color.owncast.gray.300.value}'
+    comment: 'The color of the text in the application.'
   text-color-secondary:
-    value: "{color.owncast.gray.500.value}"
+    value: '{color.owncast.gray.500.value}'
   link-color:
-    value: "{color.owncast.purple.500.value}"
+    value: '{color.owncast.purple.500.value}'
   font-family:
-    value: "{font.owncast.family.value}"
+    value: '{font.owncast.family.value}'
   background:
-    value: "{color.owncast.background.value}"
-    comment: "The main background color of the page."
+    value: '{color.owncast.background.value}'
+    comment: 'The main background color of the page.'
   background-secondary:
-    value: "{color.owncast.background-secondary.value}"
-    comment: "A secondary background color used in sections and controls."
+    value: '{color.owncast.background-secondary.value}'
+    comment: 'A secondary background color used in sections and controls.'
   rounded-corners:
-    value: "5px"
-    comment: "The radius of rounded corners used in places."
+    value: '5px'
+    comment: 'The radius of rounded corners used in places.'
 
   success-color:
-    value: "{color.owncast.green.500.value}"
+    value: '{color.owncast.green.500.value}'
   info-color:
-    value: "{color.owncast.purple.300.value}"
+    value: '{color.owncast.purple.300.value}'
   warning-color:
-    value: "{color.owncast.orange.500.value}"
+    value: '{color.owncast.orange.500.value}'
   error-color:
-    value: "{color.owncast.red.500.value}"
+    value: '{color.owncast.red.500.value}'

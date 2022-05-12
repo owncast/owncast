@@ -101,45 +101,6 @@ export function convertToText(str = '') {
   return value;
 }
 
-/*
-  You would call this when a user pastes from
-  the clipboard into a `contenteditable` area.
-*/
-export function convertOnPaste(event = { preventDefault() {} }, emojiList) {
-  // Prevent paste.
-  event.preventDefault();
-
-  // Set later.
-  let value = '';
-
-  // Does method exist?
-  const hasEventClipboard = !!(
-    event.clipboardData &&
-    typeof event.clipboardData === 'object' &&
-    typeof event.clipboardData.getData === 'function'
-  );
-
-  // Get clipboard data?
-  if (hasEventClipboard) {
-    value = event.clipboardData.getData('text/plain');
-  }
-
-  // Insert into temp `<textarea>`, read back out.
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = value;
-  value = textarea.innerText;
-
-  // Clean up text.
-  value = convertToText(value);
-
-  const HTML = emojify(value, emojiList);
-
-  // Insert text.
-  if (typeof document.execCommand === 'function') {
-    document.execCommand('insertHTML', false, HTML);
-  }
-}
-
 export function createEmojiMarkup(data, isCustom) {
   const emojiUrl = isCustom ? data.emoji : data.url;
   const emojiName = (
@@ -156,6 +117,7 @@ export function trimNbsp(html) {
 export function emojify(HTML, emojiList) {
   const textValue = convertToText(HTML);
 
+  // eslint-disable-next-line no-plusplus
   for (let lastPos = textValue.length; lastPos >= 0; lastPos--) {
     const endPos = textValue.lastIndexOf(':', lastPos);
     if (endPos <= 0) {
@@ -170,8 +132,9 @@ export function emojify(HTML, emojiList) {
       emojiItem => emojiItem.name.toLowerCase() === typedEmoji.toLowerCase(),
     );
 
-    if (emojiIndex != -1) {
+    if (emojiIndex !== -1) {
       const emojiImgElement = createEmojiMarkup(emojiList[emojiIndex], true);
+      // eslint-disable-next-line no-param-reassign
       HTML = HTML.replace(`:${typedEmoji}:`, emojiImgElement);
     }
   }

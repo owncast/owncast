@@ -21,13 +21,13 @@ import '../styles/pages.scss';
 import '../styles/offline-notice.scss';
 
 import { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 
-import AdminLayout from './admin/admin-layout';
+import AdminLayout from '../components/layouts/admin-layout';
 import SimpleLayout from '../components/layouts/SimpleLayout';
 
 function App({ Component, pageProps }: AppProps) {
-  const router = useRouter();
+  const router = useRouter() as Router;
   if (router.pathname.startsWith('/admin')) {
     return <AdminLayout pageProps={pageProps} Component={Component} router={router} />;
   }

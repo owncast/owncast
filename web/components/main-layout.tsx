@@ -130,7 +130,7 @@ export default function MainLayout(props) {
       <Sider width={240} className="side-nav">
         <h1 className="owncast-title">
           <span className="logo-container">
-            <OwncastLogo />
+            <OwncastLogo variant="simple" />
           </span>
           <span className="title-label">Owncast Admin</span>
         </h1>

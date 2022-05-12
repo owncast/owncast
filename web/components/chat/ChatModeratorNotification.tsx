@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 interface Props {}
 
 export default function ChatModerationNotification(props: Props) {

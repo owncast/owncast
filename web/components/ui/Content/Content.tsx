@@ -1,6 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { Layout, Button, Col, Tabs } from 'antd';
-import Grid from 'antd/lib/card/Grid';
+import { Layout, Button, Tabs } from 'antd';
 import {
   chatVisibilityAtom,
   clientConfigStateAtom,
@@ -23,6 +22,7 @@ import ActionButtonRow from '../../action-buttons/ActionButtonRow';
 import ActionButton from '../../action-buttons/ActionButton';
 import Statusbar from '../Statusbar/Statusbar';
 import { ServerStatus } from '../../../interfaces/server-status.model';
+import { Follower } from '../../../interfaces/follower';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -34,8 +34,8 @@ export default function ContentComponent() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const chatState = useRecoilValue<ChatState>(chatStateAtom);
 
-  const { extraPageContent } = clientConfig;
-  const { online, viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = status;
+  const { extraPageContent, version } = clientConfig;
+  const { online, viewerCount, lastConnectTime, lastDisconnectTime } = status;
 
   const followers: Follower[] = [];
 
@@ -88,7 +88,7 @@ export default function ContentComponent() {
               <ChatTextField />
             </div>
           )}
-          <Footer />
+          <Footer version={version} />
         </div>
       </div>
       {chatOpen && <Sidebar />}

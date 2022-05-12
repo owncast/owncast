@@ -40,6 +40,7 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': [1],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
+    'no-restricted-exports': 'off',
     'react/jsx-no-target-blank': [
       1,
       {
