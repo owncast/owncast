@@ -1,51 +1,10 @@
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 import { Color, ColorRow } from './Color';
-import { Image, ImageRow } from './ImageAsset';
 
-import Logo from '../assets/images/logo.svg';
-import FediverseColor from '../assets/images/fediverse-color.png';
-import FediverseBlack from '../assets/images/fediverse-black.png';
-import Moderator from '../assets/images/moderator.svg';
-import IndieAuth from '../assets/images/indieauth.png';
-import IsBot from '../assets/images/bot.svg';
-
-<Meta title="owncast/Style Guide" />
-
-<style>{`
- 
-  
-`}</style>
-
-export const images = [
-  {
-    src: Logo,
-    name: 'Logo',
-  },
-  {
-    src: FediverseColor,
-    name: 'Fediverse Color',
-  },
-  {
-    src: FediverseBlack,
-    name: 'Fediverse Black',
-  },
-  {
-    src: Moderator,
-    name: 'Moderator',
-  },
-  {
-    src: IndieAuth,
-    name: 'IndieAuth',
-  },
-  {
-    src: IsBot,
-    name: 'Bot Flag',
-  },
-];
+<Meta title="owncast/Style Guide/Colors" />
 
 # Colors
 
-<Story name="Colors"></Story>
 
 <ColorRow colors={['theme-primary-color', 'theme-text-color-secondary']} />
 
@@ -110,19 +69,3 @@ export const images = [
     'color-owncast-orange-900',
   ]}
 />
-
-# Font
-
-[Inter font](https://rsms.me/inter/)
-
-<Story name="Fonts">
-  <Canvas style={{ color: 'var(--theme-text-color-secondary)' }}>
-    {getComputedStyle(document.documentElement).getPropertyValue('--theme-font-family')}
-  </Canvas>
-</Story>
-
-# Images
-
-<Story name="Images and Icons"></Story>
-
-<ImageRow images={images} />
