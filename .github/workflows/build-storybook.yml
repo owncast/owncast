@@ -26,3 +26,10 @@ jobs:
           add: "docs/components"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dispatch event to owncast/owncast
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.ADMIN_BUNDLE_PAT }}
+          repository: owncast/owncast.github.io
+          event-type: bundle-components-library
