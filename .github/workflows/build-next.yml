@@ -9,4 +9,4 @@ jobs:
           uses: actions/checkout@v2
 
         - name: Install dependencies
-          run: npm install && npm run build
+          run: cd web && npm install && npm run build
