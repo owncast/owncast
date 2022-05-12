@@ -1,5 +1,6 @@
 export interface ClientConfig {
   name: string;
+  title?: string;
   summary: string;
   logo: string;
   tags: string[];

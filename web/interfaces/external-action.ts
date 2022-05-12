@@ -3,4 +3,6 @@ export interface ExternalAction {
   description?: string;
   color?: string;
   url: string;
+  icon?: string;
+  openExternally?: boolean;
 }

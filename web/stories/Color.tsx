@@ -25,7 +25,6 @@ export function Color(props) {
 
   const colorDescriptionStyle = {
     margin: '5px',
-    textAlign: 'center',
     color: 'gray',
     fontSize: '0.8em',
   };
@@ -33,7 +32,9 @@ export function Color(props) {
   return (
     <figure style={containerStyle}>
       <div style={colorBlockStyle} />
-      <figcaption style={colorDescriptionStyle}>{color}</figcaption>
+      <figcaption>
+        <span style={colorDescriptionStyle}>{color}</span>
+      </figcaption>
     </figure>
   );
 }
@@ -44,8 +45,8 @@ Color.propTypes = {
 
 const rowStyle = {
   display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
+  flexDirection: 'row' as 'row',
+  flexWrap: 'wrap' as 'wrap',
   // justifyContent: 'space-around',
   alignItems: 'center',
 };

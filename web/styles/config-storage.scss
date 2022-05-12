@@ -1,5 +1,4 @@
-// styles for Storage config section 
-
+// styles for Storage config section
 
 .edit-storage-container {
   padding: 1em;
@@ -21,9 +20,7 @@
   }
 }
 
-
 .edit-server-details-container {
-  
   // Do something special for the stream key field
   .field-streamkey-container {
     margin-bottom: 1.5em;
@@ -33,7 +30,7 @@
     .left-side {
       display: flex;
       flex-direction: row;
-      align-items: flex-start;  
+      align-items: flex-start;
     }
 
     .textfield-with-submit-container {
@@ -43,7 +40,7 @@
     .streamkey-actions {
       white-space: nowrap;
       button {
-        margin: .25em;
+        margin: 0.25em;
       }
       @media (max-width: 800px) {
         margin-top: 2em;
@@ -54,5 +51,4 @@
   .advanced-settings {
     max-width: 800px;
   }
-
 }

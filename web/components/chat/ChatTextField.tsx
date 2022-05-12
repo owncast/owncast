@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 interface Props {}
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function ChatTextField(props: Props) {
   const [value, setValue] = useState('');
   const [showEmojis, setShowEmojis] = useState(false);

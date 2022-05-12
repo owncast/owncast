@@ -1,19 +1,16 @@
 import React from 'react';
 import cn from 'classnames';
-import s from './Logo.module.scss'
+import s from './Logo.module.scss';
 
 interface Props {
-  variant: 'simple' | 'contrast'
+  variant: 'simple' | 'contrast';
 }
 
-export default function Logo({variant = 'simple'}: Props) {
-  const rootClassName = cn(
-    s.root,
-    {
-      [s.simple]: variant === 'simple',
-      [s.contrast]: variant === 'contrast',
-    }
-  )
+export default function Logo({ variant = 'simple' }: Props) {
+  const rootClassName = cn(s.root, {
+    [s.simple]: variant === 'simple',
+    [s.contrast]: variant === 'contrast',
+  });
 
   return (
     <div className={rootClassName}>

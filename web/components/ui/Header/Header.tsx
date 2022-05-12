@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import { ChatState } from '../../../interfaces/application-state';
 import { OwncastLogo, UserDropdown } from '../../common';
 import s from './Header.module.scss';
 
@@ -12,10 +13,10 @@ export default function HeaderComponent({ name = 'Your stream title' }: Props) {
   return (
     <Header className={`${s.header}`}>
       <div className={`${s.logo}`}>
-        <OwncastLogo variant='contrast'/>
+        <OwncastLogo variant="contrast" />
         <span>{name}</span>
       </div>
-      <UserDropdown />
+      <UserDropdown username="fillmein" chatState={ChatState.Available} />
     </Header>
   );
 }

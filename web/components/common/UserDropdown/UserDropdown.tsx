@@ -6,8 +6,8 @@ import { ChatState, ChatVisibilityState } from '../../../interfaces/application-
 import s from './UserDropdown.module.scss';
 
 interface Props {
-  username?: string;
-  chatState?: ChatState;
+  username: string;
+  chatState: ChatState;
 }
 
 export default function UserDropdown({ username = 'test-user', chatState }: Props) {
@@ -44,11 +44,6 @@ export default function UserDropdown({ username = 'test-user', chatState }: Prop
             <DownOutlined />
           </Space>
         </Button>
-        {/*
-      <button type="button" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-        {username} <DownOutlined />
-      </button>
-      */}
       </Dropdown>
     </div>
   );

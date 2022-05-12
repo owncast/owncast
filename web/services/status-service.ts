@@ -1,4 +1,4 @@
-import ServerStatus from '../interfaces/server-status.model';
+import { ServerStatus } from '../interfaces/server-status.model';
 
 const ENDPOINT = `/api/status`;
 

@@ -54,11 +54,11 @@ export default function CrossfadeImage({
   return (
     <span style={spanStyle}>
       {[...srcs, nextSrc].map(
-        (src, index) =>
-          src !== '' && (
+        (singleSrc, index) =>
+          singleSrc !== '' && (
             <img
-              key={(key + index) % 3}
-              src={src}
+              key={singleSrc}
+              src={singleSrc}
               alt=""
               style={imgStyles[index]}
               onLoad={index === 2 ? onLoadImg : undefined}

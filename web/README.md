@@ -8,21 +8,21 @@ The Owncast web frontend is a [Next.js](https://nextjs.org/) project with [React
 
 **First**, install the dependencies.
 
-```npm install --include=dev```
+`npm install --include=dev`
 
 ### Run the web project
 
 Make sure you're running an instance of Owncast on localhost:8080, as your copy of the admin will look to use that as the API.
 
 **Next**, start the web project with npm.
-  
-  ```npm run dev```
+
+`npm run dev`
 
 ### Components and Styles
 
 You can start the [Storybook](https://storybook.js.org/) UI for exploring, testing, and developing components by running:
 
-```npm run storybook```
+`npm run storybook`
 
 This allows for components to be made available without the need of the server to be running and changes to be made in
 isolation.
@@ -63,4 +63,4 @@ We are currently experimenting with using [Storybook](https://storybook.js.org/)
 
 To work with Storybook:
 
-```npm run storybook```
+`npm run storybook`

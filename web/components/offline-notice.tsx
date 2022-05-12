@@ -3,7 +3,7 @@ import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { useContext } from 'react';
 import LogTable from './log-table';
-import OwncastLogo from './logo';
+import OwncastLogo from './common/Logo/Logo';
 import NewsFeed from './news-feed';
 import { ConfigDetails } from '../types/config-section';
 import { ServerStatusContext } from '../utils/server-status-context';
@@ -125,7 +125,7 @@ export default function Offline({ logs = [], config }: OfflineProps) {
         <Col span={12} offset={6}>
           <div className="offline-intro">
             <span className="logo">
-              <OwncastLogo />
+              <OwncastLogo variant="simple" />
             </span>
             <div>
               <Title level={2}>No stream is active</Title>
