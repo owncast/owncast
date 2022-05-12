@@ -1,0 +1,11 @@
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="owncast/Style Guide/Typography" />
+
+# Font
+
+[Inter font](https://rsms.me/inter/)
+
+  <Canvas style={{ color: 'var(--theme-text-color-secondary)' }}>
+    {getComputedStyle(document.documentElement).getPropertyValue('--theme-font-family')}
+  </Canvas>

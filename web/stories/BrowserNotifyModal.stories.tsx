@@ -1,16 +1,15 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import BrowserNotifyModal from '../components/modals/BrowserNotifyModal';
-import AuthModal from '../components/modals/AuthModal';
 
 const Example = () => (
   <div>
-    <AuthModal />
+    <BrowserNotifyModal />
   </div>
 );
 
 export default {
-  title: 'owncast/Modals/Browser Push Notifications',
+  title: 'owncast/Modals/Browser Notifications',
   component: BrowserNotifyModal,
   parameters: {},
 } as ComponentMeta<typeof BrowserNotifyModal>;
