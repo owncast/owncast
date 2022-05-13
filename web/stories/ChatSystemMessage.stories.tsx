@@ -1,11 +1,22 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import ChatSystemMessage from '../components/chat/ChatSystemMessage';
+import Mock from './assets/mocks/chatmessage-system.png';
 
 export default {
   title: 'owncast/Chat/Messages/System',
   component: ChatSystemMessage,
-  parameters: {},
+  parameters: {
+    design: {
+      type: 'image',
+      url: Mock,
+    },
+    docs: {
+      description: {
+        component: `This is the message design used when the server sends a message to chat.`,
+      },
+    },
+  },
 } as ComponentMeta<typeof ChatSystemMessage>;
 
 const Template: ComponentStory<typeof ChatSystemMessage> = args => <ChatSystemMessage {...args} />;

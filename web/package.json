@@ -42,6 +42,7 @@
     "recoil": "^0.7.2",
     "slate": "^0.78.0",
     "slate-react": "^0.79.0",
+    "storybook-addon-designs": "^6.2.1",
     "ua-parser-js": "1.0.2",
     "video.js": "^7.18.1"
   },

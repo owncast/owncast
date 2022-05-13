@@ -14,7 +14,7 @@ module.exports = {
     '@storybook/preset-scss',
     '@storybook/addon-postcss',
     '@storybook/addon-a11y',
-    '@storybook/addon-viewport',
+    'storybook-addon-designs',
     'storybook-dark-mode',
     'addon-screen-reader',
   ],

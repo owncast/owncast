@@ -5,7 +5,13 @@ import ActionButton from '../components/action-buttons/ActionButton';
 export default {
   title: 'owncast/Action Buttons/Single button',
   component: ActionButton,
-  parameters: {},
+  parameters: {
+    docs: {
+      description: {
+        component: `An **Action Button** or **External Action Button** is a button that is used to trigger either an internal or external action. Many will show a modal, but they can also open a new tab to allow navigating to external pages. They are rendered horizontally within the Action Button Row.`,
+      },
+    },
+  },
 } as ComponentMeta<typeof ActionButton>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
