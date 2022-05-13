@@ -5,8 +5,8 @@ import {
   clientConfigStateAtom,
   chatMessagesAtom,
   chatStateAtom,
+  serverStatusState,
 } from '../../stores/ClientConfigStore';
-import { serverStatusState } from '../../stores/ServerStatusStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../../CustomPageContent';
 import OwncastPlayer from '../../video/OwncastPlayer';
@@ -30,7 +30,7 @@ const { Content } = Layout;
 export default function ContentComponent() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const chatOpen = useRecoilValue<ChatVisibilityState>(chatVisibilityAtom);
+  const chatVisibility = useRecoilValue<ChatVisibilityState>(chatVisibilityAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const chatState = useRecoilValue<ChatState>(chatStateAtom);
 
@@ -40,6 +40,9 @@ export default function ContentComponent() {
   const followers: Follower[] = [];
 
   const total = 0;
+
+  const isShowingChatColumn =
+    chatState === ChatState.Available && chatVisibility === ChatVisibilityState.Visible;
 
   // This is example content. It should be removed.
   const externalActions = [
@@ -58,7 +61,7 @@ export default function ContentComponent() {
   ));
 
   return (
-    <Content className={`${s.root}`} data-columns={chatOpen ? 2 : 1}>
+    <Content className={`${s.root}`} data-columns={isShowingChatColumn ? 2 : 1}>
       <div className={`${s.leftCol}`}>
         <OwncastPlayer source="/hls/stream.m3u8" online={online} />
         <Statusbar
@@ -72,6 +75,7 @@ export default function ContentComponent() {
           <Button>Follow</Button>
           <Button>Notify</Button>
         </ActionButtonRow>
+
         <div className={`${s.lowerRow}`}>
           <Tabs defaultActiveKey="1" type="card">
             <TabPane tab="About" key="1" className={`${s.pageContentSection}`}>
@@ -82,16 +86,17 @@ export default function ContentComponent() {
             </TabPane>
           </Tabs>
 
-          {chatOpen && (
+          {chatVisibility && (
             <div className={`${s.mobileChat}`}>
               <ChatContainer messages={messages} state={chatState} />
               <ChatTextField />
             </div>
           )}
+
           <Footer version={version} />
         </div>
       </div>
-      {chatOpen && <Sidebar />}
+      {isShowingChatColumn && <Sidebar />}
     </Content>
   );
 }

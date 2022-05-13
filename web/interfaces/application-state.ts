@@ -13,10 +13,10 @@ export enum ChatVisibilityState {
 }
 
 export enum ChatState {
-  Available, // Normal state. Chat can be visible and used.
-  NotAvailable, // Chat features are not available.
-  Loading, // Chat is connecting and loading history.
-  Offline, // Chat is offline/disconnected for some reason but is visible.
+  Available = 'Available', // Normal state. Chat can be visible and used.
+  NotAvailable = 'NotAvailable', // Chat features are not available.
+  Loading = 'Loading', // Chat is connecting and loading history.
+  Offline = 'Offline', // Chat is offline/disconnected for some reason but is visible.
 }
 
 export enum VideoState {

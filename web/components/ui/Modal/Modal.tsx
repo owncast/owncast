@@ -21,7 +21,6 @@ export default function Modal(props: Props) {
     height: '80vh',
   };
 
-  console.log(url);
   const iframe = url && (
     <iframe
       title={title}
