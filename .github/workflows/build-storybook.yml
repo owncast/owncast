@@ -17,16 +17,6 @@ jobs:
           npm install --include-dev
           npm run build-storybook -- -o ../docs/components
 
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: Owncast
-          author_email: owncast@owncast.online
-          message: "Commit updated components/styles"
-          add: "docs/components"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Dispatch event to web site
         uses: peter-evans/repository-dispatch@v2
         with:
