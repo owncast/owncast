@@ -2,11 +2,23 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import UserChatMessage from '../components/chat/ChatUserMessage';
 import { ChatMessage } from '../interfaces/chat-message.model';
+import Mock from './assets/mocks/chatmessage-user.png';
 
 export default {
   title: 'owncast/Chat/Messages/Standard user',
   component: UserChatMessage,
-  parameters: {},
+  parameters: {
+    design: {
+      type: 'image',
+      url: Mock,
+      scale: 0.5,
+    },
+    docs: {
+      description: {
+        component: `This is the standard text message design that is used when a user sends a message in Owncast chat.`,
+      },
+    },
+  },
 } as ComponentMeta<typeof UserChatMessage>;
 
 const Template: ComponentStory<typeof UserChatMessage> = args => <UserChatMessage {...args} />;

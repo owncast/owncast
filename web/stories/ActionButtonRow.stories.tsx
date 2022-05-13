@@ -4,9 +4,16 @@ import ActionButtonRow from '../components/action-buttons/ActionButtonRow';
 import ActionButton from '../components/action-buttons/ActionButton';
 
 export default {
-  title: 'owncast/Action Buttons/Row',
+  title: 'owncast/Action Buttons/Buttons Row',
   component: ActionButtonRow,
-  parameters: {},
+  parameters: {
+    docs: {
+      description: {
+        component: `This is a horizontal row of buttons that could be statically created by the Owncast application (such as Notify, Follow) or are user-generated external actions (Donate, Learn more, etc).
+        There can be any number of buttons, including zero. They should wrap if needed and handle resizing.`,
+      },
+    },
+  },
 } as ComponentMeta<typeof ActionButtonRow>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

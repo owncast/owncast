@@ -5,7 +5,13 @@ import Modal from '../components/ui/Modal/Modal';
 export default {
   title: 'owncast/Modals/Container',
   component: Modal,
-  parameters: {},
+  parameters: {
+    docs: {
+      description: {
+        component: `This is the popup modal container that all modal content is rendered inside. It can be passed content nodes to render, or a URL to show an iframe.`,
+      },
+    },
+  },
 } as ComponentMeta<typeof Modal>;
 
 const Template: ComponentStory<typeof Modal> = args => {
