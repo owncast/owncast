@@ -74,6 +74,10 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 
 ## Building from Source
 
+### Backend
+
+The Owncast backend is a service written in Go.
+
 1. Ensure you have the gcc compiler installed.
 1. Install the [Go toolchain](https://golang.org/dl/) (1.16 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
@@ -83,14 +87,9 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 
 There is also a supplied `Dockerfile` so you can spin it up from source with little effort. [Read more about running from source](https://owncast.online/docs/building/).
 
-### Bundling in latest admin from source
+### Frontend
 
-The admin ui is built at: https://github.com/owncast/owncast-admin it is bundled into the final binary using pkger.
-
-To bundle in the latest admin UI:
-
-1. From the owncast directory run the packager script: `./build/admin/bundleAdmin.sh`
-1. Compile or run like above. `go run main.go`
+The Owncast [Web Frontend](web/) is a React application that is worked on seperately from the backend.  Visit the [web readme](web/README.md) for details.
 
 ## Contributing
 
@@ -104,7 +103,7 @@ There is a larger, more detailed, and more up-to-date [guide for helping contrib
 
 ### Architecture
 
-Owncast consists of two repositories with two standalone projects. [The repo you're looking at now](https://github.com/owncast/owncast) is the core repository with the backend and frontend.  [owncast/owncast-admin](https://github.com/owncast/owncast-admin) is an additional web project that is built separately and used for configuration and management of an Owncast server.
+Owncast consists of two repositories with two standalone projects. [The repo you're looking at now](https://github.com/owncast/owncast) is the core repository with the backend and frontend.
 
 ### Suggestions when working with the Owncast codebase
 
