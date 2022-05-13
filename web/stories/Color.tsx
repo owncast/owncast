@@ -18,23 +18,33 @@ export function Color(props) {
   };
 
   const colorBlockStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textShadow: '0 0 15px black',
     height: '70%',
     width: '100%',
     backgroundColor: resolvedColor,
   };
 
+  const colorTextStyle = {
+    color: 'white',
+    alignText: 'center',
+  };
+
   const colorDescriptionStyle = {
     margin: '5px',
     color: 'gray',
-    fontSize: '0.8em',
+    fontSize: '0.9vw',
+    textAlign: 'center' as 'center',
   };
 
   return (
     <figure style={containerStyle}>
-      <div style={colorBlockStyle} />
-      <figcaption>
-        <span style={colorDescriptionStyle}>{color}</span>
-      </figcaption>
+      <div style={colorBlockStyle}>
+        <div style={colorTextStyle}>{resolvedColor}</div>
+      </div>
+      <figcaption style={colorDescriptionStyle}>{color}</figcaption>
     </figure>
   );
 }
@@ -47,7 +57,6 @@ const rowStyle = {
   display: 'flex',
   flexDirection: 'row' as 'row',
   flexWrap: 'wrap' as 'wrap',
-  // justifyContent: 'space-around',
   alignItems: 'center',
 };
 
