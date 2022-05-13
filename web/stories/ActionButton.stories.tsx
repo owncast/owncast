@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import ActionButton from '../components/action-buttons/ActionButton';
 
 export default {
-  title: 'owncast/External action button',
+  title: 'owncast/Action Buttons/Single button',
   component: ActionButton,
   parameters: {},
 } as ComponentMeta<typeof ActionButton>;

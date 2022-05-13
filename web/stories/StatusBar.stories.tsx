@@ -4,7 +4,7 @@ import { subHours } from 'date-fns';
 import Statusbar from '../components/ui/Statusbar/Statusbar';
 
 export default {
-  title: 'owncast/Status bar',
+  title: 'owncast/Player/Status bar',
   component: Statusbar,
   parameters: {},
 } as ComponentMeta<typeof Statusbar>;
