@@ -9,7 +9,7 @@ const streams = {
 };
 
 export default {
-  title: 'owncast/Player',
+  title: 'owncast/Player/Player',
   component: OwncastPlayer,
   argTypes: {
     source: {

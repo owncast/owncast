@@ -1,10 +1,10 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import Header from '../components/ui/Header/Header';
 import { RecoilRoot } from 'recoil';
+import Header from '../components/ui/Header/Header';
 
 export default {
-  title: 'owncast/Header',
+  title: 'owncast/Layout/Header',
   component: Header,
   parameters: {},
 } as ComponentMeta<typeof Header>;

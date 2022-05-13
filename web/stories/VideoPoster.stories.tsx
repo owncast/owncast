@@ -3,9 +3,20 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import VideoPoster from '../components/video/VideoPoster';
 
 export default {
-  title: 'owncast/Video poster',
+  title: 'owncast/Player/Video poster',
   component: VideoPoster,
-  parameters: {},
+  parameters: {
+    docs: {
+      description: {
+        component: `
+- Sits on top of the video player when playback is not taking place.
+- Shows the instance logo when the video is offline.
+- Initial image is the logo when online.
+- When the stream is online, will transition, via cross-fades, through the thumbnail.
+- Will be removed when playback starts.`,
+      },
+    },
+  },
 } as ComponentMeta<typeof VideoPoster>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

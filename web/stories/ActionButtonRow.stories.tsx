@@ -4,7 +4,7 @@ import ActionButtonRow from '../components/action-buttons/ActionButtonRow';
 import ActionButton from '../components/action-buttons/ActionButton';
 
 export default {
-  title: 'owncast/External action button row',
+  title: 'owncast/Action Buttons/Row',
   component: ActionButtonRow,
   parameters: {},
 } as ComponentMeta<typeof ActionButtonRow>;

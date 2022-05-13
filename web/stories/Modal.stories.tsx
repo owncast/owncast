@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import Modal from '../components/ui/Modal/Modal';
 
 export default {
-  title: 'owncast/Modal container',
+  title: 'owncast/Modals/Container',
   component: Modal,
   parameters: {},
 } as ComponentMeta<typeof Modal>;

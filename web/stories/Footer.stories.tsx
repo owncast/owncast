@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import Footer from '../components/ui/Footer/Footer';
 
 export default {
-  title: 'owncast/Footer',
+  title: 'owncast/Layout/Footer',
   component: Footer,
   parameters: {},
 } as ComponentMeta<typeof Footer>;

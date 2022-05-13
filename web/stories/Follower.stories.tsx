@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import SingleFollower from '../components/Follower';
 
 export default {
-  title: 'owncast/Follower',
+  title: 'owncast/Followers/Single Follower',
   component: SingleFollower,
   parameters: {},
 } as ComponentMeta<typeof SingleFollower>;
