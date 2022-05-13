@@ -1,11 +1,13 @@
 /* eslint-disable no-case-declarations */
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
 import ClientConfigService from '../../services/client-config-service';
 import ChatService from '../../services/chat-service';
 import WebsocketService from '../../services/websocket-service';
 import { ChatMessage } from '../../interfaces/chat-message.model';
+import { ServerStatus, makeEmptyServerStatus } from '../../interfaces/server-status.model';
+
 import {
   AppState,
   ChatState,
@@ -22,6 +24,14 @@ import {
 } from '../../interfaces/socket-events';
 import handleConnectedClientInfoMessage from './eventhandlers/connectedclientinfo';
 import handleChatMessage from './eventhandlers/handleChatMessage';
+import ServerStatusService from '../../services/status-service';
+
+// Server status is what gets updated such as viewer count, durations,
+// stream title, online/offline state, etc.
+export const serverStatusState = atom<ServerStatus>({
+  key: 'serverStatusState',
+  default: makeEmptyServerStatus(),
+});
 
 // The config that comes from the API.
 export const clientConfigStateAtom = atom({
@@ -71,6 +81,7 @@ export const websocketServiceAtom = atom<WebsocketService>({
 
 export function ClientConfigStore() {
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
+  const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
   const setChatVisibility = useSetRecoilState<ChatVisibilityState>(chatVisibilityAtom);
   const setChatState = useSetRecoilState<ChatState>(chatStateAtom);
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
@@ -87,6 +98,22 @@ export function ClientConfigStore() {
       setClientConfig(config);
     } catch (error) {
       console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
+    }
+  };
+
+  const updateServerStatus = async () => {
+    try {
+      const status = await ServerStatusService.getStatus();
+      setServerStatus(status);
+      if (status.online) {
+        setAppState(AppState.Online);
+      } else {
+        setAppState(AppState.Offline);
+      }
+      return status;
+    } catch (error) {
+      console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
+      return null;
     }
   };
 
@@ -140,7 +167,6 @@ export function ClientConfigStore() {
     } catch (error) {
       console.error(`ChatService -> startChat() ERROR: \n${error}`);
     }
-    setChatState(ChatState.Available);
   };
 
   useEffect(() => {
@@ -148,7 +174,14 @@ export function ClientConfigStore() {
     handleUserRegistration();
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setInterval(() => {
+      updateServerStatus();
+    }, 5000);
+    updateServerStatus();
+  }, []);
+
+  useEffect(() => {
     if (!accessToken) {
       return;
     }
@@ -159,6 +192,7 @@ export function ClientConfigStore() {
 
   useEffect(() => {
     const updatedChatState = getChatState(appState);
+    console.log('updatedChatState', updatedChatState);
     setChatState(updatedChatState);
     const updatedChatVisibility = getChatVisibilityState(appState);
     console.log(
