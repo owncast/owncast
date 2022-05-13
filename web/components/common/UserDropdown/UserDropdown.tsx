@@ -1,9 +1,12 @@
 import { Menu, Dropdown, Button, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import { useState } from 'react';
+import Modal from '../../ui/Modal/Modal';
 import { chatVisibilityAtom, chatDisplayNameAtom } from '../../stores/ClientConfigStore';
 import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
 import s from './UserDropdown.module.scss';
+import NameChangeModal from '../../modals/NameChangeModal';
 
 interface Props {
   username?: string;
@@ -14,6 +17,7 @@ export default function UserDropdown({ username: defaultUsername, chatState }: P
   const [chatVisibility, setChatVisibility] =
     useRecoilState<ChatVisibilityState>(chatVisibilityAtom);
   const username = defaultUsername || useRecoilValue(chatDisplayNameAtom);
+  const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
 
   const toggleChatVisibility = () => {
     if (chatVisibility === ChatVisibilityState.Hidden) {
@@ -23,9 +27,15 @@ export default function UserDropdown({ username: defaultUsername, chatState }: P
     }
   };
 
+  const handleChangeName = () => {
+    setShowNameChangeModal(true);
+  };
+
   const menu = (
     <Menu>
-      <Menu.Item key="0">Change name</Menu.Item>
+      <Menu.Item key="0" onClick={() => handleChangeName()}>
+        Change name
+      </Menu.Item>
       <Menu.Item key="1">Authenticate</Menu.Item>
       {chatState === ChatState.Available && (
         <Menu.Item key="3" onClick={() => toggleChatVisibility()}>
@@ -45,6 +55,13 @@ export default function UserDropdown({ username: defaultUsername, chatState }: P
           </Space>
         </Button>
       </Dropdown>
+      <Modal
+        title="Change Chat Display Name"
+        visible={showNameChangeModal}
+        handleCancel={() => setShowNameChangeModal(false)}
+      >
+        <NameChangeModal />
+      </Modal>
     </div>
   );
 }
