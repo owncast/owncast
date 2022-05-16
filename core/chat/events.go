@@ -46,7 +46,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		log.Errorln("error checking if name is available", err)
 		return
 	} else if !available {
-		message := fmt.Sprintf("You cannot change your name to **%s**, it is already in use.", proposedUsername)
+		message := fmt.Sprintf("The name **%s** has been already registered. If this is your name, please authenticate.", proposedUsername)
 		s.sendActionToClient(eventData.client, message)
 
 		// Resend the client's user so their username is in sync.
