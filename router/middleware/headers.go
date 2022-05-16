@@ -9,7 +9,6 @@ import (
 
 // SetHeaders will set our global headers for web resources.
 func SetHeaders(w http.ResponseWriter) {
-
 	// When running automated browser tests we must allow `unsafe-eval` in our CSP
 	// so we can explicitly add it only when needed.
 	inTest := os.Getenv("BROWSER_TEST") == "true"
