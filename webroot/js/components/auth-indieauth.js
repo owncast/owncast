@@ -73,9 +73,9 @@ export default class IndieAuthForm extends Component {
     const loaderStyle = loading ? 'flex' : 'none';
 
     const message = !authenticated
-      ? html`Use your own domain to authenticate ${' '}
+      ? html`Use your own domain to register ${' '}
           <span class="font-bold">${username}</span> or login as a previously
-          ${' '} authenticated chat user using IndieAuth.`
+          ${' '} registered chat user using IndieAuth.`
       : html`<span
           ><b>You are already authenticated</b>. However, you can add other
           domains or log in as a different user.</span
