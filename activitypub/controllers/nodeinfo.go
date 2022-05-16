@@ -90,7 +90,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 	res := response{
 		Version: "2.0",
 		Software: software{
-			Name:    "Owncast",
+			Name:    "owncast",
 			Version: config.VersionNumber,
 		},
 		Usage: usage{
