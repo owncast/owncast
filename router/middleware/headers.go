@@ -9,8 +9,6 @@ import (
 
 // SetHeaders will set our global headers for web resources.
 func SetHeaders(w http.ResponseWriter) {
-	// Tell Google to not use this response in their FLoC tracking.
-	w.Header().Set("Permissions-Policy", "interest-cohort=()")
 
 	// When running automated browser tests we must allow `unsafe-eval` in our CSP
 	// so we can explicitly add it only when needed.
