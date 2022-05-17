@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import SocialLinks from '../components/ui/SocialLinks/SocialLinks';
 
 export default {
-  title: 'owncast/Social links',
+  title: 'owncast/Components/Social links',
   component: SocialLinks,
   parameters: {},
 } as ComponentMeta<typeof SocialLinks>;

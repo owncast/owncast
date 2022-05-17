@@ -13,7 +13,7 @@ const Example = args => (
 );
 
 export default {
-  title: 'owncast/Notify Reminder',
+  title: 'owncast/Components/Notify Reminder',
   component: NotifyReminder,
   parameters: {
     design: {

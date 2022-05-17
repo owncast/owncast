@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import CustomPageContent from '../components/CustomPageContent';
 
 export default {
-  title: 'owncast/Custom page content',
+  title: 'owncast/Components/Custom page content',
   component: CustomPageContent,
   parameters: {},
 } as ComponentMeta<typeof CustomPageContent>;

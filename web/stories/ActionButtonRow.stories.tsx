@@ -4,7 +4,7 @@ import ActionButtonRow from '../components/action-buttons/ActionButtonRow';
 import ActionButton from '../components/action-buttons/ActionButton';
 
 export default {
-  title: 'owncast/Action Buttons/Buttons Row',
+  title: 'owncast/Components/Action Buttons/Buttons Row',
   component: ActionButtonRow,
   parameters: {
     docs: {
