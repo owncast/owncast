@@ -1,5 +1,15 @@
 import s from './Logo.module.scss';
 
-export default function SocialLinks() {
-  return <img className={s.logo} src="/logo" alt="logo" />;
+interface Props {
+  src: string;
+}
+
+export default function Logo({ src }: Props) {
+  return (
+    <div className={s.logo}>
+      <div className={s.container}>
+        <div className={s.image} style={{ backgroundImage: `url(${src})` }} />
+      </div>
+    </div>
+  );
 }

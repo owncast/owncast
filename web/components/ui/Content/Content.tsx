@@ -83,7 +83,7 @@ export default function ContentComponent() {
         </ActionButtonRow>
 
         <div className={`${s.lowerRow}`}>
-          <ServerLogo />
+          <ServerLogo src="/logo" />
           <Title level={2}>{name}</Title>
           {online && title !== '' && <Title level={3}>{title}</Title>}
           <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
