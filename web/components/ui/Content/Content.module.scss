@@ -17,12 +17,40 @@
   display: grid;
 }
 
+.buttonsLogoTitleSection {
+  margin-left: 1.5vw;
+  margin-right: 1.5vw;
+}
+
 .pageContentSection {
   background-color: var(--theme-background-secondary);
   border-radius: var(--theme-rounded-corners);
   margin: 1vw;
   padding: 1vw;
   width: 100%;
+}
+
+.logoTitleSection {
+  display: flex;
+  flex-direction: row;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-left: 10px;
+
+  .title {
+    font-size: 2.5vw;
+    font-weight: bold;
+    color: var(--theme-text-primary);
+  }
+
+  .subtitle {
+    font-size: 1.6vw;
+    font-weight: bold;
+  }
 }
 
 @media (min-width: 768px) {

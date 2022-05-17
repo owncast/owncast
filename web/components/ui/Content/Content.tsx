@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { Layout, Button, Tabs, Typography } from 'antd';
+import { Layout, Button, Tabs } from 'antd';
 import {
   chatVisibilityAtom,
   clientConfigStateAtom,
@@ -29,7 +29,6 @@ import ServerLogo from '../Logo/Logo';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
-const { Title } = Typography;
 
 export default function ContentComponent() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
@@ -74,19 +73,30 @@ export default function ContentComponent() {
           lastDisconnectTime={lastDisconnectTime}
           viewerCount={viewerCount}
         />
-        <ActionButtonRow>
-          {externalActionButtons}
-          <Button>Follow</Button>
-          <NotifyReminderPopup visible notificationClicked={() => {}} notificationClosed={() => {}}>
-            <Button>Notify</Button>
-          </NotifyReminderPopup>
-        </ActionButtonRow>
+        <div className={s.buttonsLogoTitleSection}>
+          <ActionButtonRow>
+            {externalActionButtons}
+            <Button>Follow</Button>
+            <NotifyReminderPopup
+              visible
+              notificationClicked={() => {}}
+              notificationClosed={() => {}}
+            >
+              <Button>Notify</Button>
+            </NotifyReminderPopup>
+          </ActionButtonRow>
 
-        <div className={`${s.lowerRow}`}>
-          <ServerLogo src="/logo" />
-          <Title level={2}>{name}</Title>
-          {online && title !== '' && <Title level={3}>{title}</Title>}
-          <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
+          <div className={`${s.lowerRow}`}>
+            <div className={s.logoTitleSection}>
+              <ServerLogo src="/logo" />
+              <div className={s.titleSection}>
+                <div className={s.title}>{name}</div>
+                <div className={s.subtitle}>{title}</div>
+                <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
+              </div>
+            </div>
+          </div>
+
           <Tabs defaultActiveKey="1">
             <TabPane tab="About" key="1" className={`${s.pageContentSection}`}>
               <SocialLinks links={socialHandles} />
