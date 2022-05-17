@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import SocialLinks from '../components/SocialLinks';
+import SocialLinks from '../components/ui/SocialLinks/SocialLinks';
 
 export default {
   title: 'owncast/Social links',
@@ -20,7 +20,11 @@ Populated.args = {
       url: 'https://github.com/owncast/owncast',
       icon: '/img/platformlogos/github.svg',
     },
-    { platform: 'Documentation', url: 'https://owncast.online' },
+    {
+      platform: 'Documentation',
+      url: 'https://owncast.online',
+      icon: '/img/platformlogos/link.svg',
+    },
     {
       platform: 'mastodon',
       url: 'https://fosstodon.org/users/owncast',

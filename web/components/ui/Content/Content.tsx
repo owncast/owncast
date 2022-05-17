@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { Layout, Button, Tabs } from 'antd';
+import { Layout, Button, Tabs, Typography } from 'antd';
 import {
   chatVisibilityAtom,
   clientConfigStateAtom,
@@ -23,9 +23,13 @@ import ActionButton from '../../action-buttons/ActionButton';
 import Statusbar from '../Statusbar/Statusbar';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Follower } from '../../../interfaces/follower';
+import SocialLinks from '../SocialLinks/SocialLinks';
+import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
+import ServerLogo from '../Logo/Logo';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
+const { Title } = Typography;
 
 export default function ContentComponent() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
@@ -34,7 +38,7 @@ export default function ContentComponent() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const chatState = useRecoilValue<ChatState>(chatStateAtom);
 
-  const { extraPageContent, version } = clientConfig;
+  const { extraPageContent, version, socialHandles, name, title, tags } = clientConfig;
   const { online, viewerCount, lastConnectTime, lastDisconnectTime } = status;
 
   const followers: Follower[] = [];
@@ -73,26 +77,31 @@ export default function ContentComponent() {
         <ActionButtonRow>
           {externalActionButtons}
           <Button>Follow</Button>
-          <Button>Notify</Button>
+          <NotifyReminderPopup visible notificationClicked={() => {}} notificationClosed={() => {}}>
+            <Button>Notify</Button>
+          </NotifyReminderPopup>
         </ActionButtonRow>
 
         <div className={`${s.lowerRow}`}>
-          <Tabs defaultActiveKey="1" type="card">
+          <ServerLogo />
+          <Title level={2}>{name}</Title>
+          {online && title !== '' && <Title level={3}>{title}</Title>}
+          <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
+          <Tabs defaultActiveKey="1">
             <TabPane tab="About" key="1" className={`${s.pageContentSection}`}>
+              <SocialLinks links={socialHandles} />
               <CustomPageContent content={extraPageContent} />
             </TabPane>
             <TabPane tab="Followers" key="2" className={`${s.pageContentSection}`}>
               <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
-
           {chatVisibility && (
             <div className={`${s.mobileChat}`}>
               <ChatContainer messages={messages} state={chatState} />
               <ChatTextField />
             </div>
           )}
-
           <Footer version={version} />
         </div>
       </div>
