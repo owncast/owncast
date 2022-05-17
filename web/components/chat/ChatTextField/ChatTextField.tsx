@@ -8,8 +8,9 @@ import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
+import s from './ChatTextField.module.scss';
 
-type CustomElement = { type: 'paragraph'; children: CustomText[] };
+type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] };
 type CustomText = { text: string };
 
 declare module 'slate' {
@@ -103,6 +104,16 @@ export default function ChatTextField(props: Props) {
   const [editor] = useState(() => withImages(withReact(createEditor())));
 
   const size = 'small';
+  const EMPTY_VALUE = [
+    {
+      type: 'paragraph',
+      children: [
+        {
+          text: '',
+        },
+      ],
+    },
+  ];
 
   const sendMessage = () => {
     if (!websocketService) {
@@ -142,12 +153,16 @@ export default function ChatTextField(props: Props) {
   };
 
   return (
-    <div>
-      <Slate editor={editor} value={[]} onChange={handleChange}>
+    <div className={s.root}>
+      <Slate
+        editor={editor}
+        value={[{ type: 'span', children: [{ text: 'hey' }] }]}
+        onChange={handleChange}
+      >
         <Editable
           onKeyDown={onKeyDown}
           renderElement={p => <Element {...p} />}
-          placeholder="Chat message goes here..."
+          // placeholder="Chat message goes here..."
         />
       </Slate>
       <Button type="default" ghost title="Emoji" onClick={() => setShowEmojis(!showEmojis)}>
