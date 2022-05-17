@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { OwncastLogo } from '../components/common';
 
 export default {
-  title: 'owncast/Logo',
+  title: 'owncast/Components/Logo',
   component: OwncastLogo,
   parameters: {},
 } as ComponentMeta<typeof OwncastLogo>;

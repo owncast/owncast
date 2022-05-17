@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import FollowerCollection from '../components/FollowersCollection';
 
 export default {
-  title: 'owncast/Followers/Followers collection',
+  title: 'owncast/Components/Followers/Followers collection',
   component: FollowerCollection,
   parameters: {},
 } as ComponentMeta<typeof FollowerCollection>;

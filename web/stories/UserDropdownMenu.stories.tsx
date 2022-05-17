@@ -5,7 +5,7 @@ import { UserDropdown } from '../components/common';
 import { ChatState } from '../interfaces/application-state';
 
 export default {
-  title: 'owncast/User settings menu',
+  title: 'owncast/Components/User settings menu',
   component: UserDropdown,
   parameters: {},
 } as ComponentMeta<typeof UserDropdown>;
