@@ -45,7 +45,7 @@ export default function ContentComponent() {
 
   const total = 0;
 
-  const isShowingChatColumn =
+  const chatVisible =
     chatState === ChatState.Available && chatVisibility === ChatVisibilityState.Visible;
 
   // This is example content. It should be removed.
@@ -65,7 +65,7 @@ export default function ContentComponent() {
   ));
 
   return (
-    <Content className={`${s.root}`} data-columns={isShowingChatColumn ? 2 : 1}>
+    <Content className={`${s.root}`}>
       <div className={`${s.leftCol}`}>
         <OwncastPlayer source="/hls/stream.m3u8" online={online} />
         <Statusbar
@@ -105,7 +105,7 @@ export default function ContentComponent() {
           <Footer version={version} />
         </div>
       </div>
-      {isShowingChatColumn && <Sidebar />}
+      {chatVisible && <Sidebar />}
     </Content>
   );
 }

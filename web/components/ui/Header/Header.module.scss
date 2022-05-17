@@ -1,9 +1,12 @@
 .header {
+  position: sticky;
+  top: 0px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   z-index: 1;
   padding: 0.5rem 1rem;
+  background-color: var(--default-bg-color);
   .logo {
     display: flex;
     align-items: center;
