@@ -30,7 +30,6 @@ export default function ChatContainer(props: Props) {
 
   return (
     <div>
-      <h1>Chat</h1>
       <Spin spinning={loading} indicator={spinIcon} />
       <Virtuoso
         style={{ height: '80vh' }}

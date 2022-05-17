@@ -1,4 +1,12 @@
 .root {
-  height: 2rem;
-  color: var(--black);
+  padding: .3rem;
+  color: var(--text-secondry);
+  div[role=textbox] {
+    padding: .6rem;
+    border-radius: .35rem;
+    background-color: var(--color-owncast-gray-700);
+    & > p {
+      margin: 0px;
+    }
+  }
 }

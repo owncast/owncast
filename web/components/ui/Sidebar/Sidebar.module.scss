@@ -7,8 +7,25 @@
   .root {
     position: sticky;
     top: var(--header-h);
-    display: flex;
-    min-width: 300px !important;
+    display: block;
     max-height: calc(100vh - var(--header-h));
   }
+}
+/* 
+First div is .ant-layout-sider-children
+Only way to target it apparently
+*/
+.root > div {
+  display: flex;
+  flex-flow: column nowrap;
+  -moz-box-flex: 1 !important;
+  flex-grow: 1 !important;
+  height: 100% !important;
+}
+
+.chatHeader {
+  text-align: center;
+  color: var(--text-color-secondry);
+  border-bottom: 1px solid var(--color-owncast-gray-700);
+  font-variant: small-caps;
 }

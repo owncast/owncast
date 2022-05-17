@@ -18,13 +18,16 @@ export default function Sidebar() {
 
   return (
     <Sider
-      className={`${s.root}`}
+      className={s.root}
       collapsed={chatVisibility === ChatVisibilityState.Hidden}
       collapsedWidth={0}
-      width="100%"
+      width={320}
     >
-      <ChatContainer messages={messages} state={chatState} />
-      <ChatTextField />
+      <div className={s.chatHeader}>
+        <span>stream chat</span>
+      </div>
+        <ChatContainer messages={messages} state={chatState} />
+        <ChatTextField />
     </Sider>
   );
 }
