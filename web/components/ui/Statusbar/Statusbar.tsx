@@ -1,6 +1,7 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import { useEffect, useState } from 'react';
+import { EyeOutlined } from '@ant-design/icons';
 import s from './Statusbar.module.scss';
 
 interface Props {
@@ -35,13 +36,15 @@ export default function Statusbar(props: Props) {
   const { online, lastConnectTime, lastDisconnectTime, viewerCount } = props;
 
   let onlineMessage = '';
-  let rightSideMessage = '';
+  let rightSideMessage: any;
   if (online && lastConnectTime) {
     const duration = makeDurationString(new Date(lastConnectTime));
     onlineMessage = online ? `Live for  ${duration}` : 'Offline';
-    rightSideMessage = `${viewerCount > 0 ? `${viewerCount}` : 'No'} ${
-      viewerCount === 1 ? 'viewer' : 'viewers'
-    }`;
+    rightSideMessage = (
+      <span>
+        <EyeOutlined /> {viewerCount}
+      </span>
+    );
   } else {
     onlineMessage = 'Offline';
     if (lastDisconnectTime) {
