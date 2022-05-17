@@ -78,4 +78,9 @@
   --default-link-color: #6941c6;
   --default-bg-color: #1b1a26;
   --default-text-color: #f2f4f7;
+
+  /* Layout variables */
+  --header-h: 64px;
+  --chat-w: 300px;
+  --chat-input-h: 40.5px;
 }

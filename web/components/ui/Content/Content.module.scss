@@ -1,26 +1,20 @@
 .root {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr auto;
 }
 
 .mobileChat {
   display: block;
-  position: absolute;
-  background-color: white;
   top: 0px;
   width: 100%;
-  height: calc(50vh - var(--header-h));
 }
 
 .leftCol {
   display: grid;
-  // -64px, which is the header
-  grid-template-rows: 50vh calc(50vh - var(--header-h));
 }
 .lowerRow {
   position: relative;
   display: grid;
-  grid-template-rows: 1fr var(--header-h);
 }
 
 .pageContentSection {
@@ -34,8 +28,5 @@
 @media (min-width: 768px) {
   .mobileChat {
     display: none;
-  }
-  .root[data-columns='2'] {
-    grid-template-columns: 1fr var(--chat-w);
   }
 }
