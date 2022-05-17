@@ -1,23 +1,28 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { OwncastLogo } from '../components/common';
+import Logo from '../components/ui/Logo/Logo';
 
 export default {
-  title: 'owncast/Components/Logo',
-  component: OwncastLogo,
+  title: 'owncast/Components/Page Logo',
+  component: Logo,
   parameters: {},
-} as ComponentMeta<typeof OwncastLogo>;
+} as ComponentMeta<typeof Logo>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof OwncastLogo> = args => <OwncastLogo {...args} />;
+const Template: ComponentStory<typeof Logo> = args => <Logo {...args} />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Logo = Template.bind({});
-Logo.args = {
-  url: '/logo',
+export const LocalServer = Template.bind({});
+LocalServer.args = {
+  src: 'http://localhost:8080/logo',
 };
 
 export const DemoServer = Template.bind({});
 DemoServer.args = {
-  url: 'https://watch.owncast.online/logo',
+  src: 'https://watch.owncast.online/logo',
+};
+
+export const RandomImage = Template.bind({});
+RandomImage.args = {
+  src: 'https://picsum.photos/600/500',
 };
