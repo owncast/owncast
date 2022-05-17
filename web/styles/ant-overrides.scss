@@ -446,20 +446,6 @@ textarea.ant-input {
   border-radius: 0 0 var(--container-border-radius) var(--container-border-radius);
 }
 
-// ANT POPOVER
-.ant-popover-inner {
-  background-color: var(--popover-base-color);
-}
-.ant-popover-message,
-.ant-popover-inner-content {
-  color: var(--default-text-color);
-}
-.ant-popover-placement-topLeft > .ant-popover-content > .ant-popover-arrow {
-  border-color: var(--popover-base-color);
-}
-.ant-popover-arrow-content {
-  background-color: var(--popover-base-color);
-}
 
 // ANT TOOLTIP
 .ant-tooltip {

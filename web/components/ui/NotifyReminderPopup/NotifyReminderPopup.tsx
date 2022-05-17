@@ -5,7 +5,7 @@ import s from './NotifyReminderPopup.module.scss';
 
 interface Props {
   visible: boolean;
-  children: React.ReactNode[];
+  children: React.ReactNode;
   notificationClicked: () => void;
   notificationClosed: () => void;
 }
