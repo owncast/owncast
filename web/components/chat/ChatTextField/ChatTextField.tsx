@@ -144,7 +144,11 @@ export default function ChatTextField(props: Props) {
 
   return (
     <div className={s.root}>
-      <Slate editor={editor} value={[]} onChange={handleChange}>
+      <Slate
+        editor={editor}
+        value={[{ type: 'paragraph', children: [{ text: '' }] }]}
+        onChange={handleChange}
+      >
         <Editable
           onKeyDown={onKeyDown}
           renderElement={p => <Element {...p} />}
