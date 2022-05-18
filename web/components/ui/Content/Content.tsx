@@ -26,6 +26,7 @@ import { Follower } from '../../../interfaces/follower';
 import SocialLinks from '../SocialLinks/SocialLinks';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
 import ServerLogo from '../Logo/Logo';
+import CategoryIcon from '../CategoryIcon/CategoryIcon';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -91,7 +92,10 @@ export default function ContentComponent() {
               <ServerLogo src="/logo" />
               <div className={s.titleSection}>
                 <div className={s.title}>{name}</div>
-                <div className={s.subtitle}>{title}</div>
+                <div className={s.subtitle}>
+                  {title}
+                  <CategoryIcon tags={tags} />
+                </div>
                 <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
               </div>
             </div>
