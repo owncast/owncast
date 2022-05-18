@@ -104,16 +104,6 @@ export default function ChatTextField(props: Props) {
   const [editor] = useState(() => withImages(withReact(createEditor())));
 
   const size = 'small';
-  const EMPTY_VALUE = [
-    {
-      type: 'paragraph',
-      children: [
-        {
-          text: '',
-        },
-      ],
-    },
-  ];
 
   const sendMessage = () => {
     if (!websocketService) {
@@ -154,11 +144,7 @@ export default function ChatTextField(props: Props) {
 
   return (
     <div className={s.root}>
-      <Slate
-        editor={editor}
-        value={[{ type: 'span', children: [{ text: 'hey' }] }]}
-        onChange={handleChange}
-      >
+      <Slate editor={editor} value={[]} onChange={handleChange}>
         <Editable
           onKeyDown={onKeyDown}
           renderElement={p => <Element {...p} />}

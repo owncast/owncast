@@ -26,8 +26,8 @@ export default function Sidebar() {
       <div className={s.chatHeader}>
         <span>stream chat</span>
       </div>
-        <ChatContainer messages={messages} state={chatState} />
-        <ChatTextField />
+      <ChatContainer messages={messages} state={chatState} />
+      <ChatTextField />
     </Sider>
   );
 }
