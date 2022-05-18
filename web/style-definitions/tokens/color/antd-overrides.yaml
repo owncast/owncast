@@ -4,7 +4,7 @@
 
 text-color:
   value: 'var(--theme-text-color)'
-text-color-secondry:
+text-color-secondary:
   value: 'var(--theme-text-color-secondary)'
 link-color:
   value: 'var(--theme-link-color)'
