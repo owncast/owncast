@@ -2,6 +2,15 @@ const withLess = require('next-with-less');
 
 module.exports = withLess({
   trailingSlash: true,
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
+  },
   async rewrites() {
     return [
       {

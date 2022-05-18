@@ -60,6 +60,7 @@
     "@storybook/manager-webpack5": "^6.4.22",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/testing-library": "^0.0.9",
+    "@svgr/webpack": "^6.2.1",
     "@types/chart.js": "2.9.35",
     "@types/classnames": "2.3.1",
     "@types/markdown-it": "12.2.3",
