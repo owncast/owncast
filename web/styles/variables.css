@@ -1,11 +1,11 @@
 /**
  * Do not edit directly
- * Generated on Tue, 17 May 2022 02:47:26 GMT
+ * Generated on Wed, 18 May 2022 00:35:52 GMT
  */
 
 :root {
   --text-color: var(--theme-text-color);
-  --text-color-secondry: var(--theme-text-color-secondary);
+  --text-color-secondary: var(--theme-text-color-secondary);
   --link-color: var(--theme-link-color);
   --popover-background: #6941c6;
   --background-color-light: var(--theme-background-secondary);
@@ -78,9 +78,4 @@
   --default-link-color: #6941c6;
   --default-bg-color: #1b1a26;
   --default-text-color: #f2f4f7;
-
-  /* Layout variables */
-  --header-h: 64px;
-  --chat-w: 320px;
-  --chat-input-h: 40.5px;
 }
