@@ -1,5 +1,11 @@
 import { Menu, Dropdown, Button, Space } from 'antd';
-import { CaretDownOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  CaretDownOutlined,
+  EditOutlined,
+  LockOutlined,
+  MessageOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useState } from 'react';
 import Modal from '../../ui/Modal/Modal';
@@ -33,12 +39,14 @@ export default function UserDropdown({ username: defaultUsername, chatState }: P
 
   const menu = (
     <Menu>
-      <Menu.Item key="0" onClick={() => handleChangeName()}>
+      <Menu.Item key="0" icon={<EditOutlined />} onClick={() => handleChangeName()}>
         Change name
       </Menu.Item>
-      <Menu.Item key="1">Authenticate</Menu.Item>
+      <Menu.Item key="1" icon={<LockOutlined />}>
+        Authenticate
+      </Menu.Item>
       {chatState === ChatState.Available && (
-        <Menu.Item key="3" onClick={() => toggleChatVisibility()}>
+        <Menu.Item key="3" icon={<MessageOutlined />} onClick={() => toggleChatVisibility()}>
           Toggle chat
         </Menu.Item>
       )}
