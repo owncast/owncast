@@ -1,5 +1,5 @@
 import { Menu, Dropdown, Button, Space } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, UserOutlined } from '@ant-design/icons';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useState } from 'react';
 import Modal from '../../ui/Modal/Modal';
@@ -48,10 +48,10 @@ export default function UserDropdown({ username: defaultUsername, chatState }: P
   return (
     <div className={`${s.root}`}>
       <Dropdown overlay={menu} trigger={['click']}>
-        <Button>
+        <Button icon={<UserOutlined style={{ marginRight: '.5rem' }} />}>
           <Space>
             {username}
-            <DownOutlined />
+            <CaretDownOutlined />
           </Space>
         </Button>
       </Dropdown>
