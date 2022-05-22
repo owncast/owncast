@@ -2,10 +2,11 @@ import { Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
-import { ChatMessage } from '../../interfaces/chat-message.model';
-import { ChatState } from '../../interfaces/application-state';
-import ChatUserMessage from './ChatUserMessage';
-import { MessageType } from '../../interfaces/socket-events';
+import { ChatMessage } from '/interfaces/chat-message.model';
+import { ChatState } from '/interfaces/application-state';
+import ChatUserMessage from '../ChatUserMessage';
+import { MessageType } from '/interfaces/socket-events';
+import s from './ChatContainer.module.scss';
 
 interface Props {
   messages: ChatMessage[];
@@ -30,6 +31,9 @@ export default function ChatContainer(props: Props) {
 
   return (
     <div>
+      <div className={s.chatHeader}>
+        <span>stream chat</span>
+      </div>
       <Spin spinning={loading} indicator={spinIcon} />
       <Virtuoso
         style={{ height: '80vh' }}
