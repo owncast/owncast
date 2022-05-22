@@ -1,0 +1,15 @@
+
+.root {
+  font-size: 0.9rem;
+  padding: 5px;
+  padding-left: 1rem;
+  margin: 8px 5px;
+  border-left: 2px solid;
+  .user {
+    font-weight: bold;
+    color: var(--color-owncast-grey-100);
+  }
+  .message {
+    color: var(--color-owncast-grey-100);
+  }
+}

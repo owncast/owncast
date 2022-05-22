@@ -5,8 +5,8 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatState } from '../../../interfaces/application-state';
 import { MessageType } from '../../../interfaces/socket-events';
-import ChatUserMessage from '../ChatUserMessage';
 import s from './ChatContainer.module.scss';
+import { ChatUserMessage } from '..';
 
 interface Props {
   messages: ChatMessage[];
