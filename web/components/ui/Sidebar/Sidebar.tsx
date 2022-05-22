@@ -1,7 +1,7 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import ChatContainer from '/components/chat/ChatContainer';
+import { ChatContainer, ChatTextField } from '../../chat';
 import s from './Sidebar.module.scss';
 import {
   chatMessagesAtom,
@@ -9,7 +9,6 @@ import {
   chatStateAtom,
 } from '../../stores/ClientConfigStore';
 import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
-import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 
 export default function Sidebar() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
