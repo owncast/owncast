@@ -1,7 +1,7 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import ChatContainer from '../../chat/ChatContainer';
+import ChatContainer from '/components/chat/ChatContainer';
 import s from './Sidebar.module.scss';
 import {
   chatMessagesAtom,
@@ -23,9 +23,6 @@ export default function Sidebar() {
       collapsedWidth={0}
       width={320}
     >
-      <div className={s.chatHeader}>
-        <span>stream chat</span>
-      </div>
       <ChatContainer messages={messages} state={chatState} />
       <ChatTextField />
     </Sider>
