@@ -1,4 +1,5 @@
-import { ChatMessage } from '../../interfaces/chat-message.model';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
+import s from './ChatUserMessage.module.scss';
 
 interface Props {
   message: ChatMessage;
@@ -12,12 +13,14 @@ export default function ChatUserMessage(props: Props) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { displayName, displayColor } = user;
 
-  // TODO: Convert displayColor (a hue) to a usable color.
+  const color = `hsl(${displayColor}, 100%, 70%)`;
 
   return (
-    <div>
-      <div>{displayName}</div>
-      <div>{body}</div>
+    <div className={s.root} style={{ borderColor: color }}>
+      <div className={s.user} style={{ color }}>
+        {displayName}
+      </div>
+      <div className={s.message}>{body}</div>
       {showModeratorMenu && <div>Moderator menu</div>}
     </div>
   );
