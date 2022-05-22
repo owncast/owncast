@@ -144,25 +144,34 @@ export default function ChatTextField(props: Props) {
 
   return (
     <div className={s.root}>
-      <Slate
-        editor={editor}
-        value={[{ type: 'paragraph', children: [{ text: '' }] }]}
-        onChange={handleChange}
-      >
-        <Editable
-          onKeyDown={onKeyDown}
-          renderElement={p => <Element {...p} />}
-          // placeholder="Chat message goes here..."
-        />
-      </Slate>
-      <Button type="default" ghost title="Emoji" onClick={() => setShowEmojis(!showEmojis)}>
-        <SmileOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-      </Button>
-
-      <Button size={size} type="primary" onClick={sendMessage}>
-        Submit
-      </Button>
-
+      <div className={s.inputWrapper}>
+        <Slate
+          editor={editor}
+          value={[{ type: 'paragraph', children: [{ text: '' }] }]}
+          onChange={handleChange}
+        >
+          <Editable
+            onKeyDown={onKeyDown}
+            renderElement={p => <Element {...p} />}
+            placeholder="Chat message goes here..."
+            style={{ width: '100%' }}
+          />
+        </Slate>
+        <Button
+          className={s.emojiButton}
+          type="default"
+          ghost
+          title="Emoji"
+          onClick={() => setShowEmojis(!showEmojis)}
+        >
+          <SmileOutlined />
+        </Button>
+      </div>
+      <div className={s.submitButtonWrapper}>
+        <Button size={size} type="primary" onClick={sendMessage}>
+          Submit
+        </Button>
+      </div>
       <Popover
         content={<EmojiPicker onEmojiSelect={handleEmojiSelect} />}
         trigger="click"

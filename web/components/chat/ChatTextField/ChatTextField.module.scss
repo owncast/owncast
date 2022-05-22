@@ -1,12 +1,36 @@
 .root {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
   padding: .3rem;
   color: var(--text-secondry);
+  overflow-x: hidden;
   div[role=textbox] {
     padding: .6rem;
+    padding-right: calc(0.6rem + 44px);
     border-radius: .35rem;
     background-color: var(--color-owncast-gray-700);
     & > p {
       margin: 0px;
     }
   }
+}
+.inputWrapper {
+  display: flex;
+  position: relative;
+}
+
+.emojiButton {
+  border: none;
+  margin-right: 5px;
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.submitButtonWrapper {
+  display: flex;
+  padding: 6px 0;
+  justify-content: flex-end;
 }
