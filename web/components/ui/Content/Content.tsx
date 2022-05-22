@@ -1,5 +1,6 @@
 import { useRecoilValue } from 'recoil';
 import { Layout, Button, Tabs } from 'antd';
+import { NotificationFilled, HeartFilled } from '@ant-design/icons';
 import {
   chatVisibilityAtom,
   clientConfigStateAtom,
@@ -77,13 +78,13 @@ export default function ContentComponent() {
         <div className={s.buttonsLogoTitleSection}>
           <ActionButtonRow>
             {externalActionButtons}
-            <Button>Follow</Button>
+            <Button icon={<HeartFilled />}>Follow</Button>
             <NotifyReminderPopup
               visible
               notificationClicked={() => {}}
               notificationClosed={() => {}}
             >
-              <Button>Notify</Button>
+              <Button icon={<NotificationFilled />}>Notify</Button>
             </NotifyReminderPopup>
           </ActionButtonRow>
 
