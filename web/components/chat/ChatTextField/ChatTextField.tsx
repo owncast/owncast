@@ -1,4 +1,4 @@
-import { SmileOutlined } from '@ant-design/icons';
+import { SendOutlined, SmileOutlined } from '@ant-design/icons';
 import { Button, Popover } from 'antd';
 import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -103,8 +103,6 @@ export default function ChatTextField(props: Props) {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [editor] = useState(() => withImages(withReact(createEditor())));
 
-  const size = 'small';
-
   const sendMessage = () => {
     if (!websocketService) {
       console.log('websocketService is not defined');
@@ -157,19 +155,18 @@ export default function ChatTextField(props: Props) {
             style={{ width: '100%' }}
           />
         </Slate>
-        <Button
+        <button
+          type="button"
           className={s.emojiButton}
-          type="default"
-          ghost
-          title="Emoji"
+          title="Emoji picker button"
           onClick={() => setShowEmojis(!showEmojis)}
         >
           <SmileOutlined />
-        </Button>
+        </button>
       </div>
       <div className={s.submitButtonWrapper}>
-        <Button size={size} type="primary" onClick={sendMessage}>
-          Submit
+        <Button size="middle" type="primary" icon={<SendOutlined />} onClick={sendMessage}>
+          Send
         </Button>
       </div>
       <Popover

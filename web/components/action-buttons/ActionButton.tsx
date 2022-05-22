@@ -8,7 +8,9 @@ interface Props {
   action: ExternalAction;
 }
 
-export default function ActionButton({action: { url, title, description, icon, openExternally }}: Props) {
+export default function ActionButton({
+  action: { url, title, description, icon, openExternally },
+}: Props) {
   const [showModal, setShowModal] = useState(false);
 
   const buttonClicked = () => {
@@ -21,11 +23,7 @@ export default function ActionButton({action: { url, title, description, icon, o
 
   return (
     <>
-      <Button
-        type="primary"
-        className={`${s.button}`}
-        onClick={buttonClicked}
-      >
+      <Button type="primary" className={`${s.button}`} onClick={buttonClicked}>
         <img src={icon} className={`${s.icon}`} alt={description} />
         {title}
       </Button>

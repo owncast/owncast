@@ -22,11 +22,16 @@
 
 .emojiButton {
   border: none;
-  margin-right: 5px;
+  background: none;
+  cursor: pointer;
+  padding: 0 1rem;
   position: absolute;
   right: 0px;
   top: 50%;
   transform: translateY(-50%);
+  svg {
+    fill: var(--color-owncast-gray-300);
+  }
 }
 
 .submitButtonWrapper {
