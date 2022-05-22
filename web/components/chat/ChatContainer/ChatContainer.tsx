@@ -2,10 +2,10 @@ import { Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
-import { ChatMessage } from '/interfaces/chat-message.model';
-import { ChatState } from '/interfaces/application-state';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { ChatState } from '../../../interfaces/application-state';
+import { MessageType } from '../../../interfaces/socket-events';
 import ChatUserMessage from '../ChatUserMessage';
-import { MessageType } from '/interfaces/socket-events';
 import s from './ChatContainer.module.scss';
 
 interface Props {
