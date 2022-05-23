@@ -58,6 +58,7 @@ class LatencyCompensator {
     this.playbackRate = 1.0;
     this.lastJumpOccurred = null;
     this.startupTime = new Date();
+    this.clockSkewMs = 0;
 
     this.player.on('playing', this.handlePlaying.bind(this));
     this.player.on('error', this.handleError.bind(this));
@@ -66,6 +67,15 @@ class LatencyCompensator {
     this.player.on('ended', this.handleEnded.bind(this));
     this.player.on('canplaythrough', this.handlePlaying.bind(this));
     this.player.on('canplay', this.handlePlaying.bind(this));
+  }
+
+  // To keep our client clock in sync with the server clock to determine
+  // accurate latency the clock skew should be set here to be used in
+  // the calculation. Otherwise if somebody's client clock is significantly
+  // off it will have a very incorrect latency determination and make bad
+  // decisions.
+  setClockSkew(skewMs) {
+    this.clockSkewMs = skewMs;
   }
 
   // This is run on a timer to check if we should be compensating for latency.
@@ -167,7 +177,7 @@ class LatencyCompensator {
       );
 
       const segmentTime = segment.dateTimeObject.getTime();
-      const now = new Date().getTime();
+      const now = new Date().getTime() + this.clockSkewMs;
       const latency = now - segmentTime;
 
       // Since the calculation of latency is based on clock times, it's possible
@@ -190,12 +200,13 @@ class LatencyCompensator {
           latency > maxLatencyThreshold + MAX_JUMP_LATENCY
         ) {
           const jumpAmount = latency / 1000 - segment.duration * 3;
-          console.log('jump amount', jumpAmount);
           const seekPosition = this.player.currentTime() + jumpAmount;
           console.log(
             'latency',
             latency / 1000,
-            'jumping to live from ',
+            'jumping',
+            jumpAmount,
+            'to live from ',
             this.player.currentTime(),
             ' to ',
             seekPosition
@@ -253,9 +264,9 @@ class LatencyCompensator {
         this.enabled,
         'running: ',
         this.running,
-        'timeout: ',
-        this.inTimeout,
-        'buffers: ',
+        'skew: ',
+        this.clockSkewMs,
+        'rebuffer events: ',
         this.bufferingCounter
       );
     } catch (err) {
