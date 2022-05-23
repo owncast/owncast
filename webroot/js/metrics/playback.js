@@ -7,6 +7,7 @@ class PlaybackMetrics {
     this.player = player;
     this.supportsDetailedMetrics = false;
     this.hasPerformedInitialVariantChange = false;
+    this.clockSkewMs = 0;
 
     this.segmentDownloadTime = [];
     this.bandwidthTracking = [];
@@ -57,6 +58,12 @@ class PlaybackMetrics {
     setInterval(() => {
       this.send();
     }, METRICS_SEND_INTERVAL);
+  }
+
+  // Keep our client clock in sync with the server clock to determine
+  // accurate latency calculations.
+  setClockSkew(skewMs) {
+    this.clockSkewMs = skewMs;
   }
 
   videoJSReady() {
@@ -173,7 +180,7 @@ class PlaybackMetrics {
       }
 
       const segmentTime = segment.dateTimeObject.getTime();
-      const now = new Date().getTime();
+      const now = new Date().getTime() + this.clockSkewMs;
       const latency = now - segmentTime;
 
       // Throw away values that seem invalid.
@@ -237,7 +244,7 @@ class PlaybackMetrics {
     };
 
     try {
-      fetch(URL_PLAYBACK_METRICS, options);
+      await fetch(URL_PLAYBACK_METRICS, options);
     } catch (e) {
       console.error(e);
     }
@@ -249,9 +256,7 @@ export default PlaybackMetrics;
 function getCurrentlyPlayingSegment(tech, old_segment = null) {
   var target_media = tech.vhs.playlists.media();
   var snapshot_time = tech.currentTime();
-
   var segment;
-  var segment_time;
 
   // Iterate trough available segments and get first within which snapshot_time is
   for (var i = 0, l = target_media.segments.length; i < l; i++) {
@@ -263,13 +268,7 @@ function getCurrentlyPlayingSegment(tech, old_segment = null) {
   }
 
   // Null segment_time in case it's lower then 0.
-  if (segment) {
-    segment_time = Math.max(
-      0,
-      snapshot_time - (segment.end - segment.duration)
-    );
-    // Because early segments don't have end property
-  } else {
+  if (!segment) {
     segment = target_media.segments[0];
     segment_time = 0;
   }

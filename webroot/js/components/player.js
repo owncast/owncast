@@ -57,6 +57,8 @@ class OwncastPlayer {
     this.hasStartedPlayback = false;
     this.latencyCompensatorEnabled = false;
 
+    this.clockSkewMs = 0;
+
     // bind all the things because safari
     this.startPlayer = this.startPlayer.bind(this);
     this.handleReady = this.handleReady.bind(this);
@@ -92,6 +94,18 @@ class OwncastPlayer {
     this.vjsPlayer.ready(this.handleReady);
   }
 
+  setClockSkew(skewMs) {
+    this.clockSkewMs = skewMs;
+
+    if (this.playbackMetrics) {
+      this.playbackMetrics.setClockSkew(skewMs);
+    }
+
+    if (this.latencyCompensator) {
+      this.latencyCompensator.setClockSkew(skewMs);
+    }
+  }
+
   setupPlayerCallbacks(callbacks) {
     const { onReady, onPlaying, onEnded, onError } = callbacks;
 
@@ -116,6 +130,7 @@ class OwncastPlayer {
 
   setupPlaybackMetrics() {
     this.playbackMetrics = new PlaybackMetrics(this.vjsPlayer, videojs);
+    this.playbackMetrics.setClockSkew(this.clockSkewMs);
   }
 
   setupLatencyCompensator() {
@@ -139,6 +154,7 @@ class OwncastPlayer {
 
   startLatencyCompensator() {
     this.latencyCompensator = new LatencyCompensator(this.vjsPlayer);
+    this.playbackMetrics.setClockSkew(this.clockSkewMs);
     this.latencyCompensator.enable();
     this.latencyCompensatorEnabled = true;
     this.setLatencyCompensatorItemTitle('disable minimized latency');
