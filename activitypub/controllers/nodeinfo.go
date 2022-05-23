@@ -59,6 +59,10 @@ func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 
 // NodeInfoV2Controller returns the V2 node info response.
 func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
+	type services struct {
+		Outbound []string `json:"outbound"`
+		Inbound  []string `json:"inbound"`
+	}
 	type software struct {
 		Name    string `json:"name"`
 		Version string `json:"version"`
@@ -74,6 +78,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 	}
 	type response struct {
 		Version           string   `json:"version"`
+		Services          services `json:"services"`
 		Software          software `json:"software"`
 		Protocols         []string `json:"protocols"`
 		Usage             usage    `json:"usage"`
@@ -89,6 +94,10 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 
 	res := response{
 		Version: "2.0",
+		Services: services{
+			Inbound:  []string{""},
+			Outbound: []string{""},
+		},
 		Software: software{
 			Name:    "owncast",
 			Version: config.VersionNumber,
