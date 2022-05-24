@@ -1,6 +1,6 @@
 import { Popover } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import s from './NotifyReminderPopup.module.scss';
 
 interface Props {
@@ -13,6 +13,11 @@ interface Props {
 export default function NotifyReminderPopup(props: Props) {
   const { children, visible, notificationClicked, notificationClosed } = props;
   const [visiblePopup, setVisiblePopup] = useState(visible);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const title = <div className={s.title}>Stay updated!</div>;
   const popupStyle = {
@@ -35,26 +40,30 @@ export default function NotifyReminderPopup(props: Props) {
   };
 
   const content = (
-    <button type="button" onClick={popupClicked} className={s.contentbutton}>
+    <div>
       <button type="button" className={s.closebutton} onClick={popupClosed}>
         <CloseOutlined />
       </button>
-      Click and never miss
-      <br />
-      future streams!
-    </button>
+      <button type="button" onClick={popupClicked} className={s.contentbutton}>
+        Click and never miss
+        <br />
+        future streams!
+      </button>
+    </div>
   );
   return (
-    <Popover
-      placement="topLeft"
-      defaultVisible={visiblePopup}
-      visible={visiblePopup}
-      destroyTooltipOnHide
-      title={title}
-      content={content}
-      overlayInnerStyle={popupStyle}
-    >
-      {children}
-    </Popover>
+    mounted && (
+      <Popover
+        placement="topLeft"
+        defaultVisible={visiblePopup}
+        visible={visiblePopup}
+        destroyTooltipOnHide
+        title={title}
+        content={content}
+        overlayInnerStyle={popupStyle}
+      >
+        {children}
+      </Popover>
+    )
   );
 }
