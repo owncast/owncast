@@ -99,8 +99,8 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 	res := response{
 		Version: "2.0",
 		Services: services{
-			Inbound:  []string{""},
-			Outbound: []string{""},
+			Inbound:  []string{},
+			Outbound: []string{},
 		},
 		Software: software{
 			Name:    "owncast",
