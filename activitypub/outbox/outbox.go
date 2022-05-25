@@ -60,7 +60,7 @@ func SendLive() error {
 	if title := data.GetStreamTitle(); title != "" {
 		streamTitle = fmt.Sprintf("<p>%s</p>", title)
 	}
-	textContent = fmt.Sprintf("<p>%s</p><p>%s</p><p>%s</p><a href=\"%s\">%s</a>", textContent, streamTitle, tagsString, data.GetServerURL(), data.GetServerURL())
+	textContent = fmt.Sprintf("<p>%s</p>%s<p>%s</p><a href=\"%s\">%s</a>", textContent, streamTitle, tagsString, data.GetServerURL(), data.GetServerURL())
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
