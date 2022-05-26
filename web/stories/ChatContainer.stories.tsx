@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import ChatContainer from '../components/chat/ChatContainer';
 import { ChatMessage } from '../interfaces/chat-message.model';
-import { ChatState } from '../interfaces/application-state';
 
 export default {
   title: 'owncast/Chat/Chat messages container',
@@ -25,7 +24,7 @@ const testMessages =
 const messages: ChatMessage[] = JSON.parse(testMessages);
 
 const AddMessagesChatExample = args => {
-  const { messages: m, state } = args;
+  const { messages: m, loading } = args;
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(m);
 
   return (
@@ -33,7 +32,7 @@ const AddMessagesChatExample = args => {
       <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
         Add message
       </button>
-      <ChatContainer messages={chatMessages} state={state} />
+      <ChatContainer messages={chatMessages} loading={loading} />
     </div>
   );
 };
@@ -42,17 +41,17 @@ const Template: ComponentStory<typeof ChatContainer> = args => <AddMessagesChatE
 
 export const Example = Template.bind({});
 Example.args = {
-  state: ChatState.Available,
+  loading: false,
   messages,
 };
 
 export const SingleMessage = Template.bind({});
 SingleMessage.args = {
-  state: ChatState.Available,
+  loading: false,
   messages: [messages[0]],
 };
 
 export const Loading = Template.bind({});
 Loading.args = {
-  state: ChatState.Loading,
+  loading: true,
 };

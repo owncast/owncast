@@ -1,30 +1,31 @@
-/* eslint-disable no-case-declarations */
 import { useEffect } from 'react';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { atom, selector, useRecoilState, useSetRecoilState } from 'recoil';
+import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
 import ClientConfigService from '../../services/client-config-service';
 import ChatService from '../../services/chat-service';
 import WebsocketService from '../../services/websocket-service';
 import { ChatMessage } from '../../interfaces/chat-message.model';
 import { ServerStatus, makeEmptyServerStatus } from '../../interfaces/server-status.model';
-
-import {
-  AppState,
-  ChatState,
-  VideoState,
-  ChatVisibilityState,
-  getChatState,
-  getChatVisibilityState,
-} from '../../interfaces/application-state';
+import appStateModel, {
+  AppStateEvent,
+  AppStateOptions,
+  makeEmptyAppState,
+} from './application-state';
+import { setLocalStorage, getLocalStorage } from '../../utils/helpers';
 import {
   ConnectedClientInfoEvent,
   MessageType,
   ChatEvent,
   SocketEvent,
 } from '../../interfaces/socket-events';
-import handleConnectedClientInfoMessage from './eventhandlers/connectedclientinfo';
+
 import handleChatMessage from './eventhandlers/handleChatMessage';
+import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
 import ServerStatusService from '../../services/status-service';
+
+const SERVER_STATUS_POLL_DURATION = 5000;
+const ACCESS_TOKEN_KEY = 'accessToken';
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
@@ -37,26 +38,6 @@ export const serverStatusState = atom<ServerStatus>({
 export const clientConfigStateAtom = atom({
   key: 'clientConfigState',
   default: makeEmptyClientConfig(),
-});
-
-export const appStateAtom = atom<AppState>({
-  key: 'appStateAtom',
-  default: AppState.Loading,
-});
-
-export const chatStateAtom = atom<ChatState>({
-  key: 'chatStateAtom',
-  default: ChatState.Offline,
-});
-
-export const videoStateAtom = atom<VideoState>({
-  key: 'videoStateAtom',
-  default: VideoState.Unavailable,
-});
-
-export const chatVisibilityAtom = atom<ChatVisibilityState>({
-  key: 'chatVisibility',
-  default: ChatVisibilityState.Visible,
 });
 
 export const chatDisplayNameAtom = atom<string>({
@@ -79,23 +60,79 @@ export const websocketServiceAtom = atom<WebsocketService>({
   default: null,
 });
 
+export const appStateAtom = atom<AppStateOptions>({
+  key: 'appState',
+  default: makeEmptyAppState(),
+});
+
+export const chatVisibleToggleAtom = atom<boolean>({
+  key: 'chatVisibilityToggleAtom',
+  default: true,
+});
+
+export const isVideoPlayingAtom = atom<boolean>({
+  key: 'isVideoPlayingAtom',
+  default: false,
+});
+
+// Chat is visible if the user wishes it to be visible AND the required
+// chat state is set.
+export const isChatVisibleSelector = selector({
+  key: 'isChatVisibleSelector',
+  get: ({ get }) => {
+    const state: AppStateOptions = get(appStateAtom);
+    const userVisibleToggle: boolean = get(chatVisibleToggleAtom);
+    const accessToken: String = get(accessTokenAtom);
+    return accessToken && state.chatAvailable && userVisibleToggle;
+  },
+});
+
+// We display in an "online/live" state as long as video is actively playing.
+// Even during the time where technically the server has said it's no longer
+// live, however the last few seconds of video playback is still taking place.
+export const isOnlineSelector = selector({
+  key: 'isOnlineSelector',
+  get: ({ get }) => {
+    const state: AppStateOptions = get(appStateAtom);
+    const isVideoPlaying: boolean = get(isVideoPlayingAtom);
+    return state.videoAvailable || isVideoPlaying;
+  },
+});
+
+// Take a nested object of state metadata and merge it into
+// a single flattened node.
+function mergeMeta(meta) {
+  return Object.keys(meta).reduce((acc, key) => {
+    const value = meta[key];
+    Object.assign(acc, value);
+
+    return acc;
+  }, {});
+}
+
 export function ClientConfigStore() {
+  const [appState, appStateSend, appStateService] = useMachine(appStateModel);
+
+  const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
   const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
-  const setChatVisibility = useSetRecoilState<ChatVisibilityState>(chatVisibilityAtom);
-  const setChatState = useSetRecoilState<ChatState>(chatStateAtom);
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
-  const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
-  const [appState, setAppState] = useRecoilState<AppState>(appStateAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
-  const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
+  const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
 
+  const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   let ws: WebsocketService;
+
+  const sendEvent = (event: string) => {
+    // console.log('---- sending event:', event);
+    appStateSend({ type: event });
+  };
 
   const updateClientConfig = async () => {
     try {
       const config = await ClientConfigService.getConfig();
       setClientConfig(config);
+      sendEvent('LOADED');
     } catch (error) {
       console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
     }
@@ -105,32 +142,42 @@ export function ClientConfigStore() {
     try {
       const status = await ServerStatusService.getStatus();
       setServerStatus(status);
+
       if (status.online) {
-        setAppState(AppState.Online);
-      } else {
-        setAppState(AppState.Offline);
+        sendEvent(AppStateEvent.Online);
+      } else if (!status.online) {
+        sendEvent(AppStateEvent.Offline);
       }
-      return status;
     } catch (error) {
+      sendEvent(AppStateEvent.Fail);
       console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
-      return null;
     }
+    return null;
   };
 
   const handleUserRegistration = async (optionalDisplayName?: string) => {
+    const savedAccessToken = getLocalStorage(ACCESS_TOKEN_KEY);
+    if (savedAccessToken) {
+      setAccessToken(savedAccessToken);
+      return;
+    }
+
     try {
-      setAppState(AppState.Registering);
+      sendEvent(AppStateEvent.NeedsRegister);
       const response = await ChatService.registerUser(optionalDisplayName);
       console.log(`ChatService -> registerUser() response: \n${response}`);
       const { accessToken: newAccessToken, displayName: newDisplayName } = response;
       if (!newAccessToken) {
         return;
       }
+
       console.log('setting access token', newAccessToken);
       setAccessToken(newAccessToken);
-      // setLocalStorage('accessToken', newAccessToken);
+      setLocalStorage(ACCESS_TOKEN_KEY, newAccessToken);
       setChatDisplayName(newDisplayName);
+      // sendEvent(AppStateEvent.Registered);
     } catch (e) {
+      sendEvent(AppStateEvent.Fail);
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
     }
   };
@@ -138,7 +185,7 @@ export function ClientConfigStore() {
   const handleMessage = (message: SocketEvent) => {
     switch (message.type) {
       case MessageType.CONNECTED_USER_INFO:
-        handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent);
+        handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent, setChatDisplayName);
         break;
       case MessageType.CHAT:
         handleChatMessage(message as ChatEvent, chatMessages, setChatMessages);
@@ -159,11 +206,12 @@ export function ClientConfigStore() {
   };
 
   const startChat = async () => {
-    setChatState(ChatState.Loading);
+    sendEvent(AppStateEvent.Loading);
     try {
       ws = new WebsocketService(accessToken, '/ws');
       ws.handleMessage = handleMessage;
       setWebsocketService(ws);
+      sendEvent(AppStateEvent.Loaded);
     } catch (error) {
       console.error(`ChatService -> startChat() ERROR: \n${error}`);
     }
@@ -172,14 +220,11 @@ export function ClientConfigStore() {
   useEffect(() => {
     updateClientConfig();
     handleUserRegistration();
-  }, []);
-
-  useEffect(() => {
+    updateServerStatus();
     setInterval(() => {
       updateServerStatus();
-    }, 5000);
-    updateServerStatus();
-  }, []);
+    }, SERVER_STATUS_POLL_DURATION);
+  }, [appState]);
 
   useEffect(() => {
     if (!accessToken) {
@@ -190,21 +235,18 @@ export function ClientConfigStore() {
     startChat();
   }, [accessToken]);
 
-  useEffect(() => {
-    const updatedChatState = getChatState(appState);
-    console.log('updatedChatState', updatedChatState);
-    setChatState(updatedChatState);
-    const updatedChatVisibility = getChatVisibilityState(appState);
-    console.log(
-      'app state: ',
-      AppState[appState],
-      'chat state:',
-      ChatState[updatedChatState],
-      'chat visibility:',
-      ChatVisibilityState[updatedChatVisibility],
-    );
-    setChatVisibility(updatedChatVisibility);
-  }, [appState]);
+  appStateService.onTransition(state => {
+    if (!state.changed) {
+      return;
+    }
+
+    const metadata = mergeMeta(state.meta) as AppStateOptions;
+
+    console.log('--- APP STATE: ', state.value);
+    console.log('--- APP META: ', metadata);
+
+    setAppState(metadata);
+  });
 
   return null;
 }

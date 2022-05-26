@@ -1,12 +1,13 @@
 import { useRecoilValue } from 'recoil';
-import { Layout, Button, Tabs } from 'antd';
+import { Layout, Button, Tabs, Spin } from 'antd';
 import { NotificationFilled, HeartFilled } from '@ant-design/icons';
 import {
-  chatVisibilityAtom,
   clientConfigStateAtom,
   chatMessagesAtom,
-  chatStateAtom,
+  isChatVisibleSelector,
   serverStatusState,
+  appStateAtom,
+  isOnlineSelector,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../../CustomPageContent';
@@ -17,7 +18,6 @@ import Sidebar from '../Sidebar';
 import Footer from '../Footer';
 import ChatContainer from '../../chat/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
 import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 import ActionButtonRow from '../../action-buttons/ActionButtonRow';
 import ActionButton from '../../action-buttons/ActionButton';
@@ -28,26 +28,26 @@ import SocialLinks from '../SocialLinks/SocialLinks';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
 import ServerLogo from '../Logo/Logo';
 import CategoryIcon from '../CategoryIcon/CategoryIcon';
+import OfflineBanner from '../OfflineBanner/OfflineBanner';
+import { AppStateOptions } from '../../stores/application-state';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
 export default function ContentComponent() {
+  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const chatVisibility = useRecoilValue<ChatVisibilityState>(chatVisibilityAtom);
+  const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
-  const chatState = useRecoilValue<ChatState>(chatStateAtom);
+  const online = useRecoilValue<boolean>(isOnlineSelector);
 
   const { extraPageContent, version, socialHandles, name, title, tags } = clientConfig;
-  const { online, viewerCount, lastConnectTime, lastDisconnectTime } = status;
+  const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
 
   const followers: Follower[] = [];
 
   const total = 0;
-
-  const chatVisible =
-    chatState === ChatState.Available && chatVisibility === ChatVisibilityState.Visible;
 
   // This is example content. It should be removed.
   const externalActions = [
@@ -67,8 +67,12 @@ export default function ContentComponent() {
 
   return (
     <Content className={`${s.root}`}>
+      <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
+
       <div className={`${s.leftCol}`}>
-        <OwncastPlayer source="/hls/stream.m3u8" online={online} />
+        {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+        {!online && <OfflineBanner text="Stream is offline text goes here." />}
+
         <Statusbar
           online={online}
           lastConnectTime={lastConnectTime}
@@ -111,16 +115,16 @@ export default function ContentComponent() {
               <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
-          {chatVisibility && (
+          {isChatVisible && (
             <div className={`${s.mobileChat}`}>
-              <ChatContainer messages={messages} state={chatState} />
+              <ChatContainer messages={messages} loading={appState.chatLoading} />
               <ChatTextField />
             </div>
           )}
           <Footer version={version} />
         </div>
       </div>
-      {chatVisible && <Sidebar />}
+      {isChatVisible && <Sidebar />}
     </Content>
   );
 }

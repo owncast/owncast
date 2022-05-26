@@ -23,6 +23,7 @@ import '../styles/offline-notice.scss';
 import { AppProps } from 'next/app';
 import { Router, useRouter } from 'next/router';
 
+import { RecoilRoot } from 'recoil';
 import AdminLayout from '../components/layouts/admin-layout';
 import SimpleLayout from '../components/layouts/SimpleLayout';
 
@@ -31,7 +32,11 @@ function App({ Component, pageProps }: AppProps) {
   if (router.pathname.startsWith('/admin')) {
     return <AdminLayout pageProps={pageProps} Component={Component} router={router} />;
   }
-  return <SimpleLayout pageProps={pageProps} Component={Component} router={router} />;
+  return (
+    <RecoilRoot>
+      <SimpleLayout pageProps={pageProps} Component={Component} router={router} />
+    </RecoilRoot>
+  );
 }
 
 export default App;
