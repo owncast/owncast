@@ -33,6 +33,10 @@ module.exports = withLess({
         source: '/thumbnail.jpg',
         destination: 'http://localhost:8080/thumbnail.jpg', // Proxy to Backend to work around CORS.
       },
+      {
+        source: '/favicon.ico',
+        destination: 'http://localhost:8080/favicon.ico', // Proxy to Backend to work around CORS.
+      },
     ];
   },
 });
