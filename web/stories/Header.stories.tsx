@@ -15,7 +15,14 @@ const Template: ComponentStory<typeof Header> = args => (
   </RecoilRoot>
 );
 
-export const Example = Template.bind({});
-Example.args = {
+export const ChatAvailable = Template.bind({});
+ChatAvailable.args = {
   name: 'Example Stream Name',
+  chatAvailable: true,
+};
+
+export const ChatNotAvailable = Template.bind({});
+ChatNotAvailable.args = {
+  name: 'Example Stream Name',
+  chatAvailable: false,
 };
