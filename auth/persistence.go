@@ -55,7 +55,6 @@ func GetUserByAuth(authToken string, authType Type) *user.User {
 		Type:  string(authType),
 	})
 	if err != nil {
-		log.Errorln(err)
 		return nil
 	}
 

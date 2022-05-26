@@ -319,7 +319,11 @@ export default class App extends Component {
       lastConnectTime,
       streamTitle,
       lastDisconnectTime,
+      serverTime,
     } = status;
+
+    const clockSkew = new Date(serverTime).getTime() - Date.now();
+    this.player.setClockSkew(clockSkew);
 
     this.setState({
       viewerCount,

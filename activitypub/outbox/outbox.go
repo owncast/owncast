@@ -60,7 +60,7 @@ func SendLive() error {
 	if title := data.GetStreamTitle(); title != "" {
 		streamTitle = fmt.Sprintf("<p>%s</p>", title)
 	}
-	textContent = fmt.Sprintf("<p>%s</p><p>%s</p><p>%s</p><a href=\"%s\">%s</a>", textContent, streamTitle, tagsString, data.GetServerURL(), data.GetServerURL())
+	textContent = fmt.Sprintf("<p>%s</p>%s<p>%s</p><a href=\"%s\">%s</a>", textContent, streamTitle, tagsString, data.GetServerURL(), data.GetServerURL())
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
@@ -76,18 +76,21 @@ func SendLive() error {
 	previewURL, err := url.Parse(data.GetServerURL())
 	if err == nil {
 		var imageToAttach string
+		var mediaType string
 		previewGif := filepath.Join(config.WebRoot, "preview.gif")
 		thumbnailJpg := filepath.Join(config.WebRoot, "thumbnail.jpg")
 		uniquenessString := shortid.MustGenerate()
 		if utils.DoesFileExists(previewGif) {
 			imageToAttach = "preview.gif"
+			mediaType = "image/gif"
 		} else if utils.DoesFileExists(thumbnailJpg) {
 			imageToAttach = "thumbnail.jpg"
+			mediaType = "image/jpeg"
 		}
 		if imageToAttach != "" {
 			previewURL.Path = imageToAttach
 			previewURL.RawQuery = "us=" + uniquenessString
-			apmodels.AddImageAttachmentToNote(note, previewURL.String())
+			apmodels.AddImageAttachmentToNote(note, previewURL.String(), mediaType)
 		}
 	}
 
