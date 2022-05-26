@@ -2,20 +2,19 @@ import { Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatState } from '../../../interfaces/application-state';
+
 import { MessageType } from '../../../interfaces/socket-events';
 import s from './ChatContainer.module.scss';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatUserMessage } from '..';
 
 interface Props {
   messages: ChatMessage[];
-  state: ChatState;
+  loading: boolean;
 }
 
 export default function ChatContainer(props: Props) {
-  const { messages, state } = props;
-  const loading = state === ChatState.Loading;
+  const { messages, loading } = props;
 
   const chatContainerRef = useRef(null);
   const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;

@@ -3,26 +3,17 @@ import { useRecoilValue } from 'recoil';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatContainer, ChatTextField } from '../../chat';
 import s from './Sidebar.module.scss';
-import {
-  chatMessagesAtom,
-  chatVisibilityAtom,
-  chatStateAtom,
-} from '../../stores/ClientConfigStore';
-import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
+
+import { chatMessagesAtom, appStateAtom } from '../../stores/ClientConfigStore';
+import { AppStateOptions } from '../../stores/application-state';
 
 export default function Sidebar() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
-  const chatVisibility = useRecoilValue<ChatVisibilityState>(chatVisibilityAtom);
-  const chatState = useRecoilValue<ChatState>(chatStateAtom);
+  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   return (
-    <Sider
-      className={s.root}
-      collapsed={chatVisibility === ChatVisibilityState.Hidden}
-      collapsedWidth={0}
-      width={320}
-    >
-      <ChatContainer messages={messages} state={chatState} />
+    <Sider className={s.root} collapsedWidth={0} width={320}>
+      <ChatContainer messages={messages} loading={appState.chatLoading} />
       <ChatTextField />
     </Sider>
   );

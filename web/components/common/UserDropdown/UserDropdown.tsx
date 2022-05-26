@@ -9,27 +9,30 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useState } from 'react';
 import Modal from '../../ui/Modal/Modal';
-import { chatVisibilityAtom, chatDisplayNameAtom } from '../../stores/ClientConfigStore';
-import { ChatState, ChatVisibilityState } from '../../../interfaces/application-state';
+import {
+  chatVisibleToggleAtom,
+  chatDisplayNameAtom,
+  appStateAtom,
+} from '../../stores/ClientConfigStore';
 import s from './UserDropdown.module.scss';
 import NameChangeModal from '../../modals/NameChangeModal';
+import { AppStateOptions } from '../../stores/application-state';
 
 interface Props {
   username?: string;
-  chatState: ChatState;
 }
 
-export default function UserDropdown({ username: defaultUsername, chatState }: Props) {
-  const [chatVisibility, setChatVisibility] =
-    useRecoilState<ChatVisibilityState>(chatVisibilityAtom);
+export default function UserDropdown({ username: defaultUsername }: Props) {
   const username = defaultUsername || useRecoilValue(chatDisplayNameAtom);
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
+  const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
+  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const toggleChatVisibility = () => {
-    if (chatVisibility === ChatVisibilityState.Hidden) {
-      setChatVisibility(ChatVisibilityState.Visible);
+    if (!chatToggleVisible) {
+      setChatToggleVisible(true);
     } else {
-      setChatVisibility(ChatVisibilityState.Hidden);
+      setChatToggleVisible(false);
     }
   };
 
@@ -45,7 +48,7 @@ export default function UserDropdown({ username: defaultUsername, chatState }: P
       <Menu.Item key="1" icon={<LockOutlined />}>
         Authenticate
       </Menu.Item>
-      {chatState === ChatState.Available && (
+      {appState.chatAvailable && (
         <Menu.Item key="3" icon={<MessageOutlined />} onClick={() => toggleChatVisibility()}>
           Toggle chat
         </Menu.Item>

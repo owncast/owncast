@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { RecoilRoot } from 'recoil';
 import OwncastPlayer from '../components/video/OwncastPlayer';
 
 const streams = {
@@ -23,7 +24,11 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof OwncastPlayer>;
 
-const Template: ComponentStory<typeof OwncastPlayer> = args => <OwncastPlayer {...args} />;
+const Template: ComponentStory<typeof OwncastPlayer> = args => (
+  <RecoilRoot>
+    <OwncastPlayer {...args} />
+  </RecoilRoot>
+);
 
 export const LiveDemo = Template.bind({});
 LiveDemo.args = {

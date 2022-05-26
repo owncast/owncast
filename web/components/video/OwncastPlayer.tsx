@@ -1,11 +1,10 @@
 import React from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import VideoJS from './player';
 import ViewerPing from './viewer-ping';
 import VideoPoster from './VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../utils/helpers';
-import { videoStateAtom } from '../stores/ClientConfigStore';
-import { VideoState } from '../../interfaces/application-state';
+import { isVideoPlayingAtom } from '../stores/ClientConfigStore';
 
 const PLAYER_VOLUME = 'owncast_volume';
 
@@ -19,8 +18,7 @@ interface Props {
 export default function OwncastPlayer(props: Props) {
   const playerRef = React.useRef(null);
   const { source, online } = props;
-
-  const setVideoState = useSetRecoilState<VideoState>(videoStateAtom);
+  const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
 
   const setSavedVolume = () => {
     try {
@@ -86,18 +84,19 @@ export default function OwncastPlayer(props: Props) {
     player.on('playing', () => {
       player.log('player is playing');
       ping.start();
-      setVideoState(VideoState.Playing);
+      setVideoPlaying(true);
     });
 
     player.on('pause', () => {
       player.log('player is paused');
       ping.stop();
+      setVideoPlaying(false);
     });
 
     player.on('ended', () => {
       player.log('player is ended');
       ping.stop();
-      setVideoState(VideoState.Unavailable);
+      setVideoPlaying(false);
     });
 
     player.on('volumechange', handleVolume);
@@ -111,7 +110,7 @@ export default function OwncastPlayer(props: Props) {
         </div>
       )}
       <div style={{ gridColumn: 1, gridRow: 1 }}>
-        <VideoPoster online={online} initialSrc="/logo" src="/thumbnail.jpg" />
+        {!videoPlaying && <VideoPoster online={online} initialSrc="/logo" src="/thumbnail.jpg" />}
       </div>
     </div>
   );
