@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import { useEffect, useState } from 'react';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { formatTimestamp, formatMessageText } from './messageFmt';
