@@ -1,49 +1,3 @@
-import { ORIENTATION_LANDSCAPE, ORIENTATION_PORTRAIT } from './constants.js';
-
-export function getLocalStorage(key) {
-  try {
-    return localStorage.getItem(key);
-  } catch (e) {}
-  return null;
-}
-
-export function setLocalStorage(key, value) {
-  try {
-    if (value !== '' && value !== null) {
-      localStorage.setItem(key, value);
-    } else {
-      localStorage.removeItem(key);
-    }
-    return true;
-  } catch (e) {}
-  return false;
-}
-
-export function clearLocalStorage(key) {
-  localStorage.removeItem(key);
-}
-
-// jump down to the max height of a div, with a slight delay
-export function jumpToBottom(element, behavior) {
-  if (!element) return;
-
-  if (!behavior) {
-    behavior = document.visibilityState === 'visible' ? 'smooth' : 'instant';
-  }
-
-  setTimeout(
-    () => {
-      element.scrollTo({
-        top: element.scrollHeight,
-        left: 0,
-        behavior: behavior,
-      });
-    },
-    50,
-    element,
-  );
-}
-
 // convert newlines to <br>s
 export function addNewlines(str) {
   return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -52,9 +6,8 @@ export function addNewlines(str) {
 export function pluralize(string, count) {
   if (count === 1) {
     return string;
-  } else {
-    return string + 's';
   }
+  return `${string}s`;
 }
 
 // Trying to determine if browser is mobile/tablet.
@@ -66,7 +19,7 @@ export function hasTouchScreen() {
   } else if ('msMaxTouchPoints' in navigator) {
     hasTouch = navigator.msMaxTouchPoints > 0;
   } else {
-    var mQ = window.matchMedia && matchMedia('(pointer:coarse)');
+    const mQ = window.matchMedia && matchMedia('(pointer:coarse)');
     if (mQ && mQ.media === '(pointer:coarse)') {
       hasTouch = !!mQ.matches;
     } else if ('orientation' in window) {
@@ -77,20 +30,6 @@ export function hasTouchScreen() {
     }
   }
   return hasTouch;
-}
-
-export function getOrientation(forTouch = false) {
-  // chrome mobile gives misleading matchMedia result when keyboard is up
-  if (forTouch && window.screen && window.screen.orientation) {
-    return window.screen.orientation.type.match('portrait')
-      ? ORIENTATION_PORTRAIT
-      : ORIENTATION_LANDSCAPE;
-  } else {
-    // all other cases
-    return window.matchMedia('(orientation: portrait)').matches
-      ? ORIENTATION_PORTRAIT
-      : ORIENTATION_LANDSCAPE;
-  }
 }
 
 export function padLeft(text, pad, size) {
@@ -116,7 +55,7 @@ export function parseSecondsToDurationString(seconds = 0) {
 }
 
 export function setVHvar() {
-  var vh = window.innerHeight * 0.01;
+  const vh = window.innerHeight * 0.01;
   // Then we set the value in the --vh custom property to the root of the document
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
@@ -129,7 +68,7 @@ export function doesObjectSupportFunction(object, functionName) {
 export function classNames(json) {
   const classes = [];
 
-  Object.entries(json).map(function (item) {
+  Object.entries(json).map(item => {
     const [key, value] = item;
     if (value) {
       classes.push(key);
@@ -208,7 +147,7 @@ export function paginateArray(items, page, perPage) {
     previousPage: page - 1 ? page - 1 : null,
     nextPage: totalPages > page ? page + 1 : null,
     total: items.length,
-    totalPages: totalPages,
+    totalPages,
     items: paginatedItems,
   };
 }

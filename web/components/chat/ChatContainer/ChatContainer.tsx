@@ -3,10 +3,11 @@ import { Virtuoso } from 'react-virtuoso';
 import { useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { MessageType } from '../../../interfaces/socket-events';
+import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events';
 import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatUserMessage } from '..';
+import ChatActionMessage from '../ChatActionMessage';
 
 interface Props {
   messages: ChatMessage[];
@@ -19,10 +20,20 @@ export default function ChatContainer(props: Props) {
   const chatContainerRef = useRef(null);
   const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
 
+  const getNameChangeViewForMessage = (message: NameChangeEvent) => {
+    const { oldName } = message;
+    const { user } = message;
+    const { displayName } = user;
+    const body = `<strong>${oldName}</strong> is now known as <strong>${displayName}</strong>`;
+    return <ChatActionMessage body={body} />;
+  };
+
   const getViewForMessage = message => {
     switch (message.type) {
       case MessageType.CHAT:
         return <ChatUserMessage message={message} showModeratorMenu={false} />;
+      case MessageType.NAME_CHANGE:
+        return getNameChangeViewForMessage(message);
       default:
         return null;
     }

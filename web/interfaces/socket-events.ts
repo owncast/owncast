@@ -31,3 +31,8 @@ export interface ChatEvent extends SocketEvent {
   user: User;
   body: string;
 }
+
+export interface NameChangeEvent extends SocketEvent {
+  user: User;
+  oldName: string;
+}

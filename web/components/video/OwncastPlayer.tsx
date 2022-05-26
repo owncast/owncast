@@ -3,7 +3,7 @@ import { useRecoilState } from 'recoil';
 import VideoJS from './player';
 import ViewerPing from './viewer-ping';
 import VideoPoster from './VideoPoster';
-import { getLocalStorage, setLocalStorage } from '../../utils/helpers';
+import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import { isVideoPlayingAtom } from '../stores/ClientConfigStore';
 
 const PLAYER_VOLUME = 'owncast_volume';
