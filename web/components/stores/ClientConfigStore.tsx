@@ -12,7 +12,7 @@ import appStateModel, {
   AppStateOptions,
   makeEmptyAppState,
 } from './application-state';
-import { setLocalStorage, getLocalStorage } from '../../utils/helpers';
+import { setLocalStorage, getLocalStorage } from '../../utils/localStorage';
 import {
   ConnectedClientInfoEvent,
   MessageType,
@@ -23,6 +23,7 @@ import {
 import handleChatMessage from './eventhandlers/handleChatMessage';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
 import ServerStatusService from '../../services/status-service';
+import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
 
 const SERVER_STATUS_POLL_DURATION = 5000;
 const ACCESS_TOKEN_KEY = 'accessToken';
@@ -206,6 +207,9 @@ export function ClientConfigStore() {
         break;
       case MessageType.CHAT:
         handleChatMessage(message as ChatEvent, chatMessages, setChatMessages);
+        break;
+      case MessageType.NAME_CHANGE:
+        handleNameChangeEvent(message as ChatEvent, chatMessages, setChatMessages);
         break;
       default:
         console.error('Unknown socket message type: ', message.type);

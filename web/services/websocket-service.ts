@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { MessageType, SocketEvent } from '../interfaces/socket-events';
 
 export interface SocketMessage {
@@ -76,41 +75,45 @@ export default class WebsocketService {
     // Optimization where multiple events can be sent within a
     // single websocket message. So split them if needed.
     const messages = e.data.split('\n');
-    let message: SocketEvent;
+    let socketEvent: SocketEvent;
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < messages.length; i++) {
       try {
-        message = JSON.parse(messages[i]);
+        socketEvent = JSON.parse(messages[i]);
         if (this.handleMessage) {
-          this.handleMessage(message);
+          this.handleMessage(socketEvent);
         }
       } catch (e) {
         console.error(e, e.data);
         return;
       }
 
-      if (!message.type) {
-        console.error('No type provided', message);
+      if (!socketEvent.type) {
+        console.error('No type provided', socketEvent);
         return;
       }
 
       // Send PONGs
-      if (message.type === MessageType.PING) {
+      if (socketEvent.type === MessageType.PING) {
         this.sendPong();
         return;
       }
     }
   }
 
+  isConnected(): boolean {
+    return this.websocket?.readyState === this.websocket?.OPEN;
+  }
+
   // Outbound: Other components can pass an object to `send`.
-  send(message: any) {
+  send(socketEvent: any) {
     // Sanity check that what we're sending is a valid type.
-    if (!message.type || !MessageType[message.type]) {
-      console.warn(`Outbound message: Unknown socket message type: "${message.type}" sent.`);
+    if (!socketEvent.type || !MessageType[socketEvent.type]) {
+      console.warn(`Outbound message: Unknown socket message type: "${socketEvent.type}" sent.`);
     }
 
-    const messageJSON = JSON.stringify(message);
+    const messageJSON = JSON.stringify(socketEvent);
     this.websocket.send(messageJSON);
   }
 
