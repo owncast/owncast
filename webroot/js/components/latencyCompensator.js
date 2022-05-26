@@ -401,7 +401,12 @@ class LatencyCompensator {
       return;
     }
 
-    console.log('latency compensation timeout due to buffering:', this.bufferingCounter, 'buffering events of', REBUFFER_EVENT_LIMIT);
+    console.log(
+      'latency compensation timeout due to buffering:',
+      this.bufferingCounter,
+      'buffering events of',
+      REBUFFER_EVENT_LIMIT
+    );
     this.timeout();
 
     // Allow us to forget about old buffering events if enough time goes by.
