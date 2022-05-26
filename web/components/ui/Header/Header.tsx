@@ -19,7 +19,9 @@ export default function HeaderComponent({ name = 'Your stream title', chatAvaila
       {chatAvailable && <UserDropdown />}
       {!chatAvailable && (
         <Tooltip title="Chat is available when the stream is live." placement="left">
-          <Tag color="processing">Chat offline</Tag>
+          <Tag color="processing" style={{ cursor: 'pointer' }}>
+            Chat offline
+          </Tag>
         </Tooltip>
       )}
     </Header>
