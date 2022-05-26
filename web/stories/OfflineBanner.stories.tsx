@@ -24,10 +24,12 @@ const Template: ComponentStory<typeof OfflineBanner> = args => <OfflineBanner {.
 
 export const ExampleDefault = Template.bind({});
 ExampleDefault.args = {
+  name: 'Cool stream 42',
   text: 'To get notifications when <server name> is back online you can follow or ask for notifications.',
 };
 
 export const ExampleCustom = Template.bind({});
 ExampleCustom.args = {
+  name: 'Dull stream 31337',
   text: 'This is some example offline text that a streamer can leave for a visitor of the page.',
 };
