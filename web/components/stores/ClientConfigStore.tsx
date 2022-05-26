@@ -175,15 +175,24 @@ export function ClientConfigStore() {
       setAccessToken(newAccessToken);
       setLocalStorage(ACCESS_TOKEN_KEY, newAccessToken);
       setChatDisplayName(newDisplayName);
-      // sendEvent(AppStateEvent.Registered);
     } catch (e) {
       sendEvent(AppStateEvent.Fail);
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
     }
   };
 
+  const resetAndReAuth = () => {
+    console.log('!!!!! reauth!!');
+    setLocalStorage(ACCESS_TOKEN_KEY, '');
+    setAccessToken('');
+    handleUserRegistration();
+  };
+
   const handleMessage = (message: SocketEvent) => {
     switch (message.type) {
+      case MessageType.ERROR_NEEDS_REGISTRATION:
+        resetAndReAuth();
+        break;
       case MessageType.CONNECTED_USER_INFO:
         handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent, setChatDisplayName);
         break;
