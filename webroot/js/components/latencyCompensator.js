@@ -27,7 +27,7 @@ How to help with this? The Owncast Latency Compensator will:
   - Completely give up on all compensation if too many buffering events occur.
 */
 
-const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
+const REBUFFER_EVENT_LIMIT = 4; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 200; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
 const MAX_SPEEDUP_RAMP = 0.02; // The max amount we will increase the playback rate at once.
@@ -97,7 +97,6 @@ class LatencyCompensator {
     }
 
     if (this.inTimeout) {
-      console.log('in timeout...');
       return;
     }
 
@@ -201,7 +200,7 @@ class LatencyCompensator {
         ) {
           const jumpAmount = latency / 1000 - segment.duration * 3;
           const seekPosition = this.player.currentTime() + jumpAmount;
-          console.log(
+          console.info(
             'latency',
             latency / 1000,
             'jumping',
@@ -251,7 +250,7 @@ class LatencyCompensator {
         this.stop();
       }
 
-      console.log(
+      console.info(
         'latency',
         latency / 1000,
         'min',
@@ -286,7 +285,7 @@ class LatencyCompensator {
 
     this.lastJumpOccurred = new Date();
 
-    console.log(
+    console.info(
       'current time',
       this.player.currentTime(),
       'seeking to',
@@ -392,7 +391,6 @@ class LatencyCompensator {
       return;
     }
 
-    console.log('handle error', e);
     this.timeout();
   }
 
@@ -403,7 +401,7 @@ class LatencyCompensator {
       return;
     }
 
-    console.log('timeout due to buffering');
+    console.log('latency compensation timeout due to buffering:', this.bufferingCounter, 'buffering events of', REBUFFER_EVENT_LIMIT);
     this.timeout();
 
     // Allow us to forget about old buffering events if enough time goes by.
