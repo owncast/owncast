@@ -67,6 +67,7 @@ func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 		Key:   resultKey,
 		Value: resultValue,
 	}
+	ds.SetCachedValue(resultKey, resultValue)
 
 	return result, nil
 }
@@ -117,7 +118,7 @@ func (ds *Datastore) Setup() {
 		"key" string NOT NULL PRIMARY KEY,
 		"value" BLOB,
 		"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL
-	);`
+	);CREATE INDEX IF NOT EXISTS messages_timestamp_index ON messages(timestamp);`
 
 	stmt, err := ds.DB.Prepare(createTableSQL)
 	if err != nil {

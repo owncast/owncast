@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/router/middleware"
@@ -15,6 +16,7 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 	response := webStatusResponse{
 		Online:             status.Online,
 		ViewerCount:        status.ViewerCount,
+		ServerTime:         time.Now(),
 		LastConnectTime:    status.LastConnectTime,
 		LastDisconnectTime: status.LastDisconnectTime,
 		VersionNumber:      status.VersionNumber,
@@ -30,9 +32,9 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 type webStatusResponse struct {
-	Online      bool `json:"online"`
-	ViewerCount int  `json:"viewerCount"`
-
+	Online             bool            `json:"online"`
+	ViewerCount        int             `json:"viewerCount"`
+	ServerTime         time.Time       `json:"serverTime"`
 	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
 

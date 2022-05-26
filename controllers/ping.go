@@ -11,4 +11,5 @@ import (
 func Ping(w http.ResponseWriter, r *http.Request) {
 	viewer := models.GenerateViewerFromRequest(r)
 	core.SetViewerActive(&viewer)
+	w.WriteHeader(http.StatusOK)
 }
