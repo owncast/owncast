@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import { useRecoilValue } from 'recoil';
 import { Layout, Button, Tabs, Spin } from 'antd';
 import { NotificationFilled, HeartFilled } from '@ant-design/icons';
@@ -42,7 +43,7 @@ export default function ContentComponent() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
 
-  const { extraPageContent, version, socialHandles, name, title, tags } = clientConfig;
+  const { extraPageContent, version, socialHandles, name, title, tags, summary } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
 
   const followers: Follower[] = [];
@@ -71,7 +72,12 @@ export default function ContentComponent() {
 
       <div className={`${s.leftCol}`}>
         {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-        {!online && <OfflineBanner text="Stream is offline text goes here." />}
+        {!online && (
+          <OfflineBanner
+            name={name}
+            text="Stream is offline text goes here. Will create a new form to set it in the Admin."
+          />
+        )}
 
         <Statusbar
           online={online}
@@ -102,13 +108,14 @@ export default function ContentComponent() {
                   <CategoryIcon tags={tags} />
                 </div>
                 <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
+                <SocialLinks links={socialHandles} />
               </div>
             </div>
           </div>
 
           <Tabs defaultActiveKey="1">
             <TabPane tab="About" key="1" className={`${s.pageContentSection}`}>
-              <SocialLinks links={socialHandles} />
+              <div dangerouslySetInnerHTML={{ __html: summary }} />
               <CustomPageContent content={extraPageContent} />
             </TabPane>
             <TabPane tab="Followers" key="2" className={`${s.pageContentSection}`}>

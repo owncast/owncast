@@ -1,0 +1,23 @@
+.outerContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.innerContainer {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  background-color: var(--theme-background-secondary);
+  margin: 2vw;
+  border-radius: var(--theme-rounded-corners);
+  padding: 25px;
+}
+
+.header {
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 20px;
+}
