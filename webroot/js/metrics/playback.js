@@ -267,10 +267,8 @@ function getCurrentlyPlayingSegment(tech, old_segment = null) {
     }
   }
 
-  // Null segment_time in case it's lower then 0.
   if (!segment) {
     segment = target_media.segments[0];
-    segment_time = 0;
   }
 
   return segment;
