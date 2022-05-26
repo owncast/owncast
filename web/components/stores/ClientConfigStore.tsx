@@ -87,6 +87,15 @@ export const isChatVisibleSelector = selector({
   },
 });
 
+export const isChatAvailableSelector = selector({
+  key: 'isChatAvailableSelector',
+  get: ({ get }) => {
+    const state: AppStateOptions = get(appStateAtom);
+    const accessToken: String = get(accessTokenAtom);
+    return accessToken && state.chatAvailable;
+  },
+});
+
 // We display in an "online/live" state as long as video is actively playing.
 // Even during the time where technically the server has said it's no longer
 // live, however the last few seconds of video playback is still taking place.
@@ -182,7 +191,6 @@ export function ClientConfigStore() {
   };
 
   const resetAndReAuth = () => {
-    console.log('!!!!! reauth!!');
     setLocalStorage(ACCESS_TOKEN_KEY, '');
     setAccessToken('');
     handleUserRegistration();
