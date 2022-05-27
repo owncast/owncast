@@ -23,7 +23,7 @@ module.exports = withLess({
       },
       {
         source: '/img/:path*',
-        destination: 'http://localhost:8080/hls/:path*', // Proxy to Backend to work around CORS.
+        destination: 'http://localhost:8080/img/:path*', // Proxy to Backend to work around CORS.
       },
       {
         source: '/logo',
