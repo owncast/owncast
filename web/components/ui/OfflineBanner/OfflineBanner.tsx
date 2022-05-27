@@ -21,7 +21,7 @@ export default function OfflineBanner({ name, text }: Props) {
         <div>{text}</div>
 
         <div className={s.footer}>
-          <Button onClick={handleShowNotificationModal}>
+          <Button type="primary" onClick={handleShowNotificationModal}>
             <NotificationFilled />
             Notify when Live
           </Button>

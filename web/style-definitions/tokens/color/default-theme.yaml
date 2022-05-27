@@ -5,7 +5,7 @@
 
 theme:
   primary-color:
-    value: '{color.owncast.purple.500.value}'
+    value: '{color.owncast.purple.700.value}'
     comment: 'The primary color of the application used for rendering controls.'
   text-color:
     value: '{color.owncast.gray.300.value}'

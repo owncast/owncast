@@ -71,9 +71,9 @@ color:
         value: 'rgba(32, 134, 225, 1)'
 
     background:
-      value: 'rgba(27, 26, 38, 1)'
+      value: 'rgba(32, 34, 50, 1.0)'
     background-secondary:
-      value: 'rgba(22, 21, 31, 1)'
+      value: '#282A30'
 
 font:
   owncast:
