@@ -47,6 +47,7 @@ const STARTUP_WAIT_TIME = 10 * 1000; // The amount of time after we start up tha
 class LatencyCompensator {
   constructor(player) {
     this.player = player;
+    this.playing = false;
     this.enabled = false;
     this.running = false;
     this.inTimeout = false;
@@ -61,6 +62,7 @@ class LatencyCompensator {
     this.clockSkewMs = 0;
 
     this.player.on('playing', this.handlePlaying.bind(this));
+    this.player.on('pause', this.handlePause.bind(this));
     this.player.on('error', this.handleError.bind(this));
     this.player.on('waiting', this.handleBuffering.bind(this));
     this.player.on('stalled', this.handleBuffering.bind(this));
@@ -274,6 +276,12 @@ class LatencyCompensator {
   }
 
   shouldJumpToLive() {
+    // If we've been rebuffering some recently then don't make it worse by
+    // jumping more into the future.
+    if (this.bufferingCounter > 1) {
+      return false;
+    }
+    
     const now = new Date().getTime();
     const delta = now - this.lastJumpOccurred;
     return delta > MAX_JUMP_FREQUENCY;
@@ -362,6 +370,9 @@ class LatencyCompensator {
   }
 
   handlePlaying() {
+    const wasPreviouslyPlaying = this.playing;
+    this.playing = true;
+
     clearTimeout(this.bufferingTimer);
     if (!this.enabled) {
       return;
@@ -371,11 +382,21 @@ class LatencyCompensator {
       return;
     }
 
-    // Seek to live immediately on starting playback to handle any long-pause
+    // If we were not previously playing (was paused, or this is a cold start)
+    // seek to live immediately on starting playback to handle any long-pause
     // scenarios or somebody starting far back from the live edge.
-    this.jumpingToLiveIgnoreBuffer = true;
-    this.player.liveTracker.seekToLiveEdge();
-    this.lastJumpOccurred = new Date();
+    // If we were playing previously then that means we're probably coming back
+    // from a rebuffering event, meaning we should not be adding more seeking
+    // to the mix, just let it play.
+    if (!wasPreviouslyPlaying) {
+      this.jumpingToLiveIgnoreBuffer = true;
+      this.player.liveTracker.seekToLiveEdge();
+      this.lastJumpOccurred = new Date();
+    }
+  }
+
+  handlePause() {
+    this.playing = false;
   }
 
   handleEnded() {
