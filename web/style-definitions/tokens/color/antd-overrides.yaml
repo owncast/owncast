@@ -9,7 +9,7 @@ text-color-secondary:
 link-color:
   value: 'var(--theme-link-color)'
 popover-background:
-  value: '{color.owncast.purple.700.value}'
+  value: 'var(--theme-text-color-secondary)'
 background-color-light:
   value: 'var(--theme-background-secondary)'
 layout-body-background:
