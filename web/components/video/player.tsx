@@ -52,7 +52,7 @@ export function VideoJS(props: Props) {
   return (
     <div data-vjs-player>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video ref={videoRef} className={`video-js vjs-big-play-centered ${s.player}`} />
+      <video ref={videoRef} className={`video-js vjs-big-play-centered ${s.player} vjs-owncast`} />
     </div>
   );
 }
