@@ -1,0 +1,14 @@
+/* Change all text and icon colors in the player. */
+.vjs-owncast.video-js {
+  color: var(--primary-color);
+}
+
+.vjs-owncast .vjs-big-play-button {
+  z-index: 999999;
+  border-color: var(--primary-color) !important;
+  border-radius: var(--theme-rounded-corners) !important;
+}
+
+.vjs-owncast .vjs-control-bar {
+  background-color: var(--theme-background) !important;
+}
