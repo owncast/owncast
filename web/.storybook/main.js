@@ -19,6 +19,16 @@ module.exports = {
     'addon-screen-reader',
   ],
   webpackFinal: async (config, { configType }) => {
+    // @see https://github.com/storybookjs/storybook/issues/9070
+    const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test('.svg'));
+    fileLoaderRule.exclude = /\.svg$/;
+
+    // https://www.npmjs.com/package/@svgr/webpack
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
     config.module.rules.push({
       test: /\.less$/,
       use: [
