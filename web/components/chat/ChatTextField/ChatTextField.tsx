@@ -120,16 +120,17 @@ export default function ChatTextField(props: Props) {
 
   const handleChange = () => {};
 
-  const handleEmojiSelect = emoji => {
-    console.log(emoji);
-    if (!emoji.native) {
+  const handleEmojiSelect = e => {
+    ReactEditor.focus(editor);
+
+    if (e.url) {
       // Custom emoji
-      const { src } = emoji;
-      insertImage(editor, src);
+      const { url } = e;
+      insertImage(editor, url);
     } else {
       // Native emoji
-      const { native } = emoji;
-      Transforms.insertText(editor, native);
+      const { emoji } = e;
+      Transforms.insertText(editor, emoji);
     }
   };
 
@@ -153,6 +154,7 @@ export default function ChatTextField(props: Props) {
             renderElement={p => <Element {...p} />}
             placeholder="Chat message goes here..."
             style={{ width: '100%' }}
+            autoFocus
           />
         </Slate>
         <button
@@ -174,7 +176,7 @@ export default function ChatTextField(props: Props) {
         trigger="click"
         onVisibleChange={visible => setShowEmojis(visible)}
         visible={showEmojis}
-        placement="bottomLeft"
+        // placement="topRight"
       />
     </div>
   );

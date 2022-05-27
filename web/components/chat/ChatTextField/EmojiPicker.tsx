@@ -1,6 +1,7 @@
-// import data from '@emoji-mart/data';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPicker } from 'picmo';
 
+const CUSTOM_EMOJI_URL = '/api/emoji';
 interface Props {
   // eslint-disable-next-line react/no-unused-prop-types
   onEmojiSelect: (emoji: string) => void;
@@ -8,28 +9,33 @@ interface Props {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function EmojiPicker(props: Props) {
+  const [customEmoji, setCustomEmoji] = useState([]);
+  const { onEmojiSelect } = props;
   const ref = useRef();
 
-  // TODO: Pull this custom emoji data in from the emoji API.
-  // const custom = [
-  //   {
-  //     emojis: [
-  //       {
-  //         id: 'party_parrot',
-  //         name: 'Party Parrot',
-  //         keywords: ['dance', 'dancing'],
-  //         skins: [{ src: 'https://watch.owncast.online/img/emoji/bluntparrot.gif' }],
-  //       },
-  //     ],
-  //   },
-  // ];
+  const getCustomEmoji = async () => {
+    try {
+      const response = await fetch(CUSTOM_EMOJI_URL);
+      const emoji = await response.json();
+      setCustomEmoji(emoji);
+    } catch (e) {
+      console.error('cannot fetch custom emoji', e);
+    }
+  };
 
-  // TODO: Fix the emoji picker from throwing errors.
-  // useEffect(() => {
-  //   import('emoji-mart').then(EmojiMart => {
-  //     new EmojiMart.Picker({ ...props, data, ref });
-  //   });
-  // }, []);
+  // Fetch the custom emoji on component mount.
+  useEffect(() => {
+    getCustomEmoji();
+  }, []);
+
+  // Recreate the emoji picker when the custom emoji changes.
+  useEffect(() => {
+    const picker = createPicker({ rootElement: ref.current, custom: customEmoji });
+    picker.addEventListener('emoji:select', event => {
+      console.log('Emoji selected:', event.emoji);
+      onEmojiSelect(event);
+    });
+  }, [customEmoji]);
 
   return <div ref={ref} />;
 }

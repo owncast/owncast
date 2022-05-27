@@ -14,8 +14,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var emojiCache = make([]models.CustomEmoji, 0)
-var emojiCacheTimestamp time.Time
+var (
+	emojiCache          = make([]models.CustomEmoji, 0)
+	emojiCacheTimestamp time.Time
+)
 
 // getCustomEmojiList returns a list of custom emoji either from the cache or from the emoji directory.
 func getCustomEmojiList() []models.CustomEmoji {
@@ -38,7 +40,7 @@ func getCustomEmojiList() []models.CustomEmoji {
 		for _, f := range files {
 			name := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
 			emojiPath := filepath.Join(config.EmojiDir, f.Name())
-			singleEmoji := models.CustomEmoji{Name: name, Emoji: emojiPath}
+			singleEmoji := models.CustomEmoji{Name: name, URL: emojiPath}
 			emojiCache = append(emojiCache, singleEmoji)
 		}
 
