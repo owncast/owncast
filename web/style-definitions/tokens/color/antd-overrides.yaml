@@ -12,10 +12,12 @@ popover-background:
   value: '{color.owncast.purple.700.value}'
 background-color-light:
   value: 'var(--theme-background-secondary)'
+layout-body-background:
+  value: 'var(--theme-background)'
 
 # These values require explicit colors and cannot take css variables.
 primary-color:
-  value: '{color.owncast.purple.500.value}'
+  value: '{color.owncast.purple.700.value}'
 info-color:
   value: '{color.owncast.gray.500.value}'
 success-color:

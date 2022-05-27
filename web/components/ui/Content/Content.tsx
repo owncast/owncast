@@ -88,13 +88,17 @@ export default function ContentComponent() {
         <div className={s.buttonsLogoTitleSection}>
           <ActionButtonRow>
             {externalActionButtons}
-            <Button icon={<HeartFilled />}>Follow</Button>
+            <Button type="primary" icon={<HeartFilled />}>
+              Follow
+            </Button>
             <NotifyReminderPopup
               visible
               notificationClicked={() => {}}
               notificationClosed={() => {}}
             >
-              <Button icon={<NotificationFilled />}>Notify</Button>
+              <Button type="primary" icon={<NotificationFilled />}>
+                Notify
+              </Button>
             </NotifyReminderPopup>
           </ActionButtonRow>
 
