@@ -281,7 +281,7 @@ class LatencyCompensator {
     if (this.bufferingCounter > 1) {
       return false;
     }
-    
+
     const now = new Date().getTime();
     const delta = now - this.lastJumpOccurred;
     return delta > MAX_JUMP_FREQUENCY;
