@@ -24,6 +24,7 @@ import handleChatMessage from './eventhandlers/handleChatMessage';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
 import ServerStatusService from '../../services/status-service';
 import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
+import { DisplayableError } from '../../types/displayable-error';
 
 const SERVER_STATUS_POLL_DURATION = 5000;
 const ACCESS_TOKEN_KEY = 'accessToken';
@@ -74,6 +75,11 @@ export const chatVisibleToggleAtom = atom<boolean>({
 export const isVideoPlayingAtom = atom<boolean>({
   key: 'isVideoPlayingAtom',
   default: false,
+});
+
+export const fatalErrorStateAtom = atom<DisplayableError>({
+  key: 'fatalErrorStateAtom',
+  default: null,
 });
 
 // Chat is visible if the user wishes it to be visible AND the required
@@ -129,10 +135,17 @@ export function ClientConfigStore() {
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
   const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
-
+  const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
+
   let ws: WebsocketService;
 
+  const setGlobalFatalError = (title: string, message: string) => {
+    setGlobalFatalErrorMessage({
+      title,
+      message,
+    });
+  };
   const sendEvent = (event: string) => {
     // console.log('---- sending event:', event);
     appStateSend({ type: event });
@@ -143,7 +156,12 @@ export function ClientConfigStore() {
       const config = await ClientConfigService.getConfig();
       setClientConfig(config);
       sendEvent('LOADED');
+      setGlobalFatalErrorMessage(null);
     } catch (error) {
+      setGlobalFatalError(
+        'Unable to reach Owncast server',
+        `Owncast cannot launch. Please make sure the Owncast server is running. ${error}`,
+      );
       console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
     }
   };
@@ -158,8 +176,13 @@ export function ClientConfigStore() {
       } else if (!status.online) {
         sendEvent(AppStateEvent.Offline);
       }
+      setGlobalFatalErrorMessage(null);
     } catch (error) {
       sendEvent(AppStateEvent.Fail);
+      setGlobalFatalError(
+        'Unable to reach Owncast server',
+        `Owncast cannot launch. Please make sure the Owncast server is running. ${error}`,
+      );
       console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
     }
     return null;
