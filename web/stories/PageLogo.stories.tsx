@@ -21,8 +21,3 @@ export const DemoServer = Template.bind({});
 DemoServer.args = {
   src: 'https://watch.owncast.online/logo',
 };
-
-export const RandomImage = Template.bind({});
-RandomImage.args = {
-  src: 'https://picsum.photos/600/500',
-};
