@@ -40,7 +40,7 @@ export default class WebsocketService {
     const url = new URL('ws://localhost:8080/ws');
     url.searchParams.append('accessToken', this.accessToken);
 
-    console.log('connecting to ', url.toString());
+    console.debug('connecting to ', url.toString());
     const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
     // ws.onclose = this.onClose.bind(this);

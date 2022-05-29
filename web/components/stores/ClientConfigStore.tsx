@@ -279,17 +279,19 @@ export function ClientConfigStore() {
     startChat();
   }, [accessToken]);
 
-  appStateService.onTransition(state => {
-    if (!state.changed) {
-      return;
-    }
+  useEffect(() => {
+    appStateService.onTransition(state => {
+      if (!state.changed) {
+        return;
+      }
 
-    const metadata = mergeMeta(state.meta) as AppStateOptions;
+      const metadata = mergeMeta(state.meta) as AppStateOptions;
 
-    console.log('--- APP STATE: ', state.value);
-    console.log('--- APP META: ', metadata);
+      console.debug('--- APP STATE: ', state.value);
+      console.debug('--- APP META: ', metadata);
 
-    setAppState(metadata);
+      setAppState(metadata);
+    });
   });
 
   return null;
