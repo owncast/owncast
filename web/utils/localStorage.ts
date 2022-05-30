@@ -1,5 +1,6 @@
 export const LOCAL_STORAGE_KEYS = {
   username: 'username',
+  hasDisplayedNotificationModal: 'HAS_DISPLAYED_NOTIFICATION_MODAL',
 };
 
 export function getLocalStorage(key) {

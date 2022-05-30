@@ -31,6 +31,7 @@ export default function ActionButton({
         title={description || title}
         url={url}
         visible={showModal}
+        height="80vh"
         handleCancel={() => setShowModal(false)}
       />
     </>

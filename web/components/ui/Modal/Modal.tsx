@@ -10,15 +10,16 @@ interface Props {
   handleCancel?: () => void;
   afterClose?: () => void;
   children?: ReactNode;
+  height?: string;
 }
 
 export default function Modal(props: Props) {
-  const { title, url, visible, handleOk, handleCancel, afterClose, children } = props;
+  const { title, url, visible, handleOk, handleCancel, afterClose, height, children } = props;
   const [loading, setLoading] = useState(!!url);
 
   const modalStyle = {
     padding: '0px',
-    height: '80vh',
+    height: height || '40vh',
   };
 
   const iframe = url && (
@@ -69,4 +70,5 @@ Modal.defaultProps = {
   handleOk: undefined,
   handleCancel: undefined,
   afterClose: undefined,
+  height: undefined,
 };
