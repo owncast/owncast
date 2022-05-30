@@ -1,7 +1,6 @@
 /* eslint-disable react/no-danger */
 import { useRecoilValue } from 'recoil';
-import { Layout, Button, Tabs, Spin } from 'antd';
-import { NotificationFilled, HeartFilled } from '@ant-design/icons';
+import { Layout, Tabs, Spin } from 'antd';
 import {
   clientConfigStateAtom,
   chatMessagesAtom,
@@ -31,6 +30,8 @@ import ServerLogo from '../Logo/Logo';
 import CategoryIcon from '../CategoryIcon/CategoryIcon';
 import OfflineBanner from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
+import FollowButton from '../../action-buttons/FollowButton';
+import NotifyButton from '../../action-buttons/NotifyButton';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -88,17 +89,13 @@ export default function ContentComponent() {
         <div className={s.buttonsLogoTitleSection}>
           <ActionButtonRow>
             {externalActionButtons}
-            <Button type="primary" icon={<HeartFilled />}>
-              Follow
-            </Button>
+            <FollowButton />
             <NotifyReminderPopup
               visible
               notificationClicked={() => {}}
               notificationClosed={() => {}}
             >
-              <Button type="primary" icon={<NotificationFilled />}>
-                Notify
-              </Button>
+              <NotifyButton />
             </NotifyReminderPopup>
           </ActionButtonRow>
 
