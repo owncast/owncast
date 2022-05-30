@@ -29,10 +29,29 @@ import { AppProps } from 'next/app';
 import { Router, useRouter } from 'next/router';
 
 import { RecoilRoot } from 'recoil';
+import { useEffect } from 'react';
 import AdminLayout from '../components/layouts/admin-layout';
 import SimpleLayout from '../components/layouts/SimpleLayout';
 
 function App({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/serviceWorker.js').then(
+          registration => {
+            console.debug(
+              'Service Worker registration successful with scope: ',
+              registration.scope,
+            );
+          },
+          err => {
+            console.error('Service Worker registration failed: ', err);
+          },
+        );
+      });
+    }
+  }, []);
+
   const router = useRouter() as Router;
   if (router.pathname.startsWith('/admin')) {
     return <AdminLayout pageProps={pageProps} Component={Component} router={router} />;
