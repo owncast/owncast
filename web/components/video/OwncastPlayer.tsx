@@ -1,15 +1,17 @@
-import React from 'react';
-import { useRecoilState } from 'recoil';
+import React, { useEffect } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import VideoJS from './player';
 import ViewerPing from './viewer-ping';
 import VideoPoster from './VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
-import { isVideoPlayingAtom } from '../stores/ClientConfigStore';
+import { isVideoPlayingAtom, clockSkewAtom } from '../stores/ClientConfigStore';
+import PlaybackMetrics from './metrics/playback';
 
 const PLAYER_VOLUME = 'owncast_volume';
 
 const ping = new ViewerPing();
+let playbackMetrics = null;
 
 interface Props {
   source: string;
@@ -20,6 +22,7 @@ export default function OwncastPlayer(props: Props) {
   const playerRef = React.useRef(null);
   const { source, online } = props;
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
+  const clockSkew = useRecoilValue<Number>(clockSkewAtom);
 
   const setSavedVolume = () => {
     try {
@@ -113,7 +116,7 @@ export default function OwncastPlayer(props: Props) {
     ],
   };
 
-  const handlePlayerReady = player => {
+  const handlePlayerReady = (player, videojs) => {
     playerRef.current = player;
 
     setSavedVolume();
@@ -147,7 +150,16 @@ export default function OwncastPlayer(props: Props) {
     });
 
     player.on('volumechange', handleVolume);
+
+    playbackMetrics = new PlaybackMetrics(player, videojs);
+    playbackMetrics.setClockSkew(clockSkew);
   };
+
+  useEffect(() => {
+    if (playbackMetrics) {
+      playbackMetrics.setClockSkew(clockSkew);
+    }
+  }, [clockSkew]);
 
   return (
     <div style={{ display: 'grid' }}>

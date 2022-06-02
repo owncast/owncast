@@ -9,7 +9,7 @@ require('video.js/dist/video-js.css');
 // import { PLAYER_VOLUME, URL_STREAM } from '../../utils/constants.js';
 interface Props {
   options: any;
-  onReady: (player: videojs.Player) => void;
+  onReady: (player: videojs.Player, vjsInstance: videojs) => void;
 }
 
 export function VideoJS(props: Props) {
@@ -25,7 +25,7 @@ export function VideoJS(props: Props) {
       // eslint-disable-next-line no-multi-assign
       const player = (playerRef.current = videojs(videoElement, options, () => {
         player.log('player is ready');
-        return onReady && onReady(player);
+        return onReady && onReady(player, videojs);
       }));
 
       // TODO: Add airplay support, video settings menu, latency compensator, etc.
