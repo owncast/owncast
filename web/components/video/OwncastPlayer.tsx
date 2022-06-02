@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRecoilState } from 'recoil';
+import { useHotkeys } from 'react-hotkeys-hook';
 import VideoJS from './player';
 import ViewerPing from './viewer-ping';
 import VideoPoster from './VideoPoster';
@@ -31,6 +32,52 @@ export default function OwncastPlayer(props: Props) {
   const handleVolume = () => {
     setLocalStorage(PLAYER_VOLUME, playerRef.current.muted() ? 0 : playerRef.current.volume());
   };
+
+  const togglePlayback = () => {
+    if (playerRef.current.paused()) {
+      playerRef.current.play();
+    } else {
+      playerRef.current.pause();
+    }
+  };
+
+  const toggleMute = () => {
+    if (playerRef.current.muted() || playerRef.current.volume() === 0) {
+      playerRef.current.volume(0.7);
+    } else {
+      playerRef.current.volume(0);
+    }
+  };
+
+  const toggleFullScreen = () => {
+    if (playerRef.current.isFullscreen()) {
+      playerRef.current.exitFullscreen();
+    } else {
+      playerRef.current.requestFullscreen();
+    }
+  };
+
+  // Register keyboard shortcut for the space bar to toggle playback
+  useHotkeys('space', togglePlayback, {
+    enableOnContentEditable: false,
+  });
+
+  // Register keyboard shortcut for f to toggle full screen
+  useHotkeys('f', toggleFullScreen, {
+    enableOnContentEditable: false,
+  });
+
+  // Register keyboard shortcut for the "m" key to toggle mute
+  useHotkeys('m', toggleMute, {
+    enableOnContentEditable: false,
+  });
+
+  useHotkeys('0', () => playerRef.current.volume(playerRef.current.volume() + 0.1), {
+    enableOnContentEditable: false,
+  });
+  useHotkeys('9', () => playerRef.current.volume(playerRef.current.volume() - 0.1), {
+    enableOnContentEditable: false,
+  });
 
   const videoJsOptions = {
     autoplay: false,
