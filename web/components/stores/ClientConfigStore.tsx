@@ -82,6 +82,11 @@ export const fatalErrorStateAtom = atom<DisplayableError>({
   default: null,
 });
 
+export const clockSkewAtom = atom<Number>({
+  key: 'clockSkewAtom',
+  default: 0.0,
+});
+
 // Chat is visible if the user wishes it to be visible AND the required
 // chat state is set.
 export const isChatVisibleSelector = selector({
@@ -132,6 +137,7 @@ export function ClientConfigStore() {
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
   const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
+  const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
   const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
@@ -170,6 +176,10 @@ export function ClientConfigStore() {
     try {
       const status = await ServerStatusService.getStatus();
       setServerStatus(status);
+      const { serverTime } = status;
+
+      const clockSkew = new Date(serverTime).getTime() - Date.now();
+      setClockSkew(clockSkew);
 
       if (status.online) {
         sendEvent(AppStateEvent.Online);

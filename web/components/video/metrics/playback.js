@@ -1,6 +1,29 @@
-import { URL_PLAYBACK_METRICS } from '../utils/constants.js';
+/* eslint-disable no-plusplus */
+const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
 const METRICS_SEND_INTERVAL = 10000;
 const MAX_VALID_LATENCY_SECONDS = 40; // Anything > this gets thrown out.
+
+function getCurrentlyPlayingSegment(tech) {
+  const targetMedia = tech.vhs.playlists.media();
+  const snapshotTime = tech.currentTime();
+  let segment;
+
+  // Iterate trough available segments and get first within which snapshot_time is
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0, l = targetMedia.segments.length; i < l; i++) {
+    // Note: segment.end may be undefined or is not properly set
+    if (snapshotTime < targetMedia.segments[i].end) {
+      segment = targetMedia.segments[i];
+      break;
+    }
+  }
+
+  if (!segment) {
+    [segment] = targetMedia.segments;
+  }
+
+  return segment;
+}
 
 class PlaybackMetrics {
   constructor(player, videojs) {
@@ -37,11 +60,13 @@ class PlaybackMetrics {
     const oldVjsXhrCallback = videojs.xhr;
 
     // Override the xhr function to track segment download time.
+    // eslint-disable-next-line no-param-reassign
     videojs.Vhs.xhr = (...args) => {
       if (args[0].uri.match('.ts')) {
         const start = new Date();
 
         const cb = args[1];
+        // eslint-disable-next-line no-param-reassign
         args[1] = (request, error, response) => {
           const end = new Date();
           const delta = end.getTime() - start.getTime();
@@ -70,7 +95,7 @@ class PlaybackMetrics {
     const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
     this.supportsDetailedMetrics = !!tech;
 
-    tech.on('usage', (e) => {
+    tech.on('usage', e => {
       if (e.name === 'vhs-unknown-waiting') {
         this.setIsBuffering(true);
       }
@@ -83,7 +108,7 @@ class PlaybackMetrics {
 
     // Variant changed
     const trackElements = this.player.textTracks();
-    trackElements.addEventListener('cuechange', (c) => {
+    trackElements.addEventListener('cuechange', () => {
       this.incrementQualityVariantChanges();
     });
   }
@@ -99,7 +124,7 @@ class PlaybackMetrics {
     clearInterval(this.collectPlaybackMetricsTimer);
   }
 
-  handleBuffering(e) {
+  handleBuffering() {
     this.incrementErrorCount(1);
     this.setIsBuffering(true);
   }
@@ -199,19 +224,22 @@ class PlaybackMetrics {
       return;
     }
 
+    // If we're paused then do nothing.
+    if (this.player.paused()) {
+      return;
+    }
+
     const errorCount = this.errors;
 
-    var data;
+    let data;
     if (this.supportsDetailedMetrics) {
-      const average = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
+      const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
 
       const averageDownloadDuration = average(this.segmentDownloadTime) / 1000;
-      const roundedAverageDownloadDuration =
-        Math.round(averageDownloadDuration * 1000) / 1000;
+      const roundedAverageDownloadDuration = Math.round(averageDownloadDuration * 1000) / 1000;
 
       const averageBandwidth = average(this.bandwidthTracking) / 1000;
-      const roundedAverageBandwidth =
-        Math.round(averageBandwidth * 1000) / 1000;
+      const roundedAverageBandwidth = Math.round(averageBandwidth * 1000) / 1000;
 
       const averageLatency = average(this.latencyTracking) / 1000;
       const roundedAverageLatency = Math.round(averageLatency * 1000) / 1000;
@@ -252,26 +280,3 @@ class PlaybackMetrics {
 }
 
 export default PlaybackMetrics;
-
-function getCurrentlyPlayingSegment(tech, old_segment = null) {
-  var target_media = tech.vhs.playlists.media();
-  var snapshot_time = tech.currentTime();
-  var segment;
-
-  // Iterate trough available segments and get first within which snapshot_time is
-  for (var i = 0, l = target_media.segments.length; i < l; i++) {
-    // Note: segment.end may be undefined or is not properly set
-    if (snapshot_time < target_media.segments[i].end) {
-      segment = target_media.segments[i];
-      break;
-    }
-  }
-
-  // Null segment_time in case it's lower then 0.
-  if (!segment) {
-    segment = target_media.segments[0];
-    segment_time = 0;
-  }
-
-  return segment;
-}
