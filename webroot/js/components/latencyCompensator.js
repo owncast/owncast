@@ -60,6 +60,11 @@ class LatencyCompensator {
     this.lastJumpOccurred = null;
     this.startupTime = new Date();
     this.clockSkewMs = 0;
+    this.currentLatency = null;
+
+    // Keep track of all the latencies we encountered buffering events
+    // in order to determine a new minimum latency.
+    this.bufferedAtLatency = [];
 
     this.player.on('playing', this.handlePlaying.bind(this));
     this.player.on('pause', this.handlePause.bind(this));
@@ -69,6 +74,11 @@ class LatencyCompensator {
     this.player.on('ended', this.handleEnded.bind(this));
     this.player.on('canplaythrough', this.handlePlaying.bind(this));
     this.player.on('canplay', this.handlePlaying.bind(this));
+
+    this.check = this.check.bind(this);
+    this.start = this.start.bind(this);
+    this.enable = this.enable.bind(this);
+    this.countBufferingEvent = this.countBufferingEvent.bind(this);
   }
 
   // To keep our client clock in sync with the server clock to determine
@@ -163,13 +173,27 @@ class LatencyCompensator {
       }
 
       // How far away from live edge do we stop the compensator.
-      const minLatencyThreshold = Math.max(
+      const computedMinLatencyThreshold = Math.max(
         MIN_LATENCY,
         segment.duration * 1000 * LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
       );
 
+      // Create an array of all the buffering events in the past along with
+      // the computed min latency above.
+      const targetLatencies = this.bufferedAtLatency.concat([
+        computedMinLatencyThreshold,
+      ]);
+
+      // Determine if we need to reduce the minimum latency we computed
+      // above based on buffering events that have taken place in the past by
+      // creating an array of all the buffering events and the above computed
+      // minimum latency target and averaging all those values.
+      const minLatencyThreshold =
+        targetLatencies.reduce((sum, current) => sum + current, 0) /
+        targetLatencies.length;
+
       // How far away from live edge do we start the compensator.
-      const maxLatencyThreshold = Math.max(
+      let maxLatencyThreshold = Math.max(
         minLatencyThreshold * 1.4,
         Math.min(
           segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER,
@@ -177,9 +201,17 @@ class LatencyCompensator {
         )
       );
 
+      // If this newly adjusted minimum latency ends up being greater than
+      // the previously computed maximum latency then reset the maximum
+      // value using the minimum + an offset.
+      if (minLatencyThreshold >= maxLatencyThreshold) {
+        maxLatencyThreshold = minLatencyThreshold + 3000;
+      }
+
       const segmentTime = segment.dateTimeObject.getTime();
       const now = new Date().getTime() + this.clockSkewMs;
       const latency = now - segmentTime;
+      this.currentLatency = latency;
 
       // Since the calculation of latency is based on clock times, it's possible
       // things can be reported incorrectly. So we use a sanity check here to
@@ -347,10 +379,6 @@ class LatencyCompensator {
   }
 
   timeout() {
-    if (this.inTimeout) {
-      return;
-    }
-
     if (this.jumpingToLiveIgnoreBuffer) {
       return;
     }
@@ -417,10 +445,13 @@ class LatencyCompensator {
 
   countBufferingEvent() {
     this.bufferingCounter++;
+
     if (this.bufferingCounter > REBUFFER_EVENT_LIMIT) {
       this.disable();
       return;
     }
+
+    this.bufferedAtLatency.push(this.currentLatency);
 
     console.log(
       'latency compensation timeout due to buffering:',
@@ -428,7 +459,6 @@ class LatencyCompensator {
       'buffering events of',
       REBUFFER_EVENT_LIMIT
     );
-    this.timeout();
 
     // Allow us to forget about old buffering events if enough time goes by.
     setTimeout(() => {
@@ -439,7 +469,7 @@ class LatencyCompensator {
   }
 
   handleBuffering() {
-    if (!this.enabled) {
+    if (!this.enabled || this.inTimeout) {
       return;
     }
 
@@ -448,6 +478,9 @@ class LatencyCompensator {
       return;
     }
 
+    this.timeout();
+
+    clearTimeout(this.bufferingTimer);
     this.bufferingTimer = setTimeout(() => {
       this.countBufferingEvent();
     }, MIN_BUFFER_DURATION);
