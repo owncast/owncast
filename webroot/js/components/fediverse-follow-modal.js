@@ -96,8 +96,9 @@ export default class FediverseFollowModal extends Component {
     return html`
       <div class="bg-gray-100 bg-center bg-no-repeat p-4">
         <p class="text-gray-700 text-md">
-          By following this stream you'll get posts and notifications such as
-          when it goes live.
+          By following this stream on the Fediverse you'll receive updates when
+          it goes live, get posts from the streamer, and be featured as a
+          follower.
         </p>
 
         <div
