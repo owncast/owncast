@@ -39,7 +39,7 @@ require (
 	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
 )
 
-require github.com/prometheus/client_golang v1.12.1
+require github.com/prometheus/client_golang v1.12.2
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
