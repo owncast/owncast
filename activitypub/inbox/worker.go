@@ -21,7 +21,7 @@ import (
 
 func handle(request apmodels.InboxRequest) {
 	if verified, err := Verify(request.Request); err != nil {
-		log.Debugln("Error in attempting to verify request", err)
+		log.Errorln("Error in attempting to verify request", err)
 		return
 	} else if !verified {
 		log.Debugln("Request failed verification", err)
@@ -35,6 +35,7 @@ func handle(request apmodels.InboxRequest) {
 
 // Verify will Verify the http signature of an inbound request as well as
 // check it against the list of blocked domains.
+// nolint: cyclop
 func Verify(request *http.Request) (bool, error) {
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
@@ -51,6 +52,10 @@ func Verify(request *http.Request) (bool, error) {
 	}
 
 	signature := request.Header.Get("signature")
+	if signature == "" {
+		return false, errors.New("http signature header not found in request")
+	}
+
 	var algorithmString string
 	signatureComponents := strings.Split(signature, ",")
 	for _, component := range signatureComponents {
@@ -102,8 +107,7 @@ func Verify(request *http.Request) (bool, error) {
 
 	// The verifier will verify the Digest in addition to the HTTP signature
 	if err := verifier.Verify(parsedKey, algorithm); err != nil {
-		log.Warnln("verification error for", pubKeyID, err)
-		return false, errors.Wrap(err, "verification error: "+pubKeyID.String())
+		return false, errors.Wrap(err, algorithmString+" http signature verification error for: "+pubKeyID.String())
 	}
 
 	return true, nil
