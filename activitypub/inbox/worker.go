@@ -109,10 +109,9 @@ func Verify(request *http.Request) (bool, error) {
 	}
 
 	algos := []httpsig.Algorithm{
-		httpsig.RSA_SHA256, // most common algorithm first
+		httpsig.Algorithm(algorithmString), // try stated algorithm first then other common algorithms
+		httpsig.RSA_SHA256,                 // <- used by almost all fedi software
 		httpsig.RSA_SHA512,
-		httpsig.ED25519,
-		httpsig.Algorithm(algorithmString),
 	}
 
 	// The verifier will verify the Digest in addition to the HTTP signature
