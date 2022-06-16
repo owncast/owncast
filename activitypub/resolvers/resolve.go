@@ -122,6 +122,72 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 	return apActor, err
 }
 
+// GetResolvedPublicKeyFromIRI will resolve a publicKey IRI string to a vocab.W3IDSecurityV1PublicKey.
+func GetResolvedPublicKeyFromIRI(publicKeyIRI string) (vocab.W3IDSecurityV1PublicKey, error) {
+	var err error
+	var pubkey vocab.W3IDSecurityV1PublicKey
+	resolved := false
+
+	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
+		if pkProp := person.GetW3IDSecurityV1PublicKey(); pkProp != nil {
+			for iter := pkProp.Begin(); iter != pkProp.End(); iter = iter.Next() {
+				if iter.IsW3IDSecurityV1PublicKey() {
+					pubkey = iter.Get()
+					resolved = true
+					return nil
+				}
+			}
+		}
+		return errors.New("error deriving publickey from activitystreamsperson")
+	}
+
+	serviceCallback := func(c context.Context, service vocab.ActivityStreamsService) error {
+		if pkProp := service.GetW3IDSecurityV1PublicKey(); pkProp != nil {
+			for iter := pkProp.Begin(); iter != pkProp.End(); iter = iter.Next() {
+				if iter.IsW3IDSecurityV1PublicKey() {
+					pubkey = iter.Get()
+					resolved = true
+					return nil
+				}
+			}
+		}
+		return errors.New("error deriving publickey from activitystreamsservice")
+	}
+
+	applicationCallback := func(c context.Context, app vocab.ActivityStreamsApplication) error {
+		if pkProp := app.GetW3IDSecurityV1PublicKey(); pkProp != nil {
+			for iter := pkProp.Begin(); iter != pkProp.End(); iter = iter.Next() {
+				if iter.IsW3IDSecurityV1PublicKey() {
+					pubkey = iter.Get()
+					resolved = true
+					return nil
+				}
+			}
+		}
+		return errors.New("error deriving publickey from activitystreamsapp")
+	}
+
+	pubkeyCallback := func(c context.Context, pk vocab.W3IDSecurityV1PublicKey) error {
+		pubkey = pk
+		resolved = true
+		return nil
+	}
+
+	if e := ResolveIRI(context.Background(), publicKeyIRI, personCallback, serviceCallback, applicationCallback, pubkeyCallback); e != nil {
+		err = e
+	}
+
+	if err != nil {
+		err = errors.Wrap(err, "error resolving publickey from iri")
+	}
+
+	if !resolved {
+		err = errors.New("error resolving publickey from iri")
+	}
+
+	return pubkey, err
+}
+
 // GetResolvedActorFromIRI will resolve an IRI string to a fully populated actor.
 func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubActor, error) {
 	var err error
