@@ -119,11 +119,11 @@ func Verify(request *http.Request) (bool, error) {
 	triedAlgos := make(map[httpsig.Algorithm]error)
 	for _, algorithm := range algos {
 		if _, tried := triedAlgos[algorithm]; !tried {
-			if err := verifier.Verify(parsedKey, algorithm); err == nil {
+			err := verifier.Verify(parsedKey, algorithm)
+			if err == nil {
 				return true, nil
-			} else {
-				triedAlgos[algorithm] = err
 			}
+			triedAlgos[algorithm] = err
 		}
 	}
 
