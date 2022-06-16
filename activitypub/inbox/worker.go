@@ -115,9 +115,14 @@ func Verify(request *http.Request) (bool, error) {
 	}
 
 	// The verifier will verify the Digest in addition to the HTTP signature
+	triedAlgos := make(map[httpsig.Algorithm]error)
 	for _, algorithm := range algos {
-		if err := verifier.Verify(parsedKey, algorithm); err == nil {
-			return true, nil
+		if _, tried := triedAlgos[algorithm]; !tried {
+			if err := verifier.Verify(parsedKey, algorithm); err == nil {
+				return true, nil
+			} else {
+				triedAlgos[algorithm] = err
+			}
 		}
 	}
 
