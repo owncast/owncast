@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -126,7 +127,7 @@ func Verify(request *http.Request) (bool, error) {
 		}
 	}
 
-	return false, errors.Wrap(err, algorithmString+" http signature verification error for: "+pubKeyID.String())
+	return false, fmt.Errorf("http signature verification error(s) for: %s: %+v", pubKeyID.String(), triedAlgos)
 }
 
 func isBlockedDomain(domain string) bool {
