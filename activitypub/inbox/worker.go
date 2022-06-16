@@ -71,26 +71,31 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.New("Unable to determine algorithm to verify request")
 	}
 
-	actor, err := resolvers.GetResolvedActorFromIRI(pubKeyID.String())
+	publicKey, err := resolvers.GetResolvedPublicKeyFromIRI(pubKeyID.String())
 	if err != nil {
 		return false, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
 	}
 
-	if actor.ActorIri == nil {
-		return false, errors.New("actor IRI is empty")
+	var publicKeyActorIRI *url.URL
+	if ownerProp := publicKey.GetW3IDSecurityV1Owner(); ownerProp != nil {
+		publicKeyActorIRI = ownerProp.Get()
+	}
+
+	if publicKeyActorIRI == nil {
+		return false, errors.New("public key owner IRI is empty")
 	}
 
 	// Test to see if the actor is in the list of blocked federated domains.
-	if isBlockedDomain(actor.ActorIri.Hostname()) {
+	if isBlockedDomain(publicKeyActorIRI.Hostname()) {
 		return false, errors.New("domain is blocked")
 	}
 
 	// If actor is specifically blocked, then fail validation.
-	if blocked, err := isBlockedActor(actor.ActorIri); err != nil || blocked {
+	if blocked, err := isBlockedActor(publicKeyActorIRI); err != nil || blocked {
 		return false, err
 	}
 
-	key := actor.W3IDSecurityV1PublicKey.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
+	key := publicKey.GetW3IDSecurityV1PublicKeyPem().Get()
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
 		log.Errorln("failed to parse PEM block containing the public key")
