@@ -108,14 +108,21 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.Wrap(err, "failed to parse DER encoded public key")
 	}
 
-	var algorithm httpsig.Algorithm = httpsig.Algorithm(algorithmString)
-
-	// The verifier will verify the Digest in addition to the HTTP signature
-	if err := verifier.Verify(parsedKey, algorithm); err != nil {
-		return false, errors.Wrap(err, algorithmString+" http signature verification error for: "+pubKeyID.String())
+	algos := []httpsig.Algorithm{
+		httpsig.RSA_SHA256, // most common algorithm first
+		httpsig.RSA_SHA512,
+		httpsig.ED25519,
+		httpsig.Algorithm(algorithmString),
 	}
 
-	return true, nil
+	// The verifier will verify the Digest in addition to the HTTP signature
+	for _, algorithm := range algos {
+		if err := verifier.Verify(parsedKey, algorithm); err == nil {
+			return true, nil
+		}
+	}
+
+	return false, errors.Wrap(err, algorithmString+" http signature verification error for: "+pubKeyID.String())
 }
 
 func isBlockedDomain(domain string) bool {
