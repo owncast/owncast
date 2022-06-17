@@ -10,6 +10,9 @@ build-all:
 package-all:
   BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 --platform=darwin/amd64 +package
 
+docker-all:
+  BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 +docker
+
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
@@ -111,3 +114,14 @@ package:
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
   SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
+docker:
+  ARG tag=ghcr.io/owncast/owncast
+  ARG TARGETPLATFORM
+  FROM --platform=$TARGETPLATFORM alpine:latest
+  RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
+  WORKDIR /app
+  COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
+  RUN unzip -x owncast.zip && mkdir data
+  ENTRYPOINT ["/app/owncast"]
+  EXPOSE 8080 1935
+  SAVE IMAGE --push $tag:$version
