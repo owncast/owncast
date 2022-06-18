@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -71,26 +72,31 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.New("Unable to determine algorithm to verify request")
 	}
 
-	actor, err := resolvers.GetResolvedActorFromIRI(pubKeyID.String())
+	publicKey, err := resolvers.GetResolvedPublicKeyFromIRI(pubKeyID.String())
 	if err != nil {
 		return false, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
 	}
 
-	if actor.ActorIri == nil {
-		return false, errors.New("actor IRI is empty")
+	var publicKeyActorIRI *url.URL
+	if ownerProp := publicKey.GetW3IDSecurityV1Owner(); ownerProp != nil {
+		publicKeyActorIRI = ownerProp.Get()
+	}
+
+	if publicKeyActorIRI == nil {
+		return false, errors.New("public key owner IRI is empty")
 	}
 
 	// Test to see if the actor is in the list of blocked federated domains.
-	if isBlockedDomain(actor.ActorIri.Hostname()) {
+	if isBlockedDomain(publicKeyActorIRI.Hostname()) {
 		return false, errors.New("domain is blocked")
 	}
 
 	// If actor is specifically blocked, then fail validation.
-	if blocked, err := isBlockedActor(actor.ActorIri); err != nil || blocked {
+	if blocked, err := isBlockedActor(publicKeyActorIRI); err != nil || blocked {
 		return false, err
 	}
 
-	key := actor.W3IDSecurityV1PublicKey.Begin().Get().GetW3IDSecurityV1PublicKeyPem().Get()
+	key := publicKey.GetW3IDSecurityV1PublicKeyPem().Get()
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
 		log.Errorln("failed to parse PEM block containing the public key")
@@ -103,14 +109,25 @@ func Verify(request *http.Request) (bool, error) {
 		return false, errors.Wrap(err, "failed to parse DER encoded public key")
 	}
 
-	var algorithm httpsig.Algorithm = httpsig.Algorithm(algorithmString)
-
-	// The verifier will verify the Digest in addition to the HTTP signature
-	if err := verifier.Verify(parsedKey, algorithm); err != nil {
-		return false, errors.Wrap(err, algorithmString+" http signature verification error for: "+pubKeyID.String())
+	algos := []httpsig.Algorithm{
+		httpsig.Algorithm(algorithmString), // try stated algorithm first then other common algorithms
+		httpsig.RSA_SHA256,                 // <- used by almost all fedi software
+		httpsig.RSA_SHA512,
 	}
 
-	return true, nil
+	// The verifier will verify the Digest in addition to the HTTP signature
+	triedAlgos := make(map[httpsig.Algorithm]error)
+	for _, algorithm := range algos {
+		if _, tried := triedAlgos[algorithm]; !tried {
+			err := verifier.Verify(parsedKey, algorithm)
+			if err == nil {
+				return true, nil
+			}
+			triedAlgos[algorithm] = err
+		}
+	}
+
+	return false, fmt.Errorf("http signature verification error(s) for: %s: %+v", pubKeyID.String(), triedAlgos)
 }
 
 func isBlockedDomain(domain string) bool {
