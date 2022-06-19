@@ -7,15 +7,28 @@ import VideoPoster from './VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import { isVideoPlayingAtom, clockSkewAtom } from '../stores/ClientConfigStore';
 import PlaybackMetrics from './metrics/playback';
+import createVideoSettingsMenuButton from './settings-menu';
 
+const VIDEO_CONFIG_URL = '/api/video/variants';
 const PLAYER_VOLUME = 'owncast_volume';
 
 const ping = new ViewerPing();
 let playbackMetrics = null;
-
 interface Props {
   source: string;
   online: boolean;
+}
+
+async function getVideoSettings() {
+  let qualities = [];
+
+  try {
+    const response = await fetch(VIDEO_CONFIG_URL);
+    qualities = await response.json();
+  } catch (e) {
+    console.error(e);
+  }
+  return qualities;
 }
 
 export default function OwncastPlayer(props: Props) {
@@ -118,7 +131,6 @@ export default function OwncastPlayer(props: Props) {
 
   const handlePlayerReady = (player, videojs) => {
     playerRef.current = player;
-
     setSavedVolume();
 
     // You can handle player events here, for example:
@@ -149,10 +161,26 @@ export default function OwncastPlayer(props: Props) {
       setVideoPlaying(false);
     });
 
+    videojs.hookOnce();
+
     player.on('volumechange', handleVolume);
 
     playbackMetrics = new PlaybackMetrics(player, videojs);
     playbackMetrics.setClockSkew(clockSkew);
+
+    const createSettings = async () => {
+      const videoQualities = await getVideoSettings();
+      const menuButton = createVideoSettingsMenuButton(player, videojs, videoQualities);
+      player.controlBar.addChild(
+        menuButton,
+        {},
+        // eslint-disable-next-line no-underscore-dangle
+        player.controlBar.children_.length - 2,
+      );
+      // this.latencyCompensatorToggleButton = lowLatencyItem;
+    };
+
+    createSettings();
   };
 
   useEffect(() => {
