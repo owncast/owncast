@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: Owncast
-  description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.  The following APIs represent the state in the development branch.
-  version: '0.0.11'
+  description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.
+  version: '0.0.12'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -334,7 +334,12 @@ components:
           example: https://mastodon.cloud/users/gabektest
         type:
           type: string
-          enum: [FEDIVERSE_ENGAGEMENT_FOLLOW, FEDIVERSE_ENGAGEMENT_LIKE, FEDIVERSE_ENGAGEMENT_REPOST]
+          enum:
+            [
+              FEDIVERSE_ENGAGEMENT_FOLLOW,
+              FEDIVERSE_ENGAGEMENT_LIKE,
+              FEDIVERSE_ENGAGEMENT_REPOST,
+            ]
 
   securitySchemes:
     AdminBasicAuth:
@@ -1439,7 +1444,7 @@ paths:
   /api/admin/config/federation/enable:
     post:
       summary: Enable or disable federated social features.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1450,12 +1455,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BooleanValue'
-
 
   /api/admin/config/federation/private:
     post:
       summary: Enable or disable private federation mode.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1467,11 +1471,10 @@ paths:
             schema:
               $ref: '#/components/schemas/BooleanValue'
 
-
   /api/admin/config/federation/showengagement:
     post:
       summary: Enable or disable Federation activity showing in chat.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1486,7 +1489,7 @@ paths:
   /api/admin/config/federation/username:
     post:
       summary: Set the username you are seen as on the fediverse.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1501,7 +1504,7 @@ paths:
   /api/admin/config/federation/livemessage:
     post:
       summary: Set the message sent to the fediverse when this instance goes live.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1516,7 +1519,7 @@ paths:
   /api/admin/config/federation/blockdomains:
     post:
       summary: Save a collection of domains that should be ignored on the fediverse.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1535,7 +1538,7 @@ paths:
   /api/admin/federation/send:
     post:
       summary: Manually send a message to the fediverse from this instance.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1552,7 +1555,7 @@ paths:
   /api/admin/federation/actions:
     get:
       summary: Get a list of accepted actions that took place on the Fediverse.
-      tags: ["Admin"]
+      tags: ['Admin']
       security:
         - AdminBasicAuth: []
       responses:
@@ -1564,7 +1567,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FederatedAction'
-
 
   /api/integrations/streamtitle:
     post:
@@ -2126,3 +2128,13 @@ paths:
         '200':
           description: The list of default names have been updated.
           $ref: '#/components/responses/BasicResponse'
+
+  /api/admin/prometheus:
+    get:
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      summary: Return Prometheus-compatible scraper metrics.
+      responses:
+        '200':
+          description: Prometheus-compatible scraper values.

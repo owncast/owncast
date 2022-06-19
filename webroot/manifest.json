@@ -1,5 +1,5 @@
 {
- "name": "App",
+ "name": "Owncast",
  "icons": [
   {
    "src": "\/img\/favicon\/android-icon-36x36.png",
@@ -37,5 +37,6 @@
    "type": "image\/png",
    "density": "4.0"
   }
- ]
+ ],
+ "display": "fullscreen"
 }
