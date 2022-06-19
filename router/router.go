@@ -26,12 +26,8 @@ import (
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
 	// static files
+	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
 	http.HandleFunc("/", controllers.IndexHandler)
-	http.HandleFunc("/recordings", controllers.IndexHandler)
-	http.HandleFunc("/schedule", controllers.IndexHandler)
-
-	// admin static files
-	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
 
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)

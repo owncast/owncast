@@ -7,15 +7,15 @@ import (
 	"path/filepath"
 )
 
-//go:embed admin/*
-//go:embed admin/_next/static
-//go:embed admin/_next/static/chunks/pages/*.js
-//go:embed admin/_next/static/*/*.js
-var adminFiles embed.FS
+//go:embed web/*
+//go:embed web/_next/static
+//go:embed web/_next/static/chunks/pages/*.js
+//go:embed web/_next/static/*/*.js
+var webFiles embed.FS
 
-// GetAdmin will return an embedded filesystem reference to the admin web app.
-func GetAdmin() embed.FS {
-	return adminFiles
+// GetWeb will return an embedded filesystem reference to the admin web app.
+func GetWeb() embed.FS {
+	return webFiles
 }
 
 //go:embed metadata.html.tmpl
