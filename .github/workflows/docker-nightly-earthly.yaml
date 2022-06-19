@@ -12,8 +12,9 @@ jobs:
   Docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Download latest earthly
-        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/download/v0.6.16/earthly-linux-amd64 -O /usr/local/bin/earthly && chmod +x /usr/local/bin/earthly'"
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
 
       - name: Earthly version
         run: earthly --version
