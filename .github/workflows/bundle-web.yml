@@ -1,0 +1,21 @@
+name: Bundle web app
+on:
+  repository_dispatch:
+    types: [bundle-admin-event]
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bundle admin
+        uses: actions/checkout@v3
+      - run: build/web/bundleWeb.sh
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Update embedded web app to ${{ github.event.client_payload.sha }}'
+          add: 'static/web'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_CR_PAT }}

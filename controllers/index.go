@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -36,16 +34,11 @@ type MetadataPage struct {
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
-	// Treat recordings and schedule as index requests
-	pathComponents := strings.Split(r.URL.Path, "/")
-	pathRequest := pathComponents[1]
-
-	if pathRequest == "recordings" || pathRequest == "schedule" {
-		r.URL.Path = "index.html"
-	}
-
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
-
+	if isIndexRequest {
+		serveWeb(w, r)
+		return
+	}
 	// For search engine bots and social scrapers return a special
 	// server-rendered page.
 	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
@@ -65,11 +58,11 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If this is a directory listing request then return a 404
-	info, err := os.Stat(path.Join(config.WebRoot, r.URL.Path))
-	if err != nil || (info.IsDir() && !isIndexRequest) {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
+	// info, err := os.Stat(path.Join(config.WebRoot, r.URL.Path))
+	// if err != nil || (info.IsDir() && !isIndexRequest) {
+	// 	w.WriteHeader(http.StatusNotFound)
+	// 	return
+	// }
 
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
@@ -77,7 +70,9 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Set our global HTTP headers
 	middleware.SetHeaders(w)
 
-	http.ServeFile(w, r, path.Join(config.WebRoot, r.URL.Path))
+	serveWeb(w, r)
+
+	// http.ServeFile(w, r, path.Join(config.WebRoot, r.URL.Path))
 }
 
 // Return a basic HTML page with server-rendered metadata from the config
