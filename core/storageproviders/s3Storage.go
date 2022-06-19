@@ -3,9 +3,11 @@ package storageproviders
 import (
 	"bufio"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/playlist"
@@ -176,6 +178,14 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 }
 
 func (s *S3Storage) connectAWS() *session.Session {
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	t.MaxIdleConnsPerHost = 100
+
+	httpClient := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: t,
+	}
+
 	creds := credentials.NewStaticCredentials(s.s3AccessKey, s.s3Secret, "")
 	_, err := creds.Get()
 	if err != nil {
@@ -184,6 +194,7 @@ func (s *S3Storage) connectAWS() *session.Session {
 
 	sess, err := session.NewSession(
 		&aws.Config{
+			HTTPClient:       httpClient,
 			Region:           aws.String(s.s3Region),
 			Credentials:      creds,
 			Endpoint:         aws.String(s.s3Endpoint),

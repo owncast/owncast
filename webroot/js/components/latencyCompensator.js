@@ -27,7 +27,7 @@ How to help with this? The Owncast Latency Compensator will:
   - Completely give up on all compensation if too many buffering events occur.
 */
 
-const REBUFFER_EVENT_LIMIT = 5; // Max number of buffering events before we stop compensating for latency.
+const REBUFFER_EVENT_LIMIT = 4; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 200; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
 const MAX_SPEEDUP_RAMP = 0.02; // The max amount we will increase the playback rate at once.
@@ -47,6 +47,7 @@ const STARTUP_WAIT_TIME = 10 * 1000; // The amount of time after we start up tha
 class LatencyCompensator {
   constructor(player) {
     this.player = player;
+    this.playing = false;
     this.enabled = false;
     this.running = false;
     this.inTimeout = false;
@@ -59,14 +60,25 @@ class LatencyCompensator {
     this.lastJumpOccurred = null;
     this.startupTime = new Date();
     this.clockSkewMs = 0;
+    this.currentLatency = null;
+
+    // Keep track of all the latencies we encountered buffering events
+    // in order to determine a new minimum latency.
+    this.bufferedAtLatency = [];
 
     this.player.on('playing', this.handlePlaying.bind(this));
+    this.player.on('pause', this.handlePause.bind(this));
     this.player.on('error', this.handleError.bind(this));
     this.player.on('waiting', this.handleBuffering.bind(this));
     this.player.on('stalled', this.handleBuffering.bind(this));
     this.player.on('ended', this.handleEnded.bind(this));
     this.player.on('canplaythrough', this.handlePlaying.bind(this));
     this.player.on('canplay', this.handlePlaying.bind(this));
+
+    this.check = this.check.bind(this);
+    this.start = this.start.bind(this);
+    this.enable = this.enable.bind(this);
+    this.countBufferingEvent = this.countBufferingEvent.bind(this);
   }
 
   // To keep our client clock in sync with the server clock to determine
@@ -97,7 +109,6 @@ class LatencyCompensator {
     }
 
     if (this.inTimeout) {
-      console.log('in timeout...');
       return;
     }
 
@@ -162,13 +173,27 @@ class LatencyCompensator {
       }
 
       // How far away from live edge do we stop the compensator.
-      const minLatencyThreshold = Math.max(
+      const computedMinLatencyThreshold = Math.max(
         MIN_LATENCY,
         segment.duration * 1000 * LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
       );
 
+      // Create an array of all the buffering events in the past along with
+      // the computed min latency above.
+      const targetLatencies = this.bufferedAtLatency.concat([
+        computedMinLatencyThreshold,
+      ]);
+
+      // Determine if we need to reduce the minimum latency we computed
+      // above based on buffering events that have taken place in the past by
+      // creating an array of all the buffering events and the above computed
+      // minimum latency target and averaging all those values.
+      const minLatencyThreshold =
+        targetLatencies.reduce((sum, current) => sum + current, 0) /
+        targetLatencies.length;
+
       // How far away from live edge do we start the compensator.
-      const maxLatencyThreshold = Math.max(
+      let maxLatencyThreshold = Math.max(
         minLatencyThreshold * 1.4,
         Math.min(
           segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER,
@@ -176,9 +201,17 @@ class LatencyCompensator {
         )
       );
 
+      // If this newly adjusted minimum latency ends up being greater than
+      // the previously computed maximum latency then reset the maximum
+      // value using the minimum + an offset.
+      if (minLatencyThreshold >= maxLatencyThreshold) {
+        maxLatencyThreshold = minLatencyThreshold + 3000;
+      }
+
       const segmentTime = segment.dateTimeObject.getTime();
       const now = new Date().getTime() + this.clockSkewMs;
       const latency = now - segmentTime;
+      this.currentLatency = latency;
 
       // Since the calculation of latency is based on clock times, it's possible
       // things can be reported incorrectly. So we use a sanity check here to
@@ -201,7 +234,7 @@ class LatencyCompensator {
         ) {
           const jumpAmount = latency / 1000 - segment.duration * 3;
           const seekPosition = this.player.currentTime() + jumpAmount;
-          console.log(
+          console.info(
             'latency',
             latency / 1000,
             'jumping',
@@ -251,7 +284,7 @@ class LatencyCompensator {
         this.stop();
       }
 
-      console.log(
+      console.info(
         'latency',
         latency / 1000,
         'min',
@@ -275,6 +308,12 @@ class LatencyCompensator {
   }
 
   shouldJumpToLive() {
+    // If we've been rebuffering some recently then don't make it worse by
+    // jumping more into the future.
+    if (this.bufferingCounter > 1) {
+      return false;
+    }
+
     const now = new Date().getTime();
     const delta = now - this.lastJumpOccurred;
     return delta > MAX_JUMP_FREQUENCY;
@@ -286,7 +325,7 @@ class LatencyCompensator {
 
     this.lastJumpOccurred = new Date();
 
-    console.log(
+    console.info(
       'current time',
       this.player.currentTime(),
       'seeking to',
@@ -340,10 +379,6 @@ class LatencyCompensator {
   }
 
   timeout() {
-    if (this.inTimeout) {
-      return;
-    }
-
     if (this.jumpingToLiveIgnoreBuffer) {
       return;
     }
@@ -363,6 +398,9 @@ class LatencyCompensator {
   }
 
   handlePlaying() {
+    const wasPreviouslyPlaying = this.playing;
+    this.playing = true;
+
     clearTimeout(this.bufferingTimer);
     if (!this.enabled) {
       return;
@@ -372,11 +410,21 @@ class LatencyCompensator {
       return;
     }
 
-    // Seek to live immediately on starting playback to handle any long-pause
+    // If we were not previously playing (was paused, or this is a cold start)
+    // seek to live immediately on starting playback to handle any long-pause
     // scenarios or somebody starting far back from the live edge.
-    this.jumpingToLiveIgnoreBuffer = true;
-    this.player.liveTracker.seekToLiveEdge();
-    this.lastJumpOccurred = new Date();
+    // If we were playing previously then that means we're probably coming back
+    // from a rebuffering event, meaning we should not be adding more seeking
+    // to the mix, just let it play.
+    if (!wasPreviouslyPlaying) {
+      this.jumpingToLiveIgnoreBuffer = true;
+      this.player.liveTracker.seekToLiveEdge();
+      this.lastJumpOccurred = new Date();
+    }
+  }
+
+  handlePause() {
+    this.playing = false;
   }
 
   handleEnded() {
@@ -392,19 +440,25 @@ class LatencyCompensator {
       return;
     }
 
-    console.log('handle error', e);
     this.timeout();
   }
 
   countBufferingEvent() {
     this.bufferingCounter++;
+
     if (this.bufferingCounter > REBUFFER_EVENT_LIMIT) {
       this.disable();
       return;
     }
 
-    console.log('timeout due to buffering');
-    this.timeout();
+    this.bufferedAtLatency.push(this.currentLatency);
+
+    console.log(
+      'latency compensation timeout due to buffering:',
+      this.bufferingCounter,
+      'buffering events of',
+      REBUFFER_EVENT_LIMIT
+    );
 
     // Allow us to forget about old buffering events if enough time goes by.
     setTimeout(() => {
@@ -415,7 +469,7 @@ class LatencyCompensator {
   }
 
   handleBuffering() {
-    if (!this.enabled) {
+    if (!this.enabled || this.inTimeout) {
       return;
     }
 
@@ -424,6 +478,9 @@ class LatencyCompensator {
       return;
     }
 
+    this.timeout();
+
+    clearTimeout(this.bufferingTimer);
     this.bufferingTimer = setTimeout(() => {
       this.countBufferingEvent();
     }, MIN_BUFFER_DURATION);

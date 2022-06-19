@@ -68,7 +68,7 @@ func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 
 	var response Response
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, nil, errors.Wrap(err, "unable to parse IndieAuth response")
+		return nil, nil, errors.Wrap(err, "unable to parse IndieAuth response: "+string(body))
 	}
 
 	if response.Error != "" || response.ErrorDescription != "" {
