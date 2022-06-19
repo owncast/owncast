@@ -36,12 +36,6 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
 	if isIndexRequest {
-		serveWeb(w, r)
-		return
-	}
-	// For search engine bots and social scrapers return a special
-	// server-rendered page.
-	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
 		handleScraperMetadataPage(w, r)
 		return
 	}
@@ -78,7 +72,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 // Return a basic HTML page with server-rendered metadata from the config
 // to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := static.GetBotMetadataTemplate()
+	tmpl, err := static.GetWebIndexTemplate()
 	if err != nil {
 		log.Errorln(err)
 		w.WriteHeader(http.StatusInternalServerError)
