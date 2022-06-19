@@ -15,7 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mssola/user_agent"
 	log "github.com/sirupsen/logrus"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -96,34 +95,6 @@ func moveFallback(source, destination string) error {
 		return fmt.Errorf("Failed removing original file: %s", err)
 	}
 	return nil
-}
-
-// IsUserAgentABot returns if a web client user-agent is seen as a bot.
-func IsUserAgentABot(userAgent string) bool {
-	if userAgent == "" {
-		return false
-	}
-
-	botStrings := []string{
-		"mastodon",
-		"pleroma",
-		"applebot",
-		"whatsapp",
-		"matrix",
-		"synapse",
-		"element",
-		"rocket.chat",
-		"duckduckbot",
-	}
-
-	for _, botString := range botStrings {
-		if strings.Contains(strings.ToLower(userAgent), botString) {
-			return true
-		}
-	}
-
-	ua := user_agent.New(userAgent)
-	return ua.Bot()
 }
 
 // IsUserAgentAPlayer returns if a web client user-agent is seen as a media player.

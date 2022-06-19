@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 )
 
 //go:embed web/*
@@ -18,13 +20,15 @@ func GetWeb() embed.FS {
 	return webFiles
 }
 
-//go:embed metadata.html.tmpl
-var botMetadataTemplate embed.FS
+// GetWebIndexTemplate will return the bot/scraper metadata template.
+func GetWebIndexTemplate() (*template.Template, error) {
+	webFiles := GetWeb()
+	name := "web/index.html"
+	t, err := template.ParseFS(webFiles, name)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to open index.html template")
+	}
 
-// GetBotMetadataTemplate will return the bot/scraper metadata template.
-func GetBotMetadataTemplate() (*template.Template, error) {
-	name := "metadata.html.tmpl"
-	t, err := template.ParseFS(botMetadataTemplate, name)
 	tmpl := template.Must(t, err)
 	return tmpl, err
 }
