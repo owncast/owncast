@@ -8,6 +8,9 @@ VERSION="${DATE}-nightly"
 
 echo "Building Docker image ${DOCKER_IMAGE}..."
 
+# Change to the root directory of the repository
+cd $(git rev-parse --show-toplevel)
+
 earthly --ci --push +docker --image="ghcr.io/owncast/${DOCKER_IMAGE}" --tag=nightly --version=${VERSION}
 
 # docker push ghcr.io/owncast/${DOCKER_IMAGE}:nightly
