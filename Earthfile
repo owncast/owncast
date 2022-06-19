@@ -2,6 +2,7 @@ VERSION --new-platform 0.6
 
 FROM --platform=linux/amd64 alpine:latest
 ARG version=develop
+
 WORKDIR /build
 
 build-all:
@@ -22,8 +23,8 @@ crosscompiler:
 
 code:
   FROM --platform=linux/amd64 +crosscompiler
-  # COPY . /build
-  GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
+  COPY . /build
+  # GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
 
 build:
   ARG EARTHLY_GIT_HASH # provided by Earthly
@@ -115,7 +116,8 @@ package:
   SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
 docker:
-  ARG tag=ghcr.io/owncast/owncast
+  ARG image=ghcr.io/owncast/owncast
+  ARG tag=develop
   ARG TARGETPLATFORM
   FROM --platform=$TARGETPLATFORM alpine:latest
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
@@ -124,4 +126,4 @@ docker:
   RUN unzip -x owncast.zip && mkdir data
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
-  SAVE IMAGE --push $tag:$version
+  SAVE IMAGE --push $image:$tag
