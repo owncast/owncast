@@ -127,3 +127,14 @@ docker:
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
   SAVE IMAGE --push $image:$tag
+
+api-tests:
+	FROM --platform=linux/amd64 +code
+	WORKDIR /build
+	RUN apk add npm ffmpeg
+	RUN cd test/automated/api && npm install && ./run.sh
+
+unit-tests:
+	FROM --platform=linux/amd64 +code
+	WORKDIR /build
+	RUN go test ./...
