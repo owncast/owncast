@@ -126,7 +126,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/chat/messages", middleware.RequireAdminAuth(admin.GetChatMessages))
 
 	// Update chat message visibility
-	http.HandleFunc("/api/admin/chat/updatemessagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
+	http.HandleFunc("/api/admin/chat/messagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
 
 	// Enable/disable a user
 	http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
@@ -310,7 +310,7 @@ func Start() error {
 	// Inline chat moderation actions
 
 	// Update chat message visibility
-	http.HandleFunc("/api/chat/updatemessagevisibility", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility))
+	http.HandleFunc("/api/chat/messagevisibility", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility))
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
