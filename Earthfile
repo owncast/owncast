@@ -75,20 +75,9 @@ build:
   WORKDIR /build
   # MacOSX disallows static executables, so we omit the static flag on this platform
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -o owncast main.go
-  COPY +tailwind/prod-tailwind.min.css /build/dist/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
 
   SAVE ARTIFACT owncast owncast
-  SAVE ARTIFACT webroot webroot
   SAVE ARTIFACT README.md README.md
-
-tailwind:
-  FROM +code
-  WORKDIR /build/build/javascript
-  RUN apk add --update --no-cache npm >> /dev/null
-  ENV NODE_ENV=production
-  RUN cd /build/build/javascript && npm install --quiet --no-progress >> /dev/null && npm install -g cssnano postcss postcss-cli --quiet --no-progress --save-dev >> /dev/null && ./node_modules/.bin/tailwind build > /build/tailwind.min.css
-  RUN npx postcss /build/tailwind.min.css > /build/prod-tailwind.min.css
-  SAVE ARTIFACT /build/prod-tailwind.min.css prod-tailwind.min.css
 
 package:
   RUN apk add --update --no-cache zip >> /dev/null
