@@ -1,32 +1,37 @@
-export default function createVideoSettingsMenuButton(player, videojs, qualities): any {
-  // const VjsMenuItem = videojs.getComponent('MenuItem');
+export default function createVideoSettingsMenuButton(
+  player,
+  videojs,
+  qualities,
+  latencyItemPressed,
+): any {
+  const VjsMenuItem = videojs.getComponent('MenuItem');
   const MenuItem = videojs.getComponent('MenuItem');
   const MenuButtonClass = videojs.getComponent('MenuButton');
 
-  // class MenuSeparator extends VjsMenuItem {
-  //   // eslint-disable-next-line no-useless-constructor
-  //   constructor(p: any, options: { selectable: boolean }) {
-  //     super(p, options);
-  //   }
+  class MenuSeparator extends VjsMenuItem {
+    // eslint-disable-next-line no-useless-constructor
+    constructor(p: any, options: { selectable: boolean }) {
+      super(p, options);
+    }
 
-  //   createEl(tag = 'button', props = {}, attributes = {}) {
-  //     const el = super.createEl(tag, props, attributes);
-  //     el.innerHTML = '<hr style="opacity: 0.3; margin-left: 10px; margin-right: 10px;" />';
-  //     return el;
-  //   }
-  // }
+    createEl(tag = 'button', props = {}, attributes = {}) {
+      const el = super.createEl(tag, props, attributes);
+      el.innerHTML = '<hr style="opacity: 0.3; margin-left: 10px; margin-right: 10px;" />';
+      return el;
+    }
+  }
 
   const lowLatencyItem = new MenuItem(player, {
     selectable: true,
   });
   lowLatencyItem.setAttribute('class', 'latency-toggle-item');
   lowLatencyItem.on('click', () => {
-    this.toggleLatencyCompensator();
+    latencyItemPressed();
   });
 
-  // const separator = new MenuSeparator(player, {
-  //   selectable: false,
-  // });
+  const separator = new MenuSeparator(player, {
+    selectable: false,
+  });
 
   const MenuButton = videojs.extend(MenuButtonClass, {
     // The `init()` method will also work for constructor logic here, but it is
@@ -75,16 +80,16 @@ export default function createVideoSettingsMenuButton(player, videojs, qualities
         defaultAutoItem.selected(false);
       });
 
-      const supportsLatencyCompensator = false; // !!tech && !!tech.vhs;
+      const supportsLatencyCompensator = !!tech && !!tech.vhs;
 
       // Only show the quality selector if there is more than one option.
-      // if (qualities.length < 2 && supportsLatencyCompensator) {
-      //   return [lowLatencyItem];
-      // }
+      if (qualities.length < 2 && supportsLatencyCompensator) {
+        return [lowLatencyItem];
+      }
 
-      // if (qualities.length > 1 && supportsLatencyCompensator) {
-      //   return [defaultAutoItem, ...items, separator, lowLatencyItem];
-      // }
+      if (qualities.length > 1 && supportsLatencyCompensator) {
+        return [defaultAutoItem, ...items, separator, lowLatencyItem];
+      }
       if (!supportsLatencyCompensator && qualities.length === 1) {
         return [];
       }

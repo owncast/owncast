@@ -44,6 +44,28 @@ const MAX_JUMP_FREQUENCY = 20 * 1000; // How often we'll allow a time jump.
 const MAX_ACTIONABLE_LATENCY = 80 * 1000; // If latency is seen to be greater than this then something is wrong.
 const STARTUP_WAIT_TIME = 10 * 1000; // The amount of time after we start up that we'll allow monitoring to occur.
 
+function getCurrentlyPlayingSegment(tech) {
+  const targetMedia = tech.vhs.playlists.media();
+  const snapshotTime = tech.currentTime();
+  let segment;
+
+  // Iterate trough available segments and get first within which snapshot_time is
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0, l = targetMedia.segments.length; i < l; i++) {
+    // Note: segment.end may be undefined or is not properly set
+    if (snapshotTime < targetMedia.segments[i].end) {
+      segment = targetMedia.segments[i];
+      break;
+    }
+  }
+
+  if (!segment) {
+    [segment] = targetMedia.segments;
+  }
+
+  return segment;
+}
+
 class LatencyCompensator {
   constructor(player) {
     this.player = player;
@@ -143,10 +165,12 @@ class LatencyCompensator {
         return;
       }
 
-      tech.vhs.stats.buffered.forEach((buffer) => {
+      tech.vhs.stats.buffered.forEach(buffer => {
         totalBuffered += buffer.end - buffer.start;
       });
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
 
     // Determine how much of the current playlist's bandwidth requirements
     // we're utilizing. If it's too high then we can't afford to push
@@ -164,10 +188,7 @@ class LatencyCompensator {
 
       // If we're downloading media fast enough or we feel like we have a large
       // enough buffer then continue. Otherwise timeout for a bit.
-      if (
-        bandwidthRatio < REQUIRED_BANDWIDTH_RATIO &&
-        totalBuffered < segment.duration * 6
-      ) {
+      if (bandwidthRatio < REQUIRED_BANDWIDTH_RATIO && totalBuffered < segment.duration * 6) {
         this.timeout();
         return;
       }
@@ -175,30 +196,24 @@ class LatencyCompensator {
       // How far away from live edge do we stop the compensator.
       const computedMinLatencyThreshold = Math.max(
         MIN_LATENCY,
-        segment.duration * 1000 * LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER
+        segment.duration * 1000 * LOWEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER,
       );
 
       // Create an array of all the buffering events in the past along with
       // the computed min latency above.
-      const targetLatencies = this.bufferedAtLatency.concat([
-        computedMinLatencyThreshold,
-      ]);
+      const targetLatencies = this.bufferedAtLatency.concat([computedMinLatencyThreshold]);
 
       // Determine if we need to reduce the minimum latency we computed
       // above based on buffering events that have taken place in the past by
       // creating an array of all the buffering events and the above computed
       // minimum latency target and averaging all those values.
       const minLatencyThreshold =
-        targetLatencies.reduce((sum, current) => sum + current, 0) /
-        targetLatencies.length;
+        targetLatencies.reduce((sum, current) => sum + current, 0) / targetLatencies.length;
 
       // How far away from live edge do we start the compensator.
       let maxLatencyThreshold = Math.max(
         minLatencyThreshold * 1.4,
-        Math.min(
-          segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER,
-          MAX_LATENCY
-        )
+        Math.min(segment.duration * 1000 * HIGHEST_LATENCY_SEGMENT_LENGTH_MULTIPLIER, MAX_LATENCY),
       );
 
       // If this newly adjusted minimum latency ends up being greater than
@@ -228,10 +243,7 @@ class LatencyCompensator {
       if (latency > maxLatencyThreshold) {
         // If the current latency exceeds the max jump amount then
         // force jump into the future, skipping all the video in between.
-        if (
-          this.shouldJumpToLive() &&
-          latency > maxLatencyThreshold + MAX_JUMP_LATENCY
-        ) {
+        if (this.shouldJumpToLive() && latency > maxLatencyThreshold + MAX_JUMP_LATENCY) {
           const jumpAmount = latency / 1000 - segment.duration * 3;
           const seekPosition = this.player.currentTime() + jumpAmount;
           console.info(
@@ -242,17 +254,13 @@ class LatencyCompensator {
             'to live from ',
             this.player.currentTime(),
             ' to ',
-            seekPosition
+            seekPosition,
           );
 
           // Verify we have the seek position buffered before jumping.
           const availableBufferedTimeEnd = tech.vhs.stats.buffered[0].end;
           const availableBufferedTimeStart = tech.vhs.stats.buffered[0].start;
-          if (
-            seekPosition >
-            availableBufferedTimeStart <
-            availableBufferedTimeEnd
-          ) {
+          if (seekPosition > availableBufferedTimeStart < availableBufferedTimeEnd) {
             this.jump(seekPosition);
 
             return;
@@ -260,13 +268,10 @@ class LatencyCompensator {
         }
 
         // Using our bandwidth ratio determine a wide guess at how fast we can play.
-        var proposedPlaybackRate = bandwidthRatio * 0.33;
+        let proposedPlaybackRate = bandwidthRatio * 0.33;
 
         // But limit the playback rate to a max value.
-        proposedPlaybackRate = Math.max(
-          Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE),
-          1.0
-        );
+        proposedPlaybackRate = Math.max(Math.min(proposedPlaybackRate, MAX_SPEEDUP_RATE), 1.0);
 
         if (proposedPlaybackRate > this.playbackRate + MAX_SPEEDUP_RAMP) {
           // If this proposed speed is substantially faster than the current rate,
@@ -275,8 +280,7 @@ class LatencyCompensator {
         }
 
         // Limit to 3 decimal places of precision.
-        proposedPlaybackRate =
-          Math.round(proposedPlaybackRate * Math.pow(10, 3)) / Math.pow(10, 3);
+        proposedPlaybackRate = Math.round(proposedPlaybackRate * 10 ** 3) / 10 ** 3;
 
         // Otherwise start the playback rate adjustment.
         this.start(proposedPlaybackRate);
@@ -300,7 +304,7 @@ class LatencyCompensator {
         'skew: ',
         this.clockSkewMs,
         'rebuffer events: ',
-        this.bufferingCounter
+        this.bufferingCounter,
       );
     } catch (err) {
       // console.error(err);
@@ -325,12 +329,7 @@ class LatencyCompensator {
 
     this.lastJumpOccurred = new Date();
 
-    console.info(
-      'current time',
-      this.player.currentTime(),
-      'seeking to',
-      seekPosition
-    );
+    console.info('current time', this.player.currentTime(), 'seeking to', seekPosition);
     this.player.currentTime(seekPosition);
 
     setTimeout(() => {
@@ -435,7 +434,7 @@ class LatencyCompensator {
     this.disable();
   }
 
-  handleError(e) {
+  handleError() {
     if (!this.enabled) {
       return;
     }
@@ -444,7 +443,7 @@ class LatencyCompensator {
   }
 
   countBufferingEvent() {
-    this.bufferingCounter++;
+    this.bufferingCounter += 1;
 
     if (this.bufferingCounter > REBUFFER_EVENT_LIMIT) {
       this.disable();
@@ -457,13 +456,13 @@ class LatencyCompensator {
       'latency compensation timeout due to buffering:',
       this.bufferingCounter,
       'buffering events of',
-      REBUFFER_EVENT_LIMIT
+      REBUFFER_EVENT_LIMIT,
     );
 
     // Allow us to forget about old buffering events if enough time goes by.
     setTimeout(() => {
       if (this.bufferingCounter > 0) {
-        this.bufferingCounter--;
+        this.bufferingCounter -= 1;
       }
     }, BUFFERING_AMNESTY_DURATION);
   }
@@ -485,28 +484,6 @@ class LatencyCompensator {
       this.countBufferingEvent();
     }, MIN_BUFFER_DURATION);
   }
-}
-
-function getCurrentlyPlayingSegment(tech) {
-  var target_media = tech.vhs.playlists.media();
-  var snapshot_time = tech.currentTime();
-
-  var segment;
-
-  // Iterate trough available segments and get first within which snapshot_time is
-  for (var i = 0, l = target_media.segments.length; i < l; i++) {
-    // Note: segment.end may be undefined or is not properly set
-    if (snapshot_time < target_media.segments[i].end) {
-      segment = target_media.segments[i];
-      break;
-    }
-  }
-
-  if (!segment) {
-    segment = target_media.segments[0];
-  }
-
-  return segment;
 }
 
 export default LatencyCompensator;
