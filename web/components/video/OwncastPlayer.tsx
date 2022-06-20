@@ -8,12 +8,17 @@ import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import { isVideoPlayingAtom, clockSkewAtom } from '../stores/ClientConfigStore';
 import PlaybackMetrics from './metrics/playback';
 import createVideoSettingsMenuButton from './settings-menu';
+import LatencyCompensator from './latencyCompensator';
 
 const VIDEO_CONFIG_URL = '/api/video/variants';
 const PLAYER_VOLUME = 'owncast_volume';
+const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
 
 const ping = new ViewerPing();
 let playbackMetrics = null;
+let latencyCompensator = null;
+let latencyCompensatorEnabled = false;
+
 interface Props {
   source: string;
   online: boolean;
@@ -70,6 +75,50 @@ export default function OwncastPlayer(props: Props) {
       playerRef.current.exitFullscreen();
     } else {
       playerRef.current.requestFullscreen();
+    }
+  };
+
+  const setLatencyCompensatorItemTitle = title => {
+    const item = document.querySelector('.latency-toggle-item > .vjs-menu-item-text');
+    if (!item) {
+      return;
+    }
+
+    item.innerHTML = title;
+  };
+
+  const startLatencyCompensator = () => {
+    if (latencyCompensator) {
+      latencyCompensator.stop();
+    }
+
+    latencyCompensatorEnabled = true;
+
+    latencyCompensator = new LatencyCompensator(playerRef.current);
+    latencyCompensator.setClockSkew(clockSkew);
+    latencyCompensator.enable();
+    setLocalStorage(LATENCY_COMPENSATION_ENABLED, true);
+
+    setLatencyCompensatorItemTitle('disable minimized latency');
+  };
+
+  const stopLatencyCompensator = () => {
+    if (latencyCompensator) {
+      latencyCompensator.disable();
+    }
+    latencyCompensator = null;
+    latencyCompensatorEnabled = false;
+    setLocalStorage(LATENCY_COMPENSATION_ENABLED, false);
+    setLatencyCompensatorItemTitle(
+      '<span style="font-size: 0.8em">enable minimized latency (experimental)</span>',
+    );
+  };
+
+  const toggleLatencyCompensator = () => {
+    if (latencyCompensatorEnabled) {
+      stopLatencyCompensator();
+    } else {
+      startLatencyCompensator();
     }
   };
 
@@ -133,6 +182,23 @@ export default function OwncastPlayer(props: Props) {
     playerRef.current = player;
     setSavedVolume();
 
+    const setupLatencyCompensator = () => {
+      const tech = player.tech({ IWillNotUseThisInPlugins: true });
+
+      // VHS is required.
+      if (!tech || !tech.vhs) {
+        return;
+      }
+
+      const latencyCompensatorEnabledSaved = getLocalStorage(LATENCY_COMPENSATION_ENABLED);
+
+      if (latencyCompensatorEnabledSaved === 'true' && tech && tech.vhs) {
+        startLatencyCompensator();
+      } else {
+        stopLatencyCompensator();
+      }
+    };
+
     // You can handle player events here, for example:
     player.on('waiting', () => {
       player.log('player is waiting');
@@ -170,14 +236,19 @@ export default function OwncastPlayer(props: Props) {
 
     const createSettings = async () => {
       const videoQualities = await getVideoSettings();
-      const menuButton = createVideoSettingsMenuButton(player, videojs, videoQualities);
+      const menuButton = createVideoSettingsMenuButton(
+        player,
+        videojs,
+        videoQualities,
+        toggleLatencyCompensator,
+      );
       player.controlBar.addChild(
         menuButton,
         {},
         // eslint-disable-next-line no-underscore-dangle
         player.controlBar.children_.length - 2,
       );
-      // this.latencyCompensatorToggleButton = lowLatencyItem;
+      setupLatencyCompensator();
     };
 
     createSettings();
