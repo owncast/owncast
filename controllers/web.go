@@ -16,13 +16,13 @@ import (
 // serveWeb will serve web assets.
 func serveWeb(w http.ResponseWriter, r *http.Request) {
 	// If the ETags match then return a StatusNotModified
-	if responseCode := middleware.ProcessEtags(w, r); responseCode != 0 {
-		w.WriteHeader(responseCode)
-		return
-	}
+	// if responseCode := middleware.ProcessEtags(w, r); responseCode != 0 {
+	// 	w.WriteHeader(responseCode)
+	// 	return
+	// }
 
 	webFiles := static.GetWeb()
-	path := "web/" + strings.TrimPrefix(r.URL.Path, "/")
+	path := strings.TrimPrefix(r.URL.Path, "/")
 
 	// Determine if the requested path is a directory.
 	// If so, append index.html to the request.
@@ -48,7 +48,7 @@ func serveWeb(w http.ResponseWriter, r *http.Request) {
 
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
-	d, err := webFiles.ReadFile(path)
+	d, err := fs.ReadFile(webFiles, path)
 	if err != nil {
 		log.Errorln(err)
 		w.WriteHeader(http.StatusInternalServerError)

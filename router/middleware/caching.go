@@ -2,12 +2,8 @@ package middleware
 
 import (
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
-	"github.com/amalfra/etag"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -20,25 +16,6 @@ func DisableCache(w http.ResponseWriter) {
 func setCacheSeconds(seconds int, w http.ResponseWriter) {
 	secondsStr := strconv.Itoa(seconds)
 	w.Header().Set("Cache-Control", "public, max-age="+secondsStr)
-}
-
-// ProcessEtags gets and sets ETags for caching purposes.
-func ProcessEtags(w http.ResponseWriter, r *http.Request) int {
-	info, err := os.Stat(filepath.Join(config.WebRoot, r.URL.Path))
-	if err != nil {
-		return 0
-	}
-
-	localContentEtag := etag.Generate(info.ModTime().String(), true)
-	if remoteEtagHeader := r.Header.Get("If-None-Match"); remoteEtagHeader != "" {
-		if remoteEtagHeader == localContentEtag {
-			return http.StatusNotModified
-		}
-	}
-
-	w.Header().Set("Etag", localContentEtag)
-
-	return 0
 }
 
 // SetCachingHeaders will set the cache control header of a response.

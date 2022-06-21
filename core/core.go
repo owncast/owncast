@@ -112,12 +112,13 @@ func transitionToOfflineVideoStreamContent() {
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()
-	if err = utils.Copy(filepath.Join("data", logo), "webroot/thumbnail.jpg"); err != nil {
+	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
+	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
 	}
 
 	// Delete the preview Gif
-	_ = os.Remove(path.Join(config.WebRoot, "preview.gif"))
+	_ = os.Remove(path.Join(config.DataDirectory, "preview.gif"))
 }
 
 func resetDirectories() {
@@ -129,7 +130,7 @@ func resetDirectories() {
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()
 	if utils.DoesFileExists(logo) {
-		err := utils.Copy(path.Join("data", logo), filepath.Join(config.WebRoot, "thumbnail.jpg"))
+		err := utils.Copy(path.Join("data", logo), filepath.Join(config.DataDirectory, "thumbnail.jpg"))
 		if err != nil {
 			log.Warnln(err)
 		}
