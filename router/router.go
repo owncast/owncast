@@ -25,11 +25,11 @@ import (
 
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
-	// The admin web app.
-	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
-
 	// The primary web app.
 	http.HandleFunc("/", controllers.IndexHandler)
+
+	// The admin web app.
+	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
 
 	// Return a single emoji image.
 	http.HandleFunc("/img/emoji/", middleware.RequireAdminAuth(controllers.GetCustomEmojiImage))
