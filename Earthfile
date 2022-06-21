@@ -97,7 +97,6 @@ package:
     ARG NAME=custom
   END
 
-  COPY (+build/webroot --platform $TARGETPLATFORM) /build/dist/webroot
   COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
   COPY (+build/README.md --platform $TARGETPLATFORM) /build/dist/README.md
   ENV ZIPNAME owncast-$version-$NAME.zip
@@ -116,3 +115,16 @@ docker:
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
   SAVE IMAGE --push $image:$tag
+
+unit-tests:
+  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+  COPY . /build
+	WORKDIR /build
+	RUN go test ./...
+
+api-tests:
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	RUN apk add ffmpeg npm
+  COPY . /build
+	WORKDIR /build
+	RUN cd test/automated/api && ./run.sh
