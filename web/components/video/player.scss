@@ -13,9 +13,9 @@
   background-color: var(--theme-background) !important;
 }
 
-// .vjs-airplay .vjs-icon-placeholder::before {
-//   content: url("../img/airplay.png");
-// }
+.vjs-airplay .vjs-icon-placeholder::before {
+  content: url("./airplay.png");
+}
 
 .vjs-quality-selector .vjs-icon-placeholder {
   font-family: VideoJS;
