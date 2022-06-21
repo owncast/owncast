@@ -3,6 +3,8 @@ package static
 import (
 	"embed"
 	"html/template"
+	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -16,14 +18,30 @@ import (
 var webFiles embed.FS
 
 // GetWeb will return an embedded filesystem reference to the admin web app.
-func GetWeb() embed.FS {
-	return webFiles
+func GetWeb() fs.FS {
+	wf, err := fs.Sub(webFiles, "web")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return wf
+}
+
+//go:embed img/emoji/*
+var emojiFiles embed.FS
+
+// GetEmoji will return the emoji files.
+func GetEmoji() fs.FS {
+	ef, err := fs.Sub(emojiFiles, "img/emoji")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return ef
 }
 
 // GetWebIndexTemplate will return the bot/scraper metadata template.
 func GetWebIndexTemplate() (*template.Template, error) {
 	webFiles := GetWeb()
-	name := "web/index.html"
+	name := "index.html"
 	t, err := template.ParseFS(webFiles, name)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to open index.html template")
@@ -39,6 +57,14 @@ var offlineVideoSegment []byte
 // GetOfflineSegment will return the offline video segment data.
 func GetOfflineSegment() []byte {
 	return getFileSystemStaticFileOrDefault("offline.ts", offlineVideoSegment)
+}
+
+//go:embed img/logo.png
+var logo []byte
+
+// GetLogo will return the logo data.
+func GetLogo() []byte {
+	return getFileSystemStaticFileOrDefault("img/logo.png", logo)
 }
 
 func getFileSystemStaticFileOrDefault(path string, defaultData []byte) []byte {

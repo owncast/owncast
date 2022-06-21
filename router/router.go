@@ -25,15 +25,26 @@ import (
 
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
-	// static files
+	// The admin web app.
 	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
+
+	// The primary web app.
 	http.HandleFunc("/", controllers.IndexHandler)
+
+	// Return a single emoji image.
+	http.HandleFunc("/img/emoji/", middleware.RequireAdminAuth(controllers.GetCustomEmojiImage))
+
+	// return the logo
+	http.HandleFunc("/logo", controllers.GetLogo)
+
+	// return a logo that's compatible with external social networks
+	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 
 	// custom emoji supported in the chat
-	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
+	http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
 
 	// chat rest api
 	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
@@ -58,12 +69,6 @@ func Start() error {
 
 	// list of all social platforms
 	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
-
-	// return the logo
-	http.HandleFunc("/logo", controllers.GetLogo)
-
-	// return a logo that's compatible with external social networks
-	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
