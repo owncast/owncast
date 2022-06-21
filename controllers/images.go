@@ -8,6 +8,11 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+const (
+	contentTypeJPEG = "image/jpeg"
+	contentTypeGIF  = "image/gif"
+)
+
 // GetThumbnail will return the thumbnail image as a response.
 func GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	imageFilename := "thumbnail.jpg"
@@ -28,9 +33,8 @@ func GetThumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contentType := "image/jpeg"
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
+	writeBytesAsImage(imageBytes, contentTypeJPEG, w, cacheTime)
 }
 
 // GetPreview will return the preview gif as a response.
@@ -53,7 +57,6 @@ func GetPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contentType := "image/jpeg"
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
+	writeBytesAsImage(imageBytes, contentTypeGIF, w, cacheTime)
 }

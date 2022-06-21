@@ -1,7 +1,6 @@
 package data
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"sort"
@@ -12,6 +11,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -587,9 +587,11 @@ func VerifySettings() error {
 	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, logoPath)) {
 		log.Traceln(logoPath, "not found in the data directory. copying a default logo.")
 		logo := static.GetLogo()
-		os.WriteFile(filepath.Join(config.DataDirectory, "logo.png"), logo, 0o600)
+		if err := os.WriteFile(filepath.Join(config.DataDirectory, "logo.png"), logo, 0o600); err != nil {
+			return errors.Wrap(err, "failed to write logo to disk")
+		}
 		if err := SetLogoPath("logo.png"); err != nil {
-			log.Errorln("unable to set default logo to logo.svg", err)
+			return errors.Wrap(err, "failed to save logo filename")
 		}
 	}
 
