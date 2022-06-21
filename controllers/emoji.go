@@ -10,9 +10,10 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/static"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+var emojiStaticServer = http.FileServer(http.FS(static.GetEmoji()))
 
 // getCustomEmojiList returns a list of custom emoji either from the cache or from the emoji directory.
 func getCustomEmojiList() []models.CustomEmoji {
@@ -45,17 +46,7 @@ func GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
 
 // GetCustomEmojiImage returns a single emoji image.
 func GetCustomEmojiImage(w http.ResponseWriter, r *http.Request) {
-	bundledEmoji := static.GetEmoji()
 	path := strings.TrimPrefix(r.URL.Path, "/img/emoji/")
-
-	b, err := fs.ReadFile(bundledEmoji, path)
-	if err != nil {
-		log.Errorln(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	contentType := "image/jpeg"
-	cacheTime := utils.GetCacheDurationSecondsForPath(path)
-	writeBytesAsImage(b, contentType, w, cacheTime)
+	r.URL.Path = path
+	emojiStaticServer.ServeHTTP(w, r)
 }
