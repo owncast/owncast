@@ -122,6 +122,67 @@ export default function OwncastPlayer(props: Props) {
     }
   };
 
+  const setupLatencyCompensator = player => {
+    const tech = player.tech({ IWillNotUseThisInPlugins: true });
+
+    // VHS is required.
+    if (!tech || !tech.vhs) {
+      return;
+    }
+
+    const latencyCompensatorEnabledSaved = getLocalStorage(LATENCY_COMPENSATION_ENABLED);
+
+    if (latencyCompensatorEnabledSaved === 'true' && tech && tech.vhs) {
+      startLatencyCompensator();
+    } else {
+      stopLatencyCompensator();
+    }
+  };
+
+  const createSettings = async (player, videojs) => {
+    const videoQualities = await getVideoSettings();
+    const menuButton = createVideoSettingsMenuButton(
+      player,
+      videojs,
+      videoQualities,
+      toggleLatencyCompensator,
+    );
+    player.controlBar.addChild(
+      menuButton,
+      {},
+      // eslint-disable-next-line no-underscore-dangle
+      player.controlBar.children_.length - 2,
+    );
+    setupLatencyCompensator(player);
+  };
+
+  const setupAirplay = (player, videojs) => {
+    // eslint-disable-next-line no-prototype-builtins
+    if (window.hasOwnProperty('WebKitPlaybackTargetAvailabilityEvent')) {
+      const videoJsButtonClass = videojs.getComponent('Button');
+      const ConcreteButtonClass = videojs.extend(videoJsButtonClass, {
+        // The `init()` method will also work for constructor logic here, but it is
+        // deprecated. If you provide an `init()` method, it will override the
+        // `constructor()` method!
+        constructor() {
+          videoJsButtonClass.call(this, player);
+        },
+
+        handleClick() {
+          try {
+            const videoElement = document.getElementsByTagName('video')[0];
+            (videoElement as any).webkitShowPlaybackTargetPicker();
+          } catch (e) {
+            console.error(e);
+          }
+        },
+      });
+
+      const concreteButtonInstance = player.controlBar.addChild(new ConcreteButtonClass());
+      concreteButtonInstance.addClass('vjs-airplay');
+    }
+  };
+
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys('space', togglePlayback, {
     enableOnContentEditable: false,
@@ -181,23 +242,7 @@ export default function OwncastPlayer(props: Props) {
   const handlePlayerReady = (player, videojs) => {
     playerRef.current = player;
     setSavedVolume();
-
-    const setupLatencyCompensator = () => {
-      const tech = player.tech({ IWillNotUseThisInPlugins: true });
-
-      // VHS is required.
-      if (!tech || !tech.vhs) {
-        return;
-      }
-
-      const latencyCompensatorEnabledSaved = getLocalStorage(LATENCY_COMPENSATION_ENABLED);
-
-      if (latencyCompensatorEnabledSaved === 'true' && tech && tech.vhs) {
-        startLatencyCompensator();
-      } else {
-        stopLatencyCompensator();
-      }
-    };
+    setupAirplay(player, videojs);
 
     // You can handle player events here, for example:
     player.on('waiting', () => {
@@ -234,24 +279,7 @@ export default function OwncastPlayer(props: Props) {
     playbackMetrics = new PlaybackMetrics(player, videojs);
     playbackMetrics.setClockSkew(clockSkew);
 
-    const createSettings = async () => {
-      const videoQualities = await getVideoSettings();
-      const menuButton = createVideoSettingsMenuButton(
-        player,
-        videojs,
-        videoQualities,
-        toggleLatencyCompensator,
-      );
-      player.controlBar.addChild(
-        menuButton,
-        {},
-        // eslint-disable-next-line no-underscore-dangle
-        player.controlBar.children_.length - 2,
-      );
-      setupLatencyCompensator();
-    };
-
-    createSettings();
+    createSettings(player, videojs);
   };
 
   useEffect(() => {
