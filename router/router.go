@@ -31,11 +31,15 @@ func Start() error {
 	// The admin web app.
 	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
 
+	// Images
+	http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
+	http.HandleFunc("/preview.gif", controllers.GetPreview)
+	http.HandleFunc("/logo", controllers.GetLogo)
+
 	// Return a single emoji image.
 	http.HandleFunc("/img/emoji/", middleware.RequireAdminAuth(controllers.GetCustomEmojiImage))
 
 	// return the logo
-	http.HandleFunc("/logo", controllers.GetLogo)
 
 	// return a logo that's compatible with external social networks
 	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
