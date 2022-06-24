@@ -1,4 +1,5 @@
-@import url('../public/fonts/inter/inter.css');
+@import "@fontsource/open-sans";
+@import "@fontsource/poppins";
 
 // See theme.less for specific Ant Design overrides.
 :root {
@@ -90,7 +91,5 @@
   --popover-base-color: var(--gray);
   --tooltip-base-color: var(--gray-medium);
 
-  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-family: var(--theme-font-family);
 }

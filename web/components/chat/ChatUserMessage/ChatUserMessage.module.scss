@@ -6,8 +6,9 @@
   margin: 8px 5px;
   border-left: 2px solid;
   .user {
-    font-weight: bold;
+    font: var(--theme-header-font-family);
     color: var(--color-owncast-grey-100);
+    font-weight: bold;
   }
   .message {
     color: var(--color-owncast-grey-100);

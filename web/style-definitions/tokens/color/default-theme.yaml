@@ -16,6 +16,8 @@ theme:
     value: '{color.owncast.purple.500.value}'
   font-family:
     value: '{font.owncast.family.value}'
+  header-font-family:
+    value: '{font.owncast.header-family.value}'
   background:
     value: '{color.owncast.background.value}'
     comment: 'The main background color of the page.'
