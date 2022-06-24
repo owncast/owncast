@@ -1,11 +1,11 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import FollowModal from '../components/modals/FollowModal';
+import FollowModal from '../components/modals/Follow/FollowModal';
 import FollowModalMock from './assets/mocks/follow-modal.png';
 
 const Example = () => (
   <div>
-    <FollowModal />
+    <FollowModal handleClose={null} />
   </div>
 );
 
