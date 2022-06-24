@@ -14,6 +14,8 @@
   "dependencies": {
     "@ant-design/icons": "4.7.0",
     "@emoji-mart/data": "^1.0.1",
+    "@fontsource/open-sans": "^4.5.10",
+    "@fontsource/poppins": "^4.5.8",
     "@storybook/react": "^6.4.22",
     "@xstate/react": "^3.0.0",
     "antd": "^4.20.4",

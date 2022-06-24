@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Fri, 27 May 2022 21:42:18 GMT
+ * Generated on Fri, 24 Jun 2022 23:11:54 GMT
  */
 
 :root {
@@ -23,7 +23,8 @@
   --theme-text-color: #d0d5dd; /* The color of the text in the application. */
   --theme-text-color-secondary: #667085;
   --theme-link-color: #9e77ed;
-  --theme-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-header-font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --theme-background: #202232; /* The main background color of the page. */
   --theme-background-secondary: #282a30; /* A secondary background color used in sections and controls. */
   --theme-rounded-corners: 5px; /* The radius of rounded corners used in places. */
@@ -61,7 +62,8 @@
   --color-owncast-logo-blue: #2086e1;
   --color-owncast-background: #202232;
   --color-owncast-background-secondary: #282a30;
-  --font-owncast-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-owncast-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-owncast-header-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --owncast-purple: #7871ff;
   --owncast-purple-25: rgba(120, 113, 255, 0.25);
   --owncast-purple-50: rgba(120, 113, 255, 0.5);
