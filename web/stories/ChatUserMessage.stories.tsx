@@ -92,3 +92,10 @@ FromAuthenticatedUser.args = {
   message: authenticatedUserMessage,
   showModeratorMenu: false,
 };
+
+export const WithStringHighlighted = Template.bind({});
+WithStringHighlighted.args = {
+  message: standardMessage,
+  showModeratorMenu: false,
+  highlightString: 'message',
+};

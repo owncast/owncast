@@ -47,6 +47,16 @@ export const chatDisplayNameAtom = atom<string>({
   default: null,
 });
 
+export const chatUserIdAtom = atom<string>({
+  key: 'chatUserIdAtom',
+  default: null,
+});
+
+export const isChatModeratorAtom = atom<boolean>({
+  key: 'isModeratorAtom',
+  default: false,
+});
+
 export const accessTokenAtom = atom<string>({
   key: 'accessTokenAtom',
   default: null,
@@ -135,6 +145,8 @@ export function ClientConfigStore() {
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
 
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
+  const setChatUserId = useSetRecoilState<string>(chatUserIdAtom);
+  const setIsChatModerator = useSetRecoilState<boolean>(isChatModeratorAtom);
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
   const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
@@ -236,7 +248,12 @@ export function ClientConfigStore() {
         resetAndReAuth();
         break;
       case MessageType.CONNECTED_USER_INFO:
-        handleConnectedClientInfoMessage(message as ConnectedClientInfoEvent, setChatDisplayName);
+        handleConnectedClientInfoMessage(
+          message as ConnectedClientInfoEvent,
+          setChatDisplayName,
+          setChatUserId,
+          setIsChatModerator,
+        );
         break;
       case MessageType.CHAT:
         handleChatMessage(message as ChatEvent, chatMessages, setChatMessages);

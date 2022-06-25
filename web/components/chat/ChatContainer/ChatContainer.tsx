@@ -1,6 +1,6 @@
 import { Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events';
@@ -12,10 +12,13 @@ import ChatActionMessage from '../ChatActionMessage';
 interface Props {
   messages: ChatMessage[];
   loading: boolean;
+  usernameToHighlight: string;
+  chatUserId: string;
+  isModerator: boolean;
 }
 
 export default function ChatContainer(props: Props) {
-  const { messages, loading } = props;
+  const { messages, loading, usernameToHighlight, chatUserId, isModerator } = props;
 
   const chatContainerRef = useRef(null);
   const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
@@ -31,7 +34,14 @@ export default function ChatContainer(props: Props) {
   const getViewForMessage = message => {
     switch (message.type) {
       case MessageType.CHAT:
-        return <ChatUserMessage message={message} showModeratorMenu={false} />;
+        return (
+          <ChatUserMessage
+            message={message}
+            showModeratorMenu={isModerator} // Moderators have access to an additional menu
+            highlightString={usernameToHighlight} // What to highlight in the message
+            renderAsPersonallySent={message.user?.id === chatUserId} // The local user sent this message
+          />
+        );
       case MessageType.NAME_CHANGE:
         return getNameChangeViewForMessage(message);
       default:
@@ -39,12 +49,8 @@ export default function ChatContainer(props: Props) {
     }
   };
 
-  return (
-    <div>
-      <div className={s.chatHeader}>
-        <span>stream chat</span>
-      </div>
-      <Spin spinning={loading} indicator={spinIcon} />
+  const MessagesTable = useMemo(
+    () => (
       <Virtuoso
         style={{ height: '80vh' }}
         ref={chatContainerRef}
@@ -53,6 +59,18 @@ export default function ChatContainer(props: Props) {
         itemContent={(index, message) => getViewForMessage(message)}
         followOutput="smooth"
       />
+    ),
+    [messages, usernameToHighlight, chatUserId, isModerator],
+  );
+
+  return (
+    <div>
+      <div className={s.chatHeader}>
+        <span>stream chat</span>
+      </div>
+      <Spin spinning={loading} indicator={spinIcon}>
+        {MessagesTable}
+      </Spin>
     </div>
   );
 }

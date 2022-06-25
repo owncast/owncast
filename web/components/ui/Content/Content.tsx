@@ -4,6 +4,8 @@ import { Layout, Tabs, Spin } from 'antd';
 import {
   clientConfigStateAtom,
   chatMessagesAtom,
+  chatDisplayNameAtom,
+  chatUserIdAtom,
   isChatVisibleSelector,
   serverStatusState,
   appStateAtom,
@@ -43,6 +45,8 @@ export default function ContentComponent() {
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
+  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
+  const chatUserId = useRecoilValue<string>(chatUserIdAtom);
 
   const { extraPageContent, version, socialHandles, name, title, tags, summary } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
@@ -125,7 +129,13 @@ export default function ContentComponent() {
           </Tabs>
           {isChatVisible && (
             <div className={`${s.mobileChat}`}>
-              <ChatContainer messages={messages} loading={appState.chatLoading} />
+              <ChatContainer
+                messages={messages}
+                loading={appState.chatLoading}
+                usernameToHighlight={chatDisplayName}
+                chatUserId={chatUserId}
+                isModerator={false}
+              />
               <ChatTextField />
             </div>
           )}
