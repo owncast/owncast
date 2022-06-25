@@ -14,7 +14,7 @@ import FatalErrorStateModal from '../modals/FatalErrorModal';
 
 function Main() {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const { name, title } = clientConfig;
+  const { name, title, customStyles } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
 
@@ -75,6 +75,8 @@ function Main() {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
+
+        <style>{customStyles}</style>
       </Head>
 
       <ClientConfigStore />
