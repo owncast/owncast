@@ -10,5 +10,5 @@ export default function handleConnectedClientInfoMessage(
   const { id, displayName, scopes } = user;
   setChatDisplayName(displayName);
   setChatUserId(id);
-  setIsChatModerator(scopes.includes('moderator'));
+  setIsChatModerator(scopes?.includes('moderator'));
 }
