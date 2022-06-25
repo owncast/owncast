@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import Modal from '../../ui/Modal/Modal';
 import {
   chatVisibleToggleAtom,
@@ -29,16 +30,22 @@ export default function UserDropdown({ username: defaultUsername }: Props) {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const toggleChatVisibility = () => {
-    if (!chatToggleVisible) {
-      setChatToggleVisible(true);
-    } else {
-      setChatToggleVisible(false);
-    }
+    setChatToggleVisible(!chatToggleVisible);
   };
 
   const handleChangeName = () => {
     setShowNameChangeModal(true);
   };
+
+  // Register keyboard shortcut for the space bar to toggle playback
+  useHotkeys(
+    'c',
+    toggleChatVisibility,
+    {
+      enableOnContentEditable: false,
+    },
+    [chatToggleVisible],
+  );
 
   const menu = (
     <Menu>
