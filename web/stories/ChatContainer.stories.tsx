@@ -32,7 +32,13 @@ const AddMessagesChatExample = args => {
       <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
         Add message
       </button>
-      <ChatContainer messages={chatMessages} loading={loading} />
+      <ChatContainer
+        messages={chatMessages}
+        loading={loading}
+        usernameToHighlight={null}
+        chatUserId={null}
+        isModerator={false}
+      />
     </div>
   );
 };
