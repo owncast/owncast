@@ -15,6 +15,7 @@ import {
   API_YP_SWITCH,
   FIELD_PROPS_YP,
   FIELD_PROPS_NSFW,
+  FIELD_PROPS_HIDE_VIEWER_COUNT,
 } from '../../utils/config-constants';
 
 import { UpdateArgs } from '../../types/config-section';
@@ -61,6 +62,10 @@ export default function EditInstanceDetails() {
     });
   };
 
+  function handleHideViewerCountChange(enabled: boolean) {
+    handleFieldChange({ fieldName: 'hideViewerCount', value: enabled });
+  }
+
   const hasInstanceUrl = instanceUrl !== '';
 
   return (
@@ -99,6 +104,14 @@ export default function EditInstanceDetails() {
 
       {/* Logo section */}
       <EditLogo />
+
+      <ToggleSwitch
+        fieldName="hideViewerCount"
+        useSubmit
+        {...FIELD_PROPS_HIDE_VIEWER_COUNT}
+        checked={formDataValues.hideViewerCount}
+        onChange={handleHideViewerCountChange}
+      />
 
       <br />
       <p className="description">

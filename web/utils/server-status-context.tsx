@@ -75,6 +75,7 @@ export const initialServerConfigState: ConfigDetails = {
   chatDisabled: false,
   chatJoinMessagesEnabled: true,
   chatEstablishedUserMode: false,
+  hideViewerCount: false,
 };
 
 const initialServerStatusState = {
@@ -156,6 +157,7 @@ const ServerStatusProvider = ({ children }) => {
     };
   }, []);
 
+  // eslint-disable-next-line react/jsx-no-constructed-context-values
   const providerValue = {
     ...status,
     serverConfig: config,

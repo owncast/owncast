@@ -29,6 +29,7 @@ export const API_VIDEO_SEGMENTS = '/video/streamlatencylevel';
 export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
+export const API_HIDE_VIEWER_COUNT = '/hideviewercount';
 export const API_CHAT_DISABLE = '/chat/disable';
 export const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 export const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
@@ -186,6 +187,13 @@ export const FIELD_PROPS_YP = {
   configPath: 'yp',
   label: 'Enable directory',
   tip: 'Turn this ON to request to show up in the directory.',
+};
+
+export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
+  apiPath: API_HIDE_VIEWER_COUNT,
+  configPath: '',
+  label: 'Hide viewer count',
+  tip: 'Turn this ON to hide the viewer count the web page.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {

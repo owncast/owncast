@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 )
@@ -15,12 +16,15 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 	status := core.GetStatus()
 	response := webStatusResponse{
 		Online:             status.Online,
-		ViewerCount:        status.ViewerCount,
 		ServerTime:         time.Now(),
 		LastConnectTime:    status.LastConnectTime,
 		LastDisconnectTime: status.LastDisconnectTime,
 		VersionNumber:      status.VersionNumber,
 		StreamTitle:        status.StreamTitle,
+	}
+
+	if !data.GetHideViewerCount() {
+		response.ViewerCount = status.ViewerCount
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -33,7 +37,7 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 
 type webStatusResponse struct {
 	Online             bool            `json:"online"`
-	ViewerCount        int             `json:"viewerCount"`
+	ViewerCount        int             `json:"viewerCount,omitempty"`
 	ServerTime         time.Time       `json:"serverTime"`
 	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
