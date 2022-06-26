@@ -37,7 +37,7 @@ func Start() error {
 	http.HandleFunc("/logo", controllers.GetLogo)
 
 	// Return a single emoji image.
-	http.HandleFunc("/img/emoji/", middleware.RequireAdminAuth(controllers.GetCustomEmojiImage))
+	http.HandleFunc("/img/emoji/", controllers.GetCustomEmojiImage)
 
 	// return the logo
 
