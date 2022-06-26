@@ -65,6 +65,7 @@ const (
 	browserPushPrivateKeyKey             = "browser_push_private_key"
 	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
+	hideViewerCountKey                   = "hide_viewer_count"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -907,4 +908,15 @@ func SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
 func GetHasPerformedInitialNotificationsConfig() bool {
 	configured, _ := _datastore.GetBool(hasConfiguredInitialNotificationsKey)
 	return configured
+}
+
+// GetHideViewerCount will return if the viewer count shold be hidden.
+func GetHideViewerCount() bool {
+	hide, _ := _datastore.GetBool(hideViewerCountKey)
+	return hide
+}
+
+// SetHideViewerCount will set if the viewer count should be hidden.
+func SetHideViewerCount(hide bool) error {
+	return _datastore.SetBool(hideViewerCountKey, hide)
 }

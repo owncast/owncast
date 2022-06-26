@@ -152,4 +152,5 @@ export interface ConfigDetails {
   notifications: NotificationsConfig;
   chatJoinMessagesEnabled: boolean;
   chatEstablishedUserMode: boolean;
+  hideViewerCount: boolean;
 }

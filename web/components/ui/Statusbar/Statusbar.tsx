@@ -40,12 +40,12 @@ export default function Statusbar(props: Props) {
   if (online && lastConnectTime) {
     const duration = makeDurationString(new Date(lastConnectTime));
     onlineMessage = online ? `Live for  ${duration}` : 'Offline';
-    rightSideMessage = (
+    rightSideMessage = viewerCount > 0 && (
       <span>
         <EyeOutlined /> {viewerCount}
       </span>
     );
-  } else {
+  } else if (!online) {
     onlineMessage = 'Offline';
     if (lastDisconnectTime) {
       rightSideMessage = `Last live ${formatDistanceToNow(new Date(lastDisconnectTime))} ago.`;

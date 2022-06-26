@@ -312,6 +312,9 @@ func Start() error {
 	// Video playback metrics
 	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
 
+	// Is the viewer count hidden from viewers
+	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
+
 	// Inline chat moderation actions
 
 	// Update chat message visibility
