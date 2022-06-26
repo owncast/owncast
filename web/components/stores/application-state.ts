@@ -111,6 +111,11 @@ const appStateModel =
             },
           },
           goodbye: {
+            on: {
+              ONLINE: {
+                target: 'online',
+              },
+            },
             meta: {
               ...GOODBYE_STATE,
             },
