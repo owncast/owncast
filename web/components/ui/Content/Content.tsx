@@ -1,6 +1,9 @@
 /* eslint-disable react/no-danger */
 import { useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
+import { useEffect, useState } from 'react';
+import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
+
 import {
   clientConfigStateAtom,
   chatMessagesAtom,
@@ -34,6 +37,8 @@ import OfflineBanner from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
 import FollowButton from '../../action-buttons/FollowButton';
 import NotifyButton from '../../action-buttons/NotifyButton';
+import Modal from '../Modal/Modal';
+import BrowserNotifyModal from '../../modals/BrowserNotify/BrowserNotifyModal';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -50,6 +55,8 @@ export default function ContentComponent() {
 
   const { extraPageContent, version, socialHandles, name, title, tags, summary } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
+  const [showNotifyReminder, setShowNotifyReminder] = useState(false);
+  const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
   const followers: Follower[] = [];
 
@@ -70,6 +77,29 @@ export default function ContentComponent() {
   const externalActionButtons = externalActions.map(action => (
     <ActionButton key={action.url} action={action} />
   ));
+
+  const incrementVisitCounter = () => {
+    let visits = parseInt(getLocalStorage(LOCAL_STORAGE_KEYS.userVisitCount), 10);
+    if (Number.isNaN(visits)) {
+      visits = 0;
+    }
+
+    setLocalStorage(LOCAL_STORAGE_KEYS.userVisitCount, visits + 1);
+
+    if (visits > 2 && !getLocalStorage(LOCAL_STORAGE_KEYS.hasDisplayedNotificationModal)) {
+      setShowNotifyReminder(true);
+    }
+  };
+
+  const disableNotifyReminderPopup = () => {
+    setShowNotifyPopup(false);
+    setShowNotifyReminder(false);
+    setLocalStorage(LOCAL_STORAGE_KEYS.hasDisplayedNotificationModal, true);
+  };
+
+  useEffect(() => {
+    incrementVisitCounter();
+  }, []);
 
   return (
     <Content className={`${s.root}`}>
@@ -95,13 +125,22 @@ export default function ContentComponent() {
             {externalActionButtons}
             <FollowButton />
             <NotifyReminderPopup
-              visible
-              notificationClicked={() => {}}
-              notificationClosed={() => {}}
+              visible={showNotifyReminder}
+              notificationClicked={() => setShowNotifyPopup(true)}
+              notificationClosed={() => disableNotifyReminderPopup()}
             >
-              <NotifyButton />
+              <NotifyButton onClick={() => setShowNotifyPopup(true)} />
             </NotifyReminderPopup>
           </ActionButtonRow>
+
+          <Modal
+            title="Notify"
+            visible={showNotifyPopup}
+            afterClose={() => disableNotifyReminderPopup()}
+            handleCancel={() => disableNotifyReminderPopup()}
+          >
+            <BrowserNotifyModal />
+          </Modal>
 
           <div className={`${s.lowerRow}`}>
             <div className={s.logoTitleSection}>

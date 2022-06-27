@@ -1,30 +1,20 @@
 import { Button } from 'antd';
 import { NotificationFilled } from '@ant-design/icons';
-import { useState } from 'react';
-import Modal from '../ui/Modal/Modal';
 import s from './ActionButton.module.scss';
-import BrowserNotifyModal from '../modals/BrowserNotify/BrowserNotifyModal';
 
-export default function NotifyButton() {
-  const [showModal, setShowModal] = useState(false);
+interface Props {
+  onClick: () => void;
+}
 
-  const buttonClicked = () => {
-    setShowModal(true);
-  };
-
+export default function NotifyButton({ onClick }: Props) {
   return (
-    <>
-      <Button
-        type="primary"
-        className={`${s.button}`}
-        icon={<NotificationFilled />}
-        onClick={buttonClicked}
-      >
-        Notify
-      </Button>
-      <Modal title="Notify" visible={showModal} handleCancel={() => setShowModal(false)}>
-        <BrowserNotifyModal />
-      </Modal>
-    </>
+    <Button
+      type="primary"
+      className={`${s.button}`}
+      icon={<NotificationFilled />}
+      onClick={onClick}
+    >
+      Notify
+    </Button>
   );
 }
