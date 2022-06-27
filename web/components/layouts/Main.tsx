@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
+import { useEffect, useRef } from 'react';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -11,12 +12,19 @@ import { Content, Header } from '../ui';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { DisplayableError } from '../../types/displayable-error';
 import FatalErrorStateModal from '../modals/FatalErrorModal';
+import setupNoLinkReferrer from '../../utils/no-link-referrer';
 
 function Main() {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { name, title, customStyles } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
+
+  const layoutRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setupNoLinkReferrer(layoutRef.current);
+  }, []);
 
   return (
     <>
@@ -80,7 +88,7 @@ function Main() {
       </Head>
 
       <ClientConfigStore />
-      <Layout>
+      <Layout ref={layoutRef}>
         <Header name={title || name} chatAvailable={isChatAvailable} />
         <Content />
         {fatalError && (
