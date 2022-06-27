@@ -1,7 +1,6 @@
 import { Popover } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
-import { LOCAL_STORAGE_KEYS, getLocalStorage } from '../../../utils/localStorage';
 import s from './NotifyReminderPopup.module.scss';
 
 interface Props {
@@ -15,11 +14,13 @@ export default function NotifyReminderPopup(props: Props) {
   const { children, visible, notificationClicked, notificationClosed } = props;
   const [visiblePopup, setVisiblePopup] = useState(visible);
   const [mounted, setMounted] = useState(false);
-  const [shouldShowPopup, setShouldShowPopup] = useState(false);
+
+  useEffect(() => {
+    setVisiblePopup(visible);
+  }, [visible]);
 
   useEffect(() => {
     setMounted(true);
-    setShouldShowPopup(!getLocalStorage(LOCAL_STORAGE_KEYS.hasDisplayedNotificationModal));
   }, []);
 
   const title = <div className={s.title}>Stay updated!</div>;
@@ -43,20 +44,20 @@ export default function NotifyReminderPopup(props: Props) {
   };
 
   const content = (
-    <div>
+    <div onClick={popupClicked} onKeyDown={popupClicked} role="menuitem" tabIndex={0}>
       <button type="button" className={s.closebutton} onClick={popupClosed}>
         <CloseOutlined />
       </button>
-      <button type="button" onClick={popupClicked} className={s.contentbutton}>
+      <div className={s.contentbutton}>
         Click and never miss
         <br />
         future streams!
-      </button>
+      </div>
     </div>
   );
+
   return (
-    mounted &&
-    shouldShowPopup && (
+    mounted && (
       <Popover
         placement="topLeft"
         defaultVisible={visiblePopup}
