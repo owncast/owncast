@@ -20,13 +20,17 @@ export default function ChatUserMessage({
   showModeratorMenu,
   renderAsPersonallySent, // Move the border to the right and render a background
 }: Props) {
+  const [bgColor, setBgColor] = useState<string>();
   const { body, user, timestamp } = message;
   const { displayName, displayColor } = user;
+
   const color = `var(--theme-user-colors-${displayColor})`;
-  // TODO: Need to convert the above color to a background color.
-  const bgColor = `hsl(100, 20%, 25%)`;
   const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
   const [formattedMessage, setFormattedMessage] = useState<string>(body);
+
+  useEffect(() => {
+    if (renderAsPersonallySent) setBgColor(getBgColor(displayColor));
+  }, []);
 
   useEffect(() => {
     setFormattedMessage(he.decode(body));
@@ -37,6 +41,7 @@ export default function ChatUserMessage({
       className={cn(s.root, {
         [s.ownMessage]: renderAsPersonallySent,
       })}
+      data-display-color={displayColor}
       style={{ borderColor: color, backgroundColor: bgColor }}
       title={formattedTimestamp}
     >
@@ -47,6 +52,14 @@ export default function ChatUserMessage({
         <div className={s.message}>{formattedMessage}</div>
       </Highlight>
       {showModeratorMenu && <div>Moderator menu</div>}
+      <div className={s.customBorder} style={{ color }} />
     </div>
   );
+}
+
+function getBgColor(displayColor: number, alpha = 13) {
+  const root = document.querySelector(':root');
+  const css = getComputedStyle(root);
+  const hexColor = css.getPropertyValue(`--theme-user-colors-${displayColor}`);
+  return hexColor.concat(alpha.toString());
 }
