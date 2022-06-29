@@ -1,12 +1,16 @@
 name: Build web app
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - web/**
+
 jobs:
   run:
     name: npm run build
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout repo
-          uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v2
 
-        - name: Install dependencies
-          run: cd web && npm install && npm run build
+      - name: Install dependencies
+        run: cd web && npm install && npm run build
