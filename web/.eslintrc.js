@@ -37,7 +37,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     'no-console': 'off',
     'no-use-before-define': [0],
-    '@typescript-eslint/no-use-before-define': [1],
+    '@typescript-eslint/no-use-before-define': [0],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     'no-restricted-exports': 'off',

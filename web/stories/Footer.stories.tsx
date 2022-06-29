@@ -8,7 +8,6 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof Footer>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-Footer
 const Template: ComponentStory<typeof Footer> = args => <Footer {...args} />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -14,12 +14,6 @@ export function ImageAsset(props: ImageAssetProps) {
     margin: '0.3vw',
   };
 
-  const colorBlockStyle = {
-    height: '70%',
-    width: '100%',
-    backgroundColor: 'white',
-  };
-
   const colorDescriptionStyle = {
     textAlign: 'center' as 'center',
     color: 'gray',
