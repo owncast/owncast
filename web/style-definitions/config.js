@@ -1,5 +1,17 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const yaml = require('yaml');
+const StyleDictionary = require('style-dictionary');
+
+StyleDictionary.registerFileHeader({
+  name: 'myCustomHeader',
+  fileHeader: defaultMessage => [
+    ...defaultMessage,
+    ``,
+    `How to edit these values:`,
+    `Edit the corresponding token file under the style-definitions directory`,
+    `in the Owncast web project.`,
+  ],
+});
 
 module.exports = {
   parsers: [
@@ -24,6 +36,9 @@ module.exports = {
         {
           destination: 'variables.css',
           format: 'css/variables',
+          options: {
+            fileHeader: 'myCustomHeader',
+          },
         },
       ],
     },
@@ -34,6 +49,9 @@ module.exports = {
         {
           destination: 'variables.less',
           format: 'less/variables',
+          options: {
+            fileHeader: 'myCustomHeader',
+          },
         },
       ],
     },

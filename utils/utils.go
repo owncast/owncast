@@ -321,11 +321,12 @@ func StringMapKeys(stringMap map[string]interface{}) []string {
 	return stringSlice
 }
 
-// GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.
-// The UI should determine the right saturation and lightness in order to make it look right.
+// GenerateRandomDisplayColor will return a random number that is used for
+// referencing a color value client-side. These colors are seen as
+// --theme-user-colors-n.
 func GenerateRandomDisplayColor() int {
-	rangeLower := 0
-	rangeUpper := 360
+	rangeLower := 1
+	rangeUpper := 8
 	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
 }
 

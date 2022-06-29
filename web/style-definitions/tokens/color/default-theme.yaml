@@ -36,3 +36,21 @@ theme:
     value: '{color.owncast.orange.500.value}'
   error-color:
     value: '{color.owncast.red.500.value}'
+
+  user-colors:
+    1:
+      value: '{color.owncast.user.1.value}'
+    2:
+      value: '{color.owncast.user.2.value}'
+    3:
+      value: '{color.owncast.user.3.value}'
+    4:
+      value: '{color.owncast.user.4.value}'
+    5:
+      value: '{color.owncast.user.5.value}'
+    6:
+      value: '{color.owncast.user.6.value}'
+    7:
+      value: '{color.owncast.user.7.value}'
+    8:
+      value: '{color.owncast.user.8.value}'

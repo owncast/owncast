@@ -1,6 +1,10 @@
 /**
  * Do not edit directly
- * Generated on Fri, 24 Jun 2022 23:11:54 GMT
+ * Generated on Wed, 29 Jun 2022 00:29:51 GMT
+ * 
+ * How to edit these values:
+ * Edit the corresponding tokens file under the style-definitions directory
+ * in the Owncast web project.
  */
 
 :root {
@@ -32,6 +36,14 @@
   --theme-info-color: #d6bbfb;
   --theme-warning-color: #f79009;
   --theme-error-color: #f04438;
+  --theme-user-colors-1: #f40b0b;
+  --theme-user-colors-2: #f4800b;
+  --theme-user-colors-3: #f4f40b;
+  --theme-user-colors-4: #58f40b;
+  --theme-user-colors-5: #0bf4f4;
+  --theme-user-colors-6: #0ba6f4;
+  --theme-user-colors-7: #6666ff;
+  --theme-user-colors-8: #f40bf4;
   --color-owncast-purple-100: #f4ebff;
   --color-owncast-purple-300: #d6bbfb;
   --color-owncast-purple-500: #9e77ed;
@@ -62,6 +74,14 @@
   --color-owncast-logo-blue: #2086e1;
   --color-owncast-background: #202232;
   --color-owncast-background-secondary: #282a30;
+  --color-owncast-user-1: #f40b0b;
+  --color-owncast-user-2: #f4800b;
+  --color-owncast-user-3: #f4f40b;
+  --color-owncast-user-4: #58f40b;
+  --color-owncast-user-5: #0bf4f4;
+  --color-owncast-user-6: #0ba6f4;
+  --color-owncast-user-7: #6666ff;
+  --color-owncast-user-8: #f40bf4;
   --font-owncast-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --font-owncast-header-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --owncast-purple: #7871ff;
