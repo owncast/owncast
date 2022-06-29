@@ -296,7 +296,9 @@ export default function OwncastPlayer(props: Props) {
         </div>
       )}
       <div style={{ gridColumn: 1, gridRow: 1 }}>
-        {!videoPlaying && <VideoPoster online={online} initialSrc="/logo" src="/thumbnail.jpg" />}
+        {!videoPlaying && (
+          <VideoPoster online={online} initialSrc="/thumbnail.jpg" src="/thumbnail.jpg" />
+        )}
       </div>
     </div>
   );
