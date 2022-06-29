@@ -7,7 +7,6 @@ import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events'
 import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatUserMessage } from '..';
-import ChatActionMessage from '../ChatActionMessage';
 
 interface Props {
   messages: ChatMessage[];
@@ -24,11 +23,15 @@ export default function ChatContainer(props: Props) {
   const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
 
   const getNameChangeViewForMessage = (message: NameChangeEvent) => {
-    const { oldName } = message;
-    const { user } = message;
-    const { displayName } = user;
-    const body = `<strong>${oldName}</strong> is now known as <strong>${displayName}</strong>`;
-    return <ChatActionMessage body={body} />;
+    const { oldName, user } = message;
+    const { displayName, displayColor } = user;
+    const color = `var(--theme-user-colors-${displayColor})`;
+
+    return (
+      <div>
+        <span style={{ color }}>{oldName}</span> is now known as {displayName}
+      </div>
+    );
   };
 
   const getViewForMessage = message => {
