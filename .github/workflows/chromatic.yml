@@ -3,8 +3,10 @@
 # Workflow name
 name: 'Chromatic'
 
-# Event for the workflow
-on: push
+on:
+  push:
+    paths:
+      - web/**
 
 # List of jobs
 jobs:
