@@ -22,8 +22,9 @@ export default function ChatUserMessage({
 }: Props) {
   const { body, user, timestamp } = message;
   const { displayName, displayColor } = user;
-  const color = `hsl(${displayColor}, 100%, 65%)`;
-  const bgColor = `hsl(${displayColor}, 20%, 25%)`;
+  const color = `var(--theme-user-colors-${displayColor})`;
+  // TODO: Need to convert the above color to a background color.
+  const bgColor = `hsl(100, 20%, 25%)`;
   const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
   const [formattedMessage, setFormattedMessage] = useState<string>(body);
 

@@ -276,8 +276,8 @@ components:
           example: awesome-pizza
         displayColor:
           type: integer
-          description: Hue value for displaying in the UI.
-          example: 42
+          description: Color name number for client rendering.  theme-user-colors-n
+          example: 3
         createdAt:
           type: string
           format: date-time

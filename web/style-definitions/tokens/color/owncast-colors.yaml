@@ -75,6 +75,24 @@ color:
     background-secondary:
       value: '#282A30'
 
+    user:
+      1:
+        value: 'rgb(244, 11, 11)'
+      2:
+        value: 'rgb(244, 128, 11)'
+      3:
+        value: 'rgb(244, 244, 11)'
+      4:
+        value: 'rgb(88, 244, 11)'
+      5:
+        value: 'rgb(11, 244, 244)'
+      6:
+        value: 'rgb(11, 166, 244)'
+      7:
+        value: 'rgb(102, 102, 255)'
+      8:
+        value: 'rgb(244, 11, 244)'
+
 font:
   owncast:
     family:
