@@ -30,7 +30,7 @@ const standardMessage: ChatMessage = JSON.parse(`{
   "user": {
     "id": "h_5GQ6E7R",
     "displayName": "EliteMooseTaskForce",
-    "displayColor": 329,
+    "displayColor": 3,
     "createdAt": "2022-03-24T03:52:37.966584694Z",
     "previousNames": ["gifted-nobel", "EliteMooseTaskForce"],
     "nameChangedAt": "2022-04-26T23:56:05.531287897Z",
@@ -45,7 +45,7 @@ const moderatorMessage: ChatMessage = JSON.parse(`{
     "user": {
       "id": "h_5GQ6E7R",
       "displayName": "EliteMooseTaskForce",
-      "displayColor": 329,
+      "displayColor": 2,
       "createdAt": "2022-03-24T03:52:37.966584694Z",
       "previousNames": ["gifted-nobel", "EliteMooseTaskForce"],
       "nameChangedAt": "2022-04-26T23:56:05.531287897Z",
@@ -60,7 +60,7 @@ const authenticatedUserMessage: ChatMessage = JSON.parse(`{
       "user": {
         "id": "h_5GQ6E7R",
         "displayName": "EliteMooseTaskForce",
-        "displayColor": 329,
+        "displayColor": 7,
         "createdAt": "2022-03-24T03:52:37.966584694Z",
         "previousNames": ["gifted-nobel", "EliteMooseTaskForce"],
         "nameChangedAt": "2022-04-26T23:56:05.531287897Z",
