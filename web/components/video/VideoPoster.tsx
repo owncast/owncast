@@ -30,7 +30,7 @@ export default function VideoPoster(props: Props) {
 
   return (
     <div className={s.poster}>
-      {!online && <img src={initialSrc} alt="logo" height="500vh" />}
+      {!online && <img src={initialSrc} alt="logo" />}
 
       {online && (
         <CrossfadeImage
@@ -38,7 +38,7 @@ export default function VideoPoster(props: Props) {
           duration={duration}
           objectFit="contain"
           width="100%"
-          height="500px"
+          height="100%"
         />
       )}
     </div>
