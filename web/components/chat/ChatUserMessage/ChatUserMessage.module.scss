@@ -1,10 +1,9 @@
 .root {
+  position: relative;
   font-size: 0.9rem;
   padding: 5px;
   padding-left: 1rem;
   margin: 8px 5px;
-  border-left: 2px solid;
-  border-radius: 0.3rem;
   .user {
     font: var(--theme-header-font-family);
     color: var(--color-owncast-grey-100);
@@ -28,10 +27,32 @@
       box-decoration-break: clone;
     }
   }
-}
+  .customBorder {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 5px;
+    height: 100%;
+    overflow: hidden;
+    &:after {
+      content: '';
+      width: 10px;
+      height: 100%;
+      position: absolute;
+      top: 0%;
+      right: 0px;
+      background-color: currentColor;
+      border-radius: 0.5rem;
+    }
+  }
 
-
-.ownMessage {
-  border-left: 0px;
-  border-right: 2px solid;
+  &.ownMessage {
+    .customBorder {
+      left: auto;
+      right: 0px;
+      &:after {
+        left: 0px;
+      }
+    }
+  }
 }
