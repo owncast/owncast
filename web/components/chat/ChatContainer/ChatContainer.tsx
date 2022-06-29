@@ -43,6 +43,7 @@ export default function ChatContainer(props: Props) {
             showModeratorMenu={isModerator} // Moderators have access to an additional menu
             highlightString={usernameToHighlight} // What to highlight in the message
             renderAsPersonallySent={message.user?.id === chatUserId} // The local user sent this message
+            key={message.id}
           />
         );
       case MessageType.NAME_CHANGE:
@@ -55,12 +56,13 @@ export default function ChatContainer(props: Props) {
   const MessagesTable = useMemo(
     () => (
       <Virtuoso
-        style={{ height: '80vh' }}
+        style={{ height: '70vh' }}
         ref={chatContainerRef}
-        initialTopMostItemIndex={999}
+        initialTopMostItemIndex={999} // Force alignment to bottom
         data={messages}
         itemContent={(index, message) => getViewForMessage(message)}
-        followOutput="smooth"
+        followOutput="auto"
+        alignToBottom
       />
     ),
     [messages, usernameToHighlight, chatUserId, isModerator],

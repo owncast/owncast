@@ -20,7 +20,6 @@ import {
   SocketEvent,
 } from '../../interfaces/socket-events';
 
-import handleChatMessage from './eventhandlers/handleChatMessage';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
 import ServerStatusService from '../../services/status-service';
 import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
@@ -256,7 +255,8 @@ export function ClientConfigStore() {
         );
         break;
       case MessageType.CHAT:
-        handleChatMessage(message as ChatEvent, chatMessages, setChatMessages);
+        setChatMessages(currentState => [...currentState, message as ChatEvent]);
+
         break;
       case MessageType.NAME_CHANGE:
         handleNameChangeEvent(message as ChatEvent, chatMessages, setChatMessages);
@@ -269,8 +269,7 @@ export function ClientConfigStore() {
   const getChatHistory = async () => {
     try {
       const messages = await ChatService.getChatHistory(accessToken);
-      const updatedChatMessages = [...messages, ...chatMessages];
-      setChatMessages(updatedChatMessages);
+      setChatMessages(currentState => [...currentState, ...messages]);
     } catch (error) {
       console.error(`ChatService -> getChatHistory() ERROR: \n${error}`);
     }
