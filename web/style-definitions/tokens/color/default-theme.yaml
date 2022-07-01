@@ -25,7 +25,7 @@ theme:
     value: '{color.owncast.background-secondary.value}'
     comment: 'A secondary background color used in sections and controls.'
   rounded-corners:
-    value: '5px'
+    value: '.5rem'
     comment: 'The radius of rounded corners used in places.'
 
   success-color:
