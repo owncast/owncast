@@ -1,8 +1,7 @@
-import { Spin } from 'antd';
+import { Button, Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
-import { useMemo, useRef } from 'react';
-import { LoadingOutlined } from '@ant-design/icons';
-
+import { useState, useMemo, useRef } from 'react';
+import { LoadingOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events';
 import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -19,6 +18,8 @@ interface Props {
 export default function ChatContainer(props: Props) {
   const { messages, loading, usernameToHighlight, chatUserId, isModerator } = props;
 
+  const [atBottom, setAtBottom] = useState(false);
+  // const [showButton, setShowButton] = useState(false);
   const chatContainerRef = useRef(null);
   const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
 
@@ -34,12 +35,12 @@ export default function ChatContainer(props: Props) {
     );
   };
 
-  const getViewForMessage = message => {
+  const getViewForMessage = (message: ChatMessage | NameChangeEvent) => {
     switch (message.type) {
       case MessageType.CHAT:
         return (
           <ChatUserMessage
-            message={message}
+            message={message as ChatMessage}
             showModeratorMenu={isModerator} // Moderators have access to an additional menu
             highlightString={usernameToHighlight} // What to highlight in the message
             renderAsPersonallySent={message.user?.id === chatUserId} // The local user sent this message
@@ -47,7 +48,7 @@ export default function ChatContainer(props: Props) {
           />
         );
       case MessageType.NAME_CHANGE:
-        return getNameChangeViewForMessage(message);
+        return getNameChangeViewForMessage(message as NameChangeEvent);
       default:
         return null;
     }
@@ -55,17 +56,36 @@ export default function ChatContainer(props: Props) {
 
   const MessagesTable = useMemo(
     () => (
-      <Virtuoso
-        style={{ height: '70vh' }}
-        ref={chatContainerRef}
-        initialTopMostItemIndex={999} // Force alignment to bottom
-        data={messages}
-        itemContent={(index, message) => getViewForMessage(message)}
-        followOutput="auto"
-        alignToBottom
-      />
+      <>
+        <Virtuoso
+          style={{ height: '75vh' }}
+          ref={chatContainerRef}
+          initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
+          data={messages}
+          itemContent={(_, message) => getViewForMessage(message)}
+          followOutput="auto"
+          alignToBottom
+          atBottomStateChange={bottom => setAtBottom(bottom)}
+        />
+        {!atBottom && (
+          <div className={s.toBottomWrap}>
+            <Button
+              ghost
+              icon={<VerticalAlignBottomOutlined />}
+              onClick={() =>
+                chatContainerRef.current.scrollToIndex({
+                  index: messages.length - 1,
+                  behavior: 'smooth',
+                })
+              }
+            >
+              Go to last message
+            </Button>
+          </div>
+        )}
+      </>
     ),
-    [messages, usernameToHighlight, chatUserId, isModerator],
+    [messages, usernameToHighlight, chatUserId, isModerator, atBottom],
   );
 
   return (
