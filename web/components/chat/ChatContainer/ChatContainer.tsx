@@ -43,7 +43,8 @@ export default function ChatContainer(props: Props) {
             message={message as ChatMessage}
             showModeratorMenu={isModerator} // Moderators have access to an additional menu
             highlightString={usernameToHighlight} // What to highlight in the message
-            renderAsPersonallySent={message.user?.id === chatUserId} // The local user sent this message
+            sentBySelf={message.user?.id === chatUserId} // The local user sent this message
+            sameUserAsLast={message.user?.id === messages[messages.length - 1].user?.id}
             key={message.id}
           />
         );
@@ -70,7 +71,7 @@ export default function ChatContainer(props: Props) {
         {!atBottom && (
           <div className={s.toBottomWrap}>
             <Button
-              ghost
+              type="default"
               icon={<VerticalAlignBottomOutlined />}
               onClick={() =>
                 chatContainerRef.current.scrollToIndex({

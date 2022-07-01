@@ -6,6 +6,7 @@
   // animation: chatFadeIn .1s ease-in;
   .background {
     position: absolute;
+    z-index: -1;
     top: 0px;
     left: 0px;
     width: 100%;
@@ -16,8 +17,7 @@
     overflow: hidden;
   }
   .user {
-    font: var(--theme-header-font-family);
-    color: var(--color-owncast-grey-100);
+    font-family: var(--theme-header-font-family);
     font-weight: bold;
   }
   .message {
@@ -38,6 +38,7 @@
       box-decoration-break: clone;
     }
   }
+
   .customBorder {
     position: absolute;
     top: 0px;
@@ -53,7 +54,7 @@
       top: 0%;
       right: 0px;
       background-color: currentColor;
-      border-radius: 0.5rem;
+      border-radius: var(--theme-rounded-corners);
     }
   }
 
@@ -65,6 +66,17 @@
         left: 0px;
       }
     }
+  }
+
+  .modMenuWrapper {
+    position: absolute;
+    display: none;
+    top: 0;
+    right: 10px;
+  }
+
+  &:hover .modMenuWrapper {
+    display: block;
   }
 }
 
