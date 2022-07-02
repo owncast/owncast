@@ -15,3 +15,20 @@
   position: absolute;
   bottom: 5px;
 }
+
+.nameChangeView {
+  display: flex;
+  font-size: 0.9rem;
+  border-radius: var(--theme-rounded-corners);
+  padding: 5px 15px;
+  color: var(--color-owncast-gray-300);
+  background-color: var(--color-owncast-background);
+  & .nameChangeText {
+    font-weight: bold;
+    font-family: var(--theme-header-font-family);
+    & .plain {
+      font-weight: normal;
+      font-family: var(--font-owncast-family) !important;
+    }
+  }
+}

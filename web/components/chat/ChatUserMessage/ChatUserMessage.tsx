@@ -8,6 +8,7 @@ import { DeleteOutlined, EllipsisOutlined, StopOutlined } from '@ant-design/icon
 import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { ModIcon } from '../../ui';
 
 interface Props {
   message: ChatMessage;
@@ -46,7 +47,8 @@ export default function ChatUserMessage({
       >
         {!sameUserAsLast && (
           <div className={s.user} style={{ color }}>
-            {displayName}
+            <ModIcon />
+            <span className={s.userName}>{displayName}</span>
           </div>
         )}
         <Highlight search={highlightString}>
