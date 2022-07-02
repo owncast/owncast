@@ -47,7 +47,7 @@ export default function ChatUserMessage({
       >
         {!sameUserAsLast && (
           <div className={s.user} style={{ color }}>
-            <ModIcon />
+            {showModeratorMenu && <ModIcon />}
             <span className={s.userName}>{displayName}</span>
           </div>
         )}

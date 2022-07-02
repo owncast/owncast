@@ -1,8 +1,15 @@
+import { CSSProperties } from 'react';
+
+interface Props {
+  style: CSSProperties;
+  fill: string;
+  stroke: string;
+}
 export default function ModIcon({
   style = { width: '1rem', height: '1rem' },
   fill = 'none',
   stroke = 'var(--color-owncast-gray-300)',
-}) {
+}: Props) {
   return (
     <svg
       fill={fill}
