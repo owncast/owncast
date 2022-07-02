@@ -3,25 +3,13 @@
   font-size: 0.9rem;
   padding: 5px 15px 5px 5px;
   padding-left: 1rem;
-  .background {
-    position: absolute;
-    z-index: -1;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background-color: currentColor;
-    opacity: 0.07;
-    border-radius: .25rem;
-    overflow: hidden;
-  }
   .user {
     display: flex;
     align-items: center;
     font-family: var(--theme-header-font-family);
     font-weight: bold;
     .userName {
-      margin-left: .3rem;
+      margin-left: 0.3rem;
     }
   }
   .message {
@@ -66,12 +54,24 @@
     .customBorder {
       left: auto;
       right: 0px;
+      opacity: .85;
       &:after {
         left: 0px;
       }
     }
+    .background {
+      position: absolute;
+      z-index: -1;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: currentColor;
+      opacity: 0.07;
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
   }
-
 
   .modMenuWrapper {
     position: absolute;
@@ -88,5 +88,3 @@
     display: block;
   }
 }
-
-
