@@ -30,7 +30,7 @@ export default function ChatContainer(props: Props) {
 
     return (
       <div className={s.nameChangeView}>
-        <div style={{ marginRight: 5, height: 'max-content', margin: 'auto 5px auto 0'}}>
+        <div style={{ marginRight: 5, height: 'max-content', margin: 'auto 5px auto 0' }}>
           <EditFilled />
         </div>
         <div className={s.nameChangeText}>
@@ -109,9 +109,11 @@ export default function ChatContainer(props: Props) {
 }
 
 function isSameUserAsLast(messages: ChatMessage[], index: number) {
-  const message = messages[index]
-  const { user: { id }} = message
-  const lastMessage = messages[index - 1]
-  
-  return id === lastMessage?.user.id
+  const message = messages[index];
+  const {
+    user: { id },
+  } = message;
+  const lastMessage = messages[index - 1];
+
+  return id === lastMessage?.user.id;
 }

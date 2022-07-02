@@ -11,7 +11,7 @@ export default function ModIcon({
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >
-    <title>This user has moderation rights</title>
+      <title>This user has moderation rights</title>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
