@@ -1,7 +1,7 @@
 import { Button, Spin } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef } from 'react';
-import { LoadingOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
+import { EditFilled, LoadingOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events';
 import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -29,13 +29,20 @@ export default function ChatContainer(props: Props) {
     const color = `var(--theme-user-colors-${displayColor})`;
 
     return (
-      <div>
-        <span style={{ color }}>{oldName}</span> is now known as {displayName}
+      <div className={s.nameChangeView}>
+        <div style={{ marginRight: 5, height: 'max-content', margin: 'auto 5px auto 0'}}>
+          <EditFilled />
+        </div>
+        <div className={s.nameChangeText}>
+          <span style={{ color }}>{oldName}</span>
+          <span className={s.plain}> is now known as </span>
+          <span style={{ color }}>{displayName}</span>
+        </div>
       </div>
     );
   };
 
-  const getViewForMessage = (message: ChatMessage | NameChangeEvent) => {
+  const getViewForMessage = (index: number, message: ChatMessage | NameChangeEvent) => {
     switch (message.type) {
       case MessageType.CHAT:
         return (
@@ -44,7 +51,7 @@ export default function ChatContainer(props: Props) {
             showModeratorMenu={isModerator} // Moderators have access to an additional menu
             highlightString={usernameToHighlight} // What to highlight in the message
             sentBySelf={message.user?.id === chatUserId} // The local user sent this message
-            sameUserAsLast={message.user?.id === messages[messages.length - 1].user?.id}
+            sameUserAsLast={isSameUserAsLast(messages, index)}
             key={message.id}
           />
         );
@@ -63,7 +70,7 @@ export default function ChatContainer(props: Props) {
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
-          itemContent={(_, message) => getViewForMessage(message)}
+          itemContent={(index, message) => getViewForMessage(index, message)}
           followOutput="auto"
           alignToBottom
           atBottomStateChange={bottom => setAtBottom(bottom)}
@@ -99,4 +106,12 @@ export default function ChatContainer(props: Props) {
       </Spin>
     </div>
   );
+}
+
+function isSameUserAsLast(messages: ChatMessage[], index: number) {
+  const message = messages[index]
+  const { user: { id }} = message
+  const lastMessage = messages[index - 1]
+  
+  return id === lastMessage?.user.id
 }
