@@ -1,11 +1,11 @@
-.logo {
+.root {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  width: 120px;
-  height: 120px;
+  width: clamp(5vw, 90px, 120px);
+  height: clamp(5vw, 90px, 120px);
   border-radius: 50%;
   border-width: 3px;
   border-style: solid;
