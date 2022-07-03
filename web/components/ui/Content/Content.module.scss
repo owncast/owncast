@@ -1,19 +1,28 @@
 .root {
   display: grid;
   grid-template-columns: 1fr auto;
+  &.mobile {
+    display: block;
+    // height: calc(100vh - 64px);
+    // overflow-y: hidden;
+  }
 }
 
 .mobileChat {
   position: relative;
   display: block;
-  top: 0px;
+  // top: 0px;
   width: 100%;
+  [data-virtuoso-scroller] {
+    height: 500px;
+  }
 }
 
 .leftCol {
-  display: grid;
+  display: flex;
+  flex-direction: column;
 }
-.lowerRow {
+.streamInfo {
   position: relative;
   display: grid;
 }
@@ -43,7 +52,7 @@
   margin-left: 10px;
 
   .title {
-    font-size: 2.5vw;
+    font-size: 1.5rem;
     font-weight: bold;
     color: var(--theme-text-primary);
   }
@@ -61,8 +70,3 @@
   z-index: 999999;
 }
 
-@media (min-width: 768px) {
-  .mobileChat {
-    display: none;
-  }
-}

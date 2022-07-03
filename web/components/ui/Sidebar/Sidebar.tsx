@@ -26,6 +26,7 @@ export default function Sidebar() {
         usernameToHighlight={chatDisplayName}
         chatUserId={chatUserId}
         isModerator={false}
+        isMobile={false}
       />
       <ChatTextField />
     </Sider>

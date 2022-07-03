@@ -76,6 +76,11 @@ export const appStateAtom = atom<AppStateOptions>({
   default: makeEmptyAppState(),
 });
 
+export const isMobileAtom = atom<boolean | undefined>({
+  key: 'isMobileAtom',
+  default: undefined,
+});
+
 export const chatVisibleToggleAtom = atom<boolean>({
   key: 'chatVisibilityToggleAtom',
   default: true,

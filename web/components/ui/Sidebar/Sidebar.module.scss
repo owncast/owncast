@@ -9,6 +9,7 @@
     position: sticky;
     top: var(--header-h);
     display: block;
+    height: calc(100vh - var(--header-h));
     max-height: calc(100vh - var(--header-h));
   }
 }

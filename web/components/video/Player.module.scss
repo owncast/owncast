@@ -1,6 +1,9 @@
 .player {
-  height: 80vh;
+  height: auto !important;
   width: 100%;
+  video {
+    position: static !important;
+  }
 }
 
 .poster {

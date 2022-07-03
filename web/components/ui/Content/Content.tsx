@@ -1,7 +1,8 @@
 /* eslint-disable react/no-danger */
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
 import { useEffect, useState } from 'react';
+import cn from 'classnames';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
 import {
@@ -13,6 +14,7 @@ import {
   serverStatusState,
   appStateAtom,
   isOnlineSelector,
+  isMobileAtom,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../../CustomPageContent';
@@ -48,6 +50,8 @@ export default function ContentComponent() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
+  const setIsMobile = useSetRecoilState<boolean>(isMobileAtom);
+  const isMobile = useRecoilValue(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
@@ -97,15 +101,31 @@ export default function ContentComponent() {
     setLocalStorage(LOCAL_STORAGE_KEYS.hasDisplayedNotificationModal, true);
   };
 
+  const checkIfMobile = () => {
+    const w = window.innerWidth;
+    if (isMobile === undefined) {
+      if (w <= 768) setIsMobile(true);
+      else setIsMobile(false);
+    }
+    if (!isMobile && w <= 768) setIsMobile(true);
+    if (isMobile && w > 768) setIsMobile(false);
+  };
+
   useEffect(() => {
     incrementVisitCounter();
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
   }, []);
 
+  const rootClassName = cn(s.root, {
+    [s.mobile]: isMobile,
+  });
+
   return (
-    <Content className={`${s.root}`}>
+    <Content className={rootClassName}>
       <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
 
-      <div className={`${s.leftCol}`}>
+      <div className={s.leftCol}>
         {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
         {!online && (
           <OfflineBanner
@@ -142,7 +162,7 @@ export default function ContentComponent() {
             <BrowserNotifyModal />
           </Modal>
 
-          <div className={`${s.lowerRow}`}>
+          <div className={s.streamInfo}>
             <div className={s.logoTitleSection}>
               <ServerLogo src="/logo" />
               <div className={s.titleSection}>
@@ -158,30 +178,33 @@ export default function ContentComponent() {
           </div>
 
           <Tabs defaultActiveKey="1">
-            <TabPane tab="About" key="1" className={`${s.pageContentSection}`}>
+            <TabPane tab="About" key="1" className={s.pageContentSection}>
               <div dangerouslySetInnerHTML={{ __html: summary }} />
               <CustomPageContent content={extraPageContent} />
             </TabPane>
-            <TabPane tab="Followers" key="2" className={`${s.pageContentSection}`}>
+            <TabPane tab="Followers" key="2" className={s.pageContentSection}>
               <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
-          {isChatVisible && (
-            <div className={`${s.mobileChat}`}>
-              <ChatContainer
-                messages={messages}
-                loading={appState.chatLoading}
-                usernameToHighlight={chatDisplayName}
-                chatUserId={chatUserId}
-                isModerator={false}
-              />
+          {isChatVisible && isMobile && (
+            <div style={{ position: 'relative' }}>
+              <div className={s.mobileChat}>
+                <ChatContainer
+                  messages={messages}
+                  loading={appState.chatLoading}
+                  usernameToHighlight={chatDisplayName}
+                  chatUserId={chatUserId}
+                  isModerator={false}
+                  isMobile={isMobile}
+                />
+              </div>
               <ChatTextField />
             </div>
           )}
           <Footer version={version} />
         </div>
       </div>
-      {isChatVisible && <Sidebar />}
+      {isChatVisible && !isMobile && <Sidebar />}
     </Content>
   );
 }
