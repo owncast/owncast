@@ -38,6 +38,7 @@ const AddMessagesChatExample = args => {
         usernameToHighlight={null}
         chatUserId={null}
         isModerator={false}
+        isMobile={false}
       />
     </div>
   );

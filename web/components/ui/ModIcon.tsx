@@ -1,9 +1,10 @@
+/* eslint-disable react/require-default-props */
 import { CSSProperties } from 'react';
 
 interface Props {
-  style: CSSProperties;
-  fill: string;
-  stroke: string;
+  style?: CSSProperties;
+  fill?: string;
+  stroke?: string;
 }
 export default function ModIcon({
   style = { width: '1rem', height: '1rem' },

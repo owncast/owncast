@@ -13,10 +13,11 @@ interface Props {
   usernameToHighlight: string;
   chatUserId: string;
   isModerator: boolean;
+  isMobile: boolean | undefined;
 }
 
 export default function ChatContainer(props: Props) {
-  const { messages, loading, usernameToHighlight, chatUserId, isModerator } = props;
+  const { messages, loading, usernameToHighlight, chatUserId, isModerator, isMobile } = props;
 
   const [atBottom, setAtBottom] = useState(false);
   // const [showButton, setShowButton] = useState(false);
@@ -66,7 +67,7 @@ export default function ChatContainer(props: Props) {
     () => (
       <>
         <Virtuoso
-          style={{ height: '75vh' }}
+          style={{ height: isMobile ? 500 : '77vh' }}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
@@ -93,7 +94,7 @@ export default function ChatContainer(props: Props) {
         )}
       </>
     ),
-    [messages, usernameToHighlight, chatUserId, isModerator, atBottom],
+    [messages, usernameToHighlight, chatUserId, isModerator, atBottom, isMobile],
   );
 
   return (
