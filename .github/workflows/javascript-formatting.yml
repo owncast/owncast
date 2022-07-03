@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: npm install
+        run: cd web && npm install
 
       - name: Lint
         run: npm run lint
