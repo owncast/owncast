@@ -178,11 +178,11 @@ func GetResolvedPublicKeyFromIRI(publicKeyIRI string) (vocab.W3IDSecurityV1Publi
 	}
 
 	if err != nil {
-		err = errors.Wrap(err, "error resolving publickey from iri")
+		err = errors.Wrap(err, "error resolving publickey from iri, actor may not be valid: "+publicKeyIRI)
 	}
 
 	if !resolved {
-		err = errors.New("error resolving publickey from iri")
+		err = errors.New("error resolving publickey from iri, actor may not be valid: " + publicKeyIRI)
 	}
 
 	return pubkey, err
