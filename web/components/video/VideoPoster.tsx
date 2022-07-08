@@ -23,7 +23,6 @@ export default function VideoPoster(props: Props) {
       if (duration === '0s') {
         setDuration('3s');
       }
-
       setSrc(`${base}?${Date.now()}`);
     }, REFRESH_INTERVAL);
   }, []);
@@ -36,7 +35,7 @@ export default function VideoPoster(props: Props) {
         <CrossfadeImage
           src={src}
           duration={duration}
-          objectFit="contain"
+          objectFit="cover"
           width="100%"
           height="100%"
         />

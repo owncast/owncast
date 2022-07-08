@@ -2,9 +2,19 @@
   display: grid;
   grid-template-columns: 1fr auto;
   &.mobile {
-    display: block;
-    // height: calc(100vh - 64px);
-    // overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 64px);
+    overflow-y: hidden;
+    .topHalf {
+      border: 1px dashed white;
+      height: calc(40vh - 64px);
+      overflow: hidden;
+    }
+    .lowerHalf {
+      border: 1px dashed red;
+      height: 60vh;
+    }
   }
 }
 
@@ -21,46 +31,6 @@
 .leftCol {
   display: flex;
   flex-direction: column;
-}
-.streamInfo {
-  position: relative;
-  display: grid;
-}
-
-.buttonsLogoTitleSection {
-  margin-left: 1.5vw;
-  margin-right: 1.5vw;
-}
-
-.pageContentSection {
-  background-color: var(--theme-background-secondary);
-  border-radius: var(--theme-rounded-corners);
-  margin: 1vw;
-  padding: 1vw;
-  width: 100%;
-}
-
-.logoTitleSection {
-  display: flex;
-  flex-direction: row;
-}
-
-.titleSection {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-  margin-left: 10px;
-
-  .title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--theme-text-primary);
-  }
-
-  .subtitle {
-    font-size: 1.6vw;
-    font-weight: bold;
-  }
 }
 
 .loadingSpinner {
