@@ -8,7 +8,7 @@ import s from './ActionButton.module.scss';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
 import { ClientConfig } from '../../interfaces/client-config.model';
 
-export default function FollowButton() {
+export default function FollowButton(props: any) {
   const [showModal, setShowModal] = useState(false);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { name } = clientConfig;
@@ -20,8 +20,9 @@ export default function FollowButton() {
   return (
     <>
       <Button
+        {...props}
         type="primary"
-        className={`${s.button}`}
+        className={s.button}
         icon={<HeartFilled />}
         onClick={buttonClicked}
       >

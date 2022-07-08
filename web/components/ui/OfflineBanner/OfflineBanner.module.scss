@@ -1,17 +1,17 @@
 .outerContainer {
-  width: 100%;
   display: flex;
   justify-content: center;
 }
 
 .innerContainer {
+  width: clamp(200px, 100%, 300px);
   display: flex;
   flex-direction: column;
-  width: 50%;
+  ;
   background-color: var(--theme-background-secondary);
-  margin: 2vw;
+  margin: auto;
   border-radius: var(--theme-rounded-corners);
-  padding: 25px;
+  padding: 1rem;
 }
 
 .header {

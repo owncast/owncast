@@ -20,6 +20,17 @@
 .inputWrapper {
   display: flex;
   position: relative;
+  border-radius: var(--theme-rounded-corners);
+  outline: 1px solid var(--color-owncast-gray-500);
+  &:hover {
+    box-shadow: 0 0 1px 1px var(--color-owncast-gray-300);
+  }
+  & > div {
+    transition: box-shadow .2s ease-in-out;
+    &:focus {
+      // box-shadow: 0 0 1px 1px var(--color-owncast-gray-300);
+    }
+  }
 }
 
 .emojiButton {

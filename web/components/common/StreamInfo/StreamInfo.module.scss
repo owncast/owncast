@@ -1,0 +1,36 @@
+.streamInfo {
+  position: relative;
+  display: grid;
+}
+
+.buttonsLogoTitleSection {
+  margin-left: 1.5vw;
+  margin-right: 1.5vw;
+}
+
+.pageContentSection {
+  // background-color: var(--theme-background-secondary);
+  border-radius: var(--theme-rounded-corners);
+  width: 100%;
+}
+
+.logoTitleSection {
+  display: flex;
+  align-items: center;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--theme-text-primary);
+  }
+
+  .subtitle {
+    font-size: 1.6vw;
+    font-weight: bold;
+  }
+}

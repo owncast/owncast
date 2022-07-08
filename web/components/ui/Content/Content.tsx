@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import cn from 'classnames';
@@ -31,10 +31,7 @@ import ActionButton from '../../action-buttons/ActionButton';
 import Statusbar from '../Statusbar/Statusbar';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Follower } from '../../../interfaces/follower';
-import SocialLinks from '../SocialLinks/SocialLinks';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
-import ServerLogo from '../Logo/Logo';
-import CategoryIcon from '../CategoryIcon/CategoryIcon';
 import OfflineBanner from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
 import FollowButton from '../../action-buttons/FollowButton';
@@ -50,14 +47,13 @@ export default function ContentComponent() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
-  const setIsMobile = useSetRecoilState<boolean>(isMobileAtom);
-  const isMobile = useRecoilValue(isMobileAtom);
+  const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
 
-  const { extraPageContent, version, socialHandles, name, title, tags, summary } = clientConfig;
+  const { extraPageContent, version, name, summary } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
@@ -123,84 +119,73 @@ export default function ContentComponent() {
 
   return (
     <Content className={rootClassName}>
-      <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
+      <div className={s.leftContent}>
+        <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
+        <div className={s.topHalf}>
+          {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+          {!online && (
+            <OfflineBanner
+              name={name}
+              text="Stream is offline text goes here. Will create a new form to set it in the Admin."
+            />
+          )}
 
-      <div className={s.leftCol}>
-        {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-        {!online && (
-          <OfflineBanner
-            name={name}
-            text="Stream is offline text goes here. Will create a new form to set it in the Admin."
+          <Statusbar
+            online={online}
+            lastConnectTime={lastConnectTime}
+            lastDisconnectTime={lastDisconnectTime}
+            viewerCount={viewerCount}
           />
-        )}
+          <div className={s.buttonsLogoTitleSection}>
+            <ActionButtonRow>
+              {externalActionButtons}
+              <FollowButton size="small" />
+              <NotifyReminderPopup
+                visible={showNotifyReminder}
+                notificationClicked={() => setShowNotifyPopup(true)}
+                notificationClosed={() => disableNotifyReminderPopup()}
+              >
+                <NotifyButton onClick={() => setShowNotifyPopup(true)} />
+              </NotifyReminderPopup>
+            </ActionButtonRow>
 
-        <Statusbar
-          online={online}
-          lastConnectTime={lastConnectTime}
-          lastDisconnectTime={lastDisconnectTime}
-          viewerCount={viewerCount}
-        />
-        <div className={s.buttonsLogoTitleSection}>
-          <ActionButtonRow>
-            {externalActionButtons}
-            <FollowButton />
-            <NotifyReminderPopup
-              visible={showNotifyReminder}
-              notificationClicked={() => setShowNotifyPopup(true)}
-              notificationClosed={() => disableNotifyReminderPopup()}
+            <Modal
+              title="Notify"
+              visible={showNotifyPopup}
+              afterClose={() => disableNotifyReminderPopup()}
+              handleCancel={() => disableNotifyReminderPopup()}
             >
-              <NotifyButton onClick={() => setShowNotifyPopup(true)} />
-            </NotifyReminderPopup>
-          </ActionButtonRow>
-
-          <Modal
-            title="Notify"
-            visible={showNotifyPopup}
-            afterClose={() => disableNotifyReminderPopup()}
-            handleCancel={() => disableNotifyReminderPopup()}
-          >
-            <BrowserNotifyModal />
-          </Modal>
-
-          <div className={s.streamInfo}>
-            <div className={s.logoTitleSection}>
-              <ServerLogo src="/logo" />
-              <div className={s.titleSection}>
-                <div className={s.title}>{name}</div>
-                <div className={s.subtitle}>
-                  {title}
-                  <CategoryIcon tags={tags} />
-                </div>
-                <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
-                <SocialLinks links={socialHandles} />
-              </div>
-            </div>
+              <BrowserNotifyModal />
+            </Modal>
           </div>
-
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="About" key="1" className={s.pageContentSection}>
+        </div>
+        <div className={s.lowerHalf}>
+          <Tabs defaultActiveKey="0">
+            {isChatVisible && isMobile && (
+              <TabPane tab="Chat" key="0" className={s.pageContentSection}>
+                <div style={{ position: 'relative' }}>
+                  <div className={s.mobileChat}>
+                    <ChatContainer
+                      messages={messages}
+                      loading={appState.chatLoading}
+                      usernameToHighlight={chatDisplayName}
+                      chatUserId={chatUserId}
+                      isModerator={false}
+                      isMobile={isMobile}
+                    />
+                  </div>
+                  <ChatTextField />
+                </div>
+              </TabPane>
+            )}
+            <TabPane tab="About" key="2" className={s.pageContentSection}>
               <div dangerouslySetInnerHTML={{ __html: summary }} />
               <CustomPageContent content={extraPageContent} />
             </TabPane>
-            <TabPane tab="Followers" key="2" className={s.pageContentSection}>
+            <TabPane tab="Followers" key="3" className={s.pageContentSection}>
               <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
-          {isChatVisible && isMobile && (
-            <div style={{ position: 'relative' }}>
-              <div className={s.mobileChat}>
-                <ChatContainer
-                  messages={messages}
-                  loading={appState.chatLoading}
-                  usernameToHighlight={chatDisplayName}
-                  chatUserId={chatUserId}
-                  isModerator={false}
-                  isMobile={isMobile}
-                />
-              </div>
-              <ChatTextField />
-            </div>
-          )}
           <Footer version={version} />
         </div>
       </div>

@@ -67,7 +67,7 @@ export default function ChatContainer(props: Props) {
     () => (
       <>
         <Virtuoso
-          style={{ height: isMobile ? 500 : '77vh' }}
+          style={{ height: isMobile ? 500 : '77vh', width: 'auto' }}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
@@ -99,9 +99,11 @@ export default function ChatContainer(props: Props) {
 
   return (
     <div>
-      <div className={s.chatHeader}>
-        <span>stream chat</span>
-      </div>
+      {
+        // <div className={s.chatHeader}>
+        //   <span>stream chat</span>
+        // </div>
+      }
       <Spin spinning={loading} indicator={spinIcon}>
         {MessagesTable}
       </Spin>
