@@ -65,9 +65,9 @@ export default function ChatContainer(props: Props) {
 
   const MessagesTable = useMemo(
     () => (
-      <>
+      <div style={{ height: '100%' }}>
         <Virtuoso
-          style={{ height: isMobile ? 500 : '77vh', width: 'auto' }}
+          style={{ height: '100%', width: 'auto' }}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
@@ -92,7 +92,7 @@ export default function ChatContainer(props: Props) {
             </Button>
           </div>
         )}
-      </>
+      </div>
     ),
     [messages, usernameToHighlight, chatUserId, isModerator, atBottom, isMobile],
   );

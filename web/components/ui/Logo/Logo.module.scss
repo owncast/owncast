@@ -4,8 +4,9 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  width: clamp(4rem, 10vw, 120px);
-  height: clamp(4rem, 10vw, 120px);
+  margin-right: .5rem;
+  width: clamp(2.5vh, 9vw, 120px);
+  height: clamp(2.5vh, 9vw, 120px);
   border-radius: 50%;
   border-width: 3px;
   border-style: solid;
@@ -27,3 +28,4 @@
   background-position: center;
   overflow: hidden;
 }
+

@@ -5,15 +5,22 @@
   align-items: center;
   justify-content: space-between;
   z-index: 20;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem .7rem;
   background-color: var(--default-bg-color);
   .logo {
     display: flex;
     align-items: center;
     span {
-      margin-left: 1rem;
-      font-size: 1.7rem;
+      margin-left: .5rem;
+      font-size: 1.5rem;
       font-weight: 600;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    line-height: 5vh;
+    height: 5vh;
   }
 }

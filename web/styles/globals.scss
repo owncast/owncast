@@ -9,9 +9,15 @@ body {
   padding: 0;
   margin: 0;
   font-family: var(--theme-font-family), var(--theme-header-font-family), sans-serif;
-  font-size: clamp(14px, 1.5vw, 17px);
+  font-size: clamp(14px, 1vw, 17px);
   background-color: var(--default-bg-color);
   color: var(--default-text-color);
+}
+
+@media (max-width: 768px) {
+  body {
+    overflow: hidden;
+  }
 }
 
 // a {

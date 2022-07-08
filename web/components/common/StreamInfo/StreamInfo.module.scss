@@ -1,4 +1,4 @@
-.streamInfo {
+.root {
   position: relative;
   display: grid;
 }
@@ -34,3 +34,44 @@
     font-weight: bold;
   }
 }
+
+.mobile {
+  &.root {
+    position: relative;
+    display: flex;
+    padding: 0 .3rem;
+    align-items: center;
+    justify-content: space-between;
+    .mobileInfo {
+      display: flex;
+      align-items: center;
+      .title {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+    }
+    .mobileStatus {
+      display: flex;
+      font-weight: 600;
+      .viewerCount {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .liveStatus {
+        display: flex;
+        align-items: center;
+        margin-left: .5rem;
+        font-size: .8rem;
+        gap: 4px;
+        .liveCircle {
+          border-radius: 50%;
+          background-color: red;
+          width: .5rem;
+          height: .5rem;
+        }
+      }
+    }
+  }
+}
+

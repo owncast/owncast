@@ -11,7 +11,6 @@ import {
   chatDisplayNameAtom,
   chatUserIdAtom,
   isChatVisibleSelector,
-  serverStatusState,
   appStateAtom,
   isOnlineSelector,
   isMobileAtom,
@@ -28,8 +27,6 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 import ActionButtonRow from '../../action-buttons/ActionButtonRow';
 import ActionButton from '../../action-buttons/ActionButton';
-import Statusbar from '../Statusbar/Statusbar';
-import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Follower } from '../../../interfaces/follower';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
 import OfflineBanner from '../OfflineBanner/OfflineBanner';
@@ -38,13 +35,13 @@ import FollowButton from '../../action-buttons/FollowButton';
 import NotifyButton from '../../action-buttons/NotifyButton';
 import Modal from '../Modal/Modal';
 import BrowserNotifyModal from '../../modals/BrowserNotify/BrowserNotifyModal';
+import StreamInfo from '../../common/StreamInfo';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
 export default function ContentComponent() {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
-  const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
@@ -54,7 +51,6 @@ export default function ContentComponent() {
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
 
   const { extraPageContent, version, name, summary } = clientConfig;
-  const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
@@ -129,13 +125,6 @@ export default function ContentComponent() {
               text="Stream is offline text goes here. Will create a new form to set it in the Admin."
             />
           )}
-
-          <Statusbar
-            online={online}
-            lastConnectTime={lastConnectTime}
-            lastDisconnectTime={lastDisconnectTime}
-            viewerCount={viewerCount}
-          />
           <div className={s.buttonsLogoTitleSection}>
             <ActionButtonRow>
               {externalActionButtons}
@@ -158,12 +147,18 @@ export default function ContentComponent() {
               <BrowserNotifyModal />
             </Modal>
           </div>
+          <StreamInfo isMobile={isMobile} />
         </div>
         <div className={s.lowerHalf}>
           <Tabs defaultActiveKey="0">
             {isChatVisible && isMobile && (
-              <TabPane tab="Chat" key="0" className={s.pageContentSection}>
-                <div style={{ position: 'relative' }}>
+              <TabPane
+                tab="Chat"
+                key="0"
+                className={s.pageContentSection}
+                style={{ height: '100%' }}
+              >
+                <div style={{ position: 'relative', height: '100%' }}>
                   <div className={s.mobileChat}>
                     <ChatContainer
                       messages={messages}
@@ -173,8 +168,8 @@ export default function ContentComponent() {
                       isModerator={false}
                       isMobile={isMobile}
                     />
+                    <ChatTextField />
                   </div>
-                  <ChatTextField />
                 </div>
               </TabPane>
             )}
@@ -186,7 +181,7 @@ export default function ContentComponent() {
               <FollowerCollection total={total} followers={followers} />
             </TabPane>
           </Tabs>
-          <Footer version={version} />
+          {!isMobile && <Footer version={version} />}
         </div>
       </div>
       {isChatVisible && !isMobile && <Sidebar />}

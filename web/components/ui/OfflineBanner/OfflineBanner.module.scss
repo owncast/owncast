@@ -7,9 +7,8 @@
   width: clamp(200px, 100%, 300px);
   display: flex;
   flex-direction: column;
-  ;
   background-color: var(--theme-background-secondary);
-  margin: auto;
+  margin: 1rem auto;
   border-radius: var(--theme-rounded-corners);
   padding: 1rem;
 }
