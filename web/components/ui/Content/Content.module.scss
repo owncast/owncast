@@ -1,32 +1,8 @@
 .root {
   display: grid;
   grid-template-columns: 1fr auto;
-  &.mobile {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 64px);
-    overflow-y: hidden;
-    .topHalf {
-      border: 1px dashed white;
-      height: calc(40vh - 64px);
-      overflow: hidden;
-    }
-    .lowerHalf {
-      border: 1px dashed red;
-      height: 60vh;
-    }
-  }
 }
 
-.mobileChat {
-  position: relative;
-  display: block;
-  // top: 0px;
-  width: 100%;
-  [data-virtuoso-scroller] {
-    height: 500px;
-  }
-}
 
 .leftCol {
   display: flex;
@@ -40,3 +16,26 @@
   z-index: 999999;
 }
 
+.mobile {
+  &.root {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 64px);
+    overflow: hidden;
+    .topHalf {
+      display: grid;
+      grid-template-rows: 30vh 5vh 5vh;
+      height: 40vh;
+      // overflow: hidden;
+    }
+    .lowerHalf {
+      height: 60vh;
+    }
+  }
+  .mobileChat {
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+}

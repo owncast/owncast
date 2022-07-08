@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
+import cn from 'classnames';
 import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
-import { websocketServiceAtom } from '../../stores/ClientConfigStore';
+import { isMobileAtom, websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
 import s from './ChatTextField.module.scss';
 
@@ -101,6 +102,7 @@ export default function ChatTextField(props: Props) {
   // const { value: originalValue } = props;
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
+  const isMobile = useRecoilValue<boolean>(isMobileAtom);
   const [editor] = useState(() => withImages(withReact(createEditor())));
 
   const sendMessage = () => {
@@ -120,7 +122,7 @@ export default function ChatTextField(props: Props) {
 
   const handleChange = () => {};
 
-  const handleEmojiSelect = e => {
+  const handleEmojiSelect = (e: any) => {
     ReactEditor.focus(editor);
 
     if (e.url) {
@@ -134,7 +136,7 @@ export default function ChatTextField(props: Props) {
     }
   };
 
-  const onKeyDown = e => {
+  const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       sendMessage();
@@ -142,7 +144,11 @@ export default function ChatTextField(props: Props) {
   };
 
   return (
-    <div className={s.root}>
+    <div
+      className={cn(s.root, {
+        [s.mobile]: isMobile,
+      })}
+    >
       <div className={s.inputWrapper}>
         <Slate
           editor={editor}
@@ -167,9 +173,13 @@ export default function ChatTextField(props: Props) {
         </button>
       </div>
       <div className={s.submitButtonWrapper}>
-        <Button size="middle" type="primary" icon={<SendOutlined />} onClick={sendMessage}>
-          Send
-        </Button>
+        {isMobile ? (
+          <Button size="large" type="ghost" icon={<SendOutlined />} onClick={sendMessage} />
+        ) : (
+          <Button type="primary" icon={<SendOutlined />} onClick={sendMessage}>
+            Send
+          </Button>
+        )}
       </div>
       <Popover
         content={<EmojiPicker onEmojiSelect={handleEmojiSelect} />}
