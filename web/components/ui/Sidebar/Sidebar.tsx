@@ -1,7 +1,7 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatContainer, ChatTextField } from '../../chat';
+import { ChatContainer } from '../../chat';
 import s from './Sidebar.module.scss';
 
 import {
@@ -28,7 +28,6 @@ export default function Sidebar() {
         isModerator={false}
         isMobile={false}
       />
-      <ChatTextField />
     </Sider>
   );
 }

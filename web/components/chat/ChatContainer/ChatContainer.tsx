@@ -1,15 +1,15 @@
-import { Button, Spin } from 'antd';
+import { Button } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef } from 'react';
-import { EditFilled, LoadingOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
+import { EditFilled, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events';
 import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatUserMessage } from '..';
+import { ChatTextField, ChatUserMessage } from '..';
 
 interface Props {
   messages: ChatMessage[];
-  loading: boolean;
+  // loading: boolean;
   usernameToHighlight: string;
   chatUserId: string;
   isModerator: boolean;
@@ -17,12 +17,12 @@ interface Props {
 }
 
 export default function ChatContainer(props: Props) {
-  const { messages, loading, usernameToHighlight, chatUserId, isModerator, isMobile } = props;
+  const { messages, usernameToHighlight, chatUserId, isModerator, isMobile } = props;
 
   const [atBottom, setAtBottom] = useState(false);
   // const [showButton, setShowButton] = useState(false);
   const chatContainerRef = useRef(null);
-  const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
+  // const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
 
   const getNameChangeViewForMessage = (message: NameChangeEvent) => {
     const { oldName, user } = message;
@@ -65,9 +65,9 @@ export default function ChatContainer(props: Props) {
 
   const MessagesTable = useMemo(
     () => (
-      <div style={{ height: '100%' }}>
+      <>
         <Virtuoso
-          style={{ height: '100%', width: 'auto' }}
+          style={{ height: 'calc(100% - 110px)', width: 'auto' }}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
@@ -92,21 +92,21 @@ export default function ChatContainer(props: Props) {
             </Button>
           </div>
         )}
-      </div>
+      </>
     ),
     [messages, usernameToHighlight, chatUserId, isModerator, atBottom, isMobile],
   );
 
   return (
-    <div>
+    <div style={{ height: '100%' }}>
       {
         // <div className={s.chatHeader}>
         //   <span>stream chat</span>
         // </div>
+        //
       }
-      <Spin spinning={loading} indicator={spinIcon}>
-        {MessagesTable}
-      </Spin>
+      {MessagesTable}
+      <ChatTextField />
     </div>
   );
 }
