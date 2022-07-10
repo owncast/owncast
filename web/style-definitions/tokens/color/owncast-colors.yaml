@@ -1,80 +1,14 @@
 # These are colors that make up the Owncast-specific color palette.
 color:
-  # The Owncast color definitions.
+  unknown:
+    value: '#00FF00'
+  unknown-2:
+    value: '#FF0000'
   owncast:
-    purple:
-      100:
-        value: '#f4ebff'
-      300:
-        value: '#d6bbfb'
-      500:
-        value: '#9e77ed'
-      700:
-        value: '#6941c6'
-      900:
-        value: '#42307d'
-
-    green:
-      100:
-        value: '#d15ad5'
-      300:
-        value: '#6ce9a6'
-      500:
-        value: '#12b76a'
-      700:
-        value: '#027a48'
-      900:
-        value: '#054f31'
-
-    red:
-      100:
-        value: '#fee4e2'
-      300:
-        value: '#fda29b'
-      500:
-        value: '#f04438'
-      700:
-        value: '#b42318'
-      900:
-        value: '#7a271a'
-
-    orange:
-      100:
-        value: '#fef0c7'
-      300:
-        value: '#fec84b'
-      500:
-        value: '#f79009'
-      700:
-        value: '#b54708'
-      900:
-        value: '#93370d'
-
-    gray:
-      100:
-        value: '#f2f4f7'
-      300:
-        value: '#d0d5dd'
-      500:
-        value: '#667085'
-      700:
-        value: '#344054'
-      900:
-        value: '#101828'
-
-    logo:
-      purple:
-        value: 'rgba(120, 113, 255, 1)'
-      pink:
-        value: 'rgba(201, 139, 254, 1)'
-      blue:
-        value: 'rgba(32, 134, 225, 1)'
-
-    background:
-      value: 'rgba(32, 34, 50, 1.0)'
-    background-secondary:
-      value: '#282A30'
-
+    # These are the colors assigned to chat users.
+    # If you add more colors here make sure to add them to
+    # GenerateRandomDisplayColor in the Go codebase so it knows the max
+    # number of colors to use.
     user:
       1:
         value: 'rgb(244, 11, 11)'
@@ -93,42 +27,33 @@ color:
       8:
         value: 'rgb(244, 11, 244)'
 
+    text:
+      primary:
+        value: '#030208'
+      secondary:
+        value: '#63638E'
+      highlight:
+        value: '#030208'
+      bright:
+        value: '#5353A6'
+    background:
+      highlight:
+        value: '#F0E678'
+      primary:
+        value: '#FFFCF2'
+      secondary:
+        value: '#F0EFE4'
+
+rounded-corners:
+  value: '0.5em'
+
 font:
   owncast:
-    family:
+    body:
       value: "'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji'"
-    header-family:
+    display:
       value: "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji'"
-
-# Values used in the admin and should be migrated to variables or removed.
-# See ant-overrides.scss.
-owncast-purple:
-  value: '{color.owncast.logo.purple.value}'
-owncast-purple-25:
-  value: 'rgba(120, 113, 255, 0.25)'
-owncast-purple-50:
-  value: 'rgba(120, 113, 255, 0.5)'
-online-color:
-  value: '#73dd3f'
-offline-color:
-  value: '#999'
-pink:
-  value: '{color.owncast.logo.pink.value}'
-purple:
-  value: '{color.owncast.purple.500.value}'
-blue:
-  value: '{color.owncast.logo.blue.value}'
-white-88:
-  value: '{color.owncast.gray.500.value}'
-purple-dark:
-  value: '{color.owncast.purple.900.value}'
-default-link-color:
-  value: '{color.owncast.purple.700.value}'
-default-bg-color:
-  value: '{color.owncast.background.value}'
-default-text-color:
-  value: '{color.owncast.gray.100.value}'

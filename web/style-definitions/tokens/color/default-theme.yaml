@@ -4,40 +4,38 @@
 # The fewer there are the easier it'll be easier to customize and document.
 
 theme:
-  primary-color:
-    value: '{color.owncast.purple.700.value}'
+  unknown:
+    value: '{color.unknown.value}'
+  unknown-2:
+    value: '{color.unknown-2.value}'
+  primary:
+    value: '{color.unknown.value}'
     comment: 'The primary color of the application used for rendering controls.'
-  text-color:
-    value: '{color.owncast.gray.300.value}'
-    comment: 'The color of the text in the application.'
-  text-color-secondary:
-    value: '{color.owncast.gray.500.value}'
-  link-color:
-    value: '{color.owncast.purple.500.value}'
-  font-family:
-    value: '{font.owncast.family.value}'
-  header-font-family:
-    value: '{font.owncast.header-family.value}'
+  text:
+    primary:
+      value: '{color.owncast.text.primary.value}'
+      comment: 'The color of the text in the application.'
+    secondary:
+      value: '{color.owncast.text.secondary.value}'
+    link:
+      value: '{color.owncast.text.bright.value}'
+    body-font-family:
+      value: '{font.owncast.body.value}'
+    display-font-family:
+      value: '{font.owncast.display.value}'
   background:
-    value: '{color.owncast.background.value}'
-    comment: 'The main background color of the page.'
-  background-secondary:
-    value: '{color.owncast.background-secondary.value}'
-    comment: 'A secondary background color used in sections and controls.'
-  rounded-corners:
-    value: '.4rem'
-    comment: 'The radius of rounded corners used in places.'
+    primary:
+      value: '{color.owncast.background.primary.value}'
+      comment: 'The main background color of the page.'
+    secondary:
+      value: '{color.owncast.background.secondary.value}'
+      comment: 'A secondary background color used in sections and controls.'
 
-  success-color:
-    value: '{color.owncast.green.500.value}'
-  info-color:
-    value: '{color.owncast.purple.300.value}'
-  warning-color:
-    value: '{color.owncast.orange.500.value}'
-  error-color:
-    value: '{color.owncast.red.500.value}'
+  rounded-corners:
+    value: '{rounded-corners.value}'
 
   user-colors:
+    comment: 'Colors used to display chat users.'
     1:
       value: '{color.owncast.user.1.value}'
     2:
