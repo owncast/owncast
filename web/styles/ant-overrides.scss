@@ -5,17 +5,20 @@
 .ant-btn {
   height: 2rem;
   padding: .3rem 1rem;
+  background-color: var(--theme-unknown);
   font-size: .85rem;
   font-weight: bold;
   border-radius: var(--theme-rounded-corners);
   border-color: transparent;
-  background-color: var(--color-owncast-gray-500);
-  color: var(--color-owncast-gray-100);
+  color: var(--theme-unknown-2);
   &:hover,
   &:focus {
-    background-color: var(--color-owncast-gray-700);
+    background-color: var(--theme-primary);
     border-color: transparent;
-    color: inherit;
+    color: var(--theme-unknown-2);
+  }
+  &:focus {
+    border-color: var(--theme-unknown-2);
   }
   &[ant-click-animating-without-extra-node]:after {
     animation: 0s !important;
@@ -23,30 +26,25 @@
 }
 
 .ant-btn-primary {
-  background-color: var(--color-owncast-purple-700);
-  &:hover,
-  &:focus {
-    background-color: var(--color-owncast-purple-500);
-    border-color: transparent;
-  }
+  background-color: var(--theme-unknown);
 }
 
 .ant-btn-primary[disabled] {
-  background-color: var(--white-25);
+  background-color: var(--theme-unknown);
+  color: var(--theme-unknown-2);
   &:hover {
-    background-color: var(--white-35);
+    background-color: var(--theme-unknown);
   }
 }
 
-.ant-btn-ghost {
+.ant-btn-background-ghost {
   border: 0px;
   box-shadow: none !important;
-  background-color: transparent !important;
   &:hover,
   &:focus {
-    background-color: var(--theme-info-color);
+    background-color: var(--theme-unknown);
   }
-} 
+}
 
 /* ------------------------- //
   DROPDOWN
@@ -54,24 +52,5 @@
 
 .ant-dropdown-menu {
   border-radius: var(--theme-rounded-corners);
-  background-color: var(--color-owncast-background-secondary);
-}
-
-/* ------------------------- //
-  TABS
-// ------------------------- */
-
-@media (max-width: 768px) {
-  .ant-tabs-content {
-    height: 100%;
-  }
-}
-
-/* ------------------------- //
-  TOOLTIP
-// ------------------------- */
-
-.ant-tooltip {
-  // border-radius: var(--theme-rounded-corners);
-  // overflow: hidden;
+  background-color: var(--color-background-secondary);
 }
