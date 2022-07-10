@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import s from './Footer.module.scss';
 
 const { Footer } = Layout;
 
@@ -10,7 +11,7 @@ export default function FooterComponent(props: Props) {
   const { version } = props;
 
   return (
-    <Footer style={{ textAlign: 'center', height: '64px' }}>
+    <Footer className={s.footer}>
       <a href="https://owncast.online">{version}</a>
     </Footer>
   );

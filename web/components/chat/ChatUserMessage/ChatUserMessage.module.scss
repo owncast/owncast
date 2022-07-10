@@ -15,21 +15,13 @@
     }
   }
   .message {
-    color: var(--color-owncast-gray-300);
+    color: var(--theme-text-primary);
 
     mark {
-      color: white;
-      padding: 0.1em 0.4em;
-      border-radius: 0.5em 0.3em;
-      background: transparent;
-      background-image: linear-gradient(
-        to right,
-        rgba(255, 225, 0, 0.1),
-        rgba(255, 225, 0, 0.358) 4%,
-        rgba(255, 225, 0, 0.3)
-      );
-      -webkit-box-decoration-break: clone;
-      box-decoration-break: clone;
+      padding-left: 0.35em;
+      padding-right: 0.35em;
+      color: var(--theme-text-highlight);
+      background-color: var(--color-bg-highlight);
     }
   }
 
@@ -56,7 +48,7 @@
     .customBorder {
       left: auto;
       right: 0px;
-      opacity: .85;
+      opacity: 0.85;
       &:after {
         left: 0px;
       }

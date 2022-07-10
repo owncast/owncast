@@ -8,12 +8,6 @@
   margin-right: 1.5vw;
 }
 
-.pageContentSection {
-  // background-color: var(--theme-background-secondary);
-  border-radius: var(--theme-rounded-corners);
-  width: 100%;
-}
-
 .logoTitleSection {
   display: flex;
   align-items: center;
@@ -30,8 +24,11 @@
   }
 
   .subtitle {
-    font-size: 1.6vw;
-    font-weight: bold;
+    margin-top: 0.35em;
+    font-size: 1.5em;
+    font-weight: 300;
+    color: var(--theme-text-secondary);
+    text-transform: uppercase;
   }
 }
 
@@ -39,7 +36,7 @@
   &.root {
     position: relative;
     display: flex;
-    padding: 0 .3rem;
+    padding: 0 0.3rem;
     align-items: center;
     justify-content: space-between;
     .mobileInfo {
@@ -61,17 +58,32 @@
       .liveStatus {
         display: flex;
         align-items: center;
-        margin-left: .5rem;
-        font-size: .8rem;
+        margin-left: 0.5rem;
+        font-size: 0.8rem;
         gap: 4px;
         .liveCircle {
           border-radius: 50%;
           background-color: red;
-          width: .5rem;
-          height: .5rem;
+          width: 0.5rem;
+          height: 0.5rem;
         }
       }
     }
   }
 }
 
+.tagList {
+  font-family: var(--theme-text-display-font-family);
+  color: var(--theme-text-secondary);
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: inline-block;
+    margin: 0 0.7em 0 0;
+    font-weight: 600;
+  }
+}

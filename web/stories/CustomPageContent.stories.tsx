@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import CustomPageContent from '../components/CustomPageContent';
+import CustomPageContent from '../components/ui/CustomPageContent/CustomPageContent';
 
 export default {
   title: 'owncast/Components/Custom page content',

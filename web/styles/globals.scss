@@ -7,7 +7,6 @@ body {
   font-size: 16px;
   line-height: 1.5em;
   margin: 0;
-  padding: 0;
 
   color: var(--theme-text-primary);
   background-color: var(--theme-background-primary);
@@ -20,8 +19,8 @@ body {
   h5,
   h6,
   p {
-    margin: 0.7em 0 0 0;
     padding: 0;
+    color: var(--theme-text-primary);
   }
 
   h1,
