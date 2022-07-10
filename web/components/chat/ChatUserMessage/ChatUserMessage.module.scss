@@ -1,4 +1,6 @@
 .root {
+  * {
+    z-index: 100; }
   position: relative;
   font-size: 0.9rem;
   padding: 5px 15px 5px 5px;

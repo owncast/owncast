@@ -24,7 +24,7 @@ import Sidebar from '../Sidebar';
 import Footer from '../Footer';
 import ChatContainer from '../../chat/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import ChatTextField from '../../chat/ChatTextField/ChatTextField';
+// import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 import ActionButtonRow from '../../action-buttons/ActionButtonRow';
 import ActionButton from '../../action-buttons/ActionButton';
 import { Follower } from '../../../interfaces/follower';
@@ -150,7 +150,7 @@ export default function ContentComponent() {
           <StreamInfo isMobile={isMobile} />
         </div>
         <div className={s.lowerHalf}>
-          <Tabs defaultActiveKey="0">
+          <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
             {isChatVisible && isMobile && (
               <TabPane
                 tab="Chat"
@@ -162,13 +162,12 @@ export default function ContentComponent() {
                   <div className={s.mobileChat}>
                     <ChatContainer
                       messages={messages}
-                      loading={appState.chatLoading}
+                      // loading={appState.chatLoading}
                       usernameToHighlight={chatDisplayName}
                       chatUserId={chatUserId}
                       isModerator={false}
                       isMobile={isMobile}
                     />
-                    <ChatTextField />
                   </div>
                 </div>
               </TabPane>

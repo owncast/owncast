@@ -5,20 +5,17 @@
 .ant-btn {
   height: 2rem;
   padding: .3rem 1rem;
-  background-color: var(--owncast-purple-25);
   font-size: .85rem;
   font-weight: bold;
   border-radius: var(--theme-rounded-corners);
   border-color: transparent;
-  color: var(--white-75);
+  background-color: var(--color-owncast-gray-500);
+  color: var(--color-owncast-gray-100);
   &:hover,
   &:focus {
-    background-color: var(--color-owncast-purple-700);
+    background-color: var(--color-owncast-gray-700);
     border-color: transparent;
-    color: var(--white);
-  }
-  &:focus {
-    border-color: var(--owncast-purple-25);
+    color: inherit;
   }
   &[ant-click-animating-without-extra-node]:after {
     animation: 0s !important;
@@ -26,20 +23,25 @@
 }
 
 .ant-btn-primary {
-  background-color: var(--owncast-purple-50);
+  background-color: var(--color-owncast-purple-700);
+  &:hover,
+  &:focus {
+    background-color: var(--color-owncast-purple-500);
+    border-color: transparent;
+  }
 }
 
 .ant-btn-primary[disabled] {
   background-color: var(--white-25);
-  color: var(--white-50);
   &:hover {
     background-color: var(--white-35);
   }
 }
 
-.ant-btn-background-ghost {
+.ant-btn-ghost {
   border: 0px;
   box-shadow: none !important;
+  background-color: transparent !important;
   &:hover,
   &:focus {
     background-color: var(--theme-info-color);
@@ -53,4 +55,23 @@
 .ant-dropdown-menu {
   border-radius: var(--theme-rounded-corners);
   background-color: var(--color-owncast-background-secondary);
+}
+
+/* ------------------------- //
+  TABS
+// ------------------------- */
+
+@media (max-width: 768px) {
+  .ant-tabs-content {
+    height: 100%;
+  }
+}
+
+/* ------------------------- //
+  TOOLTIP
+// ------------------------- */
+
+.ant-tooltip {
+  // border-radius: var(--theme-rounded-corners);
+  // overflow: hidden;
 }
