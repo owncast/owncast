@@ -56,10 +56,12 @@ export default function StreamInfo({ isMobile }: Props) {
         <div className={s.titleSection}>
           <div className={s.title}>{name}</div>
           <div className={s.subtitle}>
-            {title}
+            {title || 'Stream title or server description goes here'}
             <CategoryIcon tags={tags} />
           </div>
-          <div>{tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}</div>
+          <div className={s.tagList}>
+            {tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}
+          </div>
           <SocialLinks links={socialHandles} />
         </div>
       </div>

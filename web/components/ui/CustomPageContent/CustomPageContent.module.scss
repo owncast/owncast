@@ -1,0 +1,20 @@
+.customPageContent {
+  font-size: 16px;
+  line-height: 1.5em;
+  margin: 0;
+  padding: 0;
+
+  color: var(--theme-text);
+  background-color: var(--theme-background-secondary);
+  padding: 0.175em 1em;
+
+  hr {
+    margin: 1.35em 0;
+    border: 0;
+    border-top: solid 1px var(--theme-text-secondary);
+  }
+
+  div.summary {
+    font-size: 18px;
+  }
+}

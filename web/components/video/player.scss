@@ -1,20 +1,20 @@
 /* Change all text and icon colors in the player. */
 .vjs-owncast.video-js {
-  color: var(--primary-color);
+  color: var(--theme-unknown-2);
 }
 
 .vjs-owncast .vjs-big-play-button {
   z-index: 10;
-  border-color: var(--primary-color) !important;
+  border-color: var(--theme-unknown) !important;
   border-radius: var(--theme-rounded-corners) !important;
 }
 
 .vjs-owncast .vjs-control-bar {
-  background-color: var(--theme-background) !important;
+  background-color: var(--theme-unknown) !important;
 }
 
 .vjs-airplay .vjs-icon-placeholder::before {
-  content: url("./airplay.png");
+  content: url('./airplay.png');
 }
 
 .vjs-quality-selector .vjs-icon-placeholder {
@@ -23,5 +23,5 @@
   font-style: normal;
 }
 .vjs-quality-selector .vjs-icon-placeholder::before {
-  content: "\f110";
+  content: '\f110';
 }

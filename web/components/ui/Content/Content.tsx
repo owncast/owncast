@@ -16,7 +16,7 @@ import {
   isMobileAtom,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
-import CustomPageContent from '../../CustomPageContent';
+import CustomPageContent from '../CustomPageContent/CustomPageContent';
 import OwncastPlayer from '../../video/OwncastPlayer';
 import FollowerCollection from '../../FollowersCollection';
 import s from './Content.module.scss';
@@ -152,12 +152,7 @@ export default function ContentComponent() {
         <div className={s.lowerHalf}>
           <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
             {isChatVisible && isMobile && (
-              <TabPane
-                tab="Chat"
-                key="0"
-                className={s.pageContentSection}
-                style={{ height: '100%' }}
-              >
+              <TabPane tab="Chat" key="0" style={{ height: '100%' }}>
                 <div style={{ position: 'relative', height: '100%' }}>
                   <div className={s.mobileChat}>
                     <ChatContainer
