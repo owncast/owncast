@@ -24,7 +24,7 @@ const testMessages =
 const messages: ChatMessage[] = JSON.parse(testMessages);
 
 const AddMessagesChatExample = args => {
-  const { messages: m, loading } = args;
+  const { messages: m } = args;
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(m);
 
   return (
@@ -34,7 +34,6 @@ const AddMessagesChatExample = args => {
       </button>
       <ChatContainer
         messages={chatMessages}
-        loading={loading}
         usernameToHighlight={null}
         chatUserId={null}
         isModerator={false}
