@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { RecoilRoot } from 'recoil';
 import ChatContainer from '../components/chat/ChatContainer';
 import { ChatMessage } from '../interfaces/chat-message.model';
 
@@ -28,7 +29,7 @@ const AddMessagesChatExample = args => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(m);
 
   return (
-    <div>
+    <RecoilRoot>
       <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
         Add message
       </button>
@@ -39,7 +40,7 @@ const AddMessagesChatExample = args => {
         isModerator={false}
         isMobile={false}
       />
-    </div>
+    </RecoilRoot>
   );
 };
 
@@ -55,9 +56,4 @@ export const SingleMessage = Template.bind({});
 SingleMessage.args = {
   loading: false,
   messages: [messages[0]],
-};
-
-export const Loading = Template.bind({});
-Loading.args = {
-  loading: true,
 };
