@@ -9,6 +9,10 @@ on:
 jobs:
   prettier:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
     if: ${{ github.actor != 'dependabot[bot]' }}
 
     steps:
@@ -30,13 +34,16 @@ jobs:
 
   linter:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
     name: Run linter on changed files
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: cd web && npm install
+        run: npm install
 
       - name: Lint
         run: npm run lint
