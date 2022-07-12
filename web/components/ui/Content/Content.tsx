@@ -27,7 +27,6 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 // import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 import ActionButtonRow from '../../action-buttons/ActionButtonRow';
 import ActionButton from '../../action-buttons/ActionButton';
-import { Follower } from '../../../interfaces/follower';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
 import OfflineBanner from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
@@ -53,10 +52,6 @@ export default function ContentComponent() {
   const { extraPageContent, version, name, summary } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
-
-  const followers: Follower[] = [];
-
-  const total = 0;
 
   // This is example content. It should be removed.
   const externalActions = [
@@ -172,7 +167,7 @@ export default function ContentComponent() {
               <CustomPageContent content={extraPageContent} />
             </TabPane>
             <TabPane tab="Followers" key="3" className={s.pageContentSection}>
-              <FollowerCollection total={total} followers={followers} />
+              <FollowerCollection />
             </TabPane>
           </Tabs>
           {!isMobile && <Footer version={version} />}
