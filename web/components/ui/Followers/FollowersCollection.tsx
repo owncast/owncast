@@ -1,18 +1,37 @@
+import { useEffect, useState } from 'react';
 import { Col, Pagination, Row } from 'antd';
 import { Follower } from '../../../interfaces/follower';
 import SingleFollower from './Follower';
 import s from './Followers.module.scss';
 
-interface Props {
-  total: number;
-  followers: Follower[];
-}
-
-export default function FollowerCollection(props: Props) {
+export default function FollowerCollection() {
+  const ENDPOINT = '/api/followers';
   const ITEMS_PER_PAGE = 24;
 
-  const { followers, total } = props;
+  const [followers, setFollowers] = useState<Follower[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const pages = Math.ceil(total / ITEMS_PER_PAGE);
+
+  const getFollowers = async () => {
+    try {
+      const response = await fetch(`${ENDPOINT}?page=${page}`);
+      const data = await response.json();
+
+      setFollowers(data.response);
+      setTotal(data.total);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getFollowers();
+  }, []);
+
+  useEffect(() => {
+    getFollowers();
+  }, [page]);
 
   const noFollowers = (
     <div>A message explaining how to follow goes here since there are no followers.</div>
@@ -32,7 +51,15 @@ export default function FollowerCollection(props: Props) {
         ))}
       </Row>
 
-      <Pagination current={1} pageSize={ITEMS_PER_PAGE} total={pages || 1} hideOnSinglePage />
+      <Pagination
+        current={page}
+        pageSize={ITEMS_PER_PAGE}
+        total={pages || 1}
+        onChange={p => {
+          setPage(p);
+        }}
+        hideOnSinglePage
+      />
     </div>
   );
 }
