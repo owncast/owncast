@@ -37,7 +37,7 @@ export default function FollowerCollection() {
     <div>A message explaining how to follow goes here since there are no followers.</div>
   );
 
-  if (followers.length === 0) {
+  if (!followers?.length) {
     return noFollowers;
   }
 
