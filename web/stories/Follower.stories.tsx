@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import SingleFollower from '../components/Follower';
+import SingleFollower from '../components/ui/Followers/Follower';
 import SingleFollowerMock from './assets/mocks/single-follower.png';
 
 export default {
