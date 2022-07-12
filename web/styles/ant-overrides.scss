@@ -4,9 +4,9 @@
 
 .ant-btn {
   height: 2rem;
-  padding: .3rem 1rem;
+  padding: 0.3rem 1rem;
   background-color: var(--theme-unknown);
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: bold;
   border-radius: var(--theme-rounded-corners);
   border-color: transparent;
@@ -22,7 +22,7 @@
   }
   &[ant-click-animating-without-extra-node]:after {
     animation: 0s !important;
- }
+  }
 }
 
 .ant-btn-primary {
@@ -52,5 +52,5 @@
 
 .ant-dropdown-menu {
   border-radius: var(--theme-rounded-corners);
-  background-color: var(--color-background-secondary);
+  background-color: var(--theme-background-secondary);
 }
