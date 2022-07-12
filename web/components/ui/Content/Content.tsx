@@ -18,7 +18,7 @@ import {
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../CustomPageContent/CustomPageContent';
 import OwncastPlayer from '../../video/OwncastPlayer';
-import FollowerCollection from '../../FollowersCollection';
+import FollowerCollection from '../Followers/FollowersCollection';
 import s from './Content.module.scss';
 import Sidebar from '../Sidebar';
 import Footer from '../Footer';

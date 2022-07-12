@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import FollowerCollection from '../components/FollowersCollection';
+import FollowerCollection from '../components/ui/Followers/FollowersCollection';
 
 export default {
   title: 'owncast/Components/Followers/Followers collection',
@@ -11,6 +11,9 @@ export default {
 const Template: ComponentStory<typeof FollowerCollection> = args => (
   <FollowerCollection {...args} />
 );
+
+export const NoFollowers = Template.bind({});
+NoFollowers.args = { followers: [] };
 
 export const Example = Template.bind({});
 Example.args = {
