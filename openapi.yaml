@@ -686,7 +686,7 @@ paths:
                     type: string
                     example: https://fediverse.biz/authorize_interaction?uri=https://my.owncast.server/federation/user/streamer
 
-  /api/chat/updatemessagevisibility:
+  /api/chat/messagevisibility:
     post:
       summary: Update the visibility of chat messages.
       description: Pass an array of IDs you want to change the chat visibility of.
@@ -951,7 +951,7 @@ paths:
                       type: string
                       format: date-time
 
-  /api/admin/chat/updatemessagevisibility:
+  /api/admin/chat/messagevisibility:
     post:
       summary: Update the visibility of chat messages.
       description: Pass an array of IDs you want to change the chat visibility of.
@@ -1984,7 +1984,7 @@ paths:
                       type: string
                       format: date-time
 
-  /api/integrations/chat/updatemessagevisibility:
+  /api/integrations/chat/messagevisibility:
     post:
       summary: Update the visibility of chat messages.
       description: Pass an array of IDs you want to change the chat visibility of.
