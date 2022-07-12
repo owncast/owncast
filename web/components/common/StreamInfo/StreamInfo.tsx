@@ -9,7 +9,6 @@ import {
   serverStatusState,
 } from '../../stores/ClientConfigStore';
 import { ServerLogo } from '../../ui';
-import StatusBar from '../../ui/Statusbar';
 import CategoryIcon from '../../ui/CategoryIcon/CategoryIcon';
 import SocialLinks from '../../ui/SocialLinks/SocialLinks';
 import s from './StreamInfo.module.scss';
@@ -20,8 +19,7 @@ interface Props {
 }
 export default function StreamInfo({ isMobile }: Props) {
   const { socialHandles, name, title, tags } = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const { viewerCount, lastConnectTime, lastDisconnectTime } =
-    useRecoilValue<ServerStatus>(serverStatusState);
+  const { viewerCount } = useRecoilValue<ServerStatus>(serverStatusState);
   const online = useRecoilValue<boolean>(isOnlineSelector);
 
   useEffect(() => {
@@ -65,12 +63,6 @@ export default function StreamInfo({ isMobile }: Props) {
           <SocialLinks links={socialHandles} />
         </div>
       </div>
-      <StatusBar
-        online={online}
-        lastConnectTime={lastConnectTime}
-        lastDisconnectTime={lastDisconnectTime}
-        viewerCount={viewerCount}
-      />
     </div>
   );
 }

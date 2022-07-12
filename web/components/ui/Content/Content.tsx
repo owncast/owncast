@@ -14,6 +14,7 @@ import {
   appStateAtom,
   isOnlineSelector,
   isMobileAtom,
+  serverStatusState,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../CustomPageContent/CustomPageContent';
@@ -35,6 +36,8 @@ import NotifyButton from '../../action-buttons/NotifyButton';
 import Modal from '../Modal/Modal';
 import BrowserNotifyModal from '../../modals/BrowserNotify/BrowserNotifyModal';
 import StreamInfo from '../../common/StreamInfo';
+import { ServerStatus } from '../../../interfaces/server-status.model';
+import { StatusBar } from '..';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -48,7 +51,8 @@ export default function ContentComponent() {
   const online = useRecoilValue<boolean>(isOnlineSelector);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
-
+  const { viewerCount, lastConnectTime, lastDisconnectTime } =
+    useRecoilValue<ServerStatus>(serverStatusState);
   const { extraPageContent, version, name, summary } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
@@ -120,6 +124,12 @@ export default function ContentComponent() {
               text="Stream is offline text goes here. Will create a new form to set it in the Admin."
             />
           )}
+          <StatusBar
+            online={online}
+            lastConnectTime={lastConnectTime}
+            lastDisconnectTime={lastDisconnectTime}
+            viewerCount={viewerCount}
+          />
           <div className={s.buttonsLogoTitleSection}>
             <ActionButtonRow>
               {externalActionButtons}
