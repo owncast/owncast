@@ -46,6 +46,7 @@ class PlaybackMetrics {
     this.handleBuffering = this.handleBuffering.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.send = this.send.bind(this);
     this.collectPlaybackMetrics = this.collectPlaybackMetrics.bind(this);
     this.handleNoLongerBuffering = this.handleNoLongerBuffering.bind(this);
 
@@ -225,7 +226,7 @@ class PlaybackMetrics {
     }
 
     // If we're paused then do nothing.
-    if (this.player.paused()) {
+    if (!this.player || this.player.paused()) {
       return;
     }
 
