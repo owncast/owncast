@@ -53,21 +53,9 @@ export default function ContentComponent() {
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const { viewerCount, lastConnectTime, lastDisconnectTime } =
     useRecoilValue<ServerStatus>(serverStatusState);
-  const { extraPageContent, version, name, summary } = clientConfig;
+  const { extraPageContent, version, name, summary, externalActions } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
-
-  // This is example content. It should be removed.
-  const externalActions = [
-    {
-      url: 'https://owncast.online/docs',
-      title: 'Example button',
-      description: 'Example button description',
-      icon: 'https://owncast.online/images/logo.svg',
-      color: '#5232c8',
-      openExternally: false,
-    },
-  ];
 
   const externalActionButtons = externalActions.map(action => (
     <ActionButton key={action.url} action={action} />
