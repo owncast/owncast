@@ -18,7 +18,8 @@ interface Props {
   isMobile: boolean;
 }
 export default function StreamInfo({ isMobile }: Props) {
-  const { socialHandles, name, title, tags } = useRecoilValue<ClientConfig>(clientConfigStateAtom);
+  const { socialHandles, name, title, tags, summary } =
+    useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { viewerCount } = useRecoilValue<ServerStatus>(serverStatusState);
   const online = useRecoilValue<boolean>(isOnlineSelector);
 
@@ -54,7 +55,7 @@ export default function StreamInfo({ isMobile }: Props) {
         <div className={s.titleSection}>
           <div className={s.title}>{name}</div>
           <div className={s.subtitle}>
-            {title || 'Stream title or server description goes here'}
+            {title || summary}
             <CategoryIcon tags={tags} />
           </div>
           <div className={s.tagList}>
