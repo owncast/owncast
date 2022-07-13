@@ -53,7 +53,7 @@ export default function ContentComponent() {
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const { viewerCount, lastConnectTime, lastDisconnectTime } =
     useRecoilValue<ServerStatus>(serverStatusState);
-  const { extraPageContent, version, name, summary, externalActions } = clientConfig;
+  const { extraPageContent, version, name, externalActions } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
@@ -161,7 +161,6 @@ export default function ContentComponent() {
               </TabPane>
             )}
             <TabPane tab="About" key="2" className={s.pageContentSection}>
-              <div dangerouslySetInnerHTML={{ __html: summary }} />
               <CustomPageContent content={extraPageContent} />
             </TabPane>
             <TabPane tab="Followers" key="3" className={s.pageContentSection}>
