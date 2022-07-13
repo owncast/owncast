@@ -71,7 +71,6 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serverSummary := data.GetServerSummary()
-	serverSummary = utils.RenderPageContentMarkdown(serverSummary)
 
 	var federationResponse federationConfigResponse
 	federationEnabled := data.GetFederationEnabled()
