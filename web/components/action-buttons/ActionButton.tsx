@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function ActionButton({
-  action: { url, title, description, icon, openExternally },
+  action: { url, title, description, icon, color, openExternally },
 }: Props) {
   const [showModal, setShowModal] = useState(false);
 
@@ -23,7 +23,12 @@ export default function ActionButton({
 
   return (
     <>
-      <Button type="primary" className={`${s.button}`} onClick={buttonClicked}>
+      <Button
+        type="primary"
+        className={`${s.button}`}
+        onClick={buttonClicked}
+        style={{ backgroundColor: color }}
+      >
         <img src={icon} className={`${s.icon}`} alt={description} />
         {title}
       </Button>
