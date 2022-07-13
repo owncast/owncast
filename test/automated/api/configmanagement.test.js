@@ -101,7 +101,7 @@ test('verify updated config values', async (done) => {
 	const res = await request.get('/api/config');
 	expect(res.body.name).toBe(serverName);
 	expect(res.body.streamTitle).toBe(streamTitle);
-	expect(res.body.summary).toBe(`<p>${serverSummary}</p>`);
+	expect(res.body.summary).toBe(`${serverSummary}`);
 	expect(res.body.extraPageContent).toBe(pageContent);
 	expect(res.body.logo).toBe('/logo');
 	expect(res.body.socialHandles).toStrictEqual(socialHandles);
