@@ -11,6 +11,7 @@ import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatTextField, ChatUserMessage } from '..';
 import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
+import ChatActionMessage from '../ChatAction/ChatActionMessage';
 
 interface Props {
   messages: ChatMessage[];
@@ -48,6 +49,17 @@ export default function ChatContainer(props: Props) {
     );
   };
 
+  const getUserJoinedMessage = (message: ChatMessage) => {
+    const { user } = message;
+    const { displayName, displayColor } = user;
+    const color = `var(--theme-user-colors-${displayColor})`;
+    return (
+      <ChatActionMessage
+        body={`<span style="color: ${color}">${displayName}</span> joined the chat.`}
+      />
+    );
+  };
+
   const getConnectedInfoMessage = (message: ConnectedClientInfoEvent) => {
     const modStatusUpdate = checkIsModerator(message);
     if (!modStatusUpdate) {
@@ -78,6 +90,8 @@ export default function ChatContainer(props: Props) {
         return getNameChangeViewForMessage(message as NameChangeEvent);
       case MessageType.CONNECTED_USER_INFO:
         return getConnectedInfoMessage(message);
+      case MessageType.USER_JOINED:
+        return getUserJoinedMessage(message as ChatMessage);
 
       default:
         return null;
