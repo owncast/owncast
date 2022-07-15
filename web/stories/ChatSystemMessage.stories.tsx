@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatSystemMessage from '../components/chat/ChatSystemMessage';
+import ChatSystemMessage from '../components/chat/ChatSystemMessage/ChatSystemMessage';
 import Mock from './assets/mocks/chatmessage-system.png';
 
 export default {
@@ -23,3 +23,6 @@ const Template: ComponentStory<typeof ChatSystemMessage> = args => <ChatSystemMe
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Basic = Template.bind({});
+Basic.args = {
+  message: 'This is a system message.',
+};
