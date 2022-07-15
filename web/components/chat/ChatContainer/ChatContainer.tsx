@@ -2,10 +2,15 @@ import { Button } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef } from 'react';
 import { EditFilled, VerticalAlignBottomOutlined } from '@ant-design/icons';
-import { MessageType, NameChangeEvent } from '../../../interfaces/socket-events';
+import {
+  ConnectedClientInfoEvent,
+  MessageType,
+  NameChangeEvent,
+} from '../../../interfaces/socket-events';
 import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatTextField, ChatUserMessage } from '..';
+import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
 
 interface Props {
   messages: ChatMessage[];
@@ -43,7 +48,20 @@ export default function ChatContainer(props: Props) {
     );
   };
 
-  const getViewForMessage = (index: number, message: ChatMessage | NameChangeEvent) => {
+  const getConnectedInfoMessage = (message: ConnectedClientInfoEvent) => {
+    const modStatusUpdate = checkIsModerator(message);
+    if (!modStatusUpdate) {
+      return null;
+    }
+
+    // Alert the user that they are a moderator.
+    return <ChatModeratorNotification />;
+  };
+
+  const getViewForMessage = (
+    index: number,
+    message: ChatMessage | NameChangeEvent | ConnectedClientInfoEvent,
+  ) => {
     switch (message.type) {
       case MessageType.CHAT:
         return (
@@ -58,6 +76,9 @@ export default function ChatContainer(props: Props) {
         );
       case MessageType.NAME_CHANGE:
         return getNameChangeViewForMessage(message as NameChangeEvent);
+      case MessageType.CONNECTED_USER_INFO:
+        return getConnectedInfoMessage(message);
+
       default:
         return null;
     }
@@ -119,4 +140,15 @@ function isSameUserAsLast(messages: ChatMessage[], index: number) {
   const lastMessage = messages[index - 1];
 
   return id === lastMessage?.user.id;
+}
+
+function checkIsModerator(message) {
+  const { user } = message;
+  const { scopes } = user;
+
+  if (!scopes || scopes.length === 0) {
+    return false;
+  }
+
+  return scopes.includes('MODERATOR');
 }

@@ -258,6 +258,7 @@ export function ClientConfigStore() {
           setChatUserId,
           setIsChatModerator,
         );
+        setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
       case MessageType.CHAT:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);

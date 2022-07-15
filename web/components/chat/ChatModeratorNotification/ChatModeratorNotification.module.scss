@@ -1,0 +1,19 @@
+@import 'styles/mixins.scss';
+
+.chatModerationNotification {
+  background-color: var(--theme-background-primary);
+  margin: 5px;
+  border-radius: 15px;
+  border-color: rgba(0, 0, 0, 0.3);
+  border-width: 1px;
+  border-style: solid;
+  padding: 10px 10px;
+  max-width: 400px;
+  @include flexCenter;
+
+  .icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+  }
+}
