@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatActionMessage from '../components/chat/ChatActionMessage';
+import ChatActionMessage from '../components/chat/ChatAction/ChatActionMessage';
 import Mock from './assets/mocks/chatmessage-action.png';
 
 export default {
@@ -19,8 +19,9 @@ export default {
   },
 } as ComponentMeta<typeof ChatActionMessage>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Template: ComponentStory<typeof ChatActionMessage> = args => <ChatActionMessage {...args} />;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Basic = Template.bind({});
+Basic.args = {
+  body: 'This is a basic action message.',
+};
