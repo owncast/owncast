@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatModerationDetailsModal from '../components/chat/ChatModerationDetailsModal';
+import ChatModerationDetailsModal from '../components/chat/ChatModerationActionMenu/ChatModerationDetailsModal';
 
 export default {
   title: 'owncast/Chat/Moderation modal',
@@ -24,4 +24,4 @@ const Template: ComponentStory<typeof ChatModerationDetailsModal> = args => (
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+export const Example = Template.bind({});

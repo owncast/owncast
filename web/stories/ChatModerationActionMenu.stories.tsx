@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatModerationActionMenu from '../components/chat/ChatModerationActionMenu';
+import ChatModerationActionMenu from '../components/chat/ChatModerationActionMenu/ChatModerationActionMenu';
 
 export default {
   title: 'owncast/Chat/Moderation menu',
@@ -20,7 +20,12 @@ export default {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Template: ComponentStory<typeof ChatModerationActionMenu> = args => (
-  <ChatModerationActionMenu />
+  <ChatModerationActionMenu
+    accessToken="abc123"
+    messageID="xxx"
+    userDisplayName="Fake-User"
+    userID="abc123"
+  />
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
