@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -374,8 +375,9 @@ func Start() error {
 
 	h2s := &http2.Server{}
 	server := &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", ip, port),
-		Handler: h2c.NewHandler(http.DefaultServeMux, h2s),
+		Addr:              fmt.Sprintf("%s:%d", ip, port),
+		ReadHeaderTimeout: 4 * time.Second,
+		Handler:           h2c.NewHandler(http.DefaultServeMux, h2s),
 	}
 
 	log.Infof("Web server is listening on IP %s port %d.", ip, port)
