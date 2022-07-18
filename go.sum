@@ -278,6 +278,8 @@ github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMT
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125 h1:3SNcvBmEPE1YlB1JpVZouslJpI3GBNoiqW7+wb0Rz7w=
 github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125/go.mod h1:M8agBzgqHIhgj7wEn9/0hJUZcrvt9VY+Ln+S1I5Mha0=
+github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569 h1:xzABM9let0HLLqFypcxvLmlvEciCHL7+Lv+4vwZqecI=
+github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569/go.mod h1:2Ly+NIftZN4de9zRmENdYbvPQeaVIYKWpLFStLFEBgI=
 github.com/tklauser/go-sysconf v0.3.10 h1:IJ1AZGZRWbY8T5Vfk04D9WOA5WSejdflXxP03OUqALw=
 github.com/tklauser/go-sysconf v0.3.10/go.mod h1:C8XykCvCb+Gn0oNCWPIlcb0RuglQTYaQ2hGm7jmxEFk=
 github.com/tklauser/numcpus v0.4.0 h1:E53Dm1HjH1/R2/aoCtXtPgzmElmn51aOkhCFSuZq//o=
