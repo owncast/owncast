@@ -102,7 +102,7 @@ export default function ChatContainer(props: Props) {
     () => (
       <>
         <Virtuoso
-          style={{ height: 'calc(100% - 110px)', width: 'auto' }}
+          style={{ height: 'calc(100vh - 170px)', width: 'auto' }}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
