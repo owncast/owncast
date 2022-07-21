@@ -1,7 +1,7 @@
 name: Build and Deploy Components+Style Guide
 on:
   push:
-    paths: ["web/stories/**", "web/components/**"] # Trigger the action only when files change in the folders defined here
+    paths: ['web/stories/**', 'web/components/**'] # Trigger the action only when files change in the folders defined here
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -14,7 +14,7 @@ jobs:
       - name: Install and Build
         run: | # Install npm packages and build the Storybook files
           cd web
-          npm install --include-dev
+          npm install --include-dev --force
           npm run build-storybook -- -o ../docs/components
 
       - name: Dispatch event to web site

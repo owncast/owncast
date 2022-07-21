@@ -1,5 +1,6 @@
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { getUnauthedData } from '../utils/apis';
+
 const ENDPOINT = `/api/chat`;
 const URL_CHAT_REGISTRATION = `/api/chat/register`;
 

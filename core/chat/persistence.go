@@ -1,6 +1,8 @@
 package chat
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -298,6 +300,29 @@ func GetChatHistory() []interface{} {
 	}
 
 	return m
+}
+
+// GetMessagesFromUser returns chat messages that were sent by a specific user.
+func GetMessagesFromUser(userID string) ([]events.UserMessageEvent, error) {
+	query, err := _datastore.GetQueries().GetMessagesFromUser(context.Background(), sql.NullString{String: userID, Valid: true})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]events.UserMessageEvent, len(query))
+	for i, row := range query {
+		results[i] = events.UserMessageEvent{
+			Event: events.Event{
+				Timestamp: row.Timestamp.Time,
+				ID:        row.ID,
+			},
+			MessageEvent: events.MessageEvent{
+				Body: row.Body.String,
+			},
+		}
+	}
+
+	return results, nil
 }
 
 // SetMessageVisibilityForUserID will bulk change the visibility of messages for a user
