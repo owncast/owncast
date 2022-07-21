@@ -27,7 +27,7 @@
     "he": "^1.2.0",
     "lodash": "4.17.21",
     "markdown-it": "12.3.2",
-    "next": "^12.1.5",
+    "next": "^12.2.2",
     "next-with-less": "^2.0.5",
     "picmo": "^5.1.0",
     "postcss-flexbugs-fixes": "^5.0.2",
