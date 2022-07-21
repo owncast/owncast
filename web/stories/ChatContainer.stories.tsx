@@ -35,8 +35,8 @@ const AddMessagesChatExample = args => {
       </button>
       <ChatContainer
         messages={chatMessages}
-        usernameToHighlight={null}
-        chatUserId={null}
+        usernameToHighlight="testuser"
+        chatUserId="testuser"
         isModerator={false}
         isMobile={false}
       />
