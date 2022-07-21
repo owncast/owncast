@@ -4,15 +4,13 @@ import {
   EyeInvisibleOutlined,
   SmallDashOutlined,
 } from '@ant-design/icons';
-import { Dropdown, Menu, MenuProps, Space, Modal } from 'antd';
+import { Dropdown, Menu, MenuProps, Space, Modal, message } from 'antd';
 import { useState } from 'react';
 import ChatModerationDetailsModal from './ChatModerationDetailsModal';
 import s from './ChatModerationActionMenu.module.scss';
+import ChatModeration from '../../../services/moderation-service';
 
 const { confirm } = Modal;
-
-const HIDE_MESSAGE_ENDPOINT = `/api/chat/messagevisibility`;
-const BAN_USER_ENDPOINT = `/api/chat/users/setenabled`;
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 interface Props {
@@ -27,42 +25,20 @@ export default function ChatModerationActionMenu(props: Props) {
   const [showUserDetailsModal, setShowUserDetailsModal] = useState(false);
 
   const handleBanUser = async () => {
-    const url = new URL(BAN_USER_ENDPOINT);
-    url.searchParams.append('accessToken', accessToken);
-    const hideMessageUrl = url.toString();
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userID }),
-    };
-
     try {
-      await fetch(hideMessageUrl, options);
+      await ChatModeration.banUser(userID, accessToken);
     } catch (e) {
       console.error(e);
+      message.error(e);
     }
   };
 
   const handleHideMessage = async () => {
-    const url = new URL(HIDE_MESSAGE_ENDPOINT);
-    url.searchParams.append('accessToken', accessToken);
-    const hideMessageUrl = url.toString();
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ idArray: [messageID] }),
-    };
-
     try {
-      await fetch(hideMessageUrl, options);
+      await ChatModeration.removeMessage(messageID, accessToken);
     } catch (e) {
       console.error(e);
+      message.error(e);
     }
   };
 
@@ -141,12 +117,14 @@ export default function ChatModerationActionMenu(props: Props) {
       </Dropdown>
       <Modal
         visible={showUserDetailsModal}
-        footer={null}
+        okText="Ban User"
+        okButtonProps={{ danger: true }}
+        onOk={handleBanUser}
         onCancel={() => {
           setShowUserDetailsModal(false);
         }}
       >
-        <ChatModerationDetailsModal />
+        <ChatModerationDetailsModal userId={userID} accessToken={accessToken} />
       </Modal>
     </>
   );

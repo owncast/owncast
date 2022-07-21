@@ -17,6 +17,7 @@ module.exports = {
     'storybook-addon-designs',
     'storybook-dark-mode',
     'addon-screen-reader',
+    'storybook-addon-fetch-mock',
   ],
   webpackFinal: async (config, { configType }) => {
     // @see https://github.com/storybookjs/storybook/issues/9070

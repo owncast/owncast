@@ -6,6 +6,9 @@ import { themes } from '@storybook/theming';
 import { DocsContainer } from './storybook-theme';
 
 export const parameters = {
+  fetchMock: {
+    mocks: [],
+  },
   actions: { argTypesRegex: '^on[A-Z].*' },
   docs: {
     container: DocsContainer,

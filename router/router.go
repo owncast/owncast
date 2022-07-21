@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/controllers/admin"
 	fediverseauth "github.com/owncast/owncast/controllers/auth/fediverse"
 	"github.com/owncast/owncast/controllers/auth/indieauth"
+	"github.com/owncast/owncast/controllers/moderation"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -322,6 +323,9 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+
+	// Get a user's details
+	http.HandleFunc("/api/moderation/chat/user/", middleware.RequireUserModerationScopeAccesstoken(moderation.GetUserDetails))
 
 	// Configure Federation features
 
