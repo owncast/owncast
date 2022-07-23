@@ -76,22 +76,32 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 
 ## Building from Source
 
+Owncast consists of two projects.
+
+1. The Owncast backend written in Go.
+1. The frontend written in React.
+
+[Read more about running from source](https://owncast.online/docs/building/).
+
 ### Backend
 
 The Owncast backend is a service written in Go.
 
-1. Ensure you have the gcc compiler installed.
+1. Ensure you have a c compiler installed.
 1. Install the [Go toolchain](https://golang.org/dl/) (1.16 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from source.
 1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
-There is also a supplied `Dockerfile` so you can spin it up from source with little effort. [Read more about running from source](https://owncast.online/docs/building/).
-
 ### Frontend
 
-The Owncast [Web Frontend](web/) is a React application that is worked on seperately from the backend.  Visit the [web readme](web/README.md) for details.
+The frontend is the web interface that includes the player, chat, embed components, and other UI.
+
+1. This project lives in the `web` directory.
+1. Run `npm install` to install the Javascript dependencies.
+1. Run `npm run dev` 
+
 
 ## Contributing
 
@@ -103,15 +113,7 @@ We’ve been very lucky to have this so far, so maybe you can help us with your 
 
 There is a larger, more detailed, and more up-to-date [guide for helping contribute to Owncast on our website](https://owncast.online/help/).
 
-### Architecture
 
-Owncast consists of two repositories with two standalone projects. [The repo you're looking at now](https://github.com/owncast/owncast) is the core repository with the backend and frontend.
-
-### Suggestions when working with the Owncast codebase
-
-1. Install [golangci-lint](https://golangci-lint.run/usage/install/) for helpful warnings and suggestions [directly in your editor](https://golangci-lint.run/usage/integrations/) when writing Go.
-1. If using VSCode install the [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) extension to aid in syntax highlighting of our frontend HTML + Preact.
-1. Run the project with `go run main.go`.
 
 
 <!-- LICENSE -->
@@ -126,6 +128,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Project chat: [Join us on Rocket.Chat](https://owncast.rocket.chat/home) if you want to contribute, follow along, or if you have questions.
 
-Gabe Kangas - [@gabek@fosstodon.org](https://fosstodon.org/@gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
+Gabe Kangas - [@gabek@social.gabekangas.com](https://fosstodon.org/@gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
 
 Project Link: [https://github.com/owncast/owncast](https://github.com/owncast/owncast)
