@@ -74,7 +74,7 @@ build:
 
   WORKDIR /build
   # MacOSX disallows static executables, so we omit the static flag on this platform
-  RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -o owncast main.go
+  RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
   COPY +tailwind/prod-tailwind.min.css /build/dist/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
 
   SAVE ARTIFACT owncast owncast
