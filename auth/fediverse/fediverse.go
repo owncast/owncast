@@ -19,9 +19,19 @@ type OTPRegistration struct {
 // to be active at a time.
 var pendingAuthRequests = make(map[string]OTPRegistration)
 
+const registrationTimeout = time.Minute * 10
+
 // RegisterFediverseOTP will start the OTP flow for a user, creating a new
 // code and returning it to be sent to a destination.
-func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) OTPRegistration {
+func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) (OTPRegistration, bool) {
+	request, requestExists := pendingAuthRequests[accessToken]
+
+	// If a request is already registered and has not expired then return that
+	// existing request.
+	if requestExists && time.Since(request.Timestamp) < registrationTimeout {
+		return request, false
+	}
+
 	code, _ := createCode()
 	r := OTPRegistration{
 		Code:            code,
@@ -32,14 +42,14 @@ func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) 
 	}
 	pendingAuthRequests[accessToken] = r
 
-	return r
+	return r, true
 }
 
 // ValidateFediverseOTP will verify a OTP code for a auth request.
 func ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
 	request, ok := pendingAuthRequests[accessToken]
 
-	if !ok || request.Code != code || time.Since(request.Timestamp) > time.Minute*10 {
+	if !ok || request.Code != code || time.Since(request.Timestamp) > registrationTimeout {
 		return false, nil
 	}
 
