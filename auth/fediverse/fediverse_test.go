@@ -10,7 +10,11 @@ const (
 )
 
 func TestOTPFlowValidation(t *testing.T) {
-	r := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	r, success := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+
+	if !success {
+		t.Error("Registration should be permitted.")
+	}
 
 	if r.Code == "" {
 		t.Error("Code is empty")
@@ -39,5 +43,18 @@ func TestOTPFlowValidation(t *testing.T) {
 
 	if registration.UserDisplayName != userDisplayName {
 		t.Error("UserDisplayName is not set correctly")
+	}
+}
+
+func TestSingleOTPFlowRequest(t *testing.T) {
+	r1, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	r2, s2 := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+
+	if r1.Code != r2.Code {
+		t.Error("Only one registration should be permitted.")
+	}
+
+	if s2 {
+		t.Error("Second registration should not be permitted.")
 	}
 }

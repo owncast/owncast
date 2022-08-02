@@ -29,7 +29,12 @@ func RegisterFediverseOTPRequest(u user.User, w http.ResponseWriter, r *http.Req
 	}
 
 	accessToken := r.URL.Query().Get("accessToken")
-	reg := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	reg, success := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "Could not register auth request. One may already be pending. Try again later.")
+		return
+	}
+
 	msg := fmt.Sprintf("<p>This is an automated message from %s. If you did not request this message please ignore or block. Your requested one-time code is:</p><p>%s</p>", data.GetServerName(), reg.Code)
 	if err := activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
 		controllers.WriteSimpleResponse(w, false, "Could not send code to fediverse: "+err.Error())
