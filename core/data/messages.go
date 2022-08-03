@@ -23,11 +23,10 @@ func CreateMessagesTable(db *sql.DB) {
 		"image" TEXT,
 		"link" TEXT,
 		PRIMARY KEY (id)
-	);
-	`
+	);`
 	MustExec(createTableSQL, db)
 
-	// Crate indexes
+	// Create indexes
 	MustExec(`CREATE INDEX IF NOT EXISTS user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);`, db)
 	MustExec(`CREATE INDEX IF NOT EXISTS idx_id ON messages (id);`, db)
 	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON messages (user_id);`, db)
