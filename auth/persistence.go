@@ -6,7 +6,6 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/db"
 )
@@ -24,18 +23,9 @@ func Setup(db *data.Datastore) {
     "type" TEXT NOT NULL,
 		"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
-	);CREATE INDEX auth_token ON auth (token);`
-
-	stmt, err := db.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	);`
+	_datastore.MustExec(createTableSQL)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_auth_token ON auth (token);`)
 }
 
 // AddAuth will add an external authentication token and type for a user.

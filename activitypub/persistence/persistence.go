@@ -202,17 +202,10 @@ func createFederatedActivitiesTable() {
     "actor" TEXT NOT NULL,
     "type" TEXT NOT NULL,
 		"timestamp" TIMESTAMP NOT NULL
-	);
-	CREATE INDEX iri_actor_index ON ap_accepted_activities (iri,actor);`
+	);`
 
-	stmt, err := _datastore.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal("error creating inbox table", err)
-	}
-	defer stmt.Close()
-	if _, err := stmt.Exec(); err != nil {
-		log.Fatal("error creating inbound federated activities table", err)
-	}
+	_datastore.MustExec(createTableSQL)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri_actor_index ON ap_accepted_activities (iri,actor);`)
 }
 
 func createFederationOutboxTable() {
@@ -223,20 +216,12 @@ func createFederationOutboxTable() {
 		"type" TEXT NOT NULL,
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "live_notification" BOOLEAN DEFAULT FALSE,
-		PRIMARY KEY (iri));
-		CREATE INDEX iri ON ap_outbox (iri);
-		CREATE INDEX type ON ap_outbox (type);
-    CREATE INDEX live_notification ON ap_outbox (live_notification);`
+		PRIMARY KEY (iri));`
 
-	stmt, err := _datastore.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln("error executing sql creating outbox table", createTableSQL, err)
-	}
+	_datastore.MustExec(createTableSQL)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri ON ap_outbox (iri);`)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_type ON ap_outbox (type);`)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_live_notification ON ap_outbox (live_notification);`)
 }
 
 // GetOutboxPostCount will return the number of posts in the outbox.
