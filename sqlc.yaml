@@ -1,0 +1,6 @@
+version: 1
+packages:
+  - path: db
+    name: db
+    schema: 'db/schema.sql'
+    queries: 'db/query.sql'
