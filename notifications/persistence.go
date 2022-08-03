@@ -17,18 +17,10 @@ func createNotificationsTable(db *sql.DB) {
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		"channel" TEXT NOT NULL,
 		"destination" TEXT NOT NULL,
-		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
-		CREATE INDEX channel_index ON notifications (channel);`
+		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
 
-	stmt, err := db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln("error executing sql creating followers table", createTableSQL, err)
-	}
+	data.MustExec(createTableSQL, db)
+	data.MustExec(`CREATE INDEX IF NOT EXISTS idx_channel ON notifications (channel);`, db)
 }
 
 // AddNotification saves a new user notification destination.
