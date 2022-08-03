@@ -28,12 +28,12 @@ func CreateMessagesTable(db *sql.DB) {
 	MustExec(createTableSQL, db)
 
 	// Crate indexes
-	MustExec(`CREATE INDEX user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);`, db)
-	MustExec(`CREATE INDEX idx_id ON messages (id);`, db)
-	MustExec(`CREATE INDEX idx_user_id ON messages (user_id);`, db)
-	MustExec(`CREATE INDEX idx_hidden_at ON messages (hidden_at);`, db)
-	MustExec(`CREATE INDEX idx_timestamp ON messages (timestamp);`, db)
-	MustExec(`CREATE INDEX idx_messages_hidden_at_timestamp on messages(hidden_at, timestamp);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_id ON messages (id);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON messages (user_id);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_hidden_at ON messages (hidden_at);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_timestamp ON messages (timestamp);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_messages_hidden_at_timestamp on messages(hidden_at, timestamp);`, db)
 }
 
 // GetMessagesCount will return the number of messages in the database.
