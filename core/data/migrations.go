@@ -48,7 +48,7 @@ func migrateToSchema6(db *sql.DB) {
 	// Fix chat messages table schema. Since chat is ephemeral we can drop
 	// the table and recreate it.
 	// Drop the old messages table
-	mustExec(`DROP TABLE messages`, db)
+	MustExec(`DROP TABLE messages`, db)
 
 	// Recreate it
 	CreateMessagesTable(db)
