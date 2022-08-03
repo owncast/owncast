@@ -24,19 +24,10 @@ func createFederationFollowersTable() {
 		"approved_at" TIMESTAMP,
     "disabled_at" TIMESTAMP,
     "request_object" BLOB,
-		PRIMARY KEY (iri));
-		CREATE INDEX iri_index ON ap_followers (iri);
-    CREATE INDEX approved_at_index ON ap_followers (approved_at);`
-
-	stmt, err := _datastore.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln("error executing sql creating followers table", createTableSQL, err)
-	}
+		PRIMARY KEY (iri));`
+	_datastore.MustExec(createTableSQL)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri ON ap_followers (iri);`)
+	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_approved_at ON ap_followers (approved_at);`)
 }
 
 // GetFollowerCount will return the number of followers we're keeping track of.

@@ -41,20 +41,12 @@ func createUsersTable(db *sql.DB) {
 		"type" TEXT DEFAULT 'STANDARD',
 		"last_used" DATETIME DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (id)
-	);CREATE INDEX user_id_disabled_at_index ON users (id, disabled_at);
-	CREATE INDEX user_id_index ON users (id);
-  CREATE INDEX user_id_disabled_index ON users (id, disabled_at);
-	CREATE INDEX user_disabled_at_index ON USERS (disabled_at);`
+	);`
 
-	stmt, err := db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Warnln(err)
-	}
+	MustExec(createTableSQL, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON users (id);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id_disabled ON users (id, disabled_at);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_disabled_at ON users (disabled_at);`, db)
 }
 
 // GetUsersCount will return the number of users in the database.
