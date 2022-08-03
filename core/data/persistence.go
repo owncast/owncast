@@ -118,18 +118,9 @@ func (ds *Datastore) Setup() {
 		"key" string NOT NULL PRIMARY KEY,
 		"value" BLOB,
 		"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL
-	);CREATE INDEX IF NOT EXISTS messages_timestamp_index ON messages(timestamp);`
+	);`
 
-	stmt, err := ds.DB.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	ds.MustExec(createTableSQL)
 
 	if !HasPopulatedDefaults() {
 		PopulateDefaults()
@@ -172,4 +163,17 @@ func (ds *Datastore) Reset() {
 // GetDatastore returns the shared instance of the owncast datastore.
 func GetDatastore() *Datastore {
 	return _datastore
+}
+
+// MustExec will execute a SQL statement on a provided database instance.
+func (ds *Datastore) MustExec(s string) {
+	stmt, err := ds.DB.Prepare(s)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
 }
