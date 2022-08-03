@@ -29,8 +29,6 @@ SELECT iri, inbox, name, username, image, request, request_object, created_at, a
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
 
--- name: GetObjectFromOutboxByID :one
-SELECT value FROM ap_outbox WHERE iri = $1;
 
 -- name: GetObjectFromOutboxByIRI :one
 SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1;
