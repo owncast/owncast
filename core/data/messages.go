@@ -24,15 +24,15 @@ func CreateMessagesTable(db *sql.DB) {
 		"link" TEXT,
 		PRIMARY KEY (id)
 	);`
-	mustExec(createTableSQL, db)
+	MustExec(createTableSQL, db)
 
 	// Create indexes
-	mustExec(`CREATE INDEX IF NOT EXISTS user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);`, db)
-	mustExec(`CREATE INDEX IF NOT EXISTS idx_id ON messages (id);`, db)
-	mustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON messages (user_id);`, db)
-	mustExec(`CREATE INDEX IF NOT EXISTS idx_hidden_at ON messages (hidden_at);`, db)
-	mustExec(`CREATE INDEX IF NOT EXISTS idx_timestamp ON messages (timestamp);`, db)
-	mustExec(`CREATE INDEX IF NOT EXISTS idx_messages_hidden_at_timestamp on messages(hidden_at, timestamp);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_id ON messages (id);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON messages (user_id);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_hidden_at ON messages (hidden_at);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_timestamp ON messages (timestamp);`, db)
+	MustExec(`CREATE INDEX IF NOT EXISTS idx_messages_hidden_at_timestamp on messages(hidden_at, timestamp);`, db)
 }
 
 // GetMessagesCount will return the number of messages in the database.
