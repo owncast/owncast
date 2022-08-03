@@ -6,8 +6,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// MustExec will execute a SQL statement on a provided database instance.
-func MustExec(s string, db *sql.DB) {
+// mustExec will execute a SQL statement on a provided database instance.
+func mustExec(s string, db *sql.DB) {
 	stmt, err := db.Prepare(s)
 	if err != nil {
 		log.Fatal(err)
