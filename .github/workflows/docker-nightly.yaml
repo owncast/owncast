@@ -6,7 +6,7 @@ name: Build nightly docker
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 2 * * *"
+    - cron: '0 2 * * *'
 
 jobs:
   Docker:
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: earthly/actions-setup@v1
         with:
-          version: "latest" # or pin to an specific version, e.g. "v0.6.10"
+          version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
 
       - name: Earthly version
         run: earthly --version

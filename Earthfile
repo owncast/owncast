@@ -17,11 +17,11 @@ docker-all:
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
-  RUN apk add --update --no-cache wget tar gzip >> /dev/null
-  RUN curl https://httpbin.org/get
-  RUN wget "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" && tar zxf armv7l-linux-musleabihf-cross.tgz -C /usr/ --strip-components=1
-  RUN wget "https://musl.cc/i686-linux-musl-cross.tgz" && tar zxf i686-linux-musl-cross.tgz -C /usr/ --strip-components=1
-  RUN wget "https://musl.cc/x86_64-linux-musl-cross.tgz" && tar zxf x86_64-linux-musl-cross.tgz -C /usr/ --strip-components=1
+  RUN apk add --update --no-cache tar gzip >> /dev/null
+  # RUN curl -sfL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar xf - -C /usr/ --strip-components=1
+  RUN curl -fL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar xf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://musl.cc/i686-linux-musl-cross.tgz" | tar xf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://musl.cc/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
 
 code:
   FROM --platform=linux/amd64 +crosscompiler
