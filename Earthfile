@@ -1,6 +1,6 @@
 VERSION --new-platform 0.6
 
-FROM --platform=linux/amd64 alpine:latest
+FROM --platform=linux/amd64 alpine:3.15.5
 ARG version=develop
 
 WORKDIR /build
@@ -17,8 +17,10 @@ docker-all:
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
-  RUN curl -sfL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
-  RUN curl -sfL "https://musl.cc/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN apk add --update --no-cache tar gzip >> /dev/null
+  # RUN curl -sfL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar xf - -C /usr/ --strip-components=1
+  RUN curl -fL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" -o armv7l-linux-musleabihf-cross.tgz && tar zxf armv7l-linux-musleabihf-cross.tgz -C /usr/ --strip-components=1
+  RUN curl -sfL "https://musl.cc/i686-linux-musl-cross.tgz" | tar xf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://musl.cc/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
 
 code:
@@ -119,7 +121,7 @@ docker:
   ARG image=ghcr.io/owncast/owncast
   ARG tag=develop
   ARG TARGETPLATFORM
-  FROM --platform=$TARGETPLATFORM alpine:latest
+  FROM --platform=$TARGETPLATFORM alpine:3.15.5
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   WORKDIR /app
   COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
