@@ -18,10 +18,9 @@ crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
   RUN apk add --update --no-cache tar gzip >> /dev/null
-  # RUN curl -sfL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar xf - -C /usr/ --strip-components=1
-  RUN curl -fL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar xf - -C /usr/ --strip-components=1
-  RUN curl -sfL "https://musl.cc/i686-linux-musl-cross.tgz" | tar xf - -C /usr/ --strip-components=1
-  RUN curl -sfL "https://musl.cc/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
 
 code:
   FROM --platform=linux/amd64 +crosscompiler
