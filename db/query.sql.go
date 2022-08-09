@@ -478,17 +478,6 @@ func (q *Queries) GetNotificationDestinationsForChannel(ctx context.Context, cha
 	return items, nil
 }
 
-const getObjectFromOutboxByID = `-- name: GetObjectFromOutboxByID :one
-SELECT value FROM ap_outbox WHERE iri = $1
-`
-
-func (q *Queries) GetObjectFromOutboxByID(ctx context.Context, iri string) ([]byte, error) {
-	row := q.db.QueryRowContext(ctx, getObjectFromOutboxByID, iri)
-	var value []byte
-	err := row.Scan(&value)
-	return value, err
-}
-
 const getObjectFromOutboxByIRI = `-- name: GetObjectFromOutboxByIRI :one
 SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1
 `

@@ -1,6 +1,6 @@
 VERSION --new-platform 0.6
 
-FROM --platform=linux/amd64 alpine:latest
+FROM --platform=linux/amd64 alpine:3.15.5
 ARG version=develop
 
 WORKDIR /build
@@ -17,9 +17,10 @@ docker-all:
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
-  RUN curl -sfL "https://musl.cc/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
-  RUN curl -sfL "https://musl.cc/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
-  RUN curl -sfL "https://musl.cc/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN apk add --update --no-cache tar gzip >> /dev/null
+  RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+  RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
 
 code:
   FROM --platform=linux/amd64 +crosscompiler
@@ -74,7 +75,7 @@ build:
 
   WORKDIR /build
   # MacOSX disallows static executables, so we omit the static flag on this platform
-  RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -o owncast main.go
+  RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
 
   SAVE ARTIFACT owncast owncast
   SAVE ARTIFACT README.md README.md
@@ -107,7 +108,7 @@ docker:
   ARG image=ghcr.io/owncast/owncast
   ARG tag=develop
   ARG TARGETPLATFORM
-  FROM --platform=$TARGETPLATFORM alpine:latest
+  FROM --platform=$TARGETPLATFORM alpine:3.15.5
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   WORKDIR /app
   COPY --platform=$TARGETPLATFORM +package/owncast.zip /app

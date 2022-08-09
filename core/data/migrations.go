@@ -29,6 +29,8 @@ func migrateDatabaseSchema(db *sql.DB, from, to int) error {
 			migrateToSchema4(db)
 		case 4:
 			migrateToSchema5(db)
+		case 5:
+			migrateToSchema6(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}
@@ -40,6 +42,16 @@ func migrateDatabaseSchema(db *sql.DB, from, to int) error {
 	}
 
 	return nil
+}
+
+func migrateToSchema6(db *sql.DB) {
+	// Fix chat messages table schema. Since chat is ephemeral we can drop
+	// the table and recreate it.
+	// Drop the old messages table
+	MustExec(`DROP TABLE messages`, db)
+
+	// Recreate it
+	CreateMessagesTable(db)
 }
 
 // nolint:cyclop
