@@ -21,3 +21,8 @@ export const DemoServer = Template.bind({});
 DemoServer.args = {
   src: 'https://watch.owncast.online/logo',
 };
+
+export const NotSquare = Template.bind({});
+NotSquare.args = {
+  src: 'https://via.placeholder.com/150x325/FF0000/FFFFFF?text=Rectangle',
+};

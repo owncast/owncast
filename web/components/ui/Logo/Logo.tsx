@@ -1,3 +1,4 @@
+import { Image } from 'antd';
 import s from './Logo.module.scss';
 
 interface Props {
@@ -8,7 +9,7 @@ export default function Logo({ src }: Props) {
   return (
     <div className={s.root}>
       <div className={s.container}>
-        <div className={s.image} style={{ backgroundImage: `url(${src})` }} />
+        <Image src={src} alt="Logo" className={s.image} rootClassName={s.image} />
       </div>
     </div>
   );
