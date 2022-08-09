@@ -4,25 +4,25 @@ go 1.17
 
 require (
 	github.com/amalfra/etag v1.0.0
-	github.com/aws/aws-sdk-go v1.44.28
+	github.com/aws/aws-sdk-go v1.44.69
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gorilla/websocket v1.5.0
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/mattn/go-sqlite3 v1.14.13
-	github.com/microcosm-cc/bluemonday v1.0.18
+	github.com/mattn/go-sqlite3 v1.14.14
+	github.com/microcosm-cc/bluemonday v1.0.19
 	github.com/mssola/user_agent v0.5.3
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oschwald/geoip2-golang v1.7.0
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
-	github.com/sirupsen/logrus v1.8.1
-	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
-	github.com/yuin/goldmark v1.4.12
+	github.com/sirupsen/logrus v1.9.0
+	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
+	github.com/yuin/goldmark v1.4.13
 	golang.org/x/mod v0.5.1
-	golang.org/x/time v0.0.0-20220411224347-583f2d630306
+	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9
 	mvdan.cc/xurls v1.1.0
 )
 
@@ -35,8 +35,8 @@ require (
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
-	golang.org/x/net v0.0.0-20220607020251-c690dde0001d
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/net v0.0.0-20220802222814-0bcc04d9c69b
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 )
 
 require github.com/prometheus/client_golang v1.12.2
@@ -57,7 +57,7 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.5
-	github.com/shirou/gopsutil/v3 v3.22.3
+	github.com/shirou/gopsutil/v3 v3.22.7
 )
 
 require github.com/SherClockHolmes/webpush-go v1.2.0
