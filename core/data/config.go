@@ -66,6 +66,7 @@ const (
 	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 	hideViewerCountKey                   = "hide_viewer_count"
+	customOfflineMessageKey              = "custom_offline_message"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -919,4 +920,15 @@ func GetHideViewerCount() bool {
 // SetHideViewerCount will set if the viewer count should be hidden.
 func SetHideViewerCount(hide bool) error {
 	return _datastore.SetBool(hideViewerCountKey, hide)
+}
+
+// GetCustomOfflineMessage will return the custom offline message.
+func GetCustomOfflineMessage() string {
+	message, _ := _datastore.GetString(customOfflineMessageKey)
+	return message
+}
+
+// SetCustomOfflineMessage will set the custom offline message.
+func SetCustomOfflineMessage(message string) error {
+	return _datastore.SetString(customOfflineMessageKey, message)
 }

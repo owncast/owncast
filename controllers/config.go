@@ -18,6 +18,7 @@ import (
 type webConfigResponse struct {
 	Name                 string                       `json:"name"`
 	Summary              string                       `json:"summary"`
+	OfflineMessage       string                       `json:"offlineMessage"`
 	Logo                 string                       `json:"logo"`
 	Tags                 []string                     `json:"tags"`
 	Version              string                       `json:"version"`
@@ -108,6 +109,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	configuration := webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
+		OfflineMessage:       data.GetCustomOfflineMessage(),
 		Logo:                 "/logo",
 		Tags:                 data.GetServerMetadataTags(),
 		Version:              config.GetReleaseString(),

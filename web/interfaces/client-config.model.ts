@@ -2,6 +2,7 @@ export interface ClientConfig {
   name: string;
   title?: string;
   summary: string;
+  offlineMessage?: string;
   logo: string;
   tags: string[];
   version: string;
@@ -46,6 +47,7 @@ export function makeEmptyClientConfig(): ClientConfig {
   return {
     name: '',
     summary: '',
+    offlineMessage: '',
     logo: '',
     tags: [],
     version: '',

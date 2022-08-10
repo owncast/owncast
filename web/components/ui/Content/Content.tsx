@@ -53,7 +53,7 @@ export default function ContentComponent() {
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const { viewerCount, lastConnectTime, lastDisconnectTime } =
     useRecoilValue<ServerStatus>(serverStatusState);
-  const { extraPageContent, version, name, externalActions } = clientConfig;
+  const { extraPageContent, version, name, externalActions, offlineMessage } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
@@ -109,7 +109,10 @@ export default function ContentComponent() {
           {!online && (
             <OfflineBanner
               name={name}
-              text="Stream is offline text goes here. Will create a new form to set it in the Admin."
+              text={
+                offlineMessage ||
+                'Stream is offline text goes here. Will create a new form to set it in the Admin.'
+              }
             />
           )}
           <StatusBar

@@ -41,6 +41,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			ExtraPageContent: data.GetExtraPageBodyContent(),
 			StreamTitle:      data.GetStreamTitle(),
 			WelcomeMessage:   data.GetServerWelcomeMessage(),
+			OfflineMessage:   data.GetCustomOfflineMessage(),
 			Logo:             data.GetLogoPath(),
 			SocialHandles:    data.GetSocialHandles(),
 			NSFW:             data.GetNSFW(),
@@ -126,6 +127,7 @@ type webConfigResponse struct {
 	Name             string                `json:"name"`
 	Summary          string                `json:"summary"`
 	WelcomeMessage   string                `json:"welcomeMessage"`
+	OfflineMessage   string                `json:"offlineMessage"`
 	Logo             string                `json:"logo"`
 	Tags             []string              `json:"tags"`
 	Version          string                `json:"version"`
