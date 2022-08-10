@@ -324,10 +324,10 @@ func StringMapKeys(stringMap map[string]interface{}) []string {
 // GenerateRandomDisplayColor will return a random number that is used for
 // referencing a color value client-side. These colors are seen as
 // --theme-user-colors-n.
-func GenerateRandomDisplayColor() int {
-	rangeLower := 1
-	rangeUpper := 8
-	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
+func GenerateRandomDisplayColor(maxColor int) int {
+	rangeLower := 0
+	rangeUpper := maxColor
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint:gosec
 }
 
 // GetHostnameFromURL will return the hostname component from a URL string.

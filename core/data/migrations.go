@@ -291,7 +291,7 @@ func migrateToSchema1(db *sql.DB) {
 
 	// Recreate them as users
 	for _, token := range oldAccessTokens {
-		color := utils.GenerateRandomDisplayColor()
+		color := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 		if err := insertAPIToken(db, token.accessToken, token.displayName, color, token.scopes); err != nil {
 			log.Errorln("Error migrating access token", err)
 		}

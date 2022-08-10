@@ -36,19 +36,19 @@ theme:
 
   user-colors:
     comment: 'Colors used to display chat users.'
-    1:
+    0:
       value: '{color.owncast.user.1.value}'
-    2:
+    1:
       value: '{color.owncast.user.2.value}'
-    3:
+    2:
       value: '{color.owncast.user.3.value}'
-    4:
+    3:
       value: '{color.owncast.user.4.value}'
-    5:
+    4:
       value: '{color.owncast.user.5.value}'
-    6:
+    5:
       value: '{color.owncast.user.6.value}'
-    7:
+    6:
       value: '{color.owncast.user.7.value}'
-    8:
+    7:
       value: '{color.owncast.user.8.value}'

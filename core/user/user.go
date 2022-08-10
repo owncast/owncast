@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/utils"
@@ -70,7 +71,7 @@ func CreateAnonymousUser(displayName string) (*User, string, error) {
 		}
 	}
 
-	displayColor := utils.GenerateRandomDisplayColor()
+	displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
 	user := &User{
 		ID:           id,
@@ -120,6 +121,21 @@ func ChangeUsername(userID string, username string) error {
 		NamechangedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	}); err != nil {
 		return errors.Wrap(err, "unable to change display name")
+	}
+
+	return nil
+}
+
+// ChangeUserColor will change the user associated to userID from one display name to another.
+func ChangeUserColor(userID string, color int) error {
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	if err := _datastore.GetQueries().ChangeDisplayColor(context.Background(), db.ChangeDisplayColorParams{
+		DisplayColor: int32(color),
+		ID:           userID,
+	}); err != nil {
+		return errors.Wrap(err, "unable to change display color")
 	}
 
 	return nil

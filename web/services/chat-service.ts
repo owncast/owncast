@@ -8,6 +8,7 @@ interface UserRegistrationResponse {
   id: string;
   accessToken: string;
   displayName: string;
+  displayColor: number;
 }
 
 class ChatService {

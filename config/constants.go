@@ -11,6 +11,9 @@ const (
 	DataDirectory = "data"
 	// EmojiDir is relative to the static directory.
 	EmojiDir = "/img/emoji"
+	// MaxUserColor is the largest color value available to assign to users.
+	// They start at 0 and can be treated as IDs more than colors themselves.
+	MaxUserColor = 7
 )
 
 var (

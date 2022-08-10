@@ -46,6 +46,11 @@ export const chatDisplayNameAtom = atom<string>({
   default: null,
 });
 
+export const chatDisplayColorAtom = atom<number>({
+  key: 'chatDisplayColor',
+  default: null,
+});
+
 export const chatUserIdAtom = atom<string>({
   key: 'chatUserIdAtom',
   default: null,
@@ -149,6 +154,7 @@ export function ClientConfigStore() {
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
 
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
+  const setChatDisplayColor = useSetRecoilState<Number>(chatDisplayColorAtom);
   const setChatUserId = useSetRecoilState<string>(chatUserIdAtom);
   const setIsChatModerator = useSetRecoilState<boolean>(isChatModeratorAtom);
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
@@ -225,7 +231,7 @@ export function ClientConfigStore() {
       sendEvent(AppStateEvent.NeedsRegister);
       const response = await ChatService.registerUser(optionalDisplayName);
       console.log(`ChatService -> registerUser() response: \n${response}`);
-      const { accessToken: newAccessToken, displayName: newDisplayName } = response;
+      const { accessToken: newAccessToken, displayName: newDisplayName, displayColor } = response;
       if (!newAccessToken) {
         return;
       }
@@ -234,6 +240,7 @@ export function ClientConfigStore() {
       setAccessToken(newAccessToken);
       setLocalStorage(ACCESS_TOKEN_KEY, newAccessToken);
       setChatDisplayName(newDisplayName);
+      setChatDisplayColor(displayColor);
     } catch (e) {
       sendEvent(AppStateEvent.Fail);
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
@@ -255,6 +262,7 @@ export function ClientConfigStore() {
         handleConnectedClientInfoMessage(
           message as ConnectedClientInfoEvent,
           setChatDisplayName,
+          setChatDisplayColor,
           setChatUserId,
           setIsChatModerator,
         );

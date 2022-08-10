@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -89,6 +90,25 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 
 	// Resend the client's user so their username is in sync.
 	eventData.client.sendConnectedClientInfo()
+}
+
+func (s *Server) userColorChanged(eventData chatClientEvent) {
+	var receivedEvent events.ColorChangeEvent
+	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
+		log.Errorln("error unmarshalling to ColorChangeEvent", err)
+		return
+	}
+
+	// Verify this color is valid
+	if receivedEvent.NewColor > config.MaxUserColor {
+		log.Errorln("invalid color requested when changing user display color")
+		return
+	}
+
+	// Save the new color
+	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
+		log.Errorln("error changing user display color", err)
+	}
 }
 
 func (s *Server) userMessageSent(eventData chatClientEvent) {

@@ -4,6 +4,7 @@ export enum MessageType {
   CHAT = 'CHAT',
   PING = 'PING',
   NAME_CHANGE = 'NAME_CHANGE',
+  COLOR_CHANGE = 'COLOR_CHANGE',
   PONG = 'PONG',
   SYSTEM = 'SYSTEM',
   USER_JOINED = 'USER_JOINED',
