@@ -359,6 +359,8 @@ func (s *Server) eventReceived(event chatClientEvent) {
 	case events.UserNameChanged:
 		s.userNameChanged(event)
 
+	case events.UserColorChanged:
+		s.userColorChanged(event)
 	default:
 		log.Debugln(eventType, "event not found:", typecheck)
 	}

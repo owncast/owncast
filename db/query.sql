@@ -105,3 +105,6 @@ SELECT count(*) FROM users WHERE display_name = $1 AND authenticated_at is not n
 
 -- name: ChangeDisplayName :exec
 UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4;
+
+-- name: ChangeDisplayColor :exec
+UPDATE users SET display_color = $1 WHERE id = $2;

@@ -1,16 +1,34 @@
-import { useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Input, Button } from 'antd';
+import { Input, Button, Select } from 'antd';
 import { MessageType } from '../../interfaces/socket-events';
 import WebsocketService from '../../services/websocket-service';
-import { websocketServiceAtom, chatDisplayNameAtom } from '../stores/ClientConfigStore';
+import {
+  websocketServiceAtom,
+  chatDisplayNameAtom,
+  chatDisplayColorAtom,
+} from '../stores/ClientConfigStore';
+
+const { Option } = Select;
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 interface Props {}
 
+function UserColor(props: { color: number }): React.ReactElement {
+  const { color } = props;
+  const style: CSSProperties = {
+    textAlign: 'center',
+    backgroundColor: `var(--theme-user-colors-${color})`,
+    width: '100%',
+    height: '100%',
+  };
+  return <div style={style} />;
+}
+
 export default function NameChangeModal(props: Props) {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
+  const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom);
   const [newName, setNewName] = useState<any>(chatDisplayName);
 
   const handleNameChange = () => {
@@ -24,6 +42,17 @@ export default function NameChangeModal(props: Props) {
   const saveEnabled =
     newName !== chatDisplayName && newName !== '' && websocketService?.isConnected();
 
+  const handleColorChange = (color: string) => {
+    const colorChange = {
+      type: MessageType.COLOR_CHANGE,
+      newColor: Number(color),
+    };
+    websocketService.send(colorChange);
+  };
+
+  const maxColor = 8; // 0...n
+  const colorOptions = [...Array(maxColor)].map((e, i) => i);
+
   return (
     <div>
       Your chat display name is what people see when you send chat messages. Other information can
@@ -32,13 +61,28 @@ export default function NameChangeModal(props: Props) {
         value={newName}
         onChange={e => setNewName(e.target.value)}
         placeholder="Your chat display name"
-        maxLength={10}
+        maxLength={30}
         showCount
         defaultValue={chatDisplayName}
       />
       <Button disabled={!saveEnabled} onClick={handleNameChange}>
         Change name
       </Button>
+      <div>
+        Your Color
+        <Select
+          style={{ width: 120 }}
+          onChange={handleColorChange}
+          defaultValue={chatDisplayColor.toString()}
+          getPopupContainer={triggerNode => triggerNode.parentElement}
+        >
+          {colorOptions.map(e => (
+            <Option key={e.toString()} title={e}>
+              <UserColor color={e} />
+            </Option>
+          ))}
+        </Select>
+      </div>
     </div>
   );
 }
