@@ -28,7 +28,7 @@ function UserColor(props: { color: number }): React.ReactElement {
 export default function NameChangeModal(props: Props) {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
-  const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom);
+  const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom) || 0;
   const [newName, setNewName] = useState<any>(chatDisplayName);
 
   const handleNameChange = () => {
