@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, CSSProperties } from 'react';
 import { EditFilled, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import {
   ConnectedClientInfoEvent,
@@ -63,7 +63,10 @@ export default function ChatContainer(props: Props) {
   const getConnectedInfoMessage = (message: ConnectedClientInfoEvent) => {
     const modStatusUpdate = checkIsModerator(message);
     if (!modStatusUpdate) {
-      return null;
+      // Important note: We can't return null or an element with zero width
+      // or zero height. So to work around this we return a very small 1x1 div.
+      const st: CSSProperties = { width: '1px', height: '1px' };
+      return <div style={st} />;
     }
 
     // Alert the user that they are a moderator.
@@ -146,12 +149,15 @@ export default function ChatContainer(props: Props) {
   );
 }
 
-function isSameUserAsLast(messages: ChatMessage[], index: number) {
+function isSameUserAsLast(messages: ChatMessage[], index: number): boolean {
   const message = messages[index];
   const {
     user: { id },
   } = message;
   const lastMessage = messages[index - 1];
+  if (lastMessage.type !== MessageType.CHAT) {
+    return false;
+  }
 
   return id === lastMessage?.user.id;
 }
