@@ -124,3 +124,23 @@ curl 'http://localhost:8080/api/admin/config/externalactions' \
 	-H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36' \
 	--data-raw '{"value":[{"url":"https://owncast.online/docs","title":"Documentation","description":"","icon":"","color":"","openExternally":false},{"url":"https://media1.giphy.com/media/Ju7l5y9osyymQ/giphy.gif?cid=ecf05e47otegqpl9mqfz880pi861dnjm5loy6kyrquy9lku0&rid=giphy.gif&ct=g","title":"Important","description":"","icon":"https://findicons.com/files/icons/1184/quickpix_2008/128/rick_roll_d.png","color":"#c87fd7","openExternally":false},{"url":"https://randommer.io/random-images","title":"New Tab","description":"","icon":"","color":"","openExternally":true}]}' \
 	--compressed
+
+# Offline message
+
+curl 'http://localhost:8080/api/admin/config/offlinemessage' \
+	-H 'Accept: */*' \
+	-H 'Accept-Language: en-US,en;q=0.9' \
+	-H 'Authorization: Basic YWRtaW46YWJjMTIz' \
+	-H 'Cache-Control: no-cache' \
+	-H 'Connection: keep-alive' \
+	-H 'Content-Type: text/plain;charset=UTF-8' \
+	-H 'Origin: http://localhost:8080' \
+	-H 'Pragma: no-cache' \
+	-H 'Referer: http://localhost:8080/admin/config-public-details/' \
+	-H 'Sec-Fetch-Dest: empty' \
+	-H 'Sec-Fetch-Mode: cors' \
+	-H 'Sec-Fetch-Site: same-origin' \
+	-H 'Sec-GPC: 1' \
+	-H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36' \
+	--data-raw '{"value":"Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. I am offline. This is my message."}' \
+	--compressed

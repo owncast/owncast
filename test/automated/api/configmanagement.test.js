@@ -4,6 +4,7 @@ request = request('http://127.0.0.1:8080');
 const serverName = randomString();
 const streamTitle = randomString();
 const serverSummary = randomString();
+const offlineMessage = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const tags = [randomString(), randomString(), randomString()];
 const latencyLevel = Math.floor(Math.random() * 4);
@@ -97,12 +98,18 @@ test('set hide viewer count', async (done) => {
 	done();
 });
 
+test('set offline message', async (done) => {
+	const res = await sendConfigChangeRequest('offlinemessage', offlineMessage);
+	done();
+});
+
 test('verify updated config values', async (done) => {
 	const res = await request.get('/api/config');
 	expect(res.body.name).toBe(serverName);
 	expect(res.body.streamTitle).toBe(streamTitle);
 	expect(res.body.summary).toBe(`${serverSummary}`);
 	expect(res.body.extraPageContent).toBe(pageContent);
+	expect(res.body.offlineMessage).toBe(offlineMessage);
 	expect(res.body.logo).toBe('/logo');
 	expect(res.body.socialHandles).toStrictEqual(socialHandles);
 	done();
@@ -134,6 +141,7 @@ test('admin configuration is correct', (done) => {
 		.then((res) => {
 			expect(res.body.instanceDetails.name).toBe(serverName);
 			expect(res.body.instanceDetails.summary).toBe(serverSummary);
+			expect(res.body.instanceDetails.offlineMessage).toBe(offlineMessage);
 			expect(res.body.instanceDetails.tags).toStrictEqual(tags);
 			expect(res.body.instanceDetails.socialHandles).toStrictEqual(
 				socialHandles
