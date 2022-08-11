@@ -1,6 +1,7 @@
 .root {
   * {
-    z-index: 100; }
+    z-index: 100;
+  }
   position: relative;
   font-size: 0.9rem;
   padding: 5px 15px 5px 5px;
@@ -10,9 +11,6 @@
     align-items: center;
     font-family: var(--theme-header-font-family);
     font-weight: bold;
-    .userName {
-      margin-left: 0.3rem;
-    }
   }
   .message {
     color: var(--theme-text-primary);
