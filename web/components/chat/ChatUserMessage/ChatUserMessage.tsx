@@ -3,12 +3,11 @@ import { useEffect, useState } from 'react';
 import { Highlight } from 'react-highlighter-ts';
 import he from 'he';
 import cn from 'classnames';
-import { Button, Dropdown, Menu } from 'antd';
-import { DeleteOutlined, EllipsisOutlined, StopOutlined } from '@ant-design/icons';
 import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ModIcon } from '../../ui';
+import ChatModerationActionMenu from '../ChatModerationActionMenu/ChatModerationActionMenu';
 
 interface Props {
   message: ChatMessage;
@@ -27,8 +26,8 @@ export default function ChatUserMessage({
   sameUserAsLast,
   isAuthorModerator,
 }: Props) {
-  const { body, user, timestamp } = message;
-  const { displayName, displayColor } = user;
+  const { id: messageId, body, user, timestamp } = message;
+  const { id: userId, displayName, displayColor } = user;
 
   const color = `var(--theme-user-colors-${displayColor})`;
   const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
@@ -56,46 +55,19 @@ export default function ChatUserMessage({
         <Highlight search={highlightString}>
           <div className={s.message}>{formattedMessage}</div>
         </Highlight>
-        {showModeratorMenu && <ModeratorMenu />}
+        {showModeratorMenu && (
+          <div className={s.modMenuWrapper}>
+            <ChatModerationActionMenu
+              messageID={messageId}
+              accessToken=""
+              userID={userId}
+              userDisplayName={displayName}
+            />
+          </div>
+        )}
         <div className={s.customBorder} style={{ color }} />
         <div className={s.background} style={{ color }} />
       </div>
-    </div>
-  );
-}
-
-function ModeratorMenu() {
-  const menu = (
-    <Menu
-      items={[
-        {
-          label: (
-            <div>
-              <DeleteOutlined style={{ marginRight: 5 }} />
-              Hide message
-            </div>
-          ),
-          key: 0,
-        },
-
-        {
-          label: (
-            <div>
-              <StopOutlined style={{ marginRight: 5 }} />
-              Ban User
-            </div>
-          ),
-          key: 1,
-        },
-      ]}
-    />
-  );
-
-  return (
-    <div className={s.modMenuWrapper}>
-      <Dropdown overlay={menu} trigger={['click']}>
-        <Button ghost icon={<EllipsisOutlined />} />
-      </Dropdown>
     </div>
   );
 }
