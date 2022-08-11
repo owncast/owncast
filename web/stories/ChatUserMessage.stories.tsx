@@ -85,6 +85,7 @@ export const FromModeratorUser = Template.bind({});
 FromModeratorUser.args = {
   message: moderatorMessage,
   showModeratorMenu: false,
+  isAuthorModerator: true,
 };
 
 export const FromAuthenticatedUser = Template.bind({});

@@ -87,6 +87,7 @@ export default function ChatContainer(props: Props) {
             highlightString={usernameToHighlight} // What to highlight in the message
             sentBySelf={message.user?.id === chatUserId} // The local user sent this message
             sameUserAsLast={isSameUserAsLast(messages, index)}
+            isAuthorModerator={(message as ChatMessage).user.scopes.includes('MODERATOR')}
             key={message.id}
           />
         );

@@ -16,6 +16,7 @@ interface Props {
   highlightString: string;
   sentBySelf: boolean;
   sameUserAsLast: boolean;
+  isAuthorModerator: boolean;
 }
 
 export default function ChatUserMessage({
@@ -24,6 +25,7 @@ export default function ChatUserMessage({
   showModeratorMenu,
   sentBySelf, // Move the border to the right and render a background
   sameUserAsLast,
+  isAuthorModerator,
 }: Props) {
   const { body, user, timestamp } = message;
   const { displayName, displayColor } = user;
@@ -47,8 +49,8 @@ export default function ChatUserMessage({
       >
         {!sameUserAsLast && (
           <div className={s.user} style={{ color }}>
-            {showModeratorMenu && <ModIcon />}
             <span className={s.userName}>{displayName}</span>
+            {isAuthorModerator && <ModIcon />}
           </div>
         )}
         <Highlight search={highlightString}>
