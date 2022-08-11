@@ -9,7 +9,6 @@ import {
   serverStatusState,
 } from '../../stores/ClientConfigStore';
 import { ServerLogo } from '../../ui';
-import CategoryIcon from '../../ui/CategoryIcon/CategoryIcon';
 import SocialLinks from '../../ui/SocialLinks/SocialLinks';
 import s from './StreamInfo.module.scss';
 import { ServerStatus } from '../../../interfaces/server-status.model';
@@ -54,10 +53,7 @@ export default function StreamInfo({ isMobile }: Props) {
         <ServerLogo src="/logo" />
         <div className={s.titleSection}>
           <div className={s.title}>{name}</div>
-          <div className={s.subtitle}>
-            {title || summary}
-            <CategoryIcon tags={tags} />
-          </div>
+          <div className={s.subtitle}>{title || summary}</div>
           <div className={s.tagList}>
             {tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}
           </div>
