@@ -12,6 +12,7 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatTextField, ChatUserMessage } from '..';
 import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
 import ChatActionMessage from '../ChatAction/ChatActionMessage';
+import ChatSystemMessage from '../ChatSystemMessage/ChatSystemMessage';
 
 interface Props {
   messages: ChatMessage[];
@@ -95,6 +96,14 @@ export default function ChatContainer(props: Props) {
         return getConnectedInfoMessage(message);
       case MessageType.USER_JOINED:
         return getUserJoinedMessage(message as ChatMessage);
+      case MessageType.SYSTEM:
+        return (
+          <ChatSystemMessage
+            message={message as ChatMessage}
+            highlightString={usernameToHighlight} // What to highlight in the message
+            key={message.id}
+          />
+        );
 
       default:
         return null;

@@ -277,6 +277,9 @@ export function ClientConfigStore() {
       case MessageType.USER_JOINED:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
+      case MessageType.SYSTEM:
+        setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        break;
       default:
         console.error('Unknown socket message type: ', message.type);
     }
