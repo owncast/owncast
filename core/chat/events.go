@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -24,6 +25,11 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 
 	// Check if name is on the blocklist
 	blocklist := data.GetForbiddenUsernameList()
+
+	// Names have a max length
+	if len(proposedUsername) > config.MaxChatDisplayNameLength {
+		proposedUsername = proposedUsername[:config.MaxChatDisplayNameLength]
+	}
 
 	for _, blockedName := range blocklist {
 		normalizedName := strings.TrimSpace(blockedName)
@@ -59,7 +65,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	oldName := savedUser.DisplayName
 
 	// Save the new name
-	if err := user.ChangeUsername(eventData.client.User.ID, receivedEvent.NewName); err != nil {
+	if err := user.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
 		log.Errorln("error changing username", err)
 	}
 
@@ -69,7 +75,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	eventData.client.User.NameChangedAt = &now
 
 	// Send chat event letting everyone about about the name change
-	savedUser.DisplayName = receivedEvent.NewName
+	savedUser.DisplayName = proposedUsername
 
 	broadcastEvent := events.NameChangeBroadcast{
 		Oldname: oldName,
