@@ -160,12 +160,16 @@ export default function ChatContainer(props: Props) {
 }
 
 function isSameUserAsLast(messages: ChatMessage[], index: number): boolean {
+  if (messages.length < 2) {
+    return false;
+  }
+
   const message = messages[index];
   const {
     user: { id },
   } = message;
   const lastMessage = messages[index - 1];
-  if (lastMessage.type !== MessageType.CHAT) {
+  if (lastMessage?.type !== MessageType.CHAT) {
     return false;
   }
 
