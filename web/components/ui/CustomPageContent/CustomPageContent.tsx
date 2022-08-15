@@ -7,5 +7,9 @@ interface Props {
 export default function CustomPageContent(props: Props) {
   const { content } = props;
   // eslint-disable-next-line react/no-danger
-  return <div className={s.customPageContent} dangerouslySetInnerHTML={{ __html: content }} />;
+  return (
+    <div className={s.pageContentContainer}>
+      <div className={s.customPageContent} dangerouslySetInnerHTML={{ __html: content }} />
+    </div>
+  );
 }
