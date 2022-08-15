@@ -13,6 +13,8 @@ const (
 	DataDirectory = "data"
 	// EmojiDir is relative to the webroot.
 	EmojiDir = "/img/emoji"
+	// MaxChatDisplayNameLength is the maximum length of a chat display name.
+	MaxChatDisplayNameLength = 30
 )
 
 var (
