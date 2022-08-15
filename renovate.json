@@ -1,38 +1,42 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "timezone": "America/Los_Angeles",
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true
-  },
-  "npm": {
-    "stabilityDays": 3
-  },
-  "packageRules": [
-    {
-      "description": "Automatically merge minor and patch-level updates",
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "digest"
-      ],
-      "automerge": true,
-      "major": {
-        "dependencyDashboardApproval": true
-      },
-      "matchCurrentVersion": "!/^0/",
-      "automergeType": "branch"
-    },
-    {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "automerge": true,
-      "major": {
-        "dependencyDashboardApproval": true
-      }
-    }
-  ]
+	"extends": [
+		"config:base"
+	],
+	"timezone": "America/Los_Angeles",
+	"lockFileMaintenance": {
+		"enabled": true,
+		"automerge": true
+	},
+	"npm": {
+		"stabilityDays": 3
+	},
+	"packageRules": [
+		{
+			"description": "Automatically merge minor and patch-level updates",
+			"matchUpdateTypes": [
+				"minor",
+				"patch",
+				"digest"
+			],
+			"automerge": true,
+			"baseBranches": [
+				"develop",
+				"webv2"
+			],
+			"major": {
+				"dependencyDashboardApproval": true
+			},
+			"matchCurrentVersion": "!/^0/",
+			"automergeType": "branch"
+		},
+		{
+			"matchDepTypes": [
+				"devDependencies"
+			],
+			"automerge": true,
+			"major": {
+				"dependencyDashboardApproval": true
+			}
+		}
+	]
 }
