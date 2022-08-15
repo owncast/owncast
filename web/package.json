@@ -74,7 +74,7 @@
 		"@types/classnames": "2.3.1",
 		"@types/markdown-it": "12.2.3",
 		"@types/node": "17.0.0",
-		"@types/prop-types": "15.7.4",
+		"@types/prop-types": "15.7.5",
 		"@types/react": "18.0.17",
 		"@types/react-linkify": "1.0.1",
 		"@types/ua-parser-js": "0.7.36",
