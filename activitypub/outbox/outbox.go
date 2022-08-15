@@ -77,8 +77,8 @@ func SendLive() error {
 	if err == nil {
 		var imageToAttach string
 		var mediaType string
-		previewGif := filepath.Join(config.WebRoot, "preview.gif")
-		thumbnailJpg := filepath.Join(config.WebRoot, "thumbnail.jpg")
+		previewGif := filepath.Join(config.TempDir, "preview.gif")
+		thumbnailJpg := filepath.Join(config.TempDir, "thumbnail.jpg")
 		uniquenessString := shortid.MustGenerate()
 		if utils.DoesFileExists(previewGif) {
 			imageToAttach = "preview.gif"

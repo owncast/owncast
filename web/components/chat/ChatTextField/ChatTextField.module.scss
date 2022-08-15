@@ -1,0 +1,68 @@
+.root {
+  position: relative;
+  bottom: 0px;
+  width: 100%;
+  padding: .3rem;
+  color: var(--text-secondry);
+  overflow-x: hidden;
+  div[role=textbox] {
+    font-size: 0.9rem;
+    border-radius: .2rem;
+    padding: .6rem;
+    padding-right: calc(0.6rem + 44px);
+    background-color: var(--color-owncast-gray-700);
+    box-shadow: 0;
+    transition: box-shadow 50ms ease-in-out;
+    &:focus {
+      box-shadow: inset 0px 0px 0x 1px var(--color-owncast-purple-700);
+      outline: 1px solid var(--color-owncast-gray-500) !important;
+    }
+    & > p {
+      margin: 0px;
+    }
+  }
+
+  .inputWrapper {
+    display: flex;
+    position: relative;
+    margin-right: .3rem;
+    border-radius: .2rem;
+    & > div {
+      transition: box-shadow .2s ease-in-out;
+    }
+  }
+
+  .emojiButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0 1rem;
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    svg {
+      fill: var(--color-owncast-gray-300);
+    }
+  }
+
+  .submitButtonWrapper {
+    display: flex;
+    padding: 6px 0;
+    justify-content: flex-end;
+  }
+}
+
+
+
+.mobile {
+  &.root {
+    display: flex;
+    .inputWrapper {
+      flex: 1;
+    }
+    .submitButtonWrapper {
+      padding: 0px;
+    }
+  }
+}

@@ -1,0 +1,34 @@
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Color, ColorRow } from './Color';
+
+<Meta title="owncast/Style Guide/Colors" />
+
+# Colors
+
+These colors are assigned in our [color token](https://github.com/owncast/owncast/tree/webv2/web/style-definitions/tokens/color) files
+and get reflected here as they change. run `npm build-styles` to regenerate.
+
+Toggle dark mode on and off in the above toolbar to see how these colors look on a dark vs. light background.
+
+## Text
+
+<ColorRow colors={['theme-text-primary', 'theme-text-secondary', 'theme-text-link']} />
+
+## Backgrounds
+
+<ColorRow colors={['theme-background-primary', 'theme-background-secondary']} />
+
+## User Colors
+
+<ColorRow
+  colors={[
+    'theme-user-colors-0',
+    'theme-user-colors-1',
+    'theme-user-colors-2',
+    'theme-user-colors-3',
+    'theme-user-colors-4',
+    'theme-user-colors-5',
+    'theme-user-colors-6',
+    'theme-user-colors-7',
+  ]}
+/>

@@ -1,0 +1,82 @@
+.root {
+  * {
+    z-index: 100;
+  }
+  position: relative;
+  font-size: 0.9rem;
+  padding: 5px 15px 5px 5px;
+  padding-left: 1rem;
+  .user {
+    display: flex;
+    align-items: center;
+    font-family: var(--theme-header-font-family);
+    font-weight: bold;
+  }
+  .message {
+    color: var(--theme-text-primary);
+
+    mark {
+      padding-left: 0.35em;
+      padding-right: 0.35em;
+      color: var(--theme-text-highlight);
+      background-color: var(--color-bg-highlight);
+    }
+  }
+
+  .customBorder {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 5px;
+    height: 100%;
+    overflow: hidden;
+    &:after {
+      content: '';
+      width: 10px;
+      height: 100%;
+      position: absolute;
+      top: 0%;
+      right: 0px;
+      background-color: currentColor;
+      border-radius: var(--theme-rounded-corners);
+    }
+  }
+
+  &.ownMessage {
+    .customBorder {
+      left: auto;
+      right: 0px;
+      opacity: 0.85;
+      &:after {
+        left: 0px;
+      }
+    }
+    .background {
+      position: absolute;
+      z-index: -1;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: currentColor;
+      opacity: 0.07;
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+  }
+
+  .modMenuWrapper {
+    position: absolute;
+    display: none;
+    top: 0;
+    right: 10px;
+    & button:focus,
+    & button:active {
+      display: block !important;
+    }
+  }
+
+  &:hover .modMenuWrapper {
+    display: block;
+  }
+}

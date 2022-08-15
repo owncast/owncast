@@ -1,0 +1,54 @@
+# These are the variables used in the user interface.
+# They can be overwritten to customize the look and feel.
+# We should write some documentation on how to do that when the time comes.
+# The fewer there are the easier it'll be easier to customize and document.
+
+theme:
+  unknown:
+    value: '{color.unknown.value}'
+  unknown-2:
+    value: '{color.unknown-2.value}'
+  primary:
+    value: '{color.unknown.value}'
+    comment: 'The primary color of the application used for rendering controls.'
+  text:
+    primary:
+      value: '{color.owncast.text.primary.value}'
+      comment: 'The color of the text in the application.'
+    secondary:
+      value: '{color.owncast.text.secondary.value}'
+    link:
+      value: '{color.owncast.text.bright.value}'
+    body-font-family:
+      value: '{font.owncast.body.value}'
+    display-font-family:
+      value: '{font.owncast.display.value}'
+  background:
+    primary:
+      value: '{color.owncast.background.primary.value}'
+      comment: 'The main background color of the page.'
+    secondary:
+      value: '{color.owncast.background.secondary.value}'
+      comment: 'A secondary background color used in sections and controls.'
+
+  rounded-corners:
+    value: '{rounded-corners.value}'
+
+  user-colors:
+    comment: 'Colors used to display chat users.'
+    0:
+      value: '{color.owncast.user.1.value}'
+    1:
+      value: '{color.owncast.user.2.value}'
+    2:
+      value: '{color.owncast.user.3.value}'
+    3:
+      value: '{color.owncast.user.4.value}'
+    4:
+      value: '{color.owncast.user.5.value}'
+    5:
+      value: '{color.owncast.user.6.value}'
+    6:
+      value: '{color.owncast.user.7.value}'
+    7:
+      value: '{color.owncast.user.8.value}'

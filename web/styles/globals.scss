@@ -1,0 +1,91 @@
+@import '@fontsource/open-sans/variable.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/600.css';
+
+body {
+  font-family: var(--theme-text-body-font-family);
+  font-size: 16px;
+  line-height: 1.5em;
+  margin: 0;
+
+  color: var(--theme-text-primary);
+  background-color: var(--theme-background-primary);
+
+  div,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    padding: 0;
+    color: var(--theme-text-primary);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--theme-text-display-font-family);
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    font-weight: 400;
+  }
+
+  h3 {
+    font-family: var(--theme-text-body-font-family);
+    font-size: 1.25em;
+    font-weight: 500;
+  }
+
+  h4 {
+    font-size: 1em;
+  }
+
+  ul {
+    list-style: square;
+  }
+
+  ul,
+  ol {
+    margin: 0.7em 0 0 0;
+    padding: 0 1em;
+
+    ul,
+    ol {
+      margin: 0;
+    }
+
+    li {
+      margin: 0.175em 0 0 0;
+    }
+  }
+
+  a {
+    color: var(--theme-text-link);
+
+    &:visited {
+      color: var(--theme-text-primary);
+    }
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    overflow: hidden;
+  }
+}

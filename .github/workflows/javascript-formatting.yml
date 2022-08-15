@@ -1,29 +1,49 @@
-name: Format Javascript
+name: Format+Lint Javascript
 
 # This action works with pull requests and pushes
 on:
   push:
-    branches:
-    - develop
+    paths:
+      - web/**
 
 jobs:
   prettier:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
     if: ${{ github.actor != 'dependabot[bot]' }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        # Make sure the actual branch is checked out when running on pull requests
-        ref: ${{ github.head_ref }}
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.2
-      with:
-        # This part is also where you can pass other options, for example:
-        prettier_options: --write webroot/**/*.{js,md}
-        only_changed: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.2
+        with:
+          # This part is also where you can pass other options, for example:
+          prettier_options: --write **/*.{js,ts,jsx,tsx,css,md}
+          only_changed: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  linter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    name: Run linter on changed files
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install --force
+
+      - name: Lint
+        run: npm run lint

@@ -76,20 +76,9 @@ build:
   WORKDIR /build
   # MacOSX disallows static executables, so we omit the static flag on this platform
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
-  COPY +tailwind/prod-tailwind.min.css /build/dist/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
 
   SAVE ARTIFACT owncast owncast
-  SAVE ARTIFACT webroot webroot
   SAVE ARTIFACT README.md README.md
-
-tailwind:
-  FROM +code
-  WORKDIR /build/build/javascript
-  RUN apk add --update --no-cache npm >> /dev/null
-  ENV NODE_ENV=production
-  RUN cd /build/build/javascript && npm install --quiet --no-progress >> /dev/null && npm install -g cssnano postcss postcss-cli --quiet --no-progress --save-dev >> /dev/null && ./node_modules/.bin/tailwind build > /build/tailwind.min.css
-  RUN npx postcss /build/tailwind.min.css > /build/prod-tailwind.min.css
-  SAVE ARTIFACT /build/prod-tailwind.min.css prod-tailwind.min.css
 
 package:
   RUN apk add --update --no-cache zip >> /dev/null
@@ -109,7 +98,6 @@ package:
     ARG NAME=custom
   END
 
-  COPY (+build/webroot --platform $TARGETPLATFORM) /build/dist/webroot
   COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
   COPY (+build/README.md --platform $TARGETPLATFORM) /build/dist/README.md
   ENV ZIPNAME owncast-$version-$NAME.zip
@@ -129,13 +117,15 @@ docker:
   EXPOSE 8080 1935
   SAVE IMAGE --push $image:$tag
 
-api-tests:
-	FROM --platform=linux/amd64 +code
-	WORKDIR /build
-	RUN apk add npm ffmpeg
-	RUN cd test/automated/api && npm install && ./run.sh
-
 unit-tests:
-	FROM --platform=linux/amd64 +code
+  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+  COPY . /build
 	WORKDIR /build
 	RUN go test ./...
+
+api-tests:
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	RUN apk add ffmpeg npm
+  COPY . /build
+	WORKDIR /build
+	RUN cd test/automated/api && ./run.sh

@@ -1,0 +1,24 @@
+# Ant Design component color overrides.
+# You can find the variable names to override at:
+# https://github.com/ant-design/ant-design/blob/master/components/style/themes/dark.less
+
+text-color:
+  value: 'var(--theme-text-primary)'
+text-color-secondary:
+  value: 'var(--theme-text-secondary)'
+link-color:
+  value: 'var(--theme-text-link)'
+popover-background:
+  value: 'var(--theme-background-secondary)'
+modal-content-bg:
+  value: '{color.unknown-2.value}'
+background-color-light:
+  value: 'var(--theme-background-secondary)'
+layout-body-background:
+  value: 'var(--theme-background-primary)'
+
+# These colors need to be explicitly set and cannot use CSS variables.
+component-background:
+  value: '{color.unknown.value}'
+warning-color:
+  value: '{color.unknown-2.value}'

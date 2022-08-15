@@ -1,0 +1,27 @@
+.root {
+  background-color: var(--theme-background-secondary);
+  display: none;
+  --header-h: 64px;
+}
+
+@media (min-width: 768px) {
+  .root {
+    position: sticky;
+    top: var(--header-h);
+    display: block;
+    height: calc(100vh - var(--header-h));
+    max-height: calc(100vh - var(--header-h));
+  }
+}
+/* 
+First div is .ant-layout-sider-children
+Only way to target it apparently
+*/
+.root > div {
+  display: flex;
+  flex-flow: column nowrap;
+  -moz-box-flex: 1 !important;
+  flex-grow: 1 !important;
+  height: 100% !important;
+}
+

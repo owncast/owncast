@@ -1,7 +1,7 @@
 package data
 
 import (
-	"errors"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -9,7 +9,9 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -63,6 +65,8 @@ const (
 	browserPushPrivateKeyKey             = "browser_push_private_key"
 	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
+	hideViewerCountKey                   = "hide_viewer_count"
+	customOfflineMessageKey              = "custom_offline_message"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -583,13 +587,13 @@ func VerifySettings() error {
 
 	logoPath := GetLogoPath()
 	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, logoPath)) {
-		defaultLogo := filepath.Join(config.WebRoot, "img/logo.svg")
 		log.Traceln(logoPath, "not found in the data directory. copying a default logo.")
-		if err := utils.Copy(defaultLogo, filepath.Join(config.DataDirectory, "logo.svg")); err != nil {
-			log.Errorln("error copying default logo: ", err)
+		logo := static.GetLogo()
+		if err := os.WriteFile(filepath.Join(config.DataDirectory, "logo.png"), logo, 0o600); err != nil {
+			return errors.Wrap(err, "failed to write logo to disk")
 		}
-		if err := SetLogoPath("logo.svg"); err != nil {
-			log.Errorln("unable to set default logo to logo.svg", err)
+		if err := SetLogoPath("logo.png"); err != nil {
+			return errors.Wrap(err, "failed to save logo filename")
 		}
 	}
 
@@ -905,4 +909,26 @@ func SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
 func GetHasPerformedInitialNotificationsConfig() bool {
 	configured, _ := _datastore.GetBool(hasConfiguredInitialNotificationsKey)
 	return configured
+}
+
+// GetHideViewerCount will return if the viewer count shold be hidden.
+func GetHideViewerCount() bool {
+	hide, _ := _datastore.GetBool(hideViewerCountKey)
+	return hide
+}
+
+// SetHideViewerCount will set if the viewer count should be hidden.
+func SetHideViewerCount(hide bool) error {
+	return _datastore.SetBool(hideViewerCountKey, hide)
+}
+
+// GetCustomOfflineMessage will return the custom offline message.
+func GetCustomOfflineMessage() string {
+	message, _ := _datastore.GetString(customOfflineMessageKey)
+	return message
+}
+
+// SetCustomOfflineMessage will set the custom offline message.
+func SetCustomOfflineMessage(message string) error {
+	return _datastore.SetString(customOfflineMessageKey, message)
 }

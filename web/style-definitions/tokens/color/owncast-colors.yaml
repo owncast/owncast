@@ -1,0 +1,59 @@
+# These are colors that make up the Owncast-specific color palette.
+color:
+  unknown:
+    value: '#00FF00'
+  unknown-2:
+    value: '#FF0000'
+  owncast:
+    # These are the colors assigned to chat users.
+    # If you add more colors here make sure to add them to
+    # GenerateRandomDisplayColor in the Go codebase so it knows the max
+    # number of colors to use.
+    user:
+      1:
+        value: 'rgb(244, 11, 11)'
+      2:
+        value: 'rgb(244, 128, 11)'
+      3:
+        value: 'rgb(244, 244, 11)'
+      4:
+        value: 'rgb(88, 244, 11)'
+      5:
+        value: 'rgb(11, 244, 244)'
+      6:
+        value: 'rgb(11, 166, 244)'
+      7:
+        value: 'rgb(102, 102, 255)'
+      8:
+        value: 'rgb(244, 11, 244)'
+
+    text:
+      primary:
+        value: '#030208'
+      secondary:
+        value: '#63638E'
+      highlight:
+        value: '#030208'
+      bright:
+        value: '#5353A6'
+    background:
+      highlight:
+        value: '#F0E678'
+      primary:
+        value: '#FFFCF2'
+      secondary:
+        value: '#F0EFE4'
+
+rounded-corners:
+  value: '0.5em'
+
+font:
+  owncast:
+    body:
+      value: "'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji'"
+    display:
+      value: "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji'"

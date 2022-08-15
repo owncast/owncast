@@ -1,0 +1,18 @@
+.player {
+  height: auto !important;
+  width: 100%;
+  video {
+    position: static !important;
+  }
+}
+
+.poster {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .player {
+    height: 30vh !important;
+  }
+}

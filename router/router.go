@@ -16,6 +16,7 @@ import (
 	"github.com/owncast/owncast/controllers/admin"
 	fediverseauth "github.com/owncast/owncast/controllers/auth/fediverse"
 	"github.com/owncast/owncast/controllers/auth/indieauth"
+	"github.com/owncast/owncast/controllers/moderation"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -26,19 +27,30 @@ import (
 
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
-	// static files
+	// The primary web app.
 	http.HandleFunc("/", controllers.IndexHandler)
-	http.HandleFunc("/recordings", controllers.IndexHandler)
-	http.HandleFunc("/schedule", controllers.IndexHandler)
 
-	// admin static files
-	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
+	// The admin web app.
+	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
+
+	// Images
+	http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
+	http.HandleFunc("/preview.gif", controllers.GetPreview)
+	http.HandleFunc("/logo", controllers.GetLogo)
+
+	// Return a single emoji image.
+	http.HandleFunc("/img/emoji/", controllers.GetCustomEmojiImage)
+
+	// return the logo
+
+	// return a logo that's compatible with external social networks
+	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 
 	// custom emoji supported in the chat
-	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
+	http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
 
 	// chat rest api
 	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
@@ -63,12 +75,6 @@ func Start() error {
 
 	// list of all social platforms
 	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
-
-	// return the logo
-	http.HandleFunc("/logo", controllers.GetLogo)
-
-	// return a logo that's compatible with external social networks
-	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
@@ -178,6 +184,9 @@ func Start() error {
 
 	// Server summary
 	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.SetServerSummary))
+
+	// Offline message
+	http.HandleFunc("/api/admin/config/offlinemessage", middleware.RequireAdminAuth(admin.SetCustomOfflineMessage))
 
 	// Server welcome message
 	http.HandleFunc("/api/admin/config/welcomemessage", middleware.RequireAdminAuth(admin.SetServerWelcomeMessage))
@@ -308,6 +317,9 @@ func Start() error {
 	// Video playback metrics
 	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
 
+	// Is the viewer count hidden from viewers
+	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
+
 	// Inline chat moderation actions
 
 	// Update chat message visibility
@@ -315,6 +327,9 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+
+	// Get a user's details
+	http.HandleFunc("/api/moderation/chat/user/", middleware.RequireUserModerationScopeAccesstoken(moderation.GetUserDetails))
 
 	// Configure Federation features
 

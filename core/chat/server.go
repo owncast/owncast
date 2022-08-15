@@ -184,6 +184,11 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// To allow dev web environments to connect.
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Debugln(err)
@@ -354,6 +359,8 @@ func (s *Server) eventReceived(event chatClientEvent) {
 	case events.UserNameChanged:
 		s.userNameChanged(event)
 
+	case events.UserColorChanged:
+		s.userColorChanged(event)
 	default:
 		log.Debugln(eventType, "event not found:", typecheck)
 	}

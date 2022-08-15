@@ -1,0 +1,33 @@
+@import 'styles/mixins.scss';
+
+.pageContentContainer {
+  @include flexCenter;
+}
+
+.customPageContent {
+  font-size: 16px;
+  line-height: 1.5em;
+  margin: 0;
+  padding: 0;
+  width: 80%;
+  max-width: 1200px;
+
+  color: var(--theme-text);
+  background-color: var(--theme-background-secondary);
+  padding: 1em;
+
+  // Allow the content to fill the width on narrow screens.
+  @media only screen and (max-width: 768px) {
+    width: 100%;
+  }
+
+  hr {
+    margin: 1.35em 0;
+    border: 0;
+    border-top: solid 1px var(--theme-text-secondary);
+  }
+
+  div.summary {
+    font-size: 18px;
+  }
+}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/utils"
@@ -41,7 +42,7 @@ func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	color := utils.GenerateRandomDisplayColor()
+	color := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
 	if err := user.InsertExternalAPIUser(token, request.Name, color, request.Scopes); err != nil {
 		controllers.InternalErrorHandler(w, err)

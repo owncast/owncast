@@ -41,6 +41,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			ExtraPageContent: data.GetExtraPageBodyContent(),
 			StreamTitle:      data.GetStreamTitle(),
 			WelcomeMessage:   data.GetServerWelcomeMessage(),
+			OfflineMessage:   data.GetCustomOfflineMessage(),
 			Logo:             data.GetLogoPath(),
 			SocialHandles:    data.GetSocialHandles(),
 			NSFW:             data.GetNSFW(),
@@ -55,6 +56,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
+		HideViewerCount:         data.GetHideViewerCount(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -113,6 +115,7 @@ type serverConfigAdminResponse struct {
 	SuggestedUsernames      []string                    `json:"suggestedUsernames"`
 	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
 	Notifications           notificationsConfigResponse `json:"notifications"`
+	HideViewerCount         bool                        `json:"hideViewerCount"`
 }
 
 type videoSettings struct {
@@ -124,6 +127,7 @@ type webConfigResponse struct {
 	Name             string                `json:"name"`
 	Summary          string                `json:"summary"`
 	WelcomeMessage   string                `json:"welcomeMessage"`
+	OfflineMessage   string                `json:"offlineMessage"`
 	Logo             string                `json:"logo"`
 	Tags             []string              `json:"tags"`
 	Version          string                `json:"version"`

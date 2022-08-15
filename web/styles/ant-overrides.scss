@@ -1,0 +1,56 @@
+/* ------------------------- //
+  BUTTONS
+// ------------------------- */
+
+.ant-btn {
+  height: 2rem;
+  padding: 0.3rem 1rem;
+  background-color: var(--theme-unknown);
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: var(--theme-rounded-corners);
+  border-color: transparent;
+  color: var(--theme-unknown-2);
+  &:hover,
+  &:focus {
+    background-color: var(--theme-primary);
+    border-color: transparent;
+    color: var(--theme-unknown-2);
+  }
+  &:focus {
+    border-color: var(--theme-unknown-2);
+  }
+  &[ant-click-animating-without-extra-node]:after {
+    animation: 0s !important;
+  }
+}
+
+.ant-btn-primary {
+  background-color: var(--theme-unknown);
+}
+
+.ant-btn-primary[disabled] {
+  background-color: var(--theme-unknown);
+  color: var(--theme-unknown-2);
+  &:hover {
+    background-color: var(--theme-unknown);
+  }
+}
+
+.ant-btn-background-ghost {
+  border: 0px;
+  box-shadow: none !important;
+  &:hover,
+  &:focus {
+    background-color: var(--theme-unknown);
+  }
+}
+
+/* ------------------------- //
+  DROPDOWN
+// ------------------------- */
+
+.ant-dropdown-menu {
+  border-radius: var(--theme-rounded-corners);
+  background-color: var(--theme-background-secondary);
+}

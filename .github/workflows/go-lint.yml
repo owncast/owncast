@@ -1,0 +1,25 @@
+name: lint
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  golangci:
+    name: Go linter
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v3
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          only-new-issues: true
+          args: --timeout=3m

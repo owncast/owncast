@@ -1,0 +1,22 @@
+.outerContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.innerContainer {
+  width: clamp(200px, 100%, 300px);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-background-secondary);
+  margin: 1rem auto;
+  border-radius: var(--theme-rounded-corners);
+  padding: 1rem;
+}
+
+.header {
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 20px;
+}

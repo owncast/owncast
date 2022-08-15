@@ -1,0 +1,38 @@
+.chatSystemMessage {
+  background: var(--theme-background-secondary);
+  background: linear-gradient(
+    70deg,
+    rgb(78, 54, 114) 0%,
+    rgb(65, 28, 139) 40%,
+    rgb(83, 67, 130) 80%
+  );
+  margin: 5px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 12px 12px;
+  max-width: 400px;
+
+  .user {
+    display: flex;
+    align-items: center;
+    font-family: var(--theme-header-font-family);
+    font-weight: bold;
+    color: white;
+  }
+  .message {
+    color: white;
+
+    p {
+      color: white;
+      margin: unset;
+    }
+
+    mark {
+      padding-left: 0.35em;
+      padding-right: 0.35em;
+      color: var(--theme-text-highlight);
+      background-color: var(--color-bg-highlight);
+    }
+  }
+}

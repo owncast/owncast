@@ -15,7 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mssola/user_agent"
 	log "github.com/sirupsen/logrus"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -96,34 +95,6 @@ func moveFallback(source, destination string) error {
 		return fmt.Errorf("Failed removing original file: %s", err)
 	}
 	return nil
-}
-
-// IsUserAgentABot returns if a web client user-agent is seen as a bot.
-func IsUserAgentABot(userAgent string) bool {
-	if userAgent == "" {
-		return false
-	}
-
-	botStrings := []string{
-		"mastodon",
-		"pleroma",
-		"applebot",
-		"whatsapp",
-		"matrix",
-		"synapse",
-		"element",
-		"rocket.chat",
-		"duckduckbot",
-	}
-
-	for _, botString := range botStrings {
-		if strings.Contains(strings.ToLower(userAgent), botString) {
-			return true
-		}
-	}
-
-	ua := user_agent.New(userAgent)
-	return ua.Bot()
 }
 
 // IsUserAgentAPlayer returns if a web client user-agent is seen as a media player.
@@ -350,12 +321,13 @@ func StringMapKeys(stringMap map[string]interface{}) []string {
 	return stringSlice
 }
 
-// GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.
-// The UI should determine the right saturation and lightness in order to make it look right.
-func GenerateRandomDisplayColor() int {
+// GenerateRandomDisplayColor will return a random number that is used for
+// referencing a color value client-side. These colors are seen as
+// --theme-user-colors-n.
+func GenerateRandomDisplayColor(maxColor int) int {
 	rangeLower := 0
-	rangeUpper := 360
-	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
+	rangeUpper := maxColor
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint:gosec
 }
 
 // GetHostnameFromURL will return the hostname component from a URL string.
