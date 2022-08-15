@@ -70,7 +70,7 @@
 		"@storybook/preset-scss": "1.0.3",
 		"@storybook/testing-library": "0.0.13",
 		"@svgr/webpack": "6.3.1",
-		"@types/chart.js": "2.9.35",
+		"@types/chart.js": "2.9.37",
 		"@types/classnames": "2.3.1",
 		"@types/markdown-it": "12.2.3",
 		"@types/node": "17.0.0",
