@@ -99,7 +99,7 @@
 		"less-loader": "11.0.0",
 		"prettier": "2.7.1",
 		"sass": "1.54.4",
-		"sass-loader": "10.3.1",
+		"sass-loader": "13.0.2",
 		"sb": "6.5.10",
 		"storybook-dark-mode": "1.1.0",
 		"storybook-preset-less": "1.1.2",
