@@ -50,7 +50,7 @@
 		"slate-react": "0.82.0",
 		"storybook-addon-designs": "6.3.1",
 		"storybook-addon-fetch-mock": "1.0.1",
-		"style-dictionary": "^3.7.1",
+		"style-dictionary": "3.7.1",
 		"ua-parser-js": "1.0.2",
 		"video.js": "7.20.2",
 		"xstate": "4.33.1",
