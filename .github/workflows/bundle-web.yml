@@ -1,4 +1,4 @@
-name: Bundle and bundle web app into Owncast codebase
+name: Build and bundle web app into Owncast
 on:
   push:
     paths:
