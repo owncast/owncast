@@ -18,7 +18,7 @@ jobs:
         working-directory: ./web
     # Job steps
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: npm install --include=dev --force
         # 👇 Adds Chromatic as a step in the workflow
