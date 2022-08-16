@@ -40,7 +40,7 @@ jobs:
     name: Run linter on changed files
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Dependencies
         run: npm install --force
