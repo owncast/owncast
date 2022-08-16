@@ -14,6 +14,8 @@ const (
 	// MaxUserColor is the largest color value available to assign to users.
 	// They start at 0 and can be treated as IDs more than colors themselves.
 	MaxUserColor = 7
+	// MaxChatDisplayNameLength is the maximum length of a chat display name.
+	MaxChatDisplayNameLength = 30
 )
 
 var (
