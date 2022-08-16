@@ -26,7 +26,7 @@
 		"date-fns": "2.29.1",
 		"he": "1.2.0",
 		"lodash": "4.17.21",
-		"markdown-it": "12.3.2",
+		"markdown-it": "13.0.1",
 		"next": "12.2.5",
 		"next-with-less": "2.0.5",
 		"picmo": "5.4.2",
