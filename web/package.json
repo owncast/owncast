@@ -50,9 +50,11 @@
 		"slate-react": "0.82.0",
 		"storybook-addon-designs": "6.3.1",
 		"storybook-addon-fetch-mock": "1.0.1",
+		"style-dictionary": "^3.7.1",
 		"ua-parser-js": "1.0.2",
 		"video.js": "7.20.2",
-		"xstate": "4.33.1"
+		"xstate": "4.33.1",
+		"yaml": "2.0.0"
 	},
 	"devDependencies": {
 		"@babel/core": "7.18.10",
@@ -103,9 +105,7 @@
 		"sb": "6.5.10",
 		"storybook-dark-mode": "1.1.0",
 		"storybook-preset-less": "1.1.2",
-		"style-dictionary": "3.7.1",
 		"style-loader": "3.3.1",
-		"typescript": "4.7.4",
-		"yaml": "2.1.1"
+		"typescript": "4.7.4"
 	}
 }
