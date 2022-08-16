@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const yaml = require('yaml');
 const StyleDictionary = require('style-dictionary');
 
