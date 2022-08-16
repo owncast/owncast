@@ -86,8 +86,8 @@ export default function ChatContainer(props: Props) {
             showModeratorMenu={isModerator} // Moderators have access to an additional menu
             highlightString={usernameToHighlight} // What to highlight in the message
             sentBySelf={message.user?.id === chatUserId} // The local user sent this message
-            sameUserAsLast={isSameUserAsLast(messages, index)}
-            isAuthorModerator={(message as ChatMessage).user.scopes.includes('MODERATOR')}
+            sameUserAsLast={shouldCollapseMessages(messages, index)}
+            isAuthorModerator={(message as ChatMessage).user.scopes?.includes('MODERATOR')}
             key={message.id}
           />
         );
@@ -159,7 +159,7 @@ export default function ChatContainer(props: Props) {
   );
 }
 
-function isSameUserAsLast(messages: ChatMessage[], index: number): boolean {
+function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean {
   if (messages.length < 2) {
     return false;
   }
@@ -170,6 +170,17 @@ function isSameUserAsLast(messages: ChatMessage[], index: number): boolean {
   } = message;
   const lastMessage = messages[index - 1];
   if (lastMessage?.type !== MessageType.CHAT) {
+    return false;
+  }
+
+  if (!lastMessage.timestamp || !message.timestamp) {
+    return false;
+  }
+
+  const maxTimestampDelta = 1000 * 60 * 2; // 2 minutes
+  const lastTimestamp = new Date(lastMessage.timestamp).getTime();
+  const thisTimestamp = new Date(message.timestamp).getTime();
+  if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
     return false;
   }
 
