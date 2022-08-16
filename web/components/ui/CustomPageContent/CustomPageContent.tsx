@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import s from './CustomPageContent.module.scss';
 
 interface Props {

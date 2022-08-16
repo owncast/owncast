@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/no-unstable-nested-components */
 // TODO: This component should be cleaned up and usage should be re-examined. The types should be reconsidered as well.
 
 import { Typography, Statistic, Card, Progress } from 'antd';
@@ -26,9 +27,15 @@ const defaultProps = {
   formatter: null,
 };
 
-function ProgressView({ title, value, prefix, suffix, color }: StatisticItemProps) {
-  const endColor = value > 90 ? 'red' : color;
-  const content = (
+interface ContentProps {
+  prefix: string;
+  value: any;
+  suffix: string;
+  title: string;
+}
+
+function Content({ prefix, value, suffix, title }: ContentProps) {
+  return (
     <div>
       {prefix}
       <div>
@@ -42,6 +49,12 @@ function ProgressView({ title, value, prefix, suffix, color }: StatisticItemProp
       </div>
     </div>
   );
+}
+
+function ProgressView({ title, value, prefix, suffix, color }: StatisticItemProps) {
+  const endColor = value > 90 ? 'red' : color;
+  const content = <Content prefix={prefix} value={value} suffix={suffix} title={title} />;
+
   return (
     <Progress
       type="dashboard"

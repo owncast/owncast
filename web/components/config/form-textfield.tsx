@@ -165,6 +165,11 @@ TextField.defaultProps = {
   tip: '',
   type: TEXTFIELD_TYPE_TEXT,
   value: '',
+
+  pattern: '',
+  useTrim: false,
+  useTrimLead: false,
+
   onSubmit: () => {},
   onBlur: () => {},
   onChange: () => {},
