@@ -8,7 +8,7 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof FollowerCollection>;
 
-const Template: ComponentStory<typeof FollowerCollection> = args => (
+const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
   <FollowerCollection {...args} />
 );
 
