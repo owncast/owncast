@@ -19,8 +19,10 @@ jobs:
     # Job steps
     steps:
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: npm install --include=dev --force
+      - name: Check out code
+        with:
+          fetch-depth: 0
+      - run: npm install --include=dev --force
         # 👇 Adds Chromatic as a step in the workflow
       - name: Publish to Chromatic
         uses: chromaui/action@v1
