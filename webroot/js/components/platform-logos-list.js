@@ -33,7 +33,7 @@ function SocialIcon(props) {
   return html`
     <a class=${itemClass} target="_blank" rel="me" href=${url}>
       <span
-        class="platform-icon rounded-lg bg-no-repeat"
+        class="platform-icon bg-no-repeat"
         style=${style}
         title="Find me on ${name}"
       ></span>

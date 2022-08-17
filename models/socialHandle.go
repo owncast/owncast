@@ -20,6 +20,18 @@ func GetSocialHandle(platform string) *SocialHandle {
 // GetAllSocialHandles will return a list of all the social platforms we support.
 func GetAllSocialHandles() map[string]SocialHandle {
 	socialHandlePlatforms := map[string]SocialHandle{
+		"fediverse": {
+			Platform: "Fediverse",
+			Icon:     "/img/platformlogos/fediverse.svg",
+		},
+		"matrix": {
+			Platform: "Matrix",
+			Icon:     "/img/platformlogos/matrix.svg",
+		},
+		"xmpp": {
+			Platform: "XMPP",
+			Icon:     "/img/platformlogos/xmpp.svg",
+		},
 		"bandcamp": {
 			Platform: "Bandcamp",
 			Icon:     "/img/platformlogos/bandcamp.svg",
