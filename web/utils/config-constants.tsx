@@ -19,6 +19,7 @@ export const API_RTMP_PORT = '/rtmpserverport';
 export const API_S3_INFO = '/s3';
 export const API_SERVER_SUMMARY = '/serversummary';
 export const API_SERVER_WELCOME_MESSAGE = '/welcomemessage';
+export const API_SERVER_OFFLINE_MESSAGE = '/offlinemessage';
 export const API_SERVER_NAME = '/name';
 export const API_SOCIAL_HANDLES = '/socialhandles';
 export const API_STREAM_KEY = '/key';
@@ -87,6 +88,14 @@ export const TEXTFIELD_PROPS_SERVER_SUMMARY = {
   placeholder: '',
   label: 'About',
   tip: 'A brief blurb about you, your server, or what your stream is about.',
+};
+export const TEXTFIELD_PROPS_SERVER_OFFLINE_MESSAGE = {
+  apiPath: API_SERVER_OFFLINE_MESSAGE,
+  configPath: 'instanceDetails',
+  maxLength: 2500,
+  placeholder: 'An optional message you can leave people when your stream is not live.',
+  label: 'Offline Message',
+  tip: 'An optional message you can leave people when your stream is not live.',
 };
 export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
   apiPath: API_SERVER_WELCOME_MESSAGE,

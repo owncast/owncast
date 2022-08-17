@@ -21,6 +21,7 @@ export const initialServerConfigState: ConfigDetails = {
     tags: [],
     title: '',
     welcomeMessage: '',
+    offlineMessage: '',
   },
   ffmpegPath: '',
   rtmpServerPort: '',

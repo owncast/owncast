@@ -12,6 +12,7 @@ import {
   TEXTFIELD_PROPS_INSTANCE_URL,
   TEXTFIELD_PROPS_SERVER_NAME,
   TEXTFIELD_PROPS_SERVER_SUMMARY,
+  TEXTFIELD_PROPS_SERVER_OFFLINE_MESSAGE,
   API_YP_SWITCH,
   FIELD_PROPS_YP,
   FIELD_PROPS_NSFW,
@@ -99,6 +100,15 @@ export default function EditInstanceDetails() {
         type={TEXTFIELD_TYPE_TEXTAREA}
         value={formDataValues.summary}
         initialValue={instanceDetails.summary}
+        onChange={handleFieldChange}
+      />
+
+      <TextFieldWithSubmit
+        fieldName="offlineMessage"
+        {...TEXTFIELD_PROPS_SERVER_OFFLINE_MESSAGE}
+        type={TEXTFIELD_TYPE_TEXTAREA}
+        value={formDataValues.offlineMessage}
+        initialValue={instanceDetails.offlineMessage}
         onChange={handleFieldChange}
       />
 
