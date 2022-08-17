@@ -35,7 +35,7 @@ import FollowButton from '../../action-buttons/FollowButton';
 import NotifyButton from '../../action-buttons/NotifyButton';
 import Modal from '../Modal/Modal';
 import BrowserNotifyModal from '../../modals/BrowserNotify/BrowserNotifyModal';
-import StreamInfo from '../../common/StreamInfo';
+import ContentHeader from '../../common/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { StatusBar } from '..';
 
@@ -51,9 +51,18 @@ export default function ContentComponent() {
   const online = useRecoilValue<boolean>(isOnlineSelector);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
-  const { viewerCount, lastConnectTime, lastDisconnectTime } =
+  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
-  const { extraPageContent, version, name, externalActions, offlineMessage } = clientConfig;
+  const {
+    extraPageContent,
+    version,
+    name,
+    summary,
+    socialHandles,
+    tags,
+    externalActions,
+    offlineMessage,
+  } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
@@ -143,7 +152,14 @@ export default function ContentComponent() {
               <BrowserNotifyModal />
             </Modal>
           </div>
-          <StreamInfo isMobile={isMobile} />
+          <ContentHeader
+            name={name}
+            title={streamTitle}
+            summary={summary}
+            tags={tags}
+            links={socialHandles}
+            logo="/logo"
+          />
         </div>
         <div className={s.lowerHalf}>
           <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
