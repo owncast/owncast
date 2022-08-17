@@ -4,17 +4,17 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-right: .5rem;
-  width: clamp(2.5vh, 9vw, 120px);
-  height: clamp(2.5vh, 9vw, 120px);
+  margin-right: 0.5rem;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-  border-width: 3px;
+  border-width: 5px;
   border-style: solid;
   border-color: var(--theme-primary-color);
   background-color: var(--theme-background-secondary);
 }
 
-.container {  
+.container {
   width: 90%;
   height: 90%;
   border-radius: 50%;
@@ -28,4 +28,3 @@
   background-position: center;
   overflow: hidden;
 }
-
