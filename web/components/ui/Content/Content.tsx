@@ -119,8 +119,7 @@ export default function ContentComponent() {
             <OfflineBanner
               name={name}
               text={
-                offlineMessage ||
-                'Stream is offline text goes here. Will create a new form to set it in the Admin.'
+                offlineMessage || 'Please follow and ask to get notified when the stream is live.'
               }
             />
           )}
