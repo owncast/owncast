@@ -13,7 +13,7 @@ import {
   OTHER_SOCIAL_HANDLE_OPTION,
 } from '../../utils/config-constants';
 import { SocialHandle, UpdateArgs } from '../../types/config-section';
-import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
+import isValidURI from '../../utils/uris';
 import TextField from './form-textfield';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import FormStatusIndicator from './form-status-indicator';
@@ -239,7 +239,7 @@ export default function EditSocialLinks() {
   ];
 
   const okButtonProps = {
-    disabled: !isValidUrl(modalDataState.url),
+    disabled: !isValidURI(modalDataState.url),
   };
 
   const otherField = (
@@ -299,7 +299,6 @@ export default function EditSocialLinks() {
             onChange={handleUrlChange}
             useTrim
             type="url"
-            pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
           />
           <FormStatusIndicator status={submitStatus} />
         </div>
