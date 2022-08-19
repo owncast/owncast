@@ -1,16 +1,37 @@
 /* Change all text and icon colors in the player. */
 .vjs-owncast.video-js {
-  color: var(--theme-unknown-2);
+  color: var(--theme-text-secondary);
 }
 
 .vjs-owncast .vjs-big-play-button {
   z-index: 10;
-  border-color: var(--theme-unknown) !important;
+  color: var(--theme-text-secondary);
+  font-size: 15rem !important;
+  border-color: transparent !important;
   border-radius: var(--theme-rounded-corners) !important;
+  background-color: transparent !important;
+  text-shadow: 2px 3px 4px #0000005f;
+
+  :hover {
+    transition: all 0.2s ease-in-out;
+    font-size: 20rem;
+    text-shadow: 2px 5px 4px #00000093;
+  }
+}
+
+.vjs-owncast .vjs-loading-spinner {
+  z-index: 10;
+  display: block;
+  color: var(--theme-text-secondary);
 }
 
 .vjs-owncast .vjs-control-bar {
-  background-color: var(--theme-unknown) !important;
+  color: var(--theme-text-secondary);
+  background-color: var(--theme-background-primary) !important;
+}
+
+.vjs-owncast .vjs-control {
+  color: var(--theme-text-secondary);
 }
 
 .vjs-airplay .vjs-icon-placeholder::before {
