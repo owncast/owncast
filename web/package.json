@@ -29,7 +29,7 @@
 		"markdown-it": "13.0.1",
 		"next": "12.2.5",
 		"next-with-less": "2.0.5",
-		"picmo": "5.4.2",
+		"picmo": "5.5.2",
 		"postcss-flexbugs-fixes": "5.0.2",
 		"prop-types": "15.8.1",
 		"rc-overflow": "1.2.8",
