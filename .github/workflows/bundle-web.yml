@@ -1,6 +1,9 @@
 name: Build and bundle web app into Owncast
 on:
   push:
+    branches:
+      - webv2
+      - develop
     paths:
       - web/**
 
