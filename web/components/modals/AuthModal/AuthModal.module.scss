@@ -1,0 +1,11 @@
+.tabContent {
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .icon {
+    height: 15px;
+    padding-right: 5px;
+  }
+}

@@ -71,6 +71,11 @@ export const chatMessagesAtom = atom<ChatMessage[]>({
   default: [] as ChatMessage[],
 });
 
+export const chatAuthenticatedAtom = atom<boolean>({
+  key: 'chatAuthenticatedAtom',
+  default: false,
+});
+
 export const websocketServiceAtom = atom<WebsocketService>({
   key: 'websocketServiceAtom',
   default: null,
@@ -156,6 +161,7 @@ export function ClientConfigStore() {
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
   const setChatDisplayColor = useSetRecoilState<Number>(chatDisplayColorAtom);
   const setChatUserId = useSetRecoilState<string>(chatUserIdAtom);
+  const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const setIsChatModerator = useSetRecoilState<boolean>(isChatModeratorAtom);
   const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
   const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
@@ -265,6 +271,7 @@ export function ClientConfigStore() {
           setChatDisplayColor,
           setChatUserId,
           setIsChatModerator,
+          setChatAuthenticated,
         );
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
