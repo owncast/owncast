@@ -1,6 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import AuthModal from '../components/modals/AuthModal';
+import { RecoilRoot } from 'recoil';
+import AuthModal from '../components/modals/AuthModal/AuthModal';
 
 const Example = () => (
   <div>
@@ -15,7 +16,11 @@ export default {
 } as ComponentMeta<typeof AuthModal>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof AuthModal> = args => <Example />;
+const Template: ComponentStory<typeof AuthModal> = args => (
+  <RecoilRoot>
+    <Example />
+  </RecoilRoot>
+);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Basic = Template.bind({});

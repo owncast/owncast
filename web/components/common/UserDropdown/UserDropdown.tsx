@@ -18,6 +18,7 @@ import {
 import s from './UserDropdown.module.scss';
 import NameChangeModal from '../../modals/NameChangeModal';
 import { AppStateOptions } from '../../stores/application-state';
+import AuthModal from '../../modals/AuthModal/AuthModal';
 
 interface Props {
   username?: string;
@@ -26,6 +27,7 @@ interface Props {
 export default function UserDropdown({ username: defaultUsername }: Props) {
   const username = defaultUsername || useRecoilValue(chatDisplayNameAtom);
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
@@ -52,7 +54,7 @@ export default function UserDropdown({ username: defaultUsername }: Props) {
       <Menu.Item key="0" icon={<EditOutlined />} onClick={() => handleChangeName()}>
         Change name
       </Menu.Item>
-      <Menu.Item key="1" icon={<LockOutlined />}>
+      <Menu.Item key="1" icon={<LockOutlined />} onClick={() => setShowAuthModal(true)}>
         Authenticate
       </Menu.Item>
       {appState.chatAvailable && (
@@ -79,6 +81,13 @@ export default function UserDropdown({ username: defaultUsername }: Props) {
         handleCancel={() => setShowNameChangeModal(false)}
       >
         <NameChangeModal />
+      </Modal>
+      <Modal
+        title="Authenticate"
+        visible={showAuthModal}
+        handleCancel={() => setShowAuthModal(false)}
+      >
+        <AuthModal />
       </Modal>
     </div>
   );

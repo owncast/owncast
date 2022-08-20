@@ -5,7 +5,7 @@ import Mock from './assets/mocks/indieauth-modal.png';
 
 const Example = () => (
   <div>
-    <IndieAuthModal />
+    <IndieAuthModal authenticated displayName="fakeChatName" accessToken="fakeaccesstoken" />
   </div>
 );
 

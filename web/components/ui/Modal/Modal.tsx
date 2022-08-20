@@ -19,7 +19,7 @@ export default function Modal(props: Props) {
 
   const modalStyle = {
     padding: '0px',
-    height: height || '40vh',
+    minHeight: height || '40vh',
   };
 
   const iframe = url && (
