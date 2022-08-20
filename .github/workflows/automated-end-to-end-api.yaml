@@ -4,9 +4,7 @@ on:
   push:
     paths-ignore:
       - 'webroot/**'
-  pull_request:
-    paths-ignore:
-      - 'webroot/**'
+      - 'web/**'
       
 jobs:
   api:
