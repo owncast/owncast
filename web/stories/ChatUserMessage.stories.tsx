@@ -92,6 +92,7 @@ export const FromAuthenticatedUser = Template.bind({});
 FromAuthenticatedUser.args = {
   message: authenticatedUserMessage,
   showModeratorMenu: false,
+  isAuthorAuthenticated: true,
 };
 
 export const WithStringHighlighted = Template.bind({});

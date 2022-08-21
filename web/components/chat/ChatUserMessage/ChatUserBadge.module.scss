@@ -1,0 +1,13 @@
+@import 'styles/mixins.scss';
+
+.badge {
+  font-family: var(--theme-header-font-family);
+  font-weight: 500;
+  font-size: 0.4em;
+  text-transform: uppercase;
+  padding: 2px;
+  border-radius: 3px;
+  border-width: 1px;
+  border-style: solid;
+  margin-left: 3px;
+}
