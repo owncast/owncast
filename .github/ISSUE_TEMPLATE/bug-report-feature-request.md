@@ -3,7 +3,7 @@ name: Bug report or feature request
 about: Having problems or have ideas?  We'd love to know what you think and help you out.
 ---
 
-Thanks for helping by reporting issues and sharing ideas you might have!
+Thanks for helping by reporting issues and sharing ideas you might have! Please delete this message before submitting your issue, this is just a note to help.
 
 ## Feature requests
 
