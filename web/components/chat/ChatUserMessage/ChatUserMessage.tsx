@@ -6,8 +6,8 @@ import cn from 'classnames';
 import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ModIcon } from '../../ui';
 import ChatModerationActionMenu from '../ChatModerationActionMenu/ChatModerationActionMenu';
+import ChatUserBadge from './ChatUserBadge';
 
 interface Props {
   message: ChatMessage;
@@ -16,6 +16,7 @@ interface Props {
   sentBySelf: boolean;
   sameUserAsLast: boolean;
   isAuthorModerator: boolean;
+  isAuthorAuthenticated: boolean;
 }
 
 export default function ChatUserMessage({
@@ -25,6 +26,7 @@ export default function ChatUserMessage({
   sentBySelf, // Move the border to the right and render a background
   sameUserAsLast,
   isAuthorModerator,
+  isAuthorAuthenticated,
 }: Props) {
   const { id: messageId, body, user, timestamp } = message;
   const { id: userId, displayName, displayColor } = user;
@@ -32,6 +34,11 @@ export default function ChatUserMessage({
   const color = `var(--theme-user-colors-${displayColor})`;
   const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
   const [formattedMessage, setFormattedMessage] = useState<string>(body);
+
+  const badgeStrings = [isAuthorModerator && 'mod', isAuthorAuthenticated && 'auth'];
+  const badges = badgeStrings
+    .filter(badge => !!badge)
+    .map(badge => <ChatUserBadge key={badge} badge={badge} userColor={displayColor} />);
 
   useEffect(() => {
     setFormattedMessage(he.decode(body));
@@ -49,7 +56,7 @@ export default function ChatUserMessage({
         {!sameUserAsLast && (
           <div className={s.user} style={{ color }}>
             <span className={s.userName}>{displayName}</span>
-            {isAuthorModerator && <ModIcon />}
+            <span>{badges}</span>
           </div>
         )}
         <Highlight search={highlightString}>

@@ -88,6 +88,7 @@ export default function ChatContainer(props: Props) {
             sentBySelf={message.user?.id === chatUserId} // The local user sent this message
             sameUserAsLast={shouldCollapseMessages(messages, index)}
             isAuthorModerator={(message as ChatMessage).user.scopes?.includes('MODERATOR')}
+            isAuthorAuthenticated={message.user?.authenticated}
             key={message.id}
           />
         );
