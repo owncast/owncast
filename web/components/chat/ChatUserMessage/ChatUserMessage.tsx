@@ -7,7 +7,7 @@ import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import ChatModerationActionMenu from '../ChatModerationActionMenu/ChatModerationActionMenu';
-import ChatUserBadge from './ChatUserBadge';
+import ChatUserBadge from '../ChatUserBadge/ChatUserBadge';
 
 interface Props {
   message: ChatMessage;

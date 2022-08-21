@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatUserBadge from '../components/chat/ChatUserMessage/ChatUserBadge';
+import ChatUserBadge from '../components/chat/ChatUserBadge/ChatUserBadge';
 
 export default {
   title: 'owncast/Chat/Messages/User Flag',

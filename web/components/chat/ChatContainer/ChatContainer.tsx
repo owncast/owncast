@@ -11,8 +11,9 @@ import s from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatTextField, ChatUserMessage } from '..';
 import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
-import ChatActionMessage from '../ChatAction/ChatActionMessage';
+// import ChatActionMessage from '../ChatAction/ChatActionMessage';
 import ChatSystemMessage from '../ChatSystemMessage/ChatSystemMessage';
+import ChatJoinMessage from '../ChatJoinMessage/ChatJoinMessage';
 
 interface Props {
   messages: ChatMessage[];
@@ -53,10 +54,12 @@ export default function ChatContainer(props: Props) {
   const getUserJoinedMessage = (message: ChatMessage) => {
     const { user } = message;
     const { displayName, displayColor } = user;
-    const color = `var(--theme-user-colors-${displayColor})`;
+    const isAuthorModerator = checkIsModerator(message);
     return (
-      <ChatActionMessage
-        body={`<span style="color: ${color}">${displayName}</span> joined the chat.`}
+      <ChatJoinMessage
+        displayName={displayName}
+        userColor={displayColor}
+        isAuthorModerator={isAuthorModerator}
       />
     );
   };
