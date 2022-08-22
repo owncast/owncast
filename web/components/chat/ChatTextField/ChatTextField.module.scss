@@ -1,14 +1,15 @@
 .root {
   position: relative;
+  display: flex;
   bottom: 0px;
   width: 100%;
-  padding: .3rem;
-  color: var(--text-secondry);
+  padding: 0.3rem;
+  color: var(--theme-text-secondary);
   overflow-x: hidden;
-  div[role=textbox] {
+  div[role='textbox'] {
     font-size: 0.9rem;
-    border-radius: .2rem;
-    padding: .6rem;
+    border-radius: 0.2rem;
+    padding: 0.6rem;
     padding-right: calc(0.6rem + 44px);
     background-color: var(--color-owncast-gray-700);
     box-shadow: 0;
@@ -24,25 +25,12 @@
 
   .inputWrapper {
     display: flex;
+    flex-direction: row;
     position: relative;
-    margin-right: .3rem;
-    border-radius: .2rem;
+    margin-right: 0.3rem;
+    border-radius: 0.2rem;
     & > div {
-      transition: box-shadow .2s ease-in-out;
-    }
-  }
-
-  .emojiButton {
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 0 1rem;
-    position: absolute;
-    right: 0px;
-    top: 50%;
-    transform: translateY(-50%);
-    svg {
-      fill: var(--color-owncast-gray-300);
+      transition: box-shadow 0.2s ease-in-out;
     }
   }
 
@@ -53,16 +41,18 @@
   }
 }
 
+.sendButton {
+  display: none;
 
-
-.mobile {
-  &.root {
-    display: flex;
-    .inputWrapper {
-      flex: 1;
-    }
-    .submitButtonWrapper {
-      padding: 0px;
-    }
+  @media (max-width: 768px) {
+    display: inline;
+    margin-left: 5px;
   }
+}
+
+.emojiButton {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0 1rem;
 }
