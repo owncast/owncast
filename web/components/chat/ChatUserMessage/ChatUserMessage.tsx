@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Highlight } from 'react-highlighter-ts';
 import he from 'he';
 import cn from 'classnames';
+import { Tooltip } from 'antd';
 import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -32,7 +33,7 @@ export default function ChatUserMessage({
   const { id: userId, displayName, displayColor } = user;
 
   const color = `var(--theme-user-colors-${displayColor})`;
-  const formattedTimestamp = `Sent at ${formatTimestamp(timestamp)}`;
+  const formattedTimestamp = `Sent ${formatTimestamp(timestamp)}`;
   const [formattedMessage, setFormattedMessage] = useState<string>(body);
 
   const badgeStrings = [isAuthorModerator && 'mod', isAuthorAuthenticated && 'auth'];
@@ -45,23 +46,27 @@ export default function ChatUserMessage({
   }, [message]);
 
   return (
-    <div style={{ padding: 3.5 }}>
+    <div className={cn(s.messagePadding, sameUserAsLast && s.messagePaddingCollapsed)}>
       <div
         className={cn(s.root, {
           [s.ownMessage]: sentBySelf,
         })}
         style={{ borderColor: color }}
-        title={formattedTimestamp}
       >
         {!sameUserAsLast && (
-          <div className={s.user} style={{ color }}>
-            <span className={s.userName}>{displayName}</span>
-            <span>{badges}</span>
-          </div>
+          <Tooltip title="user info goes here" placement="topLeft" mouseEnterDelay={1}>
+            <div className={s.user} style={{ color }}>
+              <span className={s.userName}>{displayName}</span>
+              <span>{badges}</span>
+            </div>
+          </Tooltip>
         )}
-        <Highlight search={highlightString}>
-          <div className={s.message}>{formattedMessage}</div>
-        </Highlight>
+        <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
+          <Highlight search={highlightString}>
+            <div className={s.message}>{formattedMessage}</div>
+          </Highlight>
+        </Tooltip>
+
         {showModeratorMenu && (
           <div className={s.modMenuWrapper}>
             <ChatModerationActionMenu
