@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
-import cn from 'classnames';
 import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
-import { isMobileAtom, websocketServiceAtom } from '../../stores/ClientConfigStore';
+import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
 import s from './ChatTextField.module.scss';
 
@@ -102,7 +101,6 @@ export default function ChatTextField(props: Props) {
   // const { value: originalValue } = props;
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const isMobile = useRecoilValue<boolean>(isMobileAtom);
   const [editor] = useState(() => withImages(withReact(createEditor())));
 
   const sendMessage = () => {
@@ -144,12 +142,8 @@ export default function ChatTextField(props: Props) {
   };
 
   return (
-    <div
-      className={cn(s.root, {
-        [s.mobile]: isMobile,
-      })}
-    >
-      <div className={s.inputWrapper}>
+    <div>
+      <div className={s.root}>
         <Slate
           editor={editor}
           value={[{ type: 'paragraph', children: [{ text: '' }] }]}
@@ -162,7 +156,14 @@ export default function ChatTextField(props: Props) {
             style={{ width: '100%' }}
             autoFocus
           />
+          <Popover
+            content={<EmojiPicker onEmojiSelect={handleEmojiSelect} />}
+            trigger="click"
+            onVisibleChange={visible => setShowEmojis(visible)}
+            visible={showEmojis}
+          />
         </Slate>
+
         <button
           type="button"
           className={s.emojiButton}
@@ -171,23 +172,14 @@ export default function ChatTextField(props: Props) {
         >
           <SmileOutlined />
         </button>
+        <Button
+          className={s.sendButton}
+          size="large"
+          type="ghost"
+          icon={<SendOutlined />}
+          onClick={sendMessage}
+        />
       </div>
-      <div className={s.submitButtonWrapper}>
-        {isMobile ? (
-          <Button size="large" type="ghost" icon={<SendOutlined />} onClick={sendMessage} />
-        ) : (
-          <Button type="primary" icon={<SendOutlined />} onClick={sendMessage}>
-            Send
-          </Button>
-        )}
-      </div>
-      <Popover
-        content={<EmojiPicker onEmojiSelect={handleEmojiSelect} />}
-        trigger="click"
-        onVisibleChange={visible => setShowEmojis(visible)}
-        visible={showEmojis}
-        // placement="topRight"
-      />
     </div>
   );
 }
