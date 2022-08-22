@@ -1,0 +1,15 @@
+name: Bug report or feature request
+description: Submit a bug you encountered or share an idea you have for the project.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping by reporting issues and sharing ideas you might have!
+        While no idea is a bad idea, some might make more sense for Owncast than others.
+        Take a look at the [Owncast product definition](https://github.com/owncast/owncast/blob/develop/docs/product-definition.md) to see what our focus is and how your requests might align.
+
+  - type: textarea
+    id: issue-body
+    attributes:
+      label: Share your bug report, feature request, or comment.
+      description: Please include as much detail as possible.
