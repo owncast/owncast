@@ -4,7 +4,7 @@
   }
   position: relative;
   font-size: 0.9rem;
-  padding: 5px 15px 5px 5px;
+  padding: 0px 15px 5px 5px;
   padding-left: 1rem;
   .user {
     display: flex;
@@ -79,4 +79,14 @@
   &:hover .modMenuWrapper {
     display: block;
   }
+}
+
+.messagePadding {
+  padding: 3.5px;
+  padding-bottom: 0px;
+  padding-top: 7px;
+}
+
+.messagePaddingCollapsed {
+  padding-top: 2px;
 }
