@@ -11,15 +11,17 @@ interface Props {
   afterClose?: () => void;
   children?: ReactNode;
   height?: string;
+  width?: string;
 }
 
 export default function Modal(props: Props) {
-  const { title, url, visible, handleOk, handleCancel, afterClose, height, children } = props;
+  const { title, url, visible, handleOk, handleCancel, afterClose, height, width, children } =
+    props;
   const [loading, setLoading] = useState(!!url);
 
   const modalStyle = {
     padding: '0px',
-    minHeight: height || '40vh',
+    minHeight: height,
   };
 
   const iframe = url && (
@@ -45,7 +47,7 @@ export default function Modal(props: Props) {
       onCancel={handleCancel}
       afterClose={afterClose}
       bodyStyle={modalStyle}
-      width="70%"
+      width={width}
       zIndex={9999}
       footer={null}
       centered
@@ -70,5 +72,6 @@ Modal.defaultProps = {
   handleOk: undefined,
   handleCancel: undefined,
   afterClose: undefined,
-  height: undefined,
+  height: '40vh',
+  width: '70%',
 };
