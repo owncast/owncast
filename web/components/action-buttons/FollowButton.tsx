@@ -11,7 +11,8 @@ import { ClientConfig } from '../../interfaces/client-config.model';
 export default function FollowButton(props: any) {
   const [showModal, setShowModal] = useState(false);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const { name } = clientConfig;
+  const { name, federation } = clientConfig;
+  const { account } = federation;
 
   const buttonClicked = () => {
     setShowModal(true);
@@ -28,8 +29,14 @@ export default function FollowButton(props: any) {
       >
         Follow
       </Button>
-      <Modal title={`Follow ${name}`} visible={showModal} handleCancel={() => setShowModal(false)}>
-        <FollowModal handleClose={() => setShowModal(false)} />
+      <Modal
+        title={`Follow ${name}`}
+        visible={showModal}
+        handleCancel={() => setShowModal(false)}
+        width="550px"
+        height="200px"
+      >
+        <FollowModal account={account} name={name} handleClose={() => setShowModal(false)} />
       </Modal>
     </>
   );
