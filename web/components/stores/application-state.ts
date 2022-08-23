@@ -70,6 +70,7 @@ const appStateModel =
   createMachine({
     id: 'appState',
     initial: 'loading',
+    predictableActionArguments: true,
     states: {
       loading: {
         meta: {
