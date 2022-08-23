@@ -339,8 +339,8 @@ export function ClientConfigStore() {
 
       const metadata = mergeMeta(state.meta) as AppStateOptions;
 
-      console.debug('--- APP STATE: ', state.value);
-      console.debug('--- APP META: ', metadata);
+      // console.debug('--- APP STATE: ', state.value);
+      // console.debug('--- APP META: ', metadata);
 
       setAppState(metadata);
     });

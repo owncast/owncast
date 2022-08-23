@@ -38,7 +38,6 @@ const AddMessagesChatExample = args => {
         usernameToHighlight="testuser"
         chatUserId="testuser"
         isModerator={false}
-        isMobile={false}
       />
     </RecoilRoot>
   );
