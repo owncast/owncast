@@ -7,9 +7,9 @@ import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../u
 
 import {
   clientConfigStateAtom,
-  chatMessagesAtom,
-  chatDisplayNameAtom,
-  chatUserIdAtom,
+  // chatMessagesAtom,
+  // chatDisplayNameAtom,
+  // chatUserIdAtom,
   isChatVisibleSelector,
   appStateAtom,
   isOnlineSelector,
@@ -23,8 +23,8 @@ import FollowerCollection from '../Followers/FollowersCollection';
 import s from './Content.module.scss';
 import Sidebar from '../Sidebar';
 import Footer from '../Footer';
-import ChatContainer from '../../chat/ChatContainer';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
+// import ChatContainer from '../../chat/ChatContainer';
+// import { ChatMessage } from '../../../interfaces/chat-message.model';
 // import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 import ActionButtonRow from '../../action-buttons/ActionButtonRow';
 import ActionButton from '../../action-buttons/ActionButton';
@@ -47,10 +47,10 @@ export default function ContentComponent() {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
-  const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
+  // const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
-  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
-  const chatUserId = useRecoilValue<string>(chatUserIdAtom);
+  // const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
+  // const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
   const {
@@ -151,6 +151,8 @@ export default function ContentComponent() {
               <BrowserNotifyModal />
             </Modal>
           </div>
+        </div>
+        <div className={s.lowerHalf}>
           <ContentHeader
             name={name}
             title={streamTitle}
@@ -159,12 +161,10 @@ export default function ContentComponent() {
             links={socialHandles}
             logo="/logo"
           />
-        </div>
-        <div className={s.lowerHalf}>
           <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
             {isChatVisible && isMobile && (
               <TabPane tab="Chat" key="0" style={{ height: '100%' }}>
-                <div style={{ position: 'relative', height: '100%' }}>
+                {/* <div style={{ position: 'relative', height: '100%' }}>
                   <div className={s.mobileChat}>
                     <ChatContainer
                       messages={messages}
@@ -174,7 +174,7 @@ export default function ContentComponent() {
                       isModerator={false}
                     />
                   </div>
-                </div>
+                </div> */}
               </TabPane>
             )}
             <TabPane tab="About" key="2" className={s.pageContentSection}>
