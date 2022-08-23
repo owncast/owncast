@@ -172,7 +172,6 @@ export default function ContentComponent() {
                       usernameToHighlight={chatDisplayName}
                       chatUserId={chatUserId}
                       isModerator={false}
-                      isMobile={isMobile}
                     />
                   </div>
                 </div>

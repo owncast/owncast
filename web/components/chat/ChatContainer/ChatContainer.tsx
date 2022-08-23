@@ -17,15 +17,13 @@ import ChatJoinMessage from '../ChatJoinMessage/ChatJoinMessage';
 
 interface Props {
   messages: ChatMessage[];
-  // loading: boolean;
   usernameToHighlight: string;
   chatUserId: string;
   isModerator: boolean;
-  isMobile: boolean | undefined;
 }
 
 export default function ChatContainer(props: Props) {
-  const { messages, usernameToHighlight, chatUserId, isModerator, isMobile } = props;
+  const { messages, usernameToHighlight, chatUserId, isModerator } = props;
 
   const [atBottom, setAtBottom] = useState(false);
   // const [showButton, setShowButton] = useState(false);
@@ -146,7 +144,7 @@ export default function ChatContainer(props: Props) {
         )}
       </>
     ),
-    [messages, usernameToHighlight, chatUserId, isModerator, atBottom, isMobile],
+    [messages, usernameToHighlight, chatUserId, isModerator, atBottom],
   );
 
   return (

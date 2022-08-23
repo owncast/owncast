@@ -13,6 +13,6 @@ export default function handleConnectedClientInfoMessage(
   setChatDisplayName(displayName);
   setChatDisplayColor(displayColor);
   setChatUserId(id);
-  setIsChatModerator(scopes?.includes('moderator'));
+  setIsChatModerator(scopes?.includes('MODERATOR'));
   setChatAuthenticated(authenticated);
 }

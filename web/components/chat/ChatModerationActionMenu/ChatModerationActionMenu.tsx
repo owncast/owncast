@@ -12,7 +12,6 @@ import ChatModeration from '../../../services/moderation-service';
 
 const { confirm } = Modal;
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 interface Props {
   accessToken: string;
   messageID: string;

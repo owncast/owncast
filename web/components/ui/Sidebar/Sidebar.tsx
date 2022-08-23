@@ -8,12 +8,14 @@ import {
   chatMessagesAtom,
   chatDisplayNameAtom,
   chatUserIdAtom,
+  isChatModeratorAtom,
 } from '../../stores/ClientConfigStore';
 
 export default function Sidebar() {
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
+  const isChatModerator = useRecoilValue<boolean>(isChatModeratorAtom);
 
   return (
     <Sider className={s.root} collapsedWidth={0} width={320}>
@@ -21,8 +23,7 @@ export default function Sidebar() {
         messages={messages}
         usernameToHighlight={chatDisplayName}
         chatUserId={chatUserId}
-        isModerator={false}
-        isMobile={false}
+        isModerator={isChatModerator}
       />
     </Sider>
   );
