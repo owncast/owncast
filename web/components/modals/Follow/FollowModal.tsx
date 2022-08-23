@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Input, Button, Alert, Spin, Space } from 'antd';
 import { useState } from 'react';
 import s from './FollowModal.module.scss';
@@ -77,10 +78,10 @@ export default function FollowModal(props: Props) {
     <Space direction="vertical">
       <div className={s.header}>
         By following this stream you'll get notified on the Fediverse when it goes live. Now is a
-        great time to{' '}
+        great time to
         <a href="https://owncast.online/join-fediverse" target="_blank" rel="noreferrer">
           learn about the Fediverse
-        </a>{' '}
+        </a>
         if it's new to you.
       </div>
 

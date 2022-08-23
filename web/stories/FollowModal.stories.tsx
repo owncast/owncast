@@ -5,7 +5,7 @@ import FollowModalMock from './assets/mocks/follow-modal.png';
 
 const Example = () => (
   <div>
-    <FollowModal handleClose={null} />
+    <FollowModal handleClose={null} account="@fake@server.name" name="Fake Owncast Server" />
   </div>
 );
 
@@ -21,7 +21,7 @@ export default {
     docs: {
       description: {
         component: `The Follow modal allows an end user to type in their Fediverse account information to follow this Owncast instance. It must:
-        
+
 - Validate the input to make sure it's a valid looking account.
 - Handle errors that come back from the server.
 - Perform the redirect to the remote server when the backend response is received.
