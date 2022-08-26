@@ -1,7 +1,9 @@
 name: lint
 on:
   push:
-  pull_request:
+    paths-ignore:
+      - 'webroot/**'
+      - 'web/**'
 
 permissions:
   contents: read
