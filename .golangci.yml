@@ -78,6 +78,11 @@ linters-settings:
       - ifElseChain
       - exitAfterDefer
 
+  revive:
+    rules:
+      - name: package-comments
+        disabled: true
+
   forbidigo:
     # Forbid the following identifiers (identifiers are written using regexp):
     forbid:
