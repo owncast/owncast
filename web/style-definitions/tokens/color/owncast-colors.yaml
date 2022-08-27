@@ -1,9 +1,11 @@
 # These are colors that make up the Owncast-specific color palette.
 color:
   unknown:
-    value: '#00FF00'
+    value: '#7a5cf3'
+
+  # this ends up being primary button text
   unknown-2:
-    value: '#FF0000'
+    value: '#fffffe'
   owncast:
     # These are the colors assigned to chat users.
     # If you add more colors here make sure to add them to
@@ -29,20 +31,24 @@ color:
 
     text:
       primary:
-        value: '#030208'
+        value: '#2E282A'
+
       secondary:
-        value: '#63638E'
+        value: '#94a1b2'
+
       highlight:
         value: '#030208'
       bright:
         value: '#5353A6'
+
     background:
       highlight:
         value: '#F0E678'
+
       primary:
-        value: '#FFFCF2'
+        value: '#E2E8F0'
       secondary:
-        value: '#F0EFE4'
+        value: '#ffffff'
 
 rounded-corners:
   value: '0.5em'

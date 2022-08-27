@@ -1,7 +1,13 @@
 .root {
   display: grid;
   grid-template-columns: 1fr auto;
-  padding: 0.7em;
+
+	.topHalf {
+		padding: 1em;
+	}
+	.lowerHalf {
+		padding: 0em 2em;
+	}
 }
 
 .leftCol {

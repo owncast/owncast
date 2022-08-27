@@ -6,11 +6,12 @@
   justify-content: space-between;
   z-index: 20;
   padding: 0.4rem .7rem;
-  background-color: var(--default-bg-color);
+	box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
   .logo {
     display: flex;
     align-items: center;
     span {
+			font-family: var(--theme-text-display-font-family);
       margin-left: .5rem;
       font-size: 1.5rem;
       font-weight: 600;

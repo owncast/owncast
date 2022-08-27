@@ -1,6 +1,7 @@
 .root {
   position: relative;
   display: grid;
+	padding: 20px 10px;
 }
 
 .buttonsLogoTitleSection {
@@ -28,8 +29,10 @@
 .titleSection {
   display: flex;
   flex-direction: column;
+	margin-left: 10px;
 
   .title {
+		font-family: var(--theme-text-display-font-family);
     font-size: 32px;
     font-weight: bold;
     color: black;
@@ -38,21 +41,21 @@
   }
 
   .subtitle {
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 22px;
+    font-size: 22px;
+    font-weight: 300;
+		line-height: 1.3;
     color: var(--theme-text-secondary);
   }
 }
 
 .tagList {
-  font-family: var(--theme-text-display-font-family);
+  // font-family: var(--theme-text-display-font-family);
   color: var(--theme-text-primary);
 
   span {
     display: inline-block;
     margin-right: 8px;
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 400;
   }
 }

@@ -9,12 +9,12 @@
   line-height: 1.5em;
   margin: 0;
   padding: 0;
-  width: 80%;
-  max-width: 1200px;
+  // width: 95%;
+  // max-width: 1200px;
 
-  color: var(--theme-text);
+  color: var(--theme-text-primary);
   background-color: var(--theme-background-secondary);
-  padding: 1em;
+  padding: 2.5em;
 
   // Allow the content to fill the width on narrow screens.
   @media only screen and (max-width: 768px) {
