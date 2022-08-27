@@ -43,6 +43,7 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 	config.InternalHLSListenerPort = listenerPort
 	log.Traceln("Transcoder response service listening on: " + listenerPort)
 	go func() {
+		//nolint: gosec
 		if err := http.Serve(listener, httpServer); err != nil {
 			log.Fatalln("Unable to start internal video writing service", err)
 		}
