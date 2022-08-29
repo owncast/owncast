@@ -5,6 +5,7 @@
   justify-content: space-between;
   height: 2rem;
   width: 100%;
-  color: var(--theme-text-primary);
+	padding: var(--content-padding);
+  color: var(--alt-light);
   // background-color: var(--theme-background-secondary);
 }

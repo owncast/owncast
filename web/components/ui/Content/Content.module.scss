@@ -2,10 +2,13 @@
   display: grid;
   grid-template-columns: 1fr auto;
 
-	.topHalf {
-		padding: 1em;
+	background-color: var(--main-background);
+
+	.topSection {
+		padding: 0;
+		background-color: var(--background-video)
 	}
-	.lowerHalf {
+	.lowerSection {
 		padding: 0em 2em;
 	}
 }
@@ -28,13 +31,13 @@
     flex-direction: column;
     height: calc(100vh - 64px);
     overflow: hidden;
-    .topHalf {
+    .topSection {
       display: grid;
       grid-template-rows: 30vh 5vh 5vh;
       height: 40vh;
       // overflow: hidden;
     }
-    .lowerHalf {
+    .lowerSection {
       height: 60vh;
     }
   }

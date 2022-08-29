@@ -12,9 +12,11 @@
   // width: 95%;
   // max-width: 1200px;
 
-  color: var(--theme-text-primary);
-  background-color: var(--theme-background-secondary);
-  padding: 2.5em;
+  // color: var(--theme-text-primary);
+  // background-color: var(--theme-background-secondary);
+  color: var(--primary-dark);
+  background-color: var(--secondary-light);
+  padding: calc(3 * var(--content-padding));
 
   // Allow the content to fill the width on narrow screens.
   @media only screen and (max-width: 768px) {

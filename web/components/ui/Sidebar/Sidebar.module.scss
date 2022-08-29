@@ -1,5 +1,6 @@
 .root {
-  background-color: var(--theme-background-secondary);
+  // background-color: var(--theme-background-secondary);
+  background-color: var(--secondary-dark);
   display: none;
   --header-h: 64px;
 }
@@ -13,7 +14,7 @@
     max-height: calc(100vh - var(--header-h));
   }
 }
-/* 
+/*
 First div is .ant-layout-sider-children
 Only way to target it apparently
 */

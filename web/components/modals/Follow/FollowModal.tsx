@@ -111,10 +111,12 @@ export default function FollowModal(props: Props) {
           </div>
         </div>
         <Space className={s.buttons}>
-          <Button disabled={!valid} onClick={remoteFollowButtonPressed}>
+          <Button disabled={!valid} type="primary" onClick={remoteFollowButtonPressed}>
             Follow
           </Button>
-          <Button onClick={joinButtonPressed}>Join the Fediverse</Button>
+          <Button onClick={joinButtonPressed} type="primary">
+            Join the Fediverse
+          </Button>
         </Space>
       </Spin>
     </Space>

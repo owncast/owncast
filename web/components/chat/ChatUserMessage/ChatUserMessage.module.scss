@@ -13,7 +13,8 @@
     font-weight: bold;
   }
   .message {
-    color: var(--theme-text-primary);
+    // color: var(--theme-text-primary);
+		color: var(--chat-text);
 
     mark {
       padding-left: 0.35em;

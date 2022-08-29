@@ -1,5 +1,8 @@
 .footer {
   font-size: 0.85em;
   font-weight: 500;
-  color: var(--theme-text-secondary);
+  // color: var(--theme-text-secondary);
+  color: var(--secondary-dark);
+	background-color: transparent;
+	padding: var(--content-padding);
 }
