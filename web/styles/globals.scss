@@ -1,87 +1,87 @@
-@import '@fontsource/open-sans/variable.css';
+@import '@fontsource/open-sans/300.css';
+@import '@fontsource/open-sans/400.css';
+@import '@fontsource/open-sans/600.css';
+@import '@fontsource/open-sans/800.css';
 @import '@fontsource/poppins/400.css';
 @import '@fontsource/poppins/600.css';
 
 :root {
-	--content-padding: 12px;
-	--module-spacing: 12px; // margin size between lines of stuff, if needed
+  --content-padding: 12px;
+  --module-spacing: 12px; // margin size between lines of stuff, if needed
 
-	--primary-dark: #12161d;
-	--secondary-dark: #2D3748;
-	--alt-dark: #000000;
+  --primary-dark: #12161d;
+  --secondary-dark: #2d3748;
+  --alt-dark: #000000;
 
-	--primary-light: #e2e8f0;
-	--secondary-light: #ffffff;
-	--alt-light: #c3dafe;
+  --primary-light: #e2e8f0;
+  --secondary-light: #ffffff;
+  --alt-light: #c3dafe;
 
-	--neutral-gray-light: #707283; //746f7d
-	--neutral-gray-dark: #39373d;
+  --neutral-gray-light: #707283; //746f7d
+  --neutral-gray-dark: #39373d;
 
-	--action: #7A5CF3;
-	--action-hovered: #5d38f3;
+  --action: #7a5cf3;
+  --action-hovered: #5d38f3;
 
-	--action-disabled: #b6b3c6; // AFA8BA?, //707283text, #494453
+  --action-disabled: #b6b3c6; // AFA8BA?, //707283text, #494453
 
-	--color-warning: #FFC655; //
-	--color-error: #ff4b39; // #CC4F00
-	--color-fun1: #2386e2;// just for fun
-	--color-fun2: #da9eff;// just for fun
-	--color-fun3: #42BEA6;// just for fun
+  --color-warning: #ffc655; //
+  --color-error: #ff4b39; // #CC4F00
+  --color-fun1: #2386e2; // just for fun
+  --color-fun2: #da9eff; // just for fun
+  --color-fun3: #42bea6; // just for fun
 
+  // layout
+  --main-background: var(--primary-light);
+  --header-background: var(--primary-dark);
+  --general-text-on-dark: var(--primary-light);
+  --general-text-on-light: var(--primary-dark);
 
-	// layout
-	--main-background: var(--primary-light);
-	--header-background: var(--primary-dark);
-	--general-text-on-dark: var(--primary-light);
-	--general-text-on-light: var(--primary-dark);
+  // buttons
+  --primary-button-background: var(--action);
+  --primary-button-text: var(--secondary-light);
+  --primary-button-border: var(--secondary-light);
 
-	// buttons
-	--primary-button-background: var(--action);
-	--primary-button-text: var(--secondary-light);
-	--primary-button-border: var(--secondary-light);
+  --primary-button-background-disabled: var(--action-disabled);
+  --primary-button-border-disabled: var(--action-disabled);
+  --primary-button-text-disabled: var(--neutral-gray-light);
 
-	--primary-button-background-disabled: var(--action-disabled);
-	--primary-button-border-disabled: var(--action-disabled);
-	--primary-button-text-disabled: var(--neutral-gray-light);
+  --secondary-button-background: var(--secondary-light); // or --secondary-light? white
+  --secondary-button-text: var(--action);
+  --secondary-button-border: var(--action);
 
-	--secondary-button-background: var(--secondary-light); // or --secondary-light? white
-	--secondary-button-text: var(--action);
-	--secondary-button-border: var(--action);
+  --secondary-button-background-disabled: transparent; // or --secondary-light? white
+  --secondary-button-text-disabled: var(--action-disabled);
+  --secondary-button-border-disabled: var(--action-disabled);
 
-	--secondary-button-background-disabled: transparent; // or --secondary-light? white
-	--secondary-button-text-disabled: var(--action-disabled);
-	--secondary-button-border-disabled: var(--action-disabled);
+  // chat
+  --chat-background: var(--secondary-dark);
+  --chat-text: var(--primary-light); // secondary works too
 
-	// chat
-	--chat-background: var(--secondary-dark);
-	--chat-text: var(--primary-light);  // secondary works too
+  // video
+  --background-video: var(--alt-dark);
 
-	// video
-	--background-video: var(--alt-dark);
+  // modal
+  --modal-header-background: var(--secondary-dark);
+  --modal-header-text: var(--primary-light);
+  --modal-content-background: var(--primary-light);
+  --modal-content-text: var(--primary-dark);
 
-	// modal
-	--modal-header-background: var(--secondary-dark);
-	--modal-header-text: var(--primary-light);
-	--modal-content-background: var(--primary-light);
-	--modal-content-text: var(--primary-dark);
+  // dropdown menu
+  --menu-background: var(--primary-light);
+  --menu-item-text: var(--primary-dark);
+  --menu-item-bg: transparent;
+  --menu-item-hover-bg: rgba(0, 0, 0, 0.05);
+  --menu-item-focus-bg: rgba(0, 0, 0, 0.1);
 
-	// dropdown menu
-	--menu-background: var(--primary-light);
-	--menu-item-text: var(--primary-dark);
-	--menu-item-bg: transparent;
-	--menu-item-hover-bg: rgba(0,0,0,.05);
-	--menu-item-focus-bg: rgba(0,0,0,.1);
-
-	// forms
-	--form-field-background: var(--secondary-light);
-	--form-field-placeholder: var(--action-disabled);
-	--form-field-text: var(--primary-dark);
-	--form-field-border: var(--primary-dark); // if needed
-
-
+  // forms
+  --form-field-background: var(--secondary-light);
+  --form-field-placeholder: var(--action-disabled);
+  --form-field-text: var(--primary-dark);
+  --form-field-border: var(--primary-dark); // if needed
 }
 ::selection {
-	background-color: var(--color-fun2);
+  background-color: var(--color-fun2);
 }
 
 body {
@@ -113,7 +113,7 @@ body {
   h5,
   h6 {
     font-family: var(--theme-text-display-font-family);
-		color: unset; // reset some colors from global.less file
+    color: unset; // reset some colors from global.less file
   }
 
   h1 {

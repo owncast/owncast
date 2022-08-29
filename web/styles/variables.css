@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Sat, 27 Aug 2022 21:18:14 GMT
+ * Generated on Mon, 29 Aug 2022 07:35:46 GMT
  * 
  * How to edit these values:
  * Edit the corresponding token file under the style-definitions directory
@@ -23,13 +23,9 @@
   --theme-text-primary: #2e282a; /* The color of the text in the application. */
   --theme-text-secondary: #94a1b2;
   --theme-text-link: #5353a6;
-  --theme-text-body-font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --theme-text-display-font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --theme-background-primary: #f0f1ee; /* The main background color of the page. */
+  --theme-text-body-font-family: 'Open SansVariable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-text-display-font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-background-primary: #e2e8f0; /* The main background color of the page. */
   --theme-background-secondary: #ffffff; /* A secondary background color used in sections and controls. */
   --theme-rounded-corners: 0.5em;
   --theme-user-colors-0: #f40b0b;
@@ -51,7 +47,7 @@
   --white-88: #fffffe;
   --purple-dark: #7a5cf3;
   --default-link-color: #5353a6;
-  --default-bg-color: #f0f1ee;
+  --default-bg-color: #e2e8f0;
   --default-text-color: #2e282a;
   --color-unknown: #7a5cf3;
   --color-unknown-2: #fffffe;
@@ -68,13 +64,9 @@
   --color-owncast-text-highlight: #030208;
   --color-owncast-text-bright: #5353a6;
   --color-owncast-background-highlight: #f0e678;
-  --color-owncast-background-primary: #f0f1ee;
+  --color-owncast-background-primary: #e2e8f0;
   --color-owncast-background-secondary: #ffffff;
   --rounded-corners: 0.5em;
-  --font-owncast-body: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-owncast-display: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-owncast-body: 'Open SansVariable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-owncast-display: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
