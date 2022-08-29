@@ -80,6 +80,9 @@
 
 
 }
+::selection {
+	background-color: var(--color-fun2);
+}
 
 body {
   font-family: var(--theme-text-body-font-family);
