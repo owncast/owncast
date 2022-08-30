@@ -2,23 +2,17 @@
 # You can find the variable names to override at:
 # https://github.com/ant-design/ant-design/blob/master/components/style/themes/dark.less
 
-text-color:
-  value: 'var(--theme-text-primary)'
-text-color-secondary:
-  value: 'var(--theme-text-secondary)'
 link-color:
-  value: 'var(--theme-text-link)'
-popover-background:
-  value: 'var(--theme-background-secondary)'
+  value: 'var(--theme-color-action)'
+link-hover-color:
+  value: 'var(--theme-color-action-hover)'
+modal-header-bg:
+  value: 'var(--theme-color-components-modal-header-background)'
 modal-content-bg:
-  value: '{color.unknown-2.value}'
-background-color-light:
-  value: 'var(--theme-background-secondary)'
-layout-body-background:
-  value: 'var(--theme-background-primary)'
-
-# These colors need to be explicitly set and cannot use CSS variables.
-component-background:
-  value: '{color.unknown.value}'
-warning-color:
-  value: '{color.unknown-2.value}'
+  value: 'var(--theme-color-background-main)'
+alert-error-bg-color:
+  value: 'var(--theme-color-palette-4)'
+alert-error-border-color:
+  value: 'var(--theme-color-palette-error)'
+popover-background:
+  value: 'var(--theme-color-components-menu-background)'

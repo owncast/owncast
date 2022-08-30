@@ -1,3 +1,5 @@
+import he from 'date-fns/esm/locale/he/index.js';
+import { unset } from 'lodash';
 import PropTypes from 'prop-types';
 
 export function Color(props) {
@@ -35,8 +37,9 @@ export function Color(props) {
   const colorDescriptionStyle = {
     margin: '5px',
     color: 'gray',
-    fontSize: '0.9vw',
+    fontSize: '0.95vw',
     textAlign: 'center' as 'center',
+    lineHeight: 1.0,
   };
 
   return (

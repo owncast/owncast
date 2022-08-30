@@ -1,5 +1,5 @@
 .root {
-  background-color: var(--theme-background-secondary);
+  background-color: var(--theme-color-components-chat-background);
   display: none;
   --header-h: 64px;
 }
@@ -13,7 +13,7 @@
     max-height: calc(100vh - var(--header-h));
   }
 }
-/* 
+/*
 First div is .ant-layout-sider-children
 Only way to target it apparently
 */
@@ -24,4 +24,3 @@ Only way to target it apparently
   flex-grow: 1 !important;
   height: 100% !important;
 }
-

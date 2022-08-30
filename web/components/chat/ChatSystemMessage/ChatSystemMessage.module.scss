@@ -1,5 +1,5 @@
 .chatSystemMessage {
-  background: var(--theme-background-secondary);
+  background: var(--theme-color-background-main);
   background: linear-gradient(
     70deg,
     rgb(78, 54, 114) 0%,
@@ -31,8 +31,7 @@
     mark {
       padding-left: 0.35em;
       padding-right: 0.35em;
-      color: var(--theme-text-highlight);
-      background-color: var(--color-bg-highlight);
+      background-color: var(--theme-color-palette-12);
     }
   }
 }

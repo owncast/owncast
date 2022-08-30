@@ -1,6 +1,18 @@
-@import '@fontsource/open-sans/variable.css';
+@import '@fontsource/open-sans/300.css';
+@import '@fontsource/open-sans/400.css';
+@import '@fontsource/open-sans/600.css';
+@import '@fontsource/open-sans/800.css';
 @import '@fontsource/poppins/400.css';
 @import '@fontsource/poppins/600.css';
+
+:root {
+  --content-padding: 12px;
+  --module-spacing: 12px; // margin size between lines of stuff, if needed
+}
+
+::selection {
+  background-color: var(--theme-color-palette-12);
+}
 
 body {
   font-family: var(--theme-text-body-font-family);
@@ -8,8 +20,7 @@ body {
   line-height: 1.5em;
   margin: 0;
 
-  color: var(--theme-text-primary);
-  background-color: var(--theme-background-primary);
+  background-color: var(--theme-color-background-main);
 
   div,
   h1,
@@ -20,7 +31,6 @@ body {
   h6,
   p {
     padding: 0;
-    color: var(--theme-text-primary);
   }
 
   h1,
@@ -30,6 +40,7 @@ body {
   h5,
   h6 {
     font-family: var(--theme-text-display-font-family);
+    color: unset; // reset some colors from global.less file
   }
 
   h1 {
@@ -71,10 +82,10 @@ body {
   }
 
   a {
-    color: var(--theme-text-link);
+    color: var(--theme-color-action);
 
-    &:visited {
-      color: var(--theme-text-primary);
+    &:hover {
+      color: var(--theme-color-palette-12);
     }
   }
 

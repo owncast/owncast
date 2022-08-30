@@ -113,7 +113,8 @@ export default function ContentComponent() {
     <Content className={rootClassName}>
       <div className={s.leftContent}>
         <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
-        <div className={s.topHalf}>
+
+        <div className={s.topSection}>
           {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
           {!online && (
             <OfflineBanner
@@ -129,6 +130,8 @@ export default function ContentComponent() {
             lastDisconnectTime={lastDisconnectTime}
             viewerCount={viewerCount}
           />
+        </div>
+        <div className={s.midSection}>
           <div className={s.buttonsLogoTitleSection}>
             <ActionButtonRow>
               {externalActionButtons}
@@ -161,6 +164,9 @@ export default function ContentComponent() {
             links={socialHandles}
             logo="/logo"
           />
+        </div>
+
+        <div className={s.lowerSection}>
           <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
             {isChatVisible && isMobile && (
               <TabPane tab="Chat" key="0" style={{ height: '100%' }}>

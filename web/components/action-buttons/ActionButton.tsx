@@ -6,10 +6,15 @@ import s from './ActionButton.module.scss';
 
 interface Props {
   action: ExternalAction;
+  primary?: boolean;
 }
+ActionButton.defaultProps = {
+  primary: false,
+};
 
 export default function ActionButton({
   action: { url, title, description, icon, color, openExternally },
+  primary = false,
 }: Props) {
   const [showModal, setShowModal] = useState(false);
 
@@ -24,7 +29,7 @@ export default function ActionButton({
   return (
     <>
       <Button
-        type="primary"
+        type={primary ? 'primary' : 'default'}
         className={`${s.button}`}
         onClick={buttonClicked}
         style={{ backgroundColor: color }}

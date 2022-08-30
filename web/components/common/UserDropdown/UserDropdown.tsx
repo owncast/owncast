@@ -68,7 +68,7 @@ export default function UserDropdown({ username: defaultUsername }: Props) {
   return (
     <div className={`${s.root}`}>
       <Dropdown overlay={menu} trigger={['click']}>
-        <Button icon={<UserOutlined style={{ marginRight: '.5rem' }} />}>
+        <Button type="primary" icon={<UserOutlined style={{ marginRight: '.5rem' }} />}>
           <Space>
             {username}
             <CaretDownOutlined />

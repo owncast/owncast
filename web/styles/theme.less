@@ -1,54 +1,85 @@
 
 // Do not edit directly
-// Generated on Tue, 16 Aug 2022 03:27:53 GMT
+// Generated on Tue, 30 Aug 2022 06:12:22 GMT
 // 
 // How to edit these values:
 // Edit the corresponding token file under the style-definitions directory
 // in the Owncast web project.
 
-@text-color: var(--theme-text-primary);
-@text-color-secondary: var(--theme-text-secondary);
-@link-color: var(--theme-text-link);
-@popover-background: var(--theme-background-secondary);
-@modal-content-bg: #ff0000;
-@background-color-light: var(--theme-background-secondary);
-@layout-body-background: var(--theme-background-primary);
-@component-background: #00ff00;
-@warning-color: #ff0000;
-@theme-unknown: #00ff00;
-@theme-unknown-2: #ff0000;
-@theme-primary: #00ff00; // The primary color of the application used for rendering controls.
-@theme-text-primary: #030208; // The color of the text in the application.
-@theme-text-secondary: #63638e;
-@theme-text-link: #5353a6;
-@theme-text-body-font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-@theme-text-display-font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-@theme-background-primary: #fffcf2; // The main background color of the page.
-@theme-background-secondary: #f0efe4; // A secondary background color used in sections and controls.
-@theme-rounded-corners: 0.5em;
-@theme-user-colors-0: #f40b0b;
-@theme-user-colors-1: #f4800b;
-@theme-user-colors-2: #f4f40b;
-@theme-user-colors-3: #58f40b;
-@theme-user-colors-4: #0bf4f4;
-@theme-user-colors-5: #0ba6f4;
-@theme-user-colors-6: #6666ff;
-@theme-user-colors-7: #f40bf4;
-@owncast-purple: #00ff00;
+@link-color: var(--theme-color-action);
+@link-hover-color: var(--theme-color-action-hover);
+@modal-header-bg: var(--theme-color-components-modal-header-background);
+@modal-content-bg: var(--theme-color-background-main);
+@alert-error-bg-color: var(--theme-color-palette-4);
+@alert-error-border-color: var(--theme-color-palette-error);
+@popover-background: var(--theme-color-components-menu-background);
+@theme-rounded-corners: 0.5rem; // How much corners are rounded in places in the UI.
+@theme-unknown-1: green; // This should never be used and it means something is wrong.
+@theme-unknown-2: red; // This should never be used and it means something is wrong.
+@theme-color-users-0: var(--color-owncast-user-0);
+@theme-color-users-1: var(--color-owncast-user-1);
+@theme-color-users-2: var(--color-owncast-user-2);
+@theme-color-users-3: var(--color-owncast-user-3);
+@theme-color-users-4: var(--color-owncast-user-4);
+@theme-color-users-5: var(--color-owncast-user-5);
+@theme-color-users-6: var(--color-owncast-user-6);
+@theme-color-users-7: var(--color-owncast-user-7);
+@theme-color-palette-0: var(--color-owncast-palette-0); // Dark primary
+@theme-color-palette-1: var(--color-owncast-palette-1); // Dark secondary
+@theme-color-palette-2: var(--color-owncast-palette-2); // Dark alternate
+@theme-color-palette-3: var(--color-owncast-palette-3); // Light primary
+@theme-color-palette-4: var(--color-owncast-palette-4); // Light secondary
+@theme-color-palette-5: var(--color-owncast-palette-5); // Light alternate
+@theme-color-palette-6: var(--color-owncast-palette-6); // Text link/secondary light text
+@theme-color-palette-7: var(--color-owncast-palette-7); // Text link hover
+@theme-color-palette-8: var(--color-owncast-palette-8); // Disabled background
+@theme-color-palette-9: var(--color-owncast-palette-9); // Neutral dark
+@theme-color-palette-10: var(--color-owncast-palette-10); // Neutral gray light
+@theme-color-palette-11: var(--color-owncast-palette-11); // Fun color 1
+@theme-color-palette-12: var(--color-owncast-palette-12); // Fun color 2
+@theme-color-palette-13: var(--color-owncast-palette-13); // Fun color 3
+@theme-color-palette-error: var(--color-owncast-palette-error); // Error
+@theme-color-palette-warning: var(--color-owncast-palette-warning); // Warning
+@theme-color-background-main: var(--theme-color-palette-3); // Light primary
+@theme-color-background-header: var(--theme-color-palette-0); // Dark primary
+@theme-color-action: var(--theme-color-palette-6); // Text link/secondary light text
+@theme-color-action-hover: var(--theme-color-palette-7); // Text link hover
+@theme-color-action-disabled: var(--theme-color-palette-8); // Disabled background
+@theme-color-error: var(--theme-color-palette-error); // Error
+@theme-color-warning: var(--theme-color-palette-warning); // Warning
+@theme-color-components-text-on-light: var(--theme-color-palette-0); // Dark primary
+@theme-color-components-text-on-dark: var(--theme-color-palette-3); // Light primary
+@theme-color-components-primary-button-background: var(--theme-color-action); // Text link/secondary light text
+@theme-color-components-primary-button-background-disabled: var(--theme-color-action-disabled); // Disabled background
+@theme-color-components-primary-button-text: var(--theme-color-palette-4); // Light secondary
+@theme-color-components-primary-button-text-disabled: var(--theme-color-palette-10); // Neutral gray light
+@theme-color-components-primary-button-border: var(--theme-color-palette-4); // Light secondary
+@theme-color-components-primary-button-border-disabled: var(--theme-color-action-disabled); // Disabled background
+@theme-color-components-secondary-button-background: var(--theme-color-palette-4); // Light secondary
+@theme-color-components-secondary-button-background-disabled: transparent;
+@theme-color-components-secondary-button-text: var(--theme-color-action-disabled); // Disabled background
+@theme-color-components-secondary-button-text-disabled: var(--theme-color-action-disabled); // Disabled background
+@theme-color-components-secondary-button-border: var(--theme-color-action); // Text link/secondary light text
+@theme-color-components-secondary-button-border-disabled: var(--theme-color-action-disabled); // Disabled background
+@theme-color-components-chat-background: var(--theme-color-palette-1); // Dark secondary
+@theme-color-components-chat-text: var(--theme-color-palette-3); // Light primary
+@theme-color-components-modal-header-background: var(--theme-color-palette-1); // Dark secondary
+@theme-color-components-modal-header-text: var(--theme-color-palette-3); // Light primary
+@theme-color-components-modal-content-background: var(--theme-color-palette-3); // Light primary
+@theme-color-components-modal-content-text: var(--theme-color-palette-0); // Dark primary
+@theme-color-components-menu-background: var(--theme-color-palette-3); // Light primary
+@theme-color-components-menu-item-text: var(--theme-color-palette-0); // Dark primary
+@theme-color-components-menu-item-bg: transparent;
+@theme-color-components-menu-item-hover-bg: rgba(0, 0, 0, 0.05);
+@theme-color-components-menu-item-focus-bg: rgba(0, 0, 0, 0.1);
+@theme-color-components-form-field-background: var(--theme-color-palette-4); // Light secondary
+@theme-color-components-form-field-placeholder: var(--theme-color-action-disabled); // Disabled background
+@theme-color-components-form-field-text: var(--theme-color-palette-0); // Dark primary
+@theme-color-components-form-field-border: var(--theme-color-palette-0); // Dark primary
+@theme-color-components-video-background: var(--theme-color-palette-2); // Dark alternate
 @owncast-purple-25: rgba(120, 113, 255, 0.25);
-@owncast-purple-50: rgba(120, 113, 255, 0.5);
-@online-color: #73dd3f;
-@offline-color: #999;
-@pink: #00ff00;
-@purple: #ff0000;
-@blue: #00ff00;
-@white-88: #ff0000;
-@purple-dark: #00ff00;
-@default-link-color: #5353a6;
-@default-bg-color: #fffcf2;
-@default-text-color: #030208;
-@color-unknown: #00ff00;
-@color-unknown-2: #ff0000;
+@color-unknown: #7a5cf3;
+@color-unknown-2: #fffffe;
 @color-owncast-user-0: #f40b0b;
 @color-owncast-user-1: #f4800b;
 @color-owncast-user-2: #f4f40b;
@@ -57,13 +88,21 @@
 @color-owncast-user-5: #0ba6f4;
 @color-owncast-user-6: #6666ff;
 @color-owncast-user-7: #f40bf4;
-@color-owncast-text-primary: #030208;
-@color-owncast-text-secondary: #63638e;
-@color-owncast-text-highlight: #030208;
-@color-owncast-text-bright: #5353a6;
-@color-owncast-background-highlight: #f0e678;
-@color-owncast-background-primary: #fffcf2;
-@color-owncast-background-secondary: #f0efe4;
-@rounded-corners: 0.5em;
+@color-owncast-palette-0: #12161d; // Dark primary
+@color-owncast-palette-1: #2d3748; // Dark secondary
+@color-owncast-palette-2: #000000; // Dark alternate
+@color-owncast-palette-3: #e2e8f0; // Light primary
+@color-owncast-palette-4: #ffffff; // Light secondary
+@color-owncast-palette-5: #c3dafe; // Light alternate
+@color-owncast-palette-6: #7a5cf3; // Text link/secondary light text
+@color-owncast-palette-7: #5d38f3; // Text link hover
+@color-owncast-palette-8: #b6b3c6; // Disabled background
+@color-owncast-palette-9: #39373d; // Neutral dark
+@color-owncast-palette-10: #707283; // Neutral gray light
+@color-owncast-palette-11: #2386e2; // Fun color 1
+@color-owncast-palette-12: #da9eff; // Fun color 2
+@color-owncast-palette-13: #42bea6; // Fun color 3
+@color-owncast-palette-error: #ff4b39; // Error
+@color-owncast-palette-warning: #ffc655; // Warning
 @font-owncast-body: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 @font-owncast-display: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';

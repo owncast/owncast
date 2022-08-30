@@ -4,14 +4,16 @@
   bottom: 0px;
   width: 100%;
   padding: 0.3rem;
-  color: var(--theme-text-secondary);
+  color: var(--theme-color-components-form-field-text);
   overflow-x: hidden;
+
   div[role='textbox'] {
     font-size: 0.9rem;
     border-radius: 0.2rem;
     padding: 0.6rem;
     padding-right: calc(0.6rem + 44px);
-    background-color: var(--color-owncast-gray-700);
+    background-color: var(--theme-color-components-form-field-background);
+    border-color: var(--theme-color-components-form-field-border);
     box-shadow: 0;
     transition: box-shadow 50ms ease-in-out;
     &:focus {
