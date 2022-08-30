@@ -9,7 +9,7 @@ interface Props {
   primary?: boolean;
 }
 ActionButton.defaultProps = {
-  primary: false,
+  primary: true,
 };
 
 export default function ActionButton({
