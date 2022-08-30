@@ -4,22 +4,16 @@
 
 .ant-btn {
   height: 2rem;
-  // padding: 0.3rem 1rem; // not doing this looks better.
 
   font-size: 0.85rem;
   font-weight: bold;
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
-
-  background-color: var(--theme-color-components-secondary-button-background);
-  border-color: var(--theme-color-components-secondary-button-text);
-  color: var(--theme-color-components-secondary-button-text);
+  color: var(--theme-color-components-primary-button-text);
+  border-color: var(--theme-color-action);
 
   &:hover,
   &:focus {
-    // background-color: var(--theme-primary);
-    // border-color: transparent;
-    // color: var(--theme-unknown-2);
     border-color: var(--theme-color-action-hover);
     color: var(--theme-color-action-hover);
     background-color: var(--theme-color-components-secondary-button-background);

@@ -17,176 +17,175 @@ theme:
     users:
       comment: 'Colors used to display chat users.'
       0:
-        value: '{color.owncast.user.0.value}'
+        value: 'var(--color-owncast-user-0)'
       1:
-        value: '{color.owncast.user.1.value}'
+        value: 'var(--color-owncast-user-1)'
       2:
-        value: '{color.owncast.user.2.value}'
+        value: 'var(--color-owncast-user-2)'
       3:
-        value: '{color.owncast.user.3.value}'
+        value: 'var(--color-owncast-user-3)'
       4:
-        value: '{color.owncast.user.4.value}'
+        value: 'var(--color-owncast-user-4)'
       5:
-        value: '{color.owncast.user.5.value}'
+        value: 'var(--color-owncast-user-5)'
       6:
-        value: '{color.owncast.user.6.value}'
+        value: 'var(--color-owncast-user-6)'
       7:
-        value: '{color.owncast.user.7.value}'
+        value: 'var(--color-owncast-user-7)'
 
     palette:
       comment: 'Colors used in the user interface for the default theme.'
       0:
-        value: '{color.owncast.palette.0.value}'
+        value: 'var(--color-owncast-palette-0)'
         comment: '{color.owncast.palette.0.comment}'
       1:
-        value: '{color.owncast.palette.1.value}'
+        value: 'var(--color-owncast-palette-1)'
         comment: '{color.owncast.palette.1.comment}'
       2:
-        value: '{color.owncast.palette.2.value}'
+        value: 'var(--color-owncast-palette-2)'
         comment: '{color.owncast.palette.2.comment}'
       3:
-        value: '{color.owncast.palette.3.value}'
+        value: 'var(--color-owncast-palette-3)'
         comment: '{color.owncast.palette.3.comment}'
       4:
-        value: '{color.owncast.palette.4.value}'
+        value: 'var(--color-owncast-palette-4)'
         comment: '{color.owncast.palette.4.comment}'
       5:
-        value: '{color.owncast.palette.5.value}'
+        value: 'var(--color-owncast-palette-5)'
         comment: '{color.owncast.palette.5.comment}'
       6:
-        value: '{color.owncast.palette.6.value}'
+        value: 'var(--color-owncast-palette-6)'
         comment: '{color.owncast.palette.6.comment}'
       7:
-        value: '{color.owncast.palette.7.value}'
+        value: 'var(--color-owncast-palette-7)'
         comment: '{color.owncast.palette.7.comment}'
       8:
-        value: '{color.owncast.palette.8.value}'
+        value: 'var(--color-owncast-palette-8)'
         comment: '{color.owncast.palette.8.comment}'
       9:
-        value: '{color.owncast.palette.9.value}'
+        value: 'var(--color-owncast-palette-9)'
         comment: '{color.owncast.palette.9.comment}'
       10:
-        value: '{color.owncast.palette.10.value}'
+        value: 'var(--color-owncast-palette-10)'
         comment: '{color.owncast.palette.10.comment}'
       11:
-        value: '{color.owncast.palette.11.value}'
+        value: 'var(--color-owncast-palette-11)'
         comment: '{color.owncast.palette.11.comment}'
       12:
-        value: '{color.owncast.palette.12.value}'
+        value: 'var(--color-owncast-palette-12)'
         comment: '{color.owncast.palette.12.comment}'
       13:
-        value: '{color.owncast.palette.13.value}'
+        value: 'var(--color-owncast-palette-13)'
         comment: '{color.owncast.palette.13.comment}'
       error:
-        value: '{color.owncast.palette.error.value}'
+        value: 'var(--color-owncast-palette-error)'
         comment: '{color.owncast.palette.error.comment}'
       warning:
-        value: '{color.owncast.palette.warning.value}'
+        value: 'var(--color-owncast-palette-warning)'
         comment: '{color.owncast.palette.warning.comment}'
 
     background:
       main:
-        value: '{theme.color.palette.3.value}'
+        value: 'var(--theme-color-palette-3)'
         comment: '{theme.color.palette.3.comment}'
       header:
-        value: '{theme.color.palette.0.value}'
+        value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
     action:
-      value: '{theme.color.palette.6.value}'
+      value: 'var(--theme-color-palette-6)'
       comment: '{theme.color.palette.6.comment}'
     action-hover:
-      value: '{theme.color.palette.7.value}'
+      value: 'var(--theme-color-palette-7)'
       comment: '{theme.color.palette.7.comment}'
     action-disabled:
-      value: '{theme.color.palette.8.value}'
+      value: 'var(--theme-color-palette-8)'
       comment: '{theme.color.palette.8.comment}'
 
     error:
-      value: '{theme.color.palette.error.value}'
+      value: 'var(--theme-color-palette-error)'
       comment: '{theme.color.palette.error.comment}'
     warning:
-      value: '{theme.color.palette.warning.value}'
+      value: 'var(--theme-color-palette-warning)'
       comment: '{theme.color.palette.warning.comment}'
 
     components:
       text-on-light:
-        value: '{theme.color.palette.0.value}'
+        value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
       text-on-dark:
-        value: '{theme.color.palette.3.value}'
+        value: 'var(--theme-color-palette-3)'
         comment: '{theme.color.palette.3.comment}'
 
       primary-button:
         background:
-          value: '{theme.color.action.value}'
+          value: 'var(--theme-color-action)'
           comment: '{theme.color.action.comment}'
         background-disabled:
-          value: '{theme.color.action-disabled.value}'
+          value: 'var(--theme-color-action-disabled)'
           comment: '{theme.color.action-disabled.comment}'
         text:
-          value: '{theme.color.palette.4.value}'
+          value: 'var(--theme-color-palette-4)'
           comment: '{theme.color.palette.4.comment}'
         text-disabled:
-          value: '{theme.color.palette.10.value}'
+          value: 'var(--theme-color-palette-10)'
           comment: '{theme.color.palette.10.comment}'
         border:
-          value: '{theme.color.palette.4.value}'
+          value: 'var(--theme-color-palette-4)'
           comment: '{theme.color.palette.4.comment}'
         border-disabled:
-          value: '{theme.color.action-disabled.value}'
+          value: 'var(--theme-color-action-disabled)'
           comment: '{theme.color.action-disabled.comment}'
 
       secondary-button:
         background:
-          value: '{theme.color.palette.4.value}'
+          value: 'var(--theme-color-palette-4)'
           comment: '{theme.color.palette.4.comment}'
         background-disabled:
           value: 'transparent'
-          comment: '{theme.color.action-disabled.comment}'
         text:
-          value: '{theme.color.action-disabled.value}'
+          value: 'var(--theme-color-action-disabled)'
           comment: '{theme.color.action-disabled.comment}'
         text-disabled:
-          value: '{theme.color.action-disabled.value}'
+          value: 'var(--theme-color-action-disabled)'
           comment: '{theme.color.action-disabled.comment}'
         border:
-          value: '{theme.color.action.value}'
+          value: 'var(--theme-color-action)'
           comment: '{theme.color.action.comment}'
         border-disabled:
-          value: '{theme.color.action-disabled.value}'
+          value: 'var(--theme-color-action-disabled)'
           comment: '{theme.color.action-disabled.comment}'
 
       chat:
         background:
-          value: '{theme.color.palette.1.value}'
+          value: 'var(--theme-color-palette-1)'
           comment: '{theme.color.palette.1.comment}'
         text:
-          value: '{theme.color.palette.3.value}'
+          value: 'var(--theme-color-palette-3)'
           comment: '{theme.color.palette.3.comment}'
 
       modal:
         header:
           background:
-            value: '{theme.color.palette.1.value}'
+            value: 'var(--theme-color-palette-1)'
             comment: '{theme.color.palette.1.comment}'
           text:
-            value: '{theme.color.palette.3.value}'
+            value: 'var(--theme-color-palette-3)'
             comment: '{theme.color.palette.3.comment}'
         content:
           background:
-            value: '{theme.color.palette.3.value}'
+            value: 'var(--theme-color-palette-3)'
             comment: '{theme.color.palette.3.comment}'
           text:
-            value: '{theme.color.palette.0.value}'
+            value: 'var(--theme-color-palette-0)'
             comment: '{theme.color.palette.0.comment}'
 
       menu:
         background:
-          value: '{theme.color.palette.3.value}'
+          value: 'var(--theme-color-palette-3)'
           comment: '{theme.color.palette.3.comment}'
         item:
           text:
-            value: '{theme.color.palette.0.value}'
+            value: 'var(--theme-color-palette-0)'
             comment: '{theme.color.palette.0.comment}'
           bg:
             value: 'transparent'
@@ -197,19 +196,19 @@ theme:
 
       form-field:
         background:
-          value: '{theme.color.palette.4.value}'
+          value: 'var(--theme-color-palette-4)'
           comment: '{theme.color.palette.4.comment}'
         placeholder:
-          value: '{theme.color.action-disabled.value}'
+          value: 'var(--theme-color-action-disabled)'
           comment: '{theme.color.action-disabled.comment}'
         text:
-          value: '{theme.color.palette.0.value}'
+          value: 'var(--theme-color-palette-0)'
           comment: '{theme.color.palette.0.comment}'
         border:
-          value: '{theme.color.palette.0.value}'
+          value: 'var(--theme-color-palette-0)'
           comment: '{theme.color.palette.0.comment}'
 
       video:
         background:
-          value: '{theme.color.palette.2.value}'
+          value: 'var(--theme-color-palette-2)'
           comment: '{theme.color.palette.2.comment}'
