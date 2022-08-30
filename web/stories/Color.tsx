@@ -1,5 +1,3 @@
-import he from 'date-fns/esm/locale/he/index.js';
-import { unset } from 'lodash';
 import PropTypes from 'prop-types';
 
 export function Color(props) {
