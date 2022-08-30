@@ -4,51 +4,212 @@
 # The fewer there are the easier it'll be easier to customize and document.
 
 theme:
-  unknown:
-    value: '{color.unknown.value}'
-  unknown-2:
-    value: '{color.unknown-2.value}'
-  primary:
-    value: '{color.unknown.value}'
-    comment: 'The primary color of the application used for rendering controls.'
-  text:
-    primary:
-      value: '{color.owncast.text.primary.value}'
-      comment: 'The color of the text in the application.'
-    secondary:
-      value: '{color.owncast.text.secondary.value}'
-    link:
-      value: '{color.owncast.text.bright.value}'
-    body-font-family:
-      value: '{font.owncast.body.value}'
-    display-font-family:
-      value: '{font.owncast.display.value}'
-  background:
-    primary:
-      value: '{color.owncast.background.primary.value}'
-      comment: 'The main background color of the page.'
-    secondary:
-      value: '{color.owncast.background.secondary.value}'
-      comment: 'A secondary background color used in sections and controls.'
-
   rounded-corners:
-    value: '{rounded-corners.value}'
+    value: 0.5rem
+    comment: 'How much corners are rounded in places in the UI.'
+  unknown-1:
+    value: 'green'
+    comment: 'This should never be used and it means something is wrong.'
+  unknown-2:
+    value: 'red'
+    comment: 'This should never be used and it means something is wrong.'
+  color:
+    users:
+      comment: 'Colors used to display chat users.'
+      0:
+        value: '{color.owncast.user.0.value}'
+      1:
+        value: '{color.owncast.user.1.value}'
+      2:
+        value: '{color.owncast.user.2.value}'
+      3:
+        value: '{color.owncast.user.3.value}'
+      4:
+        value: '{color.owncast.user.4.value}'
+      5:
+        value: '{color.owncast.user.5.value}'
+      6:
+        value: '{color.owncast.user.6.value}'
+      7:
+        value: '{color.owncast.user.7.value}'
 
-  user-colors:
-    comment: 'Colors used to display chat users.'
-    0:
-      value: '{color.owncast.user.0.value}'
-    1:
-      value: '{color.owncast.user.1.value}'
-    2:
-      value: '{color.owncast.user.2.value}'
-    3:
-      value: '{color.owncast.user.3.value}'
-    4:
-      value: '{color.owncast.user.4.value}'
-    5:
-      value: '{color.owncast.user.5.value}'
-    6:
-      value: '{color.owncast.user.6.value}'
-    7:
-      value: '{color.owncast.user.7.value}'
+    palette:
+      comment: 'Colors used in the user interface for the default theme.'
+      0:
+        value: '{color.owncast.palette.0.value}'
+        comment: '{color.owncast.palette.0.comment}'
+      1:
+        value: '{color.owncast.palette.1.value}'
+        comment: '{color.owncast.palette.1.comment}'
+      2:
+        value: '{color.owncast.palette.2.value}'
+        comment: '{color.owncast.palette.2.comment}'
+      3:
+        value: '{color.owncast.palette.3.value}'
+        comment: '{color.owncast.palette.3.comment}'
+      4:
+        value: '{color.owncast.palette.4.value}'
+        comment: '{color.owncast.palette.4.comment}'
+      5:
+        value: '{color.owncast.palette.5.value}'
+        comment: '{color.owncast.palette.5.comment}'
+      6:
+        value: '{color.owncast.palette.6.value}'
+        comment: '{color.owncast.palette.6.comment}'
+      7:
+        value: '{color.owncast.palette.7.value}'
+        comment: '{color.owncast.palette.7.comment}'
+      8:
+        value: '{color.owncast.palette.8.value}'
+        comment: '{color.owncast.palette.8.comment}'
+      9:
+        value: '{color.owncast.palette.9.value}'
+        comment: '{color.owncast.palette.9.comment}'
+      10:
+        value: '{color.owncast.palette.10.value}'
+        comment: '{color.owncast.palette.10.comment}'
+      11:
+        value: '{color.owncast.palette.11.value}'
+        comment: '{color.owncast.palette.11.comment}'
+      12:
+        value: '{color.owncast.palette.12.value}'
+        comment: '{color.owncast.palette.12.comment}'
+      13:
+        value: '{color.owncast.palette.13.value}'
+        comment: '{color.owncast.palette.13.comment}'
+      error:
+        value: '{color.owncast.palette.error.value}'
+        comment: '{color.owncast.palette.error.comment}'
+      warning:
+        value: '{color.owncast.palette.warning.value}'
+        comment: '{color.owncast.palette.warning.comment}'
+
+    background:
+      main:
+        value: '{theme.color.palette.3.value}'
+        comment: '{theme.color.palette.3.comment}'
+      header:
+        value: '{theme.color.palette.0.value}'
+        comment: '{theme.color.palette.0.comment}'
+    action:
+      value: '{theme.color.palette.6.value}'
+      comment: '{theme.color.palette.6.comment}'
+    action-hover:
+      value: '{theme.color.palette.7.value}'
+      comment: '{theme.color.palette.7.comment}'
+    action-disabled:
+      value: '{theme.color.palette.8.value}'
+      comment: '{theme.color.palette.8.comment}'
+
+    error:
+      value: '{theme.color.palette.error.value}'
+      comment: '{theme.color.palette.error.comment}'
+    warning:
+      value: '{theme.color.palette.warning.value}'
+      comment: '{theme.color.palette.warning.comment}'
+
+    components:
+      text-on-light:
+        value: '{theme.color.palette.0.value}'
+        comment: '{theme.color.palette.0.comment}'
+      text-on-dark:
+        value: '{theme.color.palette.3.value}'
+        comment: '{theme.color.palette.3.comment}'
+
+      primary-button:
+        background:
+          value: '{theme.color.action.value}'
+          comment: '{theme.color.action.comment}'
+        background-disabled:
+          value: '{theme.color.action-disabled.value}'
+          comment: '{theme.color.action-disabled.comment}'
+        text:
+          value: '{theme.color.palette.4.value}'
+          comment: '{theme.color.palette.4.comment}'
+        text-disabled:
+          value: '{theme.color.palette.10.value}'
+          comment: '{theme.color.palette.10.comment}'
+        border:
+          value: '{theme.color.palette.4.value}'
+          comment: '{theme.color.palette.4.comment}'
+        border-disabled:
+          value: '{theme.color.action-disabled.value}'
+          comment: '{theme.color.action-disabled.comment}'
+
+      secondary-button:
+        background:
+          value: '{theme.color.palette.4.value}'
+          comment: '{theme.color.palette.4.comment}'
+        background-disabled:
+          value: 'transparent'
+          comment: '{theme.color.action-disabled.comment}'
+        text:
+          value: '{theme.color.action-disabled.value}'
+          comment: '{theme.color.action-disabled.comment}'
+        text-disabled:
+          value: '{theme.color.action-disabled.value}'
+          comment: '{theme.color.action-disabled.comment}'
+        border:
+          value: '{theme.color.action.value}'
+          comment: '{theme.color.action.comment}'
+        border-disabled:
+          value: '{theme.color.action-disabled.value}'
+          comment: '{theme.color.action-disabled.comment}'
+
+      chat:
+        background:
+          value: '{theme.color.palette.1.value}'
+          comment: '{theme.color.palette.1.comment}'
+        text:
+          value: '{theme.color.palette.3.value}'
+          comment: '{theme.color.palette.3.comment}'
+
+      modal:
+        header:
+          background:
+            value: '{theme.color.palette.1.value}'
+            comment: '{theme.color.palette.1.comment}'
+          text:
+            value: '{theme.color.palette.3.value}'
+            comment: '{theme.color.palette.3.comment}'
+        content:
+          background:
+            value: '{theme.color.palette.3.value}'
+            comment: '{theme.color.palette.3.comment}'
+          text:
+            value: '{theme.color.palette.0.value}'
+            comment: '{theme.color.palette.0.comment}'
+
+      menu:
+        background:
+          value: '{theme.color.palette.3.value}'
+          comment: '{theme.color.palette.3.comment}'
+        item:
+          text:
+            value: '{theme.color.palette.0.value}'
+            comment: '{theme.color.palette.0.comment}'
+          bg:
+            value: 'transparent'
+          hover-bg:
+            value: 'rgba(0, 0, 0, 0.05)'
+          focus-bg:
+            value: 'rgba(0, 0, 0, 0.1)'
+
+      form-field:
+        background:
+          value: '{theme.color.palette.4.value}'
+          comment: '{theme.color.palette.4.comment}'
+        placeholder:
+          value: '{theme.color.action-disabled.value}'
+          comment: '{theme.color.action-disabled.comment}'
+        text:
+          value: '{theme.color.palette.0.value}'
+          comment: '{theme.color.palette.0.comment}'
+        border:
+          value: '{theme.color.palette.0.value}'
+          comment: '{theme.color.palette.0.comment}'
+
+      video:
+        background:
+          value: '{theme.color.palette.2.value}'
+          comment: '{theme.color.palette.2.comment}'

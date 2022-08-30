@@ -6,6 +6,7 @@ color:
   # this ends up being primary button text
   unknown-2:
     value: '#fffffe'
+
   owncast:
     # These are the colors assigned to chat users.
     # If you add more colors here make sure to add them to
@@ -29,34 +30,60 @@ color:
       7:
         value: 'rgb(244, 11, 244)'
 
-    text:
-      primary:
-        value: '#2E282A'
-
-      secondary:
-        value: '#94a1b2'
-
-      highlight:
-        value: '#030208'
-      bright:
-        value: '#5353A6'
-
-    background:
-      highlight:
-        value: '#F0E678'
-
-      primary:
-        value: '#E2E8F0'
-      secondary:
+    palette:
+      0:
+        value: '#12161d'
+        comment: 'Dark primary'
+      1:
+        value: '#2D3748'
+        comment: 'Dark secondary'
+      2:
+        value: '#000000'
+        comment: 'Dark alternate'
+      3:
+        value: '#e2e8f0'
+        comment: 'Light primary'
+      4:
         value: '#ffffff'
-
-rounded-corners:
-  value: '0.5em'
+        comment: 'Light secondary'
+      5:
+        value: '#c3dafe'
+        comment: 'Light alternate'
+      6:
+        value: '#7a5cf3'
+        comment: 'Text link/secondary light text'
+      7:
+        value: '#5d38f3'
+        comment: 'Text link hover'
+      8:
+        value: '#b6b3c6'
+        comment: 'Disabled background'
+      9:
+        value: '#39373d'
+        comment: 'Neutral dark'
+      10:
+        value: '#707283'
+        comment: 'Neutral gray light'
+      11:
+        value: '#2386e2'
+        comment: 'Fun color 1'
+      12:
+        value: '#da9eff'
+        comment: 'Fun color 2'
+      13:
+        value: '#42bea6'
+        comment: 'Fun color 3'
+      error:
+        value: '#ff4b39'
+        comment: 'Error'
+      warning:
+        value: '#ffc655'
+        comment: 'Warning'
 
 font:
   owncast:
     body:
-      value: "'Open SansVariable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      value: "'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji'"
     display:

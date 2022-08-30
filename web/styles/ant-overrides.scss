@@ -8,77 +8,67 @@
 
   font-size: 0.85rem;
   font-weight: bold;
-	border-width: 2px;
+  border-width: 2px;
   border-radius: var(--theme-rounded-corners);
 
-	background-color: var(--secondary-button-background); // or var(--var(--theme-unknown);
-  // border-color: transparent;
-  border-color: var(--secondary-button-text);
-  // color: var(--theme-unknown-2);
-  color: var(--secondary-button-text);
+  background-color: var(--theme-color-components-secondary-button-background);
+  border-color: var(--theme-color-components-secondary-button-text);
+  color: var(--theme-color-components-secondary-button-text);
 
-	&:hover,
+  &:hover,
   &:focus {
     // background-color: var(--theme-primary);
     // border-color: transparent;
     // color: var(--theme-unknown-2);
-		border-color: var(--action-hovered);
-		color: var(--action-hovered);
-		background-color: var(--secondary-button-background);
+    border-color: var(--theme-color-action-hover);
+    color: var(--theme-color-action-hover);
+    background-color: var(--theme-color-components-secondary-button-background);
   }
 
-	&:focus {
-    // border-color: var(--theme-unknown-2);
-    border-color: var(--secondary-button-text);
+  &:focus {
+    border-color: var(--theme-color-components-secondary-button-text);
   }
   &[ant-click-animating-without-extra-node]:after {
     animation: 0s !important;
   }
 }
 .ant-btn[disabled] {
-	background-color: var(--secondary-button-background-disabled);
-  color: var(--secondary-button-text-disabled);
-	border-color: var(--secondary-button-border-disabled);
-	&:hover,
-	&:focus {
-		background-color: var(--secondary-button-background-disabled);
-		color: var(--secondary-button-text-disabled);
-		border-color: var(--secondary-button-border-disabled);
-	}
+  background-color: var(--theme-color-components-secondary-button-background-disabled);
+  color: var(--theme-color-components-secondary-button-text-disabled);
+  border-color: var(--theme-color-components-secondary-button-border-disabled);
+  &:hover,
+  &:focus {
+    background-color: var(--theme-color-components-secondary-button-background-disabled);
+    color: var(--theme-color-components-secondary-button-text-disabled);
+    border-color: var(--theme-color-components-secondary-button-border-disabled);
+  }
 }
 
 .ant-btn-primary {
-  // background-color: var(--theme-unknown);
-  background-color: var(--primary-button-background);
-  color: var(--primary-button-text);
-	border-color: var(--primary-button-background);
-	&:hover {
-		background-color: var(--action-hovered);
-		color: var(--primary-button-text);
-		border-color: var(--action-hovered);
-	}
-	&:focus {
-		background-color: var(--action-hovered);
-		color: var(--primary-button-text);
-		border-color: var(--primary-button-text);
-	}
+  background-color: var(--theme-color-components-primary-button-background);
+  color: var(--theme-color-components-primary-button-text);
+  border-color: var(--theme-color-components-primary-button-background);
+  &:hover {
+    background-color: var(--theme-color-action-hover);
+    color: var(--theme-color-components-primary-button-text);
+    border-color: var(--theme-color-action-hover);
+  }
+  &:focus {
+    background-color: var(--theme-color-action-hover);
+    color: var(--theme-color-components-primary-button-text);
+    border-color: var(--theme-color-components-primary-button-text);
+  }
 }
 
 .ant-btn-primary[disabled] {
-	// background-color: var(--theme-unknown);
-  // color: var(--theme-unknown-2);
-  // &:hover {
-  //   background-color: var(--theme-unknown);
-  // }
-
-  background-color: var(--primary-button-background-disabled);
-	border-color: var(--primary-button-border-disabled);
-  color: var(--primary-button-text-disabled);
+  background-color: var(--theme-color-components-primary-button-background-disabled);
+  border-color: var(--theme-color-components-primary-button-border-disabled);
+  color: var(--theme-color-components-primary-button-text-disabled);
   &:hover,
-	&:focus {
-    background-color: var(--primary-button-background-disabled);
-		border-color: var(--primary-button-border-disabled);
-		color: var(--primary-button-text-disabled);
+  &:focus {
+    background-color: var(--theme-color-components-primary-button-background-disabled);
+    border-color: var(--theme-color-components-primary-button-border-disabled);
+    color: var(--theme-color-components-primary-button-text-disabled);
   }
 }
 
@@ -97,65 +87,68 @@
 
 .ant-dropdown-menu {
   border-radius: var(--theme-rounded-corners);
-  background-color: var(--theme-background-secondary);
+  background-color: var(--theme-color-components-menu-background);
 }
 .ant-dropdown-menu-item {
-	&:hover {
-		background-color: rgba(33,0,99,.05);
-	}
-	&:focus {
-		background-color: rgba(33,0,99,.1);
-	}
+  color: var(--theme-color-components-menu-item-text);
+  &:hover {
+    background-color: var(--theme-color-components-menu-item-hover-bg);
+  }
+  &:focus {
+    background-color: var(--theme-color-components-menu-item-focus-bg);
+  }
 }
-
 
 .ant-modal-header {
-	background-color: var(--modal-header-background);
-	color: var(--modal-header-text);
+  color: var(--theme-color-components-modal-header-text);
 }
 .ant-modal-title {
-	color: var(--modal-header-text);
+  color: var(--theme-color-components-modal-header-text);
+}
+
+.ant-modal {
+  color: var(--theme-color-components-text-on-light);
+  h1 {
+    color: var(--theme-color-components-text-on-light);
+  }
 }
 
 .ant-input {
-	background-color: var(--form-field-background);
-	color: var(--form-field-text);
-	border-color: var(--form-field-border);
-	&::placeholder {
-		color: var(--form-field-placeholder);
-	}
+  background-color: var(--theme-color-components-form-field-background);
+  color: var(--theme-color-components-form-field-text);
+  border-color: var(--theme-color-components-form-field-border);
+  &::placeholder {
+    color: var(--theme-color-components-form-field-placeholder);
+  }
 }
 
 .ant-alert-error {
-	border-color: var(--color-error);
-	background-color: var(--secondary-light);
-	.ant-alert-icon {
-		color: var(--color-error);
-	}
-	.ant-alert-message {
-		color: var(--color-error);
-	}
+  .ant-alert-icon {
+    color: var(--theme-color-palette-error);
+  }
+  .ant-alert-message {
+    color: var(--theme-color-palette-error);
+  }
 }
-
 
 .ant-tabs-tab {
-	padding: var(--content-padding);
-	background-color: transparent;
-	border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0 ;
-	font-weight: bold;
-	&+.ant-tabs-tab {
-		margin-left: var(--module-spacing);
-	}
-	&.ant-tabs-tab-active {
-		background-color: var(--secondary-light);
-		.ant-tabs-tab-btn {
-			color: var(--action);
-			&:hover {
-				color: var(--action-hovered)
-			}
-		}
-	}
+  padding: var(--content-padding);
+  background-color: transparent;
+  border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
+  font-weight: bold;
+  & + .ant-tabs-tab {
+    margin-left: var(--module-spacing);
+  }
+  &.ant-tabs-tab-active {
+    background-color: var(--theme-color-palette-4);
+    .ant-tabs-tab-btn {
+      color: var(--theme-color-action);
+      &:hover {
+        color: var(--theme-color-action-hover);
+      }
+    }
+  }
 }
 .ant-tabs-ink-bar {
-	background-color: var(--action);
+  background-color: var(--theme-color-action);
 }

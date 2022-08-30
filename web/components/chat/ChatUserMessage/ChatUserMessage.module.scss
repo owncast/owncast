@@ -13,13 +13,12 @@
     font-weight: bold;
   }
   .message {
-    // color: var(--theme-text-primary);
-		color: var(--chat-text);
+    color: var(--theme-color-components-chat-text);
 
     mark {
       padding-left: 0.35em;
       padding-right: 0.35em;
-      color: var(--theme-text-highlight);
+      color: var(--theme-color-palette-12);
     }
   }
 

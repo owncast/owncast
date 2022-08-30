@@ -7,7 +7,8 @@
   width: clamp(200px, 100%, 300px);
   display: flex;
   flex-direction: column;
-  background-color: var(--theme-background-secondary);
+  color: var(--theme-color-components-text-on-light);
+  background-color: var(--theme-color-background-main);
   margin: 1rem auto;
   border-radius: var(--theme-rounded-corners);
   padding: 1rem;

@@ -1,6 +1,5 @@
 .root {
-  // background-color: var(--theme-background-secondary);
-  background-color: var(--secondary-dark);
+  background-color: var(--theme-color-components-chat-background);
   display: none;
   --header-h: 64px;
 }
@@ -25,4 +24,3 @@ Only way to target it apparently
   flex-grow: 1 !important;
   height: 100% !important;
 }
-

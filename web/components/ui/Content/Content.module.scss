@@ -2,15 +2,15 @@
   display: grid;
   grid-template-columns: 1fr auto;
 
-	background-color: var(--main-background);
+  background-color: var(--theme-color-background-main);
 
-	.topSection {
-		padding: 0;
-		background-color: var(--background-video)
-	}
-	.lowerSection {
-		padding: 0em 2em;
-	}
+  .topSection {
+    padding: 0;
+    background-color: var(--theme-color-components-video-background);
+  }
+  .lowerSection {
+    padding: 0em 2em;
+  }
 }
 
 .leftCol {
@@ -35,7 +35,6 @@
       display: grid;
       grid-template-rows: 30vh 5vh 5vh;
       height: 40vh;
-      // overflow: hidden;
     }
     .lowerSection {
       height: 60vh;
