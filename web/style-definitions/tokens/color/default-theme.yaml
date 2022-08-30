@@ -13,6 +13,13 @@ theme:
   unknown-2:
     value: 'red'
     comment: 'This should never be used and it means something is wrong.'
+  text-body-font-family:
+    value: 'var(--font-owncast-body)'
+    comment: 'The font family used for the body text.'
+  text-display-font-family:
+    value: 'var(--font-owncast-display)'
+    comment: 'The font family used for the display/header text.'
+
   color:
     users:
       comment: 'Colors used to display chat users.'
