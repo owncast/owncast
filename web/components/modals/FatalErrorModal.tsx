@@ -19,13 +19,7 @@ export default function FatalErrorStateModal(props: Props) {
       centered
       className="modal"
     >
-      <style global jsx>{`
-        .modal .ant-modal-content,
-        .modal .ant-modal-header {
-          background-color: var(--warning-color);
-        }
-      `}</style>
-      <p>{message}</p>
+      <p style={{ fontSize: '1.3rem' }}>{message}</p>
     </Modal>
   );
 }
