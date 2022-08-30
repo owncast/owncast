@@ -110,67 +110,68 @@ export default function ContentComponent() {
   });
 
   return (
-    <Content className={rootClassName}>
-      <div className={s.leftContent}>
-        <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
+    <div>
+      <Content className={rootClassName}>
+        <div className={s.leftContent}>
+          <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
 
-        <div className={s.topSection}>
-          {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-          {!online && (
-            <OfflineBanner
-              name={name}
-              text={
-                offlineMessage || 'Please follow and ask to get notified when the stream is live.'
-              }
+          <div className={s.topSection}>
+            {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+            {!online && (
+              <OfflineBanner
+                name={name}
+                text={
+                  offlineMessage || 'Please follow and ask to get notified when the stream is live.'
+                }
+              />
+            )}
+            <StatusBar
+              online={online}
+              lastConnectTime={lastConnectTime}
+              lastDisconnectTime={lastDisconnectTime}
+              viewerCount={viewerCount}
             />
-          )}
-          <StatusBar
-            online={online}
-            lastConnectTime={lastConnectTime}
-            lastDisconnectTime={lastDisconnectTime}
-            viewerCount={viewerCount}
-          />
-        </div>
-        <div className={s.midSection}>
-          <div className={s.buttonsLogoTitleSection}>
-            <ActionButtonRow>
-              {externalActionButtons}
-              <FollowButton size="small" />
-              <NotifyReminderPopup
-                visible={showNotifyReminder}
-                notificationClicked={() => setShowNotifyPopup(true)}
-                notificationClosed={() => disableNotifyReminderPopup()}
-              >
-                <NotifyButton onClick={() => setShowNotifyPopup(true)} />
-              </NotifyReminderPopup>
-            </ActionButtonRow>
-
-            <Modal
-              title="Notify"
-              visible={showNotifyPopup}
-              afterClose={() => disableNotifyReminderPopup()}
-              handleCancel={() => disableNotifyReminderPopup()}
-            >
-              <BrowserNotifyModal />
-            </Modal>
           </div>
-        </div>
-        <div className={s.lowerHalf}>
-          <ContentHeader
-            name={name}
-            title={streamTitle}
-            summary={summary}
-            tags={tags}
-            links={socialHandles}
-            logo="/logo"
-          />
-        </div>
+          <div className={s.midSection}>
+            <div className={s.buttonsLogoTitleSection}>
+              <ActionButtonRow>
+                {externalActionButtons}
+                <FollowButton size="small" />
+                <NotifyReminderPopup
+                  visible={showNotifyReminder}
+                  notificationClicked={() => setShowNotifyPopup(true)}
+                  notificationClosed={() => disableNotifyReminderPopup()}
+                >
+                  <NotifyButton onClick={() => setShowNotifyPopup(true)} />
+                </NotifyReminderPopup>
+              </ActionButtonRow>
 
-        <div className={s.lowerSection}>
-          <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
-            {isChatVisible && isMobile && (
-              <TabPane tab="Chat" key="0" style={{ height: '100%' }}>
-                {/* <div style={{ position: 'relative', height: '100%' }}>
+              <Modal
+                title="Notify"
+                visible={showNotifyPopup}
+                afterClose={() => disableNotifyReminderPopup()}
+                handleCancel={() => disableNotifyReminderPopup()}
+              >
+                <BrowserNotifyModal />
+              </Modal>
+            </div>
+          </div>
+          <div className={s.lowerHalf}>
+            <ContentHeader
+              name={name}
+              title={streamTitle}
+              summary={summary}
+              tags={tags}
+              links={socialHandles}
+              logo="/logo"
+            />
+          </div>
+
+          <div className={s.lowerSection}>
+            <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
+              {isChatVisible && isMobile && (
+                <TabPane tab="Chat" key="0" style={{ height: '100%' }}>
+                  {/* <div style={{ position: 'relative', height: '100%' }}>
                   <div className={s.mobileChat}>
                     <ChatContainer
                       messages={messages}
@@ -181,19 +182,20 @@ export default function ContentComponent() {
                     />
                   </div>
                 </div> */}
+                </TabPane>
+              )}
+              <TabPane tab="About" key="2" className={s.pageContentSection}>
+                <CustomPageContent content={extraPageContent} />
               </TabPane>
-            )}
-            <TabPane tab="About" key="2" className={s.pageContentSection}>
-              <CustomPageContent content={extraPageContent} />
-            </TabPane>
-            <TabPane tab="Followers" key="3" className={s.pageContentSection}>
-              <FollowerCollection />
-            </TabPane>
-          </Tabs>
-          {!isMobile && <Footer version={version} />}
+              <TabPane tab="Followers" key="3" className={s.pageContentSection}>
+                <FollowerCollection />
+              </TabPane>
+            </Tabs>
+          </div>
         </div>
-      </div>
-      {isChatVisible && !isMobile && <Sidebar />}
-    </Content>
+        {isChatVisible && !isMobile && <Sidebar />}
+      </Content>
+      {!isMobile && <Footer version={version} />}
+    </div>
   );
 }

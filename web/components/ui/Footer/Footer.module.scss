@@ -1,7 +1,32 @@
 .footer {
-  font-size: 0.85em;
-  font-weight: 500;
-  color: var(--theme-color-palette-1);
-  background-color: transparent;
-  padding: var(--content-padding);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  background-color: var(--theme-color-background-header);
+  width: 100%;
+  color: var(--theme-color-components-text-on-dark);
+  font-family: var(--theme-text-body-font-family);
+
+  padding: 0.6em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.7;
+  border-top: 1px solid rgba(214, 211, 211, 0.5);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+
+  a {
+    color: var(--theme-text-secondary);
+  }
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    .item {
+      margin-left: 1.2em;
+    }
+  }
 }
