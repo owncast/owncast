@@ -1,5 +1,5 @@
-@import "@fontsource/open-sans";
-@import "@fontsource/poppins";
+@import '@fontsource/open-sans';
+@import '@fontsource/poppins';
 
 // See theme.less for specific Ant Design overrides.
 :root {
@@ -75,21 +75,7 @@
   --container-bg-color-alt: var(--purple-dark);
   --container-border-radius: 4px;
 
-  --code-color: #9cdcfe;
-  --code-bg-color: var(--owncast-purple-25);
-
   --nav-bg-color: var(--gray-dark);
-  --nav-text: #aaa;
-  --nav-selected-text: var(--pink); //#cd7cff;
-
-  --button-focused: var(--owncast-purple-50);
 
   --textfield-border: var(--white-25);
-  --textfield-bg: var(--black);
-
-  //
-  --popover-base-color: var(--gray);
-  --tooltip-base-color: var(--gray-medium);
-
-  --font-family: var(--theme-font-family);
 }

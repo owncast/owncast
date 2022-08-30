@@ -18,7 +18,7 @@ function UserColor(props: { color: number }): React.ReactElement {
   const { color } = props;
   const style: CSSProperties = {
     textAlign: 'center',
-    backgroundColor: `var(--theme-user-colors-${color})`,
+    backgroundColor: `var(--theme-color-users-${color})`,
     width: '100%',
     height: '100%',
   };
