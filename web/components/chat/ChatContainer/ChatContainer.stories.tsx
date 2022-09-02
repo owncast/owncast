@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import ChatContainer from '../components/chat/ChatContainer';
-import { ChatMessage } from '../interfaces/chat-message.model';
+import ChatContainer from './index';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
 
 export default {
   title: 'owncast/Chat/Chat messages container',
