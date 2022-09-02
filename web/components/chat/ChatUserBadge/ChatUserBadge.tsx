@@ -1,7 +1,8 @@
+import React from 'react';
 import s from './ChatUserBadge.module.scss';
 
 interface Props {
-  badge: string;
+  badge: React.ReactNode;
   userColor: number;
 }
 
