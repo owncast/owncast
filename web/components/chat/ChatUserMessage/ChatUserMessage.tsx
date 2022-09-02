@@ -73,7 +73,7 @@ export default function ChatUserMessage({
         )}
         <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
           <Highlight search={highlightString}>
-            <div className={s.message}>{formattedMessage}</div>
+            <div className={s.message} dangerouslySetInnerHTML={{ __html: formattedMessage }} />
           </Highlight>
         </Tooltip>
 
