@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatActionMessage from '../components/chat/ChatAction/ChatActionMessage';
-import Mock from './assets/mocks/chatmessage-action.png';
+import ChatActionMessage from './ChatActionMessage';
+import Mock from '../../../stories/assets/mocks/chatmessage-action.png';
 
 export default {
   title: 'owncast/Chat/Messages/Chat action',
