@@ -6,7 +6,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
 import { uniq } from 'lodash';
 
-import BlockUserbutton from './ban-user-button';
+import BlockUserbutton from './other/ban-user-button/ban-user-button';
 import ModeratorUserbutton from './moderator-user-button';
 
 import { User, UserConnectionInfo } from '../types/chat';

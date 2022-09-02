@@ -5,7 +5,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { Client } from '../types/chat';
 import UserPopover from './user-popover';
-import BanUserButton from './ban-user-button';
+import BanUserButton from './other/ban-user-button/ban-user-button';
 import { formatUAstring } from '../utils/format';
 
 export default function ClientTable({ data }: ClientTableProps) {

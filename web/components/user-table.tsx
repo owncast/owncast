@@ -3,7 +3,7 @@ import format from 'date-fns/format';
 import { SortOrder } from 'antd/lib/table/interface';
 import { User } from '../types/chat';
 import UserPopover from './user-popover';
-import BanUserButton from './ban-user-button';
+import BanUserButton from './other/ban-user-button/ban-user-button';
 
 export function formatDisplayDate(date: string | Date) {
   return format(new Date(date), 'MMM d H:mma');
