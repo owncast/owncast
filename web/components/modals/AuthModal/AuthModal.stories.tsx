@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import AuthModal from '../components/modals/AuthModal/AuthModal';
+import AuthModal from './AuthModal';
 
 const Example = () => (
   <div>
