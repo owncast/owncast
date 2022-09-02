@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import { useState } from 'react';
-import Modal from '../ui/Modal/Modal';
-import { ExternalAction } from '../../interfaces/external-action';
+import Modal from '../../ui/Modal/Modal';
+import { ExternalAction } from '../../../interfaces/external-action';
 import s from './ActionButton.module.scss';
 
 interface Props {

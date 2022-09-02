@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ActionButtonRow from '../components/action-buttons/ActionButtonRow';
-import ActionButton from '../components/action-buttons/ActionButton';
+import ActionButtonRow from './ActionButtonRow';
+import ActionButton from '../ActionButton/ActionButton';
 
 export default {
   title: 'owncast/Components/Action Buttons/Buttons Row',

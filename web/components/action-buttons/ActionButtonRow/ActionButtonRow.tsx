@@ -1,5 +1,5 @@
 import React from 'react';
-import s from './ActionButtons.module.scss';
+import s from './ActionButtonRow.module.scss';
 
 interface Props {
   children: React.ReactNode[];
