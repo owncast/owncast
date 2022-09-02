@@ -32,7 +32,7 @@ export default function ChatUserMessage({
   const { id: messageId, body, user, timestamp } = message;
   const { id: userId, displayName, displayColor } = user;
 
-  const color = `var(--theme-user-colors-${displayColor})`;
+  const color = `var(--theme-color-users-${displayColor})`;
   const formattedTimestamp = `Sent ${formatTimestamp(timestamp)}`;
   const [formattedMessage, setFormattedMessage] = useState<string>(body);
 

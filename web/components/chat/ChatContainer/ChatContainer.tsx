@@ -33,7 +33,7 @@ export default function ChatContainer(props: Props) {
   const getNameChangeViewForMessage = (message: NameChangeEvent) => {
     const { oldName, user } = message;
     const { displayName, displayColor } = user;
-    const color = `var(--theme-user-colors-${displayColor})`;
+    const color = `var(--theme-color-users-${displayColor})`;
 
     return (
       <div className={s.nameChangeView}>

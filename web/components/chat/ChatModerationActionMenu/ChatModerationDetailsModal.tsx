@@ -86,7 +86,7 @@ const ConnectedClient = ({ client }: { client: Client }) => {
 
 // eslint-disable-next-line react/prop-types
 const UserColorBlock = ({ color }) => {
-  const bg = `var(--theme-user-colors-${color})`;
+  const bg = `var(--theme-color-users-${color})`;
   return (
     <Row justify="space-around" align="middle">
       <Col span={12}>Color</Col>
