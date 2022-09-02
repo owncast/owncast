@@ -1,8 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import BrowserNotifyModal from '../components/modals/BrowserNotify/BrowserNotifyModal';
-import BrowserNotifyModalMock from './assets/mocks/notify-modal.png';
+import BrowserNotifyModal from './BrowserNotifyModal';
+import BrowserNotifyModalMock from '../../../stories/assets/mocks/notify-modal.png';
 
 const Example = () => (
   <div>
@@ -22,7 +22,7 @@ export default {
     docs: {
       description: {
         component: `The notify modal allows an end user to get notified when the stream goes live via [Browser Push Notifications](https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications) It must:
-        
+
 - Verify the browser supports notifications.
 - Handle errors that come back from the server.
 - Have an enabled and disabled state with accurate information about each.
