@@ -4,6 +4,7 @@ import { Highlight } from 'react-highlighter-ts';
 import he from 'he';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
+import { LinkOutlined } from '@ant-design/icons';
 import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -36,10 +37,19 @@ export default function ChatUserMessage({
   const formattedTimestamp = `Sent ${formatTimestamp(timestamp)}`;
   const [formattedMessage, setFormattedMessage] = useState<string>(body);
 
-  const badgeStrings = [isAuthorModerator && 'mod', isAuthorAuthenticated && 'auth'];
-  const badges = badgeStrings
-    .filter(badge => !!badge)
-    .map(badge => <ChatUserBadge key={badge} badge={badge} userColor={displayColor} />);
+  const badgeNodes = [];
+  if (isAuthorModerator) {
+    badgeNodes.push(<ChatUserBadge key="mod" badge="mod" userColor={displayColor} />);
+  }
+  if (isAuthorAuthenticated) {
+    badgeNodes.push(
+      <ChatUserBadge
+        key="auth"
+        badge={<LinkOutlined title="authenticated" />}
+        userColor={displayColor}
+      />,
+    );
+  }
 
   useEffect(() => {
     setFormattedMessage(he.decode(body));
@@ -57,7 +67,7 @@ export default function ChatUserMessage({
           <Tooltip title="user info goes here" placement="topLeft" mouseEnterDelay={1}>
             <div className={s.user} style={{ color }}>
               <span className={s.userName}>{displayName}</span>
-              <span>{badges}</span>
+              <span>{badgeNodes}</span>
             </div>
           </Tooltip>
         )}
