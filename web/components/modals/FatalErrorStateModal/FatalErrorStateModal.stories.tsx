@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import FatalErrorStateModal from '../components/modals/FatalErrorModal';
+import FatalErrorStateModal from './FatalErrorStateModal';
 
 export default {
   title: 'owncast/Modals/Global error state',
