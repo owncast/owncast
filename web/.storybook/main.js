@@ -3,9 +3,8 @@ module.exports = {
     builder: 'webpack5',
   },
   stories: [
-    './stories-category-doc-pages/**/*.stories.mdx',
-    '../stories/**/*.stories.mdx', // TODO remove
-    '../stories/**/*.stories.@(js|jsx|ts|tsx)', // TODO remove
+    '../.storybook/stories-category-doc-pages/**/*.stories.mdx',
+    '../stories/**/*.stories.@(js|jsx|ts|tsx)',
 		'../components/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
