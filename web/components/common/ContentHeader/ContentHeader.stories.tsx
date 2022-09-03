@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ContentHeader from '../components/common/ContentHeader/ContentHeader';
+import ContentHeader from './ContentHeader';
 
 export default {
   title: 'owncast/Components/Content Header',
