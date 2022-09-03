@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import ChatModerationActionMenu from '../components/chat/ChatModerationActionMenu/ChatModerationActionMenu';
+import ChatModerationDetailsModal from './ChatModerationDetailsModal';
 
 const mocks = {
   mocks: [
@@ -65,33 +65,28 @@ const mocks = {
 };
 
 export default {
-  title: 'owncast/Chat/Moderation menu',
-  component: ChatModerationActionMenu,
+  title: 'owncast/Chat/Moderation modal',
+  component: ChatModerationDetailsModal,
   parameters: {
     fetchMock: mocks,
     docs: {
       description: {
-        component: `This should be a popup that is activated from a user's chat message. It should have actions to:
-- Remove single message
-- Ban user completely
-- Open modal to see user details
-        `,
+        component: `This should be a modal that gives the moderator more details about the user such as:
+- When the user was created
+- Other names they've used
+- If they're authenticated, and using what method (IndieAuth, FediAuth)
+`,
       },
     },
   },
-} as ComponentMeta<typeof ChatModerationActionMenu>;
+} as ComponentMeta<typeof ChatModerationDetailsModal>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ChatModerationActionMenu> = args => (
+const Template: ComponentStory<typeof ChatModerationDetailsModal> = args => (
   <RecoilRoot>
-    <ChatModerationActionMenu
-      accessToken="abc123"
-      messageID="xxx"
-      userDisplayName="Fake-User"
-      userID="abc123"
-    />
+    <ChatModerationDetailsModal userId="testuser123" accessToken="fakeaccesstoken4839" />
   </RecoilRoot>
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+export const Example = Template.bind({});
