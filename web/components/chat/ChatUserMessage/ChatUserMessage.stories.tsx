@@ -1,12 +1,12 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import UserChatMessage from '../components/chat/ChatUserMessage';
-import { ChatMessage } from '../interfaces/chat-message.model';
-import Mock from './assets/mocks/chatmessage-user.png';
+import ChatUserMessage from './index';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
+import Mock from '../../../stories/assets/mocks/chatmessage-user.png';
 
 export default {
   title: 'owncast/Chat/Messages/Standard user',
-  component: UserChatMessage,
+  component: ChatUserMessage,
   parameters: {
     design: {
       type: 'image',
@@ -19,9 +19,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof UserChatMessage>;
+} as ComponentMeta<typeof ChatUserMessage>;
 
-const Template: ComponentStory<typeof UserChatMessage> = args => <UserChatMessage {...args} />;
+const Template: ComponentStory<typeof ChatUserMessage> = args => <ChatUserMessage {...args} />;
 
 const standardMessage: ChatMessage = JSON.parse(`{
   "type": "CHAT",
