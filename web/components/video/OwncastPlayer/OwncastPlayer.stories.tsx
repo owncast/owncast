@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import OwncastPlayer from '../components/video/OwncastPlayer';
+import OwncastPlayer from './OwncastPlayer';
 
 const streams = {
   DemoServer: `https://watch.owncast.online/hls/stream.m3u8`,
