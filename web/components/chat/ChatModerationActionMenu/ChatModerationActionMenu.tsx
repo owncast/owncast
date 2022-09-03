@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import { Dropdown, Menu, MenuProps, Space, Modal, message } from 'antd';
 import { useState } from 'react';
-import ChatModerationDetailsModal from './ChatModerationDetailsModal';
+import ChatModerationDetailsModal from '../ChatModerationDetailsModal/ChatModerationDetailsModal';
 import s from './ChatModerationActionMenu.module.scss';
 import ChatModeration from '../../../services/moderation-service';
 

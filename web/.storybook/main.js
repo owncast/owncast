@@ -3,9 +3,9 @@ module.exports = {
     builder: 'webpack5',
   },
   stories: [
-    '../stories/Introduction.stories.mdx',
-    '../stories/**/*.stories.mdx',
+    '../.storybook/stories-category-doc-pages/**/*.stories.mdx',
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
+		'../components/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-links',

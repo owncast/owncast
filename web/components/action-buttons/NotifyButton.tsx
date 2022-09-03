@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { BellFilled } from '@ant-design/icons';
-import s from './ActionButton.module.scss';
+import s from './ActionButton/ActionButton.module.scss';
 
 interface Props {
   onClick: () => void;

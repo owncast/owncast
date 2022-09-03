@@ -16,7 +16,7 @@ import {
   appStateAtom,
 } from '../../stores/ClientConfigStore';
 import s from './UserDropdown.module.scss';
-import NameChangeModal from '../../modals/NameChangeModal';
+import NameChangeModal from '../../modals/NameChangeModal/NameChangeModal';
 import { AppStateOptions } from '../../stores/application-state';
 import AuthModal from '../../modals/AuthModal/AuthModal';
 
