@@ -5,6 +5,9 @@ on:
   push:
     paths:
       - web/**
+  pull_request:
+    paths:
+      - web/**
 
 jobs:
   prettier:
