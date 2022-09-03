@@ -19,7 +19,7 @@ import {
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import CustomPageContent from '../CustomPageContent/CustomPageContent';
 import OwncastPlayer from '../../video/OwncastPlayer';
-import FollowerCollection from '../Followers/FollowersCollection';
+import FollowerCollection from '../followers/FollowerCollection/FollowerCollection';
 import s from './Content.module.scss';
 import Sidebar from '../Sidebar';
 import Footer from '../Footer';
@@ -34,7 +34,7 @@ import { AppStateOptions } from '../../stores/application-state';
 import FollowButton from '../../action-buttons/FollowButton';
 import NotifyButton from '../../action-buttons/NotifyButton';
 import Modal from '../Modal/Modal';
-import BrowserNotifyModal from '../../modals/BrowserNotify/BrowserNotifyModal';
+import BrowserNotifyModal from '../../modals/BrowserNotifyModal/BrowserNotifyModal';
 import ContentHeader from '../../common/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { StatusBar } from '..';
