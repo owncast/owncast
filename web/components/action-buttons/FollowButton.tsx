@@ -3,7 +3,7 @@ import { HeartFilled } from '@ant-design/icons';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import Modal from '../ui/Modal/Modal';
-import FollowModal from '../modals/Follow/FollowModal';
+import FollowModal from '../modals/FollowModal/FollowModal';
 import s from './ActionButton/ActionButton.module.scss';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
 import { ClientConfig } from '../../interfaces/client-config.model';
