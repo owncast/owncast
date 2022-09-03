@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import IndieAuthModal from '../components/modals/IndieAuthModal';
-import Mock from './assets/mocks/indieauth-modal.png';
+import IndieAuthModal from './IndieAuthModal';
+import Mock from '../../../stories/assets/mocks/indieauth-modal.png';
 
 const Example = () => (
   <div>

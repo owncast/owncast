@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
-import IndieAuthModal from '../IndieAuthModal';
+import IndieAuthModal from '../IndieAuthModal/IndieAuthModal';
 import FediAuthModal from '../FediAuthModal';
 
 import FediverseIcon from '../../../assets/images/fediverse-black.png';

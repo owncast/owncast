@@ -1,6 +1,6 @@
 import { Alert, Button, Input, Space, Spin, Collapse, Typography } from 'antd';
 import React, { useState } from 'react';
-import isValidURL from '../../utils/urls';
+import isValidURL from '../../../utils/urls';
 
 const { Panel } = Collapse;
 const { Link } = Typography;
