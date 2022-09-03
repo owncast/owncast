@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import CrossfadeImage from '../ui/CrossfadeImage/CrossfadeImage';
+import CrossfadeImage from '../../ui/CrossfadeImage/CrossfadeImage';
 import s from './VideoPoster.module.scss';
 
 const REFRESH_INTERVAL = 20_000;

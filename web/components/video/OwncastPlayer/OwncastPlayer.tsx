@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import VideoJS from '../player';
 import ViewerPing from '../viewer-ping';
-import VideoPoster from '../VideoPoster';
+import VideoPoster from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
