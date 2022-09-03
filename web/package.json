@@ -101,7 +101,7 @@
 		"less": "4.1.3",
 		"less-loader": "11.0.0",
 		"prettier": "2.7.1",
-		"sass": "1.54.5",
+		"sass": "1.54.8",
 		"sass-loader": "13.0.2",
 		"sb": "6.5.10",
 		"storybook-dark-mode": "1.1.0",
