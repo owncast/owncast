@@ -1,0 +1,28 @@
+name: Webapp Test Build
+
+# This action works with pull requests and pushes
+on:
+  push:
+    paths:
+      - web/**
+  pull_request:
+    paths:
+      - web/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+        
+    name: Build webapp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
