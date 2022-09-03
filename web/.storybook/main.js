@@ -5,7 +5,7 @@ module.exports = {
   stories: [
     '../.storybook/stories-category-doc-pages/**/*.stories.mdx',
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
-		'../components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../components/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-links',
