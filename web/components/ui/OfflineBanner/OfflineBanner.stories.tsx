@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import OfflineBanner from '../components/ui/OfflineBanner/OfflineBanner';
-import OfflineState from './assets/mocks/offline-state.png';
+import OfflineBanner from './OfflineBanner';
+import OfflineState from '../../../stories/assets/mocks/offline-state.png';
 
 export default {
   title: 'owncast/Layout/Offline Banner',
