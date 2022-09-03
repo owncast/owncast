@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatSocialMessage from '../components/chat/ChatSocialMessage';
+import ChatSocialMessage from './ChatSocialMessage';
 
 export default {
   title: 'owncast/Chat/Messages/Social-fediverse event',
