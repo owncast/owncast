@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import Modal from '../components/ui/Modal/Modal';
+import Modal from './Modal';
 
 export default {
   title: 'owncast/Modals/Container',
