@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import FollowerCollection from '../components/ui/Followers/FollowersCollection';
+import FollowerCollection from './FollowerCollection';
 
 export default {
   title: 'owncast/Components/Followers/Followers collection',

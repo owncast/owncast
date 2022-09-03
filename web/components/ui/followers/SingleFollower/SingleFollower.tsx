@@ -1,7 +1,7 @@
 import { Avatar, Col, Row } from 'antd';
 import React from 'react';
-import { Follower } from '../../../interfaces/follower';
-import s from './Followers.module.scss';
+import { Follower } from '../../../../interfaces/follower';
+import s from './SingleFollower.module.scss';
 
 interface Props {
   follower: Follower;

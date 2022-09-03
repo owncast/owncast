@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import SingleFollower from '../components/ui/Followers/Follower';
-import SingleFollowerMock from './assets/mocks/single-follower.png';
+import SingleFollower from './SingleFollower';
+import SingleFollowerMock from '../../../../stories/assets/mocks/single-follower.png';
 
 export default {
   title: 'owncast/Components/Followers/Single Follower',

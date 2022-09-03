@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Col, Pagination, Row } from 'antd';
-import { Follower } from '../../../interfaces/follower';
-import SingleFollower from './Follower';
-import s from './Followers.module.scss';
+import { Follower } from '../../../../interfaces/follower';
+import SingleFollower from '../SingleFollower/SingleFollower';
+import s from '../SingleFollower/SingleFollower.module.scss';
 
 export default function FollowerCollection() {
   const ENDPOINT = '/api/followers';
