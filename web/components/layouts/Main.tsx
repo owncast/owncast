@@ -11,7 +11,7 @@ import {
 import { Content, Header } from '../ui';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { DisplayableError } from '../../types/displayable-error';
-import FatalErrorStateModal from '../modals/FatalErrorModal';
+import FatalErrorStateModal from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 
 function Main() {

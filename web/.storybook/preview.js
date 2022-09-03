@@ -1,7 +1,7 @@
 import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/theme.less';
-import '../stories/preview.scss';
+import './preview.scss';
 import { themes } from '@storybook/theming';
 import { DocsContainer } from './storybook-theme';
 
