@@ -1,20 +1,20 @@
 /* eslint-disable no-alert */
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import NotifyReminder from '../components/ui/NotifyReminderPopup/NotifyReminderPopup';
-import Mock from './assets/mocks/notify-popup.png';
+import NotifyReminderPopup from './NotifyReminderPopup';
+import Mock from '../../../stories/assets/mocks/notify-popup.png';
 
 const Example = args => (
   <div style={{ margin: '20px', marginTop: '130px' }}>
-    <NotifyReminder {...args}>
+    <NotifyReminderPopup {...args}>
       <button type="button">notify button</button>
-    </NotifyReminder>
+    </NotifyReminderPopup>
   </div>
 );
 
 export default {
   title: 'owncast/Components/Notify Reminder',
-  component: NotifyReminder,
+  component: NotifyReminderPopup,
   parameters: {
     design: {
       type: 'image',
@@ -27,9 +27,9 @@ Clicking it will make the notification modal display. Clicking the "X" will hide
       },
     },
   },
-} as ComponentMeta<typeof NotifyReminder>;
+} as ComponentMeta<typeof NotifyReminderPopup>;
 
-const Template: ComponentStory<typeof NotifyReminder> = args => <Example {...args} />;
+const Template: ComponentStory<typeof NotifyReminderPopup> = args => <Example {...args} />;
 
 export const Active = Template.bind({});
 Active.args = {
