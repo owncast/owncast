@@ -1,13 +1,13 @@
 import React, { CSSProperties, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Input, Button, Select } from 'antd';
-import { MessageType } from '../../interfaces/socket-events';
-import WebsocketService from '../../services/websocket-service';
+import { MessageType } from '../../../interfaces/socket-events';
+import WebsocketService from '../../../services/websocket-service';
 import {
   websocketServiceAtom,
   chatDisplayNameAtom,
   chatDisplayColorAtom,
-} from '../stores/ClientConfigStore';
+} from '../../stores/ClientConfigStore';
 
 const { Option } = Select;
 
