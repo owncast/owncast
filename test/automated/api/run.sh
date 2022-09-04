@@ -3,26 +3,26 @@
 TEMP_DB=$(mktemp)
 
 # Install the node test framework
-npm install --silent > /dev/null
+npm install #--silent >/dev/null
 
 # Download a specific version of ffmpeg
 if [ ! -d "ffmpeg" ]; then
-  mkdir ffmpeg
-  pushd ffmpeg > /dev/null
-  curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip > /dev/null
-  unzip -o ffmpeg.zip > /dev/null
-  PATH=$PATH:$(pwd)
-  popd > /dev/null
+	mkdir ffmpeg
+	pushd ffmpeg >/dev/null
+	curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip >/dev/null
+	unzip -o ffmpeg.zip >/dev/null
+	PATH=$PATH:$(pwd)
+	popd >/dev/null
 fi
 
-pushd ../../.. > /dev/null
+pushd ../../.. >/dev/null
 
 # Build and run owncast from source
-go build -race -o owncast main.go
+go build -o owncast main.go
 ./owncast -database $TEMP_DB &
 SERVER_PID=$!
 
-popd > /dev/null
+popd >/dev/null
 sleep 5
 
 # Start streaming the test file over RTMP to
@@ -31,8 +31,8 @@ ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec l
 FFMPEG_PID=$!
 
 function finish {
-  rm $TEMP_DB
-  kill $SERVER_PID $FFMPEG_PID
+	rm $TEMP_DB
+	kill $SERVER_PID $FFMPEG_PID
 }
 trap finish EXIT
 
