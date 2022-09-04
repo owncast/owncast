@@ -25,7 +25,7 @@ crosscompiler:
 code:
   FROM --platform=linux/amd64 +crosscompiler
   COPY . /build
-  # GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
+  #GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
 
 build:
   ARG EARTHLY_GIT_HASH # provided by Earthly
@@ -127,5 +127,6 @@ api-tests:
 	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
 	RUN apk add ffmpeg npm
   COPY . /build
-	WORKDIR /build
-	RUN cd test/automated/api && ./run.sh
+	WORKDIR /build/test/automated/api
+	RUN npm install
+	RUN ./run.sh
