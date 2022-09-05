@@ -17,7 +17,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import FormStatusIndicator from './form-status-indicator';
+import FormStatusIndicator from './FormStatusIndicator';
 
 import 'react-markdown-editor-lite/lib/index.css';
 

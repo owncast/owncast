@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
-import SocialDropdown from './social-icons-dropdown';
+import SocialDropdown from './SocialDropdown';
 import { fetchData, SOCIAL_PLATFORMS_LIST, NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -14,9 +14,9 @@ import {
 } from '../../utils/config-constants';
 import { SocialHandle, UpdateArgs } from '../../types/config-section';
 import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
-import TextField from './form-textfield';
+import TextField from './TextField';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
-import FormStatusIndicator from './form-status-indicator';
+import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 

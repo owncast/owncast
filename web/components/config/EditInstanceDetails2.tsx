@@ -6,8 +6,8 @@ import {
   TEXTFIELD_TYPE_NUMBER,
   TEXTFIELD_TYPE_PASSWORD,
   TEXTFIELD_TYPE_URL,
-} from './form-textfield';
-import TextFieldWithSubmit from './form-textfield-with-submit';
+} from './TextField';
+import TextFieldWithSubmit from './TextFieldWithSubmit';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
@@ -21,7 +21,7 @@ import {
 } from '../../utils/config-constants';
 
 import { UpdateArgs } from '../../types/config-section';
-import ResetYP from './reset-yp';
+import ResetYP from './ResetYP';
 
 const { Panel } = Collapse;
 

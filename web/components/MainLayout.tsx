@@ -25,7 +25,7 @@ import { OwncastLogo } from './common';
 import { ServerStatusContext } from '../utils/server-status-context';
 import { AlertMessageContext } from '../utils/alert-message-context';
 
-import TextFieldWithSubmit from './config/form-textfield-with-submit';
+import TextFieldWithSubmit from './config/TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 import ComposeFederatedPost from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';

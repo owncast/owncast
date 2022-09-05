@@ -8,7 +8,7 @@ import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import { UpdateArgs, VideoVariant } from '../../types/config-section';
 
-import VideoVariantForm from './video-variant-form';
+import VideoVariantForm from './VideoVariantForm';
 import {
   API_VIDEO_VARIANTS,
   DEFAULT_VARIANT_STATE,
@@ -24,7 +24,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import FormStatusIndicator from './form-status-indicator';
+import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 

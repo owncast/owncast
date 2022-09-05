@@ -4,7 +4,7 @@ import { Popconfirm, Row, Col, Slider, Collapse, Typography } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import classNames from 'classnames';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
-import TextField from './form-textfield';
+import TextField from './TextField';
 import {
   DEFAULT_VARIANT_STATE,
   VIDEO_VARIANT_SETTING_DEFAULTS,
@@ -17,7 +17,7 @@ import {
   FRAMERATE_DEFAULTS,
   FRAMERATE_TOOLTIPS,
 } from '../../utils/config-constants';
-import ToggleSwitch from './form-toggleswitch';
+import ToggleSwitch from './ToggleSwitch';
 
 const { Panel } = Collapse;
 

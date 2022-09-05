@@ -1,14 +1,14 @@
 import { Button, Typography } from 'antd';
 import React, { useState, useContext, useEffect } from 'react';
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import TextField from '../form-textfield';
-import FormStatusIndicator from '../form-status-indicator';
+import TextField from '../TextField';
+import FormStatusIndicator from '../FormStatusIndicator';
 import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   DISCORD_CONFIG_FIELDS,
 } from '../../../utils/config-constants';
-import ToggleSwitch from '../form-toggleswitch';
+import ToggleSwitch from '../ToggleSwitch';
 import {
   createInputStatus,
   StatusState,

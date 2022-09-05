@@ -8,7 +8,7 @@ import Twitter from '../../components/config/notification/twitter';
 import Federation from '../../components/config/notification/federation';
 import TextFieldWithSubmit, {
   TEXTFIELD_TYPE_URL,
-} from '../../components/config/form-textfield-with-submit';
+} from '../../components/config/TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { UpdateArgs } from '../../types/config-section';

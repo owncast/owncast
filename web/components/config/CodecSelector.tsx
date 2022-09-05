@@ -13,7 +13,7 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import FormStatusIndicator from './form-status-indicator';
+import FormStatusIndicator from './FormStatusIndicator';
 
 // eslint-disable-next-line react/function-component-definition
 export default function CodecSelector() {

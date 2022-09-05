@@ -1,14 +1,14 @@
 import { Button, Typography } from 'antd';
 import React, { useState, useContext, useEffect } from 'react';
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import TextField, { TEXTFIELD_TYPE_PASSWORD } from '../form-textfield';
-import FormStatusIndicator from '../form-status-indicator';
+import TextField, { TEXTFIELD_TYPE_PASSWORD } from '../TextField';
+import FormStatusIndicator from '../FormStatusIndicator';
 import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   TWITTER_CONFIG_FIELDS,
 } from '../../../utils/config-constants';
-import ToggleSwitch from '../form-toggleswitch';
+import ToggleSwitch from '../ToggleSwitch';
 import {
   createInputStatus,
   StatusState,
@@ -16,7 +16,7 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import { UpdateArgs } from '../../../types/config-section';
-import { TEXTFIELD_TYPE_TEXT } from '../form-textfield-with-submit';
+import { TEXTFIELD_TYPE_TEXT } from '../TextFieldWithSubmit';
 
 const { Title } = Typography;
 

@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { Typography, Tag } from 'antd';
 
-import TextField from './form-textfield';
+import TextField from './TextField';
 import { UpdateArgs } from '../../types/config-section';
 import { StatusState } from '../../utils/input-statuses';
-import FormStatusIndicator from './form-status-indicator';
+import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 

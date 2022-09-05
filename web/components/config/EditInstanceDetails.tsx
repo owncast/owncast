@@ -4,7 +4,7 @@ import { Typography } from 'antd';
 import TextFieldWithSubmit, {
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
-} from './form-textfield-with-submit';
+} from './TextFieldWithSubmit';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -20,8 +20,8 @@ import {
 } from '../../utils/config-constants';
 
 import { UpdateArgs } from '../../types/config-section';
-import ToggleSwitch from './form-toggleswitch';
-import EditLogo from './edit-logo';
+import ToggleSwitch from './ToggleSwitch';
+import EditLogo from './EditLogo';
 
 const { Title } = Typography;
 

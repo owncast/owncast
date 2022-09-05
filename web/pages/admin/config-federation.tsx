@@ -6,10 +6,10 @@ import {
   TEXTFIELD_TYPE_TEXT,
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
-} from '../../components/config/form-textfield';
-import TextFieldWithSubmit from '../../components/config/form-textfield-with-submit';
-import ToggleSwitch from '../../components/config/form-toggleswitch';
-import EditValueArray from '../../components/config/edit-string-array';
+} from '../../components/config/TextField';
+import TextFieldWithSubmit from '../../components/config/TextFieldWithSubmit';
+import ToggleSwitch from '../../components/config/ToggleSwitch';
+import EditValueArray from '../../components/config/EditValueArray';
 import { UpdateArgs } from '../../types/config-section';
 import {
   FIELD_PROPS_ENABLE_FEDERATION,

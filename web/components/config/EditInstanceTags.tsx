@@ -8,7 +8,7 @@ import {
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
 } from '../../utils/config-constants';
-import TextField from './form-textfield';
+import TextField from './TextField';
 import { UpdateArgs } from '../../types/config-section';
 import {
   createInputStatus,
@@ -18,7 +18,7 @@ import {
   STATUS_SUCCESS,
   STATUS_WARNING,
 } from '../../utils/input-statuses';
-import { TAG_COLOR } from './edit-string-array';
+import { TAG_COLOR } from './EditValueArray';
 
 const { Title } = Typography;
 
