@@ -1,12 +1,12 @@
 import { Button, Col, Row, Spin } from 'antd';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import ChatModeration from '../../../services/moderation-service';
-import s from './ChatModerationDetailsModal.module.scss';
+import styles from './ChatModerationDetailsModal.module.scss';
 
-interface Props {
+export type ChatModerationDetailsModalProps = {
   userId: string;
   accessToken: string;
-}
+};
 
 export interface UserDetails {
   user: User;
@@ -91,7 +91,7 @@ const UserColorBlock = ({ color }) => {
     <Row justify="space-around" align="middle">
       <Col span={12}>Color</Col>
       <Col span={12}>
-        <div className={s.colorBlock} style={{ backgroundColor: bg }}>
+        <div className={styles.colorBlock} style={{ backgroundColor: bg }}>
           {color}
         </div>
       </Col>
@@ -99,8 +99,10 @@ const UserColorBlock = ({ color }) => {
   );
 };
 
-export default function ChatModerationDetailsModal(props: Props) {
-  const { userId, accessToken } = props;
+export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = ({
+  userId,
+  accessToken,
+}) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -127,7 +129,7 @@ export default function ChatModerationDetailsModal(props: Props) {
     user;
 
   return (
-    <div className={s.modalContainer}>
+    <div className={styles.modalContainer}>
       <Spin spinning={loading}>
         <h1>{displayName}</h1>
         <Row justify="space-around" align="middle">
@@ -161,7 +163,7 @@ export default function ChatModerationDetailsModal(props: Props) {
           <div>
             <h1>Recent Chat Messages</h1>
 
-            <div className={s.chatHistory}>
+            <div className={styles.chatHistory}>
               {messages.map(message => (
                 <ChatMessageRow
                   key={message.id}
@@ -176,4 +178,6 @@ export default function ChatModerationDetailsModal(props: Props) {
       </Spin>
     </div>
   );
-}
+};
+
+export default ChatModerationDetailsModal;
