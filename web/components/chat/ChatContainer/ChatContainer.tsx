@@ -13,7 +13,7 @@ import { ChatTextField, ChatUserMessage } from '..';
 import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
 // import ChatActionMessage from '../ChatAction/ChatActionMessage';
 import ChatSystemMessage from '../ChatSystemMessage/ChatSystemMessage';
-import ChatJoinMessage from '../ChatJoinMessage/ChatJoinMessage';
+import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];
