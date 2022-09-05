@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { RecoilRoot } from 'recoil';
 import ChatUserMessage from './index';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import Mock from '../../../stories/assets/mocks/chatmessage-user.png';
@@ -21,7 +22,11 @@ export default {
   },
 } as ComponentMeta<typeof ChatUserMessage>;
 
-const Template: ComponentStory<typeof ChatUserMessage> = args => <ChatUserMessage {...args} />;
+const Template: ComponentStory<typeof ChatUserMessage> = args => (
+  <RecoilRoot>
+    <ChatUserMessage {...args} />
+  </RecoilRoot>
+);
 
 const standardMessage: ChatMessage = JSON.parse(`{
   "type": "CHAT",
