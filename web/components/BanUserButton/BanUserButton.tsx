@@ -1,7 +1,7 @@
 import { Modal, Button } from 'antd';
 import { ExclamationCircleFilled, QuestionCircleFilled, StopTwoTone } from '@ant-design/icons';
-import { USER_ENABLED_TOGGLE, fetchData } from '../../../utils/apis';
-import { User } from '../../../types/chat';
+import { USER_ENABLED_TOGGLE, fetchData } from '../../utils/apis';
+import { User } from '../../types/chat';
 
 interface BanUserButtonProps {
   user: User;
