@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Typography, Menu, Dropdown, Spin, Alert } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { getUnixTime, sub } from 'date-fns';
-import Chart from '../../components/chart';
+import Chart from '../../components/Chart/Chart';
 import StatisticItem from '../../components/statistic';
 import ViewerTable from '../../components/viewer-table';
 
