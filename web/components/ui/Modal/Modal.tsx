@@ -1,6 +1,6 @@
 import { Spin, Skeleton, Modal as AntModal } from 'antd';
 import React, { FC, ReactNode, useState } from 'react';
-import s from './Modal.module.scss';
+import styles from './Modal.module.scss';
 
 export type ModalProps = {
   title: string;
@@ -68,8 +68,8 @@ export const Modal: FC<ModalProps> = ({
         )}
 
         {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
-        {children && <div className={s.content}>{children}</div>}
-        {loading && <Spin className={s.spinner} spinning={loading} size="large" />}
+        {children && <div className={styles.content}>{children}</div>}
+        {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
       </>
     </AntModal>
   );

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import videojs from 'video.js';
-import s from './VideoJS.module.scss';
+import styles from './VideoJS.module.scss';
 
 require('video.js/dist/video-js.css');
 
@@ -51,7 +51,10 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
   return (
     <div data-vjs-player>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video ref={videoRef} className={`video-js vjs-big-play-centered ${s.player} vjs-owncast`} />
+      <video
+        ref={videoRef}
+        className={`video-js vjs-big-play-centered ${styles.player} vjs-owncast`}
+      />
     </div>
   );
 };

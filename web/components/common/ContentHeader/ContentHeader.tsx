@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { FC } from 'react';
-import { ServerLogo } from '../../ui';
-import SocialLinks from '../../ui/SocialLinks/SocialLinks';
+import { Logo } from '../../ui/Logo/Logo';
+import { SocialLinks } from '../../ui/SocialLinks/SocialLinks';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './ContentHeader.module.scss';
 
@@ -25,7 +25,7 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
   <div className={styles.root}>
     <div className={styles.logoTitleSection}>
       <div className={styles.logo}>
-        <ServerLogo src={logo} />
+        <Logo src={logo} />
       </div>
       <div className={styles.titleSection}>
         <div className={cn(styles.title, styles.row)}>{name}</div>
@@ -40,5 +40,3 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
     </div>
   </div>
 );
-
-export default ContentHeader;

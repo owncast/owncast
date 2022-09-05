@@ -2,7 +2,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import { FC, useEffect, useState } from 'react';
 import { EyeOutlined } from '@ant-design/icons';
-import s from './Statusbar.module.scss';
+import styles from './Statusbar.module.scss';
 
 export type StatusbarProps = {
   online: Boolean;
@@ -57,7 +57,7 @@ export const Statusbar: FC<StatusbarProps> = ({
   }
 
   return (
-    <div className={s.statusbar}>
+    <div className={styles.statusbar}>
       <div>{onlineMessage}</div>
       <div>{rightSideMessage}</div>
     </div>

@@ -39,4 +39,3 @@ export const EmojiPicker = (props: Props) => {
 
   return <div ref={ref} />;
 };
-export default EmojiPicker;

@@ -11,10 +11,9 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import FormStatusIndicator from './FormStatusIndicator';
+import { FormStatusIndicator } from './FormStatusIndicator';
 
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constants';
-
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 export type ToggleSwitchProps = {

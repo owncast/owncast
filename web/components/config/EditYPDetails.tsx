@@ -2,8 +2,7 @@
 import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography } from 'antd';
 
-import ToggleSwitch from './ToggleSwitch';
-
+import { ToggleSwitch } from './ToggleSwitch';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { FIELD_PROPS_NSFW, FIELD_PROPS_YP } from '../../utils/config-constants';
 

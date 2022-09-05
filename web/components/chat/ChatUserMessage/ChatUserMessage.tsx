@@ -99,5 +99,3 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
     </div>
   );
 };
-
-export default ChatUserMessage;

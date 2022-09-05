@@ -17,32 +17,32 @@ import {
   serverStatusState,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
-import CustomPageContent from '../CustomPageContent/CustomPageContent';
-import OwncastPlayer from '../../video/OwncastPlayer/OwncastPlayer';
-import FollowerCollection from '../followers/FollowerCollection/FollowerCollection';
-import s from './Content.module.scss';
-import Sidebar from '../Sidebar';
-import Footer from '../Footer';
+import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
+import { OwncastPlayer } from '../../video/OwncastPlayer/OwncastPlayer';
+import { FollowerCollection } from '../followers/FollowerCollection/FollowerCollection';
+import styles from './Content.module.scss';
+import { Sidebar } from '../Sidebar/Sidebar';
+import { Footer } from '../Footer/Footer';
 // import ChatContainer from '../../chat/ChatContainer';
 // import { ChatMessage } from '../../../interfaces/chat-message.model';
 // import ChatTextField from '../../chat/ChatTextField/ChatTextField';
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
-import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
-import OfflineBanner from '../OfflineBanner/OfflineBanner';
+import { NotifyReminderPopup } from '../NotifyReminderPopup/NotifyReminderPopup';
+import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
 import { FollowButton } from '../../action-buttons/FollowButton';
 import { NotifyButton } from '../../action-buttons/NotifyButton';
-import Modal from '../Modal/Modal';
-import BrowserNotifyModal from '../../modals/BrowserNotifyModal/BrowserNotifyModal';
+import { Modal } from '../Modal/Modal';
+import { BrowserNotifyModal } from '../../modals/BrowserNotifyModal/BrowserNotifyModal';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
-import { StatusBar } from '..';
+import { Statusbar } from '../Statusbar/Statusbar';
 
 const { TabPane } = Tabs;
-const { Content } = Layout;
+const { Content: AntContent } = Layout;
 
-export const ContentComponent: FC = () => {
+export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
@@ -105,17 +105,17 @@ export const ContentComponent: FC = () => {
     window.addEventListener('resize', checkIfMobile);
   }, []);
 
-  const rootClassName = cn(s.root, {
-    [s.mobile]: isMobile,
+  const rootClassName = cn(styles.root, {
+    [styles.mobile]: isMobile,
   });
 
   return (
     <div>
-      <Content className={rootClassName}>
-        <div className={s.leftContent}>
-          <Spin className={s.loadingSpinner} size="large" spinning={appState.appLoading} />
+      <AntContent className={rootClassName}>
+        <div className={styles.leftContent}>
+          <Spin className={styles.loadingSpinner} size="large" spinning={appState.appLoading} />
 
-          <div className={s.topSection}>
+          <div className={styles.topSection}>
             {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
             {!online && (
               <OfflineBanner
@@ -125,15 +125,15 @@ export const ContentComponent: FC = () => {
                 }
               />
             )}
-            <StatusBar
+            <Statusbar
               online={online}
               lastConnectTime={lastConnectTime}
               lastDisconnectTime={lastDisconnectTime}
               viewerCount={viewerCount}
             />
           </div>
-          <div className={s.midSection}>
-            <div className={s.buttonsLogoTitleSection}>
+          <div className={styles.midSection}>
+            <div className={styles.buttonsLogoTitleSection}>
               <ActionButtonRow>
                 {externalActionButtons}
                 <FollowButton size="small" />
@@ -156,7 +156,7 @@ export const ContentComponent: FC = () => {
               </Modal>
             </div>
           </div>
-          <div className={s.lowerHalf}>
+          <div className={styles.lowerHalf}>
             <ContentHeader
               name={name}
               title={streamTitle}
@@ -167,7 +167,7 @@ export const ContentComponent: FC = () => {
             />
           </div>
 
-          <div className={s.lowerSection}>
+          <div className={styles.lowerSection}>
             <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
               {isChatVisible && isMobile && (
                 <TabPane tab="Chat" key="0" style={{ height: '100%' }}>
@@ -184,19 +184,19 @@ export const ContentComponent: FC = () => {
                 </div> */}
                 </TabPane>
               )}
-              <TabPane tab="About" key="2" className={s.pageContentSection}>
+              <TabPane tab="About" key="2" className={styles.pageContentSection}>
                 <CustomPageContent content={extraPageContent} />
               </TabPane>
-              <TabPane tab="Followers" key="3" className={s.pageContentSection}>
+              <TabPane tab="Followers" key="3" className={styles.pageContentSection}>
                 <FollowerCollection />
               </TabPane>
             </Tabs>
           </div>
         </div>
         {isChatVisible && !isMobile && <Sidebar />}
-      </Content>
+      </AntContent>
       {!isMobile && <Footer version={version} />}
     </div>
   );
 };
-export default ContentComponent;
+export default Content;

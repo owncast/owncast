@@ -2,7 +2,7 @@ import { Button, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
 import { LoadingOutlined, UploadOutlined } from '@ant-design/icons';
 import React, { useState, useContext, FC } from 'react';
-import FormStatusIndicator from './FormStatusIndicator';
+import { FormStatusIndicator } from './FormStatusIndicator';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,

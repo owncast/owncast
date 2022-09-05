@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from 'react';
 import { Col, Pagination, Row } from 'antd';
 import { Follower } from '../../../../interfaces/follower';
-import SingleFollower from '../SingleFollower/SingleFollower';
-import s from '../SingleFollower/SingleFollower.module.scss';
+import { SingleFollower } from '../SingleFollower/SingleFollower';
+import styles from '../SingleFollower/SingleFollower.module.scss';
 
 export const FollowerCollection: FC = () => {
   const ENDPOINT = '/api/followers';
@@ -42,7 +42,7 @@ export const FollowerCollection: FC = () => {
   }
 
   return (
-    <div className={s.followers}>
+    <div className={styles.followers}>
       <Row wrap gutter={[10, 10]} justify="space-around">
         {followers.map(follower => (
           <Col>

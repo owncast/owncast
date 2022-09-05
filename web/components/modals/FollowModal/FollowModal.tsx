@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Input, Button, Alert, Spin, Space } from 'antd';
 import { FC, useState } from 'react';
-import s from './FollowModal.module.scss';
+import styles from './FollowModal.module.scss';
 
 const ENDPOINT = '/api/remotefollow';
 
@@ -75,7 +75,7 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
 
   return (
     <Space direction="vertical">
-      <div className={s.header}>
+      <div className={styles.header}>
         By following this stream you'll get notified on the Fediverse when it goes live. Now is a
         great time to
         <a href="https://owncast.online/join-fediverse" target="_blank" rel="noreferrer">
@@ -88,16 +88,16 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
         {errorMessage && (
           <Alert message="Follow Error" description={errorMessage} type="error" showIcon />
         )}
-        <div className={s.account}>
-          <img src="/logo" alt="logo" className={s.logo} />
-          <div className={s.username}>
-            <div className={s.name}>{name}</div>
+        <div className={styles.account}>
+          <img src="/logo" alt="logo" className={styles.logo} />
+          <div className={styles.username}>
+            <div className={styles.name}>{name}</div>
             <div>{account}</div>
           </div>
         </div>
 
         <div>
-          <div className={s.instructions}>Enter your username @server to follow</div>
+          <div className={styles.instructions}>Enter your username @server to follow</div>
           <Input
             value={account}
             size="large"
@@ -105,11 +105,11 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
             placeholder="Your fediverse account @account@server"
             defaultValue={account}
           />
-          <div className={s.footer}>
+          <div className={styles.footer}>
             You'll be redirected to your Fediverse server and asked to confirm the action.
           </div>
         </div>
-        <Space className={s.buttons}>
+        <Space className={styles.buttons}>
           <Button disabled={!valid} type="primary" onClick={remoteFollowButtonPressed}>
             Follow
           </Button>

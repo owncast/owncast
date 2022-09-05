@@ -9,16 +9,16 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import Modal from '../../ui/Modal/Modal';
+import { Modal } from '../../ui/Modal/Modal';
 import {
   chatVisibleToggleAtom,
   chatDisplayNameAtom,
   appStateAtom,
 } from '../../stores/ClientConfigStore';
 import styles from './UserDropdown.module.scss';
-import NameChangeModal from '../../modals/NameChangeModal/NameChangeModal';
+import { NameChangeModal } from '../../modals/NameChangeModal/NameChangeModal';
 import { AppStateOptions } from '../../stores/application-state';
-import AuthModal from '../../modals/AuthModal/AuthModal';
+import { AuthModal } from '../../modals/AuthModal/AuthModal';
 
 export type UserDropdownProps = {
   username?: string;

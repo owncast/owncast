@@ -8,10 +8,11 @@ import {
   clientConfigStateAtom,
   fatalErrorStateAtom,
 } from '../stores/ClientConfigStore';
-import { Content, Header } from '../ui';
+import { Content } from '../ui/Content/Content';
+import { Header } from '../ui/Header/Header';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { DisplayableError } from '../../types/displayable-error';
-import FatalErrorStateModal from '../modals/FatalErrorStateModal/FatalErrorStateModal';
+import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 
 const Main: FC = () => {

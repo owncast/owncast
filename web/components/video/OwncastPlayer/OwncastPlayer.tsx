@@ -1,9 +1,9 @@
 import React, { FC, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
-import VideoJS from '../VideoJS/VideoJS';
+import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
-import VideoPoster from '../VideoPoster/VideoPoster';
+import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';

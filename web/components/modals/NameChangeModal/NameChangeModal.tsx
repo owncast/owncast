@@ -25,7 +25,7 @@ const UserColor: FC<UserColorProps> = ({ color }) => {
   return <div style={style} />;
 };
 
-const NameChangeModal: FC = () => {
+export const NameChangeModal: FC = () => {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom) || 0;

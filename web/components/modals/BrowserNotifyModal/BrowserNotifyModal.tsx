@@ -6,7 +6,7 @@ import {
   registerWebPushNotifications,
   saveNotificationRegistration,
 } from '../../../services/notifications-service';
-import s from './BrowserNotifyModal.module.scss';
+import styles from './BrowserNotifyModal.module.scss';
 import isPushNotificationSupported from '../../../utils/browserPushNotifications';
 
 const { Title } = Typography;
@@ -22,10 +22,10 @@ export type PermissionPopupPreviewProps = {
 };
 
 const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
-  <div id="browser-push-preview-box" className={s.pushPreview}>
-    <div className={s.inner}>
-      <div className={s.title}>{window.location.toString()} wants to</div>
-      <div className={s.permissionLine}>
+  <div id="browser-push-preview-box" className={styles.pushPreview}>
+    <div className={styles.inner}>
+      <div className={styles.title}>{window.location.toString()} wants to</div>
+      <div className={styles.permissionLine}>
         <svg
           width="16"
           height="16"
@@ -40,17 +40,17 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
         </svg>
         Show notifications
       </div>
-      <div className={s.buttonRow}>
+      <div className={styles.buttonRow}>
         <Button
           type="primary"
-          className={s.allow}
+          className={styles.allow}
           onClick={() => {
             start();
           }}
         >
           Allow
         </Button>
-        <button type="button" className={s.disabled}>
+        <button type="button" className={styles.disabled}>
           Block
         </button>
       </div>
@@ -58,7 +58,7 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
   </div>
 );
 
-const BrowserNotifyModal = () => {
+export const BrowserNotifyModal = () => {
   const [error, setError] = useState<string>(null);
   const accessToken = useRecoilValue(accessTokenAtom);
   const config = useRecoilValue(clientConfigStateAtom);

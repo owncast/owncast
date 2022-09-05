@@ -14,9 +14,9 @@ import {
 } from '../../utils/config-constants';
 import { SocialHandle, UpdateArgs } from '../../types/config-section';
 import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
-import TextField from './TextField';
+import { TextField } from './TextField';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
-import FormStatusIndicator from './FormStatusIndicator';
+import { FormStatusIndicator } from './FormStatusIndicator';
 
 const { Title } = Typography;
 

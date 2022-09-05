@@ -11,8 +11,8 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import FormStatusIndicator from './FormStatusIndicator';
-import TextField, { TextFieldProps } from './TextField';
+import { FormStatusIndicator } from './FormStatusIndicator';
+import { TextField, TextFieldProps } from './TextField';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password

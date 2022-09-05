@@ -1,11 +1,9 @@
 import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography } from 'antd';
-
 import TextFieldWithSubmit, {
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
 } from './TextFieldWithSubmit';
-
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
@@ -18,10 +16,9 @@ import {
   FIELD_PROPS_NSFW,
   FIELD_PROPS_HIDE_VIEWER_COUNT,
 } from '../../utils/config-constants';
-
 import { UpdateArgs } from '../../types/config-section';
-import ToggleSwitch from './ToggleSwitch';
-import EditLogo from './EditLogo';
+import { ToggleSwitch } from './ToggleSwitch';
+import { EditLogo } from './EditLogo';
 
 const { Title } = Typography;
 

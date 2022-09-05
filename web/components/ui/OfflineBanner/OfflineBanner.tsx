@@ -1,7 +1,7 @@
 import { Divider, Button } from 'antd';
 import { NotificationFilled } from '@ant-design/icons';
 import { FC } from 'react';
-import s from './OfflineBanner.module.scss';
+import styles from './OfflineBanner.module.scss';
 
 export type OfflineBannerProps = {
   name: string;
@@ -9,13 +9,13 @@ export type OfflineBannerProps = {
 };
 
 export const OfflineBanner: FC<OfflineBannerProps> = ({ name, text }) => (
-  <div className={s.outerContainer}>
-    <div className={s.innerContainer}>
-      <div className={s.header}>{name} is currently offline.</div>
+  <div className={styles.outerContainer}>
+    <div className={styles.innerContainer}>
+      <div className={styles.header}>{name} is currently offline.</div>
       <Divider />
       <div>{text}</div>
 
-      <div className={s.footer}>
+      <div className={styles.footer}>
         <Button type="primary" onClick={() => console.log('show notification modal')}>
           <NotificationFilled />
           Notify when Live

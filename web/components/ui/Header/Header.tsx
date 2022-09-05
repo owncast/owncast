@@ -2,21 +2,18 @@ import { Layout, Tag, Tooltip } from 'antd';
 import { FC } from 'react';
 import { UserDropdown } from '../../common/UserDropdown/UserDropdown';
 import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
-import s from './Header.module.scss';
+import styles from './Header.module.scss';
 
-const { Header } = Layout;
+const { Header: AntHeader } = Layout;
 
 export type HeaderComponentProps = {
   name: string;
   chatAvailable: boolean;
 };
 
-export const HeaderComponent: FC<HeaderComponentProps> = ({
-  name = 'Your stream title',
-  chatAvailable,
-}) => (
-  <Header className={`${s.header}`}>
-    <div className={`${s.logo}`}>
+export const Header: FC<HeaderComponentProps> = ({ name = 'Your stream title', chatAvailable }) => (
+  <AntHeader className={`${styles.header}`}>
+    <div className={`${styles.logo}`}>
       <OwncastLogo variant="contrast" />
       <span>{name}</span>
     </div>
@@ -28,6 +25,6 @@ export const HeaderComponent: FC<HeaderComponentProps> = ({
         </Tag>
       </Tooltip>
     )}
-  </Header>
+  </AntHeader>
 );
-export default HeaderComponent;
+export default Header;

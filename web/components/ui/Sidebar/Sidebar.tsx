@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { FC } from 'react';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
-import s from './Sidebar.module.scss';
+import styles from './Sidebar.module.scss';
 
 import {
   chatDisplayNameAtom,
@@ -19,7 +19,7 @@ export const Sidebar: FC = () => {
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
 
   return (
-    <Sider className={s.root} collapsedWidth={0} width={320}>
+    <Sider className={styles.root} collapsedWidth={0} width={320}>
       <ChatContainer
         messages={messages}
         usernameToHighlight={chatDisplayName}

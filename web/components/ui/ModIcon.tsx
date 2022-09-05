@@ -27,4 +27,3 @@ export const ModIcon: FC<ModIconProps> = ({
     />
   </svg>
 );
-export default ModIcon;

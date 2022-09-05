@@ -1,14 +1,13 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useContext, useState, useEffect, FC } from 'react';
 import { Typography, Tag } from 'antd';
-
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   FIELD_PROPS_TAGS,
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
 } from '../../utils/config-constants';
-import TextField from './TextField';
+import { TextField } from './TextField';
 import { UpdateArgs } from '../../types/config-section';
 import {
   createInputStatus,

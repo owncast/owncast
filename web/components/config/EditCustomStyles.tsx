@@ -15,9 +15,8 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import FormStatusIndicator from './FormStatusIndicator';
-
-import TextField, { TEXTFIELD_TYPE_TEXTAREA } from './TextField';
+import { FormStatusIndicator } from './FormStatusIndicator';
+import { TextField, TEXTFIELD_TYPE_TEXTAREA } from './TextField';
 import { UpdateArgs } from '../../types/config-section';
 
 const { Title } = Typography;

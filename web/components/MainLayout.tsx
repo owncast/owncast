@@ -25,9 +25,9 @@ import { OwncastLogo } from './common/OwncastLogo/OwncastLogo';
 import { ServerStatusContext } from '../utils/server-status-context';
 import { AlertMessageContext } from '../utils/alert-message-context';
 
-import TextFieldWithSubmit from './config/TextFieldWithSubmit';
+import { TextFieldWithSubmit } from './config/TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
-import ComposeFederatedPost from './ComposeFederatedPost';
+import { ComposeFederatedPost } from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';
 
 export type MainLayoutProps = {

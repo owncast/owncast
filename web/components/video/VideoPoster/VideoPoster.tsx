@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import CrossfadeImage from '../../ui/CrossfadeImage/CrossfadeImage';
-import s from './VideoPoster.module.scss';
+import { CrossfadeImage } from '../../ui/CrossfadeImage/CrossfadeImage';
+import styles from './VideoPoster.module.scss';
 
 const REFRESH_INTERVAL = 20_000;
 
@@ -26,7 +26,7 @@ export const VideoPoster: FC<VideoPosterProps> = ({ online, initialSrc, src: bas
   }, []);
 
   return (
-    <div className={s.poster}>
+    <div className={styles.poster}>
       {!online && <img src={initialSrc} alt="logo" />}
 
       {online && (

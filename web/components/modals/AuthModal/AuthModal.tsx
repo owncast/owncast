@@ -1,13 +1,13 @@
 import { Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
 import { FC } from 'react';
-import IndieAuthModal from '../IndieAuthModal/IndieAuthModal';
-import FediAuthModal from '../FediAuthModal/FediAuthModal';
+import { IndieAuthModal } from '../IndieAuthModal/IndieAuthModal';
+import { FediAuthModal } from '../FediAuthModal/FediAuthModal';
 
 import FediverseIcon from '../../../assets/images/fediverse-black.png';
 import IndieAuthIcon from '../../../assets/images/indieauth.png';
 
-import s from './AuthModal.module.scss';
+import styles from './AuthModal.module.scss';
 import {
   chatDisplayNameAtom,
   chatAuthenticatedAtom,
@@ -32,8 +32,8 @@ export const AuthModal: FC = () => {
       >
         <TabPane
           tab={
-            <span className={s.tabContent}>
-              <img className={s.icon} src={IndieAuthIcon.src} alt="IndieAuth" />
+            <span className={styles.tabContent}>
+              <img className={styles.icon} src={IndieAuthIcon.src} alt="IndieAuth" />
               IndieAuth
             </span>
           }
@@ -47,8 +47,8 @@ export const AuthModal: FC = () => {
         </TabPane>
         <TabPane
           tab={
-            <span className={s.tabContent}>
-              <img className={s.icon} src={FediverseIcon.src} alt="Fediverse auth" />
+            <span className={styles.tabContent}>
+              <img className={styles.icon} src={FediverseIcon.src} alt="Fediverse auth" />
               FediAuth
             </span>
           }

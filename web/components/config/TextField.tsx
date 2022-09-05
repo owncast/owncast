@@ -4,7 +4,7 @@ import { Input, InputNumber } from 'antd';
 import { FieldUpdaterFunc } from '../../types/config-section';
 // import InfoTip from '../info-tip';
 import { StatusState } from '../../utils/input-statuses';
-import FormStatusIndicator from './FormStatusIndicator';
+import { FormStatusIndicator } from './FormStatusIndicator';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password

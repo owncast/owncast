@@ -45,7 +45,7 @@ const ArticleItem: FC<ArticleProps> = ({
   );
 };
 
-const NewsFeed = () => {
+export const NewsFeed = () => {
   const [feed, setFeed] = useState<ArticleProps[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 

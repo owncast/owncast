@@ -179,5 +179,3 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
     </div>
   );
 };
-
-export default ChatModerationDetailsModal;

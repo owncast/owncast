@@ -2,9 +2,9 @@ import { BookTwoTone, MessageTwoTone, PlaySquareTwoTone, ProfileTwoTone } from '
 import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { FC, useContext } from 'react';
-import LogTable from './LogTable';
+import { LogTable } from './LogTable';
 import { OwncastLogo } from './common/OwncastLogo/OwncastLogo';
-import NewsFeed from './NewsFeed';
+import { NewsFeed } from './NewsFeed';
 import { ConfigDetails } from '../types/config-section';
 import { ServerStatusContext } from '../utils/server-status-context';
 

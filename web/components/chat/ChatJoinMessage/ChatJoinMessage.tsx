@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import s from './ChatJoinMessage.module.scss';
+import styles from './ChatJoinMessage.module.scss';
 import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 
 export type ChatJoinMessageProps = {
@@ -16,7 +16,7 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
   const color = `var(--theme-user-colors-${userColor})`;
 
   return (
-    <div className={s.join}>
+    <div className={styles.join}>
       <span style={{ color }}>
         {displayName}
         {isAuthorModerator && (

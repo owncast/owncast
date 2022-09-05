@@ -5,8 +5,8 @@ import { SearchOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
 import { Client } from '../types/chat';
-import UserPopover from './UserPopover';
-import BanUserButton from './BanUserButton';
+import { UserPopover } from './UserPopover';
+import { BanUserButton } from './BanUserButton';
 import { formatUAstring } from '../utils/format';
 
 export type ClientTableProps = {

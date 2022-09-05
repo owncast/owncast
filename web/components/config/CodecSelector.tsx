@@ -13,7 +13,7 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import FormStatusIndicator from './FormStatusIndicator';
+import { FormStatusIndicator } from './FormStatusIndicator';
 
 export type CodecSelectorProps = {};
 

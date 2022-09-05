@@ -4,7 +4,7 @@ import React, { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
-import EmojiPicker from './EmojiPicker';
+import { EmojiPicker } from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';

@@ -18,10 +18,10 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import TextField from './TextField';
-import FormStatusIndicator from './FormStatusIndicator';
+import { TextField } from './TextField';
+import { FormStatusIndicator } from './FormStatusIndicator';
 import isValidUrl from '../../utils/urls';
-import ToggleSwitch from './ToggleSwitch';
+import { ToggleSwitch } from './ToggleSwitch';
 
 const { Panel } = Collapse;
 
