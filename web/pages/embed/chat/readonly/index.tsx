@@ -1,6 +1,6 @@
 import { useRecoilValue } from 'recoil';
 import { ChatMessage } from '../../../../interfaces/chat-message.model';
-import ChatContainer from '../../../../components/chat/ChatContainer/ChatContainer';
+import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
   ClientConfigStore,
   chatDisplayNameAtom,
