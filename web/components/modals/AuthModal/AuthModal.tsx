@@ -1,5 +1,6 @@
 import { Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
+import { FC } from 'react';
 import IndieAuthModal from '../IndieAuthModal/IndieAuthModal';
 import FediAuthModal from '../FediAuthModal/FediAuthModal';
 
@@ -15,10 +16,7 @@ import {
 
 const { TabPane } = Tabs;
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-interface Props {}
-
-export const AuthModal = (props: Props) => {
+export const AuthModal: FC = () => {
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);

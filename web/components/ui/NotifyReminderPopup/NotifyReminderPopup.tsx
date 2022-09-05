@@ -1,17 +1,21 @@
 import { Popover } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import s from './NotifyReminderPopup.module.scss';
 
-interface Props {
+export type NotifyReminderPopupProps = {
   visible: boolean;
   children: React.ReactNode;
   notificationClicked: () => void;
   notificationClosed: () => void;
-}
+};
 
-export const NotifyReminderPopup = (props: Props) => {
-  const { children, visible, notificationClicked, notificationClosed } = props;
+export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
+  children,
+  visible,
+  notificationClicked,
+  notificationClosed,
+}) => {
   const [visiblePopup, setVisiblePopup] = useState(visible);
   const [mounted, setMounted] = useState(false);
 

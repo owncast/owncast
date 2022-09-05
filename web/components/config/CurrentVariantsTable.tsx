@@ -1,6 +1,6 @@
 // Updating a variant will post ALL the variants in an array as an update to the API.
 
-import React, { useContext, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { Typography, Table, Modal, Button, Alert } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -28,7 +28,7 @@ import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 
-export const CurrentVariantsTable = () => {
+export const CurrentVariantsTable: FC = () => {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(0);

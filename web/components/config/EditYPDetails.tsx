@@ -1,5 +1,5 @@
 // Note: references to "yp" in the app are likely related to Owncast Directory
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography } from 'antd';
 
 import ToggleSwitch from './ToggleSwitch';
@@ -9,7 +9,7 @@ import { FIELD_PROPS_NSFW, FIELD_PROPS_YP } from '../../utils/config-constants';
 
 const { Title } = Typography;
 
-export const EditYPDetails = () => {
+export const EditYPDetails: FC = () => {
   const [formDataValues, setFormDataValues] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);

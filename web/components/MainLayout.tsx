@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { FC, ReactNode, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -30,9 +30,11 @@ import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 import ComposeFederatedPost from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';
 
-export const MainLayout = props => {
-  const { children } = props;
+export type MainLayoutProps = {
+  children: ReactNode;
+};
 
+export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const context = useContext(ServerStatusContext);
   const { serverConfig, online, broadcaster, versionNumber } = context || {};
   const { instanceDetails, chatDisabled, federation } = serverConfig;

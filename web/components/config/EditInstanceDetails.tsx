@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography } from 'antd';
 
 import TextFieldWithSubmit, {
@@ -25,7 +25,7 @@ import EditLogo from './EditLogo';
 
 const { Title } = Typography;
 
-export const EditInstanceDetails = () => {
+export const EditInstanceDetails: FC = () => {
   const [formDataValues, setFormDataValues] = useState(null);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};

@@ -1,6 +1,7 @@
 import { AppProps } from 'next/app';
+import { FC } from 'react';
 
-const SimpleLayout = ({ Component, pageProps }: AppProps) => (
+const SimpleLayout: FC<AppProps> = ({ Component, pageProps }) => (
   <div>
     <Component {...pageProps} />
   </div>

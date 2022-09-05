@@ -1,5 +1,5 @@
 // EDIT CUSTOM CSS STYLES
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -22,7 +22,7 @@ import { UpdateArgs } from '../../types/config-section';
 
 const { Title } = Typography;
 
-export const EditCustomStyles = () => {
+export const EditCustomStyles: FC = () => {
   const [content, setContent] = useState('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);

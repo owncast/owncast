@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import videojs from 'video.js';
 import s from './VideoJS.module.scss';
 
@@ -7,15 +7,14 @@ require('video.js/dist/video-js.css');
 // TODO: Restore volume that was saved in local storage.
 // import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
 // import { PLAYER_VOLUME, URL_STREAM } from '../../utils/constants.js';
-interface Props {
+export type VideoJSProps = {
   options: any;
   onReady: (player: videojs.Player, vjsInstance: videojs) => void;
-}
+};
 
-export const VideoJS = (props: Props) => {
+export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
   const videoRef = React.useRef(null);
   const playerRef = React.useRef(null);
-  const { options, onReady } = props;
 
   React.useEffect(() => {
     // Make sure Video.js player is only initialized once

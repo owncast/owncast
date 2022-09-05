@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/no-danger */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import { Collapse, Typography, Skeleton } from 'antd';
 import format from 'date-fns/format';
 
@@ -12,14 +12,19 @@ const { Title, Link } = Typography;
 const OWNCAST_FEED_URL = 'https://owncast.online/news/index.json';
 const OWNCAST_BASE_URL = 'https://owncast.online';
 
-interface Article {
+export type ArticleProps = {
   title: string;
   url: string;
   content_html: string;
   date_published: string;
-}
+};
 
-const ArticleItem = ({ title, url, content_html: content, date_published: date }: Article) => {
+const ArticleItem: FC<ArticleProps> = ({
+  title,
+  url,
+  content_html: content,
+  date_published: date,
+}) => {
   const dateObject = new Date(date);
   const dateString = format(dateObject, 'MMM dd, yyyy, HH:mm');
   return (
@@ -41,7 +46,7 @@ const ArticleItem = ({ title, url, content_html: content, date_published: date }
 };
 
 const NewsFeed = () => {
-  const [feed, setFeed] = useState<Article[]>([]);
+  const [feed, setFeed] = useState<ArticleProps[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 
   const getFeed = async () => {

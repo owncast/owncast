@@ -2,7 +2,7 @@
 // This one is styled to match the form-textfield component.
 // If `useSubmit` is true then it will automatically post to the config API onChange.
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, FC } from 'react';
 import { Switch } from 'antd';
 import {
   createInputStatus,
@@ -17,7 +17,7 @@ import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constan
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 
-interface ToggleSwitchProps {
+export type ToggleSwitchProps = {
   fieldName: string;
 
   apiPath?: string;
@@ -29,27 +29,26 @@ interface ToggleSwitchProps {
   tip?: string;
   useSubmit?: boolean;
   onChange?: (arg: boolean) => void;
-}
-export const ToggleSwitch = (props: ToggleSwitchProps) => {
+};
+
+export const ToggleSwitch: FC<ToggleSwitchProps> = ({
+  apiPath,
+  checked,
+  reversed = false,
+  configPath = '',
+  disabled = false,
+  fieldName,
+  label,
+  tip,
+  useSubmit,
+  onChange,
+}) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   let resetTimer = null;
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
-
-  const {
-    apiPath,
-    checked,
-    reversed = false,
-    configPath = '',
-    disabled = false,
-    fieldName,
-    label,
-    tip,
-    useSubmit,
-    onChange,
-  } = props;
 
   const resetStates = () => {
     setSubmitStatus(null);

@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
+import { FC } from 'react';
 
-export const Color = props => {
-  const { color } = props;
+export type ColorProps = {
+  color: any; // TODO specify better type
+};
+
+export const Color: FC<ColorProps> = ({ color }) => {
   const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(`--${color}`);
 
   const containerStyle = {

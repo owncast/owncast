@@ -1,13 +1,14 @@
 import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Col, Row, Statistic, Typography } from 'antd';
 import Link from 'next/link';
-import React, { useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import { ServerStatusContext } from '../utils/server-status-context';
 
-interface StreamHealthOverviewProps {
+export type StreamHealthOverviewProps = {
   showTroubleshootButton?: Boolean;
-}
-export const StreamHealthOverview = ({ showTroubleshootButton }: StreamHealthOverviewProps) => {
+};
+
+export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubleshootButton }) => {
   const serverStatusData = useContext(ServerStatusContext);
   const { health } = serverStatusData;
   if (!health) {

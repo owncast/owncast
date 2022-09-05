@@ -1,5 +1,5 @@
 // EDIT CUSTOM DETAILS ON YOUR PAGE
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
 import dynamic from 'next/dynamic';
 import MarkdownIt from 'markdown-it';
@@ -28,7 +28,7 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
 
 const { Title } = Typography;
 
-export const EditPageContent = () => {
+export const EditPageContent: FC = () => {
   const [content, setContent] = useState('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);

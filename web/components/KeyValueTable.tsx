@@ -1,8 +1,14 @@
 import { Table, Typography } from 'antd';
+import { FC } from 'react';
 
 const { Title } = Typography;
 
-export const KeyValueTable = ({ title, data }: KeyValueTableProps) => {
+export type KeyValueTableProps = {
+  title: string;
+  data: any;
+};
+
+export const KeyValueTable: FC<KeyValueTableProps> = ({ title, data }) => {
   const columns = [
     {
       title: 'Name',
@@ -24,8 +30,3 @@ export const KeyValueTable = ({ title, data }: KeyValueTableProps) => {
   );
 };
 export default KeyValueTable;
-
-interface KeyValueTableProps {
-  title: string;
-  data: any;
-}

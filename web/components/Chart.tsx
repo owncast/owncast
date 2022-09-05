@@ -2,6 +2,7 @@ import ChartJs from 'chart.js/auto';
 import Chartkick from 'chartkick';
 import format from 'date-fns/format';
 import { LineChart } from 'react-chartkick';
+import { FC } from 'react';
 
 // from https://github.com/ankane/chartkick.js/blob/master/chart.js/chart.esm.js
 Chartkick.use(ChartJs);
@@ -11,7 +12,7 @@ interface TimedValue {
   value: number;
 }
 
-interface ChartProps {
+export type ChartProps = {
   data?: TimedValue[];
   title?: string;
   color: string;
@@ -19,7 +20,7 @@ interface ChartProps {
   yFlipped?: boolean;
   yLogarithmic?: boolean;
   dataCollections?: any[];
-}
+};
 
 function createGraphDataset(dataArray) {
   const dataValues = {};
@@ -31,7 +32,7 @@ function createGraphDataset(dataArray) {
   return dataValues;
 }
 
-export const Chart = ({
+export const Chart: FC<ChartProps> = ({
   data,
   title,
   color,
@@ -39,7 +40,7 @@ export const Chart = ({
   dataCollections,
   yFlipped,
   yLogarithmic,
-}: ChartProps) => {
+}) => {
   const renderData = [];
 
   if (data && data.length > 0) {

@@ -1,8 +1,8 @@
 import { Spin, Skeleton, Modal as AntModal } from 'antd';
-import React, { ReactNode, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import s from './Modal.module.scss';
 
-interface Props {
+export type ModalProps = {
   title: string;
   url?: string;
   visible: boolean;
@@ -12,11 +12,19 @@ interface Props {
   children?: ReactNode;
   height?: string;
   width?: string;
-}
+};
 
-export const Modal = (props: Props) => {
-  const { title, url, visible, handleOk, handleCancel, afterClose, height, width, children } =
-    props;
+export const Modal: FC<ModalProps> = ({
+  title,
+  url,
+  visible,
+  handleOk,
+  handleCancel,
+  afterClose,
+  height,
+  width,
+  children,
+}) => {
   const [loading, setLoading] = useState(!!url);
 
   const modalStyle = {

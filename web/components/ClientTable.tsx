@@ -3,12 +3,17 @@ import { FilterDropdownProps, SortOrder } from 'antd/lib/table/interface';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
+import { FC } from 'react';
 import { Client } from '../types/chat';
 import UserPopover from './UserPopover';
 import BanUserButton from './BanUserButton';
 import { formatUAstring } from '../utils/format';
 
-export const ClientTable = ({ data }: ClientTableProps) => {
+export type ClientTableProps = {
+  data: Client[];
+};
+
+export const ClientTable: FC<ClientTableProps> = ({ data }) => {
   const columns: ColumnsType<Client> = [
     {
       title: 'Display Name',
@@ -93,7 +98,3 @@ export const ClientTable = ({ data }: ClientTableProps) => {
   );
 };
 export default ClientTable;
-
-interface ClientTableProps {
-  data: Client[];
-}

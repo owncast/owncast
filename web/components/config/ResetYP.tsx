@@ -1,5 +1,5 @@
 import { Popconfirm, Button, Typography } from 'antd';
-import { useContext, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 
 import { API_YP_RESET, fetchData } from '../../utils/apis';
@@ -12,7 +12,7 @@ import {
 } from '../../utils/input-statuses';
 import FormStatusIndicator from './FormStatusIndicator';
 
-export const ResetYP = () => {
+export const ResetYP: FC = () => {
   const { setMessage } = useContext(AlertMessageContext);
 
   const [submitStatus, setSubmitStatus] = useState(null);

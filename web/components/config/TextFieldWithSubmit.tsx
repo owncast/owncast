@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import classNames from 'classnames';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { UpdateArgs } from '../../types/config-section';
 import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../utils/config-constants';
 import {
@@ -20,13 +20,20 @@ export const TEXTFIELD_TYPE_NUMBER = 'numeric';
 export const TEXTFIELD_TYPE_TEXTAREA = 'textarea';
 export const TEXTFIELD_TYPE_URL = 'url';
 
-interface TextFieldWithSubmitProps extends TextFieldProps {
+export type TextFieldWithSubmitProps = TextFieldProps & {
   apiPath: string;
   configPath?: string;
   initialValue?: string;
-}
+};
 
-export const TextFieldWithSubmit = (props: TextFieldWithSubmitProps) => {
+export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
+  apiPath,
+  configPath = '',
+  initialValue,
+  useTrim,
+  useTrimLead,
+  ...textFieldProps // rest of props
+}) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const [hasChanged, setHasChanged] = useState(false);
@@ -35,15 +42,6 @@ export const TextFieldWithSubmit = (props: TextFieldWithSubmitProps) => {
   const { setFieldInConfigState } = serverStatusData || {};
 
   let resetTimer = null;
-
-  const {
-    apiPath,
-    configPath = '',
-    initialValue,
-    useTrim,
-    useTrimLead,
-    ...textFieldProps // rest of props
-  } = props;
 
   const { fieldName, required, tip, status, value, onChange, onSubmit } = textFieldProps;
 

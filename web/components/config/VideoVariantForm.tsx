@@ -1,5 +1,5 @@
 // This content populates the video variant modal, which is spawned from the variants table. This relies on the `dataState` prop fed in by the table.
-import React from 'react';
+import React, { FC } from 'react';
 import { Popconfirm, Row, Col, Slider, Collapse, Typography } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import classNames from 'classnames';
@@ -21,15 +21,15 @@ import ToggleSwitch from './ToggleSwitch';
 
 const { Panel } = Collapse;
 
-interface VideoVariantFormProps {
+export type VideoVariantFormProps = {
   dataState: VideoVariant;
   onUpdateField: FieldUpdaterFunc;
-}
+};
 
-export const VideoVariantForm = ({
+export const VideoVariantForm: FC<VideoVariantFormProps> = ({
   dataState = DEFAULT_VARIANT_STATE,
   onUpdateField,
-}: VideoVariantFormProps) => {
+}) => {
   const videoPassthroughEnabled = dataState.videoPassthrough;
 
   const handleFramerateChange = (value: number) => {

@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Select } from 'antd';
 import { SocialHandleDropdownItem } from '../../types/config-section';
 import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { OTHER_SOCIAL_HANDLE_OPTION } from '../../utils/config-constants';
 
-interface DropdownProps {
+export type DropdownProps = {
   iconList: SocialHandleDropdownItem[];
   selectedOption: string;
   onSelected: any;
-}
+};
 
-export const SocialDropdown = ({ iconList, selectedOption, onSelected }: DropdownProps) => {
+export const SocialDropdown: FC<DropdownProps> = ({ iconList, selectedOption, onSelected }) => {
   const handleSelected = (value: string) => {
     if (onSelected) {
       onSelected(value);

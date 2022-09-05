@@ -3,10 +3,11 @@
 // TODO: This component should be cleaned up and usage should be re-examined. The types should be reconsidered as well.
 
 import { Typography, Statistic, Card, Progress } from 'antd';
+import { FC } from 'react';
 
 const { Text } = Typography;
 
-interface StatisticItemProps {
+export type StatisticItemProps = {
   title?: string;
   value?: any;
   prefix?: any;
@@ -15,7 +16,8 @@ interface StatisticItemProps {
   progress?: boolean;
   centered?: boolean;
   formatter?: any;
-}
+};
+
 const defaultProps = {
   title: '',
   value: 0,
@@ -27,14 +29,14 @@ const defaultProps = {
   formatter: null,
 };
 
-interface ContentProps {
+export type ContentProps = {
   prefix: string;
   value: any;
   suffix: string;
   title: string;
-}
+};
 
-const Content = ({ prefix, value, suffix, title }: ContentProps) => (
+const Content: FC<ContentProps> = ({ prefix, value, suffix, title }) => (
   <div>
     {prefix}
     <div>
@@ -49,7 +51,7 @@ const Content = ({ prefix, value, suffix, title }: ContentProps) => (
   </div>
 );
 
-const ProgressView = ({ title, value, prefix, suffix, color }: StatisticItemProps) => {
+const ProgressView: FC<StatisticItemProps> = ({ title, value, prefix, suffix, color }) => {
   const endColor = value > 90 ? 'red' : color;
   const content = <Content prefix={prefix} value={value} suffix={suffix} title={title} />;
 
@@ -68,12 +70,12 @@ const ProgressView = ({ title, value, prefix, suffix, color }: StatisticItemProp
 };
 ProgressView.defaultProps = defaultProps;
 
-const StatisticView = ({ title, value, prefix, formatter }: StatisticItemProps) => (
+const StatisticView: FC<StatisticItemProps> = ({ title, value, prefix, formatter }) => (
   <Statistic title={title} value={value} prefix={prefix} formatter={formatter} />
 );
 StatisticView.defaultProps = defaultProps;
 
-const StatisticItem = (props: StatisticItemProps) => {
+const StatisticItem: FC<StatisticItemProps> = props => {
   const { progress, centered } = props;
   const View = progress ? ProgressView : StatisticView;
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import { Button, Space, Input, Modal } from 'antd';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../utils/input-statuses';
@@ -6,12 +6,12 @@ import { fetchData, FEDERATION_MESSAGE_SEND } from '../utils/apis';
 
 const { TextArea } = Input;
 
-interface ComposeFederatedPostProps {
+export type ComposeFederatedPostProps = {
   visible: boolean;
   handleClose: () => void;
-}
+};
 
-export const ComposeFederatedPost = ({ visible, handleClose }: ComposeFederatedPostProps) => {
+export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ visible, handleClose }) => {
   const [content, setContent] = useState('');
   const [postPending, setPostPending] = useState(false);
   const [postSuccessState, setPostSuccessState] = useState(null);

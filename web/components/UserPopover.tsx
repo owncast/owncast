@@ -1,6 +1,6 @@
 // This displays a clickable user name (or whatever children element you provide), and displays a simple tooltip of created time. OnClick a modal with more information about the user is displayed.
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, FC } from 'react';
 import { Divider, Modal, Tooltip, Typography, Row, Col, Space } from 'antd';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
@@ -13,13 +13,13 @@ import { User, UserConnectionInfo } from '../types/chat';
 import { formatDisplayDate } from './UserTable';
 import { formatUAstring } from '../utils/format';
 
-interface UserPopoverProps {
+export type UserPopoverProps = {
   user: User;
   connectionInfo?: UserConnectionInfo | null;
   children: ReactNode;
-}
+};
 
-export const UserPopover = ({ user, connectionInfo, children }: UserPopoverProps) => {
+export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, children }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleShowModal = () => {
     setIsModalVisible(true);

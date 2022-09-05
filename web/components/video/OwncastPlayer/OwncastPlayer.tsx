@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import VideoJS from '../VideoJS/VideoJS';
@@ -19,10 +19,10 @@ let playbackMetrics = null;
 let latencyCompensator = null;
 let latencyCompensatorEnabled = false;
 
-interface Props {
+export type OwncastPlayerProps = {
   source: string;
   online: boolean;
-}
+};
 
 async function getVideoSettings() {
   let qualities = [];
@@ -36,9 +36,8 @@ async function getVideoSettings() {
   return qualities;
 }
 
-export const OwncastPlayer = (props: Props) => {
+export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   const playerRef = React.useRef(null);
-  const { source, online } = props;
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
 

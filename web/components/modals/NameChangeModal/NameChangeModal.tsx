@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Input, Button, Select } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
@@ -11,11 +11,11 @@ import {
 
 const { Option } = Select;
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-interface Props {}
+export type UserColorProps = {
+  color: number;
+};
 
-const UserColor = (props: { color: number }): React.ReactElement => {
-  const { color } = props;
+const UserColor: FC<UserColorProps> = ({ color }) => {
   const style: CSSProperties = {
     textAlign: 'center',
     backgroundColor: `var(--theme-color-users-${color})`,
@@ -25,7 +25,7 @@ const UserColor = (props: { color: number }): React.ReactElement => {
   return <div style={style} />;
 };
 
-const NameChangeModal = (props: Props) => {
+const NameChangeModal: FC = () => {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom) || 0;

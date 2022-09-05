@@ -1,5 +1,5 @@
 // Custom component for AntDesign Button that makes an api call, then displays a confirmation icon upon
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import { Button, Tooltip } from 'antd';
 import {
   EyeOutlined,
@@ -12,13 +12,17 @@ import { MessageType } from '../types/chat';
 import { OUTCOME_TIMEOUT } from '../pages/admin/chat/messages';
 import { isEmptyObject } from '../utils/format';
 
-interface MessageToggleProps {
+export type MessageToggleProps = {
   isVisible: boolean;
   message: MessageType;
   setMessage: (message: MessageType) => void;
-}
+};
 
-export const MessageVisiblityToggle = ({ isVisible, message, setMessage }: MessageToggleProps) => {
+export const MessageVisiblityToggle: FC<MessageToggleProps> = ({
+  isVisible,
+  message,
+  setMessage,
+}) => {
   if (!message || isEmptyObject(message)) {
     return null;
   }

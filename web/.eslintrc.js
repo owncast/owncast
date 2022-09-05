@@ -22,6 +22,7 @@ module.exports = {
   ignorePatterns: ['!./storybook/**'],
   rules: {
     'prettier/prettier': 'error',
+    'react/prop-types': 0,
     'react/react-in-jsx-scope': 'off',
     'react/require-default-props': 'off',
     'react/jsx-filename-extension': [

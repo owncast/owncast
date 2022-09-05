@@ -1,19 +1,21 @@
 import { Alert, Button, Input, Space, Spin, Collapse, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import isValidURL from '../../../utils/urls';
 
 const { Panel } = Collapse;
 const { Link } = Typography;
 
-interface Props {
+export type IndieAuthModalProps = {
   authenticated: boolean;
   displayName: string;
   accessToken: string;
-}
+};
 
-export const IndieAuthModal = (props: Props) => {
-  const { authenticated, displayName: username, accessToken } = props;
-
+export const IndieAuthModal: FC<IndieAuthModalProps> = ({
+  authenticated,
+  displayName: username,
+  accessToken,
+}) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [valid, setValid] = useState(false);

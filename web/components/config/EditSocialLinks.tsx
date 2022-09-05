@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -20,7 +20,7 @@ import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 
-export const EditSocialLinks = () => {
+export const EditSocialLinks: FC = () => {
   const [availableIconsList, setAvailableIconsList] = useState([]);
   const [currentSocialHandles, setCurrentSocialHandles] = useState([]);
 

@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Typography, Tag } from 'antd';
 
 import TextField from './TextField';
@@ -11,7 +11,7 @@ const { Title } = Typography;
 
 export const TAG_COLOR = '#5a67d8';
 
-interface EditStringArrayProps {
+export type EditStringArrayProps = {
   title: string;
   description?: string;
   placeholder: string;
@@ -21,21 +21,20 @@ interface EditStringArrayProps {
   continuousStatusMessage?: StatusState;
   handleDeleteIndex: (index: number) => void;
   handleCreateString: (arg: string) => void;
-}
+};
 
-export const EditValueArray = (props: EditStringArrayProps) => {
+export const EditValueArray: FC<EditStringArrayProps> = ({
+  title,
+  description,
+  placeholder,
+  maxLength,
+  values,
+  handleDeleteIndex,
+  handleCreateString,
+  submitStatus,
+  continuousStatusMessage,
+}) => {
   const [newStringInput, setNewStringInput] = useState<string>('');
-  const {
-    title,
-    description,
-    placeholder,
-    maxLength,
-    values,
-    handleDeleteIndex,
-    handleCreateString,
-    submitStatus,
-    continuousStatusMessage,
-  } = props;
 
   const handleInputChange = ({ value }: UpdateArgs) => {
     setNewStringInput(value);

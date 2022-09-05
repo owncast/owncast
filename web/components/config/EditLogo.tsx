@@ -1,7 +1,7 @@
 import { Button, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
 import { LoadingOutlined, UploadOutlined } from '@ant-design/icons';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, FC } from 'react';
 import FormStatusIndicator from './FormStatusIndicator';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -26,7 +26,7 @@ function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer) 
   reader.readAsDataURL(img);
 }
 
-export const EditLogo = () => {
+export const EditLogo: FC = () => {
   const [logoUrl, setlogoUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [logoCachedbuster, setLogoCacheBuster] = useState(0);

@@ -5,14 +5,16 @@ import {
   StopTwoTone,
   SafetyCertificateTwoTone,
 } from '@ant-design/icons';
+import { FC } from 'react';
 import { USER_SET_MODERATOR, fetchData } from '../utils/apis';
 import { User } from '../types/chat';
 
-interface ModeratorUserButtonProps {
+export type ModeratorUserButtonProps = {
   user: User;
   onClick?: () => void;
-}
-export const ModeratorUserButton = ({ user, onClick }: ModeratorUserButtonProps) => {
+};
+
+export const ModeratorUserButton: FC<ModeratorUserButtonProps> = ({ user, onClick }) => {
   async function buttonClicked({ id }, setAsModerator: Boolean): Promise<Boolean> {
     const data = {
       userId: id,

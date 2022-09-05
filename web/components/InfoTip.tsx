@@ -1,11 +1,12 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
+import { FC } from 'react';
 
-interface InfoTipProps {
+export type InfoTipProps = {
   tip: string | null;
-}
+};
 
-export const InfoTip = ({ tip }: InfoTipProps) => {
+export const InfoTip: FC<InfoTipProps> = ({ tip }) => {
   if (tip === '' || tip === null) {
     return null;
   }

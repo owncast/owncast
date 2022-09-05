@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, FC } from 'react';
 import { Typography, Tag } from 'antd';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -22,7 +22,7 @@ import { TAG_COLOR } from './EditValueArray';
 
 const { Title } = Typography;
 
-export const EditInstanceTags = () => {
+export const EditInstanceTags: FC = () => {
   const [newTagInput, setNewTagInput] = useState<string>('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 

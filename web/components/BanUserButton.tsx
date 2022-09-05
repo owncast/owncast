@@ -1,15 +1,17 @@
 import { Modal, Button } from 'antd';
 import { ExclamationCircleFilled, QuestionCircleFilled, StopTwoTone } from '@ant-design/icons';
+import { FC } from 'react';
 import { USER_ENABLED_TOGGLE, fetchData } from '../utils/apis';
 import { User } from '../types/chat';
 
-interface BanUserButtonProps {
+export type BanUserButtonProps = {
   user: User;
   isEnabled: Boolean; // = this user's current status
   label?: string;
   onClick?: () => void;
-}
-export const BanUserButton = ({ user, isEnabled, label, onClick }: BanUserButtonProps) => {
+};
+
+export const BanUserButton: FC<BanUserButtonProps> = ({ user, isEnabled, label, onClick }) => {
   async function buttonClicked({ id }): Promise<Boolean> {
     const data = {
       userId: id,

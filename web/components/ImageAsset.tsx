@@ -1,6 +1,11 @@
-export const ImageAsset = (props: ImageAssetProps) => {
-  const { name, src } = props;
+import { FC } from 'react';
 
+export type ImageAssetProps = {
+  name: string;
+  src: string;
+};
+
+export const ImageAsset: FC<ImageAssetProps> = ({ name, src }) => {
   const containerStyle = {
     borderRadius: '20px',
     width: '12vw',
@@ -39,11 +44,6 @@ export const ImageAsset = (props: ImageAssetProps) => {
     </figure>
   );
 };
-
-interface ImageAssetProps {
-  name: string;
-  src: string;
-}
 
 const rowStyle = {
   display: 'flex',

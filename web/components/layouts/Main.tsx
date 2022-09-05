@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
-import { useEffect, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -14,7 +14,7 @@ import { DisplayableError } from '../../types/displayable-error';
 import FatalErrorStateModal from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 
-const Main = () => {
+const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { name, title, customStyles } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);

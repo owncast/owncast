@@ -1,16 +1,20 @@
 import { Layout, Tag, Tooltip } from 'antd';
+import { FC } from 'react';
 import { UserDropdown } from '../../common/UserDropdown/UserDropdown';
 import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import s from './Header.module.scss';
 
 const { Header } = Layout;
 
-interface Props {
+export type HeaderComponentProps = {
   name: string;
   chatAvailable: boolean;
-}
+};
 
-export const HeaderComponent = ({ name = 'Your stream title', chatAvailable }: Props) => (
+export const HeaderComponent: FC<HeaderComponentProps> = ({
+  name = 'Your stream title',
+  chatAvailable,
+}) => (
   <Header className={`${s.header}`}>
     <div className={`${s.logo}`}>
       <OwncastLogo variant="contrast" />

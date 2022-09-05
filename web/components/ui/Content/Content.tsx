@@ -1,7 +1,7 @@
 /* eslint-disable react/no-danger */
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import cn from 'classnames';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
@@ -42,7 +42,7 @@ import { StatusBar } from '..';
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
-export const ContentComponent = () => {
+export const ContentComponent: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);

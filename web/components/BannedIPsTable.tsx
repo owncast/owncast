@@ -1,7 +1,7 @@
 import { Table, Button } from 'antd';
 import format from 'date-fns/format';
 import { SortOrder } from 'antd/lib/table/interface';
-import React from 'react';
+import React, { FC } from 'react';
 import { StopTwoTone } from '@ant-design/icons';
 import { User } from '../types/chat';
 import { BANNED_IP_REMOVE, fetchData } from '../utils/apis';
@@ -23,7 +23,11 @@ async function removeIPAddressBan(ipAddress: String) {
   }
 }
 
-export const BannedIPsTable = ({ data }: UserTableProps) => {
+export type UserTableProps = {
+  data: User[];
+};
+
+export const BannedIPsTable: FC<UserTableProps> = ({ data }) => {
   const columns = [
     {
       title: 'IP Address',
@@ -70,7 +74,3 @@ export const BannedIPsTable = ({ data }: UserTableProps) => {
   );
 };
 export default BannedIPsTable;
-
-interface UserTableProps {
-  data: User[];
-}

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, FC } from 'react';
 import { Typography, Slider } from 'antd';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
@@ -34,7 +34,7 @@ const SLIDER_COMMENTS = {
   4: 'Highest latency, highest error tolerance',
 };
 
-export const VideoLatency = () => {
+export const VideoLatency: FC = () => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [selectedOption, setSelectedOption] = useState(null);
 

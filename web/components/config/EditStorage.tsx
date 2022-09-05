@@ -1,6 +1,6 @@
 import { Button, Collapse } from 'antd';
 import classNames from 'classnames';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, FC } from 'react';
 import { UpdateArgs } from '../../types/config-section';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
@@ -63,7 +63,7 @@ function checkSaveable(formValues: any, currentValues: any) {
   return false;
 }
 
-export const EditStorage = () => {
+export const EditStorage: FC = () => {
   const [formDataValues, setFormDataValues] = useState(null);
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 

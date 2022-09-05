@@ -1,15 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Input, Button, Alert, Spin, Space } from 'antd';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import s from './FollowModal.module.scss';
 
 const ENDPOINT = '/api/remotefollow';
 
-interface Props {
+export type FollowModalProps = {
   handleClose: () => void;
   account: string;
   name: string;
-}
+};
 
 function validateAccount(a) {
   const sanitized = a.replace(/^@+/, '');
@@ -18,8 +18,7 @@ function validateAccount(a) {
   return regex.test(String(sanitized).toLowerCase());
 }
 
-export const FollowModal = (props: Props) => {
-  const { handleClose, account, name } = props;
+export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }) => {
   const [remoteAccount, setRemoteAccount] = useState(null);
   const [valid, setValid] = useState(false);
   const [loading, setLoading] = useState(false);

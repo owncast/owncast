@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import { Input, InputNumber } from 'antd';
 import { FieldUpdaterFunc } from '../../types/config-section';
@@ -12,7 +12,7 @@ export const TEXTFIELD_TYPE_NUMBER = 'numeric'; // InputNumber
 export const TEXTFIELD_TYPE_TEXTAREA = 'textarea'; // Input.TextArea
 export const TEXTFIELD_TYPE_URL = 'url';
 
-export interface TextFieldProps {
+export type TextFieldProps = {
   fieldName: string;
 
   onSubmit?: () => void;
@@ -33,28 +33,26 @@ export interface TextFieldProps {
   value?: string | number;
   onBlur?: FieldUpdaterFunc;
   onChange?: FieldUpdaterFunc;
-}
+};
 
-export const TextField = (props: TextFieldProps) => {
-  const {
-    className,
-    disabled,
-    fieldName,
-    label,
-    maxLength,
-    onBlur,
-    onChange,
-    onPressEnter,
-    pattern,
-    placeholder,
-    required,
-    status,
-    tip,
-    type,
-    useTrim,
-    value,
-  } = props;
-
+export const TextField: FC<TextFieldProps> = ({
+  className,
+  disabled,
+  fieldName,
+  label,
+  maxLength,
+  onBlur,
+  onChange,
+  onPressEnter,
+  pattern,
+  placeholder,
+  required,
+  status,
+  tip,
+  type,
+  useTrim,
+  value,
+}) => {
   const handleChange = (e: any) => {
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {

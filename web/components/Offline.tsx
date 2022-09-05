@@ -1,7 +1,7 @@
 import { BookTwoTone, MessageTwoTone, PlaySquareTwoTone, ProfileTwoTone } from '@ant-design/icons';
 import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { FC, useContext } from 'react';
 import LogTable from './LogTable';
 import { OwncastLogo } from './common/OwncastLogo/OwncastLogo';
 import NewsFeed from './NewsFeed';
@@ -17,12 +17,12 @@ function generateStreamURL(serverURL, rtmpServerPort) {
   return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}:${rtmpServerPort}/live`;
 }
 
-type OfflineProps = {
+export type OfflineProps = {
   logs: any[];
   config: ConfigDetails;
 };
 
-export const Offline = ({ logs = [], config }: OfflineProps) => {
+export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};

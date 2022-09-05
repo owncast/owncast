@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Table, Tag, Typography } from 'antd';
 import Linkify from 'react-linkify';
 import { SortOrder } from 'antd/lib/table/interface';
@@ -22,12 +22,12 @@ function renderMessage(text) {
   return <Linkify>{text}</Linkify>;
 }
 
-interface Props {
+export type LogTableProps = {
   logs: object[];
   pageSize: number;
-}
+};
 
-export const LogTable = ({ logs, pageSize }: Props) => {
+export const LogTable: FC<LogTableProps> = ({ logs, pageSize }) => {
   if (!logs?.length) {
     return null;
   }

@@ -1,14 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 type ObjectFit = React.CSSProperties['objectFit'];
 
-interface CrossfadeImageProps {
+export type CrossfadeImageProps = {
   src: string;
   width: string;
   height: string;
   objectFit?: ObjectFit;
   duration?: string;
-}
+};
 
 const imgStyle: React.CSSProperties = {
   position: 'absolute',
@@ -16,13 +16,13 @@ const imgStyle: React.CSSProperties = {
   height: `100%`,
 };
 
-export const CrossfadeImage = ({
+export const CrossfadeImage: FC<CrossfadeImageProps> = ({
   src = '',
   width,
   height,
   objectFit = 'fill',
   duration = '1s',
-}: CrossfadeImageProps) => {
+}) => {
   const spanStyle: React.CSSProperties = useMemo(
     () => ({
       display: 'inline-block',

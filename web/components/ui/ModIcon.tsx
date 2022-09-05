@@ -1,16 +1,16 @@
-/* eslint-disable react/require-default-props */
-import { CSSProperties } from 'react';
+import { CSSProperties, FC } from 'react';
 
-interface Props {
+export type ModIconProps = {
   style?: CSSProperties;
   fill?: string;
   stroke?: string;
-}
-export const ModIcon = ({
+};
+
+export const ModIcon: FC<ModIconProps> = ({
   style = { width: '1rem', height: '1rem' },
   fill = 'none',
   stroke = 'var(--color-owncast-gray-300)',
-}: Props) => (
+}: ModIconProps) => (
   <svg
     fill={fill}
     stroke={stroke}

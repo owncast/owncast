@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 
 import { StatusState } from '../../utils/input-statuses';
 
-interface FormStatusIndicatorProps {
+export type FormStatusIndicatorProps = {
   status: StatusState;
-}
-export const FormStatusIndicator = ({ status }: FormStatusIndicatorProps) => {
+};
+
+export const FormStatusIndicator: FC<FormStatusIndicatorProps> = ({ status }) => {
   const { type, icon, message } = status || {};
   const classes = classNames({
     'status-container': true,

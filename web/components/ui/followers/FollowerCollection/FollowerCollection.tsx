@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Col, Pagination, Row } from 'antd';
 import { Follower } from '../../../../interfaces/follower';
 import SingleFollower from '../SingleFollower/SingleFollower';
 import s from '../SingleFollower/SingleFollower.module.scss';
 
-export const FollowerCollection = () => {
+export const FollowerCollection: FC = () => {
   const ENDPOINT = '/api/followers';
   const ITEMS_PER_PAGE = 24;
 
