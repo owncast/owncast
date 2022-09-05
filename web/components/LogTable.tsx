@@ -27,7 +27,7 @@ interface Props {
   pageSize: number;
 }
 
-export default function LogTable({ logs, pageSize }: Props) {
+export const LogTable = ({ logs, pageSize }: Props) => {
   if (!logs?.length) {
     return null;
   }
@@ -85,4 +85,5 @@ export default function LogTable({ logs, pageSize }: Props) {
       />
     </div>
   );
-}
+};
+export default LogTable;

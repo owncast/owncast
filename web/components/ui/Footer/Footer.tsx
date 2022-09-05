@@ -4,7 +4,7 @@ interface Props {
   version: string;
 }
 
-export default function FooterComponent(props: Props) {
+export const FooterComponent = (props: Props) => {
   const { version } = props;
 
   return (
@@ -31,4 +31,5 @@ export default function FooterComponent(props: Props) {
       </div>
     </div>
   );
-}
+};
+export default FooterComponent;

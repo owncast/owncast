@@ -18,11 +18,7 @@ interface MessageToggleProps {
   setMessage: (message: MessageType) => void;
 }
 
-export default function MessageVisiblityToggle({
-  isVisible,
-  message,
-  setMessage,
-}: MessageToggleProps) {
+export const MessageVisiblityToggle = ({ isVisible, message, setMessage }: MessageToggleProps) => {
   if (!message || isEmptyObject(message)) {
     return null;
   }
@@ -89,4 +85,5 @@ export default function MessageVisiblityToggle({
       </Tooltip>
     </div>
   );
-}
+};
+export default MessageVisiblityToggle;

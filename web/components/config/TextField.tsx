@@ -35,7 +35,7 @@ export interface TextFieldProps {
   onChange?: FieldUpdaterFunc;
 }
 
-export default function TextField(props: TextFieldProps) {
+export const TextField = (props: TextFieldProps) => {
   const {
     className,
     disabled,
@@ -151,7 +151,8 @@ export default function TextField(props: TextFieldProps) {
       </div>
     </div>
   );
-}
+};
+export default TextField;
 
 TextField.defaultProps = {
   className: '',

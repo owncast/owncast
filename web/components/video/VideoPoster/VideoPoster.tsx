@@ -10,7 +10,7 @@ interface Props {
   online: boolean;
 }
 
-export default function VideoPoster(props: Props) {
+export const VideoPoster = (props: Props) => {
   const { online, initialSrc, src: base } = props;
 
   let timer: ReturnType<typeof setInterval>;
@@ -42,4 +42,5 @@ export default function VideoPoster(props: Props) {
       )}
     </div>
   );
-}
+};
+export default VideoPoster;

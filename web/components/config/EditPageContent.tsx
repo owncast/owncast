@@ -28,7 +28,7 @@ const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
 
 const { Title } = Typography;
 
-export default function EditPageContent() {
+export const EditPageContent = () => {
   const [content, setContent] = useState('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);
@@ -122,4 +122,5 @@ export default function EditPageContent() {
       </div>
     </div>
   );
-}
+};
+export default EditPageContent;

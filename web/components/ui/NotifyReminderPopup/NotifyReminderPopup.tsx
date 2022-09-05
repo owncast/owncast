@@ -10,7 +10,7 @@ interface Props {
   notificationClosed: () => void;
 }
 
-export default function NotifyReminderPopup(props: Props) {
+export const NotifyReminderPopup = (props: Props) => {
   const { children, visible, notificationClicked, notificationClosed } = props;
   const [visiblePopup, setVisiblePopup] = useState(visible);
   const [mounted, setMounted] = useState(false);
@@ -71,4 +71,5 @@ export default function NotifyReminderPopup(props: Props) {
       </Popover>
     )
   );
-}
+};
+export default NotifyReminderPopup;

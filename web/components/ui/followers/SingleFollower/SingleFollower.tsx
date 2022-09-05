@@ -7,7 +7,7 @@ interface Props {
   follower: Follower;
 }
 
-export default function SingleFollower(props: Props) {
+export const SingleFollower = (props: Props) => {
   const { follower } = props;
 
   return (
@@ -27,4 +27,5 @@ export default function SingleFollower(props: Props) {
       </a>
     </div>
   );
-}
+};
+export default SingleFollower;

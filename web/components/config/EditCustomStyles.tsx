@@ -22,7 +22,7 @@ import { UpdateArgs } from '../../types/config-section';
 
 const { Title } = Typography;
 
-export default function EditCustomStyles() {
+export const EditCustomStyles = () => {
   const [content, setContent] = useState('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);
@@ -114,4 +114,5 @@ export default function EditCustomStyles() {
       </div>
     </div>
   );
-}
+};
+export default EditCustomStyles;

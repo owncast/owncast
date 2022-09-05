@@ -30,7 +30,7 @@ interface ToggleSwitchProps {
   useSubmit?: boolean;
   onChange?: (arg: boolean) => void;
 }
-export default function ToggleSwitch(props: ToggleSwitchProps) {
+export const ToggleSwitch = (props: ToggleSwitchProps) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   let resetTimer = null;
@@ -107,7 +107,8 @@ export default function ToggleSwitch(props: ToggleSwitchProps) {
       </div>
     </div>
   );
-}
+};
+export default ToggleSwitch;
 
 ToggleSwitch.defaultProps = {
   apiPath: '',

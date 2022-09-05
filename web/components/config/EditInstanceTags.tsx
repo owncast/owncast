@@ -22,7 +22,7 @@ import { TAG_COLOR } from './EditValueArray';
 
 const { Title } = Typography;
 
-export default function EditInstanceTags() {
+export const EditInstanceTags = () => {
   const [newTagInput, setNewTagInput] = useState<string>('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
@@ -136,4 +136,5 @@ export default function EditInstanceTags() {
       </div>
     </div>
   );
-}
+};
+export default EditInstanceTags;

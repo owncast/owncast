@@ -6,7 +6,7 @@ import { StatusState } from '../../utils/input-statuses';
 interface FormStatusIndicatorProps {
   status: StatusState;
 }
-export default function FormStatusIndicator({ status }: FormStatusIndicatorProps) {
+export const FormStatusIndicator = ({ status }: FormStatusIndicatorProps) => {
   const { type, icon, message } = status || {};
   const classes = classNames({
     'status-container': true,
@@ -19,4 +19,5 @@ export default function FormStatusIndicator({ status }: FormStatusIndicatorProps
       {message ? <span className="status-message">{message}</span> : null}
     </span>
   );
-}
+};
+export default FormStatusIndicator;

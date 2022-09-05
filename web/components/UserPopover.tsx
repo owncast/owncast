@@ -19,7 +19,7 @@ interface UserPopoverProps {
   children: ReactNode;
 }
 
-export default function UserPopover({ user, connectionInfo, children }: UserPopoverProps) {
+export const UserPopover = ({ user, connectionInfo, children }: UserPopoverProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleShowModal = () => {
     setIsModalVisible(true);
@@ -144,7 +144,8 @@ export default function UserPopover({ user, connectionInfo, children }: UserPopo
       </Modal>
     </>
   );
-}
+};
+export default UserPopover;
 
 UserPopover.defaultProps = {
   connectionInfo: null,

@@ -31,7 +31,7 @@ function createGraphDataset(dataArray) {
   return dataValues;
 }
 
-export default function Chart({
+export const Chart = ({
   data,
   title,
   color,
@@ -39,7 +39,7 @@ export default function Chart({
   dataCollections,
   yFlipped,
   yLogarithmic,
-}: ChartProps) {
+}: ChartProps) => {
   const renderData = [];
 
   if (data && data.length > 0) {
@@ -87,7 +87,9 @@ export default function Chart({
       />
     </div>
   );
-}
+};
+
+export default Chart;
 
 Chart.defaultProps = {
   dataCollections: [],

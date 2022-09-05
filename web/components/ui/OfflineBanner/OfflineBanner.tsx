@@ -8,7 +8,7 @@ interface Props {
   text: string;
 }
 
-export default function OfflineBanner({ name, text }: Props) {
+export const OfflineBanner = ({ name, text }: Props) => {
   const handleShowNotificationModal = () => {
     console.log('show notification modal');
   };
@@ -29,4 +29,5 @@ export default function OfflineBanner({ name, text }: Props) {
       </div>
     </div>
   );
-}
+};
+export default OfflineBanner;

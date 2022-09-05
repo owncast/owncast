@@ -14,7 +14,7 @@ interface Props {
   width?: string;
 }
 
-export default function Modal(props: Props) {
+export const Modal = (props: Props) => {
   const { title, url, visible, handleOk, handleCancel, afterClose, height, width, children } =
     props;
   const [loading, setLoading] = useState(!!url);
@@ -65,7 +65,8 @@ export default function Modal(props: Props) {
       </>
     </AntModal>
   );
-}
+};
+export default Modal;
 
 Modal.defaultProps = {
   url: undefined,

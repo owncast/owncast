@@ -9,7 +9,7 @@ interface BanUserButtonProps {
   label?: string;
   onClick?: () => void;
 }
-export default function BanUserButton({ user, isEnabled, label, onClick }: BanUserButtonProps) {
+export const BanUserButton = ({ user, isEnabled, label, onClick }: BanUserButtonProps) => {
   async function buttonClicked({ id }): Promise<Boolean> {
     const data = {
       userId: id,
@@ -78,8 +78,9 @@ export default function BanUserButton({ user, isEnabled, label, onClick }: BanUs
       {label || actionString}
     </Button>
   );
-}
+};
 BanUserButton.defaultProps = {
   label: '',
   onClick: null,
 };
+export default BanUserButton;

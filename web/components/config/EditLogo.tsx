@@ -26,7 +26,7 @@ function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer) 
   reader.readAsDataURL(img);
 }
 
-export default function EditLogo() {
+export const EditLogo = () => {
   const [logoUrl, setlogoUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [logoCachedbuster, setLogoCacheBuster] = useState(0);
@@ -125,4 +125,5 @@ export default function EditLogo() {
       </div>
     </div>
   );
-}
+};
+export default EditLogo;

@@ -42,7 +42,7 @@ import { StatusBar } from '..';
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
-export default function ContentComponent() {
+export const ContentComponent = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
@@ -198,4 +198,5 @@ export default function ContentComponent() {
       {!isMobile && <Footer version={version} />}
     </div>
   );
-}
+};
+export default ContentComponent;

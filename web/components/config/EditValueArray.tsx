@@ -23,7 +23,7 @@ interface EditStringArrayProps {
   handleCreateString: (arg: string) => void;
 }
 
-export default function EditValueArray(props: EditStringArrayProps) {
+export const EditValueArray = (props: EditStringArrayProps) => {
   const [newStringInput, setNewStringInput] = useState<string>('');
   const {
     title,
@@ -84,7 +84,8 @@ export default function EditValueArray(props: EditStringArrayProps) {
       </div>
     </div>
   );
-}
+};
+export default EditValueArray;
 
 EditValueArray.defaultProps = {
   maxLength: 50,

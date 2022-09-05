@@ -9,7 +9,7 @@ import { FIELD_PROPS_NSFW, FIELD_PROPS_YP } from '../../utils/config-constants';
 
 const { Title } = Typography;
 
-export default function EditYPDetails() {
+export const EditYPDetails = () => {
   const [formDataValues, setFormDataValues] = useState(null);
 
   const serverStatusData = useContext(ServerStatusContext);
@@ -68,4 +68,5 @@ export default function EditYPDetails() {
       </div>
     </div>
   );
-}
+};
+export default EditYPDetails;

@@ -19,7 +19,7 @@ import FormStatusIndicator from '../FormStatusIndicator';
 
 const { Title } = Typography;
 
-export default function ConfigNotify() {
+export const ConfigNotify = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { notifications } = serverConfig || {};
@@ -126,4 +126,5 @@ export default function ConfigNotify() {
       <FormStatusIndicator status={submitStatus} />
     </>
   );
-}
+};
+export default ConfigNotify;

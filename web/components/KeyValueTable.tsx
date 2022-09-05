@@ -2,7 +2,7 @@ import { Table, Typography } from 'antd';
 
 const { Title } = Typography;
 
-export default function KeyValueTable({ title, data }: KeyValueTableProps) {
+export const KeyValueTable = ({ title, data }: KeyValueTableProps) => {
   const columns = [
     {
       title: 'Name',
@@ -22,7 +22,8 @@ export default function KeyValueTable({ title, data }: KeyValueTableProps) {
       <Table pagination={false} columns={columns} dataSource={data} rowKey="name" />
     </>
   );
-}
+};
+export default KeyValueTable;
 
 interface KeyValueTableProps {
   title: string;

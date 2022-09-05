@@ -11,7 +11,7 @@ interface ComposeFederatedPostProps {
   handleClose: () => void;
 }
 
-export default function ComposeFederatedPost({ visible, handleClose }: ComposeFederatedPostProps) {
+export const ComposeFederatedPost = ({ visible, handleClose }: ComposeFederatedPostProps) => {
   const [content, setContent] = useState('');
   const [postPending, setPostPending] = useState(false);
   const [postSuccessState, setPostSuccessState] = useState(null);
@@ -79,4 +79,5 @@ export default function ComposeFederatedPost({ visible, handleClose }: ComposeFe
       </Space>
     </Modal>
   );
-}
+};
+export default ComposeFederatedPost;

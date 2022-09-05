@@ -4,7 +4,7 @@ import { Follower } from '../../../../interfaces/follower';
 import SingleFollower from '../SingleFollower/SingleFollower';
 import s from '../SingleFollower/SingleFollower.module.scss';
 
-export default function FollowerCollection() {
+export const FollowerCollection = () => {
   const ENDPOINT = '/api/followers';
   const ITEMS_PER_PAGE = 24;
 
@@ -62,4 +62,5 @@ export default function FollowerCollection() {
       />
     </div>
   );
-}
+};
+export default FollowerCollection;

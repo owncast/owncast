@@ -22,7 +22,7 @@ type OfflineProps = {
   config: ConfigDetails;
 };
 
-export default function Offline({ logs = [], config }: OfflineProps) {
+export const Offline = ({ logs = [], config }: OfflineProps) => {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};
@@ -149,4 +149,5 @@ export default function Offline({ logs = [], config }: OfflineProps) {
       <LogTable logs={logs} pageSize={5} />
     </>
   );
-}
+};
+export default Offline;

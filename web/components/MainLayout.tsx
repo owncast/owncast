@@ -30,8 +30,7 @@ import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 import ComposeFederatedPost from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';
 
-// eslint-disable-next-line react/function-component-definition
-export default function MainLayout(props) {
+export const MainLayout = props => {
   const { children } = props;
 
   const context = useContext(ServerStatusContext);
@@ -287,7 +286,8 @@ export default function MainLayout(props) {
       />
     </Layout>
   );
-}
+};
+export default MainLayout;
 
 MainLayout.propTypes = {
   children: PropTypes.element.isRequired,

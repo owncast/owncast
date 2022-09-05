@@ -18,7 +18,7 @@ function validateAccount(a) {
   return regex.test(String(sanitized).toLowerCase());
 }
 
-export default function FollowModal(props: Props) {
+export const FollowModal = (props: Props) => {
   const { handleClose, account, name } = props;
   const [remoteAccount, setRemoteAccount] = useState(null);
   const [valid, setValid] = useState(false);
@@ -121,4 +121,5 @@ export default function FollowModal(props: Props) {
       </Spin>
     </Space>
   );
-}
+};
+export default FollowModal;

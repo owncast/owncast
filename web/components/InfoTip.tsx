@@ -5,7 +5,7 @@ interface InfoTipProps {
   tip: string | null;
 }
 
-export default function InfoTip({ tip }: InfoTipProps) {
+export const InfoTip = ({ tip }: InfoTipProps) => {
   if (tip === '' || tip === null) {
     return null;
   }
@@ -17,4 +17,5 @@ export default function InfoTip({ tip }: InfoTipProps) {
       </Tooltip>
     </span>
   );
-}
+};
+export default InfoTip;

@@ -25,7 +25,7 @@ import EditLogo from './EditLogo';
 
 const { Title } = Typography;
 
-export default function EditInstanceDetails() {
+export const EditInstanceDetails = () => {
   const [formDataValues, setFormDataValues] = useState(null);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
@@ -163,4 +163,5 @@ export default function EditInstanceDetails() {
       </div>
     </div>
   );
-}
+};
+export default EditInstanceDetails;

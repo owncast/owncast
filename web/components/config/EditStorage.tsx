@@ -63,7 +63,7 @@ function checkSaveable(formValues: any, currentValues: any) {
   return false;
 }
 
-export default function EditStorage() {
+export const EditStorage = () => {
   const [formDataValues, setFormDataValues] = useState(null);
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
@@ -254,4 +254,5 @@ export default function EditStorage() {
       </div>
     </div>
   );
-}
+};
+export default EditStorage;

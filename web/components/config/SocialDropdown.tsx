@@ -10,7 +10,7 @@ interface DropdownProps {
   onSelected: any;
 }
 
-export default function SocialDropdown({ iconList, selectedOption, onSelected }: DropdownProps) {
+export const SocialDropdown = ({ iconList, selectedOption, onSelected }: DropdownProps) => {
   const handleSelected = (value: string) => {
     if (onSelected) {
       onSelected(value);
@@ -62,4 +62,5 @@ export default function SocialDropdown({ iconList, selectedOption, onSelected }:
       </div>
     </div>
   );
-}
+};
+export default SocialDropdown;

@@ -20,7 +20,7 @@ import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 
-export default function EditSocialLinks() {
+export const EditSocialLinks = () => {
   const [availableIconsList, setAvailableIconsList] = useState([]);
   const [currentSocialHandles, setCurrentSocialHandles] = useState([]);
 
@@ -316,4 +316,5 @@ export default function EditSocialLinks() {
       </Button>
     </div>
   );
-}
+};
+export default EditSocialLinks;

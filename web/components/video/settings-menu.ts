@@ -1,9 +1,4 @@
-export default function createVideoSettingsMenuButton(
-  player,
-  videojs,
-  qualities,
-  latencyItemPressed,
-): any {
+export function createVideoSettingsMenuButton(player, videojs, qualities, latencyItemPressed): any {
   const VjsMenuItem = videojs.getComponent('MenuItem');
   const MenuItem = videojs.getComponent('MenuItem');
   const MenuButtonClass = videojs.getComponent('MenuButton');
@@ -111,3 +106,4 @@ export default function createVideoSettingsMenuButton(
   // eslint-disable-next-line consistent-return
   return menuButton;
 }
+export default createVideoSettingsMenuButton;

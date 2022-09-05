@@ -25,7 +25,7 @@ import ResetYP from './ResetYP';
 
 const { Panel } = Collapse;
 
-export default function EditInstanceDetails() {
+export const EditInstanceDetails = () => {
   const [formDataValues, setFormDataValues] = useState(null);
   const serverStatusData = useContext(ServerStatusContext);
   const { setMessage } = useContext(AlertMessageContext);
@@ -164,4 +164,5 @@ export default function EditInstanceDetails() {
       </Collapse>
     </div>
   );
-}
+};
+export default EditInstanceDetails;

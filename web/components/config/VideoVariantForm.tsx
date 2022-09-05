@@ -26,10 +26,10 @@ interface VideoVariantFormProps {
   onUpdateField: FieldUpdaterFunc;
 }
 
-export default function VideoVariantForm({
+export const VideoVariantForm = ({
   dataState = DEFAULT_VARIANT_STATE,
   onUpdateField,
-}: VideoVariantFormProps) {
+}: VideoVariantFormProps) => {
   const videoPassthroughEnabled = dataState.videoPassthrough;
 
   const handleFramerateChange = (value: number) => {
@@ -314,4 +314,5 @@ export default function VideoVariantForm({
       </Collapse>
     </div>
   );
-}
+};
+export default VideoVariantForm;

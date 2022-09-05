@@ -1,6 +1,6 @@
 import { ConnectedClientInfoEvent } from '../../../interfaces/socket-events';
 
-export default function handleConnectedClientInfoMessage(
+export function handleConnectedClientInfoMessage(
   message: ConnectedClientInfoEvent,
   setChatDisplayName: (string) => void,
   setChatDisplayColor: (number) => void,
@@ -16,3 +16,4 @@ export default function handleConnectedClientInfoMessage(
   setIsChatModerator(scopes?.includes('MODERATOR'));
   setChatAuthenticated(authenticated);
 }
+export default handleConnectedClientInfoMessage;

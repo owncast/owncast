@@ -23,7 +23,7 @@ async function removeIPAddressBan(ipAddress: String) {
   }
 }
 
-export default function BannedIPsTable({ data }: UserTableProps) {
+export const BannedIPsTable = ({ data }: UserTableProps) => {
   const columns = [
     {
       title: 'IP Address',
@@ -68,7 +68,8 @@ export default function BannedIPsTable({ data }: UserTableProps) {
       rowKey="ipAddress"
     />
   );
-}
+};
+export default BannedIPsTable;
 
 interface UserTableProps {
   data: User[];

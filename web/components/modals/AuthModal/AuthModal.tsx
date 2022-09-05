@@ -18,7 +18,7 @@ const { TabPane } = Tabs;
 /* eslint-disable @typescript-eslint/no-unused-vars */
 interface Props {}
 
-export default function AuthModal(props: Props) {
+export const AuthModal = (props: Props) => {
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
@@ -61,4 +61,5 @@ export default function AuthModal(props: Props) {
       </Tabs>
     </div>
   );
-}
+};
+export default AuthModal;

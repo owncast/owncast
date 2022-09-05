@@ -12,7 +12,7 @@ interface ModeratorUserButtonProps {
   user: User;
   onClick?: () => void;
 }
-export default function ModeratorUserButton({ user, onClick }: ModeratorUserButtonProps) {
+export const ModeratorUserButton = ({ user, onClick }: ModeratorUserButtonProps) => {
   async function buttonClicked({ id }, setAsModerator: Boolean): Promise<Boolean> {
     const data = {
       userId: id,
@@ -87,7 +87,9 @@ export default function ModeratorUserButton({ user, onClick }: ModeratorUserButt
       {actionString}
     </Button>
   );
-}
+};
+export default ModeratorUserButton;
+
 ModeratorUserButton.defaultProps = {
   onClick: null,
 };

@@ -7,9 +7,7 @@ import { ServerStatusContext } from '../utils/server-status-context';
 interface StreamHealthOverviewProps {
   showTroubleshootButton?: Boolean;
 }
-export default function StreamHealthOverview({
-  showTroubleshootButton,
-}: StreamHealthOverviewProps) {
+export const StreamHealthOverview = ({ showTroubleshootButton }: StreamHealthOverviewProps) => {
   const serverStatusData = useContext(ServerStatusContext);
   const { health } = serverStatusData;
   if (!health) {
@@ -79,7 +77,8 @@ export default function StreamHealthOverview({
       </Row>
     </div>
   );
-}
+};
+export default StreamHealthOverview;
 
 StreamHealthOverview.defaultProps = {
   showTroubleshootButton: true,

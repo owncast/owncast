@@ -8,7 +8,7 @@ import { formatUAstring } from '../utils/format';
 export function formatDisplayDate(date: string | Date) {
   return format(new Date(date), 'MMM d H:mma');
 }
-export default function ViewerTable({ data }: ViewerTableProps) {
+export const ViewerTable = ({ data }: ViewerTableProps) => {
   const columns = [
     {
       title: 'User Agent',
@@ -43,7 +43,8 @@ export default function ViewerTable({ data }: ViewerTableProps) {
       rowKey="id"
     />
   );
-}
+};
+export default ViewerTable;
 
 interface ViewerTableProps {
   data: User[];

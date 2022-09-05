@@ -26,7 +26,7 @@ interface TextFieldWithSubmitProps extends TextFieldProps {
   initialValue?: string;
 }
 
-export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
+export const TextFieldWithSubmit = (props: TextFieldWithSubmitProps) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   const [hasChanged, setHasChanged] = useState(false);
@@ -150,7 +150,8 @@ export default function TextFieldWithSubmit(props: TextFieldWithSubmitProps) {
       </div>
     </div>
   );
-}
+};
+export default TextFieldWithSubmit;
 
 TextFieldWithSubmit.defaultProps = {
   configPath: '',

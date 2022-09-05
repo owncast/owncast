@@ -22,7 +22,7 @@ function makeDurationString(lastConnectTime: Date): string {
 
   return `${diff.minutes} minutes ${diff.seconds} seconds`;
 }
-export default function Statusbar(props: Props) {
+export const Statusbar = (props: Props) => {
   const [, setNow] = useState(new Date());
 
   // Set a timer to update the status bar.
@@ -58,7 +58,8 @@ export default function Statusbar(props: Props) {
       <div>{rightSideMessage}</div>
     </div>
   );
-}
+};
+export default Statusbar;
 
 Statusbar.defaultProps = {
   lastConnectTime: null,

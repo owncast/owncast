@@ -8,7 +8,7 @@ import UserPopover from './UserPopover';
 import BanUserButton from './BanUserButton';
 import { formatUAstring } from '../utils/format';
 
-export default function ClientTable({ data }: ClientTableProps) {
+export const ClientTable = ({ data }: ClientTableProps) => {
   const columns: ColumnsType<Client> = [
     {
       title: 'Display Name',
@@ -91,7 +91,8 @@ export default function ClientTable({ data }: ClientTableProps) {
       rowKey="id"
     />
   );
-}
+};
+export default ClientTable;
 
 interface ClientTableProps {
   data: Client[];

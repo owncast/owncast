@@ -11,7 +11,7 @@ import {
   visibleChatMessagesSelector,
 } from '../../stores/ClientConfigStore';
 
-export default function Sidebar() {
+export const Sidebar = () => {
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const isChatModerator = useRecoilValue<boolean>(isChatModeratorAtom);
@@ -27,4 +27,5 @@ export default function Sidebar() {
       />
     </Sider>
   );
-}
+};
+export default Sidebar;

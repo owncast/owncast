@@ -28,7 +28,7 @@ import FormStatusIndicator from './FormStatusIndicator';
 
 const { Title } = Typography;
 
-export default function CurrentVariantsTable() {
+export const CurrentVariantsTable = () => {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(0);
@@ -242,4 +242,5 @@ export default function CurrentVariantsTable() {
       </Button>
     </>
   );
-}
+};
+export default CurrentVariantsTable;

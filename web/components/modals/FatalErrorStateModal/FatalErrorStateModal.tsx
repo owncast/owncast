@@ -5,7 +5,7 @@ interface Props {
   message: string;
 }
 
-export default function FatalErrorStateModal(props: Props) {
+export const FatalErrorStateModal = (props: Props) => {
   const { title, message } = props;
 
   return (
@@ -22,4 +22,5 @@ export default function FatalErrorStateModal(props: Props) {
       <p style={{ fontSize: '1.3rem' }}>{message}</p>
     </Modal>
   );
-}
+};
+export default FatalErrorStateModal;

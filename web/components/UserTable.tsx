@@ -8,7 +8,7 @@ import BanUserButton from './BanUserButton';
 export function formatDisplayDate(date: string | Date) {
   return format(new Date(date), 'MMM d H:mma');
 }
-export default function UserTable({ data }: UserTableProps) {
+export const UserTable = ({ data }: UserTableProps) => {
   const columns = [
     {
       title: 'Last Known Display Name',
@@ -57,7 +57,8 @@ export default function UserTable({ data }: UserTableProps) {
       rowKey="id"
     />
   );
-}
+};
+export default UserTable;
 
 interface UserTableProps {
   data: User[];

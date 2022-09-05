@@ -7,7 +7,7 @@ interface Props {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function SocialLinks(props: Props) {
+export const SocialLinks = (props: Props) => {
   const { links } = props;
   return (
     <div className={s.links}>
@@ -18,4 +18,5 @@ export default function SocialLinks(props: Props) {
       ))}
     </div>
   );
-}
+};
+export default SocialLinks;

@@ -11,7 +11,7 @@ interface Props {
   accessToken: string;
 }
 
-export default function IndieAuthModal(props: Props) {
+export const IndieAuthModal = (props: Props) => {
   const { authenticated, displayName: username, accessToken } = props;
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -153,4 +153,5 @@ export default function IndieAuthModal(props: Props) {
       </Space>
     </Spin>
   );
-}
+};
+export default IndieAuthModal;

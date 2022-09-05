@@ -34,7 +34,7 @@ const SLIDER_COMMENTS = {
   4: 'Highest latency, highest error tolerance',
 };
 
-export default function VideoLatency() {
+export const VideoLatency = () => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -130,4 +130,5 @@ export default function VideoLatency() {
       </div>
     </div>
   );
-}
+};
+export default VideoLatency;

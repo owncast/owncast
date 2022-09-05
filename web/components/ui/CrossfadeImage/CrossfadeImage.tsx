@@ -16,13 +16,13 @@ const imgStyle: React.CSSProperties = {
   height: `100%`,
 };
 
-export default function CrossfadeImage({
+export const CrossfadeImage = ({
   src = '',
   width,
   height,
   objectFit = 'fill',
   duration = '1s',
-}: CrossfadeImageProps) {
+}: CrossfadeImageProps) => {
   const spanStyle: React.CSSProperties = useMemo(
     () => ({
       display: 'inline-block',
@@ -67,7 +67,8 @@ export default function CrossfadeImage({
       )}
     </span>
   );
-}
+};
+export default CrossfadeImage;
 
 CrossfadeImage.defaultProps = {
   objectFit: 'fill',

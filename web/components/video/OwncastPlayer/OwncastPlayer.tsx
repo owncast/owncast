@@ -36,7 +36,7 @@ async function getVideoSettings() {
   return qualities;
 }
 
-export default function OwncastPlayer(props: Props) {
+export const OwncastPlayer = (props: Props) => {
   const playerRef = React.useRef(null);
   const { source, online } = props;
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
@@ -302,4 +302,5 @@ export default function OwncastPlayer(props: Props) {
       </div>
     </div>
   );
-}
+};
+export default OwncastPlayer;

@@ -12,7 +12,7 @@ import {
 } from '../../utils/input-statuses';
 import FormStatusIndicator from './FormStatusIndicator';
 
-export default function ResetYP() {
+export const ResetYP = () => {
   const { setMessage } = useContext(AlertMessageContext);
 
   const [submitStatus, setSubmitStatus] = useState(null);
@@ -61,4 +61,5 @@ export default function ResetYP() {
       </p>
     </>
   );
-}
+};
+export default ResetYP;
