@@ -5,22 +5,26 @@ import {
   SmallDashOutlined,
 } from '@ant-design/icons';
 import { Dropdown, Menu, MenuProps, Space, Modal, message } from 'antd';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import ChatModerationDetailsModal from '../ChatModerationDetailsModal/ChatModerationDetailsModal';
-import s from './ChatModerationActionMenu.module.scss';
+import styles from './ChatModerationActionMenu.module.scss';
 import ChatModeration from '../../../services/moderation-service';
 
 const { confirm } = Modal;
 
-interface Props {
+export type ChatModerationActionMenuProps = {
   accessToken: string;
   messageID: string;
   userID: string;
   userDisplayName: string;
-}
+};
 
-export default function ChatModerationActionMenu(props: Props) {
-  const { messageID, userID, userDisplayName, accessToken } = props;
+export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
+  messageID,
+  userID,
+  userDisplayName,
+  accessToken,
+}) => {
   const [showUserDetailsModal, setShowUserDetailsModal] = useState(false);
 
   const handleBanUser = async () => {
@@ -78,7 +82,7 @@ export default function ChatModerationActionMenu(props: Props) {
         {
           label: (
             <div>
-              <span className={s.icon}>
+              <span className={styles.icon}>
                 <EyeInvisibleOutlined />
               </span>
               Hide Message
@@ -89,7 +93,7 @@ export default function ChatModerationActionMenu(props: Props) {
         {
           label: (
             <div>
-              <span className={s.icon}>
+              <span className={styles.icon}>
                 <CloseCircleOutlined />
               </span>
               Ban User
@@ -127,4 +131,4 @@ export default function ChatModerationActionMenu(props: Props) {
       </Modal>
     </>
   );
-}
+};
