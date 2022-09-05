@@ -9,7 +9,8 @@ import {
 } from '../../../interfaces/socket-events';
 import styles from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatTextField, ChatUserMessage } from '..';
+import { ChatUserMessage } from '..';
+import { ChatTextField } from '../ChatTextField/ChatTextField';
 import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatModeratorNotification';
 // import ChatActionMessage from '../ChatAction/ChatActionMessage';
 import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';

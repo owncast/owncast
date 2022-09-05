@@ -1,6 +1,6 @@
 import { SendOutlined, SmileOutlined } from '@ant-design/icons';
 import { Button, Popover } from 'antd';
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
@@ -8,7 +8,7 @@ import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
-import s from './ChatTextField.module.scss';
+import styles from './ChatTextField.module.scss';
 
 type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] };
 type CustomText = { text: string };
@@ -19,10 +19,6 @@ declare module 'slate' {
     Element: CustomElement;
     Text: CustomText;
   }
-}
-
-interface Props {
-  value?: string;
 }
 
 // eslint-disable-next-line react/prop-types
@@ -96,9 +92,9 @@ const serialize = node => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function ChatTextField(props: Props) {
-  // const { value: originalValue } = props;
+export type ChatTextFieldProps = {};
+
+export const ChatTextField: FC<ChatTextFieldProps> = () => {
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [editor] = useState(() => withImages(withReact(createEditor())));
@@ -143,7 +139,7 @@ export default function ChatTextField(props: Props) {
 
   return (
     <div>
-      <div className={s.root}>
+      <div className={styles.root}>
         <Slate
           editor={editor}
           value={[{ type: 'paragraph', children: [{ text: '' }] }]}
@@ -166,14 +162,14 @@ export default function ChatTextField(props: Props) {
 
         <button
           type="button"
-          className={s.emojiButton}
+          className={styles.emojiButton}
           title="Emoji picker button"
           onClick={() => setShowEmojis(!showEmojis)}
         >
           <SmileOutlined />
         </button>
         <Button
-          className={s.sendButton}
+          className={styles.sendButton}
           size="large"
           type="ghost"
           icon={<SendOutlined />}
@@ -182,8 +178,4 @@ export default function ChatTextField(props: Props) {
       </div>
     </div>
   );
-}
-
-ChatTextField.defaultProps = {
-  value: '',
 };
