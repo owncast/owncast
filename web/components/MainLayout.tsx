@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import { upgradeVersionAvailable } from '../utils/apis';
 import { parseSecondsToDurationString } from '../utils/format';
 
-import { OwncastLogo } from './common';
+import { OwncastLogo } from './common/OwncastLogo/OwncastLogo';
 import { ServerStatusContext } from '../utils/server-status-context';
 import { AlertMessageContext } from '../utils/alert-message-context';
 

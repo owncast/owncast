@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import OwncastLogo from './Logo';
+import { OwncastLogo } from './OwncastLogo';
 
 export default {
   title: 'owncast/Components/Header Logo',

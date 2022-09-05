@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { FC } from 'react';
 import cn from 'classnames';
-import s from './Logo.module.scss';
+import styles from './OwncastLogo.module.scss';
 
-interface Props {
+export type LogoProps = {
   variant: 'simple' | 'contrast';
-}
+};
 
-export default function Logo({ variant = 'simple' }: Props) {
-  const rootClassName = cn(s.root, {
-    [s.simple]: variant === 'simple',
-    [s.contrast]: variant === 'contrast',
+export const OwncastLogo: FC<LogoProps> = ({ variant = 'simple' }) => {
+  const rootClassName = cn(styles.root, {
+    [styles.simple]: variant === 'simple',
+    [styles.contrast]: variant === 'contrast',
   });
 
   return (
@@ -169,4 +169,6 @@ export default function Logo({ variant = 'simple' }: Props) {
       </svg>
     </div>
   );
-}
+};
+
+export default OwncastLogo;

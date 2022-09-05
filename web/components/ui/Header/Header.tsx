@@ -1,5 +1,6 @@
 import { Layout, Tag, Tooltip } from 'antd';
-import { OwncastLogo, UserDropdown } from '../../common';
+import { UserDropdown } from '../../common';
+import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import s from './Header.module.scss';
 
 const { Header } = Layout;

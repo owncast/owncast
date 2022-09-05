@@ -3,7 +3,7 @@ import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { useContext } from 'react';
 import LogTable from './LogTable';
-import OwncastLogo from './common/Logo/Logo';
+import { OwncastLogo } from './common/OwncastLogo/OwncastLogo';
 import NewsFeed from './NewsFeed';
 import { ConfigDetails } from '../types/config-section';
 import { ServerStatusContext } from '../utils/server-status-context';
