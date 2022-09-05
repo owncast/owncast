@@ -26,7 +26,7 @@ import Footer from '../Footer';
 // import ChatContainer from '../../chat/ChatContainer';
 // import { ChatMessage } from '../../../interfaces/chat-message.model';
 // import ChatTextField from '../../chat/ChatTextField/ChatTextField';
-import ActionButtonRow from '../../action-buttons/ActionButtonRow/ActionButtonRow';
+import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
 import OfflineBanner from '../OfflineBanner/OfflineBanner';
