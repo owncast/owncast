@@ -131,4 +131,3 @@ export const VideoLatency: FC = () => {
     </div>
   );
 };
-export default VideoLatency;

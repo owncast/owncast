@@ -114,4 +114,3 @@ export const EditCustomStyles: FC = () => {
     </div>
   );
 };
-export default EditCustomStyles;

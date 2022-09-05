@@ -92,5 +92,3 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
     </div>
   );
 };
-
-export default UserDropdown;

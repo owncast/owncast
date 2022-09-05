@@ -170,5 +170,3 @@ export const OwncastLogo: FC<LogoProps> = ({ variant = 'simple' }) => {
     </div>
   );
 };
-
-export default OwncastLogo;

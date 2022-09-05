@@ -123,4 +123,3 @@ export const EditPageContent: FC = () => {
     </div>
   );
 };
-export default EditPageContent;

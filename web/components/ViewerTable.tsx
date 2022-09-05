@@ -50,4 +50,3 @@ export const ViewerTable: FC<ViewerTableProps> = ({ data }) => {
     />
   );
 };
-export default ViewerTable;

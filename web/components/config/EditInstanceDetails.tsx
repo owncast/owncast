@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography } from 'antd';
-import TextFieldWithSubmit, {
+import {
+  TextFieldWithSubmit,
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
 } from './TextFieldWithSubmit';
@@ -161,4 +162,3 @@ export const EditInstanceDetails: FC = () => {
     </div>
   );
 };
-export default EditInstanceDetails;

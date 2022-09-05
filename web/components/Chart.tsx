@@ -90,8 +90,6 @@ export const Chart: FC<ChartProps> = ({
   );
 };
 
-export default Chart;
-
 Chart.defaultProps = {
   dataCollections: [],
   data: [],

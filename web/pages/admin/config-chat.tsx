@@ -1,9 +1,9 @@
 import { Typography } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { TEXTFIELD_TYPE_TEXTAREA } from '../../components/config/TextField';
-import TextFieldWithSubmit from '../../components/config/TextFieldWithSubmit';
-import ToggleSwitch from '../../components/config/ToggleSwitch';
-import EditValueArray from '../../components/config/EditValueArray';
+import { TextFieldWithSubmit } from '../../components/config/TextFieldWithSubmit';
+import { ToggleSwitch } from '../../components/config/ToggleSwitch';
+import { EditValueArray } from '../../components/config/EditValueArray';
 import {
   createInputStatus,
   StatusState,

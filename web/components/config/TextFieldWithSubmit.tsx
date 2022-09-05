@@ -149,7 +149,6 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
     </div>
   );
 };
-export default TextFieldWithSubmit;
 
 TextFieldWithSubmit.defaultProps = {
   configPath: '',

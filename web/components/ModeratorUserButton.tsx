@@ -90,7 +90,6 @@ export const ModeratorUserButton: FC<ModeratorUserButtonProps> = ({ user, onClic
     </Button>
   );
 };
-export default ModeratorUserButton;
 
 ModeratorUserButton.defaultProps = {
   onClick: null,

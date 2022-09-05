@@ -81,4 +81,3 @@ export const NewsFeed = () => {
     </section>
   );
 };
-export default NewsFeed;

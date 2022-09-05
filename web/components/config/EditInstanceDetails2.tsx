@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, Tooltip, Collapse, Typography } from 'antd';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
 import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_URL } from './TextField';
-import TextFieldWithSubmit from './TextFieldWithSubmit';
+import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
@@ -157,4 +157,3 @@ export const EditInstanceDetails = () => {
     </div>
   );
 };
-export default EditInstanceDetails;

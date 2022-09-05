@@ -75,7 +75,7 @@ const StatisticView: FC<StatisticItemProps> = ({ title, value, prefix, formatter
 );
 StatisticView.defaultProps = defaultProps;
 
-const StatisticItem: FC<StatisticItemProps> = props => {
+export const StatisticItem: FC<StatisticItemProps> = props => {
   const { progress, centered } = props;
   const View = progress ? ProgressView : StatisticView;
 
@@ -90,5 +90,3 @@ const StatisticItem: FC<StatisticItemProps> = props => {
   );
 };
 StatisticItem.defaultProps = defaultProps;
-
-export default StatisticItem;

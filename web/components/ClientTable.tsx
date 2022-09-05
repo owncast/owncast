@@ -97,4 +97,3 @@ export const ClientTable: FC<ClientTableProps> = ({ data }) => {
     />
   );
 };
-export default ClientTable;

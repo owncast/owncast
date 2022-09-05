@@ -85,4 +85,3 @@ BanUserButton.defaultProps = {
   label: '',
   onClick: null,
 };
-export default BanUserButton;

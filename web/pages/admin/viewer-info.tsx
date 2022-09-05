@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Typography, Menu, Dropdown, Spin, Alert } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { getUnixTime, sub } from 'date-fns';
-import Chart from '../../components/Chart';
-import StatisticItem from '../../components/StatisticItem';
-import ViewerTable from '../../components/ViewerTable';
+import { Chart } from '../../components/Chart';
+import { StatisticItem } from '../../components/StatisticItem';
+import { ViewerTable } from '../../components/ViewerTable';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 

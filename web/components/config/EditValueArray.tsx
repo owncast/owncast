@@ -84,7 +84,6 @@ export const EditValueArray: FC<EditStringArrayProps> = ({
     </div>
   );
 };
-export default EditValueArray;
 
 EditValueArray.defaultProps = {
   maxLength: 50,

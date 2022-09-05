@@ -7,9 +7,9 @@ import {
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
 } from '../../components/config/TextField';
-import TextFieldWithSubmit from '../../components/config/TextFieldWithSubmit';
-import ToggleSwitch from '../../components/config/ToggleSwitch';
-import EditValueArray from '../../components/config/EditValueArray';
+import { TextFieldWithSubmit } from '../../components/config/TextFieldWithSubmit';
+import { ToggleSwitch } from '../../components/config/ToggleSwitch';
+import { EditValueArray } from '../../components/config/EditValueArray';
 import { UpdateArgs } from '../../types/config-section';
 import {
   FIELD_PROPS_ENABLE_FEDERATION,

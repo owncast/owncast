@@ -86,4 +86,3 @@ export const LogTable: FC<LogTableProps> = ({ logs, pageSize }) => {
     </div>
   );
 };
-export default LogTable;

@@ -80,4 +80,3 @@ export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ visible, h
     </Modal>
   );
 };
-export default ComposeFederatedPost;

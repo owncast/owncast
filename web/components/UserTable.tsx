@@ -64,4 +64,3 @@ export const UserTable: FC<UserTableProps> = ({ data }) => {
     />
   );
 };
-export default UserTable;

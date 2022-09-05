@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd';
-import EditSocialLinks from '../../components/config/EditSocialLinks';
+import { EditSocialLinks } from '../../components/config/EditSocialLinks';
 
 const { Title } = Typography;
 

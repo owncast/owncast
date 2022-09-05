@@ -73,4 +73,3 @@ export const BannedIPsTable: FC<UserTableProps> = ({ data }) => {
     />
   );
 };
-export default BannedIPsTable;

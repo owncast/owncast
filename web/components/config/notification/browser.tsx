@@ -1,13 +1,13 @@
 import { Button, Typography } from 'antd';
 import React, { useState, useContext, useEffect } from 'react';
 import { ServerStatusContext } from '../../../utils/server-status-context';
-import TextField, { TEXTFIELD_TYPE_TEXTAREA } from '../TextField';
+import { TextField, TEXTFIELD_TYPE_TEXTAREA } from '../TextField';
 import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   BROWSER_PUSH_CONFIG_FIELDS,
 } from '../../../utils/config-constants';
-import ToggleSwitch from '../ToggleSwitch';
+import { ToggleSwitch } from '../ToggleSwitch';
 import {
   createInputStatus,
   StatusState,
@@ -15,7 +15,7 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import { UpdateArgs } from '../../../types/config-section';
-import FormStatusIndicator from '../FormStatusIndicator';
+import { FormStatusIndicator } from '../FormStatusIndicator';
 
 const { Title } = Typography;
 

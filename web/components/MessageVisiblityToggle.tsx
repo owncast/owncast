@@ -90,4 +90,3 @@ export const MessageVisiblityToggle: FC<MessageToggleProps> = ({
     </div>
   );
 };
-export default MessageVisiblityToggle;

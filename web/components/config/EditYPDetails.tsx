@@ -68,4 +68,3 @@ export const EditYPDetails: FC = () => {
     </div>
   );
 };
-export default EditYPDetails;

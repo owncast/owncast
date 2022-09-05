@@ -30,8 +30,8 @@ import { Router, useRouter } from 'next/router';
 
 import { RecoilRoot } from 'recoil';
 import { useEffect } from 'react';
-import AdminLayout from '../components/layouts/AdminLayout';
-import SimpleLayout from '../components/layouts/SimpleLayout';
+import { AdminLayout } from '../components/layouts/AdminLayout';
+import { SimpleLayout } from '../components/layouts/SimpleLayout';
 
 const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {

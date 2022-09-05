@@ -136,4 +136,3 @@ export const EditInstanceTags: FC = () => {
     </div>
   );
 };
-export default EditInstanceTags;

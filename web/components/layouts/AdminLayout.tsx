@@ -4,7 +4,7 @@ import ServerStatusProvider from '../../utils/server-status-context';
 import AlertMessageProvider from '../../utils/alert-message-context';
 import { MainLayout } from '../MainLayout';
 
-const AdminLayout: FC<AppProps> = ({ Component, pageProps }) => (
+export const AdminLayout: FC<AppProps> = ({ Component, pageProps }) => (
   <ServerStatusProvider>
     <AlertMessageProvider>
       <MainLayout>
@@ -13,5 +13,3 @@ const AdminLayout: FC<AppProps> = ({ Component, pageProps }) => (
     </AlertMessageProvider>
   </ServerStatusProvider>
 );
-
-export default AdminLayout;

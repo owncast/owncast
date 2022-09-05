@@ -126,4 +126,3 @@ export const EditLogo: FC = () => {
     </div>
   );
 };
-export default EditLogo;

@@ -3,13 +3,13 @@ import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import LogTable from '../../components/LogTable';
-import Offline from '../../components/Offline';
-import StreamHealthOverview from '../../components/StreamHealthOverview';
+import { LogTable } from '../../components/LogTable';
+import { Offline } from '../../components/Offline';
+import { StreamHealthOverview } from '../../components/StreamHealthOverview';
 
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../../utils/format';
-import NewsFeed from '../../components/NewsFeed';
+import { NewsFeed } from '../../components/NewsFeed';
 
 function streamDetailsFormatter(streamDetails) {
   return (

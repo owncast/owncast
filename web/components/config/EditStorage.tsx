@@ -255,4 +255,3 @@ export const EditStorage: FC = () => {
     </div>
   );
 };
-export default EditStorage;

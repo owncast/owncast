@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { DeleteOutlined } from '@ant-design/icons';
-import SocialDropdown from './SocialDropdown';
+import { SocialDropdown } from './SocialDropdown';
 import { fetchData, SOCIAL_PLATFORMS_LIST, NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -317,4 +317,3 @@ export const EditSocialLinks: FC = () => {
     </div>
   );
 };
-export default EditSocialLinks;

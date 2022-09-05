@@ -315,4 +315,3 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     </div>
   );
 };
-export default VideoVariantForm;

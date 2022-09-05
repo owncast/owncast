@@ -19,4 +19,3 @@ export const InfoTip: FC<InfoTipProps> = ({ tip }) => {
     </span>
   );
 };
-export default InfoTip;

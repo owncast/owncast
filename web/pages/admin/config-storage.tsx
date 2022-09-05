@@ -1,6 +1,6 @@
 import { Typography } from 'antd';
 import React from 'react';
-import EditStorage from '../../components/config/EditStorage';
+import { EditStorage } from '../../components/config/EditStorage';
 
 const { Title } = Typography;
 

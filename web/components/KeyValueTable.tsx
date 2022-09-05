@@ -29,4 +29,3 @@ export const KeyValueTable: FC<KeyValueTableProps> = ({ title, data }) => {
     </>
   );
 };
-export default KeyValueTable;

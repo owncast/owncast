@@ -8,9 +8,9 @@ import {
   MODERATORS,
   BANNED_IPS,
 } from '../../../utils/apis';
-import UserTable from '../../../components/UserTable';
-import ClientTable from '../../../components/ClientTable';
-import BannedIPsTable from '../../../components/BannedIPsTable';
+import { UserTable } from '../../../components/UserTable';
+import { ClientTable } from '../../../components/ClientTable';
+import { BannedIPsTable } from '../../../components/BannedIPsTable';
 
 const { TabPane } = Tabs;
 

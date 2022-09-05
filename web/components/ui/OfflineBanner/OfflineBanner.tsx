@@ -24,4 +24,3 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({ name, text }) => (
     </div>
   </div>
 );
-export default OfflineBanner;

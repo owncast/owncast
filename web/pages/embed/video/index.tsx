@@ -6,9 +6,9 @@ import {
   isOnlineSelector,
   serverStatusState,
 } from '../../../components/stores/ClientConfigStore';
-import OfflineBanner from '../../../components/ui/OfflineBanner/OfflineBanner';
-import Statusbar from '../../../components/ui/Statusbar/Statusbar';
-import OwncastPlayer from '../../../components/video/OwncastPlayer/OwncastPlayer';
+import { OfflineBanner } from '../../../components/ui/OfflineBanner/OfflineBanner';
+import { Statusbar } from '../../../components/ui/Statusbar/Statusbar';
+import { OwncastPlayer } from '../../../components/video/OwncastPlayer/OwncastPlayer';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 

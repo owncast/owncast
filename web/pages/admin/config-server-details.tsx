@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd';
-import EditServerDetails from '../../components/config/EditInstanceDetails2';
+import { EditInstanceDetails } from '../../components/config/EditInstanceDetails2';
 
 const { Title } = Typography;
 
@@ -13,7 +13,7 @@ export default function ConfigServerDetails() {
         it&apos;s likely the other settings will not need to be changed.
       </p>
       <div className="form-module config-server-details-container">
-        <EditServerDetails />
+        <EditInstanceDetails />
       </div>
     </div>
   );

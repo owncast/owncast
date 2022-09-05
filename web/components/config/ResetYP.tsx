@@ -62,4 +62,3 @@ export const ResetYP: FC = () => {
     </>
   );
 };
-export default ResetYP;

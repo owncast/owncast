@@ -79,7 +79,6 @@ export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubl
     </div>
   );
 };
-export default StreamHealthOverview;
 
 StreamHealthOverview.defaultProps = {
   showTroubleshootButton: true,

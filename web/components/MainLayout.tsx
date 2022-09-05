@@ -289,7 +289,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     </Layout>
   );
 };
-export default MainLayout;
 
 MainLayout.propTypes = {
   children: PropTypes.element.isRequired,

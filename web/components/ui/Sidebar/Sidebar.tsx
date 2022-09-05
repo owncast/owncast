@@ -29,4 +29,3 @@ export const Sidebar: FC = () => {
     </Sider>
   );
 };
-export default Sidebar;

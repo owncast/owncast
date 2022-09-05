@@ -6,8 +6,8 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
 import { uniq } from 'lodash';
 
-import BlockUserbutton from './BanUserButton';
-import ModeratorUserbutton from './ModeratorUserButton';
+import { BanUserButton } from './BanUserButton';
+import { ModeratorUserButton } from './ModeratorUserButton';
 
 import { User, UserConnectionInfo } from '../types/chat';
 import { formatDisplayDate } from './UserTable';
@@ -123,7 +123,7 @@ export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, childr
                 This user was banned on <code>{formatDisplayDate(disabledAt)}</code>.
                 <br />
                 <br />
-                <BlockUserbutton
+                <BanUserButton
                   label="Unban this user"
                   user={user}
                   isEnabled={false}
@@ -131,21 +131,20 @@ export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, childr
                 />
               </>
             ) : (
-              <BlockUserbutton
+              <BanUserButton
                 label="Ban this user"
                 user={user}
                 isEnabled
                 onClick={handleCloseModal}
               />
             )}
-            <ModeratorUserbutton user={user} onClick={handleCloseModal} />
+            <ModeratorUserButton user={user} onClick={handleCloseModal} />
           </Space>
         </div>
       </Modal>
     </>
   );
 };
-export default UserPopover;
 
 UserPopover.defaultProps = {
   connectionInfo: null,

@@ -63,4 +63,3 @@ export const SocialDropdown: FC<DropdownProps> = ({ iconList, selectedOption, on
     </div>
   );
 };
-export default SocialDropdown;
