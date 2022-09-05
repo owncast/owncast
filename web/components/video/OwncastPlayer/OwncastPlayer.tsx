@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
-import VideoJS from '../player';
+import VideoJS from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import VideoPoster from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';

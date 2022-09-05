@@ -23,7 +23,7 @@ import '../styles/chat.scss';
 import '../styles/pages.scss';
 import '../styles/offline-notice.scss';
 
-import '../components/video/player.scss';
+import '../components/video/VideoJS/VideoJS.scss';
 
 import { AppProps } from 'next/app';
 import { Router, useRouter } from 'next/router';

@@ -1,6 +1,6 @@
 import React from 'react';
 import videojs from 'video.js';
-import s from './Player.module.scss';
+import s from './VideoJS.module.scss';
 
 require('video.js/dist/video-js.css');
 
