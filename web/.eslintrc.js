@@ -49,6 +49,7 @@ module.exports = {
         enforceDynamicLinks: 'always',
       },
     ],
+    'import/prefer-default-export': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',

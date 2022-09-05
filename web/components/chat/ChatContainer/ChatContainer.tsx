@@ -10,7 +10,7 @@ import {
 import styles from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatTextField, ChatUserMessage } from '..';
-import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
+import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatModeratorNotification';
 // import ChatActionMessage from '../ChatAction/ChatActionMessage';
 import ChatSystemMessage from '../ChatSystemMessage/ChatSystemMessage';
 import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
