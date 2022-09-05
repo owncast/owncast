@@ -7,7 +7,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Modal from '../../ui/Modal/Modal';
 import {
@@ -15,16 +15,16 @@ import {
   chatDisplayNameAtom,
   appStateAtom,
 } from '../../stores/ClientConfigStore';
-import s from './UserDropdown.module.scss';
+import styles from './UserDropdown.module.scss';
 import NameChangeModal from '../../modals/NameChangeModal/NameChangeModal';
 import { AppStateOptions } from '../../stores/application-state';
 import AuthModal from '../../modals/AuthModal/AuthModal';
 
-interface Props {
+export type UserDropdownProps = {
   username?: string;
-}
+};
 
-export default function UserDropdown({ username: defaultUsername }: Props) {
+export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername = undefined }) => {
   const username = defaultUsername || useRecoilValue(chatDisplayNameAtom);
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
@@ -66,7 +66,7 @@ export default function UserDropdown({ username: defaultUsername }: Props) {
   );
 
   return (
-    <div className={`${s.root}`}>
+    <div className={`${styles.root}`}>
       <Dropdown overlay={menu} trigger={['click']}>
         <Button type="primary" icon={<UserOutlined style={{ marginRight: '.5rem' }} />}>
           <Space>
@@ -91,8 +91,6 @@ export default function UserDropdown({ username: defaultUsername }: Props) {
       </Modal>
     </div>
   );
-}
-
-UserDropdown.defaultProps = {
-  username: undefined,
 };
+
+export default UserDropdown;

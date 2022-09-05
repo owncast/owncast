@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import UserDropdown from './UserDropdown';
+import { UserDropdown } from './UserDropdown';
 
 export default {
   title: 'owncast/Components/User settings menu',
