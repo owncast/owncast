@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ActionButton from './ActionButton';
+import { ActionButton } from './ActionButton';
 
 export default {
   title: 'owncast/Components/Action Buttons/Single button',

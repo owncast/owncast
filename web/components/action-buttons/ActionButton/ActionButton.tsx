@@ -1,24 +1,21 @@
 import { Button } from 'antd';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import Modal from '../../ui/Modal/Modal';
 import { ExternalAction } from '../../../interfaces/external-action';
-import s from './ActionButton.module.scss';
+import styles from './ActionButton.module.scss';
 
-interface Props {
+export type ActionButtonProps = {
   action: ExternalAction;
   primary?: boolean;
-}
-ActionButton.defaultProps = {
-  primary: true,
 };
 
-export default function ActionButton({
+export const ActionButton: FC<ActionButtonProps> = ({
   action: { url, title, description, icon, color, openExternally },
-  primary = false,
-}: Props) {
+  primary = true,
+}) => {
   const [showModal, setShowModal] = useState(false);
 
-  const buttonClicked = () => {
+  const onButtonClicked = () => {
     if (openExternally) {
       window.open(url, '_blank');
     } else {
@@ -30,11 +27,11 @@ export default function ActionButton({
     <>
       <Button
         type={primary ? 'primary' : 'default'}
-        className={`${s.button}`}
-        onClick={buttonClicked}
+        className={`${styles.button}`}
+        onClick={onButtonClicked}
         style={{ backgroundColor: color }}
       >
-        <img src={icon} className={`${s.icon}`} alt={description} />
+        <img src={icon} className={`${styles.icon}`} alt={description} />
         {title}
       </Button>
       <Modal
@@ -46,4 +43,4 @@ export default function ActionButton({
       />
     </>
   );
-}
+};
