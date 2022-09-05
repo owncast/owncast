@@ -20,10 +20,12 @@ interface Props {
   usernameToHighlight: string;
   chatUserId: string;
   isModerator: boolean;
+  showInput?: boolean;
+  height?: string;
 }
 
 export default function ChatContainer(props: Props) {
-  const { messages, usernameToHighlight, chatUserId, isModerator } = props;
+  const { messages, usernameToHighlight, chatUserId, isModerator, showInput, height } = props;
 
   const [atBottom, setAtBottom] = useState(false);
   // const [showButton, setShowButton] = useState(false);
@@ -117,7 +119,7 @@ export default function ChatContainer(props: Props) {
     () => (
       <>
         <Virtuoso
-          style={{ height: 'calc(100vh - 170px)', width: 'auto' }}
+          style={{ height, width: 'auto' }}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
@@ -156,7 +158,7 @@ export default function ChatContainer(props: Props) {
         //
       }
       {MessagesTable}
-      <ChatTextField />
+      {showInput && <ChatTextField />}
     </div>
   );
 }
@@ -199,3 +201,8 @@ function checkIsModerator(message) {
 
   return scopes.includes('MODERATOR');
 }
+
+ChatContainer.defaultProps = {
+  showInput: true,
+  height: 'calc(100vh - 170px)',
+};
