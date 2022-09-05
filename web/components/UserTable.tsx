@@ -2,8 +2,8 @@ import { Table } from 'antd';
 import format from 'date-fns/format';
 import { SortOrder } from 'antd/lib/table/interface';
 import { User } from '../types/chat';
-import UserPopover from './user-popover';
-import BanUserButton from './BanUserButton/BanUserButton';
+import UserPopover from './UserPopover';
+import BanUserButton from './BanUserButton';
 
 export function formatDisplayDate(date: string | Date) {
   return format(new Date(date), 'MMM d H:mma');

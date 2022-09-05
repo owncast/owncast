@@ -2,8 +2,8 @@ import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
 import { Row, Col, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';
-import Chart from '../../components/Chart/Chart';
-import StatisticItem from '../../components/statistic';
+import Chart from '../../components/Chart';
+import StatisticItem from '../../components/StatisticItem';
 
 // TODO: FIX TS WARNING FROM THIS.
 // interface TimedValue {

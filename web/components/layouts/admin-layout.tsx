@@ -1,7 +1,7 @@
 import { AppProps } from 'next/app';
 import ServerStatusProvider from '../../utils/server-status-context';
 import AlertMessageProvider from '../../utils/alert-message-context';
-import MainLayout from '../main-layout';
+import MainLayout from '../MainLayout';
 
 function AdminLayout({ Component, pageProps }: AppProps) {
   return (

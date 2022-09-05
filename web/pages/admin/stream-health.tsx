@@ -4,8 +4,8 @@ import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd'
 import React, { ReactNode, useEffect, useState } from 'react';
 import { ClockCircleOutlined, WarningOutlined, WifiOutlined } from '@ant-design/icons';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../../utils/apis';
-import Chart from '../../components/Chart/Chart';
-import StreamHealthOverview from '../../components/stream-health-overview';
+import Chart from '../../components/Chart';
+import StreamHealthOverview from '../../components/StreamHealthOverview';
 
 interface TimedValue {
   time: Date;

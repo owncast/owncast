@@ -27,7 +27,7 @@ import { AlertMessageContext } from '../utils/alert-message-context';
 
 import TextFieldWithSubmit from './config/form-textfield-with-submit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
-import ComposeFederatedPost from './compose-federated-post';
+import ComposeFederatedPost from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';
 
 // eslint-disable-next-line react/function-component-definition

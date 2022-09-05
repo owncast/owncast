@@ -4,8 +4,8 @@ import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { Client } from '../types/chat';
-import UserPopover from './user-popover';
-import BanUserButton from './BanUserButton/BanUserButton';
+import UserPopover from './UserPopover';
+import BanUserButton from './BanUserButton';
 import { formatUAstring } from '../utils/format';
 
 export default function ClientTable({ data }: ClientTableProps) {

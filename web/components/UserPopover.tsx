@@ -6,11 +6,11 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
 import { uniq } from 'lodash';
 
-import BlockUserbutton from './BanUserButton/BanUserButton';
-import ModeratorUserbutton from './moderator-user-button';
+import BlockUserbutton from './BanUserButton';
+import ModeratorUserbutton from './ModeratorUserButton';
 
 import { User, UserConnectionInfo } from '../types/chat';
-import { formatDisplayDate } from './user-table';
+import { formatDisplayDate } from './UserTable';
 import { formatUAstring } from '../utils/format';
 
 interface UserPopoverProps {
