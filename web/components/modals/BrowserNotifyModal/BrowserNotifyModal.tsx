@@ -11,18 +11,16 @@ import isPushNotificationSupported from '../../../utils/browserPushNotifications
 
 const { Title } = Typography;
 
-function NotificationsNotSupported() {
-  return <div>Browser notifications are not supported in your browser.</div>;
-}
+const NotificationsNotSupported = () => (
+  <div>Browser notifications are not supported in your browser.</div>
+);
 
-function NotificationsEnabled() {
-  return <div>Notifications enabled</div>;
-}
+const NotificationsEnabled = () => <div>Notifications enabled</div>;
 
 interface PermissionPopupPreviewProps {
   start: () => void;
 }
-function PermissionPopupPreview(props: PermissionPopupPreviewProps) {
+const PermissionPopupPreview = (props: PermissionPopupPreviewProps) => {
   const { start } = props;
 
   return (
@@ -61,9 +59,9 @@ function PermissionPopupPreview(props: PermissionPopupPreviewProps) {
       </div>
     </div>
   );
-}
+};
 
-export default function BrowserNotifyModal() {
+const BrowserNotifyModal = () => {
   const [error, setError] = useState<string>(null);
   const accessToken = useRecoilValue(accessTokenAtom);
   const config = useRecoilValue(clientConfigStateAtom);
@@ -120,4 +118,5 @@ export default function BrowserNotifyModal() {
       </Row>
     </Spin>
   );
-}
+};
+export default BrowserNotifyModal;

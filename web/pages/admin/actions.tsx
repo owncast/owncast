@@ -20,7 +20,7 @@ interface Props {
   visible: boolean;
 }
 
-function NewActionModal(props: Props) {
+const NewActionModal = (props: Props) => {
   const { onOk, onCancel, visible } = props;
 
   const [actionUrl, setActionUrl] = useState('');
@@ -131,9 +131,9 @@ function NewActionModal(props: Props) {
       </div>
     </Modal>
   );
-}
+};
 
-export default function Actions() {
+const Actions = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { externalActions } = serverConfig;
@@ -310,4 +310,5 @@ export default function Actions() {
       />
     </div>
   );
-}
+};
+export default Actions;

@@ -12,7 +12,7 @@ interface Props {
   onReady: (player: videojs.Player, vjsInstance: videojs) => void;
 }
 
-export function VideoJS(props: Props) {
+export const VideoJS = (props: Props) => {
   const videoRef = React.useRef(null);
   const playerRef = React.useRef(null);
   const { options, onReady } = props;
@@ -55,7 +55,7 @@ export function VideoJS(props: Props) {
       <video ref={videoRef} className={`video-js vjs-big-play-centered ${s.player} vjs-owncast`} />
     </div>
   );
-}
+};
 
 export default VideoJS;
 

@@ -33,7 +33,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-no-bind': 'off',
     'react/function-component-definition': [
-      1,
+      'warn',
       {
         namedComponents: 'arrow-function',
         unnamedComponents: 'arrow-function',

@@ -1,4 +1,4 @@
-export function ImageAsset(props: ImageAssetProps) {
+export const ImageAsset = (props: ImageAssetProps) => {
   const { name, src } = props;
 
   const containerStyle = {
@@ -38,7 +38,7 @@ export function ImageAsset(props: ImageAssetProps) {
       </a>
     </figure>
   );
-}
+};
 
 interface ImageAssetProps {
   name: string;
@@ -53,7 +53,7 @@ const rowStyle = {
   alignItems: 'center',
 };
 
-export function ImageRow(props: ImageRowProps) {
+export const ImageRow = (props: ImageRowProps) => {
   const { images } = props;
 
   return (
@@ -63,7 +63,7 @@ export function ImageRow(props: ImageRowProps) {
       ))}
     </div>
   );
-}
+};
 
 interface ImageRowProps {
   images: ImageAssetProps[];

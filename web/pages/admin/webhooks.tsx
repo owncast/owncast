@@ -55,7 +55,7 @@ interface Props {
   visible: boolean;
 }
 
-function NewWebhookModal(props: Props) {
+const NewWebhookModal = (props: Props) => {
   const { onOk, onCancel, visible } = props;
 
   const [selectedEvents, setSelectedEvents] = useState([]);
@@ -121,9 +121,9 @@ function NewWebhookModal(props: Props) {
       </p>
     </Modal>
   );
-}
+};
 
-export default function Webhooks() {
+const Webhooks = () => {
   const [webhooks, setWebhooks] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -247,4 +247,5 @@ export default function Webhooks() {
       />
     </div>
   );
-}
+};
+export default Webhooks;

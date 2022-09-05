@@ -14,7 +14,7 @@ const { Option } = Select;
 /* eslint-disable @typescript-eslint/no-unused-vars */
 interface Props {}
 
-function UserColor(props: { color: number }): React.ReactElement {
+const UserColor = (props: { color: number }): React.ReactElement => {
   const { color } = props;
   const style: CSSProperties = {
     textAlign: 'center',
@@ -23,9 +23,9 @@ function UserColor(props: { color: number }): React.ReactElement {
     height: '100%',
   };
   return <div style={style} />;
-}
+};
 
-export default function NameChangeModal(props: Props) {
+const NameChangeModal = (props: Props) => {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom) || 0;
@@ -85,4 +85,5 @@ export default function NameChangeModal(props: Props) {
       </div>
     </div>
   );
-}
+};
+export default NameChangeModal;

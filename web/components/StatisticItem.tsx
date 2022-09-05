@@ -34,24 +34,22 @@ interface ContentProps {
   title: string;
 }
 
-function Content({ prefix, value, suffix, title }: ContentProps) {
-  return (
+const Content = ({ prefix, value, suffix, title }: ContentProps) => (
+  <div>
+    {prefix}
     <div>
-      {prefix}
-      <div>
-        <Text type="secondary">{title}</Text>
-      </div>
-      <div>
-        <Text type="secondary">
-          {value}
-          {suffix || '%'}
-        </Text>
-      </div>
+      <Text type="secondary">{title}</Text>
     </div>
-  );
-}
+    <div>
+      <Text type="secondary">
+        {value}
+        {suffix || '%'}
+      </Text>
+    </div>
+  </div>
+);
 
-function ProgressView({ title, value, prefix, suffix, color }: StatisticItemProps) {
+const ProgressView = ({ title, value, prefix, suffix, color }: StatisticItemProps) => {
   const endColor = value > 90 ? 'red' : color;
   const content = <Content prefix={prefix} value={value} suffix={suffix} title={title} />;
 
@@ -67,15 +65,15 @@ function ProgressView({ title, value, prefix, suffix, color }: StatisticItemProp
       format={() => content}
     />
   );
-}
+};
 ProgressView.defaultProps = defaultProps;
 
-function StatisticView({ title, value, prefix, formatter }: StatisticItemProps) {
-  return <Statistic title={title} value={value} prefix={prefix} formatter={formatter} />;
-}
+const StatisticView = ({ title, value, prefix, formatter }: StatisticItemProps) => (
+  <Statistic title={title} value={value} prefix={prefix} formatter={formatter} />
+);
 StatisticView.defaultProps = defaultProps;
 
-export default function StatisticItem(props: StatisticItemProps) {
+const StatisticItem = (props: StatisticItemProps) => {
   const { progress, centered } = props;
   const View = progress ? ProgressView : StatisticView;
 
@@ -88,5 +86,7 @@ export default function StatisticItem(props: StatisticItemProps) {
       </div>
     </Card>
   );
-}
+};
 StatisticItem.defaultProps = defaultProps;
+
+export default StatisticItem;

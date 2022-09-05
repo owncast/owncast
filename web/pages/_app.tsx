@@ -33,7 +33,7 @@ import { useEffect } from 'react';
 import AdminLayout from '../components/layouts/AdminLayout';
 import SimpleLayout from '../components/layouts/SimpleLayout';
 
-function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -61,6 +61,6 @@ function App({ Component, pageProps }: AppProps) {
       <SimpleLayout pageProps={pageProps} Component={Component} router={router} />
     </RecoilRoot>
   );
-}
+};
 
 export default App;

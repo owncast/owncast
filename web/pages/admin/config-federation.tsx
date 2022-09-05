@@ -27,72 +27,70 @@ import {
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 
-function FederationInfoModal({ cancelPressed, okPressed }) {
-  return (
-    <Modal
-      width="70%"
-      title="Enable Social Features"
-      visible
-      onCancel={cancelPressed}
-      footer={
-        <div>
-          <Button onClick={cancelPressed}>Do not enable</Button>
-          <Button type="primary" onClick={okPressed}>
-            Enable Social Features
-          </Button>
-        </div>
-      }
-    >
-      <Typography.Title level={3}>How do Owncast's social features work?</Typography.Title>
-      <Typography.Paragraph>
-        Owncast's social features are accomplished by having your server join The{' '}
-        <a href="https://en.wikipedia.org/wiki/Fediverse" rel="noopener noreferrer" target="_blank">
-          Fediverse
-        </a>
-        , a decentralized, open, collection of independent servers, like yours.
-      </Typography.Paragraph>
-      Please{' '}
+const FederationInfoModal = ({ cancelPressed, okPressed }) => (
+  <Modal
+    width="70%"
+    title="Enable Social Features"
+    visible
+    onCancel={cancelPressed}
+    footer={
+      <div>
+        <Button onClick={cancelPressed}>Do not enable</Button>
+        <Button type="primary" onClick={okPressed}>
+          Enable Social Features
+        </Button>
+      </div>
+    }
+  >
+    <Typography.Title level={3}>How do Owncast's social features work?</Typography.Title>
+    <Typography.Paragraph>
+      Owncast's social features are accomplished by having your server join The{' '}
+      <a href="https://en.wikipedia.org/wiki/Fediverse" rel="noopener noreferrer" target="_blank">
+        Fediverse
+      </a>
+      , a decentralized, open, collection of independent servers, like yours.
+    </Typography.Paragraph>
+    Please{' '}
+    <a href="https://owncast.online/docs/social" rel="noopener noreferrer" target="_blank">
+      read more
+    </a>{' '}
+    about these features, the details behind them, and how they work.
+    <Typography.Paragraph />
+    <Typography.Title level={3}>What do you need to know?</Typography.Title>
+    <ul>
+      <li>
+        These features are brand new. Given the variability of interfacing with the rest of the
+        world, bugs are possible. Please report anything that you think isn't working quite right.
+      </li>
+      <li>You must always host your Owncast server with SSL using a https url.</li>
+      <li>
+        You should not change your server name URL or social username once people begin following
+        you, as your server will be seen as a completely different user on the Fediverse, and the
+        old user will disappear.
+      </li>
+      <li>
+        Turning on <i>Private mode</i> will allow you to manually approve each follower and limit
+        the visibility of your posts to followers only.
+      </li>
+    </ul>
+    <Typography.Title level={3}>Learn more about The Fediverse</Typography.Title>
+    <Typography.Paragraph>
+      If these concepts are new you should discover more about what this functionality has to offer.
+      Visit{' '}
       <a href="https://owncast.online/docs/social" rel="noopener noreferrer" target="_blank">
-        read more
+        our documentation
       </a>{' '}
-      about these features, the details behind them, and how they work.
-      <Typography.Paragraph />
-      <Typography.Title level={3}>What do you need to know?</Typography.Title>
-      <ul>
-        <li>
-          These features are brand new. Given the variability of interfacing with the rest of the
-          world, bugs are possible. Please report anything that you think isn't working quite right.
-        </li>
-        <li>You must always host your Owncast server with SSL using a https url.</li>
-        <li>
-          You should not change your server name URL or social username once people begin following
-          you, as your server will be seen as a completely different user on the Fediverse, and the
-          old user will disappear.
-        </li>
-        <li>
-          Turning on <i>Private mode</i> will allow you to manually approve each follower and limit
-          the visibility of your posts to followers only.
-        </li>
-      </ul>
-      <Typography.Title level={3}>Learn more about The Fediverse</Typography.Title>
-      <Typography.Paragraph>
-        If these concepts are new you should discover more about what this functionality has to
-        offer. Visit{' '}
-        <a href="https://owncast.online/docs/social" rel="noopener noreferrer" target="_blank">
-          our documentation
-        </a>{' '}
-        to be pointed at some resources that will help get you started on The Fediverse.
-      </Typography.Paragraph>
-    </Modal>
-  );
-}
+      to be pointed at some resources that will help get you started on The Fediverse.
+    </Typography.Paragraph>
+  </Modal>
+);
 
 FederationInfoModal.propTypes = {
   cancelPressed: PropTypes.func.isRequired,
   okPressed: PropTypes.func.isRequired,
 };
 
-export default function ConfigFederation() {
+const ConfigFederation = () => {
   const { Title } = Typography;
   const [formDataValues, setFormDataValues] = useState(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -331,4 +329,5 @@ export default function ConfigFederation() {
       )}
     </div>
   );
-}
+};
+export default ConfigFederation;

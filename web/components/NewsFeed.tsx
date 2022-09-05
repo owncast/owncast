@@ -19,7 +19,7 @@ interface Article {
   date_published: string;
 }
 
-function ArticleItem({ title, url, content_html: content, date_published: date }: Article) {
+const ArticleItem = ({ title, url, content_html: content, date_published: date }: Article) => {
   const dateObject = new Date(date);
   const dateString = format(dateObject, 'MMM dd, yyyy, HH:mm');
   return (
@@ -38,9 +38,9 @@ function ArticleItem({ title, url, content_html: content, date_published: date }
       </Collapse>
     </article>
   );
-}
+};
 
-export default function NewsFeed() {
+const NewsFeed = () => {
   const [feed, setFeed] = useState<Article[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 
@@ -75,4 +75,5 @@ export default function NewsFeed() {
       {noNews}
     </section>
   );
-}
+};
+export default NewsFeed;

@@ -14,7 +14,7 @@ import { DisplayableError } from '../../types/displayable-error';
 import FatalErrorStateModal from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 
-function Main() {
+const Main = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { name, title, customStyles } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
@@ -97,6 +97,6 @@ function Main() {
       </Layout>
     </>
   );
-}
+};
 
 export default Main;

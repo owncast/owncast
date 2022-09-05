@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-export function Color(props) {
+export const Color = props => {
   const { color } = props;
   const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(`--${color}`);
 
@@ -48,7 +48,7 @@ export function Color(props) {
       <figcaption style={colorDescriptionStyle}>{color}</figcaption>
     </figure>
   );
-}
+};
 
 Color.propTypes = {
   color: PropTypes.string.isRequired,
@@ -61,7 +61,7 @@ const rowStyle = {
   alignItems: 'center',
 };
 
-export function ColorRow(props) {
+export const ColorRow = props => {
   const { colors } = props;
 
   return (
@@ -71,7 +71,7 @@ export function ColorRow(props) {
       ))}
     </div>
   );
-}
+};
 
 ColorRow.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
