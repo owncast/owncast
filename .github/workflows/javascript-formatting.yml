@@ -5,25 +5,26 @@ on:
   push:
     paths:
       - web/**
-  pull_request:
+  pull_request_target:
     paths:
       - web/**
 
 jobs:
   prettier:
+    name: Run prettier
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./web
 
     if: ${{ github.actor != 'dependabot[bot]' }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
       - name: Prettify code
@@ -36,17 +37,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linter:
+    name: Run linter on changed files
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./web
-    name: Run linter on changed files
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
 
       - name: Install Dependencies
-        run: npm install --force
+        run: npm install
 
       - name: Lint
         run: npm run lint
