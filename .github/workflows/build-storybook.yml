@@ -1,7 +1,10 @@
 name: Build and Deploy Components+Style Guide
 on:
   push:
+    branches:
+      - webv2
     paths: ['web/stories/**', 'web/components/**'] # Trigger the action only when files change in the folders defined here
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
