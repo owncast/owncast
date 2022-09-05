@@ -85,7 +85,7 @@
 		"@typescript-eslint/parser": "5.36.1",
 		"addon-screen-reader": "1.8.6",
 		"babel-loader": "8.2.5",
-		"chromatic": "6.7.4",
+		"chromatic": "6.9.0",
 		"css-loader": "6.7.1",
 		"eslint": "8.23.0",
 		"eslint-config-airbnb": "19.0.4",
