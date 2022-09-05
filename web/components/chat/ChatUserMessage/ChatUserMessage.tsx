@@ -10,7 +10,7 @@ import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatModerationActionMenu } from '../ChatModerationActionMenu/ChatModerationActionMenu';
-import ChatUserBadge from '../ChatUserBadge/ChatUserBadge';
+import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 import { accessTokenAtom } from '../../stores/ClientConfigStore';
 
 interface Props {

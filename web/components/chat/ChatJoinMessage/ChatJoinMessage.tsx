@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import s from './ChatJoinMessage.module.scss';
-import ChatUserBadge from '../ChatUserBadge/ChatUserBadge';
+import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 
 export type ChatJoinMessageProps = {
   isAuthorModerator: boolean;
