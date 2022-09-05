@@ -1,6 +1,6 @@
 import { Col, Collapse, Row, Typography } from 'antd';
 import React from 'react';
-import VideoCodecSelector from '../../components/config/CodecSelector';
+import { CodecSelector as VideoCodecSelector } from '../../components/config/CodecSelector';
 import VideoLatency from '../../components/config/VideoLatency';
 import VideoVariantsTable from '../../components/config/CurrentVariantsTable';
 

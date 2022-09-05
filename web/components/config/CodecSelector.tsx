@@ -1,5 +1,5 @@
 import { Popconfirm, Select, Typography } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
   API_VIDEO_CODEC,
@@ -15,8 +15,9 @@ import {
 import { ServerStatusContext } from '../../utils/server-status-context';
 import FormStatusIndicator from './FormStatusIndicator';
 
-// eslint-disable-next-line react/function-component-definition
-export default function CodecSelector() {
+export type CodecSelectorProps = {};
+
+export const CodecSelector: FC<CodecSelectorProps> = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { videoCodec, supportedCodecs } = serverConfig || {};
@@ -170,4 +171,4 @@ export default function CodecSelector() {
       </div>
     </>
   );
-}
+};
