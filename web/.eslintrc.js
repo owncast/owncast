@@ -32,7 +32,13 @@ module.exports = {
     ],
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-no-bind': 'off',
-    'react/function-component-definition': 'off',
+    'react/function-component-definition': [
+      1,
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
+    ],
     '@next/next/no-img-element': 'off',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
