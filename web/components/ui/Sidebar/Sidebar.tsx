@@ -1,7 +1,7 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatContainer } from '../../chat';
+import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
 import s from './Sidebar.module.scss';
 
 import {
