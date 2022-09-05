@@ -37,3 +37,8 @@ export interface NameChangeEvent extends SocketEvent {
   user: User;
   oldName: string;
 }
+
+export interface MessageVisibilityEvent extends SocketEvent {
+  visible: boolean;
+  ids: string[];
+}

@@ -62,7 +62,7 @@ export const LOGS_WARN = `${API_LOCATION}logs/warnings`;
 export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 
 // Get chat history
-export const UPDATE_CHAT_MESSGAE_VIZ = `${NEXT_PUBLIC_API_HOST}api/chat/messagevisibility`;
+export const UPDATE_CHAT_MESSGAE_VIZ = `/api/admin/chat/messagevisibility`;
 
 // Get all access tokens
 export const ACCESS_TOKENS = `${API_LOCATION}accesstokens`;

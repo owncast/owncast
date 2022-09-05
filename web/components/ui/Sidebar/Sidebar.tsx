@@ -5,17 +5,17 @@ import { ChatContainer } from '../../chat';
 import s from './Sidebar.module.scss';
 
 import {
-  chatMessagesAtom,
   chatDisplayNameAtom,
   chatUserIdAtom,
   isChatModeratorAtom,
+  visibleChatMessagesSelector,
 } from '../../stores/ClientConfigStore';
 
 export default function Sidebar() {
-  const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const isChatModerator = useRecoilValue<boolean>(isChatModeratorAtom);
+  const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
 
   return (
     <Sider className={s.root} collapsedWidth={0} width={320}>
