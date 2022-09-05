@@ -1,19 +1,19 @@
 /* eslint-disable react/no-danger */
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Highlight } from 'react-highlighter-ts';
 import he from 'he';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
-import s from './ChatUserMessage.module.scss';
+import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatModerationActionMenu } from '../ChatModerationActionMenu/ChatModerationActionMenu';
 import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 import { accessTokenAtom } from '../../stores/ClientConfigStore';
 
-interface Props {
+export type ChatUserMessageProps = {
   message: ChatMessage;
   showModeratorMenu: boolean;
   highlightString: string;
@@ -21,9 +21,9 @@ interface Props {
   sameUserAsLast: boolean;
   isAuthorModerator: boolean;
   isAuthorAuthenticated: boolean;
-}
+};
 
-export default function ChatUserMessage({
+export const ChatUserMessage: FC<ChatUserMessageProps> = ({
   message,
   highlightString,
   showModeratorMenu,
@@ -31,7 +31,7 @@ export default function ChatUserMessage({
   sameUserAsLast,
   isAuthorModerator,
   isAuthorAuthenticated,
-}: Props) {
+}) => {
   const { id: messageId, body, user, timestamp } = message;
   const { id: userId, displayName, displayColor } = user;
   const accessToken = useRecoilValue<string>(accessTokenAtom);
@@ -59,29 +59,32 @@ export default function ChatUserMessage({
   }, [message]);
 
   return (
-    <div className={cn(s.messagePadding, sameUserAsLast && s.messagePaddingCollapsed)}>
+    <div className={cn(styles.messagePadding, sameUserAsLast && styles.messagePaddingCollapsed)}>
       <div
-        className={cn(s.root, {
-          [s.ownMessage]: sentBySelf,
+        className={cn(styles.root, {
+          [styles.ownMessage]: sentBySelf,
         })}
         style={{ borderColor: color }}
       >
         {!sameUserAsLast && (
           <Tooltip title="user info goes here" placement="topLeft" mouseEnterDelay={1}>
-            <div className={s.user} style={{ color }}>
-              <span className={s.userName}>{displayName}</span>
+            <div className={styles.user} style={{ color }}>
+              <span className={styles.userName}>{displayName}</span>
               <span>{badgeNodes}</span>
             </div>
           </Tooltip>
         )}
         <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
           <Highlight search={highlightString}>
-            <div className={s.message} dangerouslySetInnerHTML={{ __html: formattedMessage }} />
+            <div
+              className={styles.message}
+              dangerouslySetInnerHTML={{ __html: formattedMessage }}
+            />
           </Highlight>
         </Tooltip>
 
         {showModeratorMenu && (
-          <div className={s.modMenuWrapper}>
+          <div className={styles.modMenuWrapper}>
             <ChatModerationActionMenu
               messageID={messageId}
               accessToken={accessToken}
@@ -90,9 +93,11 @@ export default function ChatUserMessage({
             />
           </div>
         )}
-        <div className={s.customBorder} style={{ color }} />
-        <div className={s.background} style={{ color }} />
+        <div className={styles.customBorder} style={{ color }} />
+        <div className={styles.background} style={{ color }} />
       </div>
     </div>
   );
-}
+};
+
+export default ChatUserMessage;
