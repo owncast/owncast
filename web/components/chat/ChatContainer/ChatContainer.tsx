@@ -25,6 +25,45 @@ export type ChatContainerProps = {
   height?: string;
 };
 
+function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean {
+  if (messages.length < 2) {
+    return false;
+  }
+
+  const message = messages[index];
+  const {
+    user: { id },
+  } = message;
+  const lastMessage = messages[index - 1];
+  if (lastMessage?.type !== MessageType.CHAT) {
+    return false;
+  }
+
+  if (!lastMessage.timestamp || !message.timestamp) {
+    return false;
+  }
+
+  const maxTimestampDelta = 1000 * 60 * 2; // 2 minutes
+  const lastTimestamp = new Date(lastMessage.timestamp).getTime();
+  const thisTimestamp = new Date(message.timestamp).getTime();
+  if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
+    return false;
+  }
+
+  return id === lastMessage?.user.id;
+}
+
+function checkIsModerator(message) {
+  const { user } = message;
+  const { scopes } = user;
+
+  if (!scopes || scopes.length === 0) {
+    return false;
+  }
+
+  return scopes.includes('MODERATOR');
+}
+
 export const ChatContainer: FC<ChatContainerProps> = ({
   messages,
   usernameToHighlight,
@@ -168,45 +207,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     </div>
   );
 };
-
-function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean {
-  if (messages.length < 2) {
-    return false;
-  }
-
-  const message = messages[index];
-  const {
-    user: { id },
-  } = message;
-  const lastMessage = messages[index - 1];
-  if (lastMessage?.type !== MessageType.CHAT) {
-    return false;
-  }
-
-  if (!lastMessage.timestamp || !message.timestamp) {
-    return false;
-  }
-
-  const maxTimestampDelta = 1000 * 60 * 2; // 2 minutes
-  const lastTimestamp = new Date(lastMessage.timestamp).getTime();
-  const thisTimestamp = new Date(message.timestamp).getTime();
-  if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
-    return false;
-  }
-
-  return id === lastMessage?.user.id;
-}
-
-function checkIsModerator(message) {
-  const { user } = message;
-  const { scopes } = user;
-
-  if (!scopes || scopes.length === 0) {
-    return false;
-  }
-
-  return scopes.includes('MODERATOR');
-}
 
 ChatContainer.defaultProps = {
   showInput: true,
