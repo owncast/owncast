@@ -86,4 +86,3 @@ export const NameChangeModal: FC = () => {
     </div>
   );
 };
-export default NameChangeModal;

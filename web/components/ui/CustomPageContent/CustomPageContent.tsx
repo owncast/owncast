@@ -11,4 +11,3 @@ export const CustomPageContent: FC<CustomPageContentProps> = ({ content }) => (
     <div className={styles.customPageContent} dangerouslySetInnerHTML={{ __html: content }} />
   </div>
 );
-export default CustomPageContent;

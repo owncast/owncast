@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import SocialLinks from './SocialLinks';
+import { SocialLinks } from './SocialLinks';
 
 export default {
   title: 'owncast/Components/Social links',

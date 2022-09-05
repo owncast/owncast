@@ -116,4 +116,3 @@ export const BrowserNotifyModal = () => {
     </Spin>
   );
 };
-export default BrowserNotifyModal;

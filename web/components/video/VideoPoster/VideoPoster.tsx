@@ -41,4 +41,3 @@ export const VideoPoster: FC<VideoPosterProps> = ({ online, initialSrc, src: bas
     </div>
   );
 };
-export default VideoPoster;

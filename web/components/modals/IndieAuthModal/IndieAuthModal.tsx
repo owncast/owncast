@@ -156,4 +156,3 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
     </Spin>
   );
 };
-export default IndieAuthModal;

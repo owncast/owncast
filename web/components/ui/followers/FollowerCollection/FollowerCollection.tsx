@@ -63,4 +63,3 @@ export const FollowerCollection: FC = () => {
     </div>
   );
 };
-export default FollowerCollection;

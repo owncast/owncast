@@ -24,4 +24,3 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
     </a>
   </div>
 );
-export default SingleFollower;

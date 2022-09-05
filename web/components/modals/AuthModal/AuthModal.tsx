@@ -60,4 +60,3 @@ export const AuthModal: FC = () => {
     </div>
   );
 };
-export default AuthModal;

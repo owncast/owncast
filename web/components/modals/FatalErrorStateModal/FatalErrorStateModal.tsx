@@ -20,4 +20,3 @@ export const FatalErrorStateModal: FC<FatalErrorStateModalProps> = ({ title, mes
     <p style={{ fontSize: '1.3rem' }}>{message}</p>
   </Modal>
 );
-export default FatalErrorStateModal;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import FediAuthModal from './FediAuthModal';
+import { FediAuthModal } from './FediAuthModal';
 import FediAuthModalMock from '../../../stories/assets/mocks/fediauth-modal.png';
 
 const Example = () => (

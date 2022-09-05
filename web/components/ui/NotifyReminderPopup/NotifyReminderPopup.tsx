@@ -76,4 +76,3 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
     )
   );
 };
-export default NotifyReminderPopup;
