@@ -31,7 +31,7 @@ import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 import NotifyReminderPopup from '../NotifyReminderPopup/NotifyReminderPopup';
 import OfflineBanner from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
-import FollowButton from '../../action-buttons/FollowButton';
+import { FollowButton } from '../../action-buttons/FollowButton';
 import NotifyButton from '../../action-buttons/NotifyButton';
 import Modal from '../Modal/Modal';
 import BrowserNotifyModal from '../../modals/BrowserNotifyModal/BrowserNotifyModal';
