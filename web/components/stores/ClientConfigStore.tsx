@@ -17,6 +17,7 @@ import {
   ConnectedClientInfoEvent,
   MessageType,
   ChatEvent,
+  MessageVisibilityEvent,
   SocketEvent,
 } from '../../interfaces/socket-events';
 
@@ -111,6 +112,11 @@ export const clockSkewAtom = atom<Number>({
   default: 0.0,
 });
 
+export const removedMessageIdsAtom = atom<string[]>({
+  key: 'removedMessageIds',
+  default: [],
+});
+
 // Chat is visible if the user wishes it to be visible AND the required
 // chat state is set.
 export const isChatVisibleSelector = selector({
@@ -144,6 +150,15 @@ export const isOnlineSelector = selector({
   },
 });
 
+export const visibleChatMessagesSelector = selector<ChatMessage[]>({
+  key: 'visibleChatMessagesSelector',
+  get: ({ get }) => {
+    const messages: ChatMessage[] = get(chatMessagesAtom);
+    const removedIds: string[] = get(removedMessageIdsAtom);
+    return messages.filter(message => !removedIds.includes(message.id));
+  },
+});
+
 // Take a nested object of state metadata and merge it into
 // a single flattened node.
 function mergeMeta(meta) {
@@ -171,6 +186,7 @@ export function ClientConfigStore() {
   const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
+  const [hiddenMessageIds, setHiddenMessageIds] = useRecoilState<string[]>(removedMessageIdsAtom);
 
   let ws: WebsocketService;
 
@@ -259,6 +275,17 @@ export function ClientConfigStore() {
     handleUserRegistration();
   };
 
+  const handleMessageVisibilityChange = (message: MessageVisibilityEvent) => {
+    const { ids, visible } = message;
+    if (visible) {
+      const updatedIds = hiddenMessageIds.filter(id => !ids.includes(id));
+      setHiddenMessageIds(updatedIds);
+    } else {
+      const updatedIds = [...hiddenMessageIds, ...ids];
+      setHiddenMessageIds(updatedIds);
+    }
+  };
+
   const handleMessage = (message: SocketEvent) => {
     switch (message.type) {
       case MessageType.ERROR_NEEDS_REGISTRATION:
@@ -286,6 +313,9 @@ export function ClientConfigStore() {
         break;
       case MessageType.SYSTEM:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        break;
+      case MessageType.VISIBILITY_UPDATE:
+        handleMessageVisibilityChange(message as MessageVisibilityEvent);
         break;
       default:
         console.error('Unknown socket message type: ', message.type);

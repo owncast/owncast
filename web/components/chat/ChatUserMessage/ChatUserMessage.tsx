@@ -5,11 +5,13 @@ import he from 'he';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
+import { useRecoilValue } from 'recoil';
 import s from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import ChatModerationActionMenu from '../ChatModerationActionMenu/ChatModerationActionMenu';
 import ChatUserBadge from '../ChatUserBadge/ChatUserBadge';
+import { accessTokenAtom } from '../../stores/ClientConfigStore';
 
 interface Props {
   message: ChatMessage;
@@ -32,6 +34,7 @@ export default function ChatUserMessage({
 }: Props) {
   const { id: messageId, body, user, timestamp } = message;
   const { id: userId, displayName, displayColor } = user;
+  const accessToken = useRecoilValue<string>(accessTokenAtom);
 
   const color = `var(--theme-color-users-${displayColor})`;
   const formattedTimestamp = `Sent ${formatTimestamp(timestamp)}`;
@@ -81,7 +84,7 @@ export default function ChatUserMessage({
           <div className={s.modMenuWrapper}>
             <ChatModerationActionMenu
               messageID={messageId}
-              accessToken=""
+              accessToken={accessToken}
               userID={userId}
               userDisplayName={displayName}
             />
