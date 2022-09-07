@@ -2,15 +2,41 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatTextField } from './ChatTextField';
-import Mock from '../../../stories/assets/mocks/chatinput-mock.png';
+import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
+
+const mockResponse = JSON.parse(
+  `[{"name":"Reaper-gg.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=OC"},{"name":"Reaper-hi.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=XX"},{"name":"Reaper-hype.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=TX"},{"name":"Reaper-lol.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=CA"},{"name":"Reaper-love.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=OK"}]`,
+);
+const mocks = {
+  mocks: [
+    {
+      // The "matcher" determines if this
+      // mock should respond to the current
+      // call to fetch().
+      matcher: {
+        name: 'response',
+        url: 'glob:/api/emoji',
+      },
+      // If the "matcher" matches the current
+      // fetch() call, the fetch response is
+      // built using this "response".
+      response: {
+        status: 200,
+        body: mockResponse,
+      },
+    },
+  ],
+};
 
 export default {
   title: 'owncast/Chat/Input text field',
   component: ChatTextField,
   parameters: {
+    fetchMock: mocks,
+
     design: {
       type: 'image',
-      url: Mock,
+      url: Mockup,
     },
     docs: {
       description: {
@@ -24,14 +50,12 @@ export default {
   },
 } as ComponentMeta<typeof ChatTextField>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ChatTextField> = args => (
+const Template: ComponentStory<typeof ChatTextField> = () => (
   <RecoilRoot>
-    <ChatTextField {...args} />
+    <ChatTextField />
   </RecoilRoot>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Example = Template.bind({});
 
 export const LongerMessage = Template.bind({});
