@@ -1,25 +1,27 @@
 /* eslint-disable react/no-danger */
 import { Highlight } from 'react-highlighter-ts';
+import { FC } from 'react';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import s from './ChatSystemMessage.module.scss';
+import styles from './ChatSystemMessage.module.scss';
 
-interface Props {
+export type ChatSystemMessageProps = {
   message: ChatMessage;
   highlightString: string;
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function ChatSystemMessage({ message, highlightString }: Props) {
-  const { body, user } = message;
-  const { displayName } = user;
+};
 
-  return (
-    <div className={s.chatSystemMessage}>
-      <div className={s.user}>
-        <span className={s.userName}>{displayName}</span>
-      </div>
-      <Highlight search={highlightString}>
-        <div className={s.message} dangerouslySetInnerHTML={{ __html: body }} />
-      </Highlight>
+export const ChatSystemMessage: FC<ChatSystemMessageProps> = ({
+  message: {
+    body,
+    user: { displayName },
+  },
+  highlightString,
+}) => (
+  <div className={styles.chatSystemMessage}>
+    <div className={styles.user}>
+      <span className={styles.userName}>{displayName}</span>
     </div>
-  );
-}
+    <Highlight search={highlightString}>
+      <div className={styles.message} dangerouslySetInnerHTML={{ __html: body }} />
+    </Highlight>
+  </div>
+);

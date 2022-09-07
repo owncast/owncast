@@ -1,16 +1,13 @@
 /* eslint-disable react/no-danger */
-import s from './CustomPageContent.module.scss';
+import { FC } from 'react';
+import styles from './CustomPageContent.module.scss';
 
-interface Props {
+export type CustomPageContentProps = {
   content: string;
-}
+};
 
-export default function CustomPageContent(props: Props) {
-  const { content } = props;
-  // eslint-disable-next-line react/no-danger
-  return (
-    <div className={s.pageContentContainer}>
-      <div className={s.customPageContent} dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
-  );
-}
+export const CustomPageContent: FC<CustomPageContentProps> = ({ content }) => (
+  <div className={styles.pageContentContainer}>
+    <div className={styles.customPageContent} dangerouslySetInnerHTML={{ __html: content }} />
+  </div>
+);

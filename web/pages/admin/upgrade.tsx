@@ -5,7 +5,7 @@ import { getGithubRelease } from '../../utils/apis';
 
 const { Title } = Typography;
 
-function AssetTable(assets) {
+const AssetTable = assets => {
   const data = Object.values(assets) as object[];
 
   const columns = [
@@ -32,9 +32,9 @@ function AssetTable(assets) {
       pagination={false}
     />
   );
-}
+};
 
-export default function Logs() {
+const Logs = () => {
   const [release, setRelease] = useState({
     html_url: '',
     name: '',
@@ -71,4 +71,5 @@ export default function Logs() {
       <AssetTable {...release.assets} />
     </div>
   );
-}
+};
+export default Logs;

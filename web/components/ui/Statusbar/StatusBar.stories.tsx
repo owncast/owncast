@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { subHours } from 'date-fns';
-import Statusbar from './Statusbar';
+import { Statusbar } from './Statusbar';
 
 export default {
   title: 'owncast/Player/Status bar',

@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
+import { FC } from 'react';
 
-export function Color(props) {
-  const { color } = props;
+export type ColorProps = {
+  color: any; // TODO specify better type
+};
+
+export const Color: FC<ColorProps> = ({ color }) => {
   const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(`--${color}`);
 
   const containerStyle = {
@@ -48,7 +52,7 @@ export function Color(props) {
       <figcaption style={colorDescriptionStyle}>{color}</figcaption>
     </figure>
   );
-}
+};
 
 Color.propTypes = {
   color: PropTypes.string.isRequired,
@@ -61,7 +65,7 @@ const rowStyle = {
   alignItems: 'center',
 };
 
-export function ColorRow(props) {
+export const ColorRow = props => {
   const { colors } = props;
 
   return (
@@ -71,7 +75,7 @@ export function ColorRow(props) {
       ))}
     </div>
   );
-}
+};
 
 ColorRow.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,

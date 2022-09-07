@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import FollowModal from './FollowModal';
+import { FollowModal } from './FollowModal';
 import FollowModalMock from '../../../stories/assets/mocks/follow-modal.png';
 
 const Example = () => (

@@ -1,7 +1,7 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
-import { TEXTFIELD_TYPE_URL } from '../components/config/form-textfield';
+import { TEXTFIELD_TYPE_URL } from '../components/config/TextField';
 import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
 
 export const TEXT_MAXLENGTH = 255;

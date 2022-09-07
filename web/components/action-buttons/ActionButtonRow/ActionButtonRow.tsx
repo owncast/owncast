@@ -1,12 +1,10 @@
-import React from 'react';
-import s from './ActionButtonRow.module.scss';
+import { FC, ReactNode } from 'react';
+import styles from './ActionButtonRow.module.scss';
 
-interface Props {
-  children: React.ReactNode[];
-}
+export type ActionButtonRowProps = {
+  children: ReactNode;
+};
 
-export default function ActionButtonRow(props: Props) {
-  const { children } = props;
-
-  return <div className={`${s.row}`}>{children}</div>;
-}
+export const ActionButtonRow: FC<ActionButtonRowProps> = ({ children }) => (
+  <div className={`${styles.row}`}>{children}</div>
+);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatSystemMessage from './ChatSystemMessage';
+import { ChatSystemMessage } from './ChatSystemMessage';
 import Mock from '../../../stories/assets/mocks/chatmessage-system.png';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 

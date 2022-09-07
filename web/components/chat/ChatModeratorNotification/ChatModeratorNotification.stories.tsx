@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatModeratorNotification from './ChatModeratorNotification';
+import { ChatModeratorNotification } from './ChatModeratorNotification';
 
 export default {
   title: 'owncast/Chat/Messages/Moderation Role Notification',

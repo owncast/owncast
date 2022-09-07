@@ -1,13 +1,12 @@
-import s from './ChatActionMessage.module.scss';
+import { FC } from 'react';
+import styles from './ChatActionMessage.module.scss';
 
 /* eslint-disable react/no-danger */
-interface Props {
+export type ChatActionMessageProps = {
   body: string;
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function ChatActionMessage(props: Props) {
-  const { body } = props;
-
-  return <div dangerouslySetInnerHTML={{ __html: body }} className={s.chatAction} />;
-}
+export const ChatActionMessage: FC<ChatActionMessageProps> = ({ body }) => (
+  <div dangerouslySetInnerHTML={{ __html: body }} className={styles.chatAction} />
+);

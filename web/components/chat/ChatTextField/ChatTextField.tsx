@@ -1,14 +1,14 @@
 import { SendOutlined, SmileOutlined } from '@ant-design/icons';
 import { Button, Popover } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Editor, Node, Path, Transforms, createEditor, BaseEditor, Text, Descendant } from 'slate';
+import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
-import EmojiPicker from './EmojiPicker';
+import { EmojiPicker } from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
-import style from './ChatTextField.module.scss';
+import styles from './ChatTextField.module.scss';
 
 type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] } | ImageNode;
 type CustomText = { text: string };
@@ -90,7 +90,9 @@ const serialize = node => {
   }
 };
 
-export default function ChatTextField() {
+export type ChatTextFieldProps = {};
+
+export const ChatTextField: FC<ChatTextFieldProps> = () => {
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const editor = useMemo(() => withReact(withImages(createEditor())), []);
@@ -196,14 +198,13 @@ export default function ChatTextField() {
 
   return (
     <div>
-      <div className={style.root}>
+      <div className={styles.root}>
         <Slate editor={editor} value={defaultEditorValue}>
           <Editable
             onKeyDown={onKeyDown}
             renderElement={renderElement}
             placeholder="Chat message goes here..."
             style={{ width: '100%' }}
-            // onChange={change => setValue(change.value)}
             autoFocus
           />
           <Popover
@@ -221,14 +222,14 @@ export default function ChatTextField() {
 
         <button
           type="button"
-          className={style.emojiButton}
+          className={styles.emojiButton}
           title="Emoji picker button"
           onClick={() => setShowEmojis(!showEmojis)}
         >
           <SmileOutlined />
         </button>
         <Button
-          className={style.sendButton}
+          className={styles.sendButton}
           size="large"
           type="ghost"
           icon={<SendOutlined />}
@@ -237,4 +238,4 @@ export default function ChatTextField() {
       </div>
     </div>
   );
-}
+};

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import NameChangeModal from './NameChangeModal';
+import { NameChangeModal } from './NameChangeModal';
 
 export default {
   title: 'owncast/Modals/Name change',

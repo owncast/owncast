@@ -1,19 +1,18 @@
-import React from 'react';
-import s from './ChatUserBadge.module.scss';
+import React, { FC } from 'react';
+import styles from './ChatUserBadge.module.scss';
 
-interface Props {
+export type ChatUserBadgeProps = {
   badge: React.ReactNode;
   userColor: number;
-}
+};
 
-export default function ChatUserBadge(props: Props) {
-  const { badge, userColor } = props;
+export const ChatUserBadge: FC<ChatUserBadgeProps> = ({ badge, userColor }) => {
   const color = `var(--theme-user-colors-${userColor})`;
   const style = { color, borderColor: color };
 
   return (
-    <span style={style} className={s.badge}>
+    <span style={style} className={styles.badge}>
       {badge}
     </span>
   );
-}
+};

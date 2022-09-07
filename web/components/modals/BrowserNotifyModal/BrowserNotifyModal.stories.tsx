@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import BrowserNotifyModal from './BrowserNotifyModal';
+import { BrowserNotifyModal } from './BrowserNotifyModal';
 import BrowserNotifyModalMock from '../../../stories/assets/mocks/notify-modal.png';
 
 const Example = () => (

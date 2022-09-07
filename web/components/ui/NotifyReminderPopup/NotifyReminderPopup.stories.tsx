@@ -1,7 +1,7 @@
 /* eslint-disable no-alert */
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import NotifyReminderPopup from './NotifyReminderPopup';
+import { NotifyReminderPopup } from './NotifyReminderPopup';
 import Mock from '../../../stories/assets/mocks/notify-popup.png';
 
 const Example = args => (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import Logo from '../components/ui/Logo/Logo';
+import { Logo } from '../components/ui/Logo/Logo';
 
 export default {
   title: 'owncast/Components/Page Logo',

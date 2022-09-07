@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import VideoPoster from './VideoPoster';
+import { VideoPoster } from './VideoPoster';
 
 export default {
   title: 'owncast/Player/Video poster',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ChatActionMessage from './ChatActionMessage';
+import { ChatActionMessage } from './ChatActionMessage';
 import Mock from '../../../stories/assets/mocks/chatmessage-action.png';
 
 export default {

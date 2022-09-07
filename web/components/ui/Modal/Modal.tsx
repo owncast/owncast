@@ -1,8 +1,8 @@
 import { Spin, Skeleton, Modal as AntModal } from 'antd';
-import React, { ReactNode, useState } from 'react';
-import s from './Modal.module.scss';
+import React, { FC, ReactNode, useState } from 'react';
+import styles from './Modal.module.scss';
 
-interface Props {
+export type ModalProps = {
   title: string;
   url?: string;
   visible: boolean;
@@ -12,11 +12,19 @@ interface Props {
   children?: ReactNode;
   height?: string;
   width?: string;
-}
+};
 
-export default function Modal(props: Props) {
-  const { title, url, visible, handleOk, handleCancel, afterClose, height, width, children } =
-    props;
+export const Modal: FC<ModalProps> = ({
+  title,
+  url,
+  visible,
+  handleOk,
+  handleCancel,
+  afterClose,
+  height,
+  width,
+  children,
+}) => {
   const [loading, setLoading] = useState(!!url);
 
   const modalStyle = {
@@ -60,12 +68,13 @@ export default function Modal(props: Props) {
         )}
 
         {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
-        {children && <div className={s.content}>{children}</div>}
-        {loading && <Spin className={s.spinner} spinning={loading} size="large" />}
+        {children && <div className={styles.content}>{children}</div>}
+        {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
       </>
     </AntModal>
   );
-}
+};
+export default Modal;
 
 Modal.defaultProps = {
   url: undefined,

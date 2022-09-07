@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import ChatModerationActionMenu from './ChatModerationActionMenu';
+import { ChatModerationActionMenu } from './ChatModerationActionMenu';
 
 const mocks = {
   mocks: [
@@ -82,7 +82,7 @@ export default {
 } as ComponentMeta<typeof ChatModerationActionMenu>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ChatModerationActionMenu> = args => (
+const Template: ComponentStory<typeof ChatModerationActionMenu> = () => (
   <RecoilRoot>
     <ChatModerationActionMenu
       accessToken="abc123"

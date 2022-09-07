@@ -9,7 +9,7 @@ interface Props {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function EmojiPicker(props: Props) {
+export const EmojiPicker = (props: Props) => {
   const [customEmoji, setCustomEmoji] = useState([]);
   const { onEmojiSelect, onCustomEmojiSelect } = props;
   const ref = useRef();
@@ -54,4 +54,4 @@ export default function EmojiPicker(props: Props) {
   }, [customEmoji]);
 
   return <div ref={ref} />;
-}
+};

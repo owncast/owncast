@@ -1,12 +1,9 @@
-import s from './ChatModeratorNotification.module.scss';
+import styles from './ChatModeratorNotification.module.scss';
 import Icon from '../../../assets/images/moderator.svg';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function ModeratorNotification() {
-  return (
-    <div className={s.chatModerationNotification}>
-      <Icon className={s.icon} />
-      You are now a moderator.
-    </div>
-  );
-}
+export const ChatModeratorNotification = () => (
+  <div className={styles.chatModerationNotification}>
+    <Icon className={styles.icon} />
+    You are now a moderator.
+  </div>
+);

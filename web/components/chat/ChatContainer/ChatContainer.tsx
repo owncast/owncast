@@ -1,32 +1,77 @@
 import { Button } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
-import { useState, useMemo, useRef, CSSProperties } from 'react';
+import { useState, useMemo, useRef, CSSProperties, FC } from 'react';
 import { EditFilled, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import {
   ConnectedClientInfoEvent,
   MessageType,
   NameChangeEvent,
 } from '../../../interfaces/socket-events';
-import s from './ChatContainer.module.scss';
+import styles from './ChatContainer.module.scss';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatTextField, ChatUserMessage } from '..';
-import ChatModeratorNotification from '../ChatModeratorNotification/ChatModeratorNotification';
+import { ChatUserMessage } from '../ChatUserMessage/ChatUserMessage';
+import { ChatTextField } from '../ChatTextField/ChatTextField';
+import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatModeratorNotification';
 // import ChatActionMessage from '../ChatAction/ChatActionMessage';
-import ChatSystemMessage from '../ChatSystemMessage/ChatSystemMessage';
-import ChatJoinMessage from '../ChatJoinMessage/ChatJoinMessage';
+import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
+import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
 
-interface Props {
+export type ChatContainerProps = {
   messages: ChatMessage[];
   usernameToHighlight: string;
   chatUserId: string;
   isModerator: boolean;
   showInput?: boolean;
   height?: string;
+};
+
+function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean {
+  if (messages.length < 2) {
+    return false;
+  }
+
+  const message = messages[index];
+  const {
+    user: { id },
+  } = message;
+  const lastMessage = messages[index - 1];
+  if (lastMessage?.type !== MessageType.CHAT) {
+    return false;
+  }
+
+  if (!lastMessage.timestamp || !message.timestamp) {
+    return false;
+  }
+
+  const maxTimestampDelta = 1000 * 60 * 2; // 2 minutes
+  const lastTimestamp = new Date(lastMessage.timestamp).getTime();
+  const thisTimestamp = new Date(message.timestamp).getTime();
+  if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
+    return false;
+  }
+
+  return id === lastMessage?.user.id;
 }
 
-export default function ChatContainer(props: Props) {
-  const { messages, usernameToHighlight, chatUserId, isModerator, showInput, height } = props;
+function checkIsModerator(message) {
+  const { user } = message;
+  const { scopes } = user;
 
+  if (!scopes || scopes.length === 0) {
+    return false;
+  }
+
+  return scopes.includes('MODERATOR');
+}
+
+export const ChatContainer: FC<ChatContainerProps> = ({
+  messages,
+  usernameToHighlight,
+  chatUserId,
+  isModerator,
+  showInput,
+  height,
+}) => {
   const [atBottom, setAtBottom] = useState(false);
   // const [showButton, setShowButton] = useState(false);
   const chatContainerRef = useRef(null);
@@ -38,13 +83,13 @@ export default function ChatContainer(props: Props) {
     const color = `var(--theme-color-users-${displayColor})`;
 
     return (
-      <div className={s.nameChangeView}>
+      <div className={styles.nameChangeView}>
         <div style={{ marginRight: 5, height: 'max-content', margin: 'auto 5px auto 0' }}>
           <EditFilled />
         </div>
-        <div className={s.nameChangeText}>
+        <div className={styles.nameChangeText}>
           <span style={{ color }}>{oldName}</span>
-          <span className={s.plain}> is now known as </span>
+          <span className={styles.plain}> is now known as </span>
           <span style={{ color }}>{displayName}</span>
         </div>
       </div>
@@ -129,7 +174,7 @@ export default function ChatContainer(props: Props) {
           atBottomStateChange={bottom => setAtBottom(bottom)}
         />
         {!atBottom && (
-          <div className={s.toBottomWrap}>
+          <div className={styles.toBottomWrap}>
             <Button
               type="default"
               icon={<VerticalAlignBottomOutlined />}
@@ -161,46 +206,7 @@ export default function ChatContainer(props: Props) {
       {showInput && <ChatTextField />}
     </div>
   );
-}
-
-function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean {
-  if (messages.length < 2) {
-    return false;
-  }
-
-  const message = messages[index];
-  const {
-    user: { id },
-  } = message;
-  const lastMessage = messages[index - 1];
-  if (lastMessage?.type !== MessageType.CHAT) {
-    return false;
-  }
-
-  if (!lastMessage.timestamp || !message.timestamp) {
-    return false;
-  }
-
-  const maxTimestampDelta = 1000 * 60 * 2; // 2 minutes
-  const lastTimestamp = new Date(lastMessage.timestamp).getTime();
-  const thisTimestamp = new Date(message.timestamp).getTime();
-  if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
-    return false;
-  }
-
-  return id === lastMessage?.user.id;
-}
-
-function checkIsModerator(message) {
-  const { user } = message;
-  const { scopes } = user;
-
-  if (!scopes || scopes.length === 0) {
-    return false;
-  }
-
-  return scopes.includes('MODERATOR');
-}
+};
 
 ChatContainer.defaultProps = {
   showInput: true,

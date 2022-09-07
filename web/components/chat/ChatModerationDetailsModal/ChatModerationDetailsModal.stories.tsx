@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import ChatModerationDetailsModal from './ChatModerationDetailsModal';
+import { ChatModerationDetailsModal } from './ChatModerationDetailsModal';
 
 const mocks = {
   mocks: [
@@ -82,7 +82,7 @@ export default {
 } as ComponentMeta<typeof ChatModerationDetailsModal>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ChatModerationDetailsModal> = args => (
+const Template: ComponentStory<typeof ChatModerationDetailsModal> = () => (
   <RecoilRoot>
     <ChatModerationDetailsModal userId="testuser123" accessToken="fakeaccesstoken4839" />
   </RecoilRoot>

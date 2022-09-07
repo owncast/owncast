@@ -170,7 +170,7 @@ function mergeMeta(meta) {
   }, {});
 }
 
-export function ClientConfigStore() {
+export const ClientConfigStore = () => {
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
 
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
@@ -377,4 +377,4 @@ export function ClientConfigStore() {
   });
 
   return null;
-}
+};

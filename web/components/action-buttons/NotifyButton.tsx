@@ -1,15 +1,14 @@
 import { Button } from 'antd';
 import { BellFilled } from '@ant-design/icons';
-import s from './ActionButton/ActionButton.module.scss';
+import { FC } from 'react';
+import styles from './ActionButton/ActionButton.module.scss';
 
-interface Props {
-  onClick: () => void;
-}
+export type NotifyButtonProps = {
+  onClick?: () => void;
+};
 
-export default function NotifyButton({ onClick }: Props) {
-  return (
-    <Button type="primary" className={`${s.button}`} icon={<BellFilled />} onClick={onClick}>
-      Notify
-    </Button>
-  );
-}
+export const NotifyButton: FC<NotifyButtonProps> = ({ onClick }) => (
+  <Button type="primary" className={`${styles.button}`} icon={<BellFilled />} onClick={onClick}>
+    Notify
+  </Button>
+);
