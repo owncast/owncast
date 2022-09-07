@@ -23,17 +23,17 @@ import '../styles/chat.scss';
 import '../styles/pages.scss';
 import '../styles/offline-notice.scss';
 
-import '../components/video/player.scss';
+import '../components/video/VideoJS/VideoJS.scss';
 
 import { AppProps } from 'next/app';
 import { Router, useRouter } from 'next/router';
 
 import { RecoilRoot } from 'recoil';
 import { useEffect } from 'react';
-import AdminLayout from '../components/layouts/admin-layout';
-import SimpleLayout from '../components/layouts/SimpleLayout';
+import { AdminLayout } from '../components/layouts/AdminLayout';
+import { SimpleLayout } from '../components/layouts/SimpleLayout';
 
-function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -61,6 +61,6 @@ function App({ Component, pageProps }: AppProps) {
       <SimpleLayout pageProps={pageProps} Component={Component} router={router} />
     </RecoilRoot>
   );
-}
+};
 
 export default App;

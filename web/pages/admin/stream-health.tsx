@@ -4,8 +4,8 @@ import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd'
 import React, { ReactNode, useEffect, useState } from 'react';
 import { ClockCircleOutlined, WarningOutlined, WifiOutlined } from '@ant-design/icons';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../../utils/apis';
-import Chart from '../../components/chart';
-import StreamHealthOverview from '../../components/stream-health-overview';
+import { Chart } from '../../components/Chart';
+import { StreamHealthOverview } from '../../components/StreamHealthOverview';
 
 interface TimedValue {
   time: Date;
@@ -17,16 +17,14 @@ interface DescriptionBoxProps {
   description: ReactNode;
 }
 
-function DescriptionBox({ title, description }: DescriptionBoxProps) {
-  return (
-    <div className="description-box">
-      <Typography.Title>{title}</Typography.Title>
-      <Typography.Paragraph>{description}</Typography.Paragraph>
-    </div>
-  );
-}
+const DescriptionBox = ({ title, description }: DescriptionBoxProps) => (
+  <div className="description-box">
+    <Typography.Title>{title}</Typography.Title>
+    <Typography.Paragraph>{description}</Typography.Paragraph>
+  </div>
+);
 
-export default function StreamHealth() {
+const StreamHealth = () => {
   const [errors, setErrors] = useState<TimedValue[]>([]);
   const [qualityVariantChanges, setQualityVariantChanges] = useState<TimedValue[]>([]);
 
@@ -409,4 +407,5 @@ export default function StreamHealth() {
       </Space>
     </>
   );
-}
+};
+export default StreamHealth;

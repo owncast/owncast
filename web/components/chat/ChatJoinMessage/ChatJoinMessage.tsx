@@ -1,18 +1,22 @@
-import s from './ChatJoinMessage.module.scss';
-import ChatUserBadge from '../ChatUserBadge/ChatUserBadge';
+import { FC } from 'react';
+import styles from './ChatJoinMessage.module.scss';
+import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 
-interface Props {
+export type ChatJoinMessageProps = {
   isAuthorModerator: boolean;
   userColor: number;
   displayName: string;
-}
+};
 
-export default function ChatJoinMessage(props: Props) {
-  const { isAuthorModerator, userColor, displayName } = props;
+export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
+  isAuthorModerator,
+  userColor,
+  displayName,
+}) => {
   const color = `var(--theme-user-colors-${userColor})`;
 
   return (
-    <div className={s.join}>
+    <div className={styles.join}>
       <span style={{ color }}>
         {displayName}
         {isAuthorModerator && (
@@ -24,4 +28,4 @@ export default function ChatJoinMessage(props: Props) {
       joined the chat.
     </div>
   );
-}
+};

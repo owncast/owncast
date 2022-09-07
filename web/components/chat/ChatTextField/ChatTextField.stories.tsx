@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
-import ChatTextField from './ChatTextField';
+import { ChatTextField } from './ChatTextField';
 import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
 
 const mockResponse = JSON.parse(

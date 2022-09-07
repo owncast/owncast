@@ -1,8 +1,9 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
+import { FC } from 'react';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatContainer } from '../../chat';
-import s from './Sidebar.module.scss';
+import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
+import styles from './Sidebar.module.scss';
 
 import {
   chatDisplayNameAtom,
@@ -11,14 +12,14 @@ import {
   visibleChatMessagesSelector,
 } from '../../stores/ClientConfigStore';
 
-export default function Sidebar() {
+export const Sidebar: FC = () => {
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const isChatModerator = useRecoilValue<boolean>(isChatModeratorAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
 
   return (
-    <Sider className={s.root} collapsedWidth={0} width={320}>
+    <Sider className={styles.root} collapsedWidth={0} width={320}>
       <ChatContainer
         messages={messages}
         usernameToHighlight={chatDisplayName}
@@ -27,4 +28,4 @@ export default function Sidebar() {
       />
     </Sider>
   );
-}
+};

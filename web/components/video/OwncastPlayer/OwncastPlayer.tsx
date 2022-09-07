@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
-import VideoJS from '../player';
+import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
-import VideoPoster from '../VideoPoster/VideoPoster';
+import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
@@ -19,10 +19,10 @@ let playbackMetrics = null;
 let latencyCompensator = null;
 let latencyCompensatorEnabled = false;
 
-interface Props {
+export type OwncastPlayerProps = {
   source: string;
   online: boolean;
-}
+};
 
 async function getVideoSettings() {
   let qualities = [];
@@ -36,9 +36,8 @@ async function getVideoSettings() {
   return qualities;
 }
 
-export default function OwncastPlayer(props: Props) {
+export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   const playerRef = React.useRef(null);
-  const { source, online } = props;
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
 
@@ -302,4 +301,5 @@ export default function OwncastPlayer(props: Props) {
       </div>
     </div>
   );
-}
+};
+export default OwncastPlayer;

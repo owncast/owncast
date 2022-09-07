@@ -1,16 +1,16 @@
 import { Image } from 'antd';
-import s from './Logo.module.scss';
+import { FC } from 'react';
+import styles from './Logo.module.scss';
 
-interface Props {
+export type LogoProps = {
   src: string;
-}
+};
 
-export default function Logo({ src }: Props) {
-  return (
-    <div className={s.root}>
-      <div className={s.container}>
-        <Image src={src} alt="Logo" className={s.image} rootClassName={s.image} />
-      </div>
+export const Logo: FC<LogoProps> = ({ src }) => (
+  <div className={styles.root}>
+    <div className={styles.container}>
+      <Image src={src} alt="Logo" className={styles.image} rootClassName={styles.image} />
     </div>
-  );
-}
+  </div>
+);
+export default Logo;

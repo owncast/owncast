@@ -1,15 +1,15 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import intervalToDuration from 'date-fns/intervalToDuration';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { EyeOutlined } from '@ant-design/icons';
-import s from './Statusbar.module.scss';
+import styles from './Statusbar.module.scss';
 
-interface Props {
+export type StatusbarProps = {
   online: Boolean;
   lastConnectTime?: Date;
   lastDisconnectTime?: Date;
   viewerCount: number;
-}
+};
 
 function makeDurationString(lastConnectTime: Date): string {
   const diff = intervalToDuration({ start: lastConnectTime, end: new Date() });
@@ -22,7 +22,13 @@ function makeDurationString(lastConnectTime: Date): string {
 
   return `${diff.minutes} minutes ${diff.seconds} seconds`;
 }
-export default function Statusbar(props: Props) {
+
+export const Statusbar: FC<StatusbarProps> = ({
+  online,
+  lastConnectTime,
+  lastDisconnectTime,
+  viewerCount,
+}) => {
   const [, setNow] = useState(new Date());
 
   // Set a timer to update the status bar.
@@ -32,8 +38,6 @@ export default function Statusbar(props: Props) {
       clearInterval(interval);
     };
   }, []);
-
-  const { online, lastConnectTime, lastDisconnectTime, viewerCount } = props;
 
   let onlineMessage = '';
   let rightSideMessage: any;
@@ -53,12 +57,13 @@ export default function Statusbar(props: Props) {
   }
 
   return (
-    <div className={s.statusbar}>
+    <div className={styles.statusbar}>
       <div>{onlineMessage}</div>
       <div>{rightSideMessage}</div>
     </div>
   );
-}
+};
+export default Statusbar;
 
 Statusbar.defaultProps = {
   lastConnectTime: null,

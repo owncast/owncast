@@ -1,6 +1,11 @@
-export function ImageAsset(props: ImageAssetProps) {
-  const { name, src } = props;
+import { FC } from 'react';
 
+export type ImageAssetProps = {
+  name: string;
+  src: string;
+};
+
+export const ImageAsset: FC<ImageAssetProps> = ({ name, src }) => {
   const containerStyle = {
     borderRadius: '20px',
     width: '12vw',
@@ -38,12 +43,7 @@ export function ImageAsset(props: ImageAssetProps) {
       </a>
     </figure>
   );
-}
-
-interface ImageAssetProps {
-  name: string;
-  src: string;
-}
+};
 
 const rowStyle = {
   display: 'flex',
@@ -53,7 +53,7 @@ const rowStyle = {
   alignItems: 'center',
 };
 
-export function ImageRow(props: ImageRowProps) {
+export const ImageRow = (props: ImageRowProps) => {
   const { images } = props;
 
   return (
@@ -63,7 +63,7 @@ export function ImageRow(props: ImageRowProps) {
       ))}
     </div>
   );
-}
+};
 
 interface ImageRowProps {
   images: ImageAssetProps[];

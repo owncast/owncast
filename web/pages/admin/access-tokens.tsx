@@ -62,7 +62,7 @@ interface Props {
   onOk: any; // todo: make better type
   visible: boolean;
 }
-function NewTokenModal(props: Props) {
+const NewTokenModal = (props: Props) => {
   const { onOk, onCancel, visible } = props;
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [name, setName] = useState('');
@@ -131,9 +131,9 @@ function NewTokenModal(props: Props) {
       </p>
     </Modal>
   );
-}
+};
 
-export default function AccessTokens() {
+const AccessTokens = () => {
   const [tokens, setTokens] = useState([]);
   const [isTokenModalVisible, setIsTokenModalVisible] = useState(false);
 
@@ -264,4 +264,5 @@ export default function AccessTokens() {
       />
     </div>
   );
-}
+};
+export default AccessTokens;

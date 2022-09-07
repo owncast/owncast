@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import OfflineBanner from './OfflineBanner';
+import { OfflineBanner } from './OfflineBanner';
 import OfflineState from '../../../stories/assets/mocks/offline-state.png';
 
 export default {

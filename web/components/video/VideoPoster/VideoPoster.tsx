@@ -1,18 +1,16 @@
-import { useEffect, useState } from 'react';
-import CrossfadeImage from '../../ui/CrossfadeImage/CrossfadeImage';
-import s from './VideoPoster.module.scss';
+import { FC, useEffect, useState } from 'react';
+import { CrossfadeImage } from '../../ui/CrossfadeImage/CrossfadeImage';
+import styles from './VideoPoster.module.scss';
 
 const REFRESH_INTERVAL = 20_000;
 
-interface Props {
+export type VideoPosterProps = {
   initialSrc: string;
   src: string;
   online: boolean;
-}
+};
 
-export default function VideoPoster(props: Props) {
-  const { online, initialSrc, src: base } = props;
-
+export const VideoPoster: FC<VideoPosterProps> = ({ online, initialSrc, src: base }) => {
   let timer: ReturnType<typeof setInterval>;
   const [src, setSrc] = useState(initialSrc);
   const [duration, setDuration] = useState('0s');
@@ -28,7 +26,7 @@ export default function VideoPoster(props: Props) {
   }, []);
 
   return (
-    <div className={s.poster}>
+    <div className={styles.poster}>
       {!online && <img src={initialSrc} alt="logo" />}
 
       {online && (
@@ -42,4 +40,4 @@ export default function VideoPoster(props: Props) {
       )}
     </div>
   );
-}
+};

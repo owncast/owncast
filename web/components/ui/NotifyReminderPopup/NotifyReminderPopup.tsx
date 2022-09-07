@@ -1,17 +1,21 @@
 import { Popover } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
-import s from './NotifyReminderPopup.module.scss';
+import React, { useState, useEffect, FC } from 'react';
+import styles from './NotifyReminderPopup.module.scss';
 
-interface Props {
+export type NotifyReminderPopupProps = {
   visible: boolean;
   children: React.ReactNode;
   notificationClicked: () => void;
   notificationClosed: () => void;
-}
+};
 
-export default function NotifyReminderPopup(props: Props) {
-  const { children, visible, notificationClicked, notificationClosed } = props;
+export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
+  children,
+  visible,
+  notificationClicked,
+  notificationClosed,
+}) => {
   const [visiblePopup, setVisiblePopup] = useState(visible);
   const [mounted, setMounted] = useState(false);
 
@@ -23,7 +27,7 @@ export default function NotifyReminderPopup(props: Props) {
     setMounted(true);
   }, []);
 
-  const title = <div className={s.title}>Stay updated!</div>;
+  const title = <div className={styles.title}>Stay updated!</div>;
   const popupStyle = {
     borderRadius: '5px',
     cursor: 'pointer',
@@ -45,10 +49,10 @@ export default function NotifyReminderPopup(props: Props) {
 
   const content = (
     <div onClick={popupClicked} onKeyDown={popupClicked} role="menuitem" tabIndex={0}>
-      <button type="button" className={s.closebutton} onClick={popupClosed}>
+      <button type="button" className={styles.closebutton} onClick={popupClosed}>
         <CloseOutlined />
       </button>
-      <div className={s.contentbutton}>
+      <div className={styles.contentbutton}>
         Click and never miss
         <br />
         future streams!
@@ -71,4 +75,4 @@ export default function NotifyReminderPopup(props: Props) {
       </Popover>
     )
   );
-}
+};

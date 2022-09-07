@@ -1,12 +1,13 @@
 import { Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
-import IndieAuthModal from '../IndieAuthModal/IndieAuthModal';
-import FediAuthModal from '../FediAuthModal/FediAuthModal';
+import { FC } from 'react';
+import { IndieAuthModal } from '../IndieAuthModal/IndieAuthModal';
+import { FediAuthModal } from '../FediAuthModal/FediAuthModal';
 
 import FediverseIcon from '../../../assets/images/fediverse-black.png';
 import IndieAuthIcon from '../../../assets/images/indieauth.png';
 
-import s from './AuthModal.module.scss';
+import styles from './AuthModal.module.scss';
 import {
   chatDisplayNameAtom,
   chatAuthenticatedAtom,
@@ -15,10 +16,7 @@ import {
 
 const { TabPane } = Tabs;
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-interface Props {}
-
-export default function AuthModal(props: Props) {
+export const AuthModal: FC = () => {
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
@@ -34,8 +32,8 @@ export default function AuthModal(props: Props) {
       >
         <TabPane
           tab={
-            <span className={s.tabContent}>
-              <img className={s.icon} src={IndieAuthIcon.src} alt="IndieAuth" />
+            <span className={styles.tabContent}>
+              <img className={styles.icon} src={IndieAuthIcon.src} alt="IndieAuth" />
               IndieAuth
             </span>
           }
@@ -49,8 +47,8 @@ export default function AuthModal(props: Props) {
         </TabPane>
         <TabPane
           tab={
-            <span className={s.tabContent}>
-              <img className={s.icon} src={FediverseIcon.src} alt="Fediverse auth" />
+            <span className={styles.tabContent}>
+              <img className={styles.icon} src={FediverseIcon.src} alt="Fediverse auth" />
               FediAuth
             </span>
           }
@@ -61,4 +59,4 @@ export default function AuthModal(props: Props) {
       </Tabs>
     </div>
   );
-}
+};

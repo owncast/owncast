@@ -1,8 +1,8 @@
 import { Col, Collapse, Row, Typography } from 'antd';
 import React from 'react';
-import VideoCodecSelector from '../../components/config/video-codec-selector';
-import VideoLatency from '../../components/config/video-latency';
-import VideoVariantsTable from '../../components/config/video-variants-table';
+import { CodecSelector as VideoCodecSelector } from '../../components/config/CodecSelector';
+import { VideoLatency } from '../../components/config/VideoLatency';
+import { CurrentVariantsTable } from '../../components/config/CurrentVariantsTable';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -28,7 +28,7 @@ export default function ConfigVideoSettings() {
       <Row gutter={[16, 16]}>
         <Col md={24} lg={12}>
           <div className="form-module variants-table-module">
-            <VideoVariantsTable />
+            <CurrentVariantsTable />
           </div>
         </Col>
         <Col md={24} lg={12}>

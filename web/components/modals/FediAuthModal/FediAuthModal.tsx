@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-interface Props {}
+import { FC } from 'react';
 
-export default function FediAuthModal(props: Props) {
-  return <div>Component goes here</div>;
-}
+export const FediAuthModal: FC = () => <div>Component goes here</div>;

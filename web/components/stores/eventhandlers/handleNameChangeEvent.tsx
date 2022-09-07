@@ -1,7 +1,7 @@
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatEvent } from '../../../interfaces/socket-events';
 
-export default function handleNameChangeEvent(
+export function handleNameChangeEvent(
   message: ChatEvent,
   messages: ChatMessage[],
   setChatMessages,
@@ -9,3 +9,4 @@ export default function handleNameChangeEvent(
   const updatedMessages = [...messages, message];
   setChatMessages(updatedMessages);
 }
+export default handleNameChangeEvent;
