@@ -1,17 +1,29 @@
 import { SendOutlined, SmileOutlined } from '@ant-design/icons';
 import { Button, Popover } from 'antd';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Transforms, createEditor, BaseEditor, Text } from 'slate';
-import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
+import { Editor, Node, Path, Transforms, createEditor, BaseEditor, Text, Descendant } from 'slate';
+import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
 import EmojiPicker from './EmojiPicker';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
-import s from './ChatTextField.module.scss';
+import style from './ChatTextField.module.scss';
 
-type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] };
+type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] } | ImageNode;
 type CustomText = { text: string };
+
+type EmptyText = {
+  text: string;
+};
+
+type ImageNode = {
+  type: 'image';
+  alt: string;
+  src: string;
+  name: string;
+  children: EmptyText[];
+};
 
 declare module 'slate' {
   interface CustomTypes {
@@ -21,26 +33,27 @@ declare module 'slate' {
   }
 }
 
-interface Props {
-  value?: string;
-}
+const Image = p => {
+  const { attributes, element, children } = p;
 
-// eslint-disable-next-line react/prop-types
-const Image = ({ element }) => (
-  <img
-    // eslint-disable-next-line no-undef
-    // eslint-disable-next-line react/prop-types
-    src={element.url}
-    alt="emoji"
-    style={{ display: 'inline', position: 'relative', width: '30px', bottom: '10px' }}
-  />
-);
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const insertImage = (editor, url) => {
-  // const text = { text: '' };
-  // const image: ImageElement = { type: 'image', url, children: [text] };
-  // Transforms.insertNodes(editor, image);
+  const selected = useSelected();
+  const focused = useFocused();
+  return (
+    <span {...attributes} contentEditable={false}>
+      <img
+        alt={element.alt}
+        src={element.src}
+        title={element.name}
+        style={{
+          display: 'inline',
+          maxWidth: '50px',
+          maxHeight: '20px',
+          boxShadow: `${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'}`,
+        }}
+      />
+      {children}
+    </span>
+  );
 };
 
 const withImages = editor => {
@@ -54,54 +67,40 @@ const withImages = editor => {
   return editor;
 };
 
-export type EmptyText = {
-  text: string;
-};
-
-// type ImageElement = {
-//   type: 'image';
-//   url: string;
-//   children: EmptyText[];
-// };
-
-const Element = (props: any) => {
-  const { attributes, children, element } = props;
-
-  switch (element.type) {
-    case 'image':
-      return <Image {...props} />;
-    default:
-      return <p {...attributes}>{children}</p>;
-  }
-};
-
 const serialize = node => {
   if (Text.isText(node)) {
     const string = node.text;
-    // if (node.bold) {
-    //   string = `<strong>${string}</strong>`;
-    // }
     return string;
   }
 
-  const children = node.children.map(n => serialize(n)).join('');
+  let children;
+  if (node.children.length === 0) {
+    children = [{ text: '' }];
+  } else {
+    children = node.children?.map(n => serialize(n)).join('');
+  }
 
   switch (node.type) {
     case 'paragraph':
       return `<p>${children}</p>`;
     case 'image':
-      return `<img src="${node.url}" alt="emoji" />`;
+      return `<img src="${node.src}" alt="${node.alt}" title="${node.name}" class="emoji"/>`;
     default:
       return children;
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function ChatTextField(props: Props) {
-  // const { value: originalValue } = props;
+export default function ChatTextField() {
   const [showEmojis, setShowEmojis] = useState(false);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const [editor] = useState(() => withImages(withReact(createEditor())));
+  const editor = useMemo(() => withReact(withImages(createEditor())), []);
+
+  const defaultEditorValue: Descendant[] = [
+    {
+      type: 'paragraph',
+      children: [{ text: '' }],
+    },
+  ];
 
   const sendMessage = () => {
     if (!websocketService) {
@@ -110,28 +109,73 @@ export default function ChatTextField(props: Props) {
     }
 
     const message = serialize(editor);
-
     websocketService.send({ type: MessageType.CHAT, body: message });
 
     // Clear the editor.
-    Transforms.select(editor, [0, editor.children.length - 1]);
-    Transforms.delete(editor);
+    Transforms.delete(editor, {
+      at: {
+        anchor: Editor.start(editor, []),
+        focus: Editor.end(editor, []),
+      },
+    });
   };
 
-  const handleChange = () => {};
+  const createImageNode = (alt, src, name): ImageNode => ({
+    type: 'image',
+    alt,
+    src,
+    name,
+    children: [{ text: '' }],
+  });
 
-  const handleEmojiSelect = (e: any) => {
+  const insertImage = (url, name) => {
+    if (!url) return;
+
+    const { selection } = editor;
+    const image = createImageNode(name, url, name);
+
+    Transforms.insertNodes(editor, image, { select: true });
+
+    if (selection) {
+      const [parentNode, parentPath] = Editor.parent(editor, selection.focus?.path);
+
+      if (editor.isVoid(parentNode) || Node.string(parentNode).length) {
+        // Insert the new image node after the void node or a node with content
+        Transforms.insertNodes(editor, image, {
+          at: Path.next(parentPath),
+          select: true,
+        });
+      } else {
+        // If the node is empty, replace it instead
+        // Transforms.removeNodes(editor, { at: parentPath });
+        Transforms.insertNodes(editor, image, { at: parentPath, select: true });
+        Editor.normalize(editor, { force: true });
+      }
+    } else {
+      // Insert the new image node at the bottom of the Editor when selection
+      // is falsey
+      Transforms.insertNodes(editor, image, { select: true });
+    }
+  };
+
+  const onEmojiSelect = (e: any) => {
     ReactEditor.focus(editor);
 
     if (e.url) {
       // Custom emoji
       const { url } = e;
-      insertImage(editor, url);
+      insertImage(url, url);
     } else {
       // Native emoji
       const { emoji } = e;
       Transforms.insertText(editor, emoji);
     }
+  };
+
+  const onCustomEmojiSelect = (e: any) => {
+    ReactEditor.focus(editor);
+    const { url } = e;
+    insertImage(url, url);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -141,23 +185,34 @@ export default function ChatTextField(props: Props) {
     }
   };
 
+  const renderElement = p => {
+    switch (p.element.type) {
+      case 'image':
+        return <Image {...p} />;
+      default:
+        return <p {...p} />;
+    }
+  };
+
   return (
     <div>
-      <div className={s.root}>
-        <Slate
-          editor={editor}
-          value={[{ type: 'paragraph', children: [{ text: '' }] }]}
-          onChange={handleChange}
-        >
+      <div className={style.root}>
+        <Slate editor={editor} value={defaultEditorValue}>
           <Editable
             onKeyDown={onKeyDown}
-            renderElement={p => <Element {...p} />}
+            renderElement={renderElement}
             placeholder="Chat message goes here..."
             style={{ width: '100%' }}
+            // onChange={change => setValue(change.value)}
             autoFocus
           />
           <Popover
-            content={<EmojiPicker onEmojiSelect={handleEmojiSelect} />}
+            content={
+              <EmojiPicker
+                onEmojiSelect={onEmojiSelect}
+                onCustomEmojiSelect={onCustomEmojiSelect}
+              />
+            }
             trigger="click"
             onVisibleChange={visible => setShowEmojis(visible)}
             visible={showEmojis}
@@ -166,14 +221,14 @@ export default function ChatTextField(props: Props) {
 
         <button
           type="button"
-          className={s.emojiButton}
+          className={style.emojiButton}
           title="Emoji picker button"
           onClick={() => setShowEmojis(!showEmojis)}
         >
           <SmileOutlined />
         </button>
         <Button
-          className={s.sendButton}
+          className={style.sendButton}
           size="large"
           type="ghost"
           icon={<SendOutlined />}
@@ -183,7 +238,3 @@ export default function ChatTextField(props: Props) {
     </div>
   );
 }
-
-ChatTextField.defaultProps = {
-  value: '',
-};

@@ -5,12 +5,13 @@ const CUSTOM_EMOJI_URL = '/api/emoji';
 interface Props {
   // eslint-disable-next-line react/no-unused-prop-types
   onEmojiSelect: (emoji: string) => void;
+  onCustomEmojiSelect: (emoji: string) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function EmojiPicker(props: Props) {
   const [customEmoji, setCustomEmoji] = useState([]);
-  const { onEmojiSelect } = props;
+  const { onEmojiSelect, onCustomEmojiSelect } = props;
   const ref = useRef();
 
   const getCustomEmoji = async () => {
@@ -30,10 +31,25 @@ export default function EmojiPicker(props: Props) {
 
   // Recreate the emoji picker when the custom emoji changes.
   useEffect(() => {
-    const picker = createPicker({ rootElement: ref.current, custom: customEmoji });
+    const e = customEmoji.map(emoji => ({
+      emoji: emoji.name,
+      label: emoji.name,
+      url: emoji.url,
+    }));
+
+    const picker = createPicker({
+      rootElement: ref.current,
+      custom: e,
+      initialCategory: 'custom',
+      showPreview: false,
+      showRecents: true,
+    });
     picker.addEventListener('emoji:select', event => {
-      console.log('Emoji selected:', event.emoji);
-      onEmojiSelect(event);
+      if (event.url) {
+        onCustomEmojiSelect(event);
+      } else {
+        onEmojiSelect(event);
+      }
     });
   }, [customEmoji]);
 
