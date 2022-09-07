@@ -19,18 +19,19 @@ jobs:
     defaults:
       run:
         working-directory: ./web
-    # Job steps
+
     steps:
-      - uses: actions/checkout@v3
       - name: Check out code
+        uses: actions/checkout@v3
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
-      - run: npm install --include=dev --force
-        # 👇 Adds Chromatic as a step in the workflow
+      - name: Install dependencies
+        run: npm install
+
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         # Chromatic GitHub Action options
