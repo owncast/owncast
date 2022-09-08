@@ -5,7 +5,9 @@ import { Logo } from '../components/ui/Logo/Logo';
 export default {
   title: 'owncast/Components/Page Logo',
   component: Logo,
-  parameters: {},
+  parameters: {
+    chromatic: { diffThreshold: 0.8 },
+  },
 } as ComponentMeta<typeof Logo>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
