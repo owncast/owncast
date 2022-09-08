@@ -58,7 +58,7 @@
 		"yaml": "2.0.0"
 	},
 	"devDependencies": {
-		"@babel/core": "7.18.13",
+		"@babel/core": "7.19.0",
 		"@storybook/addon-a11y": "6.5.10",
 		"@storybook/addon-actions": "6.5.10",
 		"@storybook/addon-docs": "6.5.10",
