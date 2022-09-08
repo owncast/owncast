@@ -5,7 +5,9 @@ import { OwncastLogo } from './OwncastLogo';
 export default {
   title: 'owncast/Components/Header Logo',
   component: OwncastLogo,
-  parameters: {},
+  parameters: {
+    chromatic: { diffThreshold: 0.8 },
+  },
 } as ComponentMeta<typeof OwncastLogo>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
