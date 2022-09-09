@@ -21,7 +21,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
   const [valid, setValid] = useState(false);
   const [account, setAccount] = useState('');
   const [code, setCode] = useState('');
-  const [verifyingCode, setVerifyingCode] = useState(true);
+  const [verifyingCode, setVerifyingCode] = useState(false);
 
   const message = !authenticated ? (
     <span>
