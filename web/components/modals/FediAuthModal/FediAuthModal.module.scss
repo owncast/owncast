@@ -1,0 +1,22 @@
+.codeInputContainer {
+  .codeInput {
+    font-size: 1.6rem;
+    font-family: monospace;
+    max-width: 220px;
+    margin: auto;
+    text-align: center;
+    letter-spacing: 6px;
+    border-color: var(--theme-color-palette-9);
+    color: var(--theme-color-palette-9);
+  }
+
+  .submitButton {
+    max-width: 150px;
+    margin: auto;
+    margin-top: 10px;
+  }
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}

@@ -3,12 +3,6 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { FediAuthModal } from './FediAuthModal';
 import FediAuthModalMock from '../../../stories/assets/mocks/fediauth-modal.png';
 
-const Example = () => (
-  <div>
-    <FediAuthModal />
-  </div>
-);
-
 export default {
   title: 'owncast/Modals/FediAuth',
   component: FediAuthModal,
@@ -21,8 +15,18 @@ export default {
   },
 } as ComponentMeta<typeof FediAuthModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof FediAuthModal> = args => <Example />;
+const Template: ComponentStory<typeof FediAuthModal> = args => <FediAuthModal {...args} />;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+export const NotYetAuthenticated = Template.bind({});
+NotYetAuthenticated.args = {
+  displayName: 'fake-user',
+  authenticated: false,
+  accessToken: '',
+};
+
+export const Authenticated = Template.bind({});
+Authenticated.args = {
+  displayName: 'fake-user',
+  authenticated: true,
+  accessToken: '',
+};

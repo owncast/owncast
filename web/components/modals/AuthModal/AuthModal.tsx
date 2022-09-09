@@ -20,7 +20,7 @@ export const AuthModal: FC = () => {
   const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
-  const federationEnabled = false;
+  const federationEnabled = true;
 
   return (
     <div>
@@ -54,7 +54,11 @@ export const AuthModal: FC = () => {
           }
           key="2"
         >
-          <FediAuthModal />
+          <FediAuthModal
+            authenticated={authenticated}
+            displayName={chatDisplayName}
+            accessToken={accessToken}
+          />
         </TabPane>
       </Tabs>
     </div>
