@@ -35,5 +35,5 @@ module.exports = withLess({
       },
     ];
   },
-  pageExtensions: ['.tsx'],
+  pageExtensions: ['tsx'],
 });
