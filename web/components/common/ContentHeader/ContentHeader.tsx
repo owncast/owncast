@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import { FC } from 'react';
+import Linkify from 'react-linkify';
 import { Logo } from '../../ui/Logo/Logo';
 import { SocialLinks } from '../../ui/SocialLinks/SocialLinks';
 import { SocialLink } from '../../../interfaces/social-link.model';
@@ -29,7 +30,9 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
       </div>
       <div className={styles.titleSection}>
         <div className={cn(styles.title, styles.row)}>{name}</div>
-        <div className={cn(styles.subtitle, styles.row)}>{title || summary}</div>
+        <div className={cn(styles.subtitle, styles.row)}>
+          <Linkify>{title || summary}</Linkify>
+        </div>
         <div className={cn(styles.tagList, styles.row)}>
           {tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}
         </div>
