@@ -1,10 +1,14 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
 import {
   clientConfigStateAtom,
+  chatMessagesAtom,
+  chatDisplayNameAtom,
+  chatUserIdAtom,
   isChatVisibleSelector,
   appStateAtom,
   isOnlineSelector,
@@ -31,19 +35,87 @@ import { BrowserNotifyModal } from '../../modals/BrowserNotifyModal/BrowserNotif
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
+import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
+import { ChatMessage } from '../../../interfaces/chat-message.model';
 
 const { TabPane } = Tabs;
 const { Content: AntContent } = Layout;
+
+const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extraPageContent }) => (
+  <>
+    <div className={styles.lowerHalf}>
+      <ContentHeader
+        name={name}
+        title={streamTitle}
+        summary={summary}
+        tags={tags}
+        links={socialHandles}
+        logo="/logo"
+      />
+    </div>
+
+    <div className={styles.lowerSection}>
+      <Tabs defaultActiveKey="0">
+        <TabPane tab="About" key="2">
+          <CustomPageContent content={extraPageContent} />
+        </TabPane>
+        <TabPane tab="Followers" key="3">
+          <FollowerCollection />
+        </TabPane>
+      </Tabs>
+    </div>
+  </>
+);
+
+const MobileContent = ({
+  name,
+  streamTitle,
+  summary,
+  tags,
+  socialHandles,
+  extraPageContent,
+  messages,
+  chatDisplayName,
+  chatUserId,
+}) => (
+  <div className={classNames(styles.lowerSectionMobile)}>
+    <Tabs defaultActiveKey="0">
+      <TabPane tab="Chat" key="1">
+        <ChatContainer
+          messages={messages}
+          usernameToHighlight={chatDisplayName}
+          chatUserId={chatUserId}
+          isModerator={false}
+          height="40vh"
+        />{' '}
+      </TabPane>
+      <TabPane tab="About" key="2">
+        <ContentHeader
+          name={name}
+          title={streamTitle}
+          summary={summary}
+          tags={tags}
+          links={socialHandles}
+          logo="/logo"
+        />
+        <CustomPageContent content={extraPageContent} />
+      </TabPane>
+      <TabPane tab="Followers" key="3">
+        <FollowerCollection />
+      </TabPane>
+    </Tabs>
+  </div>
+);
 
 export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
-  // const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
+  const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
-  // const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
-  // const chatUserId = useRecoilValue<string>(chatUserIdAtom);
+  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
+  const chatUserId = useRecoilValue<string>(chatUserIdAtom);
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
   const {
@@ -145,31 +217,32 @@ export const Content: FC = () => {
               </Modal>
             </div>
           </div>
-          <div className={styles.lowerHalf}>
-            <ContentHeader
+          {isMobile && isChatVisible ? (
+            <MobileContent
               name={name}
-              title={streamTitle}
+              streamTitle={streamTitle}
               summary={summary}
               tags={tags}
-              links={socialHandles}
-              logo="/logo"
+              socialHandles={socialHandles}
+              extraPageContent={extraPageContent}
+              messages={messages}
+              chatDisplayName={chatDisplayName}
+              chatUserId={chatUserId}
             />
-          </div>
-
-          <div className={styles.lowerSection}>
-            <Tabs defaultActiveKey="0">
-              <TabPane tab="About" key="2">
-                <CustomPageContent content={extraPageContent} />
-              </TabPane>
-              <TabPane tab="Followers" key="3">
-                <FollowerCollection />
-              </TabPane>
-            </Tabs>
-          </div>
+          ) : (
+            <DesktopContent
+              name={name}
+              streamTitle={streamTitle}
+              summary={summary}
+              tags={tags}
+              socialHandles={socialHandles}
+              extraPageContent={extraPageContent}
+            />
+          )}
         </div>
         {isChatVisible && !isMobile && <Sidebar />}
       </AntContent>
-      <Footer version={version} />
+      {(!isMobile || !isChatVisible) && <Footer version={version} />}
     </div>
   );
 };

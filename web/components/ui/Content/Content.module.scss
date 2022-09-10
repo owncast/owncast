@@ -9,8 +9,12 @@
     background-color: var(--theme-color-components-video-background);
   }
   .lowerSection {
-    padding: 0em 2em;
+    padding: 0em 2%;
     margin-bottom: 2em;
+  }
+
+  .lowerSectionMobile {
+    padding: 0.3em;
   }
 }
 
