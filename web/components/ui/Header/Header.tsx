@@ -20,9 +20,7 @@ export const Header: FC<HeaderComponentProps> = ({ name = 'Your stream title', c
     {chatAvailable && <UserDropdown />}
     {!chatAvailable && (
       <Tooltip title="Chat is available when the stream is live." placement="left">
-        <Tag color="processing" style={{ cursor: 'pointer' }}>
-          Chat offline
-        </Tag>
+        <Tag style={{ cursor: 'pointer' }}>Chat offline</Tag>
       </Tooltip>
     )}
   </AntHeader>
