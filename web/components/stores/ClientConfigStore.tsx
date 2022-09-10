@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { atom, selector, useRecoilState, useSetRecoilState } from 'recoil';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
@@ -170,7 +170,7 @@ function mergeMeta(meta) {
   }, {});
 }
 
-export const ClientConfigStore = () => {
+export const ClientConfigStore: FC = () => {
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
 
   const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
@@ -342,6 +342,29 @@ export const ClientConfigStore = () => {
       console.error(`ChatService -> startChat() ERROR: \n${error}`);
     }
   };
+
+  // Read the config and status on initial load from a JSON string that lives
+  // in window. This is placed there server-side and allows for fast initial
+  // load times because we don't have to wait for the API calls to complete.
+  useEffect(() => {
+    try {
+      if ((window as any).configHydration) {
+        const config = JSON.parse((window as any).configHydration);
+        setClientConfig(config);
+      }
+    } catch (e) {
+      // console.error('Error parsing config hydration', e);
+    }
+
+    try {
+      if ((window as any).statusHydration) {
+        const status = JSON.parse((window as any).statusHydration);
+        setServerStatus(status);
+      }
+    } catch (e) {
+      // console.error('error parsing status hydration', e);
+    }
+  }, []);
 
   useEffect(() => {
     updateClientConfig();

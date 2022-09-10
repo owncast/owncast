@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"path/filepath"
+	"strings"
 
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -19,6 +23,11 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if isIndexRequest {
+		renderIndexHtml(w)
+		return
+	}
+
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
@@ -26,4 +35,54 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.SetHeaders(w)
 
 	serveWeb(w, r)
+}
+
+func renderIndexHtml(w http.ResponseWriter) {
+	type serverSideContent struct {
+		Name             string
+		Summary          string
+		RequestedURL     string
+		TagsString       string
+		ThumbnailURL     string
+		Thumbnail        string
+		Image            string
+		StatusJSON       string
+		ServerConfigJSON string
+	}
+
+	status := getStatusResponse()
+	sb, err := json.Marshal(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	config := getConfigResponse()
+	cb, err := json.Marshal(config)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	content := serverSideContent{
+		Name:             data.GetServerName(),
+		Summary:          data.GetServerSummary(),
+		RequestedURL:     data.GetServerURL(),
+		TagsString:       strings.Join(data.GetServerMetadataTags(), ","),
+		ThumbnailURL:     "/thumbnail",
+		Thumbnail:        "/thumbnail",
+		Image:            "/logo/external",
+		StatusJSON:       string(sb),
+		ServerConfigJSON: string(cb),
+	}
+
+	index, err := static.GetWebIndexTemplate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := index.Execute(w, content); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
