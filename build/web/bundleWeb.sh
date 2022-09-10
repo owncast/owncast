@@ -17,7 +17,7 @@ echo "Building owncast web..."
 rm -rf .next
 (node_modules/.bin/next build && node_modules/.bin/next export) | grep info
 
-echo "Copying admin to project directory..."
+echo "Copying web project to dist directory..."
 
 # Remove the old one
 rm -rf ../static/web

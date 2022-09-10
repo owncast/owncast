@@ -61,6 +61,14 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
+	configuration := getConfigResponse()
+
+	if err := json.NewEncoder(w).Encode(configuration); err != nil {
+		BadRequestHandler(w, err)
+	}
+}
+
+func getConfigResponse() webConfigResponse {
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
 	socialHandles := data.GetSocialHandles()
 	for i, handle := range socialHandles {
@@ -106,7 +114,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		IndieAuthEnabled: data.GetServerURL() != "",
 	}
 
-	configuration := webConfigResponse{
+	return webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
 		OfflineMessage:       data.GetCustomOfflineMessage(),
@@ -125,10 +133,6 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Federation:           federationResponse,
 		Notifications:        notificationsResponse,
 		Authentication:       authenticationResponse,
-	}
-
-	if err := json.NewEncoder(w).Encode(configuration); err != nil {
-		BadRequestHandler(w, err)
 	}
 }
 

@@ -1,3 +1,5 @@
+/* eslint-disable react/no-danger */
+/* eslint-disable react/no-unescaped-entities */
 import { Layout } from 'antd';
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
@@ -26,6 +28,11 @@ export const Main: FC = () => {
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
   }, []);
+
+  const hydrationScript = `
+	window.statusHydration = {{.StatusJSON}};
+	window.configHydration = {{.ServerConfigJSON}};
+	`;
 
   return (
     <>
@@ -86,6 +93,7 @@ export const Main: FC = () => {
         <meta name="theme-color" content="#ffffff" />
 
         <style>{customStyles}</style>
+        <script dangerouslySetInnerHTML={{ __html: hydrationScript }} />
       </Head>
 
       <ClientConfigStore />
