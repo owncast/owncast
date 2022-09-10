@@ -11,8 +11,9 @@
   padding: 0;
   color: var(--theme-color-palette-0);
   background-color: var(--theme-color-palette-4);
-  padding: calc(3 * var(--content-padding));
+  padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
+  width: clamp(300px, 80%, 900px);
 
   // Allow the content to fill the width on narrow screens.
   @media only screen and (max-width: 768px) {
@@ -27,5 +28,9 @@
 
   div.summary {
     font-size: 18px;
+  }
+
+  p {
+    margin: unset;
   }
 }
