@@ -4,7 +4,7 @@
 }
 
 .innerContainer {
-  width: clamp(200px, 100%, 300px);
+  width: clamp(00px, 100%, 600px);
   display: flex;
   flex-direction: column;
   color: var(--theme-color-components-text-on-light);
@@ -12,6 +12,7 @@
   margin: 1rem auto;
   border-radius: var(--theme-rounded-corners);
   padding: 1rem;
+  font-size: 1.2rem;
 }
 
 .header {

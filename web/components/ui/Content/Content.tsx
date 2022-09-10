@@ -1,15 +1,10 @@
-/* eslint-disable react/no-danger */
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import cn from 'classnames';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
 import {
   clientConfigStateAtom,
-  // chatMessagesAtom,
-  // chatDisplayNameAtom,
-  // chatUserIdAtom,
   isChatVisibleSelector,
   appStateAtom,
   isOnlineSelector,
@@ -23,9 +18,7 @@ import { FollowerCollection } from '../followers/FollowerCollection/FollowerColl
 import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Footer } from '../Footer/Footer';
-// import ChatContainer from '../../chat/ChatContainer';
-// import { ChatMessage } from '../../../interfaces/chat-message.model';
-// import ChatTextField from '../../chat/ChatTextField/ChatTextField';
+
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 import { NotifyReminderPopup } from '../NotifyReminderPopup/NotifyReminderPopup';
@@ -105,13 +98,9 @@ export const Content: FC = () => {
     window.addEventListener('resize', checkIfMobile);
   }, []);
 
-  const rootClassName = cn(styles.root, {
-    [styles.mobile]: isMobile,
-  });
-
   return (
     <div>
-      <AntContent className={rootClassName}>
+      <AntContent className={styles.root}>
         <div className={styles.leftContent}>
           <Spin className={styles.loadingSpinner} size="large" spinning={appState.appLoading} />
 
@@ -168,26 +157,11 @@ export const Content: FC = () => {
           </div>
 
           <div className={styles.lowerSection}>
-            <Tabs defaultActiveKey="0" style={{ height: '100%' }}>
-              {isChatVisible && isMobile && (
-                <TabPane tab="Chat" key="0" style={{ height: '100%' }}>
-                  {/* <div style={{ position: 'relative', height: '100%' }}>
-                  <div className={s.mobileChat}>
-                    <ChatContainer
-                      messages={messages}
-                      // loading={appState.chatLoading}
-                      usernameToHighlight={chatDisplayName}
-                      chatUserId={chatUserId}
-                      isModerator={false}
-                    />
-                  </div>
-                </div> */}
-                </TabPane>
-              )}
-              <TabPane tab="About" key="2" className={styles.pageContentSection}>
+            <Tabs defaultActiveKey="0">
+              <TabPane tab="About" key="2">
                 <CustomPageContent content={extraPageContent} />
               </TabPane>
-              <TabPane tab="Followers" key="3" className={styles.pageContentSection}>
+              <TabPane tab="Followers" key="3">
                 <FollowerCollection />
               </TabPane>
             </Tabs>
@@ -195,7 +169,7 @@ export const Content: FC = () => {
         </div>
         {isChatVisible && !isMobile && <Sidebar />}
       </AntContent>
-      {!isMobile && <Footer version={version} />}
+      <Footer version={version} />
     </div>
   );
 };
