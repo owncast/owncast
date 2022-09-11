@@ -16,3 +16,44 @@ alert-error-border-color:
   value: 'var(--theme-color-palette-error)'
 popover-background:
   value: 'var(--theme-color-components-menu-background)'
+
+# This values need to be statically assigned at build time and cannot be
+# overridden by the user at runtime.
+primary-color:
+  value: '{color.owncast.palette.6.value}'
+  comment: '{color.owncast.palette.6.comment}'
+primary-color-hover:
+  value: '{color.owncast.palette.11.value}'
+  comment: '{color.owncast.palette.11.comment}'
+primary-color-active:
+  value: '{color.owncast.palette.7.value}'
+  comment: '{color.owncast.palette.7.comment}'
+
+primary-1:
+  value: '{color.owncast.palette.6.value}'
+  comment: '{color.owncast.palette.6.comment}'
+primary-2:
+  value: '{color.owncast.palette.11.value}'
+  comment: '{color.owncast.palette.11.comment}'
+primary-3:
+  value: '{color.owncast.palette.7.value}'
+  comment: '{color.owncast.palette.7.comment}'
+primary-4:
+  value: '{color.owncast.palette.12.value}'
+  comment: '{color.owncast.palette.12.comment}'
+primary-5:
+  value: '{color.owncast.palette.6.value}'
+  comment: '{color.owncast.palette.6.comment}'
+primary-6:
+  value: '{color.owncast.palette.11.value}'
+  comment: '{color.owncast.palette.11.comment}'
+primary-7:
+  value: '{color.owncast.palette.7.value}'
+  comment: '{color.owncast.palette.7.comment}'
+primary-8:
+  value: '{color.owncast.palette.12.value}'
+  comment: '{color.owncast.palette.12.comment}'
+
+component-background:
+  value: '{color.owncast.palette.1.value}'
+  comment: '{color.owncast.palette.1.comment}'
