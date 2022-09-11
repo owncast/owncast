@@ -26,7 +26,7 @@ export default function VideoEmbed() {
       <ClientConfigStore />
       <div className="video-embed">
         {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-        {!online && <OfflineBanner name={name} text="Stream is offline text goes here." />}{' '}
+        {!online && <OfflineBanner title={name} text="Stream is offline text goes here." />}{' '}
         <Statusbar
           online={online}
           lastConnectTime={lastConnectTime}
