@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { atom, selector, useRecoilState, useSetRecoilState } from 'recoil';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
@@ -28,6 +28,8 @@ import { DisplayableError } from '../../types/displayable-error';
 
 const SERVER_STATUS_POLL_DURATION = 5000;
 const ACCESS_TOKEN_KEY = 'accessToken';
+
+let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
@@ -187,6 +189,8 @@ export const ClientConfigStore: FC = () => {
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   const [hiddenMessageIds, setHiddenMessageIds] = useRecoilState<string[]>(removedMessageIdsAtom);
+  const [hasLoadedStatus, setHasLoadedStatus] = useState(false);
+  const [hasLoadedConfig, setHasLoadedConfig] = useState(false);
 
   let ws: WebsocketService;
 
@@ -205,12 +209,12 @@ export const ClientConfigStore: FC = () => {
     try {
       const config = await ClientConfigService.getConfig();
       setClientConfig(config);
-      sendEvent('LOADED');
       setGlobalFatalErrorMessage(null);
+      setHasLoadedConfig(true);
     } catch (error) {
       setGlobalFatalError(
         'Unable to reach Owncast server',
-        `Owncast cannot launch. Please make sure the Owncast server is running. ${error}`,
+        `Owncast cannot launch. Please make sure the Owncast server is running.`,
       );
       console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
     }
@@ -220,6 +224,7 @@ export const ClientConfigStore: FC = () => {
     try {
       const status = await ServerStatusService.getStatus();
       setServerStatus(status);
+      setHasLoadedStatus(true);
       const { serverTime } = status;
 
       const clockSkew = new Date(serverTime).getTime() - Date.now();
@@ -332,12 +337,10 @@ export const ClientConfigStore: FC = () => {
   };
 
   const startChat = async () => {
-    sendEvent(AppStateEvent.Loading);
     try {
       ws = new WebsocketService(accessToken, '/ws');
       ws.handleMessage = handleMessage;
       setWebsocketService(ws);
-      sendEvent(AppStateEvent.Loaded);
     } catch (error) {
       console.error(`ChatService -> startChat() ERROR: \n${error}`);
     }
@@ -367,10 +370,18 @@ export const ClientConfigStore: FC = () => {
   }, []);
 
   useEffect(() => {
+    if (hasLoadedStatus && hasLoadedConfig) {
+      sendEvent(AppStateEvent.Loaded);
+    }
+  }, [hasLoadedStatus, hasLoadedConfig]);
+
+  useEffect(() => {
     updateClientConfig();
     handleUserRegistration();
     updateServerStatus();
-    setInterval(() => {
+
+    clearInterval(serverStatusRefreshPoll);
+    serverStatusRefreshPoll = setInterval(() => {
       updateServerStatus();
     }, SERVER_STATUS_POLL_DURATION);
   }, [appState]);

@@ -4,14 +4,14 @@ import { FC } from 'react';
 import styles from './OfflineBanner.module.scss';
 
 export type OfflineBannerProps = {
-  name: string;
+  title: string;
   text: string;
 };
 
-export const OfflineBanner: FC<OfflineBannerProps> = ({ name, text }) => (
+export const OfflineBanner: FC<OfflineBannerProps> = ({ title, text }) => (
   <div className={styles.outerContainer}>
     <div className={styles.innerContainer}>
-      <div className={styles.header}>{name} is currently offline.</div>
+      <div className={styles.header}>{title}</div>
       <Divider />
       <div>{text}</div>
 

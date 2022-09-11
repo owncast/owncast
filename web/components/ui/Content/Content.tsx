@@ -170,79 +170,82 @@ export const Content: FC = () => {
     window.addEventListener('resize', checkIfMobile);
   }, []);
 
+  let offlineMessageBody =
+    !appState.appLoading && 'Please follow and ask to get notified when the stream is live.';
+  if (offlineMessage && !appState.appLoading) {
+    offlineMessageBody = offlineMessage;
+  }
+
+  const offlineTitle = !appState.appLoading && `${name} is currently offline`;
+
   return (
     <div>
-      <AntContent className={styles.root}>
-        <div className={styles.leftContent}>
-          <Spin className={styles.loadingSpinner} size="large" spinning={appState.appLoading} />
+      <Spin className={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
+        <AntContent className={styles.root}>
+          <div className={styles.leftContent}>
+            <div className={styles.topSection}>
+              {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+              {!online && !appState.appLoading && (
+                <OfflineBanner title={offlineTitle} text={offlineMessageBody} />
+              )}
+              <Statusbar
+                online={online}
+                lastConnectTime={lastConnectTime}
+                lastDisconnectTime={lastDisconnectTime}
+                viewerCount={viewerCount}
+              />
+            </div>
+            <div className={styles.midSection}>
+              <div className={styles.buttonsLogoTitleSection}>
+                <ActionButtonRow>
+                  {externalActionButtons}
+                  <FollowButton size="small" />
+                  <NotifyReminderPopup
+                    visible={showNotifyReminder}
+                    notificationClicked={() => setShowNotifyPopup(true)}
+                    notificationClosed={() => disableNotifyReminderPopup()}
+                  >
+                    <NotifyButton onClick={() => setShowNotifyPopup(true)} />
+                  </NotifyReminderPopup>
+                </ActionButtonRow>
 
-          <div className={styles.topSection}>
-            {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-            {!online && (
-              <OfflineBanner
+                <Modal
+                  title="Notify"
+                  visible={showNotifyPopup}
+                  afterClose={() => disableNotifyReminderPopup()}
+                  handleCancel={() => disableNotifyReminderPopup()}
+                >
+                  <BrowserNotifyModal />
+                </Modal>
+              </div>
+            </div>
+            {isMobile && isChatVisible ? (
+              <MobileContent
                 name={name}
-                text={
-                  offlineMessage || 'Please follow and ask to get notified when the stream is live.'
-                }
+                streamTitle={streamTitle}
+                summary={summary}
+                tags={tags}
+                socialHandles={socialHandles}
+                extraPageContent={extraPageContent}
+                messages={messages}
+                chatDisplayName={chatDisplayName}
+                chatUserId={chatUserId}
+              />
+            ) : (
+              <DesktopContent
+                name={name}
+                streamTitle={streamTitle}
+                summary={summary}
+                tags={tags}
+                socialHandles={socialHandles}
+                extraPageContent={extraPageContent}
               />
             )}
-            <Statusbar
-              online={online}
-              lastConnectTime={lastConnectTime}
-              lastDisconnectTime={lastDisconnectTime}
-              viewerCount={viewerCount}
-            />
           </div>
-          <div className={styles.midSection}>
-            <div className={styles.buttonsLogoTitleSection}>
-              <ActionButtonRow>
-                {externalActionButtons}
-                <FollowButton size="small" />
-                <NotifyReminderPopup
-                  visible={showNotifyReminder}
-                  notificationClicked={() => setShowNotifyPopup(true)}
-                  notificationClosed={() => disableNotifyReminderPopup()}
-                >
-                  <NotifyButton onClick={() => setShowNotifyPopup(true)} />
-                </NotifyReminderPopup>
-              </ActionButtonRow>
-
-              <Modal
-                title="Notify"
-                visible={showNotifyPopup}
-                afterClose={() => disableNotifyReminderPopup()}
-                handleCancel={() => disableNotifyReminderPopup()}
-              >
-                <BrowserNotifyModal />
-              </Modal>
-            </div>
-          </div>
-          {isMobile && isChatVisible ? (
-            <MobileContent
-              name={name}
-              streamTitle={streamTitle}
-              summary={summary}
-              tags={tags}
-              socialHandles={socialHandles}
-              extraPageContent={extraPageContent}
-              messages={messages}
-              chatDisplayName={chatDisplayName}
-              chatUserId={chatUserId}
-            />
-          ) : (
-            <DesktopContent
-              name={name}
-              streamTitle={streamTitle}
-              summary={summary}
-              tags={tags}
-              socialHandles={socialHandles}
-              extraPageContent={extraPageContent}
-            />
-          )}
-        </div>
-        {isChatVisible && !isMobile && <Sidebar />}
-      </AntContent>
-      {(!isMobile || !isChatVisible) && <Footer version={version} />}
+          {isChatVisible && !isMobile && <Sidebar />}
+        </AntContent>
+        {(!isMobile || !isChatVisible) && <Footer version={version} />}
+      </Spin>
     </div>
   );
 };
