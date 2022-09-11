@@ -180,7 +180,7 @@ export const ClientConfigStore: FC = () => {
   const setChatUserId = useSetRecoilState<string>(chatUserIdAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const setIsChatModerator = useSetRecoilState<boolean>(isChatModeratorAtom);
-  const setClientConfig = useSetRecoilState<ClientConfig>(clientConfigStateAtom);
+  const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
   const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
@@ -376,6 +376,12 @@ export const ClientConfigStore: FC = () => {
   }, [hasLoadedStatus, hasLoadedConfig]);
 
   useEffect(() => {
+    if (!clientConfig.chatDisabled && accessToken && hasLoadedConfig) {
+      startChat();
+    }
+  }, [hasLoadedConfig, accessToken]);
+
+  useEffect(() => {
     updateClientConfig();
     handleUserRegistration();
     updateServerStatus();
@@ -392,7 +398,6 @@ export const ClientConfigStore: FC = () => {
     }
 
     getChatHistory();
-    startChat();
   }, [accessToken]);
 
   useEffect(() => {

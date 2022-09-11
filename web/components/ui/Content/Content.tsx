@@ -9,6 +9,7 @@ import {
   chatMessagesAtom,
   chatDisplayNameAtom,
   chatUserIdAtom,
+  isChatAvailableSelector,
   isChatVisibleSelector,
   appStateAtom,
   isOnlineSelector,
@@ -77,18 +78,21 @@ const MobileContent = ({
   messages,
   chatDisplayName,
   chatUserId,
+  showChat,
 }) => (
   <div className={classNames(styles.lowerSectionMobile)}>
     <Tabs defaultActiveKey="0">
-      <TabPane tab="Chat" key="1">
-        <ChatContainer
-          messages={messages}
-          usernameToHighlight={chatDisplayName}
-          chatUserId={chatUserId}
-          isModerator={false}
-          height="40vh"
-        />{' '}
-      </TabPane>
+      {showChat && (
+        <TabPane tab="Chat" key="1">
+          <ChatContainer
+            messages={messages}
+            usernameToHighlight={chatDisplayName}
+            chatUserId={chatUserId}
+            isModerator={false}
+            height="40vh"
+          />
+        </TabPane>
+      )}
       <TabPane tab="About" key="2">
         <ContentHeader
           name={name}
@@ -111,6 +115,8 @@ export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
+  const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
+
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
@@ -127,6 +133,7 @@ export const Content: FC = () => {
     tags,
     externalActions,
     offlineMessage,
+    chatDisabled,
   } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
@@ -177,6 +184,7 @@ export const Content: FC = () => {
   }
 
   const offlineTitle = !appState.appLoading && `${name} is currently offline`;
+  const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
     <div>
@@ -230,6 +238,7 @@ export const Content: FC = () => {
                 messages={messages}
                 chatDisplayName={chatDisplayName}
                 chatUserId={chatUserId}
+                showChat={showChat}
               />
             ) : (
               <DesktopContent
@@ -242,9 +251,9 @@ export const Content: FC = () => {
               />
             )}
           </div>
-          {isChatVisible && !isMobile && <Sidebar />}
+          {showChat && !isMobile && <Sidebar />}
         </AntContent>
-        {(!isMobile || !isChatVisible) && <Footer version={version} />}
+        {(!isMobile || !showChat) && <Footer version={version} />}
       </Spin>
     </div>
   );

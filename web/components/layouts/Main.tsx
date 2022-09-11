@@ -24,6 +24,7 @@ export const Main: FC = () => {
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
 
   const layoutRef = useRef<HTMLDivElement>(null);
+  const { chatDisabled } = clientConfig;
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -98,7 +99,7 @@ export const Main: FC = () => {
 
       <ClientConfigStore />
       <Layout ref={layoutRef}>
-        <Header name={title || name} chatAvailable={isChatAvailable} />
+        <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
