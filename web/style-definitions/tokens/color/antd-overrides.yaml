@@ -16,6 +16,12 @@ alert-error-border-color:
   value: 'var(--theme-color-palette-error)'
 popover-background:
   value: 'var(--theme-color-components-menu-background)'
+tag-default-color:
+  value: 'var(--theme-color-action)'
+border-radius-base:
+  value: 'var(--theme-rounded-corners)'
+background-color-light:
+  value: 'var(--theme-color-background-main)'
 
 # This values need to be statically assigned at build time and cannot be
 # overridden by the user at runtime.
@@ -55,5 +61,9 @@ primary-8:
   comment: '{color.owncast.palette.12.comment}'
 
 component-background:
-  value: '{color.owncast.palette.1.value}'
-  comment: '{color.owncast.palette.1.comment}'
+  value: '{color.owncast.palette.3.value}'
+  comment: '{color.owncast.palette.3.comment}'
+
+body-background:
+  value: '{color.owncast.palette.3.value}'
+  comment: '{color.owncast.palette.3.comment}'
