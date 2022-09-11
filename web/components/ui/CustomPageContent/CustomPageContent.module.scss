@@ -13,7 +13,7 @@
   background-color: var(--theme-color-palette-4);
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
-  width: clamp(300px, 80%, 1000px);
+  width: clamp(300px, 80%, 50em);
 
   // Allow the content to fill the width on narrow screens.
   @media only screen and (max-width: 768px) {
