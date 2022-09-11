@@ -22,6 +22,8 @@ border-radius-base:
   value: 'var(--theme-rounded-corners)'
 background-color-light:
   value: 'var(--theme-color-background-main)'
+modal-close-color:
+  value: 'var(--theme-color-background-main)'
 
 # This values need to be statically assigned at build time and cannot be
 # overridden by the user at runtime.

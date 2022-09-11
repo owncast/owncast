@@ -151,3 +151,7 @@
 .ant-tabs-nav:before {
   border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
 }
+
+.ant-modal-close:hover {
+  color: var(--theme-color-components-modal-header-text);
+}
