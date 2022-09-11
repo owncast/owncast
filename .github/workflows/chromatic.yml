@@ -19,6 +19,7 @@ jobs:
 
     steps:
       - name: Check out code
+        if: ${{ github.actor != 'renovate[bot]' }}
         uses: actions/checkout@v3
         with:
           # Make sure the actual branch is checked out when running on pull requests
@@ -27,9 +28,12 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
+        if: ${{ github.actor != 'renovate[bot]' }}
         run: npm install
 
       - name: Publish to Chromatic
+        if: ${{ github.actor != 'renovate[bot]' }}
+
         uses: chromaui/action@v1
         # Chromatic GitHub Action options
         with:
