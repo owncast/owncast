@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Sun, 11 Sep 2022 00:27:11 GMT
+ * Generated on Sun, 11 Sep 2022 01:48:18 GMT
  * 
  * How to edit these values:
  * Edit the corresponding token file under the style-definitions directory
@@ -15,6 +15,9 @@
   --alert-error-bg-color: var(--theme-color-palette-4);
   --alert-error-border-color: var(--theme-color-palette-error);
   --popover-background: var(--theme-color-components-menu-background);
+  --tag-default-color: var(--theme-color-action);
+  --border-radius-base: var(--theme-rounded-corners);
+  --background-color-light: var(--theme-color-background-main);
   --primary-color: #7a5cf3; /* Text link/secondary light text */
   --primary-color-hover: #2386e2; /* Fun color 1 */
   --primary-color-active: #5d38f3; /* Text link hover */
@@ -26,15 +29,8 @@
   --primary-6: #2386e2; /* Fun color 1 */
   --primary-7: #5d38f3; /* Text link hover */
   --primary-8: #da9eff; /* Fun color 2 */
-  --blue-1: #7a5cf3; /* Text link/secondary light text */
-  --blue-2: #2386e2; /* Fun color 1 */
-  --blue-3: #5d38f3; /* Text link hover */
-  --blue-4: #da9eff; /* Fun color 2 */
-  --blue-5: #7a5cf3; /* Text link/secondary light text */
-  --blue-6: #2386e2; /* Fun color 1 */
-  --blue-7: #5d38f3; /* Text link hover */
-  --blue-8: #da9eff; /* Fun color 2 */
-  --component-background: #2d3748; /* Dark secondary */
+  --component-background: #e2e8f0; /* Light primary */
+  --body-background: #e2e8f0; /* Light primary */
   --theme-rounded-corners: 0.5rem; /* How much corners are rounded in places in the UI. */
   --theme-unknown-1: green; /* This should never be used and it means something is wrong. */
   --theme-unknown-2: red; /* This should never be used and it means something is wrong. */
