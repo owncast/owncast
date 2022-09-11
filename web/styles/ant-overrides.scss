@@ -147,3 +147,7 @@
 .ant-tabs-ink-bar {
   background-color: var(--theme-color-action);
 }
+
+.ant-tabs-nav:before {
+  border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
+}
