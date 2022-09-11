@@ -9,16 +9,21 @@ const { Header: AntHeader } = Layout;
 export type HeaderComponentProps = {
   name: string;
   chatAvailable: boolean;
+  chatDisabled: boolean;
 };
 
-export const Header: FC<HeaderComponentProps> = ({ name = 'Your stream title', chatAvailable }) => (
+export const Header: FC<HeaderComponentProps> = ({
+  name = 'Your stream title',
+  chatAvailable,
+  chatDisabled,
+}) => (
   <AntHeader className={`${styles.header}`}>
     <div className={`${styles.logo}`}>
       <OwncastLogo variant="contrast" />
       <span>{name}</span>
     </div>
-    {chatAvailable && <UserDropdown />}
-    {!chatAvailable && (
+    {chatAvailable && !chatDisabled && <UserDropdown />}
+    {!chatAvailable && !chatDisabled && (
       <Tooltip title="Chat is available when the stream is live." placement="left">
         <Tag style={{ cursor: 'pointer' }}>Chat offline</Tag>
       </Tooltip>
