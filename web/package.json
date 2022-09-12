@@ -52,7 +52,7 @@
 		"style-dictionary": "3.7.1",
 		"ua-parser-js": "1.0.2",
 		"video.js": "7.20.2",
-		"xstate": "4.33.5",
+		"xstate": "4.33.6",
 		"yaml": "2.0.0"
 	},
 	"devDependencies": {
