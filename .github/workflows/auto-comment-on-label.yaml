@@ -1,0 +1,37 @@
+name: Add comment on good first issues
+on:
+  issues:
+    types:
+      - labeled
+jobs:
+  add-comment:
+    if: github.event.label.name == 'good first issue' || github.event.label.name == 'help wanted' || github.event.label.name == 'hacktoberfest'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add comment
+        uses: peter-evans/create-or-update-comment@a35cf36e5301d70b76f316e867e7788a55a31dae
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+           ## Good First Issue
+
+            This item was marked as a good first issue or help wanted. Because of the following:
+
+            - It's self contained as a single feature or change.
+            - Is clear when it's complete.
+            - You do not need deep knowledge of Owncast to accomplish it.
+            - 
+
+            ### Next Steps
+
+            1. Comment on this issue before starting work so it can be assigned to you. Also, this issue may have been filed with limited detail or changes may have occured that are worth sharing with you before you start work.
+            2. Drop by our [community chat](https://owncast.rocket.chat/) if you'd like to be involved in more real-time discussion around Owncast to talk about this change.
+            3. Make sure you can [build and run the project from source](https://owncast.online/docs/building/).
+
+            ### Notes
+
+            - Current web work is taking place in the [`webv2` branch](https://github.com/owncast/owncast/tree/webv2) and it is very much work in progress. Read the [README](https://github.com/owncast/owncast/blob/webv2/web/README.md) for this branch to get the web project running. But it's mostly just a `npm install` and `npm run dev`.
+            - We use Storybook for testing and developing React components. `npm run storybook`.
+            - If you need to install the Go programming language to run the Owncast backend it's simple from [here](https://go.dev/dl/).
