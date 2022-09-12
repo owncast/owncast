@@ -17,12 +17,12 @@ jobs:
           body: |
            ## Good First Issue
 
-            This item was marked as a good first issue or help wanted. Because of the following:
+            This item was marked as a good first issue because of the following:
 
             - It's self contained as a single feature or change.
             - Is clear when it's complete.
             - You do not need deep knowledge of Owncast to accomplish it.
-            - 
+            
 
             ### Next Steps
 
