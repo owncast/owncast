@@ -13,7 +13,7 @@
   width: 100%;
   justify-content: center;
   position: absolute;
-  bottom: 5px;
+  bottom: 75px;
 }
 
 .nameChangeView {
@@ -31,4 +31,15 @@
       font-family: var(--theme-text-body-font-family) !important;
     }
   }
+}
+
+.chatContainer {
+  display: grid;
+  grid-template-rows: 1fr 65px;
+  height: 100%;
+}
+.virtuoso {
+  width: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
