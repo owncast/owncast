@@ -2,6 +2,7 @@
   * {
     z-index: 100;
   }
+  border-right: 2px solid currentColor;
   position: relative;
   font-size: 0.9rem;
   padding: 0px 15px 5px 5px;
@@ -14,6 +15,8 @@
   }
 
   .message {
+    overflow: hidden;
+    overflow-wrap: anywhere;
     color: var(--theme-color-components-chat-text);
 
     mark {
@@ -23,34 +26,10 @@
     }
   }
 
-  .customBorder {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 5px;
-    height: 100%;
-    overflow: hidden;
-    &:after {
-      content: '';
-      width: 10px;
-      height: 100%;
-      position: absolute;
-      top: 0%;
-      right: 0px;
-      background-color: currentColor;
-      border-radius: var(--theme-rounded-corners);
-    }
-  }
-
   &.ownMessage {
-    .customBorder {
-      left: auto;
-      right: 0px;
-      opacity: 0.85;
-      &:after {
-        left: 0px;
-      }
-    }
+    border-right: none;
+    border-left: 2px solid currentColor;
+
     .background {
       position: absolute;
       z-index: -1;
@@ -82,11 +61,5 @@
 }
 
 .messagePadding {
-  padding: 3.5px;
-  padding-bottom: 0px;
-  padding-top: 7px;
-}
-
-.messagePaddingCollapsed {
-  padding-top: 2px;
+  padding: 0px 3px;
 }

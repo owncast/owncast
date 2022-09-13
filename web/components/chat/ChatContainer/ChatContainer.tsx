@@ -164,7 +164,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     () => (
       <>
         <Virtuoso
-          style={{ height, width: 'auto' }}
+          style={{ height }}
+          className={styles.virtuoso}
           ref={chatContainerRef}
           initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
           data={messages}
@@ -195,13 +196,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   );
 
   return (
-    <div style={{ height: '100%' }}>
-      {
-        // <div className={s.chatHeader}>
-        //   <span>stream chat</span>
-        // </div>
-        //
-      }
+    <div className={styles.chatContainer}>
       {MessagesTable}
       {showInput && <ChatTextField />}
     </div>
@@ -210,5 +205,5 @@ export const ChatContainer: FC<ChatContainerProps> = ({
 
 ChatContainer.defaultProps = {
   showInput: true,
-  height: 'calc(100vh - 170px)',
+  height: 'auto',
 };

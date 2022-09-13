@@ -93,7 +93,6 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
             />
           </div>
         )}
-        <div className={styles.customBorder} style={{ color }} />
         <div className={styles.background} style={{ color }} />
       </div>
     </div>
