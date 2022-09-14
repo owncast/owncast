@@ -14,9 +14,12 @@
   background-color: var(--theme-color-palette-12);
 }
 
+html {
+  font-size: clamp(14px, 1.35vw, 16px);
+}
+
 body {
   font-family: var(--theme-text-body-font-family);
-  font-size: 16px;
   line-height: 1.5em;
   margin: 0;
 
