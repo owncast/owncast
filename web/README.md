@@ -28,6 +28,8 @@ isolation.
 1. If no design exists, then you can ask around the Owncast chat for help, for come up with your own ideas!
 1. No designs are stuck in stone, and we're using this as an opportunity to level up the UI of Owncast, so all ideas are welcome.
 
+See the extra how-to guide for components here: [Components How-to](./components/_COMPONENT_HOW_TO.md).
+
 ### Run the web project
 
 Make sure you're running an instance of Owncast on localhost:8080, as your copy of the admin will look to use that as the API.
