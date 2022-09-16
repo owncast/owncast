@@ -47,16 +47,13 @@ export type MyNewButtonProps = {
 };
 
 export const MyNewButton: FC<MyNewButtonProps> = ({ label, onClick }) => {
-
   // do something, then call the onClick fn. e.g.:
   const handleClick = useCallback(() => {
     alert(label);
     onClick && onClick();
-  }, [ label, onClick ]);
-  
-  return (
-    <button onClick={onCLick}>{label}</button>
-  );
+  }, [label, onClick]);
+
+  return <button onClick={onCLick}>{label}</button>;
 };
 ```
 
