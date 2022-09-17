@@ -9,7 +9,7 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Modal } from '../../ui/Modal/Modal';
+import { Modal } from '../../atomic/molecules/Modal/Modal';
 import {
   chatVisibleToggleAtom,
   chatDisplayNameAtom,

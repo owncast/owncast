@@ -31,7 +31,7 @@ import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
 import { FollowButton } from '../../action-buttons/FollowButton';
 import { NotifyButton } from '../../action-buttons/NotifyButton';
-import { Modal } from '../Modal/Modal';
+import { Modal } from '../../atomic/molecules/Modal/Modal';
 import { BrowserNotifyModal } from '../../modals/BrowserNotifyModal/BrowserNotifyModal';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';

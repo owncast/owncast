@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { FC, useState } from 'react';
-import { Modal } from '../../ui/Modal/Modal';
+import { Modal } from '../../atomic/molecules/Modal/Modal';
 import { ExternalAction } from '../../../interfaces/external-action';
 import styles from './ActionButton.module.scss';
 

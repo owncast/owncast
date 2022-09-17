@@ -2,7 +2,7 @@ import { Button, ButtonProps } from 'antd';
 import { HeartFilled } from '@ant-design/icons';
 import { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Modal } from '../ui/Modal/Modal';
+import { Modal } from '../atomic/molecules/Modal/Modal';
 import { FollowModal } from '../modals/FollowModal/FollowModal';
 import styles from './ActionButton/ActionButton.module.scss';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';

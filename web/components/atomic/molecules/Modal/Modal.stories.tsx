@@ -3,12 +3,12 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Modal } from './Modal';
 
 export default {
-  title: 'owncast/Modals/Container',
+  title: 'molecules/Modal',
   component: Modal,
   parameters: {
     docs: {
       description: {
-        component: `This is the popup modal container that all modal content is rendered inside. It can be passed content nodes to render, or a URL to show an iframe.`,
+        component: `This is the container that all modal content is rendered inside. It can be passed content nodes to render, or a URL to show an iframe.`,
       },
     },
   },
@@ -26,8 +26,8 @@ Example.args = {
   children: <div>Test 123</div>,
 };
 
-export const UrlExample = Template.bind({});
-UrlExample.args = {
+export const EmbeddedExternalContentExample = Template.bind({});
+EmbeddedExternalContentExample.args = {
   title: 'Modal example with URL',
   visible: true,
   url: 'https://owncast.online',
