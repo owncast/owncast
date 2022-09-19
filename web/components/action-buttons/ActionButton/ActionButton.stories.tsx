@@ -8,7 +8,10 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: `An **Action Button** or **External Action Button** is a button that is used to trigger either an internal or external action. Many will show a modal, but they can also open a new tab to allow navigating to external pages. They are rendered horizontally within the Action Button Row.`,
+        component: `DEPRECATED: Use atom/Button instead.
+        An **Action Button** or **External Action Button** is a button that is used to trigger either an internal or external action.
+        Many will show a modal, but they can also open a new tab to allow navigating to external pages.
+        They are rendered horizontally within the Action Button Row.`,
       },
     },
   },

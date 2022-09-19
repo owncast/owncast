@@ -9,6 +9,9 @@ export type ActionButtonProps = {
   primary?: boolean;
 };
 
+/**
+ * @deprecated by #2119. Use {@link ../../atomic/atoms/Button} instead.
+ */
 export const ActionButton: FC<ActionButtonProps> = ({
   action: { url, title, description, icon, color, openExternally },
   primary = true,
