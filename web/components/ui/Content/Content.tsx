@@ -24,7 +24,7 @@ import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Footer } from '../Footer/Footer';
 
-import { Button } from "../../atomic/atoms/Button/Button";
+import { Button } from '../../atomic/atoms/Button/Button';
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { NotifyReminderPopup } from '../NotifyReminderPopup/NotifyReminderPopup';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
@@ -38,7 +38,7 @@ import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ExternalAction } from "../../../interfaces/external-action";
+import { ExternalAction } from '../../../interfaces/external-action';
 
 const { TabPane } = Tabs;
 const { Content: AntContent } = Layout;
@@ -141,14 +141,14 @@ export const Content: FC = () => {
 
   const externalActionButtons = (externalActions as ExternalAction[]).map(action => (
     <Button
-			key={action.url}
-			text={action.title}
-			href={action.url}
-			iconSrc={action.icon}
-			iconAltText=""
-			color={action.color}
-			target={action.openExternally ? '_blank' : '_self'}
-		/>
+      key={action.url}
+      text={action.title}
+      href={action.url}
+      iconSrc={action.icon}
+      iconAltText=""
+      color={action.color}
+      target={action.openExternally ? '_blank' : '_self'}
+    />
   ));
 
   const incrementVisitCounter = () => {
