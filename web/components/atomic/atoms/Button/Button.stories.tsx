@@ -7,13 +7,6 @@ import {disableControls} from "../../../../utils/storybook-utils";
 export default {
   title: 'atoms/Button',
   component: Button,
-  parameters: {
-    docs: {
-      description: {
-        component: `A styled button.`,
-      },
-    },
-  },
 	argTypes: { ...disableControls('onClick') }
 } as ComponentMeta<typeof Button>;
 
