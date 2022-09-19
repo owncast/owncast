@@ -24,8 +24,8 @@ import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Footer } from '../Footer/Footer';
 
+import { Button } from "../../atomic/atoms/Button/Button";
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
-import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 import { NotifyReminderPopup } from '../NotifyReminderPopup/NotifyReminderPopup';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
@@ -38,6 +38,7 @@ import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { ExternalAction } from "../../../interfaces/external-action";
 
 const { TabPane } = Tabs;
 const { Content: AntContent } = Layout;
@@ -138,8 +139,16 @@ export const Content: FC = () => {
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
-  const externalActionButtons = externalActions.map(action => (
-    <ActionButton key={action.url} action={action} />
+  const externalActionButtons = (externalActions as ExternalAction[]).map(action => (
+    <Button
+			key={action.url}
+			text={action.title}
+			href={action.url}
+			iconSrc={action.icon}
+			iconAltText=""
+			color={action.color}
+			target={action.openExternally ? '_blank' : '_self'}
+		/>
   ));
 
   const incrementVisitCounter = () => {
