@@ -3,7 +3,7 @@ import { FC } from 'react';
 
 import styles from './Button.module.scss';
 
-export type ButtonProps = Omit<AntButtonProps, 'children' | 'icon' | 'title' | 'target'> & {
+export type ButtonProps = Omit<AntButtonProps, 'children' | 'icon' | 'title'> & {
 	text: string;
 	iconSrc?: string;
 	iconAltText?: string;
