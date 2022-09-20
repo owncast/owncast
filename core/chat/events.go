@@ -140,7 +140,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 }
 
 func logSanitize(userValue string) string {
-	// strip carriage return and newline to prevent
+	// strip carriage return and newline from user-submitted values to prevent log injection
 	sanitizedValue := strings.Replace(userValue, "\n", "", -1)
 	sanitizedValue = strings.Replace(sanitizedValue, "\r", "", -1)
 
