@@ -4,6 +4,10 @@ on:
     paths-ignore:
       - 'webroot/**'
       - 'web/**'
+  pull_request:
+    paths-ignore:
+      - 'webroot/**'
+      - 'web/**'
 
 permissions:
   contents: read
