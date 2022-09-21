@@ -355,7 +355,7 @@ func (s *Server) eventReceived(event chatClientEvent) {
 		s.userNameChanged(event)
 
 	default:
-		log.Debugln(eventType, "event not found:", typecheck)
+		log.Debugln(logSanitize(fmt.Sprint(eventType)), "event not found:", logSanitize(fmt.Sprint(typecheck)))
 	}
 }
 
