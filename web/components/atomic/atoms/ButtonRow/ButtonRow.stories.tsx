@@ -9,16 +9,9 @@ import {disableControls} from "../../../../utils/storybook-utils";
 export default {
   title: 'atoms/ButtonRow',
   component: ButtonRow,
-  parameters: {
-    docs: {
-      description: {
-        component: 'A horizontal row of buttons',
-      },
-    },
+  argTypes: {
+    ...disableControls('children'),
   },
-	argTypes: {
-		...disableControls('children'),
-	},
 } as ComponentMeta<typeof ButtonRow>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
