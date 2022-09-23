@@ -15,6 +15,15 @@ module.exports = {
     // In functional components, mostly ensures Props are defined above components.
     '@typescript-eslint/no-use-before-define': 'error',
 
+    // Allow dev dependencies in .stories.tsx files
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: ['**/*.stories.*'],
+        peerDependencies: true,
+      },
+    ],
+
     // React components tend to use named exports.
     // Additionally, the `export default function` syntax cannot be auto-fixed by eslint when using ts.
     'import/prefer-default-export': 'off',
