@@ -5,13 +5,6 @@ import { Modal } from './Modal';
 export default {
   title: 'molecules/Modal',
   component: Modal,
-  parameters: {
-    docs: {
-      description: {
-        component: `This is the container that all modal content is rendered inside. It can be passed content nodes to render, or a URL to show an iframe.`,
-      },
-    },
-  },
 } as ComponentMeta<typeof Modal>;
 
 const Template: ComponentStory<typeof Modal> = args => {

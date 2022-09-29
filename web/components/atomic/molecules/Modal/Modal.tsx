@@ -14,6 +14,12 @@ export type ModalProps = {
   width?: string;
 };
 
+/**
+ * `This is the container that all modal content is rendered inside.
+ * It can be passed content nodes to render, or a URL to show an iframe.
+ *
+ * @component
+ */
 export const Modal: FC<ModalProps> = ({
   title,
   url,
