@@ -80,13 +80,3 @@ export const Modal: FC<ModalProps> = ({
   );
 };
 export default Modal;
-
-Modal.defaultProps = {
-  url: undefined,
-  children: undefined,
-  handleOk: undefined,
-  handleCancel: undefined,
-  afterClose: undefined,
-  height: '40vh',
-  width: '70%',
-};
