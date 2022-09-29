@@ -46,7 +46,7 @@
 		"recoil": "0.7.5",
 		"sharp": "0.31.0",
 		"slate": "0.82.1",
-		"slate-react": "0.82.2",
+		"slate-react": "0.83.0",
 		"storybook-addon-designs": "6.3.1",
 		"storybook-addon-fetch-mock": "1.0.1",
 		"style-dictionary": "3.7.1",
