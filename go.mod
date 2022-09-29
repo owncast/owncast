@@ -20,7 +20,7 @@ require (
 	github.com/schollz/sqlite3dump v1.3.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
-	github.com/yuin/goldmark v1.4.14
+	github.com/yuin/goldmark v1.5.2
 	golang.org/x/mod v0.5.1
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
 	mvdan.cc/xurls v1.1.0
