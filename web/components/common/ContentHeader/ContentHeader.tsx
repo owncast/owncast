@@ -2,7 +2,7 @@ import cn from 'classnames';
 import { FC } from 'react';
 import Linkify from 'react-linkify';
 import { Logo } from '../../ui/Logo/Logo';
-import { SocialLinks } from '../../ui/SocialLinks/SocialLinks';
+import { SocialLinks } from '../../atomic/molecules/SocialLinks/SocialLinks';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './ContentHeader.module.scss';
 
