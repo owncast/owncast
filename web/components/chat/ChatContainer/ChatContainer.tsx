@@ -53,9 +53,10 @@ function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean
   return id === lastMessage?.user.id;
 }
 
-function checkIsModerator(message) {
-  const { user } = message;
-  const { scopes } = user;
+function checkIsModerator(message: ChatMessage | ConnectedClientInfoEvent) {
+  const {
+    user: { scopes },
+  } = message;
 
   if (!scopes || scopes.length === 0) {
     return false;
@@ -97,8 +98,9 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   };
 
   const getUserJoinedMessage = (message: ChatMessage) => {
-    const { user } = message;
-    const { displayName, displayColor } = user;
+    const {
+      user: { displayName, displayColor },
+    } = message;
     const isAuthorModerator = checkIsModerator(message);
     return (
       <ChatJoinMessage
