@@ -14,7 +14,7 @@ export default class ExternalActionModal extends Component {
     this.setIframeLoaded = this.setIframeLoaded.bind(this);
   }
   componentDidMount() {
-    // initalize and display Micromodal on mount
+    // initialize and display Micromodal on mount
     try {
       MicroModal.init({
         awaitCloseAnimation: false,
