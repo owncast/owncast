@@ -197,45 +197,40 @@ export const ChatTextField: FC<ChatTextFieldProps> = () => {
   };
 
   return (
-    <div>
-      <div className={styles.root}>
-        <Slate editor={editor} value={defaultEditorValue}>
-          <Editable
-            onKeyDown={onKeyDown}
-            renderElement={renderElement}
-            placeholder="Chat message goes here..."
-            style={{ width: '100%' }}
-            autoFocus
-          />
-          <Popover
-            content={
-              <EmojiPicker
-                onEmojiSelect={onEmojiSelect}
-                onCustomEmojiSelect={onCustomEmojiSelect}
-              />
-            }
-            trigger="click"
-            onVisibleChange={visible => setShowEmojis(visible)}
-            visible={showEmojis}
-          />
-        </Slate>
-
-        <button
-          type="button"
-          className={styles.emojiButton}
-          title="Emoji picker button"
-          onClick={() => setShowEmojis(!showEmojis)}
-        >
-          <SmileOutlined />
-        </button>
-        <Button
-          className={styles.sendButton}
-          size="large"
-          type="ghost"
-          icon={<SendOutlined />}
-          onClick={sendMessage}
+    <div className={styles.root}>
+      <Slate editor={editor} value={defaultEditorValue}>
+        <Editable
+          onKeyDown={onKeyDown}
+          renderElement={renderElement}
+          placeholder="Chat message goes here..."
+          style={{ width: '100%' }}
+          autoFocus
         />
-      </div>
+        <Popover
+          content={
+            <EmojiPicker onEmojiSelect={onEmojiSelect} onCustomEmojiSelect={onCustomEmojiSelect} />
+          }
+          trigger="click"
+          onVisibleChange={visible => setShowEmojis(visible)}
+          visible={showEmojis}
+        />
+      </Slate>
+
+      <button
+        type="button"
+        className={styles.emojiButton}
+        title="Emoji picker button"
+        onClick={() => setShowEmojis(!showEmojis)}
+      >
+        <SmileOutlined />
+      </button>
+      <Button
+        className={styles.sendButton}
+        size="large"
+        type="ghost"
+        icon={<SendOutlined />}
+        onClick={sendMessage}
+      />
     </div>
   );
 };

@@ -9,11 +9,17 @@
 
 .toBottomWrap {
   display: flex;
-  opacity: 0.9;
   width: 100%;
   justify-content: center;
   position: absolute;
-  bottom: 75px;
+  bottom: 50px;
+  color: var(--text-color-secondary);
+  & .toBottomWrap {
+    & .toBottomBtn {
+      border: none;
+      background-color: gray;
+    }
+  }
 }
 
 .nameChangeView {
@@ -36,6 +42,7 @@
 .chatContainer {
   display: grid;
   grid-template-rows: 1fr 65px;
+  background-color: var(--theme-color-background-chat);
   height: 100%;
 }
 .virtuoso {
