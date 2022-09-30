@@ -98,6 +98,9 @@ theme:
       header:
         value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
+      chat:
+        value: 'var(--theme-color-palette-4)'
+        comment: '{theme.color.palette.4.comment}'
     action:
       value: 'var(--theme-color-palette-6)'
       comment: '{theme.color.palette.6.comment}'
