@@ -1,7 +1,6 @@
-import { Button } from 'antd';
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC } from 'react';
-import { EditFilled, VerticalAlignBottomOutlined } from '@ant-design/icons';
+import { EditFilled } from '@ant-design/icons';
 import {
   ConnectedClientInfoEvent,
   MessageType,
@@ -15,6 +14,7 @@ import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatMode
 // import ChatActionMessage from '../ChatAction/ChatActionMessage';
 import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
 import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
+import { ScrollToBotBtn } from './ScrollToBotBtn';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];
@@ -176,22 +176,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           alignToBottom
           atBottomStateChange={bottom => setAtBottom(bottom)}
         />
-        {!atBottom && (
-          <div className={styles.toBottomWrap}>
-            <Button
-              type="default"
-              icon={<VerticalAlignBottomOutlined />}
-              onClick={() =>
-                chatContainerRef.current.scrollToIndex({
-                  index: messages.length - 1,
-                  behavior: 'smooth',
-                })
-              }
-            >
-              Go to last message
-            </Button>
-          </div>
-        )}
+        {!atBottom && <ScrollToBotBtn chatContainerRef={chatContainerRef} messages={messages} />}
       </>
     ),
     [messages, usernameToHighlight, chatUserId, isModerator, atBottom],

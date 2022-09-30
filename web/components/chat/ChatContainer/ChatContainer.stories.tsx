@@ -30,15 +30,17 @@ const AddMessagesChatExample = args => {
 
   return (
     <RecoilRoot>
-      <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
-        Add message
-      </button>
-      <ChatContainer
-        messages={chatMessages}
-        usernameToHighlight="testuser"
-        chatUserId="testuser"
-        isModerator={false}
-      />
+      <div style={{ height: '70vh', position: 'relative' }}>
+        <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
+          Add message
+        </button>
+        <ChatContainer
+          messages={chatMessages}
+          usernameToHighlight="testuser"
+          chatUserId="testuser"
+          isModerator={false}
+        />
+      </div>
     </RecoilRoot>
   );
 };
