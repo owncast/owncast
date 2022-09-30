@@ -1,12 +1,14 @@
+$border-style: 3px solid currentColor;
+$p-size: 5px;
+
 .root {
   * {
     z-index: 100;
   }
-  border-right: 2px solid currentColor;
+  border-left: $border-style;
   position: relative;
   font-size: 0.9rem;
-  padding: 0px 15px 5px 5px;
-  padding-left: 1rem;
+  padding: 0px $p-size $p-size $p-size;
   .user {
     display: flex;
     align-items: center;
@@ -17,7 +19,7 @@
   .message {
     overflow: hidden;
     overflow-wrap: anywhere;
-    color: var(--theme-color-components-chat-text);
+    font-weight: 600;
 
     mark {
       padding-left: 0.35em;
@@ -27,9 +29,6 @@
   }
 
   &.ownMessage {
-    border-right: none;
-    border-left: 2px solid currentColor;
-
     .background {
       position: absolute;
       z-index: -1;
@@ -61,5 +60,10 @@
 }
 
 .messagePadding {
-  padding: 0px 3px;
+  padding: 0px 0px;
+  padding-top: .4rem;
+}
+
+.messagePaddingCollapsed {
+  padding: 0px 0px;
 }
