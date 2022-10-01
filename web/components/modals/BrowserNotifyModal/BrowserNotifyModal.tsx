@@ -15,8 +15,6 @@ const NotificationsNotSupported = () => (
   <div>Browser notifications are not supported in your browser.</div>
 );
 
-const NotificationsEnabled = () => <div>Notifications enabled</div>;
-
 export type PermissionPopupPreviewProps = {
   start: () => void;
 };
@@ -55,6 +53,15 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
         </button>
       </div>
     </div>
+  </div>
+);
+
+const NotificationsEnabled = () => (
+  <div>
+    <Title>Notifications are enabled</Title>
+    To disable push notifications from {window.location.hostname.toString()} access your browser
+    permissions for this site and turn off notifications.
+    <a href="https://owncast.online/docs/notifications"> Learn more.</a>
   </div>
 );
 
