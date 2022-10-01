@@ -17,7 +17,7 @@
 		"@fontsource/poppins": "4.5.9",
 		"@storybook/react": "6.5.12",
 		"@xstate/react": "3.0.1",
-		"antd": "4.23.1",
+		"antd": "4.23.3",
 		"autoprefixer": "10.4.12",
 		"chart.js": "3.9.1",
 		"chartkick": "4.2.0",
