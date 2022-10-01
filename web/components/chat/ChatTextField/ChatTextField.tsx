@@ -1,5 +1,5 @@
 import { SendOutlined, SmileOutlined } from '@ant-design/icons';
-import { Button, Popover } from 'antd';
+import { Popover } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
@@ -198,39 +198,47 @@ export const ChatTextField: FC<ChatTextFieldProps> = () => {
 
   return (
     <div className={styles.root}>
-      <Slate editor={editor} value={defaultEditorValue}>
-        <Editable
-          onKeyDown={onKeyDown}
-          renderElement={renderElement}
-          placeholder="Chat message goes here..."
-          style={{ width: '100%' }}
-          autoFocus
-        />
-        <Popover
-          content={
-            <EmojiPicker onEmojiSelect={onEmojiSelect} onCustomEmojiSelect={onCustomEmojiSelect} />
-          }
-          trigger="click"
-          onVisibleChange={visible => setShowEmojis(visible)}
-          visible={showEmojis}
-        />
-      </Slate>
+      <div className={styles.inputWrap}>
+        <Slate editor={editor} value={defaultEditorValue}>
+          <Editable
+            onKeyDown={onKeyDown}
+            renderElement={renderElement}
+            placeholder="Chat message goes here..."
+            style={{ width: '100%' }}
+            autoFocus
+          />
+          <Popover
+            content={
+              <EmojiPicker
+                onEmojiSelect={onEmojiSelect}
+                onCustomEmojiSelect={onCustomEmojiSelect}
+              />
+            }
+            trigger="click"
+            onVisibleChange={visible => setShowEmojis(visible)}
+            visible={showEmojis}
+          />
+        </Slate>
 
-      <button
-        type="button"
-        className={styles.emojiButton}
-        title="Emoji picker button"
-        onClick={() => setShowEmojis(!showEmojis)}
-      >
-        <SmileOutlined />
-      </button>
-      <Button
-        className={styles.sendButton}
-        size="large"
-        type="ghost"
-        icon={<SendOutlined />}
-        onClick={sendMessage}
-      />
+        <div style={{ display: 'flex', paddingLeft: '5px' }}>
+          <button
+            type="button"
+            className={styles.emojiButton}
+            title="Emoji picker button"
+            onClick={() => setShowEmojis(!showEmojis)}
+          >
+            <SmileOutlined />
+          </button>
+          <button
+            type="button"
+            className={styles.emojiButton}
+            title="Send message Button"
+            onClick={sendMessage}
+          >
+            <SendOutlined />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
