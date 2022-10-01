@@ -3,54 +3,40 @@
   display: flex;
   bottom: 0px;
   width: 100%;
-  padding: 0.3rem;
-  color: var(--theme-color-components-form-field-text);
-  border-radius: var(--theme-rounded-corners);
-  outline: 1px solid gray;
+  padding: 5px 1vw;
   overflow-x: hidden;
+
+  .inputWrap {
+    position: relative;
+    display: flex;
+    color: var(--theme-color-components-form-field-text);
+    background-color: var(--theme-color-palette-3);
+    border-radius: var(--theme-rounded-corners);
+    bottom: 0px;
+    width: 100%;
+    padding: 0.3rem;
+    overflow-x: hidden;
+    transition: box-shadow 90ms ease-in-out;
+    &:focus-within {
+      background-color: var(--theme-color-components-form-field-background);
+      // outline: 1px solid var(--theme-color-components-form-field-border);
+      box-shadow: inset 0px 0px 2px 2px var(--theme-color-palette-3);
+    }
+  }
 
   div[role='textbox'] {
     font-size: 0.9rem;
-    border-radius: 0.2rem;
-    padding: 0.6rem;
-    padding-right: calc(0.6rem + 44px);
-    background-color: var(--theme-color-components-form-field-background);
+    padding: 0.3rem;
+    background-color: inherit;
     border-color: var(--theme-color-components-form-field-border);
     box-shadow: 0;
     transition: box-shadow 50ms ease-in-out;
     &:focus {
-      box-shadow: inset 0px 0px 0x 1px var(--color-owncast-purple-700);
       outline: 1px solid var(--color-owncast-gray-500) !important;
     }
     & > p {
       margin: 0px;
     }
-  }
-
-  .inputWrapper {
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    margin-right: 0.3rem;
-    border-radius: 0.2rem;
-    & > div {
-      transition: box-shadow 0.2s ease-in-out;
-    }
-  }
-
-  .submitButtonWrapper {
-    display: flex;
-    padding: 6px 0;
-    justify-content: flex-end;
-  }
-}
-
-.sendButton {
-  display: none;
-
-  @media (max-width: 768px) {
-    display: inline;
-    margin-left: 5px;
   }
 }
 

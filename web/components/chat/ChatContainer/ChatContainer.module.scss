@@ -40,13 +40,14 @@
 }
 
 .chatContainer {
-  display: grid;
-  grid-template-rows: 1fr 65px;
+  display: flex;
+  flex-direction: column;
   background-color: var(--theme-color-background-chat);
   height: 100%;
 }
 .virtuoso {
   width: auto;
+  flex-grow: 1;
   overflow-y: scroll;
   overflow-x: hidden;
 }
