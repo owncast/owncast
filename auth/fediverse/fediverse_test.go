@@ -1,6 +1,9 @@
 package fediverse
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 const (
 	accessToken     = "fake-access-token"
@@ -56,5 +59,20 @@ func TestSingleOTPFlowRequest(t *testing.T) {
 
 	if s2 {
 		t.Error("Second registration should not be permitted.")
+	}
+}
+
+func TestAccountCaseInsensitive(t *testing.T) {
+	account := "Account"
+	accessToken := "another-fake-access-token"
+	r1, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	_, reg1 := ValidateFediverseOTP(accessToken, r1.Code)
+
+	// Simulate second auth with account in different case
+	r2, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, strings.ToUpper(account))
+	_, reg2 := ValidateFediverseOTP(accessToken, r2.Code)
+
+	if reg1.Account != reg2.Account {
+		t.Errorf("Account names should be case-insensitive: %s %s", reg1.Account, reg2.Account)
 	}
 }

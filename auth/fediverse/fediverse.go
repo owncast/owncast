@@ -3,6 +3,7 @@ package fediverse
 import (
 	"crypto/rand"
 	"io"
+	"strings"
 	"time"
 )
 
@@ -37,7 +38,7 @@ func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) 
 		Code:            code,
 		UserID:          userID,
 		UserDisplayName: userDisplayName,
-		Account:         account,
+		Account:         strings.ToLower(account),
 		Timestamp:       time.Now(),
 	}
 	pendingAuthRequests[accessToken] = r
