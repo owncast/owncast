@@ -33,6 +33,8 @@ jobs:
           platforms: all
 
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Checkout and build
         if: env.GH_CR_PAT != null
         env:
