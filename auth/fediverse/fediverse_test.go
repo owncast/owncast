@@ -63,15 +63,16 @@ func TestSingleOTPFlowRequest(t *testing.T) {
 }
 
 func TestAccountCaseInsensitive(t *testing.T) {
-	account1 := "Account"
-	r1, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account1)
+	account := "Account"
+	accessToken := "another-fake-access-token"
+	r1, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
 	_, reg1 := ValidateFediverseOTP(accessToken, r1.Code)
 
 	// Simulate second auth with account in different case
-	r2, _ := RegisterFediverseOTP(accessToken, userID, r1.UserDisplayName, strings.ToUpper(account1))
+	r2, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, strings.ToUpper(account))
 	_, reg2 := ValidateFediverseOTP(accessToken, r2.Code)
 
 	if reg1.Account != reg2.Account {
-		t.Error("Account names should be case-insensitive")
+		t.Errorf("Account names should be case-insensitive: %s %s", reg1.Account, reg2.Account)
 	}
 }
