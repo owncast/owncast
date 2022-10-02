@@ -98,5 +98,4 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	controllers.WriteSimpleResponse(w, true, "")
-	w.WriteHeader(http.StatusOK)
 }
