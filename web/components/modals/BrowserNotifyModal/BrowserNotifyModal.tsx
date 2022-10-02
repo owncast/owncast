@@ -15,8 +15,6 @@ const NotificationsNotSupported = () => (
   <div>Browser notifications are not supported in your browser.</div>
 );
 
-const NotificationsEnabled = () => <div>Notifications enabled</div>;
-
 export type PermissionPopupPreviewProps = {
   start: () => void;
 };
@@ -58,6 +56,15 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
   </div>
 );
 
+const NotificationsEnabled = () => (
+  <div>
+    <Title>Notifications are enabled</Title>
+    To disable push notifications from {window.location.hostname.toString()} access your browser
+    permissions for this site and turn off notifications.
+    <a href="https://owncast.online/docs/notifications"> Learn more.</a>
+  </div>
+);
+
 export const BrowserNotifyModal = () => {
   const [error, setError] = useState<string>(null);
   const accessToken = useRecoilValue(accessTokenAtom);
@@ -73,12 +80,13 @@ export const BrowserNotifyModal = () => {
 
   const browserPushSupported = browser.enabled && isPushNotificationSupported();
 
+  // If notification permissions are granted, show user info how to disable them
   if (notificationsPermitted) {
     return <NotificationsEnabled />;
   }
 
   const startBrowserPushRegistration = async () => {
-    // If it's already denied or granted, don't do anything.
+    // If notification permissions are already denied or granted, don't do anything.
     if (isPushNotificationSupported() && Notification.permission !== 'default') {
       return;
     }
