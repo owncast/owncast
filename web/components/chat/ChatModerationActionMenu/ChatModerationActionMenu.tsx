@@ -4,13 +4,14 @@ import {
   EyeInvisibleOutlined,
   SmallDashOutlined,
 } from '@ant-design/icons';
-import { Dropdown, Menu, MenuProps, Space, Modal, message } from 'antd';
+import { Dropdown, Menu, MenuProps, Space, message, Modal as AntModal } from 'antd';
 import { FC, useState } from 'react';
+import { Modal } from '../../ui/Modal/Modal';
 import { ChatModerationDetailsModal } from '../ChatModerationDetailsModal/ChatModerationDetailsModal';
 import styles from './ChatModerationActionMenu.module.scss';
 import ChatModeration from '../../../services/moderation-service';
 
-const { confirm } = Modal;
+const { confirm } = AntModal;
 
 export type ChatModerationActionMenuProps = {
   accessToken: string;
@@ -119,11 +120,9 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
         </button>
       </Dropdown>
       <Modal
+        title={userDisplayName}
         visible={showUserDetailsModal}
-        okText="Ban User"
-        okButtonProps={{ danger: true }}
-        onOk={handleBanUser}
-        onCancel={() => {
+        handleCancel={() => {
           setShowUserDetailsModal(false);
         }}
       >

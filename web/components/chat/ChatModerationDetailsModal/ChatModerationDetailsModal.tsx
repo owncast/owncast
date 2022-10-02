@@ -1,7 +1,13 @@
-import { Button, Col, Row, Spin } from 'antd';
+import { Button, Col, Collapse, Row, Spin, Table, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
+import format from 'date-fns/format';
+import { DeleteOutlined } from '@ant-design/icons';
+import { ColumnsType } from 'antd/lib/table';
 import ChatModeration from '../../../services/moderation-service';
 import styles from './ChatModerationDetailsModal.module.scss';
+import { formatUAstring } from '../../../utils/format';
+
+const { Panel } = Collapse;
 
 export type ChatModerationDetailsModalProps = {
   userId: string;
@@ -54,48 +60,25 @@ const ValueRow = ({ label, value }: { label: string; value: string }) => (
   </Row>
 );
 
-const ChatMessageRow = ({
-  id,
-  body,
-  accessToken,
-}: {
-  id: string;
-  body: string;
-  accessToken: string;
-}) => (
-  <Row justify="space-around" align="middle">
-    <Col span={18}>{body}</Col>
-    <Col>
-      <Button onClick={() => removeMessage(id, accessToken)}>X</Button>
-    </Col>
-  </Row>
-);
-
 const ConnectedClient = ({ client }: { client: Client }) => {
-  const { messageCount, userAgent, connectedAt, geo } = client;
+  const { messageCount, connectedAt, geo } = client;
+  const connectedAtDate = format(new Date(connectedAt), 'PP pp');
 
   return (
     <div>
       <ValueRow label="Messages Sent" value={`${messageCount}`} />
-      <ValueRow label="Geo" value={geo} />
-      <ValueRow label="Connected At" value={connectedAt.toString()} />
-      <ValueRow label="User Agent" value={userAgent} />
+      {geo !== 'N/A' && <ValueRow label="Geo" value={geo} />}
+      <ValueRow label="Connected At" value={connectedAtDate} />
     </div>
   );
 };
 
-// eslint-disable-next-line react/prop-types
 const UserColorBlock = ({ color }) => {
   const bg = `var(--theme-color-users-${color})`;
   return (
-    <Row justify="space-around" align="middle">
-      <Col span={12}>Color</Col>
-      <Col span={12}>
-        <div className={styles.colorBlock} style={{ backgroundColor: bg }}>
-          {color}
-        </div>
-      </Col>
-    </Row>
+    <div className={styles.colorBlock} style={{ backgroundColor: bg }}>
+      Color {color}
+    </div>
   );
 };
 
@@ -108,7 +91,9 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
 
   const getDetails = async () => {
     try {
-      const response = await (await fetch(`/api/moderation/chat/user/${userId}`)).json();
+      const response = await (
+        await fetch(`/api/moderation/chat/user/${userId}?accessToken=${accessToken}`)
+      ).json();
       setUserDetails(response);
       setLoading(false);
     } catch (e) {
@@ -125,57 +110,69 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
   }
 
   const { user, connectedClients, messages } = userDetails;
-  const { displayName, displayColor, createdAt, previousNames, scopes, isBot, authenticated } =
-    user;
+  const { displayColor, createdAt, previousNames, scopes, isBot, authenticated } = user;
+
+  const totalMessagesSent = connectedClients.reduce((acc, client) => acc + client.messageCount, 0);
+  const createdAtDate = format(new Date(createdAt), 'PP pp');
+
+  const chatMessageColumns: ColumnsType<Message> = [
+    {
+      title: 'Message',
+      dataIndex: 'body',
+      key: 'body',
+    },
+    {
+      title: 'Sent At',
+      dataIndex: 'timestamp',
+      key: 'timestamp',
+      render: timestamp => format(new Date(timestamp), 'PP pp'),
+    },
+    {
+      title: 'Delete',
+      key: 'delete',
+      render: (text, record) => (
+        <Button
+          type="primary"
+          ghost
+          icon={<DeleteOutlined />}
+          onClick={() => removeMessage(record.id, accessToken)}
+        />
+      ),
+    },
+  ];
 
   return (
-    <div className={styles.modalContainer}>
-      <Spin spinning={loading}>
-        <h1>{displayName}</h1>
-        <Row justify="space-around" align="middle">
-          {scopes.map(scope => (
-            <Col>{scope}</Col>
-          ))}
-          {authenticated && <Col>Authenticated</Col>}
-          {isBot && <Col>Bot</Col>}
-        </Row>
-
-        <UserColorBlock color={displayColor} />
-
-        <ValueRow label="User Created" value={createdAt.toString()} />
-        <ValueRow label="Previous Names" value={previousNames.join(',')} />
-
-        <hr />
-
-        <h2>Currently Connected</h2>
-        {connectedClients.length > 0 && (
-          <Row gutter={[15, 15]} wrap>
+    <Spin spinning={loading}>
+      <UserColorBlock color={displayColor} />
+      {scopes.map(scope => (
+        <Tag key={scope}>{scope}</Tag>
+      ))}
+      {authenticated && <Tag>Authenticated</Tag>}
+      {isBot && <Tag>Bot</Tag>}
+      <ValueRow label="Messages Sent Across Clients" value={totalMessagesSent.toString()} />
+      <ValueRow label="User Created" value={createdAtDate} />
+      <ValueRow label="Known As" value={previousNames.join(',')} />
+      <Collapse accordion>
+        <Panel header="Currently Connected Clients" key="connected-clients">
+          <Collapse accordion>
             {connectedClients.map(client => (
-              <Col flex="auto">
+              <Panel header={formatUAstring(client.userAgent)} key={client.userAgent}>
                 <ConnectedClient client={client} />
-              </Col>
+              </Panel>
             ))}
-          </Row>
-        )}
-
-        <hr />
-        {messages.length > 0 && (
-          <div>
-            <h1>Recent Chat Messages</h1>
-
-            <div className={styles.chatHistory}>
-              {messages.map(message => (
-                <ChatMessageRow
-                  key={message.id}
-                  id={message.id}
-                  body={message.body}
-                  accessToken={accessToken}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </Spin>
-    </div>
+          </Collapse>
+        </Panel>
+        <Collapse accordion>
+          <Panel header="Recent Chat Messages" key="chat-messages">
+            <Table
+              size="small"
+              pagination={null}
+              columns={chatMessageColumns}
+              dataSource={messages}
+            />
+          </Panel>
+        </Collapse>
+      </Collapse>
+    </Spin>
   );
 };
