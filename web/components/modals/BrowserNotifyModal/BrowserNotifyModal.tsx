@@ -80,12 +80,13 @@ export const BrowserNotifyModal = () => {
 
   const browserPushSupported = browser.enabled && isPushNotificationSupported();
 
+  // If notification permissions are granted, show user info how to disable them
   if (notificationsPermitted) {
     return <NotificationsEnabled />;
   }
 
   const startBrowserPushRegistration = async () => {
-    // If it's already denied or granted, don't do anything.
+    // If notification permissions are already denied or granted, don't do anything.
     if (isPushNotificationSupported() && Notification.permission !== 'default') {
       return;
     }
