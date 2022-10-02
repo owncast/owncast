@@ -10,8 +10,16 @@
 }
 
 .colorBlock {
-  width: 50%;
+  display: inline-block;
+  width: 60px;
   height: 20px;
   border: 1px solid #000;
   text-align: center;
+  font-size: 0.8rem;
+}
+
+.displayName {
+  font-weight: bold;
+  padding-right: 10px;
+  font-size: 1.2rem;
 }
