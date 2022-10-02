@@ -121,7 +121,7 @@ docker:
   ARG tag=develop
   ARG TARGETPLATFORM
   FROM --platform=$TARGETPLATFORM alpine:3.15.5
-  RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs libva-intel-driver mesa-va-gallium mesa-vdpau-gallium intel-media-driver ca-certificates unzip && apk add --no-cache libva-vdpau-driver --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community && update-ca-certificates
+  RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   WORKDIR /app
   COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
   RUN unzip -x owncast.zip && mkdir data
