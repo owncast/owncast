@@ -16,7 +16,7 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflag
 
 # Create the image by copying the result of the build into a new alpine image
 FROM alpine
-RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs libva-intel-driver mesa-va-gallium mesa-vdpau-gallium intel-media-driver libva-vdpau-driver ca-certificates && update-ca-certificates
+RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates && update-ca-certificates
 
 # Copy owncast assets
 WORKDIR /app
