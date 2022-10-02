@@ -39,19 +39,18 @@
 		color: var(--theme-color-components-text-on-light);
 	}
 
-	.vjs-icon-placeholder {
-		font-family: VideoJS;
-		font-weight: 400;
-		font-style: normal;
+}
 
-		:before {
-			content: url('../airplay.svg');
-		}
+.vjs-airplay .vjs-icon-placeholder::before {
+	content: url('../airplay.svg');
+}
 
-		:before {
-			content: '\f110';
-		}
+.vjs-quality-selector .vjs-icon-placeholder {
+	font-family: VideoJS;
+	font-weight: 400;
+	font-style: normal;
 
+	:before {
+		content: '\f110';
 	}
-
 }
