@@ -1,6 +1,6 @@
 import { ClientConfig } from '../interfaces/client-config.model';
 
-const ENDPOINT = `http://localhost:8080/api/config`;
+const ENDPOINT = `/api/config`;
 
 class ClientConfigService {
   public static async getConfig(): Promise<ClientConfig> {
