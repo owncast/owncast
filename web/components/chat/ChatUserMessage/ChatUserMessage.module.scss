@@ -29,6 +29,8 @@ $p-size: 5px;
   }
 
   &.ownMessage {
+    border-left: none;
+    border-right: $border-style;
     .background {
       position: absolute;
       z-index: -1;
