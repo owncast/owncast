@@ -362,7 +362,7 @@ func (s *Server) eventReceived(event chatClientEvent) {
 	case events.UserColorChanged:
 		s.userColorChanged(event)
 	default:
-		log.Debugln(eventType, "event not found:", typecheck)
+		log.Debugln(logSanitize(fmt.Sprint(eventType)), "event not found:", logSanitize(fmt.Sprint(typecheck)))
 	}
 }
 

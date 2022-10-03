@@ -3,9 +3,7 @@ name: Automated API tests
 on:
   push:
     paths-ignore:
-      - 'web/**'
-  pull_request:
-    paths-ignore:
+      - 'webroot/**'
       - 'web/**'
 
 jobs:

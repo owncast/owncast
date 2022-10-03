@@ -315,7 +315,7 @@ components:
         timestamp:
           type: string
           format: date-time
-          description: Timestamp of when the follow occured
+          description: Timestamp of when the follow occurred
         disabledAt:
           type: string
           format: date-time
@@ -1306,7 +1306,7 @@ paths:
 
   /api/admin/config/s3:
     post:
-      summary: Set your storage configration.
+      summary: Set your storage configuration.
       description: Sets your S3 storage provider configuration details to enable external storage.
       tags: ['Admin']
       security:
@@ -2011,8 +2011,8 @@ paths:
 
   /api/admin/chat/users/setmoderator:
     post:
-      summary: Set moderator priviledges on a chat users.
-      description: Give a chat user ID and be able to grant or remove moderator priviledges to this user.
+      summary: Set moderator privileges on a chat users.
+      description: Give a chat user ID and be able to grant or remove moderator privileges to this user.
       requestBody:
         content:
           application/json:
