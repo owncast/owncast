@@ -36,7 +36,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		normalizedName = strings.ToLower(normalizedName)
 		if strings.Contains(normalizedName, proposedUsername) {
 			// Denied.
-			log.Debugln(eventData.client.User.DisplayName, "blocked from changing name to", proposedUsername, "due to blocked name", normalizedName)
+			log.Debugln(logSanitize(eventData.client.User.DisplayName), "blocked from changing name to", logSanitize(proposedUsername), "due to blocked name", normalizedName)
 			message := fmt.Sprintf("You cannot change your name to **%s**.", proposedUsername)
 			s.sendActionToClient(eventData.client, message)
 
@@ -159,4 +159,12 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	SaveUserMessage(event)
 	eventData.client.MessageCount++
 	_lastSeenCache[event.User.ID] = time.Now()
+}
+
+func logSanitize(userValue string) string {
+	// strip carriage return and newline from user-submitted values to prevent log injection
+	sanitizedValue := strings.ReplaceAll(userValue, "\n", "")
+	sanitizedValue = strings.ReplaceAll(sanitizedValue, "\r", "")
+
+	return fmt.Sprintf("userSuppliedValue(%s)", sanitizedValue)
 }

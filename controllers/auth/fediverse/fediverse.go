@@ -7,7 +7,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/auth"
-	"github.com/owncast/owncast/auth/fediverse"
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
@@ -57,7 +56,7 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessToken := r.URL.Query().Get("accessToken")
-	valid, authRegistration := fediverse.ValidateFediverseOTP(accessToken, req.Code)
+	valid, authRegistration := fediverseauth.ValidateFediverseOTP(accessToken, req.Code)
 	if !valid {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -99,5 +98,4 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	controllers.WriteSimpleResponse(w, true, "")
-	w.WriteHeader(http.StatusOK)
 }
