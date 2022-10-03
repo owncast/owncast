@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import styles from './ChatJoinMessage.module.scss';
+import { TeamOutlined } from '@ant-design/icons';
 import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
+import styles from './ChatJoinMessage.module.scss';
 
 export type ChatJoinMessageProps = {
   isAuthorModerator: boolean;
@@ -13,12 +14,15 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
   userColor,
   displayName,
 }) => {
-  const color = `var(--theme-user-colors-${userColor})`;
+  const color = `var(--theme-color-users-${userColor})`;
 
   return (
-    <div className={styles.join}>
+    <div className={styles.root}>
       <span style={{ color }}>
-        {displayName}
+        <span style={{ padding: '0 10px' }}>
+          <TeamOutlined />
+        </span>
+        <span style={{ fontWeight: 'bold' }}>{displayName}</span>
         {isAuthorModerator && (
           <span>
             <ChatUserBadge badge="mod" userColor={userColor} />
