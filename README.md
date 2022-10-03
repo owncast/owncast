@@ -76,7 +76,9 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 
 ## Building from Source
 
-1. Ensure you have the gcc compiler installed.
+1. Ensure you have pre-requisites installed.
+    - [gcc compiler](https://gcc.gnu.org/install/download.html)
+    - [ffmpeg](https://ffmpeg.org/download.html)
 1. Install the [Go toolchain](https://golang.org/dl/) (1.16 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from source.
