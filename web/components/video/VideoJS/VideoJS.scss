@@ -41,8 +41,12 @@
 
 }
 
-.vjs-airplay .vjs-icon-placeholder::before {
-	content: url('../airplay.svg');
+.vjs-airplay {
+	width: 50%;
+	height: 50%;
+	.vjs-icon-placeholder::before {
+		content: url('../airplay.svg');
+	}
 }
 
 .vjs-quality-selector .vjs-icon-placeholder {
