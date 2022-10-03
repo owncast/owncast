@@ -148,34 +148,19 @@ curl 'http://localhost:8080/api/admin/config/offlinemessage' \
 
 # Chat welcome message
 
-curl 'https://webv2.owncast.tv/api/admin/config/welcomemessage' \
-  -H 'authority: webv2.owncast.tv' \
+curl 'http://localhost:8080/api/admin/config/welcomemessage' \
   -H 'accept: */*' \
   -H 'accept-language: en-US,en;q=0.9' \
   -H 'authorization: Basic YWRtaW46aG05dTl4a2c=' \
   -H 'cache-control: no-cache' \
   -H 'content-type: text/plain;charset=UTF-8' \
-  -H 'origin: https://webv2.owncast.tv' \
+  -H 'Origin: http://localhost:8080' \
   -H 'pragma: no-cache' \
-  -H 'referer: https://webv2.owncast.tv/admin/config-chat/' \
+  -H 'referer: http://localhost:8080/admin/config-chat/' \
   -H 'sec-fetch-dest: empty' \
   -H 'sec-fetch-mode: cors' \
   -H 'sec-fetch-site: same-origin' \
   -H 'sec-gpc: 1' \
   -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36' \
   --data-raw '{"value":"This is an example chat welcome message."}' \
-  --compressed ;
-curl 'https://webv2.owncast.tv/api/admin/status' \
-  -H 'authority: webv2.owncast.tv' \
-  -H 'accept: */*' \
-  -H 'accept-language: en-US,en;q=0.9' \
-  -H 'authorization: Basic YWRtaW46aG05dTl4a2c=' \
-  -H 'cache-control: no-cache' \
-  -H 'pragma: no-cache' \
-  -H 'referer: https://webv2.owncast.tv/admin/config-chat/' \
-  -H 'sec-fetch-dest: empty' \
-  -H 'sec-fetch-mode: cors' \
-  -H 'sec-fetch-site: same-origin' \
-  -H 'sec-gpc: 1' \
-  -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36' \
-  --compressed
+  --compressed 
