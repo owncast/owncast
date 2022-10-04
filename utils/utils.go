@@ -186,7 +186,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 		return 20
 	} else if fileExtension == ".js" || fileExtension == ".css" {
 		// Cache javascript & CSS
-		return 60 * 60 * 3
+		return 60 * 60 * 24 * 7
 	} else if fileExtension == ".ts" || fileExtension == ".woff2" {
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
