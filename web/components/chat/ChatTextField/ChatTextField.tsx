@@ -4,11 +4,15 @@ import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
-import { EmojiPicker } from './EmojiPicker';
+import dynamic from 'next/dynamic';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
 import styles from './ChatTextField.module.scss';
+
+// Lazy loaded components
+
+const EmojiPicker = dynamic(() => import('./EmojiPicker').then(mod => mod.EmojiPicker));
 
 type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] } | ImageNode;
 type CustomText = { text: string };

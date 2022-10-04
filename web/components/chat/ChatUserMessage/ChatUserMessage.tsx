@@ -1,17 +1,26 @@
 /* eslint-disable react/no-danger */
 import { FC, useEffect, useState } from 'react';
-import { Highlight } from 'react-highlighter-ts';
 import he from 'he';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
+import dynamic from 'next/dynamic';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatModerationActionMenu } from '../ChatModerationActionMenu/ChatModerationActionMenu';
 import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 import { accessTokenAtom } from '../../stores/ClientConfigStore';
+
+// Lazy loaded components
+
+const ChatModerationActionMenu = dynamic(() =>
+  import('../ChatModerationActionMenu/ChatModerationActionMenu').then(
+    mod => mod.ChatModerationActionMenu,
+  ),
+);
+
+const Highlight = dynamic(() => import('react-highlighter-ts').then(mod => mod.Highlight));
 
 export type ChatUserMessageProps = {
   message: ChatMessage;
