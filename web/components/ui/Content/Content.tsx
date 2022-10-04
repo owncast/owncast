@@ -2,6 +2,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
+import dynamic from 'next/dynamic';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
 import {
@@ -19,28 +20,45 @@ import {
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { OwncastPlayer } from '../../video/OwncastPlayer/OwncastPlayer';
-import { FollowerCollection } from '../followers/FollowerCollection/FollowerCollection';
 import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Footer } from '../Footer/Footer';
 
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
-import { NotifyReminderPopup } from '../NotifyReminderPopup/NotifyReminderPopup';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
 import { FollowButton } from '../../action-buttons/FollowButton';
 import { NotifyButton } from '../../action-buttons/NotifyButton';
-import { Modal } from '../Modal/Modal';
-import { BrowserNotifyModal } from '../../modals/BrowserNotifyModal/BrowserNotifyModal';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
-import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 
 const { TabPane } = Tabs;
 const { Content: AntContent } = Layout;
+
+// Lazy loaded components
+
+const Modal = dynamic(() => import('../Modal/Modal').then(mod => mod.Modal));
+
+const BrowserNotifyModal = dynamic(() =>
+  import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
+);
+
+const NotifyReminderPopup = dynamic(() =>
+  import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
+);
+
+const FollowerCollection = dynamic(() =>
+  import('../followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
+);
+
+// We only need to load the chat container here if we're in mobile or narrow
+// windows, so lazy loading it makes sense.
+const ChatContainer = dynamic(() =>
+  import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+);
 
 const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extraPageContent }) => (
   <>

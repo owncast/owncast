@@ -9,16 +9,25 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Modal } from '../../ui/Modal/Modal';
+import dynamic from 'next/dynamic';
 import {
   chatVisibleToggleAtom,
   chatDisplayNameAtom,
   appStateAtom,
 } from '../../stores/ClientConfigStore';
 import styles from './UserDropdown.module.scss';
-import { NameChangeModal } from '../../modals/NameChangeModal/NameChangeModal';
 import { AppStateOptions } from '../../stores/application-state';
-import { AuthModal } from '../../modals/AuthModal/AuthModal';
+
+// Lazy loaded components
+const Modal = dynamic(() => import('../../ui/Modal/Modal').then(mod => mod.Modal));
+
+const NameChangeModal = dynamic(() =>
+  import('../../modals/NameChangeModal/NameChangeModal').then(mod => mod.NameChangeModal),
+);
+
+const AuthModal = dynamic(() =>
+  import('../../modals/AuthModal/AuthModal').then(mod => mod.AuthModal),
+);
 
 export type UserDropdownProps = {
   username?: string;
