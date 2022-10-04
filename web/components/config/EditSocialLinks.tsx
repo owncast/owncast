@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, FC } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { DeleteOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretUpOutlined, DeleteOutlined } from '@ant-design/icons';
 import { SocialDropdown } from './SocialDropdown';
 import { fetchData, SOCIAL_PLATFORMS_LIST, NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -167,6 +167,28 @@ export const EditSocialLinks: FC = () => {
     postUpdateToAPI(postData);
   };
 
+  const handleMoveItemUp = (index: number) => {
+    if (index <= 0 || index >= currentSocialHandles.length) {
+      return;
+    }
+    const postData = [...currentSocialHandles];
+    const tmp = postData[index - 1];
+    postData[index - 1] = postData[index];
+    postData[index] = tmp;
+    postUpdateToAPI(postData);
+  };
+
+  const handleMoveItemDown = (index: number) => {
+    if (index < 0 || index >= currentSocialHandles.length - 1) {
+      return;
+    }
+    const postData = [...currentSocialHandles];
+    const tmp = postData[index + 1];
+    postData[index + 1] = postData[index];
+    postData[index] = tmp;
+    postUpdateToAPI(postData);
+  };
+
   const socialHandlesColumns: ColumnsType<SocialHandle> = [
     {
       title: 'Social Link',
@@ -227,6 +249,18 @@ export const EditSocialLinks: FC = () => {
           >
             Edit
           </Button>
+          <Button
+            icon={<CaretUpOutlined />}
+            size="small"
+            hidden={index === 0}
+            onClick={() => handleMoveItemUp(index)}
+          />
+          <Button
+            icon={<CaretDownOutlined />}
+            size="small"
+            hidden={index === currentSocialHandles.length - 1}
+            onClick={() => handleMoveItemDown(index)}
+          />
           <Button
             className="delete-button"
             icon={<DeleteOutlined />}
