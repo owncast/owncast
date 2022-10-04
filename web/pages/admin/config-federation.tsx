@@ -244,6 +244,18 @@ const ConfigFederation = () => {
       />
     </>
   );
+
+  const invalidPortWarning = (
+    <Alert
+      message="Only Owncast instances available on the default SSL port 443 support this feature."
+      type="warning"
+      showIcon
+    />
+  );
+
+  const hasInvalidPort =
+    instanceUrl && new URL(instanceUrl).port !== '' && new URL(instanceUrl).port !== '443';
+
   return (
     <div>
       <Title>Configure Social Features</Title>
@@ -263,12 +275,13 @@ const ConfigFederation = () => {
       <Row>
         <Col span={15} className="form-module" style={{ marginRight: '15px' }}>
           {configurationWarning}
+          {hasInvalidPort && invalidPortWarning}
           <ToggleSwitch
             fieldName="enabled"
             onChange={handleEnabledSwitchChange}
             {...FIELD_PROPS_ENABLE_FEDERATION}
             checked={formDataValues.enabled}
-            disabled={!hasInstanceUrl || !isInstanceUrlSecure}
+            disabled={hasInvalidPort || !hasInstanceUrl || !isInstanceUrlSecure}
           />
           <ToggleSwitch
             fieldName="isPrivate"
@@ -281,7 +294,7 @@ const ConfigFederation = () => {
             useSubmit
             {...FIELD_PROPS_FEDERATION_NSFW}
             checked={formDataValues.nsfw}
-            disabled={!hasInstanceUrl}
+            disabled={hasInvalidPort || !hasInstanceUrl}
           />
           <TextFieldWithSubmit
             required
