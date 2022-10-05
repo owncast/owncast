@@ -1,0 +1,5 @@
+# Automatic workspace preparation for gitpod instances
+
+tasks:
+  - init: sudo apt-get install ffmpeg -y && go get && go build ./... && go test ./...
+    command: go run .
