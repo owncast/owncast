@@ -13,8 +13,8 @@
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.7.0",
-		"@fontsource/open-sans": "4.5.11",
-		"@fontsource/poppins": "4.5.9",
+		"@fontsource/open-sans": "4.5.12",
+		"@fontsource/poppins": "4.5.10",
 		"@storybook/react": "6.5.12",
 		"@xstate/react": "3.0.1",
 		"antd": "4.23.4",
