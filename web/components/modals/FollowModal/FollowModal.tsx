@@ -99,11 +99,11 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
         <div>
           <div className={styles.instructions}>Enter your username @server to follow</div>
           <Input
-            value={account}
+            value={remoteAccount}
             size="large"
             onChange={e => handleAccountChange(e.target.value)}
             placeholder="Your fediverse account @account@server"
-            defaultValue={account}
+            defaultValue={remoteAccount}
           />
           <div className={styles.footer}>
             You'll be redirected to your Fediverse server and asked to confirm the action.
