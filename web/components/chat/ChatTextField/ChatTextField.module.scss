@@ -46,3 +46,16 @@
   cursor: pointer;
   padding: 0 1rem;
 }
+
+.sendButton {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0 1rem;
+  display: none;
+
+  // Only show the chat send button on narrow screens to assist in mobile use.
+  @media (max-width: 768px) {
+    display: block;
+  }
+}
