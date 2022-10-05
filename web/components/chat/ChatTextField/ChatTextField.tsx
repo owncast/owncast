@@ -235,7 +235,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = () => {
           </button>
           <button
             type="button"
-            className={styles.emojiButton}
+            className={styles.sendButton}
             title="Send message Button"
             onClick={sendMessage}
           >
