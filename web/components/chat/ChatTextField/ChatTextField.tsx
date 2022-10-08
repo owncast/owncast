@@ -1,13 +1,13 @@
-import { SendOutlined, SmileOutlined } from '@ant-design/icons';
-import { Popover } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
-import dynamic from 'next/dynamic';
-import WebsocketService from '../../../services/websocket-service';
-import { websocketServiceAtom } from '../../stores/ClientConfigStore';
-import { MessageType } from '../../../interfaces/socket-events';
+import { MessageType } from '~/interfaces/socket-events';
+import { Popover } from 'antd';
+import { SendOutlined, SmileOutlined } from '@ant-design/icons';
+import WebsocketService from '~/services/websocket-service';
+import { websocketServiceAtom } from '~/components/stores/ClientConfigStore';
 import styles from './ChatTextField.module.scss';
 
 // Lazy loaded components

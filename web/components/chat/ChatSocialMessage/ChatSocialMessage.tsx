@@ -1,7 +1,7 @@
 import { Avatar, Col, Row } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { FC } from 'react';
-import { ChatSocialMessage as ChatMessage } from '../../../interfaces/chat-social-message.model';
+import { ChatSocialMessage as ChatMessage } from '~/interfaces/chat-social-message.model';
 import styles from './ChatSocialMessage.module.scss';
 
 const FollowIcon = dynamic(() => import('./follow.svg'));
@@ -15,7 +15,7 @@ export interface ChatSocialMessageProps {
 export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
   const { body, title, image, link, type } = message;
 
-  let Icon;
+  let Icon: React.ComponentType<any>;
 
   switch (type.toString()) {
     case 'follow':

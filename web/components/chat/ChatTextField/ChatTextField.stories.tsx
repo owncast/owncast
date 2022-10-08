@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatTextField } from './ChatTextField';
-import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
+import Mockup from '~/stories/assets/mocks/chatinput-mock.png';
 
 const mockResponse = JSON.parse(
   `[{"name":"Reaper-gg.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=OC"},{"name":"Reaper-hi.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=XX"},{"name":"Reaper-hype.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=TX"},{"name":"Reaper-lol.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=CA"},{"name":"Reaper-love.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=OK"}]`,

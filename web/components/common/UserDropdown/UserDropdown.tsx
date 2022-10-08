@@ -1,3 +1,13 @@
+import { FC, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import dynamic from 'next/dynamic';
+import { useHotkeys } from 'react-hotkeys-hook';
+import {
+  chatVisibleToggleAtom,
+  chatDisplayNameAtom,
+  appStateAtom,
+} from '~/components//stores/ClientConfigStore';
+import { AppStateOptions } from '~/components/stores/application-state';
 import { Menu, Dropdown, Button, Space } from 'antd';
 import {
   CaretDownOutlined,
@@ -6,17 +16,7 @@ import {
   MessageOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { FC, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
-import dynamic from 'next/dynamic';
-import {
-  chatVisibleToggleAtom,
-  chatDisplayNameAtom,
-  appStateAtom,
-} from '../../stores/ClientConfigStore';
 import styles from './UserDropdown.module.scss';
-import { AppStateOptions } from '../../stores/application-state';
 
 // Lazy loaded components
 const Modal = dynamic(() => import('../../ui/Modal/Modal').then(mod => mod.Modal));

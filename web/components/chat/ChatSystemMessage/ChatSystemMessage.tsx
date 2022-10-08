@@ -1,7 +1,7 @@
 /* eslint-disable react/no-danger */
 import { Highlight } from 'react-highlighter-ts';
 import { FC } from 'react';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { ChatMessage } from '~/interfaces/chat-message.model';
 import styles from './ChatSystemMessage.module.scss';
 
 export type ChatSystemMessageProps = {

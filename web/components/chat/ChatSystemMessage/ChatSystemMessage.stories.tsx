@@ -1,8 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { ChatSystemMessage } from './ChatSystemMessage';
-import Mock from '../../../stories/assets/mocks/chatmessage-system.png';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
+import Mock from '~/stories/assets/mocks/chatmessage-system.png';
+import { ChatMessage } from '~/interfaces/chat-message.model';
 
 export default {
   title: 'owncast/Chat/Messages/System',

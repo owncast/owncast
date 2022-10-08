@@ -5,16 +5,15 @@ import {
   ConnectedClientInfoEvent,
   MessageType,
   NameChangeEvent,
-} from '../../../interfaces/socket-events';
-import styles from './ChatContainer.module.scss';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatUserMessage } from '../ChatUserMessage/ChatUserMessage';
-import { ChatTextField } from '../ChatTextField/ChatTextField';
-import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatModeratorNotification';
-// import ChatActionMessage from '../ChatAction/ChatActionMessage';
-import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
-import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
+} from '~/interfaces/socket-events';
+import { ChatMessage } from '~/interfaces/chat-message.model';
+import { ChatUserMessage } from '~/components/chat/ChatUserMessage/ChatUserMessage';
+import { ChatTextField } from '~/components/chat/ChatTextField/ChatTextField';
+import { ChatModeratorNotification } from '~/components/chat/ChatModeratorNotification/ChatModeratorNotification';
+import { ChatSystemMessage } from '~/components/chat/ChatSystemMessage/ChatSystemMessage';
+import { ChatJoinMessage } from '~/components/chat/ChatJoinMessage/ChatJoinMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
+import styles from './ChatContainer.module.scss';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];

@@ -2,8 +2,8 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatUserMessage } from './ChatUserMessage';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
-import Mock from '../../../stories/assets/mocks/chatmessage-user.png';
+import { ChatMessage } from '~/interfaces/chat-message.model';
+import Mock from '~/stories/assets/mocks/chatmessage-user.png';
 
 export default {
   title: 'owncast/Chat/Messages/Standard user',
