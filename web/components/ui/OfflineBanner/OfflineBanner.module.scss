@@ -13,6 +13,26 @@
   border-radius: var(--theme-rounded-corners);
   padding: 1rem;
   font-size: 1.2rem;
+  border: 1px solid lightgray;
+}
+
+.bodyText {
+  line-height: 1.5rem;
+}
+
+.separator {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.lastLiveDate {
+  margin-top: 15px;
+  font-size: 1rem;
+  opacity: 0.5;
+
+  .clockIcon {
+    margin-right: 5px;
+  }
 }
 
 .header {
@@ -20,5 +40,5 @@
 }
 
 .footer {
-  margin-top: 20px;
+  margin-top: 15px;
 }

@@ -18,7 +18,7 @@ export default function VideoEmbed() {
 
   const { name } = clientConfig;
 
-  // const { extraPageContent, version, socialHandles, name, title, tags } = clientConfig;
+  const { offlineMessage } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
   const online = useRecoilValue<boolean>(isOnlineSelector);
   return (
@@ -26,13 +26,21 @@ export default function VideoEmbed() {
       <ClientConfigStore />
       <div className="video-embed">
         {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-        {!online && <OfflineBanner title={name} text="Stream is offline text goes here." />}{' '}
-        <Statusbar
-          online={online}
-          lastConnectTime={lastConnectTime}
-          lastDisconnectTime={lastDisconnectTime}
-          viewerCount={viewerCount}
-        />
+        {!online && (
+          <OfflineBanner
+            streamName={name}
+            customText={offlineMessage}
+            notificationsEnabled={false}
+          />
+        )}
+        {online && (
+          <Statusbar
+            online={online}
+            lastConnectTime={lastConnectTime}
+            lastDisconnectTime={lastDisconnectTime}
+            viewerCount={viewerCount}
+          />
+        )}
       </div>
     </>
   );

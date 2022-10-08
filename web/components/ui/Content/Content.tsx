@@ -152,9 +152,14 @@ export const Content: FC = () => {
     externalActions,
     offlineMessage,
     chatDisabled,
+    federation,
+    notifications,
   } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
+  const { account: fediverseAccount } = federation;
+  const { browser: browserNotifications } = notifications;
+  const { enabled: browserNotificationsEnabled } = browserNotifications;
 
   const externalActionButtons = externalActions.map(action => (
     <ActionButton key={action.url} action={action} />
@@ -195,13 +200,6 @@ export const Content: FC = () => {
     window.addEventListener('resize', checkIfMobile);
   }, []);
 
-  let offlineMessageBody =
-    !appState.appLoading && 'Please follow and ask to get notified when the stream is live.';
-  if (offlineMessage && !appState.appLoading) {
-    offlineMessageBody = offlineMessage;
-  }
-
-  const offlineTitle = !appState.appLoading && `${name} is currently offline`;
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
@@ -212,7 +210,14 @@ export const Content: FC = () => {
             <div className={styles.topSection}>
               {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
               {!online && !appState.appLoading && (
-                <OfflineBanner title={offlineTitle} text={offlineMessageBody} />
+                <OfflineBanner
+                  streamName={name}
+                  customText={offlineMessage}
+                  notificationsEnabled={browserNotificationsEnabled}
+                  fediverseAccount={fediverseAccount}
+                  lastLive={lastDisconnectTime}
+                  onNotifyClick={() => setShowNotifyPopup(true)}
+                />
               )}
               <Statusbar
                 online={online}
