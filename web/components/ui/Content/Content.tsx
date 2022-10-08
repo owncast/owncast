@@ -42,15 +42,21 @@ const { Content: AntContent } = Layout;
 const Modal = dynamic(() => import('../Modal/Modal').then(mod => mod.Modal));
 
 const BrowserNotifyModal = dynamic(() =>
-  import('~/components/modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
+  import('~/components/modals/BrowserNotifyModal/BrowserNotifyModal').then(
+    mod => mod.BrowserNotifyModal,
+  ),
 );
 
 const NotifyReminderPopup = dynamic(() =>
-  import('~/components/ui/NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
+  import('~/components/ui/NotifyReminderPopup/NotifyReminderPopup').then(
+    mod => mod.NotifyReminderPopup,
+  ),
 );
 
 const FollowerCollection = dynamic(() =>
-  import('~/components/ui/followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
+  import('~/components/ui/followers/FollowerCollection/FollowerCollection').then(
+    mod => mod.FollowerCollection,
+  ),
 );
 
 // We only need to load the chat container here if we're in mobile or narrow

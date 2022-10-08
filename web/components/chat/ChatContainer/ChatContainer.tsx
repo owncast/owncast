@@ -1,11 +1,7 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC } from 'react';
 import { EditFilled } from '@ant-design/icons';
-import {
-  ConnectedClientInfoEvent,
-  MessageType,
-  NameChangeEvent,
-} from '~/interfaces/socket-events';
+import { ConnectedClientInfoEvent, MessageType, NameChangeEvent } from '~/interfaces/socket-events';
 import { ChatMessage } from '~/interfaces/chat-message.model';
 import { ChatUserMessage } from '~/components/chat/ChatUserMessage/ChatUserMessage';
 import { ChatTextField } from '~/components/chat/ChatTextField/ChatTextField';
