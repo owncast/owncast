@@ -32,6 +32,23 @@ func PopulateDefaults() {
 		return
 	}
 
+	const defaultPageContent = `
+This is a live stream powered by [Owncast](https://owncast.online), a free and open source livestreaming server.
+<hr/>
+
+### Why you might be interested in Owncast
+
+- It can be self-hosted on your own server.
+- It's easy to install and configure. You can be up and running in minutes.
+- It's not controlled by a corporation and is built by people like [you](https://owncast.online/help).
+- Viewers can start chatting immediately, no account required.
+- No ads, tracking or data collection.
+
+<hr/>
+
+To discover more streams, visit [Owncast's directory](https://directory.owncast.online).
+	`
+
 	_ = SetStreamKey(defaults.StreamKey)
 	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
 	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
@@ -41,7 +58,7 @@ func PopulateDefaults() {
 	_ = SetServerWelcomeMessage("")
 	_ = SetServerName("Owncast")
 	_ = SetStreamKey(defaults.StreamKey)
-	_ = SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
+	_ = SetExtraPageBodyContent(defaultPageContent)
 	_ = SetFederationGoLiveMessage(defaults.FederationGoLiveMessage)
 	_ = SetSocialHandles([]models.SocialHandle{
 		{
