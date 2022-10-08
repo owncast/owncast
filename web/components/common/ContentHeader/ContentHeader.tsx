@@ -1,9 +1,9 @@
 import cn from 'classnames';
 import { FC } from 'react';
 import Linkify from 'react-linkify';
-import { Logo } from '../../ui/Logo/Logo';
-import { SocialLinks } from '../../ui/SocialLinks/SocialLinks';
-import { SocialLink } from '../../../interfaces/social-link.model';
+import { Logo } from '~/components/ui/Logo/Logo';
+import { SocialLinks } from '~/components/ui/SocialLinks/SocialLinks';
+import { SocialLink } from '~/interfaces/social-link.model';
 import styles from './ContentHeader.module.scss';
 
 export type ContentHeaderProps = {

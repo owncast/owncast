@@ -1,7 +1,7 @@
 import { VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { FC, MutableRefObject } from 'react';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { ChatMessage } from '~/interfaces/chat-message.model';
 import styles from './ChatContainer.module.scss';
 
 type Props = {

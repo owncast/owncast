@@ -1,12 +1,12 @@
-import { Button, ButtonProps } from 'antd';
-import { HeartFilled } from '@ant-design/icons';
 import { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Modal } from '../ui/Modal/Modal';
-import { FollowModal } from '../modals/FollowModal/FollowModal';
+import { Button, ButtonProps } from 'antd';
+import { HeartFilled } from '@ant-design/icons';
+import { Modal } from '~/components/ui/Modal/Modal';
+import { FollowModal } from '~/components/modals/FollowModal/FollowModal';
+import { clientConfigStateAtom } from '~/components/stores/ClientConfigStore';
+import { ClientConfig } from '~/interfaces/client-config.model';
 import styles from './ActionButton/ActionButton.module.scss';
-import { clientConfigStateAtom } from '../stores/ClientConfigStore';
-import { ClientConfig } from '../../interfaces/client-config.model';
 
 export type FollowButtonProps = ButtonProps;
 

@@ -1,5 +1,5 @@
 import styles from './ChatModeratorNotification.module.scss';
-import Icon from '../../../assets/images/moderator.svg';
+import Icon from '~/assets/images/moderator.svg';
 
 export const ChatModeratorNotification = () => (
   <div className={styles.chatModerationNotification}>

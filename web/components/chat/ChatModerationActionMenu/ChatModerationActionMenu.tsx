@@ -7,9 +7,9 @@ import {
 import { Dropdown, Menu, MenuProps, Space, message, Modal as AntModal } from 'antd';
 import { FC, useState } from 'react';
 import { Modal } from '../../ui/Modal/Modal';
-import { ChatModerationDetailsModal } from '../ChatModerationDetailsModal/ChatModerationDetailsModal';
+import { ChatModerationDetailsModal } from '~/components/chat/ChatModerationDetailsModal/ChatModerationDetailsModal';
 import styles from './ChatModerationActionMenu.module.scss';
-import ChatModeration from '../../../services/moderation-service';
+import ChatModeration from '~/services/moderation-service';
 
 const { confirm } = AntModal;
 

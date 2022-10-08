@@ -3,7 +3,7 @@ import { Layout, Tabs, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
-import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
+import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '~/utils/localStorage';
 
 import {
   clientConfigStateAtom,
@@ -16,24 +16,23 @@ import {
   isOnlineSelector,
   isMobileAtom,
   serverStatusState,
-} from '../../stores/ClientConfigStore';
-import { ClientConfig } from '../../../interfaces/client-config.model';
-import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
-import { OwncastPlayer } from '../../video/OwncastPlayer/OwncastPlayer';
+} from '~/components/stores/ClientConfigStore';
+import { ClientConfig } from '~/interfaces/client-config.model';
+import { CustomPageContent } from '~/components/ui/CustomPageContent/CustomPageContent';
+import { OwncastPlayer } from '~/components/video/OwncastPlayer/OwncastPlayer';
+import { Sidebar } from '~/components/ui/Sidebar/Sidebar';
+import { Footer } from '~/components/ui/Footer/Footer';
+import { ActionButtonRow } from '~/components/action-buttons/ActionButtonRow/ActionButtonRow';
+import { ActionButton } from '~/components/action-buttons/ActionButton/ActionButton';
+import { OfflineBanner } from '~/components/ui/OfflineBanner/OfflineBanner';
+import { AppStateOptions } from '~/components/stores/application-state';
+import { FollowButton } from '~/components/action-buttons/FollowButton';
+import { NotifyButton } from '~/components/action-buttons/NotifyButton';
+import { ContentHeader } from '~/components/common/ContentHeader/ContentHeader';
+import { ServerStatus } from '~/interfaces/server-status.model';
+import { Statusbar } from '~/components/ui/Statusbar/Statusbar';
+import { ChatMessage } from '~/interfaces/chat-message.model';
 import styles from './Content.module.scss';
-import { Sidebar } from '../Sidebar/Sidebar';
-import { Footer } from '../Footer/Footer';
-
-import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
-import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
-import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
-import { AppStateOptions } from '../../stores/application-state';
-import { FollowButton } from '../../action-buttons/FollowButton';
-import { NotifyButton } from '../../action-buttons/NotifyButton';
-import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
-import { ServerStatus } from '../../../interfaces/server-status.model';
-import { Statusbar } from '../Statusbar/Statusbar';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
 
 const { TabPane } = Tabs;
 const { Content: AntContent } = Layout;
@@ -43,21 +42,21 @@ const { Content: AntContent } = Layout;
 const Modal = dynamic(() => import('../Modal/Modal').then(mod => mod.Modal));
 
 const BrowserNotifyModal = dynamic(() =>
-  import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
+  import('~/components/modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
 );
 
 const NotifyReminderPopup = dynamic(() =>
-  import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
+  import('~/components/ui/NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
 );
 
 const FollowerCollection = dynamic(() =>
-  import('../followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
+  import('~/components/ui/followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
 );
 
 // We only need to load the chat container here if we're in mobile or narrow
 // windows, so lazy loading it makes sense.
 const ChatContainer = dynamic(() =>
-  import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+  import('~/components/chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
 );
 
 const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extraPageContent }) => (

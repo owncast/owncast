@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { TeamOutlined } from '@ant-design/icons';
-import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
+import { ChatUserBadge } from '~/components/chat/ChatUserBadge/ChatUserBadge';
 import styles from './ChatJoinMessage.module.scss';
 
 export type ChatJoinMessageProps = {

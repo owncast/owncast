@@ -3,9 +3,9 @@ import { FC, useEffect, useState } from 'react';
 import format from 'date-fns/format';
 import { DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
-import ChatModeration from '../../../services/moderation-service';
+import ChatModeration from '~/services/moderation-service';
 import styles from './ChatModerationDetailsModal.module.scss';
-import { formatUAstring } from '../../../utils/format';
+import { formatUAstring } from '~/utils/format';
 
 const { Panel } = Collapse;
 
