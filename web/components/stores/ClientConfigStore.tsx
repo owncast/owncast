@@ -240,7 +240,7 @@ export const ClientConfigStore: FC = () => {
       sendEvent(AppStateEvent.Fail);
       setGlobalFatalError(
         'Unable to reach Owncast server',
-        `Owncast cannot launch. Please make sure the Owncast server is running. ${error}`,
+        `Owncast cannot launch. Please make sure the Owncast server is running.`,
       );
       console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
     }
