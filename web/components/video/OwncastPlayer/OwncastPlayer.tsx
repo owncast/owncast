@@ -288,6 +288,13 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
     }
   }, [clockSkew]);
 
+  useEffect(
+    () => () => {
+      stopLatencyCompensator();
+    },
+    [],
+  );
+
   return (
     <div style={{ display: 'grid' }}>
       {online && (
