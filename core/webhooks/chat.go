@@ -42,3 +42,14 @@ func SendChatEventUserJoined(event events.UserJoinedEvent) {
 
 	SendEventToWebhooks(webhookEvent)
 }
+
+// SendChatEventSetMessageVisibility sends a webhook notifying that the visibility of one or more
+// messages has changed.
+func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
+	webhookEvent := WebhookEvent{
+		Type:      models.VisibiltyToggled,
+		EventData: event,
+	}
+
+	SendEventToWebhooks(webhookEvent)
+}
