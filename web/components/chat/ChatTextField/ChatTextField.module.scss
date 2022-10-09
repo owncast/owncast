@@ -24,6 +24,12 @@
     }
   }
 
+  .maxCharacters {
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
+  }
+
   div[role='textbox'] {
     font-size: 0.9rem;
     padding: 0.3rem;

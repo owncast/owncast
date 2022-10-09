@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
 import dynamic from 'next/dynamic';
+import classNames from 'classnames';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
@@ -94,17 +95,38 @@ const serialize = node => {
   }
 };
 
-export type ChatTextFieldProps = {};
+const getCharacterCount = node => {
+  if (Text.isText(node)) {
+    return node.text.length;
+  }
+  if (node.type === 'image') {
+    return 5;
+  }
 
-export const ChatTextField: FC<ChatTextFieldProps> = () => {
+  let count = 0;
+  node.children.forEach(child => {
+    count += getCharacterCount(child);
+  });
+
+  return count;
+};
+
+export type ChatTextFieldProps = {
+  defaultText?: string;
+};
+
+const characterLimit = 300;
+
+export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
   const [showEmojis, setShowEmojis] = useState(false);
+  const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const editor = useMemo(() => withReact(withImages(createEditor())), []);
 
   const defaultEditorValue: Descendant[] = [
     {
       type: 'paragraph',
-      children: [{ text: '' }],
+      children: [{ text: defaultText || '' }],
     },
   ];
 
@@ -124,6 +146,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = () => {
         focus: Editor.end(editor, []),
       },
     });
+    setCharacterCount(0);
   };
 
   const createImageNode = (alt, src, name): ImageNode => ({
@@ -164,30 +187,47 @@ export const ChatTextField: FC<ChatTextFieldProps> = () => {
     }
   };
 
-  const onEmojiSelect = (e: any) => {
+  // Native emoji
+  const onEmojiSelect = (emoji: string) => {
     ReactEditor.focus(editor);
-
-    if (e.url) {
-      // Custom emoji
-      const { url } = e;
-      insertImage(url, url);
-    } else {
-      // Native emoji
-      const { emoji } = e;
-      Transforms.insertText(editor, emoji);
-    }
+    Transforms.insertText(editor, emoji);
   };
 
-  const onCustomEmojiSelect = (e: any) => {
+  const onCustomEmojiSelect = (name: string, emoji: string) => {
     ReactEditor.focus(editor);
-    const { url } = e;
-    insertImage(url, url);
+    insertImage(emoji, name);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    const charCount = getCharacterCount(editor) + 1;
+
+    // Send the message when hitting enter.
     if (e.key === 'Enter') {
       e.preventDefault();
       sendMessage();
+      return;
+    }
+
+    // Always allow backspace.
+    if (e.key === 'Backspace') {
+      setCharacterCount(charCount - 1);
+      return;
+    }
+
+    // Limit the number of characters.
+    if (charCount + 1 > characterLimit) {
+      e.preventDefault();
+    }
+
+    setCharacterCount(charCount + 1);
+  };
+
+  const onPaste = (e: React.ClipboardEvent) => {
+    const text = e.clipboardData.getData('text/plain');
+
+    const { length } = text;
+    if (characterCount + length > characterLimit) {
+      e.preventDefault();
     }
   };
 
@@ -202,10 +242,16 @@ export const ChatTextField: FC<ChatTextFieldProps> = () => {
 
   return (
     <div className={styles.root}>
-      <div className={styles.inputWrap}>
+      <div
+        className={classNames(
+          styles.inputWrap,
+          characterCount >= characterLimit && styles.maxCharacters,
+        )}
+      >
         <Slate editor={editor} value={defaultEditorValue}>
           <Editable
             onKeyDown={onKeyDown}
+            onPaste={onPaste}
             renderElement={renderElement}
             placeholder="Chat message goes here..."
             style={{ width: '100%' }}

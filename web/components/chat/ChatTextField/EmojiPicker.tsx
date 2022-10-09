@@ -1,17 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { createPicker } from 'picmo';
 
 const CUSTOM_EMOJI_URL = '/api/emoji';
-interface Props {
-  // eslint-disable-next-line react/no-unused-prop-types
+export type EmojiPickerProps = {
   onEmojiSelect: (emoji: string) => void;
-  onCustomEmojiSelect: (emoji: string) => void;
-}
+  onCustomEmojiSelect: (name: string, url: string) => void;
+};
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const EmojiPicker = (props: Props) => {
+export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, onCustomEmojiSelect }) => {
   const [customEmoji, setCustomEmoji] = useState([]);
-  const { onEmojiSelect, onCustomEmojiSelect } = props;
   const ref = useRef();
 
   const getCustomEmoji = async () => {
@@ -46,9 +43,9 @@ export const EmojiPicker = (props: Props) => {
     });
     picker.addEventListener('emoji:select', event => {
       if (event.url) {
-        onCustomEmojiSelect(event);
+        onCustomEmojiSelect(event.name, event.url);
       } else {
-        onEmojiSelect(event);
+        onEmojiSelect(event.emoji);
       }
     });
   }, [customEmoji]);
