@@ -219,12 +219,14 @@ export const Content: FC = () => {
                   onNotifyClick={() => setShowNotifyPopup(true)}
                 />
               )}
-              <Statusbar
-                online={online}
-                lastConnectTime={lastConnectTime}
-                lastDisconnectTime={lastDisconnectTime}
-                viewerCount={viewerCount}
-              />
+              {online && (
+                <Statusbar
+                  online={online}
+                  lastConnectTime={lastConnectTime}
+                  lastDisconnectTime={lastDisconnectTime}
+                  viewerCount={viewerCount}
+                />
+              )}
             </div>
             <div className={styles.midSection}>
               <div className={styles.buttonsLogoTitleSection}>
