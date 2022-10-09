@@ -10,15 +10,12 @@
   margin: 0;
   padding: 0;
   color: var(--theme-color-palette-0);
-  background-color: var(--theme-color-palette-4);
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
-  width: clamp(300px, 80%, 50em);
-
-  // Allow the content to fill the width on narrow screens.
-  @media only screen and (max-width: 768px) {
-    width: 100%;
-  }
+  width: 100%;
+  border-color: var(--theme-color-palette-4);
+  border-width: 1px;
+  border-style: solid;
 
   hr {
     margin: 1.35em 0;
