@@ -34,12 +34,7 @@ const AddMessagesChatExample = args => {
         <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
           Add message
         </button>
-        <ChatContainer
-          messages={chatMessages}
-          usernameToHighlight="testuser"
-          chatUserId="testuser"
-          isModerator={false}
-        />
+        <ChatContainer {...args} />
       </div>
     </RecoilRoot>
   );
@@ -51,10 +46,18 @@ export const Example = Template.bind({});
 Example.args = {
   loading: false,
   messages,
+  usernameToHighlight: 'testuser',
+  chatUserId: 'testuser',
+  isModerator: true,
+  showInput: true,
 };
 
 export const SingleMessage = Template.bind({});
 SingleMessage.args = {
   loading: false,
   messages: [messages[0]],
+  usernameToHighlight: 'testuser',
+  chatUserId: 'testuser',
+  isModerator: true,
+  showInput: true,
 };
