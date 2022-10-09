@@ -183,8 +183,9 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   };
 
   // Register keyboard shortcut for the space bar to toggle playback
-  useHotkeys('space', togglePlayback, {
-    enableOnContentEditable: false,
+  useHotkeys('space', e => {
+    e.preventDefault();
+    togglePlayback();
   });
 
   // Register keyboard shortcut for f to toggle full screen
