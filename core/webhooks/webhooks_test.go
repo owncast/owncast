@@ -129,9 +129,9 @@ func TestRouting(t *testing.T) {
 func TestMultiple(t *testing.T) {
 	const times = 2
 
-	var calls atomic.Uint32
+	var calls uint32
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		calls.Add(1)
+		atomic.AddUint32(&calls, 1)
 	}))
 	defer svr.Close()
 
@@ -157,8 +157,8 @@ func TestMultiple(t *testing.T) {
 
 	wg.Wait()
 
-	if calls.Load() != times {
-		t.Errorf("Expected event to be sent exactly %v times but it was sent %v times", times, calls.Load())
+	if atomic.LoadUint32(&calls) != times {
+		t.Errorf("Expected event to be sent exactly %v times but it was sent %v times", times, atomic.LoadUint32(&calls))
 	}
 }
 
@@ -245,14 +245,14 @@ func TestTimestamps(t *testing.T) {
 
 // Make sure up to the expected number of events can be fired in parallel.
 func TestParallel(t *testing.T) {
-	var calls atomic.Uint32
+	var calls uint32
 
 	var wgStart sync.WaitGroup
 	finished := make(chan int)
 	wgStart.Add(webhookWorkerPoolSize)
 
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		myId := calls.Add(1)
+		myId := atomic.AddUint32(&calls, 1)
 
 		// We made it to the pool size + 1 event, so we're done with the test.
 		if myId == webhookWorkerPoolSize+1 {
