@@ -50,7 +50,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
         <div className={styles.footer}>
           {fediverseAccount && <FollowButton />}
 
-          {notificationsEnabled && <NotifyButton onClick={onNotifyClick} />}
+          {notificationsEnabled && <NotifyButton text="Notify when live" onClick={onNotifyClick} />}
         </div>
       </div>
     </div>
