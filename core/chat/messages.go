@@ -29,13 +29,7 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 		return errors.New("error broadcasting message visibility payload " + err.Error())
 	}
 
-	// Send webhook
-	wh := webhooks.WebhookEvent{
-		EventData: payload,
-		Type:      event.GetMessageType(),
-	}
-
-	webhooks.SendEventToWebhooks(wh)
+	webhooks.SendChatEventSetMessageVisibility(event)
 
 	return nil
 }
