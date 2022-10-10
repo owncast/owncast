@@ -9,7 +9,7 @@ import IndieAuthIcon from '../../../assets/images/indieauth.png';
 
 import styles from './AuthModal.module.scss';
 import {
-  chatDisplayNameAtom,
+  currentUserAtom,
   chatAuthenticatedAtom,
   accessTokenAtom,
 } from '../../stores/ClientConfigStore';
@@ -17,10 +17,15 @@ import {
 const { TabPane } = Tabs;
 
 export const AuthModal: FC = () => {
-  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
+  const currentUser = useRecoilValue(currentUserAtom);
+  if (!currentUser) {
+    return null;
+  }
+
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
   const federationEnabled = true;
+  const { displayName } = currentUser;
 
   return (
     <div>
@@ -41,7 +46,7 @@ export const AuthModal: FC = () => {
         >
           <IndieAuthModal
             authenticated={authenticated}
-            displayName={chatDisplayName}
+            displayName={displayName}
             accessToken={accessToken}
           />
         </TabPane>
@@ -56,7 +61,7 @@ export const AuthModal: FC = () => {
         >
           <FediAuthModal
             authenticated={authenticated}
-            displayName={chatDisplayName}
+            displayName={displayName}
             accessToken={accessToken}
           />
         </TabPane>

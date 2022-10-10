@@ -9,5 +9,6 @@
     "linkify",
     "paypal",
     "toggleswitch"
-  ]
+  ],
+  "deepscan.enable": true
 }

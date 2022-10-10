@@ -3,11 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { Input, Button, Select } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';
-import {
-  websocketServiceAtom,
-  chatDisplayNameAtom,
-  chatDisplayColorAtom,
-} from '../../stores/ClientConfigStore';
+import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
 
 const { Option } = Select;
 
@@ -26,10 +22,14 @@ const UserColor: FC<UserColorProps> = ({ color }) => {
 };
 
 export const NameChangeModal: FC = () => {
+  const currentUser = useRecoilValue(currentUserAtom);
+  if (!currentUser) {
+    return null;
+  }
+
+  const { displayName, displayColor } = currentUser;
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
-  const chatDisplayColor = useRecoilValue<number>(chatDisplayColorAtom) || 0;
-  const [newName, setNewName] = useState<any>(chatDisplayName);
+  const [newName, setNewName] = useState<any>(displayName);
 
   const handleNameChange = () => {
     const nameChange = {
@@ -39,8 +39,7 @@ export const NameChangeModal: FC = () => {
     websocketService.send(nameChange);
   };
 
-  const saveEnabled =
-    newName !== chatDisplayName && newName !== '' && websocketService?.isConnected();
+  const saveEnabled = newName !== displayName && newName !== '' && websocketService?.isConnected();
 
   const handleColorChange = (color: string) => {
     const colorChange = {
@@ -63,7 +62,7 @@ export const NameChangeModal: FC = () => {
         placeholder="Your chat display name"
         maxLength={30}
         showCount
-        defaultValue={chatDisplayName}
+        defaultValue={displayName}
       />
       <Button disabled={!saveEnabled} onClick={handleNameChange}>
         Change name
@@ -73,7 +72,7 @@ export const NameChangeModal: FC = () => {
         <Select
           style={{ width: 120 }}
           onChange={handleColorChange}
-          defaultValue={chatDisplayColor.toString()}
+          defaultValue={displayColor.toString()}
           getPopupContainer={triggerNode => triggerNode.parentElement}
         >
           {colorOptions.map(e => (

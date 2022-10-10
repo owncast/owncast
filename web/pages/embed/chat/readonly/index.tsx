@@ -3,23 +3,24 @@ import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
   ClientConfigStore,
-  chatDisplayNameAtom,
-  chatUserIdAtom,
+  currentUserAtom,
   visibleChatMessagesSelector,
 } from '../../../../components/stores/ClientConfigStore';
 
 export default function ReadOnlyChatEmbed() {
-  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
-  const chatUserId = useRecoilValue<string>(chatUserIdAtom);
+  const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
-
+  if (!currentUser) {
+    return null;
+  }
+  const { id, displayName } = currentUser;
   return (
     <div>
       <ClientConfigStore />
       <ChatContainer
         messages={messages}
-        usernameToHighlight={chatDisplayName}
-        chatUserId={chatUserId}
+        usernameToHighlight={displayName}
+        chatUserId={id}
         isModerator={false}
         showInput={false}
         height="100vh"
