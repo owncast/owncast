@@ -234,7 +234,7 @@ export const Content: FC = () => {
                   {externalActionButtons}
                   <FollowButton size="small" />
                   <NotifyReminderPopup
-                    visible={showNotifyReminder}
+                    open={showNotifyReminder}
                     notificationClicked={() => setShowNotifyPopup(true)}
                     notificationClosed={() => disableNotifyReminderPopup()}
                   >
