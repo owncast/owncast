@@ -13,9 +13,7 @@
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
   width: 100%;
-  border-color: var(--theme-color-palette-4);
-  border-width: 1px;
-  border-style: solid;
+  background-color: var(--theme-color-background-light);
 
   hr {
     margin: 1.35em 0;
