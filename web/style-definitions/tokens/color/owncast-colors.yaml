@@ -73,6 +73,9 @@ color:
       13:
         value: '#42bea6'
         comment: 'Fun color 3'
+      14:
+        value: '#f0f3f8'
+        comment: 'Light background'
       error:
         value: '#ff4b39'
         comment: 'Error'

@@ -84,6 +84,9 @@ theme:
       13:
         value: 'var(--color-owncast-palette-13)'
         comment: '{color.owncast.palette.13.comment}'
+      14:
+        value: 'var(--color-owncast-palette-14)'
+        comment: '{color.owncast.palette.14.comment}'
       error:
         value: 'var(--color-owncast-palette-error)'
         comment: '{color.owncast.palette.error.comment}'
@@ -95,6 +98,9 @@ theme:
       main:
         value: 'var(--theme-color-palette-3)'
         comment: '{theme.color.palette.3.comment}'
+      light:
+        value: 'var(--theme-color-palette-14)'
+        comment: '{theme.color.palette.14.comment}'
       header:
         value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
