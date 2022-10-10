@@ -17,9 +17,10 @@ export const FollowerCollection: FC = () => {
     try {
       const response = await fetch(`${ENDPOINT}?page=${page}`);
       const data = await response.json();
+      const { results, total: totalResults } = data;
 
-      setFollowers(data.response);
-      setTotal(data.total);
+      setFollowers(results);
+      setTotal(totalResults);
     } catch (error) {
       console.error(error);
     }
