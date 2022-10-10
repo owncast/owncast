@@ -121,7 +121,7 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
       </Dropdown>
       <Modal
         title={userDisplayName}
-        visible={showUserDetailsModal}
+        open={showUserDetailsModal}
         handleCancel={() => {
           setShowUserDetailsModal(false);
         }}
