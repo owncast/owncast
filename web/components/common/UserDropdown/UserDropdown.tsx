@@ -39,14 +39,6 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
   const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
-  const currentUser = useRecoilValue(currentUserAtom);
-  if (!currentUser) {
-    return null;
-  }
-
-  const { displayName } = currentUser;
-  const username = defaultUsername || displayName;
-
   const toggleChatVisibility = () => {
     setChatToggleVisible(!chatToggleVisible);
   };
@@ -65,6 +57,13 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
     [chatToggleVisible],
   );
 
+  const currentUser = useRecoilValue(currentUserAtom);
+  if (!currentUser) {
+    return null;
+  }
+
+  const { displayName } = currentUser;
+  const username = defaultUsername || displayName;
   const menu = (
     <Menu>
       <Menu.Item key="0" icon={<EditOutlined />} onClick={() => handleChangeName()}>
