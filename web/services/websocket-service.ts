@@ -37,7 +37,10 @@ export default class WebsocketService {
   }
 
   createAndConnect() {
-    const url = new URL('ws://localhost:8080/ws');
+    const url = new URL(window.location.toString());
+    url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    url.pathname = '/ws';
+    url.port = window.location.port === '3000' ? '8080' : window.location.port;
     url.searchParams.append('accessToken', this.accessToken);
 
     console.debug('connecting to ', url.toString());
@@ -84,8 +87,8 @@ export default class WebsocketService {
         if (this.handleMessage) {
           this.handleMessage(socketEvent);
         }
-      } catch (e) {
-        console.error(e, e.data);
+      } catch (err) {
+        console.error(err, err.data);
         return;
       }
 
