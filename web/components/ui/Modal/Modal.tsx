@@ -51,7 +51,7 @@ export const Modal: FC<ModalProps> = ({
   return (
     <AntModal
       title={title}
-      visible={visible}
+      open={visible}
       onOk={handleOk}
       onCancel={handleCancel}
       afterClose={afterClose}
