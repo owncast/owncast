@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { RecoilRoot } from 'recoil';
 import { FollowerCollection } from './FollowerCollection';
 
 export default {
@@ -9,7 +10,9 @@ export default {
 } as ComponentMeta<typeof FollowerCollection>;
 
 const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
-  <FollowerCollection {...args} />
+  <RecoilRoot>
+    <FollowerCollection name="Example stream name" {...args} />
+  </RecoilRoot>
 );
 
 export const NoFollowers = Template.bind({});
