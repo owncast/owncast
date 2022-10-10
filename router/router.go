@@ -58,18 +58,6 @@ func Start() error {
 	// web config api
 	http.HandleFunc("/api/config", controllers.GetWebConfig)
 
-	// pre v0.0.8 chat embed
-	http.HandleFunc("/embed/chat", controllers.GetChatEmbedreadonly)
-
-	// readonly chat embed
-	http.HandleFunc("/embed/chat/readonly", controllers.GetChatEmbedreadonly)
-
-	// readwrite chat embed
-	http.HandleFunc("/embed/chat/readwrite", controllers.GetChatEmbedreadwrite)
-
-	// video embed
-	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
-
 	// return the YP protocol data
 	http.HandleFunc("/api/yp", yp.GetYPResponse)
 
