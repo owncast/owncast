@@ -64,7 +64,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
     mounted && (
       <Popover
         placement="topLeft"
-        defaultVisible={visiblePopup}
+        defaultOpen={visiblePopup}
         visible={visiblePopup}
         destroyTooltipOnHide
         title={title}

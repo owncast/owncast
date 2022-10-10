@@ -265,7 +265,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
               />
             }
             trigger="click"
-            onVisibleChange={visible => setShowEmojis(visible)}
+            onOpenChange={visible => setShowEmojis(visible)}
             visible={showEmojis}
           />
         </Slate>
