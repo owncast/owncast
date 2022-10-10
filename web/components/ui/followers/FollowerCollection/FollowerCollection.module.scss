@@ -1,3 +1,11 @@
 .followers {
-	width: 100%;
+  width: 100%;
+  background-color: var(--theme-color-background-light);
+}
+
+.noFollowers {
+  padding: calc(2 * var(--content-padding));
+  border-radius: var(--theme-rounded-corners);
+  width: 100%;
+  background-color: var(--theme-color-background-light);
 }

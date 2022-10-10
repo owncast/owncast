@@ -79,7 +79,7 @@ const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extra
           <CustomPageContent content={extraPageContent} />
         </TabPane>
         <TabPane tab="Followers" key="3">
-          <FollowerCollection />
+          <FollowerCollection name={name} />
         </TabPane>
       </Tabs>
     </div>
@@ -123,7 +123,7 @@ const MobileContent = ({
         <CustomPageContent content={extraPageContent} />
       </TabPane>
       <TabPane tab="Followers" key="3">
-        <FollowerCollection />
+        <FollowerCollection name={name} />
       </TabPane>
     </Tabs>
   </div>
