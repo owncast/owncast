@@ -8,8 +8,7 @@ import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../u
 import {
   clientConfigStateAtom,
   chatMessagesAtom,
-  chatDisplayNameAtom,
-  chatUserIdAtom,
+  currentUserAtom,
   isChatAvailableSelector,
   isChatVisibleSelector,
   appStateAtom,
@@ -134,12 +133,12 @@ export const Content: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
+  const currentUser = useRecoilValue(currentUserAtom);
 
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
-  const chatDisplayName = useRecoilValue<string>(chatDisplayNameAtom);
-  const chatUserId = useRecoilValue<string>(chatUserIdAtom);
+
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
   const {
@@ -200,6 +199,11 @@ export const Content: FC = () => {
     window.addEventListener('resize', checkIfMobile);
   }, []);
 
+  if (!currentUser) {
+    return null;
+  }
+
+  const { id: currentUserId, displayName } = currentUser;
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
@@ -261,8 +265,8 @@ export const Content: FC = () => {
                 socialHandles={socialHandles}
                 extraPageContent={extraPageContent}
                 messages={messages}
-                chatDisplayName={chatDisplayName}
-                chatUserId={chatUserId}
+                chatDisplayName={displayName}
+                chatUserId={currentUserId}
                 showChat={showChat}
               />
             ) : (

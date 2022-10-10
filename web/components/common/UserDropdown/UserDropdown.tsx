@@ -12,7 +12,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import dynamic from 'next/dynamic';
 import {
   chatVisibleToggleAtom,
-  chatDisplayNameAtom,
+  currentUserAtom,
   appStateAtom,
 } from '../../stores/ClientConfigStore';
 import styles from './UserDropdown.module.scss';
@@ -34,11 +34,18 @@ export type UserDropdownProps = {
 };
 
 export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername = undefined }) => {
-  const username = defaultUsername || useRecoilValue(chatDisplayNameAtom);
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+
+  const currentUser = useRecoilValue(currentUserAtom);
+  if (!currentUser) {
+    return null;
+  }
+
+  const { displayName } = currentUser;
+  const username = defaultUsername || displayName;
 
   const toggleChatVisibility = () => {
     setChatToggleVisible(!chatToggleVisible);

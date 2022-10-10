@@ -6,6 +6,7 @@ import ClientConfigService from '../../services/client-config-service';
 import ChatService from '../../services/chat-service';
 import WebsocketService from '../../services/websocket-service';
 import { ChatMessage } from '../../interfaces/chat-message.model';
+import { CurrentUser } from '../../interfaces/current-user';
 import { ServerStatus, makeEmptyServerStatus } from '../../interfaces/server-status.model';
 import appStateModel, {
   AppStateEvent,
@@ -44,28 +45,13 @@ export const clientConfigStateAtom = atom({
   default: makeEmptyClientConfig(),
 });
 
-export const chatDisplayNameAtom = atom<string>({
-  key: 'chatDisplayName',
-  default: null,
-});
-
-export const chatDisplayColorAtom = atom<number>({
-  key: 'chatDisplayColor',
-  default: null,
-});
-
-export const chatUserIdAtom = atom<string>({
-  key: 'chatUserIdAtom',
-  default: null,
-});
-
-export const isChatModeratorAtom = atom<boolean>({
-  key: 'isModeratorAtom',
-  default: false,
-});
-
 export const accessTokenAtom = atom<string>({
   key: 'accessTokenAtom',
+  default: null,
+});
+
+export const currentUserAtom = atom<CurrentUser>({
+  key: 'currentUserAtom',
   default: null,
 });
 
@@ -126,7 +112,7 @@ export const isChatVisibleSelector = selector({
   get: ({ get }) => {
     const state: AppStateOptions = get(appStateAtom);
     const userVisibleToggle: boolean = get(chatVisibleToggleAtom);
-    const accessToken: String = get(accessTokenAtom);
+    const accessToken: string = get(accessTokenAtom);
     return accessToken && state.chatAvailable && userVisibleToggle;
   },
 });
@@ -135,7 +121,7 @@ export const isChatAvailableSelector = selector({
   key: 'isChatAvailableSelector',
   get: ({ get }) => {
     const state: AppStateOptions = get(appStateAtom);
-    const accessToken: String = get(accessTokenAtom);
+    const accessToken: string = get(accessTokenAtom);
     return accessToken && state.chatAvailable;
   },
 });
@@ -174,12 +160,8 @@ function mergeMeta(meta) {
 
 export const ClientConfigStore: FC = () => {
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
-
-  const setChatDisplayName = useSetRecoilState<string>(chatDisplayNameAtom);
-  const setChatDisplayColor = useSetRecoilState<Number>(chatDisplayColorAtom);
-  const setChatUserId = useSetRecoilState<string>(chatUserIdAtom);
+  const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
-  const setIsChatModerator = useSetRecoilState<boolean>(isChatModeratorAtom);
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
   const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
@@ -264,10 +246,13 @@ export const ClientConfigStore: FC = () => {
       }
 
       console.log('setting access token', newAccessToken);
+      setCurrentUser({
+        ...currentUser,
+        displayName: newDisplayName,
+        displayColor,
+      });
       setAccessToken(newAccessToken);
       setLocalStorage(ACCESS_TOKEN_KEY, newAccessToken);
-      setChatDisplayName(newDisplayName);
-      setChatDisplayColor(displayColor);
     } catch (e) {
       sendEvent(AppStateEvent.Fail);
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
@@ -276,7 +261,7 @@ export const ClientConfigStore: FC = () => {
 
   const resetAndReAuth = () => {
     setLocalStorage(ACCESS_TOKEN_KEY, '');
-    setAccessToken('');
+    setAccessToken(null);
     handleUserRegistration();
   };
 
@@ -299,11 +284,8 @@ export const ClientConfigStore: FC = () => {
       case MessageType.CONNECTED_USER_INFO:
         handleConnectedClientInfoMessage(
           message as ConnectedClientInfoEvent,
-          setChatDisplayName,
-          setChatDisplayColor,
-          setChatUserId,
-          setIsChatModerator,
           setChatAuthenticated,
+          setCurrentUser,
         );
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
