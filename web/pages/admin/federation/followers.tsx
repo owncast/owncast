@@ -13,7 +13,6 @@ import {
 } from '../../../utils/apis';
 import { isEmptyObject } from '../../../utils/format';
 
-const { TabPane } = Tabs;
 export interface Follower {
   link: string;
   username: string;
@@ -293,11 +292,21 @@ export default function FediverseFollowers() {
     },
   );
 
-  const pendingRequestsTab = isPrivate && (
-    <TabPane
-      tab={<span>Requests {followersPending.length > 0 && `(${followersPending.length})`}</span>}
-      key="2"
-    >
+  const followersTabTitle = (
+    <span>Followers {followers.length > 0 && `(${followers.length})`}</span>
+  );
+  const followersTab = (
+    <>
+      <p>The following accounts get notified when you go live or send a post.</p>
+      {makeTable(followers, followersColumns)}{' '}
+    </>
+  );
+
+  const pendingRequestsTabTitle = (
+    <span>Requests {followersPending.length > 0 && `(${followersPending.length})`}</span>
+  );
+  const pendingRequestsTab = (
+    <>
       <p>
         The following people are requesting to follow your Owncast server on the{' '}
         <a href="https://en.wikipedia.org/wiki/Fediverse" target="_blank" rel="noopener noreferrer">
@@ -306,31 +315,31 @@ export default function FediverseFollowers() {
         and be alerted to when you go live. Each must be approved.
       </p>
       {makeTable(followersPending, pendingColumns)}
-    </TabPane>
+    </>
   );
+
+  const blockedTabTitle = (
+    <span>Blocked {followersBlocked.length > 0 && `(${followersBlocked.length})`}</span>
+  );
+  const blockedTab = (
+    <>
+      <p>
+        The following people were either rejected or blocked by you. You can approve them as a
+        follower.
+      </p>
+      <p>{makeTable(followersBlocked, blockedColumns)}</p>
+    </>
+  );
+
+  const items = [
+    { label: followersTabTitle, key: '1', children: followersTab },
+    isPrivate && { label: pendingRequestsTabTitle, key: '2', children: pendingRequestsTab },
+    { label: blockedTabTitle, key: '3', children: blockedTab },
+  ];
 
   return (
     <div className="followers-section">
-      <Tabs defaultActiveKey="1">
-        <TabPane
-          tab={<span>Followers {followers.length > 0 && `(${followers.length})`}</span>}
-          key="1"
-        >
-          <p>The following accounts get notified when you go live or send a post.</p>
-          {makeTable(followers, followersColumns)}{' '}
-        </TabPane>
-        {pendingRequestsTab}
-        <TabPane
-          tab={<span>Blocked {followersBlocked.length > 0 && `(${followersBlocked.length})`}</span>}
-          key="3"
-        >
-          <p>
-            The following people were either rejected or blocked by you. You can approve them as a
-            follower.
-          </p>
-          <p>{makeTable(followersBlocked, blockedColumns)}</p>
-        </TabPane>
-      </Tabs>
+      <Tabs defaultActiveKey="1" items={items} />
     </div>
   );
 }

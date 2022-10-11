@@ -34,7 +34,6 @@ import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 
-const { TabPane } = Tabs;
 const { Content: AntContent } = Layout;
 
 // Lazy loaded components
@@ -59,31 +58,34 @@ const ChatContainer = dynamic(() =>
   import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
 );
 
-const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extraPageContent }) => (
-  <>
-    <div className={styles.lowerHalf}>
-      <ContentHeader
-        name={name}
-        title={streamTitle}
-        summary={summary}
-        tags={tags}
-        links={socialHandles}
-        logo="/logo"
-      />
-    </div>
+const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extraPageContent }) => {
+  const aboutTabContent = <CustomPageContent content={extraPageContent} />;
+  const followersTabContent = <FollowerCollection name={name} />;
 
-    <div className={styles.lowerSection}>
-      <Tabs defaultActiveKey="0">
-        <TabPane tab="About" key="2">
-          <CustomPageContent content={extraPageContent} />
-        </TabPane>
-        <TabPane tab="Followers" key="3">
-          <FollowerCollection name={name} />
-        </TabPane>
-      </Tabs>
-    </div>
-  </>
-);
+  const items = [
+    { label: 'About', key: '2', children: aboutTabContent },
+    { label: 'Followers', key: '3', children: followersTabContent },
+  ];
+
+  return (
+    <>
+      <div className={styles.lowerHalf}>
+        <ContentHeader
+          name={name}
+          title={streamTitle}
+          summary={summary}
+          tags={tags}
+          links={socialHandles}
+          logo="/logo"
+        />
+      </div>
+
+      <div className={styles.lowerSection}>
+        <Tabs defaultActiveKey="0" items={items} />
+      </div>
+    </>
+  );
+};
 
 const MobileContent = ({
   name,
@@ -96,37 +98,44 @@ const MobileContent = ({
   chatDisplayName,
   chatUserId,
   showChat,
-}) => (
-  <div className={classNames(styles.lowerSectionMobile)}>
-    <Tabs defaultActiveKey="0">
-      {showChat && (
-        <TabPane tab="Chat" key="1">
-          <ChatContainer
-            messages={messages}
-            usernameToHighlight={chatDisplayName}
-            chatUserId={chatUserId}
-            isModerator={false}
-            height="40vh"
-          />
-        </TabPane>
-      )}
-      <TabPane tab="About" key="2">
-        <ContentHeader
-          name={name}
-          title={streamTitle}
-          summary={summary}
-          tags={tags}
-          links={socialHandles}
-          logo="/logo"
-        />
-        <CustomPageContent content={extraPageContent} />
-      </TabPane>
-      <TabPane tab="Followers" key="3">
-        <FollowerCollection name={name} />
-      </TabPane>
-    </Tabs>
-  </div>
-);
+}) => {
+  const chatContent = showChat && (
+    <ChatContainer
+      messages={messages}
+      usernameToHighlight={chatDisplayName}
+      chatUserId={chatUserId}
+      isModerator={false}
+      height="40vh"
+    />
+  );
+
+  const aboutTabContent = (
+    <>
+      <ContentHeader
+        name={name}
+        title={streamTitle}
+        summary={summary}
+        tags={tags}
+        links={socialHandles}
+        logo="/logo"
+      />
+      <CustomPageContent content={extraPageContent} />
+    </>
+  );
+  const followersTabContent = <FollowerCollection name={name} />;
+
+  const items = [
+    { label: 'Chat', key: '1', children: chatContent },
+    { label: 'About', key: '2', children: aboutTabContent },
+    { label: 'Followers', key: '3', children: followersTabContent },
+  ];
+
+  return (
+    <div className={classNames(styles.lowerSectionMobile)}>
+      <Tabs defaultActiveKey="0" items={items} />
+    </div>
+  );
+};
 
 export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
