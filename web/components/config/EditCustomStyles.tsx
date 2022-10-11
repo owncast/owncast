@@ -1,6 +1,8 @@
 // EDIT CUSTOM CSS STYLES
 import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
+import CodeMirror from '@uiw/react-codemirror';
+import { css } from '@codemirror/lang-css';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -16,13 +18,11 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
-import { TextField, TEXTFIELD_TYPE_TEXTAREA } from './TextField';
-import { UpdateArgs } from '../../types/config-section';
 
 const { Title } = Typography;
 
 export const EditCustomStyles: FC = () => {
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState('/* Enter custom CSS here */');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);
 
@@ -33,15 +33,6 @@ export const EditCustomStyles: FC = () => {
   const { customStyles: initialContent } = instanceDetails;
 
   let resetTimer = null;
-
-  function handleFieldChange({ value }: UpdateArgs) {
-    setContent(value);
-    if (value !== initialContent && !hasChanged) {
-      setHasChanged(true);
-    } else if (value === initialContent && hasChanged) {
-      setHasChanged(false);
-    }
-  }
 
   // Clear out any validation states and messaging
   const resetStates = () => {
@@ -76,6 +67,15 @@ export const EditCustomStyles: FC = () => {
     setContent(initialContent);
   }, [instanceDetails]);
 
+  const onCSSValueChange = React.useCallback(value => {
+    setContent(value);
+    if (value !== initialContent && !hasChanged) {
+      setHasChanged(true);
+    } else if (value === initialContent && hasChanged) {
+      setHasChanged(false);
+    }
+  }, []);
+
   return (
     <div className="edit-custom-css">
       <Title level={3} className="section-title">
@@ -94,14 +94,14 @@ export const EditCustomStyles: FC = () => {
         Please input plain CSS text, as this will be directly injected onto your page during load.
       </p>
 
-      <TextField
-        fieldName="customStyles"
-        type={TEXTFIELD_TYPE_TEXTAREA}
+      <CodeMirror
         value={content}
-        maxLength={null}
-        onChange={handleFieldChange}
         placeholder="/* Enter custom CSS here */"
+        height="200px"
+        extensions={[css()]}
+        onChange={onCSSValueChange}
       />
+
       <br />
       <div className="page-content-actions">
         {hasChanged && (

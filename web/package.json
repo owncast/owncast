@@ -13,9 +13,12 @@
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.7.0",
+		"@codemirror/lang-css": "^6.0.0",
+		"@codemirror/lang-markdown": "^6.0.2",
 		"@fontsource/open-sans": "4.5.12",
 		"@fontsource/poppins": "4.5.10",
 		"@storybook/react": "6.5.12",
+		"@uiw/react-codemirror": "^4.12.4",
 		"@xstate/react": "3.0.1",
 		"antd": "4.23.4",
 		"autoprefixer": "10.4.12",
