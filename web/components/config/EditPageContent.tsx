@@ -1,8 +1,10 @@
 // EDIT CUSTOM DETAILS ON YOUR PAGE
 import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
-import dynamic from 'next/dynamic';
-import MarkdownIt from 'markdown-it';
+import CodeMirror from '@uiw/react-codemirror';
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { languages } from '@codemirror/language-data';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -19,13 +21,6 @@ import {
 } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
 
-import 'react-markdown-editor-lite/lib/index.css';
-
-const mdParser = new MarkdownIt(/* Markdown-it options */);
-const MdEditor = dynamic(() => import('react-markdown-editor-lite'), {
-  ssr: false,
-});
-
 const { Title } = Typography;
 
 export const EditPageContent: FC = () => {
@@ -41,7 +36,7 @@ export const EditPageContent: FC = () => {
 
   let resetTimer = null;
 
-  function handleEditorChange({ text }) {
+  function handleEditorChange(text) {
     setContent(text);
     if (text !== initialContent && !hasChanged) {
       setHasChanged(true);
@@ -101,16 +96,14 @@ export const EditPageContent: FC = () => {
         .
       </p>
 
-      <MdEditor
-        style={{ height: '30em' }}
+      <CodeMirror
         value={content}
-        renderHTML={(c: string) => mdParser.render(c)}
+        placeholder="Enter your custom page content here..."
+        theme={bbedit}
         onChange={handleEditorChange}
-        config={{
-          htmlClass: 'markdown-editor-preview-pane',
-          markdownClass: 'markdown-editor-pane',
-        }}
+        extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
       />
+
       <br />
       <div className="page-content-actions">
         {hasChanged && (
