@@ -37,7 +37,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
       <Modal
         title={description || title}
         url={url}
-        visible={showModal}
+        open={showModal}
         height="80vh"
         handleCancel={() => setShowModal(false)}
       />
