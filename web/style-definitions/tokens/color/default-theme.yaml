@@ -105,8 +105,8 @@ theme:
         value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
       chat:
-        value: 'var(--theme-color-palette-4)'
-        comment: '{theme.color.palette.4.comment}'
+        value: 'var(--theme-color-palette-14)'
+        comment: '{theme.color.palette.14.comment}'
     action:
       value: 'var(--theme-color-palette-6)'
       comment: '{theme.color.palette.6.comment}'
