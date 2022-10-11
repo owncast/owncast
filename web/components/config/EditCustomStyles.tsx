@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
 import CodeMirror from '@uiw/react-codemirror';
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { css } from '@codemirror/lang-css';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -97,6 +98,7 @@ export const EditCustomStyles: FC = () => {
       <CodeMirror
         value={content}
         placeholder="/* Enter custom CSS here */"
+        theme={bbedit}
         height="200px"
         extensions={[css()]}
         onChange={onCSSValueChange}
