@@ -12,8 +12,6 @@ import { UserTable } from '../../../components/UserTable';
 import { ClientTable } from '../../../components/ClientTable';
 import { BannedIPsTable } from '../../../components/BannedIPsTable';
 
-const { TabPane } = Tabs;
-
 export const FETCH_INTERVAL = 10 * 1000; // 10 sec
 
 export default function ChatUsers() {
@@ -88,20 +86,25 @@ export default function ChatUsers() {
     </p>
   );
 
-  return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab={<span>Connected {online ? `(${clients.length})` : '(offline)'}</span>} key="1">
-        {connectedUsers}
-      </TabPane>
-      <TabPane tab={<span>Banned Users ({disabledUsers.length})</span>} key="2">
-        <UserTable data={disabledUsers} />
-      </TabPane>
-      <TabPane tab={<span>IP Bans ({ipBans.length})</span>} key="3">
-        <BannedIPsTable data={ipBans} />
-      </TabPane>
-      <TabPane tab={<span>Moderators ({moderators.length})</span>} key="4">
-        <UserTable data={moderators} />
-      </TabPane>
-    </Tabs>
+  const connectedUserTabTitle = (
+    <span>Connected {online ? `(${clients.length})` : '(offline)'}</span>
   );
+
+  const bannedUsersTabTitle = <span>Banned Users ({disabledUsers.length})</span>;
+  const bannedUsersTable = <UserTable data={disabledUsers} />;
+
+  const bannedIPTabTitle = <span>IP Bans ({ipBans.length})</span>;
+  const bannedIpTable = <BannedIPsTable data={ipBans} />;
+
+  const moderatorUsersTabTitle = <span>Moderators ({moderators.length})</span>;
+  const moderatorTable = <UserTable data={moderators} />;
+
+  const items = [
+    { label: connectedUserTabTitle, key: '1', children: connectedUsers },
+    { label: bannedUsersTabTitle, key: '2', children: bannedUsersTable },
+    { label: bannedIPTabTitle, key: '3', children: bannedIpTable },
+    { label: moderatorUsersTabTitle, key: '4', children: moderatorTable },
+  ];
+
+  return <Tabs defaultActiveKey="1" items={items} />;
 }
