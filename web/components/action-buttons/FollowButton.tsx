@@ -29,7 +29,7 @@ export const FollowButton: FC<FollowButtonProps> = props => {
       </Button>
       <Modal
         title={`Follow ${name}`}
-        visible={showModal}
+        open={showModal}
         handleCancel={() => setShowModal(false)}
         width="550px"
         height="200px"

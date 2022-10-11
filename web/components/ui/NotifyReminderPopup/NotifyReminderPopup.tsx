@@ -4,7 +4,7 @@ import React, { useState, useEffect, FC } from 'react';
 import styles from './NotifyReminderPopup.module.scss';
 
 export type NotifyReminderPopupProps = {
-  visible: boolean;
+  open: boolean;
   children: React.ReactNode;
   notificationClicked: () => void;
   notificationClosed: () => void;
@@ -12,16 +12,16 @@ export type NotifyReminderPopupProps = {
 
 export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
   children,
-  visible,
+  open,
   notificationClicked,
   notificationClosed,
 }) => {
-  const [visiblePopup, setVisiblePopup] = useState(visible);
+  const [openPopup, setOpenPopup] = useState(open);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setVisiblePopup(visible);
-  }, [visible]);
+    setOpenPopup(open);
+  }, [open]);
 
   useEffect(() => {
     setMounted(true);
@@ -43,7 +43,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
 
   const popupClosed = e => {
     e.stopPropagation();
-    setVisiblePopup(false);
+    setOpenPopup(false);
     notificationClosed();
   };
 
@@ -64,8 +64,8 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
     mounted && (
       <Popover
         placement="topLeft"
-        defaultVisible={visiblePopup}
-        visible={visiblePopup}
+        defaultOpen={openPopup}
+        open={openPopup}
         destroyTooltipOnHide
         title={title}
         content={content}

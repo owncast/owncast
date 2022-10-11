@@ -238,7 +238,7 @@ export const Content: FC = () => {
                   {externalActionButtons}
                   <FollowButton size="small" />
                   <NotifyReminderPopup
-                    visible={showNotifyReminder}
+                    open={showNotifyReminder}
                     notificationClicked={() => setShowNotifyPopup(true)}
                     notificationClosed={() => disableNotifyReminderPopup()}
                   >
@@ -248,7 +248,7 @@ export const Content: FC = () => {
 
                 <Modal
                   title="Notify"
-                  visible={showNotifyPopup}
+                  open={showNotifyPopup}
                   afterClose={() => disableNotifyReminderPopup()}
                   handleCancel={() => disableNotifyReminderPopup()}
                 >

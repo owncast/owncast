@@ -92,16 +92,12 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
       </Dropdown>
       <Modal
         title="Change Chat Display Name"
-        visible={showNameChangeModal}
+        open={showNameChangeModal}
         handleCancel={() => setShowNameChangeModal(false)}
       >
         <NameChangeModal />
       </Modal>
-      <Modal
-        title="Authenticate"
-        visible={showAuthModal}
-        handleCancel={() => setShowAuthModal(false)}
-      >
+      <Modal title="Authenticate" open={showAuthModal} handleCancel={() => setShowAuthModal(false)}>
         <AuthModal />
       </Modal>
     </div>
