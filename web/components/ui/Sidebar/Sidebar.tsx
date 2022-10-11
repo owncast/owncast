@@ -11,6 +11,10 @@ export const Sidebar: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
 
+  if (!currentUser) {
+    return null;
+  }
+
   const { id, isModerator, displayName } = currentUser;
   return (
     <Sider className={styles.root} collapsedWidth={0} width={320}>

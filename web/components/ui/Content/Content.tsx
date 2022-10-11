@@ -95,15 +95,19 @@ const MobileContent = ({
   socialHandles,
   extraPageContent,
   messages,
-  chatDisplayName,
-  chatUserId,
+  currentUser,
   showChat,
 }) => {
+  if (!currentUser) {
+    return null;
+  }
+  const { id, displayName } = currentUser;
+
   const chatContent = showChat && (
     <ChatContainer
       messages={messages}
-      usernameToHighlight={chatDisplayName}
-      chatUserId={chatUserId}
+      usernameToHighlight={displayName}
+      chatUserId={id}
       isModerator={false}
       height="40vh"
     />
@@ -208,11 +212,6 @@ export const Content: FC = () => {
     window.addEventListener('resize', checkIfMobile);
   }, []);
 
-  if (!currentUser) {
-    return null;
-  }
-
-  const { id: currentUserId, displayName } = currentUser;
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
@@ -274,8 +273,7 @@ export const Content: FC = () => {
                 socialHandles={socialHandles}
                 extraPageContent={extraPageContent}
                 messages={messages}
-                chatDisplayName={displayName}
-                chatUserId={currentUserId}
+                currentUser={currentUser}
                 showChat={showChat}
               />
             ) : (
