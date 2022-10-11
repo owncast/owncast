@@ -41,6 +41,8 @@ trap finish EXIT
 sleep 5
 
 cd web
+npm run dev &
+sleep 5
 
 # Run cypress browser tests
 npx cypress run
