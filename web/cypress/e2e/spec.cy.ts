@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 describe('Basic tests', () => {
   it('Can visit the page', () => {
-    cy.visit('http://localhost:3030/');
+    cy.visit('http://localhost:8080/');
   });
 
   it('Can change to Followers tab', () => {

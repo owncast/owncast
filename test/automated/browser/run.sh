@@ -7,7 +7,10 @@ TEMP_DB=$(mktemp)
 # Change to the root directory of the repository
 cd "$(git rev-parse --show-toplevel)"
 
-# Install the node test framework
+# Bundle the updated web code into the server codebase.
+./build/web/bundleWeb.sh
+
+# Install the web test framework
 pushd web
 echo "Installing web dependencies..."
 npm install --silent >/dev/null
@@ -38,11 +41,6 @@ function finish {
 }
 trap finish EXIT
 
-sleep 5
-
-cd web
-npm run dev &
-sleep 5
-
 # Run cypress browser tests
+cd web
 npx cypress run
