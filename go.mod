@@ -35,7 +35,7 @@ require (
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
-	golang.org/x/net v0.0.0-20221002022538-bcab6841153b
+	golang.org/x/net v0.0.0-20221012135044-0b7e1fb9d458
 	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
 )
 
@@ -53,7 +53,6 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/evanphx/json-patch.v5 v5.6.0 // indirect
 )
 
 require (
@@ -74,6 +73,9 @@ require (
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
 )
 
-require github.com/andybalholm/cascadia v1.3.1
+require (
+	github.com/andybalholm/cascadia v1.3.1
+	gopkg.in/evanphx/json-patch.v5 v5.6.0
+)
 
 replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20211229051252-7821289d4026
