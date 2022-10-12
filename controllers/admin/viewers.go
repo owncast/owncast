@@ -37,7 +37,7 @@ func GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 // GetActiveViewers returns currently connected clients.
 func GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 	c := core.GetActiveViewers()
-	viewers := []models.Viewer{}
+	viewers := make([]models.Viewer, 0, len(c))
 	for _, v := range c {
 		viewers = append(viewers, *v)
 	}
