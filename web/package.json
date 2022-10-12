@@ -59,6 +59,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "7.19.3",
+		"@mdx-js/react": "^2.1.5",
 		"@storybook/addon-a11y": "6.5.12",
 		"@storybook/addon-actions": "6.5.12",
 		"@storybook/addon-docs": "6.5.12",
