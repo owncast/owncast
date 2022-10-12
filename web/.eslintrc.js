@@ -66,15 +66,12 @@ module.exports = {
         tsx: 'never',
       },
     ],
-    "import/no-extraneous-dependencies": [
-      "error",
+    'import/no-extraneous-dependencies': [
+      'error',
       {
-        "devDependencies": [
-          "**/*.stories.*",
-          "**/.storybook/**/*.*"
-        ],
-        "peerDependencies": true
-      }
+        devDependencies: ['**/*.stories.*', '**/.storybook/**/*.*'],
+        peerDependencies: true,
+      },
     ],
   },
   settings: {
