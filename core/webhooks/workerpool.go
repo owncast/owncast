@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 
@@ -20,6 +21,7 @@ const (
 type Job struct {
 	webhook models.Webhook
 	payload WebhookEvent
+	wg      *sync.WaitGroup
 }
 
 var queue chan Job
@@ -34,9 +36,9 @@ func InitWorkerPool() {
 	}
 }
 
-func addToQueue(webhook models.Webhook, payload WebhookEvent) {
+func addToQueue(webhook models.Webhook, payload WebhookEvent, wg *sync.WaitGroup) {
 	log.Tracef("Queued Event %s for Webhook %s", payload.Type, webhook.URL)
-	queue <- Job{webhook, payload}
+	queue <- Job{webhook, payload, wg}
 }
 
 func worker(workerID int, queue <-chan Job) {
@@ -49,6 +51,9 @@ func worker(workerID int, queue <-chan Job) {
 			log.Errorf("Event: %s failed to send to webhook: %s Error: %s", job.payload.Type, job.webhook.URL, err)
 		}
 		log.Tracef("Done with Event %s to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
+		if job.wg != nil {
+			job.wg.Done()
+		}
 	}
 }
 

@@ -44,7 +44,7 @@
   </a>
 </p>
 
-Owncast is an open source, self-hosted, decentralized, single user live video streaming and chat server for running your own live streams similar in style to the large mainstream options.  It offers complete ownership over your content, interface, moderation and audience. <a href="https://watch.owncast.online">Visit the demo</a> for an example.
+Owncast is an open source, self-hosted, decentralized, single user live video streaming and chat server for running your own live streams similar in style to the large mainstream options. It offers complete ownership over your content, interface, moderation and audience. <a href="https://watch.owncast.online">Visit the demo</a> for an example.
 
 <div>
     <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/owncast/owncast/total?style=for-the-badge">
@@ -58,7 +58,6 @@ Owncast is an open source, self-hosted, decentralized, single user live video st
       <img alt="Open Collective backers and sponsors" src="https://img.shields.io/opencollective/all/owncast?style=for-the-badge">
     </a>
 </div>
-
 
 ---
 
@@ -87,7 +86,9 @@ Owncast consists of two projects.
 
 The Owncast backend is a service written in Go.
 
-1. Ensure you have a c compiler installed.
+1. Ensure you have pre-requisites installed.
+   - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
+   - [ffmpeg](https://ffmpeg.org/download.html)
 1. Install the [Go toolchain](https://golang.org/dl/) (1.16 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from source.
@@ -100,8 +101,7 @@ The frontend is the web interface that includes the player, chat, embed componen
 
 1. This project lives in the `web` directory.
 1. Run `npm install` to install the Javascript dependencies.
-1. Run `npm run dev` 
-
+1. Run `npm run dev`
 
 ## Contributing
 
@@ -112,9 +112,6 @@ We abide by our [Code of Conduct](https://owncast.online/contribute/) and feel s
 We’ve been very lucky to have this so far, so maybe you can help us with your skills and passion, too!
 
 There is a larger, more detailed, and more up-to-date [guide for helping contribute to Owncast on our website](https://owncast.online/help/).
-
-
-
 
 <!-- LICENSE -->
 

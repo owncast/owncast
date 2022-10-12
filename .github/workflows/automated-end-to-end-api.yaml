@@ -6,6 +6,11 @@ on:
       - 'webroot/**'
       - 'web/**'
 
+  pull_request:
+    paths-ignore:
+      - 'webroot/**'
+      - 'web/**'
+
 jobs:
   test:
     runs-on: ubuntu-latest
