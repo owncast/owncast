@@ -291,6 +291,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   useEffect(
     () => () => {
       stopLatencyCompensator();
+      playbackMetrics.stop();
     },
     [],
   );
