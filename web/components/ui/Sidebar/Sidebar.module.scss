@@ -1,16 +1,12 @@
 .root {
   background-color: var(--theme-color-background-chat);
   display: none;
-  // --header-h: 64px;
 }
 
 @media (min-width: 768px) {
   .root {
     position: sticky;
-    // top: var(--header-h);
     display: block;
-    // height: calc(100vh - var(--header-h));
-    // max-height: calc(100vh - var(--header-h));
   }
 }
 /*
