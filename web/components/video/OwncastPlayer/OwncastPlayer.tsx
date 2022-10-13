@@ -210,7 +210,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
     controls: true,
     responsive: true,
     fluid: false,
-    playsInline: true,
+    playsinline: true,
     liveui: true,
     preload: 'auto',
     controlBar: {
