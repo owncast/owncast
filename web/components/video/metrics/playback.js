@@ -49,6 +49,7 @@ class PlaybackMetrics {
     this.send = this.send.bind(this);
     this.collectPlaybackMetrics = this.collectPlaybackMetrics.bind(this);
     this.handleNoLongerBuffering = this.handleNoLongerBuffering.bind(this);
+    this.sendMetricsTimer = 0;
 
     this.player.on('canplaythrough', this.handleNoLongerBuffering);
     this.player.on('error', this.handleError);
@@ -81,9 +82,14 @@ class PlaybackMetrics {
 
     this.videoJSReady();
 
-    setInterval(() => {
+    this.sendMetricsTimer = setInterval(() => {
       this.send();
     }, METRICS_SEND_INTERVAL);
+  }
+
+  stop() {
+    clearInterval(this.sendMetricsTimer);
+    this.player.off();
   }
 
   // Keep our client clock in sync with the server clock to determine
@@ -249,12 +255,12 @@ class PlaybackMetrics {
         bandwidth: roundedAverageBandwidth,
         latency: roundedAverageLatency,
         downloadDuration: roundedAverageDownloadDuration,
-        errors: errorCount + this.isBuffering ? 1 : 0,
+        errors: errorCount + (this.isBuffering ? 1 : 0),
         qualityVariantChanges: this.qualityVariantChanges,
       };
     } else {
       data = {
-        errors: errorCount + this.isBuffering ? 1 : 0,
+        errors: errorCount + (this.isBuffering ? 1 : 0),
       };
     }
 
