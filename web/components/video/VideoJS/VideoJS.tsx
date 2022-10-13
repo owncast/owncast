@@ -53,7 +53,7 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video
         ref={videoRef}
-        className={`video-js vjs-big-play-centered ${styles.player} vjs-owncast`}
+        className={`video-js vjs-big-play-centered vjs-show-big-play-button-on-pause ${styles.player} vjs-owncast`}
       />
     </div>
   );
