@@ -6,5 +6,12 @@
   height: 2rem;
   width: 100%;
   padding: var(--content-padding);
-  color: var(--theme-color-palette-5);
+  color: var(--theme-color-components-text-on-light);
+  background-color: var(--component-background);
+  font-family: var(--theme-text-display-font-family);
+  font-weight: 600;
+  
+  .right {
+    color: red;
+  }
 }
