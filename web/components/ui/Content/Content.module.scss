@@ -2,7 +2,13 @@
   display: grid;
   grid-template-columns: 1fr auto;
   height: 100%;
+  width: 100%;
   background-color: var(--theme-color-background-main);
+  
+  .mainSection {
+    display: flex;
+    flex-direction: column;
+  }
 
   .topSection {
     padding: 0;
