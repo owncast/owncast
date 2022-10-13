@@ -39,4 +39,5 @@ backup/
 test/test.db
 test/automated/browser/screenshots
 lefthook.yml
-web/cypress/screenshots
+test/automated/browser/cypress/screenshots
+test/automated/browser/cypress/videos
