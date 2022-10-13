@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
@@ -132,7 +132,7 @@ const MobileContent = ({
   ];
 
   return (
-    <div className={classNames(styles.lowerSectionMobile)}>
+    <div className={cn(styles.lowerSectionMobile)}>
       <Tabs defaultActiveKey="0" items={items} />
     </div>
   );
@@ -215,7 +215,7 @@ export const Content: FC = () => {
     <div className={styles.main}>
       <Spin wrapperClassName={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
         <AntContent className={styles.root}>
-          <div className={styles.leftContent}>
+          <div className={styles.mainSection}>
             <div className={styles.topSection}>
               {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
               {!online && !appState.appLoading && (
