@@ -31,7 +31,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
         onClick={onButtonClicked}
         style={{ backgroundColor: color }}
       >
-        <img src={icon} className={`${styles.icon}`} alt={description} />
+        {icon && <img src={icon} className={`${styles.icon}`} alt={description} />}
         {title}
       </Button>
       <Modal
