@@ -3,7 +3,7 @@
   border: none;
   text-align: left;
   cursor: pointer;
-  color: white;
+  color: var(--theme-color-components-text-on-dark);
 }
 
 .closebutton {
@@ -14,13 +14,13 @@
   border: none;
   font-size: 1.3rem;
   cursor: pointer;
-  color: white;
+  color: var(--theme-color-components-text-on-dark);
 }
 
 .title {
   border-bottom: none;
   font-weight: bold;
   padding-left: 5px;
-  color: white;
+  color: var(--theme-color-components-text-on-dark);
 }
 
