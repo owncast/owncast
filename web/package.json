@@ -59,7 +59,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "7.19.3",
-		"@mdx-js/react": "2.1.5",
+		"@mdx-js/react": "^2.0.0",
 		"@storybook/addon-a11y": "6.5.12",
 		"@storybook/addon-actions": "6.5.12",
 		"@storybook/addon-docs": "6.5.12",
@@ -71,6 +71,7 @@
 		"@storybook/builder-webpack5": "6.5.12",
 		"@storybook/cli": "6.5.12",
 		"@storybook/manager-webpack5": "6.5.12",
+		"@storybook/mdx2-csf": "^0.0.3",
 		"@storybook/preset-scss": "1.0.3",
 		"@storybook/react": "6.5.12",
 		"@storybook/testing-library": "0.0.13",
