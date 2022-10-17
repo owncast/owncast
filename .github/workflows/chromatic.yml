@@ -42,5 +42,5 @@ jobs:
         with:
           workingDir: web
           autoAcceptChanges: webv2
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          projectToken: f47410569b62
           onlyChanged: true
