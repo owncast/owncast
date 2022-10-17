@@ -24,8 +24,12 @@
 }
 
 .loadingSpinner {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  z-index: 999999;
+  display: grid;
+}
+
+.main {
+  display: grid;
+  flex: 1;
+  height: 100%;
+  grid-template-rows: 1fr auto;
 }

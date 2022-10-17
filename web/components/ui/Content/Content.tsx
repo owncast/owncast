@@ -33,6 +33,7 @@ import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
+import { FollowerCollection } from '../followers/FollowerCollection/FollowerCollection';
 
 const { Content: AntContent } = Layout;
 
@@ -46,10 +47,6 @@ const BrowserNotifyModal = dynamic(() =>
 
 const NotifyReminderPopup = dynamic(() =>
   import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
-);
-
-const FollowerCollection = dynamic(() =>
-  import('../followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
 );
 
 // We only need to load the chat container here if we're in mobile or narrow
@@ -215,8 +212,8 @@ export const Content: FC = () => {
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
-    <div>
-      <Spin className={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
+    <div className={styles.main}>
+      <Spin wrapperClassName={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
         <AntContent className={styles.root}>
           <div className={styles.leftContent}>
             <div className={styles.topSection}>
@@ -289,8 +286,8 @@ export const Content: FC = () => {
           </div>
           {showChat && !isMobile && <Sidebar />}
         </AntContent>
-        {(!isMobile || !showChat) && <Footer version={version} />}
       </Spin>
+      {(!isMobile || !showChat) && <Footer version={version} />}
     </div>
   );
 };
