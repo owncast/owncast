@@ -2,6 +2,9 @@ module.exports = {
   core: {
     builder: 'webpack5',
   },
+  features: {
+    previewMdx2: true,
+  },
   stories: [
     '../.storybook/stories-category-doc-pages/**/*.stories.mdx',
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
