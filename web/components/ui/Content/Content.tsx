@@ -212,8 +212,8 @@ export const Content: FC = () => {
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
-    <div>
-      <Spin className={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
+    <div className={styles.main}>
+      <Spin wrapperClassName={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
         <AntContent className={styles.root}>
           <div className={styles.leftContent}>
             <div className={styles.topSection}>
@@ -286,8 +286,8 @@ export const Content: FC = () => {
           </div>
           {showChat && !isMobile && <Sidebar />}
         </AntContent>
-        {(!isMobile || !showChat) && <Footer version={version} />}
       </Spin>
+      {(!isMobile || !showChat) && <Footer version={version} />}
     </div>
   );
 };

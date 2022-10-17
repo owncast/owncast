@@ -77,7 +77,7 @@ export const Main: FC = () => {
       </Head>
 
       <ClientConfigStore />
-      <Layout ref={layoutRef}>
+      <Layout ref={layoutRef} style={{ minHeight: '100vh' }}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />
         {fatalError && (
