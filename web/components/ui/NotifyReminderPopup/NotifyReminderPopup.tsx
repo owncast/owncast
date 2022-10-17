@@ -35,9 +35,6 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
     paddingRight: '10px',
     fontSize: '16px',
   };
-  const bgColor = getComputedStyle(document.documentElement).getPropertyValue(
-    '--theme-color-palette-7',
-  );
 
   const popupClicked = e => {
     e.stopPropagation();
@@ -73,7 +70,6 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
         title={title}
         content={content}
         overlayInnerStyle={popupStyle}
-        color={bgColor}
       >
         {children}
       </Popover>
