@@ -62,7 +62,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
 
   return (
     <div className={styles.followers}>
-      <Row wrap gutter={[10, 10]} justify="space-around">
+      <Row wrap gutter={[10, 10]}>
         {followers.map(follower => (
           <Col>
             <SingleFollower key={follower.link} follower={follower} />
