@@ -86,6 +86,7 @@ body {
 
   a {
     color: var(--theme-color-action);
+    word-break: break-word;
 
     &:hover {
       color: var(--theme-color-palette-12);
