@@ -4,6 +4,10 @@ on: [push, pull_request_target]
 
 jobs:
   cypress-run:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
