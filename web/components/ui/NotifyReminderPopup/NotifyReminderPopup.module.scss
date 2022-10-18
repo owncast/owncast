@@ -1,8 +1,13 @@
+:export {
+  popupBackgroundColor: var(--theme-color-palette-7);
+}
+
 .contentbutton {
   background-color: transparent;
   border: none;
   text-align: left;
   cursor: pointer;
+  color: var(--theme-color-components-text-on-dark);
 }
 
 .closebutton {
@@ -13,10 +18,12 @@
   border: none;
   font-size: 1.3rem;
   cursor: pointer;
+  color: var(--theme-color-components-text-on-dark);
 }
 
 .title {
   border-bottom: none;
   font-weight: bold;
   padding-left: 5px;
+  color: var(--theme-color-components-text-on-dark);
 }

@@ -70,6 +70,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
         title={title}
         content={content}
         overlayInnerStyle={popupStyle}
+        color={styles.popupBackgroundColor}
       >
         {children}
       </Popover>
