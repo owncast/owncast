@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	schemaVersion = 6
+	schemaVersion = 7
 )
 
 var (

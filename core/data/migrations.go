@@ -31,6 +31,8 @@ func migrateDatabaseSchema(db *sql.DB, from, to int) error {
 			migrateToSchema5(db)
 		case 5:
 			migrateToSchema6(db)
+		case 6:
+			migrateToSchema7(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}
@@ -42,6 +44,50 @@ func migrateDatabaseSchema(db *sql.DB, from, to int) error {
 	}
 
 	return nil
+}
+
+func migrateToSchema7(db *sql.DB) {
+	log.Println("Migrating users. This may take time if you have lots of users...")
+
+	var ids []string
+
+	rows, err := db.Query(`SELECT id FROM users`)
+	if err != nil {
+		log.Errorln("error migrating access tokens to schema v5", err)
+		return
+	}
+	if rows.Err() != nil {
+		log.Errorln("error migrating users to schema v7", rows.Err())
+		return
+	}
+
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			log.Error("There is a problem reading the database when migrating users.", err)
+			return
+		}
+		ids = append(ids, id)
+	}
+
+	defer rows.Close()
+
+	tx, _ := db.Begin()
+	stmt, _ := tx.Prepare("update users set display_color=? WHERE id=?")
+	defer stmt.Close()
+
+	for _, id := range ids {
+		displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
+
+		if _, err := stmt.Exec(displayColor, id); err != nil {
+			log.Panic(err)
+			return
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Panicln(err)
+	}
 }
 
 func migrateToSchema6(db *sql.DB) {
