@@ -1,11 +1,9 @@
-Cypress.on(
-	'uncaught:exception',
-	(err) => !err.message.includes('ResizeObserver loop limit exceeded')
-);
+import { setup } from '../../support/setup.js';
+setup();
 
-describe('Live tests', () => {
+describe(`Live tests`, () => {
 	it('Can visit the page', () => {
-		cy.visit('http://localhost:8080/');
+		cy.visit('http://localhost:8080');
 	});
 
 	it('Should have a play button', () => {
