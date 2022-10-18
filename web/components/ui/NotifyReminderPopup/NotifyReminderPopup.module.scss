@@ -1,3 +1,7 @@
+:export {
+  popupBackgroundColor: var(--theme-color-palette-7);
+}
+
 .contentbutton {
   background-color: transparent;
   border: none;
@@ -23,4 +27,3 @@
   padding-left: 5px;
   color: var(--theme-color-components-text-on-dark);
 }
-
