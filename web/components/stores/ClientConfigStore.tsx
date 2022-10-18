@@ -68,6 +68,7 @@ export const chatAuthenticatedAtom = atom<boolean>({
 export const websocketServiceAtom = atom<WebsocketService>({
   key: 'websocketServiceAtom',
   default: null,
+  dangerouslyAllowMutability: true,
 });
 
 export const appStateAtom = atom<AppStateOptions>({
