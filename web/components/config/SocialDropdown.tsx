@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Select } from 'antd';
 import { SocialHandleDropdownItem } from '../../types/config-section';
-import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { OTHER_SOCIAL_HANDLE_OPTION } from '../../utils/config-constants';
 
 export type DropdownProps = {
@@ -39,12 +38,11 @@ export const SocialDropdown: FC<DropdownProps> = ({ iconList, selectedOption, on
           >
             {iconList.map(item => {
               const { platform, icon, key } = item;
-              const iconUrl = `${NEXT_PUBLIC_API_HOST}${icon.slice(1)}`;
 
               return (
                 <Select.Option className="social-option" key={`platform-${key}`} value={key}>
                   <span className="option-icon">
-                    <img src={iconUrl} alt="" className="option-icon" />
+                    <img src={icon} alt="" className="option-icon" />
                   </span>
                   <span className="option-label">{platform}</span>
                 </Select.Option>
