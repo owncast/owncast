@@ -329,6 +329,8 @@ export const ClientConfigStore: FC = () => {
     }
   };
 
+  const handleChatNotification = () => {};
+
   // Read the config and status on initial load from a JSON string that lives
   // in window. This is placed there server-side and allows for fast initial
   // load times because we don't have to wait for the API calls to complete.
@@ -339,7 +341,7 @@ export const ClientConfigStore: FC = () => {
         setClientConfig(config);
       }
     } catch (e) {
-      // console.error('Error parsing config hydration', e);
+      console.error('Error parsing config hydration', e);
     }
 
     try {
@@ -348,7 +350,7 @@ export const ClientConfigStore: FC = () => {
         setServerStatus(status);
       }
     } catch (e) {
-      // console.error('error parsing status hydration', e);
+      console.error('error parsing status hydration', e);
     }
   }, []);
 
@@ -363,6 +365,11 @@ export const ClientConfigStore: FC = () => {
       startChat();
     }
   }, [hasLoadedConfig, accessToken]);
+
+  // Notify about chat activity when backgrounded.
+  useEffect(() => {
+    handleChatNotification();
+  }, [chatMessages]);
 
   useEffect(() => {
     updateClientConfig();

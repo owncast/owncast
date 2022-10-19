@@ -18,6 +18,7 @@ import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorS
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 import { ServerRenderedMetadata } from '../ServerRendered/ServerRenderedMetadata';
 import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
+import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
 
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
@@ -77,6 +78,7 @@ export const Main: FC = () => {
       </Head>
 
       <ClientConfigStore />
+      <TitleNotifier />
       <Layout ref={layoutRef} style={{ minHeight: '100vh' }}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />
