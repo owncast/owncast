@@ -3,7 +3,7 @@ import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CaretDownOutlined, CaretUpOutlined, DeleteOutlined } from '@ant-design/icons';
 import { SocialDropdown } from './SocialDropdown';
-import { fetchData, SOCIAL_PLATFORMS_LIST, NEXT_PUBLIC_API_HOST } from '../../utils/apis';
+import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../utils/apis';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
   API_SOCIAL_HANDLES,
@@ -212,12 +212,10 @@ export const EditSocialLinks: FC = () => {
           );
         }
         const { icon, platform: platformName } = platformInfo;
-        const iconUrl = `${NEXT_PUBLIC_API_HOST}${icon.slice(1)}`;
-
         return (
           <div className="social-handle-cell">
             <span className="option-icon">
-              <img src={iconUrl} alt="" className="option-icon" />
+              <img src={icon} alt="" className="option-icon" />
             </span>
             <p className="option-label">
               <strong>{platformName}</strong>

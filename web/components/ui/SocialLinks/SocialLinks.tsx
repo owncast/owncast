@@ -17,7 +17,12 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => (
         target="_blank"
         rel="noreferrer"
       >
-        <img src={link.icon} alt={link.platform} title={link.platform} className={styles.link} />
+        <img
+          src={link.icon || '/img/platformlogos/default.svg'}
+          alt={link.platform}
+          title={link.platform}
+          className={styles.link}
+        />
       </a>
     ))}
   </div>
