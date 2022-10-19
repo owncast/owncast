@@ -15,6 +15,7 @@ import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatMode
 import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
 import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
+import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];
@@ -111,6 +112,10 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     );
   };
 
+  const getActionMessage = (message: ChatMessage) => {
+    const { body } = message;
+    return <ChatActionMessage body={body} />;
+  };
   const getConnectedInfoMessage = (message: ConnectedClientInfoEvent) => {
     const modStatusUpdate = checkIsModerator(message);
     if (!modStatusUpdate) {
@@ -148,6 +153,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         return getConnectedInfoMessage(message);
       case MessageType.USER_JOINED:
         return getUserJoinedMessage(message as ChatMessage);
+      case MessageType.CHAT_ACTION:
+        return getActionMessage(message as ChatMessage);
       case MessageType.SYSTEM:
         return (
           <ChatSystemMessage

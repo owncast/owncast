@@ -302,6 +302,9 @@ export const ClientConfigStore: FC = () => {
       case MessageType.SYSTEM:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
+      case MessageType.CHAT_ACTION:
+        setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        break;
       case MessageType.VISIBILITY_UPDATE:
         handleMessageVisibilityChange(message as MessageVisibilityEvent);
         break;
