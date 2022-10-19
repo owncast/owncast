@@ -17,20 +17,17 @@ export const TitleNotifier: FC = () => {
   let defaultTitle = '';
 
   const onBlur = () => {
-    console.log('onBlur');
     backgrounded = true;
     defaultTitle = document.title;
   };
 
   const onFocus = () => {
-    console.log('onFocus');
     backgrounded = false;
     window.document.title = defaultTitle;
   };
 
   const listenForEvents = () => {
     // Listen for events that should update the title
-    console.log('listenForEvents');
     window.addEventListener('blur', onBlur);
     window.addEventListener('focus', onFocus);
   };
