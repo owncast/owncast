@@ -35,8 +35,8 @@ require (
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
-	golang.org/x/net v0.0.0-20221012135044-0b7e1fb9d458
-	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
+	golang.org/x/net v0.0.0-20221019024206-cb67ada4b0ad
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
 )
 
 require github.com/prometheus/client_golang v1.13.0
