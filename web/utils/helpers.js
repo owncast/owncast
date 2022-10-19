@@ -84,6 +84,7 @@ export function debounce(fn, time) {
   let timeout;
 
   return function () {
+    // eslint-disable-next-line prefer-rest-params
     const functionCall = () => fn.apply(this, arguments);
 
     clearTimeout(timeout);
@@ -105,7 +106,7 @@ export function makeLastOnlineString(timestamp) {
   const time = new Date(timestamp);
   const comparisonDate = new Date(time).setHours(0, 0, 0, 0);
 
-  if (comparisonDate == new Date().setHours(0, 0, 0, 0)) {
+  if (comparisonDate === new Date().setHours(0, 0, 0, 0)) {
     const atTime = time.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
@@ -150,4 +151,15 @@ export function paginateArray(items, page, perPage) {
     totalPages,
     items: paginatedItems,
   };
+}
+
+// Take a nested object of state metadata and merge it into
+// a single flattened node.
+export function mergeMeta(meta) {
+  return Object.keys(meta).reduce((acc, key) => {
+    const value = meta[key];
+    Object.assign(acc, value);
+
+    return acc;
+  }, {});
 }
