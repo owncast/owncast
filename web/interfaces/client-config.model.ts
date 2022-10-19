@@ -16,6 +16,7 @@ export interface ClientConfig {
   federation: Federation;
   notifications: Notifications;
   authentication: Authentication;
+  socketHostOverride?: string;
 }
 
 interface Authentication {

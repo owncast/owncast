@@ -20,24 +20,20 @@ export default class WebsocketService {
 
   handleMessage?: (message: SocketEvent) => void;
 
-  constructor(accessToken, path) {
+  constructor(accessToken, path, host) {
     this.accessToken = accessToken;
     this.path = path;
     this.websocketReconnectTimer = null;
-
-    // this.send = this.send.bind(this);
-    this.createAndConnect = this.createAndConnect.bind(this);
-    // this.scheduleReconnect = this.scheduleReconnect.bind(this);
-    // this.onError = this.onError.bind(this);
-    this.shutdown = this.shutdown.bind(this);
-
     this.isShutdown = false;
 
-    this.createAndConnect();
+    this.createAndConnect = this.createAndConnect.bind(this);
+    this.shutdown = this.shutdown.bind(this);
+
+    this.createAndConnect(host);
   }
 
-  createAndConnect() {
-    const url = new URL(window.location.toString());
+  createAndConnect(host) {
+    const url = new URL(host);
     url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     url.pathname = '/ws';
     url.port = window.location.port === '3000' ? '8080' : window.location.port;
