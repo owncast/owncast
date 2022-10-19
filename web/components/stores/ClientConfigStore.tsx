@@ -21,7 +21,7 @@ import {
   MessageVisibilityEvent,
   SocketEvent,
 } from '../../interfaces/socket-events';
-
+import { mergeMeta } from '../../utils/helpers';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
 import ServerStatusService from '../../services/status-service';
 import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
@@ -147,17 +147,6 @@ export const visibleChatMessagesSelector = selector<ChatMessage[]>({
     return messages.filter(message => !removedIds.includes(message.id));
   },
 });
-
-// Take a nested object of state metadata and merge it into
-// a single flattened node.
-function mergeMeta(meta) {
-  return Object.keys(meta).reduce((acc, key) => {
-    const value = meta[key];
-    Object.assign(acc, value);
-
-    return acc;
-  }, {});
-}
 
 export const ClientConfigStore: FC = () => {
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
@@ -324,7 +313,9 @@ export const ClientConfigStore: FC = () => {
 
   const startChat = async () => {
     try {
-      ws = new WebsocketService(accessToken, '/ws');
+      const { socketHostOverride } = clientConfig;
+      const host = socketHostOverride || window.location.toString();
+      ws = new WebsocketService(accessToken, '/ws', host);
       ws.handleMessage = handleMessage;
       setWebsocketService(ws);
     } catch (error) {
