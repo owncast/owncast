@@ -14,13 +14,11 @@ module.exports = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
     '@storybook/preset-scss',
     '@storybook/addon-postcss',
     '@storybook/addon-a11y',
     'storybook-addon-designs',
     'storybook-dark-mode',
-    'addon-screen-reader',
     'storybook-addon-fetch-mock',
   ],
   webpackFinal: async (config, { configType }) => {
