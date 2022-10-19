@@ -30,6 +30,7 @@ export const Modal: FC<ModalProps> = ({
   const modalStyle = {
     padding: '0px',
     minHeight: height,
+    height: height ?? '100%',
   };
 
   const iframe = url && (
