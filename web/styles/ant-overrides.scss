@@ -152,6 +152,21 @@
     }
   }
 }
+
+.ant-tabs {
+  height: 100%;
+  .ant-tabs-content-holder {
+    height: 100%;
+  }
+  .ant-tabs-content {
+    height: 100% !important;
+    overflow: scroll;
+    .ant-tabs-tabpane-active {
+      height: 100%;
+    }
+  }
+}
+
 .ant-tabs-ink-bar {
   background-color: var(--theme-color-action);
 }
