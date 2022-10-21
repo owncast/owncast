@@ -32,7 +32,6 @@ export const FollowButton: FC<FollowButtonProps> = props => {
         open={showModal}
         handleCancel={() => setShowModal(false)}
         width="550px"
-        height="200px"
       >
         <FollowModal account={account} name={name} handleClose={() => setShowModal(false)} />
       </Modal>
