@@ -312,7 +312,7 @@ export const Content: FC = () => {
           {showChat && !isMobile && <Sidebar />}
         </AntContent>
       </Spin>
-      {(!isMobile || !showChat) && <Footer version={version} />}
+      {!isMobile && <Footer version={version} />}
     </div>
   );
 };

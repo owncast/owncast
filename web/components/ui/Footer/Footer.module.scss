@@ -12,10 +12,6 @@
   font-weight: 600;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
 
-  @media (max-width: 600px) {
-    display: none;
-  }
-
   a {
     color: var(--theme-text-secondary);
   }
