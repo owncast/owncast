@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { RecoilRoot } from 'recoil';
 import { CustomPageContent } from './CustomPageContent';
 
 export default {
@@ -9,8 +10,11 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof CustomPageContent>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof CustomPageContent> = args => <CustomPageContent {...args} />;
+const Template: ComponentStory<typeof CustomPageContent> = args => (
+  <RecoilRoot>
+    <CustomPageContent {...args} />
+  </RecoilRoot>
+);
 
 export const Example1 = Template.bind({});
 Example1.args = {
