@@ -9,6 +9,11 @@ module.exports = withLess({
       use: ['@svgr/webpack'],
     });
 
+    config.module.rules.push({
+      test: /\.html/,
+      type: 'asset/source',
+    });
+
     return config;
   },
   async rewrites() {

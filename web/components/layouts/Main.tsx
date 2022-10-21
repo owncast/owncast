@@ -16,9 +16,11 @@ import { ClientConfig } from '../../interfaces/client-config.model';
 import { DisplayableError } from '../../types/displayable-error';
 import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
-import { ServerRenderedMetadata } from '../ServerRendered/ServerRenderedMetadata';
 import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
 import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
+
+// @ts-ignore
+import ServerRenderedMetadata from '../ServerRendered/ServerRenderedMetadata.html';
 
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
@@ -45,7 +47,7 @@ export const Main: FC = () => {
   return (
     <>
       <Head>
-        {isProduction && <ServerRenderedMetadata />}
+        {isProduction ?? ServerRenderedMetadata}
 
         <link rel="apple-touch-icon" sizes="57x57" href="/img/favicon/apple-icon-57x57.png" />
         <link rel="apple-touch-icon" sizes="60x60" href="/img/favicon/apple-icon-60x60.png" />
@@ -73,6 +75,7 @@ export const Main: FC = () => {
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
 
+        <title>{name}</title>
         <style>{customStyles}</style>
         {isProduction && <ServerRenderedHydration hydrationScript={hydrationScript} />}
       </Head>
