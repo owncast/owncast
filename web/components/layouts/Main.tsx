@@ -77,6 +77,8 @@ export const Main: FC = () => {
 
         <title>{name}</title>
         <style>{customStyles}</style>
+        <base target="_blank" />
+
         {isProduction && <ServerRenderedHydration hydrationScript={hydrationScript} />}
       </Head>
 
