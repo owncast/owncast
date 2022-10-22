@@ -36,6 +36,7 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { FollowerCollection } from '../followers/FollowerCollection/FollowerCollection';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
+import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
 
 const { Content: AntContent } = Layout;
 
@@ -113,6 +114,8 @@ const MobileContent = ({
   messages,
   currentUser,
   showChat,
+  actions,
+  setExternalActionToDisplay,
 }) => {
   if (!currentUser) {
     return null;
@@ -147,16 +150,23 @@ const MobileContent = ({
   const followersTabContent = <FollowerCollection name={name} />;
 
   const items = [
-    { label: 'Chat', key: '1', children: chatContent },
+    showChat && { label: 'Chat', key: '0', children: chatContent },
     { label: 'About', key: '2', children: aboutTabContent },
     { label: 'Followers', key: '3', children: followersTabContent },
   ];
 
   const height = `${useHeight(mobileContentRef)}px`;
 
+  const replacementTabBar = (props, DefaultTabBar) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+      <DefaultTabBar {...props} style={{ width: '80%' }} />
+      <ActionButtonMenu actions={actions} externalActionSelected={setExternalActionToDisplay} />
+    </div>
+  );
+
   return (
     <div className={cn(styles.lowerSectionMobile)} ref={mobileContentRef} style={{ height }}>
-      <Tabs defaultActiveKey="0" items={items} />
+      <Tabs defaultActiveKey="0" items={items} renderTabBar={replacementTabBar} />
     </div>
   );
 };
@@ -293,17 +303,19 @@ export const Content: FC = () => {
               </div>
               <div className={styles.midSection}>
                 <div className={styles.buttonsLogoTitleSection}>
-                  <ActionButtonRow>
-                    {externalActionButtons}
-                    <FollowButton size="small" />
-                    <NotifyReminderPopup
-                      open={showNotifyReminder}
-                      notificationClicked={() => setShowNotifyPopup(true)}
-                      notificationClosed={() => disableNotifyReminderPopup()}
-                    >
-                      <NotifyButton onClick={() => setShowNotifyPopup(true)} />
-                    </NotifyReminderPopup>
-                  </ActionButtonRow>
+                  {!isMobile && (
+                    <ActionButtonRow>
+                      {externalActionButtons}
+                      <FollowButton size="small" />
+                      <NotifyReminderPopup
+                        open={showNotifyReminder}
+                        notificationClicked={() => setShowNotifyPopup(true)}
+                        notificationClosed={() => disableNotifyReminderPopup()}
+                      >
+                        <NotifyButton onClick={() => setShowNotifyPopup(true)} />
+                      </NotifyReminderPopup>
+                    </ActionButtonRow>
+                  )}
 
                   <Modal
                     title="Notify"
@@ -315,7 +327,7 @@ export const Content: FC = () => {
                   </Modal>
                 </div>
               </div>
-              {isMobile && isChatVisible ? (
+              {isMobile ? (
                 <MobileContent
                   name={name}
                   streamTitle={streamTitle}
@@ -326,6 +338,8 @@ export const Content: FC = () => {
                   messages={messages}
                   currentUser={currentUser}
                   showChat={showChat}
+                  actions={externalActions}
+                  setExternalActionToDisplay={externalActionSelected}
                 />
               ) : (
                 <DesktopContent
