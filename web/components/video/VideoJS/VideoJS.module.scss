@@ -1,8 +1,14 @@
+@import '../../../styles/mixins.scss';
+
 .player {
   height: auto !important;
   width: 100%;
   video {
     position: static !important;
+  }
+
+  @include screen(desktop) {
+    height: 30vh !important;
   }
 }
 
@@ -11,8 +17,3 @@
   height: 100%;
 }
 
-@media (max-width: 768px) {
-  .player {
-    height: 30vh !important;
-  }
-}

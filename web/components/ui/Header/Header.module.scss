@@ -1,6 +1,7 @@
 .header {
   position: sticky;
   top: 0px;
+  height: var(--header-height) !important;
   display: flex;
   align-items: center;
   justify-content: space-between;

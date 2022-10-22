@@ -1,10 +1,15 @@
+@import '../../../styles/mixins.scss';
+
 .root {
   display: grid;
   grid-template-columns: 1fr auto;
-  height: 100%;
   width: 100%;
   background-color: var(--theme-color-background-main);
   
+  @include screen(desktop) {
+    height: var(--content-height);
+  }
+
   .mainSection {
     display: flex;
     overflow-y: scroll;
@@ -40,3 +45,4 @@
   height: 100%;
   grid-template-rows: 1fr auto;
 }
+

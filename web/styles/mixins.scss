@@ -3,3 +3,16 @@
   justify-content: center;
   align-items: center;
 }
+
+@mixin screen ($breakpoint) { 
+    @if $breakpoint == desktop {    
+    @media only screen and (min-width: 768px) {
+      @content;
+    }
+  }
+  @if $breakpoint == mobile {
+    @media only screen and (max-width: 481px) {
+      @content;
+    }
+  }
+}

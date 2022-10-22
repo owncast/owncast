@@ -1,7 +1,7 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-unescaped-entities */
 import { Layout } from 'antd';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
 import {
@@ -9,6 +9,7 @@ import {
   isChatAvailableSelector,
   clientConfigStateAtom,
   fatalErrorStateAtom,
+  isMobileAtom,
 } from '../stores/ClientConfigStore';
 import { Content } from '../ui/Content/Content';
 import { Header } from '../ui/Header/Header';
@@ -21,10 +22,12 @@ import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
 
 // @ts-ignore
 import ServerRenderedMetadata from '../ServerRendered/ServerRenderedMetadata.html';
+import Footer from '../ui/Footer/Footer';
 
 export const Main: FC = () => {
+  const [isMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const { name, title, customStyles } = clientConfig;
+  const { name, title, customStyles, version } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
 
@@ -90,6 +93,7 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
+        {!isMobile && <Footer version={version} />}
       </Layout>
     </>
   );
