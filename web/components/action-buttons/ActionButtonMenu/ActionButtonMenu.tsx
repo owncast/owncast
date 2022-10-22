@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Button, Dropdown, Menu } from 'antd';
-import { DashOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { EllipsisOutlined } from '@ant-design/icons';
 import styles from './ActionButtonMenu.module.scss';
 import { ExternalAction } from '../../../interfaces/external-action';
 
