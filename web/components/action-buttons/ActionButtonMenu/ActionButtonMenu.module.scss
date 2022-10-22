@@ -7,8 +7,9 @@
   display: flex;
   align-items: center;
   height: 100%;
+  padding-bottom: 16px; // to match antd nav margin-bottom
   button {
-    color: currentColor;
+    height: 100%;
   }
 }
 
@@ -19,7 +20,4 @@
 
 .menu {
   color: currentColor;
-  // border: none;
-  // background-color: transparent;
-  // margin: 8px;
 }
