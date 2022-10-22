@@ -1,10 +1,14 @@
+/* eslint-disable react/no-danger */
 import { FC } from 'react';
 
-export type ServerRenderedHydrationProps = {
-  hydrationScript: string;
-};
-
-export const ServerRenderedHydration: FC<ServerRenderedHydrationProps> = ({ hydrationScript }) => (
-  // eslint-disable-next-line react/no-danger
-  <script dangerouslySetInnerHTML={{ __html: hydrationScript }} />
+export const ServerRenderedHydration: FC = () => (
+  <script
+    id="server-side-hydration"
+    dangerouslySetInnerHTML={{
+      __html: `
+	window.configHydration = {{.ServerConfigJSON}};
+	window.statusHydration = {{.StatusJSON}};
+	`,
+    }}
+  />
 );
