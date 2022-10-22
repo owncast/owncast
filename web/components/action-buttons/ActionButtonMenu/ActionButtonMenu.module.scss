@@ -3,13 +3,23 @@
   align-items: center;
 }
 
+.buttonWrap {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  button {
+    color: currentColor;
+  }
+}
+
 .icon {
   height: 15px;
   margin-right: 5px;
 }
 
 .menu {
-  border: none;
-  background-color: transparent;
-  margin: 8px;
+  color: currentColor;
+  // border: none;
+  // background-color: transparent;
+  // margin: 8px;
 }

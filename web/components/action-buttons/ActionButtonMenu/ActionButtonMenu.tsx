@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Dropdown, Menu, Space } from 'antd';
+import { Button, Dropdown, Menu, Space } from 'antd';
 import { DownOutlined, StarOutlined } from '@ant-design/icons';
 import styles from './ActionButtonMenu.module.scss';
 import { ExternalAction } from '../../../interfaces/external-action';
@@ -32,12 +32,14 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
 
   return (
     <Dropdown overlay={menu} trigger={['click']} className={styles.menu}>
-      <button type="button" onClick={e => e.preventDefault()}>
-        <Space>
-          <StarOutlined />
-          <DownOutlined />
-        </Space>
-      </button>
+      <div className={styles.buttonWrap}>
+        <Button type="default" onClick={e => e.preventDefault()}>
+          <Space>
+            <StarOutlined />
+            <DownOutlined />
+          </Space>
+        </Button>
+      </div>
     </Dropdown>
   );
 };
