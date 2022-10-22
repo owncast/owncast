@@ -12,13 +12,14 @@
 
 .logoTitleSection {
   display: flex;
+  flex-direction: column;
+  .logo {
+    margin: auto 0.6rem;
+  }
   @include screen(desktop) {
-    flex-direction: column;
+    flex-direction: row;
     .logo {
-      margin-left: auto;
-      margin-right: auto;
-      margin-bottom: 0.6rem;
-      margin-top: 0.6rem;
+      margin: 0.6rem;
     }
   }
 }
