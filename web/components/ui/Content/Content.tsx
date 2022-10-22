@@ -159,7 +159,7 @@ const MobileContent = ({
 
   const replacementTabBar = (props, DefaultTabBar) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-      <DefaultTabBar {...props} style={{ width: '80%' }} />
+      <DefaultTabBar {...props} style={{ width: '85%' }} />
       <ActionButtonMenu actions={actions} externalActionSelected={setExternalActionToDisplay} />
     </div>
   );

@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import { Button, Dropdown, Menu, Space } from 'antd';
-import { DownOutlined, StarOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu } from 'antd';
+import { DashOutlined, EllipsisOutlined } from '@ant-design/icons';
 import styles from './ActionButtonMenu.module.scss';
 import { ExternalAction } from '../../../interfaces/external-action';
 
@@ -31,14 +31,14 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
   const menu = <Menu items={items} onClick={onMenuClick} />;
 
   return (
-    <Dropdown overlay={menu} trigger={['click']} className={styles.menu}>
+    <Dropdown overlay={menu} placement="bottomRight" trigger={['click']} className={styles.menu}>
       <div className={styles.buttonWrap}>
-        <Button type="default" onClick={e => e.preventDefault()}>
-          <Space>
-            <StarOutlined />
-            <DownOutlined />
-          </Space>
-        </Button>
+        <Button
+          type="default"
+          onClick={e => e.preventDefault()}
+          size="large"
+          icon={<EllipsisOutlined size={6} style={{ rotate: '90deg' }} />}
+        />
       </div>
     </Dropdown>
   );
