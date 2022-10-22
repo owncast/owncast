@@ -355,7 +355,7 @@ export const Content: FC = () => {
             {showChat && !isMobile && <Sidebar />}
           </AntContent>
         </Spin>
-        {!isMobile && <Footer version={version} />}
+        {!isMobile && false && <Footer version={version} />}
       </div>
 
       {externalActionToDisplay && (
