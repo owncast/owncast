@@ -207,7 +207,7 @@ type rowData struct {
 	userType            *string
 }
 
-func getChat(rows *sql.Rows, query string) []interface{} {
+func getChat(rows *sql.Rows) ([]interface{}, error) {
 	history := make([]interface{}, 0)
 
 	for rows.Next() {
@@ -235,9 +235,7 @@ func getChat(rows *sql.Rows, query string) []interface{} {
 			&row.userScopes,
 			&row.userType,
 		); err != nil {
-			log.Errorln(err)
-			log.Errorln("There is a problem enumeration chat message rows. Please report this:", query)
-			break
+			return nil, err
 		}
 
 		var message interface{}
@@ -260,7 +258,7 @@ func getChat(rows *sql.Rows, query string) []interface{} {
 		history = append(history, message)
 	}
 
-	return history
+	return history, nil
 }
 
 var _historyCache *[]interface{}
@@ -296,7 +294,14 @@ func GetChatModerationHistory() []interface{} {
 	defer stmt.Close()
 	defer rows.Close()
 
-	result := getChat(rows, query)
+	result, err := getChat(rows)
+
+	if err != nil {
+		log.Errorln(err)
+		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
+		return nil
+	}
+
 	_historyCache = &result
 
 	if err = tx.Commit(); err != nil {
@@ -335,7 +340,13 @@ func GetChatHistory() []interface{} {
 	defer stmt.Close()
 	defer rows.Close()
 
-	m := getChat(rows, query)
+	m, err := getChat(rows)
+
+	if err != nil {
+		log.Errorln(err)
+		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
+		return nil
+	}
 
 	if err = tx.Commit(); err != nil {
 		log.Errorln("error fetching chat history", err)
@@ -384,7 +395,13 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	// Get a list of IDs to send to the connected clients to hide
 	ids := make([]string, 0)
 
-	messages := getChat(rows, query)
+	messages, err := getChat(rows)
+
+	if err != nil {
+		log.Errorln(err)
+		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
+		return nil
+	}
 
 	if len(messages) == 0 {
 		return nil
