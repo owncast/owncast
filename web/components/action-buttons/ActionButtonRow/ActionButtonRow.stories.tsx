@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { ActionButtonRow } from './ActionButtonRow';
 import { ActionButton } from '../ActionButton/ActionButton';
 
@@ -42,7 +43,12 @@ const actions = [
   },
 ];
 
-const buttons = actions.map(action => <ActionButton action={action} />);
+const itemSelected = a => {
+  console.log('itemSelected', a);
+  action(a.title);
+};
+
+const buttons = actions.map(a => <ActionButton externalActionSelected={itemSelected} action={a} />);
 export const Example1 = Template.bind({});
 Example1.args = {
   buttons,
