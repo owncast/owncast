@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { ActionButton } from './ActionButton';
 
 export default {
@@ -14,8 +15,14 @@ export default {
   },
 } as ComponentMeta<typeof ActionButton>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ActionButton> = args => <ActionButton {...args} />;
+const itemSelected = a => {
+  console.log('itemSelected', a);
+  action(a.title);
+};
+
+const Template: ComponentStory<typeof ActionButton> = args => (
+  <ActionButton externalActionSelected={itemSelected} {...args} />
+);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Example1 = Template.bind({});

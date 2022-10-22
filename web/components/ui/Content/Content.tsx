@@ -34,12 +34,10 @@ import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { FollowerCollection } from '../followers/FollowerCollection/FollowerCollection';
+import { ExternalAction } from '../../../interfaces/external-action';
+import { Modal } from '../Modal/Modal';
 
 const { Content: AntContent } = Layout;
-
-// Lazy loaded components
-
-const Modal = dynamic(() => import('../Modal/Modal').then(mod => mod.Modal));
 
 const BrowserNotifyModal = dynamic(() =>
   import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
@@ -163,6 +161,19 @@ const MobileContent = ({
   );
 };
 
+const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) => {
+  const { title, description, url } = externalActionToDisplay;
+  return (
+    <Modal
+      title={description || title}
+      url={url}
+      open={!!externalActionToDisplay}
+      height="80vh"
+      handleCancel={() => setExternalActionToDisplay(null)}
+    />
+  );
+};
+
 export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
@@ -194,9 +205,23 @@ export const Content: FC = () => {
   const { account: fediverseAccount } = federation;
   const { browser: browserNotifications } = notifications;
   const { enabled: browserNotificationsEnabled } = browserNotifications;
+  const [externalActionToDisplay, setExternalActionToDisplay] = useState<ExternalAction>(null);
+
+  const externalActionSelected = (action: ExternalAction) => {
+    const { openExternally, url } = action;
+    if (openExternally) {
+      window.open(url, '_blank');
+    } else {
+      setExternalActionToDisplay(action);
+    }
+  };
 
   const externalActionButtons = externalActions.map(action => (
-    <ActionButton key={action.url} action={action} />
+    <ActionButton
+      key={action.url}
+      action={action}
+      externalActionSelected={externalActionSelected}
+    />
   ));
 
   const incrementVisitCounter = () => {
@@ -232,88 +257,100 @@ export const Content: FC = () => {
     incrementVisitCounter();
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
   }, []);
 
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
-    <div className={styles.main}>
-      <Spin wrapperClassName={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
-        <AntContent className={styles.root}>
-          <div className={styles.mainSection}>
-            <div className={styles.topSection}>
-              {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-              {!online && !appState.appLoading && (
-                <OfflineBanner
-                  streamName={name}
-                  customText={offlineMessage}
-                  notificationsEnabled={browserNotificationsEnabled}
-                  fediverseAccount={fediverseAccount}
-                  lastLive={lastDisconnectTime}
-                  onNotifyClick={() => setShowNotifyPopup(true)}
-                />
-              )}
-              {online && (
-                <Statusbar
-                  online={online}
-                  lastConnectTime={lastConnectTime}
-                  lastDisconnectTime={lastDisconnectTime}
-                  viewerCount={viewerCount}
-                />
-              )}
-            </div>
-            <div className={styles.midSection}>
-              <div className={styles.buttonsLogoTitleSection}>
-                <ActionButtonRow>
-                  {externalActionButtons}
-                  <FollowButton size="small" />
-                  <NotifyReminderPopup
-                    open={showNotifyReminder}
-                    notificationClicked={() => setShowNotifyPopup(true)}
-                    notificationClosed={() => disableNotifyReminderPopup()}
-                  >
-                    <NotifyButton onClick={() => setShowNotifyPopup(true)} />
-                  </NotifyReminderPopup>
-                </ActionButtonRow>
-
-                <Modal
-                  title="Notify"
-                  open={showNotifyPopup}
-                  afterClose={() => disableNotifyReminderPopup()}
-                  handleCancel={() => disableNotifyReminderPopup()}
-                >
-                  <BrowserNotifyModal />
-                </Modal>
+    <>
+      <div className={styles.main}>
+        <Spin wrapperClassName={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
+          <AntContent className={styles.root}>
+            <div className={styles.mainSection}>
+              <div className={styles.topSection}>
+                {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+                {!online && !appState.appLoading && (
+                  <OfflineBanner
+                    streamName={name}
+                    customText={offlineMessage}
+                    notificationsEnabled={browserNotificationsEnabled}
+                    fediverseAccount={fediverseAccount}
+                    lastLive={lastDisconnectTime}
+                    onNotifyClick={() => setShowNotifyPopup(true)}
+                  />
+                )}
+                {online && (
+                  <Statusbar
+                    online={online}
+                    lastConnectTime={lastConnectTime}
+                    lastDisconnectTime={lastDisconnectTime}
+                    viewerCount={viewerCount}
+                  />
+                )}
               </div>
+              <div className={styles.midSection}>
+                <div className={styles.buttonsLogoTitleSection}>
+                  <ActionButtonRow>
+                    {externalActionButtons}
+                    <FollowButton size="small" />
+                    <NotifyReminderPopup
+                      open={showNotifyReminder}
+                      notificationClicked={() => setShowNotifyPopup(true)}
+                      notificationClosed={() => disableNotifyReminderPopup()}
+                    >
+                      <NotifyButton onClick={() => setShowNotifyPopup(true)} />
+                    </NotifyReminderPopup>
+                  </ActionButtonRow>
+
+                  <Modal
+                    title="Notify"
+                    open={showNotifyPopup}
+                    afterClose={() => disableNotifyReminderPopup()}
+                    handleCancel={() => disableNotifyReminderPopup()}
+                  >
+                    <BrowserNotifyModal />
+                  </Modal>
+                </div>
+              </div>
+              {isMobile && isChatVisible ? (
+                <MobileContent
+                  name={name}
+                  streamTitle={streamTitle}
+                  summary={summary}
+                  tags={tags}
+                  socialHandles={socialHandles}
+                  extraPageContent={extraPageContent}
+                  messages={messages}
+                  currentUser={currentUser}
+                  showChat={showChat}
+                />
+              ) : (
+                <DesktopContent
+                  name={name}
+                  streamTitle={streamTitle}
+                  summary={summary}
+                  tags={tags}
+                  socialHandles={socialHandles}
+                  extraPageContent={extraPageContent}
+                />
+              )}
             </div>
-            {isMobile && isChatVisible ? (
-              <MobileContent
-                name={name}
-                streamTitle={streamTitle}
-                summary={summary}
-                tags={tags}
-                socialHandles={socialHandles}
-                extraPageContent={extraPageContent}
-                messages={messages}
-                currentUser={currentUser}
-                showChat={showChat}
-              />
-            ) : (
-              <DesktopContent
-                name={name}
-                streamTitle={streamTitle}
-                summary={summary}
-                tags={tags}
-                socialHandles={socialHandles}
-                extraPageContent={extraPageContent}
-              />
-            )}
-          </div>
-          {showChat && !isMobile && <Sidebar />}
-        </AntContent>
-      </Spin>
-      {!isMobile && <Footer version={version} />}
-    </div>
+            {showChat && !isMobile && <Sidebar />}
+          </AntContent>
+        </Spin>
+        {!isMobile && <Footer version={version} />}
+      </div>
+
+      {externalActionToDisplay && (
+        <ExternalModal
+          externalActionToDisplay={externalActionToDisplay}
+          setExternalActionToDisplay={setExternalActionToDisplay}
+        />
+      )}
+    </>
   );
 };
 export default Content;
