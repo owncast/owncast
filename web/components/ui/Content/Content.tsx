@@ -37,6 +37,7 @@ import { FollowerCollection } from '../followers/FollowerCollection/FollowerColl
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
+import { FollowModal } from '../../modals/FollowModal/FollowModal';
 
 const { Content: AntContent } = Layout;
 
@@ -116,6 +117,8 @@ const MobileContent = ({
   showChat,
   actions,
   setExternalActionToDisplay,
+  setShowNotifyPopup,
+  setShowFollowModal,
 }) => {
   if (!currentUser) {
     return null;
@@ -160,7 +163,14 @@ const MobileContent = ({
   const replacementTabBar = (props, DefaultTabBar) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
       <DefaultTabBar {...props} style={{ width: '85%' }} />
-      <ActionButtonMenu actions={actions} externalActionSelected={setExternalActionToDisplay} />
+      <ActionButtonMenu
+        showFollowItem
+        showNotifyItem
+        actions={actions}
+        externalActionSelected={setExternalActionToDisplay}
+        notifyItemSelected={() => setShowNotifyPopup(true)}
+        followItemSelected={() => setShowFollowModal(true)}
+      />
     </div>
   );
 
@@ -211,7 +221,8 @@ export const Content: FC = () => {
     notifications,
   } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
-  const [showNotifyPopup, setShowNotifyPopup] = useState(false);
+  const [showNotifyModal, setShowNotifyModal] = useState(false);
+  const [showFollowModal, setShowFollowModal] = useState(false);
   const { account: fediverseAccount } = federation;
   const { browser: browserNotifications } = notifications;
   const { enabled: browserNotificationsEnabled } = browserNotifications;
@@ -248,7 +259,7 @@ export const Content: FC = () => {
   };
 
   const disableNotifyReminderPopup = () => {
-    setShowNotifyPopup(false);
+    setShowNotifyModal(false);
     setShowNotifyReminder(false);
     setLocalStorage(LOCAL_STORAGE_KEYS.hasDisplayedNotificationModal, true);
   };
@@ -289,7 +300,7 @@ export const Content: FC = () => {
                     notificationsEnabled={browserNotificationsEnabled}
                     fediverseAccount={fediverseAccount}
                     lastLive={lastDisconnectTime}
-                    onNotifyClick={() => setShowNotifyPopup(true)}
+                    onNotifyClick={() => setShowNotifyModal(true)}
                   />
                 )}
                 {online && (
@@ -306,20 +317,20 @@ export const Content: FC = () => {
                   {!isMobile && (
                     <ActionButtonRow>
                       {externalActionButtons}
-                      <FollowButton size="small" />
+                      <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
                       <NotifyReminderPopup
                         open={showNotifyReminder}
-                        notificationClicked={() => setShowNotifyPopup(true)}
+                        notificationClicked={() => setShowNotifyModal(true)}
                         notificationClosed={() => disableNotifyReminderPopup()}
                       >
-                        <NotifyButton onClick={() => setShowNotifyPopup(true)} />
+                        <NotifyButton onClick={() => setShowNotifyModal(true)} />
                       </NotifyReminderPopup>
                     </ActionButtonRow>
                   )}
 
                   <Modal
                     title="Notify"
-                    open={showNotifyPopup}
+                    open={showNotifyModal}
                     afterClose={() => disableNotifyReminderPopup()}
                     handleCancel={() => disableNotifyReminderPopup()}
                   >
@@ -340,6 +351,8 @@ export const Content: FC = () => {
                   showChat={showChat}
                   actions={externalActions}
                   setExternalActionToDisplay={externalActionSelected}
+                  setShowNotifyPopup={setShowNotifyModal}
+                  setShowFollowModal={setShowFollowModal}
                 />
               ) : (
                 <DesktopContent
@@ -357,13 +370,24 @@ export const Content: FC = () => {
         </Spin>
         {!isMobile && false && <Footer version={version} />}
       </div>
-
       {externalActionToDisplay && (
         <ExternalModal
           externalActionToDisplay={externalActionToDisplay}
           setExternalActionToDisplay={setExternalActionToDisplay}
         />
       )}
+      <Modal
+        title={`Follow ${name}`}
+        open={showFollowModal}
+        handleCancel={() => setShowFollowModal(false)}
+        width="550px"
+      >
+        <FollowModal
+          account={fediverseAccount}
+          name={name}
+          handleClose={() => setShowFollowModal(false)}
+        />
+      </Modal>
     </>
   );
 };

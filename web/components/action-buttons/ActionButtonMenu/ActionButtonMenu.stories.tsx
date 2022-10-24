@@ -41,3 +41,22 @@ export const Example = Template.bind({});
 Example.args = {
   actions,
 };
+
+export const ShowFollowExample = Template.bind({});
+ShowFollowExample.args = {
+  actions,
+  showFollowItem: true,
+};
+
+export const ShowNotifyExample = Template.bind({});
+ShowNotifyExample.args = {
+  actions,
+  showNotifyItem: true,
+};
+
+export const ShowNotifyAndFollowExample = Template.bind({});
+ShowNotifyAndFollowExample.args = {
+  actions,
+  showNotifyItem: true,
+  showFollowItem: true,
+};
