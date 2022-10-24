@@ -45,7 +45,7 @@
 		"react-virtuoso": "3.1.1",
 		"recoil": "0.7.6",
 		"sharp": "0.31.1",
-		"slate": "0.82.1",
+		"slate": "0.84.0",
 		"slate-react": "0.83.2",
 		"storybook-addon-designs": "6.3.1",
 		"storybook-addon-fetch-mock": "1.0.1",
