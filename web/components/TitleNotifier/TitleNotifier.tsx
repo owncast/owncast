@@ -18,7 +18,7 @@ export const TitleNotifier: FC = () => {
 
   const onBlur = () => {
     backgrounded = true;
-    defaultTitle = document.title;
+    defaultTitle = window.document.title;
   };
 
   const onFocus = () => {
