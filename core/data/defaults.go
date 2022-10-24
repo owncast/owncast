@@ -33,20 +33,13 @@ func PopulateDefaults() {
 	}
 
 	const defaultPageContent = `
+# Welcome to Owncast
+
 This is a live stream powered by [Owncast](https://owncast.online), a free and open source livestreaming server.
 <hr/>
 
-### Why you might be interested in Owncast
-
-- It can be self-hosted on your own server.
-- It's easy to install and configure. You can be up and running in minutes.
-- It's not controlled by a corporation and is built by people like [you](https://owncast.online/help).
-- Viewers can start chatting immediately, no account required.
-- No ads, tracking or data collection.
-
-<hr/>
-
-To discover more streams, visit [Owncast's directory](https://directory.owncast.online).
+To discover more examples of streams, visit [Owncast's directory](https://directory.owncast.online), and to edit this
+page content visit the admin for this instance.
 	`
 
 	_ = SetStreamKey(defaults.StreamKey)
