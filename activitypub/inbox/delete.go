@@ -10,7 +10,11 @@ import (
 )
 
 func handleDeleteRequest(c context.Context, activity vocab.ActivityStreamsDelete) error {
-	//todo: do I need to filter like updates?
+	// Only need to handle deletes for followers
+	if !activity.GetActivityStreamsObject().At(0).IsActivityStreamsPerson() {
+		return nil
+	}
+
 	actor, err := resolvers.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 	if err != nil {
 		log.Error(err)
