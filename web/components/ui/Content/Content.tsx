@@ -301,6 +301,7 @@ export const Content: FC = () => {
                     fediverseAccount={fediverseAccount}
                     lastLive={lastDisconnectTime}
                     onNotifyClick={() => setShowNotifyModal(true)}
+                    onFollowClick={() => setShowFollowModal(true)}
                   />
                 )}
                 {online && (

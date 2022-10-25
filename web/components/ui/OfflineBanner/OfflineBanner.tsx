@@ -1,10 +1,9 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Divider } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { FC } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import styles from './OfflineBanner.module.scss';
-import { FollowButton } from '../../action-buttons/FollowButton';
-import { NotifyButton } from '../../action-buttons/NotifyButton';
 
 export type OfflineBannerProps = {
   streamName: string;
@@ -13,6 +12,7 @@ export type OfflineBannerProps = {
   notificationsEnabled: boolean;
   fediverseAccount?: string;
   onNotifyClick?: () => void;
+  onFollowClick?: () => void;
 };
 
 export const OfflineBanner: FC<OfflineBannerProps> = ({
@@ -22,14 +22,45 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   notificationsEnabled,
   fediverseAccount,
   onNotifyClick,
+  onFollowClick,
 }) => {
   let text;
   if (customText) {
     text = customText;
   } else if (!customText && notificationsEnabled && fediverseAccount) {
-    text = `This stream is offline. You can be notified the next time ${streamName} goes live or follow ${fediverseAccount} on the Fediverse.`;
+    text = (
+      <span>
+        This stream is offline. You can{' '}
+        <span role="link" tabIndex={0} className={styles.actionLink} onClick={onNotifyClick}>
+          be notified
+        </span>{' '}
+        the next time {streamName} goes live or{' '}
+        <span role="link" tabIndex={0} className={styles.actionLink} onClick={onFollowClick}>
+          follow
+        </span>{' '}
+        {fediverseAccount} on the Fediverse.
+      </span>
+    );
   } else if (!customText && notificationsEnabled) {
-    text = `This stream is offline. Be notified the next time ${streamName} goes live.`;
+    text = (
+      <span>
+        This stream is offline.{' '}
+        <span role="link" tabIndex={0} className={styles.actionLink} onClick={onNotifyClick}>
+          Be notified
+        </span>{' '}
+        the next time {streamName} goes live.
+      </span>
+    );
+  } else if (!customText && fediverseAccount) {
+    text = (
+      <span>
+        This stream is offline.{' '}
+        <span role="link" tabIndex={0} className={styles.actionLink} onClick={onFollowClick}>
+          Follow
+        </span>{' '}
+        {fediverseAccount} on the Fediverse to see the next time {streamName} goes live.
+      </span>
+    );
   } else {
     text = `This stream is offline. Check back soon!`;
   }
@@ -46,12 +77,6 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
             {`Last live ${formatDistanceToNow(new Date(lastLive))} ago.`}
           </div>
         )}
-
-        <div className={styles.footer}>
-          {fediverseAccount && <FollowButton />}
-
-          {notificationsEnabled && <NotifyButton text="Notify when live" onClick={onNotifyClick} />}
-        </div>
       </div>
     </div>
   );
