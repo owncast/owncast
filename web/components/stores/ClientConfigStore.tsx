@@ -331,8 +331,10 @@ export const ClientConfigStore: FC = () => {
   useEffect(() => {
     try {
       if ((window as any).configHydration) {
+        sendEvent(AppStateEvent.Loaded);
         const config = JSON.parse((window as any).configHydration);
         setClientConfig(config);
+        setHasLoadedConfig(true);
       }
     } catch (e) {
       console.error('Error parsing config hydration', e);
@@ -342,6 +344,7 @@ export const ClientConfigStore: FC = () => {
       if ((window as any).statusHydration) {
         const status = JSON.parse((window as any).statusHydration);
         setServerStatus(status);
+        setHasLoadedStatus(true);
       }
     } catch (e) {
       console.error('error parsing status hydration', e);
