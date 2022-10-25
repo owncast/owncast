@@ -67,13 +67,13 @@ export const Main: FC = () => {
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        {name ? <title>{name}</title> : <title>{`{{.Name}}`}</title>}
         <style>{customStyles}</style>
         <base target="_blank" />
       </Head>
 
-      {isProduction && (
+      {isProduction ? (
         <Head>
+          {name ? <title>{name}</title> : <title>{`{{.Name}}`}</title>}
           <meta name="description" content="{{.Summary}}" />
 
           <meta property="og:title" content="{{.Name}}" />
@@ -102,6 +102,10 @@ export const Main: FC = () => {
           <meta property="twitter:player" content="{{.RequestedURL}}/embed/video" />
           <meta property="twitter:player:width" content="560" />
           <meta property="twitter:player:height" content="315" />
+        </Head>
+      ) : (
+        <Head>
+          <title>{name}</title>
         </Head>
       )}
 
