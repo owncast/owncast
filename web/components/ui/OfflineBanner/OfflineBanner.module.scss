@@ -42,3 +42,12 @@
 .footer {
   margin-top: 15px;
 }
+
+.actionLink {
+  color: var(--theme-color-action);
+  text-decoration: underline;
+  cursor: pointer;
+  &:hover {
+    color: var(--color-owncast-palette-7);
+  }
+}
