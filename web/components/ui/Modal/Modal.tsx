@@ -83,6 +83,4 @@ Modal.defaultProps = {
   handleOk: undefined,
   handleCancel: undefined,
   afterClose: undefined,
-  height: '40vh',
-  width: '70%',
 };

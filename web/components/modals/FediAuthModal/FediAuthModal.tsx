@@ -139,12 +139,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
         value={account}
         placeholder="youraccount@yourserver.com"
         status={!valid && account.length > 0 ? 'error' : undefined}
-        onPressEnter={submitAccountPressed}
-        enterButton={
-          <Button onClick={submitAccountPressed} disabled={!valid}>
-            Authenticate with Fediverse
-          </Button>
-        }
+        onSearch={submitAccountPressed}
       />
     </>
   );
