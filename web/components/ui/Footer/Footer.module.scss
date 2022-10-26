@@ -1,6 +1,7 @@
 .footer {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   height: var(--footer-height);
   justify-content: space-between;
   flex-direction: row;
@@ -19,11 +20,10 @@
   }
 
   .links {
+    column-gap: 2rem;
+    width: auto;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    .item {
-      margin-left: 1.2em;
-    }
   }
 }
