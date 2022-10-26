@@ -1,4 +1,4 @@
-import { Alert, Button, Input, Space, Spin, Collapse, Typography } from 'antd';
+import { Alert, Input, Space, Spin, Collapse, Typography } from 'antd';
 import React, { FC, useState } from 'react';
 import isValidURL from '../../../utils/urls';
 
@@ -124,12 +124,7 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
           value={host}
           placeholder="yoursite.com"
           status={!valid && host.length > 0 ? 'error' : undefined}
-          onPressEnter={submitButtonPressed}
-          enterButton={
-            <Button onClick={submitButtonPressed} disabled={!valid}>
-              Authenticate with your domain
-            </Button>
-          }
+          onSearch={submitButtonPressed}
         />
 
         <Collapse ghost>
