@@ -11,15 +11,15 @@ export const Footer: FC<FooterProps> = ({ version }) => (
       Powered by <a href="https://owncast.online">{version}</a>
     </span>
     <span className={styles.links}>
-        <a href="https://owncast.online/docs" target="_blank" rel="noreferrer">
-          Documentation
-        </a>
-        <a href="https://owncast.online/help" target="_blank" rel="noreferrer">
-          Contribute
-        </a>
-        <a href="https://github.com/owncast/owncast" target="_blank" rel="noreferrer">
-          Source
-        </a>
+      <a href="https://owncast.online/docs" target="_blank" rel="noreferrer">
+        Documentation
+      </a>
+      <a href="https://owncast.online/help" target="_blank" rel="noreferrer">
+        Contribute
+      </a>
+      <a href="https://github.com/owncast/owncast" target="_blank" rel="noreferrer">
+        Source
+      </a>
     </span>
   </div>
 );
