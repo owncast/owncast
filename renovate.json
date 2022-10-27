@@ -26,7 +26,6 @@
 			"major": {
 				"dependencyDashboardApproval": true
 			},
-			"matchCurrentVersion": "!/^0/",
 			"automergeType": "branch"
 		},
 		{
@@ -38,5 +37,6 @@
 				"dependencyDashboardApproval": true
 			}
 		}
-	]
+	],
+	"platformAutomerge": true
 }
