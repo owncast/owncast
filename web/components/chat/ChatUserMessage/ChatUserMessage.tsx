@@ -63,6 +63,8 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
     );
   }
 
+  // TODO: Find a solution to get rid of or replace "he" library since
+  // it's overly large for only use in this one place.
   useEffect(() => {
     setFormattedMessage(he.decode(body));
   }, [message]);
