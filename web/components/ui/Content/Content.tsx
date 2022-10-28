@@ -18,7 +18,7 @@ import {
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
-import { OwncastPlayer } from '../../video/OwncastPlayer/OwncastPlayer';
+
 import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Footer } from '../Footer/Footer';
@@ -41,12 +41,18 @@ import { FollowModal } from '../../modals/FollowModal/FollowModal';
 
 const { Content: AntContent } = Layout;
 
+// Lazy loaded components
+
 const BrowserNotifyModal = dynamic(() =>
   import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
 );
 
 const NotifyReminderPopup = dynamic(() =>
   import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
+);
+
+const OwncastPlayer = dynamic(() =>
+  import('../../video/OwncastPlayer/OwncastPlayer').then(mod => mod.OwncastPlayer),
 );
 
 // We only need to load the chat container here if we're in mobile or narrow
