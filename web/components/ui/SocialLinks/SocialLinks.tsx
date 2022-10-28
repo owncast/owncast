@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { FC } from 'react';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './SocialLinks.module.scss';
@@ -17,11 +18,13 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => (
         target="_blank"
         rel="noreferrer"
       >
-        <img
+        <Image
           src={link.icon || '/img/platformlogos/default.svg'}
           alt={link.platform}
           title={link.platform}
           className={styles.link}
+          width="30"
+          height="30"
         />
       </a>
     ))}
