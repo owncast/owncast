@@ -55,8 +55,6 @@ const OwncastPlayer = dynamic(() =>
   import('../../video/OwncastPlayer/OwncastPlayer').then(mod => mod.OwncastPlayer),
 );
 
-// We only need to load the chat container here if we're in mobile or narrow
-// windows, so lazy loading it makes sense.
 const ChatContainer = dynamic(() =>
   import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
 );

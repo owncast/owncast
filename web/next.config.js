@@ -7,9 +7,6 @@ module.exports = withBundleAnalyzer(
   withLess({
     trailingSlash: true,
     reactStrictMode: true,
-    experimental: {
-      webVitalsAttribution: ['CLS', 'LCP'],
-    },
     webpack(config) {
       config.module.rules.push({
         test: /\.svg$/i,
