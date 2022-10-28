@@ -7,6 +7,7 @@ import '../styles/global.less';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
 
+// TODO: Move this videojs sass to the player component.
 import '../components/video/VideoJS/VideoJS.scss';
 
 import { AppProps } from 'next/app';
