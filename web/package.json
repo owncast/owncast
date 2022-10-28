@@ -18,6 +18,7 @@
 		"@codemirror/language-data": "6.1.0",
 		"@fontsource/open-sans": "4.5.13",
 		"@fontsource/poppins": "4.5.10",
+		"@next/bundle-analyzer": "^13.0.0",
 		"@uiw/codemirror-theme-bbedit": "4.12.4",
 		"@uiw/react-codemirror": "4.12.4",
 		"@xstate/react": "3.0.1",
