@@ -373,6 +373,9 @@ func Start() error {
 		chat.HandleClientConnection(w, r)
 	})
 
+	// Optional public static files
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
+
 	port := config.WebServerPort
 	ip := config.WebServerIP
 
