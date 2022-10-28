@@ -1,11 +1,16 @@
 import Sider from 'antd/lib/layout/Sider';
 import { useRecoilValue } from 'recoil';
 import { FC } from 'react';
+import dynamic from 'next/dynamic';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatContainer } from '../../chat/ChatContainer/ChatContainer';
 import styles from './Sidebar.module.scss';
 
 import { currentUserAtom, visibleChatMessagesSelector } from '../../stores/ClientConfigStore';
+
+// Lazy loaded components
+const ChatContainer = dynamic(() =>
+  import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+);
 
 export const Sidebar: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
