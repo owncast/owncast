@@ -1,7 +1,7 @@
 package chat
 
 import (
-	"fmt"
+	"database/sql"
 	"strings"
 	"time"
 
@@ -207,20 +207,14 @@ type rowData struct {
 	userType            *string
 }
 
-func getChat(query string) []interface{} {
+func getChat(rows *sql.Rows) ([]interface{}, error) {
 	history := make([]interface{}, 0)
-	rows, err := _datastore.DB.Query(query)
-	if err != nil || rows.Err() != nil {
-		log.Errorln("error fetching chat history", err)
-		return history
-	}
-	defer rows.Close()
 
 	for rows.Next() {
 		row := rowData{}
 
 		// Convert a database row into a chat event
-		if err = rows.Scan(
+		if err := rows.Scan(
 			&row.id,
 			&row.userID,
 			&row.body,
@@ -241,9 +235,7 @@ func getChat(query string) []interface{} {
 			&row.userScopes,
 			&row.userType,
 		); err != nil {
-			log.Errorln(err)
-			log.Errorln("There is a problem converting query to chat objects. Please report this:", query)
-			break
+			return nil, err
 		}
 
 		var message interface{}
@@ -266,7 +258,7 @@ func getChat(query string) []interface{} {
 		history = append(history, message)
 	}
 
-	return history
+	return history, nil
 }
 
 var _historyCache *[]interface{}
@@ -277,20 +269,89 @@ func GetChatModerationHistory() []interface{} {
 		return *_historyCache
 	}
 
+	tx, err := _datastore.DB.Begin()
+	if err != nil {
+		log.Errorln("error fetching chat moderation history", err)
+		return nil
+	}
+
+	defer tx.Rollback() // nolint
+
 	// Get all messages regardless of visibility
 	query := "SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id ORDER BY timestamp DESC"
-	result := getChat(query)
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		log.Errorln("error fetching chat moderation history", err)
+		return nil
+	}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		log.Errorln("error fetching chat moderation history", err)
+		return nil
+	}
+
+	defer stmt.Close()
+	defer rows.Close()
+
+	result, err := getChat(rows)
+
+	if err != nil {
+		log.Errorln(err)
+		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
+		return nil
+	}
 
 	_historyCache = &result
+
+	if err = tx.Commit(); err != nil {
+		log.Errorln("error fetching chat moderation history", err)
+		return nil
+	}
 
 	return result
 }
 
 // GetChatHistory will return all the chat messages suitable for returning as user-facing chat history.
 func GetChatHistory() []interface{} {
+	tx, err := _datastore.DB.Begin()
+	if err != nil {
+		log.Errorln("error fetching chat history", err)
+		return nil
+	}
+
+	defer tx.Rollback() // nolint
+
 	// Get all visible messages
-	query := fmt.Sprintf("SELECT messages.id, messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.authenticated_at, users.scopes, users.type FROM users JOIN messages ON users.id = messages.user_id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT %d", maxBacklogNumber)
-	m := getChat(query)
+	query := "SELECT messages.id, messages.user_id, messages.body, messages.title, messages.subtitle, messages.image, messages.link, messages.eventType, messages.hidden_at, messages.timestamp, users.display_name, users.display_color, users.created_at, users.disabled_at, users.previous_names, users.namechanged_at, users.authenticated_at, users.scopes, users.type FROM users JOIN messages ON users.id = messages.user_id WHERE hidden_at IS NULL AND disabled_at IS NULL ORDER BY timestamp DESC LIMIT ?"
+
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		log.Errorln("error fetching chat history", err)
+		return nil
+	}
+
+	rows, err := stmt.Query(maxBacklogNumber)
+	if err != nil {
+		log.Errorln("error fetching chat history", err)
+		return nil
+	}
+
+	defer stmt.Close()
+	defer rows.Close()
+
+	m, err := getChat(rows)
+
+	if err != nil {
+		log.Errorln(err)
+		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
+		return nil
+	}
+
+	if err = tx.Commit(); err != nil {
+		log.Errorln("error fetching chat history", err)
+		return nil
+	}
 
 	// Invert order of messages
 	for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
@@ -307,10 +368,40 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 		_historyCache = nil
 	}()
 
+	tx, err := _datastore.DB.Begin()
+	if err != nil {
+		log.Errorln("error while setting message visibility", err)
+		return nil
+	}
+
+	defer tx.Rollback() // nolint
+	query := "SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, authenticated_at, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS ?"
+
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		log.Errorln("error while setting message visibility", err)
+		return nil
+	}
+
+	rows, err := stmt.Query(userID)
+	if err != nil {
+		log.Errorln("error while setting message visibility", err)
+		return nil
+	}
+
+	defer stmt.Close()
+	defer rows.Close()
+
 	// Get a list of IDs to send to the connected clients to hide
 	ids := make([]string, 0)
-	query := fmt.Sprintf("SELECT messages.id, user_id, body, title, subtitle, image, link, eventType, hidden_at, timestamp, display_name, display_color, created_at, disabled_at,  previous_names, namechanged_at, authenticated_at, scopes, type FROM messages INNER JOIN users ON messages.user_id = users.id WHERE user_id IS '%s'", userID)
-	messages := getChat(query)
+
+	messages, err := getChat(rows)
+
+	if err != nil {
+		log.Errorln(err)
+		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
+		return nil
+	}
 
 	if len(messages) == 0 {
 		return nil
@@ -318,6 +409,11 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 
 	for _, message := range messages {
 		ids = append(ids, message.(events.UserMessageEvent).ID)
+	}
+
+	if err = tx.Commit(); err != nil {
+		log.Errorln("error while setting message visibility ", err)
+		return nil
 	}
 
 	// Tell the clients to hide/show these messages.
