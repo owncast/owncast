@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { RecoilRoot } from 'recoil';
+import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { AuthModal } from './AuthModal';
+import { currentUserAtom } from '../../stores/ClientConfigStore';
+import { CurrentUser } from '../../../interfaces/current-user';
 
-const Example = () => (
-  <div>
-    <AuthModal />
-  </div>
-);
+const Example = () => {
+  const setCurrentUser = useSetRecoilState<CurrentUser>(currentUserAtom);
+
+  useEffect(
+    () =>
+      setCurrentUser({
+        id: '1',
+        displayName: 'Test User',
+        displayColor: 3,
+        isModerator: false,
+      }),
+    [],
+  );
+
+  return (
+    <div>
+      <AuthModal />
+    </div>
+  );
+};
 
 export default {
   title: 'owncast/Modals/Auth',
@@ -15,8 +32,7 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof AuthModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof AuthModal> = args => (
+const Template: ComponentStory<typeof AuthModal> = () => (
   <RecoilRoot>
     <Example />
   </RecoilRoot>
