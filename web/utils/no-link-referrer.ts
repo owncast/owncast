@@ -15,7 +15,9 @@ export default function setupNoLinkReferrer(observationRoot: HTMLElement): void 
   const config = { attributes: false, childList: true, subtree: true };
 
   const addNoReferrer = (node: Element): void => {
-    node.setAttribute('rel', 'noopener noreferrer ');
+    const existingAttributes = node.getAttribute('rel');
+    const attributes = `${existingAttributes} noopener noreferrer`;
+    node.setAttribute('rel', attributes);
   };
 
   // Callback function to execute when mutations are observed
