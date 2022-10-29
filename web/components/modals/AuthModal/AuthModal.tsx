@@ -15,15 +15,15 @@ import {
 } from '../../stores/ClientConfigStore';
 
 export const AuthModal: FC = () => {
+  const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
+  const accessToken = useRecoilValue<string>(accessTokenAtom);
   const currentUser = useRecoilValue(currentUserAtom);
   if (!currentUser) {
     return null;
   }
-
-  const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
-  const accessToken = useRecoilValue<string>(accessTokenAtom);
-  const federationEnabled = true;
   const { displayName } = currentUser;
+
+  const federationEnabled = true;
 
   const indieAuthTabTitle = (
     <span className={styles.tabContent}>
@@ -31,6 +31,7 @@ export const AuthModal: FC = () => {
       IndieAuth
     </span>
   );
+
   const indieAuthTab = (
     <IndieAuthModal
       authenticated={authenticated}
@@ -45,6 +46,7 @@ export const AuthModal: FC = () => {
       FediAuth
     </span>
   );
+
   const fediAuthTab = (
     <FediAuthModal
       authenticated={authenticated}
