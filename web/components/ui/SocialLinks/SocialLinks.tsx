@@ -16,7 +16,8 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => (
         href={link.url}
         className={styles.link}
         target="_blank"
-        rel="noreferrer"
+        // eslint-disable-next-line react/no-invalid-html-attribute
+        rel="noreferrer me"
       >
         <Image
           src={link.icon || '/img/platformlogos/default.svg'}
