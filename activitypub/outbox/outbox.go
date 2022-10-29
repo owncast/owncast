@@ -173,6 +173,11 @@ func SendPublicMessage(textContent string) error {
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 	note.SetActivityStreamsTag(tagProp)
 
+	if !data.GetFederationIsPrivate() {
+		note = apmodels.MakeNotePublic(note)
+		activity = apmodels.MakeActivityPublic(activity)
+	}
+
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		log.Errorln("unable to serialize custom fediverse message activity", err)
