@@ -73,7 +73,7 @@
 		"@storybook/preset-scss": "1.0.3",
 		"@storybook/react": "6.5.13",
 		"@storybook/testing-library": "0.0.13",
-		"@svgr/webpack": "6.5.0",
+		"@svgr/webpack": "6.5.1",
 		"@types/chart.js": "2.9.37",
 		"@types/classnames": "2.3.1",
 		"@types/markdown-it": "12.2.3",
