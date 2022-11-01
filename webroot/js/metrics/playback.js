@@ -1,4 +1,5 @@
 import { URL_PLAYBACK_METRICS } from '../utils/constants.js';
+import { getCurrentlyPlayingSegment } from '../utils/helpers.js';
 const METRICS_SEND_INTERVAL = 10000;
 const MAX_VALID_LATENCY_SECONDS = 40; // Anything > this gets thrown out.
 
@@ -179,8 +180,10 @@ class PlaybackMetrics {
         return;
       }
 
-      const segmentTime = segment.dateTimeObject.getTime();
-      const now = new Date().getTime() + this.clockSkewMs;
+      const intoSegment = segment.duration - (segment.end - this.player.currentTime());
+      const segmentStartTime = segment.dateTimeObject.getTime();
+      const segmentTime = segmentStartTime + intoSegment * 1000;
+      const now = new Date().getTime() + this.clockSkewMs; //Server now
       const latency = now - segmentTime;
 
       // Throw away values that seem invalid.
@@ -216,9 +219,13 @@ class PlaybackMetrics {
       const averageLatency = average(this.latencyTracking) / 1000;
       const roundedAverageLatency = Math.round(averageLatency * 1000) / 1000;
 
+      const maxLatency = Math.max(this.latencyTracking) / 1000;
+      const roundedMaxLatency = Math.round(maxLatency*1000) / 1000;
+
       data = {
         bandwidth: roundedAverageBandwidth,
         latency: roundedAverageLatency,
+        maxLatency: roundedMaxLatency,
         downloadDuration: roundedAverageDownloadDuration,
         errors: errorCount + this.isBuffering ? 1 : 0,
         qualityVariantChanges: this.qualityVariantChanges,
@@ -253,23 +260,3 @@ class PlaybackMetrics {
 
 export default PlaybackMetrics;
 
-function getCurrentlyPlayingSegment(tech, old_segment = null) {
-  var target_media = tech.vhs.playlists.media();
-  var snapshot_time = tech.currentTime();
-  var segment;
-
-  // Iterate trough available segments and get first within which snapshot_time is
-  for (var i = 0, l = target_media.segments.length; i < l; i++) {
-    // Note: segment.end may be undefined or is not properly set
-    if (snapshot_time < target_media.segments[i].end) {
-      segment = target_media.segments[i];
-      break;
-    }
-  }
-
-  if (!segment) {
-    segment = target_media.segments[0];
-  }
-
-  return segment;
-}

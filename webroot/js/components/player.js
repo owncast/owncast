@@ -5,6 +5,7 @@ import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
 import PlaybackMetrics from '../metrics/playback.js';
 import LatencyCompensator from './latencyCompensator.js';
+import Syncer from './syncer.js';
 
 const VIDEO_ID = 'video';
 const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
@@ -49,6 +50,7 @@ class OwncastPlayer {
     this.vjsPlayer = null;
     this.latencyCompensator = null;
     this.playbackMetrics = null;
+    this.syncer = null;
 
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
@@ -99,6 +101,10 @@ class OwncastPlayer {
 
     if (this.playbackMetrics) {
       this.playbackMetrics.setClockSkew(skewMs);
+    }
+
+    if (this.syncer){
+      this.syncer.setClockSkew(skewMs);
     }
 
     if (this.latencyCompensator) {
@@ -152,6 +158,16 @@ class OwncastPlayer {
     }
   }
 
+  setupSyncer() {
+    const tech = this.vjsPlayer.tech({ IWillNotUseThisInPlugins: true });
+
+    // VHS is required.
+    if (!tech || !tech.vhs) {
+      return;
+    }
+    this.syncer = new Syncer(this.vjsPlayer);
+  }
+
   startLatencyCompensator() {
     this.latencyCompensator = new LatencyCompensator(this.vjsPlayer);
     this.playbackMetrics.setClockSkew(this.clockSkewMs);
@@ -179,7 +195,9 @@ class OwncastPlayer {
     this.vjsPlayer.on('ended', this.handleEnded);
 
     this.vjsPlayer.on('loadeddata', () => {
+      console.log("Setting up things ...")
       this.setupPlaybackMetrics();
+      this.setupSyncer();
       this.setupLatencyCompensator();
     });
 

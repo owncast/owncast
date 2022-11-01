@@ -27,6 +27,8 @@ How to help with this? The Owncast Latency Compensator will:
   - Completely give up on all compensation if too many buffering events occur.
 */
 
+import { getCurrentlyPlayingSegment } from "../utils/helpers.js";
+
 const REBUFFER_EVENT_LIMIT = 4; // Max number of buffering events before we stop compensating for latency.
 const MIN_BUFFER_DURATION = 200; // Min duration a buffer event must last to be counted.
 const MAX_SPEEDUP_RATE = 1.08; // The playback rate when compensating for latency.
@@ -485,28 +487,6 @@ class LatencyCompensator {
       this.countBufferingEvent();
     }, MIN_BUFFER_DURATION);
   }
-}
-
-function getCurrentlyPlayingSegment(tech) {
-  var target_media = tech.vhs.playlists.media();
-  var snapshot_time = tech.currentTime();
-
-  var segment;
-
-  // Iterate trough available segments and get first within which snapshot_time is
-  for (var i = 0, l = target_media.segments.length; i < l; i++) {
-    // Note: segment.end may be undefined or is not properly set
-    if (snapshot_time < target_media.segments[i].end) {
-      segment = target_media.segments[i];
-      break;
-    }
-  }
-
-  if (!segment) {
-    segment = target_media.segments[0];
-  }
-
-  return segment;
 }
 
 export default LatencyCompensator;

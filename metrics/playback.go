@@ -14,6 +14,7 @@ var (
 	windowedQualityVariantChanges = map[string]float64{}
 	windowedBandwidths            = map[string]float64{}
 	windowedLatencies             = map[string]float64{}
+	windowedMaxLatencies          = map[string]float64{}
 	windowedDownloadDurations     = map[string]float64{}
 )
 
@@ -61,6 +62,13 @@ func RegisterPlayerLatency(clientID string, seconds float64) {
 	metrics.m.Lock()
 	defer metrics.m.Unlock()
 	windowedLatencies[clientID] = seconds
+}
+
+// RegisterPlayerMaxLatency will add to the windows player max latency values.
+func RegisterPlayerMaxLatency(clientID string, seconds float64) {
+	metrics.m.Lock()
+	defer metrics.m.Unlock()
+	windowedMaxLatencies[clientID] = seconds
 }
 
 // RegisterPlayerSegmentDownloadDuration will add to the windowed player segment
@@ -334,4 +342,41 @@ func GetPlaybackMetricsRepresentation() int {
 	totalPlayerCount := len(core.GetActiveViewers())
 	representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
 	return representation
+}
+
+// GetPlayInstructions returns play instructions for the web player
+type playbackInstructions struct {
+	ExpectedLatency float64 `json:"ExpectedLatency"`
+}
+
+var lastMaxMaxLatency = -1.0
+
+func GetPlayInstructions() playbackInstructions {
+	maxMaxLatency := 0.0
+	// The GetMaximumLatencyOverTime gets the max value of average latency (in the window time of a client)
+	// This one gets the max value of max latency (in the window time of a client)
+
+	for _, value := range windowedMaxLatencies {
+		if value > maxMaxLatency {
+			maxMaxLatency = value
+		}
+	}
+
+	if lastMaxMaxLatency != -1.0 {
+		// We have recorded last one
+		if math.Abs(maxMaxLatency-lastMaxMaxLatency) <= 1 {
+			// Prevent tiny changes, as when every client tries to get to
+			// the instructed latency, some might go a little bit over,
+			// and we should not make everyone increase its latency
+			// because of this.
+			maxMaxLatency = lastMaxMaxLatency
+		}
+	}
+	//Hopefully, by using this latency, no client will fail to catch up.
+
+	lastMaxMaxLatency = maxMaxLatency
+
+	return playbackInstructions{
+		ExpectedLatency: maxMaxLatency,
+	}
 }

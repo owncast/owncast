@@ -212,3 +212,24 @@ export function paginateArray(items, page, perPage) {
     items: paginatedItems,
   };
 }
+
+export function getCurrentlyPlayingSegment(tech, old_segment = null) {
+  var target_media = tech.vhs.playlists.media();
+  var snapshot_time = tech.currentTime();
+  var segment;
+
+  // Iterate trough available segments and get first within which snapshot_time is
+  for (var i = 0, l = target_media.segments.length; i < l; i++) {
+    // Note: segment.end may be undefined or is not properly set
+    if (snapshot_time < target_media.segments[i].end) {
+      segment = target_media.segments[i];
+      break;
+    }
+  }
+
+  if (!segment) {
+    segment = target_media.segments[0];
+  }
+
+  return segment;
+}

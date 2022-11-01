@@ -88,6 +88,11 @@ func Start() error {
 	// save client video playback metrics
 	http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
 
+	// return play instructions, including
+	// what latency the client should be at, so that
+	// clients play at the same time
+	http.HandleFunc("/api/metrics/playinstructions", controllers.GetPlayInstructions)
+
 	// Register for notifications
 	http.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications))
 

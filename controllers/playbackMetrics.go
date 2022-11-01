@@ -20,6 +20,7 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	type reportPlaybackMetricsRequest struct {
 		Bandwidth             float64 `json:"bandwidth"`
 		Latency               float64 `json:"latency"`
+		MaxLatency            float64 `json:"maxLatency"`
 		Errors                float64 `json:"errors"`
 		DownloadDuration      float64 `json:"downloadDuration"`
 		QualityVariantChanges float64 `json:"qualityVariantChanges"`
@@ -42,6 +43,10 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 
 	if request.Latency != 0.0 {
 		metrics.RegisterPlayerLatency(clientID, request.Latency)
+	}
+
+	if request.MaxLatency != 0.0 {
+		metrics.RegisterPlayerMaxLatency(clientID, request.MaxLatency)
 	}
 
 	if request.DownloadDuration != 0.0 {

@@ -18,6 +18,7 @@ export const URL_WEBSOCKET = `${
 export const URL_CHAT_REGISTRATION = `/api/chat/register`;
 export const URL_FOLLOWERS = `/api/followers`;
 export const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
+export const URL_PLAY_INSTRUCTIONS = `/api/metrics/playinstructions`;
 
 export const URL_REGISTER_NOTIFICATION = `/api/notifications/register`;
 export const URL_REGISTER_EMAIL_NOTIFICATION = `/api/notifications/register/email`;
