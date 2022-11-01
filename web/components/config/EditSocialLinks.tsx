@@ -309,7 +309,7 @@ export const EditSocialLinks: FC = () => {
 
       <Modal
         title="Edit Social Handle"
-        visible={displayModal}
+        open={displayModal}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         confirmLoading={modalProcessing}

@@ -219,7 +219,7 @@ export const CurrentVariantsTable: FC = () => {
 
       <Modal
         title="Edit Video Variant Details"
-        visible={displayModal}
+        open={displayModal}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         confirmLoading={modalProcessing}

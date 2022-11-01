@@ -52,11 +52,11 @@ function convertEventStringToTag(eventString: string) {
 interface Props {
   onCancel: () => void;
   onOk: any; // todo: make better type
-  visible: boolean;
+  open: boolean;
 }
 
 const NewWebhookModal = (props: Props) => {
-  const { onOk, onCancel, visible } = props;
+  const { onOk, onCancel, open } = props;
 
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
@@ -95,7 +95,7 @@ const NewWebhookModal = (props: Props) => {
   return (
     <Modal
       title="Create New Webhook"
-      visible={visible}
+      open={open}
       onOk={save}
       onCancel={onCancel}
       okButtonProps={okButtonProps}
@@ -125,7 +125,7 @@ const NewWebhookModal = (props: Props) => {
 
 const Webhooks = () => {
   const [webhooks, setWebhooks] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleError(error) {
     console.error('error', error);
@@ -166,16 +166,16 @@ const Webhooks = () => {
   }
 
   const showCreateModal = () => {
-    setIsModalVisible(true);
+    setIsModalOpen(true);
   };
 
   const handleModalSaveButton = (url, events) => {
-    setIsModalVisible(false);
+    setIsModalOpen(false);
     handleSave(url, events);
   };
 
   const handleModalCancelButton = () => {
-    setIsModalVisible(false);
+    setIsModalOpen(false);
   };
 
   const columns = [
@@ -241,7 +241,7 @@ const Webhooks = () => {
         Create Webhook
       </Button>
       <NewWebhookModal
-        visible={isModalVisible}
+        open={isModalOpen}
         onOk={handleModalSaveButton}
         onCancel={handleModalCancelButton}
       />
