@@ -7,11 +7,11 @@ import { fetchData, FEDERATION_MESSAGE_SEND } from '../utils/apis';
 const { TextArea } = Input;
 
 export type ComposeFederatedPostProps = {
-  visible: boolean;
+  open: boolean;
   handleClose: () => void;
 };
 
-export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ visible, handleClose }) => {
+export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ open, handleClose }) => {
   const [content, setContent] = useState('');
   const [postPending, setPostPending] = useState(false);
   const [postSuccessState, setPostSuccessState] = useState(null);
@@ -53,7 +53,7 @@ export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ visible, h
       destroyOnClose
       width={600}
       title="Post to Followers"
-      visible={visible}
+      open={open}
       onCancel={handleClose}
       footer={[
         <Button onClick={() => handleClose()}>Cancel</Button>,
