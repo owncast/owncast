@@ -60,10 +60,10 @@ function convertScopeStringToTag(scopeString: string) {
 interface Props {
   onCancel: () => void;
   onOk: any; // todo: make better type
-  visible: boolean;
+  open: boolean;
 }
 const NewTokenModal = (props: Props) => {
-  const { onOk, onCancel, visible } = props;
+  const { onOk, onCancel, open } = props;
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [name, setName] = useState('');
 
@@ -100,7 +100,7 @@ const NewTokenModal = (props: Props) => {
   return (
     <Modal
       title="Create New Access token"
-      visible={visible}
+      open={open}
       onOk={saveToken}
       onCancel={onCancel}
       okButtonProps={okButtonProps}
@@ -135,7 +135,7 @@ const NewTokenModal = (props: Props) => {
 
 const AccessTokens = () => {
   const [tokens, setTokens] = useState([]);
-  const [isTokenModalVisible, setIsTokenModalVisible] = useState(false);
+  const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
 
   function handleError(error) {
     console.error('error', error);
@@ -220,16 +220,16 @@ const AccessTokens = () => {
   ];
 
   const showCreateTokenModal = () => {
-    setIsTokenModalVisible(true);
+    setIsTokenModalOpen(true);
   };
 
   const handleTokenModalSaveButton = (name, scopes) => {
-    setIsTokenModalVisible(false);
+    setIsTokenModalOpen(false);
     handleSaveToken(name, scopes);
   };
 
   const handleTokenModalCancel = () => {
-    setIsTokenModalVisible(false);
+    setIsTokenModalOpen(false);
   };
 
   return (
@@ -258,7 +258,7 @@ const AccessTokens = () => {
         Create Access Token
       </Button>
       <NewTokenModal
-        visible={isTokenModalVisible}
+        open={isTokenModalOpen}
         onOk={handleTokenModalSaveButton}
         onCancel={handleTokenModalCancel}
       />

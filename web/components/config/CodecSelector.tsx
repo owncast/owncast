@@ -27,7 +27,7 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
   const { setMessage } = useContext(AlertMessageContext);
   const [selectedCodec, setSelectedCodec] = useState(videoCodec);
   const [pendingSaveCodec, setPendingSavecodec] = useState(videoCodec);
-  const [confirmPopupVisible, setConfirmPopupVisible] = React.useState(false);
+  const [confirmPopupOpen, setConfirmPopupOpen] = React.useState(false);
 
   let resetTimer = null;
 
@@ -43,13 +43,13 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
 
   function handleChange(value) {
     setPendingSavecodec(value);
-    setConfirmPopupVisible(true);
+    setConfirmPopupOpen(true);
   }
 
   async function save() {
     setSelectedCodec(pendingSaveCodec);
     setPendingSavecodec('');
-    setConfirmPopupVisible(false);
+    setConfirmPopupOpen(false);
 
     await postConfigUpdateToAPI({
       apiPath: API_VIDEO_CODEC,
@@ -147,10 +147,10 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
       <div className="segment-slider-container">
         <Popconfirm
           title={`Are you sure you want to change your video codec to ${pendingSaveCodec} and understand what this means?`}
-          visible={confirmPopupVisible}
+          open={confirmPopupOpen}
           placement="leftBottom"
           onConfirm={save}
-          onCancel={() => setConfirmPopupVisible(false)}
+          onCancel={() => setConfirmPopupOpen(false)}
           okText="Yes"
           cancelText="No"
         >

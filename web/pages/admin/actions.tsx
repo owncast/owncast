@@ -17,11 +17,11 @@ let resetTimer = null;
 interface Props {
   onCancel: () => void;
   onOk: any; // todo: make better type
-  visible: boolean;
+  open: boolean;
 }
 
 const NewActionModal = (props: Props) => {
-  const { onOk, onCancel, visible } = props;
+  const { onOk, onCancel, open } = props;
 
   const [actionUrl, setActionUrl] = useState('');
   const [actionTitle, setActionTitle] = useState('');
@@ -64,7 +64,7 @@ const NewActionModal = (props: Props) => {
   return (
     <Modal
       title="Create New Action"
-      visible={visible}
+      open={open}
       onOk={save}
       onCancel={onCancel}
       okButtonProps={okButtonProps}
@@ -138,7 +138,7 @@ const Actions = () => {
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { externalActions } = serverConfig;
   const [actions, setActions] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
   const resetStates = () => {
@@ -207,7 +207,7 @@ const Actions = () => {
   }
 
   const showCreateModal = () => {
-    setIsModalVisible(true);
+    setIsModalOpen(true);
   };
 
   const handleModalSaveButton = (
@@ -218,12 +218,12 @@ const Actions = () => {
     actionColor: string,
     openExternally: boolean,
   ) => {
-    setIsModalVisible(false);
+    setIsModalOpen(false);
     handleSave(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
   };
 
   const handleModalCancelButton = () => {
-    setIsModalVisible(false);
+    setIsModalOpen(false);
   };
 
   const columns = [
@@ -304,7 +304,7 @@ const Actions = () => {
       <FormStatusIndicator status={submitStatus} />
 
       <NewActionModal
-        visible={isModalVisible}
+        open={isModalOpen}
         onOk={handleModalSaveButton}
         onCancel={handleModalCancelButton}
       />

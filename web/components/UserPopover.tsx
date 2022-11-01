@@ -20,12 +20,12 @@ export type UserPopoverProps = {
 };
 
 export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, children }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleShowModal = () => {
-    setIsModalVisible(true);
+    setIsModalOpen(true);
   };
   const handleCloseModal = () => {
-    setIsModalVisible(false);
+    setIsModalOpen(false);
   };
 
   const { displayName, createdAt, previousNames, nameChangedAt, disabledAt } = user;
@@ -74,7 +74,7 @@ export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, childr
         cancelText="Close"
         okButtonProps={{ style: { display: 'none' } }}
         title={`User details: ${displayName}`}
-        visible={isModalVisible}
+        open={isModalOpen}
         onOk={handleCloseModal}
         onCancel={handleCloseModal}
       >

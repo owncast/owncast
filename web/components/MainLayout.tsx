@@ -284,7 +284,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       </Layout>
 
       <ComposeFederatedPost
-        visible={postModalDisplayed}
+        open={postModalDisplayed}
         handleClose={() => setPostModalDisplayed(false)}
       />
     </Layout>
