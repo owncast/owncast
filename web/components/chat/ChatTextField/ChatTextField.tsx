@@ -253,7 +253,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             renderElement={renderElement}
-            placeholder="Chat message goes here..."
+            placeholder="Send a message to chat"
             style={{ width: '100%' }}
             autoFocus
           />
