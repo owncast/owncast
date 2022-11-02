@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Col, Pagination, Row } from 'antd';
+import { Col, Pagination, Row, Skeleton } from 'antd';
 import { Follower } from '../../../../interfaces/follower';
 import { SingleFollower } from '../SingleFollower/SingleFollower';
 import styles from './FollowerCollection.module.scss';
@@ -16,6 +16,8 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
   const [followers, setFollowers] = useState<Follower[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+
   const pages = Math.ceil(total / ITEMS_PER_PAGE);
 
   const getFollowers = async () => {
@@ -39,6 +41,10 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
     getFollowers();
   }, [page]);
 
+  useEffect(() => {
+    setLoading(false);
+  }, [followers]);
+
   const noFollowers = (
     <div className={styles.noFollowers}>
       <h2>Be the first follower!</h2>
@@ -56,6 +62,12 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
     </div>
   );
 
+  const loadingSkeleton = <Skeleton active paragraph={{ rows: 3 }} />;
+
+  if (loading) {
+    return loadingSkeleton;
+  }
+
   if (!followers?.length) {
     return noFollowers;
   }
@@ -64,7 +76,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
     <div className={styles.followers}>
       <Row wrap gutter={[10, 10]}>
         {followers.map(follower => (
-          <Col>
+          <Col key={follower.link}>
             <SingleFollower key={follower.link} follower={follower} />
           </Col>
         ))}
