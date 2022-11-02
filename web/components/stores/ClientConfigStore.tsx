@@ -149,7 +149,7 @@ export const visibleChatMessagesSelector = selector<ChatMessage[]>({
 });
 
 export const ClientConfigStore: FC = () => {
-  const [appState, appStateSend, appStateService] = useMachine(appStateModel);
+  const [, appStateSend, appStateService] = useMachine(appStateModel);
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
@@ -178,6 +178,10 @@ export const ClientConfigStore: FC = () => {
   };
 
   const updateClientConfig = async () => {
+    if (hasLoadedConfig) {
+      return;
+    }
+
     try {
       const config = await ClientConfigService.getConfig();
       setClientConfig(config);
@@ -193,6 +197,10 @@ export const ClientConfigStore: FC = () => {
   };
 
   const updateServerStatus = async () => {
+    if (hasLoadedStatus) {
+      return;
+    }
+
     try {
       const status = await ServerStatusService.getStatus();
       setServerStatus(status);
@@ -216,7 +224,6 @@ export const ClientConfigStore: FC = () => {
       );
       console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
     }
-    return null;
   };
 
   const handleUserRegistration = async (optionalDisplayName?: string) => {
@@ -377,7 +384,11 @@ export const ClientConfigStore: FC = () => {
     serverStatusRefreshPoll = setInterval(() => {
       updateServerStatus();
     }, SERVER_STATUS_POLL_DURATION);
-  }, [appState]);
+
+    return () => {
+      clearInterval(serverStatusRefreshPoll);
+    };
+  }, []);
 
   useEffect(() => {
     if (!accessToken) {
@@ -400,7 +411,7 @@ export const ClientConfigStore: FC = () => {
 
       setAppState(metadata);
     });
-  });
+  }, []);
 
   return null;
 };
