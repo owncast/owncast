@@ -84,6 +84,8 @@ github.com/aws/aws-sdk-go v1.44.124 h1:Xe1WQRUUekZf6ZFm3SD0vplB/AP/hymVqMiRS9LQR
 github.com/aws/aws-sdk-go v1.44.124/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/aws/aws-sdk-go v1.44.125 h1:yIyCs6HX1BOj6SFTirvBwVM1tTfplKrJOyilIZPtKV8=
 github.com/aws/aws-sdk-go v1.44.125/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
+github.com/aws/aws-sdk-go v1.44.128 h1:X34pX5t0LIZXjBY11yf9JKMP3c1aZgirh+5PjtaZyJ4=
+github.com/aws/aws-sdk-go v1.44.128/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
