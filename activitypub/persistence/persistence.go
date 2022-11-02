@@ -51,6 +51,12 @@ func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
 	return removeFollow(unfollow.ActorIri)
 }
 
+// RemoveFollowIRI will remove a follow from the datastore
+func RemoveFollowIRI(iri *url.URL) error {
+	log.Traceln("Deleting", iri, "as a follower.")
+	return removeFollow(iri)
+}
+
 // GetFollower will return a single follower/request given an IRI.
 func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 	result, err := _datastore.GetQueries().GetFollowerByIRI(context.Background(), iri)
