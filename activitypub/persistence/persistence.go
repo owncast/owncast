@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"time"
@@ -253,7 +254,13 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
 		}
-		if err := resolvers.Resolve(context.Background(), value, createCallback); err != nil {
+
+		var jsonValue map[string]interface{}
+		if err := json.Unmarshal(value, &jsonValue); err != nil {
+			return collection, err
+		}
+
+		if err := resolvers.Resolve(context.Background(), jsonValue, createCallback); err != nil {
 			return collection, err
 		}
 	}

@@ -3,6 +3,7 @@ package inbox
 import (
 	"context"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"net/http"
@@ -21,6 +22,24 @@ import (
 )
 
 func handle(request apmodels.InboxRequest) {
+	var jsonMap map[string]interface{}
+	err := json.Unmarshal(request.Body, &jsonMap)
+	if err != nil {
+		log.Debugln("Error unmarshalling request", err)
+		return
+	}
+
+	// handle deletes separately since resolving the public key won't work
+	reqType := jsonMap["type"]
+	if reqType == "Delete" { // todo: need to figure out the prefix bit
+		// Todo: need to figure out how to verify delete
+		err = resolvers.Resolve(context.Background(), jsonMap, handleDeleteRequest)
+		if err != nil {
+			log.Debugln("Error handling delete", err)
+			return
+		}
+	}
+
 	if verified, err := Verify(request.Request); err != nil {
 		log.Debugln("Error in attempting to verify request", err)
 		return
@@ -29,7 +48,7 @@ func handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	if err := resolvers.Resolve(context.Background(), request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest, handleDeleteRequest); err != nil {
+	if err := resolvers.Resolve(context.Background(), jsonMap, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest); err != nil {
 		log.Debugln("resolver error:", err)
 	}
 }
