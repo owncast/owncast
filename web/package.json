@@ -84,7 +84,7 @@
 		"@types/ua-parser-js": "0.7.36",
 		"@typescript-eslint/eslint-plugin": "5.41.0",
 		"@typescript-eslint/parser": "5.41.0",
-		"babel-loader": "9.0.0",
+		"babel-loader": "9.0.1",
 		"chromatic": "6.11.2",
 		"css-loader": "6.7.1",
 		"eslint": "8.26.0",
