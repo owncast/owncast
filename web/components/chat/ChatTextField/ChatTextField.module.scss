@@ -56,14 +56,8 @@
 }
 
 .sendButton {
-  display: none;
   border: none;
   background: none;
   cursor: pointer;
   padding: 0 1rem;
-
-  // Only show the chat send button on narrow screens to assist in mobile use.
-  @include screen(desktop) {
-    display: block;
-  }
 }
