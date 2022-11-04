@@ -85,7 +85,7 @@
 		"@typescript-eslint/eslint-plugin": "5.42.0",
 		"@typescript-eslint/parser": "5.42.0",
 		"babel-loader": "9.0.1",
-		"chromatic": "6.11.2",
+		"chromatic": "6.11.3",
 		"css-loader": "6.7.1",
 		"eslint": "8.26.0",
 		"eslint-config-airbnb": "19.0.4",
