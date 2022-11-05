@@ -29,8 +29,8 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
         <Logo src={logo} />
       </div>
       <div className={styles.titleSection}>
-        <div className={cn(styles.title, styles.row)}>{name}</div>
-        <div className={cn(styles.subtitle, styles.row)}>
+        <div className={cn(styles.title, styles.row, 'header-title')}>{name}</div>
+        <div className={cn(styles.subtitle, styles.row, 'header-subtitle')}>
           <Linkify>{title || summary}</Linkify>
         </div>
         <div className={cn(styles.tagList, styles.row)}>

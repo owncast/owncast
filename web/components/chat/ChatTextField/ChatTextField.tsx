@@ -250,6 +250,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
       >
         <Slate editor={editor} value={defaultEditorValue}>
           <Editable
+            className="chat-text-input"
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             renderElement={renderElement}
