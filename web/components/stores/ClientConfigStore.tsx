@@ -338,7 +338,6 @@ export const ClientConfigStore: FC = () => {
   useEffect(() => {
     try {
       if ((window as any).configHydration) {
-        sendEvent(AppStateEvent.Loaded);
         const config = JSON.parse((window as any).configHydration);
         setClientConfig(config);
         setHasLoadedConfig(true);
