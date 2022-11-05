@@ -57,6 +57,7 @@ export const NameChangeModal: FC = () => {
       Your chat display name is what people see when you send chat messages. Other information can
       go here to mention auth, and stuff.
       <Input
+        id="name-change-field"
         value={newName}
         onChange={e => setNewName(e.target.value)}
         placeholder="Your chat display name"
@@ -64,7 +65,7 @@ export const NameChangeModal: FC = () => {
         showCount
         defaultValue={displayName}
       />
-      <Button disabled={!saveEnabled} onClick={handleNameChange}>
+      <Button id="name-change-submit" disabled={!saveEnabled} onClick={handleNameChange}>
         Change name
       </Button>
       <div>

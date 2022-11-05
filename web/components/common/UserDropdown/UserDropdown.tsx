@@ -81,7 +81,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
   );
 
   return (
-    <div className={`${styles.root}`}>
+    <div id="user-menu" className={`${styles.root}`}>
       <Dropdown overlay={menu} trigger={['click']}>
         <Button type="primary" icon={<UserOutlined style={{ marginRight: '.5rem' }} />}>
           <Space>
