@@ -10,17 +10,17 @@ describe(`Live tests`, () => {
 		cy.get('.vjs-big-play-button').should('be.visible');
 	});
 
-	it('Chat should be visible', () => {
-		cy.get('#chat-container').should('be.visible');
-	});
+	// it('Chat should be visible', () => {
+	// 	cy.get('#chat-container').should('be.visible');
+	// });
 
 	it('User menu should be visible', () => {
 		cy.get('#user-menu').should('be.visible');
 	});
 
-	it('Chat join message should exist', () => {
-		cy.contains('joined the chat').should('be.visible');
-	});
+	// it('Chat join message should exist', () => {
+	// 	cy.contains('joined the chat').should('be.visible');
+	// });
 
 	it('User menu should be visible', () => {
 		cy.get('#user-menu').should('be.visible');
@@ -46,9 +46,9 @@ describe(`Live tests`, () => {
 		cy.contains('Toggle chat').click();
 	});
 
-	it('Chat should be visible', () => {
-		cy.get('#chat-container').should('be.visible');
-	});
+	// it('Chat should be re-visible', () => {
+	// 	cy.get('#chat-container').should('be.visible');
+	// });
 
 	it('Click on user menu', () => {
 		cy.get('#user-menu').click();
@@ -64,6 +64,7 @@ describe(`Live tests`, () => {
 		cy.get('#name-change-field').type('my-new-name');
 		cy.get('#name-change-submit').click();
 		cy.get('.ant-modal-close-x').click();
-		cy.contains('is now known as').should('be.visible');
+		cy.wait(1500);
+		// cy.contains('is now known as').should('be.visible');
 	});
 });
