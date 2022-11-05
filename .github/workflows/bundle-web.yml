@@ -10,6 +10,11 @@ on:
 jobs:
   bundle:
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - name: Bundle web app (next.js build)
         uses: actions/checkout@v3

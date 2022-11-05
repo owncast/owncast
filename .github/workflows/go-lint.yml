@@ -18,6 +18,11 @@ jobs:
     name: Go linter
     if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - uses: actions/checkout@v3
         with:

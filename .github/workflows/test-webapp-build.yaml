@@ -16,6 +16,10 @@ jobs:
       run:
         working-directory: ./web
 
+    concurrency:
+      group: ${{ github.head_ref || github.run_id }}
+      cancel-in-progress: true
+
     name: Build webapp
     steps:
       - name: Checkout

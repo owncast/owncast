@@ -190,7 +190,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   );
 
   return (
-    <div className={styles.chatContainer}>
+    <div id="chat-container" className={styles.chatContainer}>
       {MessagesTable}
       {showInput && <ChatTextField />}
     </div>

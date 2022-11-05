@@ -1,5 +1,6 @@
 import { Layout, Tag, Tooltip } from 'antd';
 import { FC } from 'react';
+import cn from 'classnames';
 import { UserDropdown } from '../../common/UserDropdown/UserDropdown';
 import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import styles from './Header.module.scss';
@@ -17,10 +18,10 @@ export const Header: FC<HeaderComponentProps> = ({
   chatAvailable,
   chatDisabled,
 }) => (
-  <AntHeader className={`${styles.header}`}>
+  <AntHeader className={cn([`${styles.header}`], 'global-header')}>
     <div className={`${styles.logo}`}>
       <OwncastLogo variant="contrast" />
-      <span>{name}</span>
+      <span className="global-header-text">{name}</span>
     </div>
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (

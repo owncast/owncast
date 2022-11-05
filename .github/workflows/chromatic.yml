@@ -20,6 +20,10 @@ jobs:
       run:
         working-directory: ./web
 
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - name: Check out code
         if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
