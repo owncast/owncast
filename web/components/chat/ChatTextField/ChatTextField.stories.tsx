@@ -33,6 +33,7 @@ export default {
   component: ChatTextField,
   parameters: {
     fetchMock: mocks,
+    chromatic: { diffThreshold: 0.2 },
 
     design: {
       type: 'image',

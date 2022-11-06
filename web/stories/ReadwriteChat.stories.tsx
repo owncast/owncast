@@ -13,7 +13,9 @@ import { ClientConfig } from '../interfaces/client-config.model';
 export default {
   title: 'owncast/Chat/Embeds/Read-write chat',
   component: ReadWritePage,
-  parameters: {},
+  parameters: {
+    chromatic: { diffThreshold: 0.2 },
+  },
 } as ComponentMeta<typeof ReadWritePage>;
 
 const testMessages =
