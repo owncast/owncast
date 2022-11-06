@@ -23,13 +23,14 @@ const UserColor: FC<UserColorProps> = ({ color }) => {
 
 export const NameChangeModal: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
+  const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
+  const [newName, setNewName] = useState<string>(currentUser?.displayName);
+
   if (!currentUser) {
     return null;
   }
 
   const { displayName, displayColor } = currentUser;
-  const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const [newName, setNewName] = useState<any>(displayName);
 
   const handleNameChange = () => {
     const nameChange = {
