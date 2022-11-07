@@ -17,7 +17,7 @@ const (
 	PUBLIC PrivacyAudience = "https://www.w3.org/ns/activitystreams#Public"
 )
 
-// MakeNotePublic ses the required proeprties to make this note seen as public.
+// MakeNotePublic ses the required properties to make this note seen as public.
 func MakeNotePublic(note vocab.ActivityStreamsNote) vocab.ActivityStreamsNote {
 	public, _ := url.Parse(PUBLIC)
 	to := streams.NewActivityStreamsToProperty()
