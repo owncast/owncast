@@ -285,7 +285,7 @@ func SetNSFW(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-// SetFfmpegPath will handle the web config request to validate and set an updated copy of ffmpg.
+// SetFfmpegPath will handle the web config request to validate and set an updated copy of ffmpeg.
 func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
