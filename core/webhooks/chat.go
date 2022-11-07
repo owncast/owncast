@@ -47,7 +47,7 @@ func SendChatEventUserJoined(event events.UserJoinedEvent) {
 // messages has changed.
 func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
 	webhookEvent := WebhookEvent{
-		Type:      models.VisibiltyToggled,
+		Type:      models.VisibilityToggled,
 		EventData: event,
 	}
 

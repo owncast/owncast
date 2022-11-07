@@ -20,7 +20,7 @@ var validEvents = []EventType{
 	MessageSent,
 	UserJoined,
 	UserNameChanged,
-	VisibiltyToggled,
+	VisibilityToggled,
 	StreamStarted,
 	StreamStopped,
 }

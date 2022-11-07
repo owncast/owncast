@@ -18,12 +18,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ExternalUpdateMessageVisibility updates an array of message IDs to have the same visiblity.
+// ExternalUpdateMessageVisibility updates an array of message IDs to have the same visibility.
 func ExternalUpdateMessageVisibility(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	UpdateMessageVisibility(w, r)
 }
 
-// UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
+// UpdateMessageVisibility updates an array of message IDs to have the same visibility.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	type messageVisibilityUpdateRequest struct {
 		IDArray []string `json:"idArray"`

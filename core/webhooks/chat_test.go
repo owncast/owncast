@@ -159,10 +159,10 @@ func TestSendChatEventUserJoined(t *testing.T) {
 func TestSendChatEventSetMessageVisibility(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
 
-	checkPayload(t, models.VisibiltyToggled, func() {
+	checkPayload(t, models.VisibilityToggled, func() {
 		SendChatEventSetMessageVisibility(events.SetMessageVisibilityEvent{
 			Event: events.Event{
-				Type:      events.VisibiltyUpdate,
+				Type:      events.VisibilityUpdate,
 				ID:        "id",
 				Timestamp: timestamp,
 			},

@@ -12,7 +12,7 @@ type SetMessageVisibilityEvent struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *SetMessageVisibilityEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"type":      VisibiltyUpdate,
+		"type":      VisibilityUpdate,
 		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"ids":       e.MessageIDs,
@@ -22,5 +22,5 @@ func (e *SetMessageVisibilityEvent) GetBroadcastPayload() EventPayload {
 
 // GetMessageType will return the event type for this message.
 func (e *SetMessageVisibilityEvent) GetMessageType() EventType {
-	return VisibiltyUpdate
+	return VisibilityUpdate
 }
