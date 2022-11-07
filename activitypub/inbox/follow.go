@@ -53,9 +53,9 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	// If this request is approved and we have not previously sent an action to
 	// chat due to a previous follow request, then do so.
-	hasPreviouslyhandled := true // Default so we don't send anything if it fails.
+	hasPreviouslyHandled := true // Default so we don't send anything if it fails.
 	if approved {
-		hasPreviouslyhandled, err = persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementFollow)
+		hasPreviouslyHandled, err = persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementFollow)
 		if err != nil {
 			log.Errorln("error checking for previously handled follow activity", err)
 		}
@@ -67,7 +67,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	}
 
 	// Send action to chat if it has not been previously handled.
-	if !hasPreviouslyhandled {
+	if !hasPreviouslyHandled {
 		return handleEngagementActivity(events.FediverseEngagementFollow, false, actorReference, events.FediverseEngagementFollow)
 	}
 

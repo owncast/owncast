@@ -16,7 +16,7 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 	objectIRI := object.At(0).GetIRI().String()
 	actorIRI := actorReference.At(0).GetIRI().String()
 
-	if hasPreviouslyhandled, err := persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementRepost); hasPreviouslyhandled || err != nil {
+	if hasPreviouslyHandled, err := persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementRepost); hasPreviouslyHandled || err != nil {
 		return errors.Wrap(err, "inbound activity of share/re-post has already been handled")
 	}
 
