@@ -107,7 +107,7 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 		}
 
 		// Convert the external AP entity into an internal actor representation.
-		apa, e := apmodels.MakeActorFromExernalAPEntity(actorEntity)
+		apa, e := apmodels.MakeActorFromExternalAPEntity(actorEntity)
 		if apa != nil {
 			apActor = *apa
 			resolved = true
@@ -194,7 +194,7 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 	var apActor apmodels.ActivityPubActor
 	resolved := false
 	personCallback := func(c context.Context, person vocab.ActivityStreamsPerson) error {
-		apa, e := apmodels.MakeActorFromExernalAPEntity(person)
+		apa, e := apmodels.MakeActorFromExternalAPEntity(person)
 		if apa != nil {
 			apActor = *apa
 			resolved = true
@@ -203,7 +203,7 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 	}
 
 	serviceCallback := func(c context.Context, service vocab.ActivityStreamsService) error {
-		apa, e := apmodels.MakeActorFromExernalAPEntity(service)
+		apa, e := apmodels.MakeActorFromExternalAPEntity(service)
 		if apa != nil {
 			apActor = *apa
 			resolved = true
@@ -212,7 +212,7 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 	}
 
 	applicationCallback := func(c context.Context, app vocab.ActivityStreamsApplication) error {
-		apa, e := apmodels.MakeActorFromExernalAPEntity(app)
+		apa, e := apmodels.MakeActorFromExternalAPEntity(app)
 		if apa != nil {
 			apActor = *apa
 			resolved = true

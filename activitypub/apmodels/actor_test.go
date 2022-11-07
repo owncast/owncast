@@ -64,7 +64,7 @@ func TestMain(m *testing.M) {
 
 func TestMakeActorFromExternalAPEntity(t *testing.T) {
 	service := makeFakeService()
-	actor, err := MakeActorFromExernalAPEntity(service)
+	actor, err := MakeActorFromExternalAPEntity(service)
 	if err != nil {
 		t.Error(err)
 	}

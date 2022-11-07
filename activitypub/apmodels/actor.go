@@ -53,9 +53,9 @@ type ExternalEntity interface {
 	GetW3IDSecurityV1PublicKey() vocab.W3IDSecurityV1PublicKeyProperty
 }
 
-// MakeActorFromExernalAPEntity takes a full ActivityPub entity and returns our
+// MakeActorFromExternalAPEntity takes a full ActivityPub entity and returns our
 // internal representation of an actor.
-func MakeActorFromExernalAPEntity(entity ExternalEntity) (*ActivityPubActor, error) {
+func MakeActorFromExternalAPEntity(entity ExternalEntity) (*ActivityPubActor, error) {
 	// Username is required (but not a part of the official ActivityPub spec)
 	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
 		return nil, errors.New("remote activitypub entity does not have a preferred username set, rejecting")
