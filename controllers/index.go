@@ -81,7 +81,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Return a basic HTML page with server-rendered metadata from the config
-// to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
+// to give to OpenGraph clients and web scrapers (bots, web crawlers, etc).
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := static.GetBotMetadataTemplate()
 	if err != nil {
