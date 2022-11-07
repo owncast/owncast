@@ -22,6 +22,10 @@
       margin: 0.6rem;
     }
   }
+
+  @include screen(mobile) {
+    align-items: center;
+  }
 }
 
 .titleSection {
