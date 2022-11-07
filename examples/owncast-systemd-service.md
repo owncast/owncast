@@ -31,7 +31,7 @@ This just means, use runlevel 3 non-graphical.
 
 
 **INSTALLATION**
-Just create the file in your systemd configuraiton directory (typically /etc/systemd/system/), and update the systemd daemon with:
+Just create the file in your systemd configuration directory (typically /etc/systemd/system/), and update the systemd daemon with:
 ```$sudo systemd daemon-reload```
 
 **USAGE**
