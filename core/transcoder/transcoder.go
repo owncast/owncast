@@ -440,7 +440,7 @@ func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
 }
 
-// SetCodec will set the codec to be used for the transocder.
+// SetCodec will set the codec to be used for the transcoder.
 func (t *Transcoder) SetCodec(codecName string) {
 	t.codec = getCodec(codecName)
 }
