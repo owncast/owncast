@@ -74,7 +74,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	eventData.client.User = savedUser
 	eventData.client.User.NameChangedAt = &now
 
-	// Send chat event letting everyone about about the name change
+	// Send chat event letting everyone about the name change
 	savedUser.DisplayName = proposedUsername
 
 	broadcastEvent := events.NameChangeBroadcast{
