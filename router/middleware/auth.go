@@ -18,7 +18,7 @@ type ExternalAccessTokenHandlerFunc func(user.ExternalAPIUser, http.ResponseWrit
 type UserAccessTokenHandlerFunc func(user.User, http.ResponseWriter, *http.Request)
 
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
-// the stream key as the password and and a hardcoded "admin" for username.
+// the stream key as the password and a hardcoded "admin" for username.
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "admin"

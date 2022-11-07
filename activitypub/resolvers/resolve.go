@@ -45,7 +45,7 @@ func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 	return nil
 }
 
-// ResolveIRI will resolve an IRI ahd call the correct callback for the resolved type.
+// ResolveIRI will resolve an IRI and call the correct callback for the resolved type.
 func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	log.Debugln("Resolving", iri)
 
