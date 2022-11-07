@@ -25,7 +25,7 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 		password := data.GetStreamKey()
 		realm := "Owncast Authenticated Request"
 
-		// The following line is kind of a work around.
+		// The following line is kind of a workaround.
 		// If you want HTTP Basic Auth + Cors it requires _explicit_ origins to be provided in the
 		// Access-Control-Allow-Origin header.  So we just pull out the origin header and specify it.
 		// If we want to lock down admin APIs to not be CORS accessible for anywhere, this is where we would do that.
