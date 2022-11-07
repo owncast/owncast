@@ -79,7 +79,7 @@
 		"@types/markdown-it": "12.2.3",
 		"@types/node": "18.11.9",
 		"@types/prop-types": "15.7.5",
-		"@types/react": "18.0.24",
+		"@types/react": "18.0.25",
 		"@types/react-linkify": "1.0.1",
 		"@types/ua-parser-js": "0.7.36",
 		"@typescript-eslint/eslint-plugin": "5.42.0",
