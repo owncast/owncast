@@ -99,7 +99,7 @@ func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty 
 	return actor
 }
 
-// MakeServiceForAccount will create a new local actor service with the the provided username.
+// MakeServiceForAccount will create a new local actor service with the provided username.
 func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	actorIRI := MakeLocalIRIForAccount(accountName)
 

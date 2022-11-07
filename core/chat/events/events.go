@@ -151,7 +151,7 @@ func sanitize(raw string) string {
 
 	p.AllowElementsContent("p")
 
-	// Allow img tags from the the local emoji directory only
+	// Allow img tags from the local emoji directory only
 	p.AllowAttrs("src").Matching(_sanitizeReSrcMatch).OnElements("img")
 	p.AllowAttrs("alt", "title").Matching(_sanitizeReAltTitleMatch).OnElements("img")
 	p.AllowAttrs("class").Matching(_sanitizeReClassMatch).OnElements("img")
