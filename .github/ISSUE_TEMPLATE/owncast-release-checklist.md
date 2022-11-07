@@ -11,7 +11,7 @@ assignees: gabek
 
 The following are intended to address the test scenarios and documentation that should be accomplished for a public release.
 
-- [ ] This release was tested as a fresh install, with no pre-existing data or configuration.
+- [ ] This release was tested as a fresh install, with no preexisting data or configuration.
 - [ ] This release was tested as an upgrade over a previous install, keeping the data and configuration.
 - [ ] This release was tested using a Docker environment.
 - [ ] This release was tested with local storage for file distribution.
