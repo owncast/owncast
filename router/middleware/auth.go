@@ -11,10 +11,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ExternalAccessTokenHandlerFunc is a function that is called after validing access.
+// ExternalAccessTokenHandlerFunc is a function that is called after validating access.
 type ExternalAccessTokenHandlerFunc func(user.ExternalAPIUser, http.ResponseWriter, *http.Request)
 
-// UserAccessTokenHandlerFunc is a function that is called after validing user access.
+// UserAccessTokenHandlerFunc is a function that is called after validating user access.
 type UserAccessTokenHandlerFunc func(user.User, http.ResponseWriter, *http.Request)
 
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
