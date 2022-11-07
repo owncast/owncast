@@ -271,47 +271,47 @@ func (c *NvencCodec) GetPresetForLevel(l int) string {
 	return presetMapping[l]
 }
 
-// QuicksyncCodec represents an instance of the Intel Quicksync Codec.
-type QuicksyncCodec struct {
+// QuickSyncCodec represents an instance of the Intel QuickSync Codec.
+type QuickSyncCodec struct {
 }
 
 // Name returns the codec name.
-func (c *QuicksyncCodec) Name() string {
+func (c *QuickSyncCodec) Name() string {
 	return "h264_qsv"
 }
 
 // DisplayName returns the human readable name of the codec.
-func (c *QuicksyncCodec) DisplayName() string {
+func (c *QuickSyncCodec) DisplayName() string {
 	return "Intel QuickSync"
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *QuicksyncCodec) GlobalFlags() string {
+func (c *QuickSyncCodec) GlobalFlags() string {
 	return ""
 }
 
 // PixelFormat is the pixel format required for this codec.
-func (c *QuicksyncCodec) PixelFormat() string {
+func (c *QuickSyncCodec) PixelFormat() string {
 	return "nv12"
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *QuicksyncCodec) ExtraArguments() string {
+func (c *QuickSyncCodec) ExtraArguments() string {
 	return ""
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
-func (c *QuicksyncCodec) ExtraFilters() string {
+func (c *QuickSyncCodec) ExtraFilters() string {
 	return ""
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
+func (c *QuickSyncCodec) VariantFlags(v *HLSVariant) string {
 	return ""
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
-func (c *QuicksyncCodec) GetPresetForLevel(l int) string {
+func (c *QuickSyncCodec) GetPresetForLevel(l int) string {
 	presetMapping := []string{
 		"ultrafast",
 		"superfast",
@@ -482,8 +482,8 @@ func getCodec(name string) Codec {
 		return &NvencCodec{}
 	case (&VaapiCodec{}).Name():
 		return &VaapiCodec{}
-	case (&QuicksyncCodec{}).Name():
-		return &QuicksyncCodec{}
+	case (&QuickSyncCodec{}).Name():
+		return &QuickSyncCodec{}
 	case (&OmxCodec{}).Name():
 		return &OmxCodec{}
 	case (&Video4Linux{}).Name():
