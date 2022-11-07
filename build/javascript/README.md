@@ -1,6 +1,6 @@
 ## Third party web dependencies
 
-Owncast's web frontend utilizes a few third party Javascript and CSS dependencies that we ship with the application.
+Owncast's web frontend utilizes a few third party JavaScript and CSS dependencies that we ship with the application.
 
 To add, remove, or update one of these components:
 

@@ -36,7 +36,7 @@ Owncast Dependencies
 - Chart.js chart library https://github.com/chartjs
 - react-chartkick component https://chartkick.com/react
 - date-fns time/date library https://date-fns.org/
-- markdown-it Javascript markdown parser https://github.com/markdown-it/markdown-it
+- markdown-it JavaScript markdown parser https://github.com/markdown-it/markdown-it
 - nextjs web framework https://nextjs.org/
 - ua-parser-js user-agent parser https://github.com/faisalman/ua-parser-js
 - Markdown editor component https://github.com/HarryChen0506/react-markdown-editor-lite

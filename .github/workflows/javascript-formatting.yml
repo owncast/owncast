@@ -1,4 +1,4 @@
-name: Format Javascript
+name: Format JavaScript
 
 # This action works with pull requests and pushes
 on:
