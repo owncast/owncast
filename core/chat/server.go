@@ -335,7 +335,7 @@ func (s *Server) eventReceived(event chatClientEvent) {
 
 	// If established chat user only mode is enabled and the user is not old
 	// enough then reject this event and send them an informative message.
-	if u != nil && data.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
+	if u != nil && data.GetChatEstablishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
 		s.sendActionToClient(c, "You have not been an established chat participant long enough to take part in chat. Please enjoy the stream and try again later.")
 		return
 	}

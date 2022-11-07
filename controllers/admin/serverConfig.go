@@ -54,7 +54,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
-		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
+		ChatEstablishedUserMode: data.GetChatEstablishedUsersOnlyMode(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,

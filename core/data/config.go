@@ -514,8 +514,8 @@ func SetChatEstablishedUsersOnlyMode(enabled bool) error {
 	return _datastore.SetBool(chatEstablishedUsersOnlyModeKey, enabled)
 }
 
-// GetChatEstbalishedUsersOnlyMode returns the state of established user only mode.
-func GetChatEstbalishedUsersOnlyMode() bool {
+// GetChatEstablishedUsersOnlyMode returns the state of established user only mode.
+func GetChatEstablishedUsersOnlyMode() bool {
 	enabled, err := _datastore.GetBool(chatEstablishedUsersOnlyModeKey)
 	if err == nil {
 		return enabled
