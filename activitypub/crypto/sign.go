@@ -39,7 +39,7 @@ func signResponse(privateKey crypto.PrivateKey, pubKeyID url.URL, body []byte, w
 	return signer.SignResponse(privateKey, pubKeyID.String(), w, body)
 }
 
-// SignRequest will sign an ounbound request given the provided body.
+// SignRequest will sign an outbound request given the provided body.
 func SignRequest(req *http.Request, body []byte, actorIRI *url.URL) error {
 	publicKey := GetPublicKey(actorIRI)
 	privateKey := GetPrivateKey()
