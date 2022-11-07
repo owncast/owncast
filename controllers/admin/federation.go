@@ -78,7 +78,7 @@ func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "federation private saved")
 }
 
-// SetFederationShowEngagement will set if Fedivese engagement shows in chat.
+// SetFederationShowEngagement will set if Fediverse engagement shows in chat.
 func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return

@@ -65,7 +65,7 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 	// Check if a user with this auth already exists, if so, log them in.
 	if u := auth.GetUserByAuth(authRegistration.Account, auth.Fediverse); u != nil {
 		// Handle existing auth.
-		log.Debugln("user with provided fedvierse identity already exists, logging them in")
+		log.Debugln("user with provided fediverse identity already exists, logging them in")
 
 		// Update the current user's access token to point to the existing user id.
 		userID := u.ID
