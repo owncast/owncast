@@ -35,21 +35,9 @@ func handle(request apmodels.InboxRequest) {
 		log.Debugln("Error checking delete")
 		return
 	}
-
 	if isDelete {
 		return
 	}
-
-	// handle deletes separately since resolving the public key won't work
-	/*reqType := jsonMap["type"]
-	if reqType == "Delete" { // todo: need to figure out the prefix bit
-		// Todo: need to figure out how to verify delete
-		err = resolvers.Resolve(context.Background(), jsonMap, handleDeleteRequest)
-		if err != nil {
-			log.Debugln("Error handling delete", err)
-			return
-		}
-	}*/
 
 	if verified, err := Verify(request.Request); err != nil {
 		log.Debugln("Error in attempting to verify request", err)
