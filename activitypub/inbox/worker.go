@@ -29,8 +29,19 @@ func handle(request apmodels.InboxRequest) {
 		return
 	}
 
+	// check if it's a delete first (getting type of message isn't easy since it could be aliased)
+	isDelete, err := resolvers.Resolve(context.Background(), jsonMap, handleDeleteRequest)
+	if err != nil {
+		log.Debugln("Error checking delete")
+		return
+	}
+
+	if isDelete {
+		return
+	}
+
 	// handle deletes separately since resolving the public key won't work
-	reqType := jsonMap["type"]
+	/*reqType := jsonMap["type"]
 	if reqType == "Delete" { // todo: need to figure out the prefix bit
 		// Todo: need to figure out how to verify delete
 		err = resolvers.Resolve(context.Background(), jsonMap, handleDeleteRequest)
@@ -38,7 +49,7 @@ func handle(request apmodels.InboxRequest) {
 			log.Debugln("Error handling delete", err)
 			return
 		}
-	}
+	}*/
 
 	if verified, err := Verify(request.Request); err != nil {
 		log.Debugln("Error in attempting to verify request", err)
@@ -48,7 +59,7 @@ func handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	if err := resolvers.Resolve(context.Background(), jsonMap, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest); err != nil {
+	if _, err := resolvers.Resolve(context.Background(), jsonMap, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest); err != nil {
 		log.Debugln("resolver error:", err)
 	}
 }

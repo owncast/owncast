@@ -16,26 +16,27 @@ import (
 )
 
 // Resolve will translate a raw ActivityPub payload and fire the callback associated with that activity type.
-func Resolve(c context.Context, jsonMap map[string]interface{}, callbacks ...interface{}) error {
+func Resolve(c context.Context, jsonMap map[string]interface{}, callbacks ...interface{}) (bool, error) {
 	jsonResolver, err := streams.NewJSONResolver(callbacks...)
 	if err != nil {
 		// Something in the setup was wrong. For example, a callback has an
 		// unsupported signature and would never be called
-		return err
+		return false, err
 	}
 
 	// The createCallback function will be called.
 	err = jsonResolver.Resolve(c, jsonMap)
 	if err != nil && !streams.IsUnmatchedErr(err) {
 		// Something went wrong
-		return err
+		return false, err
 	} else if streams.IsUnmatchedErr(err) {
 		// Everything went right but the callback didn't match or the ActivityStreams
 		// type is one that wasn't code generated.
 		log.Debugln("No match: ", err)
+		return false, nil
 	}
 
-	return nil
+	return true, nil
 }
 
 // ResolveIRI will resolve an IRI ahd call the correct callback for the resolved type.
@@ -68,7 +69,8 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	}
 
 	// fmt.Println(string(data))
-	return Resolve(c, jsonMap, callbacks...)
+	_, err = Resolve(c, jsonMap, callbacks...)
+	return err
 }
 
 // GetResolvedActorFromActorProperty resolve an external actor property to a

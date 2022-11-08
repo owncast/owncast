@@ -260,7 +260,7 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 			return collection, err
 		}
 
-		if err := resolvers.Resolve(context.Background(), jsonValue, createCallback); err != nil {
+		if _, err := resolvers.Resolve(context.Background(), jsonValue, createCallback); err != nil {
 			return collection, err
 		}
 	}
