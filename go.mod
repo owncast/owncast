@@ -22,7 +22,7 @@ require (
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	github.com/yuin/goldmark v1.5.3
 	golang.org/x/mod v0.7.0
-	golang.org/x/time v0.1.0
+	golang.org/x/time v0.2.0
 	mvdan.cc/xurls v1.1.0
 )
 
