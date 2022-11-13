@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 export function createVideoSettingsMenuButton(player, videojs, qualities, latencyItemPressed): any {
   const VjsMenuItem = videojs.getComponent('MenuItem');
   const MenuItem = videojs.getComponent('MenuItem');
@@ -28,14 +29,12 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
     selectable: false,
   });
 
-  const MenuButton = videojs.extend(MenuButtonClass, {
-    // The `init()` method will also work for constructor logic here, but it is
-    // deprecated. If you provide an `init()` method, it will override the
-    // `constructor()` method!
+  class MenuButton extends MenuButtonClass {
     constructor() {
-      MenuButtonClass.call(this, player);
-    },
+      super(player);
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     createItems() {
       const tech = player.tech({ IWillNotUseThisInPlugins: true });
 
@@ -44,7 +43,7 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
         label: 'Auto',
       });
 
-      const items = qualities.map(item => {
+      return qualities.map(item => {
         const newMenuItem = new MenuItem(player, {
           selectable: true,
           label: item.name,
@@ -90,8 +89,8 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
       }
 
       return [defaultAutoItem, ...items];
-    },
-  });
+    }
+  }
 
   // If none of the settings in this menu are applicable then don't show it.
   const tech = player.tech({ IWillNotUseThisInPlugins: true });
@@ -100,10 +99,13 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
     return;
   }
 
+  videojs.registerComponent('MenuButton', MenuButton);
+
   const menuButton = new MenuButton();
   menuButton.addClass('vjs-quality-selector');
 
   // eslint-disable-next-line consistent-return
   return menuButton;
 }
+
 export default createVideoSettingsMenuButton;
