@@ -246,28 +246,28 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
 
     // You can handle player events here, for example:
     player.on('waiting', () => {
-      player.log('player is waiting');
+      console.debug('player is waiting');
     });
 
     player.on('dispose', () => {
-      player.log('player will dispose');
+      console.debug('player will dispose');
       ping.stop();
     });
 
     player.on('playing', () => {
-      player.log('player is playing');
+      console.debug('player is playing');
       ping.start();
       setVideoPlaying(true);
     });
 
     player.on('pause', () => {
-      player.log('player is paused');
+      console.debug('player is paused');
       ping.stop();
       setVideoPlaying(false);
     });
 
     player.on('ended', () => {
-      player.log('player is ended');
+      console.debug('player is ended');
       ping.stop();
       setVideoPlaying(false);
     });
@@ -291,13 +291,13 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   useEffect(
     () => () => {
       stopLatencyCompensator();
-      playbackMetrics.stop();
+      playbackMetrics?.stop();
     },
     [],
   );
 
   return (
-    <div style={{ display: 'grid' }}>
+    <div style={{ display: 'grid', width: '100% !important', aspectRatio: '16/9' }}>
       {online && (
         <div style={{ gridColumn: 1, gridRow: 1 }}>
           <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
