@@ -15,6 +15,11 @@
   font-weight: 600;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
 
+  a {
+    color: var(--theme-color-components-text-on-dark);
+    text-decoration: none;
+  }
+
   .links {
     column-gap: 2rem;
     width: auto;
