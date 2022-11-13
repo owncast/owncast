@@ -93,6 +93,8 @@ export default function Appearance() {
     { name: 'theme-color-components-text-on-light', description: 'Text: Dark' },
     { name: 'theme-color-background-header', description: 'Header/Footer' },
     { name: 'theme-color-components-content-background', description: 'Page Content' },
+    { name: 'theme-color-components-scrollbar-background', description: 'Scrollbar Background' },
+    { name: 'theme-color-components-scrollbar-thumb', description: 'Scrollbar Thumb' },
   ];
 
   const [colors, setColors] = useState<Record<string, AppearanceVariable>>();
@@ -176,15 +178,12 @@ export default function Appearance() {
   return (
     <Space direction="vertical">
       <Title>Customize Appearance</Title>
-      <Paragraph>
-        The following colors are used across the user interface. You can change them.
-      </Paragraph>
+      <Paragraph>The following colors are used across the user interface.</Paragraph>
       <div>
         <Collapse defaultActiveKey={['1']}>
           <Panel header={<Title level={3}>Section Colors</Title>} key="1">
             <p>
-              Certain specific sections of the interface changed by selecting new colors for them
-              here.
+              Certain sections of the interface can be customized by selecting new colors for them.
             </p>
             <Row gutter={[16, 16]}>
               {componentColorVariables.map(colorVar => {
