@@ -153,7 +153,7 @@ export const ClientConfigStore: FC = () => {
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
-  const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
+  const [serverStatus, setServerStatus] = useRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
@@ -173,15 +173,11 @@ export const ClientConfigStore: FC = () => {
     });
   };
   const sendEvent = (event: string) => {
-    // console.log('---- sending event:', event);
+    console.debug('---- sending event:', event);
     appStateSend({ type: event });
   };
 
   const updateClientConfig = async () => {
-    if (hasLoadedConfig) {
-      return;
-    }
-
     try {
       const config = await ClientConfigService.getConfig();
       setClientConfig(config);
@@ -197,10 +193,6 @@ export const ClientConfigStore: FC = () => {
   };
 
   const updateServerStatus = async () => {
-    if (hasLoadedStatus) {
-      return;
-    }
-
     try {
       const status = await ServerStatusService.getStatus();
       setServerStatus(status);
@@ -210,11 +202,6 @@ export const ClientConfigStore: FC = () => {
       const clockSkew = new Date(serverTime).getTime() - Date.now();
       setClockSkew(clockSkew);
 
-      if (status.online) {
-        sendEvent(AppStateEvent.Online);
-      } else if (!status.online) {
-        sendEvent(AppStateEvent.Offline);
-      }
       setGlobalFatalErrorMessage(null);
     } catch (error) {
       sendEvent(AppStateEvent.Fail);
@@ -360,6 +347,12 @@ export const ClientConfigStore: FC = () => {
   useEffect(() => {
     if (hasLoadedStatus && hasLoadedConfig) {
       sendEvent(AppStateEvent.Loaded);
+
+      if (serverStatus.online) {
+        sendEvent(AppStateEvent.Online);
+      } else {
+        sendEvent(AppStateEvent.Offline);
+      }
     }
   }, [hasLoadedStatus, hasLoadedConfig]);
 
