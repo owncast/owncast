@@ -40,6 +40,7 @@ export interface ConfigInstanceDetailsFields {
   tags: string[];
   title: string;
   welcomeMessage: string;
+  appearanceVariables: AppearanceVariables;
 }
 
 export type CpuUsageLevel = 1 | 2 | 3 | 4 | 5;
@@ -82,6 +83,10 @@ export interface S3Field {
   servingEndpoint?: string;
   forcePathStyle: boolean;
 }
+
+type AppearanceVariables = {
+  [key: string]: string;
+};
 
 export interface ExternalAction {
   title: string;

@@ -5,7 +5,6 @@ import { EditInstanceDetails } from '../../components/config/EditInstanceDetails
 import { EditInstanceTags } from '../../components/config/EditInstanceTags';
 import { EditSocialLinks } from '../../components/config/EditSocialLinks';
 import { EditPageContent } from '../../components/config/EditPageContent';
-import { EditCustomStyles } from '../../components/config/EditCustomStyles';
 
 const { Title } = Typography;
 
@@ -41,9 +40,6 @@ export default function PublicFacingDetails() {
       </div>
       <div className="form-module page-content-module">
         <EditPageContent />
-      </div>
-      <div className="form-module page-content-module">
-        <EditCustomStyles />
       </div>
     </div>
   );

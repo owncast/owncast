@@ -21,6 +21,7 @@ import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
 import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
 
 import Footer from '../ui/Footer/Footer';
+import { Theme } from '../theme/Theme';
 
 export const Main: FC = () => {
   const [isMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
@@ -111,6 +112,7 @@ export const Main: FC = () => {
 
       <ClientConfigStore />
       <TitleNotifier />
+      <Theme />
       <Layout ref={layoutRef} style={{ minHeight: '100vh' }}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />

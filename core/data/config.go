@@ -67,6 +67,7 @@ const (
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 	hideViewerCountKey                   = "hide_viewer_count"
 	customOfflineMessageKey              = "custom_offline_message"
+	customColorVariableValuesKey         = "custom_color_variable_values"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -931,4 +932,15 @@ func GetCustomOfflineMessage() string {
 // SetCustomOfflineMessage will set the custom offline message.
 func SetCustomOfflineMessage(message string) error {
 	return _datastore.SetString(customOfflineMessageKey, message)
+}
+
+// SetCustomColorVariableValues sets CSS variable names and values.
+func SetCustomColorVariableValues(variables map[string]string) error {
+	return _datastore.SetStringMap(customColorVariableValuesKey, variables)
+}
+
+// GetCustomColorVariableValues gets CSS variable names and values.
+func GetCustomColorVariableValues() map[string]string {
+	values, _ := _datastore.GetStringMap(customColorVariableValuesKey)
+	return values
 }

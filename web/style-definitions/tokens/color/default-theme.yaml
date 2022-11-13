@@ -99,14 +99,12 @@ theme:
         value: 'var(--theme-color-palette-3)'
         comment: '{theme.color.palette.3.comment}'
       light:
-        value: 'var(--theme-color-palette-14)'
-        comment: '{theme.color.palette.14.comment}'
+        value: 'var(--theme-color-palette-3)'
+        comment: '{theme.color.palette.3.comment}'
       header:
         value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
-      chat:
-        value: 'var(--theme-color-palette-14)'
-        comment: '{theme.color.palette.14.comment}'
+
     action:
       value: 'var(--theme-color-palette-6)'
       comment: '{theme.color.palette.6.comment}'
@@ -173,11 +171,16 @@ theme:
 
       chat:
         background:
-          value: 'var(--theme-color-palette-1)'
-          comment: '{theme.color.palette.1.comment}'
+          value: 'var(--theme-color-palette-4)'
+          comment: '{theme.color.palette.4.comment}'
         text:
-          value: 'var(--theme-color-palette-3)'
-          comment: '{theme.color.palette.3.comment}'
+          value: 'var(--theme-color-palette-2)'
+          comment: '{theme.color.palette.2.comment}'
+
+      content:
+        background:
+          value: 'var(--theme-color-palette-4)'
+          comment: '{theme.color.palette.4.comment}'
 
       modal:
         header:
