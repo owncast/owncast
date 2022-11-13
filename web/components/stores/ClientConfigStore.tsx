@@ -347,14 +347,16 @@ export const ClientConfigStore: FC = () => {
   useEffect(() => {
     if (hasLoadedStatus && hasLoadedConfig) {
       sendEvent(AppStateEvent.Loaded);
-
-      if (serverStatus.online) {
-        sendEvent(AppStateEvent.Online);
-      } else {
-        sendEvent(AppStateEvent.Offline);
-      }
     }
   }, [hasLoadedStatus, hasLoadedConfig]);
+
+  useEffect(() => {
+    if (serverStatus.online) {
+      sendEvent(AppStateEvent.Online);
+    } else {
+      sendEvent(AppStateEvent.Offline);
+    }
+  }, [serverStatus]);
 
   useEffect(() => {
     if (!clientConfig.chatDisabled && accessToken && hasLoadedConfig) {
