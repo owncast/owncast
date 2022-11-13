@@ -6,14 +6,9 @@
   video {
     position: static !important;
   }
-
-  @include screen(desktop) {
-    height: 30vh !important;
-  }
 }
 
 .poster {
   width: 100%;
   height: 100%;
 }
-

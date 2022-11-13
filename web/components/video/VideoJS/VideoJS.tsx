@@ -4,9 +4,6 @@ import styles from './VideoJS.module.scss';
 
 require('video.js/dist/video-js.css');
 
-// TODO: Restore volume that was saved in local storage.
-// import { getLocalStorage, setLocalStorage } from '../../utils/helpers.js';
-// import { PLAYER_VOLUME, URL_STREAM } from '../../utils/constants.js';
 export type VideoJSProps = {
   options: any;
   onReady: (player: videojs.Player, vjsInstance: videojs) => void;
@@ -23,7 +20,8 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
 
       // eslint-disable-next-line no-multi-assign
       const player = (playerRef.current = videojs(videoElement, options, () => {
-        player.log('player is ready');
+        console.debug('player is ready');
+
         return onReady && onReady(player, videojs);
       }));
 
@@ -35,18 +33,6 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
       player.src(options.sources);
     }
   }, [options, videoRef]);
-
-  // Dispose the Video.js player when the functional component unmounts
-  React.useEffect(() => {
-    const player = playerRef.current;
-
-    return () => {
-      if (player) {
-        player.dispose();
-        playerRef.current = null;
-      }
-    };
-  }, [playerRef]);
 
   return (
     <div data-vjs-player>
@@ -60,57 +46,6 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
 };
 
 export default VideoJS;
-
-// import PlaybackMetrics from '../metrics/playback.js';
-// import LatencyCompensator from './latencyCompensator.js';
-
-// const VIDEO_ID = 'video';
-// const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
-
-// // Video setup
-// const VIDEO_SRC = {
-//   src: URL_STREAM,
-//   type: 'application/x-mpegURL',
-// };
-// const VIDEO_OPTIONS = {
-//   autoplay: false,
-//   liveui: true,
-//   preload: 'auto',
-//   controlBar: {
-//     progressControl: {
-//       seekBar: false,
-//     },
-//   },
-//   html5: {
-//     vhs: {
-//       // used to select the lowest bitrate playlist initially. This helps to decrease playback start time. This setting is false by default.
-//       enableLowInitialPlaylist: true,
-//       experimentalBufferBasedABR: true,
-//       useNetworkInformationApi: true,
-//       maxPlaylistRetries: 30,
-//     },
-//   },
-//   liveTracker: {
-//     trackingThreshold: 0,
-//     liveTolerance: 15,
-//   },
-//   sources: [VIDEO_SRC],
-// };
-
-// export const POSTER_DEFAULT = `/img/logo.png`;
-// export const POSTER_THUMB = `/thumbnail.jpg`;
-
-// export default class MenuSeparator extends VjsMenuItem {
-//   constructor(player, options) {
-//     super(player, options);
-//   }
-
-//   createEl(tag = 'button', props = {}, attributes = {}) {
-//     const el = super.createEl(tag, props, attributes);
-//     el.innerHTML = '<hr style="opacity: 0.3; margin-left: 10px; margin-right: 10px;" />';
-//     return el;
-//   }
-// }
 
 // class OwncastPlayer {
 //   constructor() {
