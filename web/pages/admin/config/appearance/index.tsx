@@ -92,6 +92,7 @@ export default function Appearance() {
     { name: 'theme-color-components-text-on-dark', description: 'Text: Light' },
     { name: 'theme-color-components-text-on-light', description: 'Text: Dark' },
     { name: 'theme-color-background-header', description: 'Header/Footer' },
+    { name: 'theme-color-components-content-background', description: 'Page Content' },
   ];
 
   const [colors, setColors] = useState<Record<string, AppearanceVariable>>();

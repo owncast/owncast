@@ -87,6 +87,9 @@ theme:
       14:
         value: 'var(--color-owncast-palette-14)'
         comment: '{color.owncast.palette.14.comment}'
+      15:
+        value: 'var(--color-owncast-palette-15)'
+        comment: '{color.owncast.palette.15.comment}'
       error:
         value: 'var(--color-owncast-palette-error)'
         comment: '{color.owncast.palette.error.comment}'
@@ -179,8 +182,8 @@ theme:
 
       content:
         background:
-          value: 'var(--theme-color-palette-4)'
-          comment: '{theme.color.palette.4.comment}'
+          value: 'var(--theme-color-palette-15)'
+          comment: '{theme.color.palette.15.comment}'
 
       modal:
         header:
