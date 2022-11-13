@@ -43,7 +43,7 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
         label: 'Auto',
       });
 
-      return qualities.map(item => {
+      const items = qualities.map(item => {
         const newMenuItem = new MenuItem(player, {
           selectable: true,
           label: item.name,
