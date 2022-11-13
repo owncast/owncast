@@ -32,6 +32,10 @@ function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean
   }
 
   const message = messages[index];
+  if (!message || !message.user) {
+    return false;
+  }
+
   const {
     user: { id },
   } = message;
