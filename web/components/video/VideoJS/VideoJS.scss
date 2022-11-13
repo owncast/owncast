@@ -4,6 +4,10 @@
     color: var(--theme-color-components-text-on-light);
   }
 
+  .vjs-menu li {
+    color: var(--theme-color-components-text-on-dark);
+  }
+
   .vjs-big-play-button {
     z-index: 10;
     color: var(--theme-color-action);
