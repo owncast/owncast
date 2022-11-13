@@ -8,6 +8,11 @@ const offlineMessage = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const tags = [randomString(), randomString(), randomString()];
 const latencyLevel = Math.floor(Math.random() * 4);
+const appearanceValues = {
+	variable1: randomString(),
+	variable2: randomString(),
+	variable3: randomString(),
+};
 
 const streamOutputVariants = {
 	videoBitrate: randomNumber() * 100,
@@ -100,6 +105,11 @@ test('set hide viewer count', async (done) => {
 
 test('set offline message', async (done) => {
 	const res = await sendConfigChangeRequest('offlinemessage', offlineMessage);
+	done();
+});
+
+test('set custom style values', async (done) => {
+	const res = await sendConfigChangeRequest('appearance', appearanceValues);
 	done();
 });
 

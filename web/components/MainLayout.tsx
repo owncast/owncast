@@ -201,7 +201,9 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
             <Menu.Item key="config-notify">
               <Link href="/admin/config-notify">Notifications</Link>
             </Menu.Item>
-
+            <Menu.Item key="config-appearance">
+              <Link href="/admin/config/appearance">Appearance</Link>
+            </Menu.Item>
             <Menu.Item key="config-storage">
               <Link href="/admin/config-storage">S3 Storage</Link>
             </Menu.Item>

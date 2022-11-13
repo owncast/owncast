@@ -87,6 +87,9 @@ theme:
       14:
         value: 'var(--color-owncast-palette-14)'
         comment: '{color.owncast.palette.14.comment}'
+      15:
+        value: 'var(--color-owncast-palette-15)'
+        comment: '{color.owncast.palette.15.comment}'
       error:
         value: 'var(--color-owncast-palette-error)'
         comment: '{color.owncast.palette.error.comment}'
@@ -99,14 +102,12 @@ theme:
         value: 'var(--theme-color-palette-3)'
         comment: '{theme.color.palette.3.comment}'
       light:
-        value: 'var(--theme-color-palette-14)'
-        comment: '{theme.color.palette.14.comment}'
+        value: 'var(--theme-color-palette-3)'
+        comment: '{theme.color.palette.3.comment}'
       header:
         value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
-      chat:
-        value: 'var(--theme-color-palette-14)'
-        comment: '{theme.color.palette.14.comment}'
+
     action:
       value: 'var(--theme-color-palette-6)'
       comment: '{theme.color.palette.6.comment}'
@@ -173,11 +174,16 @@ theme:
 
       chat:
         background:
-          value: 'var(--theme-color-palette-1)'
-          comment: '{theme.color.palette.1.comment}'
+          value: 'var(--theme-color-palette-4)'
+          comment: '{theme.color.palette.4.comment}'
         text:
-          value: 'var(--theme-color-palette-3)'
-          comment: '{theme.color.palette.3.comment}'
+          value: 'var(--theme-color-palette-2)'
+          comment: '{theme.color.palette.2.comment}'
+
+      content:
+        background:
+          value: 'var(--theme-color-palette-15)'
+          comment: '{theme.color.palette.15.comment}'
 
       modal:
         header:

@@ -43,6 +43,7 @@ const Page = () => {
     federation: undefined,
     notifications: undefined,
     authentication: undefined,
+    appearanceVariables: undefined,
   };
 
   useEffect(() => {
