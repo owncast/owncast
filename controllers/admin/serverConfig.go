@@ -35,17 +35,18 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	response := serverConfigAdminResponse{
 		InstanceDetails: webConfigResponse{
-			Name:             data.GetServerName(),
-			Summary:          data.GetServerSummary(),
-			Tags:             data.GetServerMetadataTags(),
-			ExtraPageContent: data.GetExtraPageBodyContent(),
-			StreamTitle:      data.GetStreamTitle(),
-			WelcomeMessage:   data.GetServerWelcomeMessage(),
-			OfflineMessage:   data.GetCustomOfflineMessage(),
-			Logo:             data.GetLogoPath(),
-			SocialHandles:    data.GetSocialHandles(),
-			NSFW:             data.GetNSFW(),
-			CustomStyles:     data.GetCustomStyles(),
+			Name:                data.GetServerName(),
+			Summary:             data.GetServerSummary(),
+			Tags:                data.GetServerMetadataTags(),
+			ExtraPageContent:    data.GetExtraPageBodyContent(),
+			StreamTitle:         data.GetStreamTitle(),
+			WelcomeMessage:      data.GetServerWelcomeMessage(),
+			OfflineMessage:      data.GetCustomOfflineMessage(),
+			Logo:                data.GetLogoPath(),
+			SocialHandles:       data.GetSocialHandles(),
+			NSFW:                data.GetNSFW(),
+			CustomStyles:        data.GetCustomStyles(),
+			AppearanceVariables: data.GetCustomColorVariableValues(),
 		},
 		FFmpegPath:              ffmpeg,
 		StreamKey:               data.GetStreamKey(),
@@ -124,18 +125,19 @@ type videoSettings struct {
 }
 
 type webConfigResponse struct {
-	Name             string                `json:"name"`
-	Summary          string                `json:"summary"`
-	WelcomeMessage   string                `json:"welcomeMessage"`
-	OfflineMessage   string                `json:"offlineMessage"`
-	Logo             string                `json:"logo"`
-	Tags             []string              `json:"tags"`
-	Version          string                `json:"version"`
-	NSFW             bool                  `json:"nsfw"`
-	ExtraPageContent string                `json:"extraPageContent"`
-	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
-	SocialHandles    []models.SocialHandle `json:"socialHandles"`
-	CustomStyles     string                `json:"customStyles"`
+	Name                string                `json:"name"`
+	Summary             string                `json:"summary"`
+	WelcomeMessage      string                `json:"welcomeMessage"`
+	OfflineMessage      string                `json:"offlineMessage"`
+	Logo                string                `json:"logo"`
+	Tags                []string              `json:"tags"`
+	Version             string                `json:"version"`
+	NSFW                bool                  `json:"nsfw"`
+	ExtraPageContent    string                `json:"extraPageContent"`
+	StreamTitle         string                `json:"streamTitle"` // What's going on with the current stream
+	SocialHandles       []models.SocialHandle `json:"socialHandles"`
+	CustomStyles        string                `json:"customStyles"`
+	AppearanceVariables map[string]string     `json:"appearanceVariables"`
 }
 
 type yp struct {

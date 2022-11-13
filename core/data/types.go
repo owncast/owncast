@@ -59,3 +59,18 @@ func (ds *Datastore) SetBool(key string, value bool) error {
 	configEntry := ConfigEntry{key, value}
 	return ds.Save(configEntry)
 }
+
+// GetStringMap will return the string map value for a key.
+func (ds *Datastore) GetStringMap(key string) (map[string]string, error) {
+	configEntry, err := ds.Get(key)
+	if err != nil {
+		return map[string]string{}, err
+	}
+	return configEntry.getStringMap()
+}
+
+// SetStringMap will set the string map value for a key.
+func (ds *Datastore) SetStringMap(key string, value map[string]string) error {
+	configEntry := ConfigEntry{key, value}
+	return ds.Save(configEntry)
+}

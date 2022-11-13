@@ -1,6 +1,6 @@
 .followers {
   width: 100%;
-  background-color: var(--theme-color-background-light);
+  background-color: var(--theme-color-components-content-background);
   padding: 5px;
 }
 
@@ -8,5 +8,5 @@
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
   width: 100%;
-  background-color: var(--theme-color-background-light);
+  background-color: var(--theme-color-components-content-background);
 }

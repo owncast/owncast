@@ -1,11 +1,11 @@
 @import '../../../styles/mixins.scss';
 
 .root {
-  background-color: var(--theme-color-background-chat);
+  background-color: var(--theme-color-components-chat-background);
   display: none;
   @include screen(desktop) {
-      position: sticky;
-      display: block;
+    position: sticky;
+    display: block;
   }
 }
 

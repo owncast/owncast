@@ -9,6 +9,8 @@ $p-size: 8px;
   position: relative;
   font-size: 0.9rem;
   padding: 0px $p-size $p-size $p-size;
+  color: var(--theme-color-components-chat-text);
+
   .user {
     display: flex;
     align-items: center;
@@ -63,7 +65,7 @@ $p-size: 8px;
 
 .messagePadding {
   padding: 0px 0px;
-  padding-top: .4rem;
+  padding-top: 0.4rem;
 }
 
 .messagePaddingCollapsed {

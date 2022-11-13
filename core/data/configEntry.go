@@ -19,6 +19,13 @@ func (c *ConfigEntry) getStringSlice() ([]string, error) {
 	return result, err
 }
 
+func (c *ConfigEntry) getStringMap() (map[string]string, error) {
+	decoder := c.getDecoder()
+	var result map[string]string
+	err := decoder.Decode(&result)
+	return result, err
+}
+
 func (c *ConfigEntry) getString() (string, error) {
 	decoder := c.getDecoder()
 	var result string

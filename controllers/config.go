@@ -30,6 +30,7 @@ type webConfigResponse struct {
 	ChatDisabled         bool                         `json:"chatDisabled"`
 	ExternalActions      []models.ExternalAction      `json:"externalActions"`
 	CustomStyles         string                       `json:"customStyles"`
+	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
 	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
 	Federation           federationConfigResponse     `json:"federation"`
 	Notifications        notificationsConfigResponse  `json:"notifications"`
@@ -133,6 +134,7 @@ func getConfigResponse() webConfigResponse {
 		Federation:           federationResponse,
 		Notifications:        notificationsResponse,
 		Authentication:       authenticationResponse,
+		AppearanceVariables:  data.GetCustomColorVariableValues(),
 	}
 }
 

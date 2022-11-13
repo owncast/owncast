@@ -110,6 +110,40 @@ func TestCustomType(t *testing.T) {
 	}
 }
 
+func TestStringMap(t *testing.T) {
+	const testKey = "test string map key"
+
+	testMap := map[string]string{
+		"test string 1": "test string 2",
+		"test string 3": "test string 4",
+	}
+
+	// Save config entry to the database
+	if err := _datastore.Save(ConfigEntry{testKey, &testMap}); err != nil {
+		t.Error(err)
+	}
+
+	// Get the config entry from the database
+	entryResult, err := _datastore.Get(testKey)
+	if err != nil {
+		t.Error(err)
+	}
+
+	testResult, err := entryResult.getStringMap()
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("%+v", testResult)
+
+	if testResult["test string 1"] != testMap["test string 1"] {
+		t.Error("expected", testMap["test string 1"], "but test returned", testResult["test string 1"])
+	}
+	if testResult["test string 3"] != testMap["test string 3"] {
+		t.Error("expected", testMap["test string 3"], "but test returned", testResult["test string 3"])
+	}
+}
+
 // Custom type for testing
 type TestStruct struct {
 	Test            string
