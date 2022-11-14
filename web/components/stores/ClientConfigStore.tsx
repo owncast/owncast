@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { atom, selector, useRecoilState, useSetRecoilState } from 'recoil';
+import { atom, selector, useRecoilState, useSetRecoilState, RecoilEnv } from 'recoil';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
 import ClientConfigService from '../../services/client-config-service';
@@ -26,6 +26,8 @@ import handleConnectedClientInfoMessage from './eventhandlers/connected-client-i
 import ServerStatusService from '../../services/status-service';
 import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
 import { DisplayableError } from '../../types/displayable-error';
+
+RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 const SERVER_STATUS_POLL_DURATION = 5000;
 const ACCESS_TOKEN_KEY = 'accessToken';
@@ -149,7 +151,7 @@ export const visibleChatMessagesSelector = selector<ChatMessage[]>({
 });
 
 export const ClientConfigStore: FC = () => {
-  const [, appStateSend, appStateService] = useMachine(appStateModel);
+  const [appState, appStateSend, appStateService] = useMachine(appStateModel);
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
@@ -161,7 +163,7 @@ export const ClientConfigStore: FC = () => {
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   const [hiddenMessageIds, setHiddenMessageIds] = useRecoilState<string[]>(removedMessageIdsAtom);
-  const [hasLoadedStatus, setHasLoadedStatus] = useState(false);
+  const [, setHasLoadedStatus] = useState(false);
   const [hasLoadedConfig, setHasLoadedConfig] = useState(false);
 
   let ws: WebsocketService;
@@ -173,8 +175,21 @@ export const ClientConfigStore: FC = () => {
     });
   };
   const sendEvent = (event: string) => {
-    console.debug('---- sending event:', event);
+    // console.debug('---- sending event:', event);
     appStateSend({ type: event });
+  };
+
+  const handleStatusChange = (status: ServerStatus) => {
+    if (appState.matches('loading')) {
+      sendEvent(AppStateEvent.Loaded);
+      return;
+    }
+
+    if (status.online && appState.matches('ready.offline')) {
+      sendEvent(AppStateEvent.Online);
+    } else if (!status.online && !appState.matches('ready.offline')) {
+      sendEvent(AppStateEvent.Offline);
+    }
   };
 
   const updateClientConfig = async () => {
@@ -345,17 +360,7 @@ export const ClientConfigStore: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (hasLoadedStatus && hasLoadedConfig) {
-      sendEvent(AppStateEvent.Loaded);
-    }
-  }, [hasLoadedStatus, hasLoadedConfig]);
-
-  useEffect(() => {
-    if (serverStatus.online) {
-      sendEvent(AppStateEvent.Online);
-    } else {
-      sendEvent(AppStateEvent.Offline);
-    }
+    handleStatusChange(serverStatus);
   }, [serverStatus]);
 
   useEffect(() => {
