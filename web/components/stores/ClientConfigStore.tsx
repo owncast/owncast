@@ -238,13 +238,11 @@ export const ClientConfigStore: FC = () => {
     try {
       sendEvent(AppStateEvent.NeedsRegister);
       const response = await ChatService.registerUser(optionalDisplayName);
-      console.log(`ChatService -> registerUser() response: \n${response}`);
       const { accessToken: newAccessToken, displayName: newDisplayName, displayColor } = response;
       if (!newAccessToken) {
         return;
       }
 
-      console.log('setting access token', newAccessToken);
       setCurrentUser({
         ...currentUser,
         displayName: newDisplayName,
@@ -399,10 +397,6 @@ export const ClientConfigStore: FC = () => {
 
   useEffect(() => {
     appStateService.onTransition(state => {
-      if (!state.changed) {
-        return;
-      }
-
       const metadata = mergeMeta(state.meta) as AppStateOptions;
 
       // console.debug('--- APP STATE: ', state.value);
