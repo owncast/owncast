@@ -57,12 +57,12 @@ const GOODBYE_STATE: AppStateOptions = {
 };
 
 export enum AppStateEvent {
-  Loading = 'LOADING',
-  Loaded = 'LOADED',
-  Online = 'ONLINE',
-  Offline = 'OFFLINE', // Have not pulled configuration data from the server.
-  NeedsRegister = 'NEEDS_REGISTER',
-  Fail = 'FAIL',
+  Loading = 'LOADING', // Have not pulled configuration data from the server.
+  Loaded = 'LOADED', // Configuration data has been pulled from the server.
+  Online = 'ONLINE', // Stream is live
+  Offline = 'OFFLINE', // Stream is not live
+  NeedsRegister = 'NEEDS_REGISTER', // Needs to register a chat user
+  Fail = 'FAIL', // Error
 }
 
 const appStateModel =
@@ -73,9 +73,7 @@ const appStateModel =
     predictableActionArguments: true,
     states: {
       loading: {
-        meta: {
-          ...LOADING_STATE,
-        },
+        meta: LOADING_STATE,
         on: {
           NEEDS_REGISTER: {
             target: 'loading',
