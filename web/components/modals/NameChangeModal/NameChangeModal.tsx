@@ -74,12 +74,11 @@ export const NameChangeModal: FC = () => {
           defaultValue={displayName}
         />
       </Form>
-      <Form.Item label="Your Color" style={{ paddingTop: '8px' }}>
+      <Form.Item label="Your Color" style={{ paddingTop: '8px', zIndex: 1000, marginBottom: 0 }}>
         <Select
           style={{ width: 120 }}
           onChange={handleColorChange}
           defaultValue={displayColor.toString()}
-          getPopupContainer={triggerNode => triggerNode.parentElement}
         >
           {colorOptions.map(e => (
             <Option key={e.toString()} title={e}>
