@@ -32,7 +32,11 @@ export const NameChangeModal: FC = () => {
 
   const { displayName, displayColor } = currentUser;
 
+  const saveEnabled = () => newName !== displayName && newName !== '' && websocketService?.isConnected();
+
   const handleNameChange = () => {
+    if (!saveEnabled()) return;
+
     const nameChange = {
       type: MessageType.NAME_CHANGE,
       newName,
@@ -40,7 +44,6 @@ export const NameChangeModal: FC = () => {
     websocketService.send(nameChange);
   };
 
-  const saveEnabled = newName !== displayName && newName !== '' && websocketService?.isConnected();
 
   const handleColorChange = (color: string) => {
     const colorChange = {
@@ -54,7 +57,7 @@ export const NameChangeModal: FC = () => {
   const colorOptions = [...Array(maxColor)].map((e, i) => i);
 
   const saveButton = (
-    <Button type="primary" onClick={handleNameChange} disabled={!saveEnabled}>
+    <Button type="primary" onClick={handleNameChange} disabled={!saveEnabled()}>
       Change name
     </Button>
   );
