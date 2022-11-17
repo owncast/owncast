@@ -347,8 +347,9 @@ export default class ChatInput extends Component {
         >
           <${ContentEditable}
             id="message-input"
+            aria-role="textbox"
             class="appearance-none block w-full bg-transparent text-sm text-gray-700 h-full focus:outline-none"
-            placeholderText=${placeholderText}
+            aria-placeholder=${placeholderText}
             innerRef=${this.formMessageInput}
             html=${inputHTML}
             disabled=${!inputEnabled}
