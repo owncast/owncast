@@ -50,7 +50,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const { route } = router || {};
 
   const { Header, Footer, Content, Sider } = Layout;
-  const { SubMenu } = Menu;
 
   const [upgradeVersion, setUpgradeVersion] = useState('');
   const checkForUpgrade = async () => {
@@ -83,10 +82,8 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     online,
   });
 
-  const upgradeMenuItemStyle = upgradeVersion ? 'block' : 'none';
   const upgradeVersionString = `${upgradeVersion}` || '';
   const upgradeMessage = `Upgrade to v${upgradeVersionString}`;
-  const chatMenuItemStyle = chatDisabled ? 'none' : 'block';
   const openMenuItems = upgradeVersion ? ['utilities-menu'] : [];
 
   const clearAlertMessage = () => {
@@ -122,6 +119,139 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     statusIndicator
   );
 
+  const integrationsMenu = [
+    {
+      label: <Link href="/admin/webhooks">Webhooks</Link>,
+      key: 'webhooks',
+    },
+    {
+      label: <Link href="/admin/access-tokens">Access Tokens</Link>,
+      key: 'access-tokens',
+    },
+    {
+      label: <Link href="/admin/actions">External Actions</Link>,
+      key: 'actions',
+    },
+  ];
+
+  const chatMenu = [
+    {
+      label: <Link href="/admin/chat/messages">Messages</Link>,
+      key: 'messages',
+    },
+    {
+      label: <Link href="/admin/chat/users">Users</Link>,
+      key: 'chat-users',
+    },
+  ];
+
+  const utilitiesMenu = [
+    {
+      label: <Link href="/admin/hardware-info">Hardware</Link>,
+      key: 'hardware-info',
+    },
+    {
+      label: <Link href="/admin/stream-health">Stream Health</Link>,
+      key: 'stream-health',
+    },
+    {
+      label: <Link href="/admin/logs">Logs</Link>,
+      key: 'logs',
+    },
+    federationEnabled && {
+      label: <Link href="/admin/federation/actions">Social Actions</Link>,
+      key: 'federation-activities',
+    },
+  ];
+
+  const configurationMenu = [
+    {
+      label: <Link href="/admin/config-public-details">General</Link>,
+      key: 'config-public-details',
+    },
+    {
+      label: <Link href="/admin/config-server-details">Server Setup</Link>,
+      key: 'config-server-details',
+    },
+    {
+      label: <Link href="/admin/config-video">Video</Link>,
+      key: 'config-video',
+    },
+    {
+      label: <Link href="/admin/config-chat">Chat</Link>,
+      key: 'config-chat',
+    },
+    {
+      label: <Link href="/admin/config-federation">Social</Link>,
+      key: 'config-federation',
+    },
+    {
+      label: <Link href="/admin/config-notify">Notifications</Link>,
+      key: 'config-notify',
+    },
+    {
+      label: <Link href="/admin/config/appearance">Appearance</Link>,
+      key: 'config-appearance',
+    },
+    {
+      label: <Link href="/admin/config-storage">S3 Storage</Link>,
+      key: 'config-storage',
+    },
+  ];
+
+  const menuItems = [
+    { label: <Link href="/admin">Home</Link>, icon: <HomeOutlined />, key: 'home' },
+    {
+      label: <Link href="/admin/viewer-info">Viewers</Link>,
+      icon: <LineChartOutlined />,
+      key: 'viewer-info',
+    },
+    !chatDisabled && {
+      key: 'chat-config',
+      label: <Link href="/admin/viewer-info">Chat &amp; Users</Link>,
+      icon: <MessageOutlined />,
+      children: chatMenu,
+    },
+    federationEnabled && {
+      key: 'fediverse-followers',
+      label: <Link href="/admin/federation/followers">Followers</Link>,
+      icon: (
+        <img
+          alt="fediverse icon"
+          src="/admin/fediverse-white.png"
+          width="15rem"
+          style={{ opacity: 0.6, position: 'relative', top: '-1px' }}
+        />
+      ),
+    },
+    {
+      key: 'configuration',
+      label: 'Configuration',
+      icon: <SettingOutlined />,
+      children: configurationMenu,
+    },
+    {
+      key: 'utilities',
+      label: 'Utilities',
+      icon: <ToolOutlined />,
+      children: utilitiesMenu,
+    },
+    {
+      key: 'integrations',
+      label: 'Integrations',
+      icon: <ExperimentOutlined />,
+      children: integrationsMenu,
+    },
+    upgradeVersion && {
+      key: 'upgrade',
+      label: <Link href="/upgrade">{upgradeMessage}</Link>,
+    },
+    {
+      key: 'help',
+      label: 'Help',
+      icon: <QuestionCircleOutlined />,
+    },
+  ];
   return (
     <Layout className={appClass}>
       <Head>
@@ -141,110 +271,8 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           defaultOpenKeys={openMenuItems}
           mode="inline"
           className="menu-container"
-        >
-          <Menu.Item key="home" icon={<HomeOutlined />}>
-            <Link href="/admin">Home</Link>
-          </Menu.Item>
-
-          <Menu.Item key="viewer-info" icon={<LineChartOutlined />} title="Current stream">
-            <Link href="/admin/viewer-info">Viewers</Link>
-          </Menu.Item>
-
-          <SubMenu
-            key="chat-config"
-            title="Chat &amp; Users"
-            icon={<MessageOutlined />}
-            style={{ display: chatMenuItemStyle }}
-          >
-            <Menu.Item key="messages" title="Chat utilities">
-              <Link href="/admin/chat/messages">Messages</Link>
-            </Menu.Item>
-
-            <Menu.Item key="chat-users" title="Chat utilities">
-              <Link href="/admin/chat/users">Users</Link>
-            </Menu.Item>
-          </SubMenu>
-
-          <Menu.Item
-            style={{ display: federationEnabled ? 'block' : 'none' }}
-            key="federation-followers"
-            title="Fediverse followers"
-            icon={
-              <img
-                alt="fediverse icon"
-                src="/admin/fediverse-white.png"
-                width="15rem"
-                style={{ opacity: 0.6, position: 'relative', top: '-1px' }}
-              />
-            }
-          >
-            <Link href="/admin/federation/followers">Followers</Link>
-          </Menu.Item>
-
-          <SubMenu key="configuration" title="Configuration" icon={<SettingOutlined />}>
-            <Menu.Item key="config-public-details">
-              <Link href="/admin/config-public-details">General</Link>
-            </Menu.Item>
-
-            <Menu.Item key="config-server-details">
-              <Link href="/admin/config-server-details">Server Setup</Link>
-            </Menu.Item>
-            <Menu.Item key="config-video">
-              <Link href="/admin/config-video">Video</Link>
-            </Menu.Item>
-            <Menu.Item key="config-chat">
-              <Link href="/admin/config-chat">Chat</Link>
-            </Menu.Item>
-            <Menu.Item key="config-federation">
-              <Link href="/admin/config-federation">Social</Link>
-            </Menu.Item>
-            <Menu.Item key="config-notify">
-              <Link href="/admin/config-notify">Notifications</Link>
-            </Menu.Item>
-            <Menu.Item key="config-appearance">
-              <Link href="/admin/config/appearance">Appearance</Link>
-            </Menu.Item>
-            <Menu.Item key="config-storage">
-              <Link href="/admin/config-storage">S3 Storage</Link>
-            </Menu.Item>
-          </SubMenu>
-
-          <SubMenu key="utilities-menu" icon={<ToolOutlined />} title="Utilities">
-            <Menu.Item key="hardware-info">
-              <Link href="/admin/hardware-info">Hardware</Link>
-            </Menu.Item>
-            <Menu.Item key="stream-health">
-              <Link href="/admin/stream-health">Stream Health</Link>
-            </Menu.Item>
-            <Menu.Item key="logs">
-              <Link href="/admin/logs">Logs</Link>
-            </Menu.Item>
-            <Menu.Item
-              key="federation-activities"
-              title="Social Actions"
-              style={{ display: federationEnabled ? 'block' : 'none' }}
-            >
-              <Link href="/admin/federation/actions">Social Actions</Link>
-            </Menu.Item>
-            <Menu.Item key="upgrade" style={{ display: upgradeMenuItemStyle }}>
-              <Link href="/upgrade">{upgradeMessage}</Link>
-            </Menu.Item>
-          </SubMenu>
-          <SubMenu key="integrations-menu" icon={<ExperimentOutlined />} title="Integrations">
-            <Menu.Item key="webhooks">
-              <Link href="/admin/webhooks">Webhooks</Link>
-            </Menu.Item>
-            <Menu.Item key="access-tokens">
-              <Link href="/admin/access-tokens">Access Tokens</Link>
-            </Menu.Item>
-            <Menu.Item key="actions">
-              <Link href="/admin/actions">External Actions</Link>
-            </Menu.Item>
-          </SubMenu>
-          <Menu.Item key="help" icon={<QuestionCircleOutlined />} title="Help">
-            <Link href="/admin/help">Help</Link>
-          </Menu.Item>
-        </Menu>
+          items={menuItems}
+        />
       </Sider>
 
       <Layout className="layout-main">
