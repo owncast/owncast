@@ -59,9 +59,19 @@ const ChatContainer = dynamic(() =>
   import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
 );
 
-const DesktopContent = ({ name, streamTitle, summary, tags, socialHandles, extraPageContent }) => {
+const DesktopContent = ({
+  name,
+  streamTitle,
+  summary,
+  tags,
+  socialHandles,
+  extraPageContent,
+  setShowFollowModal,
+}) => {
   const aboutTabContent = <CustomPageContent content={extraPageContent} />;
-  const followersTabContent = <FollowerCollection name={name} />;
+  const followersTabContent = (
+    <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
+  );
 
   const items = [
     { label: 'About', key: '2', children: aboutTabContent },
@@ -154,7 +164,9 @@ const MobileContent = ({
       <CustomPageContent content={extraPageContent} />
     </>
   );
-  const followersTabContent = <FollowerCollection name={name} />;
+  const followersTabContent = (
+    <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
+  );
 
   const items = [
     showChat && { label: 'Chat', key: '0', children: chatContent },
@@ -367,6 +379,7 @@ export const Content: FC = () => {
                   tags={tags}
                   socialHandles={socialHandles}
                   extraPageContent={extraPageContent}
+                  setShowFollowModal={setShowFollowModal}
                 />
               )}
             </div>
