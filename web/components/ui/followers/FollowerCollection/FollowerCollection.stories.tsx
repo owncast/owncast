@@ -11,7 +11,13 @@ export default {
 
 const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
   <RecoilRoot>
-    <FollowerCollection name="Example stream name" {...args} />
+    <FollowerCollection
+      onFollowButtonClick={function (): void {
+        throw new Error('Function not implemented.');
+      }}
+      name="Example stream name"
+      {...args}
+    />
   </RecoilRoot>
 );
 

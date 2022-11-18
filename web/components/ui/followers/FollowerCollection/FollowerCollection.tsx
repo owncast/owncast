@@ -7,9 +7,10 @@ import { FollowButton } from '../../../action-buttons/FollowButton';
 
 export type FollowerCollectionProps = {
   name: string;
+  onFollowButtonClick: () => void;
 };
 
-export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
+export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollowButtonClick }) => {
   const ENDPOINT = '/api/followers';
   const ITEMS_PER_PAGE = 24;
 
@@ -58,7 +59,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name }) => {
         from the stream, share it with others, and and show your appreciation when it goes live, all
         from your own Fediverse account.
       </p>
-      <FollowButton />
+      <FollowButton onClick={onFollowButtonClick} />
     </div>
   );
 
