@@ -119,7 +119,8 @@ DROPDOWN
   color: var(--theme-color-components-modal-header-text);
 }
 .ant-modal-body {
-  overflow: scroll;
+  overflow: auto;
+  border-radius: 0 0 var(--theme-rounded-corners) var(--theme-rounded-corners);
 }
 .ant-modal {
   color: var(--theme-color-components-text-on-light);
