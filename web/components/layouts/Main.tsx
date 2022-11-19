@@ -84,9 +84,9 @@ export const Main: FC = () => {
           <meta property="og:type" content="video.other" />
           <meta property="video:tag" content="{{.TagsString}}" />
 
-          <meta property="og:image" content="{{.Thumbnail}}" />
-          <meta property="og:image:url" content="{{.Thumbnail}}" />
-          <meta property="og:image:alt" content="{{.Image}}" />
+          <meta property="og:image" content="{{.RequestedURL}}{{.Thumbnail}}" />
+          <meta property="og:image:url" content="{{.RequestedURL}}{{.Thumbnail}}" />
+          <meta property="og:image:alt" content="{{.RequestedURL}}{{.Image}}" />
 
           <meta property="og:video" content="{{.RequestedURL}}/embed/video" />
           <meta property="og:video:secure_url" content="{{.RequestedURL}}/embed/video" />
