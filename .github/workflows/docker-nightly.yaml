@@ -11,6 +11,7 @@ on:
 jobs:
   Docker:
     runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
     steps:
       - uses: earthly/actions-setup@v1
         with:

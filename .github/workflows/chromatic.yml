@@ -16,6 +16,8 @@ jobs:
   chromatic-deployment:
     # Operating System
     runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
+
     defaults:
       run:
         working-directory: ./web
