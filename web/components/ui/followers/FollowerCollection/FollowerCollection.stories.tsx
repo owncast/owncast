@@ -1,6 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
+import { action } from '@storybook/addon-actions';
 import { FollowerCollection } from './FollowerCollection';
 
 export default {
@@ -12,8 +13,8 @@ export default {
 const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
   <RecoilRoot>
     <FollowerCollection
-      onFollowButtonClick={function (): void {
-        throw new Error('Function not implemented.');
+      onFollowButtonClick={() => {
+        action('Follow button clicked');
       }}
       name="Example stream name"
       {...args}
