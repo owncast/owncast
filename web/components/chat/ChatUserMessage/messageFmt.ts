@@ -43,7 +43,7 @@ export function formatTimestamp(sentAt: Date) {
     const localeDate = now.toLocaleDateString('en-US', {
       dateStyle: 'medium',
     });
-    return `at ${localeDate} at ${now.toLocaleTimeString()}`;
+    return `${localeDate} at ${now.toLocaleTimeString()}`;
   }
 
   return `${now.toLocaleTimeString()}`;
