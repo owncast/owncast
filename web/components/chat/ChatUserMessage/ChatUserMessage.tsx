@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import { FC, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import he from 'he';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
@@ -11,6 +11,7 @@ import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 import { accessTokenAtom } from '../../stores/ClientConfigStore';
+import { User } from '../../../interfaces/user.model';
 
 // Lazy loaded components
 
@@ -30,6 +31,22 @@ export type ChatUserMessageProps = {
   sameUserAsLast: boolean;
   isAuthorModerator: boolean;
   isAuthorAuthenticated: boolean;
+};
+
+export type UserTooltipProps = {
+  user: User;
+  children: ReactNode;
+};
+
+const UserTooltip: FC<UserTooltipProps> = ({ children, user }) => {
+  const { displayName, createdAt } = user;
+  const content = `${displayName} first joined ${formatTimestamp(createdAt)}`;
+
+  return (
+    <Tooltip title={content} placement="topLeft" mouseEnterDelay={1}>
+      {children}
+    </Tooltip>
+  );
 };
 
 export const ChatUserMessage: FC<ChatUserMessageProps> = ({
@@ -78,12 +95,12 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
         style={{ borderColor: color }}
       >
         {!sameUserAsLast && (
-          <Tooltip title="user info goes here" placement="topLeft" mouseEnterDelay={1}>
+          <UserTooltip user={user}>
             <div className={styles.user} style={{ color }}>
               <span className={styles.userName}>{displayName}</span>
               <span>{badgeNodes}</span>
             </div>
-          </Tooltip>
+          </UserTooltip>
         )}
         <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
           <Highlight search={highlightString}>
