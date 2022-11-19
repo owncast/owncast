@@ -1,0 +1,16 @@
+.container {
+  display: grid;
+  width: 100%;
+  justify-items: center;
+
+  .player,
+  .poster {
+    // position: static;
+    // height: auto !important;
+    width: 100%;
+    grid-column: 1;
+    grid-row: 1;
+    aspect-ratio: 16 / 9;
+    max-height: 75vh;
+  }
+}

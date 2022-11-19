@@ -10,6 +10,8 @@ import PlaybackMetrics from '../metrics/playback';
 import createVideoSettingsMenuButton from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
 
+import styles from './OwncastPlayer.module.scss';
+
 const VIDEO_CONFIG_URL = '/api/video/variants';
 const PLAYER_VOLUME = 'owncast_volume';
 const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
@@ -297,13 +299,13 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   );
 
   return (
-    <div style={{ display: 'grid', width: '100% !important', aspectRatio: '16/9' }}>
+    <div className={styles.container}>
       {online && (
-        <div style={{ gridColumn: 1, gridRow: 1 }}>
+        <div className={styles.player}>
           <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
         </div>
       )}
-      <div style={{ gridColumn: 1, gridRow: 1 }}>
+      <div className={styles.poster}>
         {!videoPlaying && (
           <VideoPoster online={online} initialSrc="/thumbnail.jpg" src="/thumbnail.jpg" />
         )}
