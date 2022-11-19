@@ -22,16 +22,16 @@ BUTTONS
   }
 }
 
-.ant-btn-default { 
+.ant-btn-default {
   color: currentColor;
   border-width: 2px;
   border-color: transparent;
-  border-radius: .15rem;
-  background-color: rgba(0,0,0,.1);
+  border-radius: 0.15rem;
+  background-color: rgba(0, 0, 0, 0.1);
   &:hover,
   &:focus {
     color: currentColor;
-    border-color: rgba(0,0,0,.55);
+    border-color: rgba(0, 0, 0, 0.55);
     background-color: var(--theme-color-components-secondary-button-background);
   }
 }
@@ -128,10 +128,14 @@ DROPDOWN
   }
 }
 
+.ant-input-affix-wrapper {
+  padding: 2px 5px;
+  background-color: var(--theme-color-components-form-field-background);
+}
+
 .ant-input {
   background-color: var(--theme-color-components-form-field-background);
   color: var(--theme-color-components-form-field-text);
-  border-color: var(--theme-color-components-form-field-border);
   &::placeholder {
     color: var(--theme-color-components-form-field-placeholder);
   }
@@ -172,7 +176,7 @@ DROPDOWN
   }
   .ant-tabs-content {
     height: 100% !important;
-    overflow: scroll;
+    overflow: auto;
     .ant-tabs-tabpane-active {
       height: 100%;
     }
