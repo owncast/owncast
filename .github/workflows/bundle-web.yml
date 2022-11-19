@@ -10,6 +10,7 @@ on:
 jobs:
   bundle:
     runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
 
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}

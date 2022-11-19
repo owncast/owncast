@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
