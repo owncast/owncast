@@ -185,7 +185,7 @@ export const ClientConfigStore: FC = () => {
       return;
     }
 
-    if (status.online && appState.matches('ready.offline')) {
+    if (status.online && appState.matches('ready')) {
       sendEvent(AppStateEvent.Online);
     } else if (!status.online && !appState.matches('ready.offline')) {
       sendEvent(AppStateEvent.Offline);
