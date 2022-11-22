@@ -33,7 +33,7 @@ describe(`Basic tests`, () => {
 		cy.get('.header-title').should('have.text', 'New Owncast Server');
 		cy.get('.header-subtitle').should(
 			'have.text',
-			'Welcome to your new Owncast server! This description can be changed in the admin. Visit https://owncast.online/docs/configuration/ to learn more.'
+			'This is a new live video streaming server powered by Owncast.'
 		);
 	});
 
