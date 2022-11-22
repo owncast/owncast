@@ -32,26 +32,16 @@ func PopulateDefaults() {
 		return
 	}
 
-	const defaultPageContent = `
-# Welcome to Owncast
-
-This is a live stream powered by [Owncast](https://owncast.online), a free and open source livestreaming server.
-<hr/>
-
-To discover more examples of streams, visit [Owncast's directory](https://directory.owncast.online), and to edit this
-page content visit the admin for this instance.
-	`
-
 	_ = SetStreamKey(defaults.StreamKey)
 	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
 	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
 	_ = SetLogoPath(defaults.Logo)
 	_ = SetServerMetadataTags([]string{"owncast", "streaming"})
-	_ = SetServerSummary("Welcome to your new Owncast server! This description can be changed in the admin. Visit https://owncast.online/docs/configuration/ to learn more.")
+	_ = SetServerSummary(defaults.Summary)
 	_ = SetServerWelcomeMessage("")
-	_ = SetServerName("Owncast")
+	_ = SetServerName(defaults.Name)
 	_ = SetStreamKey(defaults.StreamKey)
-	_ = SetExtraPageBodyContent(defaultPageContent)
+	_ = SetExtraPageBodyContent(defaults.PageBodyContent)
 	_ = SetFederationGoLiveMessage(defaults.FederationGoLiveMessage)
 	_ = SetSocialHandles([]models.SocialHandle{
 		{
