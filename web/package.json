@@ -20,7 +20,7 @@
 		"@fontsource/poppins": "4.5.10",
 		"@next/bundle-analyzer": "^13.0.0",
 		"@uiw/codemirror-theme-bbedit": "4.15.1",
-		"@uiw/react-codemirror": "4.13.2",
+		"@uiw/react-codemirror": "4.15.1",
 		"@xstate/react": "3.0.1",
 		"antd": "4.24.2",
 		"autoprefixer": "10.4.13",
