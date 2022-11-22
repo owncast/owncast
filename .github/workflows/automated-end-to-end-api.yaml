@@ -37,4 +37,8 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run API tests
-        run: earthly +api-tests
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: earthly +api-tests
