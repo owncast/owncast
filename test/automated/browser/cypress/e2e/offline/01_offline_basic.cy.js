@@ -30,7 +30,7 @@ describe(`Basic tests`, () => {
 
 	// Verify content header values
 	it('Has correct content header values', () => {
-		cy.get('.header-title').should('have.text', 'Owncast');
+		cy.get('.header-title').should('have.text', 'New Owncast Server');
 		cy.get('.header-subtitle').should(
 			'have.text',
 			'Welcome to your new Owncast server! This description can be changed in the admin. Visit https://owncast.online/docs/configuration/ to learn more.'
@@ -38,13 +38,13 @@ describe(`Basic tests`, () => {
 	});
 
 	it('Has correct global header values', () => {
-		cy.get('.global-header-text').should('have.text', 'Owncast');
+		cy.get('.global-header-text').should('have.text', 'New Owncast Server');
 	});
 
 	// Offline banner
 	it('Has correct offline banner values', () => {
 		cy.contains(
-			'This stream is offline. Be notified the next time Owncast goes live.'
+			'This stream is offline. Be notified the next time New Owncast Server goes live.'
 		).should('be.visible');
 	});
 });
