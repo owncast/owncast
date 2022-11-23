@@ -49,7 +49,7 @@ const federationConfig = {
 };
 
 const defaultStreamKey = 'abc123';
-var streamKey = defaultStreamKey;
+
 
 test('check default configurations', async (done) => {
   
@@ -63,12 +63,14 @@ test('check default configurations', async (done) => {
 
   request
   .get('/api/admin/serverconfig')
-  .auth('admin', streamKey)
+  .auth('admin', defaultStreamKey)
   .expect(200)
   .then((res) => {
     expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
-    expect(res.body.streamKey).toBe(streamKey);
+    expect(res.body.streamKey).toBe(defaultStreamKey);
     expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
+    expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
+    expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
     done();
   });
 });
@@ -164,7 +166,7 @@ test('verify updated config values', async (done) => {
 test('stream details are correct', (done) => {
   request
     .get('/api/admin/status')
-    .auth('admin', streamKey)
+    .auth('admin', defaultStreamKey)
     .expect(200)
     .then((res) => {
       expect(res.body.broadcaster.streamDetails.width).toBe(320);
@@ -181,7 +183,7 @@ test('stream details are correct', (done) => {
 test('admin configuration is correct', (done) => {
   request
     .get('/api/admin/serverconfig')
-    .auth('admin', streamKey)
+    .auth('admin', defaultStreamKey)
     .expect(200)
     .then((res) => {
       expect(res.body.instanceDetails.name).toBe(serverName);
@@ -203,7 +205,7 @@ test('admin configuration is correct', (done) => {
       expect(res.body.yp.enabled).toBe(true);
       expect(res.body.yp.instanceUrl).toBe(ypConfig.instanceUrl);
 
-      expect(res.body.streamKey).toBe(streamKey);
+      expect(res.body.streamKey).toBe(defaultStreamKey);
 
       expect(res.body.s3.enabled).toBe(s3Config.enabled);
       expect(res.body.s3.endpoint).toBe(s3Config.endpoint);
@@ -216,7 +218,7 @@ test('admin configuration is correct', (done) => {
       expect(res.body.federation.enabled).toBe(federationConfig.enabled);
 //      expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
       expect(res.body.federation.username).toBe(federationConfig.username);
-//      expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
+      expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
 //      expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
 //      expect(res.body.federation.blockedDomains).toBe(federationConfig.blockedDomains);
 
@@ -240,7 +242,7 @@ async function sendConfigChangeRequest(endpoint, value) {
   const url = '/api/admin/config/' + endpoint;
   const res = await request
     .post(url)
-    .auth('admin', streamKey)
+    .auth('admin', defaultStreamKey)
     .send({ value: value })
     .expect(200);
 
@@ -252,7 +254,7 @@ async function sendConfigChangePayload(endpoint, payload) {
   const url = '/api/admin/config/' + endpoint;
   const res = await request
     .post(url)
-    .auth('admin', streamKey)
+    .auth('admin', defaultStreamKey)
     .send(payload)
     .expect(200);
 
