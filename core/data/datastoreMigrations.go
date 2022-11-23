@@ -7,18 +7,23 @@ import (
 )
 
 const (
-	datastoreValuesVersion   = 1
+	datastoreValuesVersion   = 2
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
 func migrateDatastoreValues(datastore *Datastore) {
 	currentVersion, _ := _datastore.GetNumber(datastoreValueVersionKey)
+	if currentVersion == 0 {
+		currentVersion = datastoreValuesVersion
+	}
 
 	for v := currentVersion; v < datastoreValuesVersion; v++ {
-		log.Tracef("Migration datastore values from %d to %d\n", int(v), int(v+1))
+		log.Infof("Migration datastore values from %d to %d\n", int(v), int(v+1))
 		switch v {
 		case 0:
 			migrateToDatastoreValues1(datastore)
+		case 1:
+			migrateToDatastoreValues2(datastore)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -46,4 +51,10 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 			log.Errorln("error migrating suggested username list:", err)
 		}
 	}
+}
+
+func migrateToDatastoreValues2(datastore *Datastore) {
+	oldAdminPassword, _ := datastore.GetString("stream_key")
+	_ = SetAdminPassword(oldAdminPassword)
+	_ = SetStreamKeys([]string{oldAdminPassword})
 }

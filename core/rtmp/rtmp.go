@@ -15,15 +15,17 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
+var _hasInboundRTMPConnection = false
+
 var (
-	_hasInboundRTMPConnection = false
+	_pipe           *io.PipeWriter
+	_rtmpConnection net.Conn
 )
 
-var _pipe *io.PipeWriter
-var _rtmpConnection net.Conn
-
-var _setStreamAsConnected func(*io.PipeReader)
-var _setBroadcaster func(models.Broadcaster)
+var (
+	_setStreamAsConnected func(*io.PipeReader)
+	_setBroadcaster       func(models.Broadcaster)
+)
 
 // Start starts the rtmp service, listening on specified RTMP port.
 func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
@@ -75,11 +77,27 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	if !secretMatch(data.GetStreamKey(), c.URL.Path) {
+	accessGranted := false
+	validStreamingKeys := data.GetStreamKeys()
+
+	for _, key := range validStreamingKeys {
+		if secretMatch(key, c.URL.Path) {
+			accessGranted = true
+			break
+		}
+	}
+
+	if !accessGranted {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
 		_ = nc.Close()
 		return
 	}
+
+	// if !secretMatch(data.GetAdminPassword(), c.URL.Path) {
+	// 	log.Errorln("invalid streaming key; rejecting incoming stream")
+	// 	_ = nc.Close()
+	// 	return
+	// }
 
 	rtmpOut, rtmpIn := io.Pipe()
 	_pipe = rtmpIn

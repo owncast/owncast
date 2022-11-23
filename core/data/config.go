@@ -18,7 +18,7 @@ import (
 const (
 	extraContentKey                      = "extra_page_content"
 	streamTitleKey                       = "stream_title"
-	streamKeyKey                         = "stream_key"
+	adminPasswordKey                     = "admin_password_key"
 	logoPathKey                          = "logo_path"
 	logoUniquenessKey                    = "logo_uniqueness"
 	serverSummaryKey                     = "server_summary"
@@ -68,6 +68,7 @@ const (
 	hideViewerCountKey                   = "hide_viewer_count"
 	customOfflineMessageKey              = "custom_offline_message"
 	customColorVariableValuesKey         = "custom_color_variable_values"
+	streamKeysKey                        = "stream_keys"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -101,20 +102,15 @@ func SetStreamTitle(title string) error {
 	return _datastore.SetString(streamTitleKey, title)
 }
 
-// GetStreamKey will return the inbound streaming password.
-func GetStreamKey() string {
-	key, err := _datastore.GetString(streamKeyKey)
-	if err != nil {
-		log.Traceln(streamKeyKey, err)
-		return config.GetDefaults().StreamKey
-	}
-
+// GetAdminPassword will return the admin password.
+func GetAdminPassword() string {
+	key, _ := _datastore.GetString(adminPasswordKey)
 	return key
 }
 
-// SetStreamKey will set the inbound streaming password.
-func SetStreamKey(key string) error {
-	return _datastore.SetString(streamKeyKey, key)
+// SetAdminPassword will set the admin password.
+func SetAdminPassword(key string) error {
+	return _datastore.SetString(adminPasswordKey, key)
 }
 
 // GetLogoPath will return the path for the logo, relative to webroot.
@@ -582,8 +578,12 @@ func GetVideoCodec() string {
 
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
-	if GetStreamKey() == "" {
+	if len(GetStreamKeys()) == 0 {
 		return errors.New("no stream key set. Please set one via the admin or command line arguments")
+	}
+
+	if GetAdminPassword() == "" {
+		return errors.New("no admin password set. Please set one via the admin or command line arguments")
 	}
 
 	logoPath := GetLogoPath()
@@ -943,4 +943,15 @@ func SetCustomColorVariableValues(variables map[string]string) error {
 func GetCustomColorVariableValues() map[string]string {
 	values, _ := _datastore.GetStringMap(customColorVariableValuesKey)
 	return values
+}
+
+// GetStreamKeys will return valid stream keys.
+func GetStreamKeys() []string {
+	keys, _ := _datastore.GetStringSlice(streamKeysKey)
+	return keys
+}
+
+// SetStreamKeys will set valid stream keys.
+func SetStreamKeys(keys []string) error {
+	return _datastore.SetStringSlice(streamKeysKey, keys)
 }

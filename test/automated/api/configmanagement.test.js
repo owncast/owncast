@@ -7,6 +7,8 @@ const serverSummary = randomString();
 const offlineMessage = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const tags = [randomString(), randomString(), randomString()];
+const streamKeys = [randomString(), randomString(), randomString()];
+
 const latencyLevel = Math.floor(Math.random() * 4);
 const appearanceValues = {
 	variable1: randomString(),
@@ -62,6 +64,11 @@ test('set extra page content', async (done) => {
 
 test('set tags', async (done) => {
 	const res = await sendConfigChangeRequest('tags', tags);
+	done();
+});
+
+test('set stream keys', async (done) => {
+	const res = await sendConfigChangeRequest('streamkeys', streamKeys);
 	done();
 });
 
@@ -157,6 +164,7 @@ test('admin configuration is correct', (done) => {
 				socialHandles
 			);
 			expect(res.body.forbiddenUsernames).toStrictEqual(forbiddenUsernames);
+			expect(res.body.streamKeys).toStrictEqual(streamKeys);
 
 			expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
 			expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(
@@ -167,7 +175,7 @@ test('admin configuration is correct', (done) => {
 			);
 
 			expect(res.body.yp.enabled).toBe(false);
-			expect(res.body.streamKey).toBe('abc123');
+			expect(res.body.adminPassword).toBe('abc123');
 
 			expect(res.body.s3.enabled).toBe(s3Config.enabled);
 			expect(res.body.s3.endpoint).toBe(s3Config.endpoint);

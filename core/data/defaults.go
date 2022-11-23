@@ -32,7 +32,8 @@ func PopulateDefaults() {
 		return
 	}
 
-	_ = SetStreamKey(defaults.StreamKey)
+	_ = SetAdminPassword(defaults.AdminPassword)
+	_ = SetStreamKeys(defaults.StreamKeys)
 	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
 	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
 	_ = SetLogoPath(defaults.Logo)
@@ -40,7 +41,6 @@ func PopulateDefaults() {
 	_ = SetServerSummary(defaults.Summary)
 	_ = SetServerWelcomeMessage("")
 	_ = SetServerName(defaults.Name)
-	_ = SetStreamKey(defaults.StreamKey)
 	_ = SetExtraPageBodyContent(defaults.PageBodyContent)
 	_ = SetFederationGoLiveMessage(defaults.FederationGoLiveMessage)
 	_ = SetSocialHandles([]models.SocialHandle{
