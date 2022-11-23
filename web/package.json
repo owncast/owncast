@@ -86,7 +86,7 @@
 		"@typescript-eslint/parser": "5.43.0",
 		"babel-loader": "9.1.0",
 		"chromatic": "6.11.4",
-		"css-loader": "6.7.1",
+		"css-loader": "6.7.2",
 		"eslint": "8.28.0",
 		"cypress": "^11.0.0",
 		"eslint-config-airbnb": "19.0.4",
