@@ -34,6 +34,19 @@ const s3Config = {
 
 const forbiddenUsernames = [randomString(), randomString(), randomString()];
 
+test('check default configurations', async (done) => {
+  request
+  .get('/api/admin/serverconfig')
+  .auth('admin', 'abc123')
+  .expect(200)
+  .then((res) => {
+    expect(res.body.yp.enabled).toBe(false);
+    expect(res.body.streamKey).toBe('abc123');
+    expect(res.body.federation.enabled).toBe(false);
+    done();
+  });
+});
+
 test('set server name', async (done) => {
   const res = await sendConfigChangeRequest('name', serverName);
   done();
@@ -150,6 +163,8 @@ test('admin configuration is correct', (done) => {
       expect(res.body.s3.bucket).toBe(s3Config.bucket);
       expect(res.body.s3.region).toBe(s3Config.region);
       expect(res.body.s3.forcePathStyle).toBeTruthy();
+
+      expect(res.body.federation.enabled).toBe(true);
       done();
     });
 });
