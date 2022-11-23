@@ -20,7 +20,8 @@ type Defaults struct {
 	WebServerPort    int
 	WebServerIP      string
 	RTMPServerPort   int
-	StreamKey        string
+	AdminPassword    string
+	StreamKeys       []string
 
 	YPEnabled bool
 	YPServer  string
@@ -42,6 +43,8 @@ func GetDefaults() Defaults {
 		Summary:              "This is a new live video streaming server powered by Owncast.",
 		ServerWelcomeMessage: "",
 		Logo:                 "logo.svg",
+		AdminPassword:        "abc123",
+		StreamKeys:           []string{"abc123"},
 		Tags: []string{
 			"owncast",
 			"streaming",
@@ -71,7 +74,6 @@ func GetDefaults() Defaults {
 		WebServerPort:  8080,
 		WebServerIP:    "0.0.0.0",
 		RTMPServerPort: 1935,
-		StreamKey:      "abc123",
 
 		ChatEstablishedUserModeTimeDuration: time.Minute * 15,
 

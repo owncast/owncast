@@ -159,7 +159,10 @@ func Start() error {
 	// Update config values
 
 	// Change the current streaming key in memory
-	http.HandleFunc("/api/admin/config/key", middleware.RequireAdminAuth(admin.SetStreamKey))
+	http.HandleFunc("/api/admin/config/adminpass", middleware.RequireAdminAuth(admin.SetAdminPassword))
+
+	//  Set an array of valid stream keys
+	http.HandleFunc("/api/admin/config/streamkeys", middleware.RequireAdminAuth(admin.SetStreamKeys))
 
 	// Change the extra page content in memory
 	http.HandleFunc("/api/admin/config/pagecontent", middleware.RequireAdminAuth(admin.SetExtraPageContent))
