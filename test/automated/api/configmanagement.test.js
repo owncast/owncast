@@ -148,6 +148,11 @@ test('set federation goLiveMessage', async (done) => {
   done();
 });
 
+test('toggle private federation mode', async (done) => {
+  const res = await sendConfigChangeRequest('federation/private', federationConfig.isPrivate);
+  done();
+});
+
 test('enable directory', async (done) => {
   const res = await sendConfigChangeRequest('directoryenabled', true);
   done();
