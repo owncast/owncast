@@ -43,7 +43,7 @@ const ypConfig =  {
 
 const federationConfig = {
   enabled: true,
-  isPrivate: false,
+  isPrivate: true,
   username: randomString(),
   goLiveMessage: randomString(),
   showEngagement: false,
@@ -73,6 +73,7 @@ test('check default configurations', async (done) => {
     expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
     expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
     expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
+    expect(res.body.federation.goLiveMessage).toBe("I've gone live!");
     done();
   });
 });
@@ -142,6 +143,10 @@ test('set federation username', async (done) => {
   done();
 });
 
+test('set federation goLiveMessage', async (done) => {
+  const res = await sendConfigChangeRequest('federation/livemessage', federationConfig.goLiveMessage);
+  done();
+});
 
 test('enable directory', async (done) => {
   const res = await sendConfigChangeRequest('directoryenabled', true);
@@ -218,10 +223,10 @@ test('admin configuration is correct', (done) => {
       expect(res.body.s3.forcePathStyle).toBeTruthy();
 
       expect(res.body.federation.enabled).toBe(federationConfig.enabled);
-//      expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
+      expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
       expect(res.body.federation.username).toBe(federationConfig.username);
       expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
-//      expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
+      expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
 //      expect(res.body.federation.blockedDomains).toBe(federationConfig.blockedDomains);
 
       done();
