@@ -47,22 +47,13 @@ const federationConfig = {
   username: randomString(),
   goLiveMessage: randomString(),
   showEngagement: false,
-  blockedDomains: [randomString(), randomString()],
+  blockedDomains: [randomString() + ".tld", randomString() + ".tld"],
 };
 
 const defaultStreamKey = 'abc123';
 
 
 test('check default configurations', async (done) => {
-  
-  request
-  .get('/.well-known/webfinger')
-  .expect(405);
-
-  request
-  .get('/.well-known/nodeinfo')
-  .expect(405);
-
   request
   .get('/api/admin/serverconfig')
   .auth('admin', defaultStreamKey)
@@ -74,8 +65,21 @@ test('check default configurations', async (done) => {
     expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
     expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
     expect(res.body.federation.goLiveMessage).toBe("I've gone live!");
+    expect(res.body.federation.blockedDomains).toStrictEqual([]);
     done();
   });
+});
+
+test('check default federation responses', async (done) => {
+  const res1 = request
+  .get('/.well-known/webfinger')
+  .expect(405);
+
+  const res2 = request
+  .get('/.well-known/nodeinfo')
+  .expect(405);
+
+  done();
 });
 
 test('set server name', async (done) => {
@@ -150,6 +154,16 @@ test('set federation goLiveMessage', async (done) => {
 
 test('toggle private federation mode', async (done) => {
   const res = await sendConfigChangeRequest('federation/private', federationConfig.isPrivate);
+  done();
+});
+
+test('toggle federation engagement', async (done) => {
+  const res = await sendConfigChangeRequest('federation/showengagement', federationConfig.showEngagement);
+  done();
+});
+
+test('set federation blocked domains', async (done) => {
+  const res = await sendConfigChangeRequest('federation/blockdomains', federationConfig.blockedDomains);
   done();
 });
 
@@ -232,7 +246,7 @@ test('admin configuration is correct', (done) => {
       expect(res.body.federation.username).toBe(federationConfig.username);
       expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
       expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
-//      expect(res.body.federation.blockedDomains).toBe(federationConfig.blockedDomains);
+      expect(res.body.federation.blockedDomains).toStrictEqual(federationConfig.blockedDomains);
 
       done();
     });
