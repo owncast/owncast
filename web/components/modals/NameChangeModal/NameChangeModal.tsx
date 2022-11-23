@@ -57,7 +57,12 @@ export const NameChangeModal: FC = () => {
   const colorOptions = [...Array(maxColor)].map((e, i) => i);
 
   const saveButton = (
-    <Button type="primary" onClick={handleNameChange} disabled={!saveEnabled()}>
+    <Button
+      type="primary"
+      id="name-change-submit"
+      onClick={handleNameChange}
+      disabled={!saveEnabled()}
+    >
       Change name
     </Button>
   );
