@@ -48,14 +48,17 @@ const federationConfig = {
   blockedDomains: [randomString(), randomString()],
 };
 
+const defaultStreamKey = 'abc123';
+var streamKey = defaultStreamKey;
+
 test('check default configurations', async (done) => {
   request
   .get('/api/admin/serverconfig')
-  .auth('admin', 'abc123')
+  .auth('admin', streamKey)
   .expect(200)
   .then((res) => {
     expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
-    expect(res.body.streamKey).toBe('abc123');
+    expect(res.body.streamKey).toBe(streamKey);
     expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
     done();
   });
@@ -152,7 +155,7 @@ test('verify updated config values', async (done) => {
 test('stream details are correct', (done) => {
   request
     .get('/api/admin/status')
-    .auth('admin', 'abc123')
+    .auth('admin', streamKey)
     .expect(200)
     .then((res) => {
       expect(res.body.broadcaster.streamDetails.width).toBe(320);
@@ -169,7 +172,7 @@ test('stream details are correct', (done) => {
 test('admin configuration is correct', (done) => {
   request
     .get('/api/admin/serverconfig')
-    .auth('admin', 'abc123')
+    .auth('admin', streamKey)
     .expect(200)
     .then((res) => {
       expect(res.body.instanceDetails.name).toBe(serverName);
@@ -191,7 +194,7 @@ test('admin configuration is correct', (done) => {
       expect(res.body.yp.enabled).toBe(true);
       expect(res.body.yp.instanceUrl).toBe(ypConfig.instanceUrl);
 
-      expect(res.body.streamKey).toBe('abc123');
+      expect(res.body.streamKey).toBe(streamKey);
 
       expect(res.body.s3.enabled).toBe(s3Config.enabled);
       expect(res.body.s3.endpoint).toBe(s3Config.endpoint);
@@ -228,7 +231,7 @@ async function sendConfigChangeRequest(endpoint, value) {
   const url = '/api/admin/config/' + endpoint;
   const res = await request
     .post(url)
-    .auth('admin', 'abc123')
+    .auth('admin', streamKey)
     .send({ value: value })
     .expect(200);
 
@@ -240,7 +243,7 @@ async function sendConfigChangePayload(endpoint, payload) {
   const url = '/api/admin/config/' + endpoint;
   const res = await request
     .post(url)
-    .auth('admin', 'abc123')
+    .auth('admin', streamKey)
     .send(payload)
     .expect(200);
 
