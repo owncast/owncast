@@ -34,7 +34,19 @@ const s3Config = {
 
 const forbiddenUsernames = [randomString(), randomString(), randomString()];
 
-const yp_instance_url = 'https://' + randomString()
+const ypConfig =  {
+  enabled: true,
+  instanceUrl: 'http://' + randomString()
+};
+
+const federationConfig = {
+  enabled: true,
+  isPrivate: false,
+  username: randomString(),
+  goLiveMessage: randomString(),
+  showEngagement: false,
+  blockedDomains: [randomString(), randomString()],
+};
 
 test('check default configurations', async (done) => {
   request
@@ -42,16 +54,11 @@ test('check default configurations', async (done) => {
   .auth('admin', 'abc123')
   .expect(200)
   .then((res) => {
-    expect(res.body.yp.enabled).toBe(false);
+    expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
     expect(res.body.streamKey).toBe('abc123');
-    expect(res.body.federation.enabled).toBe(false);
+    expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
     done();
   });
-});
-
-test('activate yp', async (done) => {
-  const res = await sendConfigChangeRequest('yp', {enabled: true, instanceUrl: yp_instance_url});
-  done();
 });
 
 test('set server name', async (done) => {
@@ -109,6 +116,27 @@ test('set forbidden usernames', async (done) => {
   done();
 });
 
+test('set server url', async (done) => {
+  const res = await sendConfigChangeRequest('serverurl', ypConfig.instanceUrl);
+  done();
+});
+
+test('set federation username', async (done) => {
+  const res = await sendConfigChangeRequest('federation/username', federationConfig.username);
+  done();
+});
+
+
+test('enable directory', async (done) => {
+  const res = await sendConfigChangeRequest('directoryenabled', true);
+  done();
+});
+
+test('enable federation', async (done) => {
+  const res = await sendConfigChangeRequest('federation/enable', federationConfig.enabled);
+  done();
+});
+
 test('verify updated config values', async (done) => {
   const res = await request.get('/api/config');
   expect(res.body.name).toBe(serverName);
@@ -161,7 +189,7 @@ test('admin configuration is correct', (done) => {
       );
 
       expect(res.body.yp.enabled).toBe(true);
-      expect(res.body.yp.instanceUrl).toBe(yp_instance_url);
+      expect(res.body.yp.instanceUrl).toBe(ypConfig.instanceUrl);
 
       expect(res.body.streamKey).toBe('abc123');
 
@@ -173,7 +201,13 @@ test('admin configuration is correct', (done) => {
       expect(res.body.s3.region).toBe(s3Config.region);
       expect(res.body.s3.forcePathStyle).toBeTruthy();
 
-      expect(res.body.federation.enabled).toBe(true);
+      expect(res.body.federation.enabled).toBe(federationConfig.enabled);
+//      expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
+      expect(res.body.federation.username).toBe(federationConfig.username);
+//      expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
+//      expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
+//      expect(res.body.federation.blockedDomains).toBe(federationConfig.blockedDomains);
+
       done();
     });
 });
