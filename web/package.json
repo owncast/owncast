@@ -87,7 +87,7 @@
 		"babel-loader": "9.1.0",
 		"chromatic": "6.11.4",
 		"css-loader": "6.7.1",
-		"eslint": "8.27.0",
+		"eslint": "8.28.0",
 		"cypress": "^11.0.0",
 		"eslint-config-airbnb": "19.0.4",
 		"eslint-config-next": "13.0.4",
