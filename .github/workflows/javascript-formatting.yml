@@ -17,12 +17,13 @@ jobs:
       run:
         working-directory: ./web
 
-    concurrency:
-      group: ${{ github.head_ref || github.run_id }}
-      cancel-in-progress: true
-
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -47,11 +48,12 @@ jobs:
       run:
         working-directory: ./web
 
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-
     steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+          
       - name: Checkout
         uses: actions/checkout@v3
         with:
