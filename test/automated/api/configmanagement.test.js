@@ -34,6 +34,8 @@ const s3Config = {
 
 const forbiddenUsernames = [randomString(), randomString(), randomString()];
 
+const yp_instance_url = 'https://' + randomString()
+
 test('check default configurations', async (done) => {
   request
   .get('/api/admin/serverconfig')
@@ -45,6 +47,11 @@ test('check default configurations', async (done) => {
     expect(res.body.federation.enabled).toBe(false);
     done();
   });
+});
+
+test('activate yp', async (done) => {
+  const res = await sendConfigChangeRequest('yp', {enabled: true, instanceUrl: yp_instance_url});
+  done();
 });
 
 test('set server name', async (done) => {
@@ -153,7 +160,9 @@ test('admin configuration is correct', (done) => {
         streamOutputVariants.cpuUsageLevel
       );
 
-      expect(res.body.yp.enabled).toBe(false);
+      expect(res.body.yp.enabled).toBe(true);
+      expect(res.body.yp.instanceUrl).toBe(yp_instance_url);
+
       expect(res.body.streamKey).toBe('abc123');
 
       expect(res.body.s3.enabled).toBe(s3Config.enabled);
