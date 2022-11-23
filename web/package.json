@@ -12,7 +12,7 @@
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -"
 	},
 	"dependencies": {
-		"@ant-design/icons": "4.7.0",
+		"@ant-design/icons": "4.8.0",
 		"@codemirror/lang-css": "6.0.1",
 		"@codemirror/lang-markdown": "6.0.5",
 		"@codemirror/language-data": "6.1.0",
