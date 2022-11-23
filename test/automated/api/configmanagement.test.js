@@ -52,6 +52,15 @@ const defaultStreamKey = 'abc123';
 var streamKey = defaultStreamKey;
 
 test('check default configurations', async (done) => {
+  
+  request
+  .get('/.well-known/webfinger')
+  .expect(405);
+
+  request
+  .get('/.well-known/nodeinfo')
+  .expect(405);
+
   request
   .get('/api/admin/serverconfig')
   .auth('admin', streamKey)
