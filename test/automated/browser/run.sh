@@ -3,7 +3,7 @@
 TEMP_DB=$(mktemp)
 
 # Install the node test framework
-npm install
+npm install --quiet
 
 # Download a specific version of ffmpeg
 if [ ! -d "ffmpeg" ]; then
