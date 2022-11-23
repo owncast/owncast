@@ -1,4 +1,6 @@
 var request = require('supertest');
+const Random = require('crypto-random');
+
 request = request('http://127.0.0.1:8080');
 
 const serverName = randomString();
@@ -264,9 +266,9 @@ async function sendConfigChangePayload(endpoint, payload) {
 }
 
 function randomString(length = 20) {
-  return Math.random().toString(16).substr(2, length);
+  return Random.value().toString(16).substr(2, length);
 }
 
 function randomNumber() {
-  return Math.floor(Math.random() * 5);
+  return Random.range(0, 5);
 }
