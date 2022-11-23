@@ -15,11 +15,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-
     steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
       - uses: earthly/actions-setup@v1
         with:
           version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
