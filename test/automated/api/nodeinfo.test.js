@@ -1,5 +1,5 @@
 var request = require('supertest') 
-const Ajv = require("ajv")
+const Ajv = require("ajv-draft-04")
 const jsonfile = require('jsonfile')
 
 request = request('http://127.0.0.1:8080');
