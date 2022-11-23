@@ -11,7 +11,7 @@
   "dependencies": {
     "supertest": "^6.0.1",
     "websocket": "^1.0.32",
-		"avj" : "^8.11.0"
+		"ajv" : "^8.11.0"
   },
   "devDependencies": {
     "jest": "^26.6.3"
