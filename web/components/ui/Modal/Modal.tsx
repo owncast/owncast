@@ -58,7 +58,7 @@ export const Modal: FC<ModalProps> = ({
       afterClose={afterClose}
       bodyStyle={modalStyle}
       width={width}
-      zIndex={9999}
+      zIndex={999}
       footer={null}
       centered
       destroyOnClose

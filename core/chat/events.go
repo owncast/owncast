@@ -114,6 +114,10 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
 		log.Errorln("error changing user display color", err)
 	}
+
+	// Resend client's user info with new color, otherwise the name change dialog would still show the old color
+	eventData.client.User.DisplayColor = receivedEvent.NewColor
+	eventData.client.sendConnectedClientInfo()
 }
 
 func (s *Server) userMessageSent(eventData chatClientEvent) {

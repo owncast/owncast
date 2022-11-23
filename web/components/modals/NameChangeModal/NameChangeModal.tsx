@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Input, Button, Select } from 'antd';
+import { Input, Button, Select, Form } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
@@ -32,15 +32,18 @@ export const NameChangeModal: FC = () => {
 
   const { displayName, displayColor } = currentUser;
 
+  const saveEnabled = () =>
+    newName !== displayName && newName !== '' && websocketService?.isConnected();
+
   const handleNameChange = () => {
+    if (!saveEnabled()) return;
+
     const nameChange = {
       type: MessageType.NAME_CHANGE,
       newName,
     };
     websocketService.send(nameChange);
   };
-
-  const saveEnabled = newName !== displayName && newName !== '' && websocketService?.isConnected();
 
   const handleColorChange = (color: string) => {
     const colorChange = {
@@ -53,29 +56,32 @@ export const NameChangeModal: FC = () => {
   const maxColor = 8; // 0...n
   const colorOptions = [...Array(maxColor)].map((e, i) => i);
 
+  const saveButton = (
+    <Button type="primary" onClick={handleNameChange} disabled={!saveEnabled()}>
+      Change name
+    </Button>
+  );
+
   return (
     <div>
-      Your chat display name is what people see when you send chat messages. Other information can
-      go here to mention auth, and stuff.
-      <Input
-        id="name-change-field"
-        value={newName}
-        onChange={e => setNewName(e.target.value)}
-        placeholder="Your chat display name"
-        maxLength={30}
-        showCount
-        defaultValue={displayName}
-      />
-      <Button id="name-change-submit" disabled={!saveEnabled} onClick={handleNameChange}>
-        Change name
-      </Button>
-      <div>
-        Your Color
+      Your chat display name is what people see when you send chat messages.
+      <Form onSubmitCapture={handleNameChange} style={{ paddingTop: '8px' }}>
+        <Input.Search
+          enterButton={saveButton}
+          id="name-change-field"
+          value={newName}
+          onChange={e => setNewName(e.target.value)}
+          placeholder="Your chat display name"
+          maxLength={30}
+          showCount
+          defaultValue={displayName}
+        />
+      </Form>
+      <Form.Item label="Your Color" style={{ paddingTop: '8px', zIndex: 1000, marginBottom: 0 }}>
         <Select
           style={{ width: 120 }}
           onChange={handleColorChange}
           defaultValue={displayColor.toString()}
-          getPopupContainer={triggerNode => triggerNode.parentElement}
         >
           {colorOptions.map(e => (
             <Option key={e.toString()} title={e}>
@@ -83,7 +89,9 @@ export const NameChangeModal: FC = () => {
             </Option>
           ))}
         </Select>
-      </div>
+      </Form.Item>
+      You can also authenticate an IndieAuth or Fediverse account via the &quot;Authenticate&quot;
+      menu.
     </div>
   );
 };
