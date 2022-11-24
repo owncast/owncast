@@ -17,11 +17,35 @@ test('check disabled federation responses', async (done) => {
     const res1 = request
     .get('/.well-known/webfinger')
     .expect(405);
-  
+
     const res2 = request
-    .get('/.well-known/nodeinfo')
+    .get('/.well-known/host-meta')
     .expect(405);
   
+    const res3 = request
+    .get('/.well-known/nodeinfo')
+    .expect(405);
+
+    const res4 = request
+    .get('/.well-known/x-nodeinfo2')
+    .expect(405);
+    
+    const res5 = request
+    .get('/nodeinfo/2.0')
+    .expect(405);
+    
+    const res6 = request
+    .get('/api/v1/instance')
+    .expect(405);
+
+    const res7 = request
+    .get('/federation/user/')
+    .expect(405);
+
+    const res8 = request
+    .get('/federation/')
+    .expect(405);
+
     done();
   });
 
