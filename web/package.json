@@ -24,7 +24,7 @@
 		"@xstate/react": "3.0.1",
 		"antd": "4.24.3",
 		"autoprefixer": "10.4.13",
-		"chart.js": "3.9.1",
+		"chart.js": "4.0.1",
 		"chartkick": "4.2.0",
 		"classnames": "2.3.2",
 		"date-fns": "2.29.3",
