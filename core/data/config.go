@@ -946,12 +946,22 @@ func GetCustomColorVariableValues() map[string]string {
 }
 
 // GetStreamKeys will return valid stream keys.
-func GetStreamKeys() []string {
-	keys, _ := _datastore.GetStringSlice(streamKeysKey)
-	return keys
+func GetStreamKeys() []models.StreamKey {
+	configEntry, err := _datastore.Get(streamKeysKey)
+	if err != nil {
+		return []models.StreamKey{}
+	}
+
+	var streamKeys []models.StreamKey
+	if err := configEntry.getObject(&streamKeys); err != nil {
+		return []models.StreamKey{}
+	}
+
+	return streamKeys
 }
 
 // SetStreamKeys will set valid stream keys.
-func SetStreamKeys(keys []string) error {
-	return _datastore.SetStringSlice(streamKeysKey, keys)
+func SetStreamKeys(actions []models.StreamKey) error {
+	configEntry := ConfigEntry{Key: streamKeysKey, Value: actions}
+	return _datastore.Save(configEntry)
 }
