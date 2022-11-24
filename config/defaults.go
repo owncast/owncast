@@ -21,7 +21,7 @@ type Defaults struct {
 	WebServerIP      string
 	RTMPServerPort   int
 	AdminPassword    string
-	StreamKeys       []string
+	StreamKeys       []models.StreamKey
 
 	YPEnabled bool
 	YPServer  string
@@ -44,7 +44,9 @@ func GetDefaults() Defaults {
 		ServerWelcomeMessage: "",
 		Logo:                 "logo.svg",
 		AdminPassword:        "abc123",
-		StreamKeys:           []string{"abc123"},
+		StreamKeys: []models.StreamKey{
+			{Key: "abc123", Comment: "Default stream key"},
+		},
 		Tags: []string{
 			"owncast",
 			"streaming",

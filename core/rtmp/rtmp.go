@@ -81,7 +81,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	validStreamingKeys := data.GetStreamKeys()
 
 	for _, key := range validStreamingKeys {
-		if secretMatch(key, c.URL.Path) {
+		if secretMatch(key.Key, c.URL.Path) {
 			accessGranted = true
 			break
 		}

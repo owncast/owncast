@@ -3,6 +3,7 @@ package data
 import (
 	"strings"
 
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -56,5 +57,7 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 func migrateToDatastoreValues2(datastore *Datastore) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
 	_ = SetAdminPassword(oldAdminPassword)
-	_ = SetStreamKeys([]string{oldAdminPassword})
+	_ = SetStreamKeys([]models.StreamKey{
+		{Key: oldAdminPassword, Comment: "Default stream key"},
+	})
 }

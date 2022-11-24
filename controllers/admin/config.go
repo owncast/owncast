@@ -796,17 +796,18 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configValues, success := getValuesFromRequest(w, r)
-	if !success {
+	type streamKeysRequest struct {
+		Value []models.StreamKey `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var streamKeys streamKeysRequest
+	if err := decoder.Decode(&streamKeys); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update stream keys with provided values")
 		return
 	}
 
-	streamKeyStrings := make([]string, 0)
-	for _, key := range configValues {
-		streamKeyStrings = append(streamKeyStrings, key.Value.(string))
-	}
-
-	if err := data.SetStreamKeys(streamKeyStrings); err != nil {
+	if err := data.SetStreamKeys(streamKeys.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

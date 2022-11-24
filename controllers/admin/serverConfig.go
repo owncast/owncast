@@ -100,7 +100,7 @@ type serverConfigAdminResponse struct {
 	InstanceDetails         webConfigResponse           `json:"instanceDetails"`
 	FFmpegPath              string                      `json:"ffmpegPath"`
 	AdminPassword           string                      `json:"adminPassword"`
-	StreamKeys              []string                    `json:"streamKeys"`
+	StreamKeys              []models.StreamKey          `json:"streamKeys"`
 	WebServerPort           int                         `json:"webServerPort"`
 	WebServerIP             string                      `json:"webServerIP"`
 	RTMPServerPort          int                         `json:"rtmpServerPort"`

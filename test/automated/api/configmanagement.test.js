@@ -7,7 +7,11 @@ const serverSummary = randomString();
 const offlineMessage = randomString();
 const pageContent = `<p>${randomString()}</p>`;
 const tags = [randomString(), randomString(), randomString()];
-const streamKeys = [randomString(), randomString(), randomString()];
+const streamKeys = [
+	{ key: randomString(), comment: 'test key 1' },
+	{ key: randomString(), comment: 'test key 1' },
+	{ key: randomString(), comment: 'test key 1' },
+];
 
 const latencyLevel = Math.floor(Math.random() * 4);
 const appearanceValues = {
