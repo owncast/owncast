@@ -1,6 +1,8 @@
 var request = require('supertest');
 const Random = require('crypto-random');
 
+const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
+
 request = request('http://127.0.0.1:8080');
 
 const serverName = randomString();
@@ -70,17 +72,7 @@ test('check default configurations', async (done) => {
   });
 });
 
-test('check default federation responses', async (done) => {
-  const res1 = request
-  .get('/.well-known/webfinger')
-  .expect(405);
 
-  const res2 = request
-  .get('/.well-known/nodeinfo')
-  .expect(405);
-
-  done();
-});
 
 test('set server name', async (done) => {
   const res = await sendConfigChangeRequest('name', serverName);
@@ -263,31 +255,6 @@ test('frontend configuration is correct', (done) => {
       done();
     });
 });
-
-async function sendConfigChangeRequest(endpoint, value) {
-  const url = '/api/admin/config/' + endpoint;
-  const res = await request
-    .post(url)
-    .auth('admin', defaultStreamKey)
-    .send({ value: value })
-    .expect(200);
-
-  expect(res.body.success).toBe(true);
-  return res;
-}
-
-async function sendConfigChangePayload(endpoint, payload) {
-  const url = '/api/admin/config/' + endpoint;
-  const res = await request
-    .post(url)
-    .auth('admin', defaultStreamKey)
-    .send(payload)
-    .expect(200);
-
-  expect(res.body.success).toBe(true);
-
-  return res;
-}
 
 function randomString(length = 20) {
   return Random.value().toString(16).substr(2, length);
