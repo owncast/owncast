@@ -6,7 +6,7 @@ const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
 request = request('http://127.0.0.1:8080');
 
 var ajv = new Ajv();
-var nodeInfoSchema = jsonfile.readFileSync('schema/node_info_2.0_schema.json');
+var nodeInfoSchema = jsonfile.readFileSync('schema/nodeinfo_2.0.json');
 
 test('disable federation', async (done) => {
   const res = await sendConfigChangeRequest('federation/enable', false);
@@ -105,8 +105,11 @@ test('verify responses of /.well-known/x-nodeinfo2 when federation is enabled', 
 test('verify responses of /nodeinfo/2.0 when federation is enabled', async (done) => { 
   const res = request
   .get('/nodeinfo/2.0')
-  .expect(200);
-  done();
+  .expect(200)
+  .then((res) => {
+    expect(ajv.validate(nodeInfoSchema, res.body)).toBe(true);
+    done();
+  });
 });
 
 test('verify responses of /api/v1/instance when federation is enabled', async (done) => {
@@ -129,13 +132,3 @@ test('verify responses of /federation/ when federation is enabled', async (done)
   .expect(200);
   done();
 });
-
-test('verify nodeinfo 2.0 is valid', (done) => {
-  request.get('/nodeinfo/2.0').expect(200)
-    .then((res) => {
-      expect(ajv.validate(nodeInfoSchema, res.body)).toBe(true);
-      done();
-    });
-});
-
-
