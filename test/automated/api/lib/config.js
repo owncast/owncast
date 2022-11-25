@@ -10,11 +10,11 @@ async function sendConfigChangeRequest(endpoint, value) {
       .auth('admin', defaultStreamKey)
       .send({ value: value })
       .expect(200);
-  
+
     expect(res.body.success).toBe(true);
     return res;
   }
-  
+
   async function sendConfigChangePayload(endpoint, payload) {
     const url = '/api/admin/config/' + endpoint;
     const res = await request
@@ -22,9 +22,9 @@ async function sendConfigChangeRequest(endpoint, value) {
       .auth('admin', defaultStreamKey)
       .send(payload)
       .expect(200);
-  
+
     expect(res.body.success).toBe(true);
-  
+
     return res;
   }
 
