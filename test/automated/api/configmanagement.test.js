@@ -54,15 +54,34 @@ const federationConfig = {
 
 const defaultStreamKey = 'abc123';
 
+test('verify default streamKey', async (done) => {
+  request
+  .get('/api/admin/serverconfig')
+  .auth('admin', defaultStreamKey)
+  .expect(200)
+  .then((res) => {
+    expect(res.body.streamKey).toBe(defaultStreamKey);
+    done();
+  });
+});
 
-test('check default configurations', async (done) => {
+test('verify default directory configurations', async (done) => {
   request
   .get('/api/admin/serverconfig')
   .auth('admin', defaultStreamKey)
   .expect(200)
   .then((res) => {
     expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
-    expect(res.body.streamKey).toBe(defaultStreamKey);
+    done();
+  });
+});
+
+test('verify default federation configurations', async (done) => {
+  request
+  .get('/api/admin/serverconfig')
+  .auth('admin', defaultStreamKey)
+  .expect(200)
+  .then((res) => {
     expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
     expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
     expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
@@ -71,8 +90,6 @@ test('check default configurations', async (done) => {
     done();
   });
 });
-
-
 
 test('set server name', async (done) => {
   const res = await sendConfigChangeRequest('name', serverName);
