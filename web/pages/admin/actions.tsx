@@ -235,7 +235,7 @@ const Actions = () => {
         openExternally,
       };
 
-      // Replace old action if edited or the new action
+      // Replace old action if edited or append the new action
       const index = oldAction ? actions.findIndex(item => _.isEqual(item, oldAction)) : -1;
       if (index >= 0) {
         actionsData[index] = newAction;
