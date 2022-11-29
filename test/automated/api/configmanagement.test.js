@@ -10,7 +10,7 @@ request = request('http://127.0.0.1:8080');
 
 // initial configuration of server
 const defaultAdminPassword = 'abc123';
-const defaultStreamKeys = [ defaultAdminPassword ];
+const defaultStreamKeys = [{ key: defaultAdminPassword, comment: 'Default stream key' }];
 const defaultYPConfig = {
 	enabled: false
 };
@@ -105,7 +105,6 @@ test('verify default adminPassword', async (done) => {
 });
 
 test('verify default directory configurations', async (done) => {
-
 	const res = await getAdminConfig();
 
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
@@ -113,7 +112,6 @@ test('verify default directory configurations', async (done) => {
 });
 
 test('verify default federation configurations', async (done) => {
-
 	const res = await getAdminConfig();
 
 	expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
