@@ -34,12 +34,21 @@ interface Props {
 const ActionModal = (props: Props) => {
   const { onOk, onCancel, open, action } = props;
 
-  const [actionUrl, setActionUrl] = useState(action?.url || '');
-  const [actionTitle, setActionTitle] = useState(action?.title || '');
-  const [actionDescription, setActionDescription] = useState(action?.description || '');
-  const [actionIcon, setActionIcon] = useState(action?.icon || '');
-  const [actionColor, setActionColor] = useState(action?.color || '');
-  const [openExternally, setOpenExternally] = useState(action?.openExternally || false);
+  const [actionUrl, setActionUrl] = useState('');
+  const [actionTitle, setActionTitle] = useState('');
+  const [actionDescription, setActionDescription] = useState('');
+  const [actionIcon, setActionIcon] = useState('');
+  const [actionColor, setActionColor] = useState('');
+  const [openExternally, setOpenExternally] = useState(false);
+
+  useEffect(() => {
+    setActionUrl(action?.url || '');
+    setActionTitle(action?.title || '');
+    setActionDescription(action?.description || '');
+    setActionIcon(action?.icon || '');
+    setActionColor(action?.color || '');
+    setOpenExternally(action?.openExternally || false);
+  }, [action]);
 
   function save() {
     onOk(
@@ -82,6 +91,7 @@ const ActionModal = (props: Props) => {
 
   return (
     <Modal
+      destroyOnClose
       title={action == null ? 'Create New Action' : 'Edit Action'}
       open={open}
       onOk={save}
@@ -112,7 +122,6 @@ const ActionModal = (props: Props) => {
         <Form.Item name="title">
           <Input
             value={actionTitle}
-            defaultValue={actionTitle}
             required
             placeholder="Your action title (required)"
             onChange={input => setActionTitle(input.currentTarget.value)}
@@ -121,7 +130,6 @@ const ActionModal = (props: Props) => {
         <Form.Item name="description">
           <Input
             value={actionDescription}
-            defaultValue={actionDescription}
             placeholder="Optional description"
             onChange={input => setActionDescription(input.currentTarget.value)}
           />
@@ -129,20 +137,20 @@ const ActionModal = (props: Props) => {
         <Form.Item name="icon">
           <Input
             value={actionIcon}
-            defaultValue={actionIcon}
             placeholder="https://myserver.com/action/icon.png (optional)"
             onChange={input => setActionIcon(input.currentTarget.value)}
           />
         </Form.Item>
-        <Form.Item name="color">
-          <Input
-            type="color"
-            value={actionColor}
-            defaultValue={actionColor}
-            onChange={input => setActionColor(input.currentTarget.value)}
-          />
+        <div>
+          <Form.Item name="color" style={{ marginBottom: '0px' }}>
+            <Input
+              type="color"
+              value={actionColor}
+              onChange={input => setActionColor(input.currentTarget.value)}
+            />
+          </Form.Item>
           Optional background color of the action button.
-        </Form.Item>
+        </div>
         <Form.Item name="openExternally">
           <Checkbox
             checked={openExternally}
@@ -161,7 +169,7 @@ const Actions = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { externalActions } = serverConfig;
-  const [actions, setActions] = useState<ExternalAction[]>([]);
+  const [actions, setActions] = useState<ExternalAction[]>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [editAction, setEditAction] = useState<ExternalAction>(null);
