@@ -52,7 +52,7 @@ const forbiddenUsernames = [randomString(), randomString(), randomString()];
 
 const ypConfig = {
 	enabled: true,
-	instanceUrl: 'http://' + randomString()
+	instanceUrl: 'http://' + randomString() + ".tld"
 };
 
 const federationConfig = {
@@ -65,7 +65,7 @@ const federationConfig = {
 };
 
 const defaultAdminPassword = 'abc123';
-const defaultStreamKey = defaultAdminPassword;
+const defaultStreamKey = undefined;
 
 test('verify default streamKey', async (done) => {
 	request
