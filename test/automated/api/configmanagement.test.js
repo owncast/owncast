@@ -11,9 +11,13 @@ request = request('http://127.0.0.1:8080');
 
 // initial configuration of server
 const defaultServerName = 'New Owncast Server';
+const defaultStreamTitle = '';
+const defaultLogo = 'logo.svg';
+const defaultOfflineMessage = '';
 const defaultServerSummary = 'This is a new live video streaming server powered by Owncast.';
 const defaultAdminPassword = 'abc123';
 const defaultStreamKeys = [{ key: defaultAdminPassword, comment: 'Default stream key' }];
+const defaultTags = [];
 const defaultYPConfig = {
 	enabled: false,
 	instanceUrl: 'https://directory.owncast.online'
@@ -31,6 +35,16 @@ const defaultFederationConfig = {
 	blockedDomains: []
 };
 const defaultHideViewerCount = false;
+const defaultSocialHandles = [];
+const defaultForbiddenUsernames = [];
+const defaultPageContent = `# Welcome to Owncast!
+- This is a live stream powered by [Owncast](https://owncast.online), a free and open source live streaming server.
+- To discover more examples of streams, visit [Owncast's directory](https://directory.owncast.online).
+- If you're the owner of this server you should visit the admin and customize the content on this page.
+<hr/>
+<video id="video" controls preload="metadata" width="40%" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
+  <source src="https://videos.owncast.online/v/xaJ3xNn9Y6pWTdB25m9ai3.mp4?quality=" type="video/mp4" />
+</video>`;
 
 // new configuration for testing
 const newServerName = randomString();
@@ -95,44 +109,40 @@ const newFederationConfig = {
 
 const newHideViewerCount = !defaultHideViewerCount;
 
-test('verify default server name', async (done) => {
-	const res = await getAdminConfig();
 
+test('verify default config values', async (done) => {
+	const res = await request.get('/api/config');
 	expect(res.body.name).toBe(defaultServerName);
+	expect(res.body.streamTitle).toBe(defaultStreamTitle);
+	expect(res.body.summary).toBe(`${defaultServerSummary}`);
+	expect(res.body.extraPageContent).toBe(defaultPageContent);
+	expect(res.body.offlineMessage).toBe(defaultOfflineMessage);
+	expect(res.body.logo).toBe(defaultLogo);
+	expect(res.body.socialHandles).toStrictEqual(defaultSocialHandles);
 	done();
 });
 
-test('verify default server summary', async (done) => {
+test('verify default admin configuration', async (done) => {
 	const res = await getAdminConfig();
 
+	expect(res.body.instanceDetails.name).toBe(defaultServerName);
 	expect(res.body.instanceDetails.summary).toBe(defaultServerSummary);
-	done();
-});
-
-test('verify default streamKeys', async (done) => {
-	const res = await getAdminConfig();
-
+	expect(res.body.instanceDetails.offlineMessage).toBe(defaultOfflineMessage);
+	expect(res.body.instanceDetails.tags).toStrictEqual(defaultTags);
+	expect(res.body.instanceDetails.socialHandles).toStrictEqual(
+		defaultSocialHandles
+	);
+	expect(res.body.forbiddenUsernames).toStrictEqual(defaultForbiddenUsernames);
 	expect(res.body.streamKeys).toStrictEqual(defaultStreamKeys);
-	done();
-});
-
-test('verify default adminPassword', async (done) => {
-	const res = await getAdminConfig();
-
-	expect(res.body.adminPassword).toBe(defaultAdminPassword);
-	done();
-});
-
-test('verify default directory configurations', async (done) => {
-	const res = await getAdminConfig();
 
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
 	expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
-	done();
-});
 
-test('verify default federation configurations', async (done) => {
-	const res = await getAdminConfig();
+	expect(res.body.adminPassword).toBe(defaultAdminPassword);
+
+	expect(res.body.s3.enabled).toBe(defaultS3Config.enabled);
+	expect(res.body.s3.forcePathStyle).toBe(defaultS3Config.forcePathStyle);
+	expect(res.body.hideViewerCount).toBe(defaultHideViewerCount);
 
 	expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
 	expect(res.body.federation.username).toBe(defaultFederationConfig.username);
@@ -141,13 +151,7 @@ test('verify default federation configurations', async (done) => {
 	expect(res.body.federation.goLiveMessage).toBe(defaultFederationConfig.goLiveMessage);
 	expect(res.body.federation.blockedDomains).toStrictEqual(defaultFederationConfig.blockedDomains);
 	done();
-});
 
-test('verify default hideViewerCount', async (done) => {
-	const res = await getAdminConfig();
-
-	expect(res.body.hideViewerCount).toBe(defaultHideViewerCount);
-	done();
 });
 
 test('set server name', async (done) => {
@@ -333,7 +337,7 @@ test('verify updated admin configuration', async (done) => {
 		streamOutputVariants.cpuUsageLevel
 	);
 
-	expect(res.body.yp.enabled).toBe(true);
+	expect(res.body.yp.enabled).toBe(newYPConfig.enabled);
 	expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
 
 	expect(res.body.adminPassword).toBe(defaultAdminPassword);
