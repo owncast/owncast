@@ -1,6 +1,6 @@
 // This content populates the video variant modal, which is spawned from the variants table. This relies on the `dataState` prop fed in by the table.
 import React, { FC } from 'react';
-import { Popconfirm, Row, Col, Slider, Collapse, Typography } from 'antd';
+import { Popconfirm, Row, Col, Slider, Collapse, Typography, Alert, Button } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import classNames from 'classnames';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
@@ -108,7 +108,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
   });
   return (
     <div className={classes}>
-      <p className="description">
+      {/* <p className="description">
         <a
           href="https://owncast.online/docs/video?source=admin"
           target="_blank"
@@ -117,8 +117,24 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
           Learn more
         </a>{' '}
         about how each of these settings can impact the performance of your server.
-      </p>
-
+      </p> */}
+      <div style={{ marginBottom: '20px' }}>
+        <Alert
+          description="Learn more about how each of these settings can impact the performance of your server."
+          type="info"
+          action={
+            <a
+              href="https://owncast.online/docs/video?source=admin"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="small" type="text">
+                Visit the link
+              </Button>
+            </a>
+          }
+        />
+      </div>
       {videoPassthroughEnabled && (
         <p className="passthrough-warning">
           NOTE: Video Passthrough for this output stream variant is <em>enabled</em>, disabling the
@@ -127,12 +143,14 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
       )}
 
       <Row gutter={16}>
-        <TextField
-          maxLength="10"
-          {...VIDEO_NAME_DEFAULTS}
-          value={dataState.name}
-          onChange={handleNameChanged}
-        />
+        <div style={{ marginLeft: '-90px', marginBottom: '20px' }}>
+          <TextField
+            maxLength="10"
+            {...VIDEO_NAME_DEFAULTS}
+            value={dataState.name}
+            onChange={handleNameChanged}
+          />
+        </div>
         <Col sm={24} md={12}>
           <div className="form-module cpu-usage-container">
             <Typography.Title level={3}>CPU or GPU Utilization</Typography.Title>
@@ -153,7 +171,9 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
               <p className="selected-value-note">{cpuUsageNote()}</p>
             </div>
             <p className="read-more-subtext">
-              This could mean GPU or CPU usage depending on your server environment.{' '}
+              This could mean GPU or CPU usage depending on your server environment.
+              <br />
+              <br />
               <a
                 href="https://owncast.online/docs/video/?source=admin#cpu-usage"
                 target="_blank"
@@ -164,8 +184,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
             </p>
           </div>
         </Col>
-
-        <Col sm={24} md={12}>
+        <Col sm={24} md={11} offset={1}>
           {/* VIDEO BITRATE FIELD */}
           <div
             className={`form-module bitrate-container ${
