@@ -42,7 +42,7 @@ const newStreamKeys = [
 ];
 const newAdminPassword = randomString();
 
-const latencyLevel = Math.floor(Math.random() * 4);
+const latencyLevel = Random.range(0, 4);
 const appearanceValues = {
 	variable1: randomString(),
 	variable2: randomString(),
@@ -121,7 +121,13 @@ test('verify default federation configurations', async (done) => {
 	expect(res.body.federation.goLiveMessage).toBe(defaultFederationConfig.goLiveMessage);
 	expect(res.body.federation.blockedDomains).toStrictEqual(defaultFederationConfig.blockedDomains);
 	done();
+});
 
+test('verify default hideViewerCount', async (done) => {
+	const res = await getAdminConfig();
+
+	expect(res.body.hideViewerCount).toBe(defaultHideViewerCount);
+	done();
 });
 
 test('set server name', async (done) => {
@@ -202,11 +208,6 @@ test('set federation goLiveMessage', async (done) => {
 	done();
 });
 
-test('set hide viewer count', async (done) => {
-	const res = await sendConfigChangeRequest('hideviewercount', newHideViewerCount);
-	done();
-});
-
 test('toggle private federation mode', async (done) => {
 	const res = await sendConfigChangeRequest('federation/private', newFederationConfig.isPrivate);
 	done();
@@ -225,6 +226,11 @@ test('set federation blocked domains', async (done) => {
 
 test('set offline message', async (done) => {
 	const res = await sendConfigChangeRequest('offlinemessage', newOfflineMessage);
+	done();
+});
+
+test('set hide viewer count', async (done) => {
+	const res = await sendConfigChangeRequest('hideviewercount', newHideViewerCount);
 	done();
 });
 
@@ -274,7 +280,6 @@ test('verify updated config values', async (done) => {
 
 // Test that the raw video details being broadcasted are coming through
 test('verify admin stream details', async (done) => {
-
 	const res = await getAdminStatus();
 
 	expect(res.body.broadcaster.streamDetails.width).toBe(320);
