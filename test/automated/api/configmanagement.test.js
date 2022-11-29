@@ -8,48 +8,49 @@ const getAdminStatus = require('./lib/admin').getAdminStatus;
 
 request = request('http://127.0.0.1:8080');
 
-
 // initial configuration of server
 const defaultServerName = 'New Owncast Server';
 const defaultStreamTitle = undefined;
 const defaultLogo = '/logo';
 const defaultOfflineMessage = '';
-const defaultServerSummary = 'This is a new live video streaming server powered by Owncast.';
+const defaultServerSummary =
+	'This is a new live video streaming server powered by Owncast.';
 const defaultAdminPassword = 'abc123';
-const defaultStreamKeys = [{ key: defaultAdminPassword, comment: 'Default stream key' }];
-const defaultTags = ["owncast", "streaming"];
+const defaultStreamKeys = [
+	{ key: defaultAdminPassword, comment: 'Default stream key' },
+];
+const defaultTags = ['owncast', 'streaming'];
 const defaultYPConfig = {
 	enabled: false,
-	instanceUrl: ""
+	instanceUrl: '',
 };
 const defaultS3Config = {
 	enabled: false,
-	forcePathStyle: false
+	forcePathStyle: false,
 };
 const defaultFederationConfig = {
 	enabled: false,
 	isPrivate: false,
 	showEngagement: true,
 	goLiveMessage: "I've gone live!",
-	username: "streamer",
-	blockedDomains: []
+	username: 'streamer',
+	blockedDomains: [],
 };
 const defaultHideViewerCount = false;
-const defaultSocialHandles = [{
-	"icon": "/img/platformlogos/github.svg",
-	"platform": "github",
-	"url": "https://github.com/owncast/owncast"
-}];
-const defaultSocialHandlesAdmin = [{
-	"platform": "github",
-	"url": "https://github.com/owncast/owncast"
-}];
-const defaultForbiddenUsernames = [
-	"owncast",
-	"operator",
-	"admin",
-	"system",
+const defaultSocialHandles = [
+	{
+		icon: '/img/platformlogos/github.svg',
+		platform: 'github',
+		url: 'https://github.com/owncast/owncast',
+	},
 ];
+const defaultSocialHandlesAdmin = [
+	{
+		platform: 'github',
+		url: 'https://github.com/owncast/owncast',
+	},
+];
+const defaultForbiddenUsernames = ['owncast', 'operator', 'admin', 'system'];
 const defaultPageContent = `<h1>Welcome to Owncast!</h1>
 <ul>
 <li>
@@ -104,7 +105,7 @@ const newSocialHandles = [
 
 const newS3Config = {
 	enabled: !defaultS3Config.enabled,
-	endpoint: 'http://' + randomString() + ".tld",
+	endpoint: 'http://' + randomString() + '.tld',
 	accessKey: randomString(),
 	secret: randomString(),
 	bucket: randomString(),
@@ -116,7 +117,7 @@ const newForbiddenUsernames = [randomString(), randomString(), randomString()];
 
 const newYPConfig = {
 	enabled: !defaultYPConfig.enabled,
-	instanceUrl: 'http://' + randomString() + ".tld"
+	instanceUrl: 'http://' + randomString() + '.tld',
 };
 
 const newFederationConfig = {
@@ -125,11 +126,10 @@ const newFederationConfig = {
 	username: randomString(),
 	goLiveMessage: randomString(),
 	showEngagement: !defaultFederationConfig.showEngagement,
-	blockedDomains: [randomString() + ".tld", randomString() + ".tld"],
+	blockedDomains: [randomString() + '.tld', randomString() + '.tld'],
 };
 
 const newHideViewerCount = !defaultHideViewerCount;
-
 
 test('verify default config values', async (done) => {
 	const res = await request.get('/api/config');
@@ -168,11 +168,16 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
 	expect(res.body.federation.username).toBe(defaultFederationConfig.username);
 	expect(res.body.federation.isPrivate).toBe(defaultFederationConfig.isPrivate);
-	expect(res.body.federation.showEngagement).toBe(defaultFederationConfig.showEngagement);
-	expect(res.body.federation.goLiveMessage).toBe(defaultFederationConfig.goLiveMessage);
-	expect(res.body.federation.blockedDomains).toStrictEqual(defaultFederationConfig.blockedDomains);
+	expect(res.body.federation.showEngagement).toBe(
+		defaultFederationConfig.showEngagement
+	);
+	expect(res.body.federation.goLiveMessage).toBe(
+		defaultFederationConfig.goLiveMessage
+	);
+	expect(res.body.federation.blockedDomains).toStrictEqual(
+		defaultFederationConfig.blockedDomains
+	);
 	done();
-
 });
 
 test('set server name', async (done) => {
@@ -239,43 +244,66 @@ test('set forbidden usernames', async (done) => {
 });
 
 test('set server url', async (done) => {
-	const res = await sendConfigChangeRequest('serverurl', newYPConfig.instanceUrl);
+	const res = await sendConfigChangeRequest(
+		'serverurl',
+		newYPConfig.instanceUrl
+	);
 	done();
 });
 
 test('set federation username', async (done) => {
-	const res = await sendConfigChangeRequest('federation/username', newFederationConfig.username);
+	const res = await sendConfigChangeRequest(
+		'federation/username',
+		newFederationConfig.username
+	);
 	done();
 });
 
 test('set federation goLiveMessage', async (done) => {
-	const res = await sendConfigChangeRequest('federation/livemessage', newFederationConfig.goLiveMessage);
+	const res = await sendConfigChangeRequest(
+		'federation/livemessage',
+		newFederationConfig.goLiveMessage
+	);
 	done();
 });
 
 test('toggle private federation mode', async (done) => {
-	const res = await sendConfigChangeRequest('federation/private', newFederationConfig.isPrivate);
+	const res = await sendConfigChangeRequest(
+		'federation/private',
+		newFederationConfig.isPrivate
+	);
 	done();
 });
 
 test('toggle federation engagement', async (done) => {
-	const res = await sendConfigChangeRequest('federation/showengagement', newFederationConfig.showEngagement);
+	const res = await sendConfigChangeRequest(
+		'federation/showengagement',
+		newFederationConfig.showEngagement
+	);
 	done();
 });
 
 test('set federation blocked domains', async (done) => {
-	const res = await sendConfigChangeRequest('federation/blockdomains', newFederationConfig.blockedDomains);
+	const res = await sendConfigChangeRequest(
+		'federation/blockdomains',
+		newFederationConfig.blockedDomains
+	);
 	done();
 });
 
-
 test('set offline message', async (done) => {
-	const res = await sendConfigChangeRequest('offlinemessage', newOfflineMessage);
+	const res = await sendConfigChangeRequest(
+		'offlinemessage',
+		newOfflineMessage
+	);
 	done();
 });
 
 test('set hide viewer count', async (done) => {
-	const res = await sendConfigChangeRequest('hideviewercount', newHideViewerCount);
+	const res = await sendConfigChangeRequest(
+		'hideviewercount',
+		newHideViewerCount
+	);
 	done();
 });
 
@@ -290,7 +318,10 @@ test('enable directory', async (done) => {
 });
 
 test('enable federation', async (done) => {
-	const res = await sendConfigChangeRequest('federation/enable', newFederationConfig.enabled);
+	const res = await sendConfigChangeRequest(
+		'federation/enable',
+		newFederationConfig.enabled
+	);
 	done();
 });
 
@@ -300,14 +331,18 @@ test('change admin password', async (done) => {
 });
 
 test('verify admin password change', async (done) => {
-	const res = await getAdminConfig(adminPassword = newAdminPassword);
+	const res = await getAdminConfig((adminPassword = newAdminPassword));
 
 	expect(res.body.adminPassword).toBe(newAdminPassword);
 	done();
 });
 
 test('reset admin password', async (done) => {
-	const res = await sendConfigChangeRequest('adminpass', defaultAdminPassword, adminPassword = newAdminPassword);
+	const res = await sendConfigChangeRequest(
+		'adminpass',
+		defaultAdminPassword,
+		(adminPassword = newAdminPassword)
+	);
 	done();
 });
 
@@ -375,11 +410,16 @@ test('verify updated admin configuration', async (done) => {
 	expect(res.body.federation.enabled).toBe(newFederationConfig.enabled);
 	expect(res.body.federation.isPrivate).toBe(newFederationConfig.isPrivate);
 	expect(res.body.federation.username).toBe(newFederationConfig.username);
-	expect(res.body.federation.goLiveMessage).toBe(newFederationConfig.goLiveMessage);
-	expect(res.body.federation.showEngagement).toBe(newFederationConfig.showEngagement);
-	expect(res.body.federation.blockedDomains).toStrictEqual(newFederationConfig.blockedDomains);
+	expect(res.body.federation.goLiveMessage).toBe(
+		newFederationConfig.goLiveMessage
+	);
+	expect(res.body.federation.showEngagement).toBe(
+		newFederationConfig.showEngagement
+	);
+	expect(res.body.federation.blockedDomains).toStrictEqual(
+		newFederationConfig.blockedDomains
+	);
 	done();
-
 });
 
 test('verify updated frontend configuration', (done) => {
@@ -403,7 +443,6 @@ test('verify frontend status', (done) => {
 			done();
 		});
 });
-
 
 function randomString(length = 20) {
 	return Random.value().toString(16).substr(2, length);
