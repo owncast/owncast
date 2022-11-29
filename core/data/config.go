@@ -578,8 +578,8 @@ func GetVideoCodec() string {
 
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
-	if len(GetStreamKeys()) == 0 {
-		return errors.New("no stream key set. Please set one via the admin or command line arguments")
+	if len(GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
 
 	if GetAdminPassword() == "" {
