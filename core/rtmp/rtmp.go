@@ -99,12 +99,6 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	// if !secretMatch(data.GetAdminPassword(), c.URL.Path) {
-	// 	log.Errorln("invalid streaming key; rejecting incoming stream")
-	// 	_ = nc.Close()
-	// 	return
-	// }
-
 	rtmpOut, rtmpIn := io.Pipe()
 	_pipe = rtmpIn
 	log.Infoln("Inbound stream connected.")
