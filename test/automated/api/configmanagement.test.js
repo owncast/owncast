@@ -3,6 +3,8 @@ var request = require('supertest');
 const Random = require('crypto-random');
 
 const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
+const getAdminConfig =  require('./lib/config').getAdminConfig;
+
 request = request('http://127.0.0.1:8080');
 
 const serverName = randomString();
@@ -68,40 +70,32 @@ const defaultAdminPassword = 'abc123';
 const defaultStreamKey = undefined;
 
 test('verify default streamKey', async (done) => {
-	request
-		.get('/api/admin/serverconfig')
-		.auth('admin', defaultAdminPassword)
-		.expect(200)
-		.then((res) => {
-			expect(res.body.streamKey).toBe(defaultStreamKey);
-			done();
-		});
+
+	const res = await getAdminConfig();
+
+	expect(res.body.streamKey).toBe(defaultStreamKey);
+	done();
 });
 
 test('verify default directory configurations', async (done) => {
-	request
-		.get('/api/admin/serverconfig')
-		.auth('admin', defaultAdminPassword)
-		.expect(200)
-		.then((res) => {
-			expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
-			done();
-		});
+
+	const res = await getAdminConfig();
+
+	expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
+	done();
 });
 
 test('verify default federation configurations', async (done) => {
-	request
-		.get('/api/admin/serverconfig')
-		.auth('admin', defaultAdminPassword)
-		.expect(200)
-		.then((res) => {
-			expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
-			expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
-			expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
-			expect(res.body.federation.goLiveMessage).toBe("I've gone live!");
-			expect(res.body.federation.blockedDomains).toStrictEqual([]);
-			done();
-		});
+
+	const res = await getAdminConfig();
+
+	expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
+	expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
+	expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
+	expect(res.body.federation.goLiveMessage).toBe("I've gone live!");
+	expect(res.body.federation.blockedDomains).toStrictEqual([]);
+	done();
+
 });
 
 test('set server name', async (done) => {
@@ -237,69 +231,62 @@ test('verify updated config values', async (done) => {
 
 // Test that the raw video details being broadcasted are coming through
 test('admin stream details are correct', (done) => {
-	request
-		.get('/api/admin/status')
-		.auth('admin', defaultAdminPassword)
-		.expect(200)
-		.then((res) => {
-			expect(res.body.broadcaster.streamDetails.width).toBe(320);
-			expect(res.body.broadcaster.streamDetails.height).toBe(180);
-			expect(res.body.broadcaster.streamDetails.framerate).toBe(24);
-			expect(res.body.broadcaster.streamDetails.videoBitrate).toBe(1269);
-			expect(res.body.broadcaster.streamDetails.videoCodec).toBe('H.264');
-			expect(res.body.broadcaster.streamDetails.audioCodec).toBe('AAC');
-			expect(res.body.online).toBe(true);
-			done();
-		});
+
+	const res = await getAdminConfig();
+
+	expect(res.body.broadcaster.streamDetails.width).toBe(320);
+	expect(res.body.broadcaster.streamDetails.height).toBe(180);
+	expect(res.body.broadcaster.streamDetails.framerate).toBe(24);
+	expect(res.body.broadcaster.streamDetails.videoBitrate).toBe(1269);
+	expect(res.body.broadcaster.streamDetails.videoCodec).toBe('H.264');
+	expect(res.body.broadcaster.streamDetails.audioCodec).toBe('AAC');
+	expect(res.body.online).toBe(true);
+	done();
 });
 
 test('admin configuration is correct', (done) => {
-	request
-		.get('/api/admin/serverconfig')
-		.auth('admin', defaultAdminPassword)
-		.expect(200)
-		.then((res) => {
-			expect(res.body.instanceDetails.name).toBe(serverName);
-			expect(res.body.instanceDetails.summary).toBe(serverSummary);
-			expect(res.body.instanceDetails.offlineMessage).toBe(offlineMessage);
-			expect(res.body.instanceDetails.tags).toStrictEqual(tags);
-			expect(res.body.instanceDetails.socialHandles).toStrictEqual(
-				socialHandles
-			);
-			expect(res.body.forbiddenUsernames).toStrictEqual(forbiddenUsernames);
-			expect(res.body.streamKeys).toStrictEqual(streamKeys);
+	const res = await getAdminConfig();
 
-			expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
-			expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(
-				streamOutputVariants.framerate
-			);
-			expect(res.body.videoSettings.videoQualityVariants[0].cpuUsageLevel).toBe(
-				streamOutputVariants.cpuUsageLevel
-			);
+	expect(res.body.instanceDetails.name).toBe(serverName);
+	expect(res.body.instanceDetails.summary).toBe(serverSummary);
+	expect(res.body.instanceDetails.offlineMessage).toBe(offlineMessage);
+	expect(res.body.instanceDetails.tags).toStrictEqual(tags);
+	expect(res.body.instanceDetails.socialHandles).toStrictEqual(
+		socialHandles
+	);
+	expect(res.body.forbiddenUsernames).toStrictEqual(forbiddenUsernames);
+	expect(res.body.streamKeys).toStrictEqual(streamKeys);
 
-			expect(res.body.yp.enabled).toBe(true);
-			expect(res.body.yp.instanceUrl).toBe(ypConfig.instanceUrl);
+	expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
+	expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(
+		streamOutputVariants.framerate
+	);
+	expect(res.body.videoSettings.videoQualityVariants[0].cpuUsageLevel).toBe(
+		streamOutputVariants.cpuUsageLevel
+	);
 
-			expect(res.body.adminPassword).toBe(defaultAdminPassword);
+	expect(res.body.yp.enabled).toBe(true);
+	expect(res.body.yp.instanceUrl).toBe(ypConfig.instanceUrl);
 
-			expect(res.body.s3.enabled).toBe(s3Config.enabled);
-			expect(res.body.s3.endpoint).toBe(s3Config.endpoint);
-			expect(res.body.s3.accessKey).toBe(s3Config.accessKey);
-			expect(res.body.s3.secret).toBe(s3Config.secret);
-			expect(res.body.s3.bucket).toBe(s3Config.bucket);
-			expect(res.body.s3.region).toBe(s3Config.region);
-			expect(res.body.s3.forcePathStyle).toBe(true);
-			expect(res.body.hideViewerCount).toBe(true);
+	expect(res.body.adminPassword).toBe(defaultAdminPassword);
 
+	expect(res.body.s3.enabled).toBe(s3Config.enabled);
+	expect(res.body.s3.endpoint).toBe(s3Config.endpoint);
+	expect(res.body.s3.accessKey).toBe(s3Config.accessKey);
+	expect(res.body.s3.secret).toBe(s3Config.secret);
+	expect(res.body.s3.bucket).toBe(s3Config.bucket);
+	expect(res.body.s3.region).toBe(s3Config.region);
+	expect(res.body.s3.forcePathStyle).toBe(true);
+	expect(res.body.hideViewerCount).toBe(true);
 
-			expect(res.body.federation.enabled).toBe(federationConfig.enabled);
-			expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
-			expect(res.body.federation.username).toBe(federationConfig.username);
-			expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
-			expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
-			expect(res.body.federation.blockedDomains).toStrictEqual(federationConfig.blockedDomains);
-			done();
-		});
+	expect(res.body.federation.enabled).toBe(federationConfig.enabled);
+	expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
+	expect(res.body.federation.username).toBe(federationConfig.username);
+	expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
+	expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
+	expect(res.body.federation.blockedDomains).toStrictEqual(federationConfig.blockedDomains);
+	done();
+
 });
 
 test('frontend configuration is correct', (done) => {

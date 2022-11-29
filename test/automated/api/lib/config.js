@@ -3,6 +3,15 @@ request = request('http://127.0.0.1:8080');
 
 const defaultAdminPassword = 'abc123';
 
+async function getAdminConfig(adminPassword = defaultAdminPassword) {
+  const res = request
+    .get('/api/admin/serverconfig')
+    .auth('admin', adminPassword)
+    .expect(200);
+
+  return res;
+}
+
 async function sendConfigChangeRequest(endpoint, value, adminPassword = defaultAdminPassword) {
   const url = '/api/admin/config/' + endpoint;
   const res = await request
@@ -28,6 +37,6 @@ async function sendConfigChangePayload(endpoint, payload, adminPassword = defaul
   return res;
 }
 
-
+module.exports.getAdminConfig = getAdminConfig;
 module.exports.sendConfigChangeRequest = sendConfigChangeRequest;
 module.exports.sendConfigChangePayload = sendConfigChangePayload;
