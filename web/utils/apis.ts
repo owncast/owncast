@@ -108,6 +108,9 @@ export const FEDERATION_ACTIONS = `${API_LOCATION}federation/actions`;
 
 export const API_STREAM_HEALTH_METRICS = `${API_LOCATION}metrics/video`;
 
+// Save an array of stream keys
+export const UPDATE_STREAM_KEYS = `${API_LOCATION}config/streamkeys`;
+
 export const API_YP_RESET = `${API_LOCATION}yp/reset`;
 
 export const TEMP_UPDATER_API = LOGS_ALL;

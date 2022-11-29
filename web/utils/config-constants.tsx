@@ -113,13 +113,13 @@ export const TEXTFIELD_PROPS_LOGO = {
   label: 'Logo',
   tip: 'Upload your logo if you have one. We recommend that you use a square image that is at least 256x256. SVGs are discouraged as they cannot be displayed on all social media platforms.',
 };
-export const TEXTFIELD_PROPS_STREAM_KEY = {
+export const TEXTFIELD_PROPS_ADMIN_PASSWORD = {
   apiPath: API_STREAM_KEY,
   configPath: '',
   maxLength: TEXT_MAXLENGTH,
   placeholder: 'abc123',
-  label: 'Stream Key',
-  tip: 'Save this key somewhere safe, you will need it to stream or login to the admin dashboard!',
+  label: 'Admin Password',
+  tip: 'Save this password somewhere safe, you will need it to login to the admin dashboard!',
   required: true,
 };
 export const TEXTFIELD_PROPS_FFMPEG = {

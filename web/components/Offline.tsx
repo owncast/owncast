@@ -26,7 +26,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};
-  const { streamKey, rtmpServerPort } = serverConfig;
+  const { rtmpServerPort } = serverConfig;
   const instanceUrl = global.window?.location.hostname || '';
 
   let rtmpURL;
@@ -58,11 +58,11 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
               </Paragraph>
             )}
             <Text strong className="stream-info-label">
-              Stream Key:
+              Streaming Keys:
             </Text>
-            <Paragraph className="stream-info-box" copyable={{ text: streamKey }}>
-              *********************
-            </Paragraph>
+            <Text strong className="stream-info-box">
+              <Link href="/admin/config/streamkeys"> View </Link>
+            </Text>
           </div>
         </div>
       ),

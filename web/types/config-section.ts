@@ -138,13 +138,19 @@ export interface Health {
   representation: number;
 }
 
+export interface StreamKey {
+  key: string;
+  comment: string;
+}
+
 export interface ConfigDetails {
   externalActions: ExternalAction[];
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
   rtmpServerPort: string;
   s3: S3Field;
-  streamKey: string;
+  streamKeys: StreamKey[];
+  adminPassword: string;
   videoSettings: VideoSettingsFields;
   webServerPort: string;
   socketHostOverride: string;
