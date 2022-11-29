@@ -11,16 +11,16 @@ request = request('http://127.0.0.1:8080');
 
 // initial configuration of server
 const defaultServerName = 'New Owncast Server';
-const defaultStreamTitle = '';
-const defaultLogo = 'logo.svg';
+const defaultStreamTitle = undefined;
+const defaultLogo = '/logo';
 const defaultOfflineMessage = '';
 const defaultServerSummary = 'This is a new live video streaming server powered by Owncast.';
 const defaultAdminPassword = 'abc123';
 const defaultStreamKeys = [{ key: defaultAdminPassword, comment: 'Default stream key' }];
-const defaultTags = [];
+const defaultTags = ["owncast", "streaming"];
 const defaultYPConfig = {
 	enabled: false,
-	instanceUrl: 'https://directory.owncast.online'
+	instanceUrl: ""
 };
 const defaultS3Config = {
 	enabled: false,
@@ -35,12 +35,33 @@ const defaultFederationConfig = {
 	blockedDomains: []
 };
 const defaultHideViewerCount = false;
-const defaultSocialHandles = [];
-const defaultForbiddenUsernames = [];
-const defaultPageContent = `# Welcome to Owncast!
-- This is a live stream powered by [Owncast](https://owncast.online), a free and open source live streaming server.
-- To discover more examples of streams, visit [Owncast's directory](https://directory.owncast.online).
-- If you're the owner of this server you should visit the admin and customize the content on this page.
+const defaultSocialHandles = [{
+	"icon": "/img/platformlogos/github.svg",
+	"platform": "github",
+	"url": "https://github.com/owncast/owncast"
+}];
+const defaultSocialHandlesAdmin = [{
+	"platform": "github",
+	"url": "https://github.com/owncast/owncast"
+}];
+const defaultForbiddenUsernames = [
+	"owncast",
+	"operator",
+	"admin",
+	"system",
+];
+const defaultPageContent = `<h1>Welcome to Owncast!</h1>
+<ul>
+<li>
+<p>This is a live stream powered by <a href="https://owncast.online">Owncast</a>, a free and open source live streaming server.</p>
+</li>
+<li>
+<p>To discover more examples of streams, visit <a href="https://directory.owncast.online">Owncast's directory</a>.</p>
+</li>
+<li>
+<p>If you're the owner of this server you should visit the admin and customize the content on this page.</p>
+</li>
+</ul>
 <hr/>
 <video id="video" controls preload="metadata" width="40%" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
   <source src="https://videos.owncast.online/v/xaJ3xNn9Y6pWTdB25m9ai3.mp4?quality=" type="video/mp4" />
@@ -130,7 +151,7 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.instanceDetails.offlineMessage).toBe(defaultOfflineMessage);
 	expect(res.body.instanceDetails.tags).toStrictEqual(defaultTags);
 	expect(res.body.instanceDetails.socialHandles).toStrictEqual(
-		defaultSocialHandles
+		defaultSocialHandlesAdmin
 	);
 	expect(res.body.forbiddenUsernames).toStrictEqual(defaultForbiddenUsernames);
 	expect(res.body.streamKeys).toStrictEqual(defaultStreamKeys);
