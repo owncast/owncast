@@ -10,10 +10,13 @@ request = request('http://127.0.0.1:8080');
 
 
 // initial configuration of server
+const defaultServerName = 'New Owncast Server';
+const defaultServerSummary = 'This is a new live video streaming server powered by Owncast.';
 const defaultAdminPassword = 'abc123';
 const defaultStreamKeys = [{ key: defaultAdminPassword, comment: 'Default stream key' }];
 const defaultYPConfig = {
-	enabled: false
+	enabled: false,
+	instanceUrl: 'https://directory.owncast.online'
 };
 const defaultS3Config = {
 	enabled: false,
@@ -24,6 +27,7 @@ const defaultFederationConfig = {
 	isPrivate: false,
 	showEngagement: true,
 	goLiveMessage: "I've gone live!",
+	username: "streamer",
 	blockedDomains: []
 };
 const defaultHideViewerCount = false;
@@ -91,6 +95,20 @@ const newFederationConfig = {
 
 const newHideViewerCount = !defaultHideViewerCount;
 
+test('verify default server name', async (done) => {
+	const res = await getAdminConfig();
+
+	expect(res.body.name).toBe(defaultServerName);
+	done();
+});
+
+test('verify default server summary', async (done) => {
+	const res = await getAdminConfig();
+
+	expect(res.body.instanceDetails.summary).toBe(defaultServerSummary);
+	done();
+});
+
 test('verify default streamKeys', async (done) => {
 	const res = await getAdminConfig();
 
@@ -109,6 +127,7 @@ test('verify default directory configurations', async (done) => {
 	const res = await getAdminConfig();
 
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
+	expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
 	done();
 });
 
@@ -116,6 +135,7 @@ test('verify default federation configurations', async (done) => {
 	const res = await getAdminConfig();
 
 	expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
+	expect(res.body.federation.username).toBe(defaultFederationConfig.username);
 	expect(res.body.federation.isPrivate).toBe(defaultFederationConfig.isPrivate);
 	expect(res.body.federation.showEngagement).toBe(defaultFederationConfig.showEngagement);
 	expect(res.body.federation.goLiveMessage).toBe(defaultFederationConfig.goLiveMessage);
