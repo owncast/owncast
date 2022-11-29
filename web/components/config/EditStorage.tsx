@@ -47,6 +47,7 @@ function checkSaveable(formValues: any, currentValues: any) {
         endpoint !== currentValues.endpoint ||
         accessKey !== currentValues.accessKey ||
         secret !== currentValues.secret ||
+        bucket !== currentValues.bucket ||
         region !== currentValues.region ||
         (!currentValues.servingEndpoint && servingEndpoint !== '') ||
         (!!currentValues.servingEndpoint && servingEndpoint !== currentValues.servingEndpoint) ||
