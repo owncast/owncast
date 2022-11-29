@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nareix/joy5/format/rtmp"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
@@ -85,6 +86,11 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 			accessGranted = true
 			break
 		}
+	}
+
+	// Test against the temporary key if it was set at runtime.
+	if config.TemporaryStreamKey != "" && secretMatch(config.TemporaryStreamKey, c.URL.Path) {
+		accessGranted = true
 	}
 
 	if !accessGranted {
