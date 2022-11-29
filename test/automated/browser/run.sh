@@ -17,7 +17,7 @@ echo "Bundling web code into server..."
 # Install the web test framework
 echo "Installing test dependencies..."
 pushd test/automated/browser
-npm install --silent >/dev/null
+npm install --quiet --no-progress
 
 popd
 
