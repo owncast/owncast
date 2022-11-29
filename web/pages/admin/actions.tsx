@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Input, Modal, Space, Table, Typography } from 'antd';
+import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
 import { FormStatusIndicator } from '../../components/config/FormStatusIndicator';
@@ -32,15 +32,14 @@ interface Props {
 }
 
 const ActionModal = (props: Props) => {
-  console.log('ActionModal', props);
   const { onOk, onCancel, open, action } = props;
 
-  const [actionUrl, setActionUrl] = useState(action?.url ?? '');
-  const [actionTitle, setActionTitle] = useState(action?.title ?? '');
-  const [actionDescription, setActionDescription] = useState(action?.description ?? '');
-  const [actionIcon, setActionIcon] = useState(action?.icon ?? '');
-  const [actionColor, setActionColor] = useState(action?.color ?? '');
-  const [openExternally, setOpenExternally] = useState(action?.openExternally ?? false);
+  const [actionUrl, setActionUrl] = useState(action?.url || '');
+  const [actionTitle, setActionTitle] = useState(action?.title || '');
+  const [actionDescription, setActionDescription] = useState(action?.description || '');
+  const [actionIcon, setActionIcon] = useState(action?.icon || '');
+  const [actionColor, setActionColor] = useState(action?.color || '');
+  const [openExternally, setOpenExternally] = useState(action?.openExternally || false);
 
   function save() {
     onOk(
@@ -83,13 +82,13 @@ const ActionModal = (props: Props) => {
 
   return (
     <Modal
-      title="Create New Action"
+      title={action == null ? 'Create New Action' : 'Edit Action'}
       open={open}
       onOk={save}
       onCancel={onCancel}
       okButtonProps={okButtonProps}
     >
-      <div>
+      <Form initialValues={action}>
         Add the URL for the external action you want to present.{' '}
         <strong>Only HTTPS urls are supported.</strong>
         <p>
@@ -101,54 +100,59 @@ const ActionModal = (props: Props) => {
             Read more about external actions.
           </a>
         </p>
-        <p>
+        <Form.Item name="url">
           <Input
-            value={actionUrl}
             required
             placeholder="https://myserver.com/action (required)"
             onChange={input => setActionUrl(input.currentTarget.value.trim())}
             type="url"
             pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="title">
           <Input
             value={actionTitle}
+            defaultValue={actionTitle}
             required
             placeholder="Your action title (required)"
             onChange={input => setActionTitle(input.currentTarget.value)}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="description">
           <Input
             value={actionDescription}
+            defaultValue={actionDescription}
             placeholder="Optional description"
             onChange={input => setActionDescription(input.currentTarget.value)}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="icon">
           <Input
             value={actionIcon}
+            defaultValue={actionIcon}
             placeholder="https://myserver.com/action/icon.png (optional)"
             onChange={input => setActionIcon(input.currentTarget.value)}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="color">
           <Input
             type="color"
             value={actionColor}
+            defaultValue={actionColor}
             onChange={input => setActionColor(input.currentTarget.value)}
           />
           Optional background color of the action button.
-        </p>
-        <Checkbox
-          checked={openExternally}
-          defaultChecked={openExternally}
-          onChange={onOpenExternallyChanged}
-        >
-          Open in a new tab instead of within your page.
-        </Checkbox>
-      </div>
+        </Form.Item>
+        <Form.Item name="openExternally">
+          <Checkbox
+            checked={openExternally}
+            defaultChecked={openExternally}
+            onChange={onOpenExternallyChanged}
+          >
+            Open in a new tab instead of within your page.
+          </Checkbox>
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };
@@ -160,7 +164,7 @@ const Actions = () => {
   const [actions, setActions] = useState<ExternalAction[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [editAction, setEditAction] = useState<ExternalAction | null>(null);
+  const [editAction, setEditAction] = useState<ExternalAction>(null);
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -238,7 +242,7 @@ const Actions = () => {
     }
   }
 
-  async function handleEdit(action) {
+  async function handleEdit(action: ExternalAction) {
     setEditAction(action);
     setIsModalOpen(true);
   }
