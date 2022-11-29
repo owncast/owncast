@@ -3,17 +3,37 @@ var request = require('supertest');
 const Random = require('crypto-random');
 
 const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
-const getAdminConfig =  require('./lib/config').getAdminConfig;
+const getAdminConfig = require('./lib/config').getAdminConfig;
 
 request = request('http://127.0.0.1:8080');
 
-const serverName = randomString();
-const streamTitle = randomString();
-const serverSummary = randomString();
-const offlineMessage = randomString();
-const pageContent = `<p>${randomString()}</p>`;
-const tags = [randomString(), randomString(), randomString()];
-const streamKeys = [
+
+// initial configuration of server
+const defaultAdminPassword = 'abc123';
+const defaultStreamKey = undefined;
+const defaultYPConfig = {
+	enabled: false
+};
+const defaultS3Config = {
+	enabled: false
+};
+const defaultFederationConfig = {
+	enabled: false,
+	isPrivate: false,
+	showEngagement: true,
+	goLiveMessage: "I've gone live!",
+	blockedDomains: []
+};
+const defaultHideViewerCount = false;
+
+// new configuration for testing
+const newServerName = randomString();
+const newStreamTitle = randomString();
+const newServerSummary = randomString();
+const newOfflineMessage = randomString();
+const newPageContent = `<p>${randomString()}</p>`;
+const newTags = [randomString(), randomString(), randomString()];
+const newStreamKeys = [
 	{ key: randomString(), comment: 'test key 1' },
 	{ key: randomString(), comment: 'test key 2' },
 	{ key: randomString(), comment: 'test key 3' },
@@ -33,15 +53,15 @@ const streamOutputVariants = {
 	scaledHeight: randomNumber() * 100,
 	scaledWidth: randomNumber() * 100,
 };
-const socialHandles = [
+const newSocialHandles = [
 	{
 		url: 'http://facebook.org/' + randomString(),
 		platform: randomString(),
 	},
 ];
 
-const s3Config = {
-	enabled: true,
+const newS3Config = {
+	enabled: !defaultS3Config.enabled,
 	endpoint: 'http://' + randomString() + ".tld",
 	accessKey: randomString(),
 	secret: randomString(),
@@ -50,24 +70,23 @@ const s3Config = {
 	forcePathStyle: true,
 };
 
-const forbiddenUsernames = [randomString(), randomString(), randomString()];
+const newForbiddenUsernames = [randomString(), randomString(), randomString()];
 
-const ypConfig = {
-	enabled: true,
+const newYPConfig = {
+	enabled: !defaultYPConfig.enabled,
 	instanceUrl: 'http://' + randomString() + ".tld"
 };
 
-const federationConfig = {
-	enabled: true,
-	isPrivate: true,
+const newFederationConfig = {
+	enabled: !defaultFederationConfig.enabled,
+	isPrivate: !defaultFederationConfig.isPrivate,
 	username: randomString(),
 	goLiveMessage: randomString(),
-	showEngagement: false,
+	showEngagement: !defaultFederationConfig.showEngagement,
 	blockedDomains: [randomString() + ".tld", randomString() + ".tld"],
 };
 
-const defaultAdminPassword = 'abc123';
-const defaultStreamKey = undefined;
+const newHideViewerCount = !defaultHideViewerCount;
 
 test('verify default streamKey', async (done) => {
 
@@ -81,7 +100,7 @@ test('verify default directory configurations', async (done) => {
 
 	const res = await getAdminConfig();
 
-	expect(res.body.yp.enabled).toBe(!ypConfig.enabled);
+	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
 	done();
 });
 
@@ -89,42 +108,42 @@ test('verify default federation configurations', async (done) => {
 
 	const res = await getAdminConfig();
 
-	expect(res.body.federation.enabled).toBe(!federationConfig.enabled);
-	expect(res.body.federation.isPrivate).toBe(!federationConfig.isPrivate);
-	expect(res.body.federation.showEngagement).toBe(!federationConfig.showEngagement);
-	expect(res.body.federation.goLiveMessage).toBe("I've gone live!");
-	expect(res.body.federation.blockedDomains).toStrictEqual([]);
+	expect(res.body.federation.enabled).toBe(DefaultFederationConfig.enabled);
+	expect(res.body.federation.isPrivate).toBe(defaultFederationConfig.isPrivate);
+	expect(res.body.federation.showEngagement).toBe(defaultFederationConfig.showEngagement);
+	expect(res.body.federation.goLiveMessage).toBe(defaultFederationConfig.goLiveMessage);
+	expect(res.body.federation.blockedDomains).toStrictEqual(defaultFederationConfig.blockedDomains);
 	done();
 
 });
 
 test('set server name', async (done) => {
-	const res = await sendConfigChangeRequest('name', serverName);
+	const res = await sendConfigChangeRequest('name', newServerName);
 	done();
 });
 
 test('set stream title', async (done) => {
-	const res = await sendConfigChangeRequest('streamtitle', streamTitle);
+	const res = await sendConfigChangeRequest('streamtitle', newStreamTitle);
 	done();
 });
 
 test('set server summary', async (done) => {
-	const res = await sendConfigChangeRequest('serversummary', serverSummary);
+	const res = await sendConfigChangeRequest('serversummary', newServerSummary);
 	done();
 });
 
 test('set extra page content', async (done) => {
-	const res = await sendConfigChangeRequest('pagecontent', pageContent);
+	const res = await sendConfigChangeRequest('pagecontent', newPageContent);
 	done();
 });
 
 test('set tags', async (done) => {
-	const res = await sendConfigChangeRequest('tags', tags);
+	const res = await sendConfigChangeRequest('tags', newTags);
 	done();
 });
 
 test('set stream keys', async (done) => {
-	const res = await sendConfigChangeRequest('streamkeys', streamKeys);
+	const res = await sendConfigChangeRequest('streamkeys', newStreamKeys);
 	done();
 });
 
@@ -144,61 +163,61 @@ test('set video stream output variants', async (done) => {
 });
 
 test('set social handles', async (done) => {
-	const res = await sendConfigChangeRequest('socialhandles', socialHandles);
+	const res = await sendConfigChangeRequest('socialhandles', newSocialHandles);
 	done();
 });
 
 test('set s3 configuration', async (done) => {
-	const res = await sendConfigChangeRequest('s3', s3Config);
+	const res = await sendConfigChangeRequest('s3', newS3Config);
 	done();
 });
 
 test('set forbidden usernames', async (done) => {
 	const res = await sendConfigChangeRequest(
 		'chat/forbiddenusernames',
-		forbiddenUsernames
+		newForbiddenUsernames
 	);
 	done();
 });
 
 test('set server url', async (done) => {
-	const res = await sendConfigChangeRequest('serverurl', ypConfig.instanceUrl);
+	const res = await sendConfigChangeRequest('serverurl', newYPConfig.instanceUrl);
 	done();
 });
 
 test('set federation username', async (done) => {
-	const res = await sendConfigChangeRequest('federation/username', federationConfig.username);
+	const res = await sendConfigChangeRequest('federation/username', newFederationConfig.username);
 	done();
 });
 
 test('set federation goLiveMessage', async (done) => {
-	const res = await sendConfigChangeRequest('federation/livemessage', federationConfig.goLiveMessage);
+	const res = await sendConfigChangeRequest('federation/livemessage', newFederationConfig.goLiveMessage);
 	done();
 });
 
 test('set hide viewer count', async (done) => {
-	const res = await sendConfigChangeRequest('hideviewercount', true);
+	const res = await sendConfigChangeRequest('hideviewercount', newHideViewerCount);
 	done();
 });
 
 test('toggle private federation mode', async (done) => {
-	const res = await sendConfigChangeRequest('federation/private', federationConfig.isPrivate);
+	const res = await sendConfigChangeRequest('federation/private', newFederationConfig.isPrivate);
 	done();
 });
 
 test('toggle federation engagement', async (done) => {
-	const res = await sendConfigChangeRequest('federation/showengagement', federationConfig.showEngagement);
+	const res = await sendConfigChangeRequest('federation/showengagement', newFederationConfig.showEngagement);
 	done();
 });
 
 test('set federation blocked domains', async (done) => {
-	const res = await sendConfigChangeRequest('federation/blockdomains', federationConfig.blockedDomains);
+	const res = await sendConfigChangeRequest('federation/blockdomains', newFederationConfig.blockedDomains);
 	done();
 });
 
 
 test('set offline message', async (done) => {
-	const res = await sendConfigChangeRequest('offlinemessage', offlineMessage);
+	const res = await sendConfigChangeRequest('offlinemessage', newOfflineMessage);
 	done();
 });
 
@@ -213,24 +232,24 @@ test('enable directory', async (done) => {
 });
 
 test('enable federation', async (done) => {
-	const res = await sendConfigChangeRequest('federation/enable', federationConfig.enabled);
+	const res = await sendConfigChangeRequest('federation/enable', newFederationConfig.enabled);
 	done();
 });
 
 test('verify updated config values', async (done) => {
 	const res = await request.get('/api/config');
-	expect(res.body.name).toBe(serverName);
-	expect(res.body.streamTitle).toBe(streamTitle);
-	expect(res.body.summary).toBe(`${serverSummary}`);
-	expect(res.body.extraPageContent).toBe(pageContent);
-	expect(res.body.offlineMessage).toBe(offlineMessage);
+	expect(res.body.name).toBe(newServerName);
+	expect(res.body.streamTitle).toBe(newStreamTitle);
+	expect(res.body.summary).toBe(`${newServerSummary}`);
+	expect(res.body.extraPageContent).toBe(newPageContent);
+	expect(res.body.offlineMessage).toBe(newOfflineMessage);
 	expect(res.body.logo).toBe('/logo');
-	expect(res.body.socialHandles).toStrictEqual(socialHandles);
+	expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
 	done();
 });
 
 // Test that the raw video details being broadcasted are coming through
-test('admin stream details are correct', (done) => {
+test('verify admin stream details', async (done) => {
 
 	const res = await getAdminConfig();
 
@@ -244,18 +263,18 @@ test('admin stream details are correct', (done) => {
 	done();
 });
 
-test('admin configuration is correct', (done) => {
+test('verify updated admin configuration', async (done) => {
 	const res = await getAdminConfig();
 
-	expect(res.body.instanceDetails.name).toBe(serverName);
-	expect(res.body.instanceDetails.summary).toBe(serverSummary);
-	expect(res.body.instanceDetails.offlineMessage).toBe(offlineMessage);
-	expect(res.body.instanceDetails.tags).toStrictEqual(tags);
+	expect(res.body.instanceDetails.name).toBe(newServerName);
+	expect(res.body.instanceDetails.summary).toBe(newServerSummary);
+	expect(res.body.instanceDetails.offlineMessage).toBe(newOfflineMessage);
+	expect(res.body.instanceDetails.tags).toStrictEqual(newTags);
 	expect(res.body.instanceDetails.socialHandles).toStrictEqual(
-		socialHandles
+		newSocialHandles
 	);
-	expect(res.body.forbiddenUsernames).toStrictEqual(forbiddenUsernames);
-	expect(res.body.streamKeys).toStrictEqual(streamKeys);
+	expect(res.body.forbiddenUsernames).toStrictEqual(newForbiddenUsernames);
+	expect(res.body.streamKeys).toStrictEqual(newStreamKeys);
 
 	expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
 	expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(
@@ -266,42 +285,42 @@ test('admin configuration is correct', (done) => {
 	);
 
 	expect(res.body.yp.enabled).toBe(true);
-	expect(res.body.yp.instanceUrl).toBe(ypConfig.instanceUrl);
+	expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
 
 	expect(res.body.adminPassword).toBe(defaultAdminPassword);
 
-	expect(res.body.s3.enabled).toBe(s3Config.enabled);
-	expect(res.body.s3.endpoint).toBe(s3Config.endpoint);
-	expect(res.body.s3.accessKey).toBe(s3Config.accessKey);
-	expect(res.body.s3.secret).toBe(s3Config.secret);
-	expect(res.body.s3.bucket).toBe(s3Config.bucket);
-	expect(res.body.s3.region).toBe(s3Config.region);
-	expect(res.body.s3.forcePathStyle).toBe(true);
-	expect(res.body.hideViewerCount).toBe(true);
+	expect(res.body.s3.enabled).toBe(newS3Config.enabled);
+	expect(res.body.s3.endpoint).toBe(newS3Config.endpoint);
+	expect(res.body.s3.accessKey).toBe(newS3Config.accessKey);
+	expect(res.body.s3.secret).toBe(newS3Config.secret);
+	expect(res.body.s3.bucket).toBe(newS3Config.bucket);
+	expect(res.body.s3.region).toBe(newS3Config.region);
+	expect(res.body.s3.forcePathStyle).toBe(newS3Config.forcePathStyle);
+	expect(res.body.hideViewerCount).toBe(newHideViewerCount);
 
-	expect(res.body.federation.enabled).toBe(federationConfig.enabled);
-	expect(res.body.federation.isPrivate).toBe(federationConfig.isPrivate);
-	expect(res.body.federation.username).toBe(federationConfig.username);
-	expect(res.body.federation.goLiveMessage).toBe(federationConfig.goLiveMessage);
-	expect(res.body.federation.showEngagement).toBe(federationConfig.showEngagement);
-	expect(res.body.federation.blockedDomains).toStrictEqual(federationConfig.blockedDomains);
+	expect(res.body.federation.enabled).toBe(newFederationConfig.enabled);
+	expect(res.body.federation.isPrivate).toBe(newFederationConfig.isPrivate);
+	expect(res.body.federation.username).toBe(newFederationConfig.username);
+	expect(res.body.federation.goLiveMessage).toBe(newFederationConfig.goLiveMessage);
+	expect(res.body.federation.showEngagement).toBe(newFederationConfig.showEngagement);
+	expect(res.body.federation.blockedDomains).toStrictEqual(newFederationConfig.blockedDomains);
 	done();
 
 });
 
-test('frontend configuration is correct', (done) => {
+test('verify updated frontend configuration', (done) => {
 	request
 		.get('/api/config')
 		.expect(200)
 		.then((res) => {
-			expect(res.body.name).toBe(serverName);
+			expect(res.body.name).toBe(newServerName);
 			expect(res.body.logo).toBe('/logo');
-			expect(res.body.socialHandles).toStrictEqual(socialHandles);
+			expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
 			done();
 		});
 });
 
-test('frontend status is correct', (done) => {
+test('verify frontend status', (done) => {
 	request
 		.get('/api/status')
 		.expect(200)
