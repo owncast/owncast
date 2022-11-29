@@ -1,4 +1,5 @@
-import { Alert, Input, Space, Spin, Collapse, Typography } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
+import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd';
 import React, { FC, useState } from 'react';
 import isValidURL from '../../../utils/urls';
 
@@ -125,6 +126,11 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
           placeholder="yoursite.com"
           status={!valid && host.length > 0 ? 'error' : undefined}
           onSearch={submitButtonPressed}
+          enterButton={
+            <Button type={valid ? 'primary' : 'default'} disabled={!valid || host.length === 0}>
+              <CheckCircleOutlined />
+            </Button>
+          }
         />
 
         <Collapse ghost>

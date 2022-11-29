@@ -1,5 +1,6 @@
 import { Alert, Button, Input, Space, Spin, Collapse } from 'antd';
 import React, { FC, useState } from 'react';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import styles from './FediAuthModal.module.scss';
 import { validateAccount } from '../../../utils/validators';
 
@@ -140,6 +141,11 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
         placeholder="youraccount@yourserver.com"
         status={!valid && account.length > 0 ? 'error' : undefined}
         onSearch={submitAccountPressed}
+        enterButton={
+          <Button type={valid ? 'primary' : 'default'} disabled={!valid || account.length === 0}>
+            <CheckCircleOutlined />
+          </Button>
+        }
       />
     </>
   );
