@@ -12,6 +12,15 @@ async function getAdminConfig(adminPassword = defaultAdminPassword) {
   return res;
 }
 
+async function getAdminStatus(adminPassword = defaultAdminPassword) {
+  const res = request
+    .get('/api/admin/status')
+    .auth('admin', adminPassword)
+    .expect(200);
+
+  return res;
+}
+
 async function sendConfigChangeRequest(endpoint, value, adminPassword = defaultAdminPassword) {
   const url = '/api/admin/config/' + endpoint;
   const res = await request
@@ -38,5 +47,6 @@ async function sendConfigChangePayload(endpoint, payload, adminPassword = defaul
 }
 
 module.exports.getAdminConfig = getAdminConfig;
+module.exports.getAdminStatus = getAdminStatus;
 module.exports.sendConfigChangeRequest = sendConfigChangeRequest;
 module.exports.sendConfigChangePayload = sendConfigChangePayload;

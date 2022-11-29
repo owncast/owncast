@@ -4,6 +4,7 @@ const Random = require('crypto-random');
 
 const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
 const getAdminConfig = require('./lib/config').getAdminConfig;
+const getAdminStatus = require('./lib/config').getAdminStatus;
 
 request = request('http://127.0.0.1:8080');
 
@@ -274,7 +275,7 @@ test('verify updated config values', async (done) => {
 // Test that the raw video details being broadcasted are coming through
 test('verify admin stream details', async (done) => {
 
-	const res = await getAdminConfig();
+	const res = await getAdminStatus();
 
 	expect(res.body.broadcaster.streamDetails.width).toBe(320);
 	expect(res.body.broadcaster.streamDetails.height).toBe(180);
