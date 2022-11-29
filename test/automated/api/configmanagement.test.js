@@ -10,12 +10,13 @@ request = request('http://127.0.0.1:8080');
 
 // initial configuration of server
 const defaultAdminPassword = 'abc123';
-const defaultStreamKey = undefined;
+const defaultStreamKeys = [ defaultAdminPassword ];
 const defaultYPConfig = {
 	enabled: false
 };
 const defaultS3Config = {
-	enabled: false
+	enabled: false,
+	forcePathStyle: false
 };
 const defaultFederationConfig = {
 	enabled: false,
@@ -38,6 +39,7 @@ const newStreamKeys = [
 	{ key: randomString(), comment: 'test key 2' },
 	{ key: randomString(), comment: 'test key 3' },
 ];
+const newAdminPassword = randomString();
 
 const latencyLevel = Math.floor(Math.random() * 4);
 const appearanceValues = {
@@ -67,7 +69,7 @@ const newS3Config = {
 	secret: randomString(),
 	bucket: randomString(),
 	region: randomString(),
-	forcePathStyle: true,
+	forcePathStyle: !defaultS3Config.forcePathStyle,
 };
 
 const newForbiddenUsernames = [randomString(), randomString(), randomString()];
@@ -88,11 +90,17 @@ const newFederationConfig = {
 
 const newHideViewerCount = !defaultHideViewerCount;
 
-test('verify default streamKey', async (done) => {
-
+test('verify default streamKeys', async (done) => {
 	const res = await getAdminConfig();
 
-	expect(res.body.streamKey).toBe(defaultStreamKey);
+	expect(res.body.streamKeys).toStrictEqual(defaultStreamKeys);
+	done();
+});
+
+test('verify default adminPassword', async (done) => {
+	const res = await getAdminConfig();
+
+	expect(res.body.adminPassword).toBe(defaultAdminPassword);
 	done();
 });
 
@@ -108,7 +116,7 @@ test('verify default federation configurations', async (done) => {
 
 	const res = await getAdminConfig();
 
-	expect(res.body.federation.enabled).toBe(DefaultFederationConfig.enabled);
+	expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
 	expect(res.body.federation.isPrivate).toBe(defaultFederationConfig.isPrivate);
 	expect(res.body.federation.showEngagement).toBe(defaultFederationConfig.showEngagement);
 	expect(res.body.federation.goLiveMessage).toBe(defaultFederationConfig.goLiveMessage);
@@ -233,6 +241,23 @@ test('enable directory', async (done) => {
 
 test('enable federation', async (done) => {
 	const res = await sendConfigChangeRequest('federation/enable', newFederationConfig.enabled);
+	done();
+});
+
+test('change admin password', async (done) => {
+	const res = await sendConfigChangeRequest('adminpass', newAdminPassword);
+	done();
+});
+
+test('verify admin password change', async (done) => {
+	const res = await getAdminConfig(adminPassword = newAdminPassword);
+
+	expect(res.body.adminPassword).toBe(newAdminPassword);
+	done();
+});
+
+test('reset admin password', async (done) => {
+	const res = await sendConfigChangeRequest('adminpass', defaultAdminPassword, adminPassword = newAdminPassword);
 	done();
 });
 
