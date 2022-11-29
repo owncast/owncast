@@ -2,9 +2,9 @@ var request = require('supertest');
 
 const Random = require('crypto-random');
 
-const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
-const getAdminConfig = require('./lib/config').getAdminConfig;
-const getAdminStatus = require('./lib/config').getAdminStatus;
+const sendConfigChangeRequest = require('./lib/admin').sendConfigChangeRequest;
+const getAdminConfig = require('./lib/admin').getAdminConfig;
+const getAdminStatus = require('./lib/admin').getAdminStatus;
 
 request = request('http://127.0.0.1:8080');
 

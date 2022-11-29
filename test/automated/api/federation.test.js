@@ -1,7 +1,7 @@
 var request = require('supertest')
 const jsonfile = require('jsonfile')
 const Ajv = require("ajv-draft-04")
-const sendConfigChangeRequest = require('./lib/config').sendConfigChangeRequest;
+const sendConfigChangeRequest = require('./lib/admin').sendConfigChangeRequest;
 
 request = request('http://127.0.0.1:8080');
 
