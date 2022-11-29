@@ -9,7 +9,7 @@ import {
   TEXTFIELD_PROPS_FFMPEG,
   TEXTFIELD_PROPS_RTMP_PORT,
   TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE,
-  TEXTFIELD_PROPS_STREAM_KEY,
+  TEXTFIELD_PROPS_ADMIN_PASSWORD,
   TEXTFIELD_PROPS_WEB_PORT,
 } from '../../utils/config-constants';
 import { UpdateArgs } from '../../types/config-section';
@@ -24,7 +24,7 @@ export const EditInstanceDetails = () => {
 
   const { serverConfig } = serverStatusData || {};
 
-  const { streamKey, ffmpegPath, rtmpServerPort, webServerPort, yp, socketHostOverride } =
+  const { adminPassword, ffmpegPath, rtmpServerPort, webServerPort, yp, socketHostOverride } =
     serverConfig;
 
   const [copyIsVisible, setCopyVisible] = useState(false);
@@ -33,7 +33,7 @@ export const EditInstanceDetails = () => {
 
   useEffect(() => {
     setFormDataValues({
-      streamKey,
+      adminPassword,
       ffmpegPath,
       rtmpServerPort,
       webServerPort,
@@ -89,10 +89,10 @@ export const EditInstanceDetails = () => {
       <div className="field-container field-streamkey-container">
         <div className="left-side">
           <TextFieldWithSubmit
-            fieldName="streamKey"
-            {...TEXTFIELD_PROPS_STREAM_KEY}
-            value={formDataValues.streamKey}
-            initialValue={streamKey}
+            fieldName="adminPassword"
+            {...TEXTFIELD_PROPS_ADMIN_PASSWORD}
+            value={formDataValues.adminPassword}
+            initialValue={adminPassword}
             type={TEXTFIELD_TYPE_PASSWORD}
             onChange={handleFieldChange}
             onSubmit={showStreamKeyChangeMessage}
