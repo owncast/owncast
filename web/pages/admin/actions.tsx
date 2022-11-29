@@ -1,7 +1,9 @@
-import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Input, Modal, Space, Table, Typography } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
+import _ from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
 import { FormStatusIndicator } from '../../components/config/FormStatusIndicator';
+import { ExternalAction } from '../../interfaces/external-action';
 import {
   API_EXTERNAL_ACTIONS,
   postConfigUpdateToAPI,
@@ -16,12 +18,21 @@ let resetTimer = null;
 
 interface Props {
   onCancel: () => void;
-  onOk: any; // todo: make better type
+  onOk: (
+    oldAction: ExternalAction | null,
+    actionUrl: string,
+    actionTitle: string,
+    actionDescription: string,
+    actionIcon: string,
+    actionColor: string,
+    openExternally: boolean,
+  ) => void;
   open: boolean;
+  action: ExternalAction | null;
 }
 
-const NewActionModal = (props: Props) => {
-  const { onOk, onCancel, open } = props;
+const ActionModal = (props: Props) => {
+  const { onOk, onCancel, open, action } = props;
 
   const [actionUrl, setActionUrl] = useState('');
   const [actionTitle, setActionTitle] = useState('');
@@ -30,8 +41,25 @@ const NewActionModal = (props: Props) => {
   const [actionColor, setActionColor] = useState('');
   const [openExternally, setOpenExternally] = useState(false);
 
+  useEffect(() => {
+    setActionUrl(action?.url || '');
+    setActionTitle(action?.title || '');
+    setActionDescription(action?.description || '');
+    setActionIcon(action?.icon || '');
+    setActionColor(action?.color || '');
+    setOpenExternally(action?.openExternally || false);
+  }, [action]);
+
   function save() {
-    onOk(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
+    onOk(
+      action,
+      actionUrl,
+      actionTitle,
+      actionDescription,
+      actionIcon,
+      actionColor,
+      openExternally,
+    );
     setActionUrl('');
     setActionTitle('');
     setActionDescription('');
@@ -63,13 +91,14 @@ const NewActionModal = (props: Props) => {
 
   return (
     <Modal
-      title="Create New Action"
+      destroyOnClose
+      title={action == null ? 'Create New Action' : 'Edit Action'}
       open={open}
       onOk={save}
       onCancel={onCancel}
       okButtonProps={okButtonProps}
     >
-      <div>
+      <Form initialValues={action}>
         Add the URL for the external action you want to present.{' '}
         <strong>Only HTTPS urls are supported.</strong>
         <p>
@@ -81,54 +110,57 @@ const NewActionModal = (props: Props) => {
             Read more about external actions.
           </a>
         </p>
-        <p>
+        <Form.Item name="url">
           <Input
-            value={actionUrl}
             required
             placeholder="https://myserver.com/action (required)"
             onChange={input => setActionUrl(input.currentTarget.value.trim())}
             type="url"
             pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="title">
           <Input
             value={actionTitle}
             required
             placeholder="Your action title (required)"
             onChange={input => setActionTitle(input.currentTarget.value)}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="description">
           <Input
             value={actionDescription}
             placeholder="Optional description"
             onChange={input => setActionDescription(input.currentTarget.value)}
           />
-        </p>
-        <p>
+        </Form.Item>
+        <Form.Item name="icon">
           <Input
             value={actionIcon}
             placeholder="https://myserver.com/action/icon.png (optional)"
             onChange={input => setActionIcon(input.currentTarget.value)}
           />
-        </p>
-        <p>
-          <Input
-            type="color"
-            value={actionColor}
-            onChange={input => setActionColor(input.currentTarget.value)}
-          />
+        </Form.Item>
+        <div>
+          <Form.Item name="color" style={{ marginBottom: '0px' }}>
+            <Input
+              type="color"
+              value={actionColor}
+              onChange={input => setActionColor(input.currentTarget.value)}
+            />
+          </Form.Item>
           Optional background color of the action button.
-        </p>
-        <Checkbox
-          checked={openExternally}
-          defaultChecked={openExternally}
-          onChange={onOpenExternallyChanged}
-        >
-          Open in a new tab instead of within your page.
-        </Checkbox>
-      </div>
+        </div>
+        <Form.Item name="openExternally">
+          <Checkbox
+            checked={openExternally}
+            defaultChecked={openExternally}
+            onChange={onOpenExternallyChanged}
+          >
+            Open in a new tab instead of within your page.
+          </Checkbox>
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };
@@ -137,9 +169,10 @@ const Actions = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { externalActions } = serverConfig;
-  const [actions, setActions] = useState([]);
+  const [actions, setActions] = useState<ExternalAction[]>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [editAction, setEditAction] = useState<ExternalAction>(null);
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -182,6 +215,7 @@ const Actions = () => {
   }
 
   async function handleSave(
+    oldAction: ExternalAction | null,
     url: string,
     title: string,
     description: string,
@@ -191,26 +225,43 @@ const Actions = () => {
   ) {
     try {
       const actionsData = [...actions];
-      const updatedActions = actionsData.concat({
+
+      const newAction: ExternalAction = {
         url,
         title,
         description,
         icon,
         color,
         openExternally,
-      });
-      setActions(updatedActions);
-      await save(updatedActions);
+      };
+
+      // Replace old action if edited or append the new action
+      const index = oldAction ? actions.findIndex(item => _.isEqual(item, oldAction)) : -1;
+      if (index >= 0) {
+        actionsData[index] = newAction;
+      } else {
+        actionsData.push(newAction);
+      }
+
+      setActions(actionsData);
+      await save(actionsData);
     } catch (error) {
       console.error(error);
     }
   }
 
+  async function handleEdit(action: ExternalAction) {
+    setEditAction(action);
+    setIsModalOpen(true);
+  }
+
   const showCreateModal = () => {
+    setEditAction(null);
     setIsModalOpen(true);
   };
 
   const handleModalSaveButton = (
+    oldAction: ExternalAction | null,
     actionUrl: string,
     actionTitle: string,
     actionDescription: string,
@@ -219,7 +270,16 @@ const Actions = () => {
     openExternally: boolean,
   ) => {
     setIsModalOpen(false);
-    handleSave(actionUrl, actionTitle, actionDescription, actionIcon, actionColor, openExternally);
+    handleSave(
+      oldAction,
+      actionUrl,
+      actionTitle,
+      actionDescription,
+      actionIcon,
+      actionColor,
+      openExternally,
+    );
+    setEditAction(null);
   };
 
   const handleModalCancelButton = () => {
@@ -229,10 +289,11 @@ const Actions = () => {
   const columns = [
     {
       title: '',
-      key: 'delete',
+      key: 'delete-edit',
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => handleDelete(record)} icon={<DeleteOutlined />} />
+          <Button onClick={() => handleEdit(record)} icon={<EditOutlined />} />
         </Space>
       ),
     },
@@ -303,7 +364,8 @@ const Actions = () => {
       </Button>
       <FormStatusIndicator status={submitStatus} />
 
-      <NewActionModal
+      <ActionModal
+        action={editAction}
         open={isModalOpen}
         onOk={handleModalSaveButton}
         onCancel={handleModalCancelButton}
