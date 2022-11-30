@@ -62,7 +62,7 @@
 
 /* If the div is empty then show the placeholder */
 #message-input:empty:before {
-  content: attr(placeholderText);
+  content: attr(aria-placeholder);
   pointer-events: none;
   position: absolute; /* Fixes firefox positioning caret on the right */
   display: block; /* For Firefox */
