@@ -18,7 +18,12 @@ func handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUnd
 				return err
 			}
 		} else {
-			log.Traceln("Undo", iter.GetType().GetTypeName(), "ignored")
+			t := iter.GetType()
+			if t != nil {
+				log.Traceln("Undo", t.GetTypeName(), "ignored")
+			} else {
+				log.Traceln("Undo (no type) ignored")
+			}
 			return nil
 		}
 	}
