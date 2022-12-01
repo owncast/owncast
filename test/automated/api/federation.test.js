@@ -59,7 +59,7 @@ test('enable federation', async (done) => {
 });
 
 test('verify responses of /.well-known/webfinger when federation is enabled', async (done) => {
-	const res = request.get('/.well-known/webfinger').expect(200);
+	const res = request.get('/.well-known/webfinger').expect(400);
 	done();
 });
 

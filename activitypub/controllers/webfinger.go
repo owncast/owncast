@@ -30,6 +30,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 
 	userComponents := strings.Split(account, "@")
 	if len(userComponents) < 2 {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	host := userComponents[1]
