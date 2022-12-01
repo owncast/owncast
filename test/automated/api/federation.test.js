@@ -72,6 +72,12 @@ test('enable federation, set params', async (done) => {
 test('verify responses of /.well-known/webfinger when federation is enabled', async (done) => {
 	const resNoResource = request.get('/.well-known/webfinger').expect(400);
 	const resBadResource = request.get(
+		'/.well-known/webfinger?resource=' + fediUsername + '@' + serverURL
+	).expect(400);
+	const resBadServer = request.get(
+		'/.well-known/webfinger?resource=acct:' + fediUsername + '@not.my.server.lol'
+	).expect(404);
+	const res = request.get(
 		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverURL
 	).expect(200);
 	done();

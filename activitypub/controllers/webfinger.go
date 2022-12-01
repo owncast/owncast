@@ -47,7 +47,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	// should be rejected.
 	instanceHostString := data.GetServerURL()
 	if instanceHostString == "" {
-		w.WriteHeader(http.StatusNotImplemented)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
