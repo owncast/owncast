@@ -16,6 +16,7 @@
   color: var(--text-color-secondary);
   & .toBottomWrap {
     & .toBottomBtn {
+      z-index: 9999;
       border: none;
       background-color: gray;
     }
