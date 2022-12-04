@@ -10,7 +10,7 @@
   <p align="center">
     <strong>Take control over your content and stream it yourself.</strong>
     <br />
-    <a href="http://owncast.online"><strong>Explore the docs »</strong></a>
+    <a href="https://owncast.online"><strong>Explore the docs »</strong></a>
     <br />
     <a href="https://watch.owncast.online/">View Demo</a>
     ·
