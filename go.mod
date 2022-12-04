@@ -31,8 +31,8 @@ require (
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
 	github.com/mvdan/xurls v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/tklauser/go-sysconf v0.3.10 // indirect
-	github.com/tklauser/numcpus v0.4.0 // indirect
+	github.com/tklauser/go-sysconf v0.3.11 // indirect
+	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/net v0.2.0
@@ -57,7 +57,7 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.5
-	github.com/shirou/gopsutil/v3 v3.22.10
+	github.com/shirou/gopsutil/v3 v3.22.11
 )
 
 require github.com/SherClockHolmes/webpush-go v1.2.0
