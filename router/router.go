@@ -156,6 +156,12 @@ func Start() error {
 	// Set the following state of a follower or follow request.
 	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
 
+	// Upload custom emoji
+	http.HandleFunc("/api/admin/emoji/upload", middleware.RequireAdminAuth(admin.UploadCustomEmoji))
+
+	// Delete custom emoji
+	http.HandleFunc("/api/admin/emoji/delete", middleware.RequireAdminAuth(admin.DeleteCustomEmoji))
+
 	// Update config values
 
 	// Change the current streaming key in memory

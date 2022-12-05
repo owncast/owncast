@@ -1,0 +1,92 @@
+package admin
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/utils"
+)
+
+// UploadCustomEmoji allows POSTing a new custom emoji to the server.
+func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	type postEmoji struct {
+		Name string `json:"name"`
+		Data string `json:"data"`
+	}
+
+	emoji := new(postEmoji)
+
+	if err := json.NewDecoder(r.Body).Decode(emoji); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	bytes, extension, err := utils.DecodeBase64Image(emoji.Data)
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Prevent path traversal attacks
+	var emojiFileName = filepath.Base(emoji.Name)
+	if !strings.HasSuffix(emojiFileName, extension) {
+		// If we upload an JPEG file with PNG extension, we rename it
+		emojiFileName = strings.TrimSuffix(emojiFileName, filepath.Ext(emojiFileName)) + extension
+	}
+
+	var targetPath = filepath.Join(config.CustomEmojiPath, emojiFileName)
+
+	if utils.DoesFileExists(targetPath) {
+		controllers.WriteSimpleResponse(w, false, fmt.Sprintf("An emoji with the name %q already exists", emojiFileName))
+		return
+	}
+
+	if err = os.WriteFile(targetPath, bytes, 0o600); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("Emoji %q has been uploaded", emojiFileName))
+}
+
+// DeleteCustomEmoji deletes a custom emoji
+func DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	type deleteEmoji struct {
+		Name string `json:"name"`
+	}
+
+	emoji := new(deleteEmoji)
+
+	if err := json.NewDecoder(r.Body).Decode(emoji); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	var emojiFileName = filepath.Base(emoji.Name)
+	var targetPath = filepath.Join(config.CustomEmojiPath, emojiFileName)
+
+	if err := os.Remove(targetPath); err != nil {
+		if os.IsNotExist(err) {
+			controllers.WriteSimpleResponse(w, false, fmt.Sprintf("Emoji %q doesn't exist", emojiFileName))
+		} else {
+			controllers.WriteSimpleResponse(w, false, err.Error())
+		}
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("Emoji %q has been deleted", emojiFileName))
+}
