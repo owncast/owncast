@@ -77,6 +77,9 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 	const resBadServer = request.get(
 		'/.well-known/webfinger?resource=acct:' + fediUsername + '@not.my.server.lol'
 	).expect(404);
+	const resBadUser = request.get(
+		'/.well-known/webfinger?resource=acct:not' + fediUsername + '@' + serverURL
+	).expect(404);
 	const res = request.get(
 		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverURL
 	).expect(200);
