@@ -1,4 +1,5 @@
 var request = require('supertest');
+const parseJson = require('parse-json');
 const jsonfile = require('jsonfile');
 const Ajv = require('ajv-draft-04');
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
@@ -82,8 +83,13 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 	).expect(404);
 	const res = request.get(
 		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverURL
-	).expect(200);
-	done();
+	).set('Accept', 'application/json')
+		.expect('Content-Type', "application/jrd+json")
+		.expect(200)
+		.then((res) => {
+			expect(parseJson(res.body)).toBe(true);
+			done();
+		});
 });
 
 test('verify responses of /.well-known/host-meta when federation is enabled', async (done) => {
