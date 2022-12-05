@@ -64,6 +64,12 @@ export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `/api/admin/chat/messagevisibility`;
 
+// Upload a new custom emoji
+export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
+
+// Delete a custom emoji
+export const DELETE_EMOJI = `${API_LOCATION}emoji/delete`;
+
 // Get all access tokens
 export const ACCESS_TOKENS = `${API_LOCATION}accesstokens`;
 
