@@ -56,16 +56,16 @@ test('verify responses of /federation/ when federation is disabled', async (done
 	done();
 });
 
-test('enable federation, set params', async (done) => {
+test('set required parameters and enable federation', async (done) => {
 	const res1 = await sendConfigChangeRequest(
 		'serverurl',
 		serverURL
 	);
-	const res2 = await sendConfigChangeRequest('federation/enable', true);
-	const res3 = await sendConfigChangeRequest(
+	const res2 = await sendConfigChangeRequest(
 		'federation/username',
 		fediUsername
 	);
+	const res3 = await sendConfigChangeRequest('federation/enable', true);
 	done();
 });
 
