@@ -81,11 +81,10 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 	const resBadUser = request.get(
 		'/.well-known/webfinger?resource=acct:not' + fediUsername + '@' + serverURL
 	).expect(404);
-	const res = request.get(
+	const resNoAccept = request.get(
 		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverURL
-	).set('Accept', 'application/json')
-		.expect('Content-Type', "application/jrd+json")
-		.expect(200)
+	).expect(200)
+		.expect('Content-Type', /json/)
 		.then((res) => {
 			expect(parseJson(res.body)).toBe(true);
 			done();
