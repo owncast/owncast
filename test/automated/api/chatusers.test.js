@@ -154,17 +154,13 @@ test('ban an ip address', async (done) => {
   done();
 });
 
-// Note: This test expects the local address to be 127.0.0.1.
-// If it's running on an ipv6-only network, for example, things will
-// probably fail.
 test('verify IP address is blocked from the ban', async (done) => {
   const response = await request
     .get(`/api/admin/chat/users/ipbans`)
     .auth('admin', 'abc123')
     .expect(200);
 
-  expect(response.body).toHaveLength(1);
-  expect(response.body[0].ipAddress).toBe(localIPAddress);
+  expect(onlyLocalIPAddress(response.body)).toBe(true);
   done();
 });
 
@@ -196,3 +192,14 @@ test('verify access is again allowed', async (done) => {
   await request.get(`/api/chat?accessToken=${accessToken}`).expect(200);
   done();
 });
+
+
+// This function expects the local address to be 127.0.0.1 & ::1
+function onlyLocalIPAddress(banInfo) {
+  for (let i = 0; i < banInfo.length; i++) {
+    if ((banInfo[i].ipAddress != "127.0.0.1") && (banInfo[i].ipAddress != "::1")) {
+      return false
+    }
+  }
+  return true
+}
