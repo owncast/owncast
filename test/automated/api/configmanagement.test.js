@@ -3,6 +3,7 @@ var request = require('supertest');
 const Random = require('crypto-random');
 
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
+const failAdminRequest = require('./lib/admin').failAdminRequest;
 const getAdminResponse = require('./lib/admin').getAdminResponse;
 
 request = request('http://127.0.0.1:8080');
@@ -245,6 +246,10 @@ test('set forbidden usernames', async (done) => {
 });
 
 test('set server url', async (done) => {
+	const resBadURL = await failAdminRequest(
+		'config/serverurl',
+		'not.valid.url'
+	);
 	const res = await sendAdminRequest(
 		'config/serverurl',
 		newYPConfig.instanceUrl
