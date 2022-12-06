@@ -27,10 +27,17 @@ export const Modal: FC<ModalProps> = ({
 }) => {
   const [loading, setLoading] = useState(!!url);
 
+  let defaultHeight = '100%';
+  let defaultWidth = '520px';
+  if (url) {
+    defaultHeight = '70vh';
+    defaultWidth = '900px';
+  }
+
   const modalStyle = {
     padding: '0px',
     minHeight: height,
-    height: height ?? '100%',
+    height: height ?? defaultHeight,
   };
 
   const iframe = url && (
@@ -42,6 +49,7 @@ export const Modal: FC<ModalProps> = ({
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
       frameBorder="0"
       allowFullScreen
+      style={{ display: 'block' }}
       // eslint-disable-next-line react/no-unknown-property
       onLoad={() => setLoading(false)}
     />
@@ -57,7 +65,7 @@ export const Modal: FC<ModalProps> = ({
       onCancel={handleCancel}
       afterClose={afterClose}
       bodyStyle={modalStyle}
-      width={width}
+      width={width ?? defaultWidth}
       zIndex={999}
       footer={null}
       centered
