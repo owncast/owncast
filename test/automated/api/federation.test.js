@@ -90,7 +90,9 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 	).expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(parseJson(res.body)).toBe(true);
+			expect(() => {
+				parseJson(res.text);
+			}).not.toThrow();;
 			done();
 		});
 });
