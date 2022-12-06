@@ -13,6 +13,8 @@
   font-family: var(--theme-text-display-font-family);
   font-size: 0.7rem;
   font-weight: 600;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .footer {
@@ -25,6 +27,10 @@
   margin-top: 5px;
   margin-bottom: 10px;
   font-size: 0.8rem;
+  border-color: var(--color-owncast-palette-5);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 6px;
 
   .logo {
     border-radius: 50%;

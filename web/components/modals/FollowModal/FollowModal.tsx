@@ -79,7 +79,7 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
         By following this stream you'll get notified on the Fediverse when it goes live. Now is a
         great time to
         <a href="https://owncast.online/join-fediverse" target="_blank" rel="noreferrer">
-          learn about the Fediverse
+          &nbsp;learn about the Fediverse&nbsp;
         </a>
         if it's new to you.
       </div>
