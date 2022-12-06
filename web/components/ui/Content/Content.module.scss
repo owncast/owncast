@@ -24,6 +24,7 @@
 
   .mainSection::-webkit-scrollbar-thumb {
     background: var(--theme-color-components-scrollbar-thumb);
+    border-radius: 1px;
   }
 
   .topSection {
