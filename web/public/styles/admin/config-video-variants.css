@@ -46,21 +46,21 @@
 .codec-module .ant-collapse-content-active {
   background-color: var(--white-15);
 }
-.video-text-field-container{
-  margin-left: 12px; 
-  margin-bottom: 30px; 
+.video-text-field-container {
+  margin-left: 12px;
+  margin-bottom: 30px;
 }
-.video-varient-alert{
-  margin-bottom: 30px; 
+.video-varient-alert {
+  margin-bottom: 30px;
 }
-.advanced-switch-container{
-  margin-left: 80px; 
+.advanced-switch-container {
+  margin-left: 80px;
 }
-.advanced-description-switch-container{
+.advanced-description-switch-container {
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
 }
-.advanced-description-wrapper{
+.advanced-description-wrapper {
   color: black;
   display: flex;
   align-items: center;
