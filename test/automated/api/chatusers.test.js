@@ -7,7 +7,8 @@ const fs = require('fs');
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 
-const localIPAddress = '127.0.0.1';
+const localIPAddressV4 = '127.0.0.1';
+const localIPAddressV6 = '::1';
 
 const testVisibilityMessage = {
   body: 'message ' + Math.floor(Math.random() * 100),
@@ -148,7 +149,12 @@ test('verify user is enabled', async (done) => {
 test('ban an ip address', async (done) => {
   await request
     .post('/api/admin/chat/users/ipbans/create')
-    .send({ value: localIPAddress })
+    .send({ value: localIPAddressV4 })
+    .auth('admin', 'abc123')
+    .expect(200);
+  await request
+    .post('/api/admin/chat/users/ipbans/create')
+    .send({ value: localIPAddressV6 })
     .auth('admin', 'abc123')
     .expect(200);
   done();
@@ -160,6 +166,7 @@ test('verify IP address is blocked from the ban', async (done) => {
     .auth('admin', 'abc123')
     .expect(200);
 
+  expect(response.body).toHaveLength(2);
   expect(onlyLocalIPAddress(response.body)).toBe(true);
   done();
 });
@@ -172,7 +179,12 @@ test('verify access is denied', async (done) => {
 test('remove an ip address ban', async (done) => {
   await request
     .post('/api/admin/chat/users/ipbans/remove')
-    .send({ value: localIPAddress })
+    .send({ value: localIPAddressV4 })
+    .auth('admin', 'abc123')
+    .expect(200);
+    await request
+    .post('/api/admin/chat/users/ipbans/remove')
+    .send({ value: localIPAddressV6 })
     .auth('admin', 'abc123')
     .expect(200);
   done();
@@ -194,10 +206,10 @@ test('verify access is again allowed', async (done) => {
 });
 
 
-// This function expects the local address to be 127.0.0.1 & ::1
+// This function expects the local address to be localIPAddressV4 & localIPAddressV6
 function onlyLocalIPAddress(banInfo) {
   for (let i = 0; i < banInfo.length; i++) {
-    if ((banInfo[i].ipAddress != "127.0.0.1") && (banInfo[i].ipAddress != "::1")) {
+    if ((banInfo[i].ipAddress != localIPAddressV4) && (banInfo[i].ipAddress != localIPAddressV6)) {
       return false
     }
   }
