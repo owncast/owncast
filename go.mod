@@ -1,6 +1,6 @@
 module github.com/owncast/owncast
 
-go 1.17
+go 1.18
 
 require (
 	github.com/amalfra/etag v1.0.0
