@@ -9,7 +9,8 @@ request = request('http://127.0.0.1:8080');
 var ajv = new Ajv();
 var nodeInfoSchema = jsonfile.readFileSync('schema/nodeinfo_2.0.json');
 
-const serverURL = 'owncast.server.test'
+const serverURL = 'http://owncast.server.test'
+const serverName = 'owncast.server.test'
 const fediUsername = 'streamer'
 
 test('disable federation', async (done) => {
@@ -73,19 +74,19 @@ test('set required parameters and enable federation', async (done) => {
 test('verify responses of /.well-known/webfinger when federation is enabled', async (done) => {
 	const resNoResource = request.get('/.well-known/webfinger').expect(400);
 	const resBadResource = request.get(
-		'/.well-known/webfinger?resource=' + fediUsername + '@' + serverURL
+		'/.well-known/webfinger?resource=' + fediUsername + '@' + serverName
 	).expect(400);
 	const resBadResource2 = request.get(
-		'/.well-known/webfinger?resource=notacct:' + fediUsername + '@' + serverURL
+		'/.well-known/webfinger?resource=notacct:' + fediUsername + '@' + serverName
 	).expect(400);
 	const resBadServer = request.get(
-		'/.well-known/webfinger?resource=acct:' + fediUsername + '@not' + serverURL
+		'/.well-known/webfinger?resource=acct:' + fediUsername + '@not' + serverName
 	).expect(404);
 	const resBadUser = request.get(
-		'/.well-known/webfinger?resource=acct:not' + fediUsername + '@' + serverURL
+		'/.well-known/webfinger?resource=acct:not' + fediUsername + '@' + serverName
 	).expect(404);
 	const resNoAccept = request.get(
-		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverURL
+		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverName
 	).expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
