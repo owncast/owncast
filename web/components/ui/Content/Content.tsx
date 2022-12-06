@@ -346,7 +346,7 @@ export const Content: FC = () => {
                   )}
 
                   <Modal
-                    title="Notify"
+                    title="Browser Notifications"
                     open={showNotifyModal}
                     afterClose={() => disableNotifyReminderPopup()}
                     handleCancel={() => disableNotifyReminderPopup()}

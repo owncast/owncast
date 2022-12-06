@@ -1,4 +1,4 @@
-import { Row, Col, Spin, Typography, Button } from 'antd';
+import { Row, Spin, Typography, Button } from 'antd';
 import React, { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { accessTokenAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
@@ -25,6 +25,7 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
       <div className={styles.title}>{window.location.toString()} wants to</div>
       <div className={styles.permissionLine}>
         <svg
+          className={styles.bell}
           width="16"
           height="16"
           viewBox="0 0 16 16"
@@ -36,12 +37,11 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
             fill="#676670"
           />
         </svg>
-        Show notifications
+        <span className={styles.showNotificationsText}>Show notifications</span>
       </div>
       <div className={styles.buttonRow}>
         <Button
           type="primary"
-          className={styles.allow}
           onClick={() => {
             start();
           }}
@@ -110,17 +110,13 @@ export const BrowserNotifyModal = () => {
 
   return (
     <Spin spinning={browserPushPermissionsPending}>
-      <Row align="top">
-        <Title>Browser Notifications</Title>
-        Get notified right in the browser each time this stream goes live. Blah blah blah more
-        description text goes here.
+      <Row className={styles.description}>
+        Get notified right in the browser each time this stream goes live.
+        <a href="https://owncast.online/docs/notifications/#browser-notifications">Learn more</a>
+        &nbsp; about Owncast browser notifications.
       </Row>
       <Row>{error}</Row>
-      <Row align="top">
-        <Col span={12}>
-          <PermissionPopupPreview start={() => startBrowserPushRegistration()} />
-        </Col>
-      </Row>
+      <PermissionPopupPreview start={() => startBrowserPushRegistration()} />
     </Spin>
   );
 };
