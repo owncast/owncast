@@ -59,6 +59,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
 		HideViewerCount:         data.GetHideViewerCount(),
+		UseCustomEmojis:         data.GetUseCustomEmojis(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -119,6 +120,7 @@ type serverConfigAdminResponse struct {
 	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
 	Notifications           notificationsConfigResponse `json:"notifications"`
 	HideViewerCount         bool                        `json:"hideViewerCount"`
+	UseCustomEmojis         bool                        `json:"useCustomEmojis"`
 }
 
 type videoSettings struct {

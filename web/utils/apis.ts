@@ -64,6 +64,9 @@ export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `/api/admin/chat/messagevisibility`;
 
+// Get custom emoji list
+export const LIST_UPLOADED_EMOJI = `${API_LOCATION}emoji/list`;
+
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
 

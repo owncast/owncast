@@ -6,12 +6,17 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 )
+
+// GetUploadedCustomEmojiList returns a list of all uploaded custom emojis
+func GetUploadedCustomEmojiList(w http.ResponseWriter, r *http.Request) {
+	controllers.WriteResponse(w, data.GetEmojiList(true))
+}
 
 // UploadCustomEmoji allows POSTing a new custom emoji to the server.
 func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +36,7 @@ func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bytes, extension, err := utils.DecodeBase64Image(emoji.Data)
+	bytes, _, err := utils.DecodeBase64Image(emoji.Data)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -39,12 +44,13 @@ func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 
 	// Prevent path traversal attacks
 	var emojiFileName = filepath.Base(emoji.Name)
-	if !strings.HasSuffix(emojiFileName, extension) {
-		// If we upload an JPEG file with PNG extension, we rename it
-		emojiFileName = strings.TrimSuffix(emojiFileName, filepath.Ext(emojiFileName)) + extension
-	}
-
 	var targetPath = filepath.Join(config.CustomEmojiPath, emojiFileName)
+
+	err = os.MkdirAll(config.CustomEmojiPath, 0700)
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
 
 	if utils.DoesFileExists(targetPath) {
 		controllers.WriteSimpleResponse(w, false, fmt.Sprintf("An emoji with the name %q already exists", emojiFileName))

@@ -1,12 +1,11 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Space, Table, Typography, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import FormStatusIndicator from '../../../components/config/FormStatusIndicator';
 
-import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
+import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI, LIST_UPLOADED_EMOJI } from '../../../utils/apis';
 
-import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
 import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../../utils/images';
 import {
   createInputStatus,
@@ -14,7 +13,9 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
-import { RESET_TIMEOUT } from '../../../utils/config-constants';
+import { FIELD_PROPS_USE_CUSTOM_EMOJIS, RESET_TIMEOUT } from '../../../utils/config-constants';
+import ToggleSwitch from '../../../components/config/ToggleSwitch';
+import { ServerStatusContext } from '../../../utils/server-status-context';
 
 type CustomEmoji = {
   name: string;
@@ -24,7 +25,11 @@ type CustomEmoji = {
 const { Title, Paragraph } = Typography;
 
 const Emoji = () => {
+  const serverStatusData = useContext(ServerStatusContext);
+  const { serverConfig } = serverStatusData || {};
+
   const [emojis, setEmojis] = useState<CustomEmoji[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [uploadFile, setUploadFile] = useState<RcFile>(null);
@@ -39,7 +44,7 @@ const Emoji = () => {
   async function getEmojis() {
     setLoading(true);
     try {
-      const response: CustomEmoji[] = await fetchData(URL_CUSTOM_EMOJIS);
+      const response = await fetchData(LIST_UPLOADED_EMOJI);
       setEmojis(response);
     } catch (error) {
       console.error('error fetching emojis', error);
@@ -143,13 +148,22 @@ const Emoji = () => {
       ),
     },
   ];
+
   return (
     <div>
       <Title>Emojis</Title>
       <Paragraph>
-        Emojis can be used in chat messages. When uploading a new emoji, the filename will be used
-        as emoji name.
+        Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
+        filename will be used as emoji name.
       </Paragraph>
+
+      <ToggleSwitch
+        fieldName="useCustomEmojis"
+        useSubmit
+        {...FIELD_PROPS_USE_CUSTOM_EMOJIS}
+        checked={serverConfig.useCustomEmojis}
+      />
+
       <Table
         rowKey={record => record.url}
         dataSource={emojis}

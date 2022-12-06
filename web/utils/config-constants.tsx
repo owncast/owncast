@@ -31,6 +31,7 @@ export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
 export const API_HIDE_VIEWER_COUNT = '/hideviewercount';
+export const API_USE_CUSTOM_EMOJIS = '/usecustomemojis';
 export const API_CHAT_DISABLE = '/chat/disable';
 export const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 export const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
@@ -203,6 +204,13 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
   configPath: '',
   label: 'Hide viewer count',
   tip: 'Turn this ON to hide the viewer count the web page.',
+};
+
+export const FIELD_PROPS_USE_CUSTOM_EMOJIS = {
+  apiPath: API_USE_CUSTOM_EMOJIS,
+  configPath: '',
+  label: 'Use my own emojis',
+  tip: 'Use your own custom emojis instead of the default ones.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {

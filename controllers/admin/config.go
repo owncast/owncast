@@ -792,3 +792,23 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
+
+// SetUseCustomEmojis will switch between default and own uploaded custom emojis.
+func SetUseCustomEmojis(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update custom emojis")
+		return
+	}
+
+	if err := data.SetUseCustomEmojis(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "custom emojis updated")
+}
