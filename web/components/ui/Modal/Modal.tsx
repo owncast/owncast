@@ -42,6 +42,7 @@ export const Modal: FC<ModalProps> = ({
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
       frameBorder="0"
       allowFullScreen
+      style={{ display: 'block' }}
       // eslint-disable-next-line react/no-unknown-property
       onLoad={() => setLoading(false)}
     />
