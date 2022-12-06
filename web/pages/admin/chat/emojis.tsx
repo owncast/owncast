@@ -144,7 +144,7 @@ const Emoji = () => {
       title: 'Emoji',
       key: 'url',
       render: (text, record) => (
-        <img src={record.url} alt={record.name} style={{ maxWidth: '2vw' }} />
+        <img src={`/api/admin${record.url}`} alt={record.name} style={{ maxWidth: '2vw' }} />
       ),
     },
   ];

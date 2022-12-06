@@ -165,6 +165,10 @@ func Start() error {
 	// Delete custom emoji
 	http.HandleFunc("/api/admin/emoji/delete", middleware.RequireAdminAuth(admin.DeleteCustomEmoji))
 
+	// Return a single custom uploaded emoji image
+	// TODO: It might be better to have middleware.RequireAdminAuth, but that would require basic auth for <img> embeds
+	http.HandleFunc("/api/admin/img/emoji/", admin.GetUploadedCustomEmojiImage)
+
 	// Update config values
 
 	// Change the current streaming key in memory
