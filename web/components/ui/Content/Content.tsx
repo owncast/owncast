@@ -382,6 +382,7 @@ export const Content: FC = () => {
                   setShowFollowModal={setShowFollowModal}
                 />
               )}
+              <Footer version={version} />
             </div>
             {showChat && !isMobile && <Sidebar />}
           </AntContent>
