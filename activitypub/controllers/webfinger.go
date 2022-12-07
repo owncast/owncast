@@ -22,7 +22,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	instanceHostString := utils.GetHostnameFromURLString(data.GetServerURL())
 	if instanceHostString == "" {
 		w.WriteHeader(http.StatusNotFound)
-		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set. data.GetServerURL(): " + data.GetServerURL())
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set properly. data.GetServerURL(): " + data.GetServerURL())
 		return
 	}
 
