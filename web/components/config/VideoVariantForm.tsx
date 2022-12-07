@@ -110,7 +110,6 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     <div className={classes}>
       <div className="video-varient-alert">
         <Alert
-          description="Learn more about how each of these settings can impact the performance of your server."
           type="info"
           action={
             <a
@@ -118,9 +117,12 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button size="small" type="text">
-                Visit the link
-              </Button>
+              <div className="video-varient-alert-button-container">
+                <Button size="small" type="text" icon={<ExclamationCircleFilled />}>
+                  Read more about how each of these settings can impact the performance of your
+                  server.
+                </Button>
+              </div>
             </a>
           }
         />
