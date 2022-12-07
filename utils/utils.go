@@ -366,7 +366,7 @@ func IntPercentage(x, total int) int {
 	return int(float64(x) / float64(total) * 100)
 }
 
-// DecodeBase64Image decodes a base64 image string into a byte array, returning the extension (including dot) for the content type
+// DecodeBase64Image decodes a base64 image string into a byte array, returning the extension (including dot) for the content type.
 func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 	s := strings.SplitN(url, ",", 2)
 	if len(s) < 2 {
@@ -402,5 +402,5 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 		return
 	}
 
-	return
+	return bytes, extension, nil
 }

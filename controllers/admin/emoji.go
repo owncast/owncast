@@ -14,7 +14,7 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-// GetUploadedCustomEmojiList returns a list of all uploaded custom emojis
+// GetUploadedCustomEmojiList returns a list of all uploaded custom emojis.
 func GetUploadedCustomEmojiList(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteResponse(w, data.GetEmojiList(true))
 }
@@ -77,7 +77,7 @@ func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("Emoji %q has been uploaded", emojiFileName))
 }
 
-// DeleteCustomEmoji deletes a custom emoji
+// DeleteCustomEmoji deletes a custom emoji.
 func DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
