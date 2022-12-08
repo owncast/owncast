@@ -52,7 +52,7 @@ async function failAdminRequest(
 	adminPassword = defaultAdminPassword,
 	responseCode = 400
 ) {
-	const url = '/api/admin/config/' + endpoint;
+	const url = '/api/admin/' + endpoint;
 	const res = await request
 		.post(url)
 		.auth('admin', adminPassword)
