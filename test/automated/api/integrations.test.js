@@ -1,6 +1,9 @@
 var request = require('supertest');
 request = request('http://127.0.0.1:8080');
 
+const getAdminResponse = require('./lib/admin').getAdminResponse;
+const sendAdminPayload = require('./lib/admin').sendAdminPayload;
+
 var accessToken = '';
 var webhookID;
 
@@ -8,7 +11,7 @@ const webhook = 'https://super.duper.cool.thing.biz/owncast';
 const events = ['CHAT'];
 
 test('create webhook', async (done) => {
-  const res = await sendIntegrationsChangePayload('webhooks/create', {
+  const res = await sendAdminPayload('webhooks/create', {
     url: webhook,
     events: events,
   });
@@ -20,10 +23,8 @@ test('create webhook', async (done) => {
 });
 
 test('check webhooks', (done) => {
-  request
-    .get('/api/admin/webhooks')
-    .auth('admin', 'abc123')
-    .expect(200)
+
+  getAdminResponse('webhooks')
     .then((res) => {
       expect(res.body).toHaveLength(1);
       expect(res.body[0].url).toBe(webhook);
@@ -34,7 +35,7 @@ test('check webhooks', (done) => {
 });
 
 test('delete webhook', async (done) => {
-  const res = await sendIntegrationsChangePayload('webhooks/delete', {
+  const res = await sendAdminPayload('webhooks/delete', {
     id: webhookID,
   });
   expect(res.body.success).toBe(true);
@@ -42,10 +43,7 @@ test('delete webhook', async (done) => {
 });
 
 test('check that webhook was deleted', (done) => {
-  request
-    .get('/api/admin/webhooks')
-    .auth('admin', 'abc123')
-    .expect(200)
+  getAdminResponse('webhooks')
     .then((res) => {
       expect(res.body).toHaveLength(0);
       done();
@@ -59,7 +57,7 @@ test('create access token', async (done) => {
     'CAN_SEND_MESSAGES',
     'HAS_ADMIN_ACCESS',
   ];
-  const res = await sendIntegrationsChangePayload('accesstokens/create', {
+  const res = await sendAdminPayload('accesstokens/create', {
     name: name,
     scopes: scopes,
   });
@@ -74,10 +72,7 @@ test('create access token', async (done) => {
 });
 
 test('check access tokens', async (done) => {
-  const res = await request
-    .get('/api/admin/accesstokens')
-    .auth('admin', 'abc123')
-    .expect(200);
+  const res = await getAdminResponse('accesstokens');
   const tokenCheck = res.body.filter(
     (token) => token.accessToken === accessToken
   );
@@ -146,7 +141,7 @@ test('test fetch chat history OPTIONS request', async (done) => {
 });
 
 test('delete access token', async (done) => {
-  const res = await sendIntegrationsChangePayload('accesstokens/delete', {
+  const res = await sendAdminPayload('accesstokens/delete', {
     token: accessToken,
   });
   expect(res.body.success).toBe(true);
@@ -154,10 +149,7 @@ test('delete access token', async (done) => {
 });
 
 test('check token delete was successful', async (done) => {
-  const res = await request
-    .get('/api/admin/accesstokens')
-    .auth('admin', 'abc123')
-    .expect(200);
+  const res = await getAdminResponse('accesstokens');
   const tokenCheck = res.body.filter(
     (token) => token.accessToken === accessToken
   );
@@ -165,13 +157,3 @@ test('check token delete was successful', async (done) => {
   done();
 });
 
-async function sendIntegrationsChangePayload(endpoint, payload) {
-  const url = '/api/admin/' + endpoint;
-  const res = await request
-    .post(url)
-    .auth('admin', 'abc123')
-    .send(payload)
-    .expect(200);
-
-  return res;
-}
