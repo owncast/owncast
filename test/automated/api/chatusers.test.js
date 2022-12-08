@@ -38,10 +38,7 @@ test('can set the user as moderator', async (done) => {
 });
 
 test('verify user is a moderator', async (done) => {
-  const response = await request
-    .get('/api/admin/chat/users/moderators')
-    .auth('admin', 'abc123')
-    .expect(200);
+  const response = await getAdminResponse('chat/users/moderators');
   const tokenCheck = response.body.filter((user) => user.id === userId);
   expect(tokenCheck).toHaveLength(1);
 
