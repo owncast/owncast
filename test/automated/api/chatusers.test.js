@@ -76,7 +76,7 @@ test('verify user list is populated', async (done) => {
   });
 });
 
-test('disable a user', async (done) => {
+test('disable a user by admin', async (done) => {
   // To allow for visually being able to see the test hiding the
   // message add a short delay.
   await new Promise((r) => setTimeout(r, 1500));
@@ -110,7 +110,7 @@ test('verify messages from user are hidden', async (done) => {
   done();
 });
 
-test('re-enable a user', async (done) => {
+test('re-enable a user by admin', async (done) => {
   const res = await sendAdminPayload('chat/users/setenabled', { userId: userId, enabled: true });
   done();
 });
@@ -123,7 +123,7 @@ test('verify user is enabled', async (done) => {
   done();
 });
 
-test('ban an ip address', async (done) => {
+test('ban an ip address by admin', async (done) => {
   const resIPv4 = await sendAdminRequest('chat/users/ipbans/create', localIPAddressV4);
   const resIPv6 = await sendAdminRequest('chat/users/ipbans/create', localIPAddressV6);
   done();
@@ -142,7 +142,7 @@ test('verify access is denied', async (done) => {
   done();
 });
 
-test('remove an ip address ban', async (done) => {
+test('remove an ip address ban by admin', async (done) => {
   const resIPv4 = await sendAdminRequest('chat/users/ipbans/remove', localIPAddressV4);
   const resIPv6 = await sendAdminRequest('chat/users/ipbans/remove', localIPAddressV6);
   done();
