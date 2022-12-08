@@ -90,9 +90,7 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 	).expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 		});
 	const resWithAccept = request.get(
 		'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverName
@@ -100,9 +98,7 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 		.set('Accept', 'application/json')
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 			done();
 		});
 });
@@ -119,9 +115,7 @@ test('verify responses of /.well-known/nodeinfo when federation is enabled', asy
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 			done();
 		});
 });
@@ -131,9 +125,7 @@ test('verify responses of /.well-known/x-nodeinfo2 when federation is enabled', 
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 			done();
 		});
 });
@@ -144,9 +136,7 @@ test('verify responses of /nodeinfo/2.0 when federation is enabled', async (done
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 			expect(ajv.validate(nodeInfoSchema, res.body)).toBe(true);
 			done();
 		});
@@ -157,9 +147,7 @@ test('verify responses of /api/v1/instance when federation is enabled', async (d
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 			done();
 		});
 });
@@ -175,9 +163,7 @@ test('verify responses of /federation/user/ when federation is enabled', async (
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.then((res) => {
-			expect(() => {
-				parseJson(res.text);
-			}).not.toThrow();
+			parseJson(res.text);
 			done();
 		});
 });
