@@ -1,7 +1,7 @@
 var request = require('supertest');
 const jsonfile = require('jsonfile');
 const Ajv = require('ajv-draft-04');
-const sendConfigChangeRequest = require('./lib/admin').sendConfigChangeRequest;
+const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 
 request = request('http://127.0.0.1:8080');
 
@@ -12,7 +12,7 @@ const serverURL = 'owncast.server.test'
 const fediUsername = 'streamer'
 
 test('disable federation', async (done) => {
-	const res = await sendConfigChangeRequest('federation/enable', false);
+	const res = await sendAdminRequest('config/federation/enable', false);
 	done();
 });
 
@@ -57,15 +57,15 @@ test('verify responses of /federation/ when federation is disabled', async (done
 });
 
 test('set required parameters and enable federation', async (done) => {
-	const res1 = await sendConfigChangeRequest(
-		'serverurl',
+	const res1 = await sendAdminRequest(
+		'config/serverurl',
 		serverURL
 	);
-	const res2 = await sendConfigChangeRequest(
-		'federation/username',
+	const res2 = await sendAdminRequest(
+		'config/federation/username',
 		fediUsername
 	);
-	const res3 = await sendConfigChangeRequest('federation/enable', true);
+	const res3 = await sendAdminRequest('config/federation/enable', true);
 	done();
 });
 
