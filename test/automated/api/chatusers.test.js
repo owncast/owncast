@@ -8,7 +8,7 @@ const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const sendAdminPayload = require('./lib/admin').sendAdminPayload;
-const getAdminResponse= require('./lib/admin').getAdminResponse;
+const getAdminResponse = require('./lib/admin').getAdminResponse;
 
 
 const localIPAddressV4 = '127.0.0.1';
@@ -21,18 +21,18 @@ const testVisibilityMessage = {
 
 var userId;
 var accessToken;
-test('can register a user', async (done) => {
+test('register a user', async (done) => {
   const registration = await registerChat();
   userId = registration.id;
   accessToken = registration.accessToken;
   done();
 });
 
-test('can send a chat message', async (done) => {
+test('send a chat message', async (done) => {
   sendChatMessage(testVisibilityMessage, accessToken, done);
 });
 
-test('can set the user as moderator', async (done) => {
+test('set the user as moderator', async (done) => {
   const res = await sendAdminPayload('chat/users/setmoderator', { userId: userId, isModerator: true });
   done();
 });
@@ -54,10 +54,7 @@ test('verify user list is populated', async (done) => {
   );
 
   ws.on('open', async function open() {
-    const response = await request
-      .get('/api/admin/chat/clients')
-      .auth('admin', 'abc123')
-      .expect(200);
+    const response = await getAdminResponse('chat/clients');
 
     expect(response.body.length).toBeGreaterThan(0);
 
@@ -79,7 +76,7 @@ test('verify user list is populated', async (done) => {
   });
 });
 
-test('can disable a user', async (done) => {
+test('disable a user', async (done) => {
   // To allow for visually being able to see the test hiding the
   // message add a short delay.
   await new Promise((r) => setTimeout(r, 1500));
@@ -105,10 +102,7 @@ test('verify user is disabled', async (done) => {
 });
 
 test('verify messages from user are hidden', async (done) => {
-  const response = await request
-    .get('/api/admin/chat/messages')
-    .auth('admin', 'abc123')
-    .expect(200);
+  const response = await getAdminResponse('chat/messages');
   const message = response.body.filter((obj) => {
     return obj.user.id === userId;
   });
@@ -116,7 +110,7 @@ test('verify messages from user are hidden', async (done) => {
   done();
 });
 
-test('can re-enable a user', async (done) => {
+test('re-enable a user', async (done) => {
   const res = await sendAdminPayload('chat/users/setenabled', { userId: userId, enabled: true });
   done();
 });
@@ -161,7 +155,7 @@ test('verify IP address is no longer banned', async (done) => {
   done();
 });
 
-test('verify access is again allowed', async (done) => {
+test('verify access is allowed after unban', async (done) => {
   await request.get(`/api/chat?accessToken=${accessToken}`).expect(200);
   done();
 });
