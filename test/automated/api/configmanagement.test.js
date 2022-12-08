@@ -130,6 +130,8 @@ const newFederationConfig = {
 
 const newHideViewerCount = !defaultHideViewerCount;
 
+const overriddenWebsocketHost = 'ws://lolcalhost.biz';
+
 test('verify default config values', async (done) => {
 	const res = await request.get('/api/config');
 	expect(res.body.name).toBe(defaultServerName);
@@ -330,7 +332,10 @@ test('change admin password', async (done) => {
 });
 
 test('verify admin password change', async (done) => {
-	const res = await getAdminResponse('serverconfig', (adminPassword = newAdminPassword));
+	const res = await getAdminResponse(
+		'serverconfig',
+		(adminPassword = newAdminPassword)
+	);
 
 	expect(res.body.adminPassword).toBe(newAdminPassword);
 	done();
@@ -345,6 +350,11 @@ test('reset admin password', async (done) => {
 	done();
 });
 
+test('set override websocket host', async (done) => {
+	await sendAdminRequest('config/sockethostoverride', overriddenWebsocketHost);
+	done();
+});
+
 test('verify updated config values', async (done) => {
 	const res = await request.get('/api/config');
 	expect(res.body.name).toBe(newServerName);
@@ -354,6 +364,7 @@ test('verify updated config values', async (done) => {
 	expect(res.body.offlineMessage).toBe(newOfflineMessage);
 	expect(res.body.logo).toBe('/logo');
 	expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
+	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);
 	done();
 });
 
@@ -383,6 +394,7 @@ test('verify updated admin configuration', async (done) => {
 	);
 	expect(res.body.forbiddenUsernames).toStrictEqual(newForbiddenUsernames);
 	expect(res.body.streamKeys).toStrictEqual(newStreamKeys);
+	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);
 
 	expect(res.body.videoSettings.latencyLevel).toBe(latencyLevel);
 	expect(res.body.videoSettings.videoQualityVariants[0].framerate).toBe(
