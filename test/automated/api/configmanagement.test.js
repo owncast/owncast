@@ -212,7 +212,7 @@ test('set stream keys', async (done) => {
 
 test('set latency level', async (done) => {
 	const res = await sendAdminRequest(
-		'video/streamlatencylevel',
+		'config/video/streamlatencylevel',
 		latencyLevel
 	);
 	done();
@@ -237,7 +237,7 @@ test('set s3 configuration', async (done) => {
 
 test('set forbidden usernames', async (done) => {
 	const res = await sendAdminRequest(
-		'chat/forbiddenusernames',
+		'config/chat/forbiddenusernames',
 		newForbiddenUsernames
 	);
 	done();
@@ -245,7 +245,7 @@ test('set forbidden usernames', async (done) => {
 
 test('set server url', async (done) => {
 	const res = await sendAdminRequest(
-		'serverurl',
+		'config/serverurl',
 		newYPConfig.instanceUrl
 	);
 	done();
@@ -253,7 +253,7 @@ test('set server url', async (done) => {
 
 test('set federation username', async (done) => {
 	const res = await sendAdminRequest(
-		'federation/username',
+		'config/federation/username',
 		newFederationConfig.username
 	);
 	done();
@@ -261,7 +261,7 @@ test('set federation username', async (done) => {
 
 test('set federation goLiveMessage', async (done) => {
 	const res = await sendAdminRequest(
-		'federation/livemessage',
+		'config/federation/livemessage',
 		newFederationConfig.goLiveMessage
 	);
 	done();
@@ -269,7 +269,7 @@ test('set federation goLiveMessage', async (done) => {
 
 test('toggle private federation mode', async (done) => {
 	const res = await sendAdminRequest(
-		'federation/private',
+		'config/federation/private',
 		newFederationConfig.isPrivate
 	);
 	done();
@@ -277,7 +277,7 @@ test('toggle private federation mode', async (done) => {
 
 test('toggle federation engagement', async (done) => {
 	const res = await sendAdminRequest(
-		'federation/showengagement',
+		'config/federation/showengagement',
 		newFederationConfig.showEngagement
 	);
 	done();
@@ -285,7 +285,7 @@ test('toggle federation engagement', async (done) => {
 
 test('set federation blocked domains', async (done) => {
 	const res = await sendAdminRequest(
-		'federation/blockdomains',
+		'config/federation/blockdomains',
 		newFederationConfig.blockedDomains
 	);
 	done();
@@ -293,7 +293,7 @@ test('set federation blocked domains', async (done) => {
 
 test('set offline message', async (done) => {
 	const res = await sendAdminRequest(
-		'offlinemessage',
+		'config/offlinemessage',
 		newOfflineMessage
 	);
 	done();
@@ -301,7 +301,7 @@ test('set offline message', async (done) => {
 
 test('set hide viewer count', async (done) => {
 	const res = await sendAdminRequest(
-		'hideviewercount',
+		'config/hideviewercount',
 		newHideViewerCount
 	);
 	done();
@@ -319,7 +319,7 @@ test('enable directory', async (done) => {
 
 test('enable federation', async (done) => {
 	const res = await sendAdminRequest(
-		'federation/enable',
+		'config/federation/enable',
 		newFederationConfig.enabled
 	);
 	done();
@@ -339,7 +339,7 @@ test('verify admin password change', async (done) => {
 
 test('reset admin password', async (done) => {
 	const res = await sendAdminRequest(
-		'adminpass',
+		'config/adminpass',
 		defaultAdminPassword,
 		(adminPassword = newAdminPassword)
 	);
