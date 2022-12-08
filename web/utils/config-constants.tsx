@@ -405,19 +405,39 @@ export const VIDEO_NAME_DEFAULTS = {
 };
 
 export const VIDEO_BITRATE_SLIDER_MARKS = {
-  [VIDEO_BITRATE_DEFAULTS.min]: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
+  [VIDEO_BITRATE_DEFAULTS.min]: {
+    style: {
+      marginLeft: '24px',
+    },
+    label: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
+  },
   3000: 3000,
   4500: 4500,
-  [VIDEO_BITRATE_DEFAULTS.max]: `${VIDEO_BITRATE_DEFAULTS.max} ${VIDEO_BITRATE_DEFAULTS.unit}`,
+  [VIDEO_BITRATE_DEFAULTS.max]: {
+    style: {
+      marginLeft: '-10px',
+    },
+    label: `${VIDEO_BITRATE_DEFAULTS.max} ${VIDEO_BITRATE_DEFAULTS.unit}`,
+  },
 };
 // VIDEO VARIANT FORM - encoder preset
 // CPU
 export const ENCODER_PRESET_SLIDER_MARKS = {
-  1: 'lowest',
+  1: {
+    style: {
+      marginLeft: '15px',
+    },
+    label: <p>lowest</p>,
+  },
   2: '',
   3: '',
   4: '',
-  5: 'highest',
+  5: {
+    style: {
+      marginLeft: '-15px',
+    },
+    label: <p>highest</p>,
+  },
 };
 export const ENCODER_PRESET_TOOLTIPS = {
   1: 'Lowest hardware usage - lowest quality video',
