@@ -41,7 +41,7 @@ async function sendAdminPayload(
 		.send(payload)
 		.expect(200);
 
-	expect(res.body.success).toBe(true);
+	expect(res.body.success).not.toBe(false);
 
 	return res;
 }
