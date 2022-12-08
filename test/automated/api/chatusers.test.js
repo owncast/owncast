@@ -6,6 +6,9 @@ const fs = require('fs');
 
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
+const sendAdminRequest = require('./lib/admin').sendAdminRequest;
+const getAdminDisabledChatUsers = require('./lib/admin').getAdminDisabledChatUsers;
+const getAdminBlockedChatIPs = require('./lib/admin').getAdminBlockedChatIPs;
 
 const localIPAddressV4 = '127.0.0.1';
 const localIPAddressV6 = '::1';
@@ -105,10 +108,7 @@ test('can disable a user', async (done) => {
 });
 
 test('verify user is disabled', async (done) => {
-  const response = await request
-    .get('/api/admin/chat/users/disabled')
-    .auth('admin', 'abc123')
-    .expect(200);
+  const response = await getAdminDisabledChatUsers();
   const tokenCheck = response.body.filter((user) => user.id === userId);
   expect(tokenCheck).toHaveLength(1);
   done();
@@ -136,10 +136,7 @@ test('can re-enable a user', async (done) => {
 });
 
 test('verify user is enabled', async (done) => {
-  const response = await request
-    .get('/api/admin/chat/users/disabled')
-    .auth('admin', 'abc123')
-    .expect(200);
+  const response = await getAdminDisabledChatUsers();
   const tokenCheck = response.body.filter((user) => user.id === userId);
   expect(tokenCheck).toHaveLength(0);
 
@@ -147,24 +144,13 @@ test('verify user is enabled', async (done) => {
 });
 
 test('ban an ip address', async (done) => {
-  await request
-    .post('/api/admin/chat/users/ipbans/create')
-    .send({ value: localIPAddressV4 })
-    .auth('admin', 'abc123')
-    .expect(200);
-  await request
-    .post('/api/admin/chat/users/ipbans/create')
-    .send({ value: localIPAddressV6 })
-    .auth('admin', 'abc123')
-    .expect(200);
+  const resIPv4 = await sendAdminRequest('chat/users/ipbans/create', localIPAddressV4);
+  const resIPv6 = await sendAdminRequest('chat/users/ipbans/create', localIPAddressV6);
   done();
 });
 
 test('verify IP address is blocked from the ban', async (done) => {
-  const response = await request
-    .get(`/api/admin/chat/users/ipbans`)
-    .auth('admin', 'abc123')
-    .expect(200);
+  const response = await getAdminBlockedChatIPs();
 
   expect(response.body).toHaveLength(2);
   expect(onlyLocalIPAddress(response.body)).toBe(true);
@@ -177,24 +163,13 @@ test('verify access is denied', async (done) => {
 });
 
 test('remove an ip address ban', async (done) => {
-  await request
-    .post('/api/admin/chat/users/ipbans/remove')
-    .send({ value: localIPAddressV4 })
-    .auth('admin', 'abc123')
-    .expect(200);
-    await request
-    .post('/api/admin/chat/users/ipbans/remove')
-    .send({ value: localIPAddressV6 })
-    .auth('admin', 'abc123')
-    .expect(200);
+  const resIPv4 = await sendAdminRequest('chat/users/ipbans/remove', localIPAddressV4);
+  const resIPv6 = await sendAdminRequest('chat/users/ipbans/remove', localIPAddressV6);
   done();
 });
 
 test('verify IP address is no longer banned', async (done) => {
-  const response = await request
-    .get(`/api/admin/chat/users/ipbans`)
-    .auth('admin', 'abc123')
-    .expect(200);
+  const response = await getAdminBlockedChatIPs();
 
   expect(response.body).toHaveLength(0);
   done();

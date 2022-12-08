@@ -2,7 +2,7 @@ var request = require('supertest');
 
 const Random = require('crypto-random');
 
-const sendConfigChangeRequest = require('./lib/admin').sendConfigChangeRequest;
+const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const getAdminConfig = require('./lib/admin').getAdminConfig;
 const getAdminStatus = require('./lib/admin').getAdminStatus;
 
@@ -181,37 +181,37 @@ test('verify default admin configuration', async (done) => {
 });
 
 test('set server name', async (done) => {
-	const res = await sendConfigChangeRequest('name', newServerName);
+	const res = await sendAdminRequest('config/name', newServerName);
 	done();
 });
 
 test('set stream title', async (done) => {
-	const res = await sendConfigChangeRequest('streamtitle', newStreamTitle);
+	const res = await sendAdminRequest('config/streamtitle', newStreamTitle);
 	done();
 });
 
 test('set server summary', async (done) => {
-	const res = await sendConfigChangeRequest('serversummary', newServerSummary);
+	const res = await sendAdminRequest('config/serversummary', newServerSummary);
 	done();
 });
 
 test('set extra page content', async (done) => {
-	const res = await sendConfigChangeRequest('pagecontent', newPageContent);
+	const res = await sendAdminRequest('config/pagecontent', newPageContent);
 	done();
 });
 
 test('set tags', async (done) => {
-	const res = await sendConfigChangeRequest('tags', newTags);
+	const res = await sendAdminRequest('config/tags', newTags);
 	done();
 });
 
 test('set stream keys', async (done) => {
-	const res = await sendConfigChangeRequest('streamkeys', newStreamKeys);
+	const res = await sendAdminRequest('config/streamkeys', newStreamKeys);
 	done();
 });
 
 test('set latency level', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'video/streamlatencylevel',
 		latencyLevel
 	);
@@ -219,24 +219,24 @@ test('set latency level', async (done) => {
 });
 
 test('set video stream output variants', async (done) => {
-	const res = await sendConfigChangeRequest('video/streamoutputvariants', [
+	const res = await sendAdminRequest('config/video/streamoutputvariants', [
 		streamOutputVariants,
 	]);
 	done();
 });
 
 test('set social handles', async (done) => {
-	const res = await sendConfigChangeRequest('socialhandles', newSocialHandles);
+	const res = await sendAdminRequest('config/socialhandles', newSocialHandles);
 	done();
 });
 
 test('set s3 configuration', async (done) => {
-	const res = await sendConfigChangeRequest('s3', newS3Config);
+	const res = await sendAdminRequest('config/s3', newS3Config);
 	done();
 });
 
 test('set forbidden usernames', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'chat/forbiddenusernames',
 		newForbiddenUsernames
 	);
@@ -244,7 +244,7 @@ test('set forbidden usernames', async (done) => {
 });
 
 test('set server url', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'serverurl',
 		newYPConfig.instanceUrl
 	);
@@ -252,7 +252,7 @@ test('set server url', async (done) => {
 });
 
 test('set federation username', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'federation/username',
 		newFederationConfig.username
 	);
@@ -260,7 +260,7 @@ test('set federation username', async (done) => {
 });
 
 test('set federation goLiveMessage', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'federation/livemessage',
 		newFederationConfig.goLiveMessage
 	);
@@ -268,7 +268,7 @@ test('set federation goLiveMessage', async (done) => {
 });
 
 test('toggle private federation mode', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'federation/private',
 		newFederationConfig.isPrivate
 	);
@@ -276,7 +276,7 @@ test('toggle private federation mode', async (done) => {
 });
 
 test('toggle federation engagement', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'federation/showengagement',
 		newFederationConfig.showEngagement
 	);
@@ -284,7 +284,7 @@ test('toggle federation engagement', async (done) => {
 });
 
 test('set federation blocked domains', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'federation/blockdomains',
 		newFederationConfig.blockedDomains
 	);
@@ -292,7 +292,7 @@ test('set federation blocked domains', async (done) => {
 });
 
 test('set offline message', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'offlinemessage',
 		newOfflineMessage
 	);
@@ -300,7 +300,7 @@ test('set offline message', async (done) => {
 });
 
 test('set hide viewer count', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'hideviewercount',
 		newHideViewerCount
 	);
@@ -308,17 +308,17 @@ test('set hide viewer count', async (done) => {
 });
 
 test('set custom style values', async (done) => {
-	const res = await sendConfigChangeRequest('appearance', appearanceValues);
+	const res = await sendAdminRequest('config/appearance', appearanceValues);
 	done();
 });
 
 test('enable directory', async (done) => {
-	const res = await sendConfigChangeRequest('directoryenabled', true);
+	const res = await sendAdminRequest('config/directoryenabled', true);
 	done();
 });
 
 test('enable federation', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'federation/enable',
 		newFederationConfig.enabled
 	);
@@ -326,7 +326,7 @@ test('enable federation', async (done) => {
 });
 
 test('change admin password', async (done) => {
-	const res = await sendConfigChangeRequest('adminpass', newAdminPassword);
+	const res = await sendAdminRequest('config/adminpass', newAdminPassword);
 	done();
 });
 
@@ -338,7 +338,7 @@ test('verify admin password change', async (done) => {
 });
 
 test('reset admin password', async (done) => {
-	const res = await sendConfigChangeRequest(
+	const res = await sendAdminRequest(
 		'adminpass',
 		defaultAdminPassword,
 		(adminPassword = newAdminPassword)

@@ -12,6 +12,24 @@ async function getAdminConfig(adminPassword = defaultAdminPassword) {
 	return res;
 }
 
+async function getAdminDisabledChatUsers(adminPassword = defaultAdminPassword) {
+	const res = request
+		.get('/api/admin/chat/users/disabled')
+		.auth('admin', adminPassword)
+		.expect(200);
+
+	return res;
+}
+
+async function getAdminBlockedChatIPs(adminPassword = defaultAdminPassword) {
+	const res = request
+		.get('/api/admin/chat/users/ipbans')
+		.auth('admin', adminPassword)
+		.expect(200);
+
+	return res;
+}
+
 async function getAdminStatus(adminPassword = defaultAdminPassword) {
 	const res = request
 		.get('/api/admin/status')
@@ -21,12 +39,12 @@ async function getAdminStatus(adminPassword = defaultAdminPassword) {
 	return res;
 }
 
-async function sendConfigChangeRequest(
+async function sendAdminRequest(
 	endpoint,
 	value,
 	adminPassword = defaultAdminPassword
 ) {
-	const url = '/api/admin/config/' + endpoint;
+	const url = '/api/admin/' + endpoint;
 	const res = await request
 		.post(url)
 		.auth('admin', adminPassword)
@@ -37,12 +55,12 @@ async function sendConfigChangeRequest(
 	return res;
 }
 
-async function sendConfigChangePayload(
+async function sendAdminPayload(
 	endpoint,
 	payload,
 	adminPassword = defaultAdminPassword
 ) {
-	const url = '/api/admin/config/' + endpoint;
+	const url = '/api/admin/' + endpoint;
 	const res = await request
 		.post(url)
 		.auth('admin', adminPassword)
@@ -56,5 +74,7 @@ async function sendConfigChangePayload(
 
 module.exports.getAdminConfig = getAdminConfig;
 module.exports.getAdminStatus = getAdminStatus;
-module.exports.sendConfigChangeRequest = sendConfigChangeRequest;
-module.exports.sendConfigChangePayload = sendConfigChangePayload;
+module.exports.getAdminDisabledChatUsers = getAdminDisabledChatUsers;
+module.exports.getAdminBlockedChatIPs = getAdminBlockedChatIPs;
+module.exports.sendAdminRequest = sendAdminRequest;
+module.exports.sendAdminPayload = sendAdminPayload;
