@@ -7,6 +7,7 @@ const fs = require('fs');
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
+const sendAdminPayload = require('./lib/admin').sendAdminPayload;
 const getAdminDisabledChatUsers = require('./lib/admin').getAdminDisabledChatUsers;
 const getAdminBlockedChatIPs = require('./lib/admin').getAdminBlockedChatIPs;
 
@@ -32,11 +33,7 @@ test('can send a chat message', async (done) => {
 });
 
 test('can set the user as moderator', async (done) => {
-  await request
-    .post('/api/admin/chat/users/setmoderator')
-    .send({ userId: userId, isModerator: true })
-    .auth('admin', 'abc123')
-    .expect(200);
+  const res = await sendAdminPayload('chat/users/setmoderator', { userId: userId, isModerator: true });
   done();
 });
 
@@ -97,11 +94,7 @@ test('can disable a user', async (done) => {
     }
   );
 
-  await request
-    .post('/api/admin/chat/users/setenabled')
-    .send({ userId: userId, enabled: false })
-    .auth('admin', 'abc123')
-    .expect(200);
+  const res = await sendAdminPayload('chat/users/setenabled', { userId: userId, enabled: false });
 
   await new Promise((r) => setTimeout(r, 1500));
   done();
@@ -127,11 +120,7 @@ test('verify messages from user are hidden', async (done) => {
 });
 
 test('can re-enable a user', async (done) => {
-  await request
-    .post('/api/admin/chat/users/setenabled')
-    .send({ userId: userId, enabled: true })
-    .auth('admin', 'abc123')
-    .expect(200);
+  const res = await sendAdminPayload('chat/users/setenabled', { userId: userId, enabled: true });
   done();
 });
 
