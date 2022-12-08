@@ -3,36 +3,10 @@ request = request('http://127.0.0.1:8080');
 
 const defaultAdminPassword = 'abc123';
 
-async function getAdminConfig(adminPassword = defaultAdminPassword) {
+async function getAdminResponse(endpoint, adminPassword = defaultAdminPassword) {
+	const url = '/api/admin/' + endpoint;
 	const res = request
-		.get('/api/admin/serverconfig')
-		.auth('admin', adminPassword)
-		.expect(200);
-
-	return res;
-}
-
-async function getAdminDisabledChatUsers(adminPassword = defaultAdminPassword) {
-	const res = request
-		.get('/api/admin/chat/users/disabled')
-		.auth('admin', adminPassword)
-		.expect(200);
-
-	return res;
-}
-
-async function getAdminBlockedChatIPs(adminPassword = defaultAdminPassword) {
-	const res = request
-		.get('/api/admin/chat/users/ipbans')
-		.auth('admin', adminPassword)
-		.expect(200);
-
-	return res;
-}
-
-async function getAdminStatus(adminPassword = defaultAdminPassword) {
-	const res = request
-		.get('/api/admin/status')
+		.get(url)
 		.auth('admin', adminPassword)
 		.expect(200);
 
@@ -72,9 +46,6 @@ async function sendAdminPayload(
 	return res;
 }
 
-module.exports.getAdminConfig = getAdminConfig;
-module.exports.getAdminStatus = getAdminStatus;
-module.exports.getAdminDisabledChatUsers = getAdminDisabledChatUsers;
-module.exports.getAdminBlockedChatIPs = getAdminBlockedChatIPs;
+module.exports.getAdminResponse = getAdminResponse;
 module.exports.sendAdminRequest = sendAdminRequest;
 module.exports.sendAdminPayload = sendAdminPayload;

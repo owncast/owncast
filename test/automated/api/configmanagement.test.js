@@ -3,8 +3,7 @@ var request = require('supertest');
 const Random = require('crypto-random');
 
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
-const getAdminConfig = require('./lib/admin').getAdminConfig;
-const getAdminStatus = require('./lib/admin').getAdminStatus;
+const getAdminResponse = require('./lib/admin').getAdminResponse;
 
 request = request('http://127.0.0.1:8080');
 
@@ -144,7 +143,7 @@ test('verify default config values', async (done) => {
 });
 
 test('verify default admin configuration', async (done) => {
-	const res = await getAdminConfig();
+	const res = await getAdminResponse('serverconfig');
 
 	expect(res.body.instanceDetails.name).toBe(defaultServerName);
 	expect(res.body.instanceDetails.summary).toBe(defaultServerSummary);
@@ -331,7 +330,7 @@ test('change admin password', async (done) => {
 });
 
 test('verify admin password change', async (done) => {
-	const res = await getAdminConfig((adminPassword = newAdminPassword));
+	const res = await getAdminResponse('serverconfig', (adminPassword = newAdminPassword));
 
 	expect(res.body.adminPassword).toBe(newAdminPassword);
 	done();
@@ -360,7 +359,7 @@ test('verify updated config values', async (done) => {
 
 // Test that the raw video details being broadcasted are coming through
 test('verify admin stream details', async (done) => {
-	const res = await getAdminStatus();
+	const res = await getAdminResponse('status');
 
 	expect(res.body.broadcaster.streamDetails.width).toBe(320);
 	expect(res.body.broadcaster.streamDetails.height).toBe(180);
@@ -373,7 +372,7 @@ test('verify admin stream details', async (done) => {
 });
 
 test('verify updated admin configuration', async (done) => {
-	const res = await getAdminConfig();
+	const res = await getAdminResponse('serverconfig');
 
 	expect(res.body.instanceDetails.name).toBe(newServerName);
 	expect(res.body.instanceDetails.summary).toBe(newServerSummary);

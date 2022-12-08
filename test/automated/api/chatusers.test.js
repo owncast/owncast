@@ -8,8 +8,8 @@ const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const sendAdminPayload = require('./lib/admin').sendAdminPayload;
-const getAdminDisabledChatUsers = require('./lib/admin').getAdminDisabledChatUsers;
-const getAdminBlockedChatIPs = require('./lib/admin').getAdminBlockedChatIPs;
+const getAdminResponse= require('./lib/admin').getAdminResponse;
+
 
 const localIPAddressV4 = '127.0.0.1';
 const localIPAddressV6 = '::1';
@@ -101,7 +101,7 @@ test('can disable a user', async (done) => {
 });
 
 test('verify user is disabled', async (done) => {
-  const response = await getAdminDisabledChatUsers();
+  const response = await getAdminResponse('chat/users/disabled');
   const tokenCheck = response.body.filter((user) => user.id === userId);
   expect(tokenCheck).toHaveLength(1);
   done();
@@ -125,7 +125,7 @@ test('can re-enable a user', async (done) => {
 });
 
 test('verify user is enabled', async (done) => {
-  const response = await getAdminDisabledChatUsers();
+  const response = await getAdminResponse('chat/users/disabled');
   const tokenCheck = response.body.filter((user) => user.id === userId);
   expect(tokenCheck).toHaveLength(0);
 
@@ -139,7 +139,7 @@ test('ban an ip address', async (done) => {
 });
 
 test('verify IP address is blocked from the ban', async (done) => {
-  const response = await getAdminBlockedChatIPs();
+  const response = await getAdminResponse('chat/users/ipbans');
 
   expect(response.body).toHaveLength(2);
   expect(onlyLocalIPAddress(response.body)).toBe(true);
@@ -158,7 +158,7 @@ test('remove an ip address ban', async (done) => {
 });
 
 test('verify IP address is no longer banned', async (done) => {
-  const response = await getAdminBlockedChatIPs();
+  const response = await getAdminResponse('chat/users/ipbans');
 
   expect(response.body).toHaveLength(0);
   done();
