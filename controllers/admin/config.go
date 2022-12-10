@@ -416,8 +416,13 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rawValue, ok := configValue.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "could not read server url")
+		return
+	}
+
 	serverHostString := utils.GetHostnameFromURLString(rawValue)
-	if !ok || serverHostString == "" {
+	if serverHostString == "" {
 		controllers.WriteSimpleResponse(w, false, "server url value invalid")
 		return
 	}

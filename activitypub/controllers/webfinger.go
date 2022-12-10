@@ -19,7 +19,14 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	instanceHostString := utils.GetHostnameFromURLString(data.GetServerURL())
+	instanceHostURL := data.GetServerURL()
+	if instanceHostURL == "" {
+		w.WriteHeader(http.StatusNotFound)
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL is empty.")
+		return
+	}
+
+	instanceHostString := utils.GetHostnameFromURLString(instanceHostURL)
 	if instanceHostString == "" {
 		w.WriteHeader(http.StatusNotFound)
 		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set properly. data.GetServerURL(): " + data.GetServerURL())
