@@ -158,6 +158,9 @@ test('verify responses of /federation/user/ when federation is enabled', async (
 	const resWithAccept = request.get('/federation/user/')
 		.set('Accept', 'application/json')
 		.expect(404);
+	const resWithAcceptWrongUsername = request.get('/federation/user/not' + fediUsername)
+		.set('Accept', 'application/json')
+		.expect(404);
 	const resWithAcceptUsername = request.get('/federation/user/' + fediUsername)
 		.set('Accept', 'application/json')
 		.expect(200)
