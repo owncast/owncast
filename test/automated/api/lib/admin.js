@@ -46,6 +46,25 @@ async function sendAdminPayload(
 	return res;
 }
 
+async function failAdminRequest(
+	endpoint,
+	value,
+	adminPassword = defaultAdminPassword,
+	responseCode = 400
+) {
+	const url = '/api/admin/' + endpoint;
+	const res = await request
+		.post(url)
+		.auth('admin', adminPassword)
+		.send({ value: value })
+		.expect(responseCode);
+
+	expect(res.body.success).toBe(false);
+	return res;
+}
+
 module.exports.getAdminResponse = getAdminResponse;
 module.exports.sendAdminRequest = sendAdminRequest;
 module.exports.sendAdminPayload = sendAdminPayload;
+module.exports.failAdminRequest = failAdminRequest;
+
