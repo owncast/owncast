@@ -42,7 +42,7 @@ SERVER_PID=$!
 pushd test/automated/browser
 
 # Run cypress browser tests for desktop
-npx cypress run --group "desktop-offline" --ci-build-id $BUILD_ID --tag "desktop,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js"
+npx cypress run --group "desktop-offline" --env tags=desktop --ci-build-id $BUILD_ID --tag "desktop,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js"
 # Run cypress browser tests for mobile
 npx cypress run --group "mobile-offline" --ci-build-id $BUILD_ID --tag "mobile,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js" --config viewportWidth=375,viewportHeight=667
 
@@ -62,6 +62,6 @@ trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM
 sleep 20
 
 # Run cypress browser tests for desktop
-npx cypress run --group "desktop-online" --ci-build-id $BUILD_ID --tag "desktop,online" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/online/*.cy.js"
+npx cypress run --group "desktop-online" --env tags=desktop --ci-build-id $BUILD_ID --tag "desktop,online" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/online/*.cy.js"
 # Run cypress browser tests for mobile
 npx cypress run --group "mobile-online" --ci-build-id $BUILD_ID --tag "mobile,online" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/online/*.cy.js" --config viewportWidth=375,viewportHeight=667
