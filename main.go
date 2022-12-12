@@ -47,6 +47,10 @@ func main() {
 			log.Fatalln("Cannot create data directory", err)
 		}
 	}
+	// Set up emoji directory
+	if err := data.SetupEmojiDirectory(); err != nil {
+		log.Fatalln("Cannot set up emoji directory", err)
+	}
 
 	// Recreate the temp dir
 	if utils.DoesFileExists(config.TempDir) {

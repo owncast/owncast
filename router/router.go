@@ -39,7 +39,7 @@ func Start() error {
 	http.HandleFunc("/logo", controllers.GetLogo)
 
 	// Return a single emoji image.
-	http.HandleFunc("/img/emoji/", controllers.GetCustomEmojiImage)
+	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
 	// return the logo
 
