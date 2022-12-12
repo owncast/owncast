@@ -31,7 +31,7 @@ describe(`Has correct identifiers for overrides`, () => {
 	// Followers
 	const followersCollection = '#followers-collection';
 	it(`Has identifier: ${followersCollection}`, () => {
-		cy.get('#rc-tabs-1-tab-3').click();
+		cy.contains('Followers').click();
 		cy.get(followersCollection).should('be.visible');
 	});
 
