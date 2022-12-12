@@ -48,7 +48,11 @@ func main() {
 			log.Fatalln("Cannot create data directory", err)
 		}
 	}
-	// Set up emoji directory
+
+	// Migrate old (pre 0.1.0) emoji to new location if they exist.
+	utils.MigrateCustomEmojiLocations()
+
+	// Otherwise save the default emoji to the data directory.
 	if err := data.SetupEmojiDirectory(); err != nil {
 		log.Fatalln("Cannot set up emoji directory", err)
 	}
