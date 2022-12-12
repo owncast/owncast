@@ -30,6 +30,7 @@ var (
 	rtmpPortOverride      = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
 )
 
+// nolint:cyclop
 func main() {
 	flag.Parse()
 
