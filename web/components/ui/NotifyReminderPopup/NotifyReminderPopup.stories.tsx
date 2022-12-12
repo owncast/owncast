@@ -33,7 +33,7 @@ const Template: ComponentStory<typeof NotifyReminderPopup> = args => <Example {.
 
 export const Active = Template.bind({});
 Active.args = {
-  visible: true,
+  open: true,
   notificationClicked: () => {
     alert('notification clicked');
   },
@@ -44,5 +44,5 @@ Active.args = {
 
 export const InActive = Template.bind({});
 InActive.args = {
-  visible: false,
+  open: false,
 };
