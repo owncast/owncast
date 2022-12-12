@@ -66,7 +66,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   }
 
   return (
-    <div className={styles.outerContainer}>
+    <div id="offline-banner" className={styles.outerContainer}>
       <div className={styles.innerContainer}>
         <div className={styles.header}>{streamName}</div>
         <Divider className={styles.separator} />

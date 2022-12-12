@@ -71,7 +71,7 @@ export const Modal: FC<ModalProps> = ({
       centered
       destroyOnClose
     >
-      <>
+      <div id="modal-container">
         {loading && (
           <Skeleton active={loading} style={{ padding: '10px' }} paragraph={{ rows: 10 }} />
         )}
@@ -79,7 +79,7 @@ export const Modal: FC<ModalProps> = ({
         {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
         {children && <div className={styles.content}>{children}</div>}
         {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
-      </>
+      </div>
     </AntModal>
   );
 };
