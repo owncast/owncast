@@ -143,6 +143,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       label: <Link href="/admin/chat/users">Users</Link>,
       key: 'chat-users',
     },
+    {
+      label: <Link href="/admin/chat/emojis">Emojis</Link>,
+      key: 'emojis',
+    },
   ];
 
   const utilitiesMenu = [

@@ -39,7 +39,7 @@ func Start() error {
 	http.HandleFunc("/logo", controllers.GetLogo)
 
 	// Return a single emoji image.
-	http.HandleFunc("/img/emoji/", controllers.GetCustomEmojiImage)
+	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
 	// return the logo
 
@@ -155,6 +155,12 @@ func Start() error {
 
 	// Set the following state of a follower or follow request.
 	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
+
+	// Upload custom emoji
+	http.HandleFunc("/api/admin/emoji/upload", middleware.RequireAdminAuth(admin.UploadCustomEmoji))
+
+	// Delete custom emoji
+	http.HandleFunc("/api/admin/emoji/delete", middleware.RequireAdminAuth(admin.DeleteCustomEmoji))
 
 	// Update config values
 
