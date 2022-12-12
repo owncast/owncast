@@ -67,6 +67,7 @@ const Emoji = () => {
       }
 
       setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Emoji deleted'));
+      resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
     } catch (error) {
       setSubmitStatus(createInputStatus(STATUS_ERROR, `${error}`));
       setLoading(false);
