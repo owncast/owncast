@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -363,4 +364,43 @@ func ShuffleStringSlice(s []string) []string {
 // IntPercentage returns  an int percentage of a number.
 func IntPercentage(x, total int) int {
 	return int(float64(x) / float64(total) * 100)
+}
+
+// DecodeBase64Image decodes a base64 image string into a byte array, returning the extension (including dot) for the content type.
+func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
+	s := strings.SplitN(url, ",", 2)
+	if len(s) < 2 {
+		err = errors.New("error splitting base64 image data")
+		return
+	}
+
+	bytes, err = base64.StdEncoding.DecodeString(s[1])
+	if err != nil {
+		return
+	}
+
+	splitHeader := strings.Split(s[0], ":")
+	if len(splitHeader) < 2 {
+		err = errors.New("error splitting base64 image header")
+		return
+	}
+
+	contentType := strings.Split(splitHeader[1], ";")[0]
+
+	if contentType == "image/svg+xml" {
+		extension = ".svg"
+	} else if contentType == "image/gif" {
+		extension = ".gif"
+	} else if contentType == "image/png" {
+		extension = ".png"
+	} else if contentType == "image/jpeg" {
+		extension = ".jpeg"
+	}
+
+	if extension == "" {
+		err = errors.New("missing or invalid contentType in base64 image")
+		return
+	}
+
+	return bytes, extension, nil
 }
