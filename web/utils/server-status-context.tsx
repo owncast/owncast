@@ -79,7 +79,6 @@ export const initialServerConfigState: ConfigDetails = {
   chatJoinMessagesEnabled: true,
   chatEstablishedUserMode: false,
   hideViewerCount: false,
-  useCustomEmojis: false,
 };
 
 const initialServerStatusState = {

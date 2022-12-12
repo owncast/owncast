@@ -1,10 +1,10 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Space, Table, Typography, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormStatusIndicator from '../../../components/config/FormStatusIndicator';
 
-import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI, LIST_UPLOADED_EMOJI } from '../../../utils/apis';
+import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
 
 import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../../utils/images';
 import {
@@ -13,9 +13,8 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
-import { FIELD_PROPS_USE_CUSTOM_EMOJIS, RESET_TIMEOUT } from '../../../utils/config-constants';
-import ToggleSwitch from '../../../components/config/ToggleSwitch';
-import { ServerStatusContext } from '../../../utils/server-status-context';
+import { RESET_TIMEOUT } from '../../../utils/config-constants';
+import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
 
 type CustomEmoji = {
   name: string;
@@ -25,9 +24,6 @@ type CustomEmoji = {
 const { Title, Paragraph } = Typography;
 
 const Emoji = () => {
-  const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig } = serverStatusData || {};
-
   const [emojis, setEmojis] = useState<CustomEmoji[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -44,7 +40,7 @@ const Emoji = () => {
   async function getEmojis() {
     setLoading(true);
     try {
-      const response = await fetchData(LIST_UPLOADED_EMOJI);
+      const response = await fetchData(URL_CUSTOM_EMOJIS);
       setEmojis(response);
     } catch (error) {
       console.error('error fetching emojis', error);
@@ -144,7 +140,7 @@ const Emoji = () => {
       title: 'Emoji',
       key: 'url',
       render: (text, record) => (
-        <img src={`/api/admin${record.url}`} alt={record.name} style={{ maxWidth: '2vw' }} />
+        <img src={record.url} alt={record.name} style={{ maxWidth: '2vw' }} />
       ),
     },
   ];
@@ -156,13 +152,6 @@ const Emoji = () => {
         Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
         filename will be used as emoji name.
       </Paragraph>
-
-      <ToggleSwitch
-        fieldName="useCustomEmojis"
-        useSubmit
-        {...FIELD_PROPS_USE_CUSTOM_EMOJIS}
-        checked={serverConfig.useCustomEmojis}
-      />
 
       <Table
         rowKey={record => record.url}

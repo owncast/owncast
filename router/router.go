@@ -156,17 +156,11 @@ func Start() error {
 	// Set the following state of a follower or follow request.
 	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
 
-	// List custom emoji
-	http.HandleFunc("/api/admin/emoji/list", middleware.RequireAdminAuth(admin.GetUploadedCustomEmojiList))
-
 	// Upload custom emoji
 	http.HandleFunc("/api/admin/emoji/upload", middleware.RequireAdminAuth(admin.UploadCustomEmoji))
 
 	// Delete custom emoji
 	http.HandleFunc("/api/admin/emoji/delete", middleware.RequireAdminAuth(admin.DeleteCustomEmoji))
-
-	// Return a single custom uploaded emoji image
-	http.HandleFunc("/api/admin/img/emoji/", admin.GetUploadedCustomEmojiImage)
 
 	// Update config values
 
@@ -325,9 +319,6 @@ func Start() error {
 
 	// Is the viewer count hidden from viewers
 	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
-
-	// Are custom emojis enabled
-	http.HandleFunc("/api/admin/config/usecustomemojis", middleware.RequireAdminAuth(admin.SetUseCustomEmojis))
 
 	// Inline chat moderation actions
 

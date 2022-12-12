@@ -69,7 +69,6 @@ const (
 	customOfflineMessageKey              = "custom_offline_message"
 	customColorVariableValuesKey         = "custom_color_variable_values"
 	streamKeysKey                        = "stream_keys"
-	useCustomEmojisKey                   = "use_custom_emojis"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -965,15 +964,4 @@ func GetStreamKeys() []models.StreamKey {
 func SetStreamKeys(actions []models.StreamKey) error {
 	configEntry := ConfigEntry{Key: streamKeysKey, Value: actions}
 	return _datastore.Save(configEntry)
-}
-
-// SetUseCustomEmojis will set if custom emojis should be used.
-func SetUseCustomEmojis(use bool) error {
-	return _datastore.SetBool(useCustomEmojisKey, use)
-}
-
-// GetUseCustomEmojis will return if custom emojis should be used.
-func GetUseCustomEmojis() bool {
-	use, _ := _datastore.GetBool(useCustomEmojisKey)
-	return use
 }

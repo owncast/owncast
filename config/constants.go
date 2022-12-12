@@ -25,6 +25,6 @@ var (
 	// HLSStoragePath is the directory HLS video is written to.
 	HLSStoragePath = filepath.Join(DataDirectory, "hls")
 
-	// CustomEmojiPath is the optional emoji override directory.
+	// CustomEmojiPath is the emoji directory.
 	CustomEmojiPath = filepath.Join(DataDirectory, "emoji")
 )

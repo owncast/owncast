@@ -6,29 +6,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 )
-
-// GetUploadedCustomEmojiList returns a list of all uploaded custom emojis.
-func GetUploadedCustomEmojiList(w http.ResponseWriter, r *http.Request) {
-	controllers.WriteResponse(w, data.GetEmojiList(true))
-}
-
-// GetUploadedCustomEmojiImage returns a single emoji image.
-func GetUploadedCustomEmojiImage(w http.ResponseWriter, r *http.Request) {
-	// This is similar to the normal emoji handler, but it always serves the uploaded emojis
-	path := strings.TrimPrefix(r.URL.Path, "/api/admin/img/emoji/")
-	r.URL.Path = path
-
-	emojiFS := os.DirFS(config.CustomEmojiPath)
-	emojiStaticServer := http.FileServer(http.FS(emojiFS))
-	emojiStaticServer.ServeHTTP(w, r)
-}
 
 // UploadCustomEmoji allows POSTing a new custom emoji to the server.
 func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {

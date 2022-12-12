@@ -7,19 +7,12 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/static"
 	log "github.com/sirupsen/logrus"
 )
 
-// GetEmojiList returns a list of custom emoji either from the cache or from the emoji directory.
-func GetEmojiList(custom bool) []models.CustomEmoji {
-	var emojiFS fs.FS
-
-	if custom {
-		emojiFS = os.DirFS(config.CustomEmojiPath)
-	} else {
-		emojiFS = static.GetEmoji()
-	}
+// GetEmojiList returns a list of custom emoji from the emoji directory.
+func GetEmojiList() []models.CustomEmoji {
+	var emojiFS = os.DirFS(config.CustomEmojiPath)
 
 	emojiResponse := make([]models.CustomEmoji, 0)
 

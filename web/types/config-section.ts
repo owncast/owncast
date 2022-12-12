@@ -165,5 +165,4 @@ export interface ConfigDetails {
   chatJoinMessagesEnabled: boolean;
   chatEstablishedUserMode: boolean;
   hideViewerCount: boolean;
-  useCustomEmojis: boolean;
 }
