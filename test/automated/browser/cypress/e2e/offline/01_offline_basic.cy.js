@@ -38,7 +38,7 @@ describe(`Basic tests`, () => {
 	});
 
 	it('Has correct global header values', () => {
-		cy.get('.global-header-text').should('have.text', 'New Owncast Server');
+		cy.get('#global-header-text').should('have.text', 'New Owncast Server');
 	});
 
 	// Offline banner

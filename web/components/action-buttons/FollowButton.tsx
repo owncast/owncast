@@ -16,6 +16,7 @@ export const FollowButton: FC<FollowButtonProps> = ({ onClick, props }) => (
     className={styles.button}
     icon={<HeartFilled />}
     onClick={onClick}
+    id="follow-button"
   >
     Follow
   </Button>

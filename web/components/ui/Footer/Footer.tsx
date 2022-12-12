@@ -6,7 +6,7 @@ export type FooterProps = {
 };
 
 export const Footer: FC<FooterProps> = ({ version }) => (
-  <div className={styles.footer}>
+  <footer className={styles.footer}>
     <span>
       Powered by <a href="https://owncast.online">{version}</a>
     </span>
@@ -21,6 +21,6 @@ export const Footer: FC<FooterProps> = ({ version }) => (
         Source
       </a>
     </span>
-  </div>
+  </footer>
 );
 export default Footer;

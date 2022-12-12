@@ -47,7 +47,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
   }, [followers]);
 
   const noFollowers = (
-    <div className={styles.noFollowers}>
+    <div className={styles.noFollowers} id="followers-collection">
       <h2>Be the first follower!</h2>
       <p>
         {name !== 'Owncast' ? name : 'This server'} is a part of the{' '}
@@ -74,7 +74,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
   }
 
   return (
-    <div className={styles.followers}>
+    <div className={styles.followers} id="followers-collection">
       <Row wrap gutter={[10, 10]}>
         {followers.map(follower => (
           <Col key={follower.link}>
