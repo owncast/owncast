@@ -18,13 +18,7 @@ import {
 } from '../../utils/input-statuses';
 import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
-const ACCEPTED_FILE_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
-
-function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer) => void) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
+import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../utils/images';
 
 export const EditLogo: FC = () => {
   const [logoUrl, setlogoUrl] = useState(null);
@@ -53,7 +47,7 @@ export const EditLogo: FC = () => {
 
     // eslint-disable-next-line consistent-return
     return new Promise<void>((res, rej) => {
-      if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
         const msg = `File type is not supported: ${file.type}`;
         setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
@@ -108,7 +102,7 @@ export const EditLogo: FC = () => {
             listType="picture"
             className="avatar-uploader"
             showUploadList={false}
-            accept={ACCEPTED_FILE_TYPES.join(',')}
+            accept={ACCEPTED_IMAGE_TYPES.join(',')}
             beforeUpload={beforeUpload}
             customRequest={handleLogoUpdate}
             disabled={loading}

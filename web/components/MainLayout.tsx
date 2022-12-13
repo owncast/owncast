@@ -31,6 +31,8 @@ import { TEXTFIELD_PROPS_STREAM_TITLE } from '../utils/config-constants';
 import { ComposeFederatedPost } from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';
 
+import FediverseIcon from '../assets/images/fediverse-black.png';
+
 export type MainLayoutProps = {
   children: ReactNode;
 };
@@ -143,6 +145,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       label: <Link href="/admin/chat/users">Users</Link>,
       key: 'chat-users',
     },
+    {
+      label: <Link href="/admin/chat/emojis">Emojis</Link>,
+      key: 'emojis',
+    },
   ];
 
   const utilitiesMenu = [
@@ -174,7 +180,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'config-server-details',
     },
     {
-      label: <Link href="/admin/config/streamkeys/">Server Setup</Link>,
+      label: <Link href="/admin/config/streamkeys/">Stream Keys</Link>,
       key: 'config-streamkeys',
     },
     {
@@ -222,8 +228,8 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       icon: (
         <img
           alt="fediverse icon"
-          src="/admin/fediverse-white.png"
-          width="15rem"
+          src={FediverseIcon.src}
+          width="17rem"
           style={{ opacity: 0.6, position: 'relative', top: '-1px' }}
         />
       ),

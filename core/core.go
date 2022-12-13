@@ -36,7 +36,6 @@ func Start() error {
 	resetDirectories()
 
 	data.PopulateDefaults()
-	utils.MigrateCustomEmojiLocations()
 
 	if err := data.VerifySettings(); err != nil {
 		log.Error(err)
