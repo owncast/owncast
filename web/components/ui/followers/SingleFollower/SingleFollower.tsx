@@ -1,5 +1,6 @@
 import { Avatar, Col, Row } from 'antd';
 import React, { FC } from 'react';
+import cn from 'classnames';
 import { Follower } from '../../../../interfaces/follower';
 import styles from './SingleFollower.module.scss';
 
@@ -8,7 +9,7 @@ export type SingleFollowerProps = {
 };
 
 export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
-  <div className={styles.follower}>
+  <div className={cn([styles.follower, 'followers-follower'])}>
     <a href={follower.link} target="_blank" rel="noreferrer">
       <Row wrap={false}>
         <Col span={6}>
