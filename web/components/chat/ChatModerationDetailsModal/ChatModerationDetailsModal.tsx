@@ -169,7 +169,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
               pagination={null}
               columns={chatMessageColumns}
               dataSource={messages}
-              rowKey={() => Math.random()}
+              rowKey={() => Math.random() + Date.now()}
             />
           </Panel>
         </Collapse>
