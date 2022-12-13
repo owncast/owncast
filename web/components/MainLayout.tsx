@@ -178,7 +178,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'config-server-details',
     },
     {
-      label: <Link href="/admin/config/streamkeys/">Server Setup</Link>,
+      label: <Link href="/admin/config/streamkeys/">Stream Keys</Link>,
       key: 'config-streamkeys',
     },
     {
