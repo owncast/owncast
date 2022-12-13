@@ -27,7 +27,7 @@ filterTests(['desktop'], () => {
 		// Loop over each identifier and verify it exists.
 		identifiers.forEach((identifier) => {
 			it(`Has identifier: ${identifier}`, () => {
-				cy.get(identifier).should('be.visible');
+				cy.get(identifier).should('exist');
 			});
 		});
 
