@@ -87,7 +87,13 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
   }, [message]);
 
   return (
-    <div className={cn(styles.messagePadding, sameUserAsLast && styles.messagePaddingCollapsed)}>
+    <div
+      className={cn(
+        styles.messagePadding,
+        sameUserAsLast && styles.messagePaddingCollapsed,
+        'chat-message_user',
+      )}
+    >
       <div
         className={cn(styles.root, {
           [styles.ownMessage]: sentBySelf,
