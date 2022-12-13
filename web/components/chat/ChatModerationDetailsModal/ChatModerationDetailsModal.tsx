@@ -156,7 +156,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
         <Panel header="Currently Connected Clients" key="connected-clients">
           <Collapse accordion>
             {connectedClients.map(client => (
-              <Panel header={formatUAstring(client.userAgent)} key={client.userAgent}>
+              <Panel header={formatUAstring(client.userAgent)} key={client.connectedAt.toString()}>
                 <ConnectedClient client={client} />
               </Panel>
             ))}
@@ -169,6 +169,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
               pagination={null}
               columns={chatMessageColumns}
               dataSource={messages}
+              rowKey={() => Math.random()}
             />
           </Panel>
         </Collapse>
