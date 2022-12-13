@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -23,21 +24,23 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if isIndexRequest {
-		renderIndexHtml(w)
-		return
-	}
-
 	// Set a cache control max-age header
 	middleware.SetCachingHeaders(w, r)
 
+	nonceRandom, _ := utils.GenerateRandomString(5)
+
 	// Set our global HTTP headers
-	middleware.SetHeaders(w)
+	middleware.SetHeaders(w, fmt.Sprintf("nonce-%s", nonceRandom))
+
+	if isIndexRequest {
+		renderIndexHtml(w, nonceRandom)
+		return
+	}
 
 	serveWeb(w, r)
 }
 
-func renderIndexHtml(w http.ResponseWriter) {
+func renderIndexHtml(w http.ResponseWriter, nonce string) {
 	type serverSideContent struct {
 		Name             string
 		Summary          string
@@ -48,6 +51,7 @@ func renderIndexHtml(w http.ResponseWriter) {
 		Image            string
 		StatusJSON       string
 		ServerConfigJSON string
+		Nonce            string
 	}
 
 	status := getStatusResponse()
@@ -74,6 +78,7 @@ func renderIndexHtml(w http.ResponseWriter) {
 		Image:            "/logo/external",
 		StatusJSON:       string(sb),
 		ServerConfigJSON: string(cb),
+		Nonce:            nonce,
 	}
 
 	index, err := static.GetWebIndexTemplate()
