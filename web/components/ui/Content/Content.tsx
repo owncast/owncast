@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Layout, Tabs, Spin } from 'antd';
+import { Layout, Tabs, Skeleton } from 'antd';
 import { FC, MutableRefObject, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
@@ -304,89 +304,88 @@ export const Content: FC = () => {
   return (
     <>
       <div className={styles.main}>
-        <Spin wrapperClassName={styles.loadingSpinner} size="large" spinning={appState.appLoading}>
-          <AntContent className={styles.root}>
-            <div className={styles.mainSection}>
-              <div className={styles.topSection}>
-                {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
-                {!online && !appState.appLoading && (
-                  <OfflineBanner
-                    streamName={name}
-                    customText={offlineMessage}
-                    notificationsEnabled={browserNotificationsEnabled}
-                    fediverseAccount={fediverseAccount}
-                    lastLive={lastDisconnectTime}
-                    onNotifyClick={() => setShowNotifyModal(true)}
-                    onFollowClick={() => setShowFollowModal(true)}
-                  />
-                )}
-                {online && (
-                  <Statusbar
-                    online={online}
-                    lastConnectTime={lastConnectTime}
-                    lastDisconnectTime={lastDisconnectTime}
-                    viewerCount={viewerCount}
-                  />
-                )}
-              </div>
-              <div className={styles.midSection}>
-                <div className={styles.buttonsLogoTitleSection}>
-                  {!isMobile && (
-                    <ActionButtonRow>
-                      {externalActionButtons}
-                      <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
-                      <NotifyReminderPopup
-                        open={showNotifyReminder}
-                        notificationClicked={() => setShowNotifyModal(true)}
-                        notificationClosed={() => disableNotifyReminderPopup()}
-                      >
-                        <NotifyButton onClick={() => setShowNotifyModal(true)} />
-                      </NotifyReminderPopup>
-                    </ActionButtonRow>
-                  )}
-
-                  <Modal
-                    title="Browser Notifications"
-                    open={showNotifyModal}
-                    afterClose={() => disableNotifyReminderPopup()}
-                    handleCancel={() => disableNotifyReminderPopup()}
-                  >
-                    <BrowserNotifyModal />
-                  </Modal>
-                </div>
-              </div>
-              {isMobile ? (
-                <MobileContent
-                  name={name}
-                  streamTitle={streamTitle}
-                  summary={summary}
-                  tags={tags}
-                  socialHandles={socialHandles}
-                  extraPageContent={extraPageContent}
-                  messages={messages}
-                  currentUser={currentUser}
-                  showChat={showChat}
-                  actions={externalActions}
-                  setExternalActionToDisplay={externalActionSelected}
-                  setShowNotifyPopup={setShowNotifyModal}
-                  setShowFollowModal={setShowFollowModal}
-                />
-              ) : (
-                <DesktopContent
-                  name={name}
-                  streamTitle={streamTitle}
-                  summary={summary}
-                  tags={tags}
-                  socialHandles={socialHandles}
-                  extraPageContent={extraPageContent}
-                  setShowFollowModal={setShowFollowModal}
+        <AntContent className={styles.root}>
+          <div className={styles.mainSection}>
+            <div className={styles.topSection}>
+              {appState.appLoading && <Skeleton loading active paragraph={{ rows: 7 }} />}
+              {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+              {!online && !appState.appLoading && (
+                <OfflineBanner
+                  streamName={name}
+                  customText={offlineMessage}
+                  notificationsEnabled={browserNotificationsEnabled}
+                  fediverseAccount={fediverseAccount}
+                  lastLive={lastDisconnectTime}
+                  onNotifyClick={() => setShowNotifyModal(true)}
+                  onFollowClick={() => setShowFollowModal(true)}
                 />
               )}
-              <Footer version={version} />
+              {online && (
+                <Statusbar
+                  online={online}
+                  lastConnectTime={lastConnectTime}
+                  lastDisconnectTime={lastDisconnectTime}
+                  viewerCount={viewerCount}
+                />
+              )}
             </div>
-            {showChat && !isMobile && <Sidebar />}
-          </AntContent>
-        </Spin>
+            <div className={styles.midSection}>
+              <div className={styles.buttonsLogoTitleSection}>
+                {!isMobile && (
+                  <ActionButtonRow>
+                    {externalActionButtons}
+                    <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
+                    <NotifyReminderPopup
+                      open={showNotifyReminder}
+                      notificationClicked={() => setShowNotifyModal(true)}
+                      notificationClosed={() => disableNotifyReminderPopup()}
+                    >
+                      <NotifyButton onClick={() => setShowNotifyModal(true)} />
+                    </NotifyReminderPopup>
+                  </ActionButtonRow>
+                )}
+
+                <Modal
+                  title="Browser Notifications"
+                  open={showNotifyModal}
+                  afterClose={() => disableNotifyReminderPopup()}
+                  handleCancel={() => disableNotifyReminderPopup()}
+                >
+                  <BrowserNotifyModal />
+                </Modal>
+              </div>
+            </div>
+            {isMobile ? (
+              <MobileContent
+                name={name}
+                streamTitle={streamTitle}
+                summary={summary}
+                tags={tags}
+                socialHandles={socialHandles}
+                extraPageContent={extraPageContent}
+                messages={messages}
+                currentUser={currentUser}
+                showChat={showChat}
+                actions={externalActions}
+                setExternalActionToDisplay={externalActionSelected}
+                setShowNotifyPopup={setShowNotifyModal}
+                setShowFollowModal={setShowFollowModal}
+              />
+            ) : (
+              <DesktopContent
+                name={name}
+                streamTitle={streamTitle}
+                summary={summary}
+                tags={tags}
+                socialHandles={socialHandles}
+                extraPageContent={extraPageContent}
+                setShowFollowModal={setShowFollowModal}
+              />
+            )}
+            <Footer version={version} />
+          </div>
+          {showChat && !isMobile && <Sidebar />}
+        </AntContent>
         {!isMobile && false && <Footer version={version} />}
       </div>
       {externalActionToDisplay && (
