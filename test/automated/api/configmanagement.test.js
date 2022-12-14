@@ -65,7 +65,7 @@ const defaultPageContent = `<h1>Welcome to Owncast!</h1>
 </ul>
 <hr/>
 <video id="video" controls preload="metadata" width="40%" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
-  <source src="https://videos.owncast.online/v/xaJ3xNn9Y6pWTdB25m9ai3.mp4?quality=" type="video/mp4" />
+  <source src="https://assets.owncast.tv/video/owncast-embed.mp4" type="video/mp4" />
 </video>`;
 
 // new configuration for testing
@@ -246,10 +246,7 @@ test('set forbidden usernames', async (done) => {
 });
 
 test('set server url', async (done) => {
-	const resBadURL = await failAdminRequest(
-		'config/serverurl',
-		'not.valid.url'
-	);
+	const resBadURL = await failAdminRequest('config/serverurl', 'not.valid.url');
 	const res = await sendAdminRequest(
 		'config/serverurl',
 		newYPConfig.instanceUrl
