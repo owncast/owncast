@@ -1,7 +1,7 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd';
 import React, { FC, useState } from 'react';
-import isValidURL from '../../../utils/urls';
+import { isValidUrl } from '../../../utils/urls';
 
 const { Panel } = Collapse;
 const { Link } = Typography;
@@ -42,7 +42,7 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
   }
 
   const validate = (url: string) => {
-    if (!isValidURL(url)) {
+    if (!isValidUrl(url)) {
       setValid(false);
       return;
     }
