@@ -16,6 +16,7 @@ import (
 // GetUserDetails returns the details of a chat user for moderators.
 func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	type connectedClient struct {
+		Id           uint      `json:"id"`
 		MessageCount int       `json:"messageCount"`
 		UserAgent    string    `json:"userAgent"`
 		ConnectedAt  time.Time `json:"connectedAt"`
@@ -42,6 +43,7 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	clients := make([]connectedClient, len(c))
 	for i, c := range c {
 		client := connectedClient{
+			Id:           c.Id,
 			MessageCount: c.MessageCount,
 			UserAgent:    c.UserAgent,
 			ConnectedAt:  c.ConnectedAt,
