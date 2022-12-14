@@ -1,25 +1,16 @@
-.chatHeader {
-  text-align: center;
-  font-weight: bold;
-  padding: 5px 0;
-  color: var(--text-color-secondary);
-  border-bottom: 1px solid var(--color-owncast-gray-700);
-  font-variant: small-caps;
-}
-
+// The button that is displayed to scroll to the bottom of the chat.
 .toBottomWrap {
   display: flex;
   width: 100%;
   justify-content: center;
   position: absolute;
   bottom: 50px;
-  color: var(--text-color-secondary);
-  & .toBottomWrap {
-    & .toBottomBtn {
-      z-index: 9999;
-      border: none;
-      background-color: gray;
-    }
+  color: var(--theme-color-components-text-on-light);
+
+  button {
+    background-color: var(--theme-color-background-light);
+    z-index: 9999;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -28,7 +19,7 @@
   font-size: 0.9rem;
   border-radius: var(--theme-rounded-corners);
   padding: 5px 15px;
-  color: var(--color-owncast-gray-300);
+  color: var(--theme-color-components-text-on-light);
   background-color: var(--color-owncast-background);
   & .nameChangeText {
     font-weight: bold;
