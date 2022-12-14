@@ -90,7 +90,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 
 	// Send chat user name changed webhook
 	receivedEvent.User = savedUser
-	receivedEvent.ClientID = eventData.client.id
+	receivedEvent.ClientID = eventData.client.Id
 	webhooks.SendChatEventUsernameChanged(receivedEvent)
 
 	// Resend the client's user so their username is in sync.
@@ -128,7 +128,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	event.SetDefaults()
-	event.ClientID = eventData.client.id
+	event.ClientID = eventData.client.Id
 
 	// Ignore empty messages
 	if event.Empty() {
