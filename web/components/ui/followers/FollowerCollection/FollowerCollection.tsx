@@ -56,7 +56,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
       </p>
       <p>
         By following {name !== 'Owncast' ? name : 'this server'} you&apos;ll be able to get updates
-        from the stream, share it with others, and and show your appreciation when it goes live, all
+        from the stream, share it with others, and show your appreciation when it goes live, all
         from your own Fediverse account.
       </p>
       <FollowButton onClick={onFollowButtonClick} />
