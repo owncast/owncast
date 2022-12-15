@@ -7,10 +7,10 @@ export const DEFAULT_TEXTFIELD_URL_PATTERN = 'https?://.*';
  * @param {string[]} validProtocols - An array of valid protocols. Defaults to web.
  * @returns {boolean} - True if the URI is valid, false otherwise.
  */
-export function isValidUrl(url: string, validProtocols: string[] = ['http', 'https']): boolean {
-  console.log(url, validProtocols);
+export function isValidUrl(url: string, validProtocols: string[] = ['http:', 'https:']): boolean {
   try {
     const validationObject = new URL(url);
+
     if (
       validationObject.protocol === '' ||
       validationObject.hostname === '' ||
