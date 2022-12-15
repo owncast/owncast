@@ -69,16 +69,7 @@ const ActionModal = (props: Props) => {
   }
 
   function canSave(): Boolean {
-    try {
-      const validationObject = new URL(actionUrl);
-      if (validationObject.protocol !== 'https:') {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-
-    return isValidUrl(actionUrl) && actionTitle !== '';
+    return isValidUrl(actionUrl, ['https:']) && actionTitle !== '';
   }
 
   const okButtonProps = {
