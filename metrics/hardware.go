@@ -24,7 +24,14 @@ func collectCPUUtilization() {
 		return
 	}
 
-	metricValue := TimestampedValue{time.Now(), v[0]}
+	// Default to zero but try to use the cumulative values of all the CPUs
+	// if values exist.
+	value := 0.0
+	if len(v) > 0 {
+		value = v[0]
+	}
+
+	metricValue := TimestampedValue{time.Now(), value}
 	metrics.CPUUtilizations = append(metrics.CPUUtilizations, metricValue)
 	cpuUsage.Set(metricValue.Value)
 }
