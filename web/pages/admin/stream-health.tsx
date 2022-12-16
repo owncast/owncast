@@ -240,7 +240,7 @@ const StreamHealth = () => {
       'Your viewers may be consuming your video slower than required. This may be due to slow networks or your latency configuration. You need to decrease the amount of time viewers are taking to consume your video. Consider adding a lower quality with a lower bitrate or experiment with increasing the latency buffer setting.';
   }
 
-  const errorStatColor = recentErrorCount > 0 ? '#B63FFF' : '#FFFFFF';
+  const errorStatColor = recentErrorCount > 0 ? '#B63FFF' : 'unset';
   const statStyle = {
     display: 'flex',
     alignItems: 'center',
