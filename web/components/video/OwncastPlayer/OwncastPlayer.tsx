@@ -160,15 +160,14 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
   const setupAirplay = (player, videojs) => {
     // eslint-disable-next-line no-prototype-builtins
     if (window.hasOwnProperty('WebKitPlaybackTargetAvailabilityEvent')) {
-      const videoJsButtonClass = videojs.getComponent('Button');
-      const ConcreteButtonClass = videojs.extend(videoJsButtonClass, {
-        // The `init()` method will also work for constructor logic here, but it is
-        // deprecated. If you provide an `init()` method, it will override the
-        // `constructor()` method!
-        constructor() {
-          videoJsButtonClass.call(this, player);
-        },
+      const VJSButtonClass = videojs.getComponent('Button');
 
+      class ConcreteButtonClass extends VJSButtonClass {
+        constructor() {
+          super(player);
+        }
+
+        // eslint-disable-next-line class-methods-use-this
         handleClick() {
           try {
             const videoElement = document.getElementsByTagName('video')[0];
@@ -176,10 +175,11 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
           } catch (e) {
             console.error(e);
           }
-        },
-      });
+        }
+      }
 
-      const concreteButtonInstance = player.controlBar.addChild(new ConcreteButtonClass());
+      const ccbc = new ConcreteButtonClass();
+      const concreteButtonInstance = player.controlBar.addChild(ccbc);
       concreteButtonInstance.addClass('vjs-airplay');
     }
   };
