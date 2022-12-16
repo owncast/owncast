@@ -74,7 +74,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
       </Menu.Item>
       {appState.chatAvailable && (
         <Menu.Item key="3" icon={<MessageOutlined />} onClick={() => toggleChatVisibility()}>
-          Toggle chat
+          {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
       )}
     </Menu>
