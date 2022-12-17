@@ -217,7 +217,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'viewer-info',
     },
     !chatDisabled && {
-      key: 'chat-config',
       label: <Link href="/admin/viewer-info">Chat &amp; Users</Link>,
       icon: <MessageOutlined />,
       children: chatMenu,

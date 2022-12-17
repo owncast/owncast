@@ -75,6 +75,7 @@ export const ModeratorUserButton: FC<ModeratorUserButtonProps> = ({ user, onClic
 
   return (
     <Button
+      type="primary"
       onClick={confirmBlockAction}
       size="small"
       icon={
