@@ -164,9 +164,9 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
             header="Learn more about using the Fediverse to authenticate with chat."
           >
             <p>
-						  You can link your chat identity with your Fediverse identity. Next time you 
-						  want to use this chat identity you can again go through the Fediverse authentication.
-						</p>
+              You can link your chat identity with your Fediverse identity. Next time you want to
+              use this chat identity you can again go through the Fediverse authentication.
+            </p>
           </Panel>
         </Collapse>
         <div>
