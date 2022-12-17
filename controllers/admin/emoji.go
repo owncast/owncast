@@ -37,10 +37,10 @@ func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Prevent path traversal attacks
-	var emojiFileName = filepath.Base(emoji.Name)
-	var targetPath = filepath.Join(config.CustomEmojiPath, emojiFileName)
+	emojiFileName := filepath.Base(emoji.Name)
+	targetPath := filepath.Join(config.CustomEmojiPath, emojiFileName)
 
-	err = os.MkdirAll(config.CustomEmojiPath, 0700)
+	err = os.MkdirAll(config.CustomEmojiPath, 0o700)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -76,17 +76,17 @@ func DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var emojiFileName = filepath.Base(emoji.Name)
-	var targetPath = filepath.Join(config.CustomEmojiPath, emojiFileName)
+	// var emojiFileName = filepath.Base(emoji.Name)
+	targetPath := filepath.Join(config.CustomEmojiPath, emoji.Name)
 
 	if err := os.Remove(targetPath); err != nil {
 		if os.IsNotExist(err) {
-			controllers.WriteSimpleResponse(w, false, fmt.Sprintf("Emoji %q doesn't exist", emojiFileName))
+			controllers.WriteSimpleResponse(w, false, fmt.Sprintf("Emoji %q doesn't exist", emoji.Name))
 		} else {
 			controllers.WriteSimpleResponse(w, false, err.Error())
 		}
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("Emoji %q has been deleted", emojiFileName))
+	controllers.WriteSimpleResponse(w, true, fmt.Sprintf("Emoji %q has been deleted", emoji.Name))
 }
