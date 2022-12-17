@@ -92,7 +92,10 @@ func SetupEmojiDirectory() (err error) {
 			continue
 		}
 
-		memFile, err := staticFS.Open(path.path)
+		memFile, staticOpenErr := staticFS.Open(path.path)
+		if staticOpenErr != nil {
+			return errors.Wrap(staticOpenErr, "unable to open emoji file from embedded filesystem")
+		}
 
 		// nolint:gosec
 		diskFile, err := os.Create(emojiPath)
