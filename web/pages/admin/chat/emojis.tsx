@@ -51,7 +51,10 @@ const Emoji = () => {
     getEmojis();
   }, []);
 
-  async function handleDelete(name: string) {
+  async function handleDelete(fullPath: string) {
+    const name = `/${fullPath.split('/').slice(3).join('/')}`;
+    console.log(name);
+
     setLoading(true);
 
     setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Deleting emoji...'));
@@ -128,7 +131,7 @@ const Emoji = () => {
       key: 'delete',
       render: (text, record) => (
         <Space size="middle">
-          <Button onClick={() => handleDelete(record.name)} icon={<DeleteOutlined />} />
+          <Button onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />
         </Space>
       ),
     },
