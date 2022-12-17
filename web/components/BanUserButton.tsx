@@ -72,6 +72,7 @@ export const BanUserButton: FC<BanUserButtonProps> = ({ user, isEnabled, label, 
 
   return (
     <Button
+      type="primary"
       onClick={confirmBlockAction}
       size="small"
       icon={isEnabled ? <StopTwoTone twoToneColor="#ff4d4f" /> : null}
