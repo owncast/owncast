@@ -220,6 +220,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       label: <Link href="/admin/viewer-info">Chat &amp; Users</Link>,
       icon: <MessageOutlined />,
       children: chatMenu,
+      key: 'chat-and-users',
     },
     federationEnabled && {
       key: 'fediverse-followers',
