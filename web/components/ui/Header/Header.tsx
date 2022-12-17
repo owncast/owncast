@@ -23,7 +23,7 @@ export const Header: FC<HeaderComponentProps> = ({
       <div id="header-logo">
         <OwncastLogo variant="contrast" />
       </div>
-      <span id="global-header-text">{name}</span>
+      <h1><span id="global-header-text">{name}</span><h1/>
     </div>
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (
