@@ -212,7 +212,9 @@ const StreamHealth = () => {
   const currentSpeed = bitrateChart[0]?.data[bitrateChart[0].data.length - 1]?.value;
   const currentDownloadSeconds =
     medianSegmentDownloadDurations[medianSegmentDownloadDurations.length - 1]?.value;
-  const lowestVariant = availableBitrates[0]; // TODO: get lowest bitrate from available bitrates
+  const lowestVariant = availableBitrates.reduce((bitrate1, bitrate2) =>
+    bitrate1.valueOf() < bitrate2.valueOf() ? bitrate1 : bitrate2,
+  );
 
   const latencyMedian = medianLatency[medianLatency.length - 1]?.value || 0;
   const latencyMax = highestLatency[highestLatency.length - 1]?.value || 0;
