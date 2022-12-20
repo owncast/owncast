@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Popover, Alert, Typography, Button, Space, Tooltip } from 'antd';
+import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
 import {
   SettingOutlined,
   HomeOutlined,
