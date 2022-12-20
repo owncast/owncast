@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Popover, Alert, Typography, Button, Space, Tooltip } from 'antd';
+import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
 import {
   SettingOutlined,
   HomeOutlined,
@@ -100,25 +100,15 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const streamDurationString = broadcaster
     ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time)))
     : '';
-  const currentThumbnail = online ? (
-    <img src="/thumbnail.jpg" className="online-thumbnail" alt="current thumbnail" width="1rem" />
-  ) : null;
+
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
   const statusMessage = online ? `Online ${streamDurationString}` : 'Offline';
-  const popoverTitle = <Typography.Text>Thumbnail</Typography.Text>;
 
   const statusIndicator = (
     <div className="online-status-indicator">
       <span className="status-label">{statusMessage}</span>
       <span className="status-icon">{statusIcon}</span>
     </div>
-  );
-  const statusIndicatorWithThumb = online ? (
-    <Popover content={currentThumbnail} title={popoverTitle} trigger="hover">
-      {statusIndicator}
-    </Popover>
-  ) : (
-    statusIndicator
   );
 
   const integrationsMenu = [
@@ -217,10 +207,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'viewer-info',
     },
     !chatDisabled && {
-      key: 'chat-config',
       label: <Link href="/admin/viewer-info">Chat &amp; Users</Link>,
       icon: <MessageOutlined />,
       children: chatMenu,
+      key: 'chat-and-users',
     },
     federationEnabled && {
       key: 'fediverse-followers',
@@ -288,28 +278,29 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       <Layout className="layout-main">
         <Header className="layout-header">
           <Space direction="horizontal">
-            <Tooltip title="Compose post to your followers">
+            <Tooltip title="Compose post to your social followers">
               <Button
-                type="primary"
-                shape="circle"
+                type="link"
                 icon={<EditOutlined />}
-                size="large"
+                size="small"
                 onClick={handleCreatePostButtonPressed}
-                style={{ display: federationEnabled ? 'block' : 'none' }}
-              />
+                style={{ display: federationEnabled ? 'block' : 'none', margin: '10px' }}
+              >
+                Compose Post
+              </Button>
             </Tooltip>
           </Space>
           <div className="global-stream-title-container">
             <TextFieldWithSubmit
               fieldName="streamTitle"
               {...TEXTFIELD_PROPS_STREAM_TITLE}
-              placeholder="What are you streaming now"
+              placeholder="What are you streaming now? (Stream title)"
               value={currentStreamTitle}
               initialValue={instanceDetails.streamTitle}
               onChange={handleStreamTitleChanged}
             />
           </div>
-          <Space direction="horizontal">{statusIndicatorWithThumb}</Space>
+          <Space direction="horizontal">{statusIndicator}</Space>
         </Header>
 
         {headerAlertMessage}

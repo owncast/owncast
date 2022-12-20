@@ -107,7 +107,7 @@ export default function Appearance() {
     clearTimeout(resetTimer);
   };
 
-  useEffect(() => {
+  const setColorDefaults = () => {
     const c = {};
     [...paletteVariables, ...componentColorVariables, ...chatColorVariables].forEach(color => {
       const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(
@@ -116,6 +116,10 @@ export default function Appearance() {
       c[color.name] = { value: resolvedColor.trim(), description: color.description };
     });
     setColors(c);
+  };
+
+  useEffect(() => {
+    setColorDefaults();
   }, []);
 
   useEffect(() => {
@@ -136,13 +140,13 @@ export default function Appearance() {
   };
 
   const reset = async () => {
-    setColors({});
     await postConfigUpdateToAPI({
       apiPath: ENDPOINT,
       data: { value: {} },
       onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        setColorDefaults();
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));

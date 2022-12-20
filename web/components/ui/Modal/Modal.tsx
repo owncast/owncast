@@ -34,7 +34,7 @@ export const Modal: FC<ModalProps> = ({
     defaultWidth = '900px';
   }
 
-  const modalStyle = {
+  const modalContentBodyStyle = {
     padding: '0px',
     minHeight: height,
     height: height ?? defaultHeight,
@@ -64,14 +64,14 @@ export const Modal: FC<ModalProps> = ({
       onOk={handleOk}
       onCancel={handleCancel}
       afterClose={afterClose}
-      bodyStyle={modalStyle}
+      bodyStyle={modalContentBodyStyle}
       width={width ?? defaultWidth}
       zIndex={999}
       footer={null}
       centered
       destroyOnClose
     >
-      <div id="modal-container">
+      <div id="modal-container" style={{ height: '100%' }}>
         {loading && (
           <Skeleton active={loading} style={{ padding: '10px' }} paragraph={{ rows: 10 }} />
         )}

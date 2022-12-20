@@ -32,7 +32,7 @@ describe(`Live tests`, () => {
 	});
 
 	it('Can toggle chat off', () => {
-		cy.contains('Toggle chat').click();
+		cy.contains('Hide Chat').click();
 	});
 
 	it('Chat should not be visible', () => {
@@ -44,7 +44,7 @@ describe(`Live tests`, () => {
 	});
 
 	it('Can toggle chat on', () => {
-		cy.contains('Toggle chat').click();
+		cy.contains('Show Chat').click();
 	});
 
 	// it('Chat should be re-visible', () => {

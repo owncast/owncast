@@ -67,8 +67,11 @@ export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ open, hand
         </Button>,
       ]}
     >
+      <h3>
+        Tell the world about your future streaming plans or let your followers know to tune in.
+      </h3>
       <TextArea
-        placeholder="Tell the world about your streaming plans..."
+        placeholder="I'm still live, come join me!"
         size="large"
         showCount
         maxLength={500}
