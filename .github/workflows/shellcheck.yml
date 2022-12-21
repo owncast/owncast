@@ -8,6 +8,10 @@ on:
     branches:
       - webv2
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install shellcheck
-        run: apt update && apt install -y shellcheck && shellcheck --version
+        run: apt update && apt install -y shellcheck bash && shellcheck --version
 
       - name: Check shell scripts
         run: ls **/*.sh && shellcheck --severity=info **/*.sh
