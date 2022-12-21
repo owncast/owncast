@@ -8,10 +8,6 @@ on:
     branches:
       - webv2
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
@@ -26,4 +22,5 @@ jobs:
         run: apt update && apt install -y shellcheck bash && shellcheck --version
 
       - name: Check shell scripts
-        run: ls **/*.sh && shellcheck --severity=info **/*.sh
+        run: shopt -s globstar && ls **/*.sh && shellcheck --severity=info **/*.sh
+        shell: bash
