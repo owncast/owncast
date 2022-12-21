@@ -2,11 +2,11 @@ name: Check shell scripts
 
 on:
   push:
-    paths:
-      - *.sh
-  pull_request_target:
-    paths:
-      - *.sh
+    branches:
+      - webv2
+  pull_request:
+    branches:
+      - webv2
 
 jobs:
   shellcheck:
@@ -21,5 +21,5 @@ jobs:
       - name: Install shellcheck
         run: apt update && apt install -y shellcheck && shellcheck --version
 
-      - name: Check install script
-        run: shellcheck --severity=info *.sh
+      - name: Check shell scripts
+        run: ls **/*.sh && shellcheck --severity=info **/*.sh
