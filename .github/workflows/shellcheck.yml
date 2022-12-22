@@ -1,12 +1,16 @@
-name: Check shell scripts
+name: lint
 
 on:
   push:
     branches:
       - webv2
+    paths:
+      - '**.sh'
   pull_request:
     branches:
       - webv2
+    paths:
+      - '**.sh'
 
 jobs:
   shellcheck:
