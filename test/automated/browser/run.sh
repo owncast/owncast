@@ -36,7 +36,7 @@ fi
 echo "Building owncast..."
 go build -o owncast main.go
 echo "Running owncast..."
-./owncast -database $TEMP_DB &
+./owncast -database "$TEMP_DB" &
 SERVER_PID=$!
 
 pushd test/automated/browser
@@ -54,7 +54,7 @@ STREAMING_CLIENT=$!
 
 function finish {
 	echo "Cleaning up..."
-	rm $TEMP_DB
+	rm "$TEMP_DB"
 	kill $SERVER_PID $STREAMING_CLIENT
 }
 trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM

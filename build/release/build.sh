@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # Human readable names of binary distributions
-DISTRO=(macOS-64bit linux-64bit linux-32bit linux-arm7 linux-arm64)
+DISTRO_LIST=(macOS-64bit linux-64bit linux-32bit linux-arm7 linux-arm64)
 # Operating systems for the respective distributions
-OS=(darwin linux linux linux linux)
+OS_LIST=(darwin linux linux linux linux)
 # Architectures for the respective distributions
-ARCH=(amd64 amd64 386 arm-7 arm64)
+ARCH_LIST=(amd64 amd64 386 arm-7 arm64)
 
 # Version
 VERSION=$1
@@ -21,19 +21,17 @@ if [[ -z "${VERSION}" ]]; then
 fi
 
 BUILD_TEMP_DIRECTORY="$(mktemp -d)"
-cd $BUILD_TEMP_DIRECTORY
+cd "$BUILD_TEMP_DIRECTORY" || exit
 
 echo "Cloning owncast into $BUILD_TEMP_DIRECTORY..."
 git clone https://github.com/owncast/owncast 2> /dev/null
-cd owncast
+cd owncast || exit
 
 echo "Changing to branch: $GIT_BRANCH"
-git checkout $GIT_BRANCH
-
-[[ -z "${VERSION}" ]] && VERSION='unknownver' || VERSION="${VERSION}"
+git checkout "$GIT_BRANCH"
 
 # Change to the root directory of the repository
-cd $(git rev-parse --show-toplevel)
+cd "$(git rev-parse --show-toplevel)" || exit
 
 echo "Cleaning working directories..."
 rm -rf ./webroot/hls/* ./hls/* ./webroot/thumbnail.jpg
@@ -41,13 +39,13 @@ rm -rf ./webroot/hls/* ./hls/* ./webroot/thumbnail.jpg
 echo "Creating version ${VERSION} from commit ${GIT_COMMIT}"
 
 # Create production build of Tailwind CSS
-pushd build/javascript >> /dev/null
+pushd build/javascript >> /dev/null || exit
 # Install the tailwind & postcss CLIs
 npm install --quiet --no-progress
 # Run the tailwind CLI and pipe it to postcss for minification.
 # Save it to a temp directory that we will reference below.
 NODE_ENV="production" ./node_modules/.bin/tailwind build | ./node_modules/.bin/postcss >  "${TMPDIR}tailwind.min.css"
-popd
+popd || exit
 
 mkdir -p dist
 
@@ -60,28 +58,27 @@ build() {
 
   echo "Building ${NAME} (${OS}/${ARCH}) release from ${GIT_BRANCH} ${GIT_COMMIT}..."
 
-  mkdir -p dist/${NAME}
-  mkdir -p dist/${NAME}/data
+  mkdir -p dist/"${NAME}"/data
 
-  cp -R webroot/ dist/${NAME}/webroot/
+  cp -R webroot/ dist/"${NAME}"/webroot/
 
   # Copy the production pruned+minified css to the build's directory.
-  cp "${TMPDIR}tailwind.min.css" ./dist/${NAME}/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
-  cp README.md dist/${NAME}
+  cp "${TMPDIR}tailwind.min.css" ./dist/"${NAME}"/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
+  cp README.md dist/"${NAME}"
 
-  pushd dist/${NAME} >> /dev/null
+  pushd dist/"${NAME}" >> /dev/null || exit
 
-  CGO_ENABLED=1 ~/go/bin/xgo -go latest --branch ${GIT_BRANCH} -ldflags "-s -w -X github.com/owncast/owncast/config.GitCommit=${GIT_COMMIT} -X github.com/owncast/owncast/config.BuildVersion=${VERSION} -X github.com/owncast/owncast/config.BuildPlatform=${NAME}" -tags enable_updates -targets "${OS}/${ARCH}" github.com/owncast/owncast
-  mv owncast-*-${ARCH} owncast
+  CGO_ENABLED=1 ~/go/bin/xgo -go latest --branch "${GIT_BRANCH}" -ldflags "-s -w -X github.com/owncast/owncast/config.GitCommit=${GIT_COMMIT} -X github.com/owncast/owncast/config.BuildVersion=${VERSION} -X github.com/owncast/owncast/config.BuildPlatform=${NAME}" -tags enable_updates -targets "${OS}/${ARCH}" github.com/owncast/owncast
+  mv owncast-*-"${ARCH}" owncast
 
-  zip -r -q -8 ../owncast-$VERSION-$NAME.zip .
-  popd >> /dev/null
+  zip -r -q -8 ../owncast-"${VERSION}"-"${NAME}".zip .
+  popd >> /dev/null || exit
 
-  rm -rf dist/${NAME}/
+  rm -rf dist/"${NAME}"/
 }
 
-for i in "${!DISTRO[@]}"; do
-  build ${DISTRO[$i]} ${OS[$i]} ${ARCH[$i]} $VERSION $GIT_COMMIT
+for i in "${!DISTRO_LIST[@]}"; do
+  build "${DISTRO_LIST[$i]}" "${OS_LIST[$i]}" "${ARCH_LIST[$i]}" "$VERSION" "$GIT_COMMIT"
 done
 
 echo "Build archives are available in $BUILD_TEMP_DIRECTORY/owncast/dist"
@@ -108,10 +105,10 @@ DOCKER_IMAGE="owncast-${VERSION}"
 echo "Building Docker image ${DOCKER_IMAGE}..."
 
 # Change to the root directory of the repository
-cd $(git rev-parse --show-toplevel)
+cd "$(git rev-parse --show-toplevel)" || exit
 
 # Docker build
-docker build --build-arg NAME=docker --build-arg VERSION=${VERSION} --build-arg GIT_COMMIT=$GIT_COMMIT -t gabekangas/owncast:$VERSION -t gabekangas/owncast:latest -t owncast .
+docker build --build-arg NAME=docker --build-arg VERSION="${VERSION}" --build-arg GIT_COMMIT="$GIT_COMMIT" -t gabekangas/owncast:"$VERSION" -t gabekangas/owncast:latest -t owncast .
 
 # Dockerhub
 # You must be authenticated via `docker login` with your Dockerhub credentials first.
