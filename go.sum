@@ -42,6 +42,7 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
 github.com/amalfra/etag v1.0.0 h1:3PNsV45JS4C8SaQ97jxCoUZv22tGlSRF7dgsP9C7yww=
 github.com/amalfra/etag v1.0.0/go.mod h1:NROjmbfRufDsrJFWcnYxGJSlCtTKn4tXTp2zwyqdSbU=
+github.com/amalfra/etag/v2 v2.0.0/go.mod h1:KYohfwDjTIdl8c+8KEvH0LJYy+GrE1dNMCao2RQ1I/A=
 github.com/andybalholm/cascadia v1.3.1 h1:nhxRkql1kdYCc8Snf7D5/D3spOX+dBgjA6u8x004T2c=
 github.com/andybalholm/cascadia v1.3.1/go.mod h1:R4bJ1UQfqADjvDa4P6HZHLh/3OxWWEqc0Sk8XGwHqvA=
 github.com/aws/aws-sdk-go v1.43.43 h1:1L06qzQvl4aC3Skfh5rV7xVhGHjIZoHcqy16NoyQ1o4=
