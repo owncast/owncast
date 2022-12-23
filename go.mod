@@ -3,7 +3,7 @@ module github.com/owncast/owncast
 go 1.17
 
 require (
-	github.com/amalfra/etag v1.0.0
+	github.com/amalfra/etag/v2 v2.0.0
 	github.com/aws/aws-sdk-go v1.44.167
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
@@ -74,6 +74,7 @@ require (
 )
 
 require (
+	github.com/amalfra/etag v1.0.0
 	github.com/andybalholm/cascadia v1.3.1
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0
