@@ -125,6 +125,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Project chat: [Join us on Rocket.Chat](https://owncast.rocket.chat/home) if you want to contribute, follow along, or if you have questions.
 
-Gabe Kangas - [@gabek@social.gabekangas.com](https://fosstodon.org/@gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
+Gabe Kangas - [@gabek@social.gabekangas.com](https://social.gabekangas.com/gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
 
 Project Link: [https://github.com/owncast/owncast](https://github.com/owncast/owncast)
