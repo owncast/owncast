@@ -2,6 +2,7 @@ package indieauth
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
@@ -17,6 +18,7 @@ type ServerAuthRequest struct {
 	State         string
 	Me            string
 	Code          string
+	Timestamp     time.Time
 }
 
 // ServerProfile represents basic user-provided data about this Owncast instance.
@@ -38,10 +40,16 @@ type ServerProfileResponse struct {
 
 var pendingServerAuthRequests = map[string]ServerAuthRequest{}
 
+const maxPendingRequests = 1000
+
 // StartServerAuth will handle the authentication for the admin user of this
 // Owncast server. Initiated via a GET of the auth endpoint.
 // https://indieweb.org/authorization-endpoint
 func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*ServerAuthRequest, error) {
+	if len(pendingServerAuthRequests)+1 >= maxPendingRequests {
+		return nil, errors.New("Please try again later. Too many pending requests.")
+	}
+
 	code := shortid.MustGenerate()
 
 	r := ServerAuthRequest{
@@ -51,6 +59,7 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 		State:         state,
 		Me:            me,
 		Code:          code,
+		Timestamp:     time.Now(),
 	}
 
 	pendingServerAuthRequests[code] = r
