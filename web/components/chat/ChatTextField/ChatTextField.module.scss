@@ -6,8 +6,9 @@
   bottom: 0px;
   width: 100%;
 
-  padding: 2px 0.1vw;
+  padding: 4px 0.1vw;
   overflow-x: hidden;
+  background-color: var(--theme-color-palette-3);
 
   .inputWrap {
     position: relative;
