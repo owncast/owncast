@@ -38,15 +38,23 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
+      - name: Setup earthly env for webv2 build
+        if: github.event.schedule == '0 2 * * *'
+        run: echo "EARTHLY_BUILD_TAG=webv2" >> $GITHUB_ENV && echo "EARTHLY_BUILD_BRANCH=webv2" >> $GITHUB_ENV
+
+      - name: Setup earthly env for nightly build
+        if: github.event.schedule == '0 0 * * *'
+        run: echo "EARTHLY_BUILD_TAG=nightly" >> $GITHUB_ENV && echo "EARTHLY_BUILD_BRANCH=develop" >> $GITHUB_ENV
+
       - uses: actions/checkout@v3
-      - name: Checkout, build, and push
+
+      - name: Build and push
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
           EARTHLY_PUSH: true
         run: cd build/release && ./docker-nightly.sh
 
-      - uses: actions/checkout@v3
-      - name: Checkout and build
+      - name: Build
         if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
         run: cd build/release && ./docker-nightly.sh
