@@ -28,7 +28,12 @@ func RegisterFediverseOTPRequest(u user.User, w http.ResponseWriter, r *http.Req
 	}
 
 	accessToken := r.URL.Query().Get("accessToken")
-	reg, success := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	reg, success, err := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, "Could not register auth request: "+err.Error())
+		return
+	}
+
 	if !success {
 		controllers.WriteSimpleResponse(w, false, "Could not register auth request. One may already be pending. Try again later.")
 		return

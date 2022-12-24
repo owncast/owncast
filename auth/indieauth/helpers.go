@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/andybalholm/cascadia"
 	"github.com/pkg/errors"
@@ -63,6 +64,7 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 		State:              state,
 		Redirect:           &redirect,
 		Callback:           &callbackURL,
+		Timestamp:          time.Now(),
 	}, nil
 }
 

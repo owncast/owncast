@@ -8,16 +8,48 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
-var pendingAuthRequests = make(map[string]*Request)
+var (
+	pendingAuthRequests = make(map[string]*Request)
+	lock                = sync.Mutex{}
+)
+
+const registrationTimeout = time.Minute * 10
+
+func init() {
+	go setupExpiredRequestPruner()
+}
+
+// Clear out any pending requests that have been pending for greater than
+// the specified timeout value.
+func setupExpiredRequestPruner() {
+	pruneExpiredRequestsTimer := time.NewTicker(registrationTimeout)
+
+	for range pruneExpiredRequestsTimer.C {
+		lock.Lock()
+		log.Debugln("Pruning expired IndieAuth requests.")
+		for k, v := range pendingAuthRequests {
+			if time.Since(v.Timestamp) > registrationTimeout {
+				delete(pendingAuthRequests, k)
+			}
+		}
+		lock.Unlock()
+	}
+}
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
 func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
+	if len(pendingAuthRequests) >= maxPendingRequests {
+		return nil, errors.New("Please try again later. Too many pending requests.")
+	}
+
 	serverURL := data.GetServerURL()
 	if serverURL == "" {
 		return nil, errors.New("Owncast server URL must be set when using auth")
