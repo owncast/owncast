@@ -268,6 +268,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
               />
             }
             trigger="click"
+            placement="topRight"
             onOpenChange={open => setShowEmojis(open)}
             open={showEmojis}
           />
