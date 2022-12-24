@@ -18,10 +18,16 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflag
 FROM alpine
 RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates && update-ca-certificates
 
+RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
+
 # Copy owncast assets
 WORKDIR /app
 COPY --from=build /build/owncast /app/owncast
 COPY --from=build /build/webroot /app/webroot
 RUN mkdir /app/data
+
+RUN chown -R owncast:owncast /app
+USER owncast
+
 ENTRYPOINT ["/app/owncast"]
 EXPOSE 8080 1935
