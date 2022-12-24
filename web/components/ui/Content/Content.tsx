@@ -135,6 +135,8 @@ const MobileContent = ({
   setExternalActionToDisplay,
   setShowNotifyPopup,
   setShowFollowModal,
+  supportFediverseFeatures,
+  supportsBrowserNotifications,
 }) => {
   if (!currentUser) {
     return null;
@@ -182,8 +184,8 @@ const MobileContent = ({
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
       <DefaultTabBar {...props} style={{ width: '85%' }} />
       <ActionButtonMenu
-        showFollowItem
-        showNotifyItem
+        showFollowItem={supportFediverseFeatures}
+        showNotifyItem={supportsBrowserNotifications}
         actions={actions}
         externalActionSelected={setExternalActionToDisplay}
         notifyItemSelected={() => setShowNotifyPopup(true)}
@@ -385,6 +387,8 @@ export const Content: FC = () => {
                 setExternalActionToDisplay={externalActionSelected}
                 setShowNotifyPopup={setShowNotifyModal}
                 setShowFollowModal={setShowFollowModal}
+                supportFediverseFeatures={supportFediverseFeatures}
+                supportsBrowserNotifications={supportsBrowserNotifications}
               />
             ) : (
               <DesktopContent
