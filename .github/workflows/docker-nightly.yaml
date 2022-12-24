@@ -1,17 +1,22 @@
 # See https://docs.earthly.dev/ci-integration/vendor-specific-guides/gh-actions-integration
 # for details.
 
-name: Build nightly docker
+name: Build container
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *' # webv2
+    - cron: '0 0 * * *' # nightly
+  push:
+    branches:
+      - webv2
+  pull_request:
+    branches:
+      - webv2
 
 jobs:
   Docker:
     runs-on: ubuntu-latest
-    if: github.repository == 'owncast/owncast'
     steps:
       - uses: earthly/actions-setup@v1
         with:
@@ -34,8 +39,14 @@ jobs:
           platforms: all
 
       - uses: actions/checkout@v3
-      - name: Checkout and build
-        if: env.GH_CR_PAT != null
+      - name: Checkout, build, and push
+        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
+          EARTHLY_PUSH: true
+        run: cd build/release && ./docker-nightly.sh
+
+      - uses: actions/checkout@v3
+      - name: Checkout and build
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
         run: cd build/release && ./docker-nightly.sh

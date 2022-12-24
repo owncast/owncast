@@ -4,11 +4,12 @@
 # Must authenticate first: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages
 DOCKER_IMAGE="owncast"
 DATE=$(date +"%Y%m%d")
-VERSION="${DATE}-nightly"
+TAG="nightly"
+VERSION="${DATE}-${TAG}"
 
 echo "Building Docker image ${DOCKER_IMAGE}..."
 
 # Change to the root directory of the repository
 cd "$(git rev-parse --show-toplevel)" || exit
 
-earthly --ci --push +docker-all --image="ghcr.io/owncast/${DOCKER_IMAGE}" --tag=nightly --version="${VERSION}"
+earthly --ci +docker-all --image="ghcr.io/owncast/${DOCKER_IMAGE}" --tag="${TAG}" --version="${VERSION}"
