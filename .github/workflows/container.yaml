@@ -15,17 +15,17 @@ on:
       - webv2
 
 jobs:
-  Docker:
+  Earthly:
     runs-on: ubuntu-latest
     steps:
       - uses: earthly/actions-setup@v1
         with:
           version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
 
-      - name: Earthly version
+      - name: Log Earthly version
         run: earthly --version
 
-      - name: Log into GitHub Container Registry
+      - name: Authenticate to GitHub Container Registry
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
         run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin

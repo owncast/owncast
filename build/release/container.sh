@@ -1,14 +1,19 @@
 #!/bin/sh
 
-# Docker build
+# Container builder
 # Must authenticate first: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages
+# env vars: 
+#   $EARTHLY_BUILD_BRANCH: git branch to checkout
+#   $EARTHLY_BUILD_TAG: tag for container image
+
+
 EARTHLY_IMAGE_NAME="owncast"
 BUILD_TAG=${EARTHLY_BUILD_TAG:-webv2}
 DATE=$(date +"%Y%m%d")
 VERSION="${DATE}-${BUILD_TAG}"
 
 
-echo "Building Docker image ${EARTHLY_IMAGE_NAME}:${BUILD_TAG}..."
+echo "Building container image ${EARTHLY_IMAGE_NAME}:${BUILD_TAG}..."
 
 # Change to the root directory of the repository
 cd "$(git rev-parse --show-toplevel)" || exit
