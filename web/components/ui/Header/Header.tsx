@@ -20,10 +20,12 @@ export const Header: FC<HeaderComponentProps> = ({
 }) => (
   <AntHeader className={cn([`${styles.header}`], 'global-header')}>
     <div className={`${styles.logo}`}>
-      <div id="header-logo">
+      <div id="header-logo" className={styles.logoImage}>
         <OwncastLogo variant="contrast" />
       </div>
-      <span id="global-header-text">{name}</span>
+      <h1 className={styles.title} id="global-header-text">
+        {name}
+      </h1>
     </div>
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (
