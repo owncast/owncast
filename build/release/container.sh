@@ -19,4 +19,4 @@ echo "Building container image ${EARTHLY_IMAGE_NAME}:${BUILD_TAG}..."
 cd "$(git rev-parse --show-toplevel)" || exit
 git checkout "${EARTHLY_BUILD_BRANCH:-webv2}"
 
-earthly --ci --push +docker-all --image="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}" --tag=${BUILD_TAG} --version="${VERSION}"
+earthly --ci +docker-all --image="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}" --tag=${BUILD_TAG} --version="${VERSION}"

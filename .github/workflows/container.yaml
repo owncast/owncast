@@ -5,7 +5,7 @@ name: Build container
 
 on:
   schedule:
-    - cron: '0 2 * * *' # webv2
+    - cron: '0 2 * * *' # webv2 build schedule
   push:
     branches:
       - webv2
