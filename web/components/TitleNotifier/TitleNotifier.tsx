@@ -16,14 +16,20 @@ export const TitleNotifier: FC = () => {
   let backgrounded = false;
   let defaultTitle = '';
 
+  const setTitle = (title: string) => {
+    console.trace('Debug: Setting title to', title);
+    window.document.title = title;
+  };
+
   const onBlur = () => {
+    console.log('onBlur: Saving defaultTitle as', window.document.title);
     backgrounded = true;
     defaultTitle = window.document.title;
   };
 
   const onFocus = () => {
     backgrounded = false;
-    window.document.title = defaultTitle;
+    setTitle(defaultTitle);
   };
 
   const listenForEvents = () => {
@@ -33,6 +39,8 @@ export const TitleNotifier: FC = () => {
   };
 
   useEffect(() => {
+    console.log('useEffect: Saving defaultTitle as', window.document.title);
+
     defaultTitle = window.document.title;
     listenForEvents();
 
@@ -48,8 +56,7 @@ export const TitleNotifier: FC = () => {
     if (!backgrounded || !online) {
       return;
     }
-
-    window.document.title = `💬 :: ${defaultTitle}`;
+    setTitle(`💬 :: ${defaultTitle}`);
   }, [chatMessages]);
 
   useEffect(() => {
@@ -60,9 +67,9 @@ export const TitleNotifier: FC = () => {
     const { online } = serverStatus;
 
     if (online) {
-      window.document.title = ` 🟢 :: ${defaultTitle}`;
+      setTitle(` 🟢 :: ${defaultTitle}`);
     } else if (!online) {
-      window.document.title = ` 🔴 :: ${defaultTitle}`;
+      setTitle(` 🔴 :: ${defaultTitle}`);
     }
   }, [serverStatusState]);
 
