@@ -25,10 +25,10 @@ jobs:
         run: earthly --version
 
       - name: Authenticate to GitHub Container Registry
+        if: env.GH_CR_PAT != null
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
         run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-        if: env.GH_CR_PAT != null
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -40,6 +40,8 @@ jobs:
         run: echo "EARTHLY_BUILD_TAG=webv2" >> $GITHUB_ENV && echo "EARTHLY_BUILD_BRANCH=webv2" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Build and push
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
