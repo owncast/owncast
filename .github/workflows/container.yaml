@@ -17,7 +17,8 @@ jobs:
   Earthly:
     runs-on: ubuntu-latest
     steps:
-      - uses: earthly/actions-setup@v1
+      - name: Set up Earthly
+        uses: earthly/actions-setup@v1
         with:
           version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
 
@@ -36,10 +37,11 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - name: Set up earthly env
+      - name: Set up Earthly env
         run: echo "EARTHLY_BUILD_TAG=webv2" >> $GITHUB_ENV && echo "EARTHLY_BUILD_BRANCH=webv2" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 

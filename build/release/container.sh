@@ -13,10 +13,10 @@ DATE=$(date +"%Y%m%d")
 VERSION="${DATE}-${BUILD_TAG}"
 
 
-echo "Building container image ${EARTHLY_IMAGE_NAME}:${BUILD_TAG}..."
+echo "Building container image ${EARTHLY_IMAGE_NAME}:${BUILD_TAG} ..."
 
 # Change to the root directory of the repository
 cd "$(git rev-parse --show-toplevel)" || exit
-git checkout "${EARTHLY_BUILD_BRANCH:-webv2}"
+git checkout "${EARTHLY_BUILD_BRANCH:-webv2}" || exit
 
-earthly --ci +docker-all --image="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}" --tag=${BUILD_TAG} --version="${VERSION}"
+earthly --ci +docker-all --image="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}" --tag="${BUILD_TAG}" --version="${VERSION}"
