@@ -25,7 +25,6 @@ crosscompiler:
 code:
   FROM --platform=linux/amd64 +crosscompiler
   COPY . /build
-  #GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
 
 build:
   ARG EARTHLY_GIT_HASH # provided by Earthly
@@ -119,6 +118,9 @@ docker:
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
   SAVE IMAGE --push $image:$tag
+
+dockerfile:
+  FROM DOCKERFILE -f Dockerfile .
 
 unit-tests:
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile

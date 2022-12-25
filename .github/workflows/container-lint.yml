@@ -14,7 +14,7 @@ on:
 
 jobs:
   trivy:
-    name: Check Dockerfile configuration
+    name: Dockerfile
     runs-on: ubuntu-latest
     container:
       image: aquasec/trivy

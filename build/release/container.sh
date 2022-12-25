@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Container builder
 # Must authenticate first: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages
@@ -17,6 +18,9 @@ echo "Building container image ${EARTHLY_IMAGE_NAME}:${BUILD_TAG} ..."
 
 # Change to the root directory of the repository
 cd "$(git rev-parse --show-toplevel)" || exit
-git checkout "${EARTHLY_BUILD_BRANCH:-webv2}" || exit
+if [ -n "${EARTHLY_BUILD_BRANCH}" ]; then
+    git checkout "${EARTHLY_BUILD_BRANCH}" || exit
+fi
 
 earthly --ci +docker-all --image="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}" --tag="${BUILD_TAG}" --version="${VERSION}"
+earthly --ci +dockerfile

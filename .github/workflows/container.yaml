@@ -5,7 +5,7 @@ name: Build container
 
 on:
   schedule:
-    - cron: '0 2 * * *' # webv2 build schedule
+    - cron: '0 2 * * *'
   push:
     branches:
       - webv2
@@ -37,9 +37,6 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - name: Set up Earthly env
-        run: echo "EARTHLY_BUILD_TAG=webv2" >> $GITHUB_ENV && echo "EARTHLY_BUILD_BRANCH=webv2" >> $GITHUB_ENV
-
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -49,6 +46,8 @@ jobs:
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
+          EARTHLY_BUILD_TAG: 'webv2'
+          EARTHLY_BUILD_BRANCH: 'webv2'
           EARTHLY_PUSH: true
         run: ./build/release/container.sh
 
