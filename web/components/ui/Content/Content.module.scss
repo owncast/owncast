@@ -13,6 +13,18 @@
   .mainSection {
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
+  }
+
+  .mainSection::-webkit-scrollbar {
+    width: 5px;
+    height: auto;
+    background-color: var(--theme-color-components-scrollbar-background);
+  }
+
+  .mainSection::-webkit-scrollbar-thumb {
+    background: var(--theme-color-components-scrollbar-thumb);
+    border-radius: 1px;
   }
 
   .topSection {
