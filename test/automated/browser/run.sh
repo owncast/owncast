@@ -26,7 +26,7 @@ if [ ! -d "ffmpeg" ]; then
 	echo "Downloading ffmpeg..."
 	mkdir -p /tmp/ffmpeg
 	pushd /tmp/ffmpeg >/dev/null
-	curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip >/dev/null
+	curl -sL --fail https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip
 	unzip -o ffmpeg.zip >/dev/null
 	PATH=$PATH:$(pwd)
 	popd >/dev/null
@@ -36,7 +36,7 @@ fi
 echo "Building owncast..."
 go build -o owncast main.go
 echo "Running owncast..."
-./owncast -database $TEMP_DB &
+./owncast -database "$TEMP_DB" &
 SERVER_PID=$!
 
 pushd test/automated/browser
@@ -54,7 +54,7 @@ STREAMING_CLIENT=$!
 
 function finish {
 	echo "Cleaning up..."
-	rm $TEMP_DB
+	rm "$TEMP_DB"
 	kill $SERVER_PID $STREAMING_CLIENT
 }
 trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM

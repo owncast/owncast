@@ -1,4 +1,4 @@
-name: Format+Lint Javascript
+name: Lint
 
 # This action works with pull requests and pushes
 on:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   prettier:
-    name: Run prettier
+    name: Javascript prettier
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linter:
-    name: Run linter on changed files
+    name: Javascript linter
     runs-on: ubuntu-latest
     defaults:
       run:
