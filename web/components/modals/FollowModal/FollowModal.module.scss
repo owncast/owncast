@@ -28,9 +28,10 @@
   margin-bottom: 10px;
   font-size: 0.8rem;
   border-color: var(--color-owncast-palette-5);
-  border-width: 1px;
-  border-style: solid;
+  border-width: 2px;
+  border-style: dashed;
   border-radius: 6px;
+  padding: 5px;
 
   .logo {
     border-radius: 50%;
