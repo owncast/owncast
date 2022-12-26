@@ -1,7 +1,9 @@
+@import '../../../styles/mixins.scss';
 $Tablet-breakpoint: 768px;
 
+
 .footer {
-  display: flex;
+  display: none;
   align-items: center;
   flex-wrap: wrap;
   height: var(--footer-height);
@@ -16,6 +18,10 @@ $Tablet-breakpoint: 768px;
   font-size: 0.8rem;
   font-weight: 600;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
+
+  @include screen(desktop) {
+    display: flex;
+  }
 
   a {
     color: var(--theme-color-components-text-on-dark);
