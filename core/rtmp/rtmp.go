@@ -9,6 +9,7 @@ import (
 	"github.com/nareix/joy5/format/flv"
 	"github.com/nareix/joy5/format/flv/flvio"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/core/data"
@@ -75,7 +76,14 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	if !secretMatch(data.GetStreamKey(), c.URL.Path) {
+	streamKeyHash, err := bcrypt.GenerateFromPassword([]byte(data.GetStreamKey()), bcrypt.DefaultCost)
+
+	if err != nil {
+		log.Errorf("Error hashing streaming key, cannot proceed: %s", err)
+		_ = nc.Close()
+	}
+
+	if !secretMatch(streamKeyHash, c.URL.Path) {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
 		_ = nc.Close()
 		return

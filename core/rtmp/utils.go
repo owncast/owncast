@@ -10,6 +10,7 @@ import (
 	"github.com/nareix/joy5/format/flv/flvio"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const unknownString = "Unknown"
@@ -80,7 +81,7 @@ func getVideoCodec(codec interface{}) string {
 	return unknownString
 }
 
-func secretMatch(configStreamKey string, path string) bool {
+func secretMatch(configStreamKeyHash []byte, path string) bool {
 	prefix := "/live/"
 
 	if !strings.HasPrefix(path, prefix) {
@@ -88,6 +89,11 @@ func secretMatch(configStreamKey string, path string) bool {
 		return false // We need the path to begin with $prefix
 	}
 
-	streamingKey := path[len(prefix):] // Remove $prefix
-	return streamingKey == configStreamKey
+	streamingKey := []byte(path[len(prefix):]) // Remove $prefix
+
+	result := bcrypt.CompareHashAndPassword(configStreamKeyHash, streamingKey)
+	if result != nil {
+		log.Debugf("Error comparing streaming key: %s", result)
+	}
+	return result == nil
 }
