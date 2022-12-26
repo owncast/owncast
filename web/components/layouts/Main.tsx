@@ -71,7 +71,7 @@ export const Main: FC = () => {
 
       {isProduction ? (
         <Head>
-          {name ? <title>{name}</title> : <title>{`{{.Name}}`}</title>}
+          {name ? <title>{name}</title> : <title>{'{{.Name}}'}</title>}
           <meta name="description" content="{{.Summary}}" />
 
           <meta property="og:title" content="{{.Name}}" />
@@ -108,7 +108,7 @@ export const Main: FC = () => {
       )}
 
       <ClientConfigStore />
-      <TitleNotifier />
+      <TitleNotifier name={name} />
       <Theme />
       <Layout ref={layoutRef} style={{ minHeight: '100vh' }}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
