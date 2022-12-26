@@ -33,7 +33,8 @@
       font-weight: 600;
       white-space: nowrap;
       text-overflow: ellipsis;
-      max-width: 90%;
+      width: 70vw;
+      overflow: hidden;
     }
   }
 }
