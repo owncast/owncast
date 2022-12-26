@@ -1,0 +1,30 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - webv2
+    paths:
+      - '**.sh'
+  pull_request:
+    branches:
+      - webv2
+    paths:
+      - '**.sh'
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    env:
+      LANG: C.UTF-8
+    container:
+      image: docker.io/ubuntu:22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install shellcheck
+        run: apt update && apt install -y shellcheck bash && shellcheck --version
+
+      - name: Check shell scripts
+        run: shopt -s globstar && ls **/*.sh && shellcheck --severity=info **/*.sh
+        shell: bash
