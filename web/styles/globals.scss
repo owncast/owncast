@@ -20,14 +20,25 @@
 
 html {
   font-size: clamp(15px, 1.35vw, 16px);
+  scrollbar-color: var(--theme-color-components-scrollbar-thumb) var(--theme-color-components-scrollbar-background);
 }
 
 body {
   font-family: var(--theme-text-body-font-family);
   line-height: 1.5em;
   margin: 0;
-
   background-color: var(--theme-color-background-main);
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: auto;
+    background-color: var(--theme-color-components-scrollbar-background);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--theme-color-components-scrollbar-thumb);
+    border-radius: 1px;
+  }
 
   div,
   h1,
