@@ -23,7 +23,7 @@ export const Header: FC<HeaderComponentProps> = ({
       <div id="header-logo" className={styles.logoImage}>
         <OwncastLogo variant="contrast" />
       </div>
-      <h1 className={styles.title} id="global-header-text">
+      <h1 className={styles.title} id="global-header-text" title={name}>
         {name}
       </h1>
     </div>
