@@ -12,18 +12,22 @@ import {
   currentUserAtom,
   chatAuthenticatedAtom,
   accessTokenAtom,
+  clientConfigStateAtom,
 } from '../../stores/ClientConfigStore';
+import { ClientConfig } from '../../../interfaces/client-config.model';
 
 export const AuthModal: FC = () => {
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
   const currentUser = useRecoilValue(currentUserAtom);
+  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
+
   if (!currentUser) {
     return null;
   }
   const { displayName } = currentUser;
-
-  const federationEnabled = true;
+  const { federation } = clientConfig;
+  const { enabled: fediverseEnabled } = federation;
 
   const indieAuthTabTitle = (
     <span className={styles.tabContent}>
@@ -67,7 +71,7 @@ export const AuthModal: FC = () => {
         items={items}
         type="card"
         size="small"
-        renderTabBar={federationEnabled ? null : () => null}
+        renderTabBar={fediverseEnabled ? null : () => null}
       />
     </div>
   );
