@@ -12,19 +12,7 @@
 
   .mainSection {
     display: flex;
-    overflow-y: scroll;
     flex-direction: column;
-  }
-
-  .mainSection::-webkit-scrollbar {
-    width: 5px;
-    height: auto;
-    background-color: var(--theme-color-components-scrollbar-background);
-  }
-
-  .mainSection::-webkit-scrollbar-thumb {
-    background: var(--theme-color-components-scrollbar-thumb);
-    border-radius: 1px;
   }
 
   .topSection {
