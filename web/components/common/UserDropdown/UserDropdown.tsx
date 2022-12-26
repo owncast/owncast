@@ -84,9 +84,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
     <div id="user-menu" className={`${styles.root}`}>
       <Dropdown overlay={menu} trigger={['click']}>
         <Button type="primary" icon={<UserOutlined className={styles.userIcon} />}>
-          <span className={styles.username}>
-            {username}
-          </span>
+          <span className={styles.username}>{username}</span>
           <CaretDownOutlined />
         </Button>
       </Dropdown>
