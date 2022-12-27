@@ -26,7 +26,7 @@ jobs:
         run: earthly --version
 
       - name: Authenticate to GitHub Container Registry
-        if: env.GH_CR_PAT != null
+        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
         run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
