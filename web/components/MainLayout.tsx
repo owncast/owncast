@@ -248,7 +248,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     },
     {
       key: 'help',
-      label: 'Help',
+      label: <Link href="/admin/help">Help</Link>,
       icon: <QuestionCircleOutlined />,
     },
   ];
