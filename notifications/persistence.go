@@ -31,9 +31,9 @@ func AddNotification(channel, destination string) error {
 	})
 }
 
-// RemoveNotificationForChannel removes a notification destination..
+// RemoveNotificationForChannel removes a notification destination.
 func RemoveNotificationForChannel(channel, destination string) error {
-	log.Println("Removing notification for channel", channel)
+	log.Debugln("Removing notification for channel", channel)
 	return data.GetDatastore().GetQueries().RemoveNotificationDestinationForChannel(context.Background(), db.RemoveNotificationDestinationForChannelParams{
 		Channel:     channel,
 		Destination: destination,
