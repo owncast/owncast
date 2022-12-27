@@ -25,6 +25,7 @@ export interface Client {
   userAgent: string;
   connectedAt: Date;
   geo: string;
+  id: number;
 }
 
 export interface Message {
@@ -156,7 +157,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
         <Panel header="Currently Connected Clients" key="connected-clients">
           <Collapse accordion>
             {connectedClients.map(client => (
-              <Panel header={formatUAstring(client.userAgent)} key={client.userAgent}>
+              <Panel header={formatUAstring(client.userAgent)} key={client.id}>
                 <ConnectedClient client={client} />
               </Panel>
             ))}
@@ -169,6 +170,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
               pagination={null}
               columns={chatMessageColumns}
               dataSource={messages}
+              rowKey="id"
             />
           </Panel>
         </Collapse>
