@@ -5,7 +5,9 @@ on:
       - webv2
       - develop
     paths:
-      - web/**
+      - 'web/**'
+    paths-ignore:
+      - '**.md'  
 
 jobs:
   bundle:

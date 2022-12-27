@@ -1,4 +1,4 @@
-import { Menu, Dropdown, Button, Space } from 'antd';
+import { Menu, Dropdown, Button } from 'antd';
 import {
   CaretDownOutlined,
   EditOutlined,
@@ -83,11 +83,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
   return (
     <div id="user-menu" className={`${styles.root}`}>
       <Dropdown overlay={menu} trigger={['click']}>
-        <Button type="primary" icon={<UserOutlined style={{ marginRight: '.5rem' }} />}>
-          <Space>
-            {username}
-            <CaretDownOutlined />
-          </Space>
+        <Button type="primary" icon={<UserOutlined className={styles.userIcon} />}>
+          <span className={styles.username}>{username}</span>
+          <CaretDownOutlined />
         </Button>
       </Dropdown>
       <Modal
