@@ -78,10 +78,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   showInput,
   height,
 }) => {
-  const [atBottom, setAtBottom] = useState(false);
-  // const [showButton, setShowButton] = useState(false);
+  const [atBottom, setAtBottom] = useState(true);
   const chatContainerRef = useRef(null);
-  // const spinIcon = <LoadingOutlined style={{ fontSize: '32px' }} spin />;
 
   const getNameChangeViewForMessage = (message: NameChangeEvent) => {
     const { oldName, user } = message;
@@ -180,13 +178,21 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           style={{ height }}
           className={styles.virtuoso}
           ref={chatContainerRef}
-          initialTopMostItemIndex={messages.length - 1} // Force alignment to bottom
+          // initialTopMostItemIndex={999999}
           data={messages}
           itemContent={(index, message) => getViewForMessage(index, message)}
-          followOutput="auto"
+          followOutput={(isAtBottom: boolean) => {
+            if (isAtBottom) {
+              return 'smooth';
+            }
+            return false;
+          }}
           alignToBottom
           atBottomThreshold={70}
-          atBottomStateChange={bottom => setAtBottom(bottom)}
+          atBottomStateChange={bottom => {
+            setAtBottom(bottom);
+          }}
+          endReached={() => setAtBottom(true)}
         />
         {!atBottom && <ScrollToBotBtn chatContainerRef={chatContainerRef} messages={messages} />}
       </>

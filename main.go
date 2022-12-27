@@ -30,6 +30,7 @@ var (
 	rtmpPortOverride      = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
 )
 
+// nolint:cyclop
 func main() {
 	flag.Parse()
 
@@ -46,6 +47,14 @@ func main() {
 		if err := os.Mkdir("./data", 0o700); err != nil {
 			log.Fatalln("Cannot create data directory", err)
 		}
+	}
+
+	// Migrate old (pre 0.1.0) emoji to new location if they exist.
+	utils.MigrateCustomEmojiLocations()
+
+	// Otherwise save the default emoji to the data directory.
+	if err := data.SetupEmojiDirectory(); err != nil {
+		log.Fatalln("Cannot set up emoji directory", err)
 	}
 
 	// Recreate the temp dir

@@ -11,7 +11,7 @@ import {
 } from '../../utils/config-constants';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
+import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
 
 const { Title, Paragraph } = Typography;
 let resetTimer = null;
@@ -69,16 +69,7 @@ const ActionModal = (props: Props) => {
   }
 
   function canSave(): Boolean {
-    try {
-      const validationObject = new URL(actionUrl);
-      if (validationObject.protocol !== 'https:') {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-
-    return isValidUrl(actionUrl) && actionTitle !== '';
+    return isValidUrl(actionUrl, ['https:']) && actionTitle !== '';
   }
 
   const okButtonProps = {

@@ -62,20 +62,19 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
 
   return (
     mounted && (
-      <div className={styles.popOverContainer}>
-        <Popover
-          placement="topLeft"
-          defaultOpen={openPopup}
-          open={openPopup}
-          destroyTooltipOnHide
-          title={title}
-          content={content}
-          overlayInnerStyle={popupStyle}
-          color={styles.popupBackgroundColor}
-        >
-          {children}
-        </Popover>
-      </div>
+      <Popover
+        placement="topLeft"
+        defaultOpen={openPopup}
+        open={openPopup}
+        destroyTooltipOnHide
+        title={title}
+        content={content}
+        overlayInnerStyle={popupStyle}
+        color={styles.popupBackgroundColor}
+        getPopupContainer={node => node}
+      >
+        {children}
+      </Popover>
     )
   );
 };

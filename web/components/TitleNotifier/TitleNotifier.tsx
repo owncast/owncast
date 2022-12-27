@@ -5,25 +5,33 @@
  * page is backgrounded, this component will update the title to reflect it. *
  * @component
  */
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { serverStatusState, chatMessagesAtom } from '../stores/ClientConfigStore';
 
-export const TitleNotifier: FC = () => {
+export type TitleNotifierProps = {
+  name: string;
+};
+
+export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
   const chatMessages = useRecoilValue(chatMessagesAtom);
   const serverStatus = useRecoilValue(serverStatusState);
 
-  let backgrounded = false;
-  let defaultTitle = '';
+  const [backgrounded, setBackgrounded] = useState(false);
+
+  const { online } = serverStatus;
+
+  const setTitle = (title: string) => {
+    document.title = title;
+  };
 
   const onBlur = () => {
-    backgrounded = true;
-    defaultTitle = window.document.title;
+    setBackgrounded(true);
   };
 
   const onFocus = () => {
-    backgrounded = false;
-    window.document.title = defaultTitle;
+    setBackgrounded(false);
+    setTitle(name);
   };
 
   const listenForEvents = () => {
@@ -32,39 +40,44 @@ export const TitleNotifier: FC = () => {
     window.addEventListener('focus', onFocus);
   };
 
+  const removeEvents = () => {
+    window.removeEventListener('blur', onBlur);
+    window.removeEventListener('focus', onFocus);
+  };
+
   useEffect(() => {
-    defaultTitle = window.document.title;
     listenForEvents();
 
     return () => {
-      window.removeEventListener('focus', onFocus);
-      window.removeEventListener('blur', onBlur);
+      removeEvents();
     };
-  }, []);
+  }, [name]);
 
   useEffect(() => {
-    const { online } = serverStatus;
-
     if (!backgrounded || !online) {
       return;
     }
 
-    window.document.title = `💬 :: ${defaultTitle}`;
-  }, [chatMessages]);
+    // Only alert on real chat messages from people.
+    const lastMessage = chatMessages[chatMessages.length - 1];
+    if (lastMessage.type !== 'CHAT') {
+      return;
+    }
+
+    setTitle(`💬 :: ${name}`);
+  }, [chatMessages, name]);
 
   useEffect(() => {
     if (!backgrounded) {
       return;
     }
 
-    const { online } = serverStatus;
-
     if (online) {
-      window.document.title = ` 🟢 :: ${defaultTitle}`;
+      setTitle(` 🟢 :: ${name}`);
     } else if (!online) {
-      window.document.title = ` 🔴 :: ${defaultTitle}`;
+      setTitle(` 🔴 :: ${name}`);
     }
-  }, [serverStatusState]);
+  }, [online, name]);
 
   return null;
 };

@@ -37,12 +37,12 @@ pushd ../../.. >/dev/null
 
 # Build and run owncast from source
 go build -o owncast main.go
-./owncast -database $TEMP_DB &
+./owncast -database "$TEMP_DB" &
 SERVER_PID=$!
 
 function finish {
   echo "Cleaning up..."
-  rm $TEMP_DB
+  rm "$TEMP_DB"
   kill $SERVER_PID $STREAMING_CLIENT
 }
 trap finish EXIT

@@ -256,6 +256,8 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
             renderElement={renderElement}
             placeholder="Send a message to chat"
             style={{ width: '100%' }}
+            role="textbox"
+            aria-label="Chat text input"
             autoFocus
           />
           <Popover
@@ -266,6 +268,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
               />
             }
             trigger="click"
+            placement="topRight"
             onOpenChange={open => setShowEmojis(open)}
             open={showEmojis}
           />

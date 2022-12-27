@@ -1,6 +1,7 @@
 /* eslint-disable react/no-danger */
 import { Highlight } from 'react-highlighter-ts';
 import { FC } from 'react';
+import cn from 'classnames';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import styles from './ChatSystemMessage.module.scss';
 
@@ -16,7 +17,7 @@ export const ChatSystemMessage: FC<ChatSystemMessageProps> = ({
   },
   highlightString,
 }) => (
-  <div className={styles.chatSystemMessage}>
+  <div className={cn([styles.chatSystemMessage, 'chat-message_system'])}>
     <div className={styles.user}>
       <span className={styles.userName}>{displayName}</span>
     </div>

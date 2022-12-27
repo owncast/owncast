@@ -92,17 +92,20 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
     }
   }
 
+  const menuButton = new MenuButton();
+
   // If none of the settings in this menu are applicable then don't show it.
   const tech = player.tech({ IWillNotUseThisInPlugins: true });
-
-  if (qualities.length < 2 && (!tech || !tech.vhs)) {
-    return;
-  }
-
+  menuButton.addClass('vjs-quality-selector');
   videojs.registerComponent('MenuButton', MenuButton);
 
-  const menuButton = new MenuButton();
-  menuButton.addClass('vjs-quality-selector');
+  if (!tech.vhs) {
+    return menuButton;
+  }
+
+  if (qualities.length < 2 && (!tech || !tech.vhs)) {
+    return menuButton;
+  }
 
   // eslint-disable-next-line consistent-return
   return menuButton;

@@ -6,6 +6,13 @@ describe(`Basic tests`, () => {
 		cy.visit('http://localhost:8080/');
 	});
 
+	// Offline banner
+	it('Has correct offline banner values', () => {
+		cy.contains(
+			'This stream is offline. Be notified the next time New Owncast Server goes live.'
+		).should('be.visible');
+	});
+
 	// Verify the tags show up
 	it('Has correct tags visible', () => {
 		cy.contains('#owncast').should('be.visible');
@@ -38,13 +45,6 @@ describe(`Basic tests`, () => {
 	});
 
 	it('Has correct global header values', () => {
-		cy.get('.global-header-text').should('have.text', 'New Owncast Server');
-	});
-
-	// Offline banner
-	it('Has correct offline banner values', () => {
-		cy.contains(
-			'This stream is offline. Be notified the next time New Owncast Server goes live.'
-		).should('be.visible');
+		cy.get('#global-header-text').should('have.text', 'New Owncast Server');
 	});
 });

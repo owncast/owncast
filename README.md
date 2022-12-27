@@ -10,7 +10,7 @@
   <p align="center">
     <strong>Take control over your content and stream it yourself.</strong>
     <br />
-    <a href="http://owncast.online"><strong>Explore the docs »</strong></a>
+    <a href="https://owncast.online"><strong>Explore the docs »</strong></a>
     <br />
     <a href="https://watch.owncast.online/">View Demo</a>
     ·
@@ -89,7 +89,7 @@ The Owncast backend is a service written in Go.
 1. Ensure you have pre-requisites installed.
    - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
    - [ffmpeg](https://ffmpeg.org/download.html)
-1. Install the [Go toolchain](https://golang.org/dl/) (1.17 or above).
+1. Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from source.
 1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
@@ -125,6 +125,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Project chat: [Join us on Rocket.Chat](https://owncast.rocket.chat/home) if you want to contribute, follow along, or if you have questions.
 
-Gabe Kangas - [@gabek@social.gabekangas.com](https://fosstodon.org/@gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
+Gabe Kangas - [@gabek@social.gabekangas.com](https://social.gabekangas.com/gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
 
 Project Link: [https://github.com/owncast/owncast](https://github.com/owncast/owncast)

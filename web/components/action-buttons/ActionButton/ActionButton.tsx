@@ -1,5 +1,6 @@
 import { Button } from 'antd';
 import { FC } from 'react';
+import cn from 'classnames';
 import { ExternalAction } from '../../../interfaces/external-action';
 import styles from './ActionButton.module.scss';
 
@@ -19,7 +20,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
   return (
     <Button
       type={primary ? 'primary' : 'default'}
-      className={`${styles.button}`}
+      className={cn([`${styles.button}`, 'action-button'])}
       onClick={() => externalActionSelected(action)}
       style={{ backgroundColor: color }}
     >

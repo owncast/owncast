@@ -25,7 +25,7 @@ isolation.
 1. Go to the `Canvas` tab of the component you selected and see if there's a Design attached to it.
 1. If there is a design, then that's a starting point you can use to start building out the component.
 1. If there isn't, then visit the [Owncast Demo Server](https://watch.owncast.online), the [Owncast Nightly Build](https://nightly.owncast.online), or the proposed [v2 design](https://www.figma.com/file/B6ICOn1J3dyYeoZM5kPM2A/Owncast---Review?node-id=0%3A1) for some ways to start.
-1. If no design exists, then you can ask around the Owncast chat for help, for come up with your own ideas!
+1. If no design exists, then you can ask around the Owncast chat for help, or come up with your own ideas!
 1. No designs are stuck in stone, and we're using this as an opportunity to level up the UI of Owncast, so all ideas are welcome.
 
 See the extra how-to guide for components here: [Components How-to](./components/_COMPONENT_HOW_TO.md).

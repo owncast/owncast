@@ -5,7 +5,7 @@
 
 theme:
   rounded-corners:
-    value: 0.5rem
+    value: 9px
     comment: 'How much corners are rounded in places in the UI.'
   unknown-1:
     value: 'green'

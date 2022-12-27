@@ -26,7 +26,7 @@ BUTTONS
   color: currentColor;
   border-width: 2px;
   border-color: transparent;
-  border-radius: 0.15rem;
+  border-radius: var(--theme-rounded-corners);
   background-color: rgba(0, 0, 0, 0.1);
   &:hover,
   &:focus {
@@ -128,6 +128,9 @@ DROPDOWN
     color: var(--theme-color-components-text-on-light);
   }
 }
+.ant-modal-content {
+  box-shadow: 3px 15px 15px -3px rgba(0, 0, 0, 0.15), 0px 4px 6px -2px rgba(0, 0, 0, 0.08);
+}
 
 .ant-input-affix-wrapper {
   padding: 4px 5px;
@@ -194,4 +197,19 @@ DROPDOWN
 
 .ant-modal-close:hover {
   color: var(--theme-color-components-modal-header-text);
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: unset;
+}
+
+td.ant-table-column-sort,
+.ant-table-thead th.ant-table-column-sort {
+  background-color: unset;
+}
+
+th {
+  color: var(--theme-color-components-modal-header-text);
+  font-family: var(--theme-text-display-font-family);
+  font-weight: 700 !important;
 }

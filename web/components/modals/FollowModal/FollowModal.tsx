@@ -74,7 +74,7 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
   };
 
   return (
-    <Space direction="vertical">
+    <Space direction="vertical" id="follow-modal">
       <div className={styles.header}>
         By following this stream you'll get notified on the Fediverse when it goes live. Now is a
         great time to

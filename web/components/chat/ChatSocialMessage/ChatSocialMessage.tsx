@@ -1,6 +1,7 @@
 import { Avatar, Col, Row } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { FC } from 'react';
+import cn from 'classnames';
 import { ChatSocialMessage as ChatMessage } from '../../../interfaces/chat-social-message.model';
 import styles from './ChatSocialMessage.module.scss';
 
@@ -32,7 +33,7 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
   }
 
   return (
-    <div className={styles.follower}>
+    <div className={cn([styles.follower, 'chat-message_social'])}>
       <a href={link} target="_blank" rel="noreferrer">
         <Row wrap={false}>
           <Col span={6}>

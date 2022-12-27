@@ -13,7 +13,12 @@ import {
   OTHER_SOCIAL_HANDLE_OPTION,
 } from '../../utils/config-constants';
 import { SocialHandle, UpdateArgs } from '../../types/config-section';
-import isValidUrl, { DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
+import {
+  isValidMatrixAccount,
+  isValidAccount,
+  isValidUrl,
+  DEFAULT_TEXTFIELD_URL_PATTERN,
+} from '../../utils/urls';
 import { TextField } from './TextField';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
@@ -270,8 +275,19 @@ export const EditSocialLinks: FC = () => {
     },
   ];
 
+  const isValid = (url: string, platform: string) => {
+    if (platform === 'xmpp') {
+      return isValidAccount(url, 'xmpp');
+    }
+    if (platform === 'matrix') {
+      return isValidMatrixAccount(url);
+    }
+
+    return isValidUrl(url);
+  };
+
   const okButtonProps = {
-    disabled: !isValidUrl(modalDataState.url),
+    disabled: !isValid(modalDataState.url, modalDataState.platform),
   };
 
   const otherField = (

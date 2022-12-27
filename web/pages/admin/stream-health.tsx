@@ -212,7 +212,9 @@ const StreamHealth = () => {
   const currentSpeed = bitrateChart[0]?.data[bitrateChart[0].data.length - 1]?.value;
   const currentDownloadSeconds =
     medianSegmentDownloadDurations[medianSegmentDownloadDurations.length - 1]?.value;
-  const lowestVariant = availableBitrates[0]; // TODO: get lowest bitrate from available bitrates
+  const lowestVariant = availableBitrates.reduce((bitrate1, bitrate2) =>
+    bitrate1.valueOf() < bitrate2.valueOf() ? bitrate1 : bitrate2,
+  );
 
   const latencyMedian = medianLatency[medianLatency.length - 1]?.value || 0;
   const latencyMax = highestLatency[highestLatency.length - 1]?.value || 0;
@@ -240,7 +242,7 @@ const StreamHealth = () => {
       'Your viewers may be consuming your video slower than required. This may be due to slow networks or your latency configuration. You need to decrease the amount of time viewers are taking to consume your video. Consider adding a lower quality with a lower bitrate or experiment with increasing the latency buffer setting.';
   }
 
-  const errorStatColor = recentErrorCount > 0 ? '#B63FFF' : '#FFFFFF';
+  const errorStatColor = recentErrorCount > 0 ? '#B63FFF' : 'unset';
   const statStyle = {
     display: 'flex',
     alignItems: 'center',

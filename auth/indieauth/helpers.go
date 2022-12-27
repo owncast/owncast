@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/andybalholm/cascadia"
 	"github.com/pkg/errors"
@@ -63,6 +64,7 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 		State:              state,
 		Redirect:           &redirect,
 		Callback:           &callbackURL,
+		Timestamp:          time.Now(),
 	}, nil
 }
 
@@ -70,6 +72,10 @@ func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
 	htmlDocScrapeURL, err := url.Parse(urlstring)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to parse URL")
+	}
+
+	if htmlDocScrapeURL.Scheme != "https" {
+		return nil, fmt.Errorf("url must be https")
 	}
 
 	r, err := http.Get(htmlDocScrapeURL.String()) // nolint:gosec

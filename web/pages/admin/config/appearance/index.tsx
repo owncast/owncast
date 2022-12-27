@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Button, Col, Collapse, Row, Space } from 'antd';
+import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Title from 'antd/lib/typography/Title';
 import { EditCustomStyles } from '../../../../components/config/EditCustomStyles';
@@ -97,6 +97,8 @@ export default function Appearance() {
     { name: 'theme-color-components-scrollbar-thumb', description: 'Scrollbar Thumb' },
   ];
 
+  const others = [{ name: 'theme-rounded-corners', description: 'Corner radius' }];
+
   const [colors, setColors] = useState<Record<string, AppearanceVariable>>();
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
@@ -107,15 +109,21 @@ export default function Appearance() {
     clearTimeout(resetTimer);
   };
 
-  useEffect(() => {
+  const setColorDefaults = () => {
     const c = {};
-    [...paletteVariables, ...componentColorVariables, ...chatColorVariables].forEach(color => {
-      const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(
-        `--${color.name}`,
-      );
-      c[color.name] = { value: resolvedColor.trim(), description: color.description };
-    });
+    [...paletteVariables, ...componentColorVariables, ...chatColorVariables, ...others].forEach(
+      color => {
+        const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(
+          `--${color.name}`,
+        );
+        c[color.name] = { value: resolvedColor.trim(), description: color.description };
+      },
+    );
     setColors(c);
+  };
+
+  useEffect(() => {
+    setColorDefaults();
   }, []);
 
   useEffect(() => {
@@ -136,13 +144,13 @@ export default function Appearance() {
   };
 
   const reset = async () => {
-    setColors({});
     await postConfigUpdateToAPI({
       apiPath: ENDPOINT,
       data: { value: {} },
       onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        setColorDefaults();
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -174,6 +182,12 @@ export default function Appearance() {
   if (!colors) {
     return <div>Loading...</div>;
   }
+
+  const onBorderRadiusChange = (value: string) => {
+    const variableName = 'theme-rounded-corners';
+
+    updateColor(variableName, `${value.toString()}px`, '');
+  };
 
   return (
     <Space direction="vertical">
@@ -233,6 +247,32 @@ export default function Appearance() {
                   />
                 );
               })}
+            </Row>
+          </Panel>
+          <Panel header={<Title level={3}>Other Settings</Title>} key="4">
+            How rounded should corners be?
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Slider
+                  min={0}
+                  max={20}
+                  tooltip={{ formatter: null }}
+                  onChange={v => {
+                    onBorderRadiusChange(v);
+                  }}
+                  value={Number(colors['theme-rounded-corners']?.value?.replace('px', '') || 0)}
+                />
+              </Col>
+              <Col span={4}>
+                <div
+                  style={{
+                    width: '100px',
+                    height: '30px',
+                    borderRadius: `${colors['theme-rounded-corners']?.value}`,
+                    backgroundColor: 'var(--theme-color-palette-7)',
+                  }}
+                />
+              </Col>
             </Row>
           </Panel>
         </Collapse>

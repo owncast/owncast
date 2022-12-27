@@ -1,3 +1,5 @@
+@import '../../../styles/mixins.scss';
+
 .root {
   button {
     border: none;
@@ -7,4 +9,18 @@
 			}
 		}
   }
+  .userIcon {
+	@include screen(desktop) {
+		margin-right: .5rem;
+	}
+  }
+
+  .username {
+	  display: none;
+  
+	  @include screen(desktop) {
+		  display: inline;
+	  }
+  }
 }
+

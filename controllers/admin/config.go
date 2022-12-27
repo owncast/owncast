@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -228,36 +227,9 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s := strings.SplitN(configValue.Value.(string), ",", 2)
-	if len(s) < 2 {
-		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image data.")
-		return
-	}
-	bytes, err := base64.StdEncoding.DecodeString(s[1])
+	bytes, extension, err := utils.DecodeBase64Image(configValue.Value.(string))
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	splitHeader := strings.Split(s[0], ":")
-	if len(splitHeader) < 2 {
-		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image header.")
-		return
-	}
-	contentType := strings.Split(splitHeader[1], ";")[0]
-	extension := ""
-	if contentType == "image/svg+xml" {
-		extension = ".svg"
-	} else if contentType == "image/gif" {
-		extension = ".gif"
-	} else if contentType == "image/png" {
-		extension = ".png"
-	} else if contentType == "image/jpeg" {
-		extension = ".jpeg"
-	}
-
-	if extension == "" {
-		controllers.WriteSimpleResponse(w, false, "Missing or invalid contentType in base64 image.")
 		return
 	}
 
@@ -417,6 +389,12 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 
 	rawValue, ok := configValue.Value.(string)
 	if !ok {
+		controllers.WriteSimpleResponse(w, false, "could not read server url")
+		return
+	}
+
+	serverHostString := utils.GetHostnameFromURLString(rawValue)
+	if serverHostString == "" {
 		controllers.WriteSimpleResponse(w, false, "server url value invalid")
 		return
 	}

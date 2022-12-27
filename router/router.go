@@ -39,7 +39,7 @@ func Start() error {
 	http.HandleFunc("/logo", controllers.GetLogo)
 
 	// Return a single emoji image.
-	http.HandleFunc("/img/emoji/", controllers.GetCustomEmojiImage)
+	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
 	// return the logo
 
@@ -155,6 +155,12 @@ func Start() error {
 
 	// Set the following state of a follower or follow request.
 	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
+
+	// Upload custom emoji
+	http.HandleFunc("/api/admin/emoji/upload", middleware.RequireAdminAuth(admin.UploadCustomEmoji))
+
+	// Delete custom emoji
+	http.HandleFunc("/api/admin/emoji/delete", middleware.RequireAdminAuth(admin.DeleteCustomEmoji))
 
 	// Update config values
 
@@ -385,11 +391,25 @@ func Start() error {
 	port := config.WebServerPort
 	ip := config.WebServerIP
 
+	// Create a custom mux handler to intercept the /debug/vars endpoint.
+	// This is a hack because Prometheus enables this endpoint by default
+	// due to its use of expvar and we do not want this exposed.
 	h2s := &http2.Server{}
+	defaultMux := h2c.NewHandler(http.DefaultServeMux, h2s)
+	m := http.NewServeMux()
+	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/debug/vars" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		} else {
+			defaultMux.ServeHTTP(w, r)
+		}
+	})
+
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           h2c.NewHandler(http.DefaultServeMux, h2s),
+		Handler:           m,
 	}
 
 	log.Infof("Web server is listening on IP %s port %d.", ip, port)

@@ -1,4 +1,4 @@
-name: lint
+name: Lint
 on:
   push:
     paths-ignore:
@@ -30,6 +30,8 @@ jobs:
           fetch-depth: 0
 
       - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.8'
       - uses: actions/checkout@v3
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
