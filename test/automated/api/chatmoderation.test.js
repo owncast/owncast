@@ -55,7 +55,10 @@ test('verify admin can make API call to mark message as hidden', async (done) =>
 
 	const message = res.body[0];
 	messageId = message.id;
-	await sendAdminPayload('chat/messagevisibility', { idArray: [messageId], visible: false });
+	await sendAdminPayload('chat/messagevisibility', {
+		idArray: [messageId],
+		visible: false,
+	});
 });
 
 test('verify message has become hidden', async (done) => {

@@ -3,12 +3,12 @@ request = request('http://127.0.0.1:8080');
 
 const defaultAdminPassword = 'abc123';
 
-async function getAdminResponse(endpoint, adminPassword = defaultAdminPassword) {
+async function getAdminResponse(
+	endpoint,
+	adminPassword = defaultAdminPassword
+) {
 	const url = '/api/admin/' + endpoint;
-	const res = request
-		.get(url)
-		.auth('admin', adminPassword)
-		.expect(200);
+	const res = request.get(url).auth('admin', adminPassword).expect(200);
 
 	return res;
 }
@@ -67,4 +67,3 @@ module.exports.getAdminResponse = getAdminResponse;
 module.exports.sendAdminRequest = sendAdminRequest;
 module.exports.sendAdminPayload = sendAdminPayload;
 module.exports.failAdminRequest = failAdminRequest;
-
