@@ -208,7 +208,7 @@ func SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetAdminPassword(configValue.Value.(string)); err != nil {
+	if err := data.SetAdminPasswordPlainText(configValue.Value.(string)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -775,7 +775,7 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type streamKeysRequest struct {
-		Value []models.StreamKey `json:"value"`
+		Value []models.StreamKeyPlainText `json:"value"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -785,7 +785,7 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetStreamKeys(streamKeys.Value); err != nil {
+	if err := data.SetStreamKeysPlainText(streamKeys.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

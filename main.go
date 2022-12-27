@@ -7,6 +7,7 @@ import (
 
 	"github.com/owncast/owncast/logging"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
@@ -112,7 +113,7 @@ func main() {
 
 func handleCommandLineFlags() {
 	if *newAdminPassword != "" {
-		if err := data.SetAdminPassword(*newAdminPassword); err != nil {
+		if err := data.SetAdminPasswordPlainText(*newAdminPassword); err != nil {
 			log.Errorln("Error setting your admin password.", err)
 			log.Exit(1)
 		} else {
@@ -121,8 +122,13 @@ func handleCommandLineFlags() {
 	}
 
 	if *newStreamKey != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(*newStreamKey), bcrypt.DefaultCost)
+		if err == nil {
+			log.Errorln("Error setting your temporary streaming key.", err)
+			log.Exit(1)
+		}
 		log.Println("Temporary stream key is set for this session.")
-		config.TemporaryStreamKey = *newStreamKey
+		config.TemporaryStreamKey = hash
 	}
 
 	// Set the web server port

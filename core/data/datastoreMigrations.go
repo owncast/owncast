@@ -5,6 +5,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -56,8 +57,9 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 
 func migrateToDatastoreValues2(datastore *Datastore) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
-	_ = SetAdminPassword(oldAdminPassword)
-	_ = SetStreamKeys([]models.StreamKey{
-		{Key: oldAdminPassword, Comment: "Default stream key"},
+	oldAdminPasswordHash, _ := bcrypt.GenerateFromPassword([]byte(oldAdminPassword), bcrypt.DefaultCost)
+	_ = SetAdminPasswordHashed(oldAdminPasswordHash)
+	_ = SetStreamKeysHashed([]models.StreamKeyHashed{
+		{Key: oldAdminPasswordHash, Comment: "Default stream key"},
 	})
 }

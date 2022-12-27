@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -108,9 +109,17 @@ func GetAdminPassword() string {
 	return key
 }
 
+func SetAdminPasswordPlainText(password string) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	return SetAdminPasswordHashed(hash)
+}
+
 // SetAdminPassword will set the admin password.
-func SetAdminPassword(key string) error {
-	return _datastore.SetString(adminPasswordKey, key)
+func SetAdminPasswordHashed(hash []byte) error {
+	return _datastore.SetByteSlice(adminPasswordKey, hash)
 }
 
 // GetLogoPath will return the path for the logo, relative to webroot.
@@ -578,7 +587,7 @@ func GetVideoCodec() string {
 
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
-	if len(GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+	if len(GetStreamKeysHashed()) == 0 && config.TemporaryStreamKey == nil {
 		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
 
@@ -946,22 +955,34 @@ func GetCustomColorVariableValues() map[string]string {
 }
 
 // GetStreamKeys will return valid stream keys.
-func GetStreamKeys() []models.StreamKey {
+func GetStreamKeysHashed() []models.StreamKeyHashed {
 	configEntry, err := _datastore.Get(streamKeysKey)
 	if err != nil {
-		return []models.StreamKey{}
+		return []models.StreamKeyHashed{}
 	}
 
-	var streamKeys []models.StreamKey
+	var streamKeys []models.StreamKeyHashed
 	if err := configEntry.getObject(&streamKeys); err != nil {
-		return []models.StreamKey{}
+		return []models.StreamKeyHashed{}
 	}
 
 	return streamKeys
 }
 
+func SetStreamKeysPlainText(actions []models.StreamKeyPlainText) error {
+	var hashedStreamKeys []models.StreamKeyHashed
+	for _, keyPlainText := range actions {
+		hash, err := bcrypt.GenerateFromPassword([]byte(keyPlainText.Key), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+		hashedStreamKeys = append(hashedStreamKeys, models.StreamKeyHashed{Key: hash, Comment: keyPlainText.Comment})
+	}
+	return SetStreamKeysHashed(hashedStreamKeys)
+}
+
 // SetStreamKeys will set valid stream keys.
-func SetStreamKeys(actions []models.StreamKey) error {
+func SetStreamKeysHashed(actions []models.StreamKeyHashed) error {
 	configEntry := ConfigEntry{Key: streamKeysKey, Value: actions}
 	return _datastore.Save(configEntry)
 }

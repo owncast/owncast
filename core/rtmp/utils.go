@@ -1,7 +1,6 @@
 package rtmp
 
 import (
-	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +10,7 @@ import (
 	"github.com/nareix/joy5/format/flv/flvio"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const unknownString = "Unknown"
@@ -81,7 +81,7 @@ func getVideoCodec(codec interface{}) string {
 	return unknownString
 }
 
-func secretMatch(configStreamKey string, path string) bool {
+func secretMatch(configStreamKeyHashed []byte, path string) bool {
 	prefix := "/live/"
 
 	if !strings.HasPrefix(path, prefix) {
@@ -91,6 +91,6 @@ func secretMatch(configStreamKey string, path string) bool {
 
 	streamingKey := path[len(prefix):] // Remove $prefix
 
-	matches := subtle.ConstantTimeCompare([]byte(streamingKey), []byte(configStreamKey)) == 1
-	return matches
+	cmpErr := bcrypt.CompareHashAndPassword(configStreamKeyHashed, []byte(streamingKey))
+	return cmpErr == nil
 }

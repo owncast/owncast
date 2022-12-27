@@ -79,7 +79,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	accessGranted := false
-	validStreamingKeys := data.GetStreamKeys()
+	validStreamingKeys := data.GetStreamKeysHashed()
 
 	for _, key := range validStreamingKeys {
 		if secretMatch(key.Key, c.URL.Path) {
@@ -89,7 +89,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	// Test against the temporary key if it was set at runtime.
-	if config.TemporaryStreamKey != "" && secretMatch(config.TemporaryStreamKey, c.URL.Path) {
+	if config.TemporaryStreamKey != nil && secretMatch(config.TemporaryStreamKey, c.URL.Path) {
 		accessGranted = true
 	}
 

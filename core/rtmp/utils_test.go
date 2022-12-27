@@ -1,6 +1,10 @@
 package rtmp
 
-import "testing"
+import (
+	"testing"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 func Test_secretMatch(t *testing.T) {
 	tests := []struct {
@@ -26,8 +30,12 @@ func Test_secretMatch(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		hash, err := bcrypt.GenerateFromPassword([]byte(tt.streamKey), bcrypt.DefaultCost)
+		if err != nil {
+			t.Errorf("Failed to generate hash for streaming key: %s", err)
+		}
 		t.Run(tt.name, func(t *testing.T) {
-			if got := secretMatch(tt.streamKey, tt.path); got != tt.want {
+			if got := secretMatch(hash, tt.path); got != tt.want {
 				t.Errorf("secretMatch() = %v, want %v", got, tt.want)
 			}
 		})

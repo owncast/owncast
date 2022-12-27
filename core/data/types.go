@@ -30,6 +30,22 @@ func (ds *Datastore) SetString(key string, value string) error {
 	return ds.Save(configEntry)
 }
 
+// GetByteSlice will return the byte slice value for a key
+func (ds *Datastore) GetByteSlice(key string) ([]byte, error) {
+	configEntry, err := ds.Get(key)
+	if err != nil {
+		return nil, err
+	}
+
+	return configEntry.getByteSlice()
+}
+
+// SetByteSlice will set the byte slice value for a key
+func (ds *Datastore) SetByteSlice(key string, value []byte) error {
+	configEntry := ConfigEntry{key, value}
+	return ds.Save(configEntry)
+}
+
 // GetNumber will return the numeric value for a key.
 func (ds *Datastore) GetNumber(key string) (float64, error) {
 	configEntry, err := ds.Get(key)

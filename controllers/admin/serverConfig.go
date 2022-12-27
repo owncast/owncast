@@ -49,8 +49,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			AppearanceVariables: data.GetCustomColorVariableValues(),
 		},
 		FFmpegPath:              ffmpeg,
-		AdminPassword:           data.GetAdminPassword(),
-		StreamKeys:              data.GetStreamKeys(),
 		WebServerPort:           config.WebServerPort,
 		WebServerIP:             config.WebServerIP,
 		RTMPServerPort:          data.GetRTMPPortNumber(),
@@ -99,8 +97,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 type serverConfigAdminResponse struct {
 	InstanceDetails         webConfigResponse           `json:"instanceDetails"`
 	FFmpegPath              string                      `json:"ffmpegPath"`
-	AdminPassword           string                      `json:"adminPassword"`
-	StreamKeys              []models.StreamKey          `json:"streamKeys"`
 	WebServerPort           int                         `json:"webServerPort"`
 	WebServerIP             string                      `json:"webServerIP"`
 	RTMPServerPort          int                         `json:"rtmpServerPort"`

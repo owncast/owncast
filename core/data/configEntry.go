@@ -33,6 +33,13 @@ func (c *ConfigEntry) getString() (string, error) {
 	return result, err
 }
 
+func (c *ConfigEntry) getByteSlice() ([]byte, error) {
+	decoder := c.getDecoder()
+	var result []byte
+	err := decoder.Decode(&result)
+	return result, err
+}
+
 func (c *ConfigEntry) getNumber() (float64, error) {
 	decoder := c.getDecoder()
 	var result float64

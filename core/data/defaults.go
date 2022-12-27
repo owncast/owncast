@@ -23,17 +23,27 @@ func hasPopulatedFederationDefaults() bool {
 }
 
 // PopulateDefaults will set default values in the database.
-func PopulateDefaults() {
+func PopulateDefaults() error {
 	_datastore.warmCache()
 
 	defaults := config.GetDefaults()
 
 	if HasPopulatedDefaults() {
-		return
+		return nil
 	}
 
-	_ = SetAdminPassword(defaults.AdminPassword)
-	_ = SetStreamKeys(defaults.StreamKeys)
+	hashedAdminPassword, err := defaults.GetAdminPasswordHash()
+	if err != nil {
+		return err
+	}
+
+	streamKeys, err := defaults.GetStreamKeysHashed()
+	if err != nil {
+		return err
+	}
+
+	_ = SetAdminPasswordHashed(hashedAdminPassword)
+	_ = SetStreamKeysHashed(streamKeys)
 	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
 	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
 	_ = SetLogoPath(defaults.Logo)
@@ -51,4 +61,5 @@ func PopulateDefaults() {
 	})
 
 	_ = _datastore.SetBool("HAS_POPULATED_DEFAULTS", true)
+	return nil
 }

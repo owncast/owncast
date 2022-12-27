@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Defaults will hold default configuration values.
@@ -20,8 +21,6 @@ type Defaults struct {
 	WebServerPort    int
 	WebServerIP      string
 	RTMPServerPort   int
-	AdminPassword    string
-	StreamKeys       []models.StreamKey
 
 	YPEnabled bool
 	YPServer  string
@@ -37,16 +36,12 @@ type Defaults struct {
 }
 
 // GetDefaults will return default configuration values.
-func GetDefaults() Defaults {
-	return Defaults{
+func GetDefaults() *Defaults {
+	return &Defaults{
 		Name:                 "New Owncast Server",
 		Summary:              "This is a new live video streaming server powered by Owncast.",
 		ServerWelcomeMessage: "",
 		Logo:                 "logo.svg",
-		AdminPassword:        "abc123",
-		StreamKeys: []models.StreamKey{
-			{Key: "abc123", Comment: "Default stream key"},
-		},
 		Tags: []string{
 			"owncast",
 			"streaming",
@@ -91,4 +86,23 @@ func GetDefaults() Defaults {
 		FederationUsername:      "streamer",
 		FederationGoLiveMessage: "I've gone live!",
 	}
+}
+
+func (d *Defaults) GetAdminPasswordHash() ([]byte, error) {
+	return d.getDefaultPasswordHash()
+}
+
+func (d *Defaults) GetStreamKeysHashed() ([]models.StreamKeyHashed, error) {
+	hash, err := d.getDefaultPasswordHash()
+	if err != nil {
+		return nil, err
+	}
+	return []models.StreamKeyHashed{
+		{Key: hash, Comment: "default stream key"},
+	}, nil
+}
+
+func (d *Defaults) getDefaultPasswordHash() ([]byte, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte("abc123"), bcrypt.DefaultCost)
+	return hash, err
 }
