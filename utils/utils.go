@@ -182,12 +182,14 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	filename := path.Base(filePath)
 	fileExtension := path.Ext(filePath)
 
+	defaultDaysCached := 30
+
 	if filename == "thumbnail.jpg" || filename == "preview.gif" {
 		// Thumbnails & preview gif re-generate during live
 		return 20
 	} else if fileExtension == ".js" || fileExtension == ".css" {
 		// Cache javascript & CSS
-		return 60 * 60 * 24 * 7
+		return 60 * 60 * 24 * defaultDaysCached
 	} else if fileExtension == ".ts" || fileExtension == ".woff2" {
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
@@ -196,11 +198,11 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	} else if fileExtension == ".m3u8" {
 		return 0
 	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
-		return 60 * 60 * 24 * 7
+		return 60 * 60 * 24 * defaultDaysCached
 	}
 
 	// Default cache length in seconds
-	return 60 * 60 * 2
+	return 60 * 60 * 24 * 1 // For unknown types, cache for 1 day
 }
 
 // IsValidURL will return if a URL string is a valid URL or not.
