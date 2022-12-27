@@ -1,3 +1,5 @@
+$Tablet-breakpoint: 768px;
+
 .footer {
   display: flex;
   align-items: center;
@@ -11,7 +13,7 @@
   font-family: var(--theme-text-body-font-family);
 
   padding: 0 0.6rem;
-  font-size: 10px;
+  font-size: 0.8rem;
   font-weight: 600;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
 
@@ -26,5 +28,11 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
+  }
+}
+
+@media (max-width: $Tablet-breakpoint) {
+  .footer {
+    font-size: 10px;
   }
 }
