@@ -5,12 +5,12 @@ on:
     branches:
       - webv2
     paths:
-      - '.github/workflows/*.yml'
+      - '.github/workflows/*'
   pull_request:
     branches:
       - webv2
     paths:
-      - '.github/workflows/*.yml'
+      - '.github/workflows/*'
 
 jobs:
   actionlint:
