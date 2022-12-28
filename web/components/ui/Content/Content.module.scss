@@ -13,7 +13,10 @@
   .mainSection {
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+
+    @include screen(desktop) {
+      overflow-y: scroll;
+    }
   }
 
   .mainSection::-webkit-scrollbar {
