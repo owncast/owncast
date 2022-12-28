@@ -48,8 +48,6 @@ export const EditLogo: FC = () => {
 
   // validate file type and create base64 encoded img
   const beforeUpload = (file: RcFile) => {
-    console.log({ file });
-
     setLoading(true);
 
     // eslint-disable-next-line consistent-return
