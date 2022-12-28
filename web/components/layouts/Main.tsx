@@ -21,6 +21,12 @@ import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydrati
 
 import { Theme } from '../theme/Theme';
 
+const globalStyle = `
+body {
+    overflow: hidden;
+}
+`
+
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { name, title, customStyles } = clientConfig;
@@ -65,7 +71,7 @@ export const Main: FC = () => {
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        <style>{customStyles}</style>
+        <style>{customStyles}{globalStyle}</style>
         <base target="_blank" />
       </Head>
 
