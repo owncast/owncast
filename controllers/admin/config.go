@@ -227,7 +227,12 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bytes, extension, err := utils.DecodeBase64Image(configValue.Value.(string))
+	value, ok := configValue.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "unable to find image data")
+		return
+	}
+	bytes, extension, err := utils.DecodeBase64Image(value)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
