@@ -49,8 +49,8 @@ jobs:
           EARTHLY_BUILD_TAG: 'webv2'
           EARTHLY_BUILD_BRANCH: 'webv2'
           EARTHLY_PUSH: true
-        run: ./build/release/container.sh
+        run: ./build/develop/container.sh
 
       - name: Build
         if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
-        run: ./build/release/container.sh
+        run: ./build/develop/container.sh
