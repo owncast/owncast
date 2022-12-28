@@ -18,7 +18,12 @@ import {
 } from '../../utils/input-statuses';
 import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 
-import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../utils/images';
+import {
+  ACCEPTED_IMAGE_TYPES,
+  getBase64,
+  MAX_IMAGE_FILESIZE,
+  readableBytes,
+} from '../../utils/images';
 
 export const EditLogo: FC = () => {
   const [logoUrl, setlogoUrl] = useState(null);
@@ -47,6 +52,14 @@ export const EditLogo: FC = () => {
 
     // eslint-disable-next-line consistent-return
     return new Promise<void>((res, rej) => {
+      if (file.size > MAX_IMAGE_FILESIZE) {
+        const msg = `File size is too big: ${readableBytes(file.size)}`;
+        setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
+        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        setLoading(false);
+        // eslint-disable-next-line no-promise-executor-return
+        return rej();
+      }
       if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
         const msg = `File type is not supported: ${file.type}`;
         setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
