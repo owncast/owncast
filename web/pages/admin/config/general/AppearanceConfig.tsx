@@ -24,6 +24,61 @@ interface AppearanceVariable {
   description: string;
 }
 
+const chatColorVariables = [
+  { name: 'theme-color-users-0', description: '' },
+  { name: 'theme-color-users-1', description: '' },
+  { name: 'theme-color-users-2', description: '' },
+  { name: 'theme-color-users-3', description: '' },
+  { name: 'theme-color-users-4', description: '' },
+  { name: 'theme-color-users-5', description: '' },
+  { name: 'theme-color-users-6', description: '' },
+  { name: 'theme-color-users-7', description: '' },
+];
+
+const paletteVariables = [
+  { name: 'theme-color-palette-0', description: '' },
+  { name: 'theme-color-palette-1', description: '' },
+  { name: 'theme-color-palette-2', description: '' },
+  { name: 'theme-color-palette-3', description: '' },
+  { name: 'theme-color-palette-4', description: '' },
+  { name: 'theme-color-palette-5', description: '' },
+  { name: 'theme-color-palette-6', description: '' },
+  { name: 'theme-color-palette-7', description: '' },
+  { name: 'theme-color-palette-8', description: '' },
+  { name: 'theme-color-palette-9', description: '' },
+  { name: 'theme-color-palette-10', description: '' },
+  { name: 'theme-color-palette-11', description: '' },
+  { name: 'theme-color-palette-12', description: '' },
+];
+
+const componentColorVariables = [
+  { name: 'theme-color-background-main', description: 'Background' },
+  { name: 'theme-color-action', description: 'Action' },
+  { name: 'theme-color-action-hover', description: 'Action Hover' },
+  { name: 'theme-color-components-chat-background', description: 'Chat Background' },
+  { name: 'theme-color-components-chat-text', description: 'Text: Chat' },
+  { name: 'theme-color-components-text-on-dark', description: 'Text: Light' },
+  { name: 'theme-color-components-text-on-light', description: 'Text: Dark' },
+  { name: 'theme-color-background-header', description: 'Header/Footer' },
+  { name: 'theme-color-components-content-background', description: 'Page Content' },
+  { name: 'theme-color-components-scrollbar-background', description: 'Scrollbar Background' },
+  { name: 'theme-color-components-scrollbar-thumb', description: 'Scrollbar Thumb' },
+];
+
+const others = [{ name: 'theme-rounded-corners', description: 'Corner radius' }];
+
+// Create an object so these vars can be indexed by name.
+const allAvailableValues = [
+  ...paletteVariables,
+  ...componentColorVariables,
+  ...chatColorVariables,
+  ...others,
+].reduce((obj, val) => {
+  // eslint-disable-next-line no-param-reassign
+  obj[val.name] = { name: val.name, description: val.description };
+  return obj;
+}, {});
+
 function ColorPicker({
   value,
   name,
@@ -52,52 +107,9 @@ function ColorPicker({
 }
 export default function Appearance() {
   const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig } = serverStatusData || {};
+  const { serverConfig } = serverStatusData;
   const { instanceDetails } = serverConfig;
   const { appearanceVariables } = instanceDetails;
-
-  const chatColorVariables = [
-    { name: 'theme-color-users-0', description: '' },
-    { name: 'theme-color-users-1', description: '' },
-    { name: 'theme-color-users-2', description: '' },
-    { name: 'theme-color-users-3', description: '' },
-    { name: 'theme-color-users-4', description: '' },
-    { name: 'theme-color-users-5', description: '' },
-    { name: 'theme-color-users-6', description: '' },
-    { name: 'theme-color-users-7', description: '' },
-  ];
-
-  const paletteVariables = [
-    { name: 'theme-color-palette-0', description: '' },
-    { name: 'theme-color-palette-1', description: '' },
-    { name: 'theme-color-palette-2', description: '' },
-    { name: 'theme-color-palette-3', description: '' },
-    { name: 'theme-color-palette-4', description: '' },
-    { name: 'theme-color-palette-5', description: '' },
-    { name: 'theme-color-palette-6', description: '' },
-    { name: 'theme-color-palette-7', description: '' },
-    { name: 'theme-color-palette-8', description: '' },
-    { name: 'theme-color-palette-9', description: '' },
-    { name: 'theme-color-palette-10', description: '' },
-    { name: 'theme-color-palette-11', description: '' },
-    { name: 'theme-color-palette-12', description: '' },
-  ];
-
-  const componentColorVariables = [
-    { name: 'theme-color-background-main', description: 'Background' },
-    { name: 'theme-color-action', description: 'Action' },
-    { name: 'theme-color-action-hover', description: 'Action Hover' },
-    { name: 'theme-color-components-chat-background', description: 'Chat Background' },
-    { name: 'theme-color-components-chat-text', description: 'Text: Chat' },
-    { name: 'theme-color-components-text-on-dark', description: 'Text: Light' },
-    { name: 'theme-color-components-text-on-light', description: 'Text: Dark' },
-    { name: 'theme-color-background-header', description: 'Header/Footer' },
-    { name: 'theme-color-components-content-background', description: 'Page Content' },
-    { name: 'theme-color-components-scrollbar-background', description: 'Scrollbar Background' },
-    { name: 'theme-color-components-scrollbar-thumb', description: 'Scrollbar Thumb' },
-  ];
-
-  const others = [{ name: 'theme-rounded-corners', description: 'Corner radius' }];
 
   const [colors, setColors] = useState<Record<string, AppearanceVariable>>();
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
@@ -127,11 +139,14 @@ export default function Appearance() {
   }, []);
 
   useEffect(() => {
-    if (!appearanceVariables || !colors) return;
+    if (Object.keys(appearanceVariables).length === 0) return;
 
-    const c = colors;
+    const c = colors || {};
     Object.keys(appearanceVariables).forEach(key => {
-      c[key] = { value: appearanceVariables[key], description: colors[key]?.description || '' };
+      c[key] = {
+        value: appearanceVariables[key],
+        description: allAvailableValues[key]?.description || '',
+      };
     });
     setColors(c);
   }, [appearanceVariables]);
@@ -179,15 +194,15 @@ export default function Appearance() {
     });
   };
 
-  if (!colors) {
-    return <div>Loading...</div>;
-  }
-
   const onBorderRadiusChange = (value: string) => {
     const variableName = 'theme-rounded-corners';
 
     updateColor(variableName, `${value.toString()}px`, '');
   };
+
+  if (!colors) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Space direction="vertical">
@@ -203,6 +218,7 @@ export default function Appearance() {
               {componentColorVariables.map(colorVar => {
                 const { name } = colorVar;
                 const c = colors[name];
+
                 return (
                   <ColorPicker
                     key={name}
