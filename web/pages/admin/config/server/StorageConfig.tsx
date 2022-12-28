@@ -1,13 +1,9 @@
-import { Typography } from 'antd';
 import React from 'react';
-import { EditStorage } from '../../components/config/EditStorage';
-
-const { Title } = Typography;
+import EditStorage from './EditStorage';
 
 export default function ConfigStorageInfo() {
   return (
     <>
-      <Title>Storage</Title>
       <p className="description">
         Owncast supports optionally using external storage providers to stream your video. Learn
         more about this by visiting our{' '}

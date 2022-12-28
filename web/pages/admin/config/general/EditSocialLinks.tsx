@@ -1,31 +1,31 @@
-import React, { useState, useContext, useEffect, FC } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CaretDownOutlined, CaretUpOutlined, DeleteOutlined } from '@ant-design/icons';
-import { SocialDropdown } from './SocialDropdown';
-import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../utils/apis';
-import { ServerStatusContext } from '../../utils/server-status-context';
+import { SocialDropdown } from '../../../../components/config/SocialDropdown';
+import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../../../utils/apis';
+import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
   API_SOCIAL_HANDLES,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   DEFAULT_SOCIAL_HANDLE,
   OTHER_SOCIAL_HANDLE_OPTION,
-} from '../../utils/config-constants';
-import { SocialHandle, UpdateArgs } from '../../types/config-section';
+} from '../../../../utils/config-constants';
+import { SocialHandle, UpdateArgs } from '../../../../types/config-section';
 import {
   isValidMatrixAccount,
   isValidAccount,
   isValidUrl,
   DEFAULT_TEXTFIELD_URL_PATTERN,
-} from '../../utils/urls';
-import { TextField } from './TextField';
-import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
-import { FormStatusIndicator } from './FormStatusIndicator';
+} from '../../../../utils/urls';
+import { TextField } from '../../../../components/config/TextField';
+import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../../../utils/input-statuses';
+import { FormStatusIndicator } from '../../../../components/config/FormStatusIndicator';
 
 const { Title } = Typography;
 
-export const EditSocialLinks: FC = () => {
+export default function EditSocialLinks() {
   const [availableIconsList, setAvailableIconsList] = useState([]);
   const [currentSocialHandles, setCurrentSocialHandles] = useState([]);
 
@@ -364,4 +364,4 @@ export const EditSocialLinks: FC = () => {
       </Button>
     </div>
   );
-};
+}

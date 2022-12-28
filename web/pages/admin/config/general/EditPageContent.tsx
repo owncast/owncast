@@ -1,29 +1,29 @@
 // EDIT CUSTOM DETAILS ON YOUR PAGE
-import React, { useState, useEffect, useContext, FC } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Typography, Button } from 'antd';
 import CodeMirror from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 
-import { ServerStatusContext } from '../../utils/server-status-context';
+import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   API_CUSTOM_CONTENT,
-} from '../../utils/config-constants';
+} from '../../../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
   STATUS_PROCESSING,
   STATUS_SUCCESS,
-} from '../../utils/input-statuses';
-import { FormStatusIndicator } from './FormStatusIndicator';
+} from '../../../../utils/input-statuses';
+import { FormStatusIndicator } from '../../../../components/config/FormStatusIndicator';
 
 const { Title } = Typography;
 
-export const EditPageContent: FC = () => {
+export default function EditPageContent() {
   const [content, setContent] = useState('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [hasChanged, setHasChanged] = useState(false);
@@ -115,4 +115,4 @@ export const EditPageContent: FC = () => {
       </div>
     </div>
   );
-};
+}

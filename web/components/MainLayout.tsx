@@ -162,16 +162,12 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
   const configurationMenu = [
     {
-      label: <Link href="/admin/config-public-details">General</Link>,
+      label: <Link href="/admin/config/general">General</Link>,
       key: 'config-public-details',
     },
     {
-      label: <Link href="/admin/config-server-details">Server Setup</Link>,
-      key: 'config-server-details',
-    },
-    {
-      label: <Link href="/admin/config/streamkeys/">Stream Keys</Link>,
-      key: 'config-streamkeys',
+      label: <Link href="/admin/config/server">Server Setup</Link>,
+      key: 'config-server',
     },
     {
       label: <Link href="/admin/config-video">Video</Link>,
@@ -188,14 +184,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     {
       label: <Link href="/admin/config-notify">Notifications</Link>,
       key: 'config-notify',
-    },
-    {
-      label: <Link href="/admin/config/appearance">Appearance</Link>,
-      key: 'config-appearance',
-    },
-    {
-      label: <Link href="/admin/config-storage">S3 Storage</Link>,
-      key: 'config-storage',
     },
   ];
 
