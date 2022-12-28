@@ -25,7 +25,7 @@ const globalStyle = `
 body {
     overflow: hidden;
 }
-`
+`;
 
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
@@ -71,7 +71,10 @@ export const Main: FC = () => {
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        <style>{customStyles}{globalStyle}</style>
+        <style>
+          {customStyles}
+          {globalStyle}
+        </style>
         <base target="_blank" />
       </Head>
 
