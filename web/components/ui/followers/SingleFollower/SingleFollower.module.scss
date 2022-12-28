@@ -1,3 +1,5 @@
+@import '../../../../../web/styles/mixins.scss';
+
 .follower {
   border-color: rgba(0, 0, 0, 0.3);
   border-width: 1px;
@@ -8,6 +10,9 @@
   width: 250px;
   font-size: 0.8rem;
   overflow: hidden;
+  @include screen(mobile){
+    margin: auto;
+  }
 
   &:hover {
     border-color: var(--theme-text-link);
