@@ -6,8 +6,7 @@ on:
       - develop
     paths:
       - 'web/**'
-    paths-ignore:
-      - '**.md'  
+      - '!**.md'  
 
 jobs:
   bundle:
