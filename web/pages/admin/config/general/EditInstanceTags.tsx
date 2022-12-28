@@ -1,14 +1,14 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useContext, useState, useEffect, FC } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Tag } from 'antd';
-import { ServerStatusContext } from '../../utils/server-status-context';
+import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
   FIELD_PROPS_TAGS,
   RESET_TIMEOUT,
   postConfigUpdateToAPI,
-} from '../../utils/config-constants';
-import { TextField } from './TextField';
-import { UpdateArgs } from '../../types/config-section';
+} from '../../../../utils/config-constants';
+import { TextField } from '../../../../components/config/TextField';
+import { UpdateArgs } from '../../../../types/config-section';
 import {
   createInputStatus,
   StatusState,
@@ -16,12 +16,12 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
   STATUS_WARNING,
-} from '../../utils/input-statuses';
-import { TAG_COLOR } from './EditValueArray';
+} from '../../../../utils/input-statuses';
+import { TAG_COLOR } from '../../../../components/config/EditValueArray';
 
 const { Title } = Typography;
 
-export const EditInstanceTags: FC = () => {
+export default function EditInstanceTags() {
   const [newTagInput, setNewTagInput] = useState<string>('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
@@ -135,4 +135,4 @@ export const EditInstanceTags: FC = () => {
       </div>
     </div>
   );
-};
+}

@@ -1,11 +1,11 @@
-import React, { useState, useContext, useEffect, FC } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Typography } from 'antd';
 import {
   TextFieldWithSubmit,
   TEXTFIELD_TYPE_TEXTAREA,
   TEXTFIELD_TYPE_URL,
-} from './TextFieldWithSubmit';
-import { ServerStatusContext } from '../../utils/server-status-context';
+} from '../../../../components/config/TextFieldWithSubmit';
+import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
   TEXTFIELD_PROPS_INSTANCE_URL,
@@ -16,14 +16,14 @@ import {
   FIELD_PROPS_YP,
   FIELD_PROPS_NSFW,
   FIELD_PROPS_HIDE_VIEWER_COUNT,
-} from '../../utils/config-constants';
-import { UpdateArgs } from '../../types/config-section';
-import { ToggleSwitch } from './ToggleSwitch';
-import { EditLogo } from './EditLogo';
+} from '../../../../utils/config-constants';
+import { UpdateArgs } from '../../../../types/config-section';
+import { ToggleSwitch } from '../../../../components/config/ToggleSwitch';
+import { EditLogo } from '../../../../components/config/EditLogo';
 
 const { Title } = Typography;
 
-export const EditInstanceDetails: FC = () => {
+export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
@@ -161,4 +161,4 @@ export const EditInstanceDetails: FC = () => {
       </div>
     </div>
   );
-};
+}

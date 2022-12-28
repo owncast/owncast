@@ -1,17 +1,13 @@
 import React from 'react';
-import { Typography } from 'antd';
 
-import { EditInstanceDetails } from '../../components/config/EditInstanceDetails';
-import { EditInstanceTags } from '../../components/config/EditInstanceTags';
-import { EditSocialLinks } from '../../components/config/EditSocialLinks';
-import { EditPageContent } from '../../components/config/EditPageContent';
-
-const { Title } = Typography;
+import EditInstanceDetails from './EditInstanceDetails';
+import EditInstanceTags from './EditInstanceTags';
+import EditSocialLinks from './EditSocialLinks';
+import EditPageContent from './EditPageContent';
 
 export default function PublicFacingDetails() {
   return (
     <div className="config-public-details-page">
-      <Title>General Settings</Title>
       <p className="description">
         The following are displayed on your site to describe your stream and its content.{' '}
         <a

@@ -5,7 +5,7 @@ import { ServerStatusContext } from '../../../../utils/server-status-context';
 
 import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 const { Item } = Form;
 
 const saveKeys = async (keys, setError) => {
@@ -25,7 +25,6 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
   const handleAddKey = (newkey: any) => {
     const updatedKeys = [...streamKeys, newkey];
 
-    console.log(updatedKeys);
     setFieldInConfigState({
       fieldName: 'streamKeys',
       value: updatedKeys,
@@ -114,7 +113,6 @@ const StreamKeys = () => {
 
   return (
     <div>
-      <Title>Streaming Keys</Title>
       <Paragraph>
         A streaming key is used with your broadcasting software to authenticate itself to Owncast.
         Most people will only need one. However, if you share a server with others or you want
