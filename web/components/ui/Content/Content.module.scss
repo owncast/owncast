@@ -37,7 +37,13 @@
   }
 
   .lowerSectionMobile {
+    display: flex;
+    flex-grow: 1;
     padding: 0.3em;
+  }
+
+  .tabs {
+    width: 100%;
   }
 }
 
