@@ -111,7 +111,7 @@ export const TEXTFIELD_PROPS_LOGO = {
   maxLength: 255,
   placeholder: '/img/mylogo.png',
   label: 'Logo',
-  tip: 'Upload your logo if you have one. We recommend that you use a square image that is at least 256x256. SVGs are discouraged as they cannot be displayed on all social media platforms.',
+  tip: 'Upload your logo if you have one (max size 2 MB). We recommend that you use a square image that is at least 256x256. SVGs are discouraged as they cannot be displayed on all social media platforms.',
 };
 export const TEXTFIELD_PROPS_ADMIN_PASSWORD = {
   apiPath: API_STREAM_KEY,
