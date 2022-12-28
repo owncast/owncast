@@ -1,5 +1,6 @@
+@import '../../../../../web/styles/mixins.scss';
+
 .follower {
-  margin: auto; // To keep the follower in the center
   border-color: rgba(0, 0, 0, 0.3);
   border-width: 1px;
   border-style: solid;
@@ -9,6 +10,9 @@
   width: 250px;
   font-size: 0.8rem;
   overflow: hidden;
+  @include screen(mobile){
+    margin: auto;
+  }
 
   &:hover {
     border-color: var(--theme-text-link);
