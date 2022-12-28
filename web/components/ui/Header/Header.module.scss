@@ -1,9 +1,7 @@
 @import '../../../styles/mixins.scss';
 
 .header {
-  position: sticky;
-  top: 0px;
-  height: var(--header-height) !important;
+  height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -11,7 +9,6 @@
   padding: 1rem 0.7rem;
   box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
   background-color: var(--theme-color-background-header);
-  flex-basis: content;
 
   .logoImage {
     @include screen(mobile) {
