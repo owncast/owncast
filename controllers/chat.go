@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -76,7 +78,8 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		request.DisplayName = r.Header.Get("X-Forwarded-User")
 	}
 
-	newUser, accessToken, err := user.CreateAnonymousUser(request.DisplayName)
+	proposedNewDisplayName := utils.MakeSafeStringOfLength(request.DisplayName, config.MaxChatDisplayNameLength)
+	newUser, accessToken, err := user.CreateAnonymousUser(proposedNewDisplayName)
 	if err != nil {
 		WriteSimpleResponse(w, false, err.Error())
 		return
@@ -85,7 +88,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	response := registerAnonymousUserResponse{
 		ID:          newUser.ID,
 		AccessToken: accessToken,
-		DisplayName: newUser.DisplayName,
+		DisplayName: proposedNewDisplayName,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
