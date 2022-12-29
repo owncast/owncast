@@ -16,7 +16,11 @@ import {
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
-export const AuthModal: FC = () => {
+export type AuthModalProps = {
+  forceTabs?: boolean;
+};
+
+export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
   const currentUser = useRecoilValue(currentUserAtom);
@@ -71,7 +75,7 @@ export const AuthModal: FC = () => {
         items={items}
         type="card"
         size="small"
-        renderTabBar={fediverseEnabled ? null : () => null}
+        renderTabBar={fediverseEnabled || forceTabs ? null : () => null}
       />
     </div>
   );
