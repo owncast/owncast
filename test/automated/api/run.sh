@@ -19,7 +19,7 @@ pushd ../../.. >/dev/null || exit
 
 # Build and run owncast from source
 go build -o owncast main.go
-./owncast -database "$TEMP_DB" &
+./owncast -database "$TEMP_DB" -enableVerboseLogging &
 SERVER_PID=$!
 
 popd >/dev/null || exit
