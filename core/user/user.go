@@ -56,23 +56,32 @@ func SetupUsers() {
 	_datastore = data.GetDatastore()
 }
 
+func generateDisplayName() string {
+	suggestedUsernamesList := data.GetSuggestedUsernamesList()
+
+	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
+		index := utils.RandomIndex(len(suggestedUsernamesList))
+		return suggestedUsernamesList[index]
+	} else {
+		return utils.GeneratePhrase()
+	}
+}
+
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
 func CreateAnonymousUser(displayName string) (*User, string, error) {
-	id := shortid.MustGenerate()
-
-	if displayName == "" {
-		suggestedUsernamesList := data.GetSuggestedUsernamesList()
-
-		if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
-			index := utils.RandomIndex(len(suggestedUsernamesList))
-			displayName = suggestedUsernamesList[index]
-		} else {
-			displayName = utils.GeneratePhrase()
+	// Try to assign a name that was requested.
+	if displayName != "" {
+		// If name isn't available then generate a random one.
+		if available, _ := IsDisplayNameAvailable(displayName); !available {
+			displayName = generateDisplayName()
 		}
+	} else {
+		displayName = generateDisplayName()
 	}
 
 	displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
+	id := shortid.MustGenerate()
 	user := &User{
 		ID:           id,
 		DisplayName:  displayName,
