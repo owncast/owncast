@@ -5,7 +5,7 @@
 # Example: ./test/ocTestStream.sh ~/Downloads/*.mp4 rtmp://localhost/live/abc123
 
 ffmpeg_execs=( 'ffmpeg' 'ffmpeg.exe' )
-ffmpeg_paths=( '' './' '../' )
+ffmpeg_paths=( './' '../' '' )
 
 for _ffmpeg_exec in "${ffmpeg_execs[@]}"; do
   for _ffmpeg_path in "${ffmpeg_paths[@]}"; do
