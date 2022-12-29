@@ -71,7 +71,7 @@ export const EditLogo: FC = () => {
 
       getBase64(file, (url: string) => {
         setlogoUrl(url);
-        return res();
+        setTimeout(() => res(), 100);
       });
     });
   };
@@ -80,7 +80,6 @@ export const EditLogo: FC = () => {
   const handleLogoUpdate = async () => {
     if (logoUrl !== currentLogo) {
       setSubmitStatus(createInputStatus(STATUS_PROCESSING));
-
       await postConfigUpdateToAPI({
         apiPath,
         data: { value: logoUrl },
