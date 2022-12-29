@@ -41,7 +41,7 @@ if [[ ${FILE_COUNT} -eq 0 ]]; then
   echo "Streaming internal test video loop to $DESTINATION_HOST."
   echo "...press ctl+c to exit"
 
-  command "${ffmpeg_exec}" -hide_banner -loglevel panic -re -f lavfi \
+  command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -re -f lavfi \
     -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" \
     -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%{gmtime\:%H\\\\\:%M\\\\\:%S} UTC'[out]" \
     -nal-hrd cbr \
@@ -91,7 +91,7 @@ else
   echo "$CONTENT"
   echo "...press ctl+c to exit"
 
-  command "${ffmpeg_exec}" -hide_banner -loglevel panic -stream_loop -1 -re -f concat \
+  command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -stream_loop -1 -re -f concat \
     -safe 0 \
     -i list.txt \
     -vcodec libx264 \
