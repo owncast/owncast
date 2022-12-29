@@ -88,7 +88,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	response := registerAnonymousUserResponse{
 		ID:          newUser.ID,
 		AccessToken: accessToken,
-		DisplayName: proposedNewDisplayName,
+		DisplayName: newUser.DisplayName,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
