@@ -1,5 +1,3 @@
-import { RcFile } from 'antd/lib/upload';
-
 export const MAX_IMAGE_FILESIZE = 2097152;
 export const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
 
