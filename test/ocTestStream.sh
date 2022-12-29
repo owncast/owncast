@@ -28,7 +28,7 @@ elif [[ ${*: -1} == *"rtmp://"* ]]; then
   FILE_COUNT=$(( ${#} - 1 ))
 else
   echo "RTMP server is not specified"
-  DESTINATION_HOST="rtmp://localhost/live/abc123"
+  DESTINATION_HOST="rtmp://127.0.0.1/live/abc123"
   FILE_COUNT=${#}
 fi
 
