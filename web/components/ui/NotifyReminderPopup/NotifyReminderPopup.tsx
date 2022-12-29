@@ -33,7 +33,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
     cursor: 'pointer',
     paddingTop: '10px',
     paddingRight: '10px',
-    fontSize: '16px',
+    fontSize: '14px',
   };
 
   const popupClicked = e => {
@@ -63,7 +63,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
   return (
     mounted && (
       <Popover
-        placement="topLeft"
+        placement="topRight"
         defaultOpen={openPopup}
         open={openPopup}
         destroyTooltipOnHide
