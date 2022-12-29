@@ -4,6 +4,7 @@ import { Layout } from 'antd';
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
+import { useLockBodyScroll } from 'react-use';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -21,12 +22,6 @@ import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydrati
 
 import { Theme } from '../theme/Theme';
 
-const globalStyle = `
-body {
-    overflow: hidden;
-}
-`;
-
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { name, title, customStyles } = clientConfig;
@@ -35,6 +30,8 @@ export const Main: FC = () => {
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
+
+  useLockBodyScroll(true);
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -71,10 +68,7 @@ export const Main: FC = () => {
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        <style>
-          {customStyles}
-          {globalStyle}
-        </style>
+        <style>{customStyles}</style>
         <base target="_blank" />
       </Head>
 
