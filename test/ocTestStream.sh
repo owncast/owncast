@@ -35,9 +35,10 @@ fi
 if [[ -z "$ffmpeg_exec" ]]; then
 	echo "ERROR: ffmpeg was not found! Please install ffmpeg before using this script"
   exit 1
+else
+  ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
+  echo "ffmpeg path: $ffmpeg_exec ($ffmpeg_version)"
 fi
-
-command "${ffmpeg_exec}" -version
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
   echo "Streaming internal test video loop to $DESTINATION_HOST."
