@@ -12,8 +12,11 @@
 
   .mainSection {
     display: flex;
-    overflow-y: scroll;
     flex-direction: column;
+
+    @include screen(desktop) {
+      overflow-y: scroll;
+    }
   }
 
   .mainSection::-webkit-scrollbar {
@@ -37,7 +40,15 @@
   }
 
   .lowerSectionMobile {
+    display: flex;
+    flex-grow: 1;
     padding: 0.3em;
+    // Enable overflow scrolling within a tab (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
+    height: 100vw;
+  }
+
+  .tabs {
+    width: 100%;
   }
 }
 

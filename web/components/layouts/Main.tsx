@@ -4,6 +4,7 @@ import { Layout } from 'antd';
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
+import { useLockBodyScroll } from 'react-use';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -29,6 +30,8 @@ export const Main: FC = () => {
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
+
+  useLockBodyScroll(true);
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);

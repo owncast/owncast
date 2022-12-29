@@ -1,7 +1,6 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Layout, Tabs, Skeleton } from 'antd';
-import { FC, MutableRefObject, useEffect, useRef, useState } from 'react';
-import cn from 'classnames';
+import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 
@@ -98,27 +97,6 @@ const DesktopContent = ({
   );
 };
 
-function useHeight(ref: MutableRefObject<HTMLDivElement>) {
-  const [contentH, setContentH] = useState(0);
-  const handleResize = () => {
-    if (!ref.current) return;
-    const fromTop = ref.current.getBoundingClientRect().top;
-    const { innerHeight } = window;
-    setContentH(innerHeight - fromTop);
-  };
-
-  useEffect(() => {
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  return contentH;
-}
-
 const MobileContent = ({
   name,
   streamTitle,
@@ -137,9 +115,6 @@ const MobileContent = ({
   if (!currentUser) {
     return null;
   }
-
-  const mobileContentRef = useRef<HTMLDivElement>();
-
   const { id, displayName } = currentUser;
 
   const chatContent = showChat && (
@@ -174,8 +149,6 @@ const MobileContent = ({
     { label: 'Followers', key: '3', children: followersTabContent },
   ];
 
-  const height = `${useHeight(mobileContentRef)}px`;
-
   const replacementTabBar = (props, DefaultTabBar) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
       <DefaultTabBar {...props} style={{ width: '85%' }} />
@@ -191,8 +164,13 @@ const MobileContent = ({
   );
 
   return (
-    <div className={cn(styles.lowerSectionMobile)} ref={mobileContentRef} style={{ height }}>
-      <Tabs defaultActiveKey="0" items={items} renderTabBar={replacementTabBar} />
+    <div className={styles.lowerSectionMobile}>
+      <Tabs
+        className={styles.tabs}
+        defaultActiveKey="0"
+        items={items}
+        renderTabBar={replacementTabBar}
+      />
     </div>
   );
 };
