@@ -4,13 +4,23 @@
 # to repeat indefinitely.
 # Example: ./test/ocTestStream.sh ~/Downloads/*.mp4 rtmp://localhost/live/abc123
 
-# TODO: Detect ffmpeg
+ffmpeg_execs=( 'ffmpeg' 'ffmpeg.exe' )
+ffmpeg_paths=( '' './' '../' )
+
+for _ffmpeg_exec in "${ffmpeg_execs[@]}"; do
+  for _ffmpeg_path in "${ffmpeg_paths[@]}"; do
+    if [[ -x "$(command -v "${_ffmpeg_path}${_ffmpeg_exec}")" ]]; then
+      ffmpeg_exec="${_ffmpeg_path}${_ffmpeg_exec}"
+      break
+    fi
+  done
+done
 
 if [[ ${*: -1} == "--help" ]]; then
-  echo "ocTestStream is used for sending pre-recorded content to an RTMP server."
-  echo "Usage: ./ocTestStream.sh [VIDEOFILES] [RTMPDESINATION]"
-  echo "VIDEOFILES: path to one or multiple videos for sending to the RTMP server (optional)"
-  echo "RTMPDESINATION: URL of RTMP server, with key (optional, default: rtmp://localhost/live/abc123)"
+  echo "ocTestStream is used for sending pre-recorded or internal test content to an RTMP server."
+  echo "Usage: ./ocTestStream.sh [VIDEO_FILES] [RTMP_DESINATION]"
+  echo "VIDEO_FILES: path to one or multiple videos for sending to the RTMP server (optional)"
+  echo "RTMP_DESINATION: URL of RTMP server with key (optional; default: rtmp://localhost/live/abc123)"
   exit
 elif [[ ${*: -1} == *"rtmp://"* ]]; then
   echo "RTMP server is specified"
@@ -22,11 +32,16 @@ else
   FILE_COUNT=${#}
 fi
 
+if [[ -z "$ffmpeg_exec" ]]; then
+	echo "ERROR: ffmpeg was not found! Please install ffmpeg before using this script"
+  exit 1
+fi
+
 if [[ ${FILE_COUNT} -eq 0 ]]; then
   echo "Streaming internal test video loop to $DESTINATION_HOST."
   echo "...press ctl+c to exit"
 
-  ffmpeg -hide_banner -loglevel panic -re -f lavfi \
+  command "${ffmpeg_exec}" -hide_banner -loglevel panic -re -f lavfi \
     -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" \
     -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%{gmtime\:%H\\\\\:%M\\\\\:%S} UTC'[out]" \
     -nal-hrd cbr \
@@ -58,11 +73,7 @@ else
 
   CONTENT=${*:1:${FILE_COUNT}}
 
-  # Delete the old list of files if it exists
-  if test -f list.txt; then
-    rm list.txt
-  fi
-
+  rm -f list.txt
   for file in $CONTENT
   do
     echo "file '$file'" >> list.txt
@@ -75,12 +86,12 @@ else
 
   echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST."
   if [[ ${FILE_COUNT} -gt 1 ]]; then
-    echo "Warning: If these files differ greatly in formats transitioning from one to another may not always work correctly."
+    echo "Warning: If these files differ greatly in formats, transitioning from one to another may not always work correctly."
   fi
   echo "$CONTENT"
   echo "...press ctl+c to exit"
 
-  ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat \
+  command "${ffmpeg_exec}" -hide_banner -loglevel panic -stream_loop -1 -re -f concat \
     -safe 0 \
     -i list.txt \
     -vcodec libx264 \
