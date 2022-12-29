@@ -37,6 +37,8 @@ if [[ -z "$ffmpeg_exec" ]]; then
   exit 1
 fi
 
+command "${ffmpeg_exec}" -version
+
 if [[ ${FILE_COUNT} -eq 0 ]]; then
   echo "Streaming internal test video loop to $DESTINATION_HOST."
   echo "...press ctl+c to exit"
