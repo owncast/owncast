@@ -4,16 +4,15 @@
 # to repeat indefinitely.
 # Example: ./test/ocTestStream.sh ~/Downloads/*.mp4 rtmp://localhost/live/abc123
 
-if ! [[ $1 ]]
-then
-  echo "ocTestStream is used for sending pre-recorded content to a RTMP server."
-  echo "Will default to localhost with the stream key of abc123 if one isn't provided."
-  echo "./ocTestStream.sh *.mp4 [RTMPDESINATION]"
-  exit
-fi
+# TODO: Detect ffmpeg
 
-# Make the destination optional and point to localhost with default key
-if [[ ${*: -1} == *"rtmp://"* ]]; then
+if [[ ${*: -1} == "--help" ]]; then
+  echo "ocTestStream is used for sending pre-recorded content to an RTMP server."
+  echo "Usage: ./ocTestStream.sh [VIDEOFILES] [RTMPDESINATION]"
+  echo "VIDEOFILES: path to one or multiple videos for sending to the RTMP server (optional)"
+  echo "RTMPDESINATION: URL of RTMP server, with key (optional, default: rtmp://localhost/live/abc123)"
+  exit
+elif [[ ${*: -1} == *"rtmp://"* ]]; then
   echo "RTMP server is specified"
   DESTINATION_HOST=${*: -1}
   FILE_COUNT=$(( ${#} - 1 ))
@@ -23,33 +22,75 @@ else
   FILE_COUNT=${#}
 fi
 
-if [[ FILE_COUNT -eq 0 ]]; then
-  echo "ERROR: ocTestStream needs a video file for sending to the RTMP server."
-  exit
+if [[ ${FILE_COUNT} -eq 0 ]]; then
+  echo "Streaming internal test video loop to $DESTINATION_HOST."
+  echo "...press ctl+c to exit"
+
+  ffmpeg -hide_banner -loglevel panic -re -f lavfi \
+    -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" \
+    -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%{gmtime\:%H\\\\\:%M\\\\\:%S} UTC'[out]" \
+    -nal-hrd cbr \
+    -metadata:s:v encoder=test \
+    -vcodec libx264 \
+    -acodec aac \
+    -preset veryfast \
+    -profile:v baseline \
+    -tune zerolatency \
+    -bf 0 \
+    -g 0 \
+    -b:v 6320k \
+    -b:a 160k \
+    -ac 2 \
+    -ar 48000 \
+    -minrate 6320k \
+    -maxrate 6320k \
+    -bufsize 6320k \
+    -muxrate 6320k \
+    -r 60 \
+    -pix_fmt yuv420p \
+    -color_range 1 -colorspace 1 -color_primaries 1 -color_trc 1 \
+    -flags:v +global_header \
+    -bsf:v dump_extra \
+    -x264-params "nal-hrd=cbr:min-keyint=2:keyint=2:scenecut=0:bframes=0" \
+    -f flv "$DESTINATION_HOST"
+
+else
+
+  CONTENT=${*:1:${FILE_COUNT}}
+
+  # Delete the old list of files if it exists
+  if test -f list.txt; then
+    rm list.txt
+  fi
+
+  for file in $CONTENT
+  do
+    echo "file '$file'" >> list.txt
+  done
+
+  function finish {
+    rm list.txt
+  }
+  trap finish EXIT
+
+  echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST."
+  if [[ ${FILE_COUNT} -gt 1 ]]; then
+    echo "Warning: If these files differ greatly in formats transitioning from one to another may not always work correctly."
+  fi
+  echo "$CONTENT"
+  echo "...press ctl+c to exit"
+
+  ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat \
+    -safe 0 \
+    -i list.txt \
+    -vcodec libx264 \
+    -profile:v high \
+    -g 48 \
+    -r 24 \
+    -sc_threshold 0 \
+    -b:v 1300k \
+    -preset veryfast \
+    -acodec copy \
+    -vf drawtext="fontfile=monofonto.ttf: fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'" \
+    -f flv "$DESTINATION_HOST"
 fi
-
-CONTENT=${*:1:${FILE_COUNT}}
-
-# Delete the old list of files if it exists
-if test -f list.txt; then
-  rm list.txt
-fi
-
-for file in $CONTENT
-do
-  echo "file '$file'" >> list.txt
-done
-
-function finish {
-  rm list.txt
-}
-trap finish EXIT
-
-echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST."
-if [[ FILE_COUNT -gt 1 ]]; then
-  echo "Warning: If these files differ greatly in formats transitioning from one to another may not always work correctly."
-fi
-echo "$CONTENT"
-echo "...press ctl+c to exit"
-
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -f concat -safe 0 -i list.txt -vcodec libx264 -profile:v high -g 48 -r 24 -sc_threshold 0 -b:v 1300k -preset veryfast -acodec copy -vf drawtext="fontfile=monofonto.ttf: fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'" -f flv "$DESTINATION_HOST"
