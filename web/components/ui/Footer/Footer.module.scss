@@ -1,7 +1,7 @@
-$Tablet-breakpoint: 768px;
+@import '../../../styles/mixins.scss';
 
 .footer {
-  display: flex;
+  display: none;
   align-items: center;
   flex-wrap: wrap;
   height: var(--footer-height);
@@ -17,6 +17,14 @@ $Tablet-breakpoint: 768px;
   font-weight: 600;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
 
+  @include screen(tablet) {
+    font-size: 10px;
+  }
+
+  @include screen(desktop) {
+    display: flex;
+  }
+
   a {
     color: var(--theme-color-components-text-on-dark);
     text-decoration: none;
@@ -28,11 +36,5 @@ $Tablet-breakpoint: 768px;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-  }
-}
-
-@media (max-width: $Tablet-breakpoint) {
-  .footer {
-    font-size: 10px;
   }
 }
