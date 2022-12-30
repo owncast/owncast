@@ -38,7 +38,7 @@ else
 fi
 
 if [[ -z "$ffmpeg_exec" ]]; then
-	echo "ERROR: ffmpeg was not found! Please install ffmpeg before using this script"
+	echo "ERROR: ffmpeg was not found in path or in the current directory! Please install ffmpeg before using this script."
   exit 1
 else
   ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
@@ -47,7 +47,7 @@ else
 fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
-  echo "Streaming internal test video loop to $DESTINATION_HOST."
+  echo "Streaming internal test video loop to $DESTINATION_HOST"
   echo "...press ctrl+c to exit"
 
   command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -re -f lavfi \
