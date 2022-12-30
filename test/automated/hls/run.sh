@@ -33,19 +33,19 @@ go build -o owncast main.go
 ./owncast -database "$TEMP_DB" &
 SERVER_PID=$!
 
-function finish {
-  echo "Cleaning up..."
-  rm "$TEMP_DB"
-  kill $SERVER_PID $STREAMING_CLIENT
-}
-trap finish EXIT
-
 popd >/dev/null
 sleep 5
 
 # Start the stream.
 ../../ocTestStream.sh &
 STREAMING_CLIENT=$!
+
+function finish {
+  echo "Cleaning up..."
+  rm "$TEMP_DB"
+  kill $SERVER_PID $STREAMING_CLIENT
+}
+trap finish EXIT
 
 echo "Waiting..."
 sleep 13
