@@ -9,8 +9,8 @@ describe(`Basic tests`, () => {
 	// Offline banner
 	it('Has correct offline banner values', () => {
 		cy.contains(
-			'This stream is offline. Be notified the next time New Owncast Server goes live.'
-		).should('be.visible');
+			'This stream is offline. You can be notified the next time New Owncast Server goes live or follow streamer@testing.biz on the Fediverse.'
+		).should('exist');
 	});
 
 	// Verify the tags show up
