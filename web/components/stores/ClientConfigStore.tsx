@@ -290,7 +290,7 @@ export const ClientConfigStore: FC = () => {
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
       case MessageType.NAME_CHANGE:
-        handleNameChangeEvent(message as ChatEvent, chatMessages, setChatMessages);
+        handleNameChangeEvent(message as ChatEvent, setChatMessages);
         break;
       case MessageType.USER_JOINED:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
