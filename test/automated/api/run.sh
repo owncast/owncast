@@ -30,8 +30,8 @@ sleep 5
 FFMPEG_PID=$!
 
 function finish {
-	rm "$TEMP_DB"
 	kill $SERVER_PID $FFMPEG_PID
+	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
 }
 trap finish EXIT
 
