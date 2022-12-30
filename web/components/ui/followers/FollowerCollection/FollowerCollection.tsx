@@ -29,6 +29,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
 
       setFollowers(results);
       setTotal(totalResults);
+      setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -36,15 +37,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
 
   useEffect(() => {
     getFollowers();
-  }, []);
-
-  useEffect(() => {
-    getFollowers();
   }, [page]);
-
-  useEffect(() => {
-    setLoading(false);
-  }, [followers]);
 
   const noFollowers = (
     <div className={styles.noFollowers} id="followers-collection">
