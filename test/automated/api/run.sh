@@ -8,13 +8,13 @@ npm install --quiet --no-progress
 # Download a specific version of ffmpeg
 if [ ! -d "ffmpeg" ]; then
 	mkdir ffmpeg
-	pushd ffmpeg >/dev/null || exit
-	curl -sL https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
-	unzip -o ffmpeg.zip >/dev/null
-	chmod +x ffmpeg
-	PATH=$(pwd):$PATH
-	popd >/dev/null || exit
 fi
+pushd ffmpeg >/dev/null || exit
+curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
+unzip -o ffmpeg.zip >/dev/null
+chmod +x ffmpeg
+PATH=$(pwd):$PATH
+popd >/dev/null || exit
 
 pushd ../../.. >/dev/null || exit
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # A recent version of ffmpeg is required for the loop of the provided videos
 # to repeat indefinitely.
@@ -36,9 +36,9 @@ if [[ -z "$ffmpeg_exec" ]]; then
 	echo "ERROR: ffmpeg was not found! Please install ffmpeg before using this script"
   exit 1
 else
-  echo "PATH=$PATH"
   ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
-  echo "ffmpeg path: $(realpath $ffmpeg_exec) ($ffmpeg_version)"
+  echo "ffmpeg: $ffmpeg_exec ($ffmpeg_version)"
+  echo "ffmpeg path: $(readlink -e $(which $ffmpeg_exec))"
 fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
