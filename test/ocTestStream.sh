@@ -1,8 +1,13 @@
 #!/bin/bash
 
-# A recent version of ffmpeg is required for the loop of the provided videos
-# to repeat indefinitely.
+# Requirements:
+#   ffmpeg (a recent version with loop video support)
+#   a Sans family font (for overlay text)
+#   awk
+#   readlink
+
 # Example: ./test/ocTestStream.sh ~/Downloads/*.mp4 rtmp://localhost/live/abc123
+
 
 ffmpeg_execs=( 'ffmpeg' 'ffmpeg.exe' )
 ffmpeg_paths=( './' '../' '' )
@@ -88,7 +93,7 @@ else
   }
   trap finish EXIT
 
-  echo "Streaming a loop of ${FILE_COUNT} videos to $DESTINATION_HOST."
+  echo "Streaming a loop of ${FILE_COUNT} video(s) to $DESTINATION_HOST"
   if [[ ${FILE_COUNT} -gt 1 ]]; then
     echo "Warning: If these files differ greatly in formats, transitioning from one to another may not always work correctly."
   fi
@@ -106,6 +111,6 @@ else
     -b:v 1300k \
     -preset veryfast \
     -acodec copy \
-    -vf drawtext="fontfile=monofonto.ttf: fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'" \
+    -vf drawtext="fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'" \
     -f flv "$DESTINATION_HOST"
 fi
