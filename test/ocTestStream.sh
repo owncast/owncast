@@ -48,7 +48,7 @@ fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
   echo "Streaming internal test video loop to $DESTINATION_HOST."
-  echo "...press ctl+c to exit"
+  echo "...press ctrl+c to exit"
 
   command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -re -f lavfi \
     -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" \
@@ -98,7 +98,7 @@ else
     echo "Warning: If these files differ greatly in formats, transitioning from one to another may not always work correctly."
   fi
   echo "$CONTENT"
-  echo "...press ctl+c to exit"
+  echo "...press ctrl+c to exit"
 
   command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -stream_loop -1 -re -f concat \
     -safe 0 \
