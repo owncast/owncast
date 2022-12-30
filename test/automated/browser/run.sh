@@ -22,15 +22,13 @@ npm install --quiet --no-progress
 popd
 
 # Download a specific version of ffmpeg
-if [ ! -d "ffmpeg" ]; then
-	echo "Downloading ffmpeg..."
-	mkdir -p /tmp/ffmpeg
-	pushd /tmp/ffmpeg >/dev/null
-	curl -sL --fail https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip
-	unzip -o ffmpeg.zip >/dev/null
-	PATH=$PATH:$(pwd)
-	popd >/dev/null
-fi
+FFMPEG_PATH=$(mktemp -d)
+pushd "$FFMPEG_PATH" >/dev/null || exit
+curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
+unzip -o ffmpeg.zip >/dev/null
+chmod +x ffmpeg
+PATH=$FFMPEG_PATH:$PATH
+popd >/dev/null || exit
 
 # Build and run owncast from source
 echo "Building owncast..."
