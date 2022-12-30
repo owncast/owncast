@@ -38,10 +38,13 @@ if [[ -z "$ffmpeg_exec" ]]; then
 else
   ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
   echo "ffmpeg: $ffmpeg_exec ($ffmpeg_version)"
-  echo "ffmpeg path: $(readlink -f $(which $ffmpeg_exec))"
+  echo "ffmpeg path: $(readlink -f $(which "$ffmpeg_exec"))"
 fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
+  fc-cache -f -v
+  echo "fonts:"
+  fc-list
   echo "Streaming internal test video loop to $DESTINATION_HOST."
   echo "...press ctl+c to exit"
 
