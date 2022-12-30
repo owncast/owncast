@@ -2,13 +2,6 @@
 
 set -e
 
-function start_stream() {
-  # Start streaming the test file over RTMP to
-  # the local owncast instance.
-  ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
-  STREAMING_CLIENT=$!
-}
-
 function update_storage_config() {
   echo "Configuring external storage to use ${S3_BUCKET}..."
 
@@ -51,7 +44,8 @@ popd >/dev/null
 sleep 5
 
 # Start the stream.
-start_stream
+../../ocTestStream.sh &
+STREAMING_CLIENT=$!
 
 echo "Waiting..."
 sleep 13
