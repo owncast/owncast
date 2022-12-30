@@ -1,7 +1,12 @@
+@import '../../../../styles/mixins.scss';
+
 .followers {
   width: 100%;
-  background-color: var(--theme-color-components-content-background);
   padding: 5px;
+
+  @include screen(desktop) {
+    background-color: var(--theme-color-components-content-background);
+  }
 }
 
 .noFollowers {
