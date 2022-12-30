@@ -37,18 +37,15 @@ if [[ -z "$ffmpeg_exec" ]]; then
   exit 1
 else
   ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
-  echo "ffmpeg: $ffmpeg_exec ($ffmpeg_version)"
-  echo "ffmpeg path: $(readlink -f $(which "$ffmpeg_exec"))"
+  echo "ffmpeg executable: $ffmpeg_exec ($ffmpeg_version)"
+  echo "ffmpeg path: $(readlink -f "$(which "$ffmpeg_exec")")" 
 fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
-  fc-cache -f -v
-  echo "fonts:"
-  fc-list
   echo "Streaming internal test video loop to $DESTINATION_HOST."
   echo "...press ctl+c to exit"
 
-  command "${ffmpeg_exec}"  -nostdin -re -f lavfi \
+  command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -re -f lavfi \
     -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" \
     -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%{gmtime\:%H\\\\\:%M\\\\\:%S} UTC'[out]" \
     -nal-hrd cbr \
