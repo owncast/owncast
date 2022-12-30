@@ -3,6 +3,7 @@ import { Layout, Tabs, Skeleton } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
+import isPushNotificationSupported from '../../../utils/browserPushNotifications';
 
 import {
   clientConfigStateAtom,
@@ -66,16 +67,17 @@ const DesktopContent = ({
   socialHandles,
   extraPageContent,
   setShowFollowModal,
+  supportFediverseFeatures,
 }) => {
   const aboutTabContent = <CustomPageContent content={extraPageContent} />;
   const followersTabContent = (
     <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
   );
 
-  const items = [
-    { label: 'About', key: '2', children: aboutTabContent },
-    { label: 'Followers', key: '3', children: followersTabContent },
-  ];
+  const items = [{ label: 'About', key: '2', children: aboutTabContent }];
+  if (supportFediverseFeatures) {
+    items.push({ label: 'Followers', key: '3', children: followersTabContent });
+  }
 
   return (
     <>
@@ -91,7 +93,7 @@ const DesktopContent = ({
       </div>
 
       <div className={styles.lowerSection}>
-        <Tabs defaultActiveKey="0" items={items} />
+        {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : aboutTabContent}
       </div>
     </>
   );
@@ -111,6 +113,8 @@ const MobileContent = ({
   setExternalActionToDisplay,
   setShowNotifyPopup,
   setShowFollowModal,
+  supportFediverseFeatures,
+  supportsBrowserNotifications,
 }) => {
   if (!currentUser) {
     return null;
@@ -153,8 +157,8 @@ const MobileContent = ({
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
       <DefaultTabBar {...props} style={{ width: '85%' }} />
       <ActionButtonMenu
-        showFollowItem
-        showNotifyItem
+        showFollowItem={supportFediverseFeatures}
+        showNotifyItem={supportsBrowserNotifications}
         actions={actions}
         externalActionSelected={setExternalActionToDisplay}
         notifyItemSelected={() => setShowNotifyPopup(true)}
@@ -217,10 +221,13 @@ export const Content: FC = () => {
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
-  const { account: fediverseAccount } = federation;
+  const { account: fediverseAccount, enabled: fediverseEnabled } = federation;
   const { browser: browserNotifications } = notifications;
   const { enabled: browserNotificationsEnabled } = browserNotifications;
   const [externalActionToDisplay, setExternalActionToDisplay] = useState<ExternalAction>(null);
+
+  const [supportsBrowserNotifications, setSupportsBrowserNotifications] = useState(false);
+  const supportFediverseFeatures = fediverseEnabled;
 
   const externalActionSelected = (action: ExternalAction) => {
     const { openExternally, url } = action;
@@ -277,6 +284,12 @@ export const Content: FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // isPushNotificationSupported relies on `navigator` so that needs to be
+    // fired from this useEffect.
+    setSupportsBrowserNotifications(isPushNotificationSupported() && browserNotificationsEnabled);
+  }, [browserNotificationsEnabled]);
+
   const showChat = !chatDisabled && isChatAvailable && isChatVisible;
 
   return (
@@ -312,14 +325,18 @@ export const Content: FC = () => {
                 {!isMobile && (
                   <ActionButtonRow>
                     {externalActionButtons}
-                    <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
-                    <NotifyReminderPopup
-                      open={showNotifyReminder}
-                      notificationClicked={() => setShowNotifyModal(true)}
-                      notificationClosed={() => disableNotifyReminderPopup()}
-                    >
-                      <NotifyButton onClick={() => setShowNotifyModal(true)} />
-                    </NotifyReminderPopup>
+                    {supportFediverseFeatures && (
+                      <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
+                    )}
+                    {supportsBrowserNotifications && (
+                      <NotifyReminderPopup
+                        open={showNotifyReminder}
+                        notificationClicked={() => setShowNotifyModal(true)}
+                        notificationClosed={() => disableNotifyReminderPopup()}
+                      >
+                        <NotifyButton onClick={() => setShowNotifyModal(true)} />
+                      </NotifyReminderPopup>
+                    )}
                   </ActionButtonRow>
                 )}
 
@@ -348,6 +365,8 @@ export const Content: FC = () => {
                 setExternalActionToDisplay={externalActionSelected}
                 setShowNotifyPopup={setShowNotifyModal}
                 setShowFollowModal={setShowFollowModal}
+                supportFediverseFeatures={supportFediverseFeatures}
+                supportsBrowserNotifications={supportsBrowserNotifications}
               />
             ) : (
               <DesktopContent
@@ -358,6 +377,7 @@ export const Content: FC = () => {
                 socialHandles={socialHandles}
                 extraPageContent={extraPageContent}
                 setShowFollowModal={setShowFollowModal}
+                supportFediverseFeatures={supportFediverseFeatures}
               />
             )}
             <Footer version={version} />

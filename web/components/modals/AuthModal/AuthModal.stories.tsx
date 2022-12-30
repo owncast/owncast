@@ -21,7 +21,7 @@ const Example = () => {
 
   return (
     <div>
-      <AuthModal />
+      <AuthModal forceTabs />
     </div>
   );
 };
