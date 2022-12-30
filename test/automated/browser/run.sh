@@ -52,8 +52,8 @@ STREAMING_CLIENT=$!
 
 function finish {
 	echo "Cleaning up..."
-	rm "$TEMP_DB"
 	kill $SERVER_PID $STREAMING_CLIENT
+	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
 }
 trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM
 
