@@ -6,7 +6,7 @@
 #   awk
 #   readlink
 
-# Example: ./test/ocTestStream.sh ~/Downloads/*.mp4 rtmp://localhost/live/abc123
+# Example: ./test/ocTestStream.sh ~/Downloads/*.mp4 rtmp://127.0.0.1/live/abc123
 
 
 ffmpeg_execs=( 'ffmpeg' 'ffmpeg.exe' )
@@ -25,7 +25,7 @@ if [[ ${*: -1} == "--help" ]]; then
   echo "ocTestStream is used for sending pre-recorded or internal test content to an RTMP server."
   echo "Usage: ./ocTestStream.sh [VIDEO_FILES] [RTMP_DESINATION]"
   echo "VIDEO_FILES: path to one or multiple videos for sending to the RTMP server (optional)"
-  echo "RTMP_DESINATION: URL of RTMP server with key (optional; default: rtmp://localhost/live/abc123)"
+  echo "RTMP_DESINATION: URL of RTMP server with key (optional; default: rtmp://127.0.0.1/live/abc123)"
   exit
 elif [[ ${*: -1} == *"rtmp://"* ]]; then
   echo "RTMP server is specified"
