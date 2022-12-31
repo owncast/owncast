@@ -53,18 +53,10 @@ export const ConfigNotify = () => {
   }, [twitter]);
 
   const canSave = (): boolean => {
-    const {
-      enabled,
-      apiKey,
-      apiSecret,
-      accessToken,
-      accessTokenSecret,
-      bearerToken,
-      goLiveMessage,
-    } = formDataValues;
+    const { apiKey, apiSecret, accessToken, accessTokenSecret, bearerToken, goLiveMessage } =
+      formDataValues;
 
     return (
-      enabled &&
       !!apiKey &&
       !!apiSecret &&
       !!accessToken &&
