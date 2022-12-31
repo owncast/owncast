@@ -36,3 +36,7 @@ jobs:
             - We use Storybook for testing and developing React components. `npm run storybook`.
             - If you need to install the Go programming language to run the Owncast backend it's simple from [here](https://go.dev/dl/).
             - Active contributors get an Owncast t-shirt! Ask about it if you feel like you've been contributing and haven't yet been given one.
+
+            ### New to Git?
+
+            If you're brand new to Git you may want a short primer about the Fork -> Commit -> Pull Request workflow that enables changes to get made collaboratively using git. Visit the [First Contributions](https://github.com/firstcontributions/first-contributions) project to learn step-by-step how to commit a change to a Git repository such as this one.
