@@ -24,6 +24,7 @@ let latencyCompensatorEnabled = false;
 export type OwncastPlayerProps = {
   source: string;
   online: boolean;
+  initiallyMuted?: boolean;
 };
 
 async function getVideoSettings() {
@@ -38,7 +39,11 @@ async function getVideoSettings() {
   return qualities;
 }
 
-export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
+export const OwncastPlayer: FC<OwncastPlayerProps> = ({
+  source,
+  online,
+  initiallyMuted = false,
+}) => {
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
@@ -215,6 +220,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
     playsinline: true,
     liveui: true,
     preload: 'auto',
+    muted: initiallyMuted,
     controlBar: {
       progressControl: {
         seekBar: false,
