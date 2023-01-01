@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { VideoJsPlayerOptions } from 'video.js';
 import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
@@ -24,6 +25,7 @@ let latencyCompensatorEnabled = false;
 export type OwncastPlayerProps = {
   source: string;
   online: boolean;
+  initiallyMuted?: boolean;
 };
 
 async function getVideoSettings() {
@@ -38,7 +40,11 @@ async function getVideoSettings() {
   return qualities;
 }
 
-export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
+export const OwncastPlayer: FC<OwncastPlayerProps> = ({
+  source,
+  online,
+  initiallyMuted = false,
+}) => {
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
@@ -215,6 +221,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
     playsinline: true,
     liveui: true,
     preload: 'auto',
+    muted: initiallyMuted,
     controlBar: {
       progressControl: {
         seekBar: false,
@@ -239,7 +246,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({ source, online }) => {
         type: 'application/x-mpegURL',
       },
     ],
-  };
+  } satisfies VideoJsPlayerOptions;
 
   const handlePlayerReady = (player, videojs) => {
     playerRef.current = player;

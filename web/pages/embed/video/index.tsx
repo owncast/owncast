@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
+import { useRouter } from 'next/router';
 import {
   clientConfigStateAtom,
   ClientConfigStore,
@@ -21,11 +22,34 @@ export default function VideoEmbed() {
   const { offlineMessage } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
   const online = useRecoilValue<boolean>(isOnlineSelector);
+
+  const router = useRouter();
+
+  /**
+   * router.query isn't initialized until hydration
+   * (see https://github.com/vercel/next.js/discussions/11484)
+   * but router.asPath is initialized earlier, so we parse the
+   * query parameters ourselves
+   */
+  const path = router.asPath.split('?')[1] ?? '';
+  const query = path.split('&').reduce((currQuery, part) => {
+    const [key, value] = part.split('=');
+    return { ...currQuery, [key]: value };
+  }, {} as Record<string, string>);
+
+  const initiallyMuted = query.initiallyMuted === 'true';
+
   return (
     <>
       <ClientConfigStore />
       <div className="video-embed">
-        {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+        {online && (
+          <OwncastPlayer
+            source="/hls/stream.m3u8"
+            online={online}
+            initiallyMuted={initiallyMuted}
+          />
+        )}
         {!online && (
           <OfflineBanner
             streamName={name}
