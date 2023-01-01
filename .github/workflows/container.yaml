@@ -1,7 +1,7 @@
 # See https://docs.earthly.dev/ci-integration/vendor-specific-guides/gh-actions-integration
 # for details.
 
-name: Build container
+name: Build development container
 
 on:
   schedule:

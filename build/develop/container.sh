@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-# Container builder
+# Development container builder
+#
 # Must authenticate first: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages
 # env vars: 
 #   $EARTHLY_BUILD_BRANCH: git branch to checkout
