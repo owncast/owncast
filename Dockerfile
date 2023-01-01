@@ -1,4 +1,10 @@
-# Perform a build
+# IMPORTANT: This Dockerfile has been provided for the sake of convenience.
+# Currently, functionality of the containers built based on this file
+# is not a part of our continuous testing. Although, patches to keep it
+# up to date are always welcome.
+#
+# See ‘Earthfile’ for the recipes used in official builds.
+
 FROM golang:alpine AS build
 
 RUN apk update && apk add --no-cache git gcc build-base linux-headers
