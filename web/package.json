@@ -83,6 +83,7 @@
 		"@types/react": "18.0.26",
 		"@types/react-linkify": "1.0.1",
 		"@types/ua-parser-js": "0.7.36",
+		"@types/video.js": "^7.3.50",
 		"@typescript-eslint/eslint-plugin": "5.47.1",
 		"@typescript-eslint/parser": "5.47.1",
 		"babel-loader": "9.1.0",
