@@ -2,11 +2,11 @@ var request = require('supertest');
 request = request('http://127.0.0.1:8080');
 const fs = require('fs');
 const path = require('path');
+const randomString = require('./lib/rand').randomString;
 
 const publicPath = path.resolve(__dirname, '../../../public');
-const filename = randomString(20) + '.txt';
-const fileContent = randomString(8);
-
+const filename = randomString() + '.txt';
+const fileContent = randomString();
 
 test('random public static file does not exist', async (done) => {
 	request.get('/public/' + filename).expect(404);
@@ -48,11 +48,6 @@ test('public static file is persistent and not locked', async (done) => {
 	});
 	done();
 });
-
-
-function randomString(length) {
-	return Math.random().toString(36).substr(2, length);
-}
 
 function writeFileToPublic() {
 	fs.writeFileSync(

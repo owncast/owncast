@@ -1,10 +1,10 @@
 var request = require('supertest');
 
-const Random = require('crypto-random');
-
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const failAdminRequest = require('./lib/admin').failAdminRequest;
 const getAdminResponse = require('./lib/admin').getAdminResponse;
+const randomString = require('./lib/rand').randomString;
+const randomNumber = require('./lib/rand').randomNumber;
 
 request = request('http://127.0.0.1:8080');
 
@@ -82,7 +82,7 @@ const newStreamKeys = [
 ];
 const newAdminPassword = randomString();
 
-const latencyLevel = Random.range(0, 4);
+const latencyLevel = randomNumber(4);
 const appearanceValues = {
 	variable1: randomString(),
 	variable2: randomString(),
@@ -457,10 +457,3 @@ test('verify frontend status', (done) => {
 		});
 });
 
-function randomString(length = 20) {
-	return Random.value().toString(16).substr(2, length);
-}
-
-function randomNumber() {
-	return Random.range(0, 5);
-}
