@@ -22,13 +22,15 @@ npm install --quiet --no-progress
 popd
 
 # Download a specific version of ffmpeg
-FFMPEG_PATH=$(mktemp -d)
-pushd "$FFMPEG_PATH" >/dev/null || exit
-curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
-unzip -o ffmpeg.zip >/dev/null
-chmod +x ffmpeg
-PATH=$FFMPEG_PATH:$PATH
-popd >/dev/null || exit
+if [ ! -d "ffmpeg" ]; then
+	echo "Downloading ffmpeg..."
+	mkdir -p /tmp/ffmpeg
+	pushd /tmp/ffmpeg >/dev/null
+	curl -sL --fail https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip
+	unzip -o ffmpeg.zip >/dev/null
+	PATH=$PATH:$(pwd)
+	popd >/dev/null
+fi
 
 # Build and run owncast from source
 echo "Building owncast..."
@@ -47,13 +49,13 @@ npx cypress run --group "mobile-offline" --ci-build-id $BUILD_ID --tag "mobile,o
 # Start streaming the test file over RTMP to
 # the local owncast instance.
 echo "Waiting for stream to start..."
-../../ocTestStream.sh &
+ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
 STREAMING_CLIENT=$!
 
 function finish {
 	echo "Cleaning up..."
+	rm "$TEMP_DB"
 	kill $SERVER_PID $STREAMING_CLIENT
-	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
 }
 trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM
 
