@@ -9,13 +9,13 @@ const sendChatMessage = require('./lib/chat').sendChatMessage;
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const sendAdminPayload = require('./lib/admin').sendAdminPayload;
 const getAdminResponse = require('./lib/admin').getAdminResponse;
-
+const randomNumber = require('./lib/rand').randomNumber;
 
 const localIPAddressV4 = '127.0.0.1';
 const localIPAddressV6 = '::1';
 
 const testVisibilityMessage = {
-  body: 'message ' + Math.floor(Math.random() * 100),
+  body: 'message ' + randomNumber(100),
   type: 'CHAT',
 };
 
