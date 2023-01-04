@@ -66,14 +66,16 @@ export const ConfigNotify = () => {
     );
   };
 
+  useEffect(() => {
+    setEnableSaveButton(canSave());
+  }, [formDataValues]);
+
   // update individual values in state
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
     setFormDataValues({
       ...formDataValues,
       [fieldName]: value,
     });
-
-    setEnableSaveButton(canSave());
   };
 
   // toggle switch.
