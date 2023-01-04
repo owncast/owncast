@@ -5,9 +5,10 @@ request = request('http://127.0.0.1:8080');
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
 const getAdminResponse = require('./lib/admin').getAdminResponse;
+const randomNumber = require('./lib/rand').randomNumber;
 
 var userDisplayName;
-const message = Math.floor(Math.random() * 100) + ' test 123';
+const message = randomNumber(100) + ' test 123';
 
 const testMessage = {
   body: message,

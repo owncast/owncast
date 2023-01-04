@@ -8,9 +8,10 @@ const sendChatMessage = require('./lib/chat').sendChatMessage;
 const getAdminResponse = require('./lib/admin').getAdminResponse;
 const sendAdminPayload = require('./lib/admin').sendAdminPayload;
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
+const randomNumber = require('./lib/rand').randomNumber;
 
 const testVisibilityMessage = {
-	body: 'message ' + Math.floor(Math.random() * 100),
+	body: 'message ' + randomNumber(100),
 	type: 'CHAT',
 };
 
