@@ -130,7 +130,7 @@ unit-tests:
 
 api-tests:
 	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
-	RUN apk add npm font-noto && fc-cache -f
+	RUN apk add ffmpeg npm
   COPY . /build
 	WORKDIR /build/test/automated/api
 	RUN npm install
