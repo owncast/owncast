@@ -1,0 +1,56 @@
+# See https://docs.earthly.dev/ci-integration/vendor-specific-guides/gh-actions-integration
+# for details.
+
+name: Build development container
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  push:
+    branches:
+      - webv2
+  pull_request:
+    branches:
+      - webv2
+
+jobs:
+  Earthly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Earthly
+        uses: earthly/actions-setup@v1
+        with:
+          version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
+
+      - name: Log Earthly version
+        run: earthly --version
+
+      - name: Authenticate to GitHub Container Registry
+        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
+        env:
+          GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
+        run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build and push
+        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
+        env:
+          GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
+          EARTHLY_BUILD_TAG: 'webv2'
+          EARTHLY_BUILD_BRANCH: 'webv2'
+          EARTHLY_PUSH: true
+        run: ./build/develop/container.sh
+
+      - name: Build
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+        run: ./build/develop/container.sh
