@@ -66,7 +66,9 @@ sleep 5
 update_storage_config
 
 # start the stream.
-start_stream
+../../ocTestStream.sh &
+STREAMING_CLIENT=$!
+
 echo "Waiting..."
 sleep 13
 
