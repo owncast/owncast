@@ -25,7 +25,6 @@ crosscompiler:
 code:
   FROM --platform=linux/amd64 +crosscompiler
   COPY . /build
-  #GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
 
 build:
   ARG EARTHLY_GIT_HASH # provided by Earthly
@@ -110,12 +109,18 @@ docker:
   ARG TARGETPLATFORM
   FROM --platform=$TARGETPLATFORM alpine:3.15.5
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
+  RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
   COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
   RUN unzip -x owncast.zip && mkdir data
+  RUN chown -R owncast:owncast /app
+  USER owncast
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
   SAVE IMAGE --push $image:$tag
+
+dockerfile:
+  FROM DOCKERFILE -f Dockerfile .
 
 unit-tests:
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
