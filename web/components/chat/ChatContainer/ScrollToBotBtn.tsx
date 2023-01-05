@@ -18,7 +18,7 @@ export const ScrollToBotBtn: FC<Props> = ({ chatContainerRef, messages }) => (
       onClick={() =>
         chatContainerRef.current.scrollToIndex({
           index: messages.length - 1,
-          behavior: 'smooth',
+          behavior: 'auto',
         })
       }
     >
