@@ -1,6 +1,6 @@
 # Ant Design component color overrides.
 # You can find the variable names to override at:
-# https://github.com/ant-design/ant-design/blob/master/components/style/themes/dark.less
+# https://github.com/ant-design/ant-design/blob/4.x-stable/components/style/themes/dark.less (for ant v4)
 
 link-color:
   value: 'var(--theme-color-action)'
