@@ -5,7 +5,7 @@ set -o pipefail
 
 TEMP_DB=$(mktemp)
 BUILD_ID=$((RANDOM % 7200 + 600))
-BROWSER="electron" #Default. Will try to use Google Chrome.
+BROWSER="electron" # Default. Will try to use Google Chrome.
 
 if hash google-chrome 2>/dev/null; then
 	BROWSER="chrome"
@@ -18,7 +18,7 @@ fi
 pushd "$(git rev-parse --show-toplevel)"
 
 # Bundle the updated web code into the server codebase.
-if [ -z $SKIP_BUILD ]; then
+if [ -z "$SKIP_BUILD" ]; then
 	echo "Bundling web code into server..."
 	./build/web/bundleWeb.sh >/dev/null
 else
