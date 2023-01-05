@@ -1,5 +1,5 @@
 import { Virtuoso } from 'react-virtuoso';
-import { useState, useMemo, useRef, CSSProperties, FC } from 'react';
+import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
 import { EditFilled } from '@ant-design/icons';
 import {
   ConnectedClientInfoEvent,
@@ -78,7 +78,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   showInput,
   height,
 }) => {
-  const [atBottom, setAtBottom] = useState(true);
+  const [atBottom, setAtBottom] = useState(false);
   const chatContainerRef = useRef(null);
 
   const getNameChangeViewForMessage = (message: NameChangeEvent) => {
@@ -171,6 +171,23 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     }
   };
 
+  const scrollChatToBottom = (ref, behavior = 'smooth') => {
+    ref.current?.scrollToIndex({
+      index: messages.length - 1,
+      behavior,
+    });
+    setAtBottom(true);
+  };
+
+  // This is a hack to force a scroll to the very bottom of the chat messages
+  // on initial mount of the component.
+  // For https://github.com/owncast/owncast/issues/2500
+  useEffect(() => {
+    setTimeout(() => {
+      scrollChatToBottom(chatContainerRef, 'auto');
+    }, 500);
+  }, []);
+
   const MessagesTable = useMemo(
     () => (
       <>
@@ -178,7 +195,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           style={{ height }}
           className={styles.virtuoso}
           ref={chatContainerRef}
-          // initialTopMostItemIndex={999999}
           data={messages}
           itemContent={(index, message) => getViewForMessage(index, message)}
           followOutput={(isAtBottom: boolean) => {
@@ -188,11 +204,10 @@ export const ChatContainer: FC<ChatContainerProps> = ({
             return false;
           }}
           alignToBottom
-          atBottomThreshold={70}
+          atBottomThreshold={50}
           atBottomStateChange={bottom => {
             setAtBottom(bottom);
           }}
-          endReached={() => setAtBottom(true)}
         />
         {!atBottom && <ScrollToBotBtn chatContainerRef={chatContainerRef} messages={messages} />}
       </>
