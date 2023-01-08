@@ -113,8 +113,11 @@ docker:
   WORKDIR /app
   COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
   RUN unzip -x owncast.zip && mkdir data
-  RUN chown -R owncast:owncast /app
-  USER owncast
+
+	# temporarily disable until we figure out how to move forward
+  # RUN chown -R owncast:owncast /app
+  # USER owncast
+
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
   SAVE IMAGE --push $image:$tag
