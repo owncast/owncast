@@ -61,7 +61,7 @@ func main() {
 	if utils.DoesFileExists(config.TempDir) {
 		err := os.RemoveAll(config.TempDir)
 		if err != nil {
-			log.Fatalln("Unable to remove temp dir!")
+			log.Fatalln("Unable to remove temp dir! Check permissions.", config.TempDir, err)
 		}
 	}
 	if err := os.Mkdir(config.TempDir, 0o700); err != nil {
