@@ -19,7 +19,7 @@ ffmpegInstall(){
         if [[ "$ffmpeg_version" == "$FFMPEG_VER-static" ]]; then
             return 0
         else
-            mv ./ffmpeg ./ffmpeg.bk || exit
+            mv ./ffmpeg ./ffmpeg.bk || rm -f ./ffmpeg
         fi
     fi
 
