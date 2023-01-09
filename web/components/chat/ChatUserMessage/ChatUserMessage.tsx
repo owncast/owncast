@@ -1,11 +1,10 @@
 /* eslint-disable react/no-danger */
 import { FC, ReactNode, useEffect, useState } from 'react';
-import he from 'he';
 import cn from 'classnames';
-import { Tooltip } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
+import { decodeHTML } from 'entities';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -14,6 +13,8 @@ import { accessTokenAtom } from '../../stores/ClientConfigStore';
 import { User } from '../../../interfaces/user.model';
 
 // Lazy loaded components
+
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
 
 const ChatModerationActionMenu = dynamic(() =>
   import('../ChatModerationActionMenu/ChatModerationActionMenu').then(
@@ -80,10 +81,8 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
     );
   }
 
-  // TODO: Find a solution to get rid of or replace "he" library since
-  // it's overly large for only use in this one place.
   useEffect(() => {
-    setFormattedMessage(he.decode(body));
+    setFormattedMessage(decodeHTML(body));
   }, [message]);
 
   return (
