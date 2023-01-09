@@ -11,41 +11,25 @@ import '../styles/ant-overrides.scss';
 import '../components/video/VideoJS/VideoJS.scss';
 
 import { AppProps } from 'next/app';
-import { Router, useRouter } from 'next/router';
-
+import { ReactElement, ReactNode } from 'react';
+import { NextPage } from 'next';
 import { RecoilRoot } from 'recoil';
-import { useEffect } from 'react';
-import { AdminLayout } from '../components/layouts/AdminLayout';
-import { SimpleLayout } from '../components/layouts/SimpleLayout';
 
-const App = ({ Component, pageProps }: AppProps) => {
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/serviceWorker.js').then(
-          registration => {
-            console.debug(
-              'Service Worker registration successful with scope: ',
-              registration.scope,
-            );
-          },
-          err => {
-            console.error('Service Worker registration failed: ', err);
-          },
-        );
-      });
-    }
-  }, []);
-
-  const router = useRouter() as Router;
-  if (router.pathname.startsWith('/admin')) {
-    return <AdminLayout pageProps={pageProps} Component={Component} router={router} />;
-  }
-  return (
-    <RecoilRoot>
-      <SimpleLayout pageProps={pageProps} Component={Component} router={router} />
-    </RecoilRoot>
-  );
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
 };
 
-export default App;
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout ?? (page => page);
+
+  return getLayout(
+    <RecoilRoot>
+      <Component {...pageProps} />
+    </RecoilRoot>,
+  );
+}

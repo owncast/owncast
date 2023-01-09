@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+/* eslint-disable @next/next/no-css-tags */
+import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
-import { ServerStatusContext } from '../../utils/server-status-context';
+import ServerStatusProvider, { ServerStatusContext } from '../../utils/server-status-context';
 import { LogTable } from '../../components/LogTable';
 import { Offline } from '../../components/Offline';
 import { StreamHealthOverview } from '../../components/StreamHealthOverview';
@@ -10,6 +11,9 @@ import { StreamHealthOverview } from '../../components/StreamHealthOverview';
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../../utils/format';
 import { NewsFeed } from '../../components/NewsFeed';
+
+import AlertMessageProvider from '../../utils/alert-message-context';
+import { MainLayout } from '../../components/MainLayout';
 
 function streamDetailsFormatter(streamDetails) {
   return (
@@ -178,3 +182,27 @@ export default function Home() {
     </div>
   );
 }
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <>
+      <link rel="stylesheet" href="/styles/admin/main-layout.css" />
+      <link rel="stylesheet" href="/styles/admin/form-textfields.css" />
+      <link rel="stylesheet" href="/styles/admin/config-socialhandles.css" />
+      <link rel="stylesheet" href="/styles/admin/config-storage.css" />
+      <link rel="stylesheet" href="/styles/admin/config-edit-string-tags.css" />
+      <link rel="stylesheet" href="/styles/admin/config-video-variants.css" />
+      <link rel="stylesheet" href="/styles/admin/config-public-details.css" />
+      <link rel="stylesheet" href="/styles/admin/home.css" />
+      <link rel="stylesheet" href="/styles/admin/chat.css" />
+      <link rel="stylesheet" href="/styles/admin/pages.css" />
+      <link rel="stylesheet" href="/styles/admin/offline-notice.css" />
+
+      <ServerStatusProvider>
+        <AlertMessageProvider>
+          <MainLayout>{page}</MainLayout>
+        </AlertMessageProvider>
+      </ServerStatusProvider>
+    </>
+  );
+};
