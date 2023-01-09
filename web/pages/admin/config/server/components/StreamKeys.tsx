@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { Table, Space, Button, Typography, Alert, Input, Form } from 'antd';
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { ServerStatusContext } from '../../../../utils/server-status-context';
+import { ServerStatusContext } from '../../../../../utils/server-status-context';
 
-import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
+import { fetchData, UPDATE_STREAM_KEYS } from '../../../../../utils/apis';
 
 const { Paragraph } = Typography;
 const { Item } = Form;

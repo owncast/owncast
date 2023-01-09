@@ -1,5 +1,5 @@
 import React from 'react';
-import { EditInstanceDetails } from '../../../../components/config/EditInstanceDetails2';
+import { EditInstanceDetails } from '../../../../../components/config/EditInstanceDetails2';
 
 export default function ConfigServerDetails() {
   return (
