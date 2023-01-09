@@ -1,27 +1,27 @@
 import { Button, Collapse } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
-import { UpdateArgs } from '../../../../types/config-section';
-import { ServerStatusContext } from '../../../../utils/server-status-context';
-import { AlertMessageContext } from '../../../../utils/alert-message-context';
+import { UpdateArgs } from '../../../../../types/config-section';
+import { ServerStatusContext } from '../../../../../utils/server-status-context';
+import { AlertMessageContext } from '../../../../../utils/alert-message-context';
 
 import {
   postConfigUpdateToAPI,
   API_S3_INFO,
   RESET_TIMEOUT,
   S3_TEXT_FIELDS_INFO,
-} from '../../../../utils/config-constants';
+} from '../../../../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
   STATUS_PROCESSING,
   STATUS_SUCCESS,
-} from '../../../../utils/input-statuses';
-import { TextField } from '../../../../components/config/TextField';
-import { FormStatusIndicator } from '../../../../components/config/FormStatusIndicator';
-import { isValidUrl } from '../../../../utils/urls';
-import { ToggleSwitch } from '../../../../components/config/ToggleSwitch';
+} from '../../../../../utils/input-statuses';
+import { TextField } from '../../../../../components/config/TextField';
+import { FormStatusIndicator } from '../../../../../components/config/FormStatusIndicator';
+import { isValidUrl } from '../../../../../utils/urls';
+import { ToggleSwitch } from '../../../../../components/config/ToggleSwitch';
 
 const { Panel } = Collapse;
 

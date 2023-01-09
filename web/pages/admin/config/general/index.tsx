@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tabs } from 'antd';
 
-import GeneralConfig from './GeneralConfig';
-import AppearanceConfig from './AppearanceConfig';
+import GeneralConfig from './components/GeneralConfig';
+import AppearanceConfig from './components/AppearanceConfig';
 
 export default function PublicFacingDetails() {
   return (

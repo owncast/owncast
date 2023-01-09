@@ -3,17 +3,17 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Title from 'antd/lib/typography/Title';
-import { EditCustomStyles } from '../../../../components/config/EditCustomStyles';
-import s from './appearance.module.scss';
-import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../../../utils/config-constants';
+import { EditCustomStyles } from '../../../../../components/config/EditCustomStyles';
+import s from '../appearance.module.scss';
+import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../../../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
   STATUS_ERROR,
   STATUS_SUCCESS,
-} from '../../../../utils/input-statuses';
-import { ServerStatusContext } from '../../../../utils/server-status-context';
-import { FormStatusIndicator } from '../../../../components/config/FormStatusIndicator';
+} from '../../../../../utils/input-statuses';
+import { ServerStatusContext } from '../../../../../utils/server-status-context';
+import { FormStatusIndicator } from '../../../../../components/config/FormStatusIndicator';
 
 const { Panel } = Collapse;
 
