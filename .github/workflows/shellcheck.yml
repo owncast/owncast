@@ -26,5 +26,5 @@ jobs:
         run: apt update && apt install -y shellcheck bash && shellcheck --version
 
       - name: Check shell scripts
-        run: shopt -s globstar && ls **/*.sh && shellcheck --severity=info **/*.sh
+        run: shopt -s globstar && ls **/*.sh && shellcheck -x --severity=info **/*.sh
         shell: bash
