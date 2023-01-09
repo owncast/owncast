@@ -5,22 +5,36 @@ import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
 import { useLockBodyScroll } from 'react-use';
+import dynamic from 'next/dynamic';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
   clientConfigStateAtom,
   fatalErrorStateAtom,
 } from '../stores/ClientConfigStore';
-import { Content } from '../ui/Content/Content';
 import { Header } from '../ui/Header/Header';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { DisplayableError } from '../../types/displayable-error';
-import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
 import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
+import { PushNotificationServiceWorker } from '../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
+import { Content } from '../ui/Content/Content';
 
 import { Theme } from '../theme/Theme';
+
+// Lazy loaded components
+
+const FatalErrorStateModal = dynamic(
+  () =>
+    import('../modals/FatalErrorStateModal/FatalErrorStateModal').then(
+      mod => mod.FatalErrorStateModal,
+    ),
+  {
+    loading: () => <div>Loading...</div>,
+    ssr: false,
+  },
+);
 
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
@@ -111,6 +125,7 @@ export const Main: FC = () => {
       )}
 
       <ClientConfigStore />
+      <PushNotificationServiceWorker />
       <TitleNotifier name={name} />
       <Theme />
       <Layout ref={layoutRef} style={{ minHeight: '100vh' }}>
