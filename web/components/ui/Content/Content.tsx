@@ -33,15 +33,21 @@ import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { FollowerCollection } from '../followers/FollowerCollection/FollowerCollection';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
-import { FollowModal } from '../../modals/FollowModal/FollowModal';
 
 const { Content: AntContent } = Layout;
 
 // Lazy loaded components
+
+const FollowerCollection = dynamic(() =>
+  import('../followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
+);
+
+const FollowModal = dynamic(() =>
+  import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
+);
 
 const BrowserNotifyModal = dynamic(() =>
   import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
