@@ -4,6 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+source ../tools.sh
+
 TEMP_DB=$(mktemp)
 BUILD_ID=$((RANDOM % 7200 + 600))
 
@@ -21,14 +23,7 @@ npm install --quiet --no-progress
 
 popd
 
-# Download a specific version of ffmpeg
-FFMPEG_PATH=$(mktemp -d)
-pushd "$FFMPEG_PATH" >/dev/null || exit
-curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
-unzip -o ffmpeg.zip >/dev/null
-chmod +x ffmpeg
-PATH=$FFMPEG_PATH:$PATH
-popd >/dev/null || exit
+ffmpegInstall
 
 # Build and run owncast from source
 echo "Building owncast..."

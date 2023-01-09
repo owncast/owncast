@@ -2,6 +2,8 @@
 
 set -e
 
+source ../tools.sh
+
 function update_storage_config() {
   echo "Configuring external storage to use ${S3_BUCKET}..."
 
@@ -16,14 +18,7 @@ TEMP_DB=$(mktemp)
 # Install the node test framework
 npm install --silent >/dev/null
 
-# Download a specific version of ffmpeg
-FFMPEG_PATH=$(mktemp -d)
-pushd "$FFMPEG_PATH" >/dev/null || exit
-curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
-unzip -o ffmpeg.zip >/dev/null
-chmod +x ffmpeg
-PATH=$FFMPEG_PATH:$PATH
-popd >/dev/null || exit
+ffmpegInstall
 
 pushd ../../.. >/dev/null
 

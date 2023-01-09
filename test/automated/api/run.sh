@@ -1,18 +1,13 @@
 #!/bin/bash
 
+source ../tools.sh
+
 TEMP_DB=$(mktemp)
 
 # Install the node test framework
 npm install --quiet --no-progress
 
-# Download a specific version of ffmpeg
-FFMPEG_PATH=$(mktemp -d)
-pushd "$FFMPEG_PATH" >/dev/null || exit
-curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip --output ffmpeg.zip >/dev/null
-unzip -o ffmpeg.zip >/dev/null
-chmod +x ffmpeg
-PATH=$FFMPEG_PATH:$PATH
-popd >/dev/null || exit
+ffmpegInstall
 
 pushd ../../.. >/dev/null || exit
 
