@@ -26,7 +26,7 @@ export const Header: FC<HeaderComponentProps> = ({
   chatAvailable,
   chatDisabled,
 }) => (
-  <div className={cn([`${styles.header}`], 'global-header')}>
+  <header className={cn([`${styles.header}`], 'global-header')}>
     <div className={styles.logo}>
       <div id="header-logo" className={styles.logoImage}>
         <OwncastLogo variant="contrast" />
@@ -41,6 +41,6 @@ export const Header: FC<HeaderComponentProps> = ({
         <Tag style={{ cursor: 'pointer' }}>Chat offline</Tag>
       </Tooltip>
     )}
-  </div>
+  </header>
 );
 export default Header;
