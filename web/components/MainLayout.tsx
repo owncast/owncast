@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
+import { Layout, Menu, Alert, Button, Space } from 'antd';
 import {
   SettingOutlined,
   HomeOutlined,
@@ -19,6 +19,7 @@ import {
 } from '@ant-design/icons';
 
 import classNames from 'classnames';
+import dynamic from 'next/dynamic';
 import { upgradeVersionAvailable } from '../utils/apis';
 import { parseSecondsToDurationString } from '../utils/format';
 
@@ -32,6 +33,10 @@ import { ComposeFederatedPost } from './ComposeFederatedPost';
 import { UpdateArgs } from '../types/config-section';
 
 import FediverseIcon from '../assets/images/fediverse-black.png';
+
+// Lazy loaded components
+
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
 
 export type MainLayoutProps = {
   children: ReactNode;

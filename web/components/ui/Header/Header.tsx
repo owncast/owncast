@@ -1,11 +1,19 @@
-import { Layout, Tag, Tooltip } from 'antd';
+import { Layout, Tag } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
-import { UserDropdown } from '../../common/UserDropdown/UserDropdown';
+import dynamic from 'next/dynamic';
 import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import styles from './Header.module.scss';
 
 const { Header: AntHeader } = Layout;
+
+// Lazy loaded components
+
+const UserDropdown = dynamic(() =>
+  import('../../common/UserDropdown/UserDropdown').then(mod => mod.UserDropdown),
+);
+
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
 
 export type HeaderComponentProps = {
   name: string;
