@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LogTable } from '../../components/LogTable';
+import { LogTable } from '../../components/admin/LogTable';
 
 import { LOGS_ALL, fetchData } from '../../utils/apis';
 

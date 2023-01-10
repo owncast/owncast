@@ -2,7 +2,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Space, Table, Typography, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import React, { useEffect, useState } from 'react';
-import FormStatusIndicator from '../../../components/config/FormStatusIndicator';
+import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';
 
 import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
 

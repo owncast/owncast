@@ -4,16 +4,16 @@ import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import ServerStatusProvider, { ServerStatusContext } from '../../utils/server-status-context';
-import { LogTable } from '../../components/LogTable';
-import { Offline } from '../../components/Offline';
-import { StreamHealthOverview } from '../../components/StreamHealthOverview';
+import { LogTable } from '../../components/admin/LogTable';
+import { Offline } from '../../components/admin/Offline';
+import { StreamHealthOverview } from '../../components/admin/StreamHealthOverview';
 
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../../utils/format';
-import { NewsFeed } from '../../components/NewsFeed';
+import { NewsFeed } from '../../components/admin/NewsFeed';
 
 import AlertMessageProvider from '../../utils/alert-message-context';
-import { MainLayout } from '../../components/MainLayout';
+import { MainLayout } from '../../components/admin/MainLayout';
 
 function streamDetailsFormatter(streamDetails) {
   return (

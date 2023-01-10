@@ -2,14 +2,14 @@ import { Alert, Button, Col, Row, Typography } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import Discord from '../../components/config/notification/discord';
-import Browser from '../../components/config/notification/browser';
-import Twitter from '../../components/config/notification/twitter';
-import Federation from '../../components/config/notification/federation';
+import Discord from '../../components/admin/notification/discord';
+import Browser from '../../components/admin/notification/browser';
+import Twitter from '../../components/admin/notification/twitter';
+import Federation from '../../components/admin/notification/federation';
 import {
   TextFieldWithSubmit,
   TEXTFIELD_TYPE_URL,
-} from '../../components/config/TextFieldWithSubmit';
+} from '../../components/admin/TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { UpdateArgs } from '../../types/config-section';

@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
-import { FormStatusIndicator } from '../../components/config/FormStatusIndicator';
+import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
 import {
   API_EXTERNAL_ACTIONS,

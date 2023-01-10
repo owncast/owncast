@@ -13,8 +13,8 @@ import {
   UPDATE_CHAT_MESSGAE_VIZ,
 } from '../../../utils/apis';
 import { isEmptyObject } from '../../../utils/format';
-import { MessageVisiblityToggle } from '../../../components/MessageVisiblityToggle';
-import { UserPopover } from '../../../components/UserPopover';
+import { MessageVisiblityToggle } from '../../../components/admin/MessageVisiblityToggle';
+import { UserPopover } from '../../../components/admin/UserPopover';
 
 const { Title } = Typography;
 
