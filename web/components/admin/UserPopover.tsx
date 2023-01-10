@@ -16,7 +16,9 @@ import { formatUAstring } from '../../utils/format';
 
 // Lazy loaded components
 
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
+  ssr: false,
+});
 
 export type UserPopoverProps = {
   user: User;

@@ -14,7 +14,9 @@ import { isEmptyObject } from '../../utils/format';
 
 // Lazy loaded components
 
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
+  ssr: false,
+});
 
 export type MessageToggleProps = {
   isVisible: boolean;
