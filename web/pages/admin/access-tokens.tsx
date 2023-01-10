@@ -16,7 +16,9 @@ const { Title, Paragraph } = Typography;
 
 // Lazy loaded components
 
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
+  ssr: false,
+});
 
 const availableScopes = {
   CAN_SEND_SYSTEM_MESSAGES: {

@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Layout, Tabs, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
@@ -37,33 +37,59 @@ import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
 
-const { Content: AntContent } = Layout;
-
 // Lazy loaded components
 
-const FollowerCollection = dynamic(() =>
-  import('../followers/FollowerCollection/FollowerCollection').then(mod => mod.FollowerCollection),
+const FollowerCollection = dynamic(
+  () =>
+    import('../followers/FollowerCollection/FollowerCollection').then(
+      mod => mod.FollowerCollection,
+    ),
+  {
+    ssr: false,
+  },
 );
 
-const FollowModal = dynamic(() =>
-  import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
+const FollowModal = dynamic(
+  () => import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
+  {
+    ssr: false,
+  },
 );
 
-const BrowserNotifyModal = dynamic(() =>
-  import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(mod => mod.BrowserNotifyModal),
+const BrowserNotifyModal = dynamic(
+  () =>
+    import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(
+      mod => mod.BrowserNotifyModal,
+    ),
+  {
+    ssr: false,
+  },
 );
 
-const NotifyReminderPopup = dynamic(() =>
-  import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
+const NotifyReminderPopup = dynamic(
+  () => import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
+  {
+    ssr: false,
+  },
 );
 
-const OwncastPlayer = dynamic(() =>
-  import('../../video/OwncastPlayer/OwncastPlayer').then(mod => mod.OwncastPlayer),
+const OwncastPlayer = dynamic(
+  () => import('../../video/OwncastPlayer/OwncastPlayer').then(mod => mod.OwncastPlayer),
+  {
+    ssr: false,
+  },
 );
 
-const ChatContainer = dynamic(() =>
-  import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+const ChatContainer = dynamic(
+  () => import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+  {
+    ssr: false,
+  },
 );
+
+const Tabs = dynamic(() => import('antd').then(mod => mod.Tabs), {
+  ssr: false,
+});
 
 const DesktopContent = ({
   name,
@@ -301,7 +327,7 @@ export const Content: FC = () => {
   return (
     <>
       <div className={styles.main}>
-        <AntContent className={styles.root}>
+        <div className={styles.root}>
           <div className={styles.mainSection}>
             <div className={styles.topSection}>
               {appState.appLoading && <Skeleton loading active paragraph={{ rows: 7 }} />}
@@ -389,7 +415,7 @@ export const Content: FC = () => {
             <Footer version={version} />
           </div>
           {showChat && !isMobile && <Sidebar />}
-        </AntContent>
+        </div>
         {!isMobile && false && <Footer version={version} />}
       </div>
       {externalActionToDisplay && (

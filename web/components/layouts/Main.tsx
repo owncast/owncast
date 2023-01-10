@@ -1,6 +1,5 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-unescaped-entities */
-import { Layout } from 'antd';
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
@@ -16,14 +15,29 @@ import { Header } from '../ui/Header/Header';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { DisplayableError } from '../../types/displayable-error';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
-import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
 import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
-import { PushNotificationServiceWorker } from '../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
 import { Content } from '../ui/Content/Content';
 
 import { Theme } from '../theme/Theme';
 
 // Lazy loaded components
+
+const TitleNotifier = dynamic(
+  () => import('../TitleNotifier/TitleNotifier').then(mod => mod.TitleNotifier),
+  {
+    ssr: false,
+  },
+);
+
+const PushNotificationServiceWorker = dynamic(
+  () =>
+    import('../workers/PushNotificationServiceWorker/PushNotificationServiceWorker').then(
+      mod => mod.PushNotificationServiceWorker,
+    ),
+  {
+    ssr: false,
+  },
+);
 
 const FatalErrorStateModal = dynamic(
   () =>
@@ -31,7 +45,6 @@ const FatalErrorStateModal = dynamic(
       mod => mod.FatalErrorStateModal,
     ),
   {
-    loading: () => <div>Loading...</div>,
     ssr: false,
   },
 );
@@ -128,13 +141,13 @@ export const Main: FC = () => {
       <PushNotificationServiceWorker />
       <TitleNotifier name={name} />
       <Theme />
-      <Layout ref={layoutRef} style={{ minHeight: '100vh' }}>
+      <div ref={layoutRef} style={{ minHeight: '100vh' }}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-      </Layout>
+      </div>
     </>
   );
 };

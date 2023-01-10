@@ -14,7 +14,9 @@ import { User } from '../../../interfaces/user.model';
 
 // Lazy loaded components
 
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
+  ssr: false,
+});
 
 const ChatModerationActionMenu = dynamic(() =>
   import('../ChatModerationActionMenu/ChatModerationActionMenu').then(

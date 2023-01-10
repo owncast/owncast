@@ -1,11 +1,9 @@
-import { Layout, Tag } from 'antd';
+import { Tag } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import styles from './Header.module.scss';
-
-const { Header: AntHeader } = Layout;
 
 // Lazy loaded components
 
@@ -13,7 +11,9 @@ const UserDropdown = dynamic(() =>
   import('../../common/UserDropdown/UserDropdown').then(mod => mod.UserDropdown),
 );
 
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
+  ssr: false,
+});
 
 export type HeaderComponentProps = {
   name: string;
@@ -26,7 +26,7 @@ export const Header: FC<HeaderComponentProps> = ({
   chatAvailable,
   chatDisabled,
 }) => (
-  <AntHeader className={cn([`${styles.header}`], 'global-header')}>
+  <div className={cn([`${styles.header}`], 'global-header')}>
     <div className={styles.logo}>
       <div id="header-logo" className={styles.logoImage}>
         <OwncastLogo variant="contrast" />
@@ -41,6 +41,6 @@ export const Header: FC<HeaderComponentProps> = ({
         <Tag style={{ cursor: 'pointer' }}>Chat offline</Tag>
       </Tooltip>
     )}
-  </AntHeader>
+  </div>
 );
 export default Header;
