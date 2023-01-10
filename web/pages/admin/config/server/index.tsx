@@ -1,9 +1,9 @@
 import React from 'react';
 import { Tabs } from 'antd';
 
-import StreamKeys from './components/StreamKeys';
-import ServerConfig from './components/ServerConfig';
-import StorageConfig from './components/StorageConfig';
+import StreamKeys from '../../../../components/admin/config/server/StreamKeys';
+import ServerConfig from '../../../../components/admin/config/server/ServerConfig';
+import StorageConfig from '../../../../components/admin/config/server/StorageConfig';
 
 export default function PublicFacingDetails() {
   return (
