@@ -55,12 +55,12 @@
 		"ua-parser-js": "1.0.32",
 		"video.js": "7.20.3",
 		"xstate": "4.35.1",
-		"yaml": "2.2.1"
+		"yaml": "2.2.1",
+		"@next/bundle-analyzer": "^13.1.1"
 	},
 	"devDependencies": {
 		"@babel/core": "7.20.7",
 		"@mdx-js/react": "2.2.1",
-		"@next/bundle-analyzer": "^13.1.1",
 		"@storybook/addon-a11y": "6.5.15",
 		"@storybook/addon-actions": "6.5.15",
 		"@storybook/addon-docs": "6.5.15",
