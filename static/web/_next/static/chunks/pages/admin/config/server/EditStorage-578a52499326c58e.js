@@ -1,2 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6815],{42072:function(n,_,u){(window.__NEXT_P=window.__NEXT_P||[]).push(["/admin/config/server/EditStorage",function(){return u(68097)}])}},function(n){n.O(0,[481,5596,1407,173,611,1577,7033,2610,832,745,8097,9774,2888,179],function(){return n(n.s=42072)}),_N_E=n.O()}]);
-//# sourceMappingURL=EditStorage-578a52499326c58e.js.map
