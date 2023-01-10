@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Tooltip, Collapse, Typography } from 'antd';
+import { Button, Collapse, Typography } from 'antd';
 import { CopyOutlined, RedoOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_URL } from './TextField';
 import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -14,6 +15,10 @@ import {
 } from '../../utils/config-constants';
 import { UpdateArgs } from '../../types/config-section';
 import { ResetYP } from './ResetYP';
+
+// Lazy loaded components
+
+const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip));
 
 const { Panel } = Collapse;
 
