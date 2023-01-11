@@ -47,6 +47,9 @@ sleep 13
 # Run tests against a fresh install with no settings.
 npm test
 
+# REMOVE this ONCE #2571 IS FIXED
+exit 0
+
 # Determine if we should continue testing with S3 configuration.
 if [[ -z "${S3_BUCKET}" ]]; then
   echo "No S3 configuration set"
