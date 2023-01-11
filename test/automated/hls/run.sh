@@ -4,29 +4,18 @@ set -e
 
 source ../tools.sh
 
-TEMP_DB=$(mktemp)
-
 # Install the node test framework
 npm install --silent >/dev/null
 
-ffmpegInstall
+install_ffmpeg
 
 pushd ../../.. >/dev/null
 
-# Build and run owncast from source
-go build -o owncast main.go
-./owncast -database "$TEMP_DB" &
-SERVER_PID=$!
+start_owncast
 
 popd >/dev/null
-sleep 5
 
-# Start the stream.
-../../ocTestStream.sh &
-STREAM_PID=$!
-
-echo "Waiting..."
-sleep 13
+start_stream
 
 # Run tests against a fresh install with no settings.
 npm test
@@ -39,17 +28,11 @@ fi
 
 # Kill the stream.
 kill_with_kids "$STREAM_PID"
-sleep 5
 
 # Update the server config to use S3 for storage.
 update_storage_config
 
-# start the stream.
-../../ocTestStream.sh &
-STREAM_PID=$!
-
-echo "Waiting..."
-sleep 13
+start_stream
 
 # Re-run the HLS test against the external storage configuration.
 npm test

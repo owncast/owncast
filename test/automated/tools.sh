@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function ffmpegInstall() {
+function install_ffmpeg() {
     # install a specific version of ffmpeg
 
     FFMPEG_VER="4.4.1"
@@ -34,13 +34,35 @@ function ffmpegInstall() {
     popd >/dev/null || exit
 }
 
-function update_storage_config() {
-  echo "Configuring external storage to use ${S3_BUCKET}..."
+function start_owncast() {
+    # Build and run owncast from source
+    echo "Building owncast..."
+    go build -o owncast main.go
 
-  # Hard-coded to admin:abc123 for auth
-  curl --fail 'http://localhost:8080/api/admin/config/s3' \
-  -H 'Authorization: Basic YWRtaW46YWJjMTIz' \
-  --data-raw "{\"value\":{\"accessKey\":\"${S3_ACCESS_KEY}\",\"acl\":\"\",\"bucket\":\"${S3_BUCKET}\",\"enabled\":true,\"endpoint\":\"${S3_ENDPOINT}\",\"region\":\"${S3_REGION}\",\"secret\":\"${S3_SECRET}\",\"servingEndpoint\":\"\"}}"
+    echo "Running owncast..."
+    ./owncast -database "$TEMP_DB" &
+    SERVER_PID=$!
+
+    sleep 5
+
+}
+
+function start_stream() {
+    # Start streaming the test file over RTMP to the local owncast instance.
+    ../../ocTestStream.sh &
+    STREAM_PID=$!
+
+    echo "Waiting for stream to start..."
+    sleep 12
+}
+
+function update_storage_config() {
+    echo "Configuring external storage to use ${S3_BUCKET}..."
+
+    # Hard-coded to admin:abc123 for auth
+    curl --fail 'http://localhost:8080/api/admin/config/s3' \
+    -H 'Authorization: Basic YWRtaW46YWJjMTIz' \
+    --data-raw "{\"value\":{\"accessKey\":\"${S3_ACCESS_KEY}\",\"acl\":\"\",\"bucket\":\"${S3_BUCKET}\",\"enabled\":true,\"endpoint\":\"${S3_ENDPOINT}\",\"region\":\"${S3_REGION}\",\"secret\":\"${S3_SECRET}\",\"servingEndpoint\":\"\"}}"
 }
 
 function kill_with_kids() {
@@ -66,3 +88,5 @@ function finish() {
 }
 
 trap finish EXIT
+
+TEMP_DB=$(mktemp)

@@ -5,7 +5,6 @@ set -o pipefail
 
 source ../tools.sh
 
-TEMP_DB=$(mktemp)
 BUILD_ID=$((RANDOM % 7200 + 600))
 BROWSER="electron" # Default. Will try to use Google Chrome.
 
@@ -40,15 +39,9 @@ fi
 
 set -o nounset
 
-ffmpegInstall
+install_ffmpeg
 
-# Build and run owncast from source
-echo "Building owncast..."
-go build -o owncast main.go
-
-echo "Running owncast..."
-./owncast -database "$TEMP_DB" &
-SERVER_PID=$!
+start_owncast
 
 pushd test/automated/browser
 
@@ -57,13 +50,7 @@ npx cypress run --browser "$BROWSER" --group "desktop-offline" --env tags=deskto
 # Run cypress browser tests for mobile
 npx cypress run --browser "$BROWSER" --group "mobile-offline" --ci-build-id $BUILD_ID --tag "mobile,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js" --config viewportWidth=375,viewportHeight=667
 
-# Start streaming the test file over RTMP to
-# the local owncast instance.
-echo "Waiting for stream to start..."
-../../ocTestStream.sh &
-STREAM_PID=$!
-
-sleep 20
+start_stream
 
 # Run cypress browser tests for desktop
 npx cypress run --browser "$BROWSER" --group "desktop-online" --env tags=desktop --ci-build-id $BUILD_ID --tag "desktop,online" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/online/*.cy.js"
