@@ -59,7 +59,7 @@
 		"@next/bundle-analyzer": "^13.1.1"
 	},
 	"devDependencies": {
-		"@babel/core": "7.20.7",
+		"@babel/core": "7.20.12",
 		"@mdx-js/react": "2.2.1",
 		"@storybook/addon-a11y": "6.5.15",
 		"@storybook/addon-actions": "6.5.15",
