@@ -71,7 +71,7 @@ function kill_with_kids() {
     if [[ -n $1 ]]; then
         mapfile -t CHILDREN_PID_LIST < <(ps --ppid "$1" -o pid= || true)
         for child_pid in "${CHILDREN_PID_LIST[@]}"; do
-            kill "$child_pid" || true
+            kill "$child_pid" &>/dev/null || true
             wait "$child_pid" &>/dev/null || true
         done
         kill "$1" &>/dev/null || true
@@ -82,7 +82,7 @@ function kill_with_kids() {
 function finish() {
     echo "Cleaning up..."
     kill_with_kids "$STREAM_PID"
-	kill "$SERVER_PID" || true
+	kill "$SERVER_PID" &>/dev/null || true
     wait "$SERVER_PID" &>/dev/null || true
 	rm -fr "$TEMP_DB"
 }
