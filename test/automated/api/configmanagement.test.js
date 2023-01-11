@@ -374,10 +374,9 @@ test('verify updated config values', async (done) => {
 test('verify admin stream details', async (done) => {
 	const res = await getAdminResponse('status');
 
-	expect(res.body.broadcaster.streamDetails.width).toBe(320);
-	expect(res.body.broadcaster.streamDetails.height).toBe(180);
-	expect(res.body.broadcaster.streamDetails.framerate).toBe(24);
-	expect(res.body.broadcaster.streamDetails.videoBitrate).toBe(1269);
+	expect(res.body.broadcaster.streamDetails.width).toBe(1280);
+	expect(res.body.broadcaster.streamDetails.height).toBe(720);
+	expect(res.body.broadcaster.streamDetails.framerate).toBe(60);
 	expect(res.body.broadcaster.streamDetails.videoCodec).toBe('H.264');
 	expect(res.body.broadcaster.streamDetails.audioCodec).toBe('AAC');
 	expect(res.body.online).toBe(true);

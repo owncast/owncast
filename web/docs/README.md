@@ -11,7 +11,7 @@
 
 ### Form fields
 
-- Feel free to use the pre-styled `<TextField>` text form field or the `<ToggleSwitch>` compnent, in a group of form fields together. These have been styled and laid out to match each other.
+- Feel free to use the pre-styled `<TextField>` text form field or the `<ToggleSwitch>` component, in a group of form fields together. These have been styled and laid out to match each other.
 
 - `Slider`'s - If your form uses an Ant Slider component, follow this recommended markup of CSS classes to maintain a consistent look and feel to other Sliders in the app.
   ```
