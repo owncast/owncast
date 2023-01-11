@@ -3,6 +3,8 @@
 set -o errexit
 set -o pipefail
 
+source ../tools.sh
+
 TEMP_DB=$(mktemp)
 BUILD_ID=$((RANDOM % 7200 + 600))
 BROWSER="electron" # Default. Will try to use Google Chrome.
@@ -38,16 +40,7 @@ fi
 
 set -o nounset
 
-# Download a specific version of ffmpeg
-if [ ! -d "ffmpeg" ]; then
-	echo "Downloading ffmpeg..."
-	mkdir -p /tmp/ffmpeg
-	pushd /tmp/ffmpeg >/dev/null
-	curl -sL --fail https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip
-	unzip -o ffmpeg.zip >/dev/null
-	PATH=$PATH:$(pwd)
-	popd >/dev/null
-fi
+ffmpegInstall
 
 # Build and run owncast from source
 echo "Building owncast..."
@@ -67,13 +60,13 @@ npx cypress run --browser "$BROWSER" --group "mobile-offline" --ci-build-id $BUI
 # Start streaming the test file over RTMP to
 # the local owncast instance.
 echo "Waiting for stream to start..."
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
+../../ocTestStream.sh &
 STREAMING_CLIENT=$!
 
 function finish {
 	echo "Cleaning up..."
-	rm "$TEMP_DB"
 	kill $SERVER_PID $STREAMING_CLIENT
+	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
 }
 trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM
 

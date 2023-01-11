@@ -1,19 +1,13 @@
 #!/bin/bash
 
+source ../tools.sh
+
 TEMP_DB=$(mktemp)
 
 # Install the node test framework
 npm install --quiet --no-progress
 
-# Download a specific version of ffmpeg
-if [ ! -d "ffmpeg" ]; then
-	mkdir ffmpeg
-	pushd ffmpeg >/dev/null || exit
-	curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip >/dev/null
-	unzip -o ffmpeg.zip >/dev/null
-	PATH=$PATH:$(pwd)
-	popd >/dev/null || exit
-fi
+ffmpegInstall
 
 pushd ../../.. >/dev/null || exit
 
@@ -27,12 +21,12 @@ sleep 5
 
 # Start streaming the test file over RTMP to
 # the local owncast instance.
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
+../../ocTestStream.sh &
 FFMPEG_PID=$!
 
 function finish {
-	rm "$TEMP_DB"
 	kill $SERVER_PID $FFMPEG_PID
+	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
 }
 trap finish EXIT
 
