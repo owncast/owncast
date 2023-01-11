@@ -85,7 +85,7 @@ else
   rm -f list.txt
   for file in $CONTENT
   do
-    if [[ -x "$file" ]]; then
+    if [[ -f "$file" ]]; then
       echo "file '$file'" >> list.txt
     else
       echo "ERROR: File not found: $file"
