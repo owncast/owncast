@@ -82,7 +82,7 @@ function kill_with_kids() {
 function finish() {
     echo "Cleaning up..."
     kill_with_kids "$STREAM_PID"
-	kill "$SERVER_PID" &>/dev/null || true
+    kill "$SERVER_PID" &>/dev/null || true
     wait "$SERVER_PID" &>/dev/null || true
 	rm -fr "$TEMP_DB"
 }
