@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Button, Modal, Checkbox, Input, Typography, Row, Col } from 'antd';
+import {
+  Table,
+  Tag,
+  Space,
+  Button,
+  Modal,
+  Checkbox,
+  Input,
+  Typography,
+  Row,
+  Col,
+  Tooltip,
+} from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
 
-import dynamic from 'next/dynamic';
 import {
   fetchData,
   ACCESS_TOKENS,
@@ -13,12 +24,6 @@ import {
 } from '../../utils/apis';
 
 const { Title, Paragraph } = Typography;
-
-// Lazy loaded components
-
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
-  ssr: false,
-});
 
 const availableScopes = {
   CAN_SEND_SYSTEM_MESSAGES: {

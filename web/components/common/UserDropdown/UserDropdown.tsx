@@ -19,14 +19,22 @@ import styles from './UserDropdown.module.scss';
 import { AppStateOptions } from '../../stores/application-state';
 
 // Lazy loaded components
-const Modal = dynamic(() => import('../../ui/Modal/Modal').then(mod => mod.Modal));
+const Modal = dynamic(() => import('../../ui/Modal/Modal').then(mod => mod.Modal), {
+  ssr: false,
+});
 
-const NameChangeModal = dynamic(() =>
-  import('../../modals/NameChangeModal/NameChangeModal').then(mod => mod.NameChangeModal),
+const NameChangeModal = dynamic(
+  () => import('../../modals/NameChangeModal/NameChangeModal').then(mod => mod.NameChangeModal),
+  {
+    ssr: false,
+  },
 );
 
-const AuthModal = dynamic(() =>
-  import('../../modals/AuthModal/AuthModal').then(mod => mod.AuthModal),
+const AuthModal = dynamic(
+  () => import('../../modals/AuthModal/AuthModal').then(mod => mod.AuthModal),
+  {
+    ssr: false,
+  },
 );
 
 export type UserDropdownProps = {
@@ -58,9 +66,6 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
   );
 
   const currentUser = useRecoilValue(currentUserAtom);
-  if (!currentUser) {
-    return null;
-  }
 
   const { displayName } = currentUser;
   const username = defaultUsername || displayName;

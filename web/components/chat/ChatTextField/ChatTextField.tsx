@@ -13,7 +13,9 @@ import styles from './ChatTextField.module.scss';
 
 // Lazy loaded components
 
-const EmojiPicker = dynamic(() => import('./EmojiPicker').then(mod => mod.EmojiPicker));
+const EmojiPicker = dynamic(() => import('./EmojiPicker').then(mod => mod.EmojiPicker), {
+  ssr: false,
+});
 
 type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] } | ImageNode;
 type CustomText = { text: string };

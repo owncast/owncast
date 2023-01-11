@@ -149,7 +149,7 @@ const MobileContent = ({
   supportsBrowserNotifications,
 }) => {
   if (!currentUser) {
-    return null;
+    return <Skeleton loading active paragraph={{ rows: 7 }} />;
   }
   const { id, displayName } = currentUser;
 

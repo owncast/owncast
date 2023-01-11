@@ -2,6 +2,7 @@
 import { FC, ReactNode, useEffect, useState } from 'react';
 import cn from 'classnames';
 import { LinkOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
 import { decodeHTML } from 'entities';
@@ -14,17 +15,19 @@ import { User } from '../../../interfaces/user.model';
 
 // Lazy loaded components
 
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
-  ssr: false,
-});
-
-const ChatModerationActionMenu = dynamic(() =>
-  import('../ChatModerationActionMenu/ChatModerationActionMenu').then(
-    mod => mod.ChatModerationActionMenu,
-  ),
+const ChatModerationActionMenu = dynamic(
+  () =>
+    import('../ChatModerationActionMenu/ChatModerationActionMenu').then(
+      mod => mod.ChatModerationActionMenu,
+    ),
+  {
+    ssr: false,
+  },
 );
 
-const Highlight = dynamic(() => import('react-highlighter-ts').then(mod => mod.Highlight));
+const Highlight = dynamic(() => import('react-highlighter-ts').then(mod => mod.Highlight), {
+  ssr: false,
+});
 
 export type ChatUserMessageProps = {
   message: ChatMessage;

@@ -1,16 +1,21 @@
 /* eslint-disable react/destructuring-assignment */
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Input, Modal, Row, Space, Table, Tag, Typography } from 'antd';
-import dynamic from 'next/dynamic';
+import {
+  Button,
+  Checkbox,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Table,
+  Tag,
+  Typography,
+  Tooltip,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
-
-// Lazy loaded components
-
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
-  ssr: false,
-});
 
 const { Title, Paragraph } = Typography;
 

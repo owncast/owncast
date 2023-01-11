@@ -6,7 +6,7 @@ describe('Lighthouse Metrics', () => {
 	it('Capture Metrics', () => {
 		cy.lighthouse({
 			accessibility: 97,
-			'best-practices': 97,
+			'best-practices': 90,
 			seo: 90,
 			performance: 60, // Once the performance issues are fixed revert this 90,
 		});

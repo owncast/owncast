@@ -1,22 +1,15 @@
 // Custom component for AntDesign Button that makes an api call, then displays a confirmation icon upon
 import React, { useState, useEffect, FC } from 'react';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import {
   EyeOutlined,
   EyeInvisibleOutlined,
   CheckCircleFilled,
   ExclamationCircleFilled,
 } from '@ant-design/icons';
-import dynamic from 'next/dynamic';
 import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from '../../utils/apis';
 import { MessageType } from '../../types/chat';
 import { isEmptyObject } from '../../utils/format';
-
-// Lazy loaded components
-
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
-  ssr: false,
-});
 
 export type MessageToggleProps = {
   isVisible: boolean;
