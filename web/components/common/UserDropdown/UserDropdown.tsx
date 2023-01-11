@@ -66,6 +66,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
   );
 
   const currentUser = useRecoilValue(currentUserAtom);
+  if (!currentUser) {
+    return null;
+  }
 
   const { displayName } = currentUser;
   const username = defaultUsername || displayName;
