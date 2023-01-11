@@ -1,24 +1,17 @@
 // This displays a clickable user name (or whatever children element you provide), and displays a simple tooltip of created time. OnClick a modal with more information about the user is displayed.
 
 import { useState, ReactNode, FC } from 'react';
-import { Divider, Modal, Typography, Row, Col, Space } from 'antd';
+import { Divider, Modal, Typography, Row, Col, Space, Tooltip } from 'antd';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
 import { uniq } from 'lodash';
 
-import dynamic from 'next/dynamic';
 import { BanUserButton } from './BanUserButton';
 import { ModeratorUserButton } from './ModeratorUserButton';
 
 import { User, UserConnectionInfo } from '../../types/chat';
 import { formatDisplayDate } from './UserTable';
 import { formatUAstring } from '../../utils/format';
-
-// Lazy loaded components
-
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
-  ssr: false,
-});
 
 export type UserPopoverProps = {
   user: User;

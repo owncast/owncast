@@ -8,16 +8,18 @@ import styles from './Sidebar.module.scss';
 import { currentUserAtom, visibleChatMessagesSelector } from '../../stores/ClientConfigStore';
 
 // Lazy loaded components
-const ChatContainer = dynamic(() =>
-  import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+const ChatContainer = dynamic(
+  () => import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
+  {
+    ssr: false,
+  },
 );
 
 export const Sidebar: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
-
   if (!currentUser) {
-    return null;
+    return <Sider className={styles.root} collapsedWidth={0} width={320} />;
   }
 
   const { id, isModerator, displayName } = currentUser;

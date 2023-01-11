@@ -17,27 +17,11 @@ import { DisplayableError } from '../../types/displayable-error';
 import setupNoLinkReferrer from '../../utils/no-link-referrer';
 import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
 import { Content } from '../ui/Content/Content';
-
+import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
+import { PushNotificationServiceWorker } from '../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
 import { Theme } from '../theme/Theme';
 
 // Lazy loaded components
-
-const TitleNotifier = dynamic(
-  () => import('../TitleNotifier/TitleNotifier').then(mod => mod.TitleNotifier),
-  {
-    ssr: false,
-  },
-);
-
-const PushNotificationServiceWorker = dynamic(
-  () =>
-    import('../workers/PushNotificationServiceWorker/PushNotificationServiceWorker').then(
-      mod => mod.PushNotificationServiceWorker,
-    ),
-  {
-    ssr: false,
-  },
-);
 
 const FatalErrorStateModal = dynamic(
   () =>

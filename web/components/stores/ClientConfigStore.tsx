@@ -388,11 +388,9 @@ export const ClientConfigStore: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!accessToken) {
-      return;
+    if (accessToken) {
+      getChatHistory();
     }
-
-    getChatHistory();
   }, [accessToken]);
 
   useEffect(() => {

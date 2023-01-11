@@ -1,4 +1,4 @@
-import { Tag } from 'antd';
+import { Tag, Tooltip } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
@@ -7,13 +7,12 @@ import styles from './Header.module.scss';
 
 // Lazy loaded components
 
-const UserDropdown = dynamic(() =>
-  import('../../common/UserDropdown/UserDropdown').then(mod => mod.UserDropdown),
+const UserDropdown = dynamic(
+  () => import('../../common/UserDropdown/UserDropdown').then(mod => mod.UserDropdown),
+  {
+    ssr: false,
+  },
 );
-
-const Tooltip = dynamic(() => import('antd').then(mod => mod.Tooltip), {
-  ssr: false,
-});
 
 export type HeaderComponentProps = {
   name: string;

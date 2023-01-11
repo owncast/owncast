@@ -5,9 +5,15 @@ import cn from 'classnames';
 import { ChatSocialMessage as ChatMessage } from '../../../interfaces/chat-social-message.model';
 import styles from './ChatSocialMessage.module.scss';
 
-const FollowIcon = dynamic(() => import('./follow.svg'));
-const LikeIcon = dynamic(() => import('./like.svg'));
-const RepostIcon = dynamic(() => import('./repost.svg'));
+const FollowIcon = dynamic(() => import('./follow.svg'), {
+  ssr: false,
+});
+const LikeIcon = dynamic(() => import('./like.svg'), {
+  ssr: false,
+});
+const RepostIcon = dynamic(() => import('./repost.svg'), {
+  ssr: false,
+});
 
 export interface ChatSocialMessageProps {
   message: ChatMessage;
