@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - web/**
+      - test/automated/browser/**
   pull_request_target:
     paths:
       - web/**
+      - test/automated/browser/**
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
