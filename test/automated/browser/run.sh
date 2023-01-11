@@ -61,14 +61,7 @@ npx cypress run --browser "$BROWSER" --group "mobile-offline" --ci-build-id $BUI
 # the local owncast instance.
 echo "Waiting for stream to start..."
 ../../ocTestStream.sh &
-STREAMING_CLIENT=$!
-
-function finish {
-	echo "Cleaning up..."
-	kill $SERVER_PID $STREAMING_CLIENT
-	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
-}
-trap finish EXIT SIGHUP SIGINT SIGTERM SIGQUIT SIGABRT SIGTERM
+STREAM_PID=$!
 
 sleep 20
 

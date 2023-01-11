@@ -22,13 +22,7 @@ sleep 5
 # Start streaming the test file over RTMP to
 # the local owncast instance.
 ../../ocTestStream.sh &
-FFMPEG_PID=$!
-
-function finish {
-	kill $SERVER_PID $FFMPEG_PID
-	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
-}
-trap finish EXIT
+STREAM_PID=$!
 
 echo "Waiting..."
 sleep 15

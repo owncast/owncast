@@ -1,10 +1,11 @@
 #!/bin/bash
 
-ffmpegInstall(){
+function ffmpegInstall() {
     # install a specific version of ffmpeg
 
     FFMPEG_VER="4.4.1"
     FFMPEG_PATH="$(pwd)/ffmpeg-$FFMPEG_VER"
+    PATH=$FFMPEG_PATH:$PATH
 
     if ! [[ -d "$FFMPEG_PATH" ]]; then
         mkdir "$FFMPEG_PATH"
@@ -17,6 +18,7 @@ ffmpegInstall(){
         ffmpeg_version=$("$FFMPEG_PATH/ffmpeg" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
 
         if [[ "$ffmpeg_version" == "$FFMPEG_VER-static" ]]; then
+            popd >/dev/null || exit
             return 0
         else
             mv "$FFMPEG_PATH/ffmpeg" "$FFMPEG_PATH/ffmpeg.bk" || rm -f "$FFMPEG_PATH/ffmpeg"
@@ -31,3 +33,36 @@ ffmpegInstall(){
 
     popd >/dev/null || exit
 }
+
+function update_storage_config() {
+  echo "Configuring external storage to use ${S3_BUCKET}..."
+
+  # Hard-coded to admin:abc123 for auth
+  curl --fail 'http://localhost:8080/api/admin/config/s3' \
+  -H 'Authorization: Basic YWRtaW46YWJjMTIz' \
+  --data-raw "{\"value\":{\"accessKey\":\"${S3_ACCESS_KEY}\",\"acl\":\"\",\"bucket\":\"${S3_BUCKET}\",\"enabled\":true,\"endpoint\":\"${S3_ENDPOINT}\",\"region\":\"${S3_REGION}\",\"secret\":\"${S3_SECRET}\",\"servingEndpoint\":\"\"}}"
+}
+
+function kill_with_kids() {
+    # kill a process and all its children (by pid)! return no error.
+
+    if [[ -n $1 ]]; then
+        mapfile -t CHILDREN_PID_LIST < <(ps --ppid "$1" -o pid= || true)
+        for child_pid in "${CHILDREN_PID_LIST[@]}"; do
+            kill "$child_pid" || true
+            wait "$child_pid" &>/dev/null || true
+        done
+        kill "$1" &>/dev/null || true
+        wait "$1" &>/dev/null || true
+    fi
+}
+
+function finish() {
+    echo "Cleaning up..."
+    kill_with_kids "$STREAM_PID"
+	kill "$SERVER_PID" || true
+    wait "$SERVER_PID" &>/dev/null || true
+	rm -fr "$TEMP_DB"
+}
+
+trap finish EXIT
