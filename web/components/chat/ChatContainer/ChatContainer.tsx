@@ -171,11 +171,15 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const scrollChatToBottom = (ref, behavior = 'smooth') => {
-    ref.current?.scrollToIndex({
-      index: messages.length - 1,
-      behavior,
-    });
+    setTimeout(() => {
+      ref.current?.scrollToIndex({
+        index: messages.length - 1,
+        behavior,
+      });
+    }, 100);
+
     setAtBottom(true);
   };
 
@@ -192,6 +196,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     () => (
       <>
         <Virtuoso
+          id="virtuoso"
           style={{ height }}
           className={styles.virtuoso}
           ref={chatContainerRef}
@@ -199,12 +204,12 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           itemContent={(index, message) => getViewForMessage(index, message)}
           followOutput={(isAtBottom: boolean) => {
             if (isAtBottom) {
-              return 'smooth';
+              scrollChatToBottom(chatContainerRef, 'smooth');
             }
             return false;
           }}
           alignToBottom
-          atBottomThreshold={50}
+          atBottomThreshold={70}
           atBottomStateChange={bottom => {
             setAtBottom(bottom);
           }}
