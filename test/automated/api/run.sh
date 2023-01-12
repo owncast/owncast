@@ -1,37 +1,17 @@
 #!/bin/bash
 
-source ../tools.sh
+set -e
 
-TEMP_DB=$(mktemp)
+source ../tools.sh
 
 # Install the node test framework
 npm install --quiet --no-progress
 
-ffmpegInstall
+install_ffmpeg
 
-pushd ../../.. >/dev/null || exit
+start_owncast
 
-# Build and run owncast from source
-go build -o owncast main.go
-./owncast -database "$TEMP_DB" &
-SERVER_PID=$!
-
-popd >/dev/null || exit
-sleep 5
-
-# Start streaming the test file over RTMP to
-# the local owncast instance.
-../../ocTestStream.sh &
-FFMPEG_PID=$!
-
-function finish {
-	kill $SERVER_PID $FFMPEG_PID
-	rm -fr "$TEMP_DB" "$FFMPEG_PATH"
-}
-trap finish EXIT
-
-echo "Waiting..."
-sleep 15
+start_stream
 
 # Run the tests against the instance.
 npm test
