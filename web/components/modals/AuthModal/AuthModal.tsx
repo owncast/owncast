@@ -4,9 +4,6 @@ import { FC } from 'react';
 import { IndieAuthModal } from '../IndieAuthModal/IndieAuthModal';
 import { FediAuthModal } from '../FediAuthModal/FediAuthModal';
 
-import FediverseIcon from '../../../assets/images/fediverse-black.png';
-import IndieAuthIcon from '../../../assets/images/indieauth.png';
-
 import styles from './AuthModal.module.scss';
 import {
   currentUserAtom,
@@ -35,7 +32,7 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
 
   const indieAuthTabTitle = (
     <span className={styles.tabContent}>
-      <img className={styles.icon} src={IndieAuthIcon.src} alt="IndieAuth" />
+      <img className={styles.icon} src="/img/indieauth.png" alt="IndieAuth" />
       IndieAuth
     </span>
   );
@@ -50,7 +47,7 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
 
   const fediAuthTabTitle = (
     <span className={styles.tabContent}>
-      <img className={styles.icon} src={FediverseIcon.src} alt="Fediverse auth" />
+      <img className={styles.icon} src="/img/fediverse-black.png" alt="Fediverse auth" />
       FediAuth
     </span>
   );
