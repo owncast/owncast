@@ -1,8 +1,8 @@
 /* eslint-disable react/no-danger */
 import { Html, Head, Main, NextScript } from 'next/document';
-
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { HtmlComment } from '../components/common/HtmlComment/HtmlComment';
 
 class InlineStylesHead extends Head {
   getCssLinks: Head['getCssLinks'] = ({ allFiles }) => {
@@ -26,6 +26,7 @@ class InlineStylesHead extends Head {
 export default function Document() {
   return (
     <Html lang="en">
+      <HtmlComment text="If you're reading this we'd love your help with Owncast! Visit https://owncast.online/help to see how you can contribute to make independent, open source live streaming better with your help." />
       <InlineStylesHead />
       <body>
         <Main />
