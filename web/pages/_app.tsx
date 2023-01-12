@@ -14,6 +14,9 @@ import { AppProps } from 'next/app';
 import { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import { RecoilRoot } from 'recoil';
+import { Router, useRouter } from 'next/router';
+
+import { AdminLayout } from '../components/layouts/AdminLayout';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -24,10 +27,15 @@ type AppPropsWithLayout = AppProps & {
 };
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
-  // Use the layout defined at the page level, if available
-  const getLayout = Component.getLayout ?? (page => page);
+  const router = useRouter() as Router;
+  const isAdminPage = router.pathname.startsWith('/admin');
+  if (isAdminPage) {
+    return <AdminLayout pageProps={pageProps} Component={Component} router={router} />;
+  }
 
-  return getLayout(
+  const layout = Component.getLayout ?? (page => page);
+
+  return layout(
     <RecoilRoot>
       <Component {...pageProps} />
     </RecoilRoot>,
