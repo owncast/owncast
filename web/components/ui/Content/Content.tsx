@@ -103,7 +103,9 @@ const DesktopContent = ({
 }) => {
   const aboutTabContent = <CustomPageContent content={extraPageContent} />;
   const followersTabContent = (
-    <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
+    <div style={{ minHeight: '15vh' }}>
+      <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
+    </div>
   );
 
   const items = [{ label: 'About', key: '2', children: aboutTabContent }];
@@ -412,11 +414,10 @@ export const Content: FC = () => {
                 supportFediverseFeatures={supportFediverseFeatures}
               />
             )}
-            <Footer version={version} />
+            {!isMobile && <Footer version={version} />}
           </div>
           {showChat && !isMobile && <Sidebar />}
         </div>
-        {!isMobile && false && <Footer version={version} />}
       </div>
       {externalActionToDisplay && (
         <ExternalModal
