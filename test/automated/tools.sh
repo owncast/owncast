@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 function install_ffmpeg() {
     # install a specific version of ffmpeg
 
@@ -11,14 +13,14 @@ function install_ffmpeg() {
         mkdir "$FFMPEG_PATH"
     fi
 
-    pushd "$FFMPEG_PATH" >/dev/null || exit
+    pushd "$FFMPEG_PATH" >/dev/null
 
     if [[ -x "$FFMPEG_PATH/ffmpeg" ]]; then
     
         ffmpeg_version=$("$FFMPEG_PATH/ffmpeg" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
 
         if [[ "$ffmpeg_version" == "$FFMPEG_VER-static" ]]; then
-            popd >/dev/null || exit
+            popd >/dev/null
             return 0
         else
             mv "$FFMPEG_PATH/ffmpeg" "$FFMPEG_PATH/ffmpeg.bk" || rm -f "$FFMPEG_PATH/ffmpeg"
@@ -31,17 +33,19 @@ function install_ffmpeg() {
     chmod +x ffmpeg
     PATH=$FFMPEG_PATH:$PATH
 
-    popd >/dev/null || exit
+    popd >/dev/null
 }
 
 function start_owncast() {
     # Build and run owncast from source
     echo "Building owncast..."
+    pushd "$(git rev-parse --show-toplevel)" >/dev/null
     go build -o owncast main.go
 
     echo "Running owncast..."
     ./owncast -database "$TEMP_DB" &
     SERVER_PID=$!
+    popd >/dev/null
 
     sleep 5
 

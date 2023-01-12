@@ -15,24 +15,27 @@ else
 	echo "Google Chrome not found. Using Electron."
 fi
 
-# Change to the root directory of the repository
-pushd "$(git rev-parse --show-toplevel)"
 
 # Bundle the updated web code into the server codebase.
 if [ -z "$SKIP_BUILD" ]; then
 	echo "Bundling web code into server..."
+
+	# Change to the root directory of the repository
+	pushd "$(git rev-parse --show-toplevel)"
+
 	./build/web/bundleWeb.sh >/dev/null
+
+	popd
 else
 	echo "Skipping web build..."
 fi
 
+
 # Install the web test framework
 if [ -z "$SKIP_BUILD" ]; then
 	echo "Installing test dependencies..."
-	pushd test/automated/browser
 	npm install --quiet --no-progress
 
-	popd
 else
 	echo "Skipping dependencies installation"
 fi
@@ -42,8 +45,6 @@ set -o nounset
 install_ffmpeg
 
 start_owncast
-
-pushd test/automated/browser
 
 # Run cypress browser tests for desktop
 npx cypress run --browser "$BROWSER" --group "desktop-offline" --env tags=desktop --ci-build-id $BUILD_ID --tag "desktop,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js"
