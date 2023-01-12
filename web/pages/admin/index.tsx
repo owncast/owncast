@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-css-tags */
-import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
-import ServerStatusProvider, { ServerStatusContext } from '../../utils/server-status-context';
+import { ServerStatusContext } from '../../utils/server-status-context';
 import { LogTable } from '../../components/admin/LogTable';
 import { Offline } from '../../components/admin/Offline';
 import { StreamHealthOverview } from '../../components/admin/StreamHealthOverview';
@@ -11,9 +11,6 @@ import { StreamHealthOverview } from '../../components/admin/StreamHealthOvervie
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../../utils/format';
 import { NewsFeed } from '../../components/admin/NewsFeed';
-
-import AlertMessageProvider from '../../utils/alert-message-context';
-import { MainLayout } from '../../components/admin/MainLayout';
 
 function streamDetailsFormatter(streamDetails) {
   return (
