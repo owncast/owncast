@@ -22,7 +22,7 @@ npm test
 
 # Determine if we should continue testing with S3 configuration.
 if [[ -z "${S3_BUCKET}" ]]; then
-  echo "No S3 configuration set"
+  echo "No S3 configuration is set. Skipping S3 tests!"
   exit 0
 fi
 
