@@ -3,10 +3,12 @@ name: Browser Tests
 on:
   push:
     paths:
-      - web/**
-  pull_request_target:
+      - 'web/**'
+      - 'test/automated/browser/**'
+  pull_request:
     paths:
-      - web/**
+      - 'web/**'
+      - 'test/automated/browser/**'
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
