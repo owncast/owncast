@@ -26,11 +26,12 @@ class InlineStylesHead extends Head {
 export default function Document() {
   return (
     <Html lang="en">
-      <HtmlComment text="If you're reading this we'd love your help with Owncast! Visit https://owncast.online/help to see how you can contribute to make independent, open source live streaming better with your help." />
       <InlineStylesHead />
       <body>
         <Main />
         <NextScript />
+        {'\n\n'}
+        <HtmlComment text="If you're reading this we'd love your help with Owncast! Visit https://owncast.online/help to see how you can contribute to make independent, open source live streaming better with your help." />
       </body>
     </Html>
   );
