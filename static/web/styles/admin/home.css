@@ -22,7 +22,6 @@
   padding: 1em;
 }
 .offline-content .list-section > .ant-card {
-  background-color: var(--black);
   margin-bottom: 1em;
 }
 .offline-intro {
