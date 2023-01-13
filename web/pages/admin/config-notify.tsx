@@ -129,7 +129,7 @@ export default function ConfigNotify() {
           <Title>Custom</Title>
           <p className="description">Build your own notifications by using custom webhooks.</p>
 
-          <Link passHref href="/webhooks">
+          <Link passHref href="/admin/webhooks">
             <Button
               type="primary"
               style={{
