@@ -5,10 +5,11 @@
   height: 100vh;
   overflow: auto;
   z-index: 10;
-  background-color: var(--nav-bg-color);
+  background-color: var(--theme-color-background-main);
 }
 .app-container .menu-container {
   border-color: transparent;
+	background-color: unset;
 }
 .app-container h1.owncast-title {
   padding: 1rem;
