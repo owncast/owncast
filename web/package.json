@@ -54,7 +54,7 @@
 		"style-dictionary": "3.7.2",
 		"ua-parser-js": "1.0.32",
 		"video.js": "7.20.3",
-		"xstate": "4.35.1",
+		"xstate": "4.35.2",
 		"yaml": "2.2.1",
 		"@next/bundle-analyzer": "^13.1.1"
 	},
