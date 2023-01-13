@@ -23,8 +23,6 @@ export const AdminLayout: FC<AppProps> = ({ Component, pageProps }) => (
     <link rel="stylesheet" href="/styles/admin/config-public-details.css" />
     <link rel="stylesheet" href="/styles/admin/home.css" />
     <link rel="stylesheet" href="/styles/admin/chat.css" />
-    <link rel="stylesheet" href="/styles/admin/pages.css" />
-    <link rel="stylesheet" href="/styles/admin/offline-notice.css" />
 
     <ServerStatusProvider>
       <AlertMessageProvider>
