@@ -61,7 +61,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
               Streaming Keys:
             </Text>
             <Text strong className="stream-info-box">
-              <Link href="/admin/config/general"> View </Link>
+              <Link href="/admin/config/server"> View </Link>
             </Text>
           </div>
         </div>
