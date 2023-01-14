@@ -33,6 +33,7 @@ const SERVER_STATUS_POLL_DURATION = 5000;
 const ACCESS_TOKEN_KEY = 'accessToken';
 
 let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
+let hasBeenModeratorNotified = false;
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
@@ -284,7 +285,10 @@ export const ClientConfigStore: FC = () => {
           setChatAuthenticated,
           setCurrentUser,
         );
-        setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        if (!hasBeenModeratorNotified) {
+          setChatMessages(currentState => [...currentState, message as ChatEvent]);
+          hasBeenModeratorNotified = true;
+        }
         break;
       case MessageType.CHAT:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
