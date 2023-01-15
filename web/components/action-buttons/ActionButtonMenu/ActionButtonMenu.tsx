@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { Button, Dropdown, Menu } from 'antd';
+import classNames from 'classnames';
 import { EllipsisOutlined, HeartOutlined, BellOutlined } from '@ant-design/icons';
 import styles from './ActionButtonMenu.module.scss';
 import { ExternalAction } from '../../../interfaces/external-action';
@@ -14,6 +15,7 @@ export type ActionButtonMenuProps = {
   externalActionSelected: (action: ExternalAction) => void;
   notifyItemSelected: () => void;
   followItemSelected: () => void;
+  className?: string;
 };
 
 export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
@@ -23,6 +25,7 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
   followItemSelected,
   showFollowItem,
   showNotifyItem,
+  className,
 }) => {
   const onMenuClick = a => {
     if (a.key === NOTIFY_KEY) {
@@ -72,8 +75,15 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
 
   const menu = <Menu items={items} onClick={onMenuClick} />;
 
+  const dropdownClasses = classNames([styles.menu, className]);
+
   return (
-    <Dropdown overlay={menu} placement="bottomRight" trigger={['click']} className={styles.menu}>
+    <Dropdown
+      overlay={menu}
+      placement="bottomRight"
+      trigger={['click']}
+      className={dropdownClasses}
+    >
       <div className={styles.buttonWrap}>
         <Button
           type="default"
