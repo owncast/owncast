@@ -1,4 +1,3 @@
-import { SendOutlined, SmileOutlined } from '@ant-design/icons';
 import { Popover } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -14,6 +13,14 @@ import styles from './ChatTextField.module.scss';
 // Lazy loaded components
 
 const EmojiPicker = dynamic(() => import('./EmojiPicker').then(mod => mod.EmojiPicker), {
+  ssr: false,
+});
+
+const SendOutlined = dynamic(() => import('@ant-design/icons/SendOutlined'), {
+  ssr: false,
+});
+
+const SmileOutlined = dynamic(() => import('@ant-design/icons/SmileOutlined'), {
   ssr: false,
 });
 

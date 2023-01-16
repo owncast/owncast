@@ -1,8 +1,22 @@
 import { Modal, Button } from 'antd';
-import { ExclamationCircleFilled, QuestionCircleFilled, StopTwoTone } from '@ant-design/icons';
 import { FC } from 'react';
+import dynamic from 'next/dynamic';
 import { USER_ENABLED_TOGGLE, fetchData } from '../../utils/apis';
 import { User } from '../../types/chat';
+
+// Lazy loaded components
+
+const ExclamationCircleFilled = dynamic(() => import('@ant-design/icons/ExclamationCircleFilled'), {
+  ssr: false,
+});
+
+const QuestionCircleFilled = dynamic(() => import('@ant-design/icons/QuestionCircleFilled'), {
+  ssr: false,
+});
+
+const StopTwoTone = dynamic(() => import('@ant-design/icons/StopTwoTone'), {
+  ssr: false,
+});
 
 export type BanUserButtonProps = {
   user: User;

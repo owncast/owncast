@@ -1,17 +1,33 @@
-import {
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  EyeInvisibleOutlined,
-  SmallDashOutlined,
-} from '@ant-design/icons';
 import { Dropdown, Menu, MenuProps, Space, message, Modal as AntModal } from 'antd';
 import { FC, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Modal } from '../../ui/Modal/Modal';
 import { ChatModerationDetailsModal } from '../ChatModerationDetailsModal/ChatModerationDetailsModal';
 import styles from './ChatModerationActionMenu.module.scss';
 import ChatModeration from '../../../services/moderation-service';
 
 const { confirm } = AntModal;
+
+// Lazy loaded components
+
+const CloseCircleOutlined = dynamic(() => import('@ant-design/icons/CloseCircleOutlined'), {
+  ssr: false,
+});
+
+const ExclamationCircleOutlined = dynamic(
+  () => import('@ant-design/icons/ExclamationCircleOutlined'),
+  {
+    ssr: false,
+  },
+);
+
+const EyeInvisibleOutlined = dynamic(() => import('@ant-design/icons/EyeInvisibleOutlined'), {
+  ssr: false,
+});
+
+const SmallDashOutlined = dynamic(() => import('@ant-design/icons/SmallDashOutlined'), {
+  ssr: false,
+});
 
 export type ChatModerationActionMenuProps = {
   accessToken: string;

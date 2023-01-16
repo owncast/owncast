@@ -1,7 +1,7 @@
-import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Space, Table, Typography, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';
 
 import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
@@ -15,6 +15,12 @@ import {
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
 import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
 
 type CustomEmoji = {
   name: string;

@@ -1,7 +1,7 @@
-import { BookTwoTone, MessageTwoTone, PlaySquareTwoTone, ProfileTwoTone } from '@ant-design/icons';
 import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { FC, useContext } from 'react';
+import dynamic from 'next/dynamic';
 import { LogTable } from './LogTable';
 import { OwncastLogo } from '../common/OwncastLogo/OwncastLogo';
 import { NewsFeed } from './NewsFeed';
@@ -12,6 +12,24 @@ const { Paragraph, Text } = Typography;
 
 const { Title } = Typography;
 const { Meta } = Card;
+
+// Lazy loaded components
+
+const BookTwoTone = dynamic(() => import('@ant-design/icons/BookTwoTone'), {
+  ssr: false,
+});
+
+const MessageTwoTone = dynamic(() => import('@ant-design/icons/MessageTwoTone'), {
+  ssr: false,
+});
+
+const PlaySquareTwoTone = dynamic(() => import('@ant-design/icons/PlaySquareTwoTone'), {
+  ssr: false,
+});
+
+const ProfileTwoTone = dynamic(() => import('@ant-design/icons/ProfileTwoTone'), {
+  ssr: false,
+});
 
 function generateStreamURL(serverURL, rtmpServerPort) {
   return `rtmp://${serverURL.replace(/(^\w+:|^)\/\//, '')}:${rtmpServerPort}/live`;

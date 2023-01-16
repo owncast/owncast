@@ -1,7 +1,6 @@
 /* eslint-disable react/no-danger */
 import { FC, ReactNode, useEffect, useState } from 'react';
 import cn from 'classnames';
-import { LinkOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
@@ -14,6 +13,10 @@ import { accessTokenAtom } from '../../stores/ClientConfigStore';
 import { User } from '../../../interfaces/user.model';
 
 // Lazy loaded components
+
+const LinkOutlined = dynamic(() => import('@ant-design/icons/LinkOutlined'), {
+  ssr: false,
+});
 
 const ChatModerationActionMenu = dynamic(
   () =>

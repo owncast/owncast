@@ -1,7 +1,13 @@
 import { Button } from 'antd';
-import { BellFilled } from '@ant-design/icons';
 import { FC } from 'react';
+import dynamic from 'next/dynamic';
 import styles from './ActionButton/ActionButton.module.scss';
+
+// Lazy loaded components
+
+const BellFilled = dynamic(() => import('@ant-design/icons/BellFilled'), {
+  ssr: false,
+});
 
 export type NotifyButtonProps = {
   text?: string;

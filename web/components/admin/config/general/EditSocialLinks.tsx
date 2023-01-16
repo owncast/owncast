@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Typography, Table, Button, Modal, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { CaretDownOutlined, CaretUpOutlined, DeleteOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { SocialDropdown } from '../../SocialDropdown';
 import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../../../utils/apis';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
@@ -24,6 +24,20 @@ import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../../../uti
 import { FormStatusIndicator } from '../../FormStatusIndicator';
 
 const { Title } = Typography;
+
+// Lazy loaded components
+
+const CaretDownOutlined = dynamic(() => import('@ant-design/icons/CaretDownOutlined'), {
+  ssr: false,
+});
+
+const CaretUpOutlined = dynamic(() => import('@ant-design/icons/CaretUpOutlined'), {
+  ssr: false,
+});
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
 
 // eslint-disable-next-line react/function-component-definition
 export default function EditSocialLinks() {

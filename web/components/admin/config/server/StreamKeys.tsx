@@ -1,12 +1,26 @@
 import React, { useContext, useState } from 'react';
 import { Table, Space, Button, Typography, Alert, Input, Form } from 'antd';
-import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 
 import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
 
 const { Paragraph } = Typography;
 const { Item } = Form;
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
+
+const EyeOutlined = dynamic(() => import('@ant-design/icons/EyeOutlined'), {
+  ssr: false,
+});
+
+const PlusOutlined = dynamic(() => import('@ant-design/icons/PlusOutlined'), {
+  ssr: false,
+});
 
 const saveKeys = async (keys, setError) => {
   try {

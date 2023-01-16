@@ -1,9 +1,17 @@
-import { VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
+import dynamic from 'next/dynamic';
 import { FC, MutableRefObject } from 'react';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import styles from './ChatContainer.module.scss';
 
+// Lazy loaded components
+
+const VerticalAlignBottomOutlined = dynamic(
+  () => import('@ant-design/icons/VerticalAlignBottomOutlined'),
+  {
+    ssr: false,
+  },
+);
 type Props = {
   chatContainerRef: MutableRefObject<any>;
   messages: ChatMessage[];

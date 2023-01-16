@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography, Button } from 'antd';
-import { CheckCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
 import format from 'date-fns/format';
 
+import dynamic from 'next/dynamic';
 import { MessageType } from '../../../types/chat';
 import {
   CHAT_HISTORY,
@@ -17,6 +17,16 @@ import { MessageVisiblityToggle } from '../../../components/admin/MessageVisibli
 import { UserPopover } from '../../../components/admin/UserPopover';
 
 const { Title } = Typography;
+
+// Lazy loaded components
+
+const CheckCircleFilled = dynamic(() => import('@ant-design/icons/CheckCircleFilled'), {
+  ssr: false,
+});
+
+const ExclamationCircleFilled = dynamic(() => import('@ant-design/icons/ExclamationCircleFilled'), {
+  ssr: false,
+});
 
 function createUserNameFilters(messages: MessageType[]) {
   const filtered = messages.reduce((acc, curItem) => {

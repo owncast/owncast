@@ -1,9 +1,22 @@
-import {
-  CheckCircleFilled,
-  ExclamationCircleFilled,
-  LoadingOutlined,
-  WarningOutlined,
-} from '@ant-design/icons';
+import dynamic from 'next/dynamic';
+
+// Lazy loaded components
+
+const CheckCircleFilled = dynamic(() => import('@ant-design/icons/CheckCircleFilled'), {
+  ssr: false,
+});
+
+const ExclamationCircleFilled = dynamic(() => import('@ant-design/icons/ExclamationCircleFilled'), {
+  ssr: false,
+});
+
+const LoadingOutlined = dynamic(() => import('@ant-design/icons/LoadingOutlined'), {
+  ssr: false,
+});
+
+const WarningOutlined = dynamic(() => import('@ant-design/icons/WarningOutlined'), {
+  ssr: false,
+});
 
 export const STATUS_RESET_TIMEOUT = 3000;
 

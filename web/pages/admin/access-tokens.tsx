@@ -12,10 +12,10 @@ import {
   Col,
   Tooltip,
 } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
 
 import format from 'date-fns/format';
 
+import dynamic from 'next/dynamic';
 import {
   fetchData,
   ACCESS_TOKENS,
@@ -24,6 +24,12 @@ import {
 } from '../../utils/apis';
 
 const { Title, Paragraph } = Typography;
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
 
 const availableScopes = {
   CAN_SEND_SYSTEM_MESSAGES: {

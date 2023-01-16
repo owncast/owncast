@@ -1,19 +1,51 @@
 import { Button, Card, Col, Divider, Result, Row } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import Title from 'antd/lib/typography/Title';
-import {
-  ApiTwoTone,
-  BugTwoTone,
-  CameraTwoTone,
-  DatabaseTwoTone,
-  EditTwoTone,
-  Html5TwoTone,
-  LinkOutlined,
-  QuestionCircleTwoTone,
-  SettingTwoTone,
-  SlidersTwoTone,
-} from '@ant-design/icons';
+
 import React from 'react';
+import dynamic from 'next/dynamic';
+
+// Lazy loaded components
+
+const ApiTwoTone = dynamic(() => import('@ant-design/icons/ApiTwoTone'), {
+  ssr: false,
+});
+
+const BugTwoTone = dynamic(() => import('@ant-design/icons/BugTwoTone'), {
+  ssr: false,
+});
+
+const CameraTwoTone = dynamic(() => import('@ant-design/icons/CameraTwoTone'), {
+  ssr: false,
+});
+
+const DatabaseTwoTone = dynamic(() => import('@ant-design/icons/DatabaseTwoTone'), {
+  ssr: false,
+});
+
+const EditTwoTone = dynamic(() => import('@ant-design/icons/EditTwoTone'), {
+  ssr: false,
+});
+
+const Html5TwoTone = dynamic(() => import('@ant-design/icons/Html5TwoTone'), {
+  ssr: false,
+});
+
+const LinkOutlined = dynamic(() => import('@ant-design/icons/LinkOutlined'), {
+  ssr: false,
+});
+
+const QuestionCircleTwoTone = dynamic(() => import('@ant-design/icons/QuestionCircleTwoTone'), {
+  ssr: false,
+});
+
+const SettingTwoTone = dynamic(() => import('@ant-design/icons/SettingTwoTone'), {
+  ssr: false,
+});
+
+const SlidersTwoTone = dynamic(() => import('@ant-design/icons/SlidersTwoTone'), {
+  ssr: false,
+});
 
 export default function Help() {
   const questions = [

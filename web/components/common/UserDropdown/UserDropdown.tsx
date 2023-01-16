@@ -1,11 +1,5 @@
 import { Menu, Dropdown, Button } from 'antd';
-import {
-  CaretDownOutlined,
-  EditOutlined,
-  LockOutlined,
-  MessageOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -19,6 +13,27 @@ import styles from './UserDropdown.module.scss';
 import { AppStateOptions } from '../../stores/application-state';
 
 // Lazy loaded components
+
+const CaretDownOutlined = dynamic(() => import('@ant-design/icons/CaretDownOutlined'), {
+  ssr: false,
+});
+
+const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
+  ssr: false,
+});
+
+const LockOutlined = dynamic(() => import('@ant-design/icons/LockOutlined'), {
+  ssr: false,
+});
+
+const MessageOutlined = dynamic(() => import('@ant-design/icons/MessageOutlined'), {
+  ssr: false,
+});
+
+const UserOutlined = dynamic(() => import('@ant-design/icons/UserOutlined'), {
+  ssr: false,
+});
+
 const Modal = dynamic(() => import('../../ui/Modal/Modal').then(mod => mod.Modal), {
   ssr: false,
 });

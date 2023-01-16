@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Typography, Menu, Dropdown, Spin, Alert } from 'antd';
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { getUnixTime, sub } from 'date-fns';
+import dynamic from 'next/dynamic';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
 import { ViewerTable } from '../../components/admin/ViewerTable';
@@ -9,6 +9,16 @@ import { ViewerTable } from '../../components/admin/ViewerTable';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../../utils/apis';
+
+// Lazy loaded components
+
+const DownOutlined = dynamic(() => import('@ant-design/icons/DownOutlined'), {
+  ssr: false,
+});
+
+const UserOutlined = dynamic(() => import('@ant-design/icons/UserOutlined'), {
+  ssr: false,
+});
 
 const FETCH_INTERVAL = 60 * 1000; // 1 min
 

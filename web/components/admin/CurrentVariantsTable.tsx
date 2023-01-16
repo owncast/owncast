@@ -3,7 +3,7 @@
 import React, { FC, useContext, useState } from 'react';
 import { Typography, Table, Modal, Button, Alert } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { DeleteOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import { UpdateArgs, VideoVariant } from '../../types/config-section';
@@ -27,6 +27,12 @@ import {
 import { FormStatusIndicator } from './FormStatusIndicator';
 
 const { Title } = Typography;
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
 
 // eslint-disable-next-line import/prefer-default-export
 export const CurrentVariantsTable: FC = () => {

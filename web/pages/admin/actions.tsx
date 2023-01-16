@@ -1,6 +1,6 @@
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
 import _ from 'lodash';
+import dynamic from 'next/dynamic';
 import React, { useContext, useEffect, useState } from 'react';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
@@ -14,6 +14,17 @@ import { ServerStatusContext } from '../../utils/server-status-context';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
 
 const { Title, Paragraph } = Typography;
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
+
+const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
+  ssr: false,
+});
+
 let resetTimer = null;
 
 interface Props {

@@ -2,9 +2,15 @@ import { Table, Button } from 'antd';
 import format from 'date-fns/format';
 import { SortOrder } from 'antd/lib/table/interface';
 import React, { FC } from 'react';
-import { StopTwoTone } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { User } from '../../types/chat';
 import { BANNED_IP_REMOVE, fetchData } from '../../utils/apis';
+
+// Lazy loaded components
+
+const StopTwoTone = dynamic(() => import('@ant-design/icons/StopTwoTone'), {
+  ssr: false,
+});
 
 function formatDisplayDate(date: string | Date) {
   return format(new Date(date), 'MMM d H:mma');

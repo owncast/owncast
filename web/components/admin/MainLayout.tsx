@@ -5,20 +5,9 @@ import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
 import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
-import {
-  SettingOutlined,
-  HomeOutlined,
-  LineChartOutlined,
-  ToolOutlined,
-  PlayCircleFilled,
-  MinusSquareFilled,
-  QuestionCircleOutlined,
-  MessageOutlined,
-  ExperimentOutlined,
-  EditOutlined,
-} from '@ant-design/icons';
 
 import classNames from 'classnames';
+import dynamic from 'next/dynamic';
 import { upgradeVersionAvailable } from '../../utils/apis';
 import { parseSecondsToDurationString } from '../../utils/format';
 
@@ -30,6 +19,48 @@ import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../../utils/config-constants';
 import { ComposeFederatedPost } from './ComposeFederatedPost';
 import { UpdateArgs } from '../../types/config-section';
+
+// Lazy loaded components
+
+const SettingOutlined = dynamic(() => import('@ant-design/icons/SettingOutlined'), {
+  ssr: false,
+}); // Lazy loaded components
+
+const HomeOutlined = dynamic(() => import('@ant-design/icons/HomeOutlined'), {
+  ssr: false,
+});
+
+const LineChartOutlined = dynamic(() => import('@ant-design/icons/LineChartOutlined'), {
+  ssr: false,
+});
+
+const ToolOutlined = dynamic(() => import('@ant-design/icons/ToolOutlined'), {
+  ssr: false,
+});
+
+const PlayCircleFilled = dynamic(() => import('@ant-design/icons/PlayCircleFilled'), {
+  ssr: false,
+});
+
+const MinusSquareFilled = dynamic(() => import('@ant-design/icons/MinusSquareFilled'), {
+  ssr: false,
+});
+
+const QuestionCircleOutlined = dynamic(() => import('@ant-design/icons/QuestionCircleOutlined'), {
+  ssr: false,
+});
+
+const MessageOutlined = dynamic(() => import('@ant-design/icons/MessageOutlined'), {
+  ssr: false,
+});
+
+const ExperimentOutlined = dynamic(() => import('@ant-design/icons/ExperimentOutlined'), {
+  ssr: false,
+});
+
+const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
+  ssr: false,
+});
 
 export type MainLayoutProps = {
   children: ReactNode;

@@ -1,10 +1,16 @@
-import { CheckCircleOutlined } from '@ant-design/icons';
 import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd';
+import dynamic from 'next/dynamic';
 import React, { FC, useState } from 'react';
 import { isValidUrl } from '../../../utils/urls';
 
 const { Panel } = Collapse;
 const { Link } = Typography;
+
+// Lazy loaded components
+
+const CheckCircleOutlined = dynamic(() => import('@ant-design/icons/CheckCircleOutlined'), {
+  ssr: false,
+});
 
 export type IndieAuthModalProps = {
   authenticated: boolean;

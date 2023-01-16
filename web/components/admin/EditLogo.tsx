@@ -1,7 +1,7 @@
 import { Button, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
-import { LoadingOutlined, UploadOutlined } from '@ant-design/icons';
 import React, { useState, useContext, FC } from 'react';
+import dynamic from 'next/dynamic';
 import { FormStatusIndicator } from './FormStatusIndicator';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -24,6 +24,16 @@ import {
   MAX_IMAGE_FILESIZE,
   readableBytes,
 } from '../../utils/images';
+
+// Lazy loaded components
+
+const LoadingOutlined = dynamic(() => import('@ant-design/icons/LoadingOutlined'), {
+  ssr: false,
+});
+
+const UploadOutlined = dynamic(() => import('@ant-design/icons/UploadOutlined'), {
+  ssr: false,
+});
 
 // eslint-disable-next-line import/prefer-default-export
 export const EditLogo: FC = () => {

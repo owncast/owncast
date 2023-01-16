@@ -1,8 +1,21 @@
-import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Col, Row, Statistic, Typography } from 'antd';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { FC, useContext } from 'react';
 import { ServerStatusContext } from '../../utils/server-status-context';
+
+// Lazy loaded components
+
+const CheckCircleOutlined = dynamic(() => import('@ant-design/icons/CheckCircleOutlined'), {
+  ssr: false,
+});
+
+const ExclamationCircleOutlined = dynamic(
+  () => import('@ant-design/icons/ExclamationCircleOutlined'),
+  {
+    ssr: false,
+  },
+);
 
 export type StreamHealthOverviewProps = {
   showTroubleshootButton?: Boolean;

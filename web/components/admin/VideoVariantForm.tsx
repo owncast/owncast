@@ -1,8 +1,8 @@
 // This content populates the video variant modal, which is spawned from the variants table. This relies on the `dataState` prop fed in by the table.
 import React, { FC } from 'react';
 import { Popconfirm, Row, Col, Slider, Collapse, Typography, Alert, Button } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import classNames from 'classnames';
+import dynamic from 'next/dynamic';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
 import { TextField } from './TextField';
 import {
@@ -20,6 +20,12 @@ import {
 import { ToggleSwitch } from './ToggleSwitch';
 
 const { Panel } = Collapse;
+
+// Lazy loaded components
+
+const ExclamationCircleFilled = dynamic(() => import('@ant-design/icons/ExclamationCircleFilled'), {
+  ssr: false,
+});
 
 export type VideoVariantFormProps = {
   dataState: VideoVariant;

@@ -1,8 +1,14 @@
 import { Button, ButtonProps } from 'antd';
-import { HeartFilled } from '@ant-design/icons';
 
 import { FC } from 'react';
+import dynamic from 'next/dynamic';
 import styles from './ActionButton/ActionButton.module.scss';
+
+// Lazy loaded components
+
+const HeartFilled = dynamic(() => import('@ant-design/icons/HeartFilled'), {
+  ssr: false,
+});
 
 export type FollowButtonProps = ButtonProps & {
   onClick?: () => void;

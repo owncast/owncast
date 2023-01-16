@@ -1,6 +1,12 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
+import dynamic from 'next/dynamic';
 import { FC } from 'react';
+
+// Lazy loaded components
+
+const InfoCircleOutlined = dynamic(() => import('@ant-design/icons/InfoCircleOutlined'), {
+  ssr: false,
+});
 
 export type InfoTipProps = {
   tip: string | null;

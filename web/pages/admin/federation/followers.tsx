@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Table, Avatar, Button, Tabs } from 'antd';
 import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   FOLLOWERS,
@@ -13,6 +13,15 @@ import {
 } from '../../../utils/apis';
 import { isEmptyObject } from '../../../utils/format';
 
+// Lazy loaded components
+
+const UserAddOutlined = dynamic(() => import('@ant-design/icons/UserAddOutlined'), {
+  ssr: false,
+});
+
+const UserDeleteOutlined = dynamic(() => import('@ant-design/icons/UserDeleteOutlined'), {
+  ssr: false,
+});
 export interface Follower {
   link: string;
   username: string;
