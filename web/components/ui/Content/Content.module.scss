@@ -66,7 +66,7 @@
 .replacementBar {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
 
   @include screen(tablet) {
     height: var(--replacement-bar-height);
