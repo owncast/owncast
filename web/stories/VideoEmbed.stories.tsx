@@ -12,17 +12,20 @@ const Template = ({
   title: string;
   width: number;
   height: number;
-}) => (
-  <iframe
-    src={`${origin}/embed/video?${query}`}
-    title={title}
-    height={`${height}px`}
-    width={`${width}px`}
-    referrerPolicy="origin"
-    scrolling="no"
-    allowFullScreen
-  />
-);
+}) => {
+  const queryString = query ? `?${query}` : '';
+  return (
+    <iframe
+      src={`${origin}/embed/video${queryString}`}
+      title={title}
+      height={`${height}px`}
+      width={`${width}px`}
+      referrerPolicy="origin"
+      scrolling="no"
+      allowFullScreen
+    />
+  );
+};
 
 const origins = {
   DemoServer: `https://watch.owncast.online`,
