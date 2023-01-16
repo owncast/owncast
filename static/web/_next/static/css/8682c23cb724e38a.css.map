@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack://_N_E/components/admin/config/general/appearance.module.scss"],"names":[],"mappings":"AAAA,+BACE,UAAA,CACA,WAAA","file":"static/css/8682c23cb724e38a.css","sourcesContent":[".colorPicker {\n  width: 100%;\n  height: 50px;\n}\n"],"sourceRoot":""}
