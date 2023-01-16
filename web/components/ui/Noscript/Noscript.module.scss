@@ -1,0 +1,31 @@
+.noscript {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2em;
+  font-size: large;
+  background-color: var(--theme-color-background-main);
+  z-index: 999;
+  overflow: auto;
+
+  .content {
+    width: 70ch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logo {
+    width: 70%;
+  }
+
+  h2 {
+    margin-top: 25px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: inherit;
+  }
+}
