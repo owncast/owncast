@@ -1,6 +1,6 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
-import { EditFilled } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import {
   ConnectedClientInfoEvent,
   MessageType,
@@ -17,6 +17,11 @@ import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
 import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 
+// Lazy loaded components
+
+const EditFilled = dynamic(() => import('@ant-design/icons/EditFilled'), {
+  ssr: false,
+});
 export type ChatContainerProps = {
   messages: ChatMessage[];
   usernameToHighlight: string;

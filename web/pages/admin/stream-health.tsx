@@ -2,10 +2,24 @@
 // import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
 import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd';
 import React, { ReactNode, useEffect, useState } from 'react';
-import { ClockCircleOutlined, WarningOutlined, WifiOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StreamHealthOverview } from '../../components/admin/StreamHealthOverview';
+
+// Lazy loaded components
+
+const ClockCircleOutlined = dynamic(() => import('@ant-design/icons/ClockCircleOutlined'), {
+  ssr: false,
+});
+
+const WarningOutlined = dynamic(() => import('@ant-design/icons/WarningOutlined'), {
+  ssr: false,
+});
+
+const WifiOutlined = dynamic(() => import('@ant-design/icons/WifiOutlined'), {
+  ssr: false,
+});
 
 interface TimedValue {
   time: Date;

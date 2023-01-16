@@ -1,5 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
@@ -13,11 +12,18 @@ import {
   Typography,
   Tooltip,
 } from 'antd';
+import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
 
 const { Title, Paragraph } = Typography;
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
 
 const availableEvents = {
   CHAT: { name: 'Chat messages', description: 'When a user sends a chat message', color: 'purple' },

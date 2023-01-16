@@ -1,8 +1,14 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import { FC, useEffect, useState } from 'react';
-import { EyeFilled } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import styles from './Statusbar.module.scss';
+
+// Lazy loaded components
+
+const EyeFilled = dynamic(() => import('@ant-design/icons/EyeFilled'), {
+  ssr: false,
+});
 
 export type StatusbarProps = {
   online: Boolean;

@@ -1,9 +1,23 @@
-import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
 import { Row, Col, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
+
+// Lazy loaded components
+
+const BulbOutlined = dynamic(() => import('@ant-design/icons/BulbOutlined'), {
+  ssr: false,
+});
+
+const LaptopOutlined = dynamic(() => import('@ant-design/icons/LaptopOutlined'), {
+  ssr: false,
+});
+
+const SaveOutlined = dynamic(() => import('@ant-design/icons/SaveOutlined'), {
+  ssr: false,
+});
 
 // TODO: FIX TS WARNING FROM THIS.
 // interface TimedValue {

@@ -1,7 +1,13 @@
 import { Popover } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
 import React, { useState, useEffect, FC } from 'react';
+import dynamic from 'next/dynamic';
 import styles from './NotifyReminderPopup.module.scss';
+
+// Lazy loaded components
+
+const CloseOutlined = dynamic(() => import('@ant-design/icons/CloseOutlined'), {
+  ssr: false,
+});
 
 export type NotifyReminderPopupProps = {
   open: boolean;

@@ -1,9 +1,15 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Divider } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
 import { FC } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import dynamic from 'next/dynamic';
 import styles from './OfflineBanner.module.scss';
+
+// Lazy loaded components
+
+const ClockCircleOutlined = dynamic(() => import('@ant-design/icons/ClockCircleOutlined'), {
+  ssr: false,
+});
 
 export type OfflineBannerProps = {
   streamName: string;

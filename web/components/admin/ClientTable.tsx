@@ -1,13 +1,19 @@
 import { Input, Table } from 'antd';
 import { FilterDropdownProps, SortOrder } from 'antd/lib/table/interface';
 import { ColumnsType } from 'antd/es/table';
-import { SearchOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
+import dynamic from 'next/dynamic';
 import { Client } from '../../types/chat';
 import { UserPopover } from './UserPopover';
 import { BanUserButton } from './BanUserButton';
 import { formatUAstring } from '../../utils/format';
+
+// Lazy loaded components
+
+const SearchOutlined = dynamic(() => import('@ant-design/icons/SearchOutlined'), {
+  ssr: false,
+});
 
 export type ClientTableProps = {
   data: Client[];

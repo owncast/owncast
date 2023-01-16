@@ -1,13 +1,19 @@
 import { Button, Col, Collapse, Row, Spin, Table, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import format from 'date-fns/format';
-import { DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
+import dynamic from 'next/dynamic';
 import ChatModeration from '../../../services/moderation-service';
 import styles from './ChatModerationDetailsModal.module.scss';
 import { formatUAstring } from '../../../utils/format';
 
 const { Panel } = Collapse;
+
+// Lazy loaded components
+
+const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
+  ssr: false,
+});
 
 export type ChatModerationDetailsModalProps = {
   userId: string;

@@ -1,10 +1,16 @@
 import { Alert, Button, Input, Space, Spin, Collapse } from 'antd';
 import React, { FC, useState } from 'react';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import styles from './FediAuthModal.module.scss';
 import { validateAccount } from '../../../utils/validators';
 
 const { Panel } = Collapse;
+
+// Lazy loaded components
+
+const CheckCircleOutlined = dynamic(() => import('@ant-design/icons/CheckCircleOutlined'), {
+  ssr: false,
+});
 
 export type FediAuthModalProps = {
   authenticated: boolean;

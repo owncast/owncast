@@ -1,7 +1,13 @@
 import { FC } from 'react';
-import { TeamOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 import styles from './ChatJoinMessage.module.scss';
+
+// Lazy loaded components
+
+const TeamOutlined = dynamic(() => import('@ant-design/icons/TeamOutlined'), {
+  ssr: false,
+});
 
 export type ChatJoinMessageProps = {
   isAuthorModerator: boolean;

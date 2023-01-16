@@ -1,9 +1,23 @@
 import { FC } from 'react';
 import { Button, Dropdown, Menu } from 'antd';
 import classNames from 'classnames';
-import { EllipsisOutlined, HeartOutlined, BellOutlined } from '@ant-design/icons';
+import dynamic from 'next/dynamic';
 import styles from './ActionButtonMenu.module.scss';
 import { ExternalAction } from '../../../interfaces/external-action';
+
+// Lazy loaded components
+
+const EllipsisOutlined = dynamic(() => import('@ant-design/icons/EllipsisOutlined'), {
+  ssr: false,
+});
+
+const HeartOutlined = dynamic(() => import('@ant-design/icons/HeartOutlined'), {
+  ssr: false,
+});
+
+const BellOutlined = dynamic(() => import('@ant-design/icons/BellOutlined'), {
+  ssr: false,
+});
 
 const NOTIFY_KEY = 'notify';
 const FOLLOW_KEY = 'follow';
