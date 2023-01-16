@@ -188,9 +188,10 @@ const MobileContent = ({
   ];
 
   const replacementTabBar = (props, DefaultTabBar) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-      <DefaultTabBar {...props} style={{ width: '85%' }} />
+    <div className={styles.replacementBar}>
+      <DefaultTabBar {...props} className={styles.defaultTabBar} />
       <ActionButtonMenu
+        className={styles.actionButtonMenu}
         showFollowItem={supportFediverseFeatures}
         showNotifyItem={supportsBrowserNotifications}
         actions={actions}

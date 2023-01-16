@@ -42,13 +42,8 @@
   .lowerSectionMobile {
     display: flex;
     flex-grow: 1;
+    flex-shrink: 0;
     padding: 0.3em;
-    // Enable overflow scrolling within a tab (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
-    height: 100vw;
-  }
-
-  .tabs {
-    width: 100%;
   }
 }
 
@@ -66,4 +61,46 @@
   flex: 1;
   height: 100%;
   grid-template-rows: 1fr auto;
+}
+
+.replacementBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+
+  @include screen(tablet) {
+    height: var(--replacement-bar-height);
+  }
+}
+
+.defaultTabBar {
+  width: 85%;
+}
+
+.defaultTabBar,
+.actionButtonMenu {
+  @include screen(tablet) {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+.tabs {
+  width: 100%;
+
+  @include screen(tablet) {
+    position: relative;
+    > :global(.ant-tabs-content-holder) {
+      position: absolute;
+      height: calc(100% - var(--replacement-bar-height));
+      top: var(--replacement-bar-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    > :global(.ant-tabs-content-holder .ant-tabs-content) {
+      padding-top: 16px;
+    }
+  }
 }
