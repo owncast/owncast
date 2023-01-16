@@ -2,8 +2,10 @@ import { Button, Card, Col, Divider, Result, Row } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import Title from 'antd/lib/typography/Title';
 
-import React from 'react';
+import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -258,3 +260,7 @@ export default function Help() {
     </div>
   );
 }
+
+Help.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

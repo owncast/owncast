@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Row, Col, Typography, Menu, Dropdown, Spin, Alert } from 'antd';
 import { getUnixTime, sub } from 'date-fns';
 import dynamic from 'next/dynamic';
@@ -9,6 +9,8 @@ import { ViewerTable } from '../../components/admin/ViewerTable';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../../utils/apis';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -157,3 +159,7 @@ export default function ViewersOverTime() {
     </>
   );
 }
+
+ViewersOverTime.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

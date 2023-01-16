@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { LogTable } from '../../components/admin/LogTable';
 
 import { LOGS_ALL, fetchData } from '../../utils/apis';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const FETCH_INTERVAL = 5 * 1000; // 5 sec
 
@@ -32,3 +34,7 @@ export default function Logs() {
 
   return <LogTable logs={logs} pageSize={20} />;
 }
+
+Logs.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

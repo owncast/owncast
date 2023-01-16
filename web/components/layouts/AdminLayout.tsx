@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-css-tags */
-import { AppProps } from 'next/app';
-import { FC } from 'react';
+import { FC, ReactElement } from 'react';
 import ServerStatusProvider from '../../utils/server-status-context';
 import AlertMessageProvider from '../../utils/alert-message-context';
 import { MainLayout } from '../admin/MainLayout';
@@ -12,7 +11,12 @@ edited or maintained. Instead we are using css modules everywhere. So if you
 need to change a style rewrite the css file as a css module and import it
 into the component that needs it, removing it from this global list.
 */
-export const AdminLayout: FC<AppProps> = ({ Component, pageProps }) => (
+
+type AdminLayoutProps = {
+  page: ReactElement;
+};
+
+export const AdminLayout: FC<AdminLayoutProps> = ({ page }) => (
   <>
     <link rel="stylesheet" href="/styles/admin/main-layout.css" />
     <link rel="stylesheet" href="/styles/admin/form-textfields.css" />
@@ -26,9 +30,7 @@ export const AdminLayout: FC<AppProps> = ({ Component, pageProps }) => (
 
     <ServerStatusProvider>
       <AlertMessageProvider>
-        <MainLayout>
-          <Component {...pageProps} />
-        </MainLayout>
+        <MainLayout>{page}</MainLayout>
       </AlertMessageProvider>
     </ServerStatusProvider>
   </>

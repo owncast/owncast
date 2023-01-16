@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Tabs } from 'antd';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
@@ -11,6 +11,8 @@ import {
 import { UserTable } from '../../../components/admin/UserTable';
 import { ClientTable } from '../../../components/admin/ClientTable';
 import { BannedIPsTable } from '../../../components/admin/BannedIPsTable';
+
+import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 export const FETCH_INTERVAL = 10 * 1000; // 10 sec
 
@@ -108,3 +110,7 @@ export default function ChatUsers() {
 
   return <Tabs defaultActiveKey="1" items={items} />;
 }
+
+ChatUsers.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

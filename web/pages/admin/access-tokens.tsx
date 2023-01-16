@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import {
   Table,
   Tag,
@@ -22,6 +22,8 @@ import {
   DELETE_ACCESS_TOKEN,
   CREATE_ACCESS_TOKEN,
 } from '../../utils/apis';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const { Title, Paragraph } = Typography;
 
@@ -271,4 +273,9 @@ const AccessTokens = () => {
     </div>
   );
 };
+
+AccessTokens.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};
+
 export default AccessTokens;

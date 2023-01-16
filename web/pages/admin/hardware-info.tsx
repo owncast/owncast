@@ -1,9 +1,11 @@
 import { Row, Col, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -123,3 +125,7 @@ export default function HardwareInfo() {
     </>
   );
 }
+
+HardwareInfo.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

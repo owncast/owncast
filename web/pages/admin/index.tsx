@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-css-tags */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import dynamic from 'next/dynamic';
@@ -11,6 +11,8 @@ import { StreamHealthOverview } from '../../components/admin/StreamHealthOvervie
 import { LOGS_WARN, fetchData, FETCH_INTERVAL } from '../../utils/apis';
 import { formatIPAddress, isEmptyObject } from '../../utils/format';
 import { NewsFeed } from '../../components/admin/NewsFeed';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -189,3 +191,7 @@ export default function Home() {
     </div>
   );
 }
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
 import { FEDERATION_ACTIONS, fetchData } from '../../../utils/apis';
 
 import { isEmptyObject } from '../../../utils/format';
+
+import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 const { Title, Paragraph } = Typography;
 
@@ -134,3 +136,7 @@ export default function FediverseActions() {
     </div>
   );
 }
+
+FediverseActions.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

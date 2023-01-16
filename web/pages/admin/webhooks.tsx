@@ -13,9 +13,11 @@ import {
   Tooltip,
 } from 'antd';
 import dynamic from 'next/dynamic';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const { Title, Paragraph } = Typography;
 
@@ -254,4 +256,9 @@ const Webhooks = () => {
     </div>
   );
 };
+
+Webhooks.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};
+
 export default Webhooks;
