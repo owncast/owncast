@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Table, Typography } from 'antd';
 import { getGithubRelease } from '../../utils/apis';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const { Title } = Typography;
 
@@ -72,4 +74,9 @@ const Logs = () => {
     </div>
   );
 };
+
+Logs.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};
+
 export default Logs;

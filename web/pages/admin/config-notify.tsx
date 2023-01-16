@@ -1,5 +1,5 @@
 import { Alert, Button, Col, Row, Typography } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import Discord from '../../components/admin/notification/discord';
@@ -14,6 +14,8 @@ import { TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL } from '../../utils/config-cons
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { UpdateArgs } from '../../types/config-section';
 import { isValidUrl } from '../../utils/urls';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const { Title } = Typography;
 
@@ -147,3 +149,7 @@ export default function ConfigNotify() {
     </>
   );
 }
+
+ConfigNotify.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

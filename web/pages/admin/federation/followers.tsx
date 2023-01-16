@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, ReactElement } from 'react';
 import { Table, Avatar, Button, Tabs } from 'antd';
 import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
@@ -12,6 +12,8 @@ import {
   fetchData,
 } from '../../../utils/apis';
 import { isEmptyObject } from '../../../utils/format';
+
+import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -352,3 +354,7 @@ export default function FediverseFollowers() {
     </div>
   );
 }
+
+FediverseFollowers.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

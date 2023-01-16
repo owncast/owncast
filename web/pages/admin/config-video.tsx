@@ -1,8 +1,10 @@
 import { Col, Collapse, Row, Typography } from 'antd';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { CodecSelector as VideoCodecSelector } from '../../components/admin/CodecSelector';
 import { VideoLatency } from '../../components/admin/VideoLatency';
 import { CurrentVariantsTable } from '../../components/admin/CurrentVariantsTable';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -48,3 +50,7 @@ export default function ConfigVideoSettings() {
     </div>
   );
 }
+
+ConfigVideoSettings.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

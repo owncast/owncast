@@ -1,6 +1,6 @@
 import { Button, Space, Table, Typography, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';
 
@@ -15,6 +15,8 @@ import {
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
 import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
+
+import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -187,6 +189,10 @@ const Emoji = () => {
       <FormStatusIndicator status={submitStatus} />
     </div>
   );
+};
+
+Emoji.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
 };
 
 export default Emoji;

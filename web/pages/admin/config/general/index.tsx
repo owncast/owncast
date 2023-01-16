@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Tabs } from 'antd';
 
 import GeneralConfig from '../../../../components/admin/config/general/GeneralConfig';
 import AppearanceConfig from '../../../../components/admin/config/general/AppearanceConfig';
+
+import { AdminLayout } from '../../../../components/layouts/AdminLayout';
 
 export default function PublicFacingDetails() {
   return (
@@ -26,3 +28,7 @@ export default function PublicFacingDetails() {
     </div>
   );
 }
+
+PublicFacingDetails.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

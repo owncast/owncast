@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { Table, Typography, Button } from 'antd';
 import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
@@ -15,6 +15,8 @@ import {
 import { isEmptyObject } from '../../../utils/format';
 import { MessageVisiblityToggle } from '../../../components/admin/MessageVisiblityToggle';
 import { UserPopover } from '../../../components/admin/UserPopover';
+
+import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 const { Title } = Typography;
 
@@ -261,3 +263,7 @@ export default function Chat() {
     </div>
   );
 }
+
+Chat.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

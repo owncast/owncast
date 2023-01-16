@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Typography, Modal, Button, Row, Col, Alert } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   TEXTFIELD_TYPE_TEXT,
@@ -26,6 +26,8 @@ import {
 } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const FederationInfoModal = ({ cancelPressed, okPressed }) => (
   <Modal
@@ -343,4 +345,9 @@ const ConfigFederation = () => {
     </div>
   );
 };
+
+ConfigFederation.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};
+
 export default ConfigFederation;

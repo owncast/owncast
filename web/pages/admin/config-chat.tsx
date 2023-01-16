@@ -1,5 +1,5 @@
 import { Typography } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { TEXTFIELD_TYPE_TEXTAREA } from '../../components/admin/TextField';
 import { TextFieldWithSubmit } from '../../components/admin/TextFieldWithSubmit';
 import { ToggleSwitch } from '../../components/admin/ToggleSwitch';
@@ -25,6 +25,8 @@ import {
   TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
 } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 export default function ConfigChat() {
   const { Title } = Typography;
@@ -220,3 +222,7 @@ export default function ConfigChat() {
     </div>
   );
 }
+
+ConfigChat.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};

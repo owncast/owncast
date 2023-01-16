@@ -1,7 +1,7 @@
 import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
 import _ from 'lodash';
 import dynamic from 'next/dynamic';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
 import {
@@ -12,6 +12,8 @@ import {
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 const { Title, Paragraph } = Typography;
 
@@ -374,5 +376,9 @@ const Actions = () => {
       />
     </div>
   );
+};
+
+Actions.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
 };
 export default Actions;

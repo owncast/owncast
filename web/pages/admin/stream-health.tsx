@@ -1,11 +1,13 @@
 /* eslint-disable react/no-unescaped-entities */
 // import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
 import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StreamHealthOverview } from '../../components/admin/StreamHealthOverview';
+
+import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
 
@@ -424,4 +426,9 @@ const StreamHealth = () => {
     </>
   );
 };
+
+StreamHealth.getLayout = function getLayout(page: ReactElement) {
+  return <AdminLayout page={page} />;
+};
+
 export default StreamHealth;
