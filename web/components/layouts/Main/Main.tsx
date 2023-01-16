@@ -3,29 +3,36 @@
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
-import { useLockBodyScroll } from 'react-use';
+import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
   clientConfigStateAtom,
   fatalErrorStateAtom,
-} from '../stores/ClientConfigStore';
-import { Header } from '../ui/Header/Header';
-import { ClientConfig } from '../../interfaces/client-config.model';
-import { DisplayableError } from '../../types/displayable-error';
-import setupNoLinkReferrer from '../../utils/no-link-referrer';
-import { ServerRenderedHydration } from '../ServerRendered/ServerRenderedHydration';
-import { Content } from '../ui/Content/Content';
-import { TitleNotifier } from '../TitleNotifier/TitleNotifier';
-import { PushNotificationServiceWorker } from '../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
-import { Theme } from '../theme/Theme';
+} from '../../stores/ClientConfigStore';
+import { Content } from '../../ui/Content/Content';
+import { Header } from '../../ui/Header/Header';
+import { ClientConfig } from '../../../interfaces/client-config.model';
+import { DisplayableError } from '../../../types/displayable-error';
+import setupNoLinkReferrer from '../../../utils/no-link-referrer';
+import { TitleNotifier } from '../../TitleNotifier/TitleNotifier';
+import { ServerRenderedHydration } from '../../ServerRendered/ServerRenderedHydration';
+import { Theme } from '../../theme/Theme';
+import styles from './Main.module.scss';
+import { PushNotificationServiceWorker } from '../../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
+
+const lockBodyStyle = `
+body {
+  overflow: hidden;
+}
+`;
 
 // Lazy loaded components
 
 const FatalErrorStateModal = dynamic(
   () =>
-    import('../modals/FatalErrorStateModal/FatalErrorStateModal').then(
+    import('../../modals/FatalErrorStateModal/FatalErrorStateModal').then(
       mod => mod.FatalErrorStateModal,
     ),
   {
@@ -41,8 +48,6 @@ export const Main: FC = () => {
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
-
-  useLockBodyScroll(true);
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -79,7 +84,10 @@ export const Main: FC = () => {
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        <style>{customStyles}</style>
+        <style>
+          {customStyles}
+          {lockBodyStyle}
+        </style>
         <base target="_blank" />
       </Head>
 
@@ -125,13 +133,13 @@ export const Main: FC = () => {
       <PushNotificationServiceWorker />
       <TitleNotifier name={name} />
       <Theme />
-      <div ref={layoutRef} style={{ minHeight: '100vh' }}>
+      <Layout ref={layoutRef} className={styles.layout}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-      </div>
+      </Layout>
     </>
   );
 };
