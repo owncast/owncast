@@ -4,7 +4,6 @@ import Link from 'next/link';
 
 import Discord from '../../components/admin/notification/discord';
 import Browser from '../../components/admin/notification/browser';
-import Twitter from '../../components/admin/notification/twitter';
 import Federation from '../../components/admin/notification/federation';
 import {
   TextFieldWithSubmit,
@@ -98,13 +97,6 @@ export default function ConfigNotify() {
           style={{ margin: '5px', display: 'flex', flexDirection: 'column' }}
         >
           <Browser />
-        </Col>
-        <Col
-          span={10}
-          className={`form-module ${enabled ? '' : 'disabled'}`}
-          style={{ margin: '5px', display: 'flex', flexDirection: 'column' }}
-        >
-          <Twitter />
         </Col>
 
         <Col

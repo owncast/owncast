@@ -84,7 +84,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		Notifications: notificationsConfigResponse{
 			Discord: data.GetDiscordConfig(),
 			Browser: data.GetBrowserPushConfig(),
-			Twitter: data.GetTwitterConfiguration(),
 		},
 	}
 
@@ -160,5 +159,4 @@ type federationConfigResponse struct {
 type notificationsConfigResponse struct {
 	Browser models.BrowserNotificationConfiguration `json:"browser"`
 	Discord models.DiscordConfiguration             `json:"discord"`
-	Twitter models.TwitterConfiguration             `json:"twitter"`
 }

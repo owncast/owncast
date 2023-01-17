@@ -56,7 +56,6 @@ Owncast Dependencies
 
 - HTTP routing https://github.com/gorilla/mux
 - Mastodon API https://github.com/mattn/go-mastodon
-- Twitter API https://github.com/ChimeraCoder/anaconda
 - Go ORM https://gorm.io/gorm
 - ID string generator https://github.com/teris-io/shortid
 - Slug generator https://github.com/metal3d/go-slugify

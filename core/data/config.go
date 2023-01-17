@@ -63,7 +63,6 @@ const (
 	browserPushConfigurationKey          = "browser_push_configuration"
 	browserPushPublicKeyKey              = "browser_push_public_key"
 	browserPushPrivateKeyKey             = "browser_push_private_key"
-	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 	hideViewerCountKey                   = "hide_viewer_count"
 	customOfflineMessageKey              = "custom_offline_message"
@@ -878,27 +877,6 @@ func SetBrowserPushPrivateKey(key string) error {
 // GetBrowserPushPrivateKey will return the private key for browser pushes.
 func GetBrowserPushPrivateKey() (string, error) {
 	return _datastore.GetString(browserPushPrivateKeyKey)
-}
-
-// SetTwitterConfiguration will set the Twitter configuration.
-func SetTwitterConfiguration(config models.TwitterConfiguration) error {
-	configEntry := ConfigEntry{Key: twitterConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
-}
-
-// GetTwitterConfiguration will return the Twitter configuration.
-func GetTwitterConfiguration() models.TwitterConfiguration {
-	configEntry, err := _datastore.Get(twitterConfigurationKey)
-	if err != nil {
-		return models.TwitterConfiguration{Enabled: false}
-	}
-
-	var config models.TwitterConfiguration
-	if err := configEntry.getObject(&config); err != nil {
-		return models.TwitterConfiguration{Enabled: false}
-	}
-
-	return config
 }
 
 // SetHasPerformedInitialNotificationsConfig sets when performed initial setup.
