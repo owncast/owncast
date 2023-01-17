@@ -20,7 +20,7 @@
 		"@fontsource/poppins": "4.5.10",
 		"@uiw/codemirror-theme-bbedit": "4.19.6",
 		"@uiw/react-codemirror": "4.19.6",
-		"@xstate/react": "3.0.1",
+		"@xstate/react": "3.0.2",
 		"antd": "4.24.3",
 		"autoprefixer": "10.4.13",
 		"chart.js": "4.1.2",
