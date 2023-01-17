@@ -33,9 +33,9 @@ $p-size: 8px;
   &.ownMessage {
     border-left: none;
     border-right: $border-style;
+
     .background {
       position: absolute;
-      z-index: -1;
       top: 0px;
       left: 0px;
       width: 100%;
