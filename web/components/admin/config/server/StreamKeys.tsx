@@ -50,14 +50,54 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
   };
 
   return (
-    <Form layout="inline" autoComplete="off" onFinish={handleAddKey}>
-      <Item label="Key" name="key" tooltip="The key you provide your broadcasting software">
+    <Form
+      layout="horizontal"
+      autoComplete="off"
+      onFinish={handleAddKey}
+      style={{ display: 'flex', flexDirection: 'row' }}
+    >
+      <Item
+        style={{ width: '60%', marginRight: '5px' }}
+        label="Key"
+        name="key"
+        tooltip={
+          <p>
+            The key you provide your broadcasting software. Please note that the key must be a
+            minimum of eight characters and must include at least one uppercase letter, at least one
+            lowercase letter, at least one special character, and at least one number.
+          </p>
+        }
+        rules={[
+          { min: 8, message: '- minimum 8 characters' },
+          { max: 192, message: '- maximum 192 characters' },
+          {
+            pattern: /^(?=.*[a-z])/,
+            message: '- at least one lowercase letter',
+          },
+          {
+            pattern: /^(?=.*[A-Z])/,
+            message: '- at least one uppercase letter',
+          },
+          {
+            pattern: /\d/,
+            message: '- at least one digit',
+          },
+          {
+            pattern: /^(?=.*?[#?!@$%^&*-])/,
+            message: '- at least one special character: !@#$%^&*',
+          },
+        ]}
+      >
         <Input placeholder="def456" />
       </Item>
-      <Item label="Comment" name="comment" tooltip="For remembering why you added this key">
+      <Item
+        style={{ width: '60%', marginRight: '5px' }}
+        label="Comment"
+        name="comment"
+        tooltip="For remembering why you added this key"
+      >
         <Input placeholder="My OBS Key" />
       </Item>
-
       <Button type="primary" htmlType="submit">
         Add
       </Button>
