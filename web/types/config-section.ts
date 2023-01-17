@@ -115,20 +115,9 @@ export interface DiscordNotification {
   goLiveMessage: string;
 }
 
-export interface TwitterNotification {
-  enabled: boolean;
-  apiKey: string;
-  apiSecret: string;
-  accessToken: string;
-  accessTokenSecret: string;
-  bearerToken: string;
-  goLiveMessage: string;
-}
-
 export interface NotificationsConfig {
   browser: BrowserNotification;
   discord: DiscordNotification;
-  twitter: TwitterNotification;
 }
 
 export interface Health {
