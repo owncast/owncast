@@ -386,7 +386,7 @@ func Start() error {
 	})
 
 	// Optional public static files
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
 
 	port := config.WebServerPort
 	ip := config.WebServerIP
