@@ -39,6 +39,7 @@ const componentColorVariables = [
   { name: 'theme-color-background-main', description: 'Background' },
   { name: 'theme-color-action', description: 'Action' },
   { name: 'theme-color-action-hover', description: 'Action Hover' },
+  { name: 'theme-color-components-primary-button-border', description: 'Primary Button Border' },
   { name: 'theme-color-components-chat-background', description: 'Chat Background' },
   { name: 'theme-color-components-chat-text', description: 'Text: Chat' },
   { name: 'theme-color-components-text-on-dark', description: 'Text: Light' },
