@@ -45,8 +45,6 @@ const componentColorVariables = [
   { name: 'theme-color-components-text-on-light', description: 'Text: Dark' },
   { name: 'theme-color-background-header', description: 'Header/Footer' },
   { name: 'theme-color-components-content-background', description: 'Page Content' },
-  { name: 'theme-color-components-scrollbar-background', description: 'Scrollbar Background' },
-  { name: 'theme-color-components-scrollbar-thumb', description: 'Scrollbar Thumb' },
 ];
 
 const others = [{ name: 'theme-rounded-corners', description: 'Corner radius' }];

@@ -185,14 +185,6 @@ theme:
           value: 'var(--theme-color-palette-15)'
           comment: '{theme.color.palette.15.comment}'
 
-      scrollbar:
-        background:
-          value: 'var(--theme-color-palette-15)'
-          comment: '{theme.color.palette.15.comment}'
-        thumb:
-          value: 'var(--theme-color-palette-6)'
-          comment: '{theme.color.palette.6.comment}'
-
       modal:
         header:
           background:
