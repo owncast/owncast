@@ -35,22 +35,6 @@ const chatColorVariables = [
   { name: 'theme-color-users-7', description: '' },
 ];
 
-const paletteVariables = [
-  { name: 'theme-color-palette-0', description: '' },
-  { name: 'theme-color-palette-1', description: '' },
-  { name: 'theme-color-palette-2', description: '' },
-  { name: 'theme-color-palette-3', description: '' },
-  { name: 'theme-color-palette-4', description: '' },
-  { name: 'theme-color-palette-5', description: '' },
-  { name: 'theme-color-palette-6', description: '' },
-  { name: 'theme-color-palette-7', description: '' },
-  { name: 'theme-color-palette-8', description: '' },
-  { name: 'theme-color-palette-9', description: '' },
-  { name: 'theme-color-palette-10', description: '' },
-  { name: 'theme-color-palette-11', description: '' },
-  { name: 'theme-color-palette-12', description: '' },
-];
-
 const componentColorVariables = [
   { name: 'theme-color-background-main', description: 'Background' },
   { name: 'theme-color-action', description: 'Action' },
@@ -68,16 +52,14 @@ const componentColorVariables = [
 const others = [{ name: 'theme-rounded-corners', description: 'Corner radius' }];
 
 // Create an object so these vars can be indexed by name.
-const allAvailableValues = [
-  ...paletteVariables,
-  ...componentColorVariables,
-  ...chatColorVariables,
-  ...others,
-].reduce((obj, val) => {
-  // eslint-disable-next-line no-param-reassign
-  obj[val.name] = { name: val.name, description: val.description };
-  return obj;
-}, {});
+const allAvailableValues = [...componentColorVariables, ...chatColorVariables, ...others].reduce(
+  (obj, val) => {
+    // eslint-disable-next-line no-param-reassign
+    obj[val.name] = { name: val.name, description: val.description };
+    return obj;
+  },
+  {},
+);
 
 // eslint-disable-next-line react/function-component-definition
 function ColorPicker({
@@ -125,14 +107,12 @@ export default function Appearance() {
 
   const setColorDefaults = () => {
     const c = {};
-    [...paletteVariables, ...componentColorVariables, ...chatColorVariables, ...others].forEach(
-      color => {
-        const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(
-          `--${color.name}`,
-        );
-        c[color.name] = { value: resolvedColor.trim(), description: color.description };
-      },
-    );
+    [...componentColorVariables, ...chatColorVariables, ...others].forEach(color => {
+      const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(
+        `--${color.name}`,
+      );
+      c[color.name] = { value: resolvedColor.trim(), description: color.description };
+    });
     setColors(c);
   };
 
@@ -250,23 +230,7 @@ export default function Appearance() {
               })}
             </Row>
           </Panel>
-          <Panel header={<Title level={3}>Theme Colors</Title>} key="3">
-            <Row gutter={[16, 16]}>
-              {paletteVariables.map(colorVar => {
-                const { name } = colorVar;
-                const c = colors[name];
-                return (
-                  <ColorPicker
-                    key={name}
-                    value={c.value}
-                    name={name}
-                    description={c.description}
-                    onChange={updateColor}
-                  />
-                );
-              })}
-            </Row>
-          </Panel>
+
           <Panel header={<Title level={3}>Other Settings</Title>} key="4">
             How rounded should corners be?
             <Row gutter={[16, 16]}>
