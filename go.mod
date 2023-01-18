@@ -57,7 +57,7 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.5
-	github.com/shirou/gopsutil/v3 v3.22.11
+	github.com/shirou/gopsutil/v3 v3.22.12
 )
 
 require github.com/SherClockHolmes/webpush-go v1.2.0
