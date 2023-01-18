@@ -2,6 +2,7 @@
 	"name": "owncast-admin",
 	"version": "0.1.0",
 	"private": true,
+	"sideEffects": false,
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build && next export",
@@ -49,17 +50,14 @@
 		"sharp": "0.31.3",
 		"slate": "0.88.1",
 		"slate-react": "0.88.0",
-		"storybook-addon-designs": "6.3.1",
-		"storybook-addon-fetch-mock": "1.0.1",
-		"style-dictionary": "3.7.2",
 		"ua-parser-js": "1.0.32",
 		"video.js": "7.20.3",
 		"xstate": "4.35.2",
-		"yaml": "2.2.1",
-		"@next/bundle-analyzer": "^13.1.1"
+		"yaml": "2.2.1"
 	},
 	"devDependencies": {
 		"@babel/core": "7.20.12",
+		"style-dictionary": "3.7.2",
 		"@mdx-js/react": "2.2.1",
 		"@storybook/addon-a11y": "6.5.15",
 		"@storybook/addon-actions": "6.5.15",
@@ -75,6 +73,8 @@
 		"@storybook/preset-scss": "1.0.3",
 		"@storybook/react": "6.5.15",
 		"@storybook/testing-library": "0.0.13",
+		"storybook-addon-designs": "6.3.1",
+		"storybook-addon-fetch-mock": "1.0.1",
 		"@svgr/webpack": "6.5.1",
 		"@types/chart.js": "2.9.37",
 		"@types/classnames": "2.3.1",
@@ -111,6 +111,7 @@
 		"storybook-dark-mode": "2.0.5",
 		"storybook-preset-less": "1.1.3",
 		"style-loader": "3.3.1",
-		"typescript": "4.9.4"
+		"typescript": "4.9.4",
+		"@next/bundle-analyzer": "^13.1.1"
 	}
 }
