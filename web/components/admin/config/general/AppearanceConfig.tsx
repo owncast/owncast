@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 
 import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -46,6 +46,14 @@ const componentColorVariables = [
   { name: 'theme-color-components-text-on-light', description: 'Text: Dark' },
   { name: 'theme-color-background-header', description: 'Header/Footer' },
   { name: 'theme-color-components-content-background', description: 'Page Content' },
+  {
+    name: 'theme-color-components-video-status-bar-background',
+    description: 'Video Status Bar Background',
+  },
+  {
+    name: 'theme-color-components-video-status-bar-foreground',
+    description: 'Video Status Bar Foreground',
+  },
 ];
 
 const others = [{ name: 'theme-rounded-corners', description: 'Corner radius' }];
@@ -87,6 +95,7 @@ function ColorPicker({
     </Col>
   );
 }
+
 // eslint-disable-next-line react/function-component-definition
 export default function Appearance() {
   const serverStatusData = useContext(ServerStatusContext);
@@ -94,7 +103,9 @@ export default function Appearance() {
   const { instanceDetails } = serverConfig;
   const { appearanceVariables } = instanceDetails;
 
-  const [colors, setColors] = useState<Record<string, AppearanceVariable>>();
+  const [defaultValues, setDefaultValues] = useState<Record<string, AppearanceVariable>>();
+  const [customValues, setCustomValues] = useState<Record<string, AppearanceVariable>>();
+
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   let resetTimer = null;
@@ -104,7 +115,7 @@ export default function Appearance() {
     clearTimeout(resetTimer);
   };
 
-  const setColorDefaults = () => {
+  const setDefaults = () => {
     const c = {};
     [...componentColorVariables, ...chatColorVariables, ...others].forEach(color => {
       const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(
@@ -112,29 +123,29 @@ export default function Appearance() {
       );
       c[color.name] = { value: resolvedColor.trim(), description: color.description };
     });
-    setColors(c);
+    setDefaultValues(c);
   };
 
   useEffect(() => {
-    setColorDefaults();
+    setDefaults();
   }, []);
 
   useEffect(() => {
     if (Object.keys(appearanceVariables).length === 0) return;
 
-    const c = colors || {};
+    const c = {};
     Object.keys(appearanceVariables).forEach(key => {
       c[key] = {
         value: appearanceVariables[key],
         description: allAvailableValues[key]?.description || '',
       };
     });
-    setColors(c);
+    setCustomValues(c);
   }, [appearanceVariables]);
 
   const updateColor = (variable: string, color: string, description: string) => {
-    setColors({
-      ...colors,
+    setCustomValues({
+      ...customValues,
       [variable]: { value: color, description },
     });
   };
@@ -146,7 +157,7 @@ export default function Appearance() {
       onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-        setColorDefaults();
+        setCustomValues(null);
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -157,8 +168,8 @@ export default function Appearance() {
 
   const save = async () => {
     const c = {};
-    Object.keys(colors).forEach(color => {
-      c[color] = colors[color].value;
+    Object.keys(customValues).forEach(color => {
+      c[color] = customValues[color].value;
     });
 
     await postConfigUpdateToAPI({
@@ -181,7 +192,31 @@ export default function Appearance() {
     updateColor(variableName, `${value.toString()}px`, '');
   };
 
-  if (!colors) {
+  type ColorCollectionProps = {
+    variables: { name; description }[];
+  };
+  // eslint-disable-next-line react/no-unstable-nested-components
+  const ColorCollection: FC<ColorCollectionProps> = ({ variables }) => {
+    const cc = variables.map(colorVar => {
+      const source = customValues?.[colorVar.name] ? customValues : defaultValues;
+      const { name, description } = colorVar;
+      const { value } = source[name];
+
+      return (
+        <ColorPicker
+          key={name}
+          value={value}
+          name={name}
+          description={description}
+          onChange={updateColor}
+        />
+      );
+    });
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    return <>{cc}</>;
+  };
+
+  if (!defaultValues) {
     return <div>Loading...</div>;
   }
 
@@ -196,37 +231,12 @@ export default function Appearance() {
               Certain sections of the interface can be customized by selecting new colors for them.
             </p>
             <Row gutter={[16, 16]}>
-              {componentColorVariables.map(colorVar => {
-                const { name } = colorVar;
-                const c = colors[name];
-
-                return (
-                  <ColorPicker
-                    key={name}
-                    value={c.value}
-                    name={name}
-                    description={c.description}
-                    onChange={updateColor}
-                  />
-                );
-              })}
+              <ColorCollection variables={componentColorVariables} />
             </Row>
           </Panel>
           <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
             <Row gutter={[16, 16]}>
-              {chatColorVariables.map(colorVar => {
-                const { name } = colorVar;
-                const c = colors[name];
-                return (
-                  <ColorPicker
-                    key={name}
-                    value={c.value}
-                    name={name}
-                    description={c.description}
-                    onChange={updateColor}
-                  />
-                );
-              })}
+              <ColorCollection variables={chatColorVariables} />
             </Row>
           </Panel>
 
@@ -241,7 +251,9 @@ export default function Appearance() {
                   onChange={v => {
                     onBorderRadiusChange(v);
                   }}
-                  value={Number(colors['theme-rounded-corners']?.value?.replace('px', '') || 0)}
+                  value={Number(
+                    defaultValues['theme-rounded-corners']?.value?.replace('px', '') || 0,
+                  )}
                 />
               </Col>
               <Col span={4}>
@@ -249,7 +261,7 @@ export default function Appearance() {
                   style={{
                     width: '100px',
                     height: '30px',
-                    borderRadius: `${colors['theme-rounded-corners']?.value}`,
+                    borderRadius: `${defaultValues['theme-rounded-corners']?.value}`,
                     backgroundColor: 'var(--theme-color-palette-7)',
                   }}
                 />
