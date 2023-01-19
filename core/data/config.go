@@ -44,6 +44,7 @@ const (
 	chatDisabledKey                      = "chat_disabled"
 	externalActionsKey                   = "external_actions"
 	customStylesKey                      = "custom_styles"
+	customJavascriptKey                  = "custom_javascript"
 	videoCodecKey                        = "video_codec"
 	blockedUsernamesKey                  = "blocked_usernames"
 	publicKeyKey                         = "public_key"
@@ -553,6 +554,21 @@ func SetCustomStyles(styles string) error {
 // GetCustomStyles will return a string with CSS to insert into the page.
 func GetCustomStyles() string {
 	style, err := _datastore.GetString(customStylesKey)
+	if err != nil {
+		return ""
+	}
+
+	return style
+}
+
+// SetCustomJavascript will save a string with Javascript to insert into the page.
+func SetCustomJavascript(styles string) error {
+	return _datastore.SetString(customJavascriptKey, styles)
+}
+
+// GetCustomJavascript will return a string with Javascript to insert into the page.
+func GetCustomJavascript() string {
+	style, err := _datastore.GetString(customJavascriptKey)
 	if err != nil {
 		return ""
 	}

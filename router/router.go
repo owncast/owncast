@@ -39,6 +39,9 @@ func Start() error {
 	http.HandleFunc("/preview.gif", controllers.GetPreview)
 	http.HandleFunc("/logo", controllers.GetLogo)
 
+	// Custom Javascript
+	http.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+
 	// Return a single emoji image.
 	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
@@ -314,6 +317,9 @@ func Start() error {
 
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
+
+	// set custom style javascript
+	http.HandleFunc("/api/admin/config/customjavascript", middleware.RequireAdminAuth(admin.SetCustomJavascript))
 
 	// Video playback metrics
 	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))

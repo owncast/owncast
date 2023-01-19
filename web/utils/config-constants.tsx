@@ -11,6 +11,7 @@ export const RESET_TIMEOUT = 3000;
 // CONFIG API ENDPOINTS
 export const API_CUSTOM_CONTENT = '/pagecontent';
 export const API_CUSTOM_CSS_STYLES = '/customstyles';
+export const API_CUSTOM_JAVASCRIPT = '/customjavascript';
 export const API_FFMPEG = '/ffmpegpath';
 export const API_INSTANCE_URL = '/serverurl';
 export const API_LOGO = '/logo';

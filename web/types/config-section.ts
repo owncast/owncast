@@ -29,6 +29,7 @@ export interface ConfigDirectoryFields {
 
 export interface ConfigInstanceDetailsFields {
   customStyles: string;
+  customJavascript: string;
   extraPageContent: string;
   logo: string;
   name: string;
