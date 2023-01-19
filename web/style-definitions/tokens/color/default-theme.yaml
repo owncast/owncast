@@ -174,11 +174,11 @@ theme:
 
       chat:
         background:
+          value: 'var(--theme-color-palette-1)'
+          comment: '{theme.color.palette.0.comment}'
+        text:
           value: 'var(--theme-color-palette-15)'
           comment: '{theme.color.palette.15.comment}'
-        text:
-          value: 'var(--theme-color-palette-2)'
-          comment: '{theme.color.palette.2.comment}'
 
       content:
         background:

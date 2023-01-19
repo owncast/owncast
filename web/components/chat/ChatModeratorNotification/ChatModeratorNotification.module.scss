@@ -2,9 +2,10 @@
 
 .chatModerationNotification {
   background-color: var(--theme-background-primary);
+  color: var(--theme-color-components-chat-text);
   margin: 5px;
   border-radius: 15px;
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: var(--theme-color-components-text-on-dark);
   border-width: 1px;
   border-style: solid;
   padding: 10px 10px;

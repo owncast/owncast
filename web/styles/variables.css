@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Thu, 19 Jan 2023 00:03:35 GMT
+ * Generated on Thu, 19 Jan 2023 03:14:14 GMT
  * 
  * How to edit these values:
  * Edit the corresponding token file under the style-definitions directory
@@ -85,8 +85,8 @@
   --theme-color-components-secondary-button-text-disabled: var(--theme-color-action-disabled); /* Disabled background */
   --theme-color-components-secondary-button-border: var(--theme-color-action); /* Text link/secondary light text */
   --theme-color-components-secondary-button-border-disabled: var(--theme-color-action-disabled); /* Disabled background */
-  --theme-color-components-chat-background: var(--theme-color-palette-15); /* Lighter background */
-  --theme-color-components-chat-text: var(--theme-color-palette-2); /* Dark alternate */
+  --theme-color-components-chat-background: var(--theme-color-palette-1); /* Dark primary */
+  --theme-color-components-chat-text: var(--theme-color-palette-15); /* Lighter background */
   --theme-color-components-content-background: var(--theme-color-palette-15); /* Lighter background */
   --theme-color-components-modal-header-background: var(--theme-color-palette-1); /* Dark secondary */
   --theme-color-components-modal-header-text: var(--theme-color-palette-3); /* Light primary */
