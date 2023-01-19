@@ -237,3 +237,10 @@ theme:
         live-indicator:
           value: 'var(--theme-color-palette-7)'
           comment: 'The Live dot indicator in the control bar of the video player'
+        status-bar:
+          background:
+            value: 'var(--theme-color-palette-2)'
+            comment: 'The background color of the video status bar'
+          foreground:
+            value: 'var(--theme-color-palette-4)'
+            comment: 'The foreground color of the video status bar'
