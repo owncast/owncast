@@ -158,7 +158,7 @@ DROPDOWN
   padding: var(--content-padding);
   background-color: transparent;
   border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
-  font-weight: bold;
+  font-weight: 600;
   & + .ant-tabs-tab {
     margin-left: var(--module-spacing);
   }
