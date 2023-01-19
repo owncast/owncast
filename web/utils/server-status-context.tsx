@@ -12,6 +12,7 @@ export const initialServerConfigState: ConfigDetails = {
   adminPassword: '',
   instanceDetails: {
     customStyles: '',
+    customJavascript: '',
     extraPageContent: '',
     logo: '',
     name: '',

@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
 import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
+import Script from 'next/script';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -133,6 +134,8 @@ export const Main: FC = () => {
       <PushNotificationServiceWorker />
       <TitleNotifier name={name} />
       <Theme />
+      <Script strategy="afterInteractive" src="/customjavascript" />
+
       <Layout ref={layoutRef} className={styles.layout}>
         <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
         <Content />
