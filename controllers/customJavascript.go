@@ -9,5 +9,5 @@ import (
 // ServeCustomJavascript will serve optional custom Javascript.
 func ServeCustomJavascript(w http.ResponseWriter, r *http.Request) {
 	js := data.GetCustomJavascript()
-	w.Write([]byte(js))
+	_, _ = w.Write([]byte(js))
 }
