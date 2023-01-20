@@ -213,3 +213,7 @@ th {
   font-family: var(--theme-text-display-font-family);
   font-weight: 700 !important;
 }
+
+.ant-popover {
+  z-index: 800; // Lower the z-index so it renders under modals.
+}
