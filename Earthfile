@@ -102,8 +102,9 @@ package:
   SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
 docker:
-  ARG image=ghcr.io/owncast/owncast
-  ARG tag=develop
+	# Multiple image names can be tagged at once. They should all be passed
+	# in as space separated strings using the full account/repo:tag format.
+	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
   ARG TARGETPLATFORM
   FROM --platform=$TARGETPLATFORM alpine:3.15.5
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
@@ -118,10 +119,24 @@ docker:
 
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
-  SAVE IMAGE --push $image:$tag
+
+  ARG images=ghcr.io/owncast/owncast:testing
+	RUN echo "Saving images: ${images}"
+
+	# Tag this image with the list of names
+	# passed along.
+	FOR --no-cache i IN ${images}
+		SAVE IMAGE --push "${i}"
+	END
 
 dockerfile:
   FROM DOCKERFILE -f Dockerfile .
+
+testing:
+	ARG images
+	FOR i IN ${images}
+		RUN echo "Testing ${i}"
+	END
 
 unit-tests:
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
