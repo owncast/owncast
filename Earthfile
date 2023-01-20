@@ -77,7 +77,6 @@ build:
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
 
   SAVE ARTIFACT owncast owncast
-  SAVE ARTIFACT README.md README.md
 
 package:
   RUN apk add --update --no-cache zip >> /dev/null
@@ -98,7 +97,6 @@ package:
   END
 
   COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
-  COPY (+build/README.md --platform $TARGETPLATFORM) /build/dist/README.md
   ENV ZIPNAME owncast-$version-$NAME.zip
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
   SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
