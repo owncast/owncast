@@ -1,9 +1,5 @@
 @import '../../../styles/mixins.scss';
 
 .player {
-  height: auto !important;
   width: 100%;
-  video {
-    position: static !important;
-  }
 }

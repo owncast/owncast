@@ -218,6 +218,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     controls: true,
     responsive: true,
     fluid: false,
+    fill: true,
     playsinline: true,
     liveui: true,
     preload: 'auto',
