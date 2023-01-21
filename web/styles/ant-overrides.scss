@@ -25,7 +25,7 @@ BUTTONS
 .ant-btn-default {
   color: currentColor;
   border-width: 2px;
-  border-color: transparent;
+  border-color: var(--theme-color-components-primary-button-border);
   border-radius: var(--theme-rounded-corners);
   background-color: rgba(0, 0, 0, 0.1);
   &:hover,
@@ -43,6 +43,7 @@ BUTTONS
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
   color: var(--theme-color-components-primary-button-text);
+  border-color: var(--theme-color-components-primary-button-border);
 
   &:hover,
   &:focus {
@@ -59,7 +60,6 @@ BUTTONS
   }
   background-color: var(--theme-color-components-primary-button-background);
   color: var(--theme-color-components-primary-button-text);
-  border-color: var(--theme-color-components-primary-button-background);
   &:hover {
     background-color: var(--theme-color-action-hover);
     color: var(--theme-color-components-primary-button-text);
