@@ -147,7 +147,7 @@ theme:
           value: 'var(--theme-color-palette-10)'
           comment: '{theme.color.palette.10.comment}'
         border:
-          value: 'var(--theme-color-palette-4)'
+          value: 'var(--theme-color-action)'
           comment: '{theme.color.palette.4.comment}'
         border-disabled:
           value: 'var(--theme-color-action-disabled)'
