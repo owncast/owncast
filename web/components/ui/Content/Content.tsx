@@ -115,7 +115,7 @@ const DesktopContent = ({
 
   return (
     <>
-      <div className={styles.lowerHalf}>
+      <div className={styles.lowerHalf} id="skip-to-content">
         <ContentHeader
           name={name}
           title={streamTitle}

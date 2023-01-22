@@ -307,7 +307,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   );
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} id="player">
       {online && (
         <div className={styles.player}>
           <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />

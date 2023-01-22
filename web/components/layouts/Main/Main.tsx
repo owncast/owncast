@@ -11,6 +11,7 @@ import {
   isChatAvailableSelector,
   clientConfigStateAtom,
   fatalErrorStateAtom,
+  appStateAtom,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -22,6 +23,7 @@ import { ServerRenderedHydration } from '../../ServerRendered/ServerRenderedHydr
 import { Theme } from '../../theme/Theme';
 import styles from './Main.module.scss';
 import { PushNotificationServiceWorker } from '../../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
+import { AppStateOptions } from '../../stores/application-state';
 
 const lockBodyStyle = `
 body {
@@ -46,9 +48,11 @@ export const Main: FC = () => {
   const { name, title, customStyles } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
+  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
+  const { videoAvailable } = appState;
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -137,7 +141,12 @@ export const Main: FC = () => {
       <Script strategy="afterInteractive" src="/customjavascript" />
 
       <Layout ref={layoutRef} className={styles.layout}>
-        <Header name={title || name} chatAvailable={isChatAvailable} chatDisabled={chatDisabled} />
+        <Header
+          name={title || name}
+          chatAvailable={isChatAvailable}
+          chatDisabled={chatDisabled}
+          online={videoAvailable}
+        />
         <Content />
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
