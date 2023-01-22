@@ -321,7 +321,13 @@ export const ClientConfigStore: FC = () => {
   const startChat = async () => {
     try {
       const { socketHostOverride } = clientConfig;
-      const host = socketHostOverride || window.location.toString();
+
+      // Get a copy of the browser location without #fragments.
+      const l = window.location;
+      l.hash = '';
+      const location = l.toString().replaceAll('#', '');
+      const host = socketHostOverride || location;
+
       ws = new WebsocketService(accessToken, '/ws', host);
       ws.handleMessage = handleMessage;
       setWebsocketService(ws);
