@@ -12,4 +12,4 @@ echo "Building Docker image ${DOCKER_IMAGE}..."
 cd $(git rev-parse --show-toplevel)
 git checkout webv2
 
-earthly --ci --push +docker-all --image="ghcr.io/owncast/${DOCKER_IMAGE}" --tag=${TAG} --version="${VERSION}"
+earthly --ci --push +docker-all --images="ghcr.io/owncast/${DOCKER_IMAGE}:${TAG}" --version="${VERSION}"
