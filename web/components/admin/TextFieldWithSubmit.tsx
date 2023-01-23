@@ -13,7 +13,6 @@ import {
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { FormStatusIndicator } from './FormStatusIndicator';
 import { TextField, TextFieldProps } from './TextField';
-import { TextFieldAdmin } from './TextFieldAdmin';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -122,21 +121,12 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
   return (
     <div className={textfieldContainerClass}>
       <div className="textfield-component">
-        {textFieldProps.fieldName !== 'adminPassword' ? (
-          <TextField
-            {...textFieldProps}
-            onSubmit={null}
-            onBlur={handleBlur}
-            onChange={handleChange}
-          />
-        ) : (
-          <TextFieldAdmin
-            {...textFieldProps}
-            onSubmit={null}
-            onBlur={handleBlur}
-            onChange={handleChange}
-          />
-        )}
+        <TextField
+          {...textFieldProps}
+          onSubmit={null}
+          onBlur={handleBlur}
+          onChange={handleChange}
+        />
       </div>
       <div className="formfield-container lower-container">
         <p className="label-spacer" />
