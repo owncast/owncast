@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import classNames from 'classnames';
-import { Input, InputNumber } from 'antd';
+import { Input, Form, InputNumber } from 'antd';
 import { FieldUpdaterFunc } from '../../types/config-section';
 // import InfoTip from '../info-tip';
 import { StatusState } from '../../utils/input-statuses';
@@ -60,6 +60,13 @@ export const TextField: FC<TextFieldProps> = ({
       onChange({ fieldName, value: useTrim ? val.trim() : val });
     }
   };
+
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    // console.log('value: ', value);
+    form.setFieldsValue({ adminPassword: value });
+  }, [value]);
 
   // if you blur a required field with an empty value, restore its original value in state (parent's state), if an onChange from parent is available.
   const handleBlur = (e: any) => {
@@ -128,25 +135,76 @@ export const TextField: FC<TextFieldProps> = ({
         </div>
       ) : null}
 
-      <div className="input-side">
-        <div className="input-group">
-          <Field
-            id={fieldId}
-            className={`field ${className} ${fieldId}`}
-            {...fieldProps}
-            {...(type !== TEXTFIELD_TYPE_NUMBER && { allowClear: true })}
-            placeholder={placeholder}
-            maxLength={maxLength}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onPressEnter={handlePressEnter}
-            disabled={disabled}
-            value={value as number | (readonly string[] & number)}
-          />
+      {fieldName !== 'adminPassword' ? (
+        <div className="input-side">
+          <div className="input-group">
+            <Field
+              id={fieldId}
+              className={`field ${className} ${fieldId}`}
+              {...fieldProps}
+              {...(type !== TEXTFIELD_TYPE_NUMBER && { allowClear: true })}
+              placeholder={placeholder}
+              maxLength={maxLength}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              onPressEnter={handlePressEnter}
+              disabled={disabled}
+              value={value as number | (readonly string[] & number)}
+            />
+          </div>
+          <FormStatusIndicator status={status} />
+          <p className="field-tip">{tip}</p>
         </div>
-        <FormStatusIndicator status={status} />
-        <p className="field-tip">{tip}</p>
-      </div>
+      ) : (
+        <div className="input-side">
+          <div className="input-group">
+            <Form
+              name="basic"
+              form={form}
+              initialValues={{ adminPassword: value }}
+              style={{ width: '100%' }}
+            >
+              <Form.Item
+                name="adminPassword"
+                rules={[
+                  { min: 8, message: '- minimum 8 characters' },
+                  { max: 192, message: '- maximum 192 characters' },
+                  {
+                    pattern: /^(?=.*[a-z])/,
+                    message: '- at least one lowercase letter',
+                  },
+                  {
+                    pattern: /^(?=.*[A-Z])/,
+                    message: '- at least one uppercase letter',
+                  },
+                  {
+                    pattern: /\d/,
+                    message: '- at least one digit',
+                  },
+                  {
+                    pattern: /^(?=.*?[#?!@$%^&*-])/,
+                    message: '- at least one special character: !@#$%^&*',
+                  },
+                ]}
+              >
+                <Input.Password
+                  id={fieldId}
+                  className={`field ${className} ${fieldId}`}
+                  {...(type !== TEXTFIELD_TYPE_NUMBER && { allowClear: true })}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder={placeholder}
+                  onPressEnter={handlePressEnter}
+                  disabled={disabled}
+                  value={value as number | (readonly string[] & number)}
+                />
+              </Form.Item>
+              <FormStatusIndicator status={status} />
+              <p className="field-tip">{tip}</p>
+            </Form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
