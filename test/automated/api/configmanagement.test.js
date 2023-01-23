@@ -92,7 +92,7 @@ const appearanceValues = {
 const streamOutputVariants = {
 	videoBitrate: randomNumber() * 100,
 	framerate: 42,
-	cpuUsageLevel: 2,
+	cpuUsageLevel: randomNumber(4, 0),
 	scaledHeight: randomNumber() * 100,
 	scaledWidth: randomNumber() * 100,
 };
