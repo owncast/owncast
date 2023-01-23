@@ -199,7 +199,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 		return 0
 	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
 		return 60 * 60 * 24 * defaultDaysCached
-	} else if fileExtension == ".html" {
+	} else if fileExtension == ".html" || filename == "/" || fileExtension == "" {
 		return 0
 	}
 
