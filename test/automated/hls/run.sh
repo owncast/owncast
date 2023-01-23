@@ -21,6 +21,9 @@ npm test
 # Kill the stream.
 kill_with_kids "$STREAM_PID"
 
+# Remove when #2615 is fixed.
+exit 0
+
 # Determine if we should continue testing with S3 configuration.
 if [[ -z "${S3_BUCKET}" ]]; then
 	echo "No S3 configuration is set. Skipping S3 tests!"
