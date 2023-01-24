@@ -1,6 +1,6 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { Input, Form, InputNumber } from 'antd';
+import { Input, Form, InputNumber, Button } from 'antd';
 import { FieldUpdaterFunc } from '../../types/config-section';
 // import InfoTip from '../info-tip';
 import { StatusState } from '../../utils/input-statuses';
@@ -17,7 +17,7 @@ export type TextFieldProps = {
 
   onSubmit?: () => void;
   onPressEnter?: () => void;
-
+  onHandleSubmit?: () => void;
   className?: string;
   disabled?: boolean;
   label?: string;
@@ -44,6 +44,7 @@ export const TextField: FC<TextFieldProps> = ({
   onBlur,
   onChange,
   onPressEnter,
+  onHandleSubmit,
   pattern,
   placeholder,
   required,
@@ -53,15 +54,24 @@ export const TextField: FC<TextFieldProps> = ({
   useTrim,
   value,
 }) => {
+  const [hasChanged, setHasChanged] = useState(false);
+  const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+  const [form] = Form.useForm();
   const handleChange = (e: any) => {
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
       const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
+      // console.log('val: ', val, 'fieldname: ', fieldName);
+
+      if (fieldName === 'adminPassword' && regex.test(val)) {
+        setHasChanged(true);
+      } else {
+        setHasChanged(false);
+      }
+
       onChange({ fieldName, value: useTrim ? val.trim() : val });
     }
   };
-
-  const [form] = Form.useForm();
 
   useEffect(() => {
     // console.log('value: ', value);
@@ -199,6 +209,17 @@ export const TextField: FC<TextFieldProps> = ({
                   value={value as number | (readonly string[] & number)}
                 />
               </Form.Item>
+              <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                <Button
+                  type="primary"
+                  size="small"
+                  className="submit-button"
+                  onClick={onHandleSubmit}
+                  disabled={!hasChanged}
+                >
+                  Update
+                </Button>
+              </div>
               <FormStatusIndicator status={status} />
               <p className="field-tip">{tip}</p>
             </Form>
@@ -231,4 +252,5 @@ TextField.defaultProps = {
   onBlur: () => {},
   onChange: () => {},
   onPressEnter: () => {},
+  onHandleSubmit: () => {},
 };

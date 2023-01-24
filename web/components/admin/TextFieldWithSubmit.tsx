@@ -126,6 +126,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           onSubmit={null}
           onBlur={handleBlur}
           onChange={handleChange}
+          onHandleSubmit={handleSubmit}
         />
       </div>
       <div className="formfield-container lower-container">
@@ -134,15 +135,17 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           <div className="field-tip">{tip}</div>
           <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
-            <Button
-              type="primary"
-              size="small"
-              className="submit-button"
-              onClick={handleSubmit}
-              disabled={!hasChanged}
-            >
-              Update
-            </Button>
+            {fieldName !== 'adminPassword' && (
+              <Button
+                type="primary"
+                size="small"
+                className="submit-button"
+                onClick={handleSubmit}
+                disabled={!hasChanged}
+              >
+                Update
+              </Button>
+            )}
           </div>
         </div>
       </div>
