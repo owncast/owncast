@@ -335,7 +335,13 @@ export const Content: FC = () => {
           <div className={styles.mainSection}>
             <div className={styles.topSection}>
               {appState.appLoading && <Skeleton loading active paragraph={{ rows: 7 }} />}
-              {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+              {online && (
+                <OwncastPlayer
+                  source="/hls/stream.m3u8"
+                  online={online}
+                  title={streamTitle || name}
+                />
+              )}
               {!online && !appState.appLoading && (
                 <OfflineBanner
                   streamName={name}

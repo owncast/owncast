@@ -34,4 +34,5 @@ export const LiveDemo = Template.bind({});
 LiveDemo.args = {
   online: true,
   source: 'https://watch.owncast.online/hls/stream.m3u8',
+  title: 'Stream title',
 };
