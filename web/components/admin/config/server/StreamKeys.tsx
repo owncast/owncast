@@ -6,7 +6,8 @@ import { ServerStatusContext } from '../../../../utils/server-status-context';
 import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
 
 const { Paragraph } = Typography;
-const { Item } = Form;
+
+const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
 // Lazy loaded components
 
@@ -36,6 +37,9 @@ const saveKeys = async (keys, setError) => {
 };
 
 const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setError }) => {
+  const [hasChanged, setHasChanged] = useState(false);
+  const [form] = Form.useForm();
+  const { Item } = Form;
   const handleAddKey = (newkey: any) => {
     const updatedKeys = [...streamKeys, newkey];
 
@@ -49,11 +53,21 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
     setShowAddKeyForm(false);
   };
 
+  const handleInputChange = (event: any) => {
+    const val = event.target.value;
+    if (regex.test(val)) {
+      setHasChanged(true);
+    } else {
+      setHasChanged(false);
+    }
+  };
+
   return (
     <Form
       layout="horizontal"
       autoComplete="off"
       onFinish={handleAddKey}
+      form={form}
       style={{ display: 'flex', flexDirection: 'row' }}
     >
       <Item
@@ -88,7 +102,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
           },
         ]}
       >
-        <Input placeholder="def456" />
+        <Input placeholder="def456" onChange={handleInputChange} />
       </Item>
       <Item
         style={{ width: '60%', marginRight: '5px' }}
@@ -98,7 +112,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
       >
         <Input placeholder="My OBS Key" />
       </Item>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit" disabled={!hasChanged}>
         Add
       </Button>
     </Form>
