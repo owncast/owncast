@@ -7,7 +7,6 @@ export type SocialLinksProps = {
   links: SocialLink[];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const SocialLinks: FC<SocialLinksProps> = ({ links }) => (
   <div className={styles.links}>
     {links.map(link => (
@@ -22,7 +21,6 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => (
         <Image
           src={link.icon || '/img/platformlogos/default.svg'}
           alt={link.platform}
-          title={link.platform}
           className={styles.link}
           width="30"
           height="30"
