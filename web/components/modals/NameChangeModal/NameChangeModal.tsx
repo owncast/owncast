@@ -77,6 +77,7 @@ export const NameChangeModal: FC = () => {
           value={newName}
           onChange={e => setNewName(e.target.value)}
           placeholder="Your chat display name"
+          aria-label="Your chat display name"
           maxLength={30}
           showCount
           defaultValue={displayName}
@@ -90,7 +91,7 @@ export const NameChangeModal: FC = () => {
         >
           {colorOptions.map(e => (
             <Option key={e.toString()} title={e}>
-              <UserColor color={e} />
+              <UserColor color={e} aria-label={e.toString()} />
             </Option>
           ))}
         </Select>
