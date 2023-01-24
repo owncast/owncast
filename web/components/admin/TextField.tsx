@@ -55,7 +55,7 @@ export const TextField: FC<TextFieldProps> = ({
   value,
 }) => {
   const [hasChanged, setHasChanged] = useState(false);
-  const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+  const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
   const [form] = Form.useForm();
   const handleChange = (e: any) => {
     // if an extra onChange handler was sent in as a prop, let's run that too.

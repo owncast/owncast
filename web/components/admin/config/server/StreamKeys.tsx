@@ -7,7 +7,7 @@ import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
 
 const { Paragraph } = Typography;
 
-const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
 
 // Lazy loaded components
 
