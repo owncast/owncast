@@ -20,7 +20,7 @@ export default function VideoEmbed() {
   const { name } = clientConfig;
 
   const { offlineMessage } = clientConfig;
-  const { viewerCount, lastConnectTime, lastDisconnectTime } = status;
+  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = status;
   const online = useRecoilValue<boolean>(isOnlineSelector);
 
   const router = useRouter();
@@ -48,6 +48,7 @@ export default function VideoEmbed() {
             source="/hls/stream.m3u8"
             online={online}
             initiallyMuted={initiallyMuted}
+            title={streamTitle || name}
           />
         )}
         {!online && (
