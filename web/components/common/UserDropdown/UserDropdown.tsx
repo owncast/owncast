@@ -96,7 +96,12 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
         Authenticate
       </Menu.Item>
       {appState.chatAvailable && (
-        <Menu.Item key="3" icon={<MessageOutlined />} onClick={() => toggleChatVisibility()}>
+        <Menu.Item
+          key="3"
+          icon={<MessageOutlined />}
+          onClick={() => toggleChatVisibility()}
+          aria-expanded={chatToggleVisible}
+        >
           {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
       )}
