@@ -61,7 +61,6 @@ export const TextField: FC<TextFieldProps> = ({
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
       const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
-      // console.log('val: ', val, 'fieldname: ', fieldName);
 
       if (fieldName === 'adminPassword' && regex.test(val)) {
         setHasChanged(true);
@@ -74,7 +73,6 @@ export const TextField: FC<TextFieldProps> = ({
   };
 
   useEffect(() => {
-    // console.log('value: ', value);
     form.setFieldsValue({ adminPassword: value });
   }, [value]);
 
