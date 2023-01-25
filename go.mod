@@ -3,7 +3,7 @@ module github.com/owncast/owncast
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.44.175
+	github.com/aws/aws-sdk-go v1.44.181
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -69,14 +69,13 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.5
-	github.com/shirou/gopsutil/v3 v3.22.11
+	github.com/shirou/gopsutil/v3 v3.22.12
 )
 
 require github.com/SherClockHolmes/webpush-go v1.2.0
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/dghubble/oauth1 v0.7.2
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/gorilla/css v1.0.0 // indirect
