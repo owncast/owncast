@@ -26,7 +26,7 @@
 		"antd": "4.24.3",
 		"autoprefixer": "10.4.13",
 		"chart.js": "4.2.0",
-		"chartkick": "4.2.0",
+		"chartkick": "5.0.1",
 		"classnames": "2.3.2",
 		"date-fns": "2.29.3",
 		"entities": "^4.4.0",
