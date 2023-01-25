@@ -102,7 +102,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
           },
         ]}
       >
-        <Input placeholder="def456" onChange={handleInputChange} />
+        <Input onChange={handleInputChange} />
       </Item>
       <Item
         style={{ width: '60%', marginRight: '5px' }}
