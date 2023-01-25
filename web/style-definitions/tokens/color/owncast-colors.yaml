@@ -62,7 +62,7 @@ color:
         value: '#39373d'
         comment: 'Neutral dark'
       10:
-        value: '#707283'
+        value: '#5d5f72'
         comment: 'Neutral gray light'
       11:
         value: '#2386e2'
