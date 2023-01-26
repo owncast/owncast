@@ -20,6 +20,9 @@ jobs:
         run: | # Install npm packages and build the Storybook files
           cd web
           npm install --include-dev --force
+          cd .storybook/tools
+          ./generate-stories.sh
+          cd -
           npm run build-storybook -- -o ../docs/components
 
       - name: Dispatch event to web site
