@@ -1,0 +1,22 @@
+
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Image, ImageRow } from './ImageAsset';
+
+<Meta title="owncast/Assets/Emoji" />
+
+# Built-in Custom Emoji
+
+{{#each emojiCollections}}
+
+## {{capitalize this.name}}
+	<a href="/img/emoji/{{this.name}}/LICENSE.md" target="_blank">
+		LICENSE
+	</a>
+	<ImageRow images={[
+		{{#each this.images}}
+			{src: "{{this.src}}", name: "{{this.name}}"},
+		{{/each}}
+	]}/>
+
+{{/each}}

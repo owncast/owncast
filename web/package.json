@@ -20,6 +20,7 @@
 		"@codemirror/language-data": "6.1.0",
 		"@fontsource/open-sans": "4.5.14",
 		"@fontsource/poppins": "4.5.10",
+		"@next/bundle-analyzer": "^13.1.1",
 		"@uiw/codemirror-theme-bbedit": "4.19.7",
 		"@uiw/react-codemirror": "4.19.7",
 		"@xstate/react": "3.0.2",
@@ -30,7 +31,6 @@
 		"classnames": "2.3.2",
 		"date-fns": "2.29.3",
 		"entities": "^4.4.0",
-		"install": "^0.13.0",
 		"lodash": "4.17.21",
 		"next": "13.1.5",
 		"next-with-less": "2.0.5",
@@ -54,8 +54,7 @@
 		"ua-parser-js": "1.0.33",
 		"video.js": "7.20.3",
 		"xstate": "4.35.2",
-		"yaml": "2.2.1",
-		"@next/bundle-analyzer": "^13.1.1"
+		"yaml": "2.2.1"
 	},
 	"devDependencies": {
 		"@babel/core": "7.20.12",
@@ -100,9 +99,12 @@
 		"eslint-plugin-react": "7.32.1",
 		"eslint-plugin-react-hooks": "4.6.0",
 		"eslint-plugin-storybook": "0.6.10",
+		"handlebars": "^4.7.7",
 		"html-webpack-plugin": "5.5.0",
+		"install": "^0.13.0",
 		"less": "4.1.3",
 		"less-loader": "11.1.0",
+		"npm": "^9.4.0",
 		"prettier": "2.8.3",
 		"sass": "1.57.1",
 		"sass-loader": "13.2.0",
