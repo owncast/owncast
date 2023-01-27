@@ -125,7 +125,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
 
   if (!config?.federation?.enabled) {
     data.push({
-      icon: <img alt="fediverse" width="20px" src="fediverse-white.png" />,
+      icon: <img alt="fediverse" width="20px" src="/img/fediverse-color.png" />,
       title: 'Add your Owncast instance to the Fediverse',
       content: (
         <div>
