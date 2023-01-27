@@ -261,7 +261,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     },
     upgradeVersion && {
       key: 'upgrade',
-      label: <Link href="/upgrade">{upgradeMessage}</Link>,
+      label: <Link href="/admin/upgrade">{upgradeMessage}</Link>,
     },
     {
       key: 'help',
