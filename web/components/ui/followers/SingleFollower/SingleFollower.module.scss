@@ -9,13 +9,26 @@
   height: 75px;
   width: 250px;
   font-size: 0.8rem;
-  overflow: hidden;
-  @include screen(mobile){
+
+  color: var(--theme-color-components-text-on-light);
+
+  .name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--theme-color-components-text-on-light);
+  }
+
+  .account {
+    color: var(--theme-color-components-text-on-light);
+    overflow: hidden;
+  }
+
+  @include screen(mobile) {
     margin: auto;
   }
 
   &:hover {
-    border-color: var(--theme-text-link);
+    border-color: var(--theme-color-action);
   }
 
   .avatar {
@@ -24,11 +37,6 @@
     border-color: rgba(0, 0, 0, 0.3);
     border-width: 1px;
     border-style: solid;
-  }
-
-  .account {
-    color: var(--theme-text-secondary);
-    text-overflow: ellipsis;
   }
 
   .placeholder {
