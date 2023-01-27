@@ -9,7 +9,10 @@ import { Image, ImageRow } from './ImageAsset';
 
 ## {{capitalize this.name}}
 
-    <a href="img/emoji/{{this.name}}/LICENSE.md" target="_blank">
+<Story
+  name="{{capitalize this.name}}"
+>
+   <a href="img/emoji/{{this.name}}/LICENSE.md" target="_blank">
     	LICENSE
     </a>
     <ImageRow images={[
@@ -17,5 +20,6 @@ import { Image, ImageRow } from './ImageAsset';
     		{src: "{{this.src}}", name: "{{this.name}}"},
     	{{/each}}
     ]}/>
+</Story>
 
 {{/each}}
