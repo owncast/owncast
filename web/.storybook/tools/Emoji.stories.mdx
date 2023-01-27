@@ -1,5 +1,3 @@
-
-
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 import { Image, ImageRow } from './ImageAsset';
 
@@ -10,13 +8,14 @@ import { Image, ImageRow } from './ImageAsset';
 {{#each emojiCollections}}
 
 ## {{capitalize this.name}}
-	<a href="/img/emoji/{{this.name}}/LICENSE.md" target="_blank">
-		LICENSE
-	</a>
-	<ImageRow images={[
-		{{#each this.images}}
-			{src: "{{this.src}}", name: "{{this.name}}"},
-		{{/each}}
-	]}/>
+
+    <a href="img/emoji/{{this.name}}/LICENSE.md" target="_blank">
+    	LICENSE
+    </a>
+    <ImageRow images={[
+    	{{#each this.images}}
+    		{src: "{{this.src}}", name: "{{this.name}}"},
+    	{{/each}}
+    ]}/>
 
 {{/each}}
