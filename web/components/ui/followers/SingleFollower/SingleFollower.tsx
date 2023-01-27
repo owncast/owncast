@@ -18,7 +18,7 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
           </Avatar>
         </Col>
         <Col>
-          <Row>{follower.name}</Row>
+          <Row className={styles.name}>{follower.name}</Row>
           <Row className={styles.account}>{follower.username}</Row>
         </Col>
       </Row>
