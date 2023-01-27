@@ -1,13 +1,16 @@
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 import { ColorRow } from './Color';
 
-<Meta title="owncast/Style Guide/Default Theme" />
+<Meta title="owncast/Styles/Colors" />
 
 # Default theme colors
 
 These colors are assigned in our [color token](https://github.com/owncast/owncast/tree/webv2/web/style-definitions/tokens/color) files
 and get reflected here as they change. run `npm run build-styles` to regenerate.
 
+<Story
+  name="Default Theme"
+>
 ## Default Theme
 
 These color names are assigned to specific component variables. They can be overwritten via CSS.
@@ -39,7 +42,11 @@ These color names are assigned to specific component variables. They can be over
     'theme-color-action-disabled',
   ]}
 />
+</Story>
 
+<Story
+  name="Frontend Components"
+>
 ## Component Colors
 
 <ColorRow
@@ -76,7 +83,11 @@ These color names are assigned to specific component variables. They can be over
     'theme-color-components-video-status-bar-foreground',
   ]}
 />
+</Story>
 
+<Story
+  name="Owncast Color Palette"
+>
 ## Default Palette
 
 These are the core colors for the default, out of the box, Owncast web application theme.
@@ -100,7 +111,11 @@ They should not be overwritten, instead the theme variables should be overwritte
     'color-owncast-palette-15',
   ]}
 />
+</Story>
 
+<Story
+  name="User Chat Colors"
+>
 ## User Colors
 
 <ColorRow
@@ -115,3 +130,4 @@ They should not be overwritten, instead the theme variables should be overwritte
     'theme-color-users-7',
   ]}
 />
+</Story>
