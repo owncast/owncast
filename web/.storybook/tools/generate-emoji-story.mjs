@@ -26,7 +26,7 @@ emojiCollectionDirs.forEach(collection => {
   const emojiCollection = readdirSync(path.resolve(emojiDir, collection))
     .filter(f => f.toLowerCase() !== 'license.md')
     .map(emoji => {
-      return { name: emoji, src: `/img/emoji/${collection}/${emoji}` };
+      return { name: emoji, src: `img/emoji/${collection}/${emoji}` };
     });
   emojiCollections[collection] = { name: collection, images: emojiCollection };
 });
