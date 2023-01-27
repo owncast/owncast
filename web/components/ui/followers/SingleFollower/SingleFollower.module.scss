@@ -16,11 +16,18 @@
     font-weight: 600;
     font-size: 1rem;
     color: var(--theme-color-components-text-on-light);
+    display: inline-block;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: calc(85%);
+    white-space: nowrap;
   }
 
   .account {
     color: var(--theme-color-components-text-on-light);
-    overflow: hidden;
+    word-break: break-all;
+    line-height: 0.9rem;
   }
 
   @include screen(mobile) {
