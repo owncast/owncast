@@ -31,7 +31,7 @@ jobs:
           author_name: Owncast
           author_email: owncast@owncast.online
           message: 'Commit updated Storybook stories'
-          add: '.storybook/'
+          add: '*.stories.*'
           pull: '--rebase --autostash'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
