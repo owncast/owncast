@@ -2,7 +2,7 @@ name: Build and Deploy Components+Style Guide
 on:
   push:
     branches:
-      - webv2
+      - develop
     paths: ['web/stories/**', 'web/components/**', 'web/.storybook/**'] # Trigger the action only when files change in the folders defined here
 
 jobs:
@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: webv2 # Remove when webv2 gets merged into develop
 
       - name: Install and Build
         run: | # Install npm packages and build the Storybook files
