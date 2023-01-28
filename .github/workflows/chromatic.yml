@@ -47,6 +47,5 @@ jobs:
         # Chromatic GitHub Action options
         with:
           workingDir: web
-          autoAcceptChanges: webv2
           projectToken: f47410569b62
           onlyChanged: true

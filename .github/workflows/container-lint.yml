@@ -3,12 +3,12 @@ name: Lint
 on:
   push:
     branches:
-      - webv2
+      - develop
     paths:
       - 'Dockerfile'
   pull_request:
     branches:
-      - webv2
+      - develop
     paths:
       - 'Dockerfile'
 

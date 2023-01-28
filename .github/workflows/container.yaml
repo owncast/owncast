@@ -8,10 +8,10 @@ on:
     - cron: '0 2 * * *'
   push:
     branches:
-      - webv2
+      - develop
   pull_request:
     branches:
-      - webv2
+      - develop
 
 jobs:
   Earthly:
@@ -41,15 +41,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Build and push
-        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
-        env:
-          GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
-          EARTHLY_BUILD_TAG: 'webv2'
-          EARTHLY_BUILD_BRANCH: 'webv2'
-          EARTHLY_PUSH: true
-        run: ./build/develop/container.sh
 
       - name: Build and push
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
