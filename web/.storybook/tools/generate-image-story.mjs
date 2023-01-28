@@ -11,12 +11,13 @@ handlebars.registerHelper('capitalize', function (str) {
 const args = process.argv;
 const dir = args[2];
 const title = args[3];
-if (args.length < 4) {
-  console.error('Usage: generate-image-story.mjs <dir> <title>');
+const category = args[4];
+const publicPath = args[5];
+
+if (args.length < 6) {
+  console.error('Usage: generate-image-story.mjs <dir> <title> <category> <webpublicpath>');
   process.exit(1);
 }
-
-const relativeDir = path.relative('../../public/', dir);
 
 const images = readdirSync(dir)
   .map(img => {
@@ -25,11 +26,11 @@ const images = readdirSync(dir)
       return;
     }
 
-    return { name: img, src: `${relativeDir}/${img}` };
+    return { name: img, src: `${publicPath}/${img}` };
   })
   .filter(Boolean);
 
 const template = fs.readFileSync('./Images.stories.mdx', 'utf8');
 let t = handlebars.compile(template);
-let output = t({ images, title });
+let output = t({ images, title, category });
 console.log(output);
