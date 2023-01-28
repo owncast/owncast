@@ -54,18 +54,19 @@ export const TextField: FC<TextFieldProps> = ({
   useTrim,
   value,
 }) => {
-  const [hasChanged, setHasChanged] = useState(false);
+  const [hasPwdChanged, setHasPwdChanged] = useState(false);
+  const [showPwdButton, setShowPwdButton] = useState(false);
   const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
   const [form] = Form.useForm();
   const handleChange = (e: any) => {
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
       const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
-
+      setShowPwdButton(true);
       if (fieldName === 'adminPassword' && regex.test(val)) {
-        setHasChanged(true);
+        setHasPwdChanged(true);
       } else {
-        setHasChanged(false);
+        setHasPwdChanged(false);
       }
 
       onChange({ fieldName, value: useTrim ? val.trim() : val });
@@ -143,7 +144,7 @@ export const TextField: FC<TextFieldProps> = ({
         </div>
       ) : null}
 
-      {fieldName !== 'adminPassword' ? (
+      {type !== TEXTFIELD_TYPE_PASSWORD ? (
         <div className="input-side">
           <div className="input-group">
             <Field
@@ -198,7 +199,6 @@ export const TextField: FC<TextFieldProps> = ({
                 <Input.Password
                   id={fieldId}
                   className={`field ${className} ${fieldId}`}
-                  {...(type !== TEXTFIELD_TYPE_NUMBER && { allowClear: true })}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder={placeholder}
@@ -207,17 +207,19 @@ export const TextField: FC<TextFieldProps> = ({
                   value={value as number | (readonly string[] & number)}
                 />
               </Form.Item>
-              <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                <Button
-                  type="primary"
-                  size="small"
-                  className="submit-button"
-                  onClick={onHandleSubmit}
-                  disabled={!hasChanged}
-                >
-                  Update
-                </Button>
-              </div>
+              {showPwdButton && (
+                <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                  <Button
+                    type="primary"
+                    size="small"
+                    className="submit-button"
+                    onClick={onHandleSubmit}
+                    disabled={!hasPwdChanged}
+                  >
+                    Update
+                  </Button>
+                </div>
+              )}
               <FormStatusIndicator status={status} />
               <p className="field-tip">{tip}</p>
             </Form>

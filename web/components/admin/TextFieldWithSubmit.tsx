@@ -118,6 +118,14 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
     'textfield-with-submit-container': true,
     submittable: hasChanged,
   });
+
+  const isPasswordInput = () => {
+    if (fieldName === 'adminPassword') {
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className={textfieldContainerClass}>
       <div className="textfield-component">
@@ -135,7 +143,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           <div className="field-tip">{tip}</div>
           <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
-            {fieldName !== 'adminPassword' && (
+            {isPasswordInput() && (
               <Button
                 type="primary"
                 size="small"
