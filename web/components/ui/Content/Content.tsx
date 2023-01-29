@@ -344,6 +344,7 @@ export const Content: FC = () => {
               )}
               {!online && !appState.appLoading && (
                 <OfflineBanner
+                  showsHeader={false}
                   streamName={name}
                   customText={offlineMessage}
                   notificationsEnabled={browserNotificationsEnabled}
