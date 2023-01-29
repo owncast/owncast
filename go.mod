@@ -3,8 +3,7 @@ module github.com/owncast/owncast
 go 1.17
 
 require (
-	github.com/amalfra/etag/v2 v2.0.0
-	github.com/aws/aws-sdk-go v1.44.187
+	github.com/aws/aws-sdk-go v1.44.189
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -12,7 +11,7 @@ require (
 	github.com/grafov/m3u8 v0.11.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.16
-	github.com/microcosm-cc/bluemonday v1.0.21
+	github.com/microcosm-cc/bluemonday v1.0.22
 	github.com/mssola/user_agent v0.5.3
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oschwald/geoip2-golang v1.8.0
@@ -23,7 +22,6 @@ require (
 	github.com/yuin/goldmark v1.5.3
 	golang.org/x/mod v0.7.0
 	golang.org/x/time v0.3.0
-	mvdan.cc/xurls/v2 v2.4.0
 )
 
 require (
