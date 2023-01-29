@@ -51,10 +51,10 @@ color:
         value: '#c3dafe'
         comment: 'Light alternate'
       6:
-        value: '#7a5cf3'
+        value: '#6544e9'
         comment: 'Text link/secondary light text'
       7:
-        value: '#5d38f3'
+        value: '#7a5cf3'
         comment: 'Text link hover'
       8:
         value: '#b6b3c6'
