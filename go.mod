@@ -72,7 +72,7 @@ require (
 )
 
 require (
-	github.com/amalfra/etag/v2 v2.0.0
+	github.com/amalfra/etag v1.0.0
 	github.com/andybalholm/cascadia v1.3.1
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0
