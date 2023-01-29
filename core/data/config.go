@@ -44,6 +44,7 @@ const (
 	chatDisabledKey                      = "chat_disabled"
 	externalActionsKey                   = "external_actions"
 	customStylesKey                      = "custom_styles"
+	customJavascriptKey                  = "custom_javascript"
 	videoCodecKey                        = "video_codec"
 	blockedUsernamesKey                  = "blocked_usernames"
 	publicKeyKey                         = "public_key"
@@ -63,7 +64,6 @@ const (
 	browserPushConfigurationKey          = "browser_push_configuration"
 	browserPushPublicKeyKey              = "browser_push_public_key"
 	browserPushPrivateKeyKey             = "browser_push_private_key"
-	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
 	hideViewerCountKey                   = "hide_viewer_count"
 	customOfflineMessageKey              = "custom_offline_message"
@@ -561,6 +561,21 @@ func GetCustomStyles() string {
 	return style
 }
 
+// SetCustomJavascript will save a string with Javascript to insert into the page.
+func SetCustomJavascript(styles string) error {
+	return _datastore.SetString(customJavascriptKey, styles)
+}
+
+// GetCustomJavascript will return a string with Javascript to insert into the page.
+func GetCustomJavascript() string {
+	style, err := _datastore.GetString(customJavascriptKey)
+	if err != nil {
+		return ""
+	}
+
+	return style
+}
+
 // SetVideoCodec will set the codec used for video encoding.
 func SetVideoCodec(codec string) error {
 	return _datastore.SetString(videoCodecKey, codec)
@@ -878,27 +893,6 @@ func SetBrowserPushPrivateKey(key string) error {
 // GetBrowserPushPrivateKey will return the private key for browser pushes.
 func GetBrowserPushPrivateKey() (string, error) {
 	return _datastore.GetString(browserPushPrivateKeyKey)
-}
-
-// SetTwitterConfiguration will set the Twitter configuration.
-func SetTwitterConfiguration(config models.TwitterConfiguration) error {
-	configEntry := ConfigEntry{Key: twitterConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
-}
-
-// GetTwitterConfiguration will return the Twitter configuration.
-func GetTwitterConfiguration() models.TwitterConfiguration {
-	configEntry, err := _datastore.Get(twitterConfigurationKey)
-	if err != nil {
-		return models.TwitterConfiguration{Enabled: false}
-	}
-
-	var config models.TwitterConfiguration
-	if err := configEntry.getObject(&config); err != nil {
-		return models.TwitterConfiguration{Enabled: false}
-	}
-
-	return config
 }
 
 // SetHasPerformedInitialNotificationsConfig sets when performed initial setup.

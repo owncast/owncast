@@ -93,6 +93,7 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
   }
 
   const menuButton = new MenuButton();
+  menuButton.el().setAttribute('aria-label', 'Settings');
 
   // If none of the settings in this menu are applicable then don't show it.
   const tech = player.tech({ IWillNotUseThisInPlugins: true });

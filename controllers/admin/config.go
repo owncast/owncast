@@ -650,6 +650,22 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
 }
 
+// SetCustomJavascript will set the Javascript string we insert into the page.
+func SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
+	customJavascript, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update custom javascript")
+		return
+	}
+
+	if err := data.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "custom styles updated")
+}
+
 // SetForbiddenUsernameList will set the list of usernames we do not allow to use.
 func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 	type forbiddenUsernameListRequest struct {

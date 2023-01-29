@@ -8,12 +8,10 @@
   justify-content: space-between;
   flex-direction: row;
   background-color: var(--theme-color-background-header);
-  width: 100%;
-  min-height: 30px;
   color: var(--theme-color-components-text-on-dark);
   font-family: var(--theme-text-body-font-family);
 
-  padding: 0 0.6rem;
+  padding: 0.6rem;
   font-size: 0.8rem;
   font-weight: 600;
   border-top: 1px solid rgba(214, 211, 211, 0.5);

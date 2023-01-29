@@ -66,7 +66,7 @@ export const Statusbar: FC<StatusbarProps> = ({
   }
 
   return (
-    <div className={styles.statusbar}>
+    <div className={styles.statusbar} role="status">
       <div>{onlineMessage}</div>
       <div>{rightSideMessage}</div>
     </div>

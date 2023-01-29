@@ -11,6 +11,7 @@ export const RESET_TIMEOUT = 3000;
 // CONFIG API ENDPOINTS
 export const API_CUSTOM_CONTENT = '/pagecontent';
 export const API_CUSTOM_CSS_STYLES = '/customstyles';
+export const API_CUSTOM_JAVASCRIPT = '/customjavascript';
 export const API_FFMPEG = '/ffmpegpath';
 export const API_INSTANCE_URL = '/serverurl';
 export const API_LOGO = '/logo';
@@ -549,51 +550,6 @@ export const DISCORD_CONFIG_FIELDS = {
 };
 
 export const BROWSER_PUSH_CONFIG_FIELDS = {
-  goLiveMessage: {
-    fieldName: 'goLiveMessage',
-    label: 'Go Live Text',
-    maxLength: 200,
-    tip: 'The text to send when you go live.',
-    placeholder: `I've gone live! Come watch!`,
-  },
-};
-
-export const TWITTER_CONFIG_FIELDS = {
-  apiKey: {
-    fieldName: 'apiKey',
-    label: 'API Key',
-    maxLength: 200,
-    tip: '',
-    placeholder: `gaUQhRC2lqfrEFfElBXJgOctU`,
-  },
-  apiSecret: {
-    fieldName: 'apiSecret',
-    label: 'API Secret',
-    maxLength: 200,
-    tip: '',
-    placeholder: `IIz4jFZMWbUKdFOEGUprFjRwIslG56d1SPQlolJYjXwJ2y2qKS`,
-  },
-  accessToken: {
-    fieldName: 'accessToken',
-    label: 'Access Token',
-    maxLength: 200,
-    tip: '',
-    placeholder: `952540400-EEiwe9fkuSvWjnNC82YFa9kgpqbyAP3J7FjE2dkka`,
-  },
-  accessTokenSecret: {
-    fieldName: 'accessTokenSecret',
-    label: 'Access Token Secret',
-    maxLength: 200,
-    tip: '',
-    placeholder: `xO0AZWNGfZxpNsYPg3zNEKhAsPPGvNZFlzQArA2khI9Kg`,
-  },
-  bearerToken: {
-    fieldName: 'bearerToken',
-    label: 'Bearer Token',
-    maxLength: 200,
-    tip: '',
-    placeholder: `AAAAAAAAAAAAAAFqpXwEAAnnepHkjA8XD5ftx5jUadYIRtPtaq7AAAAwpXPpDWKDcdhiWr0tVDjsgW%2B4awGOM9VQ%3XPoMFuWcHsE42TK`,
-  },
   goLiveMessage: {
     fieldName: 'goLiveMessage',
     label: 'Go Live Text',

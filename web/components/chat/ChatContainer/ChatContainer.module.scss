@@ -45,13 +45,11 @@
 }
 
 .virtuoso::-webkit-scrollbar {
-  width: 5px;
-  height: auto;
-  background-color: var(--theme-color-components-chat-background);
+  display: none;
 }
 
 .virtuoso::-webkit-scrollbar-thumb {
-  background: var(--theme-color-components-scrollbar-thumb);
+  display: none;
 }
 
 .chatTextField {

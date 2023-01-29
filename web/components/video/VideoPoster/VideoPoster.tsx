@@ -33,9 +33,9 @@ export const VideoPoster: FC<VideoPosterProps> = ({ online, initialSrc, src: bas
         <CrossfadeImage
           src={src}
           duration={duration}
-          objectFit="cover"
+          objectFit="contain"
+          height="auto"
           width="100%"
-          height="100%"
         />
       )}
     </div>

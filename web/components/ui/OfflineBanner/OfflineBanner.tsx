@@ -17,6 +17,7 @@ export type OfflineBannerProps = {
   lastLive?: Date;
   notificationsEnabled: boolean;
   fediverseAccount?: string;
+  showsHeader?: boolean;
   onNotifyClick?: () => void;
   onFollowClick?: () => void;
 };
@@ -27,6 +28,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   lastLive,
   notificationsEnabled,
   fediverseAccount,
+  showsHeader = true,
   onNotifyClick,
   onFollowClick,
 }) => {
@@ -74,8 +76,12 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   return (
     <div id="offline-banner" className={styles.outerContainer}>
       <div className={styles.innerContainer}>
-        <div className={styles.header}>{streamName}</div>
-        <Divider className={styles.separator} />
+        {showsHeader && (
+          <>
+            <div className={styles.header}>{streamName}</div>
+            <Divider className={styles.separator} />
+          </>
+        )}
         <div className={styles.bodyText}>{text}</div>
         {lastLive && (
           <div className={styles.lastLiveDate}>

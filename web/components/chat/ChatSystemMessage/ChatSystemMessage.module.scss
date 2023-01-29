@@ -7,6 +7,7 @@
     rgb(83, 67, 130) 80%
   );
   margin: 5px;
+  margin-bottom: 10px;
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
@@ -32,6 +33,15 @@
       padding-left: 0.35em;
       padding-right: 0.35em;
       background-color: var(--theme-color-palette-12);
+    }
+  }
+
+  a {
+    color: var(--theme-color-palette-4);
+    :hover {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-color: var(--theme-color-palette-15);
     }
   }
 }

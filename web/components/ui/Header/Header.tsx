@@ -2,6 +2,7 @@ import { Tag, Tooltip } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import styles from './Header.module.scss';
 
@@ -18,19 +19,32 @@ export type HeaderComponentProps = {
   name: string;
   chatAvailable: boolean;
   chatDisabled: boolean;
+  online: boolean;
 };
 
 export const Header: FC<HeaderComponentProps> = ({
   name = 'Your stream title',
   chatAvailable,
   chatDisabled,
+  online,
 }) => (
   <header className={cn([`${styles.header}`], 'global-header')}>
+    {online && (
+      <Link href="#player" className={styles.skipLink}>
+        Skip to player
+      </Link>
+    )}
+    <Link href="#skip-to-content" className={styles.skipLink}>
+      Skip to page content
+    </Link>
+    <Link href="#footer" className={styles.skipLink}>
+      Skip to footer
+    </Link>
     <div className={styles.logo}>
       <div id="header-logo" className={styles.logoImage}>
         <OwncastLogo variant="contrast" />
       </div>
-      <h1 className={styles.title} id="global-header-text" title={name}>
+      <h1 className={styles.title} id="global-header-text">
         {name}
       </h1>
     </div>

@@ -43,6 +43,10 @@ module.exports = withBundleAnalyzer(
           source: '/thumbnail.jpg',
           destination: 'http://localhost:8080/thumbnail.jpg', // Proxy to Backend to work around CORS.
         },
+        {
+          source: '/customjavascript',
+          destination: 'http://localhost:8080/customjavascript', // Proxy to Backend to work around CORS.
+        },
       ];
     },
     pageExtensions: ['tsx'],

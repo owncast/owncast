@@ -115,7 +115,7 @@ const DesktopContent = ({
 
   return (
     <>
-      <div className={styles.lowerHalf}>
+      <div className={styles.lowerHalf} id="skip-to-content">
         <ContentHeader
           name={name}
           title={streamTitle}
@@ -233,7 +233,7 @@ export const Content: FC = () => {
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const currentUser = useRecoilValue(currentUserAtom);
-
+  const serverStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
@@ -259,6 +259,7 @@ export const Content: FC = () => {
   const { account: fediverseAccount, enabled: fediverseEnabled } = federation;
   const { browser: browserNotifications } = notifications;
   const { enabled: browserNotificationsEnabled } = browserNotifications;
+  const { online: isStreamLive } = serverStatus;
   const [externalActionToDisplay, setExternalActionToDisplay] = useState<ExternalAction>(null);
 
   const [supportsBrowserNotifications, setSupportsBrowserNotifications] = useState(false);
@@ -334,9 +335,16 @@ export const Content: FC = () => {
           <div className={styles.mainSection}>
             <div className={styles.topSection}>
               {appState.appLoading && <Skeleton loading active paragraph={{ rows: 7 }} />}
-              {online && <OwncastPlayer source="/hls/stream.m3u8" online={online} />}
+              {online && (
+                <OwncastPlayer
+                  source="/hls/stream.m3u8"
+                  online={online}
+                  title={streamTitle || name}
+                />
+              )}
               {!online && !appState.appLoading && (
                 <OfflineBanner
+                  showsHeader={false}
                   streamName={name}
                   customText={offlineMessage}
                   notificationsEnabled={browserNotificationsEnabled}
@@ -346,7 +354,7 @@ export const Content: FC = () => {
                   onFollowClick={() => setShowFollowModal(true)}
                 />
               )}
-              {online && (
+              {isStreamLive && (
                 <Statusbar
                   online={online}
                   lastConnectTime={lastConnectTime}

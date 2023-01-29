@@ -39,6 +39,9 @@ func Start() error {
 	http.HandleFunc("/preview.gif", controllers.GetPreview)
 	http.HandleFunc("/logo", controllers.GetLogo)
 
+	// Custom Javascript
+	http.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+
 	// Return a single emoji image.
 	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
@@ -315,6 +318,9 @@ func Start() error {
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
+	// set custom style javascript
+	http.HandleFunc("/api/admin/config/customjavascript", middleware.RequireAdminAuth(admin.SetCustomJavascript))
+
 	// Video playback metrics
 	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
 
@@ -366,7 +372,6 @@ func Start() error {
 	// Configure outbound notification channels.
 	http.HandleFunc("/api/admin/config/notifications/discord", middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration))
 	http.HandleFunc("/api/admin/config/notifications/browser", middleware.RequireAdminAuth(admin.SetBrowserNotificationConfiguration))
-	http.HandleFunc("/api/admin/config/notifications/twitter", middleware.RequireAdminAuth(admin.SetTwitterConfiguration))
 
 	// Auth
 
@@ -387,7 +392,7 @@ func Start() error {
 	})
 
 	// Optional public static files
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
 
 	port := config.WebServerPort
 	ip := config.WebServerIP

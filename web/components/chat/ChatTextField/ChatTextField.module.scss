@@ -6,9 +6,9 @@
   bottom: 0px;
   width: 100%;
 
-  padding: 4px 0.1vw;
+  padding: 0.6em;
   overflow-x: hidden;
-  background-color: var(--theme-color-palette-3);
+  background-color: var(--theme-color-components-chat-background);
 
   .inputWrap {
     position: relative;
@@ -23,7 +23,6 @@
     transition: box-shadow 90ms ease-in-out;
     &:focus-within {
       background-color: var(--theme-color-components-form-field-background);
-      // outline: 1px solid var(--theme-color-components-form-field-border);
       box-shadow: inset 0px 0px 2px 2px var(--theme-color-palette-3);
     }
   }

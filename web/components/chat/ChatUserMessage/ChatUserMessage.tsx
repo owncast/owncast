@@ -5,6 +5,7 @@ import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
 import { decodeHTML } from 'entities';
+import linkifyHtml from 'linkify-html';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -107,6 +108,8 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
         })}
         style={{ borderColor: color }}
       >
+        <div className={styles.background} style={{ color }} />
+
         {!sameUserAsLast && (
           <UserTooltip user={user}>
             <div className={styles.user} style={{ color }}>
@@ -119,11 +122,10 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
           <Highlight search={highlightString}>
             <div
               className={styles.message}
-              dangerouslySetInnerHTML={{ __html: formattedMessage }}
+              dangerouslySetInnerHTML={{ __html: linkifyHtml(formattedMessage) }}
             />
           </Highlight>
         </Tooltip>
-
         {showModeratorMenu && (
           <div className={styles.modMenuWrapper}>
             <ChatModerationActionMenu
@@ -134,7 +136,6 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
             />
           </div>
         )}
-        <div className={styles.background} style={{ color }} />
       </div>
     </div>
   );

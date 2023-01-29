@@ -73,7 +73,7 @@ function kill_with_kids() {
     # kill a process and all its children (by pid)! return no error.
 
     if [[ -n $1 ]]; then
-        mapfile -t CHILDREN_PID_LIST < <(ps --ppid "$1" -o pid= || true)
+        mapfile -t CHILDREN_PID_LIST < <(ps --ppid "$1" -o pid= &>/dev/null || true)
         for child_pid in "${CHILDREN_PID_LIST[@]}"; do
             kill "$child_pid" &>/dev/null || true
             wait "$child_pid" &>/dev/null || true
