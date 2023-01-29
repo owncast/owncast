@@ -4,12 +4,8 @@
   display: grid;
   width: 100%;
   justify-items: center;
-  height: 78vh;
-
-  @include screen(tablet) {
-    aspect-ratio: 16 / 9;
-    height: unset;
-  }
+  max-height: 75vh;
+  aspect-ratio: 16 / 9;
 
   .player,
   .poster {
