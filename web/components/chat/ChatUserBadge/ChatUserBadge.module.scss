@@ -1,13 +1,15 @@
 .badge {
-  font-family: var(--theme-text-display-font-family);
-  font-weight: 500;
-  font-size: 0.5rem;
-  text-transform: uppercase;
+  color: white;
+  background-color: var(--color-owncast-palette-0);
+  height: 18px;
+  width: 18px;
+  border-radius: 2px;
+  text-align: center;
   padding: 2px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 3px;
-  border-width: 1px;
-  border-style: solid;
-  margin-left: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-left: 5px;
+  font-size: 0.75rem;
 }
