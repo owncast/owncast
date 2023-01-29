@@ -63,7 +63,7 @@ func GetDefaults() Defaults {
 
 <hr/>
 
-<video id="video" controls preload="metadata" width="40%" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
+<video id="video" controls preload="metadata" style="width: 60vw; max-width: 600px; min-width: 200px;" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
   <source src="https://assets.owncast.tv/video/owncast-embed.mp4" type="video/mp4" />
 </video>
 	`,

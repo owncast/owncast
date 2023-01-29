@@ -5,6 +5,7 @@ import GeneralConfig from '../../../../components/admin/config/general/GeneralCo
 import AppearanceConfig from '../../../../components/admin/config/general/AppearanceConfig';
 
 import { AdminLayout } from '../../../../components/layouts/AdminLayout';
+import { EditCustomJavascript } from '../../../../components/admin/EditCustomJavascript';
 
 export default function PublicFacingDetails() {
   return (
@@ -22,6 +23,11 @@ export default function PublicFacingDetails() {
             label: `Appearance`,
             key: '2',
             children: <AppearanceConfig />,
+          },
+          {
+            label: `Custom Scripting`,
+            key: '3',
+            children: <EditCustomJavascript />,
           },
         ]}
       />

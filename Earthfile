@@ -77,7 +77,6 @@ build:
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
 
   SAVE ARTIFACT owncast owncast
-  SAVE ARTIFACT README.md README.md
 
 package:
   RUN apk add --update --no-cache zip >> /dev/null
@@ -98,14 +97,14 @@ package:
   END
 
   COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
-  COPY (+build/README.md --platform $TARGETPLATFORM) /build/dist/README.md
   ENV ZIPNAME owncast-$version-$NAME.zip
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
   SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
 docker:
-  ARG image=ghcr.io/owncast/owncast
-  ARG tag=develop
+	# Multiple image names can be tagged at once. They should all be passed
+	# in as space separated strings using the full account/repo:tag format.
+	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
   ARG TARGETPLATFORM
   FROM --platform=$TARGETPLATFORM alpine:3.15.5
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
@@ -120,10 +119,24 @@ docker:
 
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
-  SAVE IMAGE --push $image:$tag
+
+  ARG images=ghcr.io/owncast/owncast:testing
+	RUN echo "Saving images: ${images}"
+
+	# Tag this image with the list of names
+	# passed along.
+	FOR --no-cache i IN ${images}
+		SAVE IMAGE --push "${i}"
+	END
 
 dockerfile:
   FROM DOCKERFILE -f Dockerfile .
+
+testing:
+	ARG images
+	FOR i IN ${images}
+		RUN echo "Testing ${i}"
+	END
 
 unit-tests:
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
@@ -136,5 +149,13 @@ api-tests:
 	RUN apk add npm font-noto && fc-cache -f
   COPY . /build
 	WORKDIR /build/test/automated/api
+	RUN npm install
+	RUN ./run.sh
+
+hls-tests:
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	RUN apk add npm font-noto && fc-cache -f
+  COPY . /build
+	WORKDIR /build/test/automated/hls
 	RUN npm install
 	RUN ./run.sh

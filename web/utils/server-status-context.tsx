@@ -12,6 +12,7 @@ export const initialServerConfigState: ConfigDetails = {
   adminPassword: '',
   instanceDetails: {
     customStyles: '',
+    customJavascript: '',
     extraPageContent: '',
     logo: '',
     name: '',
@@ -60,15 +61,6 @@ export const initialServerConfigState: ConfigDetails = {
   notifications: {
     browser: { enabled: false, goLiveMessage: '' },
     discord: { enabled: false, webhook: '', goLiveMessage: '' },
-    twitter: {
-      enabled: false,
-      goLiveMessage: '',
-      apiKey: '',
-      apiSecret: '',
-      accessToken: '',
-      accessTokenSecret: '',
-      bearerToken: '',
-    },
   },
   externalActions: [],
   supportedCodecs: [],

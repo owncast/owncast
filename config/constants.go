@@ -27,4 +27,7 @@ var (
 
 	// CustomEmojiPath is the emoji directory.
 	CustomEmojiPath = filepath.Join(DataDirectory, "emoji")
+
+	// PublicFilesPath is the optional directory for hosting public files.
+	PublicFilesPath = filepath.Join(DataDirectory, "public")
 )

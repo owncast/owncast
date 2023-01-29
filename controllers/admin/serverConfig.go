@@ -46,6 +46,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			SocialHandles:       data.GetSocialHandles(),
 			NSFW:                data.GetNSFW(),
 			CustomStyles:        data.GetCustomStyles(),
+			CustomJavascript:    data.GetCustomJavascript(),
 			AppearanceVariables: data.GetCustomColorVariableValues(),
 		},
 		FFmpegPath:              ffmpeg,
@@ -84,7 +85,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		Notifications: notificationsConfigResponse{
 			Discord: data.GetDiscordConfig(),
 			Browser: data.GetBrowserPushConfig(),
-			Twitter: data.GetTwitterConfiguration(),
 		},
 	}
 
@@ -139,6 +139,7 @@ type webConfigResponse struct {
 	StreamTitle         string                `json:"streamTitle"` // What's going on with the current stream
 	SocialHandles       []models.SocialHandle `json:"socialHandles"`
 	CustomStyles        string                `json:"customStyles"`
+	CustomJavascript    string                `json:"customJavascript"`
 	AppearanceVariables map[string]string     `json:"appearanceVariables"`
 }
 
@@ -160,5 +161,4 @@ type federationConfigResponse struct {
 type notificationsConfigResponse struct {
 	Browser models.BrowserNotificationConfiguration `json:"browser"`
 	Discord models.DiscordConfiguration             `json:"discord"`
-	Twitter models.TwitterConfiguration             `json:"twitter"`
 }

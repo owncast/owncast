@@ -35,6 +35,8 @@ const ACCESS_TOKEN_KEY = 'accessToken';
 let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
 let hasBeenModeratorNotified = false;
 
+const serverConnectivityError = `Cannot connect to the Owncast service. Please check your internet connection or if needed, double check this Owncast server is running.`;
+
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
 export const serverStatusState = atom<ServerStatus>({
@@ -200,10 +202,7 @@ export const ClientConfigStore: FC = () => {
       setGlobalFatalErrorMessage(null);
       setHasLoadedConfig(true);
     } catch (error) {
-      setGlobalFatalError(
-        'Unable to reach Owncast server',
-        `Owncast cannot launch. Please make sure the Owncast server is running.`,
-      );
+      setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
       console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
     }
   };
@@ -221,10 +220,7 @@ export const ClientConfigStore: FC = () => {
       setGlobalFatalErrorMessage(null);
     } catch (error) {
       sendEvent(AppStateEvent.Fail);
-      setGlobalFatalError(
-        'Unable to reach Owncast server',
-        `Owncast cannot launch. Please make sure the Owncast server is running.`,
-      );
+      setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
       console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
     }
   };
@@ -325,7 +321,13 @@ export const ClientConfigStore: FC = () => {
   const startChat = async () => {
     try {
       const { socketHostOverride } = clientConfig;
-      const host = socketHostOverride || window.location.toString();
+
+      // Get a copy of the browser location without #fragments.
+      const l = window.location;
+      l.hash = '';
+      const location = l.toString().replaceAll('#', '');
+      const host = socketHostOverride || location;
+
       ws = new WebsocketService(accessToken, '/ws', host);
       ws.handleMessage = handleMessage;
       setWebsocketService(ws);

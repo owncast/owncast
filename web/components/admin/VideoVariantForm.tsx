@@ -284,6 +284,8 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                     onConfirm={handleVideoPassConfirm}
                     okText="Yes"
                     cancelText="No"
+                    getPopupContainer={triggerNode => triggerNode}
+                    placement="topLeft"
                   >
                     {/* adding an <a> tag to force Popcofirm to register click on toggle */}
                     {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}

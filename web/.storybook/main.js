@@ -18,7 +18,6 @@ module.exports = {
     '@storybook/addon-postcss',
     '@storybook/addon-a11y',
     'storybook-addon-designs',
-    'storybook-dark-mode',
     'storybook-addon-fetch-mock',
   ],
   webpackFinal: async (config, { configType }) => {
@@ -45,7 +44,9 @@ module.exports = {
         },
       ],
     });
+
     return config;
   },
   framework: '@storybook/react',
+  staticDirs: ['../public', '../../static', './story-assets'],
 };

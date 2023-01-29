@@ -25,7 +25,7 @@ BUTTONS
 .ant-btn-default {
   color: currentColor;
   border-width: 2px;
-  border-color: transparent;
+  border-color: var(--theme-color-components-primary-button-border);
   border-radius: var(--theme-rounded-corners);
   background-color: rgba(0, 0, 0, 0.1);
   &:hover,
@@ -43,6 +43,7 @@ BUTTONS
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
   color: var(--theme-color-components-primary-button-text);
+  border-color: var(--theme-color-components-primary-button-border);
 
   &:hover,
   &:focus {
@@ -59,7 +60,6 @@ BUTTONS
   }
   background-color: var(--theme-color-components-primary-button-background);
   color: var(--theme-color-components-primary-button-text);
-  border-color: var(--theme-color-components-primary-button-background);
   &:hover {
     background-color: var(--theme-color-action-hover);
     color: var(--theme-color-components-primary-button-text);
@@ -158,7 +158,7 @@ DROPDOWN
   padding: var(--content-padding);
   background-color: transparent;
   border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
-  font-weight: bold;
+  font-weight: 600;
   & + .ant-tabs-tab {
     margin-left: var(--module-spacing);
   }
@@ -212,4 +212,8 @@ th {
   color: var(--theme-color-components-modal-header-text);
   font-family: var(--theme-text-display-font-family);
   font-weight: 700 !important;
+}
+
+.ant-popover {
+  z-index: 800; // Lower the z-index so it renders under modals.
 }

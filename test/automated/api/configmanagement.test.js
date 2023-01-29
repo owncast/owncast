@@ -64,7 +64,7 @@ const defaultPageContent = `<h1>Welcome to Owncast!</h1>
 </li>
 </ul>
 <hr/>
-<video id="video" controls preload="metadata" width="40%" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
+<video id="video" controls preload="metadata" style="width: 60vw; max-width: 600px; min-width: 200px;" poster="https://videos.owncast.online/t/xaJ3xNn9Y6pWTdB25m9ai3">
   <source src="https://assets.owncast.tv/video/owncast-embed.mp4" type="video/mp4" />
 </video>`;
 
@@ -92,7 +92,7 @@ const appearanceValues = {
 const streamOutputVariants = {
 	videoBitrate: randomNumber() * 100,
 	framerate: 42,
-	cpuUsageLevel: 2,
+	cpuUsageLevel: randomNumber(4, 0),
 	scaledHeight: randomNumber() * 100,
 	scaledWidth: randomNumber() * 100,
 };
@@ -132,6 +132,8 @@ const newFederationConfig = {
 const newHideViewerCount = !defaultHideViewerCount;
 
 const overriddenWebsocketHost = 'ws://lolcalhost.biz';
+const customCSS = randomString();
+const customJavascript = randomString();
 
 test('verify default config values', async (done) => {
 	const res = await request.get('/api/config');
@@ -315,6 +317,16 @@ test('set custom style values', async (done) => {
 	done();
 });
 
+test('set custom css', async (done) => {
+	await sendAdminRequest('config/customstyles', customCSS);
+	done();
+});
+
+test('set custom javascript', async (done) => {
+	await sendAdminRequest('config/customjavascript', customJavascript);
+	done();
+});
+
 test('enable directory', async (done) => {
 	const res = await sendAdminRequest('config/directoryenabled', true);
 	done();
@@ -367,6 +379,7 @@ test('verify updated config values', async (done) => {
 	expect(res.body.logo).toBe('/logo');
 	expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
 	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);
+	expect(res.body.customStyles).toBe(customCSS);
 	done();
 });
 
@@ -393,6 +406,9 @@ test('verify updated admin configuration', async (done) => {
 	expect(res.body.instanceDetails.socialHandles).toStrictEqual(
 		newSocialHandles
 	);
+	expect(res.body.instanceDetails.customStyles).toBe(customCSS);
+	expect(res.body.instanceDetails.customJavascript).toBe(customJavascript);
+
 	expect(res.body.forbiddenUsernames).toStrictEqual(newForbiddenUsernames);
 	expect(res.body.streamKeys).toStrictEqual(newStreamKeys);
 	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);

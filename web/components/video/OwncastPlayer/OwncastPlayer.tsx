@@ -10,7 +10,6 @@ import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStor
 import PlaybackMetrics from '../metrics/playback';
 import createVideoSettingsMenuButton from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
-
 import styles from './OwncastPlayer.module.scss';
 
 const VIDEO_CONFIG_URL = '/api/video/variants';
@@ -26,6 +25,7 @@ export type OwncastPlayerProps = {
   source: string;
   online: boolean;
   initiallyMuted?: boolean;
+  title: string;
 };
 
 async function getVideoSettings() {
@@ -44,6 +44,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   source,
   online,
   initiallyMuted = false,
+  title,
 }) => {
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
@@ -85,13 +86,13 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     }
   };
 
-  const setLatencyCompensatorItemTitle = title => {
+  const setLatencyCompensatorItemTitle = t => {
     const item = document.querySelector('.latency-toggle-item > .vjs-menu-item-text');
     if (!item) {
       return;
     }
 
-    item.innerHTML = title;
+    item.innerHTML = t;
   };
 
   const startLatencyCompensator = () => {
@@ -218,6 +219,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     controls: true,
     responsive: true,
     fluid: false,
+    fill: true,
     playsinline: true,
     liveui: true,
     preload: 'auto',
@@ -306,10 +308,10 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   );
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} id="player">
       {online && (
         <div className={styles.player}>
-          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />
         </div>
       )}
       <div className={styles.poster}>

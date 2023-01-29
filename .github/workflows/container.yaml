@@ -51,6 +51,10 @@ jobs:
           EARTHLY_PUSH: true
         run: ./build/develop/container.sh
 
-      - name: Build
-        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
-        run: ./build/develop/container.sh
+      - name: Build and push
+        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: ./build/develop/container.sh

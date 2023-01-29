@@ -2,15 +2,12 @@ package notifications
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
-	"github.com/owncast/owncast/notifications/twitter"
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +17,6 @@ type Notifier struct {
 	datastore *data.Datastore
 	browser   *browser.Browser
 	discord   *discord.Discord
-	twitter   *twitter.Twitter
 }
 
 // Setup will perform any pre-use setup for the notifier.
@@ -67,9 +63,6 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 	}
 	if err := notifier.setupDiscord(); err != nil {
 		log.Error(err)
-	}
-	if err := notifier.setupTwitter(); err != nil {
-		log.Errorln(err)
 	}
 
 	return &notifier, nil
@@ -147,36 +140,6 @@ func (n *Notifier) notifyDiscord() {
 	}
 }
 
-func (n *Notifier) setupTwitter() error {
-	if twitterConfig := data.GetTwitterConfiguration(); twitterConfig.Enabled {
-		if t, err := twitter.New(twitterConfig.APIKey, twitterConfig.APISecret, twitterConfig.AccessToken, twitterConfig.AccessTokenSecret, twitterConfig.BearerToken); err == nil {
-			n.twitter = t
-		} else if err != nil {
-			return errors.Wrap(err, "error creating twitter notifier")
-		}
-	}
-	return nil
-}
-
-func (n *Notifier) notifyTwitter() {
-	goLiveMessage := data.GetTwitterConfiguration().GoLiveMessage
-	streamTitle := data.GetStreamTitle()
-	if streamTitle != "" {
-		goLiveMessage += "\n" + streamTitle
-	}
-	tagString := ""
-	for _, tag := range utils.ShuffleStringSlice(data.GetServerMetadataTags()) {
-		tagString = fmt.Sprintf("%s #%s", tagString, tag)
-	}
-	tagString = strings.TrimSpace(tagString)
-
-	message := fmt.Sprintf("%s\n%s\n\n%s", goLiveMessage, data.GetServerURL(), tagString)
-
-	if err := n.twitter.Notify(message); err != nil {
-		log.Errorln("error sending twitter message", err)
-	}
-}
-
 // Notify will fire the different notification channels.
 func (n *Notifier) Notify() {
 	if n.browser != nil {
@@ -185,9 +148,5 @@ func (n *Notifier) Notify() {
 
 	if n.discord != nil {
 		n.notifyDiscord()
-	}
-
-	if n.twitter != nil {
-		n.notifyTwitter()
 	}
 }

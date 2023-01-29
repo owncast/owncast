@@ -22,6 +22,7 @@ $p-size: 8px;
     overflow: hidden;
     overflow-wrap: anywhere;
     font-weight: 500;
+    position: relative;
 
     mark {
       padding-left: 0.35em;
@@ -52,9 +53,15 @@ $p-size: 8px;
     display: none;
     top: 0;
     right: 10px;
+    color: var(--theme-color-components-text-on-light);
     & button:focus,
     & button:active {
       display: block !important;
+    }
+
+    button {
+      border-radius: var(--theme-rounded-corners);
+      opacity: 0.8;
     }
   }
 
