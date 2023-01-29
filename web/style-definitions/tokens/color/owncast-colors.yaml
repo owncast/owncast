@@ -12,23 +12,24 @@ color:
     # If you add more colors here make sure to add them to
     # GenerateRandomDisplayColor in the Go codebase so it knows the max
     # number of colors to use.
+
     user:
       0:
-        value: 'rgb(244, 11, 11)'
+        value: '#ff717b'
       1:
-        value: 'rgb(244, 128, 11)'
+        value: '#F4E413'
       2:
-        value: 'rgb(162, 162, 1)'
+        value: '#b99c45'
       3:
-        value: 'rgb(88, 244, 11)'
+        value: '#58f40b'
       4:
-        value: 'rgb(11, 244, 244)'
+        value: '#0bf4f4'
       5:
-        value: 'rgb(11, 166, 244)'
+        value: '#0ba6f4'
       6:
-        value: 'rgb(102, 102, 255)'
+        value: '#9a92ff'
       7:
-        value: 'rgb(244, 11, 244)'
+        value: '#ff53ff'
 
     palette:
       0:
