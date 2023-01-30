@@ -79,9 +79,11 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", authRegistration.UserDisplayName, u.DisplayName)
-		if err := chat.SendSystemAction(loginMessage, true); err != nil {
-			log.Errorln(err)
+		if authRegistration.UserDisplayName != u.DisplayName {
+			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", authRegistration.UserDisplayName, u.DisplayName)
+			if err := chat.SendSystemAction(loginMessage, true); err != nil {
+				log.Errorln(err)
+			}
 		}
 
 		controllers.WriteSimpleResponse(w, true, "")
