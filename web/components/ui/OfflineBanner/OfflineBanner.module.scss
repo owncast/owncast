@@ -1,3 +1,5 @@
+@import '../../../styles/mixins.scss';
+
 .outerContainer {
   display: flex;
   justify-content: center;
@@ -15,6 +17,12 @@
   font-size: 1.3rem;
   border: 1px solid lightgray;
   font-family: var(--theme-text-display-font-family);
+
+  @include screen(tablet) {
+    font-size: 1.2rem;
+    padding: 1em;
+    margin: 1rem auto;
+  }
 }
 
 .bodyText {
