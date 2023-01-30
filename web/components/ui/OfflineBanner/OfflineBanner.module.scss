@@ -11,9 +11,10 @@
   background-color: var(--theme-color-background-main);
   margin: 3rem auto;
   border-radius: var(--theme-rounded-corners);
-  padding: 2.5em;
-  font-size: 1.2rem;
+  padding: 2.4em;
+  font-size: 1.3rem;
   border: 1px solid lightgray;
+  font-family: var(--theme-text-display-font-family);
 }
 
 .bodyText {
@@ -29,6 +30,7 @@
   margin-top: 15px;
   font-size: 1rem;
   opacity: 0.5;
+  font-family: var(--theme-text-body-font-family);
 
   .clockIcon {
     margin-right: 5px;
