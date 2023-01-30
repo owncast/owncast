@@ -13,5 +13,5 @@ export type AuthedUserBadgeProps = {
 };
 
 export const AuthedUserBadge: FC<AuthedUserBadgeProps> = ({ userColor }) => (
-  <ChatUserBadge badge={<SafetyCertificateFilled />} userColor={userColor} title="Moderator" />
+  <ChatUserBadge badge={<SafetyCertificateFilled />} userColor={userColor} title="Authenticated" />
 );
