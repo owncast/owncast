@@ -25,7 +25,7 @@ Specify the human readable version number in the `version` flag such as `v0.1.0`
 
 Create and push the image to Docker Hub with a list of tags. You'll want to tag the image with both the new version number and `latest`.
 
-**Run**: `earthly --push +docker-all --images="owncast/owncast:0.1.0 owncast/owncast:latest gabekangas/owncast:0.1.0 gabekangas/owncast:latest" --version="webv2"`
+**Run**: `earthly --push +docker-all --images="owncast/owncast:0.1.0 owncast/owncast:latest gabekangas/owncast:0.1.0 gabekangas/owncast:latest" --version="v0.1.0"`
 
 Omit `--push` if you don't want to push the image to Docker Hub and want to just build and test the image locally first.
 

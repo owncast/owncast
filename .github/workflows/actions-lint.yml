@@ -2,13 +2,9 @@ name: Lint
 
 on:
   push:
-    branches:
-      - webv2
     paths:
       - '.github/workflows/*'
   pull_request:
-    branches:
-      - webv2
     paths:
       - '.github/workflows/*'
 
