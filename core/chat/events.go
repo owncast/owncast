@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,9 +28,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	blocklist := data.GetForbiddenUsernameList()
 
 	// Names have a max length
-	if len(proposedUsername) > config.MaxChatDisplayNameLength {
-		proposedUsername = proposedUsername[:config.MaxChatDisplayNameLength]
-	}
+	proposedUsername = utils.MakeSafeStringOfLength(proposedUsername, config.MaxChatDisplayNameLength)
 
 	for _, blockedName := range blocklist {
 		normalizedName := strings.TrimSpace(blockedName)
@@ -90,8 +89,34 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 
 	// Send chat user name changed webhook
 	receivedEvent.User = savedUser
-	receivedEvent.ClientID = eventData.client.id
+	receivedEvent.ClientID = eventData.client.Id
 	webhooks.SendChatEventUsernameChanged(receivedEvent)
+
+	// Resend the client's user so their username is in sync.
+	eventData.client.sendConnectedClientInfo()
+}
+
+func (s *Server) userColorChanged(eventData chatClientEvent) {
+	var receivedEvent events.ColorChangeEvent
+	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
+		log.Errorln("error unmarshalling to ColorChangeEvent", err)
+		return
+	}
+
+	// Verify this color is valid
+	if receivedEvent.NewColor > config.MaxUserColor {
+		log.Errorln("invalid color requested when changing user display color")
+		return
+	}
+
+	// Save the new color
+	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
+		log.Errorln("error changing user display color", err)
+	}
+
+	// Resend client's user info with new color, otherwise the name change dialog would still show the old color
+	eventData.client.User.DisplayColor = receivedEvent.NewColor
+	eventData.client.sendConnectedClientInfo()
 }
 
 func (s *Server) userMessageSent(eventData chatClientEvent) {
@@ -102,7 +127,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	event.SetDefaults()
-	event.ClientID = eventData.client.id
+	event.ClientID = eventData.client.Id
 
 	// Ignore empty messages
 	if event.Empty() {

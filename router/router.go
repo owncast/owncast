@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/nanmu42/gzip"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
@@ -16,6 +17,7 @@ import (
 	"github.com/owncast/owncast/controllers/admin"
 	fediverseauth "github.com/owncast/owncast/controllers/auth/fediverse"
 	"github.com/owncast/owncast/controllers/auth/indieauth"
+	"github.com/owncast/owncast/controllers/moderation"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -26,19 +28,33 @@ import (
 
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
-	// static files
+	// The primary web app.
 	http.HandleFunc("/", controllers.IndexHandler)
-	http.HandleFunc("/recordings", controllers.IndexHandler)
-	http.HandleFunc("/schedule", controllers.IndexHandler)
 
-	// admin static files
-	http.HandleFunc("/admin/", middleware.RequireAdminAuth(admin.ServeAdmin))
+	// The admin web app.
+	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
+
+	// Images
+	http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
+	http.HandleFunc("/preview.gif", controllers.GetPreview)
+	http.HandleFunc("/logo", controllers.GetLogo)
+
+	// Custom Javascript
+	http.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+
+	// Return a single emoji image.
+	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
+
+	// return the logo
+
+	// return a logo that's compatible with external social networks
+	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 
 	// custom emoji supported in the chat
-	http.HandleFunc("/api/emoji", controllers.GetCustomEmoji)
+	http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
 
 	// chat rest api
 	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
@@ -46,29 +62,11 @@ func Start() error {
 	// web config api
 	http.HandleFunc("/api/config", controllers.GetWebConfig)
 
-	// pre v0.0.8 chat embed
-	http.HandleFunc("/embed/chat", controllers.GetChatEmbedreadonly)
-
-	// readonly chat embed
-	http.HandleFunc("/embed/chat/readonly", controllers.GetChatEmbedreadonly)
-
-	// readwrite chat embed
-	http.HandleFunc("/embed/chat/readwrite", controllers.GetChatEmbedreadwrite)
-
-	// video embed
-	http.HandleFunc("/embed/video", controllers.GetVideoEmbed)
-
 	// return the YP protocol data
 	http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// list of all social platforms
 	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
-
-	// return the logo
-	http.HandleFunc("/logo", controllers.GetLogo)
-
-	// return a logo that's compatible with external social networks
-	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
@@ -162,10 +160,19 @@ func Start() error {
 	// Set the following state of a follower or follow request.
 	http.HandleFunc("/api/admin/followers/approve", middleware.RequireAdminAuth(admin.ApproveFollower))
 
+	// Upload custom emoji
+	http.HandleFunc("/api/admin/emoji/upload", middleware.RequireAdminAuth(admin.UploadCustomEmoji))
+
+	// Delete custom emoji
+	http.HandleFunc("/api/admin/emoji/delete", middleware.RequireAdminAuth(admin.DeleteCustomEmoji))
+
 	// Update config values
 
 	// Change the current streaming key in memory
-	http.HandleFunc("/api/admin/config/key", middleware.RequireAdminAuth(admin.SetStreamKey))
+	http.HandleFunc("/api/admin/config/adminpass", middleware.RequireAdminAuth(admin.SetAdminPassword))
+
+	//  Set an array of valid stream keys
+	http.HandleFunc("/api/admin/config/streamkeys", middleware.RequireAdminAuth(admin.SetStreamKeys))
 
 	// Change the extra page content in memory
 	http.HandleFunc("/api/admin/config/pagecontent", middleware.RequireAdminAuth(admin.SetExtraPageContent))
@@ -178,6 +185,9 @@ func Start() error {
 
 	// Server summary
 	http.HandleFunc("/api/admin/config/serversummary", middleware.RequireAdminAuth(admin.SetServerSummary))
+
+	// Offline message
+	http.HandleFunc("/api/admin/config/offlinemessage", middleware.RequireAdminAuth(admin.SetCustomOfflineMessage))
 
 	// Server welcome message
 	http.HandleFunc("/api/admin/config/welcomemessage", middleware.RequireAdminAuth(admin.SetServerWelcomeMessage))
@@ -199,6 +209,9 @@ func Start() error {
 
 	// Set video codec
 	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
+
+	// Set style/color/css values
+	http.HandleFunc("/api/admin/config/appearance", middleware.RequireAdminAuth(admin.SetCustomColorVariableValues))
 
 	// Return all webhooks
 	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
@@ -305,8 +318,14 @@ func Start() error {
 	// set custom style css
 	http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
+	// set custom style javascript
+	http.HandleFunc("/api/admin/config/customjavascript", middleware.RequireAdminAuth(admin.SetCustomJavascript))
+
 	// Video playback metrics
 	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
+
+	// Is the viewer count hidden from viewers
+	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
 
 	// Inline chat moderation actions
 
@@ -315,6 +334,9 @@ func Start() error {
 
 	// Enable/disable a user
 	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+
+	// Get a user's details
+	http.HandleFunc("/api/moderation/chat/user/", middleware.RequireUserModerationScopeAccesstoken(moderation.GetUserDetails))
 
 	// Configure Federation features
 
@@ -350,7 +372,6 @@ func Start() error {
 	// Configure outbound notification channels.
 	http.HandleFunc("/api/admin/config/notifications/discord", middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration))
 	http.HandleFunc("/api/admin/config/notifications/browser", middleware.RequireAdminAuth(admin.SetBrowserNotificationConfiguration))
-	http.HandleFunc("/api/admin/config/notifications/twitter", middleware.RequireAdminAuth(admin.SetTwitterConfiguration))
 
 	// Auth
 
@@ -369,6 +390,9 @@ func Start() error {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		chat.HandleClientConnection(w, r)
 	})
+
+	// Optional public static files
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
 
 	port := config.WebServerPort
 	ip := config.WebServerIP
@@ -391,7 +415,7 @@ func Start() error {
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           m,
+		Handler:           gzip.DefaultHandler().WrapHandler(m),
 	}
 
 	log.Infof("Web server is listening on IP %s port %d.", ip, port)

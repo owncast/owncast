@@ -1,0 +1,79 @@
+$border-style: 4px solid currentColor;
+$p-size: 8px;
+
+.root {
+  * {
+    z-index: 100;
+  }
+  border-left: $border-style;
+  position: relative;
+  font-size: 0.9rem;
+  padding: 0px $p-size $p-size $p-size;
+  color: var(--theme-color-components-chat-text);
+
+  .user {
+    display: flex;
+    align-items: center;
+    font-family: var(--theme-text-display-font-family);
+    font-weight: 600;
+  }
+
+  .message {
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    font-weight: 500;
+    position: relative;
+
+    mark {
+      padding-left: 0.35em;
+      padding-right: 0.35em;
+      color: var(--theme-color-palette-12);
+    }
+  }
+
+  &.ownMessage {
+    border-left: none;
+    border-right: $border-style;
+
+    .background {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: currentColor;
+      opacity: 0.07;
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+  }
+
+  .modMenuWrapper {
+    position: absolute;
+    display: none;
+    top: 0;
+    right: 10px;
+    color: var(--theme-color-components-text-on-light);
+    & button:focus,
+    & button:active {
+      display: block !important;
+    }
+
+    button {
+      border-radius: var(--theme-rounded-corners);
+      opacity: 0.8;
+    }
+  }
+
+  &:hover .modMenuWrapper {
+    display: block;
+  }
+}
+
+.messagePadding {
+  padding: 0.4rem 5px 0px 5px;
+}
+
+.messagePaddingCollapsed {
+  padding: 0px 5px 0px 5px;
+}

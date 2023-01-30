@@ -3,11 +3,11 @@ name: Automated HLS tests
 on:
   push:
     paths-ignore:
-      - 'webroot/**'
+      - 'web/**'
   pull_request:
     paths-ignore:
-      - 'webroot/**'
-      
+      - 'web/**'
+
 env:
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
   S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
@@ -18,13 +18,20 @@ env:
 jobs:
   api:
     runs-on: ubuntu-latest
+
     steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
         with:
-          stable: 'false'
-          go-version: '1.17.2'
-      - name: Run HLS tests
-        run: cd test/automated/hls && ./run.sh
+          go-version: '1.18.8'
 
-  
+      - name: Run HLS tests
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd test/automated/hls && ./run.sh

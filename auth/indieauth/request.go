@@ -1,6 +1,9 @@
 package indieauth
 
-import "net/url"
+import (
+	"net/url"
+	"time"
+)
 
 // Request represents a single in-flight IndieAuth request.
 type Request struct {
@@ -15,4 +18,5 @@ type Request struct {
 	CodeChallenge      string
 	State              string
 	Me                 *url.URL
+	Timestamp          time.Time
 }

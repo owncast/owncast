@@ -15,44 +15,53 @@ import (
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	if !data.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
+		log.Debugln("webfinger request rejected! Federation is not enabled")
+		return
+	}
+
+	instanceHostURL := data.GetServerURL()
+	if instanceHostURL == "" {
+		w.WriteHeader(http.StatusNotFound)
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL is empty.")
+		return
+	}
+
+	instanceHostString := utils.GetHostnameFromURLString(instanceHostURL)
+	if instanceHostString == "" {
+		w.WriteHeader(http.StatusNotFound)
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set properly. data.GetServerURL(): " + data.GetServerURL())
 		return
 	}
 
 	resource := r.URL.Query().Get("resource")
-	resourceComponents := strings.Split(resource, ":")
+	preAcct, account, foundAcct := strings.Cut(resource, "acct:")
 
-	var account string
-	if len(resourceComponents) == 2 {
-		account = resourceComponents[1]
-	} else {
-		account = resourceComponents[0]
+	if !foundAcct || preAcct != "" {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Debugln("webfinger request rejected! Malformed resource in query: " + resource)
+		return
 	}
 
 	userComponents := strings.Split(account, "@")
-	if len(userComponents) < 2 {
+	if len(userComponents) != 2 {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Debugln("webfinger request rejected! Malformed account in query: " + account)
 		return
 	}
 	host := userComponents[1]
 	user := userComponents[0]
 
 	if _, valid := data.GetFederatedInboxMap()[user]; !valid {
-		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
-		log.Debugln("webfinger request rejected")
+		log.Debugln("webfinger request rejected! Invalid user: " + user)
 		return
 	}
 
 	// If the webfinger request doesn't match our server then it
 	// should be rejected.
-	instanceHostString := data.GetServerURL()
-	if instanceHostString == "" {
+	if instanceHostString != host {
 		w.WriteHeader(http.StatusNotImplemented)
-		return
-	}
-
-	instanceHostString = utils.GetHostnameFromURLString(instanceHostString)
-	if instanceHostString == "" || instanceHostString != host {
-		w.WriteHeader(http.StatusNotImplemented)
+		log.Debugln("webfinger request rejected! Invalid query host: " + host + " instanceHostString: " + instanceHostString)
 		return
 	}
 

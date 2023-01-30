@@ -1,0 +1,103 @@
+@import '../../../styles/mixins.scss';
+
+.root {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  width: 100%;
+  background-color: var(--theme-color-background-main);
+
+  @include screen(desktop) {
+    height: var(--content-height);
+  }
+
+  .mainSection {
+    display: flex;
+    flex-direction: column;
+
+    @include screen(desktop) {
+      overflow-y: scroll;
+    }
+  }
+
+  .mainSection::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mainSection::-webkit-scrollbar-thumb {
+    display: none;
+  }
+
+  .topSection {
+    padding: 0;
+    background-color: var(--theme-color-components-video-background);
+  }
+  .lowerSection {
+    padding: 0em 2%;
+    margin-bottom: 2em;
+  }
+
+  .lowerSectionMobile {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 0.3em;
+  }
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.loadingSpinner {
+  display: grid;
+}
+
+.main {
+  display: grid;
+  flex: 1;
+  height: 100%;
+  grid-template-rows: 1fr auto;
+}
+
+.replacementBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  @include screen(tablet) {
+    height: var(--replacement-bar-height);
+  }
+}
+
+.defaultTabBar {
+  width: 85%;
+}
+
+.defaultTabBar,
+.actionButtonMenu {
+  @include screen(tablet) {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+.tabs {
+  width: 100%;
+
+  @include screen(tablet) {
+    position: relative;
+    > :global(.ant-tabs-content-holder) {
+      position: absolute;
+      height: calc(100% - var(--replacement-bar-height));
+      top: var(--replacement-bar-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    > :global(.ant-tabs-content-holder .ant-tabs-content) {
+      padding-top: 16px;
+    }
+  }
+}

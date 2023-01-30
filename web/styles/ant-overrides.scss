@@ -1,0 +1,219 @@
+/* ------------------------- //
+HEADER
+// ------------------------- */
+
+.ant-layout-header {
+  line-height: unset;
+  height: auto;
+}
+/* ------------------------- //
+BUTTONS
+// ------------------------- */
+
+.ant-btn[disabled] {
+  background-color: var(--theme-color-components-secondary-button-background-disabled);
+  color: var(--theme-color-components-secondary-button-text-disabled);
+  border-color: var(--theme-color-components-secondary-button-border-disabled);
+  &:hover,
+  &:focus {
+    background-color: var(--theme-color-components-secondary-button-background-disabled);
+    color: var(--theme-color-components-secondary-button-text-disabled);
+    border-color: var(--theme-color-components-secondary-button-border-disabled);
+  }
+}
+
+.ant-btn-default {
+  color: currentColor;
+  border-width: 2px;
+  border-color: var(--theme-color-components-primary-button-border);
+  border-radius: var(--theme-rounded-corners);
+  background-color: rgba(0, 0, 0, 0.1);
+  &:hover,
+  &:focus {
+    color: currentColor;
+    border-color: rgba(0, 0, 0, 0.55);
+    background-color: var(--theme-color-components-secondary-button-background);
+  }
+}
+
+.ant-btn-primary {
+  height: 2rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-width: 2px;
+  border-radius: var(--theme-rounded-corners);
+  color: var(--theme-color-components-primary-button-text);
+  border-color: var(--theme-color-components-primary-button-border);
+
+  &:hover,
+  &:focus {
+    border-color: var(--theme-color-action-hover);
+    color: var(--theme-color-action-hover);
+    background-color: var(--theme-color-components-secondary-button-background);
+  }
+
+  &:focus {
+    border-color: var(--theme-color-components-secondary-button-text);
+  }
+  &[ant-click-animating-without-extra-node]:after {
+    animation: 0s !important;
+  }
+  background-color: var(--theme-color-components-primary-button-background);
+  color: var(--theme-color-components-primary-button-text);
+  &:hover {
+    background-color: var(--theme-color-action-hover);
+    color: var(--theme-color-components-primary-button-text);
+    border-color: var(--theme-color-action-hover);
+  }
+  &:focus {
+    background-color: var(--theme-color-action-hover);
+    color: var(--theme-color-components-primary-button-text);
+    border-color: var(--theme-color-components-primary-button-text);
+  }
+}
+
+.ant-btn-primary[disabled] {
+  background-color: var(--theme-color-components-primary-button-background-disabled);
+  border-color: var(--theme-color-components-primary-button-border-disabled);
+  color: var(--theme-color-components-primary-button-text-disabled);
+  &:hover,
+  &:focus {
+    background-color: var(--theme-color-components-primary-button-background-disabled);
+    border-color: var(--theme-color-components-primary-button-border-disabled);
+    color: var(--theme-color-components-primary-button-text-disabled);
+  }
+}
+
+.ant-btn-background-ghost {
+  border: 0px;
+  box-shadow: none !important;
+  &:hover,
+  &:focus {
+    background-color: var(--theme-unknown);
+  }
+}
+
+/* ------------------------- //
+DROPDOWN
+// ------------------------- */
+
+.ant-dropdown-menu {
+  border-radius: var(--theme-rounded-corners);
+  background-color: var(--theme-color-components-menu-background);
+}
+.ant-dropdown-menu-item {
+  color: var(--theme-color-components-menu-item-text);
+  &:hover {
+    background-color: var(--theme-color-components-menu-item-hover-bg);
+  }
+  &:focus {
+    background-color: var(--theme-color-components-menu-item-focus-bg);
+  }
+}
+
+.ant-modal-header {
+  color: var(--theme-color-components-modal-header-text);
+  font-family: var(--theme-text-display-font-family);
+}
+.ant-modal-title {
+  color: var(--theme-color-components-modal-header-text);
+}
+.ant-modal-body {
+  overflow: auto;
+  border-radius: 0 0 var(--theme-rounded-corners) var(--theme-rounded-corners);
+}
+.ant-modal {
+  color: var(--theme-color-components-text-on-light);
+  h1 {
+    color: var(--theme-color-components-text-on-light);
+  }
+}
+.ant-modal-content {
+  box-shadow: 3px 15px 15px -3px rgba(0, 0, 0, 0.15), 0px 4px 6px -2px rgba(0, 0, 0, 0.08);
+}
+
+.ant-input-affix-wrapper {
+  padding: 4px 5px;
+  background-color: var(--theme-color-components-form-field-background);
+}
+
+.ant-input {
+  background-color: var(--theme-color-components-form-field-background);
+  color: var(--theme-color-components-form-field-text);
+  &::placeholder {
+    color: var(--theme-color-components-form-field-placeholder);
+  }
+}
+
+.ant-alert-error {
+  .ant-alert-icon {
+    color: var(--theme-color-palette-error);
+  }
+  .ant-alert-message {
+    color: var(--theme-color-palette-error);
+  }
+}
+
+.ant-tabs-tab {
+  padding: var(--content-padding);
+  background-color: transparent;
+  border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
+  font-weight: 600;
+  & + .ant-tabs-tab {
+    margin-left: var(--module-spacing);
+  }
+  &.ant-tabs-tab-active {
+    background-color: var(--theme-color-palette-4);
+    .ant-tabs-tab-btn {
+      color: var(--theme-color-action);
+      &:hover {
+        color: var(--theme-color-action-hover);
+      }
+    }
+  }
+}
+
+.ant-tabs {
+  height: 100%;
+  .ant-tabs-content-holder {
+    height: 100%;
+  }
+  .ant-tabs-content {
+    height: 100% !important;
+    overflow: auto;
+    .ant-tabs-tabpane-active {
+      height: 100%;
+    }
+  }
+}
+
+.ant-tabs-ink-bar {
+  background-color: var(--theme-color-action);
+}
+
+.ant-tabs-nav:before {
+  border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
+}
+
+.ant-modal-close:hover {
+  color: var(--theme-color-components-modal-header-text);
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: unset;
+}
+
+td.ant-table-column-sort,
+.ant-table-thead th.ant-table-column-sort {
+  background-color: unset;
+}
+
+th {
+  color: var(--theme-color-components-modal-header-text);
+  font-family: var(--theme-text-display-font-family);
+  font-weight: 700 !important;
+}
+
+.ant-popover {
+  z-index: 800; // Lower the z-index so it renders under modals.
+}

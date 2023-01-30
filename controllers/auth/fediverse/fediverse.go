@@ -28,7 +28,12 @@ func RegisterFediverseOTPRequest(u user.User, w http.ResponseWriter, r *http.Req
 	}
 
 	accessToken := r.URL.Query().Get("accessToken")
-	reg, success := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	reg, success, err := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	if err != nil {
+		controllers.WriteSimpleResponse(w, false, "Could not register auth request: "+err.Error())
+		return
+	}
+
 	if !success {
 		controllers.WriteSimpleResponse(w, false, "Could not register auth request. One may already be pending. Try again later.")
 		return
@@ -74,9 +79,11 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", authRegistration.UserDisplayName, u.DisplayName)
-		if err := chat.SendSystemAction(loginMessage, true); err != nil {
-			log.Errorln(err)
+		if authRegistration.UserDisplayName != u.DisplayName {
+			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", authRegistration.UserDisplayName, u.DisplayName)
+			if err := chat.SendSystemAction(loginMessage, true); err != nil {
+				log.Errorln(err)
+			}
 		}
 
 		controllers.WriteSimpleResponse(w, true, "")

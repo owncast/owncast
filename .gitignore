@@ -27,6 +27,7 @@ webroot/preview.gif
 webroot/hls
 webroot/static/content.md
 hls/
+!test/automated/hls/
 dist/
 data/
 transcoder.log
@@ -39,3 +40,5 @@ backup/
 test/test.db
 test/automated/browser/screenshots
 lefthook.yml
+test/automated/browser/cypress/screenshots
+test/automated/browser/cypress/videos

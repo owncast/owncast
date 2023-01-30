@@ -1,0 +1,70 @@
+/* Change all text and icon colors in the player. */
+.vjs-owncast {
+  .video-js {
+    color: var(--theme-color-components-text-on-light);
+  }
+
+  .vjs-menu li {
+    color: var(--theme-color-components-text-on-dark);
+  }
+
+  .vjs-big-play-button {
+    z-index: 10;
+    color: var(--theme-color-action);
+    font-size: 8rem !important;
+    border-color: transparent !important;
+    border-radius: var(--theme-rounded-corners) !important;
+    background-color: transparent !important;
+    text-shadow: 2px 3px 4px #0000005f;
+
+    -webkit-text-stroke: 2px white;
+    text-stroke: 2px white;
+
+    :hover {
+      transition: all 0.2s ease-in-out;
+      font-size: 10rem;
+      text-shadow: 2px 5px 4px #00000093;
+    }
+  }
+
+  .vjs-loading-spinner {
+    z-index: 10;
+    display: block;
+    color: var(--theme-color-components-text-on-light);
+  }
+
+  .vjs-control-bar {
+    color: var(--theme-color-components-text-on-light);
+    background-color: var(--theme-color-background-main) !important;
+  }
+
+  .vjs-control {
+    color: var(--theme-color-components-text-on-light);
+  }
+}
+
+.vjs-airplay {
+  .vjs-icon-placeholder::before {
+    content: url('../airplay.svg');
+    width: 50% !important;
+    height: 50% !important;
+    top: 15% !important;
+    left: 15% !important;
+  }
+}
+
+.vjs-quality-selector {
+  .vjs-icon-placeholder {
+    font-family: VideoJS, serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .vjs-icon-placeholder::before {
+    content: '\f110';
+  }
+}
+
+.vjs-seek-to-live-control.vjs-control.vjs-at-live-edge .vjs-icon-placeholder {
+  color: var(--theme-color-components-video-live-indicator) !important;
+}

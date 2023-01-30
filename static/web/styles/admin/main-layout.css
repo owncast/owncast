@@ -1,0 +1,137 @@
+/* NOTE: This is used for the admin only! */
+
+.app-container .side-nav {
+  position: fixed;
+  height: 100vh;
+  overflow: auto;
+  z-index: 10;
+  background-color: var(--theme-color-background-main);
+}
+.app-container .menu-container {
+  border-color: transparent;
+	background-color: unset;
+}
+.app-container h1.owncast-title {
+  padding: 1rem;
+  padding-bottom: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.app-container h1.owncast-title .logo-container {
+  background-color: var(--white);
+  padding-top: 4px;
+  padding-right: 6px;
+  padding-left: 6px;
+  border-radius: 9999px;
+}
+.app-container h1.owncast-title .title-label {
+  display: inline-block;
+  margin-left: 1rem;
+  color: var(--white);
+  font-size: 1.15rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  line-height: normal;
+  letter-spacing: 0.05em;
+}
+.app-container .layout-main {
+  margin-left: 240px;
+}
+.app-container .layout-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  background-color: var(--nav-bg-color);
+}
+.app-container .main-content-container {
+  padding: 2em 3em 3em;
+  min-width: 50vw;
+}
+.app-container .footer-container {
+  text-align: center;
+}
+.app-container .online-status-indicator {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.app-container .online-status-indicator .online-thumbnail {
+  width: 12.5rem;
+}
+.app-container .online-status-indicator .status-label {
+  color: var(--white);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  display: inline-block;
+  margin-right: 0.5rem;
+  color: var(--offline-color);
+}
+.app-container .online-status-indicator .status-icon {
+  font-size: 1.5rem;
+}
+.app-container .online-status-indicator .status-icon svg {
+  fill: var(--offline-color);
+}
+.app-container.online .online-status-indicator .status-icon svg {
+  fill: var(--online-color);
+}
+.app-container.online .online-status-indicator .status-label {
+  white-space: nowrap;
+  color: var(--online-color);
+}
+.global-stream-title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.global-stream-title-container .textfield-with-submit-container {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0;
+}
+.global-stream-title-container .textfield-with-submit-container .input-side {
+  width: 400px;
+}
+@media (max-width: 800px) {
+  .global-stream-title-container .textfield-with-submit-container .input-side {
+    width: auto;
+  }
+}
+.global-stream-title-container .textfield-with-submit-container .label-side {
+  display: none;
+}
+.global-stream-title-container .textfield-with-submit-container .lower-container {
+  width: auto;
+}
+.global-stream-title-container .textfield-with-submit-container .lower-container .lower-content {
+  flex-direction: column-reverse;
+  position: relative;
+}
+.global-stream-title-container .textfield-with-submit-container .lower-container .label-spacer,
+.global-stream-title-container .textfield-with-submit-container .lower-container .field-tip {
+  display: none;
+}
+.global-stream-title-container .textfield-with-submit-container .lower-container .status-container {
+  line-height: 1;
+  position: absolute;
+  bottom: -2em;
+}
+.global-stream-title-container
+  .textfield-with-submit-container
+  .lower-container
+  .update-button-container {
+  margin: 0;
+  margin-left: 0.5em;
+  line-height: 1;
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: var(--theme-color-components-form-field-background);
+}

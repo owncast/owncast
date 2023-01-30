@@ -79,3 +79,21 @@ CREATE TABLE IF NOT EXISTS auth (
 		"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL
 	);
   CREATE INDEX auth_token ON auth (token);
+
+CREATE TABLE IF NOT EXISTS messages (
+		"id" string NOT NULL,
+		"user_id" TEXT,
+		"body" TEXT,
+		"eventType" TEXT,
+		"hidden_at" DATE,
+		"timestamp" DATE,
+    "title" TEXT,
+    "subtitle" TEXT,
+    "image" TEXT,
+    "link" TEXT,
+		PRIMARY KEY (id)
+	);CREATE INDEX index ON messages (id, user_id, hidden_at, timestamp);
+	CREATE INDEX id ON messages (id);
+	CREATE INDEX user_id ON messages (user_id);
+	CREATE INDEX hidden_at ON messages (hidden_at);
+	CREATE INDEX timestamp ON messages (timestamp);

@@ -1,0 +1,181 @@
+/**
+ * Do not edit directly
+ * Generated on Sun, 29 Jan 2023 22:10:49 GMT
+ * 
+ * How to edit these values:
+ * Edit the corresponding token file under the style-definitions directory
+ * in the Owncast web project.
+ */
+
+:root {
+  --link-color: var(--theme-color-action);
+  --link-hover-color: var(--theme-color-action-hover);
+  --modal-header-bg: var(--theme-color-components-modal-header-background);
+  --modal-content-bg: var(--theme-color-background-main);
+  --alert-error-bg-color: var(--theme-color-palette-4);
+  --alert-error-border-color: var(--theme-color-palette-error);
+  --popover-background: var(--theme-color-components-menu-background);
+  --tag-default-color: var(--theme-color-action);
+  --border-radius-base: var(--theme-rounded-corners);
+  --background-color-light: var(--theme-color-background-main);
+  --modal-close-color: var(--theme-color-background-main);
+  --primary-color: #6544e9; /* Text link/secondary light text */
+  --primary-color-hover: #2386e2; /* Fun color 1 */
+  --primary-color-active: #7a5cf3; /* Text link hover */
+  --primary-1: #6544e9; /* Text link/secondary light text */
+  --primary-2: #2386e2; /* Fun color 1 */
+  --primary-3: #7a5cf3; /* Text link hover */
+  --primary-4: #da9eff; /* Fun color 2 */
+  --primary-5: #6544e9; /* Text link/secondary light text */
+  --primary-6: #2386e2; /* Fun color 1 */
+  --primary-7: #7a5cf3; /* Text link hover */
+  --primary-8: #da9eff; /* Fun color 2 */
+  --component-background: #e2e8f0; /* Light primary */
+  --body-background: #e2e8f0; /* Light primary */
+  --theme-rounded-corners: 9px; /* How much corners are rounded in places in the UI. */
+  --theme-unknown-1: green; /* This should never be used and it means something is wrong. */
+  --theme-unknown-2: red; /* This should never be used and it means something is wrong. */
+  --theme-text-body-font-family: var(
+    --font-owncast-body
+  ); /* The font family used for the body text. */
+  --theme-text-display-font-family: var(
+    --font-owncast-display
+  ); /* The font family used for the display/header text. */
+  --theme-color-users-0: var(--color-owncast-user-0);
+  --theme-color-users-1: var(--color-owncast-user-1);
+  --theme-color-users-2: var(--color-owncast-user-2);
+  --theme-color-users-3: var(--color-owncast-user-3);
+  --theme-color-users-4: var(--color-owncast-user-4);
+  --theme-color-users-5: var(--color-owncast-user-5);
+  --theme-color-users-6: var(--color-owncast-user-6);
+  --theme-color-users-7: var(--color-owncast-user-7);
+  --theme-color-palette-0: var(--color-owncast-palette-0); /* Dark primary */
+  --theme-color-palette-1: var(--color-owncast-palette-1); /* Dark secondary */
+  --theme-color-palette-2: var(--color-owncast-palette-2); /* Dark alternate */
+  --theme-color-palette-3: var(--color-owncast-palette-3); /* Light primary */
+  --theme-color-palette-4: var(--color-owncast-palette-4); /* Light secondary */
+  --theme-color-palette-5: var(--color-owncast-palette-5); /* Light alternate */
+  --theme-color-palette-6: var(--color-owncast-palette-6); /* Text link/secondary light text */
+  --theme-color-palette-7: var(--color-owncast-palette-7); /* Text link hover */
+  --theme-color-palette-8: var(--color-owncast-palette-8); /* Disabled background */
+  --theme-color-palette-9: var(--color-owncast-palette-9); /* Neutral dark */
+  --theme-color-palette-10: var(--color-owncast-palette-10); /* Neutral gray light */
+  --theme-color-palette-11: var(--color-owncast-palette-11); /* Fun color 1 */
+  --theme-color-palette-12: var(--color-owncast-palette-12); /* Fun color 2 */
+  --theme-color-palette-13: var(--color-owncast-palette-13); /* Fun color 3 */
+  --theme-color-palette-14: var(--color-owncast-palette-14); /* Light background */
+  --theme-color-palette-15: var(--color-owncast-palette-15); /* Lighter background */
+  --theme-color-palette-error: var(--color-owncast-palette-error); /* Error */
+  --theme-color-palette-warning: var(--color-owncast-palette-warning); /* Warning */
+  --theme-color-background-main: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-background-light: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-background-header: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-action: var(--theme-color-palette-6); /* Text link/secondary light text */
+  --theme-color-action-hover: var(--theme-color-palette-7); /* Text link hover */
+  --theme-color-action-disabled: var(--theme-color-palette-8); /* Disabled background */
+  --theme-color-error: var(--theme-color-palette-error); /* Error */
+  --theme-color-warning: var(--theme-color-palette-warning); /* Warning */
+  --theme-color-components-text-on-light: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-text-on-dark: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-components-primary-button-background: var(
+    --theme-color-action
+  ); /* Text link/secondary light text */
+  --theme-color-components-primary-button-background-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-primary-button-text: var(--theme-color-palette-4); /* Light secondary */
+  --theme-color-components-primary-button-text-disabled: var(
+    --theme-color-palette-10
+  ); /* Neutral gray light */
+  --theme-color-components-primary-button-border: var(--theme-color-action); /* Light secondary */
+  --theme-color-components-primary-button-border-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-secondary-button-background: var(
+    --theme-color-palette-4
+  ); /* Light secondary */
+  --theme-color-components-secondary-button-background-disabled: transparent;
+  --theme-color-components-secondary-button-text: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-secondary-button-text-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-secondary-button-border: var(
+    --theme-color-action
+  ); /* Text link/secondary light text */
+  --theme-color-components-secondary-button-border-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-chat-background: var(--theme-color-palette-1); /* Dark primary */
+  --theme-color-components-chat-text: var(--theme-color-palette-15); /* Lighter background */
+  --theme-color-components-content-background: var(
+    --theme-color-palette-15
+  ); /* Lighter background */
+  --theme-color-components-modal-header-background: var(
+    --theme-color-palette-1
+  ); /* Dark secondary */
+  --theme-color-components-modal-header-text: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-components-modal-content-background: var(
+    --theme-color-palette-3
+  ); /* Light primary */
+  --theme-color-components-modal-content-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-menu-background: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-components-menu-item-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-menu-item-bg: transparent;
+  --theme-color-components-menu-item-hover-bg: rgba(0, 0, 0, 0.05);
+  --theme-color-components-menu-item-focus-bg: rgba(0, 0, 0, 0.1);
+  --theme-color-components-form-field-background: var(
+    --theme-color-palette-4
+  ); /* Light secondary */
+  --theme-color-components-form-field-placeholder: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-form-field-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-form-field-border: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-video-background: var(--theme-color-palette-2); /* Dark alternate */
+  --theme-color-components-video-live-indicator: var(
+    --theme-color-palette-7
+  ); /* The Live dot indicator in the control bar of the video player */
+  --theme-color-components-video-status-bar-background: var(
+    --theme-color-palette-2
+  ); /* The background color of the video status bar */
+  --theme-color-components-video-status-bar-foreground: var(
+    --theme-color-palette-4
+  ); /* The foreground color of the video status bar */
+  --owncast-purple-25: rgba(120, 113, 255, 0.25);
+  --color-unknown: #7a5cf3;
+  --color-unknown-2: #fffffe;
+  --color-owncast-user-0: #ff717b;
+  --color-owncast-user-1: #f4e413;
+  --color-owncast-user-2: #b99c45;
+  --color-owncast-user-3: #58f40b;
+  --color-owncast-user-4: #0bf4f4;
+  --color-owncast-user-5: #16a8f7;
+  --color-owncast-user-6: #9a92ff;
+  --color-owncast-user-7: #ff53ff;
+  --color-owncast-palette-0: #12161d; /* Dark primary */
+  --color-owncast-palette-1: #2d3748; /* Dark secondary */
+  --color-owncast-palette-2: #000000; /* Dark alternate */
+  --color-owncast-palette-3: #e2e8f0; /* Light primary */
+  --color-owncast-palette-4: #ffffff; /* Light secondary */
+  --color-owncast-palette-5: #c3dafe; /* Light alternate */
+  --color-owncast-palette-6: #6544e9; /* Text link/secondary light text */
+  --color-owncast-palette-7: #7a5cf3; /* Text link hover */
+  --color-owncast-palette-8: #b6b3c6; /* Disabled background */
+  --color-owncast-palette-9: #39373d; /* Neutral dark */
+  --color-owncast-palette-10: #5d5f72; /* Neutral gray light */
+  --color-owncast-palette-11: #2386e2; /* Fun color 1 */
+  --color-owncast-palette-12: #da9eff; /* Fun color 2 */
+  --color-owncast-palette-13: #42bea6; /* Fun color 3 */
+  --color-owncast-palette-14: #f0f3f8; /* Light background */
+  --color-owncast-palette-15: #eff1f4; /* Lighter background */
+  --color-owncast-palette-error: #ff4b39; /* Error */
+  --color-owncast-palette-warning: #ffc655; /* Warning */
+  --font-owncast-body: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-owncast-display: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+}

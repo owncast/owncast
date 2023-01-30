@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"context"
 	"database/sql"
 	"strings"
 	"time"
@@ -295,7 +296,6 @@ func GetChatModerationHistory() []interface{} {
 	defer rows.Close()
 
 	result, err := getChat(rows)
-
 	if err != nil {
 		log.Errorln(err)
 		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
@@ -341,7 +341,6 @@ func GetChatHistory() []interface{} {
 	defer rows.Close()
 
 	m, err := getChat(rows)
-
 	if err != nil {
 		log.Errorln(err)
 		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)
@@ -359,6 +358,29 @@ func GetChatHistory() []interface{} {
 	}
 
 	return m
+}
+
+// GetMessagesFromUser returns chat messages that were sent by a specific user.
+func GetMessagesFromUser(userID string) ([]events.UserMessageEvent, error) {
+	query, err := _datastore.GetQueries().GetMessagesFromUser(context.Background(), sql.NullString{String: userID, Valid: true})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]events.UserMessageEvent, len(query))
+	for i, row := range query {
+		results[i] = events.UserMessageEvent{
+			Event: events.Event{
+				Timestamp: row.Timestamp.Time,
+				ID:        row.ID,
+			},
+			MessageEvent: events.MessageEvent{
+				Body: row.Body.String,
+			},
+		}
+	}
+
+	return results, nil
 }
 
 // SetMessageVisibilityForUserID will bulk change the visibility of messages for a user
@@ -396,7 +418,6 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	ids := make([]string, 0)
 
 	messages, err := getChat(rows)
-
 	if err != nil {
 		log.Errorln(err)
 		log.Errorln("There is a problem enumerating chat message rows. Please report this:", query)

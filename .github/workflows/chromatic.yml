@@ -1,0 +1,52 @@
+# .github/workflows/chromatic.yml
+
+# Workflow name
+name: 'Chromatic'
+
+on:
+  push:
+    paths:
+      - web/**
+  pull_request_target:
+    paths:
+      - web/**
+
+# List of jobs
+jobs:
+  chromatic-deployment:
+    # Operating System
+    runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
+
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+      - name: Check out code
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
+        uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
+      - name: Install dependencies
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
+        run: npm install
+
+      - name: Publish to Chromatic
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
+
+        uses: chromaui/action@v1
+        # Chromatic GitHub Action options
+        with:
+          workingDir: web
+          autoAcceptChanges: webv2
+          projectToken: f47410569b62
+          onlyChanged: true

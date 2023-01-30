@@ -1,0 +1,246 @@
+# These are the variables used in the user interface.
+# They can be overwritten to customize the look and feel.
+# We should write some documentation on how to do that when the time comes.
+# The fewer there are the easier it'll be easier to customize and document.
+
+theme:
+  rounded-corners:
+    value: 9px
+    comment: 'How much corners are rounded in places in the UI.'
+  unknown-1:
+    value: 'green'
+    comment: 'This should never be used and it means something is wrong.'
+  unknown-2:
+    value: 'red'
+    comment: 'This should never be used and it means something is wrong.'
+  text-body-font-family:
+    value: 'var(--font-owncast-body)'
+    comment: 'The font family used for the body text.'
+  text-display-font-family:
+    value: 'var(--font-owncast-display)'
+    comment: 'The font family used for the display/header text.'
+
+  color:
+    users:
+      comment: 'Colors used to display chat users.'
+      0:
+        value: 'var(--color-owncast-user-0)'
+      1:
+        value: 'var(--color-owncast-user-1)'
+      2:
+        value: 'var(--color-owncast-user-2)'
+      3:
+        value: 'var(--color-owncast-user-3)'
+      4:
+        value: 'var(--color-owncast-user-4)'
+      5:
+        value: 'var(--color-owncast-user-5)'
+      6:
+        value: 'var(--color-owncast-user-6)'
+      7:
+        value: 'var(--color-owncast-user-7)'
+
+    palette:
+      comment: 'Colors used in the user interface for the default theme.'
+      0:
+        value: 'var(--color-owncast-palette-0)'
+        comment: '{color.owncast.palette.0.comment}'
+      1:
+        value: 'var(--color-owncast-palette-1)'
+        comment: '{color.owncast.palette.1.comment}'
+      2:
+        value: 'var(--color-owncast-palette-2)'
+        comment: '{color.owncast.palette.2.comment}'
+      3:
+        value: 'var(--color-owncast-palette-3)'
+        comment: '{color.owncast.palette.3.comment}'
+      4:
+        value: 'var(--color-owncast-palette-4)'
+        comment: '{color.owncast.palette.4.comment}'
+      5:
+        value: 'var(--color-owncast-palette-5)'
+        comment: '{color.owncast.palette.5.comment}'
+      6:
+        value: 'var(--color-owncast-palette-6)'
+        comment: '{color.owncast.palette.6.comment}'
+      7:
+        value: 'var(--color-owncast-palette-7)'
+        comment: '{color.owncast.palette.7.comment}'
+      8:
+        value: 'var(--color-owncast-palette-8)'
+        comment: '{color.owncast.palette.8.comment}'
+      9:
+        value: 'var(--color-owncast-palette-9)'
+        comment: '{color.owncast.palette.9.comment}'
+      10:
+        value: 'var(--color-owncast-palette-10)'
+        comment: '{color.owncast.palette.10.comment}'
+      11:
+        value: 'var(--color-owncast-palette-11)'
+        comment: '{color.owncast.palette.11.comment}'
+      12:
+        value: 'var(--color-owncast-palette-12)'
+        comment: '{color.owncast.palette.12.comment}'
+      13:
+        value: 'var(--color-owncast-palette-13)'
+        comment: '{color.owncast.palette.13.comment}'
+      14:
+        value: 'var(--color-owncast-palette-14)'
+        comment: '{color.owncast.palette.14.comment}'
+      15:
+        value: 'var(--color-owncast-palette-15)'
+        comment: '{color.owncast.palette.15.comment}'
+      error:
+        value: 'var(--color-owncast-palette-error)'
+        comment: '{color.owncast.palette.error.comment}'
+      warning:
+        value: 'var(--color-owncast-palette-warning)'
+        comment: '{color.owncast.palette.warning.comment}'
+
+    background:
+      main:
+        value: 'var(--theme-color-palette-3)'
+        comment: '{theme.color.palette.3.comment}'
+      light:
+        value: 'var(--theme-color-palette-3)'
+        comment: '{theme.color.palette.3.comment}'
+      header:
+        value: 'var(--theme-color-palette-0)'
+        comment: '{theme.color.palette.0.comment}'
+
+    action:
+      value: 'var(--theme-color-palette-6)'
+      comment: '{theme.color.palette.6.comment}'
+    action-hover:
+      value: 'var(--theme-color-palette-7)'
+      comment: '{theme.color.palette.7.comment}'
+    action-disabled:
+      value: 'var(--theme-color-palette-8)'
+      comment: '{theme.color.palette.8.comment}'
+
+    error:
+      value: 'var(--theme-color-palette-error)'
+      comment: '{theme.color.palette.error.comment}'
+    warning:
+      value: 'var(--theme-color-palette-warning)'
+      comment: '{theme.color.palette.warning.comment}'
+
+    components:
+      text-on-light:
+        value: 'var(--theme-color-palette-0)'
+        comment: '{theme.color.palette.0.comment}'
+      text-on-dark:
+        value: 'var(--theme-color-palette-3)'
+        comment: '{theme.color.palette.3.comment}'
+
+      primary-button:
+        background:
+          value: 'var(--theme-color-action)'
+          comment: '{theme.color.action.comment}'
+        background-disabled:
+          value: 'var(--theme-color-action-disabled)'
+          comment: '{theme.color.action-disabled.comment}'
+        text:
+          value: 'var(--theme-color-palette-4)'
+          comment: '{theme.color.palette.4.comment}'
+        text-disabled:
+          value: 'var(--theme-color-palette-10)'
+          comment: '{theme.color.palette.10.comment}'
+        border:
+          value: 'var(--theme-color-action)'
+          comment: '{theme.color.palette.4.comment}'
+        border-disabled:
+          value: 'var(--theme-color-action-disabled)'
+          comment: '{theme.color.action-disabled.comment}'
+
+      secondary-button:
+        background:
+          value: 'var(--theme-color-palette-4)'
+          comment: '{theme.color.palette.4.comment}'
+        background-disabled:
+          value: 'transparent'
+        text:
+          value: 'var(--theme-color-action-disabled)'
+          comment: '{theme.color.action-disabled.comment}'
+        text-disabled:
+          value: 'var(--theme-color-action-disabled)'
+          comment: '{theme.color.action-disabled.comment}'
+        border:
+          value: 'var(--theme-color-action)'
+          comment: '{theme.color.action.comment}'
+        border-disabled:
+          value: 'var(--theme-color-action-disabled)'
+          comment: '{theme.color.action-disabled.comment}'
+
+      chat:
+        background:
+          value: 'var(--theme-color-palette-1)'
+          comment: '{theme.color.palette.0.comment}'
+        text:
+          value: 'var(--theme-color-palette-15)'
+          comment: '{theme.color.palette.15.comment}'
+
+      content:
+        background:
+          value: 'var(--theme-color-palette-15)'
+          comment: '{theme.color.palette.15.comment}'
+
+      modal:
+        header:
+          background:
+            value: 'var(--theme-color-palette-1)'
+            comment: '{theme.color.palette.1.comment}'
+          text:
+            value: 'var(--theme-color-palette-3)'
+            comment: '{theme.color.palette.3.comment}'
+        content:
+          background:
+            value: 'var(--theme-color-palette-3)'
+            comment: '{theme.color.palette.3.comment}'
+          text:
+            value: 'var(--theme-color-palette-0)'
+            comment: '{theme.color.palette.0.comment}'
+
+      menu:
+        background:
+          value: 'var(--theme-color-palette-3)'
+          comment: '{theme.color.palette.3.comment}'
+        item:
+          text:
+            value: 'var(--theme-color-palette-0)'
+            comment: '{theme.color.palette.0.comment}'
+          bg:
+            value: 'transparent'
+          hover-bg:
+            value: 'rgba(0, 0, 0, 0.05)'
+          focus-bg:
+            value: 'rgba(0, 0, 0, 0.1)'
+
+      form-field:
+        background:
+          value: 'var(--theme-color-palette-4)'
+          comment: '{theme.color.palette.4.comment}'
+        placeholder:
+          value: 'var(--theme-color-action-disabled)'
+          comment: '{theme.color.action-disabled.comment}'
+        text:
+          value: 'var(--theme-color-palette-0)'
+          comment: '{theme.color.palette.0.comment}'
+        border:
+          value: 'var(--theme-color-palette-0)'
+          comment: '{theme.color.palette.0.comment}'
+
+      video:
+        background:
+          value: 'var(--theme-color-palette-2)'
+          comment: '{theme.color.palette.2.comment}'
+        live-indicator:
+          value: 'var(--theme-color-palette-7)'
+          comment: 'The Live dot indicator in the control bar of the video player'
+        status-bar:
+          background:
+            value: 'var(--theme-color-palette-2)'
+            comment: 'The background color of the video status bar'
+          foreground:
+            value: 'var(--theme-color-palette-4)'
+            comment: 'The foreground color of the video status bar'

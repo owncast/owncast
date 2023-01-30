@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: Owncast
-  description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software.
-  version: '0.0.13'
+  description: Owncast is a self-hosted live video and web chat server for use with existing popular broadcasting software. <br/><br/>Take note that only APIs listed specifically for external use, 3rd parties or for integration purposes are encouraged for external use. Internal APIs may change at any time and are used by the server and frontend itself.
+  version: '0.1.0'
   contact:
     name: Gabe Kangas
     email: gabek@real-ity.com
@@ -42,6 +42,16 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Follower'
+
+    StreamKeyArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/StreamKey'
+
+    ChatMessageArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/ChatMessage'
 
     Client:
       type: object
@@ -96,6 +106,7 @@ components:
           type: boolean
         message:
           type: string
+
     InstanceDetails:
       type: object
       description: User-facing details about this server.
@@ -240,6 +251,7 @@ components:
         message:
           type: string
           description: 'The log entry contents'
+
     Webhook:
       type: object
       properties:
@@ -276,8 +288,8 @@ components:
           example: awesome-pizza
         displayColor:
           type: integer
-          description: Hue value for displaying in the UI.
-          example: 42
+          description: Color name number for client rendering.  theme-user-colors-n
+          example: 3
         createdAt:
           type: string
           format: date-time
@@ -341,11 +353,43 @@ components:
               FEDIVERSE_ENGAGEMENT_REPOST,
             ]
 
+    StreamKey:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The key used for authing a stream.
+          example: yklw5Imng
+        comment:
+          type: string
+          description: The user-facing description or explanation of this single key
+          example: Used by Tim.
+
+    ChatMessage:
+      type: array
+      items:
+        type: object
+        properties:
+          user:
+            $ref: '#/components/schemas/User'
+            body:
+              type: string
+              description: Escaped HTML of the chat message content.
+            id:
+              type: string
+              description: Unique ID of the chat message.
+            visible:
+              type: boolean
+              description: 'Should chat message be visibly rendered.'
+            timestamp:
+              type: string
+              format: date-time
+
   securitySchemes:
     AdminBasicAuth:
       type: http
       scheme: basic
-      description: The username for admin basic auth is `admin` and the password is the stream key.
+      description: The username for admin basic auth is `admin`. Defaults to abc123.
     AccessToken:
       type: http
       scheme: bearer
@@ -512,6 +556,20 @@ paths:
                     sessionMaxViewerCount: 12
                     viewerCount: 7
 
+  /api/customjavascript:
+    get:
+      summary: Custom Javascript to execute.
+      description: Returns custom Javascript that was set in the Owncast admin to be run in the Owncast frontend.
+      tags: ['Server']
+      responses:
+        '200':
+          description: ''
+          content:
+            application/javascript:
+              schema:
+                type: string
+              example: console.log("Hello World");
+
   /api/chat/register:
     post:
       summary: Register a chat user
@@ -560,24 +618,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    user:
-                      $ref: '#/components/schemas/User'
-                    body:
-                      type: string
-                      description: Escaped HTML of the chat message content.
-                    id:
-                      type: string
-                      description: Unique ID of the chat message.
-                    visible:
-                      type: boolean
-                      description: 'Should chat message be visibly rendered.'
-                    timestamp:
-                      type: string
-                      format: date-time
+                $ref: '#/components/schemas/ChatMessageArray'
 
   /api/yp:
     get:
@@ -616,6 +657,23 @@ paths:
                     type: string
                     nullable: true
                     format: date-time
+
+  /img/emoji/:
+    get:
+      parameters:
+        - name: name
+          in: path
+          description: Emoji image name
+          required: true
+          schema:
+            type: string
+          example: test.svg
+      summary: Get Emoji Image
+      description: Get an emoji image.
+      tags: ['Chat']
+      responses:
+        '200':
+          description: 'Returns a single image'
 
   /api/emoji:
     get:
@@ -1000,10 +1058,9 @@ paths:
         '200':
           $ref: '#/components/responses/BasicResponse'
 
-  /api/admin/config/key:
+  /api/admin/config/adminpass:
     post:
-      summary: Set the stream key.
-      description: Set the stream key.  Also used as the admin password.
+      summary: Set the admin password.
       tags: ['Admin']
       security:
         - AdminBasicAuth: []
@@ -1015,6 +1072,21 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ConfigValue'
+
+  /api/admin/config/streamkeys:
+    post:
+      summary: Set the stream keys.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StreamKeyArray'
 
   /api/admin/config/pagecontent:
     post:
@@ -1084,6 +1156,24 @@ paths:
               $ref: '#/components/schemas/ConfigValue'
             example:
               value: The best in Desert Bus Streaming
+
+  /api/admin/config/offlinemessage:
+    post:
+      summary: Set the offline message.
+      description: Set the message that is displayed when a stream is not live.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+            example:
+              value: Come back on Friday at 2pm, I'll be streaming then.
 
   /api/admin/config/logo:
     post:
@@ -1349,6 +1439,7 @@ paths:
                   url: https://github.com/owncast/owncast
                 - platform: mastodon
                   url: https://mastodon.social/@gabek
+
   /api/admin/config/customstyles:
     post:
       summary: Custom CSS styles to be used in the web front endpoints.
@@ -1364,6 +1455,43 @@ paths:
               $ref: '#/components/schemas/ConfigValue'
             example:
               value: 'body { color: orange; background: black; }'
+
+  /api/admin/config/customjavascript:
+    post:
+      summary: Custom Javascript to be inserted into the frontend
+      description: Save a string containing Javascript to be inserted in to the web frontend page.
+      tags: ['Admin']
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/javascript:
+            schema:
+              $ref: '#/components/schemas/ConfigValue'
+            example:
+              value: console.log('Hello world.');
+
+  /api/admin/config/appearance:
+    post:
+      summary: Save a map of variables and values to be used in the frontend.
+      description: These values will override the default values in the frontend.
+      tags: ['Admin']
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: object
+            example:
+              value:
+                theme-color-components-primary-button-background: '#ff0000'
+                theme-color-components-chat-background: '#000000'
 
   /api/admin/viewersOverTime:
     get:
@@ -1440,6 +1568,21 @@ paths:
                         value: 11
                       - time: '2020-10-03T21:43:00.381996-05:00'
                         value: 11
+
+  /api/admin/config/hideviewercount:
+    post:
+      summary: Enable or disable showing the viewer count.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooleanValue'
 
   /api/admin/config/federation/enable:
     post:
@@ -1567,6 +1710,33 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FederatedAction'
+
+  /api/admin/emoji/upload:
+    post:
+      summary: Upload a single emoji image.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+
+  /api/admin/emoji/delete:
+    post:
+      summary: Delete a single emoji image.
+      tags: ['Admin']
+      security:
+        - AdminBasicAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BasicResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              name: test.svg
 
   /api/integrations/streamtitle:
     post:
@@ -2049,6 +2219,34 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+
+  /api/moderation/chat/user/:
+    get:
+      tags: ['Moderation']
+      parameters:
+        - name: name
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+          example: USER-ID
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  connectClients:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+                  messages:
+                    $ref: '#/components/schemas/ChatMessageArray'
 
   /api/admin/followers:
     get:

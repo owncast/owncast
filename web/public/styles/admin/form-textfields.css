@@ -1,0 +1,128 @@
+.formfield-container {
+  --form-label-container-width: 15em;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 600px;
+}
+.formfield-container .label-side {
+  padding-right: 1.25em;
+  text-align: right;
+  width: var(--form-label-container-width);
+  margin: 0.2em 0;
+}
+.formfield-container .formfield-label {
+  font-weight: 500;
+  font-size: 1em;
+  color: var(--owncast-purple);
+}
+.formfield-container .formfield-label::after {
+  content: ':';
+}
+.formfield-container.required .formfield-label::before {
+  content: '*';
+  display: inline-block;
+  margin-right: 0.25em;
+  color: var(--ant-error);
+}
+.formfield-container .input-side {
+  max-width: 500px;
+  width: 100%;
+}
+.formfield-container .input-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.formfield-container .status-container {
+  margin: 0.25em;
+  width: 100%;
+  display: block;
+}
+.formfield-container .status-container.empty {
+  display: none;
+  visibility: visible;
+}
+.formfield-container .field-tip {
+  margin: 0.5em 0.5em;
+}
+@media (max-width: 800px) {
+  .formfield-container {
+    flex-wrap: wrap;
+  }
+  .formfield-container .label-side {
+    width: 100%;
+    text-align: left;
+  }
+}
+.textfield-with-submit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1em;
+}
+.textfield-with-submit-container .textfield-component {
+  width: 100%;
+}
+.textfield-with-submit-container .textfield-component .textfield-container .field-tip,
+.textfield-with-submit-container .textfield-component .textfield-container .status-container {
+  display: none;
+}
+.textfield-with-submit-container .lower-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.textfield-with-submit-container .lower-container .label-spacer {
+  width: var(--form-label-container-width);
+}
+.textfield-with-submit-container .lower-container .lower-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 100%;
+}
+.textfield-with-submit-container .lower-container .lower-content .field-tip {
+  margin-right: 1em;
+  width: 100%;
+}
+.textfield-with-submit-container .lower-container .lower-content .status-container {
+  margin: 0.5em;
+}
+.textfield-with-submit-container .lower-container .lower-content .status-container.empty {
+  display: none;
+}
+.textfield-with-submit-container .lower-container .update-button-container {
+  visibility: hidden;
+  margin: 0.25em 0;
+}
+.textfield-with-submit-container.submittable .lower-container .update-button-container {
+  visibility: visible;
+}
+@media (max-width: 800px) {
+  .textfield-with-submit-container .label-spacer {
+    display: none;
+  }
+}
+.toggleswitch-container {
+  margin: 2em 0 1em;
+}
+.toggleswitch-container .label-side {
+  margin-top: 0;
+}
+.toggleswitch-container .input-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.toggleswitch-container .input-group .status-container {
+  width: auto;
+  margin: 0 0 0 1em;
+  display: inline-block;
+}

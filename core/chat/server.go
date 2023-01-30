@@ -99,14 +99,14 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 
 	s.mu.Lock()
 	{
-		client.id = s.seq
-		s.clients[client.id] = client
+		client.Id = s.seq
+		s.clients[client.Id] = client
 		s.seq++
 		_lastSeenCache[user.ID] = time.Now()
 	}
 	s.mu.Unlock()
 
-	log.Traceln("Adding client", client.id, "total count:", len(s.clients))
+	log.Traceln("Adding client", client.Id, "total count:", len(s.clients))
 
 	go client.writePump()
 	go client.readPump()
@@ -132,7 +132,7 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	userJoinedEvent := events.UserJoinedEvent{}
 	userJoinedEvent.SetDefaults()
 	userJoinedEvent.User = c.User
-	userJoinedEvent.ClientID = c.id
+	userJoinedEvent.ClientID = c.Id
 
 	if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
 		log.Errorln("error adding client to chat server", err)
@@ -148,9 +148,9 @@ func (s *Server) ClientClosed(c *Client) {
 	defer s.mu.Unlock()
 	c.close()
 
-	if _, ok := s.clients[c.id]; ok {
-		log.Debugln("Deleting", c.id)
-		delete(s.clients, c.id)
+	if _, ok := s.clients[c.Id]; ok {
+		log.Debugln("Deleting", c.Id)
+		delete(s.clients, c.Id)
 	}
 }
 
@@ -182,6 +182,11 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxSocketConnectionLimit)
 		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return
+	}
+
+	// To allow dev web environments to connect.
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
 	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -354,6 +359,8 @@ func (s *Server) eventReceived(event chatClientEvent) {
 	case events.UserNameChanged:
 		s.userNameChanged(event)
 
+	case events.UserColorChanged:
+		s.userColorChanged(event)
 	default:
 		log.Debugln(logSanitize(fmt.Sprint(eventType)), "event not found:", logSanitize(fmt.Sprint(typecheck)))
 	}

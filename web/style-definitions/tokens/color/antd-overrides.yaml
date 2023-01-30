@@ -1,0 +1,71 @@
+# Ant Design component color overrides.
+# You can find the variable names to override at:
+# https://github.com/ant-design/ant-design/blob/4.x-stable/components/style/themes/dark.less (for ant v4)
+
+link-color:
+  value: 'var(--theme-color-action)'
+link-hover-color:
+  value: 'var(--theme-color-action-hover)'
+modal-header-bg:
+  value: 'var(--theme-color-components-modal-header-background)'
+modal-content-bg:
+  value: 'var(--theme-color-background-main)'
+alert-error-bg-color:
+  value: 'var(--theme-color-palette-4)'
+alert-error-border-color:
+  value: 'var(--theme-color-palette-error)'
+popover-background:
+  value: 'var(--theme-color-components-menu-background)'
+tag-default-color:
+  value: 'var(--theme-color-action)'
+border-radius-base:
+  value: 'var(--theme-rounded-corners)'
+background-color-light:
+  value: 'var(--theme-color-background-main)'
+modal-close-color:
+  value: 'var(--theme-color-background-main)'
+
+# This values need to be statically assigned at build time and cannot be
+# overridden by the user at runtime.
+primary-color:
+  value: '{color.owncast.palette.6.value}'
+  comment: '{color.owncast.palette.6.comment}'
+primary-color-hover:
+  value: '{color.owncast.palette.11.value}'
+  comment: '{color.owncast.palette.11.comment}'
+primary-color-active:
+  value: '{color.owncast.palette.7.value}'
+  comment: '{color.owncast.palette.7.comment}'
+
+primary-1:
+  value: '{color.owncast.palette.6.value}'
+  comment: '{color.owncast.palette.6.comment}'
+primary-2:
+  value: '{color.owncast.palette.11.value}'
+  comment: '{color.owncast.palette.11.comment}'
+primary-3:
+  value: '{color.owncast.palette.7.value}'
+  comment: '{color.owncast.palette.7.comment}'
+primary-4:
+  value: '{color.owncast.palette.12.value}'
+  comment: '{color.owncast.palette.12.comment}'
+primary-5:
+  value: '{color.owncast.palette.6.value}'
+  comment: '{color.owncast.palette.6.comment}'
+primary-6:
+  value: '{color.owncast.palette.11.value}'
+  comment: '{color.owncast.palette.11.comment}'
+primary-7:
+  value: '{color.owncast.palette.7.value}'
+  comment: '{color.owncast.palette.7.comment}'
+primary-8:
+  value: '{color.owncast.palette.12.value}'
+  comment: '{color.owncast.palette.12.comment}'
+
+component-background:
+  value: '{color.owncast.palette.3.value}'
+  comment: '{color.owncast.palette.3.comment}'
+
+body-background:
+  value: '{color.owncast.palette.3.value}'
+  comment: '{color.owncast.palette.3.comment}'

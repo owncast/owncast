@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/utils"
@@ -55,23 +56,32 @@ func SetupUsers() {
 	_datastore = data.GetDatastore()
 }
 
+func generateDisplayName() string {
+	suggestedUsernamesList := data.GetSuggestedUsernamesList()
+
+	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
+		index := utils.RandomIndex(len(suggestedUsernamesList))
+		return suggestedUsernamesList[index]
+	} else {
+		return utils.GeneratePhrase()
+	}
+}
+
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
 func CreateAnonymousUser(displayName string) (*User, string, error) {
-	id := shortid.MustGenerate()
-
-	if displayName == "" {
-		suggestedUsernamesList := data.GetSuggestedUsernamesList()
-
-		if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
-			index := utils.RandomIndex(len(suggestedUsernamesList))
-			displayName = suggestedUsernamesList[index]
-		} else {
-			displayName = utils.GeneratePhrase()
+	// Try to assign a name that was requested.
+	if displayName != "" {
+		// If name isn't available then generate a random one.
+		if available, _ := IsDisplayNameAvailable(displayName); !available {
+			displayName = generateDisplayName()
 		}
+	} else {
+		displayName = generateDisplayName()
 	}
 
-	displayColor := utils.GenerateRandomDisplayColor()
+	displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
+	id := shortid.MustGenerate()
 	user := &User{
 		ID:           id,
 		DisplayName:  displayName,
@@ -120,6 +130,21 @@ func ChangeUsername(userID string, username string) error {
 		NamechangedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	}); err != nil {
 		return errors.Wrap(err, "unable to change display name")
+	}
+
+	return nil
+}
+
+// ChangeUserColor will change the user associated to userID from one display name to another.
+func ChangeUserColor(userID string, color int) error {
+	_datastore.DbLock.Lock()
+	defer _datastore.DbLock.Unlock()
+
+	if err := _datastore.GetQueries().ChangeDisplayColor(context.Background(), db.ChangeDisplayColorParams{
+		DisplayColor: int32(color),
+		ID:           userID,
+	}); err != nil {
+		return errors.Wrap(err, "unable to change display color")
 	}
 
 	return nil

@@ -1,0 +1,36 @@
+.edit-current-strings .ant-tag {
+  margin: 0.1rem;
+  font-size: 0.85rem;
+  border-radius: 10em;
+  padding: 0.25em 1em;
+}
+.edit-current-strings .ant-tag:hover {
+  opacity: 1;
+}
+.edit-current-strings .ant-tag .ant-tag-close-icon {
+  transform: translateY(-1px);
+  margin-left: 0.3rem;
+  padding: 2px;
+  border-radius: 5rem;
+  color: var(--black);
+  border: 1px solid var(--black);
+  transition-duration: var(--ant-transition-duration);
+}
+.edit-current-strings .ant-tag .ant-tag-close-icon:hover {
+  border-color: var(--owncast-purple);
+  background-color: var(--white);
+}
+.edit-current-strings .ant-tag .ant-tag-close-icon:hover svg {
+  fill: black;
+  transition: fill var(--ant-transition-duration);
+}
+.add-new-string-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 2em;
+}
+.continuous-status-section {
+  margin-top: 1em;
+}

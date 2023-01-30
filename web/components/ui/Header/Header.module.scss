@@ -1,0 +1,59 @@
+@import '../../../styles/mixins.scss';
+
+.header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+  padding: 0.7rem;
+  box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
+  background-color: var(--theme-color-background-header);
+
+  @include screen(mobile) {
+    --header-height: 3.85rem;
+  }
+}
+
+.logoImage {
+  padding: 0.2rem;
+  display: none;
+
+  @include screen(desktop) {
+    display: block;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  color: var(--theme-color-components-text-on-dark);
+  font-family: var(--theme-text-display-font-family);
+  margin-left: 0.5rem;
+  margin-bottom: 0px;
+  font-size: clamp(1rem, 4vw, 1.6rem);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 70vw;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+.skipLink {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skipLink:focus {
+  position: static;
+  width: auto;
+  height: auto;
+}

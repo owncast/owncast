@@ -1,0 +1,15 @@
+.badge {
+  color: white;
+  background-color: var(--color-owncast-palette-0);
+  height: 18px;
+  width: 18px;
+  border-radius: 2px;
+  text-align: center;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-left: 5px;
+  font-size: 0.75rem;
+}

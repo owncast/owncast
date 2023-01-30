@@ -1,0 +1,57 @@
+// The button that is displayed to scroll to the bottom of the chat.
+.toBottomWrap {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  position: absolute;
+  bottom: 50px;
+  color: var(--theme-color-components-text-on-light);
+
+  button {
+    background-color: var(--theme-color-background-light);
+    z-index: 9999;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  }
+}
+
+.nameChangeView {
+  display: flex;
+  font-size: 0.9rem;
+  border-radius: var(--theme-rounded-corners);
+  padding: 5px 15px;
+  color: var(--theme-color-components-text-on-light);
+  background-color: var(--color-owncast-background);
+  & .nameChangeText {
+    font-weight: bold;
+    font-family: var(--theme-text-display-font-family);
+    & .plain {
+      font-weight: normal;
+      font-family: var(--theme-text-body-font-family) !important;
+    }
+  }
+}
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-color-components-chat-background);
+  height: 100%;
+}
+.virtuoso {
+  width: auto;
+  flex-grow: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.virtuoso::-webkit-scrollbar {
+  display: none;
+}
+
+.virtuoso::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+.chatTextField {
+  border-top: 1px solid lightgray;
+}

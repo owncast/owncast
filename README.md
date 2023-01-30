@@ -44,7 +44,7 @@
   </a>
 </p>
 
-Owncast is an open source, self-hosted, decentralized, single user live video streaming and chat server for running your own live streams similar in style to the large mainstream options.  It offers complete ownership over your content, interface, moderation and audience. <a href="https://watch.owncast.online">Visit the demo</a> for an example.
+Owncast is an open source, self-hosted, decentralized, single user live video streaming and chat server for running your own live streams similar in style to the large mainstream options. It offers complete ownership over your content, interface, moderation and audience. <a href="https://watch.owncast.online">Visit the demo</a> for an example.
 
 <div>
     <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/owncast/owncast/total?style=for-the-badge">
@@ -58,8 +58,6 @@ Owncast is an open source, self-hosted, decentralized, single user live video st
       <img alt="Open Collective backers and sponsors" src="https://img.shields.io/opencollective/all/owncast?style=for-the-badge">
     </a>
 </div>
-
-[![contribute.design](https://contribute.design/api/shield/owncast/owncast)](https://contribute.design/owncast/owncast)
 
 ---
 
@@ -77,25 +75,37 @@ OBS, Streamlabs, Restream and many others have been used with Owncast. [Read mor
 
 ## Building from Source
 
+Owncast consists of two projects.
+
+1. The Owncast backend written in Go.
+1. The frontend written in React.
+
+[Read more about running from source](https://owncast.online/development/).
+
+### Important note about source code and the develop branch
+
+The `develop` branch is always the most up-to-date state of development and this may not be what you always want. If you want to run the latest released stable version, check out the tag related to that release. For example, if you'd only like the source prior to the v0.1.0 development cycle you can check out the `v0.0.13` tag.
+
+### Backend
+
+The Owncast backend is a service written in Go.
+
 1. Ensure you have pre-requisites installed.
-    - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
-    - [ffmpeg](https://ffmpeg.org/download.html)
-1. Install the [Go toolchain](https://golang.org/dl/) (1.17 or above).
+   - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
+   - [ffmpeg](https://ffmpeg.org/download.html)
+1. Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from source.
 1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
-There is also a supplied `Dockerfile` so you can spin it up from source with little effort. [Read more about running from source](https://owncast.online/docs/building/).
+### Frontend
 
-### Bundling in latest admin from source
+The frontend is the web interface that includes the player, chat, embed components, and other UI.
 
-The admin ui is built at: https://github.com/owncast/owncast-admin it is bundled into the final binary using pkger.
-
-To bundle in the latest admin UI:
-
-1. From the owncast directory run the packager script: `./build/admin/bundleAdmin.sh`
-1. Compile or run like above. `go run main.go`
+1. This project lives in the `web` directory.
+1. Run `npm install` to install the Javascript dependencies.
+1. Run `npm run dev`
 
 ## Contributing
 
@@ -106,17 +116,6 @@ We abide by our [Code of Conduct](https://owncast.online/contribute/) and feel s
 We’ve been very lucky to have this so far, so maybe you can help us with your skills and passion, too!
 
 There is a larger, more detailed, and more up-to-date [guide for helping contribute to Owncast on our website](https://owncast.online/help/).
-
-### Architecture
-
-Owncast consists of two repositories with two standalone projects. [The repo you're looking at now](https://github.com/owncast/owncast) is the core repository with the backend and frontend.  [owncast/owncast-admin](https://github.com/owncast/owncast-admin) is an additional web project that is built separately and used for configuration and management of an Owncast server.
-
-### Suggestions when working with the Owncast codebase
-
-1. Install [golangci-lint](https://golangci-lint.run/usage/install/) for helpful warnings and suggestions [directly in your editor](https://golangci-lint.run/usage/integrations/) when writing Go.
-1. If using VSCode install the [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) extension to aid in syntax highlighting of our frontend HTML + Preact.
-1. Run the project with `go run main.go`.
-
 
 <!-- LICENSE -->
 
@@ -130,6 +129,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Project chat: [Join us on Rocket.Chat](https://owncast.rocket.chat/home) if you want to contribute, follow along, or if you have questions.
 
-Gabe Kangas - [@gabek@fosstodon.org](https://fosstodon.org/@gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
+Gabe Kangas - [@gabek@social.gabekangas.com](https://social.gabekangas.com/gabek) - email [gabek@real-ity.com](mailto:gabek@real-ity.com)
 
 Project Link: [https://github.com/owncast/owncast](https://github.com/owncast/owncast)

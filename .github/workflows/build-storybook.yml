@@ -1,0 +1,44 @@
+name: Build and Deploy Components+Style Guide
+on:
+  push:
+    branches:
+      - webv2
+    paths: ['web/stories/**', 'web/components/**', 'web/.storybook/**'] # Trigger the action only when files change in the folders defined here
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: webv2 # Remove when webv2 gets merged into develop
+
+      - name: Install and Build
+        run: | # Install npm packages and build the Storybook files
+          cd web
+          npm install --include-dev --force
+          cd .storybook/tools
+          ./generate-stories.sh
+          cd -
+          npm run build-storybook -- -o ../docs/components
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Commit updated Storybook stories'
+          add: '*.stories.*'
+          pull: '--rebase --autostash'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dispatch event to web site
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.BUNDLE_STORYBOOK_OWNCAST_ONLINE }}
+          repository: owncast/owncast.github.io
+          event-type: bundle-components-library

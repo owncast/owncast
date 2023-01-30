@@ -22,7 +22,7 @@ type UserAccessTokenHandlerFunc func(user.User, http.ResponseWriter, *http.Reque
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "admin"
-		password := data.GetStreamKey()
+		password := data.GetAdminPassword()
 		realm := "Owncast Authenticated Request"
 
 		// The following line is kind of a work around.

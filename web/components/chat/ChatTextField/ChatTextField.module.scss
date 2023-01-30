@@ -1,0 +1,64 @@
+@import '../../../styles/mixins.scss';
+
+.root {
+  position: relative;
+  display: flex;
+  bottom: 0px;
+  width: 100%;
+
+  padding: 0.6em;
+  overflow-x: hidden;
+  background-color: var(--theme-color-components-chat-background);
+
+  .inputWrap {
+    position: relative;
+    display: flex;
+    color: var(--theme-color-components-form-field-text);
+    background-color: var(--theme-color-palette-3);
+    border-radius: var(--theme-rounded-corners);
+    bottom: 0px;
+    width: 100%;
+    padding: 0.3rem;
+    overflow-x: hidden;
+    transition: box-shadow 90ms ease-in-out;
+    &:focus-within {
+      background-color: var(--theme-color-components-form-field-background);
+      box-shadow: inset 0px 0px 2px 2px var(--theme-color-palette-3);
+    }
+  }
+
+  .maxCharacters {
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
+  }
+
+  div[role='textbox'] {
+    font-size: 16px;
+    padding: 0.3rem;
+    background-color: inherit;
+    border-color: var(--theme-color-components-form-field-border);
+    box-shadow: 0;
+    transition: box-shadow 50ms ease-in-out;
+    &:focus {
+      outline: 1px solid var(--color-owncast-gray-500) !important;
+    }
+    & > p {
+      margin: 0px;
+    }
+  }
+}
+
+.emojiButton {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0 1rem;
+}
+
+.sendButton {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0 1rem;
+}

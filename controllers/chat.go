@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,6 +20,7 @@ func ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWr
 
 // GetChatMessages gets all of the chat messages.
 func GetChatMessages(u user.User, w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(w)
 	getChatMessages(w, r)
 }
 
@@ -41,7 +44,16 @@ func getChatMessages(w http.ResponseWriter, r *http.Request) {
 
 // RegisterAnonymousChatUser will register a new user.
 func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != POST {
+	middleware.EnableCors(w)
+
+	if r.Method == "OPTIONS" {
+		// All OPTIONS requests should have a wildcard CORS header.
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	if r.Method != http.MethodPost {
 		WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
@@ -66,7 +78,8 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		request.DisplayName = r.Header.Get("X-Forwarded-User")
 	}
 
-	newUser, accessToken, err := user.CreateAnonymousUser(request.DisplayName)
+	proposedNewDisplayName := utils.MakeSafeStringOfLength(request.DisplayName, config.MaxChatDisplayNameLength)
+	newUser, accessToken, err := user.CreateAnonymousUser(proposedNewDisplayName)
 	if err != nil {
 		WriteSimpleResponse(w, false, err.Error())
 		return
