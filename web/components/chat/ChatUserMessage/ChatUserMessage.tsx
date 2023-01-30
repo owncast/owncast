@@ -9,15 +9,12 @@ import linkifyHtml from 'linkify-html';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { ChatUserBadge } from '../ChatUserBadge/ChatUserBadge';
 import { accessTokenAtom } from '../../stores/ClientConfigStore';
 import { User } from '../../../interfaces/user.model';
+import { AuthedUserBadge } from '../ChatUserBadge/AuthedUserBadge';
+import { ModerationBadge } from '../ChatUserBadge/ModerationBadge';
 
 // Lazy loaded components
-
-const LinkOutlined = dynamic(() => import('@ant-design/icons/LinkOutlined'), {
-  ssr: false,
-});
 
 const ChatModerationActionMenu = dynamic(
   () =>
@@ -78,16 +75,10 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
 
   const badgeNodes = [];
   if (isAuthorModerator) {
-    badgeNodes.push(<ChatUserBadge key="mod" badge="mod" userColor={displayColor} />);
+    badgeNodes.push(<ModerationBadge key="mod" userColor={displayColor} />);
   }
   if (isAuthorAuthenticated) {
-    badgeNodes.push(
-      <ChatUserBadge
-        key="auth"
-        badge={<LinkOutlined title="authenticated" />}
-        userColor={displayColor}
-      />,
-    );
+    badgeNodes.push(<AuthedUserBadge key="auth" userColor={displayColor} />);
   }
 
   useEffect(() => {

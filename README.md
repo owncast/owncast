@@ -80,7 +80,11 @@ Owncast consists of two projects.
 1. The Owncast backend written in Go.
 1. The frontend written in React.
 
-[Read more about running from source](https://owncast.online/docs/building/).
+[Read more about running from source](https://owncast.online/development/).
+
+### Important note about source code and the develop branch
+
+The `develop` branch is always the most up-to-date state of development and this may not be what you always want. If you want to run the latest released stable version, check out the tag related to that release. For example, if you'd only like the source prior to the v0.1.0 development cycle you can check out the `v0.0.13` tag.
 
 ### Backend
 

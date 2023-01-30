@@ -12,23 +12,24 @@ color:
     # If you add more colors here make sure to add them to
     # GenerateRandomDisplayColor in the Go codebase so it knows the max
     # number of colors to use.
+
     user:
       0:
-        value: 'rgb(244, 11, 11)'
+        value: '#FF717B'
       1:
-        value: 'rgb(244, 128, 11)'
+        value: '#F4E413'
       2:
-        value: 'rgb(162, 162, 1)'
+        value: '#B99C45'
       3:
-        value: 'rgb(88, 244, 11)'
+        value: '#58F40B'
       4:
-        value: 'rgb(11, 244, 244)'
+        value: '#0BF4F4'
       5:
-        value: 'rgb(11, 166, 244)'
+        value: '#16a8f7'
       6:
-        value: 'rgb(102, 102, 255)'
+        value: '#9A92FF'
       7:
-        value: 'rgb(244, 11, 244)'
+        value: '#FF53FF'
 
     palette:
       0:
@@ -50,10 +51,10 @@ color:
         value: '#c3dafe'
         comment: 'Light alternate'
       6:
-        value: '#7a5cf3'
+        value: '#6544e9'
         comment: 'Text link/secondary light text'
       7:
-        value: '#5d38f3'
+        value: '#7a5cf3'
         comment: 'Text link hover'
       8:
         value: '#b6b3c6'
