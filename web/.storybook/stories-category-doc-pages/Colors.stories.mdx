@@ -1,16 +1,15 @@
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 import { ColorRow } from './Color';
 
-<Meta title="owncast/Styles/Colors" parameters={chromatic: { disableSnapshot: true }} />
+<Meta title="owncast/Styles/Colors" parameters={{ chromatic: { disableSnapshot: true } }} />
 
 # Default theme colors
 
 These colors are assigned in our [color token](https://github.com/owncast/owncast/tree/develop/web/style-definitions/tokens/color) files
 and get reflected here as they change. run `npm run build-styles` to regenerate.
 
-<Story
-  name="Default Theme"
->
+<Story name="Default Theme">
+	
 ## Default Theme
 
 These color names are assigned to specific component variables. They can be overwritten via CSS.
