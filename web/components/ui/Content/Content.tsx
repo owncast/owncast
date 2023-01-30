@@ -103,7 +103,7 @@ const DesktopContent = ({
 }) => {
   const aboutTabContent = <CustomPageContent content={extraPageContent} />;
   const followersTabContent = (
-    <div style={{ minHeight: '16vh' }}>
+    <div>
       <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
     </div>
   );
@@ -126,7 +126,7 @@ const DesktopContent = ({
         />
       </div>
 
-      <div className={styles.lowerSection}>
+      <div className={styles.lowerSection} style={{ minHeight: '16vh' }}>
         {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : aboutTabContent}
       </div>
     </>
