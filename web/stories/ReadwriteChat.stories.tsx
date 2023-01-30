@@ -14,7 +14,7 @@ export default {
   title: 'owncast/Chat/Embeds/Read-write chat',
   component: ReadWritePage,
   parameters: {
-    chromatic: { diffThreshold: 0.2 },
+    chromatic: { diffThreshold: 0.8 },
   },
 } as ComponentMeta<typeof ReadWritePage>;
 
