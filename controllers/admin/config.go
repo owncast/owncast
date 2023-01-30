@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -141,6 +140,25 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetCustomOfflineMessage will set a message to display when the server is offline.
+func SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetCustomOfflineMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
+}
+
 // SetServerWelcomeMessage will handle the web config request to set the welcome message text.
 func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
@@ -179,8 +197,8 @@ func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
 
-// SetStreamKey will handle the web config request to set the server stream key.
-func SetStreamKey(w http.ResponseWriter, r *http.Request) {
+// SetAdminPassword will handle the web config request to set the server admin password.
+func SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -190,7 +208,7 @@ func SetStreamKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetStreamKey(configValue.Value.(string)); err != nil {
+	if err := data.SetAdminPassword(configValue.Value.(string)); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -209,36 +227,14 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s := strings.SplitN(configValue.Value.(string), ",", 2)
-	if len(s) < 2 {
-		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image data.")
+	value, ok := configValue.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "unable to find image data")
 		return
 	}
-	bytes, err := base64.StdEncoding.DecodeString(s[1])
+	bytes, extension, err := utils.DecodeBase64Image(value)
 	if err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
-		return
-	}
-
-	splitHeader := strings.Split(s[0], ":")
-	if len(splitHeader) < 2 {
-		controllers.WriteSimpleResponse(w, false, "Error splitting base64 image header.")
-		return
-	}
-	contentType := strings.Split(splitHeader[1], ";")[0]
-	extension := ""
-	if contentType == "image/svg+xml" {
-		extension = ".svg"
-	} else if contentType == "image/gif" {
-		extension = ".gif"
-	} else if contentType == "image/png" {
-		extension = ".png"
-	} else if contentType == "image/jpeg" {
-		extension = ".jpeg"
-	}
-
-	if extension == "" {
-		controllers.WriteSimpleResponse(w, false, "Missing or invalid contentType in base64 image.")
 		return
 	}
 
@@ -398,6 +394,12 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 
 	rawValue, ok := configValue.Value.(string)
 	if !ok {
+		controllers.WriteSimpleResponse(w, false, "could not read server url")
+		return
+	}
+
+	serverHostString := utils.GetHostnameFromURLString(rawValue)
+	if serverHostString == "" {
 		controllers.WriteSimpleResponse(w, false, "server url value invalid")
 		return
 	}
@@ -648,6 +650,22 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "custom styles updated")
 }
 
+// SetCustomJavascript will set the Javascript string we insert into the page.
+func SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
+	customJavascript, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update custom javascript")
+		return
+	}
+
+	if err := data.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "custom styles updated")
+}
+
 // SetForbiddenUsernameList will set the list of usernames we do not allow to use.
 func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 	type forbiddenUsernameListRequest struct {
@@ -711,6 +729,26 @@ func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "chat join message status updated")
 }
 
+// SetHideViewerCount will enable or disable hiding the viewer count.
+func SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update hiding viewer count")
+		return
+	}
+
+	if err := data.SetHideViewerCount(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "hide viewer count setting updated")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
@@ -749,4 +787,29 @@ func getValuesFromRequest(w http.ResponseWriter, r *http.Request) ([]ConfigValue
 	}
 
 	return values, true
+}
+
+// SetStreamKeys will set the valid stream keys.
+func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	type streamKeysRequest struct {
+		Value []models.StreamKey `json:"value"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var streamKeys streamKeysRequest
+	if err := decoder.Decode(&streamKeys); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update stream keys with provided values")
+		return
+	}
+
+	if err := data.SetStreamKeys(streamKeys.Value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "changed")
 }

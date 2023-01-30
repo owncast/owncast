@@ -1,0 +1,13 @@
+.statusbar {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  justify-content: space-between;
+  height: 2rem;
+  width: 100%;
+  padding: var(--content-padding);
+  color: var(--theme-color-components-video-status-bar-foreground);
+  background-color: var(--theme-color-components-video-status-bar-background);
+  font-family: var(--theme-text-display-font-family);
+  font-weight: 400;
+}

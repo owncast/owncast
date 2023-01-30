@@ -1,30 +1,69 @@
-name: Format Javascript
+name: Lint
 
 # This action works with pull requests and pushes
 on:
   push:
-    branches:
-    - develop
+    paths:
+      - web/**
+  pull_request_target:
+    paths:
+      - web/**
 
 jobs:
   prettier:
+    name: Javascript prettier
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
     if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.2
+        with:
+          # This part is also where you can pass other options, for example:
+          prettier_options: --write **/*.{js,ts,jsx,tsx,css,md}
+          only_changed: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  linter:
+    name: Javascript linter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        # Make sure the actual branch is checked out when running on pull requests
-        ref: ${{ github.head_ref }}
-        fetch-depth: 0
-        pull: --rebase --autostash
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+          
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
 
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.2
-      with:
-        # This part is also where you can pass other options, for example:
-        prettier_options: --write webroot/**/*.{js,md}
-        only_changed: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint

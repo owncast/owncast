@@ -97,8 +97,14 @@ UPDATE user_access_tokens SET user_id = $1 WHERE token = $2;
 -- name: SetUserAsAuthenticated :exec
 UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = $1;
 
+-- name: GetMessagesFromUser :many
+SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = $1 ORDER BY TIMESTAMP DESC;
+
 -- name: IsDisplayNameAvailable :one
 SELECT count(*) FROM users WHERE display_name = $1 AND authenticated_at is not null AND disabled_at is NULL;
 
 -- name: ChangeDisplayName :exec
 UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4;
+
+-- name: ChangeDisplayColor :exec
+UPDATE users SET display_color = $1 WHERE id = $2;

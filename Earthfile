@@ -25,7 +25,6 @@ crosscompiler:
 code:
   FROM --platform=linux/amd64 +crosscompiler
   COPY . /build
-  # GIT CLONE --branch=$version git@github.com:owncast/owncast.git /build
 
 build:
   ARG EARTHLY_GIT_HASH # provided by Earthly
@@ -76,20 +75,8 @@ build:
   WORKDIR /build
   # MacOSX disallows static executables, so we omit the static flag on this platform
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
-  COPY +tailwind/prod-tailwind.min.css /build/dist/webroot/js/web_modules/tailwindcss/dist/tailwind.min.css
 
   SAVE ARTIFACT owncast owncast
-  SAVE ARTIFACT webroot webroot
-  SAVE ARTIFACT README.md README.md
-
-tailwind:
-  FROM +code
-  WORKDIR /build/build/javascript
-  RUN apk add --update --no-cache npm >> /dev/null
-  ENV NODE_ENV=production
-  RUN cd /build/build/javascript && npm install --quiet --no-progress >> /dev/null && npm install -g cssnano postcss postcss-cli --quiet --no-progress --save-dev >> /dev/null && ./node_modules/.bin/tailwind build > /build/tailwind.min.css
-  RUN npx postcss /build/tailwind.min.css > /build/prod-tailwind.min.css
-  SAVE ARTIFACT /build/prod-tailwind.min.css prod-tailwind.min.css
 
 package:
   RUN apk add --update --no-cache zip >> /dev/null
@@ -109,33 +96,66 @@ package:
     ARG NAME=custom
   END
 
-  COPY (+build/webroot --platform $TARGETPLATFORM) /build/dist/webroot
   COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
-  COPY (+build/README.md --platform $TARGETPLATFORM) /build/dist/README.md
   ENV ZIPNAME owncast-$version-$NAME.zip
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
   SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
 docker:
-  ARG image=ghcr.io/owncast/owncast
-  ARG tag=develop
+	# Multiple image names can be tagged at once. They should all be passed
+	# in as space separated strings using the full account/repo:tag format.
+	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
   ARG TARGETPLATFORM
   FROM --platform=$TARGETPLATFORM alpine:3.15.5
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
+  RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
   COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
   RUN unzip -x owncast.zip && mkdir data
+
+	# temporarily disable until we figure out how to move forward
+  # RUN chown -R owncast:owncast /app
+  # USER owncast
+
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
-  SAVE IMAGE --push $image:$tag
 
-api-tests:
-	FROM --platform=linux/amd64 +code
-	WORKDIR /build
-	RUN apk add npm ffmpeg
-	RUN cd test/automated/api && npm install && ./run.sh
+  ARG images=ghcr.io/owncast/owncast:testing
+	RUN echo "Saving images: ${images}"
+
+	# Tag this image with the list of names
+	# passed along.
+	FOR --no-cache i IN ${images}
+		SAVE IMAGE --push "${i}"
+	END
+
+dockerfile:
+  FROM DOCKERFILE -f Dockerfile .
+
+testing:
+	ARG images
+	FOR i IN ${images}
+		RUN echo "Testing ${i}"
+	END
 
 unit-tests:
-	FROM --platform=linux/amd64 +code
+  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+  COPY . /build
 	WORKDIR /build
 	RUN go test ./...
+
+api-tests:
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	RUN apk add npm font-noto && fc-cache -f
+  COPY . /build
+	WORKDIR /build/test/automated/api
+	RUN npm install
+	RUN ./run.sh
+
+hls-tests:
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	RUN apk add npm font-noto && fc-cache -f
+  COPY . /build
+	WORKDIR /build/test/automated/hls
+	RUN npm install
+	RUN ./run.sh

@@ -1,0 +1,110 @@
+@import '@fontsource/open-sans/300.css';
+@import '@fontsource/open-sans/400.css';
+@import '@fontsource/open-sans/600.css';
+@import '@fontsource/open-sans/800.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/600.css';
+@import './mixins.scss';
+
+:root {
+  --content-padding: 12px;
+  --module-spacing: 12px; // margin size between lines of stuff, if needed
+  --header-height: 4.3rem; // needed for making main content scrollable;
+  --footer-height: 2.5rem; // needed for making main content scrollable;
+  --content-height: calc(100vh - var(--header-height));
+  --replacement-bar-height: 46px; // needed for making main content scrollable on mobile;
+}
+
+::selection {
+  background-color: var(--theme-color-palette-12);
+}
+
+html {
+  font-size: clamp(15px, 1.35vw, 16px);
+}
+
+body {
+  font-family: var(--theme-text-body-font-family);
+  line-height: 1.5em;
+  margin: 0;
+  background-color: var(--theme-color-background-main);
+
+  div,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    padding: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--theme-text-display-font-family);
+    color: unset; // reset some colors from global.less file
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    font-weight: 400;
+  }
+
+  h3 {
+    font-family: var(--theme-text-body-font-family);
+    font-size: 1.25em;
+    font-weight: 500;
+  }
+
+  h4 {
+    font-size: 1em;
+  }
+
+  ul {
+    list-style: square;
+  }
+
+  ul,
+  ol {
+    margin: 0.7em 0 0 0;
+    padding: 0 1em;
+
+    ul,
+    ol {
+      margin: 0;
+    }
+
+    li {
+      margin: 0.175em 0 0 0;
+    }
+  }
+
+  a {
+    color: var(--theme-color-action);
+    word-break: break-word;
+
+    &:hover {
+      color: var(--theme-color-palette-12);
+    }
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+  }
+}
+
+.emoji {
+  height: 30px;
+  margin-left: 5px;
+  margin-right: 5px;
+}

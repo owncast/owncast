@@ -1,0 +1,51 @@
+.header {
+  font-family: var(--theme-text-display-font-family);
+  font-size: 0.8rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.instructions {
+  font-family: var(--theme-text-display-font-family);
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.footer {
+  font-size: 0.5rem;
+}
+
+.account {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  border-color: var(--color-owncast-palette-5);
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 6px;
+  padding: 5px;
+
+  .logo {
+    border-radius: 50%;
+    width: 4em;
+    height: 4em;
+  }
+
+  .username {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    margin-top: 5px;
+    .name {
+      font-weight: 600;
+    }
+  }
+}

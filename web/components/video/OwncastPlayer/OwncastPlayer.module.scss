@@ -1,0 +1,21 @@
+@import '../../../styles/mixins.scss';
+
+.container {
+  display: grid;
+  width: 100%;
+  justify-items: center;
+  height: 75vh;
+  aspect-ratio: 16 / 9;
+
+  @media (max-width: 1200px) {
+    height: unset;
+    max-height: 75vh;
+  }
+
+  .player,
+  .poster {
+    width: 100%;
+    grid-column: 1;
+    grid-row: 1;
+  }
+}

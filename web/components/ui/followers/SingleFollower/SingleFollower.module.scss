@@ -1,0 +1,53 @@
+@import '../../../../../web/styles/mixins.scss';
+
+.follower {
+  border-color: rgba(0, 0, 0, 0.3);
+  border-width: 1px;
+  border-style: solid;
+  padding: 10px 10px;
+  border-radius: 15px;
+  height: 75px;
+  width: 250px;
+  font-size: 0.8rem;
+
+  color: var(--theme-color-components-text-on-light);
+
+  .name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--theme-color-components-text-on-light);
+    display: inline-block;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: calc(85%);
+    white-space: nowrap;
+  }
+
+  .account {
+    color: var(--theme-color-components-text-on-light);
+    word-break: break-all;
+    line-height: 0.9rem;
+  }
+
+  @include screen(mobile) {
+    margin: auto;
+  }
+
+  &:hover {
+    border-color: var(--theme-color-action);
+  }
+
+  .avatar {
+    height: 50px;
+    width: 50px;
+    border-color: rgba(0, 0, 0, 0.3);
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .placeholder {
+    width: 100%;
+    height: 100%;
+  }
+}

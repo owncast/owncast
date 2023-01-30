@@ -1,0 +1,36 @@
+name: Browser Tests
+
+on:
+  push:
+    paths:
+      - 'web/**'
+      - 'test/automated/browser/**'
+  pull_request:
+    paths:
+      - 'web/**'
+      - 'test/automated/browser/**'
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.8'
+
+      - name: Install Google Chrome
+        run: sudo apt-get install google-chrome-stable
+
+      - name: Run Browser tests
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          command: cd test/automated/browser && ./run.sh

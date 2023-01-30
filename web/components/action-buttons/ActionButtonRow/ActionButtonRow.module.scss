@@ -1,0 +1,11 @@
+.row {
+  padding: .3rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  button {
+    margin-left: .3rem;
+    margin-right: .3rem;
+  }
+}

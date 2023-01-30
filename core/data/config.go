@@ -1,7 +1,7 @@
 package data
 
 import (
-	"errors"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -9,14 +9,16 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
 	extraContentKey                      = "extra_page_content"
 	streamTitleKey                       = "stream_title"
-	streamKeyKey                         = "stream_key"
+	adminPasswordKey                     = "admin_password_key"
 	logoPathKey                          = "logo_path"
 	logoUniquenessKey                    = "logo_uniqueness"
 	serverSummaryKey                     = "server_summary"
@@ -42,6 +44,7 @@ const (
 	chatDisabledKey                      = "chat_disabled"
 	externalActionsKey                   = "external_actions"
 	customStylesKey                      = "custom_styles"
+	customJavascriptKey                  = "custom_javascript"
 	videoCodecKey                        = "video_codec"
 	blockedUsernamesKey                  = "blocked_usernames"
 	publicKeyKey                         = "public_key"
@@ -61,8 +64,11 @@ const (
 	browserPushConfigurationKey          = "browser_push_configuration"
 	browserPushPublicKeyKey              = "browser_push_public_key"
 	browserPushPrivateKeyKey             = "browser_push_private_key"
-	twitterConfigurationKey              = "twitter_configuration"
 	hasConfiguredInitialNotificationsKey = "has_configured_initial_notifications"
+	hideViewerCountKey                   = "hide_viewer_count"
+	customOfflineMessageKey              = "custom_offline_message"
+	customColorVariableValuesKey         = "custom_color_variable_values"
+	streamKeysKey                        = "stream_keys"
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
@@ -96,20 +102,15 @@ func SetStreamTitle(title string) error {
 	return _datastore.SetString(streamTitleKey, title)
 }
 
-// GetStreamKey will return the inbound streaming password.
-func GetStreamKey() string {
-	key, err := _datastore.GetString(streamKeyKey)
-	if err != nil {
-		log.Traceln(streamKeyKey, err)
-		return config.GetDefaults().StreamKey
-	}
-
+// GetAdminPassword will return the admin password.
+func GetAdminPassword() string {
+	key, _ := _datastore.GetString(adminPasswordKey)
 	return key
 }
 
-// SetStreamKey will set the inbound streaming password.
-func SetStreamKey(key string) error {
-	return _datastore.SetString(streamKeyKey, key)
+// SetAdminPassword will set the admin password.
+func SetAdminPassword(key string) error {
+	return _datastore.SetString(adminPasswordKey, key)
 }
 
 // GetLogoPath will return the path for the logo, relative to webroot.
@@ -560,6 +561,21 @@ func GetCustomStyles() string {
 	return style
 }
 
+// SetCustomJavascript will save a string with Javascript to insert into the page.
+func SetCustomJavascript(styles string) error {
+	return _datastore.SetString(customJavascriptKey, styles)
+}
+
+// GetCustomJavascript will return a string with Javascript to insert into the page.
+func GetCustomJavascript() string {
+	style, err := _datastore.GetString(customJavascriptKey)
+	if err != nil {
+		return ""
+	}
+
+	return style
+}
+
 // SetVideoCodec will set the codec used for video encoding.
 func SetVideoCodec(codec string) error {
 	return _datastore.SetString(videoCodecKey, codec)
@@ -577,19 +593,23 @@ func GetVideoCodec() string {
 
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
-	if GetStreamKey() == "" {
-		return errors.New("no stream key set. Please set one via the admin or command line arguments")
+	if len(GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
+	}
+
+	if GetAdminPassword() == "" {
+		return errors.New("no admin password set. Please set one via the admin or command line arguments")
 	}
 
 	logoPath := GetLogoPath()
 	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, logoPath)) {
-		defaultLogo := filepath.Join(config.WebRoot, "img/logo.svg")
 		log.Traceln(logoPath, "not found in the data directory. copying a default logo.")
-		if err := utils.Copy(defaultLogo, filepath.Join(config.DataDirectory, "logo.svg")); err != nil {
-			log.Errorln("error copying default logo: ", err)
+		logo := static.GetLogo()
+		if err := os.WriteFile(filepath.Join(config.DataDirectory, "logo.png"), logo, 0o600); err != nil {
+			return errors.Wrap(err, "failed to write logo to disk")
 		}
-		if err := SetLogoPath("logo.svg"); err != nil {
-			log.Errorln("unable to set default logo to logo.svg", err)
+		if err := SetLogoPath("logo.png"); err != nil {
+			return errors.Wrap(err, "failed to save logo filename")
 		}
 	}
 
@@ -875,27 +895,6 @@ func GetBrowserPushPrivateKey() (string, error) {
 	return _datastore.GetString(browserPushPrivateKeyKey)
 }
 
-// SetTwitterConfiguration will set the Twitter configuration.
-func SetTwitterConfiguration(config models.TwitterConfiguration) error {
-	configEntry := ConfigEntry{Key: twitterConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
-}
-
-// GetTwitterConfiguration will return the Twitter configuration.
-func GetTwitterConfiguration() models.TwitterConfiguration {
-	configEntry, err := _datastore.Get(twitterConfigurationKey)
-	if err != nil {
-		return models.TwitterConfiguration{Enabled: false}
-	}
-
-	var config models.TwitterConfiguration
-	if err := configEntry.getObject(&config); err != nil {
-		return models.TwitterConfiguration{Enabled: false}
-	}
-
-	return config
-}
-
 // SetHasPerformedInitialNotificationsConfig sets when performed initial setup.
 func SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
 	return _datastore.SetBool(hasConfiguredInitialNotificationsKey, true)
@@ -905,4 +904,58 @@ func SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
 func GetHasPerformedInitialNotificationsConfig() bool {
 	configured, _ := _datastore.GetBool(hasConfiguredInitialNotificationsKey)
 	return configured
+}
+
+// GetHideViewerCount will return if the viewer count shold be hidden.
+func GetHideViewerCount() bool {
+	hide, _ := _datastore.GetBool(hideViewerCountKey)
+	return hide
+}
+
+// SetHideViewerCount will set if the viewer count should be hidden.
+func SetHideViewerCount(hide bool) error {
+	return _datastore.SetBool(hideViewerCountKey, hide)
+}
+
+// GetCustomOfflineMessage will return the custom offline message.
+func GetCustomOfflineMessage() string {
+	message, _ := _datastore.GetString(customOfflineMessageKey)
+	return message
+}
+
+// SetCustomOfflineMessage will set the custom offline message.
+func SetCustomOfflineMessage(message string) error {
+	return _datastore.SetString(customOfflineMessageKey, message)
+}
+
+// SetCustomColorVariableValues sets CSS variable names and values.
+func SetCustomColorVariableValues(variables map[string]string) error {
+	return _datastore.SetStringMap(customColorVariableValuesKey, variables)
+}
+
+// GetCustomColorVariableValues gets CSS variable names and values.
+func GetCustomColorVariableValues() map[string]string {
+	values, _ := _datastore.GetStringMap(customColorVariableValuesKey)
+	return values
+}
+
+// GetStreamKeys will return valid stream keys.
+func GetStreamKeys() []models.StreamKey {
+	configEntry, err := _datastore.Get(streamKeysKey)
+	if err != nil {
+		return []models.StreamKey{}
+	}
+
+	var streamKeys []models.StreamKey
+	if err := configEntry.getObject(&streamKeys); err != nil {
+		return []models.StreamKey{}
+	}
+
+	return streamKeys
+}
+
+// SetStreamKeys will set valid stream keys.
+func SetStreamKeys(actions []models.StreamKey) error {
+	configEntry := ConfigEntry{Key: streamKeysKey, Value: actions}
+	return _datastore.Save(configEntry)
 }

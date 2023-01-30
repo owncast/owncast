@@ -18,6 +18,7 @@ import (
 type webConfigResponse struct {
 	Name                 string                       `json:"name"`
 	Summary              string                       `json:"summary"`
+	OfflineMessage       string                       `json:"offlineMessage"`
 	Logo                 string                       `json:"logo"`
 	Tags                 []string                     `json:"tags"`
 	Version              string                       `json:"version"`
@@ -29,6 +30,7 @@ type webConfigResponse struct {
 	ChatDisabled         bool                         `json:"chatDisabled"`
 	ExternalActions      []models.ExternalAction      `json:"externalActions"`
 	CustomStyles         string                       `json:"customStyles"`
+	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
 	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
 	Federation           federationConfigResponse     `json:"federation"`
 	Notifications        notificationsConfigResponse  `json:"notifications"`
@@ -60,6 +62,14 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
+	configuration := getConfigResponse()
+
+	if err := json.NewEncoder(w).Encode(configuration); err != nil {
+		BadRequestHandler(w, err)
+	}
+}
+
+func getConfigResponse() webConfigResponse {
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
 	socialHandles := data.GetSocialHandles()
 	for i, handle := range socialHandles {
@@ -71,7 +81,6 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serverSummary := data.GetServerSummary()
-	serverSummary = utils.RenderPageContentMarkdown(serverSummary)
 
 	var federationResponse federationConfigResponse
 	federationEnabled := data.GetFederationEnabled()
@@ -106,9 +115,10 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		IndieAuthEnabled: data.GetServerURL() != "",
 	}
 
-	configuration := webConfigResponse{
+	return webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
+		OfflineMessage:       data.GetCustomOfflineMessage(),
 		Logo:                 "/logo",
 		Tags:                 data.GetServerMetadataTags(),
 		Version:              config.GetReleaseString(),
@@ -124,10 +134,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		Federation:           federationResponse,
 		Notifications:        notificationsResponse,
 		Authentication:       authenticationResponse,
-	}
-
-	if err := json.NewEncoder(w).Encode(configuration); err != nil {
-		BadRequestHandler(w, err)
+		AppearanceVariables:  data.GetCustomColorVariableValues(),
 	}
 }
 

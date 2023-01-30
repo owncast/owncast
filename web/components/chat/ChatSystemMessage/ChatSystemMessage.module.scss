@@ -1,0 +1,47 @@
+.chatSystemMessage {
+  background: var(--theme-color-background-main);
+  background: linear-gradient(
+    70deg,
+    rgb(78, 54, 114) 0%,
+    rgb(65, 28, 139) 40%,
+    rgb(83, 67, 130) 80%
+  );
+  margin: 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 12px 12px;
+  max-width: 400px;
+
+  .user {
+    display: flex;
+    align-items: center;
+    font-family: var(--theme-text-display-font-family);
+    font-weight: bold;
+    color: white;
+  }
+  .message {
+    color: white;
+
+    p {
+      color: white;
+      margin: unset;
+    }
+
+    mark {
+      padding-left: 0.35em;
+      padding-right: 0.35em;
+      background-color: var(--theme-color-palette-12);
+    }
+  }
+
+  a {
+    color: var(--theme-color-palette-4);
+    :hover {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-color: var(--theme-color-palette-15);
+    }
+  }
+}

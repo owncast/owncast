@@ -1,4 +1,0 @@
-{
-  "name": "owncast browser tests",
-  "preset": "jest-puppeteer"
-}

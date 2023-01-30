@@ -1,0 +1,26 @@
+@import '../../../styles/mixins.scss';
+
+.root {
+  button {
+    border: none;
+		.ant-space {
+			.ant-space-item {
+				color: var(--theme-unknown-2);
+			}
+		}
+  }
+  .userIcon {
+	@include screen(desktop) {
+		margin-right: .5rem;
+	}
+  }
+
+  .username {
+	  display: none;
+  
+	  @include screen(desktop) {
+		  display: inline;
+	  }
+  }
+}
+

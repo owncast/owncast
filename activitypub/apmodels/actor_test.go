@@ -153,7 +153,7 @@ func TestMakeServiceForAccount(t *testing.T) {
 		t.Errorf("actor.Followers = %v, want %v", person.GetActivityStreamsFollowers().GetIRI().String(), expectedFollowers)
 	}
 
-	expectedName := "Owncast"
+	expectedName := "New Owncast Server"
 	if person.GetActivityStreamsName().Begin().GetXMLSchemaString() != expectedName {
 		t.Errorf("actor.Name = %v, want %v", person.GetActivityStreamsName().Begin().GetXMLSchemaString(), expectedName)
 	}
@@ -168,7 +168,7 @@ func TestMakeServiceForAccount(t *testing.T) {
 		t.Errorf("actor.Avatar = %v, want %v", person.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI().String(), expectedAvatar)
 	}
 
-	expectedSummary := "Welcome to your new Owncast server! This description can be changed in the admin. Visit https://owncast.online/docs/configuration/ to learn more."
+	expectedSummary := "This is a new live video streaming server powered by Owncast."
 	if person.GetActivityStreamsSummary().At(0).GetXMLSchemaString() != expectedSummary {
 		t.Errorf("actor.Summary = %v, want %v", person.GetActivityStreamsSummary().At(0).GetXMLSchemaString(), expectedSummary)
 	}

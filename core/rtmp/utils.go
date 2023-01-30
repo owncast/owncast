@@ -1,6 +1,7 @@
 package rtmp
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -89,5 +90,7 @@ func secretMatch(configStreamKey string, path string) bool {
 	}
 
 	streamingKey := path[len(prefix):] // Remove $prefix
-	return streamingKey == configStreamKey
+
+	matches := subtle.ConstantTimeCompare([]byte(streamingKey), []byte(configStreamKey)) == 1
+	return matches
 }

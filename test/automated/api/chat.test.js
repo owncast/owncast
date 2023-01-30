@@ -4,16 +4,18 @@ request = request('http://127.0.0.1:8080');
 
 const registerChat = require('./lib/chat').registerChat;
 const sendChatMessage = require('./lib/chat').sendChatMessage;
+const getAdminResponse = require('./lib/admin').getAdminResponse;
+const randomNumber = require('./lib/rand').randomNumber;
 
 var userDisplayName;
-const message = Math.floor(Math.random() * 100) + ' test 123';
+const message = randomNumber(100) + ' test 123';
 
 const testMessage = {
   body: message,
   type: 'CHAT',
 };
 
-test('can send a chat message', async (done) => {
+test('send a chat message', async (done) => {
   const registration = await registerChat();
   const accessToken = registration.accessToken;
   userDisplayName = registration.displayName;
@@ -21,11 +23,8 @@ test('can send a chat message', async (done) => {
   sendChatMessage(testMessage, accessToken, done);
 });
 
-test('can fetch chat messages', async (done) => {
-  const res = await request
-    .get('/api/admin/chat/messages')
-    .auth('admin', 'abc123')
-    .expect(200);
+test('fetch chat messages by admin', async (done) => {
+  const res = await getAdminResponse('chat/messages');
 
   const message = res.body.filter((m) => m.body === testMessage.body)[0];
   if (!message) {
@@ -41,7 +40,7 @@ test('can fetch chat messages', async (done) => {
   done();
 });
 
-test('can derive display name from user header', async (done) => {
+test('derive display name from user header', async (done) => {
   const res = await request
     .post('/api/chat/register')
     .set('X-Forwarded-User', 'test-user')
@@ -51,7 +50,7 @@ test('can derive display name from user header', async (done) => {
   done();
 });
 
-test('can overwrite user header derived display name with body', async (done) => {
+test('overwrite user header derived display name with body', async (done) => {
   const res = await request
     .post('/api/chat/register')
     .send({ displayName: 'TestUserChat' })

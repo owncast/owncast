@@ -1,0 +1,29 @@
+@import 'styles/mixins.scss';
+
+.pageContentContainer {
+  @include flexCenter;
+}
+
+.customPageContent {
+  font-size: 1rem;
+  line-height: 1.6em;
+  color: var(--theme-color-components-text-on-light);
+  padding: calc(2 * var(--content-padding));
+  border-radius: var(--theme-rounded-corners);
+  width: 100%;
+  background-color: var(--theme-color-components-content-background);
+
+  hr {
+    margin: 1.35em 0;
+    border: 0;
+    border-top: solid 1px var(--theme-color-components-content-background);
+  }
+
+  div.summary {
+    font-size: 0.9rem;
+  }
+
+  p {
+    margin: unset;
+  }
+}

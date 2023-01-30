@@ -1,0 +1,58 @@
+.description {
+  margin-bottom: 5px;
+}
+
+.pushPreview {
+  border-style: dashed;
+  border-width: 2px;
+  width: 100%;
+  max-width: 400px;
+  margin: 1%;
+  margin-top: 10px;
+
+  .inner {
+    margin: 10px;
+    padding: 15px;
+    background-color: white;
+    box-shadow: 2px 6px 7px 0px #87898d;
+
+    .title {
+      font-weight: bold;
+    }
+
+    .permissionLine {
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+
+      .bell {
+        margin-top: -1px;
+        margin-right: 5px;
+      }
+    }
+
+    .buttonRow {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+      .disabled {
+        cursor: not-allowed;
+        outline-width: 1;
+        outline-color: '#e2e8f0';
+        outline-style: 'solid';
+        background-color: white;
+      }
+
+      button {
+        margin-left: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        border-radius: 3px;
+        border-style: solid;
+      }
+    }
+  }
+}

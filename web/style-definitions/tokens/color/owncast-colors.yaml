@@ -1,0 +1,99 @@
+# These are colors that make up the Owncast-specific color palette.
+color:
+  unknown:
+    value: '#7a5cf3'
+
+  # this ends up being primary button text
+  unknown-2:
+    value: '#fffffe'
+
+  owncast:
+    # These are the colors assigned to chat users.
+    # If you add more colors here make sure to add them to
+    # GenerateRandomDisplayColor in the Go codebase so it knows the max
+    # number of colors to use.
+
+    user:
+      0:
+        value: '#FF717B'
+      1:
+        value: '#F4E413'
+      2:
+        value: '#B99C45'
+      3:
+        value: '#58F40B'
+      4:
+        value: '#0BF4F4'
+      5:
+        value: '#16a8f7'
+      6:
+        value: '#9A92FF'
+      7:
+        value: '#FF53FF'
+
+    palette:
+      0:
+        value: '#12161d'
+        comment: 'Dark primary'
+      1:
+        value: '#2D3748'
+        comment: 'Dark secondary'
+      2:
+        value: '#000000'
+        comment: 'Dark alternate'
+      3:
+        value: '#e2e8f0'
+        comment: 'Light primary'
+      4:
+        value: '#ffffff'
+        comment: 'Light secondary'
+      5:
+        value: '#c3dafe'
+        comment: 'Light alternate'
+      6:
+        value: '#6544e9'
+        comment: 'Text link/secondary light text'
+      7:
+        value: '#7a5cf3'
+        comment: 'Text link hover'
+      8:
+        value: '#b6b3c6'
+        comment: 'Disabled background'
+      9:
+        value: '#39373d'
+        comment: 'Neutral dark'
+      10:
+        value: '#5d5f72'
+        comment: 'Neutral gray light'
+      11:
+        value: '#2386e2'
+        comment: 'Fun color 1'
+      12:
+        value: '#da9eff'
+        comment: 'Fun color 2'
+      13:
+        value: '#42bea6'
+        comment: 'Fun color 3'
+      14:
+        value: '#f0f3f8'
+        comment: 'Light background'
+      15:
+        value: '#eff1f4'
+        comment: 'Lighter background'
+      error:
+        value: '#ff4b39'
+        comment: 'Error'
+      warning:
+        value: '#ffc655'
+        comment: 'Warning'
+
+font:
+  owncast:
+    body:
+      value: "'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji'"
+    display:
+      value: "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji'"

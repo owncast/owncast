@@ -1,0 +1,120 @@
+.chat-messages .ant-table-cell.name-col {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.chat-messages .ant-table-cell.toggle-col label {
+  font-size: 0.7rem;
+}
+.chat-messages .ant-table-cell .message-contents {
+  overflow: auto;
+  max-height: 200px;
+}
+.chat-messages .ant-table-cell .message-contents img {
+  position: relative;
+  margin-top: -5px;
+  width: 3rem;
+  padding: 0.25rem;
+}
+.chat-messages .ant-table-cell .message-contents p {
+  margin-bottom: 0;
+}
+.chat-messages .bulk-editor {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px solid var(--textfield-border);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  border-radius: 4px;
+}
+.chat-messages .bulk-editor.active .label {
+  color: var(--black-3);
+}
+.chat-messages .bulk-editor .label {
+  font-size: 0.75rem;
+  color: var(--white-50);
+  margin-right: 0.5rem;
+}
+.chat-messages .bulk-editor button {
+  margin: 0 0.2rem;
+  font-size: 0.75rem;
+}
+.ant-table-filter-dropdown {
+  max-width: 250px;
+}
+.toggle-switch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  transition: opacity 0.15s;
+}
+.toggle-switch .outcome-icon {
+  margin-right: 0.5rem;
+}
+.toggle-switch.hidden {
+  opacity: 0.25;
+}
+.toggle-switch.hidden:hover {
+  opacity: 1;
+}
+.toggle-switch .ant-btn .anticon {
+  opacity: 0.5;
+}
+.toggle-switch .ant-btn:hover .anticon {
+  opacity: 1;
+}
+.toggle-switch .ant-btn-text:hover {
+  background-color: var(--black-35);
+}
+.blockuser-popover {
+  max-width: 400px;
+}
+.user-item-container {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+}
+.user-item-container .display-name {
+  color: var(--white);
+  border-bottom: 1px dotted var(--white-50);
+}
+.user-item-container:hover .display-name {
+  border-color: var(--white);
+}
+.user-details h5 {
+  color: var(--white);
+}
+.user-details .created-at {
+  font-size: 0.75em;
+  font-style: italic;
+}
+.user-details .connection-info {
+  font-size: 0.88em;
+}
+.user-details .previous-names-list {
+  font-size: 0.88em;
+}
+.user-details .previous-names-list .user-name-item {
+  font-family: monospace;
+}
+.user-details .previous-names-list .latest {
+  font-style: italic;
+}
+.user-details .previous-names-list .latest .user-name-item {
+  font-weight: bold;
+  font-style: normal;
+  color: var(--pink);
+}
+.user-details .ant-divider {
+  border-color: var(--white-25);
+}
+.block-user-button {
+  text-transform: capitalize;
+}

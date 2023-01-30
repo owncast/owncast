@@ -8,6 +8,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +22,7 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 		returnDefault(w)
 		return
 	}
-	imagePath := filepath.Join("data", imageFilename)
+	imagePath := filepath.Join(config.DataDirectory, imageFilename)
 	imageBytes, err := getImage(imagePath)
 	if err != nil {
 		returnDefault(w)
@@ -56,7 +57,7 @@ func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Otherwise use a fallback logo.png.
-	imagePath := filepath.Join(config.WebRoot, "img", "logo.png")
+	imagePath := filepath.Join(config.DataDirectory, "logo.png")
 	contentType := "image/png"
 	imageBytes, err := getImage(imagePath)
 	if err != nil {
@@ -74,14 +75,9 @@ func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
 }
 
 func returnDefault(w http.ResponseWriter) {
-	imagePath := filepath.Join(config.WebRoot, "img", "logo.svg")
-	imageBytes, err := getImage(imagePath)
-	if err != nil {
-		log.Errorln(err)
-		return
-	}
-	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, "image/svg+xml", w, cacheTime)
+	imageBytes := static.GetLogo()
+	cacheTime := utils.GetCacheDurationSecondsForPath("logo.png")
+	writeBytesAsImage(imageBytes, "image/png", w, cacheTime)
 }
 
 func writeBytesAsImage(data []byte, contentType string, w http.ResponseWriter, cacheSeconds int) {

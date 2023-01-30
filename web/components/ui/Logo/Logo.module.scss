@@ -1,0 +1,30 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-right: 0.5rem;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--theme-color-palette-0);
+  background-color: var(--theme-color-palette-4);
+}
+
+.container {
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}

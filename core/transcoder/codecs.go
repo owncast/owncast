@@ -31,8 +31,7 @@ var supportedCodecs = map[string]string{
 }
 
 // Libx264Codec represents an instance of the Libx264 Codec.
-type Libx264Codec struct {
-}
+type Libx264Codec struct{}
 
 // Name returns the codec name.
 func (c *Libx264Codec) Name() string {
@@ -77,24 +76,26 @@ func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *Libx264Codec) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
 	}
 
-	if l >= len(presetMapping) {
-		return "superfast" //nolint:goconst
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for x264 preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
 
-	return presetMapping[l]
+	return preset
 }
 
 // OmxCodec represents an instance of the Omx codec.
-type OmxCodec struct {
-}
+type OmxCodec struct{}
 
 // Name returns the codec name.
 func (c *OmxCodec) Name() string {
@@ -135,24 +136,26 @@ func (c *OmxCodec) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *OmxCodec) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
 	}
 
-	if l >= len(presetMapping) {
-		return "superfast"
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for omx preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
 
-	return presetMapping[l]
+	return preset
 }
 
 // VaapiCodec represents an instance of the Vaapi codec.
-type VaapiCodec struct {
-}
+type VaapiCodec struct{}
 
 // Name returns the codec name.
 func (c *VaapiCodec) Name() string {
@@ -195,24 +198,26 @@ func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VaapiCodec) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
 	}
 
-	if l >= len(presetMapping) {
-		return "superfast"
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for vaapi preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
 
-	return presetMapping[l]
+	return preset
 }
 
 // NvencCodec represents an instance of the Nvenc Codec.
-type NvencCodec struct {
-}
+type NvencCodec struct{}
 
 // Name returns the codec name.
 func (c *NvencCodec) Name() string {
@@ -256,24 +261,26 @@ func (c *NvencCodec) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *NvencCodec) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"p1",
-		"p2",
-		"p3",
-		"p4",
-		"p5",
+	presetMapping := map[int]string{
+		0: "p1",
+		1: "p2",
+		2: "p3",
+		3: "p4",
+		4: "p5",
 	}
 
-	if l >= len(presetMapping) {
-		return "p3"
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[2]
+		log.Errorf("Invalid level for nvenc preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
 
-	return presetMapping[l]
+	return preset
 }
 
 // QuicksyncCodec represents an instance of the Intel Quicksync Codec.
-type QuicksyncCodec struct {
-}
+type QuicksyncCodec struct{}
 
 // Name returns the codec name.
 func (c *QuicksyncCodec) Name() string {
@@ -312,19 +319,22 @@ func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *QuicksyncCodec) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
 	}
 
-	if l >= len(presetMapping) {
-		return "superfast"
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for quicksync preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
 
-	return presetMapping[l]
+	return preset
 }
 
 // Video4Linux represents an instance of the V4L Codec.
@@ -367,24 +377,25 @@ func (c *Video4Linux) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *Video4Linux) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
 	}
 
-	if l >= len(presetMapping) {
-		return "superfast"
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for v4l preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
-
-	return presetMapping[l]
+	return preset
 }
 
 // VideoToolboxCodec represents an instance of the VideoToolbox codec.
-type VideoToolboxCodec struct {
-}
+type VideoToolboxCodec struct{}
 
 // Name returns the codec name.
 func (c *VideoToolboxCodec) Name() string {
@@ -435,19 +446,22 @@ func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VideoToolboxCodec) GetPresetForLevel(l int) string {
-	presetMapping := []string{
-		"ultrafast",
-		"superfast",
-		"veryfast",
-		"faster",
-		"fast",
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
 	}
 
-	if l >= len(presetMapping) {
-		return "superfast"
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for videotoolbox preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
 	}
 
-	return presetMapping[l]
+	return preset
 }
 
 // GetCodecs will return the supported codecs available on the system.

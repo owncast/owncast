@@ -1,0 +1,24 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - webv2
+    paths:
+      - '.github/workflows/*'
+  pull_request:
+    branches:
+      - webv2
+    paths:
+      - '.github/workflows/*'
+
+jobs:
+  actionlint:
+    name: GitHub actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: docker://rhysd/actionlint:latest
+        with:
+          args: -shellcheck= -color

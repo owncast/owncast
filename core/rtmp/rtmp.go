@@ -11,19 +11,22 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nareix/joy5/format/rtmp"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
 
+var _hasInboundRTMPConnection = false
+
 var (
-	_hasInboundRTMPConnection = false
+	_pipe           *io.PipeWriter
+	_rtmpConnection net.Conn
 )
 
-var _pipe *io.PipeWriter
-var _rtmpConnection net.Conn
-
-var _setStreamAsConnected func(*io.PipeReader)
-var _setBroadcaster func(models.Broadcaster)
+var (
+	_setStreamAsConnected func(*io.PipeReader)
+	_setBroadcaster       func(models.Broadcaster)
+)
 
 // Start starts the rtmp service, listening on specified RTMP port.
 func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
@@ -75,7 +78,22 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	if !secretMatch(data.GetStreamKey(), c.URL.Path) {
+	accessGranted := false
+	validStreamingKeys := data.GetStreamKeys()
+
+	for _, key := range validStreamingKeys {
+		if secretMatch(key.Key, c.URL.Path) {
+			accessGranted = true
+			break
+		}
+	}
+
+	// Test against the temporary key if it was set at runtime.
+	if config.TemporaryStreamKey != "" && secretMatch(config.TemporaryStreamKey, c.URL.Path) {
+		accessGranted = true
+	}
+
+	if !accessGranted {
 		log.Errorln("invalid streaming key; rejecting incoming stream")
 		_ = nc.Close()
 		return

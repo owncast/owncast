@@ -35,19 +35,23 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	response := serverConfigAdminResponse{
 		InstanceDetails: webConfigResponse{
-			Name:             data.GetServerName(),
-			Summary:          data.GetServerSummary(),
-			Tags:             data.GetServerMetadataTags(),
-			ExtraPageContent: data.GetExtraPageBodyContent(),
-			StreamTitle:      data.GetStreamTitle(),
-			WelcomeMessage:   data.GetServerWelcomeMessage(),
-			Logo:             data.GetLogoPath(),
-			SocialHandles:    data.GetSocialHandles(),
-			NSFW:             data.GetNSFW(),
-			CustomStyles:     data.GetCustomStyles(),
+			Name:                data.GetServerName(),
+			Summary:             data.GetServerSummary(),
+			Tags:                data.GetServerMetadataTags(),
+			ExtraPageContent:    data.GetExtraPageBodyContent(),
+			StreamTitle:         data.GetStreamTitle(),
+			WelcomeMessage:      data.GetServerWelcomeMessage(),
+			OfflineMessage:      data.GetCustomOfflineMessage(),
+			Logo:                data.GetLogoPath(),
+			SocialHandles:       data.GetSocialHandles(),
+			NSFW:                data.GetNSFW(),
+			CustomStyles:        data.GetCustomStyles(),
+			CustomJavascript:    data.GetCustomJavascript(),
+			AppearanceVariables: data.GetCustomColorVariableValues(),
 		},
 		FFmpegPath:              ffmpeg,
-		StreamKey:               data.GetStreamKey(),
+		AdminPassword:           data.GetAdminPassword(),
+		StreamKeys:              data.GetStreamKeys(),
 		WebServerPort:           config.WebServerPort,
 		WebServerIP:             config.WebServerIP,
 		RTMPServerPort:          data.GetRTMPPortNumber(),
@@ -55,6 +59,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
+		HideViewerCount:         data.GetHideViewerCount(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -80,7 +85,6 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		Notifications: notificationsConfigResponse{
 			Discord: data.GetDiscordConfig(),
 			Browser: data.GetBrowserPushConfig(),
-			Twitter: data.GetTwitterConfiguration(),
 		},
 	}
 
@@ -95,7 +99,8 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 type serverConfigAdminResponse struct {
 	InstanceDetails         webConfigResponse           `json:"instanceDetails"`
 	FFmpegPath              string                      `json:"ffmpegPath"`
-	StreamKey               string                      `json:"streamKey"`
+	AdminPassword           string                      `json:"adminPassword"`
+	StreamKeys              []models.StreamKey          `json:"streamKeys"`
 	WebServerPort           int                         `json:"webServerPort"`
 	WebServerIP             string                      `json:"webServerIP"`
 	RTMPServerPort          int                         `json:"rtmpServerPort"`
@@ -113,6 +118,7 @@ type serverConfigAdminResponse struct {
 	SuggestedUsernames      []string                    `json:"suggestedUsernames"`
 	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
 	Notifications           notificationsConfigResponse `json:"notifications"`
+	HideViewerCount         bool                        `json:"hideViewerCount"`
 }
 
 type videoSettings struct {
@@ -121,17 +127,20 @@ type videoSettings struct {
 }
 
 type webConfigResponse struct {
-	Name             string                `json:"name"`
-	Summary          string                `json:"summary"`
-	WelcomeMessage   string                `json:"welcomeMessage"`
-	Logo             string                `json:"logo"`
-	Tags             []string              `json:"tags"`
-	Version          string                `json:"version"`
-	NSFW             bool                  `json:"nsfw"`
-	ExtraPageContent string                `json:"extraPageContent"`
-	StreamTitle      string                `json:"streamTitle"` // What's going on with the current stream
-	SocialHandles    []models.SocialHandle `json:"socialHandles"`
-	CustomStyles     string                `json:"customStyles"`
+	Name                string                `json:"name"`
+	Summary             string                `json:"summary"`
+	WelcomeMessage      string                `json:"welcomeMessage"`
+	OfflineMessage      string                `json:"offlineMessage"`
+	Logo                string                `json:"logo"`
+	Tags                []string              `json:"tags"`
+	Version             string                `json:"version"`
+	NSFW                bool                  `json:"nsfw"`
+	ExtraPageContent    string                `json:"extraPageContent"`
+	StreamTitle         string                `json:"streamTitle"` // What's going on with the current stream
+	SocialHandles       []models.SocialHandle `json:"socialHandles"`
+	CustomStyles        string                `json:"customStyles"`
+	CustomJavascript    string                `json:"customJavascript"`
+	AppearanceVariables map[string]string     `json:"appearanceVariables"`
 }
 
 type yp struct {
@@ -152,5 +161,4 @@ type federationConfigResponse struct {
 type notificationsConfigResponse struct {
 	Browser models.BrowserNotificationConfiguration `json:"browser"`
 	Discord models.DiscordConfiguration             `json:"discord"`
-	Twitter models.TwitterConfiguration             `json:"twitter"`
 }

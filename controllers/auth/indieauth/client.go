@@ -58,7 +58,7 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	request, response, err := ia.HandleCallbackCode(code, state)
 	if err != nil {
 		log.Debugln(err)
-		msg := fmt.Sprintf("Unable to complete authentication. <a href=\"/\">Go back.</a><hr/> %s", err.Error())
+		msg := `Unable to complete authentication. <a href="/">Go back.</a><hr/>`
 		_ = controllers.WriteString(w, msg, http.StatusBadRequest)
 		return
 	}
@@ -76,9 +76,11 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", request.DisplayName, u.DisplayName)
-		if err := chat.SendSystemAction(loginMessage, true); err != nil {
-			log.Errorln(err)
+		if request.DisplayName != u.DisplayName {
+			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", request.DisplayName, u.DisplayName)
+			if err := chat.SendSystemAction(loginMessage, true); err != nil {
+				log.Errorln(err)
+			}
 		}
 
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)

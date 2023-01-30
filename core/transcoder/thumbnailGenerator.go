@@ -49,8 +49,8 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 
 func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
-	outputFile := path.Join(config.WebRoot, "thumbnail.jpg")
-	previewGifFile := path.Join(config.WebRoot, "preview.gif")
+	outputFile := path.Join(config.TempDir, "thumbnail.jpg")
+	previewGifFile := path.Join(config.TempDir, "preview.gif")
 
 	framePath := path.Join(segmentPath, strconv.Itoa(variantIndex))
 	files, err := os.ReadDir(framePath)
@@ -87,7 +87,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 
 	mostRecentFile := path.Join(framePath, names[0])
 	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-	outputFileTemp := path.Join(config.WebRoot, "tempthumbnail.jpg")
+	outputFileTemp := path.Join(config.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
 		ffmpegPath,
@@ -117,7 +117,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 
 func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-	outputFileTemp := path.Join(config.WebRoot, "temppreview.gif")
+	outputFileTemp := path.Join(config.TempDir, "temppreview.gif")
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{

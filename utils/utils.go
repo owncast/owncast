@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -15,7 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mssola/user_agent"
 	log "github.com/sirupsen/logrus"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -96,34 +96,6 @@ func moveFallback(source, destination string) error {
 		return fmt.Errorf("Failed removing original file: %s", err)
 	}
 	return nil
-}
-
-// IsUserAgentABot returns if a web client user-agent is seen as a bot.
-func IsUserAgentABot(userAgent string) bool {
-	if userAgent == "" {
-		return false
-	}
-
-	botStrings := []string{
-		"mastodon",
-		"pleroma",
-		"applebot",
-		"whatsapp",
-		"matrix",
-		"synapse",
-		"element",
-		"rocket.chat",
-		"duckduckbot",
-	}
-
-	for _, botString := range botStrings {
-		if strings.Contains(strings.ToLower(userAgent), botString) {
-			return true
-		}
-	}
-
-	ua := user_agent.New(userAgent)
-	return ua.Bot()
 }
 
 // IsUserAgentAPlayer returns if a web client user-agent is seen as a media player.
@@ -210,13 +182,15 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	filename := path.Base(filePath)
 	fileExtension := path.Ext(filePath)
 
+	defaultDaysCached := 30
+
 	if filename == "thumbnail.jpg" || filename == "preview.gif" {
 		// Thumbnails & preview gif re-generate during live
 		return 20
 	} else if fileExtension == ".js" || fileExtension == ".css" {
 		// Cache javascript & CSS
-		return 60 * 60 * 3
-	} else if fileExtension == ".ts" {
+		return 60 * 60 * 24 * defaultDaysCached
+	} else if fileExtension == ".ts" || fileExtension == ".woff2" {
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
 		// and not for live or 3rd party storage.
@@ -224,11 +198,13 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	} else if fileExtension == ".m3u8" {
 		return 0
 	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
-		return 60 * 60 * 24 * 7
+		return 60 * 60 * 24 * defaultDaysCached
+	} else if fileExtension == ".html" || filename == "/" || fileExtension == "" {
+		return 0
 	}
 
 	// Default cache length in seconds
-	return 60 * 60 * 2
+	return 60 * 60 * 24 * 1 // For unknown types, cache for 1 day
 }
 
 // IsValidURL will return if a URL string is a valid URL or not.
@@ -350,12 +326,13 @@ func StringMapKeys(stringMap map[string]interface{}) []string {
 	return stringSlice
 }
 
-// GenerateRandomDisplayColor will return a random _hue_ to be used when displaying a user.
-// The UI should determine the right saturation and lightness in order to make it look right.
-func GenerateRandomDisplayColor() int {
+// GenerateRandomDisplayColor will return a random number that is used for
+// referencing a color value client-side. These colors are seen as
+// --theme-user-colors-n.
+func GenerateRandomDisplayColor(maxColor int) int {
 	rangeLower := 0
-	rangeUpper := 360
-	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint
+	rangeUpper := maxColor
+	return rangeLower + rand.Intn(rangeUpper-rangeLower+1) //nolint:gosec
 }
 
 // GetHostnameFromURL will return the hostname component from a URL string.
@@ -391,4 +368,43 @@ func ShuffleStringSlice(s []string) []string {
 // IntPercentage returns  an int percentage of a number.
 func IntPercentage(x, total int) int {
 	return int(float64(x) / float64(total) * 100)
+}
+
+// DecodeBase64Image decodes a base64 image string into a byte array, returning the extension (including dot) for the content type.
+func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
+	s := strings.SplitN(url, ",", 2)
+	if len(s) < 2 {
+		err = errors.New("error splitting base64 image data")
+		return
+	}
+
+	bytes, err = base64.StdEncoding.DecodeString(s[1])
+	if err != nil {
+		return
+	}
+
+	splitHeader := strings.Split(s[0], ":")
+	if len(splitHeader) < 2 {
+		err = errors.New("error splitting base64 image header")
+		return
+	}
+
+	contentType := strings.Split(splitHeader[1], ";")[0]
+
+	if contentType == "image/svg+xml" {
+		extension = ".svg"
+	} else if contentType == "image/gif" {
+		extension = ".gif"
+	} else if contentType == "image/png" {
+		extension = ".png"
+	} else if contentType == "image/jpeg" {
+		extension = ".jpeg"
+	}
+
+	if extension == "" {
+		err = errors.New("missing or invalid contentType in base64 image")
+		return
+	}
+
+	return bytes, extension, nil
 }

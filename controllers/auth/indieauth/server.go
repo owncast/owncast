@@ -33,7 +33,7 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 
 	request, err := ia.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
 	if err != nil {
-		// Return a human readable, HTML page as an error. JSON is no use here.
+		_ = controllers.WriteString(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

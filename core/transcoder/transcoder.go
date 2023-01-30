@@ -132,7 +132,7 @@ func (t *Transcoder) Start() {
 	}
 
 	if err := _commandExec.Start(); err != nil {
-		log.Errorln("Transcoder error.  See ", logging.GetTranscoderLogFilePath(), " for full output to debug.")
+		log.Errorln("Transcoder error. See", logging.GetTranscoderLogFilePath(), "for full output to debug.")
 		log.Panicln(err, command)
 	}
 
@@ -150,7 +150,7 @@ func (t *Transcoder) Start() {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at ", logging.GetTranscoderLogFilePath(), " to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
+		log.Errorln("transcoding error. look at", logging.GetTranscoderLogFilePath(), "to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
 	}
 }
 

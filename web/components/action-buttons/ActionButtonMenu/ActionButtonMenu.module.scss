@@ -1,0 +1,23 @@
+.item {
+  display: flex;
+  align-items: center;
+}
+
+.buttonWrap {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-bottom: 16px; // to match antd nav margin-bottom
+  button {
+    height: 100%;
+  }
+}
+
+.icon {
+  height: 15px;
+  margin-right: 5px;
+}
+
+.menu {
+  color: currentColor;
+}

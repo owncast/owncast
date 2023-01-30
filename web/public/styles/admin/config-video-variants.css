@@ -1,0 +1,71 @@
+.config-video-variants .variants-table {
+  margin-top: 2em;
+}
+.config-video-variants .variants-table-module {
+  min-width: 400px;
+}
+.config-variant-form .description {
+  margin-top: 0;
+}
+.config-variant-form .passthrough-warning {
+  text-align: center;
+  padding: 1em;
+  color: var(--ant-warning);
+  font-size: 0.88em;
+  font-weight: 500;
+  background-color: var(--black-50);
+  border-radius: var(--container-border-radius);
+}
+.config-variant-form .cpu-usage-container,
+.config-variant-form .bitrate-container {
+  min-height: 22em;
+}
+.config-variant-form .advanced-settings {
+  margin-top: 1em;
+}
+.config-variant-form .advanced-settings .resolution-module,
+.config-variant-form .advanced-settings .video-passthrough-module {
+  min-height: 30em;
+}
+.config-variant-form.video-passthrough-enabled .form-module:not(.video-passthrough-module) {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+.variants-table .actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.variants-table .delete-button {
+  margin-left: 0.5em;
+  opacity: 0.8;
+}
+.read-more-subtext {
+  font-size: 0.8rem;
+}
+.codec-module .ant-collapse-content-active {
+  background-color: var(--white-15);
+}
+.video-text-field-container {
+  margin-left: 12px;
+  margin-bottom: 30px;
+}
+.video-varient-alert {
+  margin-bottom: 30px;
+}
+.advanced-switch-container {
+  margin-left: 80px;
+}
+.advanced-description-switch-container {
+  display: flex;
+  flex-direction: row;
+}
+.advanced-description-wrapper {
+  color: black;
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+.video-varient-alert-button-container {
+  width: 100vh;
+}

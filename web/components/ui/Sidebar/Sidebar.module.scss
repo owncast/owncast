@@ -1,0 +1,22 @@
+@import '../../../styles/mixins.scss';
+
+.root {
+  background-color: var(--theme-color-components-chat-background);
+  display: none;
+  @include screen(desktop) {
+    position: sticky;
+    display: block;
+  }
+}
+
+/*
+First div is .ant-layout-sider-children
+Only way to target it apparently
+*/
+.root > div {
+  display: flex;
+  flex-flow: column nowrap;
+  -moz-box-flex: 1 !important;
+  flex-grow: 1 !important;
+  height: 100% !important;
+}

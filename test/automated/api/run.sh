@@ -1,43 +1,17 @@
 #!/bin/bash
 
-TEMP_DB=$(mktemp)
+set -e
+
+source ../tools.sh
 
 # Install the node test framework
-npm install --silent > /dev/null
+npm install --quiet --no-progress
 
-# Download a specific version of ffmpeg
-if [ ! -d "ffmpeg" ]; then
-  mkdir ffmpeg
-  pushd ffmpeg > /dev/null
-  curl -sL https://github.com/vot/ffbinaries-prebuilt/releases/download/v4.2.1/ffmpeg-4.2.1-linux-64.zip --output ffmpeg.zip > /dev/null
-  unzip -o ffmpeg.zip > /dev/null
-  PATH=$PATH:$(pwd)
-  popd > /dev/null
-fi
+install_ffmpeg
 
-pushd ../../.. > /dev/null
+start_owncast
 
-# Build and run owncast from source
-go build -race -o owncast main.go
-./owncast -database $TEMP_DB &
-SERVER_PID=$!
-
-popd > /dev/null
-sleep 5
-
-# Start streaming the test file over RTMP to
-# the local owncast instance.
-ffmpeg -hide_banner -loglevel panic -stream_loop -1 -re -i ../test.mp4 -vcodec libx264 -profile:v main -sc_threshold 0 -b:v 1300k -acodec copy -f flv rtmp://127.0.0.1/live/abc123 &
-FFMPEG_PID=$!
-
-function finish {
-  rm $TEMP_DB
-  kill $SERVER_PID $FFMPEG_PID
-}
-trap finish EXIT
-
-echo "Waiting..."
-sleep 15
+start_stream
 
 # Run the tests against the instance.
 npm test

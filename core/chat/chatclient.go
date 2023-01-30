@@ -20,7 +20,7 @@ import (
 // Client represents a single chat client.
 type Client struct {
 	mu          sync.RWMutex
-	id          uint
+	Id          uint `json:"-"`
 	accessToken string
 	conn        *websocket.Conn
 	User        *user.User `json:"user"`
@@ -123,7 +123,7 @@ func (c *Client) readPump() {
 
 		// Guard against floods.
 		if !c.passesRateLimit() {
-			log.Warnln("Client", c.id, c.User.DisplayName, "has exceeded the messaging rate limiting thresholds and messages are being rejected temporarily.")
+			log.Warnln("Client", c.Id, c.User.DisplayName, "has exceeded the messaging rate limiting thresholds and messages are being rejected temporarily.")
 			c.startChatRejectionTimeout()
 
 			continue
@@ -186,14 +186,14 @@ func (c *Client) handleEvent(data []byte) {
 }
 
 func (c *Client) close() {
-	log.Traceln("client closed:", c.User.DisplayName, c.id, c.IPAddress)
+	log.Traceln("client closed:", c.User.DisplayName, c.Id, c.IPAddress)
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	if c.send != nil {
 		_ = c.conn.Close()
-		c.server.unregister <- c.id
+		c.server.unregister <- c.Id
 		close(c.send)
 		c.send = nil
 	}

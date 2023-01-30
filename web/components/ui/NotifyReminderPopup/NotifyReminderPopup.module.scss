@@ -1,0 +1,29 @@
+:export {
+  popupBackgroundColor: var(--theme-color-components-primary-button-background);
+}
+
+.contentbutton {
+  background-color: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--theme-color-components-text-on-dark);
+}
+
+.closebutton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--theme-color-components-text-on-dark);
+}
+
+.title {
+  border-bottom: none;
+  font-weight: bold;
+  padding-left: 5px;
+  color: var(--theme-color-components-text-on-dark);
+}

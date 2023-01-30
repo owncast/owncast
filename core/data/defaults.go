@@ -32,16 +32,16 @@ func PopulateDefaults() {
 		return
 	}
 
-	_ = SetStreamKey(defaults.StreamKey)
+	_ = SetAdminPassword(defaults.AdminPassword)
+	_ = SetStreamKeys(defaults.StreamKeys)
 	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
 	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
 	_ = SetLogoPath(defaults.Logo)
 	_ = SetServerMetadataTags([]string{"owncast", "streaming"})
-	_ = SetServerSummary("Welcome to your new Owncast server! This description can be changed in the admin. Visit https://owncast.online/docs/configuration/ to learn more.")
+	_ = SetServerSummary(defaults.Summary)
 	_ = SetServerWelcomeMessage("")
-	_ = SetServerName("Owncast")
-	_ = SetStreamKey(defaults.StreamKey)
-	_ = SetExtraPageBodyContent("This is your page's content that can be edited in the admin.")
+	_ = SetServerName(defaults.Name)
+	_ = SetExtraPageBodyContent(defaults.PageBodyContent)
 	_ = SetFederationGoLiveMessage(defaults.FederationGoLiveMessage)
 	_ = SetSocialHandles([]models.SocialHandle{
 		{

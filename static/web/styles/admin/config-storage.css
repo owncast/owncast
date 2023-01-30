@@ -1,0 +1,44 @@
+.edit-storage-container {
+  padding: 1em;
+}
+.edit-storage-container .form-fields {
+  display: none;
+  margin-bottom: 1em;
+}
+.edit-storage-container.enabled .form-fields {
+  display: block;
+}
+.edit-storage-container .button-container {
+  margin: 2em 0 1em 0;
+}
+.edit-storage-container .advanced-section {
+  margin: 1em 0;
+}
+.edit-server-details-container .field-streamkey-container {
+  margin-bottom: 1.5em;
+}
+.edit-server-details-container .field-streamkey-container .field-tip {
+  color: var(--ant-warning);
+}
+.edit-server-details-container .field-streamkey-container .left-side {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.edit-server-details-container .field-streamkey-container .textfield-with-submit-container {
+  margin-bottom: 0;
+}
+.edit-server-details-container .field-streamkey-container .streamkey-actions {
+  white-space: nowrap;
+}
+.edit-server-details-container .field-streamkey-container .streamkey-actions button {
+  margin: 0.25em;
+}
+@media (max-width: 800px) {
+  .edit-server-details-container .field-streamkey-container .streamkey-actions {
+    margin-top: 2em;
+  }
+}
+.edit-server-details-container .advanced-settings {
+  max-width: 800px;
+}

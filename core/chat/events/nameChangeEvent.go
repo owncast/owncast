@@ -7,6 +7,13 @@ type NameChangeEvent struct {
 	NewName string `json:"newName"`
 }
 
+// ColorChangeEvent is received when a user changes their chat display color.
+type ColorChangeEvent struct {
+	Event
+	UserEvent
+	NewColor int `json:"newColor"`
+}
+
 // NameChangeBroadcast represents a user changing their chat display name.
 type NameChangeBroadcast struct {
 	Event
