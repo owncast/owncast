@@ -5,7 +5,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer(
   withLess({
-    productionBrowserSourceMaps: true,
+    productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
     trailingSlash: true,
     reactStrictMode: true,
     images: {
