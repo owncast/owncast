@@ -343,16 +343,18 @@ export const Content: FC = () => {
                 />
               )}
               {!online && !appState.appLoading && (
-                <OfflineBanner
-                  showsHeader={false}
-                  streamName={name}
-                  customText={offlineMessage}
-                  notificationsEnabled={browserNotificationsEnabled}
-                  fediverseAccount={fediverseAccount}
-                  lastLive={lastDisconnectTime}
-                  onNotifyClick={() => setShowNotifyModal(true)}
-                  onFollowClick={() => setShowFollowModal(true)}
-                />
+                <div id="offline-message">
+                  <OfflineBanner
+                    showsHeader={false}
+                    streamName={name}
+                    customText={offlineMessage}
+                    notificationsEnabled={browserNotificationsEnabled}
+                    fediverseAccount={fediverseAccount}
+                    lastLive={lastDisconnectTime}
+                    onNotifyClick={() => setShowNotifyModal(true)}
+                    onFollowClick={() => setShowFollowModal(true)}
+                  />
+                </div>
               )}
               {isStreamLive && (
                 <Statusbar

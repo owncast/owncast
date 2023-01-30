@@ -29,9 +29,13 @@ export const Header: FC<HeaderComponentProps> = ({
   online,
 }) => (
   <header className={cn([`${styles.header}`], 'global-header')}>
-    {online && (
+    {online ? (
       <Link href="#player" className={styles.skipLink}>
         Skip to player
+      </Link>
+    ) : (
+      <Link href="#offline-message" className={styles.skipLink}>
+        Skip to offline message
       </Link>
     )}
     <Link href="#skip-to-content" className={styles.skipLink}>
