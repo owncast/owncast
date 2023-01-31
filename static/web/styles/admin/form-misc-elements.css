@@ -32,7 +32,7 @@
   width: 100%;
   margin: auto;
   padding: 1em 2em 0.75em;
-  background-color: var(--owncast-purple-25);
+  background-color: var(--color-owncast-palette-7);
   border-radius: var(--container-border-radius);
 }
 .segment-slider-container .status-container {
@@ -48,7 +48,7 @@
   line-height: normal;
   color: var(--white);
   padding: 1em;
-  border-radius: var(--container-border-radius);
+  border-radius: var(--theme-rounded-corners);
   background-color: var(--black-35);
 }
 .segment-tip {
