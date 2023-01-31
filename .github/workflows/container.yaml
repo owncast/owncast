@@ -44,6 +44,11 @@ jobs:
 
       - name: Build and push
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
+        env:
+          GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
+          EARTHLY_BUILD_TAG: 'nightly'
+          EARTHLY_BUILD_BRANCH: 'develop'
+          EARTHLY_PUSH: true
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
