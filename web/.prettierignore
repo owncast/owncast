@@ -1,3 +1,4 @@
 # Ignore artifacts:
 node_modules
 out
+styles/variables.css
