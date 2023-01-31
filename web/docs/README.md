@@ -31,7 +31,7 @@
 
 - This admin site chooses to have a generally Dark color palette, but with colors that are different from Ant design's _dark_ stylesheet, so that style sheet is not included. This results in a very large `ant-overrides.scss` file to reset colors on frequently used Ant components in the system. If you find yourself a new Ant Component that has not yet been used in this app, feel free to add a reset style for that component to the overrides stylesheet.
 
-  - Take a look at `variables.scss` CSS file if you want to give some elements custom css colors.
+  - Take a look at `variables.css` CSS file if you want to give some elements custom css colors.
 
 ---
 
