@@ -14,7 +14,7 @@
   font-size: 0.88em;
   font-weight: 500;
   background-color: var(--black-50);
-  border-radius: var(--container-border-radius);
+  border-radius: var(--theme-rounded-corners);
 }
 .config-variant-form .cpu-usage-container,
 .config-variant-form .bitrate-container {
