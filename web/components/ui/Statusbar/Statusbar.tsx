@@ -25,7 +25,7 @@ function makeDurationString(lastConnectTime: Date): string {
   const SECOND_LABEL = 'second';
   const diff = intervalToDuration({ start: lastConnectTime, end: new Date() });
 
-  if (diff.days > 1) {
+  if (diff.days >= 1) {
     return `${diff.days} ${pluralize(DAY_LABEL, diff.days)}
 			${diff.hours} ${pluralize(HOUR_LABEL, diff.hours)}`;
   }
