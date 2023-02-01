@@ -5,11 +5,12 @@
   height: 100vh;
   overflow: auto;
   z-index: 10;
-  background-color: var(--theme-color-background-main);
+  background-color: var(--theme-color-palette-1);
 }
 .app-container .menu-container {
   border-color: transparent;
 	background-color: unset;
+	color: var(--theme-color-components-text-on-dark);
 }
 .app-container h1.owncast-title {
   padding: 1rem;
@@ -20,7 +21,7 @@
   align-items: center;
 }
 .app-container h1.owncast-title .logo-container {
-  background-color: var(--white);
+  background-color: var(--theme-color-palette-4);
   padding-top: 4px;
   padding-right: 6px;
   padding-left: 6px;
@@ -29,7 +30,7 @@
 .app-container h1.owncast-title .title-label {
   display: inline-block;
   margin-left: 1rem;
-  color: var(--white);
+  color: var(--theme-color-palette-4);
   font-size: 1.15rem;
   font-weight: 200;
   text-transform: uppercase;
@@ -45,9 +46,10 @@
   justify-content: flex-end;
   padding-right: 1rem;
   padding-left: 1rem;
-  background-color: var(--nav-bg-color);
+	background-color: var(--theme-color-background-main);
 }
 .app-container .main-content-container {
+	background-color: var(--theme-color-palette-3);
   padding: 2em 3em 3em;
   min-width: 50vw;
 }
@@ -64,7 +66,7 @@
   width: 12.5rem;
 }
 .app-container .online-status-indicator .status-label {
-  color: var(--white);
+  color: var(--theme-color-palette-4);
   text-transform: uppercase;
   font-size: 0.75rem;
   display: inline-block;
@@ -134,4 +136,8 @@
 
 .ant-select:not(.ant-select-customize-input) .ant-select-selector {
   background-color: var(--theme-color-components-form-field-background);
+}
+
+.ant-menu-item a, .ant-menu-submenu-expand-icon, .ant-menu-submenu-arrow {
+	color: unset;
 }
