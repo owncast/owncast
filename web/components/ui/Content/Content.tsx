@@ -77,6 +77,7 @@ const OwncastPlayer = dynamic(
   () => import('../../video/OwncastPlayer/OwncastPlayer').then(mod => mod.OwncastPlayer),
   {
     ssr: false,
+    loading: () => <Skeleton loading active paragraph={{ rows: 12 }} />,
   },
 );
 
