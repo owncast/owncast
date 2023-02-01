@@ -158,7 +158,7 @@ export const ClientConfigStore: FC = () => {
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
-  const [serverStatus, setServerStatus] = useRecoilState<ServerStatus>(serverStatusState);
+  const [, setServerStatus] = useRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
   const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
@@ -166,7 +166,6 @@ export const ClientConfigStore: FC = () => {
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   const [hiddenMessageIds, setHiddenMessageIds] = useRecoilState<string[]>(removedMessageIdsAtom);
-  const [, setHasLoadedStatus] = useState(false);
   const [hasLoadedConfig, setHasLoadedConfig] = useState(false);
 
   let ws: WebsocketService;
@@ -177,21 +176,27 @@ export const ClientConfigStore: FC = () => {
       message,
     });
   };
-  const sendEvent = (event: string) => {
+  const sendEvent = (events: string[]) => {
     // console.debug('---- sending event:', event);
-    appStateSend({ type: event });
+    appStateSend(events);
   };
 
   const handleStatusChange = (status: ServerStatus) => {
     if (appState.matches('loading')) {
-      sendEvent(AppStateEvent.Loaded);
+      const events = [AppStateEvent.Loaded];
+      if (status.online) {
+        events.push(AppStateEvent.Online);
+      } else {
+        events.push(AppStateEvent.Offline);
+      }
+      sendEvent(events);
       return;
     }
 
     if (status.online && appState.matches('ready')) {
-      sendEvent(AppStateEvent.Online);
+      sendEvent([AppStateEvent.Online]);
     } else if (!status.online && !appState.matches('ready.offline')) {
-      sendEvent(AppStateEvent.Offline);
+      sendEvent([AppStateEvent.Offline]);
     }
   };
 
@@ -210,8 +215,9 @@ export const ClientConfigStore: FC = () => {
   const updateServerStatus = async () => {
     try {
       const status = await ServerStatusService.getStatus();
+      handleStatusChange(status);
       setServerStatus(status);
-      setHasLoadedStatus(true);
+
       const { serverTime } = status;
 
       const clockSkew = new Date(serverTime).getTime() - Date.now();
@@ -219,7 +225,7 @@ export const ClientConfigStore: FC = () => {
 
       setGlobalFatalErrorMessage(null);
     } catch (error) {
-      sendEvent(AppStateEvent.Fail);
+      sendEvent([AppStateEvent.Fail]);
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
       console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
     }
@@ -233,7 +239,7 @@ export const ClientConfigStore: FC = () => {
     }
 
     try {
-      sendEvent(AppStateEvent.NeedsRegister);
+      sendEvent([AppStateEvent.NeedsRegister]);
       const response = await ChatService.registerUser(optionalDisplayName);
       const { accessToken: newAccessToken, displayName: newDisplayName, displayColor } = response;
       if (!newAccessToken) {
@@ -248,7 +254,7 @@ export const ClientConfigStore: FC = () => {
       setAccessToken(newAccessToken);
       setLocalStorage(ACCESS_TOKEN_KEY, newAccessToken);
     } catch (e) {
-      sendEvent(AppStateEvent.Fail);
+      sendEvent([AppStateEvent.Fail]);
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
     }
   };
@@ -356,16 +362,12 @@ export const ClientConfigStore: FC = () => {
       if ((window as any).statusHydration) {
         const status = JSON.parse((window as any).statusHydration);
         setServerStatus(status);
-        setHasLoadedStatus(true);
+        handleStatusChange(status);
       }
     } catch (e) {
       console.error('error parsing status hydration', e);
     }
   }, []);
-
-  useEffect(() => {
-    handleStatusChange(serverStatus);
-  }, [serverStatus]);
 
   useEffect(() => {
     if (!clientConfig.chatDisabled && accessToken && hasLoadedConfig) {
