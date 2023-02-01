@@ -24,6 +24,7 @@ import { Theme } from '../../theme/Theme';
 import styles from './Main.module.scss';
 import { PushNotificationServiceWorker } from '../../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
 import { AppStateOptions } from '../../stores/application-state';
+import { Noscript } from '../../ui/Noscript/Noscript';
 
 const lockBodyStyle = `
 body {
@@ -152,6 +153,8 @@ export const Main: FC = () => {
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
       </Layout>
+
+      <Noscript />
     </>
   );
 };
