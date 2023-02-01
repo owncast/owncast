@@ -127,7 +127,7 @@ const DesktopContent = ({
         />
       </div>
 
-      <div className={styles.lowerSection} style={{ minHeight: '30vh' }}>
+      <div className={styles.lowerSection}>
         {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : aboutTabContent}
       </div>
     </>
