@@ -9,8 +9,8 @@
 }
 .app-container .menu-container {
   border-color: transparent;
-	background-color: unset;
-	color: var(--theme-color-components-text-on-dark);
+  background-color: unset;
+  color: var(--theme-color-components-text-on-dark);
 }
 .app-container h1.owncast-title {
   padding: 1rem;
@@ -46,10 +46,10 @@
   justify-content: flex-end;
   padding-right: 1rem;
   padding-left: 1rem;
-	background-color: var(--theme-color-background-main);
+  background-color: var(--theme-color-background-main);
 }
 .app-container .main-content-container {
-	background-color: var(--theme-color-palette-3);
+  background-color: var(--theme-color-palette-3);
   padding: 2em 3em 3em;
   min-width: 50vw;
 }
@@ -138,6 +138,8 @@
   background-color: var(--theme-color-components-form-field-background);
 }
 
-.ant-menu-item a, .ant-menu-submenu-expand-icon, .ant-menu-submenu-arrow {
-	color: unset;
+.ant-menu-item a,
+.ant-menu-submenu-expand-icon,
+.ant-menu-submenu-arrow {
+  color: unset;
 }

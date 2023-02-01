@@ -38,7 +38,7 @@
 .news-feed {
   margin-top: 0;
   padding: 1.5em;
-	border: 1px solid var(--theme-color-palette-15);
+  border: 1px solid var(--theme-color-palette-15);
 }
 .news-feed h2 {
   font-size: 1.2em;
@@ -63,11 +63,12 @@
   font-size: 0.75em;
 }
 
-.ant-collapse > .ant-collapse-item:last-child, .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-	background-color: var(--theme-color-palette-5);
+.ant-collapse > .ant-collapse-item:last-child,
+.ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
+  background-color: var(--theme-color-palette-5);
 }
 
 .ant-card-body {
-	/* background-color: var(--theme-color-palette-5); */
-	border: 1px solid var(--theme-color-palette-15);
+  /* background-color: var(--theme-color-palette-5); */
+  border: 1px solid var(--theme-color-palette-15);
 }
