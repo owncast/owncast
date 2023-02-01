@@ -38,6 +38,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
 
   const [hasChanged, setHasChanged] = useState(false);
 
+  const [isPwdInput, setPwdInputField] = useState(false);
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
 
@@ -65,6 +66,13 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
       setHasChanged(true);
     }
   }, [value]);
+
+  useEffect(() => {
+    if (fieldName === 'adminPassword') {
+      setPwdInputField(true);
+    }
+    setPwdInputField(false);
+  }, [fieldName]);
 
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = ({ fieldName: changedFieldName, value: changedValue }: UpdateArgs) => {
@@ -119,13 +127,6 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
     submittable: hasChanged,
   });
 
-  const isPasswordInput = () => {
-    if (fieldName === 'adminPassword') {
-      return false;
-    }
-    return true;
-  };
-
   return (
     <div className={textfieldContainerClass}>
       <div className="textfield-component">
@@ -143,7 +144,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           <div className="field-tip">{tip}</div>
           <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
-            {isPasswordInput() && (
+            {isPwdInput && (
               <Button
                 type="primary"
                 size="small"
