@@ -10,10 +10,10 @@
 .config-variant-form .passthrough-warning {
   text-align: center;
   padding: 1em;
-  color: var(--ant-warning);
+  color: var(--theme-color-palette-error);
   font-size: 0.88em;
   font-weight: 500;
-  background-color: var(--black-50);
+  background-color: var(--theme-color-palette-10);
   border-radius: var(--theme-rounded-corners);
 }
 .config-variant-form .cpu-usage-container,
@@ -43,9 +43,7 @@
 .read-more-subtext {
   font-size: 0.8rem;
 }
-.codec-module .ant-collapse-content-active {
-  background-color: var(--white-15);
-}
+
 .video-text-field-container {
   margin-left: 12px;
   margin-bottom: 30px;

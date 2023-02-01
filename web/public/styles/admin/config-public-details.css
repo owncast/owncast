@@ -41,13 +41,13 @@
   width: 100%;
 }
 .config-public-details-page .social-items-container {
-  background-color: var(--container-bg-color-alt);
+  background-color: var(--theme-color-palette-5);
   padding: 0 0.75em;
   margin-left: 1em;
   max-width: 450px;
 }
 .config-public-details-page .social-items-container .form-module {
-  background-color: var(--black);
+  background-color: var(--theme-color-palette-10);
 }
 .config-public-details-page .social-items-container .social-handles-container {
   min-width: 350px;
@@ -78,5 +78,5 @@
   max-width: 256px;
   margin-right: 1em;
   display: inline-block;
-  border: 1px solid var(--white-25);
+  border: 1px solid var(--theme-color-palette-5);
 }
