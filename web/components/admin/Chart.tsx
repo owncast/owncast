@@ -1,15 +1,35 @@
-import ChartJs from 'chart.js/auto';
-import Chartkick from 'chartkick';
 import format from 'date-fns/format';
-import { LineChart } from 'react-chartkick';
 import { FC } from 'react';
 
-// from https://github.com/ankane/chartkick.js/blob/master/chart.js/chart.esm.js
-Chartkick.use(ChartJs);
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  LogarithmicScale,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LogarithmicScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 interface TimedValue {
   time: Date;
   value: number;
+  pointStyle?: boolean | string;
+  pointRadius?: number;
 }
 
 export type ChartProps = {
@@ -45,47 +65,46 @@ export const Chart: FC<ChartProps> = ({
 
   if (data && data.length > 0) {
     renderData.push({
-      name: title,
-      color,
+      id: title,
+      label: title,
+      backgroundColor: color,
+      borderColor: color,
+      borderWidth: 3,
       data: createGraphDataset(data),
     });
   }
 
   dataCollections.forEach(collection => {
     renderData.push({
-      name: collection.name,
+      id: collection.name,
+      label: collection.name,
       data: createGraphDataset(collection.data),
-      color: collection.color,
-      dataset: collection.options,
+      backgroundColor: collection.color,
+      borderColor: collection.color,
+      borderWidth: 3,
+      pointStyle: collection.pointStyle || 'circle',
+      radius: collection.pointRadius || 1,
     });
   });
 
-  // ChartJs.defaults.scales.linear.reverse = true;
-
   const options = {
+    responsive: true,
+
     scales: {
-      y: { reverse: false, type: 'linear' },
-      x: {
-        type: 'time',
+      y: {
+        type: yLogarithmic ? ('logarithmic' as const) : ('linear' as const),
+        reverse: yFlipped,
+        title: {
+          display: true,
+          text: unit,
+        },
       },
     },
   };
 
-  options.scales.y.reverse = yFlipped;
-  options.scales.y.type = yLogarithmic ? 'logarithmic' : 'linear';
-
   return (
     <div className="line-chart-container">
-      <LineChart
-        xtitle="Time"
-        ytitle={title}
-        suffix={unit}
-        legend="bottom"
-        color={color}
-        data={renderData}
-        download={title}
-        library={options}
-      />
+      <Line data={{ datasets: renderData }} options={options} height="70vh" />
     </div>
   );
 };
