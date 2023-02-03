@@ -51,6 +51,6 @@ jobs:
           EARTHLY_PUSH: true
         uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 20
           max_attempts: 3
           command: ./build/develop/container.sh
