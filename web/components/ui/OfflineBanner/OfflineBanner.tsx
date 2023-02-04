@@ -3,6 +3,7 @@ import { Divider } from 'antd';
 import { FC } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import dynamic from 'next/dynamic';
+import classNames from 'classnames';
 import styles from './OfflineBanner.module.scss';
 
 // Lazy loaded components
@@ -20,6 +21,7 @@ export type OfflineBannerProps = {
   showsHeader?: boolean;
   onNotifyClick?: () => void;
   onFollowClick?: () => void;
+  className?: string;
 };
 
 export const OfflineBanner: FC<OfflineBannerProps> = ({
@@ -31,6 +33,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   showsHeader = true,
   onNotifyClick,
   onFollowClick,
+  className,
 }) => {
   let text;
   if (customText) {
@@ -74,7 +77,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   }
 
   return (
-    <div id="offline-banner" className={styles.outerContainer}>
+    <div id="offline-banner" className={classNames(styles.outerContainer, className)}>
       <div className={styles.innerContainer}>
         {showsHeader && (
           <>
