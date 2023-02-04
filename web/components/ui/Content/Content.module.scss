@@ -3,16 +3,20 @@
 .root {
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-template-rows: 100%;
   width: 100%;
   background-color: var(--theme-color-background-main);
+  height: 100%;
+  min-height: 0;
 
   @include screen(desktop) {
     height: var(--content-height);
   }
 
   .mainSection {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    // TODO: make this more adaptive to the currently displayed components!
+    grid-template-rows: minmax(0, min-content) min-content min-content minmax(300px, 1fr);
 
     @include screen(desktop) {
       overflow-y: scroll;
@@ -27,10 +31,6 @@
     display: none;
   }
 
-  .topSection {
-    padding: 0;
-    background-color: var(--theme-color-components-video-background);
-  }
   .lowerSection {
     padding: 0em 2%;
     margin-bottom: 2em;
@@ -44,6 +44,14 @@
   }
 }
 
+.topSectionElement {
+  background-color: var(--theme-color-components-video-background);
+}
+
+.statusBar {
+  flex-shrink: 0;
+}
+
 .leftCol {
   display: flex;
   flex-direction: column;
@@ -51,13 +59,6 @@
 
 .loadingSpinner {
   display: grid;
-}
-
-.main {
-  display: grid;
-  flex: 1;
-  height: 100%;
-  grid-template-rows: 1fr auto;
 }
 
 .replacementBar {
