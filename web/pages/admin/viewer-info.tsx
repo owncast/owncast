@@ -151,7 +151,7 @@ export default function ViewersOverTime() {
           </button>
         </Dropdown>
         {viewerInfo.length > 0 && (
-          <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="" />
+          <Chart title="Viewers" data={viewerInfo} color="#2087E2" unit="viewers" />
         )}
 
         <ViewerTable data={viewerDetails} />

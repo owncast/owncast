@@ -33,7 +33,7 @@ export const ConfigNotify = () => {
         </span>
       </p>
 
-      <Link passHref href="/config-federation">
+      <Link passHref href="/admin/config-federation/">
         <Button
           type="primary"
           style={{

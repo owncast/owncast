@@ -130,13 +130,13 @@ const StreamHealth = () => {
     {
       name: 'Errors',
       color: '#B63FFF',
-      options: { radius: 3 },
       data: errors,
+      pointStyle: 'crossRot',
+      pointRadius: 7,
     },
     {
       name: 'Quality changes',
       color: '#2087E2',
-      options: { radius: 2 },
       data: qualityVariantChanges,
     },
   ];
@@ -145,19 +145,16 @@ const StreamHealth = () => {
     {
       name: 'Median stream latency',
       color: '#00FFFF',
-      options: { radius: 2 },
       data: medianLatency,
     },
     {
       name: 'Lowest stream latency',
       color: '#02FD0D',
-      options: { radius: 2 },
       data: lowestLatency,
     },
     {
       name: 'Highest stream latency',
       color: '#B63FFF',
-      options: { radius: 2 },
       data: highestLatency,
     },
   ];
@@ -188,6 +185,7 @@ const StreamHealth = () => {
         time: item.time,
         value: segmentLength,
       })),
+      pointStyle: 'dash' as const,
       options: { radius: 0 },
     },
   ];
@@ -358,7 +356,7 @@ const StreamHealth = () => {
             title="Seconds"
             dataCollections={segmentDownloadDurationChart}
             color="#FF7700"
-            unit="s"
+            unit="seconds"
             yLogarithmic
           />
         </Card>
@@ -420,7 +418,7 @@ const StreamHealth = () => {
             title="Viewer Latency"
             description="An approximate number of seconds that your viewers are behind your live video. The largest cause of latency spikes is buffering. High latency itself is not a problem, and optimizing for low latency can result in buffering, resulting in even higher latency."
           />
-          <Chart title="Seconds" dataCollections={latencyChart} color="#FF7700" unit="s" />
+          <Chart title="Seconds" dataCollections={latencyChart} color="#FF7700" unit="seconds" />
         </Card>
       </Space>
     </>

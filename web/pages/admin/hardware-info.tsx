@@ -69,16 +69,19 @@ export default function HardwareInfo() {
       name: 'CPU',
       color: '#B63FFF',
       data: hardwareStatus.cpu,
+      pointStyle: 'rect',
     },
     {
       name: 'Memory',
       color: '#2087E2',
       data: hardwareStatus.memory,
+      pointStyle: 'circle',
     },
     {
       name: 'Disk',
       color: '#FF7700',
       data: hardwareStatus.disk,
+      pointStyle: 'rectRounded',
     },
   ];
 

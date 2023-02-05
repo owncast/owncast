@@ -31,7 +31,6 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  color: var(--white-75);
 }
 .social-links-edit-container .social-handles-table .social-handle-cell .option-icon {
   height: 2em;

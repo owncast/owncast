@@ -77,6 +77,7 @@ const OwncastPlayer = dynamic(
   () => import('../../video/OwncastPlayer/OwncastPlayer').then(mod => mod.OwncastPlayer),
   {
     ssr: false,
+    loading: () => <Skeleton loading active paragraph={{ rows: 12 }} />,
   },
 );
 
@@ -103,7 +104,7 @@ const DesktopContent = ({
 }) => {
   const aboutTabContent = <CustomPageContent content={extraPageContent} />;
   const followersTabContent = (
-    <div style={{ minHeight: '16vh' }}>
+    <div>
       <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
     </div>
   );
@@ -343,16 +344,18 @@ export const Content: FC = () => {
                 />
               )}
               {!online && !appState.appLoading && (
-                <OfflineBanner
-                  showsHeader={false}
-                  streamName={name}
-                  customText={offlineMessage}
-                  notificationsEnabled={browserNotificationsEnabled}
-                  fediverseAccount={fediverseAccount}
-                  lastLive={lastDisconnectTime}
-                  onNotifyClick={() => setShowNotifyModal(true)}
-                  onFollowClick={() => setShowFollowModal(true)}
-                />
+                <div id="offline-message">
+                  <OfflineBanner
+                    showsHeader={false}
+                    streamName={name}
+                    customText={offlineMessage}
+                    notificationsEnabled={browserNotificationsEnabled}
+                    fediverseAccount={fediverseAccount}
+                    lastLive={lastDisconnectTime}
+                    onNotifyClick={() => setShowNotifyModal(true)}
+                    onFollowClick={() => setShowFollowModal(true)}
+                  />
+                </div>
               )}
               {isStreamLive && (
                 <Statusbar

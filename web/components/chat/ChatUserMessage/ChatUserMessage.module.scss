@@ -25,9 +25,18 @@ $p-size: 8px;
     position: relative;
 
     mark {
-      padding-left: 0.35em;
-      padding-right: 0.35em;
+      padding-left: 0.3em;
+      padding-right: 0.3em;
+      color: var(--theme-color-palette-4);
+      border-radius: var(--theme-rounded-corners);
+      background-color: var(--color-owncast-palette-7);
+    }
+
+    a {
       color: var(--theme-color-palette-12);
+      &:hover {
+        color: var(--theme-color-palette-4);
+      }
     }
   }
 

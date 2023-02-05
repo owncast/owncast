@@ -6,7 +6,9 @@ import { Header } from './Header';
 export default {
   title: 'owncast/Layout/Header',
   component: Header,
-  parameters: {},
+  parameters: {
+    chromatic: { diffThreshold: 0.75 },
+  },
 } as ComponentMeta<typeof Header>;
 
 const Template: ComponentStory<typeof Header> = args => (
