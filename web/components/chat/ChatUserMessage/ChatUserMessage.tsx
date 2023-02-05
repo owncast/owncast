@@ -1,11 +1,12 @@
 /* eslint-disable react/no-danger */
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode } from 'react';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
-import { decodeHTML } from 'entities';
-import linkifyHtml from 'linkify-html';
+import { Interweave } from 'interweave';
+import { UrlMatcher } from 'interweave-autolink';
+import { ChatMessageHighlightMatcher } from './customMatcher';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -25,10 +26,6 @@ const ChatModerationActionMenu = dynamic(
     ssr: false,
   },
 );
-
-const Highlight = dynamic(() => import('react-highlighter-ts').then(mod => mod.Highlight), {
-  ssr: false,
-});
 
 export type ChatUserMessageProps = {
   message: ChatMessage;
@@ -71,7 +68,6 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
 
   const color = `var(--theme-color-users-${displayColor})`;
   const formattedTimestamp = `Sent ${formatTimestamp(timestamp)}`;
-  const [formattedMessage, setFormattedMessage] = useState<string>(body);
 
   const badgeNodes = [];
   if (isAuthorModerator) {
@@ -80,10 +76,6 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
   if (isAuthorAuthenticated) {
     badgeNodes.push(<AuthedUserBadge key="auth" userColor={displayColor} />);
   }
-
-  useEffect(() => {
-    setFormattedMessage(decodeHTML(body));
-  }, [message]);
 
   return (
     <div
@@ -110,12 +102,14 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
           </UserTooltip>
         )}
         <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
-          <Highlight search={highlightString}>
-            <div
-              className={styles.message}
-              dangerouslySetInnerHTML={{ __html: linkifyHtml(formattedMessage) }}
-            />
-          </Highlight>
+          <Interweave
+            className={styles.message}
+            content={body}
+            matchers={[
+              new UrlMatcher('url', { validateTLD: false }),
+              new ChatMessageHighlightMatcher('highlight', { highlightString }),
+            ]}
+          />
         </Tooltip>
         {showModeratorMenu && (
           <div className={styles.modMenuWrapper}>
