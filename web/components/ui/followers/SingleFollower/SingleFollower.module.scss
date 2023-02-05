@@ -27,7 +27,7 @@
   .account {
     color: var(--theme-color-components-text-on-light);
     word-break: break-all;
-    line-height: 0.9rem;
+    line-height: 1rem;
   }
 
   @include screen(mobile) {
