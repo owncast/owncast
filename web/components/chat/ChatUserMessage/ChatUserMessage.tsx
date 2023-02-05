@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import { FC, ReactNode } from 'react';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
