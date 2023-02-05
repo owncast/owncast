@@ -1,4 +1,4 @@
-import { Avatar, Col, Row } from 'antd';
+import { Avatar, Col, Row, Typography } from 'antd';
 import React, { FC } from 'react';
 import cn from 'classnames';
 import { Follower } from '../../../../interfaces/follower';
@@ -17,9 +17,13 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
             <img src="/logo" alt="Logo" className={styles.placeholder} />
           </Avatar>
         </Col>
-        <Col>
-          <Row className={styles.name}>{follower.name}</Row>
-          <Row className={styles.account}>{follower.username}</Row>
+        <Col span={18}>
+          <Row className={styles.name}>
+            <Typography.Text ellipsis>{follower.name}</Typography.Text>
+          </Row>
+          <Row className={styles.account}>
+            <Typography.Text ellipsis>{follower.username}</Typography.Text>
+          </Row>
         </Col>
       </Row>
     </a>
