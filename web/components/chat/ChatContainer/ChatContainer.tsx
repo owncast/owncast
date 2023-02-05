@@ -150,6 +150,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
             sentBySelf={message.user?.id === chatUserId} // The local user sent this message
             sameUserAsLast={shouldCollapseMessages(messages, index)}
             isAuthorModerator={(message as ChatMessage).user.scopes?.includes('MODERATOR')}
+            isAuthorBot={(message as ChatMessage).user.scopes?.includes('BOT')}
             isAuthorAuthenticated={message.user?.authenticated}
             key={message.id}
           />
