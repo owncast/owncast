@@ -3,17 +3,18 @@ import cn from 'classnames';
 import styles from './OwncastLogo.module.scss';
 
 export type LogoProps = {
-  variant: 'simple' | 'contrast';
+  variant?: 'simple' | 'contrast';
+  className?: string;
 };
 
-export const OwncastLogo: FC<LogoProps> = ({ variant = 'simple' }) => {
+export const OwncastLogo: FC<LogoProps> = ({ variant = 'simple', className = '' }) => {
   const rootClassName = cn(styles.root, {
     [styles.simple]: variant === 'simple',
     [styles.contrast]: variant === 'contrast',
   });
 
   return (
-    <div className={rootClassName}>
+    <div className={`${rootClassName} ${className}`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 95.68623352050781 104.46271514892578"

@@ -21,19 +21,17 @@
 .chat-messages .bulk-editor {
   margin: 0.5rem 0;
   padding: 0.5rem;
-  border: 1px solid var(--textfield-border);
+  border: 1px solid var(--theme-color-palette-8);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   border-radius: 4px;
 }
-.chat-messages .bulk-editor.active .label {
-  color: var(--black-3);
-}
+
 .chat-messages .bulk-editor .label {
   font-size: 0.75rem;
-  color: var(--white-50);
+  color: var(--theme-color-palette-10);
   margin-right: 0.5rem;
 }
 .chat-messages .bulk-editor button {
@@ -67,7 +65,7 @@
   opacity: 1;
 }
 .toggle-switch .ant-btn-text:hover {
-  background-color: var(--black-35);
+  background-color: var(--theme-color-palette-10);
 }
 .blockuser-popover {
   max-width: 400px;
@@ -82,14 +80,14 @@
   outline: none;
 }
 .user-item-container .display-name {
-  color: var(--white);
-  border-bottom: 1px dotted var(--white-50);
+  color: var(--theme-color-palette-4);
+  border-bottom: 1px dotted var(--theme-color-palette-10);
 }
 .user-item-container:hover .display-name {
-  border-color: var(--white);
+  border-color: var(--theme-color-palette-4);
 }
 .user-details h5 {
-  color: var(--white);
+  color: var(--theme-color-palette-4);
 }
 .user-details .created-at {
   font-size: 0.75em;
@@ -110,11 +108,9 @@
 .user-details .previous-names-list .latest .user-name-item {
   font-weight: bold;
   font-style: normal;
-  color: var(--pink);
+  color: var(--theme-color-palette-12);
 }
-.user-details .ant-divider {
-  border-color: var(--white-25);
-}
+
 .block-user-button {
   text-transform: capitalize;
 }

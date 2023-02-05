@@ -117,7 +117,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
       content: (
         <div>
           List yourself in the Owncast Directory and show off your stream. Enable it in{' '}
-          <Link href="/config-public-details">settings.</Link>
+          <Link href="/admin/config/general/">settings.</Link>
         </div>
       ),
     });
@@ -129,7 +129,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
       title: 'Add your Owncast instance to the Fediverse',
       content: (
         <div>
-          <Link href="/config-federation">Enable Owncast social</Link> features to have your
+          <Link href="/admin/config-federation/">Enable Owncast social</Link> features to have your
           instance join the Fediverse, allowing people to follow, share and engage with your live
           stream.
         </div>

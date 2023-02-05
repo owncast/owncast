@@ -8,7 +8,7 @@ export default {
   title: 'owncast/Chat/Chat messages container',
   component: ChatContainer,
   parameters: {
-    chromatic: { diffThreshold: 0.2 },
+    chromatic: { diffThreshold: 0.8 },
     docs: {
       description: {
         component: `

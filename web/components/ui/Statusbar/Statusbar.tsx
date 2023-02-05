@@ -3,6 +3,7 @@ import intervalToDuration from 'date-fns/intervalToDuration';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './Statusbar.module.scss';
+import { pluralize } from '../../../utils/helpers';
 
 // Lazy loaded components
 
@@ -18,15 +19,23 @@ export type StatusbarProps = {
 };
 
 function makeDurationString(lastConnectTime: Date): string {
+  const DAY_LABEL = 'day';
+  const HOUR_LABEL = 'hour';
+  const MINUTE_LABEL = 'minute';
+  const SECOND_LABEL = 'second';
   const diff = intervalToDuration({ start: lastConnectTime, end: new Date() });
-  if (diff.days > 1) {
-    return `${diff.days} days ${diff.hours} hours`;
+
+  if (diff.days >= 1) {
+    return `${diff.days} ${pluralize(DAY_LABEL, diff.days)}
+			${diff.hours} ${pluralize(HOUR_LABEL, diff.hours)}`;
   }
   if (diff.hours >= 1) {
-    return `${diff.hours} hours ${diff.minutes} minutes`;
+    return `${diff.hours} ${pluralize(HOUR_LABEL, diff.hours)} ${diff.minutes}
+			${pluralize(MINUTE_LABEL, diff.minutes)}`;
   }
 
-  return `${diff.minutes} minutes ${diff.seconds} seconds`;
+  return `${diff.minutes} ${pluralize(MINUTE_LABEL, diff.minutes)}
+		${diff.seconds} ${pluralize(SECOND_LABEL, diff.seconds)}`;
 }
 
 export const Statusbar: FC<StatusbarProps> = ({

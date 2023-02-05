@@ -12,13 +12,12 @@
   margin-left: 0.3rem;
   padding: 2px;
   border-radius: 5rem;
-  color: var(--black);
-  border: 1px solid var(--black);
+  border: 1px solid black;
   transition-duration: var(--ant-transition-duration);
 }
 .edit-current-strings .ant-tag .ant-tag-close-icon:hover {
-  border-color: var(--owncast-purple);
-  background-color: var(--white);
+  border-color: var(--theme-color-palette-6);
+  background-color: var(--theme-color-palette-4);
 }
 .edit-current-strings .ant-tag .ant-tag-close-icon:hover svg {
   fill: black;

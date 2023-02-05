@@ -1,6 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { ChatUserBadge } from './ChatUserBadge';
+import { ModerationBadge } from './ModerationBadge';
+import { AuthedUserBadge } from './AuthedUserBadge';
 
 export default {
   title: 'owncast/Chat/Messages/User Flag',
@@ -14,15 +16,26 @@ export default {
 } as ComponentMeta<typeof ChatUserBadge>;
 
 const Template: ComponentStory<typeof ChatUserBadge> = args => <ChatUserBadge {...args} />;
+const ModerationTemplate: ComponentStory<typeof ModerationBadge> = args => (
+  <ModerationBadge {...args} />
+);
 
-export const Moderator = Template.bind({});
+const AuthedTemplate: ComponentStory<typeof ModerationBadge> = args => (
+  <AuthedUserBadge {...args} />
+);
+
+export const Authenticated = AuthedTemplate.bind({});
+Authenticated.args = {
+  userColor: '3',
+};
+
+export const Moderator = ModerationTemplate.bind({});
 Moderator.args = {
-  badge: 'mod',
   userColor: '5',
 };
 
-export const Authenticated = Template.bind({});
-Authenticated.args = {
-  badge: 'auth',
+export const Generic = Template.bind({});
+Generic.args = {
+  badge: '?',
   userColor: '6',
 };

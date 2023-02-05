@@ -168,7 +168,7 @@ export default function Help() {
         <div>
           Most general questions are answered in our
           <a
-            href="https://owncast.online/docs/faq/?source=admin"
+            href="https://owncast.online/faq/?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -15,21 +15,21 @@ color:
 
     user:
       0:
-        value: '#ff717b'
+        value: '#FF717B'
       1:
         value: '#F4E413'
       2:
-        value: '#b99c45'
+        value: '#B99C45'
       3:
-        value: '#58f40b'
+        value: '#58F40B'
       4:
-        value: '#0bf4f4'
+        value: '#0BF4F4'
       5:
-        value: '#0ba6f4'
+        value: '#16a8f7'
       6:
-        value: '#9a92ff'
+        value: '#9A92FF'
       7:
-        value: '#ff53ff'
+        value: '#FF53FF'
 
     palette:
       0:
@@ -51,10 +51,10 @@ color:
         value: '#c3dafe'
         comment: 'Light alternate'
       6:
-        value: '#7a5cf3'
+        value: '#6544e9'
         comment: 'Text link/secondary light text'
       7:
-        value: '#5d38f3'
+        value: '#7a5cf3'
         comment: 'Text link hover'
       8:
         value: '#b6b3c6'
