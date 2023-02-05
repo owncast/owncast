@@ -18,8 +18,12 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
           </Avatar>
         </Col>
         <Col span={18}>
-          <Row className={styles.name}><Typography.Text ellipsis={true}>{follower.name}</Typography.Text></Row>
-          <Row className={styles.account}><Typography.Text ellipsis={true}>{follower.username}</Typography.Text></Row>
+          <Row className={styles.name}>
+            <Typography.Text ellipsis={true}>{follower.name}</Typography.Text>
+          </Row>
+          <Row className={styles.account}>
+            <Typography.Text ellipsis={true}>{follower.username}</Typography.Text>
+          </Row>
         </Col>
       </Row>
     </a>
