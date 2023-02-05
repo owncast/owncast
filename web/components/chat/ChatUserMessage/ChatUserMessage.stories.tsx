@@ -43,6 +43,21 @@ const standardMessage: ChatMessage = JSON.parse(`{
   },
   "body": "Test message from a regular user."}`);
 
+const messageWithLinkAndCustomEmoji: ChatMessage = JSON.parse(`{
+		"type": "CHAT",
+		"id": "wY-MEXwnR",
+		"timestamp": "2022-04-28T20:30:27.001762726Z",
+		"user": {
+			"id": "h_5GQ6E7R",
+			"displayName": "EliteMooseTaskForce",
+			"displayColor": 3,
+			"createdAt": "2022-03-24T03:52:37.966584694Z",
+			"previousNames": ["gifted-nobel", "EliteMooseTaskForce"],
+			"nameChangedAt": "2022-04-26T23:56:05.531287897Z",
+			"scopes": []
+		},
+		"body": "Test message with a link https://owncast.online and a custom emoji <img src='/img/emoji/blob/ablobattention.gif' width='30px'/> ."}`);
+
 const moderatorMessage: ChatMessage = JSON.parse(`{
     "type": "CHAT",
     "id": "wY-MEXwnR",
@@ -77,6 +92,12 @@ const authenticatedUserMessage: ChatMessage = JSON.parse(`{
 export const WithoutModeratorMenu = Template.bind({});
 WithoutModeratorMenu.args = {
   message: standardMessage,
+  showModeratorMenu: false,
+};
+
+export const WithLinkAndCustomEmoji = Template.bind({});
+WithLinkAndCustomEmoji.args = {
+  message: messageWithLinkAndCustomEmoji,
   showModeratorMenu: false,
 };
 
