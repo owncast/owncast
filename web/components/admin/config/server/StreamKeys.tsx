@@ -49,10 +49,16 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
     setShowAddKeyForm(false);
   };
 
+  // Default auto-generated key
+  let defaultKey = '';
+  for (let i = 0; i < 3; i += 1) {
+    defaultKey += Math.random().toString(36).substring(2);
+  }
+
   return (
     <Form layout="inline" autoComplete="off" onFinish={handleAddKey}>
       <Item label="Key" name="key" tooltip="The key you provide your broadcasting software">
-        <Input placeholder="def456" />
+        <Input placeholder="def456" defaultValue={defaultKey} />
       </Item>
       <Item label="Comment" name="comment" tooltip="For remembering why you added this key">
         <Input placeholder="My OBS Key" />

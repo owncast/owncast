@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Collapse, Typography, Tooltip } from 'antd';
-import dynamic from 'next/dynamic';
+import { Collapse, Typography } from 'antd';
 import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_URL } from './TextField';
 import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -15,16 +14,6 @@ import {
 import { UpdateArgs } from '../../types/config-section';
 import { ResetYP } from './ResetYP';
 
-// Lazy loaded components
-
-const CopyOutlined = dynamic(() => import('@ant-design/icons/CopyOutlined'), {
-  ssr: false,
-});
-
-const RedoOutlined = dynamic(() => import('@ant-design/icons/RedoOutlined'), {
-  ssr: false,
-});
-
 const { Panel } = Collapse;
 
 // eslint-disable-next-line react/function-component-definition
@@ -37,10 +26,6 @@ export default function EditInstanceDetails() {
 
   const { adminPassword, ffmpegPath, rtmpServerPort, webServerPort, yp, socketHostOverride } =
     serverConfig;
-
-  const [copyIsVisible, setCopyVisible] = useState(false);
-
-  const COPY_TOOLTIP_TIMEOUT = 3000;
 
   useEffect(() => {
     setFormDataValues({
@@ -79,22 +64,6 @@ export default function EditInstanceDetails() {
     }
   };
 
-  function generateStreamKey() {
-    let key = '';
-    for (let i = 0; i < 3; i += 1) {
-      key += Math.random().toString(36).substring(2);
-    }
-
-    handleFieldChange({ fieldName: 'streamKey', value: key });
-  }
-
-  function copyStreamKey() {
-    navigator.clipboard.writeText(formDataValues.streamKey).then(() => {
-      setCopyVisible(true);
-      setTimeout(() => setCopyVisible(false), COPY_TOOLTIP_TIMEOUT);
-    });
-  }
-
   return (
     <div className="edit-server-details-container">
       <div className="field-container field-streamkey-container">
@@ -108,18 +77,6 @@ export default function EditInstanceDetails() {
             onChange={handleFieldChange}
             onSubmit={showStreamKeyChangeMessage}
           />
-          <div className="streamkey-actions">
-            <Tooltip title="Generate a stream key">
-              <Button icon={<RedoOutlined />} size="small" onClick={generateStreamKey} />
-            </Tooltip>
-
-            <Tooltip
-              className="copy-tooltip"
-              title={copyIsVisible ? 'Copied!' : 'Copy to clipboard'}
-            >
-              <Button icon={<CopyOutlined />} size="small" onClick={copyStreamKey} />
-            </Tooltip>
-          </div>
         </div>
       </div>
       <TextFieldWithSubmit
