@@ -20,6 +20,7 @@ import {
   ChatEvent,
   MessageVisibilityEvent,
   SocketEvent,
+  FediverseEvent,
 } from '../../interfaces/socket-events';
 import { mergeMeta } from '../../utils/helpers';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
@@ -160,7 +161,7 @@ export const ClientConfigStore: FC = () => {
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
   const [, setServerStatus] = useRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
-  const [chatMessages, setChatMessages] = useRecoilState<ChatMessage[]>(chatMessagesAtom);
+  const [chatMessages, setChatMessages] = useRecoilState<SocketEvent[]>(chatMessagesAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
   const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
@@ -306,6 +307,15 @@ export const ClientConfigStore: FC = () => {
         break;
       case MessageType.CHAT_ACTION:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        break;
+      case MessageType.FEDIVERSE_ENGAGEMENT_FOLLOW:
+        setChatMessages(currentState => [...currentState, message as FediverseEvent]);
+        break;
+      case MessageType.FEDIVERSE_ENGAGEMENT_LIKE:
+        setChatMessages(currentState => [...currentState, message as FediverseEvent]);
+        break;
+      case MessageType.FEDIVERSE_ENGAGEMENT_REPOST:
+        setChatMessages(currentState => [...currentState, message as FediverseEvent]);
         break;
       case MessageType.VISIBILITY_UPDATE:
         handleMessageVisibilityChange(message as MessageVisibilityEvent);
