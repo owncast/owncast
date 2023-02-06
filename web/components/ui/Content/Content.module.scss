@@ -16,11 +16,20 @@
   .mainSection {
     display: grid;
     grid-template-rows: min-content // Skeleton when app is loading
-      minmax(30px, min-content) // player or offline banner
+      minmax(30px, min-content) // player
       min-content // status bar when live
       min-content // mid section
       minmax(250px, 1fr) // mobile content
 ;
+
+    &.offline {
+      grid-template-rows: min-content // Skeleton when app is loading
+        min-content // offline banner
+        min-content // status bar when live
+        min-content // mid section
+        minmax(250px, 1fr) // mobile content
+;
+    }
 
     @include screen(tablet) {
       grid-template-columns: 100vw;

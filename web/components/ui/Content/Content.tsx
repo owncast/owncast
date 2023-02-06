@@ -333,7 +333,7 @@ export const Content: FC = () => {
   return (
     <>
       <div className={styles.root}>
-        <div className={styles.mainSection}>
+        <div className={classnames(styles.mainSection, { [styles.offline]: !online })}>
           {appState.appLoading ? (
             <Skeleton loading active paragraph={{ rows: 7 }} className={styles.topSectionElement} />
           ) : (
