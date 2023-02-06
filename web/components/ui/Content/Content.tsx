@@ -334,8 +334,10 @@ export const Content: FC = () => {
     <>
       <div className={styles.root}>
         <div className={styles.mainSection}>
-          {appState.appLoading && (
+          {appState.appLoading ? (
             <Skeleton loading active paragraph={{ rows: 7 }} className={styles.topSectionElement} />
+          ) : (
+            <div className="skeleton-placeholder" />
           )}
           {online && (
             <OwncastPlayer
@@ -360,7 +362,7 @@ export const Content: FC = () => {
               />
             </div>
           )}
-          {isStreamLive && (
+          {isStreamLive ? (
             <Statusbar
               online={online}
               lastConnectTime={lastConnectTime}
@@ -368,6 +370,8 @@ export const Content: FC = () => {
               viewerCount={viewerCount}
               className={classnames(styles.topSectionElement, styles.statusBar)}
             />
+          ) : (
+            <div className="statusbar-placeholder" />
           )}
           <div className={styles.midSection}>
             <div className={styles.buttonsLogoTitleSection}>

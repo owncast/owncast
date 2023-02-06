@@ -15,11 +15,20 @@
 
   .mainSection {
     display: grid;
-    // TODO: make this more adaptive to the currently displayed components!
-    grid-template-rows: minmax(30px, min-content) min-content min-content minmax(250px, 1fr);
+    grid-template-rows: min-content // Skeleton when app is loading
+      minmax(30px, min-content) // player or offline banner
+      min-content // status bar when live
+      min-content // mid section
+      minmax(250px, 1fr) // mobile content
+;
+
+    @include screen(tablet) {
+      grid-template-columns: 100vw;
+    }
 
     @include screen(desktop) {
       overflow-y: scroll;
+      grid-template-rows: unset;
     }
   }
 
