@@ -21,6 +21,7 @@
       min-content // mid section
       minmax(250px, 1fr) // mobile content
 ;
+    grid-template-columns: 100%;
 
     &.offline {
       grid-template-rows: min-content // Skeleton when app is loading
