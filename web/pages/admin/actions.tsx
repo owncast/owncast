@@ -2,6 +2,7 @@ import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from '
 import _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import TextArea from 'antd/lib/input/TextArea';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
 import {
@@ -34,6 +35,7 @@ interface Props {
   onOk: (
     oldAction: ExternalAction | null,
     actionUrl: string,
+    actionHTML: string,
     actionTitle: string,
     actionDescription: string,
     actionIcon: string,
@@ -47,7 +49,10 @@ interface Props {
 const ActionModal = (props: Props) => {
   const { onOk, onCancel, open, action } = props;
 
+  const [useHTML, setUseHTML] = useState((props.action?.html?.length || 0) > 0);
+
   const [actionUrl, setActionUrl] = useState('');
+  const [actionHTML, setActionHTML] = useState('');
   const [actionTitle, setActionTitle] = useState('');
   const [actionDescription, setActionDescription] = useState('');
   const [actionIcon, setActionIcon] = useState('');
@@ -56,6 +61,7 @@ const ActionModal = (props: Props) => {
 
   useEffect(() => {
     setActionUrl(action?.url || '');
+    setActionHTML(action?.html || '');
     setActionTitle(action?.title || '');
     setActionDescription(action?.description || '');
     setActionIcon(action?.icon || '');
@@ -66,7 +72,8 @@ const ActionModal = (props: Props) => {
   function save() {
     onOk(
       action,
-      actionUrl,
+      useHTML ? '' : actionUrl,
+      useHTML ? actionHTML : '',
       actionTitle,
       actionDescription,
       actionIcon,
@@ -74,6 +81,7 @@ const ActionModal = (props: Props) => {
       openExternally,
     );
     setActionUrl('');
+    setActionHTML('');
     setActionTitle('');
     setActionDescription('');
     setActionIcon('');
@@ -82,6 +90,9 @@ const ActionModal = (props: Props) => {
   }
 
   function canSave(): Boolean {
+    if (useHTML) {
+      return actionHTML !== '' && actionTitle !== '';
+    }
     return isValidUrl(actionUrl, ['https:']) && actionTitle !== '';
   }
 
@@ -91,6 +102,10 @@ const ActionModal = (props: Props) => {
 
   const onOpenExternallyChanged = checkbox => {
     setOpenExternally(checkbox.target.checked);
+  };
+
+  const onUseHTMLChanged = checkbox => {
+    setUseHTML(checkbox.target.checked);
   };
 
   return (
@@ -114,14 +129,29 @@ const ActionModal = (props: Props) => {
             Read more about external actions.
           </a>
         </p>
-        <Form.Item name="url">
-          <Input
-            required
-            placeholder="https://myserver.com/action (required)"
-            onChange={input => setActionUrl(input.currentTarget.value.trim())}
-            type="url"
-            pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
-          />
+        {useHTML ? (
+          <Form.Item name="html">
+            <TextArea
+              value={actionHTML}
+              placeholder="HTML embed code (required)"
+              onChange={input => setActionHTML(input.currentTarget.value)}
+            />
+          </Form.Item>
+        ) : (
+          <Form.Item name="url">
+            <Input
+              required
+              placeholder="https://myserver.com/action (required)"
+              onChange={input => setActionUrl(input.currentTarget.value.trim())}
+              type="url"
+              pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
+            />
+          </Form.Item>
+        )}
+        <Form.Item name="useHTML">
+          <Checkbox checked={useHTML} defaultChecked={openExternally} onChange={onUseHTMLChanged}>
+            Embed HTML instead of an URL
+          </Checkbox>
         </Form.Item>
         <Form.Item name="title">
           <Input
@@ -155,15 +185,17 @@ const ActionModal = (props: Props) => {
           </Form.Item>
           Optional background color of the action button.
         </div>
-        <Form.Item name="openExternally">
-          <Checkbox
-            checked={openExternally}
-            defaultChecked={openExternally}
-            onChange={onOpenExternallyChanged}
-          >
-            Open in a new tab instead of within your page.
-          </Checkbox>
-        </Form.Item>
+        {useHTML ? null : (
+          <Form.Item name="openExternally">
+            <Checkbox
+              checked={openExternally}
+              defaultChecked={openExternally}
+              onChange={onOpenExternallyChanged}
+            >
+              Open in a new tab instead of within your page.
+            </Checkbox>
+          </Form.Item>
+        )}
       </Form>
     </Modal>
   );
@@ -221,6 +253,7 @@ const Actions = () => {
   async function handleSave(
     oldAction: ExternalAction | null,
     url: string,
+    html: string,
     title: string,
     description: string,
     icon: string,
@@ -232,6 +265,7 @@ const Actions = () => {
 
       const newAction: ExternalAction = {
         url,
+        html,
         title,
         description,
         icon,
@@ -267,6 +301,7 @@ const Actions = () => {
   const handleModalSaveButton = (
     oldAction: ExternalAction | null,
     actionUrl: string,
+    actionHTML: string,
     actionTitle: string,
     actionDescription: string,
     actionIcon: string,
@@ -277,6 +312,7 @@ const Actions = () => {
     handleSave(
       oldAction,
       actionUrl,
+      actionHTML,
       actionTitle,
       actionDescription,
       actionIcon,
@@ -312,9 +348,10 @@ const Actions = () => {
       key: 'description',
     },
     {
-      title: 'URL',
-      dataIndex: 'url',
+      title: 'URL / Embed',
       key: 'url',
+      dataIndex: 'url',
+      render: (text, record) => (record.html ? 'HTML embed' : record.url),
     },
     {
       title: 'Icon',
@@ -331,9 +368,11 @@ const Actions = () => {
     },
     {
       title: 'Opens',
-      dataIndex: 'openExternally',
       key: 'openExternally',
-      render: (openExternally: boolean) => (openExternally ? 'In a new tab' : 'In a modal'),
+      dataIndex: 'openExternally',
+      // Note embeds will alway open in the same tab.
+      render: (openExternally: boolean, record) =>
+        !openExternally || record.html ? 'In the same tab' : 'In a new tab',
     },
   ];
 
