@@ -49,7 +49,8 @@ interface Props {
 const ActionModal = (props: Props) => {
   const { onOk, onCancel, open, action } = props;
 
-  const [useHTML, setUseHTML] = useState((props.action?.html?.length || 0) > 0);
+  // useHTML is not part of the action object -- HTML is used if its length is > 0
+  const [useHTML, setUseHTML] = useState(false);
 
   const [actionUrl, setActionUrl] = useState('');
   const [actionHTML, setActionHTML] = useState('');
@@ -60,6 +61,7 @@ const ActionModal = (props: Props) => {
   const [openExternally, setOpenExternally] = useState(false);
 
   useEffect(() => {
+    setUseHTML((action?.html?.length || 0) > 0);
     setActionUrl(action?.url || '');
     setActionHTML(action?.html || '');
     setActionTitle(action?.title || '');
@@ -72,6 +74,7 @@ const ActionModal = (props: Props) => {
   function save() {
     onOk(
       action,
+      // Save only one of the properties
       useHTML ? '' : actionUrl,
       useHTML ? actionHTML : '',
       actionTitle,
@@ -119,7 +122,7 @@ const ActionModal = (props: Props) => {
     >
       <Form initialValues={action}>
         Add the URL for the external action you want to present.{' '}
-        <strong>Only HTTPS urls are supported.</strong>
+        <strong>Only HTTPS URLs and embeds are supported.</strong>
         <p>
           <a
             href="https://owncast.online/thirdparty/actions/"
