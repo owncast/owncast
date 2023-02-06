@@ -16,7 +16,7 @@
   .mainSection {
     display: grid;
     // TODO: make this more adaptive to the currently displayed components!
-    grid-template-rows: minmax(0, min-content) min-content min-content minmax(300px, 1fr);
+    grid-template-rows: minmax(30px, min-content) min-content min-content minmax(250px, 1fr);
 
     @include screen(desktop) {
       overflow-y: scroll;
