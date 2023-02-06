@@ -25,13 +25,13 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
   let Icon;
 
   switch (type.toString()) {
-    case 'follow':
+    case 'FEDIVERSE_ENGAGEMENT_FOLLOW':
       Icon = FollowIcon;
       break;
-    case 'like':
+    case 'FEDIVERSE_ENGAGEMENT_LIKE':
       Icon = LikeIcon;
       break;
-    case 'repost':
+    case 'FEDIVERSE_ENGAGEMENT_REPOST':
       Icon = RepostIcon;
       break;
     default:

@@ -7,6 +7,7 @@
   height: 85px;
   width: 300px;
   overflow: hidden;
+  background-color: var(--theme-color-background-main);
 
   &:hover {
     border-color: var(--theme-text-link);
@@ -23,6 +24,7 @@
   .body {
     color: var(--theme-color-components-text-on-light);
     text-overflow: ellipsis;
+    line-height: 1.2rem;
   }
 
   .account {
@@ -37,8 +39,8 @@
     height: 25px;
     top: -20px;
     left: 40px;
-    border-color: white;
-    border-width: 1px;
+    border-color: var(--theme-color-background-main);
+    border-width: 2px;
     border-style: solid;
     border-radius: 50%;
     background-size: cover;

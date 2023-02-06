@@ -3,6 +3,7 @@ import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   ConnectedClientInfoEvent,
+  FediverseEvent,
   MessageType,
   NameChangeEvent,
 } from '../../../interfaces/socket-events';
@@ -16,6 +17,7 @@ import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
 import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
 import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
+import { ChatSocialMessage } from '../ChatSocialMessage/ChatSocialMessage';
 
 // Lazy loaded components
 
@@ -105,6 +107,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     );
   };
 
+  const getFediverseMessage = (message: FediverseEvent) => <ChatSocialMessage message={message} />;
+
   const getUserJoinedMessage = (message: ChatMessage) => {
     const {
       user: { displayName, displayColor },
@@ -138,7 +142,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
 
   const getViewForMessage = (
     index: number,
-    message: ChatMessage | NameChangeEvent | ConnectedClientInfoEvent,
+    message: ChatMessage | NameChangeEvent | ConnectedClientInfoEvent | FediverseEvent,
   ) => {
     switch (message.type) {
       case MessageType.CHAT:
@@ -147,18 +151,18 @@ export const ChatContainer: FC<ChatContainerProps> = ({
             message={message as ChatMessage}
             showModeratorMenu={isModerator} // Moderators have access to an additional menu
             highlightString={usernameToHighlight} // What to highlight in the message
-            sentBySelf={message.user?.id === chatUserId} // The local user sent this message
+            sentBySelf={(message as ChatMessage).user?.id === chatUserId} // The local user sent this message
             sameUserAsLast={shouldCollapseMessages(messages, index)}
             isAuthorModerator={(message as ChatMessage).user.scopes?.includes('MODERATOR')}
             isAuthorBot={(message as ChatMessage).user.scopes?.includes('BOT')}
-            isAuthorAuthenticated={message.user?.authenticated}
+            isAuthorAuthenticated={(message as ChatMessage).user?.authenticated}
             key={message.id}
           />
         );
       case MessageType.NAME_CHANGE:
         return getNameChangeViewForMessage(message as NameChangeEvent);
       case MessageType.CONNECTED_USER_INFO:
-        return getConnectedInfoMessage(message);
+        return getConnectedInfoMessage(message as ConnectedClientInfoEvent);
       case MessageType.USER_JOINED:
         return getUserJoinedMessage(message as ChatMessage);
       case MessageType.CHAT_ACTION:
@@ -171,6 +175,12 @@ export const ChatContainer: FC<ChatContainerProps> = ({
             key={message.id}
           />
         );
+      case MessageType.FEDIVERSE_ENGAGEMENT_FOLLOW:
+        return getFediverseMessage(message as FediverseEvent);
+      case MessageType.FEDIVERSE_ENGAGEMENT_LIKE:
+        return getFediverseMessage(message as FediverseEvent);
+      case MessageType.FEDIVERSE_ENGAGEMENT_REPOST:
+        return getFediverseMessage(message as FediverseEvent);
 
       default:
         return null;
