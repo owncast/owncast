@@ -1,5 +1,4 @@
 import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
-import _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import TextArea from 'antd/lib/input/TextArea';
@@ -34,6 +33,7 @@ interface Props {
   onCancel: () => void;
   onOk: (
     oldAction: ExternalAction | null,
+    oldActionIndex: number | null,
     actionUrl: string,
     actionHTML: string,
     actionTitle: string,
@@ -44,6 +44,7 @@ interface Props {
   ) => void;
   open: boolean;
   action: ExternalAction | null;
+  index: number | null;
 }
 
 const ActionModal = (props: Props) => {
@@ -74,6 +75,7 @@ const ActionModal = (props: Props) => {
   function save() {
     onOk(
       action,
+      props.index,
       // Save only one of the properties
       useHTML ? '' : actionUrl,
       useHTML ? actionHTML : '',
@@ -212,6 +214,7 @@ const Actions = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [editAction, setEditAction] = useState<ExternalAction>(null);
+  const [editActionIndex, setEditActionIndex] = useState(-1);
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -240,9 +243,8 @@ const Actions = () => {
     });
   }
 
-  async function handleDelete(action) {
+  async function handleDelete(action, index) {
     const actionsData = [...actions];
-    const index = actions.findIndex(item => item.url === action.url);
     actionsData.splice(index, 1);
 
     try {
@@ -255,6 +257,7 @@ const Actions = () => {
 
   async function handleSave(
     oldAction: ExternalAction | null,
+    oldActionIndex: number,
     url: string,
     html: string,
     title: string,
@@ -277,9 +280,8 @@ const Actions = () => {
       };
 
       // Replace old action if edited or append the new action
-      const index = oldAction ? actions.findIndex(item => _.isEqual(item, oldAction)) : -1;
-      if (index >= 0) {
-        actionsData[index] = newAction;
+      if (oldActionIndex >= 0) {
+        actionsData[oldActionIndex] = newAction;
       } else {
         actionsData.push(newAction);
       }
@@ -291,18 +293,21 @@ const Actions = () => {
     }
   }
 
-  async function handleEdit(action: ExternalAction) {
+  async function handleEdit(action: ExternalAction, index) {
+    setEditActionIndex(index);
     setEditAction(action);
     setIsModalOpen(true);
   }
 
   const showCreateModal = () => {
     setEditAction(null);
+    setEditActionIndex(-1);
     setIsModalOpen(true);
   };
 
   const handleModalSaveButton = (
     oldAction: ExternalAction | null,
+    oldActionIndex: number,
     actionUrl: string,
     actionHTML: string,
     actionTitle: string,
@@ -314,6 +319,7 @@ const Actions = () => {
     setIsModalOpen(false);
     handleSave(
       oldAction,
+      oldActionIndex,
       actionUrl,
       actionHTML,
       actionTitle,
@@ -323,6 +329,7 @@ const Actions = () => {
       openExternally,
     );
     setEditAction(null);
+    setEditActionIndex(-1);
   };
 
   const handleModalCancelButton = () => {
@@ -333,10 +340,10 @@ const Actions = () => {
     {
       title: '',
       key: 'delete-edit',
-      render: (text, record) => (
+      render: (text, record, index) => (
         <Space size="middle">
-          <Button onClick={() => handleDelete(record)} icon={<DeleteOutlined />} />
-          <Button onClick={() => handleEdit(record)} icon={<EditOutlined />} />
+          <Button onClick={() => handleDelete(record, index)} icon={<DeleteOutlined />} />
+          <Button onClick={() => handleEdit(record, index)} icon={<EditOutlined />} />
         </Space>
       ),
     },
@@ -412,6 +419,7 @@ const Actions = () => {
 
       <ActionModal
         action={editAction}
+        index={editActionIndex}
         open={isModalOpen}
         onOk={handleModalSaveButton}
         onCancel={handleModalCancelButton}
