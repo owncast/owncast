@@ -215,8 +215,14 @@ const MobileContent = ({
   );
 };
 
-const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) => {
-  const { title, description, url } = externalActionToDisplay;
+const ExternalModal = ({
+  externalActionToDisplay,
+  setExternalActionToDisplay,
+}: {
+  externalActionToDisplay: ExternalAction;
+  setExternalActionToDisplay: (action: ExternalAction) => void;
+}) => {
+  const { title, description, url, html } = externalActionToDisplay;
   return (
     <Modal
       title={description || title}
@@ -224,7 +230,20 @@ const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) 
       open={!!externalActionToDisplay}
       height="80vh"
       handleCancel={() => setExternalActionToDisplay(null)}
-    />
+    >
+      {html ? (
+        <div
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: html }}
+          style={{
+            height: '100%',
+            width: '100%',
+            overflow: 'auto',
+          }}
+          // Set first child style to 100% to ensure it fills the modal.
+        />
+      ) : null}
+    </Modal>
   );
 };
 
