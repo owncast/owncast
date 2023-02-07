@@ -24,6 +24,7 @@ export type TextFieldWithSubmitProps = TextFieldProps & {
   apiPath: string;
   configPath?: string;
   initialValue?: string;
+  isAdminPwdField?: boolean;
 };
 
 export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
@@ -38,13 +39,13 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
 
   const [hasChanged, setHasChanged] = useState(false);
 
-  const [isPwdInput, setPwdInputField] = useState(false);
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
 
   let resetTimer = null;
 
-  const { fieldName, required, tip, status, value, onChange, onSubmit } = textFieldProps;
+  const { fieldName, required, tip, status, value, isAdminPwdField, onChange, onSubmit } =
+    textFieldProps;
 
   // Clear out any validation states and messaging
   const resetStates = () => {
@@ -66,13 +67,6 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
       setHasChanged(true);
     }
   }, [value]);
-
-  useEffect(() => {
-    if (fieldName === 'adminPassword') {
-      setPwdInputField(true);
-    }
-    setPwdInputField(false);
-  }, [fieldName]);
 
   // if field is required but value is empty, or equals initial value, then don't show submit/update button. otherwise clear out any result messaging and display button.
   const handleChange = ({ fieldName: changedFieldName, value: changedValue }: UpdateArgs) => {
@@ -144,7 +138,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           <div className="field-tip">{tip}</div>
           <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
-            {isPwdInput && (
+            {!isAdminPwdField && (
               <Button
                 type="primary"
                 size="small"
