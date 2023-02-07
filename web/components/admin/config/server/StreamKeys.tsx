@@ -1,13 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Table, Space, Button, Typography, Alert, Input, Form } from 'antd';
 import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 
 import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
+import { PASSWORD_COMPLEXITY_RULES, REGEX_PASSWORD } from '../../../../utils/config-constants';
 
 const { Paragraph } = Typography;
-
-const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
 
 // Lazy loaded components
 
@@ -40,6 +39,15 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
   const [hasChanged, setHasChanged] = useState(false);
   const [form] = Form.useForm();
   const { Item } = Form;
+  // Password Complexity rules
+  const passwordComplexityRules = [];
+
+  useEffect(() => {
+    PASSWORD_COMPLEXITY_RULES.forEach(element => {
+      passwordComplexityRules.push(element);
+    });
+  }, []);
+
   const handleAddKey = (newkey: any) => {
     const updatedKeys = [...streamKeys, newkey];
 
@@ -55,7 +63,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
 
   const handleInputChange = (event: any) => {
     const val = event.target.value;
-    if (regex.test(val)) {
+    if (REGEX_PASSWORD.test(val)) {
       setHasChanged(true);
     } else {
       setHasChanged(false);
@@ -81,26 +89,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
             lowercase letter, at least one special character, and at least one number.
           </p>
         }
-        rules={[
-          { min: 8, message: '- minimum 8 characters' },
-          { max: 192, message: '- maximum 192 characters' },
-          {
-            pattern: /^(?=.*[a-z])/,
-            message: '- at least one lowercase letter',
-          },
-          {
-            pattern: /^(?=.*[A-Z])/,
-            message: '- at least one uppercase letter',
-          },
-          {
-            pattern: /\d/,
-            message: '- at least one digit',
-          },
-          {
-            pattern: /^(?=.*?[#?!@$%^&*-])/,
-            message: '- at least one special character: !@#$%^&*',
-          },
-        ]}
+        rules={PASSWORD_COMPLEXITY_RULES}
       >
         <Input onChange={handleInputChange} />
       </Item>

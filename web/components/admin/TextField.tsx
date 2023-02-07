@@ -5,6 +5,7 @@ import { FieldUpdaterFunc } from '../../types/config-section';
 // import InfoTip from '../info-tip';
 import { StatusState } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
+import { PASSWORD_COMPLEXITY_RULES, REGEX_PASSWORD } from '../../utils/config-constants';
 
 export const TEXTFIELD_TYPE_TEXT = 'default';
 export const TEXTFIELD_TYPE_PASSWORD = 'password'; // Input.Password
@@ -58,14 +59,13 @@ export const TextField: FC<TextFieldProps> = ({
 }) => {
   const [hasPwdChanged, setHasPwdChanged] = useState(false);
   const [showPwdButton, setShowPwdButton] = useState(false);
-  const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
   const [form] = Form.useForm();
   const handleChange = (e: any) => {
     // if an extra onChange handler was sent in as a prop, let's run that too.
     if (onChange) {
       const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
       setShowPwdButton(true);
-      if (isAdminPwdField && regex.test(val)) {
+      if (isAdminPwdField && REGEX_PASSWORD.test(val)) {
         setHasPwdChanged(true);
       } else {
         setHasPwdChanged(false);
@@ -92,7 +92,8 @@ export const TextField: FC<TextFieldProps> = ({
       onPressEnter();
     }
   };
-
+  // Password Complexity rules
+  const passwordComplexityRules = [];
   // display the appropriate Ant text field
   let Field = Input as
     | typeof Input
@@ -106,6 +107,9 @@ export const TextField: FC<TextFieldProps> = ({
       autoSize: true,
     };
   } else if (type === TEXTFIELD_TYPE_PASSWORD) {
+    PASSWORD_COMPLEXITY_RULES.forEach(element => {
+      passwordComplexityRules.push(element);
+    });
     Field = Input.Password;
     fieldProps = {
       visibilityToggle: true,
@@ -175,29 +179,7 @@ export const TextField: FC<TextFieldProps> = ({
               initialValues={{ inputFieldPassword: value }}
               style={{ width: '100%' }}
             >
-              <Form.Item
-                name="inputFieldPassword"
-                rules={[
-                  { min: 8, message: '- minimum 8 characters' },
-                  { max: 192, message: '- maximum 192 characters' },
-                  {
-                    pattern: /^(?=.*[a-z])/,
-                    message: '- at least one lowercase letter',
-                  },
-                  {
-                    pattern: /^(?=.*[A-Z])/,
-                    message: '- at least one uppercase letter',
-                  },
-                  {
-                    pattern: /\d/,
-                    message: '- at least one digit',
-                  },
-                  {
-                    pattern: /^(?=.*?[#?!@$%^&*-])/,
-                    message: '- at least one special character: !@#$%^&*',
-                  },
-                ]}
-              >
+              <Form.Item name="inputFieldPassword" rules={passwordComplexityRules}>
                 <Input.Password
                   id={fieldId}
                   className={`field ${className} ${fieldId}`}
