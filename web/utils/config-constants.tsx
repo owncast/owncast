@@ -562,3 +562,26 @@ export const BROWSER_PUSH_CONFIG_FIELDS = {
     placeholder: `I've gone live! Come watch!`,
   },
 };
+
+export const PASSWORD_COMPLEXITY_RULES = [
+  { min: 8, message: '- minimum 8 characters' },
+  { max: 192, message: '- maximum 192 characters' },
+  {
+    pattern: /^(?=.*[a-z])/,
+    message: '- at least one lowercase letter',
+  },
+  {
+    pattern: /^(?=.*[A-Z])/,
+    message: '- at least one uppercase letter',
+  },
+  {
+    pattern: /\d/,
+    message: '- at least one digit',
+  },
+  {
+    pattern: /^(?=.*?[#?!@$%^&*-])/,
+    message: '- at least one special character: !@#$%^&*',
+  },
+];
+
+export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/g;
