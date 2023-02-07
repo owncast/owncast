@@ -76,7 +76,7 @@ export const TextField: FC<TextFieldProps> = ({
   };
 
   useEffect(() => {
-    form.setFieldsValue({ adminPassword: value });
+    form.setFieldsValue({ inputFieldPassword: value });
   }, [value]);
 
   // if you blur a required field with an empty value, restore its original value in state (parent's state), if an onChange from parent is available.
@@ -172,11 +172,11 @@ export const TextField: FC<TextFieldProps> = ({
             <Form
               name="basic"
               form={form}
-              initialValues={{ adminPassword: value }}
+              initialValues={{ inputFieldPassword: value }}
               style={{ width: '100%' }}
             >
               <Form.Item
-                name="adminPassword"
+                name="inputFieldPassword"
                 rules={[
                   { min: 8, message: '- minimum 8 characters' },
                   { max: 192, message: '- maximum 192 characters' },
