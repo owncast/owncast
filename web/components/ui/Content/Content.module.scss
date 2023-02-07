@@ -39,6 +39,10 @@
     @include screen(desktop) {
       overflow-y: scroll;
       grid-template-rows: unset;
+
+      &.offline {
+        grid-template-rows: unset;
+      }
     }
   }
 
