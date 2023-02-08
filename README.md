@@ -123,6 +123,10 @@ There is a larger, more detailed, and more up-to-date [guide for helping contrib
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
+## Supported by
+
+- This project is tested with [BrowserStack](https://browserstack.com).
+
 <!-- CONTACT -->
 
 ## Contact
