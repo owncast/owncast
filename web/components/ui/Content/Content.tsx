@@ -240,7 +240,6 @@ const ExternalModal = ({
             width: '100%',
             overflow: 'auto',
           }}
-          // Set first child style to 100% to ensure it fills the modal.
         />
       ) : null}
     </Modal>
