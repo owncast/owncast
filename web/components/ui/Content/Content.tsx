@@ -287,7 +287,8 @@ export const Content: FC = () => {
 
   const externalActionSelected = (action: ExternalAction) => {
     const { openExternally, url } = action;
-    if (openExternally) {
+    // apply openExternally only if we don't have an HTML embed
+    if (openExternally && url) {
       window.open(url, '_blank');
     } else {
       setExternalActionToDisplay(action);
