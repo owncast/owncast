@@ -296,7 +296,7 @@ export const Content: FC = () => {
 
   const externalActionButtons = externalActions.map(action => (
     <ActionButton
-      key={action.url}
+      key={action.url || action.html}
       action={action}
       externalActionSelected={externalActionSelected}
     />
