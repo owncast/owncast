@@ -35,6 +35,24 @@ const saveKeys = async (keys, setError) => {
   }
 };
 
+const generateRndKey = () => {
+  let defaultKey = '';
+  let isValidStreamKey = false;
+  const streamKeyRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
+  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+
+  while (!isValidStreamKey) {
+    const temp = Array.apply(20, Array(30))
+      .map(() => s.charAt(Math.floor(Math.random() * s.length)))
+      .join('');
+    if (streamKeyRegex.test(temp)) {
+      isValidStreamKey = true;
+      defaultKey = temp;
+    }
+  }
+  return defaultKey;
+};
+
 const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setError }) => {
   const handleAddKey = (newkey: any) => {
     const updatedKeys = [...streamKeys, newkey];
@@ -50,10 +68,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
   };
 
   // Default auto-generated key
-  let defaultKey = '';
-  for (let i = 0; i < 3; i += 1) {
-    defaultKey += Math.random().toString(36).substring(2);
-  }
+  const defaultKey = generateRndKey();
 
   return (
     <Form layout="inline" autoComplete="off" onFinish={handleAddKey}>
