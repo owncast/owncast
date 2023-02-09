@@ -68,7 +68,7 @@ export const EditCustomJavascript: FC = () => {
     setContent(initialContent);
   }, [instanceDetails]);
 
-  const onCSSValueChange = React.useCallback(value => {
+  const onValueChange = React.useCallback(value => {
     setContent(value);
     if (value !== initialContent && !hasChanged) {
       setHasChanged(true);
@@ -80,20 +80,18 @@ export const EditCustomJavascript: FC = () => {
   return (
     <div className="edit-custom-css">
       <Title level={3} className="section-title">
-        Customize your page styling with CSS
+        Customize your page with Javascript
       </Title>
 
       <p className="description">
-        Customize the look and feel of your Owncast instance by overriding the CSS styles of various
-        components on the page. Refer to the{' '}
+        Insert custom Javascript into your Owncast page to add your own functionality or to add 3rd
+        party scripts. Read more about how to use this feature in the{' '}
         <a href="https://owncast.online/docs/website/" rel="noopener noreferrer" target="_blank">
-          CSS &amp; Components guide
+          Web page documentation.
         </a>
         .
       </p>
-      <p className="description">
-        Please input plain CSS text, as this will be directly injected onto your page during load.
-      </p>
+      <p className="description">Please use raw Javascript, no HTML or any script tags.</p>
 
       <CodeMirror
         value={content}
@@ -101,7 +99,7 @@ export const EditCustomJavascript: FC = () => {
         theme={bbedit}
         height="200px"
         extensions={[javascript()]}
-        onChange={onCSSValueChange}
+        onChange={onValueChange}
       />
 
       <br />
