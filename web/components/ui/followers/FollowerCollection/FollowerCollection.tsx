@@ -19,17 +19,16 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const pages = Math.ceil(total / ITEMS_PER_PAGE);
-
   const getFollowers = async () => {
     try {
-      const response = await fetch(`${ENDPOINT}?page=${page}`);
+      const response = await fetch(`${ENDPOINT}?page=${page}&limit=${ITEMS_PER_PAGE}`);
 
       const data = await response.json();
       const { results, total: totalResults } = data;
 
       setFollowers(results);
       setTotal(totalResults);
+
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -78,9 +77,12 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
       </Row>
 
       <Pagination
+        className={styles.pagination}
         current={page}
         pageSize={ITEMS_PER_PAGE}
-        total={pages || 1}
+        defaultPageSize={ITEMS_PER_PAGE}
+        total={total}
+        showSizeChanger={false}
         onChange={p => {
           setPage(p);
         }}
