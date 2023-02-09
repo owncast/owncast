@@ -2,6 +2,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { Skeleton } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import classnames from 'classnames';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import isPushNotificationSupported from '../../../utils/browserPushNotifications';
 
@@ -331,105 +332,110 @@ export const Content: FC = () => {
 
   return (
     <>
-      <div className={styles.main}>
-        <div className={styles.root}>
-          <div className={styles.mainSection}>
-            <div className={styles.topSection}>
-              {appState.appLoading && <Skeleton loading active paragraph={{ rows: 7 }} />}
-              {online && (
-                <OwncastPlayer
-                  source="/hls/stream.m3u8"
-                  online={online}
-                  title={streamTitle || name}
-                />
-              )}
-              {!online && !appState.appLoading && (
-                <div id="offline-message">
-                  <OfflineBanner
-                    showsHeader={false}
-                    streamName={name}
-                    customText={offlineMessage}
-                    notificationsEnabled={browserNotificationsEnabled}
-                    fediverseAccount={fediverseAccount}
-                    lastLive={lastDisconnectTime}
-                    onNotifyClick={() => setShowNotifyModal(true)}
-                    onFollowClick={() => setShowFollowModal(true)}
-                  />
-                </div>
-              )}
-              {isStreamLive && (
-                <Statusbar
-                  online={online}
-                  lastConnectTime={lastConnectTime}
-                  lastDisconnectTime={lastDisconnectTime}
-                  viewerCount={viewerCount}
-                />
-              )}
+      <div className={styles.root}>
+        <div className={classnames(styles.mainSection, { [styles.offline]: !online })}>
+          {appState.appLoading ? (
+            <Skeleton loading active paragraph={{ rows: 7 }} className={styles.topSectionElement} />
+          ) : (
+            <div className="skeleton-placeholder" />
+          )}
+          {online && (
+            <OwncastPlayer
+              source="/hls/stream.m3u8"
+              online={online}
+              title={streamTitle || name}
+              className={styles.topSectionElement}
+            />
+          )}
+          {!online && !appState.appLoading && (
+            <div id="offline-message">
+              <OfflineBanner
+                showsHeader={false}
+                streamName={name}
+                customText={offlineMessage}
+                notificationsEnabled={browserNotificationsEnabled}
+                fediverseAccount={fediverseAccount}
+                lastLive={lastDisconnectTime}
+                onNotifyClick={() => setShowNotifyModal(true)}
+                onFollowClick={() => setShowFollowModal(true)}
+                className={styles.topSectionElement}
+              />
             </div>
-            <div className={styles.midSection}>
-              <div className={styles.buttonsLogoTitleSection}>
-                {!isMobile && (
-                  <ActionButtonRow>
-                    {externalActionButtons}
-                    {supportFediverseFeatures && (
-                      <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
-                    )}
-                    {supportsBrowserNotifications && (
-                      <NotifyReminderPopup
-                        open={showNotifyReminder}
-                        notificationClicked={() => setShowNotifyModal(true)}
-                        notificationClosed={() => disableNotifyReminderPopup()}
-                      >
-                        <NotifyButton onClick={() => setShowNotifyModal(true)} />
-                      </NotifyReminderPopup>
-                    )}
-                  </ActionButtonRow>
-                )}
+          )}
+          {isStreamLive ? (
+            <Statusbar
+              online={online}
+              lastConnectTime={lastConnectTime}
+              lastDisconnectTime={lastDisconnectTime}
+              viewerCount={viewerCount}
+              className={classnames(styles.topSectionElement, styles.statusBar)}
+            />
+          ) : (
+            <div className="statusbar-placeholder" />
+          )}
+          <div className={styles.midSection}>
+            <div className={styles.buttonsLogoTitleSection}>
+              {!isMobile && (
+                <ActionButtonRow>
+                  {externalActionButtons}
+                  {supportFediverseFeatures && (
+                    <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
+                  )}
+                  {supportsBrowserNotifications && (
+                    <NotifyReminderPopup
+                      open={showNotifyReminder}
+                      notificationClicked={() => setShowNotifyModal(true)}
+                      notificationClosed={() => disableNotifyReminderPopup()}
+                    >
+                      <NotifyButton onClick={() => setShowNotifyModal(true)} />
+                    </NotifyReminderPopup>
+                  )}
+                </ActionButtonRow>
+              )}
 
-                <Modal
-                  title="Browser Notifications"
-                  open={showNotifyModal}
-                  afterClose={() => disableNotifyReminderPopup()}
-                  handleCancel={() => disableNotifyReminderPopup()}
-                >
-                  <BrowserNotifyModal />
-                </Modal>
-              </div>
+              <Modal
+                title="Browser Notifications"
+                open={showNotifyModal}
+                afterClose={() => disableNotifyReminderPopup()}
+                handleCancel={() => disableNotifyReminderPopup()}
+              >
+                <BrowserNotifyModal />
+              </Modal>
             </div>
-            {isMobile ? (
-              <MobileContent
-                name={name}
-                streamTitle={streamTitle}
-                summary={summary}
-                tags={tags}
-                socialHandles={socialHandles}
-                extraPageContent={extraPageContent}
-                messages={messages}
-                currentUser={currentUser}
-                showChat={showChat}
-                actions={externalActions}
-                setExternalActionToDisplay={externalActionSelected}
-                setShowNotifyPopup={setShowNotifyModal}
-                setShowFollowModal={setShowFollowModal}
-                supportFediverseFeatures={supportFediverseFeatures}
-                supportsBrowserNotifications={supportsBrowserNotifications}
-              />
-            ) : (
-              <DesktopContent
-                name={name}
-                streamTitle={streamTitle}
-                summary={summary}
-                tags={tags}
-                socialHandles={socialHandles}
-                extraPageContent={extraPageContent}
-                setShowFollowModal={setShowFollowModal}
-                supportFediverseFeatures={supportFediverseFeatures}
-              />
-            )}
-            {!isMobile && <Footer version={version} />}
           </div>
-          {showChat && !isMobile && <Sidebar />}
+          {isMobile ? (
+            <MobileContent
+              name={name}
+              streamTitle={streamTitle}
+              summary={summary}
+              tags={tags}
+              socialHandles={socialHandles}
+              extraPageContent={extraPageContent}
+              messages={messages}
+              currentUser={currentUser}
+              showChat={showChat}
+              actions={externalActions}
+              setExternalActionToDisplay={externalActionSelected}
+              setShowNotifyPopup={setShowNotifyModal}
+              setShowFollowModal={setShowFollowModal}
+              supportFediverseFeatures={supportFediverseFeatures}
+              supportsBrowserNotifications={supportsBrowserNotifications}
+            />
+          ) : (
+            <DesktopContent
+              name={name}
+              streamTitle={streamTitle}
+              summary={summary}
+              tags={tags}
+              socialHandles={socialHandles}
+              extraPageContent={extraPageContent}
+              setShowFollowModal={setShowFollowModal}
+              supportFediverseFeatures={supportFediverseFeatures}
+            />
+          )}
+          {!isMobile && <Footer version={version} />}
         </div>
+        {showChat && !isMobile && <Sidebar />}
       </div>
       {externalActionToDisplay && (
         <ExternalModal
