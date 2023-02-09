@@ -38,7 +38,9 @@
   font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 70vw;
+  // 6rem is an overapproximation of the width of
+  // the user menu
+  max-width: min(70vw, calc(100vw - 6rem));
   overflow: hidden;
   line-height: 1.4;
 }

@@ -36,6 +36,7 @@ export const VideoPoster: FC<VideoPosterProps> = ({ online, initialSrc, src: bas
           objectFit="contain"
           height="auto"
           width="100%"
+          className={styles.image}
         />
       )}
     </div>

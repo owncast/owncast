@@ -3,19 +3,46 @@
 .root {
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-template-rows: 100%;
   width: 100%;
   background-color: var(--theme-color-background-main);
+  height: 100%;
+  min-height: 0;
 
   @include screen(desktop) {
     height: var(--content-height);
   }
 
   .mainSection {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: min-content // Skeleton when app is loading
+      minmax(30px, min-content) // player
+      min-content // status bar when live
+      min-content // mid section
+      minmax(250px, 1fr) // mobile content
+;
+    grid-template-columns: 100%;
+
+    &.offline {
+      grid-template-rows: min-content // Skeleton when app is loading
+        min-content // offline banner
+        min-content // status bar when live
+        min-content // mid section
+        minmax(250px, 1fr) // mobile content
+;
+    }
+
+    @include screen(tablet) {
+      grid-template-columns: 100vw;
+    }
 
     @include screen(desktop) {
       overflow-y: scroll;
+      grid-template-rows: unset;
+
+      &.offline {
+        grid-template-rows: unset;
+      }
     }
   }
 
@@ -27,10 +54,6 @@
     display: none;
   }
 
-  .topSection {
-    padding: 0;
-    background-color: var(--theme-color-components-video-background);
-  }
   .lowerSection {
     padding: 0em 2%;
     margin-bottom: 2em;
@@ -44,6 +67,14 @@
   }
 }
 
+.topSectionElement {
+  background-color: var(--theme-color-components-video-background);
+}
+
+.statusBar {
+  flex-shrink: 0;
+}
+
 .leftCol {
   display: flex;
   flex-direction: column;
@@ -51,13 +82,6 @@
 
 .loadingSpinner {
   display: grid;
-}
-
-.main {
-  display: grid;
-  flex: 1;
-  height: 100%;
-  grid-template-rows: 1fr auto;
 }
 
 .replacementBar {
