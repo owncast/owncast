@@ -12,6 +12,9 @@
   background-color: unset;
   color: var(--theme-color-components-text-on-dark);
 }
+.app-container .menu-container .ant-menu-item-selected:not(.ant-menu-item-only-child), .ant-menu-item a:hover, .ant-menu-item a::before {
+	color: var(--theme-color-palette-12);
+}
 .app-container h1.owncast-title {
   padding: 1rem;
   padding-bottom: 4px;
