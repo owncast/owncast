@@ -2,7 +2,6 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { HtmlComment } from '../components/common/HtmlComment/HtmlComment';
 
 class InlineStylesHead extends Head {
   getCssLinks: Head['getCssLinks'] = ({ allFiles }) => {
@@ -30,8 +29,6 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
-        {'\n\n'}
-        <HtmlComment text="If you're reading this we'd love your help with Owncast! Visit https://owncast.online/help to see how you can contribute to make independent, open source live streaming better with your help." />
       </body>
     </Html>
   );
