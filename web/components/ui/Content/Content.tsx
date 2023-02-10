@@ -54,6 +54,7 @@ const FollowModal = dynamic(
   () => import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
   {
     ssr: false,
+    loading: () => <Skeleton loading active paragraph={{ rows: 8 }} />,
   },
 );
 
@@ -64,6 +65,7 @@ const BrowserNotifyModal = dynamic(
     ),
   {
     ssr: false,
+    loading: () => <Skeleton loading active paragraph={{ rows: 6 }} />,
   },
 );
 
@@ -71,6 +73,7 @@ const NotifyReminderPopup = dynamic(
   () => import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
   {
     ssr: false,
+    loading: () => <Skeleton loading active paragraph={{ rows: 8 }} />,
   },
 );
 
