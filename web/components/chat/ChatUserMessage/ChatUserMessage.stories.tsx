@@ -56,7 +56,7 @@ const messageWithLinkAndCustomEmoji: ChatMessage = JSON.parse(`{
 			"nameChangedAt": "2022-04-26T23:56:05.531287897Z",
 			"scopes": []
 		},
-		"body": "Test message with a link https://owncast.online and a custom emoji <img src='/img/emoji/blob/ablobattention.gif' width='30px'/> ."}`);
+		"body": "Test message with a link https://owncast.online and a custom emoji <img src='/img/emoji/mutant/skull.svg' width='30px'/> ."}`);
 
 const moderatorMessage: ChatMessage = JSON.parse(`{
     "type": "CHAT",
