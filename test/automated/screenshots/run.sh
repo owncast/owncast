@@ -4,17 +4,18 @@ set -e
 set -o errexit
 set -o pipefail
 
+finish() {
+	kill_with_kids "$BROWSERSTACK_PID"
+	kill_with_kids "$STREAM_PID"
+}
+
 rm -rf ./screenshots
 mkdir -p ./screenshots
 
 curl -o ./BrowserStackLocal-linux-x64.zip https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip
 unzip -o ./BrowserStackLocal-linux-x64.zip
 ./BrowserStackLocal --key "$BROWSERSTACK_KEY" &
-
-finish() {
-	killall BrowserStackLocal
-	kill_with_kids "$STREAM_PID"
-}
+BROWSERSTACK_PID=$!
 
 trap finish EXIT TERM INT
 
