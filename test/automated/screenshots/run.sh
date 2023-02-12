@@ -9,7 +9,7 @@ mkdir -p ./screenshots
 
 curl -o ./BrowserStackLocal-linux-x64.zip https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip
 unzip -o ./BrowserStackLocal-linux-x64.zip
-./BrowserStackLocal --key $BROWSERSTACK_KEY &
+./BrowserStackLocal --key "$BROWSERSTACK_KEY" &
 
 finish() {
 	killall BrowserStackLocal
@@ -33,7 +33,7 @@ sleep 20
 FILE_SUFFIX="online" node index.js
 
 SCREENSHOTS="$(pwd)/screenshots"
-echo $SCREENSHOTS
+echo "$SCREENSHOTS"
 
 # Change to the root directory of the repository
 cd "$(git rev-parse --show-toplevel)"
