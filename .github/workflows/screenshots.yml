@@ -31,6 +31,7 @@ jobs:
           author_name: Owncast
           author_email: owncast@owncast.online
           message: 'Commit screenshots'
+          add: '*.png'
           pull: '--rebase --autostash'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
