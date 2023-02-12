@@ -23,22 +23,22 @@ const testBrowsersPortrait = [
 		browser_version: '16.0',
 		real_mobile: null,
 	},
-	// {
-	// 	os: 'OS X',
-	// 	os_version: 'Ventura',
-	// 	browser: 'firefox',
-	// 	device: null,
-	// 	browser_version: '90.0',
-	// 	real_mobile: null,
-	// },
-	// {
-	// 	os: 'Windows',
-	// 	os_version: '10',
-	// 	browser: 'firefox',
-	// 	device: null,
-	// 	browser_version: '90.0',
-	// 	real_mobile: null,
-	// },
+	{
+		os: 'OS X',
+		os_version: 'Ventura',
+		browser: 'firefox',
+		device: null,
+		browser_version: '89.0',
+		real_mobile: null,
+	},
+	{
+		os: 'Windows',
+		os_version: '11',
+		browser: 'firefox',
+		device: null,
+		browser_version: '89.0',
+		real_mobile: null,
+	},
 	{
 		os: 'Windows',
 		os_version: '11',
@@ -82,14 +82,14 @@ const testBrowsersPortrait = [
 ];
 
 const testBrowsersLandscape = [
-	// {
-	// 	os: 'android',
-	// 	os_version: '13.0',
-	// 	browser: 'Android Browser',
-	// 	device: 'Google Pixel 7 Pro',
-	// 	browser_version: null,
-	// 	real_mobile: true,
-	// },
+	{
+		os: 'android',
+		os_version: '10.0',
+		browser: 'Android Browser',
+		device: 'Samsung Galaxy S20 Ultra',
+		browser_version: null,
+		real_mobile: true,
+	},
 	{
 		os: 'ios',
 		os_version: '16',
@@ -102,7 +102,7 @@ const testBrowsersLandscape = [
 	// 	os: 'ios',
 	// 	os_version: '16',
 	// 	browser: 'Mobile Safari',
-	// 	device: 'iPhone 14 Pro',
+	// 	device: 'iPhone 14',
 	// 	browser_version: null,
 	// 	real_mobile: true,
 	// },
