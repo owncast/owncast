@@ -61,7 +61,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
   if (loading) {
     return loadingSkeleton;
   }
-
+  
   if (!followers?.length) {
     return noFollowers;
   }
