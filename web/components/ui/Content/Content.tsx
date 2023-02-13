@@ -18,7 +18,6 @@ import {
   serverStatusState,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
-import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 
 import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
@@ -30,25 +29,15 @@ import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
 import { FollowButton } from '../../action-buttons/FollowButton';
 import { NotifyButton } from '../../action-buttons/NotifyButton';
-import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
-import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
+import { DesktopContent } from './DesktopContent';
+import { MobileContent } from './MobileContent';
 
 // Lazy loaded components
-
-const FollowerCollection = dynamic(
-  () =>
-    import('../followers/FollowerCollection/FollowerCollection').then(
-      mod => mod.FollowerCollection,
-    ),
-  {
-    ssr: false,
-  },
-);
 
 const FollowModal = dynamic(
   () => import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
@@ -84,140 +73,6 @@ const OwncastPlayer = dynamic(
     loading: () => <Skeleton loading active paragraph={{ rows: 12 }} />,
   },
 );
-
-const ChatContainer = dynamic(
-  () => import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
-  {
-    ssr: false,
-  },
-);
-
-const Tabs = dynamic(() => import('antd').then(mod => mod.Tabs), {
-  ssr: false,
-});
-
-const DesktopContent = ({
-  name,
-  streamTitle,
-  summary,
-  tags,
-  socialHandles,
-  extraPageContent,
-  setShowFollowModal,
-  supportFediverseFeatures,
-}) => {
-  const aboutTabContent = <CustomPageContent content={extraPageContent} />;
-  const followersTabContent = (
-    <div>
-      <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
-    </div>
-  );
-
-  const items = [{ label: 'About', key: '2', children: aboutTabContent }];
-  if (supportFediverseFeatures) {
-    items.push({ label: 'Followers', key: '3', children: followersTabContent });
-  }
-
-  return (
-    <>
-      <div className={styles.lowerHalf} id="skip-to-content">
-        <ContentHeader
-          name={name}
-          title={streamTitle}
-          summary={summary}
-          tags={tags}
-          links={socialHandles}
-          logo="/logo"
-        />
-      </div>
-
-      <div className={styles.lowerSection}>
-        {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : aboutTabContent}
-      </div>
-    </>
-  );
-};
-
-const MobileContent = ({
-  name,
-  streamTitle,
-  summary,
-  tags,
-  socialHandles,
-  extraPageContent,
-  messages,
-  currentUser,
-  showChat,
-  actions,
-  setExternalActionToDisplay,
-  setShowNotifyPopup,
-  setShowFollowModal,
-  supportFediverseFeatures,
-  supportsBrowserNotifications,
-}) => {
-  if (!currentUser) {
-    return <Skeleton loading active paragraph={{ rows: 7 }} />;
-  }
-  const { id, displayName } = currentUser;
-
-  const chatContent = showChat && (
-    <ChatContainer
-      messages={messages}
-      usernameToHighlight={displayName}
-      chatUserId={id}
-      isModerator={false}
-    />
-  );
-
-  const aboutTabContent = (
-    <>
-      <ContentHeader
-        name={name}
-        title={streamTitle}
-        summary={summary}
-        tags={tags}
-        links={socialHandles}
-        logo="/logo"
-      />
-      <CustomPageContent content={extraPageContent} />
-    </>
-  );
-  const followersTabContent = (
-    <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
-  );
-
-  const items = [
-    showChat && { label: 'Chat', key: '0', children: chatContent },
-    { label: 'About', key: '2', children: aboutTabContent },
-    { label: 'Followers', key: '3', children: followersTabContent },
-  ];
-
-  const replacementTabBar = (props, DefaultTabBar) => (
-    <div className={styles.replacementBar}>
-      <DefaultTabBar {...props} className={styles.defaultTabBar} />
-      <ActionButtonMenu
-        className={styles.actionButtonMenu}
-        showFollowItem={supportFediverseFeatures}
-        showNotifyItem={supportsBrowserNotifications}
-        actions={actions}
-        externalActionSelected={setExternalActionToDisplay}
-        notifyItemSelected={() => setShowNotifyPopup(true)}
-        followItemSelected={() => setShowFollowModal(true)}
-      />
-    </div>
-  );
-
-  return (
-    <div className={styles.lowerSectionMobile}>
-      <Tabs
-        className={styles.tabs}
-        defaultActiveKey="0"
-        items={items}
-        renderTabBar={replacementTabBar}
-      />
-    </div>
-  );
-};
 
 const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) => {
   const { title, description, url } = externalActionToDisplay;
@@ -423,6 +278,9 @@ export const Content: FC = () => {
               setShowFollowModal={setShowFollowModal}
               supportFediverseFeatures={supportFediverseFeatures}
               supportsBrowserNotifications={supportsBrowserNotifications}
+              notifyItemSelected={() => setShowNotifyModal(true)}
+              followItemSelected={() => setShowFollowModal(true)}
+              externalActionSelected={externalActionSelected}
             />
           ) : (
             <DesktopContent
