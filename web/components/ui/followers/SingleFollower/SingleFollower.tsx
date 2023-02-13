@@ -19,8 +19,7 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
         </Col>
         <Col span={18}>
           <Row className={styles.name}>
-        {/* using ternary operrator for follower name,
-         if name is not present then username will work as a name  */}
+        
             <Typography.Text ellipsis>{follower.name || follower.username}</Typography.Text>
           </Row>
           <Row className={styles.account}>
