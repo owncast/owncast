@@ -28,3 +28,5 @@ jobs:
           pull: --rebase --autostash
           message: 'Bundle embedded web app'
           add: 'static/web'
+          author_name: Owncast
+          author_email: owncast@owncast.online
