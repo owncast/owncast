@@ -1,6 +1,12 @@
 import { Canvas, Meta, Story, Typeset, Source } from '@storybook/addon-docs';
 
-<Meta title="owncast/Styles/Typography" />
+<Meta
+  title="owncast/Styles/Typography"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
 
 export const SampleText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 

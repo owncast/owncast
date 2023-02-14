@@ -81,3 +81,9 @@ export const ColorRow = props => {
 ColorRow.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
+
+export const getColor = color => {
+  const colorValue = getComputedStyle(document.documentElement).getPropertyValue(`--${color}`);
+  return { [color]: colorValue };
+  // return { [color]: colorValue };
+};
