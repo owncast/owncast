@@ -4,6 +4,8 @@ package models
 type ExternalAction struct {
 	// URL is the URL to load.
 	URL string `json:"url"`
+	// HTML is the HTML to embed into the modal. When this is set, OpenExternally and URL are ignored
+	HTML string `json:"html"`
 	// Title is the name of this action, displayed in the modal.
 	Title string `json:"title"`
 	// Description is the description of this action.

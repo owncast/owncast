@@ -75,7 +75,7 @@ const OwncastPlayer = dynamic(
 );
 
 const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) => {
-  const { title, description, url } = externalActionToDisplay;
+  const { title, description, url, html } = externalActionToDisplay;
   return (
     <Modal
       title={description || title}
@@ -83,7 +83,19 @@ const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) 
       open={!!externalActionToDisplay}
       height="80vh"
       handleCancel={() => setExternalActionToDisplay(null)}
-    />
+    >
+      {html ? (
+        <div
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: html }}
+          style={{
+            height: '100%',
+            width: '100%',
+            overflow: 'auto',
+          }}
+        />
+      ) : null}
+    </Modal>
   );
 };
 
@@ -127,7 +139,8 @@ export const Content: FC = () => {
 
   const externalActionSelected = (action: ExternalAction) => {
     const { openExternally, url } = action;
-    if (openExternally) {
+    // apply openExternally only if we don't have an HTML embed
+    if (openExternally && url) {
       window.open(url, '_blank');
     } else {
       setExternalActionToDisplay(action);
@@ -136,7 +149,7 @@ export const Content: FC = () => {
 
   const externalActionButtons = externalActions.map(action => (
     <ActionButton
-      key={action.url}
+      key={action.url || action.html}
       action={action}
       externalActionSelected={externalActionSelected}
     />
