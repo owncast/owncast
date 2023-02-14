@@ -10,6 +10,11 @@
   box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
   background-color: var(--theme-color-background-header);
 
+  h1 {
+    margin-top: unset;
+    margin-bottom: unset;
+  }
+
   @include screen(mobile) {
     --header-height: 3.85rem;
   }
