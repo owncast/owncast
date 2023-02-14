@@ -1,7 +1,9 @@
-import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
+import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography } from 'antd';
+import CodeMirror from '@uiw/react-codemirror';
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
+import { html as codeMirrorHTML } from '@codemirror/lang-html';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import TextArea from 'antd/lib/input/TextArea';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
 import {
@@ -47,11 +49,13 @@ interface Props {
   index: number | null;
 }
 
+// ActionType is only used here to save either only the URL or only the HTML.
+type ActionType = 'url' | 'html';
+
 const ActionModal = (props: Props) => {
   const { onOk, onCancel, open, action } = props;
 
-  // useHTML is not part of the action object -- HTML is used if its length is > 0
-  const [useHTML, setUseHTML] = useState(false);
+  const [actionType, setActionType] = useState<ActionType>('url');
 
   const [actionUrl, setActionUrl] = useState('');
   const [actionHTML, setActionHTML] = useState('');
@@ -62,7 +66,7 @@ const ActionModal = (props: Props) => {
   const [openExternally, setOpenExternally] = useState(false);
 
   useEffect(() => {
-    setUseHTML((action?.html?.length || 0) > 0);
+    setActionType((action?.html?.length || 0) > 0 ? 'html' : 'url');
     setActionUrl(action?.url || '');
     setActionHTML(action?.html || '');
     setActionTitle(action?.title || '');
@@ -77,8 +81,8 @@ const ActionModal = (props: Props) => {
       action,
       props.index,
       // Save only one of the properties
-      useHTML ? '' : actionUrl,
-      useHTML ? actionHTML : '',
+      actionType === 'html' ? '' : actionUrl,
+      actionType === 'html' ? actionHTML : '',
       actionTitle,
       actionDescription,
       actionIcon,
@@ -95,7 +99,7 @@ const ActionModal = (props: Props) => {
   }
 
   function canSave(): Boolean {
-    if (useHTML) {
+    if (actionType === 'html') {
       return actionHTML !== '' && actionTitle !== '';
     }
     return isValidUrl(actionUrl, ['https:']) && actionTitle !== '';
@@ -109,8 +113,8 @@ const ActionModal = (props: Props) => {
     setOpenExternally(checkbox.target.checked);
   };
 
-  const onUseHTMLChanged = checkbox => {
-    setUseHTML(checkbox.target.checked);
+  const onActionHTMLChanged = (newActionHTML: string) => {
+    setActionHTML(newActionHTML);
   };
 
   return (
@@ -134,12 +138,26 @@ const ActionModal = (props: Props) => {
             Read more about external actions.
           </a>
         </p>
-        {useHTML ? (
+        <Form.Item>
+          <Select
+            value={actionType}
+            onChange={setActionType}
+            placeholder="Select an action type"
+            options={[
+              { label: 'Link or embed an URL', value: 'url' },
+              { label: 'Custom HTML', value: 'html' },
+            ]}
+          />
+        </Form.Item>
+        {actionType === 'html' ? (
           <Form.Item name="html">
-            <TextArea
+            <CodeMirror
               value={actionHTML}
               placeholder="HTML embed code (required)"
-              onChange={input => setActionHTML(input.currentTarget.value)}
+              theme={bbedit}
+              height="200px"
+              extensions={[codeMirrorHTML()]}
+              onChange={onActionHTMLChanged}
             />
           </Form.Item>
         ) : (
@@ -153,11 +171,6 @@ const ActionModal = (props: Props) => {
             />
           </Form.Item>
         )}
-        <Form.Item name="useHTML">
-          <Checkbox checked={useHTML} defaultChecked={openExternally} onChange={onUseHTMLChanged}>
-            Embed HTML instead of an URL
-          </Checkbox>
-        </Form.Item>
         <Form.Item name="title">
           <Input
             value={actionTitle}
@@ -190,7 +203,7 @@ const ActionModal = (props: Props) => {
           </Form.Item>
           Optional background color of the action button.
         </div>
-        {useHTML ? null : (
+        {actionType === 'html' ? null : (
           <Form.Item name="openExternally">
             <Checkbox
               checked={openExternally}
@@ -380,7 +393,7 @@ const Actions = () => {
       title: 'Opens',
       key: 'openExternally',
       dataIndex: 'openExternally',
-      // Note embeds will alway open in the same tab.
+      // Note: embeds will alway open in the same tab / in a modal
       render: (openExternally: boolean, record) =>
         !openExternally || record.html ? 'In the same tab' : 'In a new tab',
     },
