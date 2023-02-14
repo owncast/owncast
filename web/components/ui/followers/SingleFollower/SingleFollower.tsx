@@ -13,9 +13,12 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
     <a href={follower.link} target="_blank" rel="noreferrer">
       <Row wrap={false}>
         <Col span={6}>
-          <Avatar src={follower.image} alt="Avatar" className={styles.avatar}>
-            <img src="/logo" alt="Logo" className={styles.placeholder} />
-          </Avatar>
+          <Avatar
+            src={follower.image}
+            alt="Avatar"
+            className={styles.avatar}
+            icon={<img src="/logo" alt="Logo" />}
+          />
         </Col>
         <Col span={18}>
           <Row className={styles.name}>
