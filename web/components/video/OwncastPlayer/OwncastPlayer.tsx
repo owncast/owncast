@@ -2,6 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { VideoJsPlayerOptions } from 'video.js';
+import classNames from 'classnames';
 import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
@@ -26,6 +27,7 @@ export type OwncastPlayerProps = {
   online: boolean;
   initiallyMuted?: boolean;
   title: string;
+  className?: string;
 };
 
 async function getVideoSettings() {
@@ -45,6 +47,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   online,
   initiallyMuted = false,
   title,
+  className,
 }) => {
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
@@ -308,7 +311,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   );
 
   return (
-    <div className={styles.container} id="player">
+    <div className={classNames(styles.container, className)} id="player">
       {online && (
         <div className={styles.player}>
           <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />

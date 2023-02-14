@@ -1,29 +1,146 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, Typeset, Source } from '@storybook/addon-docs';
 
-<Meta title="owncast/Styles/Typography" />
+<Meta
+  title="owncast/Styles/Typography"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
 
-## Body
+export const SampleText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
-<div style={{ fontSize: '1.2rem', fontFamily: 'var(--theme-text-body-font-family)' }}>
-  The quick brown fox jumps over the lazy dog.
-</div>
+# Typography
+
+These are the font families in use by Owncast.
+
+---
+
+export const bodyFont = {
+  type: {
+    primary: getComputedStyle(document.documentElement).getPropertyValue(
+      '--theme-text-body-font-family',
+    ),
+  },
+  weight: {
+    regular: '400',
+    bold: '600',
+    extrabold: '800',
+  },
+  size: {
+    s1: 12,
+    s2: 14,
+    s3: 16,
+    m1: 20,
+    m2: 24,
+    m3: 28,
+    l1: 32,
+    l2: 40,
+    l3: 48,
+  },
+};
+
+## {bodyFont.type.primary.split(',')[0].replaceAll('"', '')}
+
+### Everywhere but headings and titles.
+
+<Typeset
+  fontSizes={[
+    Number(bodyFont.size.s1),
+    Number(bodyFont.size.s2),
+    Number(bodyFont.size.s3),
+    Number(bodyFont.size.m1),
+    Number(bodyFont.size.m2),
+    Number(bodyFont.size.m3),
+    Number(bodyFont.size.l1),
+    Number(bodyFont.size.l2),
+    Number(bodyFont.size.l3),
+  ]}
+  fontWeight={bodyFont.weight.black}
+  sampleText={SampleText}
+  fontFamily={bodyFont.type.primary}
+/>
+
+## Usage
 
 <Canvas
-  style={{ color: 'var(--theme-text-secondary)', fontFamily: 'var(--theme-text-body-font-family)' }}
+  columns={2}
+  withSource="open"
+  withToolbar
+  style={{ fontFamily: 'var(--theme-text-body-font-family)' }}
 >
   {getComputedStyle(document.documentElement).getPropertyValue('--theme-text-body-font-family')}
 </Canvas>
 
-## Display
+<Source
+  language="css"
+  dark
+  format={true}
+  code={`
+     font-family: var(--theme-text-body-font-family);
+  `}
+/>
 
-<div style={{ fontSize: '1.2rem', fontFamily: 'var(--theme-text-display-font-family)' }}>
-  The quick brown fox jumps over the lazy dog.
-</div>
+export const displayFont = {
+  type: {
+    primary: getComputedStyle(document.documentElement).getPropertyValue(
+      '--theme-text-display-font-family',
+    ),
+  },
+  weight: {
+    regular: '400',
+    bold: '600',
+    extrabold: '800',
+  },
+  size: {
+    s1: 12,
+    s2: 14,
+    s3: 16,
+    m1: 20,
+    m2: 24,
+    m3: 28,
+    l1: 32,
+    l2: 40,
+    l3: 48,
+  },
+};
+
+## {displayFont.type.primary.split(',')[0].replaceAll('"','')}
+
+### Headings and titles.
+
+<Typeset
+  fontSizes={[
+    Number(displayFont.size.s1),
+    Number(displayFont.size.s2),
+    Number(displayFont.size.s3),
+    Number(displayFont.size.m1),
+    Number(displayFont.size.m2),
+    Number(displayFont.size.m3),
+    Number(displayFont.size.l1),
+    Number(displayFont.size.l2),
+    Number(displayFont.size.l3),
+  ]}
+  fontWeight={displayFont.weight.black}
+  sampleText={SampleText}
+  fontFamily={displayFont.type.primary}
+/>
+
+## Usage
+
 <Canvas
-  style={{
-    color: 'var(--theme-text-secondary)',
-    fontFamily: 'var(--theme-text-display-font-family)',
-  }}
+  columns={2}
+  withSource="open"
+  withToolbarstyle={{ fontFamily: 'var(--theme-text-display-font-family)' }}
 >
   {getComputedStyle(document.documentElement).getPropertyValue('--theme-text-display-font-family')}
 </Canvas>
+
+<Source
+  language="css"
+  dark
+  format={true}
+  code={`
+     font-family: var(--theme-text-display-font-family);
+  `}
+/>

@@ -20,7 +20,7 @@ const mocks = {
       response: {
         status: 200,
         body: {
-          total: 10,
+          total: 100,
           results: [
             {
               link: 'https://sun.minuscule.space/users/mardijker',
@@ -173,14 +173,6 @@ const mocks = {
               username: 'aekre@gamethattune.club',
               image: '',
               timestamp: '2022-03-30T14:41:32Z',
-              disabledAt: null,
-            },
-            {
-              link: 'https://gamethattune.club/users/mork',
-              name: 'mork',
-              username: 'mork@gamethattune.club',
-              image: '',
-              timestamp: '2022-03-30T14:37:10Z',
               disabledAt: null,
             },
             {

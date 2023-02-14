@@ -2,6 +2,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import classNames from 'classnames';
 import styles from './Statusbar.module.scss';
 import { pluralize } from '../../../utils/helpers';
 
@@ -16,6 +17,7 @@ export type StatusbarProps = {
   lastConnectTime?: Date;
   lastDisconnectTime?: Date;
   viewerCount: number;
+  className?: string;
 };
 
 function makeDurationString(lastConnectTime: Date): string {
@@ -43,6 +45,7 @@ export const Statusbar: FC<StatusbarProps> = ({
   lastConnectTime,
   lastDisconnectTime,
   viewerCount,
+  className,
 }) => {
   const [, setNow] = useState(new Date());
 
@@ -75,7 +78,7 @@ export const Statusbar: FC<StatusbarProps> = ({
   }
 
   return (
-    <div className={styles.statusbar} role="status">
+    <div className={classNames(styles.statusbar, className)} role="status">
       <div>{onlineMessage}</div>
       <div>{rightSideMessage}</div>
     </div>

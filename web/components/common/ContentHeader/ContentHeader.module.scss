@@ -40,6 +40,7 @@
     font-size: 1.7rem;
     font-weight: bold;
     line-height: 30px;
+    margin: unset;
   }
 
   .subtitle {
@@ -48,6 +49,7 @@
     line-height: 1.3;
     color: var(--theme-color-background-header);
     max-width: 900px;
+    margin-top: 7px;
   }
 }
 
