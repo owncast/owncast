@@ -9,6 +9,7 @@
   line-height: 1.6em;
   color: var(--theme-color-components-text-on-light);
   padding: calc(2 * var(--content-padding));
+  padding-top: unset;
   border-radius: var(--theme-rounded-corners);
   width: 100%;
   background-color: var(--theme-color-components-content-background);
