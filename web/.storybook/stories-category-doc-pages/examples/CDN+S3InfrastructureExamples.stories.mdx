@@ -1,0 +1,55 @@
+import { Mermaid } from 'mdx-mermaid/Mermaid';
+import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+
+<Meta
+  title="owncast/Documentation/Infrastructure Examples/S3 With CDN Example"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description
+  markdown={`
+## CDN in front of S3 Object Storage
+
+If you're using a S3 provider but would like to increase the speed of your video delivery to your clients around the world, you can use a CDN in front of your S3 provider.
+This leads to not only your server not serving any video traffic, but the video traffic would be distributed globally so each client player would be pulling video from somewhere geographically closer, reducing the likelihood of buffering and slower network requests.
+
+`} />
+
+<Mermaid
+  chart={`flowchart TD
+    subgraph Video Assets
+        S3[fa:fa-hard-drive S3 Object Storage]
+        CDN[fa:fa-cloud Global CDN]
+    end
+
+    subgraph Clients
+        WebPlayer[fa:fa-window-maximize Web App]
+        Embeds[fa:fa-window-restore Embeds]
+        MobileApps[fa:fa-mobile-screen Mobile Apps]
+        SmartTV[fa:fa-tv Smart TV]
+        VLC[fa:fa-shapes VLC]
+    end
+
+    subgraph Web Assets & Chat Service
+        direction TB
+        Owncast{fa:fa-server Owncast}
+    end
+
+    Owncast--Upload\\nVideo-->S3
+    Owncast--Web-->WebPlayer
+    Owncast<--Chat-->WebPlayer
+    Owncast--Web-->Embeds
+
+    CDN--Download\\nVideo-->WebPlayer
+    CDN--Download\\nVideo-->Embeds
+    CDN--Download\\nVideo-->MobileApps
+    CDN--Download\\nVideo-->SmartTV
+    CDN--Download\\nVideo-->VLC
+
+    S3 --- CDN
+
+`}
+/>

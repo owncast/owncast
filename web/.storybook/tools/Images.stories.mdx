@@ -1,12 +1,13 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
-import { Image, ImageRow } from './ImageAsset';
+import { Canvas, Meta, Story, IconItem, IconGallery } from '@storybook/addon-docs';
 
-<Meta title="{{category}}" parameters=\{{chromatic: { disableSnapshot: true }}} />
+<Meta title="{{category}}" parameters=\{{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
 
 # {{capitalize title}}
 
-    <ImageRow images={[
-    	{{#each images}}
-    		{src: "{{this.src}}", name: "{{this.name}}"},
-    	{{/each}}
-    ]}/>
+    	<IconGallery>
+    		{{#each images}}
+    			<IconItem name="{{this.name}}">
+    				<img src="{{this.src}}" />
+    			</IconItem>
+    		{{/each}}
+    	</IconGallery>

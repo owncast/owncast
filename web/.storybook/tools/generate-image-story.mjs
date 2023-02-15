@@ -13,6 +13,7 @@ const dir = args[2];
 const title = args[3];
 const category = args[4];
 const publicPath = args[5];
+const useLarge = args[6];
 
 if (args.length < 6) {
   console.error('Usage: generate-image-story.mjs <dir> <title> <category> <webpublicpath>');
@@ -30,7 +31,8 @@ const images = readdirSync(dir)
   })
   .filter(Boolean);
 
-const template = fs.readFileSync('./Images.stories.mdx', 'utf8');
+const templateFile = useLarge ? './ImagesLarge.stories.mdx' : './Images.stories.mdx';
+const template = fs.readFileSync(templateFile, 'utf8');
 let t = handlebars.compile(template);
 let output = t({ images, title, category });
 console.log(output);

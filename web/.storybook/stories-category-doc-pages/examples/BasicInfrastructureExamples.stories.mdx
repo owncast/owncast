@@ -1,14 +1,20 @@
 import { Mermaid } from 'mdx-mermaid/Mermaid';
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
 
 <Meta
-  title="owncast/Documentation/Usage Examples"
-  parameters={{ chromatic: { disableSnapshot: true } }}
+  title="owncast/Documentation/Infrastructure Examples/Basic Example"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
 />
 
-<Story name="Basic">
+<Description
+  markdown={`
+## Basic
 
 This is the most basic Owncast setup and is what you get when you run it without any additional services.
+`} />
 
 <Mermaid
   chart={`graph TD
@@ -28,12 +34,13 @@ This is the most basic Owncast setup and is what you get when you run it without
 `}
 />
 
-</Story>
-
-<Story name="S3 Object Storage">
+<Description
+  markdown={`
+## S3 Object Storage
 
 If you would like no video traffic to take place from your Owncast server to your clients, you can use S3 Object Storage to be responsible for this instead.
 Instead of video players pulling the stream from your Owncast server it would instead make these requests to a S3 provider, and Owncast would upload video to this provider to make it available.
+`} />
 
 <Mermaid
   chart={`graph TD
@@ -67,12 +74,14 @@ Instead of video players pulling the stream from your Owncast server it would in
 `}
 />
 
-</Story>
-
-<Story name="CDN in front of S3 Object Storage">
+<Description
+  markdown={`
+## CDN in front of S3 Object Storage
 
 If you're using a S3 provider but would like to increase the speed of your video delivery to your clients around the world, you can use a CDN in front of your S3 provider.
 This leads to not only your server not serving any video traffic, but the video traffic would be distributed globally so each client player would be pulling video from somewhere geographically closer, reducing the likelihood of buffering and slower network requests.
+
+`} />
 
 <Mermaid
   chart={`flowchart TD
@@ -110,11 +119,12 @@ This leads to not only your server not serving any video traffic, but the video 
 `}
 />
 
-</Story>
-
-<Story name="CDN in front of Owncast">
+<Description
+  markdown={`
+## CDN in front of Owncast
 
 If you're ok with some video requests coming directly to your Owncast server, and want to generally increase the overall speed that your viewers globally access all your Owncast assets, including video and the web interface, you can put a CDN in front of your entire Owncast server.
+`} />
 
 <Mermaid
   chart={`flowchart TD
@@ -143,5 +153,3 @@ If you're ok with some video requests coming directly to your Owncast server, an
 
 `}
 />
-
-</Story>
