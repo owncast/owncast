@@ -1,25 +1,27 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, Description, IconGallery, IconItem } from '@storybook/addon-docs';
 import { Image, ImageRow } from './ImageAsset';
 
-<Meta title="owncast/Frontend Assets/Emoji" parameters=\{{chromatic: { disableSnapshot: true }}} />
+<Meta title="owncast/Frontend Assets/Emoji" parameters=\{{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
 
 # Built-in Custom Emoji
 
 {{#each emojiCollections}}
 
+<Description
+  markdown={`
 ## {{capitalize this.name}}
 
-<Story
-  name="{{capitalize this.name}}"
->
-   <a href="img/emoji/{{this.name}}/LICENSE.md" target="_blank">
-    	LICENSE
-    </a>
-    <ImageRow images={[
-    	{{#each this.images}}
-    		{src: "{{this.src}}", name: "{{this.name}}"},
-    	{{/each}}
-    ]}/>
-</Story>
+<a href="img/emoji/{{this.name}}/LICENSE.md" target="_blank">
+  LICENSE
+</a>
+`} />
+
+    <IconGallery>
+    		{{#each images}}
+    			<IconItem name="{{this.name}}">
+    				<img src="{{this.src}}" />
+    			</IconItem>
+    		{{/each}}
+    	</IconGallery>
 
 {{/each}}

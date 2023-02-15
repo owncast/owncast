@@ -1,41 +1,102 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
-import { Image, ImageRow } from './ImageAsset';
+import { Canvas, Meta, Story, IconItem, IconGallery } from '@storybook/addon-docs';
 
-<Meta title="owncast/Frontend Assets/Social Platform Images" parameters={{chromatic: { disableSnapshot: true }}} />
+<Meta title="owncast/Frontend Assets/Social Platform Images" parameters={{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
 
 # Social Platform Images
 
-    <ImageRow images={[
-    		{src: "img/platformlogos/bandcamp.svg", name: "bandcamp.svg"},
-    		{src: "img/platformlogos/default.svg", name: "default.svg"},
-    		{src: "img/platformlogos/discord.svg", name: "discord.svg"},
-    		{src: "img/platformlogos/donate.svg", name: "donate.svg"},
-    		{src: "img/platformlogos/facebook.svg", name: "facebook.svg"},
-    		{src: "img/platformlogos/fediverse.svg", name: "fediverse.svg"},
-    		{src: "img/platformlogos/follow.svg", name: "follow.svg"},
-    		{src: "img/platformlogos/github.svg", name: "github.svg"},
-    		{src: "img/platformlogos/gitlab.svg", name: "gitlab.svg"},
-    		{src: "img/platformlogos/google.svg", name: "google.svg"},
-    		{src: "img/platformlogos/instagram.svg", name: "instagram.svg"},
-    		{src: "img/platformlogos/keyoxide.png", name: "keyoxide.png"},
-    		{src: "img/platformlogos/ko-fi.svg", name: "ko-fi.svg"},
-    		{src: "img/platformlogos/lbry.svg", name: "lbry.svg"},
-    		{src: "img/platformlogos/liberapay.svg", name: "liberapay.svg"},
-    		{src: "img/platformlogos/link.svg", name: "link.svg"},
-    		{src: "img/platformlogos/linkedin.svg", name: "linkedin.svg"},
-    		{src: "img/platformlogos/mastodon.svg", name: "mastodon.svg"},
-    		{src: "img/platformlogos/matrix.svg", name: "matrix.svg"},
-    		{src: "img/platformlogos/odysee.svg", name: "odysee.svg"},
-    		{src: "img/platformlogos/patreon.svg", name: "patreon.svg"},
-    		{src: "img/platformlogos/paypal.svg", name: "paypal.svg"},
-    		{src: "img/platformlogos/snapchat.svg", name: "snapchat.svg"},
-    		{src: "img/platformlogos/soundcloud.svg", name: "soundcloud.svg"},
-    		{src: "img/platformlogos/spotify.svg", name: "spotify.svg"},
-    		{src: "img/platformlogos/steam.svg", name: "steam.svg"},
-    		{src: "img/platformlogos/tiktok.svg", name: "tiktok.svg"},
-    		{src: "img/platformlogos/twitch.svg", name: "twitch.svg"},
-    		{src: "img/platformlogos/twitter.svg", name: "twitter.svg"},
-    		{src: "img/platformlogos/xmpp.svg", name: "xmpp.svg"},
-    		{src: "img/platformlogos/youtube.svg", name: "youtube.svg"},
-    ]}/>
+    	<IconGallery>
+    			<IconItem name="bandcamp.svg">
+    				<img src="img/platformlogos/bandcamp.svg" />
+    			</IconItem>
+    			<IconItem name="default.svg">
+    				<img src="img/platformlogos/default.svg" />
+    			</IconItem>
+    			<IconItem name="discord.svg">
+    				<img src="img/platformlogos/discord.svg" />
+    			</IconItem>
+    			<IconItem name="donate.svg">
+    				<img src="img/platformlogos/donate.svg" />
+    			</IconItem>
+    			<IconItem name="facebook.svg">
+    				<img src="img/platformlogos/facebook.svg" />
+    			</IconItem>
+    			<IconItem name="fediverse.svg">
+    				<img src="img/platformlogos/fediverse.svg" />
+    			</IconItem>
+    			<IconItem name="follow.svg">
+    				<img src="img/platformlogos/follow.svg" />
+    			</IconItem>
+    			<IconItem name="github.svg">
+    				<img src="img/platformlogos/github.svg" />
+    			</IconItem>
+    			<IconItem name="gitlab.svg">
+    				<img src="img/platformlogos/gitlab.svg" />
+    			</IconItem>
+    			<IconItem name="google.svg">
+    				<img src="img/platformlogos/google.svg" />
+    			</IconItem>
+    			<IconItem name="instagram.svg">
+    				<img src="img/platformlogos/instagram.svg" />
+    			</IconItem>
+    			<IconItem name="keyoxide.png">
+    				<img src="img/platformlogos/keyoxide.png" />
+    			</IconItem>
+    			<IconItem name="ko-fi.svg">
+    				<img src="img/platformlogos/ko-fi.svg" />
+    			</IconItem>
+    			<IconItem name="lbry.svg">
+    				<img src="img/platformlogos/lbry.svg" />
+    			</IconItem>
+    			<IconItem name="liberapay.svg">
+    				<img src="img/platformlogos/liberapay.svg" />
+    			</IconItem>
+    			<IconItem name="link.svg">
+    				<img src="img/platformlogos/link.svg" />
+    			</IconItem>
+    			<IconItem name="linkedin.svg">
+    				<img src="img/platformlogos/linkedin.svg" />
+    			</IconItem>
+    			<IconItem name="mastodon.svg">
+    				<img src="img/platformlogos/mastodon.svg" />
+    			</IconItem>
+    			<IconItem name="matrix.svg">
+    				<img src="img/platformlogos/matrix.svg" />
+    			</IconItem>
+    			<IconItem name="odysee.svg">
+    				<img src="img/platformlogos/odysee.svg" />
+    			</IconItem>
+    			<IconItem name="patreon.svg">
+    				<img src="img/platformlogos/patreon.svg" />
+    			</IconItem>
+    			<IconItem name="paypal.svg">
+    				<img src="img/platformlogos/paypal.svg" />
+    			</IconItem>
+    			<IconItem name="snapchat.svg">
+    				<img src="img/platformlogos/snapchat.svg" />
+    			</IconItem>
+    			<IconItem name="soundcloud.svg">
+    				<img src="img/platformlogos/soundcloud.svg" />
+    			</IconItem>
+    			<IconItem name="spotify.svg">
+    				<img src="img/platformlogos/spotify.svg" />
+    			</IconItem>
+    			<IconItem name="steam.svg">
+    				<img src="img/platformlogos/steam.svg" />
+    			</IconItem>
+    			<IconItem name="tiktok.svg">
+    				<img src="img/platformlogos/tiktok.svg" />
+    			</IconItem>
+    			<IconItem name="twitch.svg">
+    				<img src="img/platformlogos/twitch.svg" />
+    			</IconItem>
+    			<IconItem name="twitter.svg">
+    				<img src="img/platformlogos/twitter.svg" />
+    			</IconItem>
+    			<IconItem name="xmpp.svg">
+    				<img src="img/platformlogos/xmpp.svg" />
+    			</IconItem>
+    			<IconItem name="youtube.svg">
+    				<img src="img/platformlogos/youtube.svg" />
+    			</IconItem>
+    	</IconGallery>
 

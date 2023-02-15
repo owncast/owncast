@@ -1,16 +1,27 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
-import { Image, ImageRow } from './ImageAsset';
+import { Canvas, Meta, Story, IconItem, IconGallery } from '@storybook/addon-docs';
 
-<Meta title="owncast/Frontend Assets/Images" parameters={{chromatic: { disableSnapshot: true }}} />
+<Meta title="owncast/Frontend Assets/Images" parameters={{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
 
 # Images
 
-    <ImageRow images={[
-    		{src: "img/fediverse-black.png", name: "fediverse-black.png"},
-    		{src: "img/fediverse-color.png", name: "fediverse-color.png"},
-    		{src: "img/follow.svg", name: "follow.svg"},
-    		{src: "img/indieauth.png", name: "indieauth.png"},
-    		{src: "img/like.svg", name: "like.svg"},
-    		{src: "img/repost.svg", name: "repost.svg"},
-    ]}/>
+    	<IconGallery>
+    			<IconItem name="fediverse-black.png">
+    				<img src="img/fediverse-black.png" />
+    			</IconItem>
+    			<IconItem name="fediverse-color.png">
+    				<img src="img/fediverse-color.png" />
+    			</IconItem>
+    			<IconItem name="follow.svg">
+    				<img src="img/follow.svg" />
+    			</IconItem>
+    			<IconItem name="indieauth.png">
+    				<img src="img/indieauth.png" />
+    			</IconItem>
+    			<IconItem name="like.svg">
+    				<img src="img/like.svg" />
+    			</IconItem>
+    			<IconItem name="repost.svg">
+    				<img src="img/repost.svg" />
+    			</IconItem>
+    	</IconGallery>
 

@@ -1,0 +1,12 @@
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Image, ImageRow } from './ImageAsset';
+
+<Meta title="{{category}}" parameters=\{{chromatic: { disableSnapshot: true }}} />
+
+# {{capitalize title}}
+
+    <ImageRow images={[
+    	{{#each images}}
+    		{src: "{{this.src}}", name: "{{this.name}}"},
+    	{{/each}}
+    ]}/>
