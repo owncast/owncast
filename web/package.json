@@ -54,7 +54,7 @@
 		"slate-react": "0.90.0",
 		"ua-parser-js": "1.0.33",
 		"video.js": "7.20.3",
-		"xstate": "4.35.4",
+		"xstate": "4.36.0",
 		"yaml": "2.2.1"
 	},
 	"devDependencies": {
