@@ -14,6 +14,7 @@
 # ignore IDE specific files
 .idea/
 *.iml
+.idea
 
 # Dependency directories (remove the comment below to include it)
 vendor/
@@ -27,7 +28,7 @@ webroot/preview.gif
 webroot/hls
 webroot/static/content.md
 hls/
-!test/automated/hls/
+!internal/test/automated/hls/
 dist/
 data/
 transcoder.log
@@ -36,9 +37,9 @@ chat.db
 .yp.key
 backup/
 !webroot/js/web_modules/**/dist
-!core/data
-test/test.db
-test/automated/browser/screenshots
+!internal/core/data
+internal/test/test.db
+internal/test/automated/browser/screenshots
 lefthook.yml
-test/automated/browser/cypress/screenshots
-test/automated/browser/cypress/videos
+internal/test/automated/browser/cypress/screenshots
+internal/test/automated/browser/cypress/videos
