@@ -46,4 +46,4 @@ jobs:
         with:
           timeout_minutes: 20
           max_attempts: 3
-          command: cd test/automated/browser && ./run.sh
+          command: cd internal/test/automated/browser && ./run.sh

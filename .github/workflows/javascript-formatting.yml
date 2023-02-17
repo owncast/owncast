@@ -4,10 +4,10 @@ name: Lint
 on:
   push:
     paths:
-      - web/**
+      - internal/web/**
   pull_request_target:
     paths:
-      - web/**
+      - internal/web/**
 
 jobs:
   prettier:
@@ -46,14 +46,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./web
+        working-directory: ./internal/web
 
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
-          
+
       - name: Checkout
         uses: actions/checkout@v3
         with:

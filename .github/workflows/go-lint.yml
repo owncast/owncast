@@ -2,10 +2,10 @@ name: Lint
 on:
   push:
     paths-ignore:
-      - 'web/**'
+      - 'internal/web/**'
   pull_request:
     paths-ignore:
-      - 'web/**'
+      - 'internal/web/**'
 
 permissions:
   contents: read

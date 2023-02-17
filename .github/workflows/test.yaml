@@ -3,10 +3,10 @@ name: Go Tests
 on:
   push:
     paths-ignore:
-      - 'web/**'
+      - 'internal/web/**'
   pull_request:
     paths-ignore:
-      - 'web/**'
+      - 'internal/web/**'
 
 jobs:
   test:

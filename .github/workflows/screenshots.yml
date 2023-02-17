@@ -37,7 +37,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 4
-          command: cd test/automated/screenshots && ./run.sh
+          command: cd internal/test/automated/screenshots && ./run.sh
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9

@@ -4,10 +4,10 @@ name: Webapp Test Build
 on:
   push:
     paths:
-      - web/**
+      - internal/web/**
   pull_request:
     paths:
-      - web/**
+      - internal/web/**
 
 jobs:
   build:

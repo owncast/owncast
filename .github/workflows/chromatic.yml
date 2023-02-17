@@ -6,10 +6,10 @@ name: 'Chromatic'
 on:
   push:
     paths:
-      - web/**
+      - internal/web/**
   pull_request_target:
     paths:
-      - web/**
+      - internal/web/**
 
 # List of jobs
 jobs:
@@ -20,7 +20,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./web
+        working-directory: ./internal/web
 
     steps:
       - id: skip_check
@@ -46,6 +46,6 @@ jobs:
         uses: chromaui/action@v1
         # Chromatic GitHub Action options
         with:
-          workingDir: web
+          workingDir: internal/web
           projectToken: f47410569b62
           onlyChanged: true

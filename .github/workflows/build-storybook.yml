@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-    paths: ['web/stories/**', 'web/components/**', 'web/.storybook/**'] # Trigger the action only when files change in the folders defined here
+    paths: ['internal/web/stories/**', 'internal/web/components/**', 'internal/web/.storybook/**'] # Trigger the action only when files change in the folders defined here
 
 jobs:
   build-and-deploy:
@@ -20,7 +20,7 @@ jobs:
           cache-name: cache-node-modules-bundle-web-app
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('internal/web/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -28,7 +28,7 @@ jobs:
 
       - name: Install and Build
         run: | # Install npm packages and build the Storybook files
-          cd web
+          cd internal/web
           npm install --include-dev --force
           cd .storybook/tools
           ./generate-stories.sh

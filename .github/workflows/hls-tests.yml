@@ -3,10 +3,10 @@ name: Automated HLS tests
 on:
   push:
     paths-ignore:
-      - 'web/**'
+      - 'internal/web/**'
   pull_request:
     paths-ignore:
-      - 'web/**'
+      - 'internal/web/**'
 
 env:
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
@@ -47,4 +47,4 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: cd test/automated/hls && ./run.sh
+          command: cd internal/test/automated/hls && ./run.sh
