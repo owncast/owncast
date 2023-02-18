@@ -7,12 +7,15 @@ type ActionEvent struct {
 }
 
 // GetBroadcastPayload will return the object to send to all chat users.
-func (e *ActionEvent) GetBroadcastPayload() EventPayload {
+func (e *ActionEvent) GetBroadcastPayload(serverName string) EventPayload {
 	return EventPayload{
 		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
 		"type":      e.GetMessageType(),
+		"user": EventPayload{
+			"displayName": serverName,
+		},
 	}
 }
 

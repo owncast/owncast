@@ -13,11 +13,14 @@ import (
 type LocalStorage struct {
 	// Cleanup old public HLS content every N min from the webroot.
 	onlineCleanupTicker *time.Ticker
+	transcoder          *transcoder.Transcoder
 }
 
 // NewLocalStorage returns a new LocalStorage instance.
-func NewLocalStorage() *LocalStorage {
-	return &LocalStorage{}
+func NewLocalStorage(t *transcoder.Transcoder) *LocalStorage {
+	return &LocalStorage{
+		transcoder: t,
+	}
 }
 
 // Setup configures this storage provider.
@@ -27,7 +30,7 @@ func (s *LocalStorage) Setup() error {
 	s.onlineCleanupTicker = time.NewTicker(1 * time.Minute)
 	go func() {
 		for range s.onlineCleanupTicker.C {
-			transcoder.CleanupOldContent(config.HLSStoragePath)
+			s.transcoder.CleanupOldContent(config.HLSStoragePath)
 		}
 	}()
 	return nil

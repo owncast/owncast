@@ -6,26 +6,26 @@ import (
 	"path/filepath"
 	"strconv"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 var _hasWarnedSVGLogo = false
 
 // GetLogo will return the logo image as a response.
-func GetLogo(w http.ResponseWriter, r *http.Request) {
-	imageFilename := data.GetLogoPath()
+func (s *Service) GetLogo(w http.ResponseWriter, r *http.Request) {
+	imageFilename := s.Data.GetLogoPath()
 	if imageFilename == "" {
-		returnDefault(w)
+		s.returnDefault(w)
 		return
 	}
 	imagePath := filepath.Join(config.DataDirectory, imageFilename)
-	imageBytes, err := getImage(imagePath)
+	imageBytes, err := s.getImage(imagePath)
 	if err != nil {
-		returnDefault(w)
+		s.returnDefault(w)
 		return
 	}
 
@@ -39,34 +39,34 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
+	s.writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 }
 
 // GetCompatibleLogo will return the logo unless it's a SVG
 // and in that case will return a default placeholder.
 // Used for sharing to external social networks that generally
 // don't support SVG.
-func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
-	imageFilename := data.GetLogoPath()
+func (s *Service) GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
+	imageFilename := s.Data.GetLogoPath()
 
 	// If the logo image is not a SVG then we can return it
 	// without any problems.
 	if imageFilename != "" && filepath.Ext(imageFilename) != ".svg" {
-		GetLogo(w, r)
+		s.GetLogo(w, r)
 		return
 	}
 
 	// Otherwise use a fallback logo.png.
 	imagePath := filepath.Join(config.DataDirectory, "logo.png")
 	contentType := "image/png"
-	imageBytes, err := getImage(imagePath)
+	imageBytes, err := s.getImage(imagePath)
 	if err != nil {
-		returnDefault(w)
+		s.returnDefault(w)
 		return
 	}
 
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
+	s.writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 
 	if !_hasWarnedSVGLogo {
 		log.Warnf("an external site requested your logo. because many social networks do not support SVGs we returned a placeholder instead. change your current logo to a png or jpeg to be most compatible with external social networking sites.")
@@ -74,13 +74,13 @@ func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func returnDefault(w http.ResponseWriter) {
+func (s *Service) returnDefault(w http.ResponseWriter) {
 	imageBytes := static.GetLogo()
 	cacheTime := utils.GetCacheDurationSecondsForPath("logo.png")
-	writeBytesAsImage(imageBytes, "image/png", w, cacheTime)
+	s.writeBytesAsImage(imageBytes, "image/png", w, cacheTime)
 }
 
-func writeBytesAsImage(data []byte, contentType string, w http.ResponseWriter, cacheSeconds int) {
+func (s *Service) writeBytesAsImage(data []byte, contentType string, w http.ResponseWriter, cacheSeconds int) {
 	w.Header().Set("Content-Type", contentType)
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
 	w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheSeconds))
@@ -90,6 +90,6 @@ func writeBytesAsImage(data []byte, contentType string, w http.ResponseWriter, c
 	}
 }
 
-func getImage(path string) ([]byte, error) {
+func (s *Service) getImage(path string) ([]byte, error) {
 	return os.ReadFile(path) // nolint
 }

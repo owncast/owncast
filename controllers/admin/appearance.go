@@ -3,14 +3,11 @@ package admin
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core/data"
 )
 
 // SetCustomColorVariableValues sets the custom color variables.
-func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
@@ -22,14 +19,14 @@ func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 	var values request
 
 	if err := decoder.Decode(&values); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to update appearance variable values")
+		c.WriteSimpleResponse(w, false, "unable to update appearance variable values")
 		return
 	}
 
-	if err := data.SetCustomColorVariableValues(values.Value); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetCustomColorVariableValues(values.Value); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "custom appearance variables updated")
+	c.WriteSimpleResponse(w, true, "custom appearance variables updated")
 }

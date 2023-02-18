@@ -8,7 +8,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
 
@@ -27,27 +26,27 @@ type Job struct {
 var queue chan Job
 
 // InitWorkerPool starts n go routines that await webhook jobs.
-func InitWorkerPool() {
+func (s *Service) InitWorkerPool() {
 	queue = make(chan Job)
 
 	// start workers
 	for i := 1; i <= webhookWorkerPoolSize; i++ {
-		go worker(i, queue)
+		go s.worker(i, queue)
 	}
 }
 
-func addToQueue(webhook models.Webhook, payload WebhookEvent, wg *sync.WaitGroup) {
+func (s *Service) addToQueue(webhook models.Webhook, payload WebhookEvent, wg *sync.WaitGroup) {
 	log.Tracef("Queued Event %s for Webhook %s", payload.Type, webhook.URL)
 	queue <- Job{webhook, payload, wg}
 }
 
-func worker(workerID int, queue <-chan Job) {
+func (s *Service) worker(workerID int, queue <-chan Job) {
 	log.Debugf("Started Webhook worker %d", workerID)
 
 	for job := range queue {
 		log.Debugf("Event %s sent to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
 
-		if err := sendWebhook(job); err != nil {
+		if err := s.sendWebhook(job); err != nil {
 			log.Errorf("Event: %s failed to send to webhook: %s Error: %s", job.payload.Type, job.webhook.URL, err)
 		}
 		log.Tracef("Done with Event %s to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
@@ -57,7 +56,7 @@ func worker(workerID int, queue <-chan Job) {
 	}
 }
 
-func sendWebhook(job Job) error {
+func (s *Service) sendWebhook(job Job) error {
 	jsonText, err := json.Marshal(job.payload)
 	if err != nil {
 		return err
@@ -79,7 +78,7 @@ func sendWebhook(job Job) error {
 
 	defer resp.Body.Close()
 
-	if err := data.SetWebhookAsUsed(job.webhook); err != nil {
+	if err := s.data.SetWebhookAsUsed(job.webhook); err != nil {
 		log.Warnln(err)
 	}
 

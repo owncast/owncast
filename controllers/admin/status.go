@@ -4,20 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/metrics"
-	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/app/middleware"
+	"github.com/owncast/owncast/models"
 )
 
 // Status gets the details of the inbound broadcaster.
-func Status(w http.ResponseWriter, r *http.Request) {
-	broadcaster := core.GetBroadcaster()
-	status := core.GetStatus()
-	currentBroadcast := core.GetCurrentBroadcast()
-	health := metrics.GetStreamHealthOverview()
+func (c *Controller) Status(w http.ResponseWriter, r *http.Request) {
+	broadcaster := c.Core.GetBroadcaster()
+	status := c.Core.GetStatus()
+	currentBroadcast := c.Core.GetCurrentBroadcast()
+	health := c.Metrics.GetStreamHealthOverview()
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,
 		CurrentBroadcast:       currentBroadcast,
@@ -27,7 +25,7 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
 		VersionNumber:          status.VersionNumber,
-		StreamTitle:            data.GetStreamTitle(),
+		StreamTitle:            c.Data.GetStreamTitle(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

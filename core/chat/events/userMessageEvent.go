@@ -8,7 +8,7 @@ type UserMessageEvent struct {
 }
 
 // GetBroadcastPayload will return the object to send to all chat users.
-func (e *UserMessageEvent) GetBroadcastPayload() EventPayload {
+func (e *UserMessageEvent) GetBroadcastPayload(serverName string) EventPayload {
 	return EventPayload{
 		"id":        e.ID,
 		"timestamp": e.Timestamp,

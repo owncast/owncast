@@ -2,44 +2,43 @@ package core
 
 import (
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
 
 // GetStatus gets the status of the system.
-func GetStatus() models.Status {
-	if _stats == nil {
+func (s *Service) GetStatus() models.Status {
+	if s.stats == nil {
 		return models.Status{}
 	}
 
 	viewerCount := 0
-	if IsStreamConnected() {
-		viewerCount = len(_stats.Viewers)
+	if s.IsStreamConnected() {
+		viewerCount = len(s.stats.Viewers)
 	}
 
 	return models.Status{
-		Online:                IsStreamConnected(),
+		Online:                s.IsStreamConnected(),
 		ViewerCount:           viewerCount,
-		OverallMaxViewerCount: _stats.OverallMaxViewerCount,
-		SessionMaxViewerCount: _stats.SessionMaxViewerCount,
-		LastDisconnectTime:    _stats.LastDisconnectTime,
-		LastConnectTime:       _stats.LastConnectTime,
+		OverallMaxViewerCount: s.stats.OverallMaxViewerCount,
+		SessionMaxViewerCount: s.stats.SessionMaxViewerCount,
+		LastDisconnectTime:    s.stats.LastDisconnectTime,
+		LastConnectTime:       s.stats.LastConnectTime,
 		VersionNumber:         config.VersionNumber,
-		StreamTitle:           data.GetStreamTitle(),
+		StreamTitle:           s.Data.GetStreamTitle(),
 	}
 }
 
 // GetCurrentBroadcast will return the currently active broadcast.
-func GetCurrentBroadcast() *models.CurrentBroadcast {
-	return _currentBroadcast
+func (s *Service) GetCurrentBroadcast() *models.CurrentBroadcast {
+	return s.streamState._currentBroadcast
 }
 
-// setBroadcaster will store the current inbound broadcasting details.
-func setBroadcaster(broadcaster models.Broadcaster) {
-	_broadcaster = &broadcaster
+// SetBroadcaster will store the current inbound broadcasting details.
+func (s *Service) SetBroadcaster(b models.Broadcaster) {
+	s.broadcaster = &b
 }
 
 // GetBroadcaster will return the details of the currently active broadcaster.
-func GetBroadcaster() *models.Broadcaster {
-	return _broadcaster
+func (s *Service) GetBroadcaster() *models.Broadcaster {
+	return s.broadcaster
 }

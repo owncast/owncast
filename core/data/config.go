@@ -7,12 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -72,8 +73,8 @@ const (
 )
 
 // GetExtraPageBodyContent will return the user-supplied body content.
-func GetExtraPageBodyContent() string {
-	content, err := _datastore.GetString(extraContentKey)
+func (s *Service) GetExtraPageBodyContent() string {
+	content, err := s.Store.GetString(extraContentKey)
 	if err != nil {
 		log.Traceln(extraContentKey, err)
 		return config.GetDefaults().PageBodyContent
@@ -83,13 +84,13 @@ func GetExtraPageBodyContent() string {
 }
 
 // SetExtraPageBodyContent will set the user-supplied body content.
-func SetExtraPageBodyContent(content string) error {
-	return _datastore.SetString(extraContentKey, content)
+func (s *Service) SetExtraPageBodyContent(content string) error {
+	return s.Store.SetString(extraContentKey, content)
 }
 
 // GetStreamTitle will return the name of the current stream.
-func GetStreamTitle() string {
-	title, err := _datastore.GetString(streamTitleKey)
+func (s *Service) GetStreamTitle() string {
+	title, err := s.Store.GetString(streamTitleKey)
 	if err != nil {
 		return ""
 	}
@@ -98,24 +99,24 @@ func GetStreamTitle() string {
 }
 
 // SetStreamTitle will set the name of the current stream.
-func SetStreamTitle(title string) error {
-	return _datastore.SetString(streamTitleKey, title)
+func (s *Service) SetStreamTitle(title string) error {
+	return s.Store.SetString(streamTitleKey, title)
 }
 
 // GetAdminPassword will return the admin password.
-func GetAdminPassword() string {
-	key, _ := _datastore.GetString(adminPasswordKey)
+func (s *Service) GetAdminPassword() string {
+	key, _ := s.Store.GetString(adminPasswordKey)
 	return key
 }
 
 // SetAdminPassword will set the admin password.
-func SetAdminPassword(key string) error {
-	return _datastore.SetString(adminPasswordKey, key)
+func (s *Service) SetAdminPassword(key string) error {
+	return s.Store.SetString(adminPasswordKey, key)
 }
 
 // GetLogoPath will return the path for the logo, relative to webroot.
-func GetLogoPath() string {
-	logo, err := _datastore.GetString(logoPathKey)
+func (s *Service) GetLogoPath() string {
+	logo, err := s.Store.GetString(logoPathKey)
 	if err != nil {
 		log.Traceln(logoPathKey, err)
 		return config.GetDefaults().Logo
@@ -129,18 +130,18 @@ func GetLogoPath() string {
 }
 
 // SetLogoPath will set the path for the logo, relative to webroot.
-func SetLogoPath(logo string) error {
-	return _datastore.SetString(logoPathKey, logo)
+func (s *Service) SetLogoPath(logo string) error {
+	return s.Store.SetString(logoPathKey, logo)
 }
 
 // SetLogoUniquenessString will set the logo cache busting string.
-func SetLogoUniquenessString(uniqueness string) error {
-	return _datastore.SetString(logoUniquenessKey, uniqueness)
+func (s *Service) SetLogoUniquenessString(uniqueness string) error {
+	return s.Store.SetString(logoUniquenessKey, uniqueness)
 }
 
 // GetLogoUniquenessString will return the logo cache busting string.
-func GetLogoUniquenessString() string {
-	uniqueness, err := _datastore.GetString(logoUniquenessKey)
+func (s *Service) GetLogoUniquenessString() string {
+	uniqueness, err := s.Store.GetString(logoUniquenessKey)
 	if err != nil {
 		log.Traceln(logoUniquenessKey, err)
 		return ""
@@ -150,8 +151,8 @@ func GetLogoUniquenessString() string {
 }
 
 // GetServerSummary will return the server summary text.
-func GetServerSummary() string {
-	summary, err := _datastore.GetString(serverSummaryKey)
+func (s *Service) GetServerSummary() string {
+	summary, err := s.Store.GetString(serverSummaryKey)
 	if err != nil {
 		log.Traceln(serverSummaryKey, err)
 		return ""
@@ -161,13 +162,13 @@ func GetServerSummary() string {
 }
 
 // SetServerSummary will set the server summary text.
-func SetServerSummary(summary string) error {
-	return _datastore.SetString(serverSummaryKey, summary)
+func (s *Service) SetServerSummary(summary string) error {
+	return s.Store.SetString(serverSummaryKey, summary)
 }
 
 // GetServerWelcomeMessage will return the server welcome message text.
-func GetServerWelcomeMessage() string {
-	welcomeMessage, err := _datastore.GetString(serverWelcomeMessageKey)
+func (s *Service) GetServerWelcomeMessage() string {
+	welcomeMessage, err := s.Store.GetString(serverWelcomeMessageKey)
 	if err != nil {
 		log.Traceln(serverWelcomeMessageKey, err)
 		return config.GetDefaults().ServerWelcomeMessage
@@ -177,13 +178,13 @@ func GetServerWelcomeMessage() string {
 }
 
 // SetServerWelcomeMessage will set the server welcome message text.
-func SetServerWelcomeMessage(welcomeMessage string) error {
-	return _datastore.SetString(serverWelcomeMessageKey, welcomeMessage)
+func (s *Service) SetServerWelcomeMessage(welcomeMessage string) error {
+	return s.Store.SetString(serverWelcomeMessageKey, welcomeMessage)
 }
 
 // GetServerName will return the server name text.
-func GetServerName() string {
-	name, err := _datastore.GetString(serverNameKey)
+func (s *Service) GetServerName() string {
+	name, err := s.Store.GetString(serverNameKey)
 	if err != nil {
 		log.Traceln(serverNameKey, err)
 		return config.GetDefaults().Name
@@ -193,13 +194,13 @@ func GetServerName() string {
 }
 
 // SetServerName will set the server name text.
-func SetServerName(name string) error {
-	return _datastore.SetString(serverNameKey, name)
+func (s *Service) SetServerName(name string) error {
+	return s.Store.SetString(serverNameKey, name)
 }
 
 // GetServerURL will return the server URL.
-func GetServerURL() string {
-	url, err := _datastore.GetString(serverURLKey)
+func (s *Service) GetServerURL() string {
+	url, err := s.Store.GetString(serverURLKey)
 	if err != nil {
 		return ""
 	}
@@ -208,13 +209,13 @@ func GetServerURL() string {
 }
 
 // SetServerURL will set the server URL.
-func SetServerURL(url string) error {
-	return _datastore.SetString(serverURLKey, url)
+func (s *Service) SetServerURL(url string) error {
+	return s.Store.SetString(serverURLKey, url)
 }
 
 // GetHTTPPortNumber will return the server HTTP port.
-func GetHTTPPortNumber() int {
-	port, err := _datastore.GetNumber(httpPortNumberKey)
+func (s *Service) GetHTTPPortNumber() int {
+	port, err := s.Store.GetNumber(httpPortNumberKey)
 	if err != nil {
 		log.Traceln(httpPortNumberKey, err)
 		return config.GetDefaults().WebServerPort
@@ -227,25 +228,25 @@ func GetHTTPPortNumber() int {
 }
 
 // SetWebsocketOverrideHost will set the host override for websockets.
-func SetWebsocketOverrideHost(host string) error {
-	return _datastore.SetString(websocketHostOverrideKey, host)
+func (s *Service) SetWebsocketOverrideHost(host string) error {
+	return s.Store.SetString(websocketHostOverrideKey, host)
 }
 
 // GetWebsocketOverrideHost will return the host override for websockets.
-func GetWebsocketOverrideHost() string {
-	host, _ := _datastore.GetString(websocketHostOverrideKey)
+func (s *Service) GetWebsocketOverrideHost() string {
+	host, _ := s.Store.GetString(websocketHostOverrideKey)
 
 	return host
 }
 
 // SetHTTPPortNumber will set the server HTTP port.
-func SetHTTPPortNumber(port float64) error {
-	return _datastore.SetNumber(httpPortNumberKey, port)
+func (s *Service) SetHTTPPortNumber(port float64) error {
+	return s.Store.SetNumber(httpPortNumberKey, port)
 }
 
 // GetHTTPListenAddress will return the HTTP listen address.
-func GetHTTPListenAddress() string {
-	address, err := _datastore.GetString(httpListenAddressKey)
+func (s *Service) GetHTTPListenAddress() string {
+	address, err := s.Store.GetString(httpListenAddressKey)
 	if err != nil {
 		log.Traceln(httpListenAddressKey, err)
 		return config.GetDefaults().WebServerIP
@@ -254,13 +255,13 @@ func GetHTTPListenAddress() string {
 }
 
 // SetHTTPListenAddress will set the server HTTP listen address.
-func SetHTTPListenAddress(address string) error {
-	return _datastore.SetString(httpListenAddressKey, address)
+func (s *Service) SetHTTPListenAddress(address string) error {
+	return s.Store.SetString(httpListenAddressKey, address)
 }
 
 // GetRTMPPortNumber will return the server RTMP port.
-func GetRTMPPortNumber() int {
-	port, err := _datastore.GetNumber(rtmpPortNumberKey)
+func (s *Service) GetRTMPPortNumber() int {
+	port, err := s.Store.GetNumber(rtmpPortNumberKey)
 	if err != nil {
 		log.Traceln(rtmpPortNumberKey, err)
 		return config.GetDefaults().RTMPServerPort
@@ -274,13 +275,13 @@ func GetRTMPPortNumber() int {
 }
 
 // SetRTMPPortNumber will set the server RTMP port.
-func SetRTMPPortNumber(port float64) error {
-	return _datastore.SetNumber(rtmpPortNumberKey, port)
+func (s *Service) SetRTMPPortNumber(port float64) error {
+	return s.Store.SetNumber(rtmpPortNumberKey, port)
 }
 
 // GetServerMetadataTags will return the metadata tags.
-func GetServerMetadataTags() []string {
-	tagsString, err := _datastore.GetString(serverMetadataTagsKey)
+func (s *Service) GetServerMetadataTags() []string {
+	tagsString, err := s.Store.GetString(serverMetadataTagsKey)
 	if tagsString == "" {
 		return []string{}
 	}
@@ -294,14 +295,14 @@ func GetServerMetadataTags() []string {
 }
 
 // SetServerMetadataTags will return the metadata tags.
-func SetServerMetadataTags(tags []string) error {
+func (s *Service) SetServerMetadataTags(tags []string) error {
 	tagString := strings.Join(tags, ",")
-	return _datastore.SetString(serverMetadataTagsKey, tagString)
+	return s.Store.SetString(serverMetadataTagsKey, tagString)
 }
 
 // GetDirectoryEnabled will return if this server should register to YP.
-func GetDirectoryEnabled() bool {
-	enabled, err := _datastore.GetBool(directoryEnabledKey)
+func (s *Service) GetDirectoryEnabled() bool {
+	enabled, err := s.Store.GetBool(directoryEnabledKey)
 	if err != nil {
 		return config.GetDefaults().YPEnabled
 	}
@@ -310,26 +311,26 @@ func GetDirectoryEnabled() bool {
 }
 
 // SetDirectoryEnabled will set if this server should register to YP.
-func SetDirectoryEnabled(enabled bool) error {
-	return _datastore.SetBool(directoryEnabledKey, enabled)
+func (s *Service) SetDirectoryEnabled(enabled bool) error {
+	return s.Store.SetBool(directoryEnabledKey, enabled)
 }
 
 // SetDirectoryRegistrationKey will set the YP protocol registration key.
-func SetDirectoryRegistrationKey(key string) error {
-	return _datastore.SetString(directoryRegistrationKeyKey, key)
+func (s *Service) SetDirectoryRegistrationKey(key string) error {
+	return s.Store.SetString(directoryRegistrationKeyKey, key)
 }
 
 // GetDirectoryRegistrationKey will return the YP protocol registration key.
-func GetDirectoryRegistrationKey() string {
-	key, _ := _datastore.GetString(directoryRegistrationKeyKey)
+func (s *Service) GetDirectoryRegistrationKey() string {
+	key, _ := s.Store.GetString(directoryRegistrationKeyKey)
 	return key
 }
 
 // GetSocialHandles will return the external social links.
-func GetSocialHandles() []models.SocialHandle {
+func (s *Service) GetSocialHandles() []models.SocialHandle {
 	var socialHandles []models.SocialHandle
 
-	configEntry, err := _datastore.Get(socialHandlesKey)
+	configEntry, err := s.Store.Get(socialHandlesKey)
 	if err != nil {
 		log.Traceln(socialHandlesKey, err)
 		return socialHandles
@@ -344,14 +345,14 @@ func GetSocialHandles() []models.SocialHandle {
 }
 
 // SetSocialHandles will set the external social links.
-func SetSocialHandles(socialHandles []models.SocialHandle) error {
+func (s *Service) SetSocialHandles(socialHandles []models.SocialHandle) error {
 	configEntry := ConfigEntry{Key: socialHandlesKey, Value: socialHandles}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // GetPeakSessionViewerCount will return the max number of viewers for this stream.
-func GetPeakSessionViewerCount() int {
-	count, err := _datastore.GetNumber(peakViewersSessionKey)
+func (s *Service) GetPeakSessionViewerCount() int {
+	count, err := s.Store.GetNumber(peakViewersSessionKey)
 	if err != nil {
 		return 0
 	}
@@ -359,13 +360,13 @@ func GetPeakSessionViewerCount() int {
 }
 
 // SetPeakSessionViewerCount will set the max number of viewers for this stream.
-func SetPeakSessionViewerCount(count int) error {
-	return _datastore.SetNumber(peakViewersSessionKey, float64(count))
+func (s *Service) SetPeakSessionViewerCount(count int) error {
+	return s.Store.SetNumber(peakViewersSessionKey, float64(count))
 }
 
 // GetPeakOverallViewerCount will return the overall max number of viewers.
-func GetPeakOverallViewerCount() int {
-	count, err := _datastore.GetNumber(peakViewersOverallKey)
+func (s *Service) GetPeakOverallViewerCount() int {
+	count, err := s.Store.GetNumber(peakViewersOverallKey)
 	if err != nil {
 		return 0
 	}
@@ -373,15 +374,15 @@ func GetPeakOverallViewerCount() int {
 }
 
 // SetPeakOverallViewerCount will set the overall max number of viewers.
-func SetPeakOverallViewerCount(count int) error {
-	return _datastore.SetNumber(peakViewersOverallKey, float64(count))
+func (s *Service) SetPeakOverallViewerCount(count int) error {
+	return s.Store.SetNumber(peakViewersOverallKey, float64(count))
 }
 
 // GetLastDisconnectTime will return the time the last stream ended.
-func GetLastDisconnectTime() (*utils.NullTime, error) {
+func (s *Service) GetLastDisconnectTime() (*utils.NullTime, error) {
 	var disconnectTime utils.NullTime
 
-	configEntry, err := _datastore.Get(lastDisconnectTimeKey)
+	configEntry, err := s.Store.Get(lastDisconnectTimeKey)
 	if err != nil {
 		return nil, err
 	}
@@ -398,20 +399,20 @@ func GetLastDisconnectTime() (*utils.NullTime, error) {
 }
 
 // SetLastDisconnectTime will set the time the last stream ended.
-func SetLastDisconnectTime(disconnectTime time.Time) error {
+func (s *Service) SetLastDisconnectTime(disconnectTime time.Time) error {
 	savedDisconnectTime := utils.NullTime{Time: disconnectTime, Valid: true}
 	configEntry := ConfigEntry{Key: lastDisconnectTimeKey, Value: savedDisconnectTime}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // SetNSFW will set if this stream has NSFW content.
-func SetNSFW(isNSFW bool) error {
-	return _datastore.SetBool(nsfwKey, isNSFW)
+func (s *Service) SetNSFW(isNSFW bool) error {
+	return s.Store.SetBool(nsfwKey, isNSFW)
 }
 
 // GetNSFW will return if this stream has NSFW content.
-func GetNSFW() bool {
-	nsfw, err := _datastore.GetBool(nsfwKey)
+func (s *Service) GetNSFW() bool {
+	nsfw, err := s.Store.GetBool(nsfwKey)
 	if err != nil {
 		return false
 	}
@@ -419,13 +420,13 @@ func GetNSFW() bool {
 }
 
 // SetFfmpegPath will set the custom ffmpeg path.
-func SetFfmpegPath(path string) error {
-	return _datastore.SetString(ffmpegPathKey, path)
+func (s *Service) SetFfmpegPath(path string) error {
+	return s.Store.SetString(ffmpegPathKey, path)
 }
 
 // GetFfMpegPath will return the ffmpeg path.
-func GetFfMpegPath() string {
-	path, err := _datastore.GetString(ffmpegPathKey)
+func (s *Service) GetFfMpegPath() string {
+	path, err := s.Store.GetString(ffmpegPathKey)
 	if err != nil {
 		return ""
 	}
@@ -433,8 +434,8 @@ func GetFfMpegPath() string {
 }
 
 // GetS3Config will return the external storage configuration.
-func GetS3Config() models.S3 {
-	configEntry, err := _datastore.Get(s3StorageConfigKey)
+func (s *Service) GetS3Config() models.S3 {
+	configEntry, err := s.Store.Get(s3StorageConfigKey)
 	if err != nil {
 		return models.S3{Enabled: false}
 	}
@@ -448,14 +449,14 @@ func GetS3Config() models.S3 {
 }
 
 // SetS3Config will set the external storage configuration.
-func SetS3Config(config models.S3) error {
+func (s *Service) SetS3Config(config models.S3) error {
 	configEntry := ConfigEntry{Key: s3StorageConfigKey, Value: config}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // GetStreamLatencyLevel will return the stream latency level.
-func GetStreamLatencyLevel() models.LatencyLevel {
-	level, err := _datastore.GetNumber(videoLatencyLevel)
+func (s *Service) GetStreamLatencyLevel() models.LatencyLevel {
+	level, err := s.Store.GetNumber(videoLatencyLevel)
 	if err != nil {
 		level = 2 // default
 	} else if level > 4 {
@@ -466,13 +467,13 @@ func GetStreamLatencyLevel() models.LatencyLevel {
 }
 
 // SetStreamLatencyLevel will set the stream latency level.
-func SetStreamLatencyLevel(level float64) error {
-	return _datastore.SetNumber(videoLatencyLevel, level)
+func (s *Service) SetStreamLatencyLevel(level float64) error {
+	return s.Store.SetNumber(videoLatencyLevel, level)
 }
 
 // GetStreamOutputVariants will return all of the stream output variants.
-func GetStreamOutputVariants() []models.StreamOutputVariant {
-	configEntry, err := _datastore.Get(videoStreamOutputVariantsKey)
+func (s *Service) GetStreamOutputVariants() []models.StreamOutputVariant {
+	configEntry, err := s.Store.Get(videoStreamOutputVariantsKey)
 	if err != nil {
 		return config.GetDefaults().StreamVariants
 	}
@@ -490,19 +491,19 @@ func GetStreamOutputVariants() []models.StreamOutputVariant {
 }
 
 // SetStreamOutputVariants will set the stream output variants.
-func SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
+func (s *Service) SetStreamOutputVariants(variants []models.StreamOutputVariant) error {
 	configEntry := ConfigEntry{Key: videoStreamOutputVariantsKey, Value: variants}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // SetChatDisabled will disable chat if set to true.
-func SetChatDisabled(disabled bool) error {
-	return _datastore.SetBool(chatDisabledKey, disabled)
+func (s *Service) SetChatDisabled(disabled bool) error {
+	return s.Store.SetBool(chatDisabledKey, disabled)
 }
 
 // GetChatDisabled will return if chat is disabled.
-func GetChatDisabled() bool {
-	disabled, err := _datastore.GetBool(chatDisabledKey)
+func (s *Service) GetChatDisabled() bool {
+	disabled, err := s.Store.GetBool(chatDisabledKey)
 	if err == nil {
 		return disabled
 	}
@@ -511,13 +512,13 @@ func GetChatDisabled() bool {
 }
 
 // SetChatEstablishedUsersOnlyMode sets the state of established user only mode.
-func SetChatEstablishedUsersOnlyMode(enabled bool) error {
-	return _datastore.SetBool(chatEstablishedUsersOnlyModeKey, enabled)
+func (s *Service) SetChatEstablishedUsersOnlyMode(enabled bool) error {
+	return s.Store.SetBool(chatEstablishedUsersOnlyModeKey, enabled)
 }
 
 // GetChatEstbalishedUsersOnlyMode returns the state of established user only mode.
-func GetChatEstbalishedUsersOnlyMode() bool {
-	enabled, err := _datastore.GetBool(chatEstablishedUsersOnlyModeKey)
+func (s *Service) GetChatEstbalishedUsersOnlyMode() bool {
+	enabled, err := s.Store.GetBool(chatEstablishedUsersOnlyModeKey)
 	if err == nil {
 		return enabled
 	}
@@ -526,8 +527,8 @@ func GetChatEstbalishedUsersOnlyMode() bool {
 }
 
 // GetExternalActions will return the registered external actions.
-func GetExternalActions() []models.ExternalAction {
-	configEntry, err := _datastore.Get(externalActionsKey)
+func (s *Service) GetExternalActions() []models.ExternalAction {
+	configEntry, err := s.Store.Get(externalActionsKey)
 	if err != nil {
 		return []models.ExternalAction{}
 	}
@@ -541,19 +542,19 @@ func GetExternalActions() []models.ExternalAction {
 }
 
 // SetExternalActions will save external actions.
-func SetExternalActions(actions []models.ExternalAction) error {
+func (s *Service) SetExternalActions(actions []models.ExternalAction) error {
 	configEntry := ConfigEntry{Key: externalActionsKey, Value: actions}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // SetCustomStyles will save a string with CSS to insert into the page.
-func SetCustomStyles(styles string) error {
-	return _datastore.SetString(customStylesKey, styles)
+func (s *Service) SetCustomStyles(styles string) error {
+	return s.Store.SetString(customStylesKey, styles)
 }
 
 // GetCustomStyles will return a string with CSS to insert into the page.
-func GetCustomStyles() string {
-	style, err := _datastore.GetString(customStylesKey)
+func (s *Service) GetCustomStyles() string {
+	style, err := s.Store.GetString(customStylesKey)
 	if err != nil {
 		return ""
 	}
@@ -562,13 +563,13 @@ func GetCustomStyles() string {
 }
 
 // SetCustomJavascript will save a string with Javascript to insert into the page.
-func SetCustomJavascript(styles string) error {
-	return _datastore.SetString(customJavascriptKey, styles)
+func (s *Service) SetCustomJavascript(styles string) error {
+	return s.Store.SetString(customJavascriptKey, styles)
 }
 
 // GetCustomJavascript will return a string with Javascript to insert into the page.
-func GetCustomJavascript() string {
-	style, err := _datastore.GetString(customJavascriptKey)
+func (s *Service) GetCustomJavascript() string {
+	style, err := s.Store.GetString(customJavascriptKey)
 	if err != nil {
 		return ""
 	}
@@ -577,13 +578,13 @@ func GetCustomJavascript() string {
 }
 
 // SetVideoCodec will set the codec used for video encoding.
-func SetVideoCodec(codec string) error {
-	return _datastore.SetString(videoCodecKey, codec)
+func (s *Service) SetVideoCodec(codec string) error {
+	return s.Store.SetString(videoCodecKey, codec)
 }
 
 // GetVideoCodec returns the codec to use for transcoding video.
-func GetVideoCodec() string {
-	codec, err := _datastore.GetString(videoCodecKey)
+func (s *Service) GetVideoCodec() string {
+	codec, err := s.Store.GetString(videoCodecKey)
 	if codec == "" || err != nil {
 		return "libx264" // Default value
 	}
@@ -592,23 +593,23 @@ func GetVideoCodec() string {
 }
 
 // VerifySettings will perform a sanity check for specific settings values.
-func VerifySettings() error {
-	if len(GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+func (s *Service) VerifySettings() error {
+	if len(s.GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
 		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
 
-	if GetAdminPassword() == "" {
+	if s.GetAdminPassword() == "" {
 		return errors.New("no admin password set. Please set one via the admin or command line arguments")
 	}
 
-	logoPath := GetLogoPath()
+	logoPath := s.GetLogoPath()
 	if !utils.DoesFileExists(filepath.Join(config.DataDirectory, logoPath)) {
 		log.Traceln(logoPath, "not found in the data directory. copying a default logo.")
 		logo := static.GetLogo()
 		if err := os.WriteFile(filepath.Join(config.DataDirectory, "logo.png"), logo, 0o600); err != nil {
 			return errors.Wrap(err, "failed to write logo to disk")
 		}
-		if err := SetLogoPath("logo.png"); err != nil {
+		if err := s.SetLogoPath("logo.png"); err != nil {
 			return errors.Wrap(err, "failed to save logo filename")
 		}
 	}
@@ -617,7 +618,7 @@ func VerifySettings() error {
 }
 
 // FindHighestVideoQualityIndex will return the highest quality from a slice of variants.
-func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
+func (s *Service) FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	type IndexedQuality struct {
 		index   int
 		quality models.StreamOutputVariant
@@ -649,8 +650,8 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 }
 
 // GetForbiddenUsernameList will return the blocked usernames as a comma separated string.
-func GetForbiddenUsernameList() []string {
-	usernames, err := _datastore.GetStringSlice(blockedUsernamesKey)
+func (s *Service) GetForbiddenUsernameList() []string {
+	usernames, err := s.Store.GetStringSlice(blockedUsernamesKey)
 	if err != nil {
 		return config.DefaultForbiddenUsernames
 	}
@@ -663,15 +664,15 @@ func GetForbiddenUsernameList() []string {
 }
 
 // SetForbiddenUsernameList set the username blocklist as a comma separated string.
-func SetForbiddenUsernameList(usernames []string) error {
-	return _datastore.SetStringSlice(blockedUsernamesKey, usernames)
+func (s *Service) SetForbiddenUsernameList(usernames []string) error {
+	return s.Store.SetStringSlice(blockedUsernamesKey, usernames)
 }
 
 // GetSuggestedUsernamesList will return the suggested usernames.
 // If the number of suggested usernames is smaller than 10, the number pool is
 // not used (see code in the CreateAnonymousUser function).
-func GetSuggestedUsernamesList() []string {
-	usernames, err := _datastore.GetStringSlice(suggestedUsernamesKey)
+func (s *Service) GetSuggestedUsernamesList() []string {
+	usernames, err := s.Store.GetStringSlice(suggestedUsernamesKey)
 
 	if err != nil || len(usernames) == 0 {
 		return []string{}
@@ -681,15 +682,15 @@ func GetSuggestedUsernamesList() []string {
 }
 
 // SetSuggestedUsernamesList sets the username suggestion list.
-func SetSuggestedUsernamesList(usernames []string) error {
-	return _datastore.SetStringSlice(suggestedUsernamesKey, usernames)
+func (s *Service) SetSuggestedUsernamesList(usernames []string) error {
+	return s.Store.SetStringSlice(suggestedUsernamesKey, usernames)
 }
 
 // GetServerInitTime will return when the server was first setup.
-func GetServerInitTime() (*utils.NullTime, error) {
+func (s *Service) GetServerInitTime() (*utils.NullTime, error) {
 	var t utils.NullTime
 
-	configEntry, err := _datastore.Get(serverInitDateKey)
+	configEntry, err := s.Store.Get(serverInitDateKey)
 	if err != nil {
 		return nil, err
 	}
@@ -706,20 +707,20 @@ func GetServerInitTime() (*utils.NullTime, error) {
 }
 
 // SetServerInitTime will set when the server was first created.
-func SetServerInitTime(t time.Time) error {
+func (s *Service) SetServerInitTime(t time.Time) error {
 	nt := utils.NullTime{Time: t, Valid: true}
 	configEntry := ConfigEntry{Key: serverInitDateKey, Value: nt}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // SetFederationEnabled will enable federation if set to true.
-func SetFederationEnabled(enabled bool) error {
-	return _datastore.SetBool(federationEnabledKey, enabled)
+func (s *Service) SetFederationEnabled(enabled bool) error {
+	return s.Store.SetBool(federationEnabledKey, enabled)
 }
 
 // GetFederationEnabled will return if federation is enabled.
-func GetFederationEnabled() bool {
-	enabled, err := _datastore.GetBool(federationEnabledKey)
+func (s *Service) GetFederationEnabled() bool {
+	enabled, err := s.Store.GetBool(federationEnabledKey)
 	if err == nil {
 		return enabled
 	}
@@ -728,13 +729,13 @@ func GetFederationEnabled() bool {
 }
 
 // SetFederationUsername will set the username used in federated activities.
-func SetFederationUsername(username string) error {
-	return _datastore.SetString(federationUsernameKey, username)
+func (s *Service) SetFederationUsername(username string) error {
+	return s.Store.SetString(federationUsernameKey, username)
 }
 
 // GetFederationUsername will return the username used in federated activities.
-func GetFederationUsername() string {
-	username, err := _datastore.GetString(federationUsernameKey)
+func (s *Service) GetFederationUsername() string {
+	username, err := s.Store.GetString(federationUsernameKey)
 	if username == "" || err != nil {
 		return config.GetDefaults().FederationUsername
 	}
@@ -743,14 +744,14 @@ func GetFederationUsername() string {
 }
 
 // SetFederationGoLiveMessage will set the message sent when going live.
-func SetFederationGoLiveMessage(message string) error {
-	return _datastore.SetString(federationGoLiveMessageKey, message)
+func (s *Service) SetFederationGoLiveMessage(message string) error {
+	return s.Store.SetString(federationGoLiveMessageKey, message)
 }
 
 // GetFederationGoLiveMessage will return the message sent when going live.
-func GetFederationGoLiveMessage() string {
+func (s *Service) GetFederationGoLiveMessage() string {
 	// Empty message means it's disabled.
-	message, err := _datastore.GetString(federationGoLiveMessageKey)
+	message, err := s.Store.GetString(federationGoLiveMessageKey)
 	if err != nil {
 		log.Traceln("unable to fetch go live message.", err)
 	}
@@ -759,13 +760,13 @@ func GetFederationGoLiveMessage() string {
 }
 
 // SetFederationIsPrivate will set if federation activity is private.
-func SetFederationIsPrivate(isPrivate bool) error {
-	return _datastore.SetBool(federationPrivateKey, isPrivate)
+func (s *Service) SetFederationIsPrivate(isPrivate bool) error {
+	return s.Store.SetBool(federationPrivateKey, isPrivate)
 }
 
 // GetFederationIsPrivate will return if federation is private.
-func GetFederationIsPrivate() bool {
-	isPrivate, err := _datastore.GetBool(federationPrivateKey)
+func (s *Service) GetFederationIsPrivate() bool {
+	isPrivate, err := s.Store.GetBool(federationPrivateKey)
 	if err == nil {
 		return isPrivate
 	}
@@ -774,13 +775,13 @@ func GetFederationIsPrivate() bool {
 }
 
 // SetFederationShowEngagement will set if fediverse engagement shows in chat.
-func SetFederationShowEngagement(showEngagement bool) error {
-	return _datastore.SetBool(federationShowEngagementKey, showEngagement)
+func (s *Service) SetFederationShowEngagement(showEngagement bool) error {
+	return s.Store.SetBool(federationShowEngagementKey, showEngagement)
 }
 
 // GetFederationShowEngagement will return if fediverse engagement shows in chat.
-func GetFederationShowEngagement() bool {
-	showEngagement, err := _datastore.GetBool(federationShowEngagementKey)
+func (s *Service) GetFederationShowEngagement() bool {
+	showEngagement, err := s.Store.GetBool(federationShowEngagementKey)
 	if err == nil {
 		return showEngagement
 	}
@@ -789,13 +790,13 @@ func GetFederationShowEngagement() bool {
 }
 
 // SetBlockedFederatedDomains will set the blocked federated domains.
-func SetBlockedFederatedDomains(domains []string) error {
-	return _datastore.SetString(federationBlockedDomainsKey, strings.Join(domains, ","))
+func (s *Service) SetBlockedFederatedDomains(domains []string) error {
+	return s.Store.SetString(federationBlockedDomainsKey, strings.Join(domains, ","))
 }
 
 // GetBlockedFederatedDomains will return a list of blocked federated domains.
-func GetBlockedFederatedDomains() []string {
-	domains, err := _datastore.GetString(federationBlockedDomainsKey)
+func (s *Service) GetBlockedFederatedDomains() []string {
+	domains, err := s.Store.GetString(federationBlockedDomainsKey)
 	if err != nil {
 		return []string{}
 	}
@@ -808,13 +809,13 @@ func GetBlockedFederatedDomains() []string {
 }
 
 // SetChatJoinMessagesEnabled will set if chat join messages are enabled.
-func SetChatJoinMessagesEnabled(enabled bool) error {
-	return _datastore.SetBool(chatJoinMessagesEnabledKey, enabled)
+func (s *Service) SetChatJoinMessagesEnabled(enabled bool) error {
+	return s.Store.SetBool(chatJoinMessagesEnabledKey, enabled)
 }
 
 // GetChatJoinMessagesEnabled will return if chat join messages are enabled.
-func GetChatJoinMessagesEnabled() bool {
-	enabled, err := _datastore.GetBool(chatJoinMessagesEnabledKey)
+func (s *Service) GetChatJoinMessagesEnabled() bool {
+	enabled, err := s.Store.GetBool(chatJoinMessagesEnabledKey)
 	if err != nil {
 		return true
 	}
@@ -823,19 +824,19 @@ func GetChatJoinMessagesEnabled() bool {
 }
 
 // SetNotificationsEnabled will save the enabled state of notifications.
-func SetNotificationsEnabled(enabled bool) error {
-	return _datastore.SetBool(notificationsEnabledKey, enabled)
+func (s *Service) SetNotificationsEnabled(enabled bool) error {
+	return s.Store.SetBool(notificationsEnabledKey, enabled)
 }
 
 // GetNotificationsEnabled will return the enabled state of notifications.
-func GetNotificationsEnabled() bool {
-	enabled, _ := _datastore.GetBool(notificationsEnabledKey)
+func (s *Service) GetNotificationsEnabled() bool {
+	enabled, _ := s.Store.GetBool(notificationsEnabledKey)
 	return enabled
 }
 
 // GetDiscordConfig will return the Discord configuration.
-func GetDiscordConfig() models.DiscordConfiguration {
-	configEntry, err := _datastore.Get(discordConfigurationKey)
+func (s *Service) GetDiscordConfig() models.DiscordConfiguration {
+	configEntry, err := s.Store.Get(discordConfigurationKey)
 	if err != nil {
 		return models.DiscordConfiguration{Enabled: false}
 	}
@@ -849,14 +850,14 @@ func GetDiscordConfig() models.DiscordConfiguration {
 }
 
 // SetDiscordConfig will set the Discord configuration.
-func SetDiscordConfig(config models.DiscordConfiguration) error {
+func (s *Service) SetDiscordConfig(config models.DiscordConfiguration) error {
 	configEntry := ConfigEntry{Key: discordConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // GetBrowserPushConfig will return the browser push configuration.
-func GetBrowserPushConfig() models.BrowserNotificationConfiguration {
-	configEntry, err := _datastore.Get(browserPushConfigurationKey)
+func (s *Service) GetBrowserPushConfig() models.BrowserNotificationConfiguration {
+	configEntry, err := s.Store.Get(browserPushConfigurationKey)
 	if err != nil {
 		return models.BrowserNotificationConfiguration{Enabled: false}
 	}
@@ -870,78 +871,78 @@ func GetBrowserPushConfig() models.BrowserNotificationConfiguration {
 }
 
 // SetBrowserPushConfig will set the browser push configuration.
-func SetBrowserPushConfig(config models.BrowserNotificationConfiguration) error {
+func (s *Service) SetBrowserPushConfig(config models.BrowserNotificationConfiguration) error {
 	configEntry := ConfigEntry{Key: browserPushConfigurationKey, Value: config}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }
 
 // SetBrowserPushPublicKey will set the public key for browser pushes.
-func SetBrowserPushPublicKey(key string) error {
-	return _datastore.SetString(browserPushPublicKeyKey, key)
+func (s *Service) SetBrowserPushPublicKey(key string) error {
+	return s.Store.SetString(browserPushPublicKeyKey, key)
 }
 
 // GetBrowserPushPublicKey will return the public key for browser pushes.
-func GetBrowserPushPublicKey() (string, error) {
-	return _datastore.GetString(browserPushPublicKeyKey)
+func (s *Service) GetBrowserPushPublicKey() (string, error) {
+	return s.Store.GetString(browserPushPublicKeyKey)
 }
 
 // SetBrowserPushPrivateKey will set the private key for browser pushes.
-func SetBrowserPushPrivateKey(key string) error {
-	return _datastore.SetString(browserPushPrivateKeyKey, key)
+func (s *Service) SetBrowserPushPrivateKey(key string) error {
+	return s.Store.SetString(browserPushPrivateKeyKey, key)
 }
 
 // GetBrowserPushPrivateKey will return the private key for browser pushes.
-func GetBrowserPushPrivateKey() (string, error) {
-	return _datastore.GetString(browserPushPrivateKeyKey)
+func (s *Service) GetBrowserPushPrivateKey() (string, error) {
+	return s.Store.GetString(browserPushPrivateKeyKey)
 }
 
 // SetHasPerformedInitialNotificationsConfig sets when performed initial setup.
-func SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
-	return _datastore.SetBool(hasConfiguredInitialNotificationsKey, true)
+func (s *Service) SetHasPerformedInitialNotificationsConfig(hasConfigured bool) error {
+	return s.Store.SetBool(hasConfiguredInitialNotificationsKey, true)
 }
 
 // GetHasPerformedInitialNotificationsConfig gets when performed initial setup.
-func GetHasPerformedInitialNotificationsConfig() bool {
-	configured, _ := _datastore.GetBool(hasConfiguredInitialNotificationsKey)
+func (s *Service) GetHasPerformedInitialNotificationsConfig() bool {
+	configured, _ := s.Store.GetBool(hasConfiguredInitialNotificationsKey)
 	return configured
 }
 
 // GetHideViewerCount will return if the viewer count shold be hidden.
-func GetHideViewerCount() bool {
-	hide, _ := _datastore.GetBool(hideViewerCountKey)
+func (s *Service) GetHideViewerCount() bool {
+	hide, _ := s.Store.GetBool(hideViewerCountKey)
 	return hide
 }
 
 // SetHideViewerCount will set if the viewer count should be hidden.
-func SetHideViewerCount(hide bool) error {
-	return _datastore.SetBool(hideViewerCountKey, hide)
+func (s *Service) SetHideViewerCount(hide bool) error {
+	return s.Store.SetBool(hideViewerCountKey, hide)
 }
 
 // GetCustomOfflineMessage will return the custom offline message.
-func GetCustomOfflineMessage() string {
-	message, _ := _datastore.GetString(customOfflineMessageKey)
+func (s *Service) GetCustomOfflineMessage() string {
+	message, _ := s.Store.GetString(customOfflineMessageKey)
 	return message
 }
 
 // SetCustomOfflineMessage will set the custom offline message.
-func SetCustomOfflineMessage(message string) error {
-	return _datastore.SetString(customOfflineMessageKey, message)
+func (s *Service) SetCustomOfflineMessage(message string) error {
+	return s.Store.SetString(customOfflineMessageKey, message)
 }
 
 // SetCustomColorVariableValues sets CSS variable names and values.
-func SetCustomColorVariableValues(variables map[string]string) error {
-	return _datastore.SetStringMap(customColorVariableValuesKey, variables)
+func (s *Service) SetCustomColorVariableValues(variables map[string]string) error {
+	return s.Store.SetStringMap(customColorVariableValuesKey, variables)
 }
 
 // GetCustomColorVariableValues gets CSS variable names and values.
-func GetCustomColorVariableValues() map[string]string {
-	values, _ := _datastore.GetStringMap(customColorVariableValuesKey)
+func (s *Service) GetCustomColorVariableValues() map[string]string {
+	values, _ := s.Store.GetStringMap(customColorVariableValuesKey)
 	return values
 }
 
 // GetStreamKeys will return valid stream keys.
-func GetStreamKeys() []models.StreamKey {
-	configEntry, err := _datastore.Get(streamKeysKey)
+func (s *Service) GetStreamKeys() []models.StreamKey {
+	configEntry, err := s.Store.Get(streamKeysKey)
 	if err != nil {
 		return []models.StreamKey{}
 	}
@@ -955,7 +956,7 @@ func GetStreamKeys() []models.StreamKey {
 }
 
 // SetStreamKeys will set valid stream keys.
-func SetStreamKeys(actions []models.StreamKey) error {
+func (s *Service) SetStreamKeys(actions []models.StreamKey) error {
 	configEntry := ConfigEntry{Key: streamKeysKey, Value: actions}
-	return _datastore.Save(configEntry)
+	return s.Store.Save(configEntry)
 }

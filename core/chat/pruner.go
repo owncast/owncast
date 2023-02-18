@@ -8,14 +8,14 @@ import (
 
 // Only keep recent messages so we don't keep more chat data than needed
 // for privacy and efficiency reasons.
-func runPruner() {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func (s *Service) runPruner() {
+	s.data.Store.DbLock.Lock()
+	defer s.data.Store.DbLock.Unlock()
 
 	log.Traceln("Removing chat messages older than", maxBacklogHours, "hours")
 
 	deleteStatement := `DELETE FROM messages WHERE timestamp <= datetime('now', 'localtime', ?)`
-	tx, err := _datastore.DB.Begin()
+	tx, err := s.data.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
 		return

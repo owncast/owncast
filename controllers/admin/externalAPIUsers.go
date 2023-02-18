@@ -22,35 +22,35 @@ type createExternalAPIUserRequest struct {
 }
 
 // CreateExternalAPIUser will generate a 3rd party access token.
-func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var request createExternalAPIUserRequest
 	if err := decoder.Decode(&request); err != nil {
-		controllers.BadRequestHandler(w, err)
+		c.BadRequestHandler(w, err)
 		return
 	}
 
 	// Verify all the scopes provided are valid
 	if !user.HasValidScopes(request.Scopes) {
-		controllers.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
+		c.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
 		return
 	}
 
 	token, err := utils.GenerateAccessToken()
 	if err != nil {
-		controllers.InternalErrorHandler(w, err)
+		c.InternalErrorHandler(w, err)
 		return
 	}
 
 	color := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
-	if err := user.InsertExternalAPIUser(token, request.Name, color, request.Scopes); err != nil {
-		controllers.InternalErrorHandler(w, err)
+	if err := user.InsertExternalAPIUser(token, request.Name, color, request.Scopes, c.Data.Store); err != nil {
+		c.InternalErrorHandler(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	controllers.WriteResponse(w, user.ExternalAPIUser{
+	c.WriteResponse(w, user.ExternalAPIUser{
 		AccessToken:  token,
 		DisplayName:  request.Name,
 		DisplayColor: color,
@@ -61,43 +61,43 @@ func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetExternalAPIUsers will return all 3rd party access tokens.
-func GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	tokens, err := user.GetExternalAPIUser()
+	tokens, err := user.GetExternalAPIUser(c.Data.Store)
 	if err != nil {
-		controllers.InternalErrorHandler(w, err)
+		c.InternalErrorHandler(w, err)
 		return
 	}
 
-	controllers.WriteResponse(w, tokens)
+	c.WriteResponse(w, tokens)
 }
 
 // DeleteExternalAPIUser will return a single 3rd party access token.
-func DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != controllers.POST {
-		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
+		c.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
 	var request deleteExternalAPIUserRequest
 	if err := decoder.Decode(&request); err != nil {
-		controllers.BadRequestHandler(w, err)
+		c.BadRequestHandler(w, err)
 		return
 	}
 
 	if request.Token == "" {
-		controllers.BadRequestHandler(w, errors.New("must provide a token"))
+		c.BadRequestHandler(w, errors.New("must provide a token"))
 		return
 	}
 
-	if err := user.DeleteExternalAPIUser(request.Token); err != nil {
-		controllers.InternalErrorHandler(w, err)
+	if err := user.DeleteExternalAPIUser(request.Token, c.Data.Store); err != nil {
+		c.InternalErrorHandler(w, err)
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "deleted token")
+	c.WriteSimpleResponse(w, true, "deleted token")
 }

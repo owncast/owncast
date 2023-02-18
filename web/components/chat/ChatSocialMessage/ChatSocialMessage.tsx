@@ -39,7 +39,7 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
   }
 
   return (
-    <div className={cn([styles.follower, 'chat-message_social'])}>
+    <div className={cn([styles.Follower, 'chat-message_social'])}>
       <a href={link} target="_blank" rel="noreferrer">
         <Row wrap={false}>
           <Col span={6}>

@@ -6,13 +6,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/router/middleware"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/app/middleware"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 type webConfigResponse struct {
@@ -33,7 +32,7 @@ type webConfigResponse struct {
 	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
 	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
 	Federation           federationConfigResponse     `json:"federation"`
-	Notifications        notificationsConfigResponse  `json:"notifications"`
+	Notifications        notificationsConfigResponse  `json:"Notifications"`
 	Authentication       authenticationConfigResponse `json:"authentication"`
 }
 
@@ -57,21 +56,21 @@ type authenticationConfigResponse struct {
 }
 
 // GetWebConfig gets the status of the server.
-func GetWebConfig(w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
-	configuration := getConfigResponse()
+	configuration := s.getConfigResponse()
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {
-		BadRequestHandler(w, err)
+		s.BadRequestHandler(w, err)
 	}
 }
 
-func getConfigResponse() webConfigResponse {
-	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
-	socialHandles := data.GetSocialHandles()
+func (s *Service) getConfigResponse() webConfigResponse {
+	pageContent := utils.RenderPageContentMarkdown(s.Data.GetExtraPageBodyContent())
+	socialHandles := s.Data.GetSocialHandles()
 	for i, handle := range socialHandles {
 		platform := models.GetSocialHandle(handle.Platform)
 		if platform != nil {
@@ -80,16 +79,16 @@ func getConfigResponse() webConfigResponse {
 		}
 	}
 
-	serverSummary := data.GetServerSummary()
+	serverSummary := s.Data.GetServerSummary()
 
 	var federationResponse federationConfigResponse
-	federationEnabled := data.GetFederationEnabled()
+	federationEnabled := s.Data.GetFederationEnabled()
 
-	followerCount, _ := activitypub.GetFollowerCount()
+	followerCount, _ := s.ActivityPub.GetFollowerCount()
 	if federationEnabled {
-		serverURLString := data.GetServerURL()
+		serverURLString := s.Data.GetServerURL()
 		serverURL, _ := url.Parse(serverURLString)
-		account := fmt.Sprintf("%s@%s", data.GetDefaultFederationUsername(), serverURL.Host)
+		account := fmt.Sprintf("%s@%s", s.Data.GetDefaultFederationUsername(), serverURL.Host)
 		federationResponse = federationConfigResponse{
 			Enabled:       federationEnabled,
 			FollowerCount: int(followerCount),
@@ -97,10 +96,10 @@ func getConfigResponse() webConfigResponse {
 		}
 	}
 
-	browserPushEnabled := data.GetBrowserPushConfig().Enabled
-	browserPushPublicKey, err := data.GetBrowserPushPublicKey()
+	browserPushEnabled := s.Data.GetBrowserPushConfig().Enabled
+	browserPushPublicKey, err := s.Data.GetBrowserPushPublicKey()
 	if err != nil {
-		log.Errorln("unable to fetch browser push notifications public key", err)
+		log.Errorln("unable to fetch browser push Notifications public key", err)
 		browserPushEnabled = false
 	}
 
@@ -112,39 +111,39 @@ func getConfigResponse() webConfigResponse {
 	}
 
 	authenticationResponse := authenticationConfigResponse{
-		IndieAuthEnabled: data.GetServerURL() != "",
+		IndieAuthEnabled: s.Data.GetServerURL() != "",
 	}
 
 	return webConfigResponse{
-		Name:                 data.GetServerName(),
+		Name:                 s.Data.GetServerName(),
 		Summary:              serverSummary,
-		OfflineMessage:       data.GetCustomOfflineMessage(),
+		OfflineMessage:       s.Data.GetCustomOfflineMessage(),
 		Logo:                 "/logo",
-		Tags:                 data.GetServerMetadataTags(),
+		Tags:                 s.Data.GetServerMetadataTags(),
 		Version:              config.GetReleaseString(),
-		NSFW:                 data.GetNSFW(),
-		SocketHostOverride:   data.GetWebsocketOverrideHost(),
+		NSFW:                 s.Data.GetNSFW(),
+		SocketHostOverride:   s.Data.GetWebsocketOverrideHost(),
 		ExtraPageContent:     pageContent,
-		StreamTitle:          data.GetStreamTitle(),
+		StreamTitle:          s.Data.GetStreamTitle(),
 		SocialHandles:        socialHandles,
-		ChatDisabled:         data.GetChatDisabled(),
-		ExternalActions:      data.GetExternalActions(),
-		CustomStyles:         data.GetCustomStyles(),
+		ChatDisabled:         s.Data.GetChatDisabled(),
+		ExternalActions:      s.Data.GetExternalActions(),
+		CustomStyles:         s.Data.GetCustomStyles(),
 		MaxSocketPayloadSize: config.MaxSocketPayloadSize,
 		Federation:           federationResponse,
 		Notifications:        notificationsResponse,
 		Authentication:       authenticationResponse,
-		AppearanceVariables:  data.GetCustomColorVariableValues(),
+		AppearanceVariables:  s.Data.GetCustomColorVariableValues(),
 	}
 }
 
 // GetAllSocialPlatforms will return a list of all social platform types.
-func GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	w.Header().Set("Content-Type", "application/json")
 
 	platforms := models.GetAllSocialHandles()
 	if err := json.NewEncoder(w).Encode(platforms); err != nil {
-		InternalErrorHandler(w, err)
+		s.InternalErrorHandler(w, err)
 	}
 }

@@ -6,13 +6,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
+
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
 )
 
-func migrateDatabaseSchema(db *sql.DB, from, to int) error {
+func (s *Service) migrateDatabaseSchema(db *sql.DB, from, to int) error {
 	log.Printf("Migrating database from version %d to %d", from, to)
 	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
 	utils.Backup(db, dbBackupFile)
@@ -20,19 +21,19 @@ func migrateDatabaseSchema(db *sql.DB, from, to int) error {
 		log.Tracef("Migration step from %d to %d\n", v, v+1)
 		switch v {
 		case 0:
-			migrateToSchema1(db)
+			s.migrateToSchema1(db)
 		case 1:
-			migrateToSchema2(db)
+			s.migrateToSchema2(db)
 		case 2:
-			migrateToSchema3(db)
+			s.migrateToSchema3(db)
 		case 3:
-			migrateToSchema4(db)
+			s.migrateToSchema4(db)
 		case 4:
-			migrateToSchema5(db)
+			s.migrateToSchema5(db)
 		case 5:
-			migrateToSchema6(db)
+			s.migrateToSchema6(db)
 		case 6:
-			migrateToSchema7(db)
+			s.migrateToSchema7(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}
@@ -46,7 +47,7 @@ func migrateDatabaseSchema(db *sql.DB, from, to int) error {
 	return nil
 }
 
-func migrateToSchema7(db *sql.DB) {
+func (s *Service) migrateToSchema7(db *sql.DB) {
 	log.Println("Migrating users. This may take time if you have lots of users...")
 
 	var ids []string
@@ -90,20 +91,20 @@ func migrateToSchema7(db *sql.DB) {
 	}
 }
 
-func migrateToSchema6(db *sql.DB) {
+func (s *Service) migrateToSchema6(db *sql.DB) {
 	// Fix chat messages table schema. Since chat is ephemeral we can drop
 	// the table and recreate it.
 	// Drop the old messages table
 	MustExec(`DROP TABLE messages`, db)
 
 	// Recreate it
-	CreateMessagesTable(db)
+	s.CreateMessagesTable(db)
 }
 
 // nolint:cyclop
-func migrateToSchema5(db *sql.DB) {
+func (s *Service) migrateToSchema5(db *sql.DB) {
 	// Create the access tokens table.
-	createAccessTokenTable(db)
+	s.createAccessTokenTable()
 
 	// 1. Authenticated bool added to the users table.
 	// 2. Access tokens are now stored in their own table.
@@ -134,7 +135,7 @@ func migrateToSchema5(db *sql.DB) {
 		log.Errorln("error running migration, you may experience issues: ", err)
 	}
 
-	// Start insert transaction
+	// init insert transaction
 	tx, err := db.Begin()
 	if err != nil {
 		log.Errorln(err)
@@ -210,7 +211,7 @@ func migrateToSchema5(db *sql.DB) {
 	}
 }
 
-func migrateToSchema4(db *sql.DB) {
+func (s *Service) migrateToSchema4(db *sql.DB) {
 	// We now save the follow request object.
 	stmt, err := db.Prepare("ALTER TABLE ap_followers ADD COLUMN request_object BLOB")
 	if err != nil {
@@ -225,7 +226,7 @@ func migrateToSchema4(db *sql.DB) {
 	}
 }
 
-func migrateToSchema3(db *sql.DB) {
+func (s *Service) migrateToSchema3(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
 	// and recreate the table.
 
@@ -241,10 +242,10 @@ func migrateToSchema3(db *sql.DB) {
 	}
 
 	// Recreate it
-	CreateMessagesTable(db)
+	s.CreateMessagesTable(db)
 }
 
-func migrateToSchema2(db *sql.DB) {
+func (s *Service) migrateToSchema2(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
 	// and recreate the table.
 
@@ -260,10 +261,10 @@ func migrateToSchema2(db *sql.DB) {
 	}
 
 	// Recreate it
-	CreateMessagesTable(db)
+	s.CreateMessagesTable(db)
 }
 
-func migrateToSchema1(db *sql.DB) {
+func (s *Service) migrateToSchema1(db *sql.DB) {
 	// Since it's just a backlog of chat messages let's wipe the old messages
 	// and recreate the table.
 
@@ -279,7 +280,7 @@ func migrateToSchema1(db *sql.DB) {
 	}
 
 	// Recreate it
-	CreateMessagesTable(db)
+	s.CreateMessagesTable(db)
 
 	// Migrate access tokens to become chat users
 	type oldAccessToken struct {
@@ -338,13 +339,13 @@ func migrateToSchema1(db *sql.DB) {
 	// Recreate them as users
 	for _, token := range oldAccessTokens {
 		color := utils.GenerateRandomDisplayColor(config.MaxUserColor)
-		if err := insertAPIToken(db, token.accessToken, token.displayName, color, token.scopes); err != nil {
+		if err := s.insertAPIToken(db, token.accessToken, token.displayName, color, token.scopes); err != nil {
 			log.Errorln("Error migrating access token", err)
 		}
 	}
 }
 
-func insertAPIToken(db *sql.DB, token string, name string, color int, scopes string) error {
+func (s *Service) insertAPIToken(db *sql.DB, token string, name string, color int, scopes string) error {
 	log.Debugln("Adding new access token:", name)
 
 	id := shortid.MustGenerate()

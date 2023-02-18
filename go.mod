@@ -2,6 +2,10 @@ module github.com/owncast/owncast
 
 go 1.18
 
+replace (
+	github.com/gravestench/eventemitter => /home/gravestench/src/eventemitter
+)
+
 require (
 	github.com/aws/aws-sdk-go v1.44.198
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
@@ -85,6 +89,7 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.1
+	github.com/gravestench/eventemitter v0.0.0-20210902014026-73feeec3a47f
 	github.com/nanmu42/gzip v1.2.0
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0

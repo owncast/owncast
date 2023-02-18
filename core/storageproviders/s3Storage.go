@@ -9,10 +9,12 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/playlist"
+	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -26,8 +28,10 @@ import (
 
 // S3Storage is the s3 implementation of a storage provider.
 type S3Storage struct {
-	sess *session.Session
-	host string
+	data       *data.Service
+	sess       *session.Session
+	transcoder *transcoder.Transcoder
+	host       string
 
 	s3Endpoint        string
 	s3ServingEndpoint string
@@ -46,8 +50,9 @@ type S3Storage struct {
 }
 
 // NewS3Storage returns a new S3Storage instance.
-func NewS3Storage() *S3Storage {
+func NewS3Storage(d *data.Service) *S3Storage {
 	return &S3Storage{
+		data:                  d,
 		queuedPlaylistUpdates: make(map[string]string),
 	}
 }
@@ -56,7 +61,7 @@ func NewS3Storage() *S3Storage {
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
-	s3Config := data.GetS3Config()
+	s3Config := s.data.GetS3Config()
 	if s3Config.ServingEndpoint != "" {
 		s.host = s3Config.ServingEndpoint
 	} else {
@@ -94,7 +99,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 
 	// Warn the user about long-running save operations
 	if averagePerformance != 0 {
-		if averagePerformance > float64(data.GetStreamLatencyLevel().SecondsPerSegment)*0.9 {
+		if averagePerformance > float64(s.data.GetStreamLatencyLevel().SecondsPerSegment)*0.9 {
 			log.Warnln("Possible slow uploads: average upload S3 save duration", averagePerformance, "s. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
 		}
 	}

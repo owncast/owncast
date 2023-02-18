@@ -6,27 +6,25 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/metrics"
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 )
 
 // GetViewersOverTime will return the number of viewers at points in time.
-func GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 	windowStartAtStr := r.URL.Query().Get("windowStart")
 	windowStartAtUnix, err := strconv.Atoi(windowStartAtStr)
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		c.Service.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	windowStartAt := time.Unix(int64(windowStartAtUnix), 0)
 	windowEnd := time.Now()
 
-	viewersOverTime := metrics.GetViewersOverTime(windowStartAt, windowEnd)
+	viewersOverTime := c.Metrics.GetViewersOverTime(windowStartAt, windowEnd)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(viewersOverTime)
 	if err != nil {
@@ -35,21 +33,21 @@ func GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetActiveViewers returns currently connected clients.
-func GetActiveViewers(w http.ResponseWriter, r *http.Request) {
-	c := core.GetActiveViewers()
-	viewers := make([]models.Viewer, 0, len(c))
-	for _, v := range c {
+func (c *Controller) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+	viewersMap := c.Core.GetActiveViewers()
+	viewers := make([]models.Viewer, 0, len(viewersMap))
+	for _, v := range viewersMap {
 		viewers = append(viewers, *v)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(viewers); err != nil {
-		controllers.InternalErrorHandler(w, err)
+		c.Service.InternalErrorHandler(w, err)
 	}
 }
 
 // ExternalGetActiveViewers returns currently connected clients.
-func ExternalGetActiveViewers(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	GetConnectedChatClients(w, r)
+func (c *Controller) ExternalGetActiveViewers(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	c.GetConnectedChatClients(w, r)
 }

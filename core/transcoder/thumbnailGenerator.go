@@ -11,21 +11,20 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 )
 
 var _timer *time.Ticker
 
 // StopThumbnailGenerator will stop the periodic generating of a thumbnail from video.
-func StopThumbnailGenerator() {
+func (t *Transcoder) StopThumbnailGenerator() {
 	if _timer != nil {
 		_timer.Stop()
 	}
 }
 
 // StartThumbnailGenerator starts generating thumbnails.
-func StartThumbnailGenerator(chunkPath string, variantIndex int) {
+func (t *Transcoder) StartThumbnailGenerator(chunkPath string, variantIndex int) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.
 	_timer = time.NewTicker(20 * time.Second)
@@ -35,7 +34,7 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 		for {
 			select {
 			case <-_timer.C:
-				if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
+				if err := t.fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
 					log.Errorln("Unable to generate thumbnail:", err)
 				}
 			case <-quit:
@@ -47,7 +46,7 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 	}()
 }
 
-func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
+func (t *Transcoder) fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join(config.TempDir, "thumbnail.jpg")
 	previewGifFile := path.Join(config.TempDir, "preview.gif")
@@ -86,7 +85,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	}
 
 	mostRecentFile := path.Join(framePath, names[0])
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	ffmpegPath := utils.ValidatedFfmpegPath(t.data.GetFfMpegPath())
 	outputFileTemp := path.Join(config.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
@@ -110,13 +109,13 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		log.Errorln(err)
 	}
 
-	makeAnimatedGifPreview(mostRecentFile, previewGifFile)
+	t.makeAnimatedGifPreview(mostRecentFile, previewGifFile, t.data.GetFfMpegPath())
 
 	return nil
 }
 
-func makeAnimatedGifPreview(sourceFile string, outputFile string) {
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+func (t *Transcoder) makeAnimatedGifPreview(sourceFile, outputFile, ffmpegPath string) {
+	ffmpegPath = utils.ValidatedFfmpegPath(ffmpegPath)
 	outputFileTemp := path.Join(config.TempDir, "temppreview.gif")
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/

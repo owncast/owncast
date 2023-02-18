@@ -6,11 +6,12 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
-	log "github.com/sirupsen/logrus"
 )
 
 var _datastore *data.Datastore
@@ -20,16 +21,12 @@ const (
 	maxBacklogNumber = 50 // Return max number of messages in history request
 )
 
-func setupPersistence() {
-	_datastore = data.GetDatastore()
-	data.CreateMessagesTable(_datastore.DB)
-	data.CreateBanIPTable(_datastore.DB)
-
+func (s *Service) setupPersistence() {
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {
-		runPruner()
+		s.runPruner()
 		for range chatDataPruner.C {
-			runPruner()
+			s.runPruner()
 		}
 	}()
 }
@@ -385,7 +382,7 @@ func GetMessagesFromUser(userID string) ([]events.UserMessageEvent, error) {
 
 // SetMessageVisibilityForUserID will bulk change the visibility of messages for a user
 // and then send out visibility changed events to chat clients.
-func SetMessageVisibilityForUserID(userID string, visible bool) error {
+func (s *Service) SetMessageVisibilityForUserID(userID string, visible bool) error {
 	defer func() {
 		_historyCache = nil
 	}()
@@ -438,7 +435,7 @@ func SetMessageVisibilityForUserID(userID string, visible bool) error {
 	}
 
 	// Tell the clients to hide/show these messages.
-	return SetMessagesVisibility(ids, visible)
+	return s.SetMessagesVisibility(ids, visible)
 }
 
 func saveMessageVisibility(messageIDs []string, visible bool) error {

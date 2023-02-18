@@ -7,10 +7,11 @@ import (
 	"strings"
 	"sync"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 var _lastTranscoderLogMessage = ""
@@ -94,7 +95,7 @@ func handleTranscoderMessage(message string) {
 	_lastTranscoderLogMessage = message
 }
 
-func createVariantDirectories() {
+func createVariantDirectories(data *data.Service) {
 	// Create private hls data dirs
 	utils.CleanupDirectory(config.HLSStoragePath)
 

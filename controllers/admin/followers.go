@@ -3,16 +3,11 @@ package admin
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/owncast/owncast/activitypub/persistence"
-	"github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core/data"
 )
 
 // ApproveFollower will approve a federated follow request.
-func ApproveFollower(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) ApproveFollower(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
@@ -24,59 +19,59 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var approval approveFollowerRequest
 	if err := decoder.Decode(&approval); err != nil {
-		controllers.WriteSimpleResponse(w, false, "unable to handle follower state with provided values")
+		c.Service.WriteSimpleResponse(w, false, "unable to handle follower state with provided values")
 		return
 	}
 
 	if approval.Approved {
 		// Approve a follower
-		if err := persistence.ApprovePreviousFollowRequest(approval.ActorIRI); err != nil {
-			controllers.WriteSimpleResponse(w, false, err.Error())
+		if err := c.Follower.ApprovePreviousFollowRequest(approval.ActorIRI); err != nil {
+			c.Service.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
-		localAccountName := data.GetDefaultFederationUsername()
+		localAccountName := c.Data.GetDefaultFederationUsername()
 
-		followRequest, err := persistence.GetFollower(approval.ActorIRI)
+		followRequest, err := c.Follower.GetFollower(approval.ActorIRI)
 		if err != nil {
-			controllers.WriteSimpleResponse(w, false, err.Error())
+			c.Service.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
-			controllers.WriteSimpleResponse(w, false, err.Error())
+		if err := c.Follower.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
+			c.Service.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 	} else {
 		// Remove/block a follower
-		if err := persistence.BlockOrRejectFollower(approval.ActorIRI); err != nil {
-			controllers.WriteSimpleResponse(w, false, err.Error())
+		if err := c.Follower.BlockOrRejectFollower(approval.ActorIRI); err != nil {
+			c.Service.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 	}
 
-	controllers.WriteSimpleResponse(w, true, "follower updated")
+	c.Service.WriteSimpleResponse(w, true, "follower updated")
 }
 
 // GetPendingFollowRequests will return a list of pending follow requests.
-func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	requests, err := persistence.GetPendingFollowRequests()
+func (c *Controller) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+	requests, err := c.Follower.GetPendingFollowRequests()
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		c.Service.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteResponse(w, requests)
+	c.Service.WriteResponse(w, requests)
 }
 
 // GetBlockedAndRejectedFollowers will return blocked and rejected followers.
-func GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
-	rejections, err := persistence.GetBlockedAndRejectedFollowers()
+func (c *Controller) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
+	rejections, err := c.Follower.GetBlockedAndRejectedFollowers()
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		c.Service.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteResponse(w, rejections)
+	c.Service.WriteResponse(w, rejections)
 }

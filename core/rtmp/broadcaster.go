@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/nareix/joy5/format/flv/flvio"
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
 )
 
-func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
+func (s *Service) setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 	data, err := getInboundDetailsFromMetadata(t.DebugFields())
 	if err != nil {
 		log.Traceln("Unable to parse inbound broadcaster details:", err)
@@ -30,5 +31,5 @@ func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 		},
 	}
 
-	_setBroadcaster(broadcaster)
+	s._setBroadcaster(broadcaster)
 }

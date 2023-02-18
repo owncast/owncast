@@ -1,13 +1,13 @@
 package data
 
 // GetFederatedInboxMap is a mapping between account names and their outbox.
-func GetFederatedInboxMap() map[string]string {
+func (s *Service) GetFederatedInboxMap() map[string]string {
 	return map[string]string{
-		GetDefaultFederationUsername(): GetDefaultFederationUsername(),
+		s.GetDefaultFederationUsername(): s.GetDefaultFederationUsername(),
 	}
 }
 
 // GetDefaultFederationUsername will return the username used for sending federation activities.
-func GetDefaultFederationUsername() string {
-	return GetFederationUsername()
+func (s *Service) GetDefaultFederationUsername() string {
+	return s.GetFederationUsername()
 }

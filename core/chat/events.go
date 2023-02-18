@@ -6,13 +6,12 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 func (s *Server) userNameChanged(eventData chatClientEvent) {
@@ -25,7 +24,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	proposedUsername := receivedEvent.NewName
 
 	// Check if name is on the blocklist
-	blocklist := data.GetForbiddenUsernameList()
+	blocklist := s.data.GetForbiddenUsernameList()
 
 	// Names have a max length
 	proposedUsername = utils.MakeSafeStringOfLength(proposedUsername, config.MaxChatDisplayNameLength)
@@ -47,7 +46,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	}
 
 	// Check if the name is not already assigned to a registered user.
-	if available, err := user.IsDisplayNameAvailable(proposedUsername); err != nil {
+	if available, err := user.IsDisplayNameAvailable(proposedUsername, s.data.Store); err != nil {
 		log.Errorln("error checking if name is available", err)
 		return
 	} else if !available {
@@ -60,11 +59,11 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	savedUser := user.GetUserByToken(eventData.client.accessToken)
+	savedUser := user.GetUserByToken(eventData.client.accessToken, s.data.Store)
 	oldName := savedUser.DisplayName
 
 	// Save the new name
-	if err := user.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
+	if err := user.ChangeUsername(eventData.client.User.ID, proposedUsername, s.data.Store); err != nil {
 		log.Errorln("error changing username", err)
 	}
 
@@ -90,7 +89,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	// Send chat user name changed webhook
 	receivedEvent.User = savedUser
 	receivedEvent.ClientID = eventData.client.Id
-	webhooks.SendChatEventUsernameChanged(receivedEvent)
+	s.webhooks.SendChatEventUsernameChanged(receivedEvent)
 
 	// Resend the client's user so their username is in sync.
 	eventData.client.sendConnectedClientInfo()
@@ -110,7 +109,7 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new color
-	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
+	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor, s.data.Store); err != nil {
 		log.Errorln("error changing user display color", err)
 	}
 
@@ -119,7 +118,7 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 	eventData.client.sendConnectedClientInfo()
 }
 
-func (s *Server) userMessageSent(eventData chatClientEvent) {
+func (s *Service) userMessageSent(eventData chatClientEvent) {
 	var event events.UserMessageEvent
 	if err := json.Unmarshal(eventData.data, &event); err != nil {
 		log.Errorln("error unmarshalling to UserMessageEvent", err)
@@ -135,33 +134,32 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	// Ignore if the stream has been offline
-	if !getStatus().Online && getStatus().LastDisconnectTime != nil {
-		disconnectedTime := getStatus().LastDisconnectTime.Time
+	if !s.getStatus().Online && s.getStatus().LastDisconnectTime != nil {
+		disconnectedTime := s.getStatus().LastDisconnectTime.Time
 		if time.Since(disconnectedTime) > 5*time.Minute {
 			return
 		}
 	}
 
-	event.User = user.GetUserByToken(eventData.client.accessToken)
+	event.User = user.GetUserByToken(eventData.client.accessToken, s.data.Store)
 
 	// Guard against nil users
 	if event.User == nil {
 		return
 	}
 
-	payload := event.GetBroadcastPayload()
-	if err := s.Broadcast(payload); err != nil {
+	if err := s.Broadcast(&event); err != nil {
 		log.Errorln("error broadcasting UserMessageEvent payload", err)
 		return
 	}
 
 	// Send chat message sent webhook
-	webhooks.SendChatEvent(&event)
-	chatMessagesSentCounter.Inc()
+	s.webhooks.SendChatEvent(&event)
+	s.chatMessagesSentCounter.Inc()
 
 	SaveUserMessage(event)
 	eventData.client.MessageCount++
-	_lastSeenCache[event.User.ID] = time.Now()
+	s.server.lastSeenCache[event.User.ID] = time.Now()
 }
 
 func logSanitize(userValue string) string {

@@ -8,17 +8,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+	"github.com/teris-io/shortid"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/utils"
-	"github.com/pkg/errors"
-	"github.com/teris-io/shortid"
 
 	log "github.com/sirupsen/logrus"
 )
-
-var _datastore *data.Datastore
 
 const (
 	moderatorScopeKey              = "MODERATOR"
@@ -51,13 +50,8 @@ func (u *User) IsModerator() bool {
 	return hasModerationScope
 }
 
-// SetupUsers will perform the initial initialization of the user package.
-func SetupUsers() {
-	_datastore = data.GetDatastore()
-}
-
-func generateDisplayName() string {
-	suggestedUsernamesList := data.GetSuggestedUsernamesList()
+func generateDisplayName(d *data.Service) string {
+	suggestedUsernamesList := d.GetSuggestedUsernamesList()
 
 	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
 		index := utils.RandomIndex(len(suggestedUsernamesList))
@@ -68,15 +62,15 @@ func generateDisplayName() string {
 }
 
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
-func CreateAnonymousUser(displayName string) (*User, string, error) {
+func CreateAnonymousUser(displayName string, d *data.Service) (*User, string, error) {
 	// Try to assign a name that was requested.
 	if displayName != "" {
 		// If name isn't available then generate a random one.
-		if available, _ := IsDisplayNameAvailable(displayName); !available {
-			displayName = generateDisplayName()
+		if available, _ := IsDisplayNameAvailable(displayName, d.Store); !available {
+			displayName = generateDisplayName(d)
 		}
 	} else {
-		displayName = generateDisplayName()
+		displayName = generateDisplayName(d)
 	}
 
 	displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
@@ -90,7 +84,7 @@ func CreateAnonymousUser(displayName string) (*User, string, error) {
 	}
 
 	// Create new user.
-	if err := create(user); err != nil {
+	if err := create(user, d.Store); err != nil {
 		return nil, "", err
 	}
 
@@ -100,7 +94,7 @@ func CreateAnonymousUser(displayName string) (*User, string, error) {
 		log.Errorln("Unable to create access token for new user")
 		return nil, "", err
 	}
-	if err := addAccessTokenForUser(accessToken, id); err != nil {
+	if err := addAccessTokenForUser(accessToken, id, d.Store); err != nil {
 		return nil, "", errors.Wrap(err, "unable to save access token for new user")
 	}
 
@@ -108,8 +102,8 @@ func CreateAnonymousUser(displayName string) (*User, string, error) {
 }
 
 // IsDisplayNameAvailable will check if the proposed name is available for use.
-func IsDisplayNameAvailable(displayName string) (bool, error) {
-	if available, err := _datastore.GetQueries().IsDisplayNameAvailable(context.Background(), displayName); err != nil {
+func IsDisplayNameAvailable(displayName string, store *data.Datastore) (bool, error) {
+	if available, err := store.GetQueries().IsDisplayNameAvailable(context.Background(), displayName); err != nil {
 		return false, errors.Wrap(err, "unable to check if display name is available")
 	} else if available != 0 {
 		return false, nil
@@ -119,11 +113,11 @@ func IsDisplayNameAvailable(displayName string) (bool, error) {
 }
 
 // ChangeUsername will change the user associated to userID from one display name to another.
-func ChangeUsername(userID string, username string) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func ChangeUsername(userID string, username string, store *data.Datastore) error {
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
-	if err := _datastore.GetQueries().ChangeDisplayName(context.Background(), db.ChangeDisplayNameParams{
+	if err := store.GetQueries().ChangeDisplayName(context.Background(), db.ChangeDisplayNameParams{
 		DisplayName:   username,
 		ID:            userID,
 		PreviousNames: sql.NullString{String: fmt.Sprintf(",%s", username), Valid: true},
@@ -136,11 +130,11 @@ func ChangeUsername(userID string, username string) error {
 }
 
 // ChangeUserColor will change the user associated to userID from one display name to another.
-func ChangeUserColor(userID string, color int) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func ChangeUserColor(userID string, color int, store *data.Datastore) error {
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
-	if err := _datastore.GetQueries().ChangeDisplayColor(context.Background(), db.ChangeDisplayColorParams{
+	if err := store.GetQueries().ChangeDisplayColor(context.Background(), db.ChangeDisplayColorParams{
 		DisplayColor: int32(color),
 		ID:           userID,
 	}); err != nil {
@@ -150,18 +144,18 @@ func ChangeUserColor(userID string, color int) error {
 	return nil
 }
 
-func addAccessTokenForUser(accessToken, userID string) error {
-	return _datastore.GetQueries().AddAccessTokenForUser(context.Background(), db.AddAccessTokenForUserParams{
+func addAccessTokenForUser(accessToken, userID string, store *data.Datastore) error {
+	return store.GetQueries().AddAccessTokenForUser(context.Background(), db.AddAccessTokenForUserParams{
 		Token:  accessToken,
 		UserID: userID,
 	})
 }
 
-func create(user *User) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func create(user *User, store *data.Datastore) error {
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
-	tx, err := _datastore.DB.Begin()
+	tx, err := store.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
 	}
@@ -185,11 +179,11 @@ func create(user *User) error {
 }
 
 // SetEnabled will set the enabled status of a single user by ID.
-func SetEnabled(userID string, enabled bool) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func SetEnabled(userID string, enabled bool, store *data.Datastore) error {
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
-	tx, err := _datastore.DB.Begin()
+	tx, err := store.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -217,8 +211,8 @@ func SetEnabled(userID string, enabled bool) error {
 }
 
 // GetUserByToken will return a user by an access token.
-func GetUserByToken(token string) *User {
-	u, err := _datastore.GetQueries().GetUserByAccessToken(context.Background(), token)
+func GetUserByToken(token string, store *data.Datastore) *User {
+	u, err := store.GetQueries().GetUserByAccessToken(context.Background(), token)
 	if err != nil {
 		return nil
 	}
@@ -254,8 +248,8 @@ func GetUserByToken(token string) *User {
 
 // SetAccessTokenToOwner will reassign an access token to be owned by a
 // different user. Used for logging in with external auth.
-func SetAccessTokenToOwner(token, userID string) error {
-	return _datastore.GetQueries().SetAccessTokenToOwner(context.Background(), db.SetAccessTokenToOwnerParams{
+func SetAccessTokenToOwner(token, userID string, store *data.Datastore) error {
+	return store.GetQueries().SetAccessTokenToOwner(context.Background(), db.SetAccessTokenToOwnerParams{
 		UserID: userID,
 		Token:  token,
 	})
@@ -263,21 +257,21 @@ func SetAccessTokenToOwner(token, userID string) error {
 
 // SetUserAsAuthenticated will mark that a user has been authenticated
 // in some way.
-func SetUserAsAuthenticated(userID string) error {
-	return errors.Wrap(_datastore.GetQueries().SetUserAsAuthenticated(context.Background(), userID), "unable to set user as authenticated")
+func SetUserAsAuthenticated(userID string, store *data.Datastore) error {
+	return errors.Wrap(store.GetQueries().SetUserAsAuthenticated(context.Background(), userID), "unable to set user as authenticated")
 }
 
 // SetModerator will add or remove moderator status for a single user by ID.
-func SetModerator(userID string, isModerator bool) error {
+func SetModerator(userID string, isModerator bool, store *data.Datastore) error {
 	if isModerator {
-		return addScopeToUser(userID, moderatorScopeKey)
+		return addScopeToUser(userID, moderatorScopeKey, store)
 	}
 
-	return removeScopeFromUser(userID, moderatorScopeKey)
+	return removeScopeFromUser(userID, moderatorScopeKey, store)
 }
 
-func addScopeToUser(userID string, scope string) error {
-	u := GetUserByID(userID)
+func addScopeToUser(userID string, scope string, store *data.Datastore) error {
+	u := GetUserByID(userID, store)
 	if u == nil {
 		return errors.New("user not found when modifying scope")
 	}
@@ -288,25 +282,25 @@ func addScopeToUser(userID string, scope string) error {
 
 	scopesSlice := utils.StringMapKeys(scopes)
 
-	return setScopesOnUser(userID, scopesSlice)
+	return setScopesOnUser(userID, scopesSlice, store)
 }
 
-func removeScopeFromUser(userID string, scope string) error {
-	u := GetUserByID(userID)
+func removeScopeFromUser(userID string, scope string, store *data.Datastore) error {
+	u := GetUserByID(userID, store)
 	scopesString := u.Scopes
 	scopes := utils.StringSliceToMap(scopesString)
 	delete(scopes, scope)
 
 	scopesSlice := utils.StringMapKeys(scopes)
 
-	return setScopesOnUser(userID, scopesSlice)
+	return setScopesOnUser(userID, scopesSlice, store)
 }
 
-func setScopesOnUser(userID string, scopes []string) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func setScopesOnUser(userID string, scopes []string, store *data.Datastore) error {
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
-	tx, err := _datastore.DB.Begin()
+	tx, err := store.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -336,12 +330,12 @@ func setScopesOnUser(userID string, scopes []string) error {
 }
 
 // GetUserByID will return a user by a user ID.
-func GetUserByID(id string) *User {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+func GetUserByID(id string, store *data.Datastore) *User {
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
 	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes FROM users WHERE id = ?"
-	row := _datastore.DB.QueryRow(query, id)
+	row := store.DB.QueryRow(query, id)
 	if row == nil {
 		log.Errorln(row)
 		return nil
@@ -350,10 +344,10 @@ func GetUserByID(id string) *User {
 }
 
 // GetDisabledUsers will return back all the currently disabled users that are not API users.
-func GetDisabledUsers() []*User {
+func GetDisabledUsers(store *data.Datastore) []*User {
 	query := "SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE disabled_at IS NOT NULL AND type IS NOT 'API'"
 
-	rows, err := _datastore.DB.Query(query)
+	rows, err := store.DB.Query(query)
 	if err != nil {
 		log.Errorln(err)
 		return nil
@@ -370,7 +364,7 @@ func GetDisabledUsers() []*User {
 }
 
 // GetModeratorUsers will return a list of users with moderator access.
-func GetModeratorUsers() []*User {
+func GetModeratorUsers(store *data.Datastore) []*User {
 	query := `SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (
 		WITH RECURSIVE split(id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, scope, rest) AS (
 		  SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, '', scopes || ',' FROM users
@@ -386,7 +380,7 @@ func GetModeratorUsers() []*User {
 		 ORDER BY created_at
 	  ) AS token WHERE token.scope = ?`
 
-	rows, err := _datastore.DB.Query(query, moderatorScopeKey)
+	rows, err := store.DB.Query(query, moderatorScopeKey)
 	if err != nil {
 		log.Errorln(err)
 		return nil

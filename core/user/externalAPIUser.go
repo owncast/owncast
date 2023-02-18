@@ -6,10 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
+
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 )
 
 // ExternalAPIUser represents a single 3rd party integration that uses an access token.
@@ -43,16 +45,16 @@ var validAccessTokenScopes = []string{
 }
 
 // InsertExternalAPIUser will add a new API user to the database.
-func InsertExternalAPIUser(token string, name string, color int, scopes []string) error {
+func InsertExternalAPIUser(token string, name string, color int, scopes []string, store *data.Datastore) error {
 	log.Traceln("Adding new API user")
 
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
 	scopesString := strings.Join(scopes, ",")
 	id := shortid.MustGenerate()
 
-	tx, err := _datastore.DB.Begin()
+	tx, err := store.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -70,7 +72,7 @@ func InsertExternalAPIUser(token string, name string, color int, scopes []string
 		return err
 	}
 
-	if err := addAccessTokenForUser(token, id); err != nil {
+	if err := addAccessTokenForUser(token, id, store); err != nil {
 		return errors.Wrap(err, "unable to save access token for new external api user")
 	}
 
@@ -78,13 +80,13 @@ func InsertExternalAPIUser(token string, name string, color int, scopes []string
 }
 
 // DeleteExternalAPIUser will delete a token from the database.
-func DeleteExternalAPIUser(token string) error {
+func DeleteExternalAPIUser(token string, store *data.Datastore) error {
 	log.Traceln("Deleting access token")
 
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
+	store.DbLock.Lock()
+	defer store.DbLock.Unlock()
 
-	tx, err := _datastore.DB.Begin()
+	tx, err := store.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -112,7 +114,7 @@ func DeleteExternalAPIUser(token string) error {
 }
 
 // GetExternalAPIUserForAccessTokenAndScope will determine if a specific token has access to perform a scoped action.
-func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*ExternalAPIUser, error) {
+func GetExternalAPIUserForAccessTokenAndScope(token string, scope string, store *data.Datastore) (*ExternalAPIUser, error) {
 	// This will split the scopes from comma separated to individual rows
 	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
@@ -132,15 +134,15 @@ func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*Exte
 		 ORDER BY scope
 	  ) AS token WHERE user_access_tokens.token = ? AND token.scope = ?`
 
-	row := _datastore.DB.QueryRow(query, token, scope)
+	row := store.DB.QueryRow(query, token, scope)
 	integration, err := makeExternalAPIUserFromRow(row)
 
 	return integration, err
 }
 
 // GetIntegrationNameForAccessToken will return the integration name associated with a specific access token.
-func GetIntegrationNameForAccessToken(token string) *string {
-	name, err := _datastore.GetQueries().GetUserDisplayNameByToken(context.Background(), token)
+func GetIntegrationNameForAccessToken(token string, store *data.Datastore) *string {
+	name, err := store.GetQueries().GetUserDisplayNameByToken(context.Background(), token)
 	if err != nil {
 		return nil
 	}
@@ -149,11 +151,11 @@ func GetIntegrationNameForAccessToken(token string) *string {
 }
 
 // GetExternalAPIUser will return all API users with access tokens.
-func GetExternalAPIUser() ([]ExternalAPIUser, error) { //nolint
+func GetExternalAPIUser(store *data.Datastore) ([]ExternalAPIUser, error) { //nolint
 	// Get all messages sent within the past day
 	query := "SELECT id, token, display_name, display_color, scopes, created_at, last_used FROM users, user_access_tokens WHERE user_access_tokens.user_id = id  AND type IS 'API' AND disabled_at IS NULL"
 
-	rows, err := _datastore.DB.Query(query)
+	rows, err := store.DB.Query(query)
 	if err != nil {
 		return []ExternalAPIUser{}, err
 	}
@@ -165,8 +167,8 @@ func GetExternalAPIUser() ([]ExternalAPIUser, error) { //nolint
 }
 
 // SetExternalAPIUserAccessTokenAsUsed will update the last used timestamp for a token.
-func SetExternalAPIUserAccessTokenAsUsed(token string) error {
-	tx, err := _datastore.DB.Begin()
+func SetExternalAPIUserAccessTokenAsUsed(token string, store *data.Datastore) error {
+	tx, err := store.DB.Begin()
 	if err != nil {
 		return err
 	}

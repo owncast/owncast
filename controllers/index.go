@@ -7,14 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/app/middleware"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 )
 
 // IndexHandler handles the default index route.
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Service) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
@@ -33,14 +32,14 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.SetHeaders(w, fmt.Sprintf("nonce-%s", nonceRandom))
 
 	if isIndexRequest {
-		renderIndexHtml(w, nonceRandom)
+		s.renderIndexHtml(w, nonceRandom)
 		return
 	}
 
-	serveWeb(w, r)
+	s.serveWeb(w, r)
 }
 
-func renderIndexHtml(w http.ResponseWriter, nonce string) {
+func (s *Service) renderIndexHtml(w http.ResponseWriter, nonce string) {
 	type serverSideContent struct {
 		Name             string
 		Summary          string
@@ -54,14 +53,14 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Nonce            string
 	}
 
-	status := getStatusResponse()
+	status := s.getStatusResponse()
 	sb, err := json.Marshal(status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	config := getConfigResponse()
+	config := s.getConfigResponse()
 	cb, err := json.Marshal(config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -69,10 +68,10 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 	}
 
 	content := serverSideContent{
-		Name:             data.GetServerName(),
-		Summary:          data.GetServerSummary(),
-		RequestedURL:     data.GetServerURL(),
-		TagsString:       strings.Join(data.GetServerMetadataTags(), ","),
+		Name:             s.Data.GetServerName(),
+		Summary:          s.Data.GetServerSummary(),
+		RequestedURL:     s.Data.GetServerURL(),
+		TagsString:       strings.Join(s.Data.GetServerMetadataTags(), ","),
 		ThumbnailURL:     "/thumbnail",
 		Thumbnail:        "/thumbnail",
 		Image:            "/logo/external",

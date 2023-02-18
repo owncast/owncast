@@ -3,146 +3,142 @@ package admin
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/activitypub/outbox"
-	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/core/data"
 )
 
 // SendFederatedMessage will send a manual message to the fediverse.
-func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
+	configValue, success := c.getValueFromRequest(w, r)
 	if !success {
 		return
 	}
 
 	message, ok := configValue.Value.(string)
 	if !ok {
-		controllers.WriteSimpleResponse(w, false, "unable to send message")
+		c.WriteSimpleResponse(w, false, "unable to send message")
 		return
 	}
 
-	if err := activitypub.SendPublicFederatedMessage(message); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.ActivityPub.SendPublicFederatedMessage(message); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "sent")
+	c.WriteSimpleResponse(w, true, "sent")
 }
 
 // SetFederationEnabled will set if Federation features are enabled.
-func SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
+	configValue, success := c.getValueFromRequest(w, r)
 	if !success {
 		return
 	}
 
-	if err := data.SetFederationEnabled(configValue.Value.(bool)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetFederationEnabled(configValue.Value.(bool)); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
-	controllers.WriteSimpleResponse(w, true, "federation features saved")
+	c.WriteSimpleResponse(w, true, "federation features saved")
 }
 
 // SetFederationActivityPrivate will set if Federation features are private to followers.
-func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
+	configValue, success := c.getValueFromRequest(w, r)
 	if !success {
 		return
 	}
 
-	if err := data.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Outbox.UpdateFollowersWithAccountUpdates(c.ActivityPub.Persistence); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "federation private saved")
+	c.WriteSimpleResponse(w, true, "federation private saved")
 }
 
 // SetFederationShowEngagement will set if Fedivese engagement shows in chat.
-func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
+	configValue, success := c.getValueFromRequest(w, r)
 	if !success {
 		return
 	}
 
-	if err := data.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
-	controllers.WriteSimpleResponse(w, true, "federation show engagement saved")
+	c.WriteSimpleResponse(w, true, "federation show engagement saved")
 }
 
 // SetFederationUsername will set the local actor username used for federation activities.
-func SetFederationUsername(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
+	configValue, success := c.getValueFromRequest(w, r)
 	if !success {
 		return
 	}
 
-	if err := data.SetFederationUsername(configValue.Value.(string)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetFederationUsername(configValue.Value.(string)); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "username saved")
+	c.WriteSimpleResponse(w, true, "username saved")
 }
 
 // SetFederationGoLiveMessage will set the federated message sent when the streamer goes live.
-func SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValue, success := getValueFromRequest(w, r)
+	configValue, success := c.getValueFromRequest(w, r)
 	if !success {
 		return
 	}
 
-	if err := data.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "message saved")
+	c.WriteSimpleResponse(w, true, "message saved")
 }
 
 // SetFederationBlockDomains saves a list of domains to block on the Fediverse.
-func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
-	if !requirePOST(w, r) {
+func (c *Controller) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+	if !c.requirePOST(w, r) {
 		return
 	}
 
-	configValues, success := getValuesFromRequest(w, r)
+	configValues, success := c.getValuesFromRequest(w, r)
 	if !success {
-		controllers.WriteSimpleResponse(w, false, "unable to handle provided domains")
+		c.WriteSimpleResponse(w, false, "unable to handle provided domains")
 		return
 	}
 
@@ -151,22 +147,22 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 		domainStrings = append(domainStrings, domain.Value.(string))
 	}
 
-	if err := data.SetBlockedFederatedDomains(domainStrings); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+	if err := c.Data.SetBlockedFederatedDomains(domainStrings); err != nil {
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	controllers.WriteSimpleResponse(w, true, "saved")
+	c.WriteSimpleResponse(w, true, "saved")
 }
 
 // GetFederatedActions will return the saved list of accepted inbound
 // federated activities.
-func GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
 	offset := pageSize * page
 
-	activities, total, err := persistence.GetInboundActivities(pageSize, offset)
+	activities, total, err := c.ActivityPub.Persistence.GetInboundActivities(pageSize, offset)
 	if err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
@@ -175,5 +171,5 @@ func GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.
 		Results: activities,
 	}
 
-	controllers.WriteResponse(w, response)
+	c.WriteResponse(w, response)
 }

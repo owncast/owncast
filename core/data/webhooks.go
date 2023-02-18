@@ -6,11 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
 )
 
-func createWebhooksTable() {
+func (s *Service) createWebhooksTable() {
 	log.Traceln("Creating webhooks table...")
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS webhooks (
@@ -21,7 +22,7 @@ func createWebhooksTable() {
 		"last_used" DATETIME
 	);`
 
-	stmt, err := _db.Prepare(createTableSQL)
+	stmt, err := s.Store.DB.Prepare(createTableSQL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,12 +33,12 @@ func createWebhooksTable() {
 }
 
 // InsertWebhook will add a new webhook to the database.
-func InsertWebhook(url string, events []models.EventType) (int, error) {
+func (s *Service) InsertWebhook(url string, events []models.EventType) (int, error) {
 	log.Traceln("Adding new webhook")
 
 	eventsString := strings.Join(events, ",")
 
-	tx, err := _db.Begin()
+	tx, err := s.Store.DB.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -65,10 +66,10 @@ func InsertWebhook(url string, events []models.EventType) (int, error) {
 }
 
 // DeleteWebhook will delete a webhook from the database.
-func DeleteWebhook(id int) error {
+func (s *Service) DeleteWebhook(id int) error {
 	log.Traceln("Deleting webhook")
 
-	tx, err := _db.Begin()
+	tx, err := s.Store.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -96,7 +97,7 @@ func DeleteWebhook(id int) error {
 }
 
 // GetWebhooksForEvent will return all of the webhooks that want to be notified about an event type.
-func GetWebhooksForEvent(event models.EventType) []models.Webhook {
+func (s *Service) GetWebhooksForEvent(event models.EventType) []models.Webhook {
 	webhooks := make([]models.Webhook, 0)
 
 	query := `SELECT * FROM (
@@ -113,7 +114,7 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 		 WHERE event <> ''
 	  ) AS webhook WHERE event IS "` + event + `"`
 
-	rows, err := _db.Query(query)
+	rows, err := s.Store.DB.Query(query)
 	if err != nil || rows.Err() != nil {
 		log.Fatal(err)
 	}
@@ -140,12 +141,12 @@ func GetWebhooksForEvent(event models.EventType) []models.Webhook {
 }
 
 // GetWebhooks will return all the webhooks.
-func GetWebhooks() ([]models.Webhook, error) { //nolint
+func (s *Service) GetWebhooks() ([]models.Webhook, error) { //nolint
 	webhooks := make([]models.Webhook, 0)
 
 	query := "SELECT * FROM webhooks"
 
-	rows, err := _db.Query(query)
+	rows, err := s.Store.DB.Query(query)
 	if err != nil {
 		return webhooks, err
 	}
@@ -193,8 +194,8 @@ func GetWebhooks() ([]models.Webhook, error) { //nolint
 }
 
 // SetWebhookAsUsed will update the last used time for a webhook.
-func SetWebhookAsUsed(webhook models.Webhook) error {
-	tx, err := _db.Begin()
+func (s *Service) SetWebhookAsUsed(webhook models.Webhook) error {
+	tx, err := s.Store.DB.Begin()
 	if err != nil {
 		return err
 	}

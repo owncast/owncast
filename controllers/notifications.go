@@ -6,7 +6,6 @@ import (
 
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/notifications"
-
 	"github.com/owncast/owncast/utils"
 
 	log "github.com/sirupsen/logrus"
@@ -14,9 +13,9 @@ import (
 
 // RegisterForLiveNotifications will register a channel + destination to be
 // notified when a stream goes live.
-func RegisterForLiveNotifications(u user.User, w http.ResponseWriter, r *http.Request) {
+func (s *Service) RegisterForLiveNotifications(u user.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != POST {
-		WriteSimpleResponse(w, false, r.Method+" not supported")
+		s.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
 
@@ -31,7 +30,7 @@ func RegisterForLiveNotifications(u user.User, w http.ResponseWriter, r *http.Re
 	var req request
 	if err := decoder.Decode(&req); err != nil {
 		log.Errorln(err)
-		WriteSimpleResponse(w, false, "unable to register for notifications")
+		s.WriteSimpleResponse(w, false, "unable to register for Notifications")
 		return
 	}
 
@@ -39,13 +38,13 @@ func RegisterForLiveNotifications(u user.User, w http.ResponseWriter, r *http.Re
 	validTypes := []string{notifications.BrowserPushNotification}
 	_, validChannel := utils.FindInSlice(validTypes, req.Channel)
 	if !validChannel {
-		WriteSimpleResponse(w, false, "invalid notification channel: "+req.Channel)
+		s.WriteSimpleResponse(w, false, "invalid notification channel: "+req.Channel)
 		return
 	}
 
-	if err := notifications.AddNotification(req.Channel, req.Destination); err != nil {
+	if err := s.Notifications.AddNotification(req.Channel, req.Destination); err != nil {
 		log.Errorln(err)
-		WriteSimpleResponse(w, false, "unable to save notification")
+		s.WriteSimpleResponse(w, false, "unable to save notification")
 		return
 	}
 }

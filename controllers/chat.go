@@ -4,27 +4,28 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/app/middleware"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // ExternalGetChatMessages gets all of the chat messages.
-func ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (s *Service) ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-	getChatMessages(w, r)
+	s.getChatMessages(w, r)
 }
 
 // GetChatMessages gets all of the chat messages.
-func GetChatMessages(u user.User, w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetChatMessages(u user.User, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-	getChatMessages(w, r)
+	s.getChatMessages(w, r)
 }
 
-func getChatMessages(w http.ResponseWriter, r *http.Request) {
+func (s *Service) getChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	switch r.Method {
@@ -37,13 +38,13 @@ func getChatMessages(w http.ResponseWriter, r *http.Request) {
 	default:
 		w.WriteHeader(http.StatusNotImplemented)
 		if err := json.NewEncoder(w).Encode(j{"error": "method not implemented (PRs are accepted)"}); err != nil {
-			InternalErrorHandler(w, err)
+			s.InternalErrorHandler(w, err)
 		}
 	}
 }
 
 // RegisterAnonymousChatUser will register a new user.
-func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
+func (s *Service) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
 	if r.Method == "OPTIONS" {
@@ -54,7 +55,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != http.MethodPost {
-		WriteSimpleResponse(w, false, r.Method+" not supported")
+		s.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
 
@@ -79,9 +80,9 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	proposedNewDisplayName := utils.MakeSafeStringOfLength(request.DisplayName, config.MaxChatDisplayNameLength)
-	newUser, accessToken, err := user.CreateAnonymousUser(proposedNewDisplayName)
+	newUser, accessToken, err := user.CreateAnonymousUser(proposedNewDisplayName, s.Data)
 	if err != nil {
-		WriteSimpleResponse(w, false, err.Error())
+		s.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
@@ -94,5 +95,5 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	middleware.DisableCache(w)
 
-	WriteResponse(w, response)
+	s.WriteResponse(w, response)
 }

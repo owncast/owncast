@@ -3,8 +3,9 @@ package data
 import (
 	"strings"
 
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
 )
 
 const (
@@ -12,29 +13,29 @@ const (
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
-func migrateDatastoreValues(datastore *Datastore) {
-	currentVersion, _ := _datastore.GetNumber(datastoreValueVersionKey)
+func (s *Service) migrateDatastoreValues(datastore *Datastore) {
+	currentVersion, _ := s.Store.GetNumber(datastoreValueVersionKey)
 	if currentVersion == 0 {
 		currentVersion = datastoreValuesVersion
 	}
 
 	for v := currentVersion; v < datastoreValuesVersion; v++ {
-		log.Infof("Migration datastore values from %d to %d\n", int(v), int(v+1))
+		log.Infof("Migration Store values from %d to %d\n", int(v), int(v+1))
 		switch v {
 		case 0:
-			migrateToDatastoreValues1(datastore)
+			s.migrateToDatastoreValues1(datastore)
 		case 1:
-			migrateToDatastoreValues2(datastore)
+			s.migrateToDatastoreValues2(datastore)
 		default:
-			log.Fatalln("missing datastore values migration step")
+			log.Fatalln("missing Store values migration step")
 		}
 	}
-	if err := _datastore.SetNumber(datastoreValueVersionKey, datastoreValuesVersion); err != nil {
-		log.Errorln("error setting datastore value version:", err)
+	if err := s.Store.SetNumber(datastoreValueVersionKey, datastoreValuesVersion); err != nil {
+		log.Errorln("error setting Store value version:", err)
 	}
 }
 
-func migrateToDatastoreValues1(datastore *Datastore) {
+func (s *Service) migrateToDatastoreValues1(datastore *Datastore) {
 	// Migrate the forbidden usernames to be a slice instead of a string.
 	forbiddenUsernamesString, _ := datastore.GetString(blockedUsernamesKey)
 	if forbiddenUsernamesString != "" {
@@ -54,10 +55,10 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 	}
 }
 
-func migrateToDatastoreValues2(datastore *Datastore) {
+func (s *Service) migrateToDatastoreValues2(datastore *Datastore) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
-	_ = SetAdminPassword(oldAdminPassword)
-	_ = SetStreamKeys([]models.StreamKey{
+	_ = s.SetAdminPassword(oldAdminPassword)
+	_ = s.SetStreamKeys([]models.StreamKey{
 		{Key: oldAdminPassword, Comment: "Default stream key"},
 	})
 }

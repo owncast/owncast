@@ -22,6 +22,7 @@ var _commandExec *exec.Cmd
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
+	data                 *data.Service
 	input                string
 	stdin                *io.PipeReader
 	segmentOutputPath    string
@@ -114,7 +115,7 @@ func (t *Transcoder) Start() {
 
 	command := t.getString()
 	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.DisplayName(), len(t.variants))
-	createVariantDirectories()
+	createVariantDirectories(t.data)
 
 	if config.EnableDebugFeatures {
 		log.Println(command)
@@ -267,16 +268,18 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config.
-func NewTranscoder() *Transcoder {
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-
+func NewTranscoder(d *data.Service) *Transcoder {
 	transcoder := new(Transcoder)
+	transcoder.data = d
+
+	ffmpegPath := utils.ValidatedFfmpegPath(d.GetFfMpegPath())
+
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
-	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
-	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
-	transcoder.codec = getCodec(data.GetVideoCodec())
+	transcoder.currentStreamOutputSettings = d.GetStreamOutputVariants()
+	transcoder.currentLatencyLevel = d.GetStreamLatencyLevel()
+	transcoder.codec = getCodec(d.GetVideoCodec())
 	transcoder.segmentOutputPath = config.HLSStoragePath
 	transcoder.playlistOutputPath = config.HLSStoragePath
 

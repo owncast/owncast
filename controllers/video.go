@@ -3,8 +3,6 @@ package controllers
 import (
 	"net/http"
 	"sort"
-
-	"github.com/owncast/owncast/core/data"
 )
 
 type variantsSort struct {
@@ -20,8 +18,8 @@ type variantsResponse struct {
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
-func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
-	outputVariants := data.GetStreamOutputVariants()
+func (s *Service) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	outputVariants := s.Data.GetStreamOutputVariants()
 
 	streamSortVariants := make([]variantsSort, len(outputVariants))
 	for i, variant := range outputVariants {
@@ -55,5 +53,5 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		response[i] = variantResponse
 	}
 
-	WriteResponse(w, response)
+	s.WriteResponse(w, response)
 }

@@ -1,0 +1,199 @@
+package data
+
+import (
+	"fmt"
+	"os"
+	"testing"
+)
+
+func TestMain(m *testing.M) {
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-DB.DB")
+	if err != nil {
+		panic(err)
+	}
+
+	s := &Service{}
+	s.Init(dbFile.Name())
+
+	m.Run()
+}
+
+func TestString(t *testing.T) {
+	const testKey = "test string key"
+	const testValue = "test string value"
+
+	s := &Service{}
+
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-DB.DB")
+	if err != nil {
+		panic(err)
+	}
+
+	s.Init(dbFile.Name())
+
+	if err := s.Store.SetString(testKey, testValue); err != nil {
+		panic(err)
+	}
+
+	// Get the config entry from the database
+	stringTestResult, err := s.Store.GetString(testKey)
+	if err != nil {
+		panic(err)
+	}
+
+	if stringTestResult != testValue {
+		t.Error("expected", testValue, "but test returned", stringTestResult)
+	}
+}
+
+func TestNumber(t *testing.T) {
+	const testKey = "test number key"
+	const testValue = 42
+
+	s := &Service{}
+
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-DB.DB")
+	if err != nil {
+		panic(err)
+	}
+
+	s.Init(dbFile.Name())
+
+	err = s.Store.SetNumber(testKey, testValue)
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the config entry from the database
+	numberTestResult, err := s.Store.GetNumber(testKey)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(numberTestResult)
+
+	if numberTestResult != testValue {
+		t.Error("expected", testValue, "but test returned", numberTestResult)
+	}
+}
+
+func TestBool(t *testing.T) {
+	const testKey = "test bool key"
+	const testValue = true
+
+	s := &Service{}
+
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-DB.DB")
+	if err != nil {
+		panic(err)
+	}
+
+	s.Init(dbFile.Name())
+
+	err = s.Store.SetBool(testKey, testValue)
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the config entry from the database
+	numberTestResult, err := s.Store.GetBool(testKey)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(numberTestResult)
+
+	if numberTestResult != testValue {
+		t.Error("expected", testValue, "but test returned", numberTestResult)
+	}
+}
+
+func TestCustomType(t *testing.T) {
+	const testKey = "test custom type key"
+
+	// Test an example struct with a slice
+	testStruct := TestStruct{
+		Test:      "Test string 123 in test struct",
+		TestSlice: []string{"test string 1", "test string 2"},
+	}
+
+	s := &Service{}
+
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-DB.DB")
+	if err != nil {
+		panic(err)
+	}
+
+	s.Init(dbFile.Name())
+
+	// Save config entry to the database
+	if err := s.Store.Save(ConfigEntry{testKey, &testStruct}); err != nil {
+		t.Error(err)
+	}
+
+	// Get the config entry from the database
+	entryResult, err := s.Store.Get(testKey)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Get a typed struct out of it
+	var testResult TestStruct
+	if err := entryResult.getObject(&testResult); err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("%+v", testResult)
+
+	if testResult.TestSlice[0] != testStruct.TestSlice[0] {
+		t.Error("expected", testStruct.TestSlice[0], "but test returned", testResult.TestSlice[0])
+	}
+}
+
+func TestStringMap(t *testing.T) {
+	const testKey = "test string map key"
+
+	testMap := map[string]string{
+		"test string 1": "test string 2",
+		"test string 3": "test string 4",
+	}
+
+	s := &Service{}
+
+	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-DB.DB")
+	if err != nil {
+		panic(err)
+	}
+
+	s.Init(dbFile.Name())
+
+	// Save config entry to the database
+	if err := s.Store.Save(ConfigEntry{testKey, &testMap}); err != nil {
+		t.Error(err)
+	}
+
+	// Get the config entry from the database
+	entryResult, err := s.Store.Get(testKey)
+	if err != nil {
+		t.Error(err)
+	}
+
+	testResult, err := entryResult.getStringMap()
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("%+v", testResult)
+
+	if testResult["test string 1"] != testMap["test string 1"] {
+		t.Error("expected", testMap["test string 1"], "but test returned", testResult["test string 1"])
+	}
+	if testResult["test string 3"] != testMap["test string 3"] {
+		t.Error("expected", testMap["test string 3"], "but test returned", testResult["test string 3"])
+	}
+}
+
+// Custom type for testing
+type TestStruct struct {
+	Test            string
+	TestSlice       []string
+	privateProperty string
+}

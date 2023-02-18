@@ -4,7 +4,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 )
@@ -27,18 +26,18 @@ type WebhookChatMessage struct {
 }
 
 // SendEventToWebhooks will send a single webhook event to all webhook destinations.
-func SendEventToWebhooks(payload WebhookEvent) {
-	sendEventToWebhooks(payload, nil)
+func (s *Service) SendEventToWebhooks(payload WebhookEvent) {
+	s.sendEventToWebhooks(payload, nil)
 }
 
-func sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
-	webhooks := data.GetWebhooksForEvent(payload.Type)
+func (s *Service) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
+	webhooks := s.data.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
 		// Use wg to track the number of notifications to be sent.
 		if wg != nil {
 			wg.Add(1)
 		}
-		addToQueue(webhook, payload, wg)
+		s.addToQueue(webhook, payload, wg)
 	}
 }

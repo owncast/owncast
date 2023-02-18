@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
+
+	"github.com/owncast/owncast/core/data"
 )
 
 // ServerAuthRequest is n inbound request to authenticate against
@@ -69,7 +70,7 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 
 // CompleteServerAuth will verify that the values provided in the final step
 // of the IndieAuth flow are correct, and return some basic profile info.
-func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
+func CompleteServerAuth(code, redirectURI, clientID, codeVerifier string, d *data.Service) (*ServerProfileResponse, error) {
 	request, pending := pendingServerAuthRequests[code]
 	if !pending {
 		return nil, errors.New("no pending authentication request")
@@ -89,11 +90,11 @@ func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string)
 	}
 
 	response := ServerProfileResponse{
-		Me: data.GetServerURL(),
+		Me: d.GetServerURL(),
 		Profile: ServerProfile{
-			Name:  data.GetServerName(),
-			URL:   data.GetServerURL(),
-			Photo: fmt.Sprintf("%s/%s", data.GetServerURL(), data.GetLogoPath()),
+			Name:  d.GetServerName(),
+			URL:   d.GetServerURL(),
+			Photo: fmt.Sprintf("%s/%s", d.GetServerURL(), d.GetLogoPath()),
 		},
 	}
 

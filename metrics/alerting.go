@@ -22,18 +22,18 @@ var errorResetDuration = time.Minute * 5
 
 const alertingError = "The %s utilization of %f%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
 
-func handleAlerting() {
-	handleCPUAlerting()
-	handleRAMAlerting()
-	handleDiskAlerting()
+func (s *Service) handleAlerting() {
+	s.handleCPUAlerting()
+	s.handleRAMAlerting()
+	s.handleDiskAlerting()
 }
 
-func handleCPUAlerting() {
-	if len(metrics.CPUUtilizations) < 2 {
+func (s *Service) handleCPUAlerting() {
+	if len(s.Metrics.CPUUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.CPUUtilizations)
+	avg := s.recentAverage(s.Metrics.CPUUtilizations)
 	if avg > maxCPUAlertingThresholdPCT && !inCPUAlertingState {
 		log.Warnf(alertingError, "CPU", avg)
 		inCPUAlertingState = true
@@ -46,12 +46,12 @@ func handleCPUAlerting() {
 	}
 }
 
-func handleRAMAlerting() {
-	if len(metrics.RAMUtilizations) < 2 {
+func (s *Service) handleRAMAlerting() {
+	if len(s.Metrics.RAMUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.RAMUtilizations)
+	avg := s.recentAverage(s.Metrics.RAMUtilizations)
 	if avg > maxRAMAlertingThresholdPCT && !inRAMAlertingState {
 		log.Warnf(alertingError, "memory", avg)
 		inRAMAlertingState = true
@@ -64,12 +64,12 @@ func handleRAMAlerting() {
 	}
 }
 
-func handleDiskAlerting() {
-	if len(metrics.DiskUtilizations) < 2 {
+func (s *Service) handleDiskAlerting() {
+	if len(s.Metrics.DiskUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.DiskUtilizations)
+	avg := s.recentAverage(s.Metrics.DiskUtilizations)
 
 	if avg > maxDiskAlertingThresholdPCT && !inDiskAlertingState {
 		log.Warnf(alertingError, "disk", avg)
@@ -83,6 +83,6 @@ func handleDiskAlerting() {
 	}
 }
 
-func recentAverage(values []TimestampedValue) float64 {
+func (s *Service) recentAverage(values []TimestampedValue) float64 {
 	return (values[len(values)-1].Value + values[len(values)-2].Value) / 2
 }

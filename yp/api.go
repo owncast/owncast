@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type ypDetailsResponse struct {
@@ -27,29 +27,29 @@ type ypDetailsResponse struct {
 }
 
 // GetYPResponse gets the status of the server for YP purposes.
-func GetYPResponse(w http.ResponseWriter, r *http.Request) {
-	if !data.GetDirectoryEnabled() {
+func (yp *YP) GetYPResponse(w http.ResponseWriter, r *http.Request) {
+	if !yp.data.GetDirectoryEnabled() {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	status := getStatus()
 
-	streamTitle := data.GetStreamTitle()
+	streamTitle := yp.data.GetStreamTitle()
 
 	response := ypDetailsResponse{
-		Name:                  data.GetServerName(),
-		Description:           data.GetServerSummary(),
+		Name:                  yp.data.GetServerName(),
+		Description:           yp.data.GetServerSummary(),
 		StreamTitle:           streamTitle,
 		Logo:                  "/logo",
-		NSFW:                  data.GetNSFW(),
-		Tags:                  data.GetServerMetadataTags(),
+		NSFW:                  yp.data.GetNSFW(),
+		Tags:                  yp.data.GetServerMetadataTags(),
 		Online:                status.Online,
 		ViewerCount:           status.ViewerCount,
 		OverallMaxViewerCount: status.OverallMaxViewerCount,
 		SessionMaxViewerCount: status.SessionMaxViewerCount,
 		LastConnectTime:       status.LastConnectTime,
-		Social:                data.GetSocialHandles(),
+		Social:                yp.data.GetSocialHandles(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

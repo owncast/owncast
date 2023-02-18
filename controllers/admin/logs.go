@@ -5,18 +5,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/logging"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/logging"
 )
 
 // GetLogs will return all logs.
-func GetLogs(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetLogs(w http.ResponseWriter, r *http.Request) {
 	logs := logging.Logger.AllEntries()
 	response := make([]logsResponse, 0)
 
 	for i := 0; i < len(logs); i++ {
-		response = append(response, fromEntry(logs[i]))
+		response = append(response, c.fromEntry(logs[i]))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -26,14 +27,14 @@ func GetLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetWarnings will return only warning and error logs.
-func GetWarnings(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetWarnings(w http.ResponseWriter, r *http.Request) {
 	logs := logging.Logger.WarningEntries()
 	response := make([]logsResponse, 0)
 
 	for i := 0; i < len(logs); i++ {
 		logEntry := logs[i]
 		if logEntry != nil {
-			response = append(response, fromEntry(logEntry))
+			response = append(response, c.fromEntry(logEntry))
 		}
 	}
 
@@ -49,7 +50,7 @@ type logsResponse struct {
 	Time    time.Time `json:"time"`
 }
 
-func fromEntry(e *logrus.Entry) logsResponse {
+func (c *Controller) fromEntry(e *logrus.Entry) logsResponse {
 	return logsResponse{
 		Message: e.Message,
 		Level:   e.Level.String(),

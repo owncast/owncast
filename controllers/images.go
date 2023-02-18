@@ -14,7 +14,7 @@ const (
 )
 
 // GetThumbnail will return the thumbnail image as a response.
-func GetThumbnail(w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	imageFilename := "thumbnail.jpg"
 	imagePath := filepath.Join(config.TempDir, imageFilename)
 
@@ -22,23 +22,23 @@ func GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if utils.DoesFileExists(imagePath) {
-		imageBytes, err = getImage(imagePath)
+		imageBytes, err = s.getImage(imagePath)
 	} else {
-		GetLogo(w, r)
+		s.GetLogo(w, r)
 		return
 	}
 
 	if err != nil {
-		GetLogo(w, r)
+		s.GetLogo(w, r)
 		return
 	}
 
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentTypeJPEG, w, cacheTime)
+	s.writeBytesAsImage(imageBytes, contentTypeJPEG, w, cacheTime)
 }
 
 // GetPreview will return the preview gif as a response.
-func GetPreview(w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetPreview(w http.ResponseWriter, r *http.Request) {
 	imageFilename := "preview.gif"
 	imagePath := filepath.Join(config.TempDir, imageFilename)
 
@@ -46,17 +46,17 @@ func GetPreview(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if utils.DoesFileExists(imagePath) {
-		imageBytes, err = getImage(imagePath)
+		imageBytes, err = s.getImage(imagePath)
 	} else {
-		GetLogo(w, r)
+		s.GetLogo(w, r)
 		return
 	}
 
 	if err != nil {
-		GetLogo(w, r)
+		s.GetLogo(w, r)
 		return
 	}
 
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
-	writeBytesAsImage(imageBytes, contentTypeGIF, w, cacheTime)
+	s.writeBytesAsImage(imageBytes, contentTypeGIF, w, cacheTime)
 }

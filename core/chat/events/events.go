@@ -13,8 +13,9 @@ import (
 	"github.com/yuin/goldmark/renderer/html"
 	"mvdan.cc/xurls"
 
-	"github.com/owncast/owncast/core/user"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/core/user"
 )
 
 // EventPayload is a generic key/value map for sending out to chat clients.
@@ -22,7 +23,7 @@ type EventPayload map[string]interface{}
 
 // OutboundEvent represents an event that is sent out to all listeners of the chat server.
 type OutboundEvent interface {
-	GetBroadcastPayload() EventPayload
+	GetBroadcastPayload(serverName string) EventPayload
 	GetMessageType() EventType
 }
 

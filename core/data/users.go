@@ -1,18 +1,18 @@
 package data
 
 import (
-	"database/sql"
-
 	log "github.com/sirupsen/logrus"
 )
 
-func createAccessTokenTable(db *sql.DB) {
+func (s *Service) createAccessTokenTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS user_access_tokens (
     "token" TEXT NOT NULL PRIMARY KEY,
     "user_id" TEXT NOT NULL,
     "timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
   );`
+
+	db := s.Store.DB
 
 	stmt, err := db.Prepare(createTableSQL)
 	if err != nil {
@@ -25,7 +25,7 @@ func createAccessTokenTable(db *sql.DB) {
 	}
 }
 
-func createUsersTable(db *sql.DB) {
+func (s *Service) createUsersTable() {
 	log.Traceln("Creating users table...")
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS users (
@@ -43,6 +43,8 @@ func createUsersTable(db *sql.DB) {
 		PRIMARY KEY (id)
 	);`
 
+	db := s.Store.DB
+
 	MustExec(createTableSQL, db)
 	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON users (id);`, db)
 	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id_disabled ON users (id, disabled_at);`, db)
@@ -50,9 +52,9 @@ func createUsersTable(db *sql.DB) {
 }
 
 // GetUsersCount will return the number of users in the database.
-func GetUsersCount() int64 {
+func (s *Service) GetUsersCount() int64 {
 	query := `SELECT COUNT(*) FROM users`
-	rows, err := _db.Query(query)
+	rows, err := s.Store.DB.Query(query)
 	if err != nil || rows.Err() != nil {
 		return 0
 	}

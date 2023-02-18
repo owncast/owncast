@@ -7,12 +7,11 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/owncast/owncast/activitypub/webfinger"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/internal/activitypub/webfinger"
 )
 
 // RemoteFollow handles a request to begin the remote follow redirect flow.
-func RemoteFollow(w http.ResponseWriter, r *http.Request) {
+func (s *Service) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	type followRequest struct {
 		Account string `json:"account"`
 	}
@@ -24,21 +23,21 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	var request followRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&request); err != nil {
-		WriteSimpleResponse(w, false, "unable to parse request")
+		s.WriteSimpleResponse(w, false, "unable to parse request")
 		return
 	}
 
 	if request.Account == "" {
-		WriteSimpleResponse(w, false, "Remote Fediverse account is required to follow.")
+		s.WriteSimpleResponse(w, false, "Remote Fediverse account is required to follow.")
 		return
 	}
 
-	localActorPath, _ := url.Parse(data.GetServerURL())
-	localActorPath.Path = fmt.Sprintf("/federation/user/%s", data.GetDefaultFederationUsername())
+	localActorPath, _ := url.Parse(s.Data.GetServerURL())
+	localActorPath.Path = fmt.Sprintf("/federation/user/%s", s.Data.GetDefaultFederationUsername())
 	var template string
 	links, err := webfinger.GetWebfingerLinks(request.Account)
 	if err != nil {
-		WriteSimpleResponse(w, false, err.Error())
+		s.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
@@ -52,7 +51,7 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if localActorPath.String() == "" || template == "" {
-		WriteSimpleResponse(w, false, "unable to determine remote follow information for "+request.Account)
+		s.WriteSimpleResponse(w, false, "unable to determine remote follow information for "+request.Account)
 		return
 	}
 
@@ -61,5 +60,5 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 		RedirectURL: redirectURL,
 	}
 
-	WriteResponse(w, response)
+	s.WriteResponse(w, response)
 }

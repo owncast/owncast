@@ -6,18 +6,16 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-
-	"github.com/owncast/owncast/core/data"
 )
 
 // CleanupOldContent will delete old files from the private dir that are no longer being referenced
 // in the stream.
-func CleanupOldContent(baseDirectory string) {
+func (t *Transcoder) CleanupOldContent(baseDirectory string) {
 	// Determine how many files we should keep on disk
-	maxNumber := data.GetStreamLatencyLevel().SegmentCount
+	maxNumber := t.data.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
 
-	files, err := getAllFilesRecursive(baseDirectory)
+	files, err := t.getAllFilesRecursive(baseDirectory)
 	if err != nil {
 		log.Debugln("Unable to cleanup old video files", err)
 		return
@@ -43,7 +41,7 @@ func CleanupOldContent(baseDirectory string) {
 	}
 }
 
-func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error) {
+func (t *Transcoder) getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error) {
 	var files = make(map[string][]os.FileInfo)
 
 	var directory string

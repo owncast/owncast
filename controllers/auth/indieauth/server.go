@@ -4,27 +4,26 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/owncast/owncast/app/middleware"
 	ia "github.com/owncast/owncast/auth/indieauth"
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/router/middleware"
 )
 
 // HandleAuthEndpoint will handle the IndieAuth auth endpoint.
-func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// Require the GET request for IndieAuth to be behind admin login.
-		f := middleware.RequireAdminAuth(handleAuthEndpointGet)
+		f := middleware.RequireAdminAuth(c.handleAuthEndpointGet, c.Data)
 		f(w, r)
 		return
 	} else if r.Method == http.MethodPost {
-		handleAuthEndpointPost(w, r)
+		c.handleAuthEndpointPost(w, r)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 }
 
-func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	codeChallenge := r.URL.Query().Get("code_challenge")
@@ -33,7 +32,7 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 
 	request, err := ia.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
 	if err != nil {
-		_ = controllers.WriteString(w, err.Error(), http.StatusInternalServerError)
+		_ = c.WriteString(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -42,7 +41,7 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	// If the URL is invalid then return with specific "invalid_request" error.
 	u, err := url.Parse(redirectURI)
 	if err != nil {
-		controllers.WriteResponse(w, ia.Response{
+		c.WriteResponse(w, ia.Response{
 			Error:            "invalid_request",
 			ErrorDescription: err.Error(),
 		})
@@ -57,9 +56,9 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
 }
 
-func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		controllers.WriteSimpleResponse(w, false, err.Error())
+		c.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
@@ -67,17 +66,18 @@ func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	redirectURI := r.PostForm.Get("redirect_uri")
 	clientID := r.PostForm.Get("client_id")
 	codeVerifier := r.PostForm.Get("code_verifier")
+	dataService := c.ActivityPub.Persistence.Data
 
 	// If the server auth flow cannot be completed then return with specific
 	// "invalid_client" error.
-	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
+	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier, dataService)
 	if err != nil {
-		controllers.WriteResponse(w, ia.Response{
+		c.WriteResponse(w, ia.Response{
 			Error:            "invalid_client",
 			ErrorDescription: err.Error(),
 		})
 		return
 	}
 
-	controllers.WriteResponse(w, response)
+	c.WriteResponse(w, response)
 }

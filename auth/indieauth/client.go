@@ -11,9 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/core/data"
 )
 
 var (
@@ -45,12 +46,12 @@ func setupExpiredRequestPruner() {
 }
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
-func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
+func StartAuthFlow(authHost, userID, accessToken, displayName string, d *data.Service) (*url.URL, error) {
 	if len(pendingAuthRequests) >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
-	serverURL := data.GetServerURL()
+	serverURL := d.GetServerURL()
 	if serverURL == "" {
 		return nil, errors.New("Owncast server URL must be set when using auth")
 	}

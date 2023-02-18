@@ -11,6 +11,7 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/gorilla/websocket"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
@@ -244,5 +245,5 @@ func (c *Client) sendAction(message string) {
 	}
 	clientMessage.SetDefaults()
 	clientMessage.RenderBody()
-	c.sendPayload(clientMessage.GetBroadcastPayload())
+	c.sendPayload(clientMessage.GetBroadcastPayload(c.server.data.GetServerName()))
 }

@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/controllers"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/config"
 )
 
 /*
@@ -34,7 +34,7 @@ specific conditions are met.
 */
 
 // AutoUpdateOptions will return what auto update options are available.
-func AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
 	type autoUpdateOptionsResponse struct {
 		SupportsUpdate bool `json:"supportsUpdate"`
 		CanRestart     bool `json:"canRestart"`
@@ -48,30 +48,30 @@ func AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
 	// Nothing is supported when running under "dev" or the feature is
 	// explicitly disabled.
 	if config.BuildPlatform == "dev" || !config.EnableAutoUpdate {
-		controllers.WriteResponse(w, updateOptions)
+		c.Service.WriteResponse(w, updateOptions)
 		return
 	}
 
 	// If we are not in a container then we can update in place.
-	if getContainerID() == "" {
+	if c.getContainerID() == "" {
 		updateOptions.SupportsUpdate = true
 	}
 
-	updateOptions.CanRestart = isRunningUnderSystemD()
+	updateOptions.CanRestart = c.isRunningUnderSystemD()
 
-	controllers.WriteResponse(w, updateOptions)
+	c.Service.WriteResponse(w, updateOptions)
 }
 
 // AutoUpdateStart will begin the auto update process.
-func AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
 	// We return the console output directly to the client.
 	w.Header().Set("Content-Type", "text/plain")
 
 	// Download the installer and save it to a temp file.
-	updater, err := downloadInstaller()
+	updater, err := c.downloadInstaller()
 	if err != nil {
 		log.Errorln(err)
-		controllers.WriteSimpleResponse(w, false, "failed to download and run installer")
+		c.Service.WriteSimpleResponse(w, false, "failed to download and run installer")
 		return
 	}
 
@@ -96,15 +96,15 @@ func AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
 }
 
 // AutoUpdateForceQuit will force quit the service.
-func AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
 	log.Warnln("Owncast is exiting due to request.")
 	go func() {
 		os.Exit(0)
 	}()
-	controllers.WriteSimpleResponse(w, true, "forcing quit")
+	c.Service.WriteSimpleResponse(w, true, "forcing quit")
 }
 
-func downloadInstaller() (string, error) {
+func (c *Controller) downloadInstaller() (string, error) {
 	installer := "https://owncast.online/install.sh"
 	out, err := os.CreateTemp(os.TempDir(), "updater.sh")
 	if err != nil {
@@ -130,7 +130,7 @@ func downloadInstaller() (string, error) {
 }
 
 // Check to see if owncast is listed as a running service under systemd.
-func isRunningUnderSystemD() bool {
+func (c *Controller) isRunningUnderSystemD() bool {
 	// Our current PID
 	ppid := os.Getppid()
 
@@ -143,7 +143,7 @@ func isRunningUnderSystemD() bool {
 }
 
 // Taken from https://stackoverflow.com/questions/23513045/how-to-check-if-a-process-is-running-inside-docker-container
-func getContainerID() string {
+func (c *Controller) getContainerID() string {
 	pid := os.Getppid()
 	cgroupPath := fmt.Sprintf("/proc/%s/cgroup", strconv.Itoa(pid))
 	containerID := ""

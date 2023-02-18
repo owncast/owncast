@@ -22,6 +22,7 @@ var _inErrorState = false
 
 // YP is a service for handling listing in the Owncast directory.
 type YP struct {
+	data  *data.Service
 	timer *time.Ticker
 }
 
@@ -38,9 +39,11 @@ type ypPingRequest struct {
 }
 
 // NewYP creates a new instance of the YP service handler.
-func NewYP(getStatusFunc func() models.Status) *YP {
+func NewYP(getStatusFunc func() models.Status, d *data.Service) *YP {
 	getStatus = getStatusFunc
-	return &YP{}
+	return &YP{
+		data: d,
+	}
 }
 
 // Start is run when a live stream begins to start pinging YP.
@@ -59,7 +62,7 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
-	if !data.GetDirectoryEnabled() {
+	if !yp.data.GetDirectoryEnabled() {
 		return
 	}
 
@@ -69,7 +72,7 @@ func (yp *YP) ping() {
 		return
 	}
 
-	myInstanceURL := data.GetServerURL()
+	myInstanceURL := yp.data.GetServerURL()
 	if myInstanceURL == "" {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
 		return
@@ -83,9 +86,9 @@ func (yp *YP) ping() {
 		return
 	}
 
-	key := data.GetDirectoryRegistrationKey()
+	key := yp.data.GetDirectoryRegistrationKey()
 
-	log.Traceln("Pinging YP as: ", data.GetServerName(), "with key", key)
+	log.Traceln("Pinging YP as: ", yp.data.GetServerName(), "with key", key)
 
 	request := ypPingRequest{
 		Key: key,
@@ -127,7 +130,7 @@ func (yp *YP) ping() {
 	_inErrorState = false
 
 	if pingResponse.Key != key {
-		if err := data.SetDirectoryRegistrationKey(key); err != nil {
+		if err := yp.data.SetDirectoryRegistrationKey(key); err != nil {
 			log.Errorln("unable to save directory key:", err)
 		}
 	}

@@ -2,15 +2,13 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/owncast/owncast/activitypub/persistence"
 )
 
 // GetFollowers will handle an API request to fetch the list of followers (non-activitypub response).
-func GetFollowers(offset int, limit int, w http.ResponseWriter, r *http.Request) {
-	followers, total, err := persistence.GetFederationFollowers(limit, offset)
+func (s *Service) GetFollowers(offset int, limit int, w http.ResponseWriter, r *http.Request) {
+	followers, total, err := s.Follower.GetFederationFollowers(limit, offset)
 	if err != nil {
-		WriteSimpleResponse(w, false, "unable to fetch followers")
+		s.WriteSimpleResponse(w, false, "unable to fetch followers")
 		return
 	}
 
@@ -18,5 +16,6 @@ func GetFollowers(offset int, limit int, w http.ResponseWriter, r *http.Request)
 		Total:   total,
 		Results: followers,
 	}
-	WriteResponse(w, response)
+
+	s.WriteResponse(w, response)
 }

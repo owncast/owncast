@@ -20,17 +20,15 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var _server *Server
-
-// a map of user IDs and when they last were active.
-var _lastSeenCache = map[string]time.Time{}
-
 // Server represents an instance of the chat server.
 type Server struct {
+	webhooks                 *webhooks.Service
+	data                     *data.Service
 	mu                       sync.RWMutex
 	seq                      uint
 	clients                  map[uint]*Client
 	maxSocketConnectionLimit int64
+	chatService              *Service
 
 	// send outbound message payload to all clients
 	outbound chan []byte
@@ -42,10 +40,12 @@ type Server struct {
 	unregister chan uint // the ChatClient id
 
 	geoipClient *geoip.Client
+
+	// a map of user IDs and when they last were active.
+	lastSeenCache map[string]time.Time
 }
 
-// NewChat will return a new instance of the chat server.
-func NewChat() *Server {
+func createServer(chatService *Service) *Server {
 	maximumConcurrentConnectionLimit := getMaximumConcurrentConnectionLimit()
 	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
 
@@ -56,32 +56,34 @@ func NewChat() *Server {
 		unregister:               make(chan uint),
 		maxSocketConnectionLimit: maximumConcurrentConnectionLimit,
 		geoipClient:              geoip.NewClient(),
+		data:                     chatService.data,
+		webhooks:                 chatService.webhooks,
 	}
 
 	return server
 }
 
 // Run will start the chat server.
-func (s *Server) Run() {
+func (s *Service) Run() {
 	for {
 		select {
-		case clientID := <-s.unregister:
-			if _, ok := s.clients[clientID]; ok {
-				s.mu.Lock()
-				delete(s.clients, clientID)
-				s.mu.Unlock()
+		case clientID := <-s.server.unregister:
+			if _, ok := s.server.clients[clientID]; ok {
+				s.server.mu.Lock()
+				delete(s.server.clients, clientID)
+				s.server.mu.Unlock()
 			}
 
-		case message := <-s.inbound:
+		case message := <-s.server.inbound:
 			s.eventReceived(message)
 		}
 	}
 }
 
 // Addclient registers new connection as a User.
-func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *Client {
+func (s *Service) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *Client {
 	client := &Client{
-		server:      s,
+		server:      s.server,
 		conn:        conn,
 		User:        user,
 		IPAddress:   ipAddress,
@@ -92,37 +94,37 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 	}
 
 	// Do not send user re-joined broadcast message if they've been active within 5 minutes.
-	shouldSendJoinedMessages := data.GetChatJoinMessagesEnabled()
-	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*5 {
+	shouldSendJoinedMessages := s.data.GetChatJoinMessagesEnabled()
+	if previouslyLastSeen, ok := s.server.lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*5 {
 		shouldSendJoinedMessages = false
 	}
 
-	s.mu.Lock()
+	s.server.mu.Lock()
 	{
-		client.Id = s.seq
-		s.clients[client.Id] = client
-		s.seq++
-		_lastSeenCache[user.ID] = time.Now()
+		client.Id = s.server.seq
+		s.server.clients[client.Id] = client
+		s.server.seq++
+		s.server.lastSeenCache[user.ID] = time.Now()
 	}
-	s.mu.Unlock()
+	s.server.mu.Unlock()
 
-	log.Traceln("Adding client", client.Id, "total count:", len(s.clients))
+	log.Traceln("Adding client", client.Id, "total count:", len(s.server.clients))
 
 	go client.writePump()
 	go client.readPump()
 
 	client.sendConnectedClientInfo()
 
-	if getStatus().Online {
+	if s.getStatus().Online {
 		if shouldSendJoinedMessages {
-			s.sendUserJoinedMessage(client)
+			s.server.sendUserJoinedMessage(client)
 		}
-		s.sendWelcomeMessageToClient(client)
+		s.server.sendWelcomeMessageToClient(client)
 	}
 
-	// Asynchronously, optionally, fetch GeoIP data.
+	// Asynchronously, optionally, fetch GeoIP s.data.
 	go func(client *Client) {
-		client.Geo = s.geoipClient.GetGeoFromIP(ipAddress)
+		client.Geo = s.server.geoipClient.GetGeoFromIP(ipAddress)
 	}(client)
 
 	return client
@@ -139,7 +141,7 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	}
 
 	// Send chat user joined webhook
-	webhooks.SendChatEventUserJoined(userJoinedEvent)
+	s.webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
 // ClientClosed is fired when a client disconnects or connection is dropped.
@@ -155,15 +157,15 @@ func (s *Server) ClientClosed(c *Client) {
 }
 
 // HandleClientConnection is fired when a single client connects to the websocket.
-func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
-	if data.GetChatDisabled() {
+func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request, ss *Service) {
+	if s.data.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
 	}
 
 	ipAddress := utils.GetIPAddressFromRequest(r)
 	// Check if this client's IP address is banned. If so send a rejection.
-	if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
+	if blocked, err := s.data.IsIPAddressBanned(ipAddress); blocked {
 		log.Debugln("Client ip address has been blocked. Rejecting.")
 		event := events.UserDisabledEvent{}
 		event.SetDefaults()
@@ -171,7 +173,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusForbidden)
 		// Send this disabled event specifically to this single connected client
 		// to let them know they've been banned.
-		// _server.Send(event.GetBroadcastPayload(), client)
+		// server.Send(event.GetBroadcastPayload(), client)
 		return
 	} else if err != nil {
 		log.Errorln("error determining if IP address is blocked: ", err)
@@ -204,7 +206,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// A user is required to use the websocket
-	user := user.GetUserByToken(accessToken)
+	user := user.GetUserByToken(accessToken, s.data.Store)
 	if user == nil {
 		// Send error that registration is required
 		_ = conn.WriteJSON(events.EventPayload{
@@ -226,7 +228,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 
 	userAgent := r.UserAgent()
 
-	s.Addclient(conn, user, accessToken, userAgent, ipAddress)
+	ss.Addclient(conn, user, accessToken, userAgent, ipAddress)
 }
 
 // Broadcast sends message to all connected clients.
@@ -276,7 +278,7 @@ func (s *Server) DisconnectClients(clients []*Client) {
 
 			// Send this disabled event specifically to this single connected client
 			// to let them know they've been banned.
-			_server.Send(event.GetBroadcastPayload(), client)
+			s.Send(event.GetBroadcastPayload(), client)
 
 			// Give the socket time to send out the above message.
 			// Unfortunately I don't know of any way to get a real callback to know when
@@ -293,14 +295,14 @@ func (s *Server) DisconnectClients(clients []*Client) {
 
 // SendConnectedClientInfoToUser will find all the connected clients assigned to a user
 // and re-send each the connected client info.
-func SendConnectedClientInfoToUser(userID string) error {
-	clients, err := GetClientsForUser(userID)
+func (s *Service) SendConnectedClientInfoToUser(userID string) error {
+	clients, err := s.GetClientsForUser(userID)
 	if err != nil {
 		return err
 	}
 
 	// Get an updated reference to the user.
-	user := user.GetUserByID(userID)
+	user := user.GetUserByID(userID, s.data.Store)
 	if user == nil {
 		return fmt.Errorf("user not found")
 	}
@@ -321,27 +323,27 @@ func SendConnectedClientInfoToUser(userID string) error {
 
 // SendActionToUser will send system action text to all connected clients
 // assigned to a user ID.
-func SendActionToUser(userID string, text string) error {
-	clients, err := GetClientsForUser(userID)
+func (s *Service) SendActionToUser(userID string, text string) error {
+	clients, err := s.GetClientsForUser(userID)
 	if err != nil {
 		return err
 	}
 
 	for _, client := range clients {
-		_server.sendActionToClient(client, text)
+		s.server.sendActionToClient(client, text)
 	}
 
 	return nil
 }
 
-func (s *Server) eventReceived(event chatClientEvent) {
+func (s *Service) eventReceived(event chatClientEvent) {
 	c := event.client
 	u := c.User
 
 	// If established chat user only mode is enabled and the user is not old
 	// enough then reject this event and send them an informative message.
-	if u != nil && data.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
-		s.sendActionToClient(c, "You have not been an established chat participant long enough to take part in chat. Please enjoy the stream and try again later.")
+	if u != nil && s.data.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
+		s.server.sendActionToClient(c, "You have not been an established chat participant long enough to take part in chat. Please enjoy the stream and try again later.")
 		return
 	}
 
@@ -357,10 +359,10 @@ func (s *Server) eventReceived(event chatClientEvent) {
 		s.userMessageSent(event)
 
 	case events.UserNameChanged:
-		s.userNameChanged(event)
+		s.server.userNameChanged(event)
 
 	case events.UserColorChanged:
-		s.userColorChanged(event)
+		s.server.userColorChanged(event)
 	default:
 		log.Debugln(logSanitize(fmt.Sprint(eventType)), "event not found:", logSanitize(fmt.Sprint(typecheck)))
 	}
@@ -370,7 +372,7 @@ func (s *Server) sendWelcomeMessageToClient(c *Client) {
 	// Add an artificial delay so people notice this message come in.
 	time.Sleep(7 * time.Second)
 
-	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(s.data.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		s.sendSystemMessageToClient(c, welcomeMessage)
@@ -378,7 +380,7 @@ func (s *Server) sendWelcomeMessageToClient(c *Client) {
 }
 
 func (s *Server) sendAllWelcomeMessage() {
-	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(s.data.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		clientMessage := events.SystemMessageEvent{
@@ -388,7 +390,7 @@ func (s *Server) sendAllWelcomeMessage() {
 			},
 		}
 		clientMessage.SetDefaults()
-		_ = s.Broadcast(clientMessage.GetBroadcastPayload())
+		_ = s.Broadcast(clientMessage.GetBroadcastPayload(s.data.GetServerName()))
 	}
 }
 
@@ -401,7 +403,7 @@ func (s *Server) sendSystemMessageToClient(c *Client, message string) {
 	}
 	clientMessage.SetDefaults()
 	clientMessage.RenderBody()
-	s.Send(clientMessage.GetBroadcastPayload(), c)
+	s.Send(clientMessage.GetBroadcastPayload(s.data.GetServerName()), c)
 }
 
 func (s *Server) sendActionToClient(c *Client, message string) {
@@ -415,5 +417,5 @@ func (s *Server) sendActionToClient(c *Client, message string) {
 	}
 	clientMessage.SetDefaults()
 	clientMessage.RenderBody()
-	s.Send(clientMessage.GetBroadcastPayload(), c)
+	s.Send(clientMessage.GetBroadcastPayload(s.data.GetServerName()), c)
 }

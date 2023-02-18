@@ -6,16 +6,16 @@ import (
 )
 
 // HasPopulatedDefaults will determine if the defaults have been inserted into the database.
-func HasPopulatedDefaults() bool {
-	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_DEFAULTS")
+func (s *Service) HasPopulatedDefaults() bool {
+	hasPopulated, err := s.Store.GetBool("HAS_POPULATED_DEFAULTS")
 	if err != nil {
 		return false
 	}
 	return hasPopulated
 }
 
-func hasPopulatedFederationDefaults() bool {
-	hasPopulated, err := _datastore.GetBool("HAS_POPULATED_FEDERATION_DEFAULTS")
+func (s *Service) hasPopulatedFederationDefaults() bool {
+	hasPopulated, err := s.Store.GetBool("HAS_POPULATED_FEDERATION_DEFAULTS")
 	if err != nil {
 		return false
 	}
@@ -23,32 +23,32 @@ func hasPopulatedFederationDefaults() bool {
 }
 
 // PopulateDefaults will set default values in the database.
-func PopulateDefaults() {
-	_datastore.warmCache()
+func (s *Service) PopulateDefaults() {
+	s.Store.warmCache()
 
 	defaults := config.GetDefaults()
 
-	if HasPopulatedDefaults() {
+	if s.HasPopulatedDefaults() {
 		return
 	}
 
-	_ = SetAdminPassword(defaults.AdminPassword)
-	_ = SetStreamKeys(defaults.StreamKeys)
-	_ = SetHTTPPortNumber(float64(defaults.WebServerPort))
-	_ = SetRTMPPortNumber(float64(defaults.RTMPServerPort))
-	_ = SetLogoPath(defaults.Logo)
-	_ = SetServerMetadataTags([]string{"owncast", "streaming"})
-	_ = SetServerSummary(defaults.Summary)
-	_ = SetServerWelcomeMessage("")
-	_ = SetServerName(defaults.Name)
-	_ = SetExtraPageBodyContent(defaults.PageBodyContent)
-	_ = SetFederationGoLiveMessage(defaults.FederationGoLiveMessage)
-	_ = SetSocialHandles([]models.SocialHandle{
+	_ = s.SetAdminPassword(defaults.AdminPassword)
+	_ = s.SetStreamKeys(defaults.StreamKeys)
+	_ = s.SetHTTPPortNumber(float64(defaults.WebServerPort))
+	_ = s.SetRTMPPortNumber(float64(defaults.RTMPServerPort))
+	_ = s.SetLogoPath(defaults.Logo)
+	_ = s.SetServerMetadataTags([]string{"owncast", "streaming"})
+	_ = s.SetServerSummary(defaults.Summary)
+	_ = s.SetServerWelcomeMessage("")
+	_ = s.SetServerName(defaults.Name)
+	_ = s.SetExtraPageBodyContent(defaults.PageBodyContent)
+	_ = s.SetFederationGoLiveMessage(defaults.FederationGoLiveMessage)
+	_ = s.SetSocialHandles([]models.SocialHandle{
 		{
 			Platform: "github",
 			URL:      "https://github.com/owncast/owncast",
 		},
 	})
 
-	_ = _datastore.SetBool("HAS_POPULATED_DEFAULTS", true)
+	_ = s.Store.SetBool("HAS_POPULATED_DEFAULTS", true)
 }

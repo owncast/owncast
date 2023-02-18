@@ -2,15 +2,12 @@ package data
 
 import (
 	"errors"
-	"sync"
 )
-
-var _cacheLock = sync.Mutex{}
 
 // GetCachedValue will return a value for key from the cache.
 func (ds *Datastore) GetCachedValue(key string) ([]byte, error) {
-	_cacheLock.Lock()
-	defer _cacheLock.Unlock()
+	ds.muxCache.Lock()
+	defer ds.muxCache.Unlock()
 
 	// Check for a cached value
 	if val, ok := ds.cache[key]; ok {
@@ -22,8 +19,8 @@ func (ds *Datastore) GetCachedValue(key string) ([]byte, error) {
 
 // SetCachedValue will set a value for key in the cache.
 func (ds *Datastore) SetCachedValue(key string, b []byte) {
-	_cacheLock.Lock()
-	defer _cacheLock.Unlock()
+	ds.muxCache.Lock()
+	defer ds.muxCache.Unlock()
 
 	ds.cache[key] = b
 }

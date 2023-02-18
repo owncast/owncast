@@ -7,16 +7,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/owncast/owncast/app/middleware"
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 )
 
 // HandleHLSRequest will manage all requests to HLS content.
-func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
+func (s *Service) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	// Sanity check to limit requests to HLS file types.
 	if filepath.Ext(r.URL.Path) != ".m3u8" && filepath.Ext(r.URL.Path) != ".ts" {
 		w.WriteHeader(http.StatusNotFound)
@@ -29,7 +27,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 	// If using external storage then only allow requests for the
 	// master playlist at stream.m3u8, no variants or segments.
-	if data.GetS3Config().Enabled && relativePath != "stream.m3u8" {
+	if s.Data.GetS3Config().Enabled && relativePath != "stream.m3u8" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -44,7 +42,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 		// Use this as an opportunity to mark this viewer as active.
 		viewer := models.GenerateViewerFromRequest(r)
-		core.SetViewerActive(&viewer)
+		s.Core.SetViewerActive(&viewer)
 	} else {
 		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))

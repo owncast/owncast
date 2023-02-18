@@ -6,15 +6,28 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/user"
-	log "github.com/sirupsen/logrus"
 )
 
+func New(s *controllers.Service) (*Controller, error) {
+	c := &Controller{
+		Service: s,
+	}
+
+	return c, nil
+}
+
+type Controller struct {
+	*controllers.Service
+}
+
 // GetUserDetails returns the details of a chat user for moderators.
-func GetUserDetails(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	type connectedClient struct {
 		Id           uint      `json:"id"`
 		MessageCount int       `json:"messageCount"`
@@ -32,27 +45,28 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	uid := pathComponents[len(pathComponents)-1]
 
-	u := user.GetUserByID(uid)
+	u := user.GetUserByID(uid, c.Data.Store)
 
 	if u == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	c, _ := chat.GetClientsForUser(uid)
-	clients := make([]connectedClient, len(c))
-	for i, c := range c {
-		client := connectedClient{
-			Id:           c.Id,
-			MessageCount: c.MessageCount,
-			UserAgent:    c.UserAgent,
-			ConnectedAt:  c.ConnectedAt,
+	clients, _ := c.Core.Chat.GetClientsForUser(uid)
+	clientsInfo := make([]connectedClient, len(clients))
+
+	for i, client := range clients {
+		info := connectedClient{
+			Id:           client.Id,
+			MessageCount: client.MessageCount,
+			UserAgent:    client.UserAgent,
+			ConnectedAt:  client.ConnectedAt,
 		}
-		if c.Geo != nil {
-			client.Geo = c.Geo.CountryCode
+		if client.Geo != nil {
+			info.Geo = client.Geo.CountryCode
 		}
 
-		clients[i] = client
+		clientsInfo[i] = info
 	}
 
 	messages, err := chat.GetMessagesFromUser(uid)
@@ -62,12 +76,12 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 
 	res := response{
 		User:             u,
-		ConnectedClients: clients,
+		ConnectedClients: clientsInfo,
 		Messages:         messages,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(res); err != nil {
-		controllers.InternalErrorHandler(w, err)
+		c.Service.InternalErrorHandler(w, err)
 	}
 }
