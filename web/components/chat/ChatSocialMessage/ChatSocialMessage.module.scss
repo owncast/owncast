@@ -28,6 +28,10 @@
     color: var(--theme-color-components-text-on-light);
     text-overflow: ellipsis;
     line-height: 1.2rem;
+
+    p {
+      margin: 0;
+    }
   }
 
   .account {
