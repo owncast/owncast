@@ -32,12 +32,8 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
-      # Note: Remove this once https://github.com/creyD/prettier_action/issues/113 is fixed.
-      - name: Install npm v8
-        run: npm i -g npm@8
-
       - name: Prettify code
-        uses: creyD/prettier_action@v4.2
+        uses: creyD/prettier_action@v4.3
         with:
           # This part is also where you can pass other options, for example:
           prettier_options: --write **/*.{js,ts,jsx,tsx,css,md}
