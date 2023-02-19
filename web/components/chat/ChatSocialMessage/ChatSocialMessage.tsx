@@ -51,7 +51,7 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
           </Col>
           <Col>
             <Row className={styles.account}>{title}</Row>
-            <Row className={styles.body}>{body}</Row>
+            <Row className={styles.body} dangerouslySetInnerHTML={{ __html: body }} />
           </Col>
         </Row>
       </a>
