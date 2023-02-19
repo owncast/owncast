@@ -42,10 +42,11 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
     <div className={cn([styles.follower, 'chat-message_social'])}>
       <a href={link} target="_blank" rel="noreferrer">
         <Row wrap={false}>
-          <Col span={6}>
-            <Avatar src={image} alt="Avatar" className={styles.avatar}>
-              <img src="/logo" alt="Logo" className={styles.placeholder} />
+          <Col span={6} className={styles.avatarColumn}>
+            <Avatar src={image} alt="Avatar" className={styles.avatar} size="large">
+              {title.charAt(0).toUpperCase()}
             </Avatar>
+
             <Icon className={styles.icon} />
           </Col>
           <Col>

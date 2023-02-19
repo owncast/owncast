@@ -42,3 +42,25 @@ Repost.args = {
     link: 'https://mastodon.social/@james',
   },
 };
+
+export const LongAccountName = Template.bind({});
+LongAccountName.args = {
+  message: {
+    type: 'FEDIVERSE_ENGAGEMENT_REPOST',
+    body: 'james shared this stream with their followers.',
+    title: 'littlejimmywilliams@technology.biz.net.org.technology.gov',
+    image: 'https://mastodon.social/avatars/original/missing.png',
+    link: 'https://mastodon.social/@james',
+  },
+};
+
+export const InvalidAvatarImage = Template.bind({});
+InvalidAvatarImage.args = {
+  message: {
+    type: 'FEDIVERSE_ENGAGEMENT_REPOST',
+    body: 'james shared this stream with their followers.',
+    title: 'james@mastodon.social',
+    image: 'https://xx.xx/avatars/original/missing.png',
+    link: 'https://mastodon.social/@james',
+  },
+};

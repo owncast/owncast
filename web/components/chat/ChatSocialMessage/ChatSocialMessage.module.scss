@@ -4,9 +4,6 @@
   border-style: solid;
   padding: 10px 10px;
   border-radius: 15px;
-  height: 85px;
-  width: 300px;
-  overflow: hidden;
   background-color: var(--theme-color-background-main);
 
   &:hover {
@@ -19,6 +16,12 @@
     border-color: rgba(0, 0, 0, 0.3);
     border-width: 1px;
     border-style: solid;
+    font-size: 1.8rem;
+  }
+
+  .avatarColumn {
+    max-width: 75px;
+    min-width: 75px;
   }
 
   .body {
@@ -34,10 +37,10 @@
   }
 
   .icon {
-    position: relative;
+    position: absolute;
     width: 25px;
     height: 25px;
-    top: -20px;
+    top: 40px;
     left: 40px;
     border-color: var(--theme-color-background-main);
     border-width: 2px;
@@ -45,10 +48,5 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-  }
-
-  .placeholder {
-    width: 100%;
-    height: 100%;
   }
 }
