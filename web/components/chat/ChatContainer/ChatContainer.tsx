@@ -217,8 +217,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           data={messages}
           itemContent={(index, message) => getViewForMessage(index, message)}
           initialTopMostItemIndex={messages.length - 1}
-          followOutput={(atBottom: boolean) => {
-            console.log({ atBottom, isAtBottom });
+          followOutput={() => {
             clearTimeout(showScrollToBottomButtonDelay.current);
 
             if (isAtBottom) {
