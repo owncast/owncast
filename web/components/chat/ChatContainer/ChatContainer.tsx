@@ -49,7 +49,7 @@ function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean
     return false;
   }
 
-  const maxTimestampDelta = 1000 * 60 * 2; // 2 minutes
+  const maxTimestampDelta = 1000 * 60; // 1 minute
   const lastTimestamp = new Date(lastMessage?.timestamp).getTime();
   const thisTimestamp = new Date(message.timestamp).getTime();
   if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
