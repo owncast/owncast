@@ -1,6 +1,5 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import {
   ConnectedClientInfoEvent,
   FediverseEvent,
@@ -17,12 +16,7 @@ import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
 import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 import { ChatSocialMessage } from '../ChatSocialMessage/ChatSocialMessage';
-
-// Lazy loaded components
-
-const EditFilled = dynamic(() => import('@ant-design/icons/EditFilled'), {
-  ssr: false,
-});
+import { ChatNameChangeMessage } from '../ChatNameChangeMessage/ChatNameChangeMessage';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];
@@ -108,25 +102,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     [],
   );
 
-  const getNameChangeViewForMessage = (message: NameChangeEvent) => {
-    const { oldName, user } = message;
-    const { displayName, displayColor } = user;
-    const color = `var(--theme-color-users-${displayColor})`;
-
-    return (
-      <div className={styles.nameChangeView}>
-        <div style={{ marginRight: 5, height: 'max-content', margin: 'auto 5px auto 0' }}>
-          <EditFilled />
-        </div>
-        <div className={styles.nameChangeText}>
-          <span style={{ color }}>{oldName}</span>
-          <span className={styles.plain}> is now known as </span>
-          <span style={{ color }}>{displayName}</span>
-        </div>
-      </div>
-    );
-  };
-
   const getFediverseMessage = (message: FediverseEvent) => <ChatSocialMessage message={message} />;
 
   const getUserJoinedMessage = (message: ChatMessage) => {
@@ -181,7 +156,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           />
         );
       case MessageType.NAME_CHANGE:
-        return getNameChangeViewForMessage(message as NameChangeEvent);
+        return <ChatNameChangeMessage message={message as NameChangeEvent} />;
       case MessageType.CONNECTED_USER_INFO:
         return getConnectedInfoMessage(message as ConnectedClientInfoEvent);
       case MessageType.USER_JOINED:
