@@ -55,7 +55,7 @@ export const Header: FC<HeaderComponentProps> = ({
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (
       <Tooltip title="Chat is available when the stream is live." placement="left">
-        <Tag style={{ cursor: 'pointer' }}>Chat offline</Tag>
+        <Tag className={styles.offlineTag}>Chat offline</Tag>
       </Tooltip>
     )}
   </header>
