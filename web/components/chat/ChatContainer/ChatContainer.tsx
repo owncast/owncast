@@ -27,7 +27,11 @@ export type ChatContainerProps = {
   height?: string;
 };
 
-function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean {
+function shouldCollapseMessages(
+  messages: ChatMessage[],
+  index: number,
+  collapsedMessageIds: Set<string>,
+): boolean {
   if (messages.length < 2) {
     return false;
   }
@@ -56,7 +60,17 @@ function shouldCollapseMessages(messages: ChatMessage[], index: number): boolean
     return false;
   }
 
-  return id === lastMessage?.user.id;
+  if (id !== lastMessage?.user.id) {
+    return false;
+  }
+
+  // Limit the number of messages that can be collapsed in a row.
+  const maxCollapsedMessageCount = 5;
+  if (collapsedMessageIds.size >= maxCollapsedMessageCount) {
+    return false;
+  }
+
+  return true;
 }
 
 function checkIsModerator(message: ChatMessage | ConnectedClientInfoEvent) {
@@ -85,6 +99,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   const chatContainerRef = useRef(null);
   const showScrollToBottomButtonDelay = useRef(null);
   const scrollToBottomDelay = useRef(null);
+
+  const collapsedMessageIds = new Set<string>();
 
   const setShowScrolltoBottomButtonWithDelay = (show: boolean) => {
     showScrollToBottomButtonDelay.current = setTimeout(() => {
@@ -136,25 +152,35 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     return <ChatModeratorNotification />;
   };
 
+  const getUserChatMessageView = (index: number, message: ChatMessage) => {
+    const collapsed = shouldCollapseMessages(messages, index, collapsedMessageIds);
+    if (!collapsed) {
+      collapsedMessageIds.clear();
+    } else {
+      collapsedMessageIds.add(message.id);
+    }
+
+    return (
+      <ChatUserMessage
+        message={message}
+        showModeratorMenu={isModerator} // Moderators have access to an additional menu
+        highlightString={usernameToHighlight} // What to highlight in the message
+        sentBySelf={message.user?.id === chatUserId} // The local user sent this message
+        sameUserAsLast={collapsed}
+        isAuthorModerator={message.user?.scopes?.includes('MODERATOR')}
+        isAuthorBot={message.user?.scopes?.includes('BOT')}
+        isAuthorAuthenticated={message.user?.authenticated}
+        key={message.id}
+      />
+    );
+  };
   const getViewForMessage = (
     index: number,
     message: ChatMessage | NameChangeEvent | ConnectedClientInfoEvent | FediverseEvent,
   ) => {
     switch (message.type) {
       case MessageType.CHAT:
-        return (
-          <ChatUserMessage
-            message={message as ChatMessage}
-            showModeratorMenu={isModerator} // Moderators have access to an additional menu
-            highlightString={usernameToHighlight} // What to highlight in the message
-            sentBySelf={(message as ChatMessage).user?.id === chatUserId} // The local user sent this message
-            sameUserAsLast={shouldCollapseMessages(messages, index)}
-            isAuthorModerator={(message as ChatMessage).user?.scopes?.includes('MODERATOR')}
-            isAuthorBot={(message as ChatMessage).user?.scopes?.includes('BOT')}
-            isAuthorAuthenticated={(message as ChatMessage).user?.authenticated}
-            key={message.id}
-          />
-        );
+        return getUserChatMessageView(index, message as ChatMessage);
       case MessageType.NAME_CHANGE:
         return <ChatNameChangeMessage message={message as NameChangeEvent} />;
       case MessageType.CONNECTED_USER_INFO:
