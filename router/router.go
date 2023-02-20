@@ -383,6 +383,11 @@ func Start() error {
 	http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
 	http.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
 
+	// Redirect /embed/chat
+	http.HandleFunc("/embed/chat", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
+	})
+
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
 
