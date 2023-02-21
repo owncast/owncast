@@ -27,9 +27,20 @@ Read the detailed [product definition](https://github.com/owncast/owncast/blob/d
 
 Owncast is a is a live streaming and chat server targeted to anybody who has live streaming needs. This means anything from corporate events, government meetings, game streams, concerts, TV stations, and more.
 
+## 🧑‍🎨 Product design opportunities
+
+Owncast is a constantly moving project with features both old and new. This allows for design contributions to be both big or small.
+You may not know how much time you can dedicate to the project, or if you'll be able to see something through to the end, so be honest about that. Take on projects that you'll be able to see completed.
+
+- So maybe start small by finding rough edges and improvements to existing features without requiring complete rewrites. As a small project the bandwidth for rebuilding existing designs is limited, but tweaks are appreciated. This is especially great if you don't know how much time or energy you'll be able to provide the project. If you think you have a week to help, but might not be around in a month small projects are better.
+- If you think you'll be around longer term, learn about future new features and start thinking about the design challenges of those so we can build them your feedback and design contributions in mind. See your designs put in the world through brand new functionality!
+- Not everything has to be a a feature. Think big picture. What can we start doing now to put the project in a better place six months from now, or a year?
+
 ## 💅 Design relevant materials
 
-Here is a list of design relevant information and materials:
+A collection of design relevant information and materials can be found under the "style" section of "Storybook" here:
+
+http://owncast.online/components
 
 ### Fonts
 
