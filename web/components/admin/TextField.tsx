@@ -32,7 +32,7 @@ export type TextFieldProps = {
   useTrim?: boolean;
   useTrimLead?: boolean;
   value?: string | number;
-  isAdminPwdField?: boolean;
+  hasComplexityRequirements?: boolean;
   onBlur?: FieldUpdaterFunc;
   onChange?: FieldUpdaterFunc;
 };
@@ -55,7 +55,7 @@ export const TextField: FC<TextFieldProps> = ({
   type,
   useTrim,
   value,
-  isAdminPwdField,
+  hasComplexityRequirements,
 }) => {
   const [hasPwdChanged, setHasPwdChanged] = useState(false);
   const [showPwdButton, setShowPwdButton] = useState(false);
@@ -65,7 +65,7 @@ export const TextField: FC<TextFieldProps> = ({
     if (onChange) {
       const val = type === TEXTFIELD_TYPE_NUMBER ? e : e.target.value;
       setShowPwdButton(true);
-      if (isAdminPwdField && REGEX_PASSWORD.test(val)) {
+      if (hasComplexityRequirements && REGEX_PASSWORD.test(val)) {
         setHasPwdChanged(true);
       } else {
         setHasPwdChanged(false);
@@ -150,7 +150,7 @@ export const TextField: FC<TextFieldProps> = ({
         </div>
       ) : null}
 
-      {!isAdminPwdField ? (
+      {!hasComplexityRequirements ? (
         <div className="input-side">
           <div className="input-group">
             <Field
@@ -231,7 +231,7 @@ TextField.defaultProps = {
   pattern: '',
   useTrim: false,
   useTrimLead: false,
-  isAdminPwdField: false,
+  hasComplexityRequirements: false,
 
   onSubmit: () => {},
   onBlur: () => {},

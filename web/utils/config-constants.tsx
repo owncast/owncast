@@ -122,7 +122,7 @@ export const TEXTFIELD_PROPS_ADMIN_PASSWORD = {
   label: 'Admin Password',
   tip: 'Save this password somewhere safe, you will need it to login to the admin dashboard!',
   required: true,
-  isAdminPwdField: true,
+  hasComplexityRequirements: true,
 };
 export const TEXTFIELD_PROPS_FFMPEG = {
   apiPath: API_FFMPEG,
@@ -132,7 +132,7 @@ export const TEXTFIELD_PROPS_FFMPEG = {
   label: 'FFmpeg Path',
   tip: 'Absolute file path of the FFMPEG application on your server',
   required: true,
-  isAdminPwdField: false,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_WEB_PORT = {
   apiPath: API_WEB_PORT,
@@ -142,7 +142,7 @@ export const TEXTFIELD_PROPS_WEB_PORT = {
   label: 'Owncast port',
   tip: 'What port is your Owncast web server listening? Default is 8080',
   required: true,
-  isAdminPwdField: false,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_RTMP_PORT = {
   apiPath: API_RTMP_PORT,
@@ -152,7 +152,7 @@ export const TEXTFIELD_PROPS_RTMP_PORT = {
   label: 'RTMP port',
   tip: 'What port should accept inbound broadcasts? Default is 1935',
   required: true,
-  isAdminPwdField: false,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_INSTANCE_URL = {
   apiPath: API_INSTANCE_URL,
