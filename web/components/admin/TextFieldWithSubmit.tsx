@@ -24,7 +24,7 @@ export type TextFieldWithSubmitProps = TextFieldProps & {
   apiPath: string;
   configPath?: string;
   initialValue?: string;
-  isAdminPwdField?: boolean;
+  hasComplexityRequirements?: boolean;
 };
 
 export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
@@ -44,7 +44,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
 
   let resetTimer = null;
 
-  const { fieldName, required, tip, status, value, isAdminPwdField, onChange, onSubmit } =
+  const { fieldName, required, tip, status, value, hasComplexityRequirements, onChange, onSubmit } =
     textFieldProps;
 
   // Clear out any validation states and messaging
@@ -138,7 +138,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           <div className="field-tip">{tip}</div>
           <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
-            {!isAdminPwdField && (
+            {!hasComplexityRequirements && (
               <Button
                 type="primary"
                 size="small"
