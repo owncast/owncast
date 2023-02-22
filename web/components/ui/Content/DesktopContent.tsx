@@ -43,9 +43,14 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   setShowFollowModal,
   supportFediverseFeatures,
 }) => {
-  const aboutTabContent = <CustomPageContent content={extraPageContent} />;
+  const aboutTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <CustomPageContent content={extraPageContent} />
+    </div>
+  );
+
   const followersTabContent = (
-    <div>
+    <div className={styles.bottomPageContentContainer}>
       <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
     </div>
   );

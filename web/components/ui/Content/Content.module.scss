@@ -61,6 +61,7 @@
 
   .lowerSectionMobile {
     display: flex;
+    flex-direction: column;
     flex-grow: 1;
     flex-shrink: 0;
     padding: 0.3em;
@@ -124,4 +125,12 @@
       padding-top: 16px;
     }
   }
+}
+
+.bottomPageContentContainer {
+  background-color: var(--theme-color-components-content-background);
+  padding: calc(2 * var(--content-padding));
+  padding-top: 0px;
+  border-radius: var(--theme-rounded-corners);
+  width: 100%;
 }

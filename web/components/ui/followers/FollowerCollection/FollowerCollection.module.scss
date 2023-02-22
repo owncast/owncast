@@ -4,10 +4,6 @@
   width: 100%;
   padding: 5px;
 
-  @include screen(desktop) {
-    background-color: var(--theme-color-components-content-background);
-  }
-
   @include screen(mobile) {
     .followerRow {
       justify-content: center;
@@ -16,10 +12,9 @@
 }
 
 .noFollowers {
-  padding: calc(2 * var(--content-padding));
+  padding: var(--content-padding);
   border-radius: var(--theme-rounded-corners);
   width: 100%;
-  background-color: var(--theme-color-components-content-background);
 }
 
 .pagination {
