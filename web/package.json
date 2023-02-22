@@ -51,7 +51,7 @@
 		"recoil": "0.7.6",
 		"sharp": "0.31.3",
 		"slate": "0.90.0",
-		"slate-react": "0.91.0",
+		"slate-react": "0.91.1",
 		"ua-parser-js": "1.0.33",
 		"video.js": "7.20.3",
 		"xstate": "4.36.0",
