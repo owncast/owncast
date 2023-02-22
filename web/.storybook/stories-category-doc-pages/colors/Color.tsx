@@ -63,7 +63,7 @@ const rowStyle = {
 
 export type ColorRowProps = {
   colors: string[];
-}
+};
 
 export const ColorRow: FC<ColorRowProps> = (props: ColorRowProps) => {
   const { colors } = props;
