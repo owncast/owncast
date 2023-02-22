@@ -1,9 +1,5 @@
 @import 'styles/mixins.scss';
 
-.pageContentContainer {
-  @include flexCenter;
-}
-
 .customPageContent {
   font-size: 1rem;
   line-height: 1.6em;
