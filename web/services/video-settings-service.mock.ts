@@ -4,7 +4,7 @@ export const videoSettingsServiceMockOf = (
   videoQualities: Array<VideoQuality>,
 ): VideoSettingsStaticService =>
   class VideoSettingsServiceMock {
-    public static async getVideoSettings(): Promise<Array<VideoQuality>> {
+    public static async getVideoQualities(): Promise<Array<VideoQuality>> {
       return videoQualities;
     }
   };
