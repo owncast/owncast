@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FC } from 'react';
 
 export type ColorProps = {
-  color: any; // TODO specify better type
+  color: string;
 };
 
 export const Color: FC<ColorProps> = ({ color }) => {
@@ -55,10 +54,6 @@ export const Color: FC<ColorProps> = ({ color }) => {
   );
 };
 
-Color.propTypes = {
-  color: PropTypes.string.isRequired,
-};
-
 const rowStyle = {
   display: 'flex',
   flexDirection: 'row' as 'row',
@@ -66,7 +61,11 @@ const rowStyle = {
   alignItems: 'center',
 };
 
-export const ColorRow = props => {
+export type ColorRowProps = {
+  colors: string[];
+};
+
+export const ColorRow: FC<ColorRowProps> = (props: ColorRowProps) => {
   const { colors } = props;
 
   return (
@@ -76,10 +75,6 @@ export const ColorRow = props => {
       ))}
     </div>
   );
-};
-
-ColorRow.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export const getColor = color => {
