@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, FC, ReactElement } from 'react';
 
 export const AlertMessageContext = React.createContext({
   message: null,
@@ -7,7 +6,11 @@ export const AlertMessageContext = React.createContext({
   setMessage: (text?: string) => null,
 });
 
-const AlertMessageProvider = ({ children }) => {
+export type AlertMessageProviderProps = {
+  children: ReactElement;
+};
+
+const AlertMessageProvider: FC<AlertMessageProviderProps> = ({ children }) => {
   const [message, setMessage] = useState('');
 
   const providerValue = {
@@ -17,10 +20,6 @@ const AlertMessageProvider = ({ children }) => {
   return (
     <AlertMessageContext.Provider value={providerValue}>{children}</AlertMessageContext.Provider>
   );
-};
-
-AlertMessageProvider.propTypes = {
-  children: PropTypes.element.isRequired,
 };
 
 export default AlertMessageProvider;
