@@ -1,10 +1,30 @@
 # Owncast Backend Architecture
 
-Work in progress documentation detailing the backend architecture of Owncast.
+This is a work in progress document detailing the future backend architecture of Owncast. It should be seen as a living document until a refactor of the backend is complete.
 
-## Structure
+## Dependencies
 
-WIP
+Dependencies are services that are required across the application. This can be things like the chat service or a data repository for config values or user data.
+
+Note: A better name that "dependencies" might be clearer. Perhaps "services" or "providers".
+
+TODO: Have a complete list of dependencies.
+
+### Data Repositories
+
+The repository pattern provides a layer of abstraction between the application and the data store, allowing the application to interact with the data store through a well-defined interface, rather than directly accessing the data store. This helps to decouple the application from the data store.
+
+TODO: List out the repositories and what they do.
+
+Learn more about the [repository pattern](https://techinscribed.com/different-approaches-to-pass-database-connection-into-controllers-in-golang/).
+
+### Application Controller
+
+The `AppController` has references to all the dependencies and serves as an arbiter between consumers of these services and the services themselves.
+
+A reference to the `AppController` is passed in to the all the core functionality in the application and each package would have its own interface that `AppController` implements. This can include getting access to dependency services like getting access to the chat service, getting access to the config repository values or knowing application state such as if a stream is live or how many viewers are watching via metrics.
+
+TODO: Show examples of how the application is passed in to packages and how to reference dependencies through it.
 
 ## Diagram
 
@@ -13,6 +33,8 @@ WIP
 %% See https://jojozhuang.github.io/tutorial/mermaid-cheat-sheet/
 %% for a cheat sheet on creating this diagram.
 %% Paste this document in https://mermaid.live as a quick way to edit.
+
+%% TODO: Add links between nodes and the actual code.
 
 %% This is a graph style diagram, Top Down.
 graph TD
@@ -23,25 +45,31 @@ graph TD
 subgraph VideoPipeline[Video Pipeline]
     VideoTranscoder(fa:fa-video Video Transcoder)
     RTMPService[fa:fa-video RTMP Service]
-    FFMpeg[fa:fa-video ffmpeg]
 end
 
 subgraph ChatService[fa:fa-comment Chat Service]
 end
 
 subgraph Dependencies
-    subgraph Webhooks[fa:fa-webhook Webhooks]
-        InboundWebhooks[Inbound]
-        OutboundWebhooks[Outbound]
-    end
+    OutboundWebhooks[Outbound]
 
     App{Application}
     ChatService--->App
     Webhooks--->App
+
     ConfigRepository(fa:fa-hard-drive Config Repository)--->App
     UserRepository(fa:fa-hard-drive User Repository)--->App
+    APRepository(fa:fa-hard-drive ActivityPub Repository)--->App
+    NotificationsRepository(fa:fa-hard-drive Notifications Repository)--->App
+    ChatRepository(fa:fa-hard-drive Chat Repository)
+
     Database(fa:fa-hard-drive Database)--->ConfigRepository
     Database--->UserRepository
+    Database--->APRepository
+    Database--->NotificationsRepository
+
+    ChatRepository-->ChatService
+
     ApplicationState(fa:fa-list Application State)--->App
     GeoIP(fa:fa-globe GeoIP Lookup)--->App
     Statistics(fa:fa-list Statistics)--->App
@@ -69,8 +97,6 @@ end
 
 subgraph WebServer[Web Server]
     ActivityPubHandlers[fa:fa-file ActivityPub Handlers]
-    StaticFiles((fa:fa-file Static Files))
-    WebSocket[WebSocket]
 
     subgraph WebAssets[Web Assets]
         EmbeddedStaticFiles((fa:fa-file Embedded\nStatic Assets))
@@ -80,8 +106,9 @@ subgraph WebServer[Web Server]
     end
 
     subgraph HTTPHandlers[fa:fa-browser HTTP Handlers]
-        subgraph AdminAPIs[Admin APIs]
-        end
+        AdminAPIs[Admin APIs]
+        ThirdPartyAPIs[3rd Party APIs]
+        WebSocket[WebSocket]
         subgraph ChatAPIs[Chat APIs]
             ChatUserRegistration[Chat User Registration]
             Emoji[Emojis]
@@ -106,17 +133,10 @@ subgraph Streamer
     BroadcastingSoftware>fa:fa-video BroadcastingSoftware]
 end
 
-subgraph Viewer
-    VideoPlayer[fa:fa-video Video Player]
-    WebBrowser[fa:fa-browser Web Browser]
-end
-
-
-
 %% All the services and packages require access
 %% to dependencies through a Application reference.
 App-.->HTTPHandlers
-App-.->RTMPService
+App-.->VideoPipeline
 App-.->ActivityPub
 App-.->Authentication
 App-.Stream went\nonline.->Notifications
@@ -126,8 +146,6 @@ LocalStorage--HLS-->OnDiskStaticFiles
 
 RTMPService>RTMP Ingest]--RTMP-->VideoTranscoder
 VideoTranscoder--HLS-->VideoStorageProviders
-VideoTranscoder--RTMP-->FFMpeg
-FFMpeg--HLS-->VideoTranscoder
 
 %% Viewers
 VideoPlayer-->VideoStorageProviders
@@ -151,8 +169,10 @@ classDef storage fill:#42bea6,color:#fff
 class App bigtext
 class UserRepository repository
 class ConfigRepository repository
+class APRepository repository
+class NotificationsRepository repository
+class ChatRepository repository
 
-class WebSocket inbound
 class HTTPHandlers inbound
 class ActivityPubInboundHandlers inbound
 class InboundWebhooks inbound
