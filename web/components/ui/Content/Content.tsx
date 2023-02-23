@@ -224,7 +224,7 @@ export const Content: FC = () => {
                 showsHeader={false}
                 streamName={name}
                 customText={offlineMessage}
-                notificationsEnabled={browserNotificationsEnabled}
+                notificationsEnabled={supportsBrowserNotifications}
                 fediverseAccount={fediverseAccount}
                 lastLive={lastDisconnectTime}
                 onNotifyClick={() => setShowNotifyModal(true)}
