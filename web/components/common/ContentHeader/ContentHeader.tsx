@@ -8,21 +8,13 @@ import styles from './ContentHeader.module.scss';
 
 export type ContentHeaderProps = {
   name: string;
-  title: string;
   summary: string;
   tags: string[];
   links: SocialLink[];
   logo: string;
 };
 
-export const ContentHeader: FC<ContentHeaderProps> = ({
-  name,
-  title,
-  summary,
-  logo,
-  tags,
-  links,
-}) => (
+export const ContentHeader: FC<ContentHeaderProps> = ({ name, summary, logo, tags, links }) => (
   <div className={styles.root}>
     <div className={styles.logoTitleSection}>
       <div className={styles.logo}>
@@ -31,7 +23,7 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
       <div className={styles.titleSection}>
         <h2 className={cn(styles.title, styles.row, 'header-title')}>{name}</h2>
         <h3 className={cn(styles.subtitle, styles.row, 'header-subtitle')}>
-          <Linkify>{title || summary}</Linkify>
+          <Linkify>{summary}</Linkify>
         </h3>
         <div className={cn(styles.tagList, styles.row)}>
           {tags.length > 0 && tags.map(tag => <span key={tag}>#{tag}&nbsp;</span>)}

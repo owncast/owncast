@@ -22,12 +22,7 @@ export type HeaderComponentProps = {
   online: boolean;
 };
 
-export const Header: FC<HeaderComponentProps> = ({
-  name = 'Your stream title',
-  chatAvailable,
-  chatDisabled,
-  online,
-}) => (
+export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisabled, online }) => (
   <header className={cn([`${styles.header}`], 'global-header')}>
     {online ? (
       <Link href="#player" className={styles.skipLink}>

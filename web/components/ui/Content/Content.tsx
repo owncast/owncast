@@ -277,7 +277,6 @@ export const Content: FC = () => {
           {isMobile ? (
             <MobileContent
               name={name}
-              streamTitle={streamTitle}
               summary={summary}
               tags={tags}
               socialHandles={socialHandles}
@@ -298,7 +297,6 @@ export const Content: FC = () => {
           ) : (
             <DesktopContent
               name={name}
-              streamTitle={streamTitle}
               summary={summary}
               tags={tags}
               socialHandles={socialHandles}

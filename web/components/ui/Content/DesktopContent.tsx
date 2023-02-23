@@ -8,7 +8,6 @@ import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 
 export type DesktopContentProps = {
   name: string;
-  streamTitle: string;
   summary: string;
   tags: string[];
   socialHandles: SocialLink[];
@@ -35,7 +34,6 @@ const FollowerCollection = dynamic(
 
 export const DesktopContent: FC<DesktopContentProps> = ({
   name,
-  streamTitle,
   summary,
   tags,
   socialHandles,
@@ -65,7 +63,6 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       <div className={styles.lowerHalf} id="skip-to-content">
         <ContentHeader
           name={name}
-          title={streamTitle}
           summary={summary}
           tags={tags}
           links={socialHandles}
