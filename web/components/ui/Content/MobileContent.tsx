@@ -12,7 +12,6 @@ import { ExternalAction } from '../../../interfaces/external-action';
 
 export type MobileContentProps = {
   name: string;
-  streamTitle: string;
   summary: string;
   tags: string[];
   socialHandles: SocialLink[];
@@ -56,7 +55,6 @@ const ChatContainer = dynamic(
 
 export const MobileContent: FC<MobileContentProps> = ({
   name,
-  streamTitle,
   summary,
   tags,
   socialHandles,
@@ -87,14 +85,7 @@ export const MobileContent: FC<MobileContentProps> = ({
 
   const aboutTabContent = (
     <>
-      <ContentHeader
-        name={name}
-        title={streamTitle}
-        summary={summary}
-        tags={tags}
-        links={socialHandles}
-        logo="/logo"
-      />
+      <ContentHeader name={name} summary={summary} tags={tags} links={socialHandles} logo="/logo" />
       <div className={styles.bottomPageContentContainer}>
         <CustomPageContent content={extraPageContent} />
       </div>
