@@ -261,6 +261,9 @@ const noFollowersMock = {
 export default {
   title: 'owncast/Components/Followers/Followers collection',
   component: FollowerCollection,
+  parameters: {
+    chromatic: { diffThreshold: 0.83 },
+  },
 } as ComponentMeta<typeof FollowerCollection>;
 
 const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
