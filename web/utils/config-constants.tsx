@@ -424,16 +424,16 @@ export const VIDEO_BITRATE_SLIDER_MARKS = {
 // VIDEO VARIANT FORM - encoder preset
 // CPU
 export const ENCODER_PRESET_SLIDER_MARKS = {
-  1: {
+  0: {
     style: {
       marginLeft: '15px',
     },
     label: <p>lowest</p>,
   },
+  1: '',
   2: '',
   3: '',
-  4: '',
-  5: {
+  4: {
     style: {
       marginLeft: '-15px',
     },
@@ -441,11 +441,11 @@ export const ENCODER_PRESET_SLIDER_MARKS = {
   },
 };
 export const ENCODER_PRESET_TOOLTIPS = {
-  1: 'Lowest hardware usage - lowest quality video',
-  2: 'Low hardware usage - low quality video',
-  3: 'Medium hardware usage - average quality video',
-  4: 'High hardware usage - high quality video',
-  5: 'Highest hardware usage - higher quality video',
+  0: 'Lowest hardware usage - lowest quality video',
+  1: 'Low hardware usage - low quality video',
+  2: 'Medium hardware usage - average quality video',
+  3: 'High hardware usage - high quality video',
+  4: 'Highest hardware usage - higher quality video',
 };
 
 export const ENCODER_RECOMMENDATION_THRESHOLD = {
