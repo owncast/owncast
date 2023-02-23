@@ -22,7 +22,9 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
         </Col>
         <Col span={18}>
           <Row className={styles.name}>
-            <Typography.Text ellipsis>{follower.name || follower.username}</Typography.Text>
+            <Typography.Text ellipsis>
+              {follower.name || follower.username.split('@', 2)[0]}
+            </Typography.Text>
           </Row>
           <Row className={styles.account}>
             <Typography.Text ellipsis>{follower.username}</Typography.Text>
