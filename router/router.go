@@ -383,11 +383,6 @@ func Start() error {
 	http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
 	http.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
 
-	// Redirect /embed/chat
-	http.HandleFunc("/embed/chat", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
-	})
-
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
 
@@ -398,6 +393,13 @@ func Start() error {
 
 	// Optional public static files
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
+
+	// Redirect /embed/chat
+	http.HandleFunc("/embed/chat/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/embed/chat/" || r.URL.Path == "/embed/chat" {
+			http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
+		}
+	})
 
 	port := config.WebServerPort
 	ip := config.WebServerIP
