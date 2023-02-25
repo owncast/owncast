@@ -48,14 +48,6 @@ const testBrowsersPortrait = [
 		real_mobile: null,
 	},
 	{
-		os: 'Windows',
-		os_version: '10',
-		browser: 'edge',
-		device: null,
-		browser_version: '18.0',
-		real_mobile: null,
-	},
-	{
 		os: 'ios',
 		os_version: '16',
 		browser: 'Mobile Safari',
