@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/nanmu42/gzip"
+	"github.com/CAFxX/httpcompression"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
@@ -419,10 +419,11 @@ func Start() error {
 		}
 	})
 
+	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           gzip.DefaultHandler().WrapHandler(m),
+		Handler:           compress(m),
 	}
 
 	log.Infof("Web server is listening on IP %s port %d.", ip, port)
