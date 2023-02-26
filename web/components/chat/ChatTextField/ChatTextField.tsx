@@ -148,7 +148,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
     const message = serialize(editor);
     websocketService.send({ type: MessageType.CHAT, body: message });
 
-    // Clear the editor.   
+    // Clear the editor.
     Transforms.delete(editor, {
       at: {
         anchor: Editor.start(editor, []),
@@ -173,7 +173,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
 
     Transforms.insertNodes(editor, image);
     Editor.normalize(editor, { force: true });
-  }
+  };
 
   // Native emoji
   const onEmojiSelect = (emoji: string) => {
