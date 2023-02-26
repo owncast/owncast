@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/nanmu42/gzip"
+	"github.com/CAFxX/httpcompression"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
@@ -394,35 +394,34 @@ func Start() error {
 	// Optional public static files
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
 
-	// Redirect /embed/chat
-	http.HandleFunc("/embed/chat/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/embed/chat/" || r.URL.Path == "/embed/chat" {
-			http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
-		}
-	})
-
 	port := config.WebServerPort
 	ip := config.WebServerIP
+
+	h2s := &http2.Server{}
 
 	// Create a custom mux handler to intercept the /debug/vars endpoint.
 	// This is a hack because Prometheus enables this endpoint by default
 	// due to its use of expvar and we do not want this exposed.
-	h2s := &http2.Server{}
 	defaultMux := h2c.NewHandler(http.DefaultServeMux, h2s)
 	m := http.NewServeMux()
+
 	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/debug/vars" {
 			w.WriteHeader(http.StatusNotFound)
 			return
+		} else if r.URL.Path == "/embed/chat/" || r.URL.Path == "/embed/chat" {
+			// Redirect /embed/chat
+			http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
 		} else {
 			defaultMux.ServeHTTP(w, r)
 		}
 	})
 
+	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           gzip.DefaultHandler().WrapHandler(m),
+		Handler:           compress(m),
 	}
 
 	log.Infof("Web server is listening on IP %s port %d.", ip, port)
