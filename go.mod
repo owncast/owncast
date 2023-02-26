@@ -48,7 +48,7 @@ require (
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/klauspost/compress v1.14.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -75,6 +75,8 @@ require (
 require github.com/SherClockHolmes/webpush-go v1.2.0
 
 require (
+	github.com/CAFxX/httpcompression v0.0.8 // indirect
+	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
@@ -85,7 +87,6 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.1
-	github.com/nanmu42/gzip v1.2.0
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0
 )
