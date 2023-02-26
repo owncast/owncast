@@ -213,7 +213,7 @@ export const ClientConfigStore: FC = () => {
       setHasLoadedConfig(true);
     } catch (error) {
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
-      console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
+      console.error(`ClientConfigService -> getConfig() ERROR: \n`, error);
     }
   };
 
@@ -232,7 +232,7 @@ export const ClientConfigStore: FC = () => {
     } catch (error) {
       sendEvent([AppStateEvent.Fail]);
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
-      console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
+      console.error(`serverStatusState -> getStatus() ERROR: \n`, error);
     }
   };
 
