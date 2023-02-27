@@ -33,14 +33,16 @@ export default function ReadWriteChatEmbed() {
       <ClientConfigStore />
       <Header name={headerText} chatAvailable chatDisabled={chatDisabled} online={videoAvailable} />
       {currentUser && (
-        <ChatContainer
-          messages={messages}
-          usernameToHighlight={currentUser.displayName}
-          chatUserId={currentUser.id}
-          isModerator={currentUser.isModerator}
-          showInput
-          height="80vh"
-        />
+        <div id="chat-container">
+          <ChatContainer
+            messages={messages}
+            usernameToHighlight={currentUser.displayName}
+            chatUserId={currentUser.id}
+            isModerator={currentUser.isModerator}
+            showInput
+            height="80vh"
+          />
+        </div>
       )}
     </div>
   );
