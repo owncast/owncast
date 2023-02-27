@@ -112,7 +112,7 @@ func (n *Notifier) setupDiscord() error {
 	if discordConfig.Enabled && discordConfig.Webhook != "" {
 		var image string
 		if serverURL := data.GetServerURL(); serverURL != "" {
-			image = serverURL + "/images/owncast-logo.png"
+			image = serverURL + "/logo"
 		}
 		discordNotifier, err := discord.New(
 			data.GetServerName(),
