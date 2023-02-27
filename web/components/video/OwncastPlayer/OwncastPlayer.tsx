@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { VideoJsPlayerOptions } from 'video.js';
@@ -12,8 +12,8 @@ import PlaybackMetrics from '../metrics/playback';
 import createVideoSettingsMenuButton from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
 import styles from './OwncastPlayer.module.scss';
+import { VideoSettingsServiceContext } from '../../../services/video-settings-service';
 
-const VIDEO_CONFIG_URL = '/api/video/variants';
 const PLAYER_VOLUME = 'owncast_volume';
 const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
 
@@ -30,18 +30,6 @@ export type OwncastPlayerProps = {
   className?: string;
 };
 
-async function getVideoSettings() {
-  let qualities = [];
-
-  try {
-    const response = await fetch(VIDEO_CONFIG_URL);
-    qualities = await response.json();
-  } catch (e) {
-    console.error(e);
-  }
-  return qualities;
-}
-
 export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   source,
   online,
@@ -49,6 +37,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   title,
   className,
 }) => {
+  const VideoSettingsService = useContext(VideoSettingsServiceContext);
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
@@ -151,7 +140,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   };
 
   const createSettings = async (player, videojs) => {
-    const videoQualities = await getVideoSettings();
+    const videoQualities = await VideoSettingsService.getVideoQualities();
     const menuButton = createVideoSettingsMenuButton(
       player,
       videojs,

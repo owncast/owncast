@@ -1,14 +1,20 @@
+import { createContext } from 'react';
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { getUnauthedData } from '../utils/apis';
 
 const ENDPOINT = `/api/chat`;
 const URL_CHAT_REGISTRATION = `/api/chat/register`;
 
-interface UserRegistrationResponse {
+export interface UserRegistrationResponse {
   id: string;
   accessToken: string;
   displayName: string;
   displayColor: number;
+}
+
+export interface ChatStaticService {
+  getChatHistory(accessToken: string): Promise<ChatMessage[]>;
+  registerUser(username: string): Promise<UserRegistrationResponse>;
 }
 
 class ChatService {
@@ -31,4 +37,4 @@ class ChatService {
   }
 }
 
-export default ChatService;
+export const ChatServiceContext = createContext<ChatStaticService>(ChatService);
