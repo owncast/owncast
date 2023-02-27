@@ -48,7 +48,7 @@ const defaultClientConfig = {
   logo: 'http://localhost:8080/logo',
   name: "Spiderman's super serious stream",
   summary: 'Strong Spidey stops supervillains! Streamed Saturdays & Sundays.',
-  extraPageContent: '<marquee>Spiderman is cool</marquee>',
+  extraPageContent: 'Spiderman is **cool**',
 };
 
 const defaultServerStatus = makeEmptyServerStatus();
