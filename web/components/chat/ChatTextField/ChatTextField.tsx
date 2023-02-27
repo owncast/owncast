@@ -1,7 +1,7 @@
 import { Popover } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
+import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
