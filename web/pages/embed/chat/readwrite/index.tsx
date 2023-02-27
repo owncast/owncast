@@ -26,25 +26,22 @@ export default function ReadWriteChatEmbed() {
   const { videoAvailable } = appState;
   const { streamTitle, online } = clientStatus;
 
-  if (!currentUser) {
-    return null;
-  }
-
   const headerText = online ? streamTitle || name : name;
 
-  const { id, displayName, isModerator } = currentUser;
   return (
     <div>
       <ClientConfigStore />
       <Header name={headerText} chatAvailable chatDisabled={chatDisabled} online={videoAvailable} />
-      <ChatContainer
-        messages={messages}
-        usernameToHighlight={displayName}
-        chatUserId={id}
-        isModerator={isModerator}
-        showInput
-        height="80vh"
-      />
+      {currentUser && (
+        <ChatContainer
+          messages={messages}
+          usernameToHighlight={currentUser.displayName}
+          chatUserId={currentUser.id}
+          isModerator={currentUser.isModerator}
+          showInput
+          height="80vh"
+        />
+      )}
     </div>
   );
 }

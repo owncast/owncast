@@ -10,21 +10,20 @@ import {
 export default function ReadOnlyChatEmbed() {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
-  if (!currentUser) {
-    return null;
-  }
-  const { id, displayName } = currentUser;
+
   return (
     <div>
       <ClientConfigStore />
-      <ChatContainer
-        messages={messages}
-        usernameToHighlight={displayName}
-        chatUserId={id}
-        isModerator={false}
-        showInput={false}
-        height="100vh"
-      />
+      {currentUser && (
+        <ChatContainer
+          messages={messages}
+          usernameToHighlight={currentUser.displayName}
+          chatUserId={currentUser.id}
+          isModerator={false}
+          showInput={false}
+          height="100vh"
+        />
+      )}
     </div>
   );
 }
