@@ -169,31 +169,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
   const insertImage = (url, name) => {
     if (!url) return;
 
-    const { selection } = editor;
     const image = createImageNode(name, url, name);
 
-    Transforms.insertNodes(editor, image, { select: true });
-
-    if (selection) {
-      const [parentNode, parentPath] = Editor.parent(editor, selection.focus?.path);
-
-      if (editor.isVoid(parentNode) || Node.string(parentNode).length) {
-        // Insert the new image node after the void node or a node with content
-        Transforms.insertNodes(editor, image, {
-          at: Path.next(parentPath),
-          select: true,
-        });
-      } else {
-        // If the node is empty, replace it instead
-        // Transforms.removeNodes(editor, { at: parentPath });
-        Transforms.insertNodes(editor, image, { at: parentPath, select: true });
-        Editor.normalize(editor, { force: true });
-      }
-    } else {
-      // Insert the new image node at the bottom of the Editor when selection
-      // is falsey
-      Transforms.insertNodes(editor, image, { select: true });
-    }
+    Transforms.insertNodes(editor, image);
+    Editor.normalize(editor, { force: true });
   };
 
   // Native emoji
