@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { atom, selector, useRecoilState, useSetRecoilState, RecoilEnv } from 'recoil';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
-import ClientConfigService from '../../services/client-config-service';
-import ChatService from '../../services/chat-service';
+import { ClientConfigServiceContext } from '../../services/client-config-service';
+import { ChatServiceContext } from '../../services/chat-service';
 import WebsocketService from '../../services/websocket-service';
 import { ChatMessage } from '../../interfaces/chat-message.model';
 import { CurrentUser } from '../../interfaces/current-user';
@@ -24,7 +24,7 @@ import {
 } from '../../interfaces/socket-events';
 import { mergeMeta } from '../../utils/helpers';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
-import ServerStatusService from '../../services/status-service';
+import { ServerStatusServiceContext } from '../../services/status-service';
 import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
 import { DisplayableError } from '../../types/displayable-error';
 
@@ -155,6 +155,10 @@ export const visibleChatMessagesSelector = selector<ChatMessage[]>({
 });
 
 export const ClientConfigStore: FC = () => {
+  const ClientConfigService = useContext(ClientConfigServiceContext);
+  const ChatService = useContext(ChatServiceContext);
+  const ServerStatusService = useContext(ServerStatusServiceContext);
+
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
@@ -209,7 +213,7 @@ export const ClientConfigStore: FC = () => {
       setHasLoadedConfig(true);
     } catch (error) {
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
-      console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
+      console.error(`ClientConfigService -> getConfig() ERROR: \n`, error);
     }
   };
 
@@ -228,7 +232,7 @@ export const ClientConfigStore: FC = () => {
     } catch (error) {
       sendEvent([AppStateEvent.Fail]);
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
-      console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
+      console.error(`serverStatusState -> getStatus() ERROR: \n`, error);
     }
   };
 
