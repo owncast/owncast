@@ -8,6 +8,7 @@ import { DEFAULT_VARIANT_STATE } from './config-constants';
 
 export const initialServerConfigState: ConfigDetails = {
   streamKeys: [],
+  streamKeyOverridden: false,
   adminPassword: '',
   instanceDetails: {
     customStyles: '',

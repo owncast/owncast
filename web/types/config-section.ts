@@ -140,6 +140,7 @@ export interface ConfigDetails {
   rtmpServerPort: string;
   s3: S3Field;
   streamKeys: StreamKey[];
+  streamKeyOverridden: boolean;
   adminPassword: string;
   videoSettings: VideoSettingsFields;
   webServerPort: string;

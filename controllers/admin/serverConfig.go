@@ -52,6 +52,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		FFmpegPath:              ffmpeg,
 		AdminPassword:           data.GetAdminPassword(),
 		StreamKeys:              data.GetStreamKeys(),
+		StreamKeyOverridden:     config.TemporaryStreamKey != "",
 		WebServerPort:           config.WebServerPort,
 		WebServerIP:             config.WebServerIP,
 		RTMPServerPort:          data.GetRTMPPortNumber(),
@@ -101,6 +102,7 @@ type serverConfigAdminResponse struct {
 	FFmpegPath              string                      `json:"ffmpegPath"`
 	AdminPassword           string                      `json:"adminPassword"`
 	StreamKeys              []models.StreamKey          `json:"streamKeys"`
+	StreamKeyOverridden     bool                        `json:"streamKeyOverridden"`
 	WebServerPort           int                         `json:"webServerPort"`
 	WebServerIP             string                      `json:"webServerIP"`
 	RTMPServerPort          int                         `json:"rtmpServerPort"`
