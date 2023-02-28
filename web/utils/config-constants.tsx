@@ -428,7 +428,7 @@ export const ENCODER_PRESET_SLIDER_MARKS = {
     style: {
       marginLeft: '15px',
     },
-    label: <p>lowest</p>,
+    label: 'lowest',
   },
   1: '',
   2: '',
@@ -437,7 +437,7 @@ export const ENCODER_PRESET_SLIDER_MARKS = {
     style: {
       marginLeft: '-15px',
     },
-    label: <p>highest</p>,
+    label: 'highest',
   },
 };
 export const ENCODER_PRESET_TOOLTIPS = {
