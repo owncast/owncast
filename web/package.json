@@ -35,7 +35,7 @@
 		"lodash": "4.17.21",
 		"next": "13.2.1",
 		"next-with-less": "2.0.5",
-		"picmo": "5.7.6",
+		"picmo": "5.8.0",
 		"postcss-flexbugs-fixes": "5.0.2",
 		"prop-types": "15.8.1",
 		"react": "18.2.0",
