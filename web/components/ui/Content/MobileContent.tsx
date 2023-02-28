@@ -86,9 +86,11 @@ export const MobileContent: FC<MobileContentProps> = ({
   const aboutTabContent = (
     <>
       <ContentHeader name={name} summary={summary} tags={tags} links={socialHandles} logo="/logo" />
-      <div className={styles.bottomPageContentContainer}>
-        <CustomPageContent content={extraPageContent} />
-      </div>
+      {!!extraPageContent && (
+        <div className={styles.bottomPageContentContainer}>
+          <CustomPageContent content={extraPageContent} />
+        </div>
+      )}
     </>
   );
   const followersTabContent = (
