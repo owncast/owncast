@@ -52,8 +52,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
     </div>
   );
-
-  const items = [{ label: 'About', key: '2', children: aboutTabContent }];
+  const items = [!!extraPageContent && { label: 'About', key: '2', children: aboutTabContent }];
   if (supportFediverseFeatures) {
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
   }
@@ -71,7 +70,11 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       </div>
 
       <div className={styles.lowerSection}>
-        {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : aboutTabContent}
+        {items.length > 1 ? (
+          <Tabs defaultActiveKey="0" items={items} />
+        ) : (
+          !!extraPageContent && aboutTabContent
+        )}
       </div>
     </>
   );
