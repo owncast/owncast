@@ -1,13 +1,19 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
 import { Tabs } from 'antd';
 
 import StreamKeys from '../../../../components/admin/config/server/StreamKeys';
 import ServerConfig from '../../../../components/admin/config/server/ServerConfig';
 import StorageConfig from '../../../../components/admin/config/server/StorageConfig';
+import { ServerStatusContext } from '../../../../utils/server-status-context';
 
 import { AdminLayout } from '../../../../components/layouts/AdminLayout';
 
 export default function PublicFacingDetails() {
+  const serverStatusData = useContext(ServerStatusContext);
+
+  const { serverConfig } = serverStatusData || {};
+  const { streamKeyOverridden } = serverConfig;
+
   return (
     <div className="config-public-details-page">
       <Tabs
@@ -19,7 +25,7 @@ export default function PublicFacingDetails() {
             key: '1',
             children: <ServerConfig />,
           },
-          {
+          !streamKeyOverridden && {
             label: `Stream Keys`,
             key: '2',
             children: <StreamKeys />,
