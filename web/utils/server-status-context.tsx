@@ -1,7 +1,6 @@
 // TODO: add a notication after updating info that changes will take place either on a new stream or server restart. may be different for each field.
 
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, FC, ReactElement } from 'react';
 
 import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { ConfigDetails, UpdateArgs } from '../types/config-section';
@@ -9,6 +8,7 @@ import { DEFAULT_VARIANT_STATE } from './config-constants';
 
 export const initialServerConfigState: ConfigDetails = {
   streamKeys: [],
+  streamKeyOverridden: false,
   adminPassword: '',
   instanceDetails: {
     customStyles: '',
@@ -101,7 +101,11 @@ export const ServerStatusContext = React.createContext({
   setFieldInConfigState: (args: UpdateArgs) => null,
 });
 
-const ServerStatusProvider = ({ children }) => {
+export type ServerStatusProviderProps = {
+  children: ReactElement;
+};
+
+const ServerStatusProvider: FC<ServerStatusProviderProps> = ({ children }) => {
   const [status, setStatus] = useState(initialServerStatusState);
   const [config, setConfig] = useState(initialServerConfigState);
 
@@ -162,10 +166,6 @@ const ServerStatusProvider = ({ children }) => {
   return (
     <ServerStatusContext.Provider value={providerValue}>{children}</ServerStatusContext.Provider>
   );
-};
-
-ServerStatusProvider.propTypes = {
-  children: PropTypes.element.isRequired,
 };
 
 export default ServerStatusProvider;

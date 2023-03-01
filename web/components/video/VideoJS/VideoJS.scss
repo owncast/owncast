@@ -11,7 +11,18 @@
   .vjs-big-play-button {
     z-index: 10;
     color: var(--theme-color-action);
-    font-size: 8rem !important;
+
+    // Setting the font size resizes the video.js
+    // BigPlayButton due to its style definitions
+    // (see https://github.com/videojs/video.js/blob/b306ce614e70e6d3305348d1b69e1434031d73ef/src/css/components/_big-play.scss)
+    // 30vmin determined by trial & error to not cause
+    // overflow with weird (small) x or y dimensions.
+    // min and max are also arbitrary; max was the old
+    // constant value. feel free to change if necessary,
+    // but check short and narrow screen sizes for overflow
+    // issues.
+    font-size: clamp(1rem, 30vmin, 8rem) !important;
+
     border-color: transparent !important;
     border-radius: var(--theme-rounded-corners) !important;
     background-color: transparent !important;
@@ -58,10 +69,10 @@
     font-family: VideoJS, serif;
     font-weight: 400;
     font-style: normal;
-  }
 
-  .vjs-icon-placeholder::before {
-    content: '\f110';
+    &::before {
+      content: '\f110';
+    }
   }
 }
 

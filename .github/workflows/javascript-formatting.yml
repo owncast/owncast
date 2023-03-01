@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: Prettify code
-        uses: creyD/prettier_action@v4.2
+        uses: creyD/prettier_action@v4.3
         with:
           # This part is also where you can pass other options, for example:
           prettier_options: --write **/*.{js,ts,jsx,tsx,css,md}

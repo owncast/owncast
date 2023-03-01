@@ -1,6 +1,11 @@
+import { createContext } from 'react';
 import { ClientConfig } from '../interfaces/client-config.model';
 
 const ENDPOINT = `/api/config`;
+
+export interface ClientConfigStaticService {
+  getConfig(): Promise<ClientConfig>;
+}
 
 class ClientConfigService {
   public static async getConfig(): Promise<ClientConfig> {
@@ -10,4 +15,5 @@ class ClientConfigService {
   }
 }
 
-export default ClientConfigService;
+export const ClientConfigServiceContext =
+  createContext<ClientConfigStaticService>(ClientConfigService);

@@ -3,6 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { ChatUserBadge } from './ChatUserBadge';
 import { ModerationBadge } from './ModerationBadge';
 import { AuthedUserBadge } from './AuthedUserBadge';
+import { BotUserBadge } from './BotUserBadge';
 
 export default {
   title: 'owncast/Chat/Messages/User Flag',
@@ -24,6 +25,8 @@ const AuthedTemplate: ComponentStory<typeof ModerationBadge> = args => (
   <AuthedUserBadge {...args} />
 );
 
+const BotTemplate: ComponentStory<typeof BotUserBadge> = args => <BotUserBadge {...args} />;
+
 export const Authenticated = AuthedTemplate.bind({});
 Authenticated.args = {
   userColor: '3',
@@ -32,6 +35,11 @@ Authenticated.args = {
 export const Moderator = ModerationTemplate.bind({});
 Moderator.args = {
   userColor: '5',
+};
+
+export const Bot = BotTemplate.bind({});
+Bot.args = {
+  userColor: '7',
 };
 
 export const Generic = Template.bind({});

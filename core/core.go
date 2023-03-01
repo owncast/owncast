@@ -102,7 +102,7 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	_transcoder.SetIsEvent(true)
 
-	offlineFilePath, err := saveOfflineClipToDisk("offline.tsclip")
+	offlineFilePath, err := saveOfflineClipToDisk("offline.ts")
 	if err != nil {
 		log.Fatalln("unable to save offline clip:", err)
 	}

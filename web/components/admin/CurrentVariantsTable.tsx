@@ -151,7 +151,9 @@ export const CurrentVariantsTable: FC = () => {
       dataIndex: 'cpuUsageLevel',
       key: 'cpuUsageLevel',
       render: (level: string, variant: VideoVariant) =>
-        !level || variant.videoPassthrough ? 'n/a' : ENCODER_PRESET_TOOLTIPS[level].split(' ')[0],
+        !level || variant.videoPassthrough
+          ? 'n/a'
+          : ENCODER_PRESET_TOOLTIPS[level]?.split(' ')[0] || 'Warning: please edit & reset',
     },
     {
       title: '',

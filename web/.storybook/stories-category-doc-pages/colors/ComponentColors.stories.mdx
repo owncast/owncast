@@ -1,0 +1,110 @@
+import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/addon-docs';
+import { ColorRow, getColor } from './Color';
+
+<Meta
+  title="owncast/Styles/Colors/Components"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description markdown={`
+  
+## Component Colors
+
+These are the specific colors used for components in the web application. They point to colors in the Owncast color palette but CSS variable names can be overwritten for customizing the theme.
+
+`}/>
+
+<ColorPalette>
+  <ColorItem
+    title="Text"
+    subtitle=""
+    colors={{
+      ...getColor('theme-color-components-text-on-light'),
+      ...getColor('theme-color-components-text-on-dark'),
+    }}
+  />
+  <ColorItem
+    title="Primary Button"
+    subtitle=""
+    colors={{
+      ...getColor('theme-color-components-primary-button-background'),
+      ...getColor('theme-color-components-primary-button-background-disabled'),
+			...getColor('theme-color-components-primary-button-text'),
+			...getColor('theme-color-components-primary-button-text-disabled'),
+			...getColor('theme-color-components-primary-button-border')
+    }}
+    />
+
+    <ColorItem
+    title="Secondary Button"
+    subtitle=""
+    colors={{
+      ...getColor('theme-color-components-secondary-button-background'),
+      ...getColor('theme-color-components-secondary-button-background-disabled'),
+    		...getColor('theme-color-components-secondary-button-text'),
+    		...getColor('theme-color-components-secondary-button-text-disabled'),
+    		...getColor('theme-color-components-secondary-button-border'),
+    }}
+    />
+
+<ColorItem
+  title="Chat"
+  subtitle=""
+  colors={{
+    ...getColor('theme-color-components-chat-background'),
+    ...getColor('theme-color-components-chat-text'),
+  }}
+/>
+<ColorItem
+  title="Modals"
+  subtitle=""
+  colors={{
+    ...getColor('theme-color-components-modal-header-background'),
+    ...getColor('theme-color-components-modal-header-text'),
+    ...getColor('theme-color-components-modal-content-background'),
+    ...getColor('theme-color-components-modal-content-text'),
+  }}
+/>
+<ColorItem
+  title="Page Content"
+  subtitle="Tabbed content"
+  colors={{
+    ...getColor('theme-color-components-content-background'),
+  }}
+/>
+<ColorItem
+  title="Menus"
+  subtitle=""
+  colors={{
+    ...getColor('theme-color-components-menu-background'),
+    ...getColor('theme-color-components-menu-item-text'),
+    ...getColor('theme-color-components-menu-item-bg'),
+    ...getColor('theme-color-components-menu-item-text'),
+    ...getColor('theme-color-components-menu-item-hover-bg'),
+    ...getColor('theme-color-components-menu-item-focus-bg'),
+  }}
+/>
+<ColorItem
+  title="Form Fields"
+  subtitle=""
+  colors={{
+    ...getColor('theme-color-components-form-field-background'),
+    ...getColor('theme-color-components-form-field-placeholder'),
+    ...getColor('theme-color-components-form-field-text'),
+    ...getColor('theme-color-components-menu-item-text'),
+    ...getColor('theme-color-components-form-field-border'),
+  }}
+/>
+<ColorItem
+  title="Video Player Status Bar"
+  subtitle="Displays duration and viewer count."
+  colors={{
+    ...getColor('theme-color-components-video-status-bar-background'),
+    ...getColor('theme-color-components-video-status-bar-foreground'),
+  }}
+/>
+
+</ColorPalette>

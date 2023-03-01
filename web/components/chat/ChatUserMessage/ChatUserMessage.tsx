@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import { FC, ReactNode } from 'react';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
@@ -14,6 +13,7 @@ import { accessTokenAtom } from '../../stores/ClientConfigStore';
 import { User } from '../../../interfaces/user.model';
 import { AuthedUserBadge } from '../ChatUserBadge/AuthedUserBadge';
 import { ModerationBadge } from '../ChatUserBadge/ModerationBadge';
+import { BotUserBadge } from '../ChatUserBadge/BotUserBadge';
 
 // Lazy loaded components
 
@@ -35,6 +35,7 @@ export type ChatUserMessageProps = {
   sameUserAsLast: boolean;
   isAuthorModerator: boolean;
   isAuthorAuthenticated: boolean;
+  isAuthorBot: boolean;
 };
 
 export type UserTooltipProps = {
@@ -61,6 +62,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
   sameUserAsLast,
   isAuthorModerator,
   isAuthorAuthenticated,
+  isAuthorBot,
 }) => {
   const { id: messageId, body, user, timestamp } = message;
   const { id: userId, displayName, displayColor } = user;
@@ -76,7 +78,9 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
   if (isAuthorAuthenticated) {
     badgeNodes.push(<AuthedUserBadge key="auth" userColor={displayColor} />);
   }
-
+  if (isAuthorBot) {
+    badgeNodes.push(<BotUserBadge key="bot" userColor={displayColor} />);
+  }
   return (
     <div
       className={cn(

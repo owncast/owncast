@@ -1,9 +1,10 @@
-/* eslint-disable react/no-danger */
-import { Highlight } from 'react-highlighter-ts';
 import { FC } from 'react';
 import cn from 'classnames';
+import { Interweave } from 'interweave';
+import { UrlMatcher } from 'interweave-autolink';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import styles from './ChatSystemMessage.module.scss';
+import { ChatMessageHighlightMatcher } from '../ChatUserMessage/customMatcher';
 
 export type ChatSystemMessageProps = {
   message: ChatMessage;
@@ -21,8 +22,13 @@ export const ChatSystemMessage: FC<ChatSystemMessageProps> = ({
     <div className={styles.user}>
       <span className={styles.userName}>{displayName}</span>
     </div>
-    <Highlight search={highlightString}>
-      <div className={styles.message} dangerouslySetInnerHTML={{ __html: body }} />
-    </Highlight>
+    <Interweave
+      className={styles.message}
+      content={body}
+      matchers={[
+        new UrlMatcher('url', { validateTLD: false }),
+        new ChatMessageHighlightMatcher('highlight', { highlightString }),
+      ]}
+    />
   </div>
 );

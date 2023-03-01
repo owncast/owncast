@@ -8,6 +8,7 @@ export type CrossfadeImageProps = {
   height: string;
   objectFit?: ObjectFit;
   duration?: string;
+  className?: string;
 };
 
 const imgStyle: React.CSSProperties = {
@@ -22,6 +23,7 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
   height,
   objectFit = 'fill',
   duration = '1s',
+  className,
 }) => {
   const spanStyle: React.CSSProperties = useMemo(
     () => ({
@@ -52,7 +54,7 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
   };
 
   return (
-    <span style={spanStyle}>
+    <span style={spanStyle} className={className}>
       {[...srcs, nextSrc].map(
         (singleSrc, index) =>
           singleSrc !== '' && (

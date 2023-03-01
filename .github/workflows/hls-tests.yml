@@ -28,6 +28,19 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: '1.18.8'
+          cache: true
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules-hls-tests
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('test/automated/hls/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Run HLS tests
         uses: nick-fields/retry@v2

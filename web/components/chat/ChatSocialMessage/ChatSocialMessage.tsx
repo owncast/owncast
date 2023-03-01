@@ -25,13 +25,13 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
   let Icon;
 
   switch (type.toString()) {
-    case 'follow':
+    case 'FEDIVERSE_ENGAGEMENT_FOLLOW':
       Icon = FollowIcon;
       break;
-    case 'like':
+    case 'FEDIVERSE_ENGAGEMENT_LIKE':
       Icon = LikeIcon;
       break;
-    case 'repost':
+    case 'FEDIVERSE_ENGAGEMENT_REPOST':
       Icon = RepostIcon;
       break;
     default:
@@ -42,15 +42,16 @@ export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
     <div className={cn([styles.follower, 'chat-message_social'])}>
       <a href={link} target="_blank" rel="noreferrer">
         <Row wrap={false}>
-          <Col span={6}>
-            <Avatar src={image} alt="Avatar" className={styles.avatar}>
-              <img src="/logo" alt="Logo" className={styles.placeholder} />
+          <Col span={6} className={styles.avatarColumn}>
+            <Avatar src={image} alt="Avatar" className={styles.avatar} size="large">
+              {title.charAt(0).toUpperCase()}
             </Avatar>
+
             <Icon className={styles.icon} />
           </Col>
           <Col>
             <Row className={styles.account}>{title}</Row>
-            <Row className={styles.body}>{body}</Row>
+            <Row className={styles.body} dangerouslySetInnerHTML={{ __html: body }} />
           </Col>
         </Row>
       </a>

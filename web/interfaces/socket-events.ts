@@ -42,3 +42,10 @@ export interface MessageVisibilityEvent extends SocketEvent {
   visible: boolean;
   ids: string[];
 }
+
+export interface FediverseEvent extends SocketEvent {
+  title: string;
+  image: string;
+  link: string;
+  body: string;
+}

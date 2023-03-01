@@ -1,6 +1,11 @@
+import { createContext } from 'react';
 import { ServerStatus } from '../interfaces/server-status.model';
 
 const ENDPOINT = `/api/status`;
+
+export interface ServerStatusStaticService {
+  getStatus(): Promise<ServerStatus>;
+}
 
 class ServerStatusService {
   public static async getStatus(): Promise<ServerStatus> {
@@ -10,4 +15,5 @@ class ServerStatusService {
   }
 }
 
-export default ServerStatusService;
+export const ServerStatusServiceContext =
+  createContext<ServerStatusStaticService>(ServerStatusService);
