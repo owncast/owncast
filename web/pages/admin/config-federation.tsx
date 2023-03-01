@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Typography, Modal, Button, Row, Col, Alert } from 'antd';
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { ReactElement, useContext, useEffect, useState, FC } from 'react';
 import {
   TEXTFIELD_TYPE_TEXT,
   TEXTFIELD_TYPE_TEXTAREA,
@@ -29,7 +28,12 @@ import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/inp
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
-const FederationInfoModal = ({ cancelPressed, okPressed }) => (
+export type FederationInfoModalProps = {
+  cancelPressed: () => void;
+  okPressed: () => void;
+};
+
+const FederationInfoModal: FC<FederationInfoModalProps> = ({ cancelPressed, okPressed }) => (
   <Modal
     width="70%"
     title="Enable Social Features"
@@ -86,11 +90,6 @@ const FederationInfoModal = ({ cancelPressed, okPressed }) => (
     </Typography.Paragraph>
   </Modal>
 );
-
-FederationInfoModal.propTypes = {
-  cancelPressed: PropTypes.func.isRequired,
-  okPressed: PropTypes.func.isRequired,
-};
 
 const ConfigFederation = () => {
   const { Title } = Typography;

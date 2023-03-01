@@ -1,0 +1,15 @@
+.nameChangeView {
+  display: flex;
+  font-size: 0.9rem;
+  border-radius: var(--theme-rounded-corners);
+  padding: 5px 15px;
+  color: var(--theme-color-components-chat-text);
+  & .nameChangeText {
+    font-weight: bold;
+    font-family: var(--theme-text-display-font-family);
+    & .plain {
+      font-weight: normal;
+      font-family: var(--theme-text-body-font-family) !important;
+    }
+  }
+}

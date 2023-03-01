@@ -1,0 +1,45 @@
+import { Mermaid } from 'mdx-mermaid/Mermaid';
+import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+
+<Meta
+  title="owncast/Documentation/Infrastructure Examples/CDN Example"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description
+  markdown={`
+## CDN in front of Owncast
+
+If you're ok with some video requests coming directly to your Owncast server, and want to generally increase the overall speed that your viewers globally access all your Owncast assets, including video and the web interface, you can put a CDN in front of your entire Owncast server.
+`} />
+
+<Mermaid
+  chart={`flowchart TD
+    CDN{{fa:fa-cloud Global CDN}}
+    Owncast{fa:fa-server Owncast}
+
+    subgraph Clients
+        WebPlayer[fa:fa-window-maximize Web App]
+        Embeds[fa:fa-window-restore Embeds]
+        MobileApps[fa:fa-mobile-screen Mobile Apps]
+        SmartTV[fa:fa-tv Smart TV]
+        VLC[fa:fa-shapes VLC]
+    end
+
+    CDN--Web-->WebPlayer
+    Owncast<--Chat-->WebPlayer
+    CDN--Web-->Embeds
+
+    CDN--Download\\nVideo-->WebPlayer
+    CDN--Download\\nVideo-->Embeds
+    CDN--Download\\nVideo-->MobileApps
+    CDN--Download\\nVideo-->SmartTV
+    CDN--Download\\nVideo-->VLC
+
+    CDN --- Owncast
+
+`}
+/>

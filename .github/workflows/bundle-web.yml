@@ -18,6 +18,18 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules-bundle-web-app
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Bundle web app (next.js build)
         uses: actions/checkout@v3
       - run: build/web/bundleWeb.sh
@@ -28,3 +40,5 @@ jobs:
           pull: --rebase --autostash
           message: 'Bundle embedded web app'
           add: 'static/web'
+          author_name: Owncast
+          author_email: owncast@owncast.online

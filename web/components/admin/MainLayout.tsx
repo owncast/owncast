@@ -1,5 +1,4 @@
 import React, { FC, ReactNode, useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
@@ -224,7 +223,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'viewer-info',
     },
     !chatDisabled && {
-      label: <Link href="/admin/viewer-info">Chat &amp; Users</Link>,
+      label: <span>Chat &amp; Users</span>,
       icon: <MessageOutlined />,
       children: chatMenu,
       key: 'chat-and-users',
@@ -337,8 +336,4 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       />
     </Layout>
   );
-};
-
-MainLayout.propTypes = {
-  children: PropTypes.element.isRequired,
 };

@@ -1,0 +1,155 @@
+import { Mermaid } from 'mdx-mermaid/Mermaid';
+import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+
+<Meta
+  title="owncast/Documentation/Infrastructure Examples/Basic Example"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description
+  markdown={`
+## Basic
+
+This is the most basic Owncast setup and is what you get when you run it without any additional services.
+`} />
+
+<Mermaid
+  chart={`graph TD
+    Owncast{fa:fa-server Owncast}
+
+    A[fa:fa-window-maximize Web App] --Video-->Owncast
+    A[fa:fa-window-maximize Web App] --Web-->Owncast
+    A[fa:fa-window-maximize Web App] <--Chat-->Owncast
+    B[fa:fa-tv Smart TV] --Video--> Owncast
+    I[fa:fa-window-restore Chat Embeds] --Web-->Owncast
+    I[fa:fa-window-restore Chat Embeds] <--Chat-->Owncast
+    Owncast --Video-->F[fa:fa-shapes VLC]
+    Owncast --Video-->G[fa:fa-window-restore Video Embeds]
+    Owncast --Web-->G[fa:fa-window-restore Video Embeds]
+    Owncast --Video-->H[fa:fa-mobile-screen Mobile Apps]
+
+`}
+/>
+
+<Description
+  markdown={`
+## S3 Object Storage
+
+If you would like no video traffic to take place from your Owncast server to your clients, you can use S3 Object Storage to be responsible for this instead.
+Instead of video players pulling the stream from your Owncast server it would instead make these requests to a S3 provider, and Owncast would upload video to this provider to make it available.
+`} />
+
+<Mermaid
+  chart={`graph TD
+	 	subgraph Chat & Web Assets
+    Owncast{fa:fa-server Owncast}
+    end
+		
+    Owncast--Upload\\nVideo-->S3
+
+    subgraph Video Assets
+    S3[fa:fa-hard-drive S3 Object Storage]
+    end
+
+    subgraph Clients
+    WebPlayer[fa:fa-window-maximize Web App]
+    Embeds[fa:fa-window-restore Embeds]
+    MobileApps[fa:fa-mobile-screen Mobile Apps]
+    SmartTV[fa:fa-tv Smart TV]
+    VLC[fa:fa-shapes VLC]
+    end
+
+    Owncast--Web-->WebPlayer
+    Owncast--Web-->Embeds
+    Owncast<--Chat-->WebPlayer
+    S3--Download\\nVideo-->WebPlayer
+    S3--Download\\nVideo-->Embeds
+    S3--Download\\nVideo-->MobileApps
+    S3--Download\\nVideo-->SmartTV
+    S3--Download\\nVideo-->VLC
+
+`}
+/>
+
+<Description
+  markdown={`
+## CDN in front of S3 Object Storage
+
+If you're using a S3 provider but would like to increase the speed of your video delivery to your clients around the world, you can use a CDN in front of your S3 provider.
+This leads to not only your server not serving any video traffic, but the video traffic would be distributed globally so each client player would be pulling video from somewhere geographically closer, reducing the likelihood of buffering and slower network requests.
+
+`} />
+
+<Mermaid
+  chart={`flowchart TD
+    subgraph Video Assets
+        S3[fa:fa-hard-drive S3 Object Storage]
+        CDN[fa:fa-cloud Global CDN]
+    end
+
+    subgraph Clients
+        WebPlayer[fa:fa-window-maximize Web App]
+        Embeds[fa:fa-window-restore Embeds]
+        MobileApps[fa:fa-mobile-screen Mobile Apps]
+        SmartTV[fa:fa-tv Smart TV]
+        VLC[fa:fa-shapes VLC]
+    end
+
+    subgraph Web Assets & Chat Service
+        direction TB
+        Owncast{fa:fa-server Owncast}
+    end
+
+    Owncast--Upload\\nVideo-->S3
+    Owncast--Web-->WebPlayer
+    Owncast<--Chat-->WebPlayer
+    Owncast--Web-->Embeds
+
+    CDN--Download\\nVideo-->WebPlayer
+    CDN--Download\\nVideo-->Embeds
+    CDN--Download\\nVideo-->MobileApps
+    CDN--Download\\nVideo-->SmartTV
+    CDN--Download\\nVideo-->VLC
+
+    S3 --- CDN
+
+`}
+/>
+
+<Description
+  markdown={`
+## CDN in front of Owncast
+
+If you're ok with some video requests coming directly to your Owncast server, and want to generally increase the overall speed that your viewers globally access all your Owncast assets, including video and the web interface, you can put a CDN in front of your entire Owncast server.
+`} />
+
+<Mermaid
+  chart={`flowchart TD
+    CDN{{fa:fa-cloud Global CDN}}
+    Owncast{fa:fa-server Owncast}
+
+    subgraph Clients
+        WebPlayer[fa:fa-window-maximize Web App]
+        Embeds[fa:fa-window-restore Embeds]
+        MobileApps[fa:fa-mobile-screen Mobile Apps]
+        SmartTV[fa:fa-tv Smart TV]
+        VLC[fa:fa-shapes VLC]
+    end
+
+    CDN--Web-->WebPlayer
+    Owncast<--Chat-->WebPlayer
+    CDN--Web-->Embeds
+
+    CDN--Download\\nVideo-->WebPlayer
+    CDN--Download\\nVideo-->Embeds
+    CDN--Download\\nVideo-->MobileApps
+    CDN--Download\\nVideo-->SmartTV
+    CDN--Download\\nVideo-->VLC
+
+    CDN --- Owncast
+
+`}
+/>

@@ -1,0 +1,50 @@
+import { Mermaid } from 'mdx-mermaid/Mermaid';
+import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+
+<Meta
+  title="owncast/Documentation/Infrastructure Examples/S3 Example"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description
+  markdown={`
+## S3 Object Storage
+
+If you would like no video traffic to take place from your Owncast server to your clients, you can use S3 Object Storage to be responsible for this instead.
+Instead of video players pulling the stream from your Owncast server it would instead make these requests to a S3 provider, and Owncast would upload video to this provider to make it available.
+`} />
+
+<Mermaid
+  chart={`graph TD
+	 	subgraph Chat & Web Assets
+    Owncast{fa:fa-server Owncast}
+    end
+		
+    Owncast--Upload\\nVideo-->S3
+
+    subgraph Video Assets
+    S3[fa:fa-hard-drive S3 Object Storage]
+    end
+
+    subgraph Clients
+    WebPlayer[fa:fa-window-maximize Web App]
+    Embeds[fa:fa-window-restore Embeds]
+    MobileApps[fa:fa-mobile-screen Mobile Apps]
+    SmartTV[fa:fa-tv Smart TV]
+    VLC[fa:fa-shapes VLC]
+    end
+
+    Owncast--Web-->WebPlayer
+    Owncast--Web-->Embeds
+    Owncast<--Chat-->WebPlayer
+    S3--Download\\nVideo-->WebPlayer
+    S3--Download\\nVideo-->Embeds
+    S3--Download\\nVideo-->MobileApps
+    S3--Download\\nVideo-->SmartTV
+    S3--Download\\nVideo-->VLC
+
+`}
+/>

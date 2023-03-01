@@ -1,5 +1,7 @@
-import { Button, Checkbox, Form, Input, Modal, Space, Table, Typography } from 'antd';
-import _ from 'lodash';
+import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography } from 'antd';
+import CodeMirror from '@uiw/react-codemirror';
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
+import { html as codeMirrorHTML } from '@codemirror/lang-html';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
@@ -33,7 +35,9 @@ interface Props {
   onCancel: () => void;
   onOk: (
     oldAction: ExternalAction | null,
+    oldActionIndex: number | null,
     actionUrl: string,
+    actionHTML: string,
     actionTitle: string,
     actionDescription: string,
     actionIcon: string,
@@ -42,12 +46,19 @@ interface Props {
   ) => void;
   open: boolean;
   action: ExternalAction | null;
+  index: number | null;
 }
+
+// ActionType is only used here to save either only the URL or only the HTML.
+type ActionType = 'url' | 'html';
 
 const ActionModal = (props: Props) => {
   const { onOk, onCancel, open, action } = props;
 
+  const [actionType, setActionType] = useState<ActionType>('url');
+
   const [actionUrl, setActionUrl] = useState('');
+  const [actionHTML, setActionHTML] = useState('');
   const [actionTitle, setActionTitle] = useState('');
   const [actionDescription, setActionDescription] = useState('');
   const [actionIcon, setActionIcon] = useState('');
@@ -55,7 +66,9 @@ const ActionModal = (props: Props) => {
   const [openExternally, setOpenExternally] = useState(false);
 
   useEffect(() => {
+    setActionType((action?.html?.length || 0) > 0 ? 'html' : 'url');
     setActionUrl(action?.url || '');
+    setActionHTML(action?.html || '');
     setActionTitle(action?.title || '');
     setActionDescription(action?.description || '');
     setActionIcon(action?.icon || '');
@@ -66,7 +79,10 @@ const ActionModal = (props: Props) => {
   function save() {
     onOk(
       action,
-      actionUrl,
+      props.index,
+      // Save only one of the properties
+      actionType === 'html' ? '' : actionUrl,
+      actionType === 'html' ? actionHTML : '',
       actionTitle,
       actionDescription,
       actionIcon,
@@ -74,6 +90,7 @@ const ActionModal = (props: Props) => {
       openExternally,
     );
     setActionUrl('');
+    setActionHTML('');
     setActionTitle('');
     setActionDescription('');
     setActionIcon('');
@@ -82,6 +99,9 @@ const ActionModal = (props: Props) => {
   }
 
   function canSave(): Boolean {
+    if (actionType === 'html') {
+      return actionHTML !== '' && actionTitle !== '';
+    }
     return isValidUrl(actionUrl, ['https:']) && actionTitle !== '';
   }
 
@@ -91,6 +111,10 @@ const ActionModal = (props: Props) => {
 
   const onOpenExternallyChanged = checkbox => {
     setOpenExternally(checkbox.target.checked);
+  };
+
+  const onActionHTMLChanged = (newActionHTML: string) => {
+    setActionHTML(newActionHTML);
   };
 
   return (
@@ -104,7 +128,7 @@ const ActionModal = (props: Props) => {
     >
       <Form initialValues={action}>
         Add the URL for the external action you want to present.{' '}
-        <strong>Only HTTPS urls are supported.</strong>
+        <strong>Only HTTPS URLs and embeds are supported.</strong>
         <p>
           <a
             href="https://owncast.online/thirdparty/actions/"
@@ -114,15 +138,39 @@ const ActionModal = (props: Props) => {
             Read more about external actions.
           </a>
         </p>
-        <Form.Item name="url">
-          <Input
-            required
-            placeholder="https://myserver.com/action (required)"
-            onChange={input => setActionUrl(input.currentTarget.value.trim())}
-            type="url"
-            pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
+        <Form.Item>
+          <Select
+            value={actionType}
+            onChange={setActionType}
+            placeholder="Select an action type"
+            options={[
+              { label: 'Link or embed an URL', value: 'url' },
+              { label: 'Custom HTML', value: 'html' },
+            ]}
           />
         </Form.Item>
+        {actionType === 'html' ? (
+          <Form.Item name="html">
+            <CodeMirror
+              value={actionHTML}
+              placeholder="HTML embed code (required)"
+              theme={bbedit}
+              height="200px"
+              extensions={[codeMirrorHTML()]}
+              onChange={onActionHTMLChanged}
+            />
+          </Form.Item>
+        ) : (
+          <Form.Item name="url">
+            <Input
+              required
+              placeholder="https://myserver.com/action (required)"
+              onChange={input => setActionUrl(input.currentTarget.value.trim())}
+              type="url"
+              pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
+            />
+          </Form.Item>
+        )}
         <Form.Item name="title">
           <Input
             value={actionTitle}
@@ -155,15 +203,17 @@ const ActionModal = (props: Props) => {
           </Form.Item>
           Optional background color of the action button.
         </div>
-        <Form.Item name="openExternally">
-          <Checkbox
-            checked={openExternally}
-            defaultChecked={openExternally}
-            onChange={onOpenExternallyChanged}
-          >
-            Open in a new tab instead of within your page.
-          </Checkbox>
-        </Form.Item>
+        {actionType === 'html' ? null : (
+          <Form.Item name="openExternally">
+            <Checkbox
+              checked={openExternally}
+              defaultChecked={openExternally}
+              onChange={onOpenExternallyChanged}
+            >
+              Open in a new tab instead of within your page.
+            </Checkbox>
+          </Form.Item>
+        )}
       </Form>
     </Modal>
   );
@@ -177,6 +227,7 @@ const Actions = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [editAction, setEditAction] = useState<ExternalAction>(null);
+  const [editActionIndex, setEditActionIndex] = useState(-1);
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -205,9 +256,8 @@ const Actions = () => {
     });
   }
 
-  async function handleDelete(action) {
+  async function handleDelete(action, index) {
     const actionsData = [...actions];
-    const index = actions.findIndex(item => item.url === action.url);
     actionsData.splice(index, 1);
 
     try {
@@ -220,7 +270,9 @@ const Actions = () => {
 
   async function handleSave(
     oldAction: ExternalAction | null,
+    oldActionIndex: number,
     url: string,
+    html: string,
     title: string,
     description: string,
     icon: string,
@@ -232,6 +284,7 @@ const Actions = () => {
 
       const newAction: ExternalAction = {
         url,
+        html,
         title,
         description,
         icon,
@@ -240,9 +293,8 @@ const Actions = () => {
       };
 
       // Replace old action if edited or append the new action
-      const index = oldAction ? actions.findIndex(item => _.isEqual(item, oldAction)) : -1;
-      if (index >= 0) {
-        actionsData[index] = newAction;
+      if (oldActionIndex >= 0) {
+        actionsData[oldActionIndex] = newAction;
       } else {
         actionsData.push(newAction);
       }
@@ -254,19 +306,23 @@ const Actions = () => {
     }
   }
 
-  async function handleEdit(action: ExternalAction) {
+  async function handleEdit(action: ExternalAction, index) {
+    setEditActionIndex(index);
     setEditAction(action);
     setIsModalOpen(true);
   }
 
   const showCreateModal = () => {
     setEditAction(null);
+    setEditActionIndex(-1);
     setIsModalOpen(true);
   };
 
   const handleModalSaveButton = (
     oldAction: ExternalAction | null,
+    oldActionIndex: number,
     actionUrl: string,
+    actionHTML: string,
     actionTitle: string,
     actionDescription: string,
     actionIcon: string,
@@ -276,7 +332,9 @@ const Actions = () => {
     setIsModalOpen(false);
     handleSave(
       oldAction,
+      oldActionIndex,
       actionUrl,
+      actionHTML,
       actionTitle,
       actionDescription,
       actionIcon,
@@ -284,6 +342,7 @@ const Actions = () => {
       openExternally,
     );
     setEditAction(null);
+    setEditActionIndex(-1);
   };
 
   const handleModalCancelButton = () => {
@@ -294,10 +353,10 @@ const Actions = () => {
     {
       title: '',
       key: 'delete-edit',
-      render: (text, record) => (
+      render: (text, record, index) => (
         <Space size="middle">
-          <Button onClick={() => handleDelete(record)} icon={<DeleteOutlined />} />
-          <Button onClick={() => handleEdit(record)} icon={<EditOutlined />} />
+          <Button onClick={() => handleDelete(record, index)} icon={<DeleteOutlined />} />
+          <Button onClick={() => handleEdit(record, index)} icon={<EditOutlined />} />
         </Space>
       ),
     },
@@ -312,9 +371,10 @@ const Actions = () => {
       key: 'description',
     },
     {
-      title: 'URL',
-      dataIndex: 'url',
+      title: 'URL / Embed',
       key: 'url',
+      dataIndex: 'url',
+      render: (text, record) => (record.html ? 'HTML embed' : record.url),
     },
     {
       title: 'Icon',
@@ -331,9 +391,11 @@ const Actions = () => {
     },
     {
       title: 'Opens',
-      dataIndex: 'openExternally',
       key: 'openExternally',
-      render: (openExternally: boolean) => (openExternally ? 'In a new tab' : 'In a modal'),
+      dataIndex: 'openExternally',
+      // Note: embeds will alway open in the same tab / in a modal
+      render: (openExternally: boolean, record) =>
+        !openExternally || record.html ? 'In the same tab' : 'In a new tab',
     },
   ];
 
@@ -370,6 +432,7 @@ const Actions = () => {
 
       <ActionModal
         action={editAction}
+        index={editActionIndex}
         open={isModalOpen}
         onOk={handleModalSaveButton}
         onCancel={handleModalCancelButton}

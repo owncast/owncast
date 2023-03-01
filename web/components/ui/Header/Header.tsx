@@ -22,12 +22,7 @@ export type HeaderComponentProps = {
   online: boolean;
 };
 
-export const Header: FC<HeaderComponentProps> = ({
-  name = 'Your stream title',
-  chatAvailable,
-  chatDisabled,
-  online,
-}) => (
+export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisabled, online }) => (
   <header className={cn([`${styles.header}`], 'global-header')}>
     {online ? (
       <Link href="#player" className={styles.skipLink}>
@@ -55,7 +50,7 @@ export const Header: FC<HeaderComponentProps> = ({
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (
       <Tooltip title="Chat is available when the stream is live." placement="left">
-        <Tag style={{ cursor: 'pointer' }}>Chat offline</Tag>
+        <Tag className={styles.offlineTag}>Chat offline</Tag>
       </Tooltip>
     )}
   </header>

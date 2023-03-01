@@ -1,0 +1,64 @@
+import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/addon-docs';
+import { ColorRow, getColor } from './Color';
+
+<Meta
+  title="owncast/Styles/Colors/Palette"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description markdown={`
+  
+## Theme Color Palette
+
+These are the colors used across the web application. All the specific component colors point to colors in this palette. If you override one of these colors all usage of that color will be updated.
+
+`}/>
+
+<ColorPalette>
+  <ColorItem
+    title="Theme color palette"
+    subtitle="Colors used across the theme."
+    colors={{
+      ...getColor('theme-color-palette-0'),
+      ...getColor('theme-color-palette-1'),
+      ...getColor('theme-color-palette-2'),
+      ...getColor('theme-color-palette-3'),
+      ...getColor('theme-color-palette-4'),
+      ...getColor('theme-color-palette-5'),
+    }}
+  />
+  <ColorItem
+    colors={{
+      ...getColor('theme-color-palette-6'),
+      ...getColor('theme-color-palette-7'),
+      ...getColor('theme-color-palette-8'),
+      ...getColor('theme-color-palette-9'),
+      ...getColor('theme-color-palette-10'),
+      ...getColor('theme-color-palette-11'),
+    }}
+
+/>
+
+  <ColorItem
+    colors={{
+      ...getColor('theme-color-palette-12'),
+      ...getColor('theme-color-palette-13'),
+      ...getColor('theme-color-palette-14'),
+      ...getColor('theme-color-palette-15'),
+      ...getColor('theme-color-palette-error'),
+      ...getColor('theme-color-palette-warning'),
+    }}
+  />
+  <ColorItem
+    colors={{
+      ...getColor('theme-color-background-light'),
+      ...getColor('theme-color-background-header'),
+      ...getColor('theme-color-action'),
+      ...getColor('theme-color-action-hover'),
+      ...getColor('theme-color-action-disabled'),
+    }}
+  />
+</ColorPalette>

@@ -56,7 +56,7 @@ const messageWithLinkAndCustomEmoji: ChatMessage = JSON.parse(`{
 			"nameChangedAt": "2022-04-26T23:56:05.531287897Z",
 			"scopes": []
 		},
-		"body": "Test message with a link https://owncast.online and a custom emoji <img src='/img/emoji/blob/ablobattention.gif' width='30px'/> ."}`);
+		"body": "Test message with a link https://owncast.online and a custom emoji <img src='/img/emoji/mutant/skull.svg' width='30px'/> ."}`);
 
 const moderatorMessage: ChatMessage = JSON.parse(`{
     "type": "CHAT",
@@ -89,6 +89,22 @@ const authenticatedUserMessage: ChatMessage = JSON.parse(`{
       },
       "body": "I am an authenticated user."}`);
 
+const botUserMessage: ChatMessage = JSON.parse(`{
+				"type": "CHAT",
+				"id": "wY-MEXwnR",
+				"timestamp": "2022-04-28T20:30:27.001762726Z",
+				"user": {
+					"id": "h_5GQ6E7R",
+					"displayName": "EliteMooseTaskForce",
+					"displayColor": 7,
+					"createdAt": "2022-03-24T03:52:37.966584694Z",
+					"previousNames": ["gifted-nobel", "EliteMooseTaskForce"],
+					"nameChangedAt": "2022-04-26T23:56:05.531287897Z",
+					"authenticated": true,
+					"scopes": ["bot"]
+				},
+				"body": "I am a bot."}`);
+
 export const WithoutModeratorMenu = Template.bind({});
 WithoutModeratorMenu.args = {
   message: standardMessage,
@@ -119,6 +135,13 @@ FromAuthenticatedUser.args = {
   message: authenticatedUserMessage,
   showModeratorMenu: false,
   isAuthorAuthenticated: true,
+};
+
+export const FromBotUser = Template.bind({});
+FromBotUser.args = {
+  message: botUserMessage,
+  showModeratorMenu: false,
+  isAuthorBot: true,
 };
 
 export const WithStringHighlighted = Template.bind({});

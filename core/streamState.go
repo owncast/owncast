@@ -92,7 +92,7 @@ func SetStreamAsDisconnected() {
 	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
-	offlineFilename := "offline.tsclip"
+	offlineFilename := "offline.ts"
 
 	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
 	if err != nil {

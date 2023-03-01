@@ -159,8 +159,8 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
               <Slider
                 tipFormatter={value => ENCODER_PRESET_TOOLTIPS[value]}
                 onChange={handleVideoCpuUsageLevelChange}
-                min={1}
-                max={Object.keys(ENCODER_PRESET_SLIDER_MARKS).length}
+                min={0}
+                max={Object.keys(ENCODER_PRESET_SLIDER_MARKS).length - 1}
                 marks={ENCODER_PRESET_SLIDER_MARKS}
                 defaultValue={dataState.cpuUsageLevel}
                 value={dataState.cpuUsageLevel}

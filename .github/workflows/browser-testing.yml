@@ -24,9 +24,22 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: '1.18.8'
+          cache: true
 
       - name: Install Google Chrome
         run: sudo apt-get install google-chrome-stable
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules-browser-tests
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('test/automated/browser/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Run Browser tests
         uses: nick-fields/retry@v2

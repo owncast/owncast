@@ -13,13 +13,18 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
     <a href={follower.link} target="_blank" rel="noreferrer">
       <Row wrap={false}>
         <Col span={6}>
-          <Avatar src={follower.image} alt="Avatar" className={styles.avatar}>
-            <img src="/logo" alt="Logo" className={styles.placeholder} />
-          </Avatar>
+          <Avatar
+            src={follower.image}
+            alt="Avatar"
+            className={styles.avatar}
+            icon={<img src="/logo" alt="Logo" />}
+          />
         </Col>
         <Col span={18}>
           <Row className={styles.name}>
-            <Typography.Text ellipsis>{follower.name}</Typography.Text>
+            <Typography.Text ellipsis>
+              {follower.name || follower.username.split('@', 2)[0]}
+            </Typography.Text>
           </Row>
           <Row className={styles.account}>
             <Typography.Text ellipsis>{follower.username}</Typography.Text>

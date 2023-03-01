@@ -44,7 +44,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
   const serverStatusData = useContext(ServerStatusContext);
 
   const { serverConfig } = serverStatusData || {};
-  const { rtmpServerPort } = serverConfig;
+  const { rtmpServerPort, streamKeyOverridden } = serverConfig;
   const instanceUrl = global.window?.location.hostname || '';
 
   let rtmpURL;
@@ -79,7 +79,13 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
               Streaming Keys:
             </Text>
             <Text strong className="stream-info-box">
-              <Link href="/admin/config/server"> View </Link>
+              {!streamKeyOverridden ? (
+                <Link href="/admin/config/server"> View </Link>
+              ) : (
+                <span style={{ paddingLeft: '10px', fontWeight: 'normal' }}>
+                  Overridden via command line.
+                </span>
+              )}
             </Text>
           </div>
         </div>

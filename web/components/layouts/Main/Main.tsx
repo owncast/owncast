@@ -12,6 +12,7 @@ import {
   clientConfigStateAtom,
   fatalErrorStateAtom,
   appStateAtom,
+  serverStatusState,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -25,6 +26,7 @@ import styles from './Main.module.scss';
 import { PushNotificationServiceWorker } from '../../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
 import { AppStateOptions } from '../../stores/application-state';
 import { Noscript } from '../../ui/Noscript/Noscript';
+import { ServerStatus } from '../../../interfaces/server-status.model';
 
 const lockBodyStyle = `
 body {
@@ -46,7 +48,8 @@ const FatalErrorStateModal = dynamic(
 
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const { name, title, customStyles } = clientConfig;
+  const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
+  const { name, customStyles } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
@@ -54,12 +57,14 @@ export const Main: FC = () => {
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
+  const { online, streamTitle } = clientStatus;
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
   }, []);
 
   const isProduction = process.env.NODE_ENV === 'production';
+  const headerText = online ? streamTitle || name : name;
 
   return (
     <>
@@ -143,7 +148,7 @@ export const Main: FC = () => {
 
       <Layout ref={layoutRef} className={styles.layout}>
         <Header
-          name={title || name}
+          name={headerText}
           chatAvailable={isChatAvailable}
           chatDisabled={chatDisabled}
           online={videoAvailable}

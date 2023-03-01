@@ -30,9 +30,11 @@
     }
 
     mark {
-      padding-left: 0.35em;
-      padding-right: 0.35em;
-      background-color: var(--theme-color-palette-12);
+      padding-left: 0.3em;
+      padding-right: 0.3em;
+      color: var(--theme-color-palette-4);
+      border-radius: var(--theme-rounded-corners);
+      background-color: var(--color-owncast-palette-7);
     }
   }
 

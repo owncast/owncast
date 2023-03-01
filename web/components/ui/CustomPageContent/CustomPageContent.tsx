@@ -7,7 +7,7 @@ export type CustomPageContentProps = {
 };
 
 export const CustomPageContent: FC<CustomPageContentProps> = ({ content }) => (
-  <div className={styles.pageContentContainer} id="custom-page-content">
+  <div id="custom-page-content">
     <div className={styles.customPageContent} dangerouslySetInnerHTML={{ __html: content }} />
   </div>
 );

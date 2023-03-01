@@ -1,0 +1,64 @@
+import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/addon-docs';
+import { ColorRow, getColor } from './Color';
+
+<Meta
+  title="owncast/Styles/Colors/Users"
+  parameters={{
+    previewTabs: { canvas: { hidden: true } },
+    chromatic: { disableSnapshot: true },
+  }}
+/>
+
+<Description markdown={`
+  
+## User Colors
+
+These are the colors available for assigning to chat users for display purposes. The CSS variables can be overwritten for customizing the theme.
+
+`}/>
+
+<ColorPalette>
+  <ColorItem title="User Color 0" colors={{ ...getColor('theme-color-users-0') }} />
+  <ColorItem
+    title="User Color 1"
+    colors={{
+      ...getColor('theme-color-users-1'),
+    }}
+  />
+  <ColorItem
+    title="User Color 2"
+    colors={{
+      ...getColor('theme-color-users-2'),
+    }}
+  />
+  <ColorItem
+    title="User Color 3"
+    colors={{
+      ...getColor('theme-color-users-3'),
+    }}
+  />
+  <ColorItem
+    title="User Color 4"
+    colors={{
+      ...getColor('theme-color-users-4'),
+    }}
+  />
+  <ColorItem
+    title="User Color 5"
+    colors={{
+      ...getColor('theme-color-users-5'),
+    }}
+  />
+  <ColorItem
+    title="User Color 6"
+    colors={{
+      ...getColor('theme-color-users-6'),
+    }}
+  />
+  <ColorItem
+    title="User Color 7"
+    colors={{
+      ...getColor('theme-color-users-7'),
+    }}
+  />
+</ColorPalette>
