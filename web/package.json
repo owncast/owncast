@@ -78,7 +78,7 @@
 		"@types/chart.js": "2.9.37",
 		"@types/classnames": "2.3.1",
 		"@types/markdown-it": "12.2.3",
-		"@types/node": "18.14.1",
+		"@types/node": "18.14.2",
 		"@types/prop-types": "15.7.5",
 		"@types/react": "18.0.28",
 		"@types/react-linkify": "1.0.1",
