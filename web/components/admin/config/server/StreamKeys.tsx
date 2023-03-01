@@ -87,7 +87,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
       setHasChanged(false);
     }
   };
-  
+
   // Default auto-generated key
   const defaultKey = generateRndKey();
 
