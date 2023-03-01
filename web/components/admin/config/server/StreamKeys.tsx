@@ -35,8 +35,26 @@ const saveKeys = async (keys, setError) => {
   }
 };
 
+const generateRndKey = () => {
+  let defaultKey = '';
+  let isValidStreamKey = false;
+  const streamKeyRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
+  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+
+  while (!isValidStreamKey) {
+    const temp = Array.apply(20, Array(30))
+      .map(() => s.charAt(Math.floor(Math.random() * s.length)))
+      .join('');
+    if (streamKeyRegex.test(temp)) {
+      isValidStreamKey = true;
+      defaultKey = temp;
+    }
+  }
+  return defaultKey;
+};
+
 const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setError }) => {
-  const [hasChanged, setHasChanged] = useState(false);
+  const [hasChanged, setHasChanged] = useState(true);
   const [form] = Form.useForm();
   const { Item } = Form;
   // Password Complexity rules
@@ -70,6 +88,9 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
     }
   };
 
+  // Default auto-generated key
+  const defaultKey = generateRndKey();
+
   return (
     <Form
       layout="horizontal"
@@ -91,7 +112,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
         }
         rules={PASSWORD_COMPLEXITY_RULES}
       >
-        <Input onChange={handleInputChange} />
+        <Input placeholder="def456" defaultValue={defaultKey} onChange={handleInputChange} />
       </Item>
       <Item
         style={{ width: '60%', marginRight: '5px' }}
