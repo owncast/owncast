@@ -5,11 +5,13 @@ import {
   ClientConfigStore,
   currentUserAtom,
   visibleChatMessagesSelector,
+  isChatAvailableSelector,
 } from '../../../../components/stores/ClientConfigStore';
 
 export default function ReadOnlyChatEmbed() {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
+  const isChatAvailable = useRecoilValue(isChatAvailableSelector);
 
   return (
     <div>
@@ -22,6 +24,7 @@ export default function ReadOnlyChatEmbed() {
           isModerator={false}
           showInput={false}
           height="100vh"
+          chatAvailable={isChatAvailable}
         />
       )}
     </div>

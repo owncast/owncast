@@ -293,6 +293,7 @@ export const Content: FC = () => {
               notifyItemSelected={() => setShowNotifyModal(true)}
               followItemSelected={() => setShowFollowModal(true)}
               externalActionSelected={externalActionSelected}
+              chatEnabled={isChatAvailable}
             />
           ) : (
             <DesktopContent

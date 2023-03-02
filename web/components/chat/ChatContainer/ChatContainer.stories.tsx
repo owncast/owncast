@@ -593,6 +593,18 @@ Example.args = {
   chatUserId: 'testuser',
   isModerator: true,
   showInput: true,
+  chatAvailable: true,
+};
+
+export const ChatDisabled = Template.bind({});
+ChatDisabled.args = {
+  loading: false,
+  messages,
+  usernameToHighlight: 'testuser',
+  chatUserId: 'testuser',
+  isModerator: true,
+  showInput: true,
+  chatAvailable: false,
 };
 
 export const SingleMessage = Template.bind({});
@@ -603,4 +615,5 @@ SingleMessage.args = {
   chatUserId: 'testuser',
   isModerator: true,
   showInput: true,
+  chatAvailable: true,
 };

@@ -5,7 +5,11 @@ import dynamic from 'next/dynamic';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import styles from './Sidebar.module.scss';
 
-import { currentUserAtom, visibleChatMessagesSelector } from '../../stores/ClientConfigStore';
+import {
+  currentUserAtom,
+  visibleChatMessagesSelector,
+  isChatAvailableSelector,
+} from '../../stores/ClientConfigStore';
 
 // Lazy loaded components
 const ChatContainer = dynamic(
@@ -18,6 +22,8 @@ const ChatContainer = dynamic(
 export const Sidebar: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
+  const isChatAvailable = useRecoilValue(isChatAvailableSelector);
+
   if (!currentUser) {
     return <Sider className={styles.root} collapsedWidth={0} width={320} />;
   }
@@ -30,6 +36,7 @@ export const Sidebar: FC = () => {
         usernameToHighlight={displayName}
         chatUserId={id}
         isModerator={isModerator}
+        chatAvailable={isChatAvailable}
       />
     </Sider>
   );
