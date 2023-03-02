@@ -25,6 +25,7 @@ export type MobileContentProps = {
   messages: ChatMessage[];
   currentUser: CurrentUser;
   showChat: boolean;
+  chatEnabled: boolean;
   actions: ExternalAction[];
   externalActionSelected: (action: ExternalAction) => void;
   supportsBrowserNotifications: boolean;
@@ -62,6 +63,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   messages,
   currentUser,
   showChat,
+  chatEnabled,
   actions,
   setExternalActionToDisplay,
   setShowNotifyPopup,
@@ -80,6 +82,7 @@ export const MobileContent: FC<MobileContentProps> = ({
       usernameToHighlight={displayName}
       chatUserId={id}
       isModerator={false}
+      chatAvailable={chatEnabled}
     />
   );
 

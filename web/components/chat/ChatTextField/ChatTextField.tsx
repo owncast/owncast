@@ -122,11 +122,12 @@ const getCharacterCount = node => {
 
 export type ChatTextFieldProps = {
   defaultText?: string;
+  enabled: boolean;
 };
 
 const characterLimit = 300;
 
-export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
+export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
@@ -241,8 +242,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
             className="chat-text-input"
             onKeyDown={onKeyDown}
             onPaste={onPaste}
+            disabled={!enabled}
+            readOnly={!enabled}
             renderElement={renderElement}
-            placeholder="Send a message to chat"
+            placeholder={enabled ? 'Send a message to chat' : 'Chat is currently unavailable.'}
             style={{ width: '100%' }}
             role="textbox"
             aria-label="Chat text input"
@@ -262,24 +265,26 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
           />
         </Slate>
 
-        <div style={{ display: 'flex', paddingLeft: '5px' }}>
-          <button
-            type="button"
-            className={styles.emojiButton}
-            title="Emoji picker button"
-            onClick={() => setShowEmojis(!showEmojis)}
-          >
-            <SmileOutlined />
-          </button>
-          <button
-            type="button"
-            className={styles.sendButton}
-            title="Send message Button"
-            onClick={sendMessage}
-          >
-            <SendOutlined />
-          </button>
-        </div>
+        {enabled && (
+          <div style={{ display: 'flex', paddingLeft: '5px' }}>
+            <button
+              type="button"
+              className={styles.emojiButton}
+              title="Emoji picker button"
+              onClick={() => setShowEmojis(!showEmojis)}
+            >
+              <SmileOutlined />
+            </button>
+            <button
+              type="button"
+              className={styles.sendButton}
+              title="Send message Button"
+              onClick={sendMessage}
+            >
+              <SendOutlined />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
