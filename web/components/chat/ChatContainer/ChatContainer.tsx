@@ -99,22 +99,14 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   const chatContainerRef = useRef(null);
-  const showScrollToBottomButtonDelay = useRef(null);
   const scrollToBottomDelay = useRef(null);
 
   const collapsedMessageIds = new Set<string>();
-
-  const setShowScrolltoBottomButtonWithDelay = (show: boolean) => {
-    showScrollToBottomButtonDelay.current = setTimeout(() => {
-      setShowScrollToBottomButton(show);
-    }, 1500);
-  };
 
   useEffect(
     () =>
       // Clear the timer when the component unmounts
       () => {
-        clearTimeout(showScrollToBottomButtonDelay.current);
         clearTimeout(scrollToBottomDelay.current);
       },
     [],
@@ -213,7 +205,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
 
   const scrollChatToBottom = (ref, behavior = 'smooth') => {
     clearTimeout(scrollToBottomDelay.current);
-    clearTimeout(showScrollToBottomButtonDelay.current);
     scrollToBottomDelay.current = setTimeout(() => {
       ref.current?.scrollToIndex({
         index: messages.length - 1,
@@ -230,7 +221,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   useEffect(() => {
     setTimeout(() => {
       scrollChatToBottom(chatContainerRef, 'auto');
-      setShowScrolltoBottomButtonWithDelay(false);
     }, 500);
   }, []);
 
@@ -246,14 +236,11 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           itemContent={(index, message) => getViewForMessage(index, message)}
           initialTopMostItemIndex={messages.length - 1}
           followOutput={() => {
-            clearTimeout(showScrollToBottomButtonDelay.current);
-
             if (isAtBottom) {
               setShowScrollToBottomButton(false);
               scrollChatToBottom(chatContainerRef, 'auto');
               return 'smooth';
             }
-            setShowScrolltoBottomButtonWithDelay(true);
 
             return false;
           }}
@@ -265,7 +252,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
             if (bottom) {
               setShowScrollToBottomButton(false);
             } else {
-              setShowScrolltoBottomButtonWithDelay(true);
+              setShowScrollToBottomButton(true);
             }
           }}
         />
