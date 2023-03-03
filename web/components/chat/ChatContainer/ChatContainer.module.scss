@@ -15,10 +15,6 @@
     align-items: center;
     opacity: 0;
     animation: show 250ms forwards ease-in-out 500ms;
-    
-    &>span {
-      font-weight: 600;
-    }
   }
 }
 
