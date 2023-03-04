@@ -292,13 +292,14 @@ export const ClientConfigStore: FC = () => {
           setChatAuthenticated,
           setCurrentUser,
         );
-        if (
-          !hasBeenModeratorNotified &&
-          (message as ChatEvent).user?.scopes.includes('MODERATOR')
-        ) {
-          setChatMessages(currentState => [...currentState, message as ChatEvent]);
-          hasBeenModeratorNotified = true;
+        if (message as ChatEvent) {
+          const m = new ChatEvent(message);
+          if (!hasBeenModeratorNotified && m.user?.isModerator()) {
+            setChatMessages(currentState => [...currentState, message as ChatEvent]);
+            hasBeenModeratorNotified = true;
+          }
         }
+
         break;
       case MessageType.CHAT:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
