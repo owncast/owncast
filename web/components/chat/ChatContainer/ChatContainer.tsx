@@ -17,6 +17,7 @@ import { ScrollToBotBtn } from './ScrollToBotBtn';
 import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 import { ChatSocialMessage } from '../ChatSocialMessage/ChatSocialMessage';
 import { ChatNameChangeMessage } from '../ChatNameChangeMessage/ChatNameChangeMessage';
+import { User } from '../../../interfaces/user.model';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];
@@ -75,15 +76,11 @@ function shouldCollapseMessages(
 }
 
 function checkIsModerator(message: ChatMessage | ConnectedClientInfoEvent) {
-  const {
-    user: { scopes },
-  } = message;
+  const { user } = message;
 
-  if (!scopes || scopes.length === 0) {
-    return false;
-  }
+  const u = new User(user);
 
-  return scopes.includes('MODERATOR');
+  return u.isModerator();
 }
 
 export const ChatContainer: FC<ChatContainerProps> = ({

@@ -28,8 +28,25 @@ export interface SocketEvent {
 export interface ConnectedClientInfoEvent extends SocketEvent {
   user: User;
 }
-export interface ChatEvent extends SocketEvent {
+export class ChatEvent implements SocketEvent {
+  constructor(message) {
+    this.id = message.id;
+    this.timestamp = message.timestamp;
+    this.type = message.type;
+    this.body = message.body;
+    if (message.user) {
+      this.user = new User(message.user);
+    }
+  }
+
+  timestamp: Date;
+
+  type: MessageType;
+
+  id: string;
+
   user: User;
+
   body: string;
 }
 

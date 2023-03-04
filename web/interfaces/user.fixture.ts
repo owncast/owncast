@@ -9,6 +9,8 @@ export const createUser = (name: string, color: number, createdAt: Date): User =
   nameChangedAt: createdAt,
   previousNames: [],
   scopes: [],
+
+  isModerator: () => false,
 });
 
 export const spidermanUser = createUser('Spiderman', 1, new Date(2020, 1, 2));
