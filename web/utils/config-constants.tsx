@@ -209,10 +209,10 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
   framerate: 24,
   videoPassthrough: false,
-  videoBitrate: 800,
+  videoBitrate: 1200,
   audioPassthrough: true, // if false, then CAN set audiobitrate
   audioBitrate: 0,
-  cpuUsageLevel: 3,
+  cpuUsageLevel: 2,
   scaledHeight: null,
   scaledWidth: null,
   name: '',
