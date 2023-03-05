@@ -217,3 +217,18 @@ th {
 .ant-popover {
   z-index: 800; // Lower the z-index so it renders under modals.
 }
+
+/* ------------------------- //
+ * SIDER MENUITEM
+// ------------------------- */
+.ant-menu-light .ant-menu-submenu-title:active {
+  background: var(--theme-color-palette-12);
+}
+
+.ant-menu-light .ant-menu-submenu-title:hover {
+  color: var(--theme-color-palette-12);
+}
+
+.ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-arrow {
+  color: var(--theme-color-palette-12);
+}
