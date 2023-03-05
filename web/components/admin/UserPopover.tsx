@@ -85,7 +85,7 @@ export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, childr
             {connectionInfo && (
               <Col md={lastNameChangeDate ? 12 : 24}>
                 <Typography.Title level={5}>
-                  This user is currently connected to Chat.
+                  <strong>This user is currently connected to Chat.</strong>
                 </Typography.Title>
                 <ul className="connection-info">
                   <li>
