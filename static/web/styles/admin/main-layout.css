@@ -31,6 +31,8 @@
   padding-right: 6px;
   padding-left: 6px;
   border-radius: 9999px;
+	width: 60px;
+	height: 60px;
 }
 .app-container h1.owncast-title .title-label {
   display: inline-block;
