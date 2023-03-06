@@ -54,6 +54,29 @@ const ChatContainer = dynamic(
   },
 );
 
+type ChatContentProps = {
+  showChat: boolean;
+  chatEnabled: boolean;
+  messages: ChatMessage[];
+  currentUser: CurrentUser;
+};
+
+const ChatContent: FC<ChatContentProps> = ({ showChat, chatEnabled, messages, currentUser }) => {
+  const { id, displayName } = currentUser;
+
+  return showChat && !!currentUser ? (
+    <ChatContainer
+      messages={messages}
+      usernameToHighlight={displayName}
+      chatUserId={id}
+      isModerator={false}
+      chatAvailable={chatEnabled}
+    />
+  ) : (
+    <Skeleton loading active paragraph={{ rows: 7 }} />
+  );
+};
+
 export const MobileContent: FC<MobileContentProps> = ({
   name,
   summary,
@@ -71,21 +94,6 @@ export const MobileContent: FC<MobileContentProps> = ({
   supportFediverseFeatures,
   supportsBrowserNotifications,
 }) => {
-  if (!currentUser) {
-    return <Skeleton loading active paragraph={{ rows: 7 }} />;
-  }
-  const { id, displayName } = currentUser;
-
-  const chatContent = showChat && (
-    <ChatContainer
-      messages={messages}
-      usernameToHighlight={displayName}
-      chatUserId={id}
-      isModerator={false}
-      chatAvailable={chatEnabled}
-    />
-  );
-
   const aboutTabContent = (
     <>
       <ContentHeader name={name} summary={summary} tags={tags} links={socialHandles} logo="/logo" />
@@ -104,7 +112,18 @@ export const MobileContent: FC<MobileContentProps> = ({
 
   const items = [];
   if (showChat) {
-    items.push({ label: 'Chat', key: '0', children: chatContent });
+    items.push({
+      label: 'Chat',
+      key: '0',
+      children: (
+        <ChatContent
+          showChat={showChat}
+          chatEnabled={chatEnabled}
+          messages={messages}
+          currentUser={currentUser}
+        />
+      ),
+    });
   }
   items.push({ label: 'About', key: '2', children: aboutTabContent });
   if (supportFediverseFeatures) {
