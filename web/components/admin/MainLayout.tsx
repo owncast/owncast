@@ -61,6 +61,10 @@ const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
   ssr: false,
 });
 
+const FediverseOutlined = dynamic(() => import('../../assets/images/icons/fediverse.svg'), {
+  ssr: false,
+});
+
 export type MainLayoutProps = {
   children: ReactNode;
 };
@@ -232,12 +236,15 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'fediverse-followers',
       label: <Link href="/admin/federation/followers">Followers</Link>,
       icon: (
-        <img
-          alt="fediverse icon"
-          src="/img/fediverse-black.png"
-          width="17rem"
-          style={{ opacity: 0.6, position: 'relative', top: '-1px' }}
-        />
+        <span
+          role="img"
+          aria-label="message"
+          className="anticon anticon-message ant-menu-item-icon"
+        >
+          {/* Wrapping the icon in span for consistency with other icons used
+            directly from antd */}
+          <FediverseOutlined />
+        </span>
       ),
     },
     {
