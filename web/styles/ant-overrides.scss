@@ -137,7 +137,8 @@ DROPDOWN
   background-color: var(--theme-color-components-form-field-background);
 }
 
-.ant-input {
+.ant-input,
+.ant-input-number-input {
   background-color: var(--theme-color-components-form-field-background);
   color: var(--theme-color-components-form-field-text);
   &::placeholder {
