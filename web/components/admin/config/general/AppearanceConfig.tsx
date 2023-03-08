@@ -70,18 +70,18 @@ const allAvailableValues = [...componentColorVariables, ...chatColorVariables, .
 );
 
 // eslint-disable-next-line react/function-component-definition
-function ColorPicker({
-  value,
-  name,
-  description,
-  onChange,
-}: {
-  value: string;
-  name: string;
-  description: string;
-  onChange: (name: string, value: string, description: string) => void;
-}) {
-  return (
+const ColorPicker = React.memo(
+  ({
+    value,
+    name,
+    description,
+    onChange,
+  }: {
+    value: string;
+    name: string;
+    description: string;
+    onChange: (name: string, value: string, description: string) => void;
+  }) => (
     <Col span={3} key={name}>
       <input
         type="color"
@@ -94,8 +94,8 @@ function ColorPicker({
       />
       <div style={{ padding: '2px' }}>{description}</div>
     </Col>
-  );
-}
+  ),
+);
 
 // eslint-disable-next-line react/function-component-definition
 export default function Appearance() {
