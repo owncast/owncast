@@ -181,7 +181,7 @@ export default function Appearance() {
       onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-        setCustomValues(null);
+        setCustomValues({});
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -265,7 +265,9 @@ export default function Appearance() {
                     onBorderRadiusChange(v);
                   }}
                   value={Number(
-                    defaultValues['theme-rounded-corners']?.value?.replace('px', '') || 0,
+                    customValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
+                      defaultValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
+                      0,
                   )}
                 />
               </Col>
@@ -274,7 +276,10 @@ export default function Appearance() {
                   style={{
                     width: '100px',
                     height: '30px',
-                    borderRadius: `${defaultValues['theme-rounded-corners']?.value}`,
+                    borderRadius: `${
+                      customValues?.['theme-rounded-corners']?.value ??
+                      defaultValues?.['theme-rounded-corners']?.value
+                    }`,
                     backgroundColor: 'var(--theme-color-palette-7)',
                   }}
                 />
