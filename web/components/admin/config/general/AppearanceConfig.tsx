@@ -24,6 +24,11 @@ interface AppearanceVariable {
   description: string;
 }
 
+type ColorCollectionProps = {
+  variables: { name; description; value }[];
+  updateColor: (variable: string, color: string, description: string) => void;
+};
+
 const chatColorVariables = [
   { name: 'theme-color-users-0', description: '' },
   { name: 'theme-color-users-1', description: '' },
@@ -96,6 +101,24 @@ const ColorPicker = React.memo(
     </Col>
   ),
 );
+
+const ColorCollection: FC<ColorCollectionProps> = ({ variables, updateColor }) => {
+  const cc = variables.map(colorVar => {
+    const { name, description, value } = colorVar;
+
+    return (
+      <ColorPicker
+        key={name}
+        value={value}
+        name={name}
+        description={description}
+        onChange={updateColor}
+      />
+    );
+  });
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{cc}</>;
+};
 
 // eslint-disable-next-line react/function-component-definition
 export default function Appearance() {
@@ -193,33 +216,17 @@ export default function Appearance() {
     updateColor(variableName, `${value.toString()}px`, '');
   };
 
-  type ColorCollectionProps = {
-    variables: { name; description }[];
-  };
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const ColorCollection: FC<ColorCollectionProps> = ({ variables }) => {
-    const cc = variables.map(colorVar => {
-      const source = customValues?.[colorVar.name] ? customValues : defaultValues;
-      const { name, description } = colorVar;
-      const { value } = source[name];
-
-      return (
-        <ColorPicker
-          key={name}
-          value={value}
-          name={name}
-          description={description}
-          onChange={updateColor}
-        />
-      );
-    });
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    return <>{cc}</>;
-  };
-
   if (!defaultValues) {
     return <div>Loading...</div>;
   }
+
+  const transformToColorMap = variables =>
+    variables.map(colorVar => {
+      const source = customValues?.[colorVar.name] ? customValues : defaultValues;
+      const { name, description } = colorVar;
+      const { value } = source[name];
+      return { name, description, value };
+    });
 
   return (
     <Space direction="vertical">
@@ -232,15 +239,20 @@ export default function Appearance() {
               Certain sections of the interface can be customized by selecting new colors for them.
             </p>
             <Row gutter={[16, 16]}>
-              <ColorCollection variables={componentColorVariables} />
+              <ColorCollection
+                variables={transformToColorMap(componentColorVariables)}
+                updateColor={updateColor}
+              />
             </Row>
           </Panel>
           <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
             <Row gutter={[16, 16]}>
-              <ColorCollection variables={chatColorVariables} />
+              <ColorCollection
+                variables={transformToColorMap(chatColorVariables)}
+                updateColor={updateColor}
+              />
             </Row>
           </Panel>
-
           <Panel header={<Title level={3}>Other Settings</Title>} key="4">
             How rounded should corners be?
             <Row gutter={[16, 16]}>
