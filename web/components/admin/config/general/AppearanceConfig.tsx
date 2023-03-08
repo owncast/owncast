@@ -266,7 +266,7 @@ export default function Appearance() {
                     height: '30px',
                     borderRadius: `${
                       customValues?.['theme-rounded-corners']?.value ??
-                      defaultValues['theme-rounded-corners']?.value
+                      defaultValues?.['theme-rounded-corners']?.value
                     }`,
                     backgroundColor: 'var(--theme-color-palette-7)',
                   }}
