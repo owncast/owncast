@@ -187,7 +187,7 @@ export default function Appearance() {
     });
   };
 
-  const onBorderRadiusChange = (value: number) => {
+  const onBorderRadiusChange = (value: string) => {
     const variableName = 'theme-rounded-corners';
 
     updateColor(variableName, `${value.toString()}px`, '');
