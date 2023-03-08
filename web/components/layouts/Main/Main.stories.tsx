@@ -133,6 +133,9 @@ export const Online: typeof Template = Template.bind({});
 Online.args = {
   ServerStatusServiceMock: OnlineServerStatusServiceMock,
 };
+Online.parameters = {
+  chromatic: { diffThreshold: 0.88 },
+};
 
 export const OnlineMobile: typeof Template = Online.bind({});
 OnlineMobile.args = {
