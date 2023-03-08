@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useCallback, useEffect, useState } from 'react';
 
 import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -144,12 +144,12 @@ export default function Appearance() {
     setCustomValues(c);
   }, [appearanceVariables]);
 
-  const updateColor = (variable: string, color: string, description: string) => {
-    setCustomValues({
-      ...customValues,
+  const updateColor = useCallback((variable: string, color: string, description: string) => {
+    setCustomValues(oldCustomValues => ({
+      ...oldCustomValues,
       [variable]: { value: color, description },
-    });
-  };
+    }));
+  }, []);
 
   const reset = async () => {
     await postConfigUpdateToAPI({
