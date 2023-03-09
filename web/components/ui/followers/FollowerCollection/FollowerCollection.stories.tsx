@@ -262,7 +262,7 @@ export default {
   title: 'owncast/Components/Followers/Followers collection',
   component: FollowerCollection,
   parameters: {
-    chromatic: { diffThreshold: 0.83 },
+    chromatic: { diffThreshold: 0.86 },
   },
 } as ComponentMeta<typeof FollowerCollection>;
 

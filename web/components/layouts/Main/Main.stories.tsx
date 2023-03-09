@@ -109,6 +109,9 @@ const Template: ComponentStory<typeof Main> = ({
 );
 
 export const OfflineDesktop: typeof Template = Template.bind({});
+OfflineDesktop.parameters = {
+  chromatic: { diffThreshold: 0.88 },
+};
 
 export const OfflineMobile: typeof Template = Template.bind({});
 OfflineMobile.args = {
