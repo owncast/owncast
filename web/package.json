@@ -93,7 +93,7 @@
 		"eslint": "8.35.0",
 		"eslint-config-airbnb": "19.0.4",
 		"eslint-config-next": "13.2.3",
-		"eslint-config-prettier": "8.6.0",
+		"eslint-config-prettier": "8.7.0",
 		"eslint-plugin-import": "2.27.5",
 		"eslint-plugin-jsx-a11y": "6.7.1",
 		"eslint-plugin-prettier": "4.2.1",
