@@ -126,6 +126,9 @@ export default function EditStorage() {
   const handleSave = async () => {
     setSubmitStatus(createInputStatus(STATUS_PROCESSING));
     const postValue = formDataValues;
+    if (postValue?.servingEndpoint) {
+      postValue.servingEndpoint = postValue?.servingEndpoint?.replace(/\/+$/g, '');
+    }
 
     await postConfigUpdateToAPI({
       apiPath: API_S3_INFO,
