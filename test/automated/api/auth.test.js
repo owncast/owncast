@@ -29,6 +29,13 @@ const paths = [
 	'/admin/chat/users/',
 	'/admin/stream-health',
 	'/admin/hardware-info/',
+	// Some APIs too
+	'/api/admin/status',
+	'/api/admin/serverconfig',
+	'/api/admin/chat/clients',
+	'/api/admin/chat/messages',
+	'/api/admin/followers',
+	'/api/admin/prometheus',
 ];
 
 // Test a bunch of paths to make sure random different pages don't slip by for some reason.
