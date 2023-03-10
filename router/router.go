@@ -32,7 +32,7 @@ func Start() error {
 	http.HandleFunc("/", controllers.IndexHandler)
 
 	// The admin web app.
-	http.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
+	http.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
 
 	// Images
 	http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
