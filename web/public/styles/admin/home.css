@@ -1,29 +1,60 @@
 .home-container .online-status-section {
   margin-bottom: 1em;
 }
+
 .home-container .online-status-section .online-details-card {
-  border-color: var(--theme-color-palette-6);
+  border-color: var(--theme-color-palette-15);
 }
+
 .home-container .stream-details-item-container {
   margin: 1em 0;
 }
+
 .home-container .stream-details-item-container:first-of-type {
   margin-top: 0;
 }
+
 .home-container .stream-details > .ant-card-bordered {
   border-color: rgba(255, 255, 255, 0.1);
 }
+
+.home-container .ant-card-small > .ant-card-head {
+  background-color: var(--primary-3);
+}
+
+#admin-page .ant-card-body {
+  background-color: var(--theme-color-palette-15);
+  border-radius: var(--theme-rounded-corners);
+}
+
+#admin-page .line-chart-container {
+  background-color: var(--theme-color-palette-15);
+  border-radius: var(--theme-rounded-corners);
+  margin: 10px 0px 10px 0px;
+}
+
+#admin-page th {
+  background-color: var(--theme-color-palette-15);
+}
+
+#admin-page .ant-btn-default {
+  background-color: var(--theme-color-palette-14);
+}
+
 .home-container .outbound-details {
   margin-bottom: 1em;
 }
+
 .offline-content .list-section {
-  /* background-color: var(--theme-color-palette-3); */
+  background-color: var(--theme-color-palette-15);
   border-radius: var(--theme-rounded-corners);
   padding: 1em;
 }
+
 .offline-content .list-section > .ant-card {
   margin-bottom: 1em;
 }
+
 .offline-intro {
   display: flex;
   flex-direction: row;
@@ -31,33 +62,42 @@
   align-items: center;
   margin-bottom: 2em;
 }
+
 .offline-intro .logo-svg {
   height: 6em;
   width: 6em;
 }
+
 .news-feed {
   margin-top: 0;
   padding: 1.5em;
   border: 1px solid var(--theme-color-palette-15);
+  background-color: var(--theme-color-palette-15);
+  border-radius: var(--theme-rounded-corners);
 }
+
 .news-feed h2 {
   font-size: 1.2em;
   margin-top: 0;
-  color: var(--theme-color-palette-11);
+  color: var(--theme-color-palette-1);
 }
+
 .news-feed article {
   padding: 1em 0.25em;
   font-size: 0.9rem;
   color: var(--white-75);
-  border-bottom: 1px solid var(--theme-color-palette-10);
+  border-bottom: 1px solid var(--theme-color-palette-15);
 }
+
 .news-feed article h3 {
   font-size: 1.2em;
 }
+
 .news-feed article h3 a {
   font-weight: 400;
   font-size: 1em;
 }
+
 .news-feed article .timestamp {
   margin-top: 0;
   font-size: 0.75em;
@@ -65,7 +105,8 @@
 
 .ant-collapse > .ant-collapse-item:last-child,
 .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-  background-color: var(--theme-color-palette-5);
+  background-color: var(--theme-color-palette-3);
+  border-radius: var(--theme-rounded-corners);
 }
 
 .ant-card-body {
