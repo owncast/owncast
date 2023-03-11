@@ -276,7 +276,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     },
   ];
   return (
-    <Layout className={appClass}>
+    <Layout id="admin-page" className={appClass}>
       <Head>
         <title>Owncast Admin</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png" />
