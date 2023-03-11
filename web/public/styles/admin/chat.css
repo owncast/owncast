@@ -87,7 +87,7 @@
   border-color: var(--theme-color-palette-4);
 }
 .user-details h5 {
-  color: var(--theme-color-palette-4);
+  color: var(--theme-color-palette-0);
 }
 .user-details .created-at {
   font-size: 0.75em;
