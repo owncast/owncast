@@ -91,6 +91,10 @@ const initialServerStatusState = {
     message: '',
     representation: 0,
   },
+  error: {
+    type: null,
+    msg: null,
+  },
 };
 
 export const ServerStatusContext = React.createContext({
@@ -112,17 +116,34 @@ const ServerStatusProvider: FC<ServerStatusProviderProps> = ({ children }) => {
   const getStatus = async () => {
     try {
       const result = await fetchData(STATUS);
-      setStatus({ ...result });
+
+      if (result instanceof Error) {
+        throw result;
+      }
+
+      setStatus({ ...result, error: { type: null, msg: null } });
     } catch (error) {
+      setStatus(initialStatus => ({
+        ...initialStatus,
+        error: {
+          type: 'OWNCAST_SERVICE_UNREACHABLE',
+          msg: 'Cannot connect to the Owncast service. Please check you are connected to the internet and the Owncast server is running.',
+        },
+      }));
       // todo
     }
   };
   const getConfig = async () => {
     try {
       const result = await fetchData(SERVER_CONFIG);
+
+      if (result instanceof Error) {
+        throw result;
+      }
+
       setConfig(result);
     } catch (error) {
-      // todo
+      console.error(error);
     }
   };
 
