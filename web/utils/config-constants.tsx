@@ -203,7 +203,7 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
   apiPath: API_HIDE_VIEWER_COUNT,
   configPath: '',
   label: 'Hide viewer count',
-  tip: 'Turn this ON to hide the viewer count the web page.',
+  tip: 'Turn this ON to hide the viewer count on the web page.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
