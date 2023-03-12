@@ -162,7 +162,10 @@
   bottom: -2em;
 }
 
-.global-stream-title-container .textfield-with-submit-container .lower-container .update-button-container {
+.global-stream-title-container
+  .textfield-with-submit-container
+  .lower-container
+  .update-button-container {
   margin: 0;
   margin-left: 0.5em;
   line-height: 1;
