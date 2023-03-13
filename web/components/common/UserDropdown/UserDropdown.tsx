@@ -4,6 +4,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import dynamic from 'next/dynamic';
+import { ErrorBoundary } from 'react-error-boundary';
 import {
   chatVisibleToggleAtom,
   currentUserAtom,
@@ -11,6 +12,7 @@ import {
 } from '../../stores/ClientConfigStore';
 import styles from './UserDropdown.module.scss';
 import { AppStateOptions } from '../../stores/application-state';
+import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 // Lazy loaded components
 
@@ -109,23 +111,38 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
   );
 
   return (
-    <div id="user-menu" className={`${styles.root}`}>
-      <Dropdown overlay={menu} trigger={['click']}>
-        <Button type="primary" icon={<UserOutlined className={styles.userIcon} />}>
-          <span className={styles.username}>{username}</span>
-          <CaretDownOutlined />
-        </Button>
-      </Dropdown>
-      <Modal
-        title="Change Chat Display Name"
-        open={showNameChangeModal}
-        handleCancel={() => setShowNameChangeModal(false)}
-      >
-        <NameChangeModal />
-      </Modal>
-      <Modal title="Authenticate" open={showAuthModal} handleCancel={() => setShowAuthModal(false)}>
-        <AuthModal />
-      </Modal>
-    </div>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="UserDropdown"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
+      )}
+    >
+      <div id="user-menu" className={`${styles.root}`}>
+        <Dropdown overlay={menu} trigger={['click']}>
+          <Button type="primary" icon={<UserOutlined className={styles.userIcon} />}>
+            <span className={styles.username}>{username}</span>
+            <CaretDownOutlined />
+          </Button>
+        </Dropdown>
+        <Modal
+          title="Change Chat Display Name"
+          open={showNameChangeModal}
+          handleCancel={() => setShowNameChangeModal(false)}
+        >
+          <NameChangeModal />
+        </Modal>
+        <Modal
+          title="Authenticate"
+          open={showAuthModal}
+          handleCancel={() => setShowAuthModal(false)}
+        >
+          <AuthModal />
+        </Modal>
+      </div>
+    </ErrorBoundary>
   );
 };
