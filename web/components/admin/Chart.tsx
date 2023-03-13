@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
   LogarithmicScale,
+  ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -40,6 +41,8 @@ export type ChartProps = {
   yFlipped?: boolean;
   yLogarithmic?: boolean;
   dataCollections?: any[];
+  minYValue?: number;
+  yStepSize?: number;
 };
 
 function createGraphDataset(dataArray) {
@@ -60,6 +63,8 @@ export const Chart: FC<ChartProps> = ({
   dataCollections,
   yFlipped,
   yLogarithmic,
+  minYValue,
+  yStepSize = 0,
 }) => {
   const renderData = [];
 
@@ -94,6 +99,10 @@ export const Chart: FC<ChartProps> = ({
       y: {
         type: yLogarithmic ? ('logarithmic' as const) : ('linear' as const),
         reverse: yFlipped,
+        min: minYValue,
+        ticks: {
+          stepSize: yStepSize,
+        },
         title: {
           display: true,
           text: unit,
@@ -104,7 +113,11 @@ export const Chart: FC<ChartProps> = ({
 
   return (
     <div className="line-chart-container">
-      <Line data={{ datasets: renderData }} options={options} height="70vh" />
+      <Line
+        data={{ datasets: renderData }}
+        options={options as ChartOptions<'line'>}
+        height="70vh"
+      />
     </div>
   );
 };
