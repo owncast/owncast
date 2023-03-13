@@ -121,7 +121,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   );
 
   const items = [];
-  if (showChat) {
+  if (showChat && currentUser) {
     items.push({
       label: 'Chat',
       key: '0',
