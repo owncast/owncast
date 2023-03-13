@@ -24,7 +24,6 @@ class VideoSettingsService {
     try {
       const response = await fetch(VideoSettingsService.VIDEO_CONFIG_URL);
       qualities = await response.json();
-      console.log(qualities);
     } catch (e) {
       console.error(e);
     }
