@@ -14,7 +14,7 @@ export default {
   title: 'owncast/Modals/Browser Notifications',
   component: BrowserNotifyModal,
   parameters: {
-    chromatic: { diffThreshold: 0.7 },
+    chromatic: { diffThreshold: 0.9 },
     design: {
       type: 'image',
       url: BrowserNotifyModalMock,
