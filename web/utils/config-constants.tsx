@@ -1,7 +1,6 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
-import { TEXTFIELD_TYPE_URL } from '../components/admin/TextField';
 import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
 
 export const TEXT_MAXLENGTH = 255;
@@ -48,6 +47,8 @@ export const API_FEDERATION_USERNAME = '/federation/username';
 export const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
 export const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
 export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
+
+const TEXTFIELD_TYPE_URL = 'url';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;
@@ -122,6 +123,7 @@ export const TEXTFIELD_PROPS_ADMIN_PASSWORD = {
   label: 'Admin Password',
   tip: 'Save this password somewhere safe, you will need it to login to the admin dashboard!',
   required: true,
+  hasComplexityRequirements: true,
 };
 export const TEXTFIELD_PROPS_FFMPEG = {
   apiPath: API_FFMPEG,
@@ -131,6 +133,7 @@ export const TEXTFIELD_PROPS_FFMPEG = {
   label: 'FFmpeg Path',
   tip: 'Absolute file path of the FFMPEG application on your server',
   required: true,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_WEB_PORT = {
   apiPath: API_WEB_PORT,
@@ -140,6 +143,7 @@ export const TEXTFIELD_PROPS_WEB_PORT = {
   label: 'Owncast port',
   tip: 'What port is your Owncast web server listening? Default is 8080',
   required: true,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_RTMP_PORT = {
   apiPath: API_RTMP_PORT,
@@ -149,6 +153,7 @@ export const TEXTFIELD_PROPS_RTMP_PORT = {
   label: 'RTMP port',
   tip: 'What port should accept inbound broadcasts? Default is 1935',
   required: true,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_INSTANCE_URL = {
   apiPath: API_INSTANCE_URL,
@@ -558,3 +563,26 @@ export const BROWSER_PUSH_CONFIG_FIELDS = {
     placeholder: `I've gone live! Come watch!`,
   },
 };
+
+export const PASSWORD_COMPLEXITY_RULES = [
+  { min: 8, message: '- minimum 8 characters' },
+  { max: 192, message: '- maximum 192 characters' },
+  {
+    pattern: /^(?=.*[a-z])/,
+    message: '- at least one lowercase letter',
+  },
+  {
+    pattern: /^(?=.*[A-Z])/,
+    message: '- at least one uppercase letter',
+  },
+  {
+    pattern: /\d/,
+    message: '- at least one digit',
+  },
+  {
+    pattern: /^(?=.*?[#?!@$%^&*-])/,
+    message: '- at least one special character: !@#$%^&*',
+  },
+];
+
+export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
