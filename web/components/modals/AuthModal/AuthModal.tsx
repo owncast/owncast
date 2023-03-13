@@ -72,7 +72,7 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
-          componentName="ChatContainer"
+          componentName="AuthModal"
           message={error.message}
           retryFunction={resetErrorBoundary}
         />
