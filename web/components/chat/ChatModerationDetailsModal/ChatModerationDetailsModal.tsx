@@ -147,11 +147,10 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
       ),
     },
   ];
-
   return (
     <Spin spinning={loading}>
       <UserColorBlock color={displayColor} />
-      {scopes.map(scope => (
+      {scopes?.map(scope => (
         <Tag key={scope}>{scope}</Tag>
       ))}
       {authenticated && <Tag>Authenticated</Tag>}
