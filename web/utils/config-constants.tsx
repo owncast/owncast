@@ -348,7 +348,7 @@ export const VIDEO_VARIANT_SETTING_DEFAULTS = {
     fieldName: 'scaledWidth',
     label: 'Resized Width',
     maxLength: 4,
-    placeholder: '1080',
+    placeholder: '1280',
     tip: "Optionally resize this content's width.",
   },
   scaledHeight: {
