@@ -150,21 +150,14 @@ export async function fetchData(url: string, options?: FetchOptions) {
     requestOptions.credentials = 'include';
   }
 
-  try {
-    const response = await fetch(url, requestOptions);
-    const json = await response.json();
+  const response = await fetch(url, requestOptions);
+  const json = await response.json();
 
-    if (!response.ok) {
-      const message = json.message || `An error has occurred: ${response.status}`;
-      throw new Error(message);
-    }
-    return json;
-  } catch (error) {
-    console.error(error);
-    return error;
-    // console.log(error)
-    // throw new Error(error)
+  if (!response.ok) {
+    const message = json.message || `An error has occurred: ${response.status}`;
+    throw new Error(message);
   }
+  return json;
 }
 
 export async function getUnauthedData(url: string, options?: FetchOptions) {

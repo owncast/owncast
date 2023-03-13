@@ -63,6 +63,7 @@ export enum AppStateEvent {
   Offline = 'OFFLINE', // Stream is not live
   NeedsRegister = 'NEEDS_REGISTER', // Needs to register a chat user
   Fail = 'FAIL', // Error
+  ChatUserDisabled = 'CHAT_USER_DISABLED', // Chat user is disabled
 }
 
 const appStateModel =
@@ -97,6 +98,9 @@ const appStateModel =
               OFFLINE: {
                 target: 'goodbye',
               },
+              CHAT_USER_DISABLED: {
+                target: 'chatUserDisabled',
+              },
             },
           },
           offline: {
@@ -122,6 +126,12 @@ const appStateModel =
               '300000': {
                 target: 'offline',
               },
+            },
+          },
+          chatUserDisabled: {
+            meta: {
+              ...ONLINE_STATE,
+              chatAvailable: false,
             },
           },
         },

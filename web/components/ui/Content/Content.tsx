@@ -199,7 +199,7 @@ export const Content: FC = () => {
     setSupportsBrowserNotifications(isPushNotificationSupported() && browserNotificationsEnabled);
   }, [browserNotificationsEnabled]);
 
-  const showChat = !chatDisabled && isChatAvailable && isChatVisible;
+  const showChat = online && !chatDisabled && isChatVisible;
 
   return (
     <>
