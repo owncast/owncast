@@ -10,6 +10,8 @@ export default class WebsocketService {
 
   accessToken: string;
 
+  host: string;
+
   path: string;
 
   websocketReconnectTimer: ReturnType<typeof setTimeout>;
@@ -20,20 +22,28 @@ export default class WebsocketService {
 
   handleMessage?: (message: SocketEvent) => void;
 
+  socketConnected: () => void;
+
+  socketDisconnected: () => void;
+
   constructor(accessToken, path, host) {
     this.accessToken = accessToken;
     this.path = path;
     this.websocketReconnectTimer = null;
     this.isShutdown = false;
+    this.host = host;
 
     this.createAndConnect = this.createAndConnect.bind(this);
     this.shutdown = this.shutdown.bind(this);
 
-    this.createAndConnect(host);
+    this.createAndConnect();
   }
 
-  createAndConnect(host) {
-    const url = new URL(host);
+  createAndConnect() {
+    if (!this.host) {
+      return;
+    }
+    const url = new URL(this.host);
     url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     url.pathname = '/ws';
     url.port = window.location.port === '3000' ? '8080' : window.location.port;
@@ -52,11 +62,13 @@ export default class WebsocketService {
     if (this.websocketReconnectTimer) {
       clearTimeout(this.websocketReconnectTimer);
     }
+    this.socketConnected();
   }
 
   // On ws error just close the socket and let it re-connect again for now.
-  onError(e) {
-    handleNetworkingError(`Socket error: ${e}`);
+  onError() {
+    handleNetworkingError();
+    this.socketDisconnected();
     this.websocket.close();
     if (!this.isShutdown) {
       this.scheduleReconnect();
@@ -137,8 +149,8 @@ export default class WebsocketService {
   }
 }
 
-function handleNetworkingError(error) {
+function handleNetworkingError() {
   console.error(
-    `Chat has been disconnected and is likely not working for you. It's possible you were removed from chat. If this is a server configuration issue, visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled: ${error}`,
+    `Chat has been disconnected and is likely not working for you. It's possible you were removed from chat. If this is a server configuration issue, visit troubleshooting steps to resolve. https://owncast.online/docs/troubleshooting/#chat-is-disabled`,
   );
 }
