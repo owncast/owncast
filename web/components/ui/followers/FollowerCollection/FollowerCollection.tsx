@@ -1,9 +1,11 @@
 import { FC, useEffect, useState } from 'react';
 import { Col, Pagination, Row, Skeleton } from 'antd';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Follower } from '../../../../interfaces/follower';
 import { SingleFollower } from '../SingleFollower/SingleFollower';
 import styles from './FollowerCollection.module.scss';
 import { FollowButton } from '../../../action-buttons/FollowButton';
+import { ComponentError } from '../../ComponentError/ComponentError';
 
 export type FollowerCollectionProps = {
   name: string;
@@ -67,27 +69,38 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
   }
 
   return (
-    <div className={styles.followers} id="followers-collection">
-      <Row wrap gutter={[10, 10]} className={styles.followerRow}>
-        {followers.map(follower => (
-          <Col key={follower.link}>
-            <SingleFollower key={follower.link} follower={follower} />
-          </Col>
-        ))}
-      </Row>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="FollowerCollection"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
+      )}
+    >
+      <div className={styles.followers} id="followers-collection">
+        <Row wrap gutter={[10, 10]} className={styles.followerRow}>
+          {followers.map(follower => (
+            <Col key={follower.link}>
+              <SingleFollower key={follower.link} follower={follower} />
+            </Col>
+          ))}
+        </Row>
 
-      <Pagination
-        className={styles.pagination}
-        current={page}
-        pageSize={ITEMS_PER_PAGE}
-        defaultPageSize={ITEMS_PER_PAGE}
-        total={total}
-        showSizeChanger={false}
-        onChange={p => {
-          setPage(p);
-        }}
-        hideOnSinglePage
-      />
-    </div>
+        <Pagination
+          className={styles.pagination}
+          current={page}
+          pageSize={ITEMS_PER_PAGE}
+          defaultPageSize={ITEMS_PER_PAGE}
+          total={total}
+          showSizeChanger={false}
+          onChange={p => {
+            setPage(p);
+          }}
+          hideOnSinglePage
+        />
+      </div>
+    </ErrorBoundary>
   );
 };
