@@ -1,5 +1,6 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import {
   ConnectedClientInfoEvent,
   FediverseEvent,
@@ -18,6 +19,7 @@ import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 import { ChatSocialMessage } from '../ChatSocialMessage/ChatSocialMessage';
 import { ChatNameChangeMessage } from '../ChatNameChangeMessage/ChatNameChangeMessage';
 import { User } from '../../../interfaces/user.model';
+import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 export type ChatContainerProps = {
   messages: ChatMessage[];
@@ -266,14 +268,25 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   );
 
   return (
-    <div id="chat-container" className={styles.chatContainer}>
-      {MessagesTable}
-      {showInput && (
-        <div className={styles.chatTextField}>
-          <ChatTextField enabled={chatEnabled} />
-        </div>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="ChatContainer"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
       )}
-    </div>
+    >
+      <div id="chat-container" className={styles.chatContainer}>
+        {MessagesTable}
+        {showInput && (
+          <div className={styles.chatTextField}>
+            <ChatTextField enabled={chatEnabled} />
+          </div>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 };
 
