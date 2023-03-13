@@ -113,10 +113,10 @@ export const BrowserNotifyModal = () => {
   return (
     <ErrorBoundary
       // eslint-disable-next-line react/no-unstable-nested-components
-      fallbackRender={({ error, resetErrorBoundary }) => (
+      fallbackRender={({ error: e, resetErrorBoundary }) => (
         <ComponentError
           componentName="BrowserNotifyModal"
-          message={error.message}
+          message={e.message}
           retryFunction={resetErrorBoundary}
         />
       )}
