@@ -32,6 +32,6 @@ export class User {
       return false;
     }
 
-    return this.scopes.includes('moderator');
+    return this.scopes.includes('MODERATOR');
   };
 }
