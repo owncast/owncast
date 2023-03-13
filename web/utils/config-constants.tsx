@@ -1,7 +1,6 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
-import { TEXTFIELD_TYPE_URL } from '../components/admin/TextField';
 import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
 
 export const TEXT_MAXLENGTH = 255;
@@ -48,6 +47,8 @@ export const API_FEDERATION_USERNAME = '/federation/username';
 export const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
 export const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
 export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
+
+const TEXTFIELD_TYPE_URL = 'url';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;

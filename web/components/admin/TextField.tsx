@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { Input, Form, InputNumber, Button } from 'antd';
 import { FieldUpdaterFunc } from '../../types/config-section';
-// import InfoTip from '../info-tip';
 import { StatusState } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
 import { PASSWORD_COMPLEXITY_RULES, REGEX_PASSWORD } from '../../utils/config-constants';
