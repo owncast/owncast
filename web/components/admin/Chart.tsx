@@ -94,6 +94,7 @@ export const Chart: FC<ChartProps> = ({
 
   const options = {
     responsive: true,
+    clip: false,
 
     scales: {
       y: {
