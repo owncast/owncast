@@ -22,6 +22,8 @@ const (
 	StreamStarted EventType = "STREAM_STARTED"
 	// StreamStopped represents a stream stopped event.
 	StreamStopped EventType = "STREAM_STOPPED"
+	// StreamTitleUpdated is the event sent when a stream's title changes.
+	StreamTitleUpdated EventType = "STREAM_TITLE_UPDATED"
 	// SystemMessageSent is the event sent when a system message is sent.
 	SystemMessageSent EventType = "SYSTEM"
 	// ChatDisabled is when a user is explicitly disabled and blocked from using chat.

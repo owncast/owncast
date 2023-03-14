@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -66,6 +67,7 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	if !success {
 		return
 	}
+	go webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
 
 	value := configValue.Value.(string)
 
