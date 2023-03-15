@@ -69,9 +69,9 @@
 }
 
 .config-video-latency-container .segment-slider-container .ant-slider-mark-text:first-of-type {
-	margin-left: 20px;
+  margin-left: 20px;
 }
 
 .config-video-latency-container .segment-slider-container .ant-slider-mark-text:last-of-type {
-	left: 95% !important;
+  left: 95% !important;
 }
