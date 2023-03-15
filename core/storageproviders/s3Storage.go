@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -149,11 +150,27 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
 	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
-	uploadInput := &s3manager.UploadInput{
-		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
-		Key:          aws.String(remotePath), // Name of the file to be saved
-		Body:         file,                   // File
-		CacheControl: &cacheControlHeader,
+
+	var uploadInput *s3manager.UploadInput
+
+	if path.Ext(filePath) == ".m3u8" {
+		noCacheHeader := "no-cache, no-store, must-revalidate"
+		contentType := "application/x-mpegURL"
+
+		uploadInput = &s3manager.UploadInput{
+			Bucket:       aws.String(s.s3Bucket), // Bucket to be used
+			Key:          aws.String(remotePath), // Name of the file to be saved
+			Body:         file,                   // File
+			CacheControl: &noCacheHeader,
+			ContentType:  &contentType,
+		}
+	} else {
+		uploadInput = &s3manager.UploadInput{
+			Bucket:       aws.String(s.s3Bucket), // Bucket to be used
+			Key:          aws.String(remotePath), // Name of the file to be saved
+			Body:         file,                   // File
+			CacheControl: &cacheControlHeader,
+		}
 	}
 
 	if s.s3ACL != "" {
