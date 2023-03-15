@@ -435,9 +435,9 @@ export const ENCODER_PRESET_SLIDER_MARKS = {
     },
     label: 'lowest',
   },
-  1: '',
-  2: '',
-  3: '',
+  1: ' ',
+  2: ' ',
+  3: ' ',
   4: {
     style: {
       marginLeft: '-15px',
