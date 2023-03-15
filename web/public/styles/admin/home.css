@@ -105,7 +105,7 @@
 
 .ant-collapse > .ant-collapse-item:last-child,
 .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-  background-color: var(--theme-color-palette-3);
+  background-color: var(--theme-color-palette-5);
   border-radius: var(--theme-rounded-corners);
 }
 
