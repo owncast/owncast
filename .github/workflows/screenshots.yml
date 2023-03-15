@@ -21,7 +21,7 @@ jobs:
           cache: true
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules-screenshots
         with:
