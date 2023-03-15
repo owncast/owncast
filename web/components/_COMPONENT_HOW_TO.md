@@ -78,17 +78,16 @@ The `ComponentError` component is a pre-built error state that can be used to di
 import { ErrorBoundary } from 'react-error-boundary';
 
 <ErrorBoundary
-      // eslint-disable-next-line react/no-unstable-nested-components
-      fallbackRender={({ error: e, resetErrorBoundary }) => (
-        <ComponentError
-          componentName="BrowserNotifyModal"
-          message={e.message}
-          retryFunction={resetErrorBoundary}
-        />
-      )}
-    >
-		<YourFunctionality/>
-</ErrorBoundary
+  fallbackRender={({ error, resetErrorBoundary }) => (
+    <ComponentError
+      componentName="DesktopContent"
+      message={error.message}
+      retryFunction={resetErrorBoundary}
+    />
+  )}
+>
+  <YourComponent />
+</ErrorBoundary>
 ```
 
 ## Storybook
