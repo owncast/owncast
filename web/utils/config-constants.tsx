@@ -194,7 +194,7 @@ export const FIELD_PROPS_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'NSFW?',
-  tip: "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
+  tip: "Turn this ON if you plan to stream explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
 };
 
 export const FIELD_PROPS_YP = {
@@ -322,7 +322,7 @@ export const FIELD_PROPS_FEDERATION_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'Potentially NSFW',
-  tip: 'Turn this ON if you plan to steam explicit or adult content so previews of your stream can be marked as potentially sensitive.',
+  tip: 'Turn this ON if you plan to stream explicit or adult content so previews of your stream can be marked as potentially sensitive.',
 };
 
 export const FIELD_PROPS_FEDERATION_BLOCKED_DOMAINS = {
