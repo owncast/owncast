@@ -1,4 +1,4 @@
-name: Automated HLS tests
+name: HLS tests
 
 on:
   push:
@@ -42,9 +42,16 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Run HLS tests
+      - name: Local stroage
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/hls && ./run.sh
+
+      - name: S3 storage
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd test/automated/hls && ./run-s3.sh
