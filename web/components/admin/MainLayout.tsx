@@ -276,6 +276,21 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       icon: <QuestionCircleOutlined />,
     },
   ];
+
+  const [openKeys, setOpenKeys] = useState(openMenuItems);
+
+  const onOpenChange = (keys: string[]) => {
+    setOpenKeys(keys);
+  };
+
+  useEffect(() => {
+    menuItems.forEach(item =>
+      item?.children?.forEach(child => {
+        if (child?.key === route) setOpenKeys([...openMenuItems, item.key]);
+      }),
+    );
+  }, []);
+
   return (
     <Layout id="admin-page" className={appClass}>
       <Head>
@@ -295,11 +310,12 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           <span className="title-label">Owncast Admin</span>
         </h1>
         <Menu
-          defaultOpenKeys={openMenuItems}
           mode="inline"
           className="menu-container"
           items={menuItems}
           selectedKeys={[route || '/admin']}
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
         />
       </Sider>
 
