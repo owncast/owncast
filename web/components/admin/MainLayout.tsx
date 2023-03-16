@@ -18,6 +18,7 @@ import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../../utils/config-constants';
 import { ComposeFederatedPost } from './ComposeFederatedPost';
 import { UpdateArgs } from '../../types/config-section';
+import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 
 // Lazy loaded components
 
@@ -71,7 +72,7 @@ export type MainLayoutProps = {
 
 export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const context = useContext(ServerStatusContext);
-  const { serverConfig, online, broadcaster, versionNumber } = context || {};
+  const { serverConfig, online, broadcaster, versionNumber, error: serverError } = context || {};
   const { instanceDetails, chatDisabled, federation } = serverConfig;
   const { enabled: federationEnabled } = federation;
 
@@ -276,11 +277,15 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     },
   ];
   return (
-    <Layout className={appClass}>
+    <Layout id="admin-page" className={appClass}>
       <Head>
         <title>Owncast Admin</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png" />
       </Head>
+
+      {serverError?.type === 'OWNCAST_SERVICE_UNREACHABLE' && (
+        <FatalErrorStateModal title="Server Unreachable" message={serverError.msg} />
+      )}
 
       <Sider width={240} className="side-nav">
         <h1 className="owncast-title">

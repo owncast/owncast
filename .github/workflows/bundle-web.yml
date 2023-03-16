@@ -19,7 +19,7 @@ jobs:
           concurrent_skipping: 'same_content_newer'
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:

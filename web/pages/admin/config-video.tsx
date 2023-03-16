@@ -27,7 +27,7 @@ export default function ConfigVideoSettings() {
         qualities.
       </p>
 
-      <Row gutter={[16, 16]}>
+      <Row gutter={[45, 16]}>
         <Col md={24} lg={12}>
           <div className="form-module variants-table-module">
             <CurrentVariantsTable />

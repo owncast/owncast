@@ -165,13 +165,8 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	// Check if this client's IP address is banned. If so send a rejection.
 	if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
 		log.Debugln("Client ip address has been blocked. Rejecting.")
-		event := events.UserDisabledEvent{}
-		event.SetDefaults()
 
 		w.WriteHeader(http.StatusForbidden)
-		// Send this disabled event specifically to this single connected client
-		// to let them know they've been banned.
-		// _server.Send(event.GetBroadcastPayload(), client)
 		return
 	} else if err != nil {
 		log.Errorln("error determining if IP address is blocked: ", err)

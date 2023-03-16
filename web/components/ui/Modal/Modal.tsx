@@ -1,5 +1,7 @@
 import { Spin, Skeleton, Modal as AntModal } from 'antd';
 import React, { FC, ReactNode, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ComponentError } from '../ComponentError/ComponentError';
 import styles from './Modal.module.scss';
 
 export type ModalProps = {
@@ -71,15 +73,26 @@ export const Modal: FC<ModalProps> = ({
       centered
       destroyOnClose
     >
-      <div id="modal-container" style={{ height: '100%' }}>
-        {loading && (
-          <Skeleton active={loading} style={{ padding: '10px' }} paragraph={{ rows: 10 }} />
+      <ErrorBoundary
+        // eslint-disable-next-line react/no-unstable-nested-components
+        fallbackRender={({ error, resetErrorBoundary }) => (
+          <ComponentError
+            componentName="Modal"
+            message={error.message}
+            retryFunction={resetErrorBoundary}
+          />
         )}
+      >
+        <div id="modal-container" style={{ height: '100%' }}>
+          {loading && (
+            <Skeleton active={loading} style={{ padding: '10px' }} paragraph={{ rows: 10 }} />
+          )}
 
-        {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
-        {children && <div className={styles.content}>{children}</div>}
-        {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
-      </div>
+          {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
+          {children && <div className={styles.content}>{children}</div>}
+          {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
+        </div>
+      </ErrorBoundary>
     </AntModal>
   );
 };

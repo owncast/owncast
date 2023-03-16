@@ -24,6 +24,7 @@ export type TextFieldWithSubmitProps = TextFieldProps & {
   apiPath: string;
   configPath?: string;
   initialValue?: string;
+  hasComplexityRequirements?: boolean;
 };
 
 export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
@@ -43,7 +44,8 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
 
   let resetTimer = null;
 
-  const { fieldName, required, tip, status, value, onChange, onSubmit } = textFieldProps;
+  const { fieldName, required, tip, status, value, hasComplexityRequirements, onChange, onSubmit } =
+    textFieldProps;
 
   // Clear out any validation states and messaging
   const resetStates = () => {
@@ -118,6 +120,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
     'textfield-with-submit-container': true,
     submittable: hasChanged,
   });
+
   return (
     <div className={textfieldContainerClass}>
       <div className="textfield-component">
@@ -126,6 +129,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           onSubmit={null}
           onBlur={handleBlur}
           onChange={handleChange}
+          onHandleSubmit={handleSubmit}
         />
       </div>
       <div className="formfield-container lower-container">
@@ -134,15 +138,17 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
           <div className="field-tip">{tip}</div>
           <FormStatusIndicator status={status || submitStatus} />
           <div className="update-button-container">
-            <Button
-              type="primary"
-              size="small"
-              className="submit-button"
-              onClick={handleSubmit}
-              disabled={!hasChanged}
-            >
-              Update
-            </Button>
+            {!hasComplexityRequirements && (
+              <Button
+                type="primary"
+                size="small"
+                className="submit-button"
+                onClick={handleSubmit}
+                disabled={!hasChanged}
+              >
+                Update
+              </Button>
+            )}
           </div>
         </div>
       </div>

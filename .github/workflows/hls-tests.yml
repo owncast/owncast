@@ -1,4 +1,4 @@
-name: Automated HLS tests
+name: HLS tests
 
 on:
   push:
@@ -16,7 +16,7 @@ env:
   S3_SECRET: ${{ secrets.S3_SECRET }}
 
 jobs:
-  api:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +31,7 @@ jobs:
           cache: true
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules-hls-tests
         with:
@@ -42,9 +42,16 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Run HLS tests
+      - name: Local stroage
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/hls && ./run.sh
+
+      - name: S3 storage
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd test/automated/hls && ./run-s3.sh

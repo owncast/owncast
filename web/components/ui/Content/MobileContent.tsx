@@ -1,6 +1,7 @@
 import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton, TabsProps } from 'antd';
+import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
@@ -9,6 +10,7 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { CurrentUser } from '../../../interfaces/current-user';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
 import { ExternalAction } from '../../../interfaces/external-action';
+import { ComponentError } from '../ComponentError/ComponentError';
 
 export type MobileContentProps = {
   name: string;
@@ -61,6 +63,14 @@ type ChatContentProps = {
   currentUser: CurrentUser;
 };
 
+const ComponentErrorFallback = ({ error, resetErrorBoundary }) => (
+  <ComponentError
+    message={error}
+    componentName="MobileContent"
+    retryFunction={resetErrorBoundary}
+  />
+);
+
 const ChatContent: FC<ChatContentProps> = ({ showChat, chatEnabled, messages, currentUser }) => {
   const { id, displayName } = currentUser;
 
@@ -111,7 +121,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   );
 
   const items = [];
-  if (showChat) {
+  if (showChat && currentUser) {
     items.push({
       label: 'Chat',
       key: '0',
@@ -146,17 +156,24 @@ export const MobileContent: FC<MobileContentProps> = ({
   );
 
   return (
-    <div className={styles.lowerSectionMobile}>
-      {items.length > 1 ? (
-        <Tabs
-          className={styles.tabs}
-          defaultActiveKey="0"
-          items={items}
-          renderTabBar={replacementTabBar}
-        />
-      ) : (
-        aboutTabContent
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
       )}
-    </div>
+    >
+      <div className={styles.lowerSectionMobile}>
+        {items.length > 1 ? (
+          <Tabs
+            className={styles.tabs}
+            defaultActiveKey="0"
+            items={items}
+            renderTabBar={replacementTabBar}
+          />
+        ) : (
+          aboutTabContent
+        )}
+      </div>
+    </ErrorBoundary>
   );
 };

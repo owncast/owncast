@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { VideoJsPlayerOptions } from 'video.js';
 import classNames from 'classnames';
+import { ErrorBoundary } from 'react-error-boundary';
 import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
@@ -13,6 +14,7 @@ import createVideoSettingsMenuButton from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
 import styles from './OwncastPlayer.module.scss';
 import { VideoSettingsServiceContext } from '../../../services/video-settings-service';
+import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 const PLAYER_VOLUME = 'owncast_volume';
 const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
@@ -300,18 +302,29 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   );
 
   return (
-    <div className={classNames(styles.container, className)} id="player">
-      {online && (
-        <div className={styles.player}>
-          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />
-        </div>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="OwncastPlayer"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
       )}
-      <div className={styles.poster}>
-        {!videoPlaying && (
-          <VideoPoster online={online} initialSrc="/thumbnail.jpg" src="/thumbnail.jpg" />
+    >
+      <div className={classNames(styles.container, className)} id="player">
+        {online && (
+          <div className={styles.player}>
+            <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />
+          </div>
         )}
+        <div className={styles.poster}>
+          {!videoPlaying && (
+            <VideoPoster online={online} initialSrc="/thumbnail.jpg" src="/thumbnail.jpg" />
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 export default OwncastPlayer;

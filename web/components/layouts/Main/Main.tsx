@@ -1,3 +1,4 @@
+/* eslint-disable react/no-invalid-html-attribute */
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-unescaped-entities */
 import { useRecoilValue } from 'recoil';
@@ -6,6 +7,7 @@ import { FC, useEffect, useRef } from 'react';
 import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
+import { ErrorBoundary } from 'react-error-boundary';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -90,7 +92,7 @@ export const Main: FC = () => {
         <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon/favicon-96x96.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link href="/api/auth/provider/indieauth" />
+        <link rel="authorization_endpoint" href="/api/auth/provider/indieauth" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
@@ -139,8 +141,17 @@ export const Main: FC = () => {
           <title>{name}</title>
         </Head>
       )}
-
-      <ClientConfigStore />
+      <ErrorBoundary
+        // eslint-disable-next-line react/no-unstable-nested-components
+        fallbackRender={({ error }) => (
+          <FatalErrorStateModal
+            title="Error"
+            message={`There was an unexpected error. Please refresh the page to retry. If this error continues please file a bug with the Owncast project: ${error}`}
+          />
+        )}
+      >
+        <ClientConfigStore />
+      </ErrorBoundary>
       <PushNotificationServiceWorker />
       <TitleNotifier name={name} />
       <Theme />
