@@ -16,7 +16,7 @@ env:
   S3_SECRET: ${{ secrets.S3_SECRET }}
 
 jobs:
-  api:
+  hls:
     runs-on: ubuntu-latest
 
     steps:
