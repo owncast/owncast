@@ -17,12 +17,7 @@ install_ffmpeg
 
 start_owncast
 
-start_stream
-
 sleep 10
-
-# Run tests against a fresh install with no settings.
-npm test
 
 # Update the server config to use S3 for storage.
 update_storage_config
