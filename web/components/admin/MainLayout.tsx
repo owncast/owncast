@@ -129,7 +129,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     <Alert message={alertMessage.message} afterClose={clearAlertMessage} banner closable />
   ) : null;
 
-  // status indicator items
+  // status indicator items.
   const streamDurationString = broadcaster
     ? parseSecondsToDurationString(differenceInSeconds(new Date(), new Date(broadcaster.time)))
     : '';
