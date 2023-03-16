@@ -32,9 +32,7 @@ const ErrorContent = ({
       fixed in the future.
     </p>
     {!!canRetry && (
-      <p>
-        You may optionally retry, however functionality, if there are errors, may be unexpected.
-      </p>
+      <p>You may optionally retry, however functionality might not work as expected.</p>
     )}
     <code>
       <div>{message && `Error: ${message}`}</div>
