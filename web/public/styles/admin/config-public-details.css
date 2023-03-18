@@ -39,15 +39,12 @@
 }
 .config-public-details-page .instance-details-container {
   width: 100%;
+  border-right: 1px solid #cbd0d8;
 }
 .config-public-details-page .social-items-container {
-  background-color: var(--theme-color-palette-5);
   padding: 0 0.75em;
   margin-left: 1em;
   max-width: 450px;
-}
-.config-public-details-page .social-items-container .form-module {
-  background-color: var(--theme-color-palette-10);
 }
 .config-public-details-page .social-items-container .social-handles-container {
   min-width: 350px;
