@@ -23,7 +23,9 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
 
   const getFollowers = async () => {
     try {
-      const response = await fetch(`${ENDPOINT}?page=${page}&limit=${ITEMS_PER_PAGE}`);
+      const response = await fetch(
+        `${ENDPOINT}?offset=${page * ITEMS_PER_PAGE}&limit=${ITEMS_PER_PAGE}`,
+      );
 
       const data = await response.json();
       const { results, total: totalResults } = data;
