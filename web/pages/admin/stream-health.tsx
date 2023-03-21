@@ -279,9 +279,7 @@ const StreamHealth = () => {
       <Space direction="vertical" size="middle">
         <Row justify="space-around">
           <Col style={{ width: '100%' }}>
-            <Card type="inner">
-              <StreamHealthOverview showTroubleshootButton={false} />
-            </Card>
+            <StreamHealthOverview showTroubleshootButton={false} />
           </Col>
         </Row>
         <Row
