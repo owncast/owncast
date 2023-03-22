@@ -303,9 +303,7 @@ export default function FediverseFollowers() {
     },
   );
 
-  const followersTabTitle = (
-    <span>Followers {followers.length > 0 && `(${followers.length})`}</span>
-  );
+  const followersTabTitle = <span>Followers {totalCount > 0 && `(${totalCount})`}</span>;
   const followersTab = (
     <>
       <p>The following accounts get notified when you go live or send a post.</p>
