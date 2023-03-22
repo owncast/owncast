@@ -76,10 +76,15 @@ func (b *Browser) Send(
 		return false, errors.Wrap(err, "error sending browser push notification")
 	}
 
+	if resp == nil {
+		return false, errors.New("no response from web push server")
+	}
+
+	defer resp.Body.Close()
+
 	if resp.StatusCode == 410 {
 		return true, nil
 	}
-	defer resp.Body.Close()
 
 	return false, err
 }
