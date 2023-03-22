@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Col, Pagination, Row, Skeleton } from 'antd';
+import { Pagination, Spin } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Follower } from '../../../../interfaces/follower';
 import { SingleFollower } from '../SingleFollower/SingleFollower';
@@ -23,8 +23,10 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
 
   const getFollowers = async () => {
     try {
+      setLoading(true);
+
       const response = await fetch(
-        `${ENDPOINT}?offset=${page * ITEMS_PER_PAGE}&limit=${ITEMS_PER_PAGE}`,
+        `${ENDPOINT}?offset=${(page - 1) * ITEMS_PER_PAGE}&limit=${ITEMS_PER_PAGE}`,
       );
 
       const data = await response.json();
@@ -60,13 +62,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
     </div>
   );
 
-  const loadingSkeleton = <Skeleton active paragraph={{ rows: 3 }} />;
-
-  if (loading) {
-    return loadingSkeleton;
-  }
-
-  if (!followers?.length) {
+  if (!followers?.length && !loading) {
     return noFollowers;
   }
 
@@ -81,28 +77,28 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
         />
       )}
     >
-      <div className={styles.followers} id="followers-collection">
-        <Row wrap gutter={[10, 10]} className={styles.followerRow}>
-          {followers.map(follower => (
-            <Col key={follower.link}>
+      <Spin spinning={loading} size="large">
+        <div className={styles.followers} id="followers-collection">
+          <div className={styles.followerRow}>
+            {followers.map(follower => (
               <SingleFollower key={follower.link} follower={follower} />
-            </Col>
-          ))}
-        </Row>
+            ))}
+          </div>
 
-        <Pagination
-          className={styles.pagination}
-          current={page}
-          pageSize={ITEMS_PER_PAGE}
-          defaultPageSize={ITEMS_PER_PAGE}
-          total={total}
-          showSizeChanger={false}
-          onChange={p => {
-            setPage(p);
-          }}
-          hideOnSinglePage
-        />
-      </div>
+          <Pagination
+            className={styles.pagination}
+            current={page}
+            pageSize={ITEMS_PER_PAGE}
+            defaultPageSize={ITEMS_PER_PAGE}
+            total={total}
+            showSizeChanger={false}
+            onChange={p => {
+              setPage(p);
+            }}
+            hideOnSinglePage
+          />
+        </div>
+      </Spin>
     </ErrorBoundary>
   );
 };

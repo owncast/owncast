@@ -12,7 +12,7 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
   <div className={cn([styles.follower, 'followers-follower'])}>
     <a href={follower.link} target="_blank" rel="noreferrer">
       <Row wrap={false}>
-        <Col span={6}>
+        <Col span={4}>
           <Avatar
             src={follower.image}
             alt="Avatar"
