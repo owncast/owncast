@@ -3,6 +3,15 @@
 .outerContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
+
+  @include screen(tablet) {
+      height: 430px;
+  }
+
+  @include screen (mobile) {
+    height: 280px;
+  }
 }
 
 .innerContainer {

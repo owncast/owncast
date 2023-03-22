@@ -12,6 +12,23 @@
     max-height: 75vh;
   }
 
+  @include screen(desktop) {
+    // prevent sidebar from overlapping stream
+    // padding-right: 320px;
+  }
+
+  //set height of player for tablet
+  @include screen(tablet) {
+    height: 400px;
+    max-height: 400px;
+  }
+  
+  //set height of player for mobile
+  @include screen(mobile) {
+    height: 250px;
+    max-height: 250px;
+  }
+
   .player,
   .poster {
     width: 100%;

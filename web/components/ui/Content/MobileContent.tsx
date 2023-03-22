@@ -4,7 +4,6 @@ import { Skeleton, TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
-import mobileStyles from './MobileContent.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -19,8 +18,6 @@ export type MobileContentProps = {
   tags: string[];
   socialHandles: SocialLink[];
   extraPageContent: string;
-  notifyItemSelected: () => void;
-  followItemSelected: () => void;
   setExternalActionToDisplay: (action: ExternalAction) => void;
   setShowNotifyPopup: (show: boolean) => void;
   setShowFollowModal: (show: boolean) => void;
@@ -30,7 +27,6 @@ export type MobileContentProps = {
   showChat: boolean;
   chatEnabled: boolean;
   actions: ExternalAction[];
-  externalActionSelected: (action: ExternalAction) => void;
   supportsBrowserNotifications: boolean;
 };
 
@@ -88,25 +84,6 @@ const ChatContent: FC<ChatContentProps> = ({ showChat, chatEnabled, messages, cu
   );
 };
 
-const ActionButton = ({
-  supportFediverseFeatures,
-  supportsBrowserNotifications,
-  actions,
-  setExternalActionToDisplay,
-  setShowNotifyPopup,
-  setShowFollowModal,
-}) => (
-  <ActionButtonMenu
-    className={styles.actionButtonMenu}
-    showFollowItem={supportFediverseFeatures}
-    showNotifyItem={supportsBrowserNotifications}
-    actions={actions}
-    externalActionSelected={setExternalActionToDisplay}
-    notifyItemSelected={() => setShowNotifyPopup(true)}
-    followItemSelected={() => setShowFollowModal(true)}
-  />
-);
-
 export const MobileContent: FC<MobileContentProps> = ({
   name,
   summary,
@@ -160,19 +137,7 @@ export const MobileContent: FC<MobileContentProps> = ({
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
   }
 
-  const replacementTabBar = (props, DefaultTabBar) => (
-    <div className={styles.replacementBar}>
-      <DefaultTabBar {...props} className={styles.defaultTabBar} />
-      <ActionButton
-        supportFediverseFeatures={supportFediverseFeatures}
-        supportsBrowserNotifications={supportsBrowserNotifications}
-        actions={actions}
-        setExternalActionToDisplay={setExternalActionToDisplay}
-        setShowNotifyPopup={setShowNotifyPopup}
-        setShowFollowModal={setShowFollowModal}
-      />
-    </div>
-  );
+  console.log('ITEMS', items.length);
 
   return (
     <ErrorBoundary
@@ -182,29 +147,20 @@ export const MobileContent: FC<MobileContentProps> = ({
       )}
     >
       <div className={styles.lowerSectionMobile}>
-        {items.length > 1 ? (
-          <Tabs
-            className={styles.tabs}
-            defaultActiveKey="0"
-            items={items}
-            renderTabBar={replacementTabBar}
+        {items.length > 1 && <Tabs defaultActiveKey="0" items={items} />}
+        <div className={styles.mobileActionButtonMenu}>
+          <ActionButtonMenu
+            className={styles.actionButtonMenu}
+            showFollowItem={supportFediverseFeatures}
+            showNotifyItem={supportsBrowserNotifications}
+            actions={actions}
+            externalActionSelected={setExternalActionToDisplay}
+            notifyItemSelected={() => setShowNotifyPopup(true)}
+            followItemSelected={() => setShowFollowModal(true)}
           />
-        ) : (
-          <>
-            <div className={mobileStyles.noTabsActionMenuButton}>
-              <ActionButton
-                supportFediverseFeatures={supportFediverseFeatures}
-                supportsBrowserNotifications={supportsBrowserNotifications}
-                actions={actions}
-                setExternalActionToDisplay={setExternalActionToDisplay}
-                setShowNotifyPopup={setShowNotifyPopup}
-                setShowFollowModal={setShowFollowModal}
-              />
-            </div>
-            <div className={mobileStyles.noTabsAboutContent}>{aboutTabContent}</div>
-          </>
-        )}
+        </div>
       </div>
+      <div className={styles.mobileNoTabs}>{items.length <= 1 && aboutTabContent}</div>
     </ErrorBoundary>
   );
 };

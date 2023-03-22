@@ -8,6 +8,7 @@ import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Footer } from '../../ui/Footer/Footer';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -30,12 +31,6 @@ import { AppStateOptions } from '../../stores/application-state';
 import { Noscript } from '../../ui/Noscript/Noscript';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 
-const lockBodyStyle = `
-body {
-  overflow: hidden;
-}
-`;
-
 // Lazy loaded components
 
 const FatalErrorStateModal = dynamic(
@@ -51,13 +46,13 @@ const FatalErrorStateModal = dynamic(
 export const Main: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
-  const { name, customStyles } = clientConfig;
+  const { name } = clientConfig;
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const layoutRef = useRef<HTMLDivElement>(null);
-  const { chatDisabled } = clientConfig;
+  const { chatDisabled, version } = clientConfig;
   const { videoAvailable } = appState;
   const { online, streamTitle } = clientStatus;
 
@@ -96,11 +91,6 @@ export const Main: FC = () => {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
-
-        <style>
-          {customStyles}
-          {lockBodyStyle}
-        </style>
         <base target="_blank" />
       </Head>
 
@@ -168,6 +158,7 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
+        <Footer version={version} />
       </Layout>
 
       <Noscript />
