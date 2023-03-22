@@ -72,10 +72,12 @@ func (b *Browser) Send(
 		// Not really the subscriber, but a contact point for the sender.
 		Subscriber: "owncast@owncast.online",
 	})
+	if err != nil {
+		return false, errors.Wrap(err, "error sending browser push notification")
+	}
+
 	if resp.StatusCode == 410 {
 		return true, nil
-	} else if err != nil {
-		return false, errors.Wrap(err, "error sending browser push notification")
 	}
 	defer resp.Body.Close()
 
