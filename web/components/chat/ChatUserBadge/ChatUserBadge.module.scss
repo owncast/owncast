@@ -3,7 +3,7 @@
   background-color: var(--color-owncast-palette-0);
   height: 18px;
   width: 18px;
-  border-radius: 2px;
+  border-radius: calc(0.3 * var(--theme-rounded-corners));
   text-align: center;
   padding: 2px;
   display: inline-flex;
