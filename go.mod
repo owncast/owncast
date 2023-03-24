@@ -75,6 +75,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.1
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0
+	mvdan.cc/xurls/v2 v2.4.0
 )
 
 replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20211229051252-7821289d4026
