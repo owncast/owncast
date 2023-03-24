@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/yuin/goldmark"
@@ -358,7 +357,6 @@ func GetHashtagsFromText(text string) []string {
 
 // ShuffleStringSlice will shuffle a slice of strings.
 func ShuffleStringSlice(s []string) []string {
-	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(s), func(i, j int) {
 		s[i], s[j] = s[j], s[i]
 	})
