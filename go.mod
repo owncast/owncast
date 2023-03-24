@@ -54,7 +54,7 @@ require (
 )
 
 require (
-	github.com/nakabonne/tstorage v0.3.5
+	github.com/nakabonne/tstorage v0.3.6
 	github.com/shirou/gopsutil/v3 v3.22.12
 )
 
