@@ -38,10 +38,13 @@
   }
 
   .avatar {
-    height: 50px;
-    width: 50px;
     border-color: rgba(0, 0, 0, 0.3);
     border-width: 1px;
     border-style: solid;
+    background-color: var(--theme-color-background-main);
+
+    span {
+      font-size: 1.6rem;
+    }
   }
 }
