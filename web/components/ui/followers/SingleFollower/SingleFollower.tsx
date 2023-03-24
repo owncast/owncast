@@ -12,15 +12,12 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
   <div className={cn([styles.follower, 'followers-follower'])}>
     <a href={follower.link} target="_blank" rel="noreferrer">
       <Row wrap={false}>
-        <Col span={4}>
-          <Avatar
-            src={follower.image}
-            alt="Avatar"
-            className={styles.avatar}
-            icon={<img src="/logo" alt="Logo" />}
-          />
+        <Col span={6}>
+          <Avatar src={follower.image} size="large" alt="Avatar" className={styles.avatar}>
+            {follower.username.charAt(0).toUpperCase()}
+          </Avatar>
         </Col>
-        <Col span={18}>
+        <Col span={16}>
           <Row className={styles.name}>
             <Typography.Text ellipsis>
               {follower.name || follower.username.split('@', 2)[0]}
