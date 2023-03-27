@@ -42,6 +42,11 @@ const availableEvents = {
   },
   STREAM_STARTED: { name: 'Stream started', description: 'When a stream starts', color: 'orange' },
   STREAM_STOPPED: { name: 'Stream stopped', description: 'When a stream stops', color: 'cyan' },
+  STREAM_TITLE_UPDATED: {
+    name: 'Stream title updated',
+    description: 'When a stream title is changed',
+    color: 'yellow',
+  },
 };
 
 function convertEventStringToTag(eventString: string) {
