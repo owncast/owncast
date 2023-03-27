@@ -1,35 +1,37 @@
 package storageproviders
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/playlist"
 	"github.com/owncast/owncast/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/owncast/owncast/config"
+
+	"github.com/grafov/m3u8"
 )
 
 // S3Storage is the s3 implementation of a storage provider.
 type S3Storage struct {
-	sess *session.Session
-
-	// If we try to upload a playlist but it is not yet on disk
-	// then keep a reference to it here.
-	queuedPlaylistUpdates map[string]string
-
-	uploader *s3manager.Uploader
+	sess     *session.Session
+	s3Client *s3.S3
 	host     string
 
 	s3Endpoint        string
@@ -40,6 +42,12 @@ type S3Storage struct {
 	s3Secret          string
 	s3ACL             string
 	s3ForcePathStyle  bool
+
+	// If we try to upload a playlist but it is not yet on disk
+	// then keep a reference to it here.
+	queuedPlaylistUpdates map[string]string
+
+	uploader *s3manager.Uploader
 }
 
 // NewS3Storage returns a new S3Storage instance.
@@ -54,9 +62,8 @@ func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
 	s3Config := data.GetS3Config()
-	customVideoServingEndpoint := data.GetVideoServingEndpoint()
-	if customVideoServingEndpoint != "" {
-		s.host = customVideoServingEndpoint
+	if s3Config.ServingEndpoint != "" {
+		s.host = s3Config.ServingEndpoint
 	} else {
 		s.host = fmt.Sprintf("%s/%s", s3Config.Endpoint, s3Config.Bucket)
 	}
@@ -71,6 +78,7 @@ func (s *S3Storage) Setup() error {
 	s.s3ForcePathStyle = s3Config.ForcePathStyle
 
 	s.sess = s.connectAWS()
+	s.s3Client = s3.New(s.sess)
 
 	s.uploader = s3manager.NewUploader(s.sess)
 
@@ -127,7 +135,7 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	if err := rewriteRemotePlaylist(localFilePath, s.host); err != nil {
+	if err := s.rewriteRemotePlaylist(localFilePath); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -178,10 +186,25 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return s.Save(filePath, retryCount+1)
 		}
 
-		return "", fmt.Errorf("Giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
+		return "", fmt.Errorf("Giving up on %s", filePath)
 	}
 
 	return response.Location, nil
+}
+
+func (s *S3Storage) Cleanup() error {
+	// Determine how many files we should keep on S3 storage
+	maxNumber := data.GetStreamLatencyLevel().SegmentCount
+	buffer := 20
+
+	keys, err := s.getDeletableVideoSegmentsWithOffset(maxNumber + buffer)
+	if err != nil {
+		return err
+	}
+
+	s.deleteObjects(keys)
+
+	return nil
 }
 
 func (s *S3Storage) connectAWS() *session.Session {
@@ -212,4 +235,97 @@ func (s *S3Storage) connectAWS() *session.Session {
 		log.Panicln(err)
 	}
 	return sess
+}
+
+// rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
+func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
+	f, err := os.Open(filePath) // nolint
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	p := m3u8.NewMasterPlaylist()
+	if err := p.DecodeFrom(bufio.NewReader(f), false); err != nil {
+		log.Warnln(err)
+	}
+
+	for _, item := range p.Variants {
+		item.URI = s.host + filepath.Join("/hls", item.URI)
+	}
+
+	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(filePath))
+
+	newPlaylist := p.String()
+
+	return playlist.WritePlaylist(newPlaylist, publicPath)
+}
+
+func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object, error) {
+	objectsToDelete, err := s.retrieveAllVideoSegments()
+	if err != nil {
+		return nil, err
+	}
+
+	objectsToDelete = objectsToDelete[offset : len(objectsToDelete)-1]
+
+	return objectsToDelete, nil
+}
+
+func (s *S3Storage) deleteObjects(objects []s3object) {
+	keys := make([]*s3.ObjectIdentifier, len(objects))
+	for i, object := range objects {
+		keys[i] = &s3.ObjectIdentifier{Key: aws.String(object.key)}
+	}
+
+	log.Debugln("Deleting", len(keys), "objects from S3 bucket:", s.s3Bucket)
+
+	deleteObjectsRequest := &s3.DeleteObjectsInput{
+		Bucket: aws.String(s.s3Bucket),
+		Delete: &s3.Delete{
+			Objects: keys,
+			Quiet:   aws.Bool(true),
+		},
+	}
+
+	_, err := s.s3Client.DeleteObjects(deleteObjectsRequest)
+	if err != nil {
+		log.Errorf("Unable to delete objects from bucket %q, %v\n", s.s3Bucket, err)
+	}
+}
+
+func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
+	allObjectsListRequest := &s3.ListObjectsInput{
+		Bucket: aws.String(s.s3Bucket),
+	}
+
+	// Fetch all objects in the bucket
+	allObjectsListResponse, err := s.s3Client.ListObjects(allObjectsListRequest)
+	if err != nil {
+		return nil, errors.Wrap(err, "Unable to fetch list of items in bucket for cleanup")
+	}
+
+	// Filter out non-video segments
+	allObjects := []s3object{}
+	for _, item := range allObjectsListResponse.Contents {
+		if !strings.HasSuffix(*item.Key, ".ts") {
+			continue
+		}
+
+		allObjects = append(allObjects, s3object{
+			key:          *item.Key,
+			lastModified: *item.LastModified,
+		})
+	}
+
+	// Sort the results by timestamp
+	sort.Slice(allObjects, func(i, j int) bool {
+		return allObjects[i].lastModified.After(allObjects[j].lastModified)
+	})
+
+	return allObjects, nil
+}
+
+type s3object struct {
+	key          string
+	lastModified time.Time
 }

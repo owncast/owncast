@@ -1,21 +1,19 @@
 package storageproviders
 
 import (
-	"time"
+	"os"
+	"path/filepath"
+	"sort"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/transcoder"
 )
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
-type LocalStorage struct {
-	// Cleanup old public HLS content every N min from the webroot.
-	onlineCleanupTicker        *time.Ticker
-	customVideoServingEndpoint string
-}
+type LocalStorage struct{}
 
 // NewLocalStorage returns a new LocalStorage instance.
 func NewLocalStorage() *LocalStorage {
@@ -24,18 +22,6 @@ func NewLocalStorage() *LocalStorage {
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
-	if data.GetVideoServingEndpoint() != "" {
-		s.customVideoServingEndpoint = data.GetVideoServingEndpoint()
-	}
-
-	// NOTE: This cleanup timer will have to be disabled to support recordings in the future
-	// as all HLS segments have to be publicly available on disk to keep a recording of them.
-	s.onlineCleanupTicker = time.NewTicker(1 * time.Minute)
-	go func() {
-		for range s.onlineCleanupTicker.C {
-			transcoder.CleanupOldContent(config.HLSStoragePath)
-		}
-	}()
 	return nil
 }
 
@@ -56,12 +42,7 @@ func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
 
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
-	if s.customVideoServingEndpoint != "" {
-		// Rewrite the playlist to use custom absolute remote URLs
-		if err := rewriteRemotePlaylist(localFilePath, s.customVideoServingEndpoint); err != nil {
-			log.Warnln(err)
-		}
-	} else if _, err := s.Save(localFilePath, 0); err != nil {
+	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -69,4 +50,69 @@ func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
 // Save will save a local filepath using the storage provider.
 func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	return filePath, nil
+}
+
+func (s *LocalStorage) Cleanup() error {
+	// Determine how many files we should keep on disk
+	maxNumber := data.GetStreamLatencyLevel().SegmentCount
+	buffer := 10
+	baseDirectory := config.HLSStoragePath
+
+	files, err := getAllFilesRecursive(baseDirectory)
+	if err != nil {
+		return errors.Wrap(err, "unable find old video files for cleanup")
+	}
+
+	// Delete old private HLS files on disk
+	for directory := range files {
+		files := files[directory]
+		if len(files) < maxNumber+buffer {
+			continue
+		}
+
+		filesToDelete := files[maxNumber+buffer:]
+		log.Traceln("Deleting", len(filesToDelete), "old files from", baseDirectory, "for video variant", directory)
+
+		for _, file := range filesToDelete {
+			fileToDelete := filepath.Join(baseDirectory, directory, file.Name())
+			err := os.Remove(fileToDelete)
+			if err != nil {
+				return errors.Wrap(err, "unable to delete old video files")
+			}
+		}
+	}
+	return nil
+}
+
+func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error) {
+	files := make(map[string][]os.FileInfo)
+
+	var directory string
+	err := filepath.Walk(baseDirectory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			directory = info.Name()
+		}
+
+		if filepath.Ext(info.Name()) == ".ts" {
+			files[directory] = append(files[directory], info)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Sort by date so we can delete old files
+	for directory := range files {
+		sort.Slice(files[directory], func(i, j int) bool {
+			return files[directory][i].ModTime().UnixNano() > files[directory][j].ModTime().UnixNano()
+		})
+	}
+
+	return files, nil
 }
