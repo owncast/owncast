@@ -23,6 +23,7 @@ var validEvents = []EventType{
 	VisibiltyToggled,
 	StreamStarted,
 	StreamStopped,
+	StreamTitleUpdated,
 }
 
 // HasValidEvents will verify that all the events provided are valid.
