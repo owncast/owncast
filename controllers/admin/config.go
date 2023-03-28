@@ -67,7 +67,6 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	if !success {
 		return
 	}
-	go webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
 
 	value := configValue.Value.(string)
 
@@ -77,6 +76,7 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	}
 	if value != "" {
 		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
+		go webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
 	}
 	controllers.WriteSimpleResponse(w, true, "changed")
 }
