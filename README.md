@@ -75,7 +75,6 @@ In general Owncast is compatible with any software that uses `RTMP` to broadcast
 OBS, Streamlabs, Restream and many others have been used with Owncast. [Read more about compatibility with existing software](https://owncast.online/docs/broadcasting/).
 
 ## Building from Source
-### For Linux Users
 Owncast consists of two projects.
 
 1. The Owncast backend written in Go.
@@ -87,6 +86,7 @@ Owncast consists of two projects.
 
 The `develop` branch is always the most up-to-date state of development and this may not be what you always want. If you want to run the latest released stable version, check out the tag related to that release. For example, if you'd only like the source prior to the v0.1.0 development cycle you can check out the `v0.0.13` tag.
 
+## For Linux Users
 ### Backend
 
 The Owncast backend is a service written in Go.
@@ -107,6 +107,34 @@ The frontend is the web interface that includes the player, chat, embed componen
 1. This project lives in the `web` directory.
 1. Run `npm install` to install the Javascript dependencies.
 1. Run `npm run dev`
+
+## For Windows Users
+Currently Owncast does not support  Building from Source for Windows Operating System.
+But one can use Windows Subsystem for Linux (WSL2) to run this project.  
+#### Note : 
+This is not advised. This is a workaround to run Owncast in Windows.
+### Backend
+
+The Owncast backend is a service written in Go.
+
+1. Ensure you have pre-requisites installed.
+   - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
+   - [ffmpeg](https://ffmpeg.org/download.html)
+1. Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
+1. Clone the repo. `git clone https://github.com/owncast/owncast`
+1. `go run main.go` will run from source.
+1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
+1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
+
+### Frontend
+
+The frontend is the web interface that includes the player, chat, embed components, and other UI.
+
+1. This project lives in the `web` directory.
+1. Run `npm install` to install the Javascript dependencies.
+1. Run `npm run dev`
+
+
 
 ## Contributing
 
