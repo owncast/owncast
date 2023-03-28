@@ -57,6 +57,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
   const [hasChanged, setHasChanged] = useState(true);
   const [form] = Form.useForm();
   const { Item } = Form;
+
   // Password Complexity rules
   const passwordComplexityRules = [];
 
@@ -98,6 +99,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
       onFinish={handleAddKey}
       form={form}
       style={{ display: 'flex', flexDirection: 'row' }}
+      initialValues={{ key: defaultKey, comment: 'My new key' }}
     >
       <Item
         style={{ width: '60%', marginRight: '5px' }}
@@ -112,7 +114,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
         }
         rules={PASSWORD_COMPLEXITY_RULES}
       >
-        <Input placeholder="def456" defaultValue={defaultKey} onChange={handleInputChange} />
+        <Input placeholder="your key" onChange={handleInputChange} />
       </Item>
       <Item
         style={{ width: '60%', marginRight: '5px' }}
