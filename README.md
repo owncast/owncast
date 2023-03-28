@@ -30,6 +30,7 @@
 - [Getting Started](#getting-started)
 - [Use with your broadcasting software](#use-with-your-existing-broadcasting-software)
 - [Building from source](#building-from-source)
+    - [1. For Linux Users](#for-linux-users)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
@@ -74,7 +75,7 @@ In general Owncast is compatible with any software that uses `RTMP` to broadcast
 OBS, Streamlabs, Restream and many others have been used with Owncast. [Read more about compatibility with existing software](https://owncast.online/docs/broadcasting/).
 
 ## Building from Source
-
+### For Linux Users
 Owncast consists of two projects.
 
 1. The Owncast backend written in Go.
