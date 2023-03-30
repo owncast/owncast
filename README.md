@@ -85,7 +85,7 @@ Owncast consists of two projects.
 
 The `develop` branch is always the most up-to-date state of development and this may not be what you always want. If you want to run the latest released stable version, check out the tag related to that release. For example, if you'd only like the source prior to the v0.1.0 development cycle you can check out the `v0.0.13` tag.
 
-> Note: Currently Owncast only supports Linux based Operating Systems, but Windows Users can use Windows Subsystem for Linux (WSL2) to install Owncast locally. For more details you can check out this [page](https://ffmpeg.org/download.html)
+> Note: Currently Owncast only supports Linux based Operating Systems, but Windows Users can use Windows Subsystem for Linux (WSL2) to install Owncast locally. For more details you can check out this [Owncast-for-windows](https://github.com/dev265545/owncast-for-windows)
 
 ### Backend
 
