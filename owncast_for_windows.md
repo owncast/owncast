@@ -99,8 +99,9 @@ After finding the IP address in your broadcasting software make the server point
 Example in OBS-Studio ->
 ![image](https://user-images.githubusercontent.com/73140257/228762798-a0c56695-c692-4295-b11b-f2e85e867ce7.png)
 
-Now Check Again. You would be able to stream.
+Now check again, you will be able to stream.
 
+---
 
 <!-- CONTACT -->
 
