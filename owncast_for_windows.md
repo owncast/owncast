@@ -27,7 +27,8 @@
 > Note:  Owncast currently **does not support Windows Operating System**. This is a workaround to run Owncast on Windows.
 
 
-This document list out the steps in detail to install and run Owncast in Windows using Windows Subsystem for Linux, specifically **WSL2**
+This document list out the steps in detail to install and run Owncast in Windows using Windows Subsystem for Linux, specifically **WSL2**.  
+The steps provided are for both the use cases whether you want to use Owncast or build and install Owncast for contributing to the project.
 
 ---
 
@@ -52,20 +53,40 @@ Here is the list for all the prerequisites required ->
  - [ffmpeg](https://ffmpeg.org/download.html)
  - Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
 
-### Step 4: Installing Owncast Backend
+### Follow Step 4 if you want to install and use Owncast.
+
+### Step 4: Installing Owncast for streaming.
+One of the many ways to install Owncast is to use the Quick Installer script.
+In the WSL2 terminal run, the following command
+
+```
+curl -s https://owncast.online/install.sh | bash  
+cd owncast  
+./owncast   
+```
+
+If everything is installed correctly you will be able to access the admin interface at port `localhost:8080/admin`.  
+Here are other ways listed you can use to install Owncast -[Owncast Quickstart](https://owncast.online/quickstart/)
+
+
+### Follow Steps 5 and 6 for installing and building Owncast for development.
+
+### Step 5: Installing Owncast Backend
 The Owncast backend is a service written in Go.
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from the source.
 1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
-### Step 4: Installing Owncast Frontend
+### Step 6: Installing Owncast Frontend
 The frontend is the web interface that includes the player, chat, embed components, and other UI.
 
 1. This project lives in the `web` directory.
 1. Run `npm install` to install the Javascript dependencies.
 1. Run `npm run dev`
 
+Further information about the development is [here](https://owncast.online/development/)
+ 
 ----
 
 
@@ -84,8 +105,7 @@ To solve this issue you can look at nvm. Here is one tutorial - [Node-Version-Ma
 **The broadcasting Software failed to connect to the server.**   
 This issue arises when you try to use `rtmp://localhost:1935/live` for example in OBS.
 To solve this issue you need to find the correct IP address for the WSL2 you are running and use that instead of localhost.
-You can use the below commands to find that ->
-
+You can use the below commands to find that ->  
 Note: you can use either of these, whichever works for you.
  - In WSL2 Terminal - 
    `ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
