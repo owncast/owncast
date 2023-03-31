@@ -72,7 +72,7 @@ func TestPublicSend(t *testing.T) {
 
 // Make sure that events are only sent to interested endpoints.
 func TestRouting(t *testing.T) {
-	eventTypes := []models.EventType{models.PING, models.PONG}
+	eventTypes := []models.EventType{models.ChatActionSent, models.UserJoined}
 
 	calls := map[models.EventType]int{}
 	var lock sync.Mutex
@@ -166,7 +166,7 @@ func TestMultiple(t *testing.T) {
 func TestTimestamps(t *testing.T) {
 	const tolerance = time.Second
 	start := time.Now()
-	eventTypes := []models.EventType{models.PING, models.PONG}
+	eventTypes := []models.EventType{models.StreamStarted, models.StreamStopped}
 	handlerIds := []int{0, 0}
 	handlers := []*models.Webhook{nil, nil}
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
