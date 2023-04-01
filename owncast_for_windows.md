@@ -32,7 +32,7 @@ The steps provided are for both the use cases whether you want to use Owncast or
 
 ---
 
-### Step 1 : Installing WSL2 in Windows.
+### Installing WSL2 in Windows.
 There are lots of tutorials available online (videos and docs both) on how to install WSL2.  
 Here are the official documents from Microsoft -> [Install Linux on Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/setup/environment)
 Some points to remember -> 
@@ -42,10 +42,10 @@ Some points to remember ->
 - Installed your Linux distribution of choice and make sure you installed the latest available version (Preferably Ubuntu)
 
 
-### Step 2: Setting up WSL2 and the distribution of your choice.
+### Setting up WSL2 and the distribution of your choice.
 After basic setup, you can look into setting WSL2 for development. Here is the link for a detailed document by Microsoft - [https://learn.microsoft.com/en-us/windows/wsl/setup/environment](https://learn.microsoft.com/en-us/windows/wsl/setup/environment)
 
-### Step 3: Make sure all the prerequisites are installed in WSL2.
+### Make sure all the prerequisites are installed in WSL2.
 Here is the list for all the prerequisites required ->
  - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
  - npm (Node Package Manager) is installed as `sudo apt install npm`. 
@@ -53,32 +53,35 @@ Here is the list for all the prerequisites required ->
  - [ffmpeg](https://ffmpeg.org/download.html)
  - Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
 
-### Follow Step 4 if you want to install and use Owncast.
+<hr>
 
-### Step 4: Installing Owncast for streaming.
+## Now for users who just want to use Owncast
+
+### Installing Owncast for streaming.
+
 One of the many ways to install Owncast is to use the Quick Installer script.
 In the WSL2 terminal run, the following command
-
 ```
 curl -s https://owncast.online/install.sh | bash  
 cd owncast  
 ./owncast   
 ```
-
 If everything is installed correctly you will be able to access the admin interface at port `localhost:8080/admin`.  
 Here are other ways listed you can use to install Owncast -[Owncast Quickstart](https://owncast.online/quickstart/)
 
+<hr>
 
-### Follow Steps 5 and 6 for installing and building Owncast for development.
+##  Next steps are for developers and users looking to build and install Owncast.
+These steps are for building and install Owncast on Windows for development and contributing to this project.
 
-### Step 5: Installing Owncast Backend
+### Installing Owncast Backend
 The Owncast backend is a service written in Go.
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from the source.
 1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
-### Step 6: Installing Owncast Frontend
+### Installing Owncast Frontend
 The frontend is the web interface that includes the player, chat, embed components, and other UI.
 
 1. This project lives in the `web` directory.
@@ -90,16 +93,17 @@ Further information about the development is [here](https://owncast.online/devel
 ----
 
 
-##### Congratulations !!!  If you have reached here. You have successfully installed and run Owncast locally on Windows. Happy Streaming.
+#### Congratulations !!!  If you have reached here. You have successfully installed and run Owncast locally on Windows. Happy Streaming.
 You can contribute to Owncast here [https://github.com/owncast/owncast](https://github.com/owncast/owncast)
 
 
----
+<hr>
 ### Some errors you can face while following these steps.
 
 #### Error 1. 
 **You have an older version of Nodejs installed in the WSL2.**     
 To solve this issue you can look at nvm. Here is one tutorial - [Node-Version-Manager](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04#option-3-installing-node-using-the-node-version-manager).   
+<hr>
 
 #### Error 2.  
 **The broadcasting Software failed to connect to the server.**   
