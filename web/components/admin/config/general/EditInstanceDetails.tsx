@@ -29,13 +29,14 @@ export default function EditInstanceDetails() {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
 
-  const { instanceDetails, yp } = serverConfig;
+  const { instanceDetails, yp, hideViewerCount } = serverConfig;
   const { instanceUrl } = yp;
 
   useEffect(() => {
     setFormDataValues({
       ...instanceDetails,
       ...yp,
+      hideViewerCount,
     });
   }, [instanceDetails, yp]);
 

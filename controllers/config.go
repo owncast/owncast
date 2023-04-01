@@ -35,6 +35,7 @@ type webConfigResponse struct {
 	Federation           federationConfigResponse     `json:"federation"`
 	Notifications        notificationsConfigResponse  `json:"notifications"`
 	Authentication       authenticationConfigResponse `json:"authentication"`
+	HideViewerCount      bool                         `json:"hideViewerCount"`
 }
 
 type federationConfigResponse struct {
@@ -135,6 +136,7 @@ func getConfigResponse() webConfigResponse {
 		Notifications:        notificationsResponse,
 		Authentication:       authenticationResponse,
 		AppearanceVariables:  data.GetCustomColorVariableValues(),
+		HideViewerCount:      data.GetHideViewerCount(),
 	}
 }
 
