@@ -181,7 +181,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return s.Save(filePath, retryCount+1)
 		}
 
-		return "", fmt.Errorf("Giving up on %s", filePath)
+		return "", fmt.Errorf("Giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
 
 	return response.Location, nil
