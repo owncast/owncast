@@ -45,18 +45,10 @@ Some points to remember ->
 ### Setting up WSL2 and the distribution of your choice.
 After basic setup, you can look into setting WSL2 for development. Here is the link for a detailed document by Microsoft - [https://learn.microsoft.com/en-us/windows/wsl/setup/environment](https://learn.microsoft.com/en-us/windows/wsl/setup/environment)
 
-### Make sure all the prerequisites are installed in WSL2.
-Here is the list for all the prerequisites required ->
- - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
- - npm (Node Package Manager) is installed as `sudo apt install npm`. 
- - Node.js is installed (LTS Version) `sudo apt install nodejs`.
- - [ffmpeg](https://ffmpeg.org/download.html)
- - Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
-
 <hr>
 
-## Now for users who just want to use Owncast
 
+## Now for the users who just want to use Owncast
 ### Installing Owncast for streaming.
 
 One of the many ways to install Owncast is to use the Quick Installer script.
@@ -68,10 +60,22 @@ cd owncast
 ```
 If everything is installed correctly you will be able to access the admin interface at port `localhost:8080/admin`.  
 Here are other ways listed you can use to install Owncast -[Owncast Quickstart](https://owncast.online/quickstart/)
+If you face any errors you can look at the Error List at the end of the document.
 
 <hr>
 
 ##  Next steps are for developers and users looking to build and install Owncast.
+
+### Make sure all the prerequisites are installed in WSL2.
+Here is the list for all the prerequisites required ->
+ - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
+ - npm (Node Package Manager) is installed as `sudo apt install npm`. 
+ - Node.js is installed (LTS Version) `sudo apt install nodejs`.
+ - [ffmpeg](https://ffmpeg.org/download.html)
+ - Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
+
+---
+
 These steps are for building and install Owncast on Windows for development and contributing to this project.
 
 ### Installing Owncast Backend
