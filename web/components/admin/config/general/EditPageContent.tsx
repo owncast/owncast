@@ -5,7 +5,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
-import { EditorView } from '@codemirror/view';
+
 
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
@@ -35,10 +35,7 @@ export default function EditPageContent() {
 
   const { instanceDetails } = serverConfig;
   const { extraPageContent: initialContent } = instanceDetails;
-  const fixedHeightEditor = EditorView.theme({
-    '&': { height: '300px' },
-    '.cm-scroller': { overflow: 'auto' },
-  });
+
 
   let resetTimer = null;
 
@@ -106,9 +103,10 @@ export default function EditPageContent() {
         value={content}
         placeholder="Enter your custom page content here..."
         theme={bbedit}
+        height="200px"
         onChange={handleEditorChange}
         extensions={[
-          markdown({ base: markdownLanguage, codeLanguages: languages }, fixedHeightEditor),
+          markdown({ base: markdownLanguage, codeLanguages: languages }),
         ]}
       />
 

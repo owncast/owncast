@@ -229,6 +229,7 @@ export default function Appearance() {
     });
 
   return (
+    <>
     <Space direction="vertical">
       <Title>Customize Appearance</Title>
       <Paragraph>The following colors are used across the user interface.</Paragraph>
@@ -298,9 +299,11 @@ export default function Appearance() {
         </Button>
       </Space>
       <FormStatusIndicator status={submitStatus} />
-      <div className="form-module page-content-module">
-        <EditCustomStyles />
-      </div>
+     
     </Space>
+     <div className="form-module page-content-module">
+     <EditCustomStyles />
+   </div>
+   </>
   );
 }
