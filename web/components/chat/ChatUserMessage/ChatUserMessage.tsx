@@ -4,7 +4,7 @@ import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
 import { Interweave } from 'interweave';
-import { EmailMatcher, UrlMatcher } from 'interweave-autolink';
+import { UrlMatcher } from 'interweave-autolink';
 import { ChatMessageHighlightMatcher } from './customMatcher';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
