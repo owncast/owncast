@@ -4,7 +4,7 @@ import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
 import { Interweave } from 'interweave';
-import { UrlMatcher } from 'interweave-autolink';
+import { EmailMatcher, UrlMatcher } from 'interweave-autolink';
 import { ChatMessageHighlightMatcher } from './customMatcher';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
@@ -110,7 +110,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
             className={styles.message}
             content={body}
             matchers={[
-              new UrlMatcher('url', { validateTLD: false }),
+              new UrlMatcher('url',{ customTLDs: ['online'] }),
               new ChatMessageHighlightMatcher('highlight', { highlightString }),
             ]}
           />
