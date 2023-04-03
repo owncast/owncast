@@ -6,7 +6,6 @@ import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 
-
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
   postConfigUpdateToAPI,
@@ -35,7 +34,6 @@ export default function EditPageContent() {
 
   const { instanceDetails } = serverConfig;
   const { extraPageContent: initialContent } = instanceDetails;
-
 
   let resetTimer = null;
 
@@ -105,9 +103,7 @@ export default function EditPageContent() {
         theme={bbedit}
         height="200px"
         onChange={handleEditorChange}
-        extensions={[
-          markdown({ base: markdownLanguage, codeLanguages: languages }),
-        ]}
+        extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
       />
 
       <br />
