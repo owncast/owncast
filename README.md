@@ -74,6 +74,7 @@ In general, Owncast is compatible with any software that uses `RTMP` to broadcas
 OBS, Streamlabs, Restream and many others have been used with Owncast. [Read more about compatibility with existing software](https://owncast.online/docs/broadcasting/).
 
 ## Building from Source
+
 Owncast consists of two projects.
 
 1. The Owncast backend is written in Go.
@@ -107,7 +108,6 @@ The frontend is the web interface that includes the player, chat, embed componen
 1. This project lives in the `web` directory.
 1. Run `npm install` to install the Javascript dependencies.
 1. Run `npm run dev`
-
 
 ## Contributing
 
