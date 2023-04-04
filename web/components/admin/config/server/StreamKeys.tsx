@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Table, Space, Button, Typography, Alert, Input, Form } from 'antd';
+import { Table, Space, Button, Typography, Alert, Input, Form, message } from 'antd';
 import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 
@@ -136,6 +136,12 @@ const AddKeyButton = ({ setShowAddKeyForm }) => (
     <PlusOutlined />
   </Button>
 );
+const copyText = (text: string) => {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => message.success('Copied to clipboard'))
+    .catch(() => message.error('Failed to copy to clipboard'));
+};
 
 const StreamKeys = () => {
   const serverStatusData = useContext(ServerStatusContext);
@@ -168,7 +174,14 @@ const StreamKeys = () => {
       key: 'key',
       render: text => (
         <Space direction="horizontal">
-          <Paragraph copyable>{showKeyMap[text] ? text : '**********'}</Paragraph>
+          <Paragraph
+            copyable={{
+              text: showKeyMap[text] ? text : '**********',
+              onCopy: () => copyText(text),
+            }}
+          >
+            {showKeyMap[text] ? text : '**********'}
+          </Paragraph>
 
           <Button
             type="link"
