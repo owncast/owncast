@@ -101,6 +101,7 @@ export default function EditPageContent() {
         value={content}
         placeholder="Enter your custom page content here..."
         theme={bbedit}
+        height="200px"
         onChange={handleEditorChange}
         extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
       />

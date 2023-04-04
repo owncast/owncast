@@ -229,78 +229,81 @@ export default function Appearance() {
     });
 
   return (
-    <Space direction="vertical">
-      <Title>Customize Appearance</Title>
-      <Paragraph>The following colors are used across the user interface.</Paragraph>
-      <div>
-        <Collapse defaultActiveKey={['1']}>
-          <Panel header={<Title level={3}>Section Colors</Title>} key="1">
-            <p>
-              Certain sections of the interface can be customized by selecting new colors for them.
-            </p>
-            <Row gutter={[16, 16]}>
-              <ColorCollection
-                variables={transformToColorMap(componentColorVariables)}
-                updateColor={updateColor}
-              />
-            </Row>
-          </Panel>
-          <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
-            <Row gutter={[16, 16]}>
-              <ColorCollection
-                variables={transformToColorMap(chatColorVariables)}
-                updateColor={updateColor}
-              />
-            </Row>
-          </Panel>
-          <Panel header={<Title level={3}>Other Settings</Title>} key="4">
-            How rounded should corners be?
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Slider
-                  min={0}
-                  max={20}
-                  tooltip={{ formatter: null }}
-                  onChange={v => {
-                    onBorderRadiusChange(v);
-                  }}
-                  value={Number(
-                    customValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
-                      defaultValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
-                      0,
-                  )}
+    <>
+      <Space direction="vertical">
+        <Title>Customize Appearance</Title>
+        <Paragraph>The following colors are used across the user interface.</Paragraph>
+        <div>
+          <Collapse defaultActiveKey={['1']}>
+            <Panel header={<Title level={3}>Section Colors</Title>} key="1">
+              <p>
+                Certain sections of the interface can be customized by selecting new colors for
+                them.
+              </p>
+              <Row gutter={[16, 16]}>
+                <ColorCollection
+                  variables={transformToColorMap(componentColorVariables)}
+                  updateColor={updateColor}
                 />
-              </Col>
-              <Col span={4}>
-                <div
-                  style={{
-                    width: '100px',
-                    height: '30px',
-                    borderRadius: `${
-                      customValues?.['theme-rounded-corners']?.value ??
-                      defaultValues?.['theme-rounded-corners']?.value
-                    }`,
-                    backgroundColor: 'var(--theme-color-palette-7)',
-                  }}
+              </Row>
+            </Panel>
+            <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
+              <Row gutter={[16, 16]}>
+                <ColorCollection
+                  variables={transformToColorMap(chatColorVariables)}
+                  updateColor={updateColor}
                 />
-              </Col>
-            </Row>
-          </Panel>
-        </Collapse>
-      </div>
+              </Row>
+            </Panel>
+            <Panel header={<Title level={3}>Other Settings</Title>} key="4">
+              How rounded should corners be?
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Slider
+                    min={0}
+                    max={20}
+                    tooltip={{ formatter: null }}
+                    onChange={v => {
+                      onBorderRadiusChange(v);
+                    }}
+                    value={Number(
+                      customValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
+                        defaultValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
+                        0,
+                    )}
+                  />
+                </Col>
+                <Col span={4}>
+                  <div
+                    style={{
+                      width: '100px',
+                      height: '30px',
+                      borderRadius: `${
+                        customValues?.['theme-rounded-corners']?.value ??
+                        defaultValues?.['theme-rounded-corners']?.value
+                      }`,
+                      backgroundColor: 'var(--theme-color-palette-7)',
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Panel>
+          </Collapse>
+        </div>
 
-      <Space direction="horizontal">
-        <Button type="primary" onClick={save}>
-          Save Colors
-        </Button>
-        <Button type="ghost" onClick={reset}>
-          Reset to Defaults
-        </Button>
+        <Space direction="horizontal">
+          <Button type="primary" onClick={save}>
+            Save Colors
+          </Button>
+          <Button type="ghost" onClick={reset}>
+            Reset to Defaults
+          </Button>
+        </Space>
+        <FormStatusIndicator status={submitStatus} />
       </Space>
-      <FormStatusIndicator status={submitStatus} />
       <div className="form-module page-content-module">
         <EditCustomStyles />
       </div>
-    </Space>
+    </>
   );
 }
