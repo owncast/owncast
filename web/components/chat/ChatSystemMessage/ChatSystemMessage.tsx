@@ -26,7 +26,7 @@ export const ChatSystemMessage: FC<ChatSystemMessageProps> = ({
       className={styles.message}
       content={body}
       matchers={[
-        new UrlMatcher('url', { customTLDs: ['online'] }),
+        new UrlMatcher('url', { validateTLD: false }),
         new ChatMessageHighlightMatcher('highlight', { highlightString }),
       ]}
     />
