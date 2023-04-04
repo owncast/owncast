@@ -240,6 +240,7 @@ export const ClientConfigStore: FC = () => {
     const savedAccessToken = getLocalStorage(ACCESS_TOKEN_KEY);
     if (savedAccessToken) {
       setAccessToken(savedAccessToken);
+
       return;
     }
 
@@ -267,6 +268,7 @@ export const ClientConfigStore: FC = () => {
   const resetAndReAuth = () => {
     setLocalStorage(ACCESS_TOKEN_KEY, '');
     setAccessToken(null);
+    ws?.shutdown();
     handleUserRegistration();
   };
 
@@ -358,6 +360,12 @@ export const ClientConfigStore: FC = () => {
 
   const startChat = async () => {
     try {
+      if (ws) {
+        ws?.shutdown();
+        setWebsocketService(null);
+        ws = null;
+      }
+
       const { socketHostOverride } = clientConfig;
 
       // Get a copy of the browser location without #fragments.
@@ -403,9 +411,23 @@ export const ClientConfigStore: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!clientConfig.chatDisabled && accessToken && hasLoadedConfig) {
-      startChat();
+    if (clientConfig.chatDisabled) {
+      return;
     }
+
+    if (!accessToken) {
+      return;
+    }
+
+    if (!hasLoadedConfig) {
+      return;
+    }
+
+    if (ws) {
+      return;
+    }
+
+    startChat();
   }, [hasLoadedConfig, accessToken]);
 
   useEffect(() => {

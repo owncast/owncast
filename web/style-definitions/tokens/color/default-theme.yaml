@@ -235,7 +235,7 @@ theme:
           value: 'var(--theme-color-palette-2)'
           comment: '{theme.color.palette.2.comment}'
         live-indicator:
-          value: 'var(--theme-color-palette-7)'
+          value: 'var(--theme-color-action)'
           comment: 'The Live dot indicator in the control bar of the video player'
         status-bar:
           background:

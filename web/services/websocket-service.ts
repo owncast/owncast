@@ -43,6 +43,11 @@ export default class WebsocketService {
     if (!this.host) {
       return;
     }
+
+    if (this.isShutdown) {
+      return;
+    }
+
     const url = new URL(this.host);
     url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     url.pathname = '/ws';
@@ -76,6 +81,10 @@ export default class WebsocketService {
   }
 
   scheduleReconnect() {
+    if (this.isShutdown) {
+      return;
+    }
+
     if (this.websocketReconnectTimer) {
       clearTimeout(this.websocketReconnectTimer);
     }
