@@ -117,20 +117,73 @@ func GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*Exte
 	// so we can efficiently find if a token supports a single scope.
 	// This is SQLite specific, so if we ever support other database
 	// backends we need to support other methods.
-	query := `SELECT id, scopes, display_name, display_color, created_at, last_used FROM user_access_tokens, (
-		WITH RECURSIVE split(id, scopes, display_name, display_color, created_at, last_used, disabled_at, scope, rest) AS (
-		  SELECT id, scopes, display_name, display_color, created_at, last_used, disabled_at, '', scopes || ',' FROM users
-		   UNION ALL
-		  SELECT id, scopes, display_name, display_color, created_at, last_used, disabled_at,
-				 substr(rest, 0, instr(rest, ',')),
-				 substr(rest, instr(rest, ',')+1)
-			FROM split
-		   WHERE rest <> '')
-		SELECT id, scopes, display_name, display_color, created_at, last_used, disabled_at, scope
-		  FROM split
-		 WHERE scope <> ''
-		 ORDER BY scope
-	  ) AS token WHERE user_access_tokens.token = ? AND token.scope = ?`
+	query := `SELECT
+  id,
+	scopes,
+  display_name,
+  display_color,
+  created_at,
+  last_used
+FROM
+  user_access_tokens
+  INNER JOIN (
+    WITH RECURSIVE split(
+      id,
+      scopes,
+      display_name,
+      display_color,
+      created_at,
+      last_used,
+      disabled_at,
+      scope,
+      rest
+    ) AS (
+      SELECT
+        id,
+        scopes,
+        display_name,
+        display_color,
+        created_at,
+        last_used,
+        disabled_at,
+        '',
+        scopes || ','
+      FROM
+        users AS u
+      UNION ALL
+      SELECT
+        id,
+        scopes,
+        display_name,
+        display_color,
+        created_at,
+        last_used,
+        disabled_at,
+        substr(rest, 0, instr(rest, ',')),
+        substr(rest, instr(rest, ',') + 1)
+      FROM
+        split
+      WHERE
+        rest <> ''
+    )
+    SELECT
+      id,
+      display_name,
+      display_color,
+      created_at,
+      last_used,
+      disabled_at,
+      scopes,
+      scope
+    FROM
+      split
+    WHERE
+      scope <> ''
+  ) ON user_access_tokens.user_id = id
+WHERE
+  disabled_at IS NULL
+  AND token = ?
+  AND scope = ?;`
 
 	row := _datastore.DB.QueryRow(query, token, scope)
 	integration, err := makeExternalAPIUserFromRow(row)
@@ -150,7 +203,6 @@ func GetIntegrationNameForAccessToken(token string) *string {
 
 // GetExternalAPIUser will return all API users with access tokens.
 func GetExternalAPIUser() ([]ExternalAPIUser, error) { //nolint
-	// Get all messages sent within the past day
 	query := "SELECT id, token, display_name, display_color, scopes, created_at, last_used FROM users, user_access_tokens WHERE user_access_tokens.user_id = id  AND type IS 'API' AND disabled_at IS NULL"
 
 	rows, err := _datastore.DB.Query(query)
@@ -170,7 +222,6 @@ func SetExternalAPIUserAccessTokenAsUsed(token string) error {
 	if err != nil {
 		return err
 	}
-	// stmt, err := tx.Prepare("UPDATE users SET last_used = CURRENT_TIMESTAMP WHERE access_token = ?")
 	stmt, err := tx.Prepare("UPDATE users SET last_used = CURRENT_TIMESTAMP WHERE id = (SELECT user_id FROM user_access_tokens WHERE token = ?)")
 	if err != nil {
 		return err
