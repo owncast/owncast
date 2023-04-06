@@ -26,7 +26,7 @@ import chatServiceMockOf from '../../../services/chat-service.mock';
 import serverStatusServiceMockOf from '../../../services/status-service.mock';
 import { VideoSettingsServiceContext } from '../../../services/video-settings-service';
 import videoSettingsServiceMockOf from '../../../services/video-settings-service.mock';
-import { grootUser, spidermanUser } from '../../../interfaces/user.fixture';
+import { spidermanUser } from '../../../interfaces/user.fixture';
 import { exampleChatHistory } from '../../../interfaces/chat-message.fixture';
 
 export default {
@@ -80,7 +80,7 @@ const initializeDefaultState = (mutableState: MutableSnapshot) => {
 
 const ClientConfigServiceMock = clientConfigServiceMockOf(defaultClientConfig);
 const ChatServiceMock = chatServiceMockOf(exampleChatHistory, {
-  ...grootUser,
+  ...spidermanUser,
   accessToken: 'some fake token',
 });
 const DefaultServerStatusServiceMock = serverStatusServiceMockOf(defaultServerStatus);
