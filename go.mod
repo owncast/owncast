@@ -55,7 +55,7 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.6
-	github.com/shirou/gopsutil/v3 v3.23.2
+	github.com/shirou/gopsutil/v3 v3.23.3
 )
 
 require github.com/SherClockHolmes/webpush-go v1.2.0
@@ -68,6 +68,7 @@ require (
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
+	github.com/shoenig/go-m1cpu v0.1.4 // indirect
 )
 
 require (
