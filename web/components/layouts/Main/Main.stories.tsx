@@ -38,7 +38,7 @@ export default {
 
 // mock the Websocket to prevent ani webhook calls from being made in storybook
 // @ts-ignore
-window.WebSocket = () => {}
+window.WebSocket = () => {};
 
 type StateInitializer = (mutableState: MutableSnapshot) => void;
 
