@@ -217,3 +217,12 @@ th {
 .ant-popover {
   z-index: 800; // Lower the z-index so it renders under modals.
 }
+
+.line-chart-container{
+  position: relative;
+  .download-btn{
+    position:absolute;
+    top: 10%;
+    right: 5%;
+  }
+}
