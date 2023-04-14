@@ -1,10 +1,12 @@
 import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { TabsProps } from 'antd';
+import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
+import { ComponentError } from '../ComponentError/ComponentError';
 
 export type DesktopContentProps = {
   name: string;
@@ -52,14 +54,22 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
     </div>
   );
-
-  const items = [{ label: 'About', key: '2', children: aboutTabContent }];
+  const items = [!!extraPageContent && { label: 'About', key: '2', children: aboutTabContent }];
   if (supportFediverseFeatures) {
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
   }
 
   return (
-    <>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="DesktopContent"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
+      )}
+    >
       <div className={styles.lowerHalf} id="skip-to-content">
         <ContentHeader
           name={name}
@@ -71,8 +81,12 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       </div>
 
       <div className={styles.lowerSection}>
-        {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : aboutTabContent}
+        {items.length > 1 ? (
+          <Tabs defaultActiveKey="0" items={items} />
+        ) : (
+          !!extraPageContent && aboutTabContent
+        )}
       </div>
-    </>
+    </ErrorBoundary>
   );
 };

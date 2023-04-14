@@ -1,4 +1,4 @@
-import { Row, Col, Typography } from 'antd';
+import { Row, Col, Typography, Alert, Spin } from 'antd';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';
@@ -20,12 +20,6 @@ const LaptopOutlined = dynamic(() => import('@ant-design/icons/LaptopOutlined'),
 const SaveOutlined = dynamic(() => import('@ant-design/icons/SaveOutlined'), {
   ssr: false,
 });
-
-// TODO: FIX TS WARNING FROM THIS.
-// interface TimedValue {
-//   time: Date;
-//   value: Number;
-// }
 
 export default function HardwareInfo() {
   const [hardwareStatus, setHardwareStatus] = useState({
@@ -57,7 +51,20 @@ export default function HardwareInfo() {
   }, []);
 
   if (!hardwareStatus.cpu) {
-    return null;
+    return (
+      <div>
+        <Typography.Title>Hardware Info</Typography.Title>
+
+        <Alert
+          style={{ marginTop: '10px' }}
+          banner
+          message="Please wait"
+          description="No hardware details have been collected yet."
+          type="info"
+        />
+        <Spin spinning style={{ width: '100%', margin: '10px' }} />
+      </div>
+    );
   }
 
   const currentCPUUsage = hardwareStatus.cpu[hardwareStatus.cpu.length - 1]?.value;

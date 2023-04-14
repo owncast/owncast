@@ -81,16 +81,16 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	accessGranted := false
 	validStreamingKeys := data.GetStreamKeys()
 
+	// If a stream key override was specified then use that instead.
+	if config.TemporaryStreamKey != "" {
+		validStreamingKeys = []models.StreamKey{{Key: config.TemporaryStreamKey}}
+	}
+
 	for _, key := range validStreamingKeys {
 		if secretMatch(key.Key, c.URL.Path) {
 			accessGranted = true
 			break
 		}
-	}
-
-	// Test against the temporary key if it was set at runtime.
-	if config.TemporaryStreamKey != "" && secretMatch(config.TemporaryStreamKey, c.URL.Path) {
-		accessGranted = true
 	}
 
 	if !accessGranted {

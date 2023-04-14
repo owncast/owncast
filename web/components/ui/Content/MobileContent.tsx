@@ -1,6 +1,7 @@
 import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton, TabsProps } from 'antd';
+import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
@@ -9,6 +10,7 @@ import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { CurrentUser } from '../../../interfaces/current-user';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
 import { ExternalAction } from '../../../interfaces/external-action';
+import { ComponentError } from '../ComponentError/ComponentError';
 
 export type MobileContentProps = {
   name: string;
@@ -25,6 +27,7 @@ export type MobileContentProps = {
   messages: ChatMessage[];
   currentUser: CurrentUser;
   showChat: boolean;
+  chatEnabled: boolean;
   actions: ExternalAction[];
   externalActionSelected: (action: ExternalAction) => void;
   supportsBrowserNotifications: boolean;
@@ -53,6 +56,37 @@ const ChatContainer = dynamic(
   },
 );
 
+type ChatContentProps = {
+  showChat: boolean;
+  chatEnabled: boolean;
+  messages: ChatMessage[];
+  currentUser: CurrentUser;
+};
+
+const ComponentErrorFallback = ({ error, resetErrorBoundary }) => (
+  <ComponentError
+    message={error}
+    componentName="MobileContent"
+    retryFunction={resetErrorBoundary}
+  />
+);
+
+const ChatContent: FC<ChatContentProps> = ({ showChat, chatEnabled, messages, currentUser }) => {
+  const { id, displayName } = currentUser;
+
+  return showChat && !!currentUser ? (
+    <ChatContainer
+      messages={messages}
+      usernameToHighlight={displayName}
+      chatUserId={id}
+      isModerator={false}
+      chatAvailable={chatEnabled}
+    />
+  ) : (
+    <Skeleton loading active paragraph={{ rows: 7 }} />
+  );
+};
+
 export const MobileContent: FC<MobileContentProps> = ({
   name,
   summary,
@@ -62,6 +96,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   messages,
   currentUser,
   showChat,
+  chatEnabled,
   actions,
   setExternalActionToDisplay,
   setShowNotifyPopup,
@@ -69,26 +104,14 @@ export const MobileContent: FC<MobileContentProps> = ({
   supportFediverseFeatures,
   supportsBrowserNotifications,
 }) => {
-  if (!currentUser) {
-    return <Skeleton loading active paragraph={{ rows: 7 }} />;
-  }
-  const { id, displayName } = currentUser;
-
-  const chatContent = showChat && (
-    <ChatContainer
-      messages={messages}
-      usernameToHighlight={displayName}
-      chatUserId={id}
-      isModerator={false}
-    />
-  );
-
   const aboutTabContent = (
     <>
       <ContentHeader name={name} summary={summary} tags={tags} links={socialHandles} logo="/logo" />
-      <div className={styles.bottomPageContentContainer}>
-        <CustomPageContent content={extraPageContent} />
-      </div>
+      {!!extraPageContent && (
+        <div className={styles.bottomPageContentContainer}>
+          <CustomPageContent content={extraPageContent} />
+        </div>
+      )}
     </>
   );
   const followersTabContent = (
@@ -98,8 +121,19 @@ export const MobileContent: FC<MobileContentProps> = ({
   );
 
   const items = [];
-  if (showChat) {
-    items.push({ label: 'Chat', key: '0', children: chatContent });
+  if (showChat && currentUser) {
+    items.push({
+      label: 'Chat',
+      key: '0',
+      children: (
+        <ChatContent
+          showChat={showChat}
+          chatEnabled={chatEnabled}
+          messages={messages}
+          currentUser={currentUser}
+        />
+      ),
+    });
   }
   items.push({ label: 'About', key: '2', children: aboutTabContent });
   if (supportFediverseFeatures) {
@@ -122,17 +156,24 @@ export const MobileContent: FC<MobileContentProps> = ({
   );
 
   return (
-    <div className={styles.lowerSectionMobile}>
-      {items.length > 1 ? (
-        <Tabs
-          className={styles.tabs}
-          defaultActiveKey="0"
-          items={items}
-          renderTabBar={replacementTabBar}
-        />
-      ) : (
-        aboutTabContent
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
       )}
-    </div>
+    >
+      <div className={styles.lowerSectionMobile}>
+        {items.length > 1 ? (
+          <Tabs
+            className={styles.tabs}
+            defaultActiveKey="0"
+            items={items}
+            renderTabBar={replacementTabBar}
+          />
+        ) : (
+          aboutTabContent
+        )}
+      </div>
+    </ErrorBoundary>
   );
 };

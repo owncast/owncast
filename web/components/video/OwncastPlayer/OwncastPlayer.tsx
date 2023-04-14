@@ -1,8 +1,9 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { VideoJsPlayerOptions } from 'video.js';
 import classNames from 'classnames';
+import { ErrorBoundary } from 'react-error-boundary';
 import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
@@ -12,8 +13,9 @@ import PlaybackMetrics from '../metrics/playback';
 import createVideoSettingsMenuButton from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
 import styles from './OwncastPlayer.module.scss';
+import { VideoSettingsServiceContext } from '../../../services/video-settings-service';
+import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
-const VIDEO_CONFIG_URL = '/api/video/variants';
 const PLAYER_VOLUME = 'owncast_volume';
 const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
 
@@ -28,19 +30,8 @@ export type OwncastPlayerProps = {
   initiallyMuted?: boolean;
   title: string;
   className?: string;
+  fill?: boolean;
 };
-
-async function getVideoSettings() {
-  let qualities = [];
-
-  try {
-    const response = await fetch(VIDEO_CONFIG_URL);
-    qualities = await response.json();
-  } catch (e) {
-    console.error(e);
-  }
-  return qualities;
-}
 
 export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   source,
@@ -48,7 +39,9 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   initiallyMuted = false,
   title,
   className,
+  fill,
 }) => {
+  const VideoSettingsService = useContext(VideoSettingsServiceContext);
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
@@ -151,7 +144,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   };
 
   const createSettings = async (player, videojs) => {
-    const videoQualities = await getVideoSettings();
+    const videoQualities = await VideoSettingsService.getVideoQualities();
     const menuButton = createVideoSettingsMenuButton(
       player,
       videojs,
@@ -311,18 +304,29 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   );
 
   return (
-    <div className={classNames(styles.container, className)} id="player">
-      {online && (
-        <div className={styles.player}>
-          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />
-        </div>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="OwncastPlayer"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
       )}
-      <div className={styles.poster}>
-        {!videoPlaying && (
-          <VideoPoster online={online} initialSrc="/thumbnail.jpg" src="/thumbnail.jpg" />
+    >
+      <div className={classNames(styles.container, className, fill && styles.fill)} id="player">
+        {online && (
+          <div className={styles.player}>
+            <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />
+          </div>
         )}
+        <div className={styles.poster}>
+          {!videoPlaying && (
+            <VideoPoster online={online} initialSrc="/thumbnail.jpg" src="/thumbnail.jpg" />
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 export default OwncastPlayer;

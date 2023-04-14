@@ -8,6 +8,7 @@ import {
   clientConfigStateAtom,
   appStateAtom,
   serverStatusState,
+  isChatAvailableSelector,
 } from '../../../../components/stores/ClientConfigStore';
 import Header from '../../../../components/ui/Header/Header';
 import { ClientConfig } from '../../../../interfaces/client-config.model';
@@ -21,30 +22,31 @@ export default function ReadWriteChatEmbed() {
   const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
 
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+  const isChatAvailable = useRecoilValue(isChatAvailableSelector);
 
   const { name, chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
   const { streamTitle, online } = clientStatus;
 
-  if (!currentUser) {
-    return null;
-  }
-
   const headerText = online ? streamTitle || name : name;
 
-  const { id, displayName, isModerator } = currentUser;
   return (
     <div>
       <ClientConfigStore />
       <Header name={headerText} chatAvailable chatDisabled={chatDisabled} online={videoAvailable} />
-      <ChatContainer
-        messages={messages}
-        usernameToHighlight={displayName}
-        chatUserId={id}
-        isModerator={isModerator}
-        showInput
-        height="80vh"
-      />
+      {currentUser && (
+        <div id="chat-container">
+          <ChatContainer
+            messages={messages}
+            usernameToHighlight={currentUser.displayName}
+            chatUserId={currentUser.id}
+            isModerator={currentUser.isModerator}
+            showInput
+            height="80vh"
+            chatAvailable={isChatAvailable}
+          />
+        </div>
+      )}
     </div>
   );
 }

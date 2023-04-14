@@ -4,13 +4,17 @@
   width: 100%;
   justify-content: center;
   position: absolute;
-  bottom: 50px;
+  bottom: 75px;
   color: var(--theme-color-components-text-on-light);
 
   button {
     background-color: var(--theme-color-background-light);
     z-index: 9999;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    animation: show 250ms forwards ease-in-out 500ms;
   }
 }
 
@@ -37,4 +41,14 @@
 
 .chatTextField {
   border-top: 1px solid lightgray;
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  } to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
 }

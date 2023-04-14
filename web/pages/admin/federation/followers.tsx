@@ -33,6 +33,25 @@ export interface Follower {
   approved: Date;
 }
 
+const FollowersTable = ({ data, tableColumns, totalCount, setCurrentPage }) => (
+  <Table
+    dataSource={data}
+    columns={tableColumns}
+    size="small"
+    rowKey={row => row.link}
+    pagination={{
+      pageSize: 25,
+      hideOnSinglePage: true,
+      showSizeChanger: false,
+      total: totalCount,
+    }}
+    onChange={pagination => {
+      const page = pagination.current;
+      setCurrentPage(page);
+    }}
+  />
+);
+
 export default function FediverseFollowers() {
   const [followersPending, setFollowersPending] = useState<Follower[]>([]);
   const [followersBlocked, setFollowersBlocked] = useState<Follower[]>([]);
@@ -47,7 +66,7 @@ export default function FediverseFollowers() {
 
   const getFollowers = async () => {
     try {
-      const limit = 50;
+      const limit = 25;
       const offset = currentPage * limit;
       const u = `${FOLLOWERS}?offset=${offset}&limit=${limit}`;
 
@@ -115,27 +134,6 @@ export default function FediverseFollowers() {
       ),
     },
   ];
-
-  function makeTable(data: Follower[], tableColumns: ColumnsType<Follower>) {
-    return (
-      <Table
-        dataSource={data}
-        columns={tableColumns}
-        size="small"
-        rowKey={row => row.link}
-        pagination={{
-          pageSize: 50,
-          hideOnSinglePage: true,
-          showSizeChanger: false,
-          total: totalCount,
-        }}
-        onChange={pagination => {
-          const page = pagination.current;
-          setCurrentPage(page);
-        }}
-      />
-    );
-  }
 
   async function approveFollowRequest(request) {
     try {
@@ -303,13 +301,16 @@ export default function FediverseFollowers() {
     },
   );
 
-  const followersTabTitle = (
-    <span>Followers {followers.length > 0 && `(${followers.length})`}</span>
-  );
+  const followersTabTitle = <span>Followers {totalCount > 0 && `(${totalCount})`}</span>;
   const followersTab = (
     <>
       <p>The following accounts get notified when you go live or send a post.</p>
-      {makeTable(followers, followersColumns)}{' '}
+      <FollowersTable
+        data={followers}
+        tableColumns={followersColumns}
+        totalCount={totalCount}
+        setCurrentPage={setCurrentPage}
+      />
     </>
   );
 
@@ -325,7 +326,12 @@ export default function FediverseFollowers() {
         </a>{' '}
         and be alerted to when you go live. Each must be approved.
       </p>
-      {makeTable(followersPending, pendingColumns)}
+      <Table
+        dataSource={followersPending}
+        columns={pendingColumns}
+        size="small"
+        rowKey={row => row.link}
+      />
     </>
   );
 
@@ -338,7 +344,14 @@ export default function FediverseFollowers() {
         The following people were either rejected or blocked by you. You can approve them as a
         follower.
       </p>
-      <p>{makeTable(followersBlocked, blockedColumns)}</p>
+      <p>
+        <Table
+          dataSource={followersBlocked}
+          columns={blockedColumns}
+          size="small"
+          rowKey={row => row.link}
+        />
+      </p>
     </>
   );
 

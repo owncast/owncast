@@ -80,14 +80,14 @@
   outline: none;
 }
 .user-item-container .display-name {
-  color: var(--theme-color-palette-4);
+  color: var(--theme-color-palette-2);
   border-bottom: 1px dotted var(--theme-color-palette-10);
 }
 .user-item-container:hover .display-name {
   border-color: var(--theme-color-palette-4);
 }
 .user-details h5 {
-  color: var(--theme-color-palette-4);
+  color: var(--theme-color-palette-0);
 }
 .user-details .created-at {
   font-size: 0.75em;

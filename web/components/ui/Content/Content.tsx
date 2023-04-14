@@ -199,7 +199,7 @@ export const Content: FC = () => {
     setSupportsBrowserNotifications(isPushNotificationSupported() && browserNotificationsEnabled);
   }, [browserNotificationsEnabled]);
 
-  const showChat = !chatDisabled && isChatAvailable && isChatVisible;
+  const showChat = online && !chatDisabled && isChatVisible;
 
   return (
     <>
@@ -293,6 +293,7 @@ export const Content: FC = () => {
               notifyItemSelected={() => setShowNotifyModal(true)}
               followItemSelected={() => setShowFollowModal(true)}
               externalActionSelected={externalActionSelected}
+              chatEnabled={isChatAvailable}
             />
           ) : (
             <DesktopContent

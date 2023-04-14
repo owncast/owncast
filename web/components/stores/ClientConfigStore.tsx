@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { atom, selector, useRecoilState, useSetRecoilState, RecoilEnv } from 'recoil';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
-import ClientConfigService from '../../services/client-config-service';
-import ChatService from '../../services/chat-service';
+import { ClientConfigServiceContext } from '../../services/client-config-service';
+import { ChatServiceContext } from '../../services/chat-service';
 import WebsocketService from '../../services/websocket-service';
 import { ChatMessage } from '../../interfaces/chat-message.model';
 import { CurrentUser } from '../../interfaces/current-user';
@@ -24,7 +24,7 @@ import {
 } from '../../interfaces/socket-events';
 import { mergeMeta } from '../../utils/helpers';
 import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
-import ServerStatusService from '../../services/status-service';
+import { ServerStatusServiceContext } from '../../services/status-service';
 import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
 import { DisplayableError } from '../../types/displayable-error';
 
@@ -35,8 +35,9 @@ const ACCESS_TOKEN_KEY = 'accessToken';
 
 let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
 let hasBeenModeratorNotified = false;
+let hasWebsocketDisconnected = false;
 
-const serverConnectivityError = `Cannot connect to the Owncast service. Please check your internet connection or if needed, double check this Owncast server is running.`;
+const serverConnectivityError = `Cannot connect to the Owncast service. Please check your internet connection and verify this Owncast server is running.`;
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
@@ -112,6 +113,15 @@ export const removedMessageIdsAtom = atom<string[]>({
   default: [],
 });
 
+export const isChatAvailableSelector = selector({
+  key: 'isChatAvailableSelector',
+  get: ({ get }) => {
+    const state: AppStateOptions = get(appStateAtom);
+    const accessToken: string = get(accessTokenAtom);
+    return accessToken && state.chatAvailable && !hasWebsocketDisconnected;
+  },
+});
+
 // Chat is visible if the user wishes it to be visible AND the required
 // chat state is set.
 export const isChatVisibleSelector = selector({
@@ -119,17 +129,7 @@ export const isChatVisibleSelector = selector({
   get: ({ get }) => {
     const state: AppStateOptions = get(appStateAtom);
     const userVisibleToggle: boolean = get(chatVisibleToggleAtom);
-    const accessToken: string = get(accessTokenAtom);
-    return accessToken && state.chatAvailable && userVisibleToggle;
-  },
-});
-
-export const isChatAvailableSelector = selector({
-  key: 'isChatAvailableSelector',
-  get: ({ get }) => {
-    const state: AppStateOptions = get(appStateAtom);
-    const accessToken: string = get(accessTokenAtom);
-    return accessToken && state.chatAvailable;
+    return state.chatAvailable && userVisibleToggle && !hasWebsocketDisconnected;
   },
 });
 
@@ -155,13 +155,17 @@ export const visibleChatMessagesSelector = selector<ChatMessage[]>({
 });
 
 export const ClientConfigStore: FC = () => {
+  const ClientConfigService = useContext(ClientConfigServiceContext);
+  const ChatService = useContext(ChatServiceContext);
+  const ServerStatusService = useContext(ServerStatusServiceContext);
+
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
   const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
-  const [, setServerStatus] = useRecoilState<ServerStatus>(serverStatusState);
+  const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
   const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
-  const [chatMessages, setChatMessages] = useRecoilState<SocketEvent[]>(chatMessagesAtom);
+  const setChatMessages = useSetRecoilState<SocketEvent[]>(chatMessagesAtom);
   const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
   const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
@@ -209,7 +213,7 @@ export const ClientConfigStore: FC = () => {
       setHasLoadedConfig(true);
     } catch (error) {
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
-      console.error(`ClientConfigService -> getConfig() ERROR: \n${error}`);
+      console.error(`ClientConfigService -> getConfig() ERROR: \n`, error);
     }
   };
 
@@ -228,7 +232,7 @@ export const ClientConfigStore: FC = () => {
     } catch (error) {
       sendEvent([AppStateEvent.Fail]);
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
-      console.error(`serverStatusState -> getStatus() ERROR: \n${error}`);
+      console.error(`serverStatusState -> getStatus() ERROR: \n`, error);
     }
   };
 
@@ -236,6 +240,7 @@ export const ClientConfigStore: FC = () => {
     const savedAccessToken = getLocalStorage(ACCESS_TOKEN_KEY);
     if (savedAccessToken) {
       setAccessToken(savedAccessToken);
+
       return;
     }
 
@@ -263,6 +268,7 @@ export const ClientConfigStore: FC = () => {
   const resetAndReAuth = () => {
     setLocalStorage(ACCESS_TOKEN_KEY, '');
     setAccessToken(null);
+    ws?.shutdown();
     handleUserRegistration();
   };
 
@@ -277,6 +283,14 @@ export const ClientConfigStore: FC = () => {
     }
   };
 
+  const handleSocketDisconnect = () => {
+    hasWebsocketDisconnected = true;
+  };
+
+  const handleSocketConnected = () => {
+    hasWebsocketDisconnected = false;
+  };
+
   const handleMessage = (message: SocketEvent) => {
     switch (message.type) {
       case MessageType.ERROR_NEEDS_REGISTRATION:
@@ -288,10 +302,14 @@ export const ClientConfigStore: FC = () => {
           setChatAuthenticated,
           setCurrentUser,
         );
-        if (!hasBeenModeratorNotified) {
-          setChatMessages(currentState => [...currentState, message as ChatEvent]);
-          hasBeenModeratorNotified = true;
+        if (message as ChatEvent) {
+          const m = new ChatEvent(message);
+          if (!hasBeenModeratorNotified && m.user?.isModerator()) {
+            setChatMessages(currentState => [...currentState, message as ChatEvent]);
+            hasBeenModeratorNotified = true;
+          }
         }
+
         break;
       case MessageType.CHAT:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
@@ -320,6 +338,10 @@ export const ClientConfigStore: FC = () => {
       case MessageType.VISIBILITY_UPDATE:
         handleMessageVisibilityChange(message as MessageVisibilityEvent);
         break;
+      case MessageType.ERROR_USER_DISABLED:
+        console.log('User has been disabled');
+        sendEvent([AppStateEvent.ChatUserDisabled]);
+        break;
       default:
         console.error('Unknown socket message type: ', message.type);
     }
@@ -328,7 +350,9 @@ export const ClientConfigStore: FC = () => {
   const getChatHistory = async () => {
     try {
       const messages = await ChatService.getChatHistory(accessToken);
-      setChatMessages(currentState => [...currentState, ...messages]);
+      if (messages) {
+        setChatMessages(currentState => [...currentState, ...messages]);
+      }
     } catch (error) {
       console.error(`ChatService -> getChatHistory() ERROR: \n${error}`);
     }
@@ -336,6 +360,12 @@ export const ClientConfigStore: FC = () => {
 
   const startChat = async () => {
     try {
+      if (ws) {
+        ws?.shutdown();
+        setWebsocketService(null);
+        ws = null;
+      }
+
       const { socketHostOverride } = clientConfig;
 
       // Get a copy of the browser location without #fragments.
@@ -346,13 +376,14 @@ export const ClientConfigStore: FC = () => {
 
       ws = new WebsocketService(accessToken, '/ws', host);
       ws.handleMessage = handleMessage;
+      ws.socketDisconnected = handleSocketDisconnect;
+      ws.socketConnected = handleSocketConnected;
       setWebsocketService(ws);
     } catch (error) {
       console.error(`ChatService -> startChat() ERROR: \n${error}`);
+      sendEvent([AppStateEvent.ChatUserDisabled]);
     }
   };
-
-  const handleChatNotification = () => {};
 
   // Read the config and status on initial load from a JSON string that lives
   // in window. This is placed there server-side and allows for fast initial
@@ -380,15 +411,24 @@ export const ClientConfigStore: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!clientConfig.chatDisabled && accessToken && hasLoadedConfig) {
-      startChat();
+    if (clientConfig.chatDisabled) {
+      return;
     }
-  }, [hasLoadedConfig, accessToken]);
 
-  // Notify about chat activity when backgrounded.
-  useEffect(() => {
-    handleChatNotification();
-  }, [chatMessages]);
+    if (!accessToken) {
+      return;
+    }
+
+    if (!hasLoadedConfig) {
+      return;
+    }
+
+    if (ws) {
+      return;
+    }
+
+    startChat();
+  }, [hasLoadedConfig, accessToken]);
 
   useEffect(() => {
     updateClientConfig();

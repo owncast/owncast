@@ -20,9 +20,9 @@ const { Title } = Typography;
 
 const SLIDER_MARKS = {
   0: 'Lowest',
-  1: '',
-  2: '',
-  3: '',
+  1: ' ',
+  2: ' ',
+  3: ' ',
   4: 'Highest',
 };
 

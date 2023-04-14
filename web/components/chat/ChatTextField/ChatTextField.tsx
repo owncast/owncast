@@ -1,7 +1,7 @@
 import { Popover } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Node, Path } from 'slate';
+import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
@@ -122,11 +122,12 @@ const getCharacterCount = node => {
 
 export type ChatTextFieldProps = {
   defaultText?: string;
+  enabled: boolean;
 };
 
 const characterLimit = 300;
 
-export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
+export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
@@ -169,31 +170,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
   const insertImage = (url, name) => {
     if (!url) return;
 
-    const { selection } = editor;
     const image = createImageNode(name, url, name);
 
-    Transforms.insertNodes(editor, image, { select: true });
-
-    if (selection) {
-      const [parentNode, parentPath] = Editor.parent(editor, selection.focus?.path);
-
-      if (editor.isVoid(parentNode) || Node.string(parentNode).length) {
-        // Insert the new image node after the void node or a node with content
-        Transforms.insertNodes(editor, image, {
-          at: Path.next(parentPath),
-          select: true,
-        });
-      } else {
-        // If the node is empty, replace it instead
-        // Transforms.removeNodes(editor, { at: parentPath });
-        Transforms.insertNodes(editor, image, { at: parentPath, select: true });
-        Editor.normalize(editor, { force: true });
-      }
-    } else {
-      // Insert the new image node at the bottom of the Editor when selection
-      // is falsey
-      Transforms.insertNodes(editor, image, { select: true });
-    }
+    Transforms.insertNodes(editor, image);
+    Editor.normalize(editor, { force: true });
   };
 
   // Native emoji
@@ -262,8 +242,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
             className="chat-text-input"
             onKeyDown={onKeyDown}
             onPaste={onPaste}
+            disabled={!enabled}
+            readOnly={!enabled}
             renderElement={renderElement}
-            placeholder="Send a message to chat"
+            placeholder={enabled ? 'Send a message to chat' : 'Chat is currently unavailable.'}
             style={{ width: '100%' }}
             role="textbox"
             aria-label="Chat text input"
@@ -283,24 +265,26 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText }) => {
           />
         </Slate>
 
-        <div style={{ display: 'flex', paddingLeft: '5px' }}>
-          <button
-            type="button"
-            className={styles.emojiButton}
-            title="Emoji picker button"
-            onClick={() => setShowEmojis(!showEmojis)}
-          >
-            <SmileOutlined />
-          </button>
-          <button
-            type="button"
-            className={styles.sendButton}
-            title="Send message Button"
-            onClick={sendMessage}
-          >
-            <SendOutlined />
-          </button>
-        </div>
+        {enabled && (
+          <div style={{ display: 'flex', paddingLeft: '5px' }}>
+            <button
+              type="button"
+              className={styles.emojiButton}
+              title="Emoji picker button"
+              onClick={() => setShowEmojis(!showEmojis)}
+            >
+              <SmileOutlined />
+            </button>
+            <button
+              type="button"
+              className={styles.sendButton}
+              title="Send message Button"
+              onClick={sendMessage}
+            >
+              <SendOutlined />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

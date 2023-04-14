@@ -54,7 +54,7 @@ export default function EditInstanceDetails() {
 
   const showStreamKeyChangeMessage = () => {
     setMessage(
-      'Changing your stream key will log you out of the admin and block you from streaming until you change the key in your broadcasting software.',
+      'Changing your password will log you out of the admin. You may want to refresh the page to force yourself to log back in if not prompted.',
     );
   };
 

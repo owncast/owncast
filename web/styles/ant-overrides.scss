@@ -137,7 +137,8 @@ DROPDOWN
   background-color: var(--theme-color-components-form-field-background);
 }
 
-.ant-input {
+.ant-input,
+.ant-input-number-input {
   background-color: var(--theme-color-components-form-field-background);
   color: var(--theme-color-components-form-field-text);
   &::placeholder {
@@ -216,6 +217,25 @@ th {
 
 .ant-popover {
   z-index: 800; // Lower the z-index so it renders under modals.
+}
+
+/* ------------------------- //
+ * SIDER MENUITEM
+// ------------------------- */
+.ant-menu-light .ant-menu-submenu-title:active {
+  background: var(--theme-color-palette-12);
+}
+
+.ant-menu-light .ant-menu-submenu-title:hover {
+  color: var(--theme-color-palette-12);
+}
+
+.ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-arrow {
+  color: var(--theme-color-palette-12);
+}
+
+.ant-menu-light .ant-menu-item:hover {
+  color: var(--theme-color-palette-12);
 }
 
 .line-chart-container{

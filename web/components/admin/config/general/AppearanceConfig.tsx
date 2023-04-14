@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useCallback, useEffect, useState } from 'react';
 
 import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -23,6 +23,11 @@ interface AppearanceVariable {
   value: string;
   description: string;
 }
+
+type ColorCollectionProps = {
+  variables: { name; description; value }[];
+  updateColor: (variable: string, color: string, description: string) => void;
+};
 
 const chatColorVariables = [
   { name: 'theme-color-users-0', description: '' },
@@ -70,18 +75,18 @@ const allAvailableValues = [...componentColorVariables, ...chatColorVariables, .
 );
 
 // eslint-disable-next-line react/function-component-definition
-function ColorPicker({
-  value,
-  name,
-  description,
-  onChange,
-}: {
-  value: string;
-  name: string;
-  description: string;
-  onChange: (name: string, value: string, description: string) => void;
-}) {
-  return (
+const ColorPicker = React.memo(
+  ({
+    value,
+    name,
+    description,
+    onChange,
+  }: {
+    value: string;
+    name: string;
+    description: string;
+    onChange: (name: string, value: string, description: string) => void;
+  }) => (
     <Col span={3} key={name}>
       <input
         type="color"
@@ -94,8 +99,26 @@ function ColorPicker({
       />
       <div style={{ padding: '2px' }}>{description}</div>
     </Col>
-  );
-}
+  ),
+);
+
+const ColorCollection: FC<ColorCollectionProps> = ({ variables, updateColor }) => {
+  const cc = variables.map(colorVar => {
+    const { name, description, value } = colorVar;
+
+    return (
+      <ColorPicker
+        key={name}
+        value={value}
+        name={name}
+        description={description}
+        onChange={updateColor}
+      />
+    );
+  });
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{cc}</>;
+};
 
 // eslint-disable-next-line react/function-component-definition
 export default function Appearance() {
@@ -144,12 +167,12 @@ export default function Appearance() {
     setCustomValues(c);
   }, [appearanceVariables]);
 
-  const updateColor = (variable: string, color: string, description: string) => {
-    setCustomValues({
-      ...customValues,
+  const updateColor = useCallback((variable: string, color: string, description: string) => {
+    setCustomValues(oldCustomValues => ({
+      ...oldCustomValues,
       [variable]: { value: color, description },
-    });
-  };
+    }));
+  }, []);
 
   const reset = async () => {
     await postConfigUpdateToAPI({
@@ -158,7 +181,7 @@ export default function Appearance() {
       onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
-        setCustomValues(null);
+        setCustomValues({});
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
@@ -193,97 +216,94 @@ export default function Appearance() {
     updateColor(variableName, `${value.toString()}px`, '');
   };
 
-  type ColorCollectionProps = {
-    variables: { name; description }[];
-  };
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const ColorCollection: FC<ColorCollectionProps> = ({ variables }) => {
-    const cc = variables.map(colorVar => {
-      const source = customValues?.[colorVar.name] ? customValues : defaultValues;
-      const { name, description } = colorVar;
-      const { value } = source[name];
-
-      return (
-        <ColorPicker
-          key={name}
-          value={value}
-          name={name}
-          description={description}
-          onChange={updateColor}
-        />
-      );
-    });
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    return <>{cc}</>;
-  };
-
   if (!defaultValues) {
     return <div>Loading...</div>;
   }
 
+  const transformToColorMap = variables =>
+    variables.map(colorVar => {
+      const source = customValues?.[colorVar.name] ? customValues : defaultValues;
+      const { name, description } = colorVar;
+      const { value } = source[name];
+      return { name, description, value };
+    });
+
   return (
-    <Space direction="vertical">
-      <Title>Customize Appearance</Title>
-      <Paragraph>The following colors are used across the user interface.</Paragraph>
-      <div>
-        <Collapse defaultActiveKey={['1']}>
-          <Panel header={<Title level={3}>Section Colors</Title>} key="1">
-            <p>
-              Certain sections of the interface can be customized by selecting new colors for them.
-            </p>
-            <Row gutter={[16, 16]}>
-              <ColorCollection variables={componentColorVariables} />
-            </Row>
-          </Panel>
-          <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
-            <Row gutter={[16, 16]}>
-              <ColorCollection variables={chatColorVariables} />
-            </Row>
-          </Panel>
-
-          <Panel header={<Title level={3}>Other Settings</Title>} key="4">
-            How rounded should corners be?
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Slider
-                  min={0}
-                  max={20}
-                  tooltip={{ formatter: null }}
-                  onChange={v => {
-                    onBorderRadiusChange(v);
-                  }}
-                  value={Number(
-                    defaultValues['theme-rounded-corners']?.value?.replace('px', '') || 0,
-                  )}
+    <>
+      <Space direction="vertical">
+        <Title>Customize Appearance</Title>
+        <Paragraph>The following colors are used across the user interface.</Paragraph>
+        <div>
+          <Collapse defaultActiveKey={['1']}>
+            <Panel header={<Title level={3}>Section Colors</Title>} key="1">
+              <p>
+                Certain sections of the interface can be customized by selecting new colors for
+                them.
+              </p>
+              <Row gutter={[16, 16]}>
+                <ColorCollection
+                  variables={transformToColorMap(componentColorVariables)}
+                  updateColor={updateColor}
                 />
-              </Col>
-              <Col span={4}>
-                <div
-                  style={{
-                    width: '100px',
-                    height: '30px',
-                    borderRadius: `${defaultValues['theme-rounded-corners']?.value}`,
-                    backgroundColor: 'var(--theme-color-palette-7)',
-                  }}
+              </Row>
+            </Panel>
+            <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
+              <Row gutter={[16, 16]}>
+                <ColorCollection
+                  variables={transformToColorMap(chatColorVariables)}
+                  updateColor={updateColor}
                 />
-              </Col>
-            </Row>
-          </Panel>
-        </Collapse>
-      </div>
+              </Row>
+            </Panel>
+            <Panel header={<Title level={3}>Other Settings</Title>} key="4">
+              How rounded should corners be?
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Slider
+                    min={0}
+                    max={20}
+                    tooltip={{ formatter: null }}
+                    onChange={v => {
+                      onBorderRadiusChange(v);
+                    }}
+                    value={Number(
+                      customValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
+                        defaultValues?.['theme-rounded-corners']?.value?.replace('px', '') ??
+                        0,
+                    )}
+                  />
+                </Col>
+                <Col span={4}>
+                  <div
+                    style={{
+                      width: '100px',
+                      height: '30px',
+                      borderRadius: `${
+                        customValues?.['theme-rounded-corners']?.value ??
+                        defaultValues?.['theme-rounded-corners']?.value
+                      }`,
+                      backgroundColor: 'var(--theme-color-palette-7)',
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Panel>
+          </Collapse>
+        </div>
 
-      <Space direction="horizontal">
-        <Button type="primary" onClick={save}>
-          Save Colors
-        </Button>
-        <Button type="ghost" onClick={reset}>
-          Reset to Defaults
-        </Button>
+        <Space direction="horizontal">
+          <Button type="primary" onClick={save}>
+            Save Colors
+          </Button>
+          <Button type="ghost" onClick={reset}>
+            Reset to Defaults
+          </Button>
+        </Space>
+        <FormStatusIndicator status={submitStatus} />
       </Space>
-      <FormStatusIndicator status={submitStatus} />
       <div className="form-module page-content-module">
         <EditCustomStyles />
       </div>
-    </Space>
+    </>
   );
 }

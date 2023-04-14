@@ -1,7 +1,6 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
-import { TEXTFIELD_TYPE_URL } from '../components/admin/TextField';
 import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
 
 export const TEXT_MAXLENGTH = 255;
@@ -48,6 +47,8 @@ export const API_FEDERATION_USERNAME = '/federation/username';
 export const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
 export const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
 export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
+
+const TEXTFIELD_TYPE_URL = 'url';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;
@@ -122,6 +123,7 @@ export const TEXTFIELD_PROPS_ADMIN_PASSWORD = {
   label: 'Admin Password',
   tip: 'Save this password somewhere safe, you will need it to login to the admin dashboard!',
   required: true,
+  hasComplexityRequirements: true,
 };
 export const TEXTFIELD_PROPS_FFMPEG = {
   apiPath: API_FFMPEG,
@@ -131,6 +133,7 @@ export const TEXTFIELD_PROPS_FFMPEG = {
   label: 'FFmpeg Path',
   tip: 'Absolute file path of the FFMPEG application on your server',
   required: true,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_WEB_PORT = {
   apiPath: API_WEB_PORT,
@@ -140,6 +143,7 @@ export const TEXTFIELD_PROPS_WEB_PORT = {
   label: 'Owncast port',
   tip: 'What port is your Owncast web server listening? Default is 8080',
   required: true,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_RTMP_PORT = {
   apiPath: API_RTMP_PORT,
@@ -149,6 +153,7 @@ export const TEXTFIELD_PROPS_RTMP_PORT = {
   label: 'RTMP port',
   tip: 'What port should accept inbound broadcasts? Default is 1935',
   required: true,
+  hasComplexityRequirements: false,
 };
 export const TEXTFIELD_PROPS_INSTANCE_URL = {
   apiPath: API_INSTANCE_URL,
@@ -189,7 +194,7 @@ export const FIELD_PROPS_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'NSFW?',
-  tip: "Turn this ON if you plan to steam explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
+  tip: "Turn this ON if you plan to stream explicit or adult content. Please respectfully set this flag so unexpected eyes won't accidentally see it in the Directory.",
 };
 
 export const FIELD_PROPS_YP = {
@@ -203,16 +208,16 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
   apiPath: API_HIDE_VIEWER_COUNT,
   configPath: '',
   label: 'Hide viewer count',
-  tip: 'Turn this ON to hide the viewer count the web page.',
+  tip: 'Turn this ON to hide the viewer count on the web page.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
   framerate: 24,
   videoPassthrough: false,
-  videoBitrate: 800,
+  videoBitrate: 1200,
   audioPassthrough: true, // if false, then CAN set audiobitrate
   audioBitrate: 0,
-  cpuUsageLevel: 3,
+  cpuUsageLevel: 2,
   scaledHeight: null,
   scaledWidth: null,
   name: '',
@@ -317,7 +322,7 @@ export const FIELD_PROPS_FEDERATION_NSFW = {
   apiPath: API_NSFW_SWITCH,
   configPath: 'instanceDetails',
   label: 'Potentially NSFW',
-  tip: 'Turn this ON if you plan to steam explicit or adult content so previews of your stream can be marked as potentially sensitive.',
+  tip: 'Turn this ON if you plan to stream explicit or adult content so previews of your stream can be marked as potentially sensitive.',
 };
 
 export const FIELD_PROPS_FEDERATION_BLOCKED_DOMAINS = {
@@ -348,7 +353,7 @@ export const VIDEO_VARIANT_SETTING_DEFAULTS = {
     fieldName: 'scaledWidth',
     label: 'Resized Width',
     maxLength: 4,
-    placeholder: '1080',
+    placeholder: '1280',
     tip: "Optionally resize this content's width.",
   },
   scaledHeight: {
@@ -428,16 +433,16 @@ export const ENCODER_PRESET_SLIDER_MARKS = {
     style: {
       marginLeft: '15px',
     },
-    label: <p>lowest</p>,
+    label: 'lowest',
   },
-  1: '',
-  2: '',
-  3: '',
+  1: ' ',
+  2: ' ',
+  3: ' ',
   4: {
     style: {
       marginLeft: '-15px',
     },
-    label: <p>highest</p>,
+    label: 'highest',
   },
 };
 export const ENCODER_PRESET_TOOLTIPS = {
@@ -558,3 +563,26 @@ export const BROWSER_PUSH_CONFIG_FIELDS = {
     placeholder: `I've gone live! Come watch!`,
   },
 };
+
+export const PASSWORD_COMPLEXITY_RULES = [
+  { min: 8, message: '- minimum 8 characters' },
+  { max: 192, message: '- maximum 192 characters' },
+  {
+    pattern: /^(?=.*[a-z])/,
+    message: '- at least one lowercase letter',
+  },
+  {
+    pattern: /^(?=.*[A-Z])/,
+    message: '- at least one uppercase letter',
+  },
+  {
+    pattern: /\d/,
+    message: '- at least one digit',
+  },
+  {
+    pattern: /^(?=.*?[#?!@$%^&*-])/,
+    message: '- at least one special character: !@#$%^&*',
+  },
+];
+
+export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;

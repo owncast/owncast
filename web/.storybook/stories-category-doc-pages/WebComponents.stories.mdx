@@ -68,6 +68,32 @@ But why _this_ style?
 
 See the discussion on the PR that introduced this pattern: [#2082](https://github.com/owncast/owncast/pull/2082).
 
+## Error Boundaries
+
+Components that have substantial state and internal functionality should be wrapped in an [Error Boundary](https://reactjs.org/docs/error-boundaries.html). This allows for catching unexpected errors and displaying a fallback UI.
+
+Components that are stateless views are unlikely to throw exceptions and don't require an error boundary.
+
+The `ComponentError` component is a pre-built error state that can be used to display an error message and a bug reporting button.
+
+### Example
+
+```tsx
+import { ErrorBoundary } from 'react-error-boundary';
+
+<ErrorBoundary
+  fallbackRender={({ error, resetErrorBoundary }) => (
+    <ComponentError
+      componentName="DesktopContent"
+      message={error.message}
+      retryFunction={resetErrorBoundary}
+    />
+  )}
+>
+  <YourComponent />
+</ErrorBoundary>
+```
+
 ## Storybook
 
 We use [Storybook](https://storybook.js.org/) to create a component library where we can see and interact with each component.

@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { Table, Space, Button, Typography, Alert, Input, Form } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { Table, Space, Button, Typography, Alert, Input, Form, message } from 'antd';
 import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 
 import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
+import { PASSWORD_COMPLEXITY_RULES, REGEX_PASSWORD } from '../../../../utils/config-constants';
 
 const { Paragraph } = Typography;
-const { Item } = Form;
 
 // Lazy loaded components
 
@@ -54,6 +54,19 @@ const generateRndKey = () => {
 };
 
 const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setError }) => {
+  const [hasChanged, setHasChanged] = useState(true);
+  const [form] = Form.useForm();
+  const { Item } = Form;
+
+  // Password Complexity rules
+  const passwordComplexityRules = [];
+
+  useEffect(() => {
+    PASSWORD_COMPLEXITY_RULES.forEach(element => {
+      passwordComplexityRules.push(element);
+    });
+  }, []);
+
   const handleAddKey = (newkey: any) => {
     const updatedKeys = [...streamKeys, newkey];
 
@@ -67,19 +80,51 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
     setShowAddKeyForm(false);
   };
 
+  const handleInputChange = (event: any) => {
+    const val = event.target.value;
+    if (REGEX_PASSWORD.test(val)) {
+      setHasChanged(true);
+    } else {
+      setHasChanged(false);
+    }
+  };
+
   // Default auto-generated key
   const defaultKey = generateRndKey();
 
   return (
-    <Form layout="inline" autoComplete="off" onFinish={handleAddKey}>
-      <Item label="Key" name="key" tooltip="The key you provide your broadcasting software">
-        <Input placeholder="def456" defaultValue={defaultKey} />
+    <Form
+      layout="horizontal"
+      autoComplete="off"
+      onFinish={handleAddKey}
+      form={form}
+      style={{ display: 'flex', flexDirection: 'row' }}
+      initialValues={{ key: defaultKey, comment: 'My new key' }}
+    >
+      <Item
+        style={{ width: '60%', marginRight: '5px' }}
+        label="Key"
+        name="key"
+        tooltip={
+          <p>
+            The key you provide your broadcasting software. Please note that the key must be a
+            minimum of eight characters and must include at least one uppercase letter, at least one
+            lowercase letter, at least one special character, and at least one number.
+          </p>
+        }
+        rules={PASSWORD_COMPLEXITY_RULES}
+      >
+        <Input placeholder="your key" onChange={handleInputChange} />
       </Item>
-      <Item label="Comment" name="comment" tooltip="For remembering why you added this key">
+      <Item
+        style={{ width: '60%', marginRight: '5px' }}
+        label="Comment"
+        name="comment"
+        tooltip="For remembering why you added this key"
+      >
         <Input placeholder="My OBS Key" />
       </Item>
-
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit" disabled={!hasChanged}>
         Add
       </Button>
     </Form>
@@ -91,6 +136,12 @@ const AddKeyButton = ({ setShowAddKeyForm }) => (
     <PlusOutlined />
   </Button>
 );
+const copyText = (text: string) => {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => message.success('Copied to clipboard'))
+    .catch(() => message.error('Failed to copy to clipboard'));
+};
 
 const StreamKeys = () => {
   const serverStatusData = useContext(ServerStatusContext);
@@ -123,7 +174,14 @@ const StreamKeys = () => {
       key: 'key',
       render: text => (
         <Space direction="horizontal">
-          <Paragraph copyable>{showKeyMap[text] ? text : '**********'}</Paragraph>
+          <Paragraph
+            copyable={{
+              text: showKeyMap[text] ? text : '**********',
+              onCopy: () => copyText(text),
+            }}
+          >
+            {showKeyMap[text] ? text : '**********'}
+          </Paragraph>
 
           <Button
             type="link"

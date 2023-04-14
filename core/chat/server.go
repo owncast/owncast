@@ -91,9 +91,9 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 		ConnectedAt: time.Now(),
 	}
 
-	// Do not send user re-joined broadcast message if they've been active within 5 minutes.
+	// Do not send user re-joined broadcast message if they've been active within 10 minutes.
 	shouldSendJoinedMessages := data.GetChatJoinMessagesEnabled()
-	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*5 {
+	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*10 {
 		shouldSendJoinedMessages = false
 	}
 
@@ -165,13 +165,8 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	// Check if this client's IP address is banned. If so send a rejection.
 	if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
 		log.Debugln("Client ip address has been blocked. Rejecting.")
-		event := events.UserDisabledEvent{}
-		event.SetDefaults()
 
 		w.WriteHeader(http.StatusForbidden)
-		// Send this disabled event specifically to this single connected client
-		// to let them know they've been banned.
-		// _server.Send(event.GetBroadcastPayload(), client)
 		return
 	} else if err != nil {
 		log.Errorln("error determining if IP address is blocked: ", err)

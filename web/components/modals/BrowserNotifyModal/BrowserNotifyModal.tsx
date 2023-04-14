@@ -1,6 +1,7 @@
 import { Row, Spin, Typography, Button } from 'antd';
 import React, { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import { ErrorBoundary } from 'react-error-boundary';
 import { accessTokenAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
 import {
   registerWebPushNotifications,
@@ -8,6 +9,7 @@ import {
 } from '../../../services/notifications-service';
 import styles from './BrowserNotifyModal.module.scss';
 import isPushNotificationSupported from '../../../utils/browserPushNotifications';
+import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 const { Title } = Typography;
 
@@ -109,14 +111,25 @@ export const BrowserNotifyModal = () => {
   }
 
   return (
-    <Spin spinning={browserPushPermissionsPending}>
-      <Row className={styles.description}>
-        Get notified right in the browser each time this stream goes live.
-        <a href="https://owncast.online/docs/notifications/#browser-notifications">Learn more</a>
-        &nbsp; about Owncast browser notifications.
-      </Row>
-      <Row>{error}</Row>
-      <PermissionPopupPreview start={() => startBrowserPushRegistration()} />
-    </Spin>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error: e, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="BrowserNotifyModal"
+          message={e.message}
+          retryFunction={resetErrorBoundary}
+        />
+      )}
+    >
+      <Spin spinning={browserPushPermissionsPending}>
+        <Row className={styles.description}>
+          Get notified right in the browser each time this stream goes live.
+          <a href="https://owncast.online/docs/notifications/#browser-notifications">Learn more</a>
+          &nbsp; about Owncast browser notifications.
+        </Row>
+        <Row>{error}</Row>
+        <PermissionPopupPreview start={() => startBrowserPushRegistration()} />
+      </Spin>
+    </ErrorBoundary>
   );
 };

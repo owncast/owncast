@@ -18,6 +18,7 @@ import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../../utils/config-constants';
 import { ComposeFederatedPost } from './ComposeFederatedPost';
 import { UpdateArgs } from '../../types/config-section';
+import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 
 // Lazy loaded components
 
@@ -61,13 +62,17 @@ const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
   ssr: false,
 });
 
+const FediverseOutlined = dynamic(() => import('../../assets/images/icons/fediverse.svg'), {
+  ssr: false,
+});
+
 export type MainLayoutProps = {
   children: ReactNode;
 };
 
 export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const context = useContext(ServerStatusContext);
-  const { serverConfig, online, broadcaster, versionNumber } = context || {};
+  const { serverConfig, online, broadcaster, versionNumber, error: serverError } = context || {};
   const { instanceDetails, chatDisabled, federation } = serverConfig;
   const { enabled: federationEnabled } = federation;
 
@@ -142,85 +147,85 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const integrationsMenu = [
     {
       label: <Link href="/admin/webhooks">Webhooks</Link>,
-      key: 'webhooks',
+      key: '/admin/webhooks',
     },
     {
       label: <Link href="/admin/access-tokens">Access Tokens</Link>,
-      key: 'access-tokens',
+      key: '/admin/access-tokens',
     },
     {
       label: <Link href="/admin/actions">External Actions</Link>,
-      key: 'actions',
+      key: '/admin/actions',
     },
   ];
 
   const chatMenu = [
     {
       label: <Link href="/admin/chat/messages">Messages</Link>,
-      key: 'messages',
+      key: '/admin/chat/messages',
     },
     {
       label: <Link href="/admin/chat/users">Users</Link>,
-      key: 'chat-users',
+      key: '/admin/chat/users',
     },
     {
       label: <Link href="/admin/chat/emojis">Emojis</Link>,
-      key: 'emojis',
+      key: '/admin/chat/emojis',
     },
   ];
 
   const utilitiesMenu = [
     {
       label: <Link href="/admin/hardware-info">Hardware</Link>,
-      key: 'hardware-info',
+      key: '/admin/hardware-info',
     },
     {
       label: <Link href="/admin/stream-health">Stream Health</Link>,
-      key: 'stream-health',
+      key: '/admin/stream-health',
     },
     {
       label: <Link href="/admin/logs">Logs</Link>,
-      key: 'logs',
+      key: '/admin/logs',
     },
     federationEnabled && {
       label: <Link href="/admin/federation/actions">Social Actions</Link>,
-      key: 'federation-activities',
+      key: '/admin/federation/actions',
     },
   ];
 
   const configurationMenu = [
     {
       label: <Link href="/admin/config/general">General</Link>,
-      key: 'config-public-details',
+      key: '/admin/config/general',
     },
     {
       label: <Link href="/admin/config/server">Server Setup</Link>,
-      key: 'config-server',
+      key: '/admin/config/server',
     },
     {
       label: <Link href="/admin/config-video">Video</Link>,
-      key: 'config-video',
+      key: '/admin/config-video',
     },
     {
       label: <Link href="/admin/config-chat">Chat</Link>,
-      key: 'config-chat',
+      key: '/admin/config-chat',
     },
     {
       label: <Link href="/admin/config-federation">Social</Link>,
-      key: 'config-federation',
+      key: '/admin/config-federation',
     },
     {
       label: <Link href="/admin/config-notify">Notifications</Link>,
-      key: 'config-notify',
+      key: '/admin/config-notify',
     },
   ];
 
   const menuItems = [
-    { label: <Link href="/admin">Home</Link>, icon: <HomeOutlined />, key: 'home' },
+    { label: <Link href="/admin">Home</Link>, icon: <HomeOutlined />, key: '/admin' },
     {
       label: <Link href="/admin/viewer-info">Viewers</Link>,
       icon: <LineChartOutlined />,
-      key: 'viewer-info',
+      key: '/admin/viewer-info',
     },
     !chatDisabled && {
       label: <span>Chat &amp; Users</span>,
@@ -229,15 +234,18 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: 'chat-and-users',
     },
     federationEnabled && {
-      key: 'fediverse-followers',
+      key: '/admin/federation/followers',
       label: <Link href="/admin/federation/followers">Followers</Link>,
       icon: (
-        <img
-          alt="fediverse icon"
-          src="/img/fediverse-black.png"
-          width="17rem"
-          style={{ opacity: 0.6, position: 'relative', top: '-1px' }}
-        />
+        <span
+          role="img"
+          aria-label="message"
+          className="anticon anticon-message ant-menu-item-icon"
+        >
+          {/* Wrapping the icon in span for consistency with other icons used
+            directly from antd */}
+          <FediverseOutlined />
+        </span>
       ),
     },
     {
@@ -259,21 +267,40 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       children: integrationsMenu,
     },
     upgradeVersion && {
-      key: 'upgrade',
+      key: '/admin/upgrade',
       label: <Link href="/admin/upgrade">{upgradeMessage}</Link>,
     },
     {
-      key: 'help',
+      key: '/admin/help',
       label: <Link href="/admin/help">Help</Link>,
       icon: <QuestionCircleOutlined />,
     },
   ];
+
+  const [openKeys, setOpenKeys] = useState(openMenuItems);
+
+  const onOpenChange = (keys: string[]) => {
+    setOpenKeys(keys);
+  };
+
+  useEffect(() => {
+    menuItems.forEach(item =>
+      item?.children?.forEach(child => {
+        if (child?.key === route) setOpenKeys([...openMenuItems, item.key]);
+      }),
+    );
+  }, []);
+
   return (
-    <Layout className={appClass}>
+    <Layout id="admin-page" className={appClass}>
       <Head>
         <title>Owncast Admin</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png" />
       </Head>
+
+      {serverError?.type === 'OWNCAST_SERVICE_UNREACHABLE' && (
+        <FatalErrorStateModal title="Server Unreachable" message={serverError.msg} />
+      )}
 
       <Sider width={240} className="side-nav">
         <h1 className="owncast-title">
@@ -283,11 +310,12 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           <span className="title-label">Owncast Admin</span>
         </h1>
         <Menu
-          defaultSelectedKeys={[route.substring(1) || 'home']}
-          defaultOpenKeys={openMenuItems}
           mode="inline"
           className="menu-container"
           items={menuItems}
+          selectedKeys={[route || '/admin']}
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
         />
       </Sider>
 

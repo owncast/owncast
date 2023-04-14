@@ -3,9 +3,11 @@ import { FC, useEffect, useState } from 'react';
 import format from 'date-fns/format';
 import { ColumnsType } from 'antd/lib/table';
 import dynamic from 'next/dynamic';
+import { ErrorBoundary } from 'react-error-boundary';
 import ChatModeration from '../../../services/moderation-service';
 import styles from './ChatModerationDetailsModal.module.scss';
 import { formatUAstring } from '../../../utils/format';
+import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 const { Panel } = Collapse;
 
@@ -147,40 +149,50 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
       ),
     },
   ];
-
   return (
-    <Spin spinning={loading}>
-      <UserColorBlock color={displayColor} />
-      {scopes.map(scope => (
-        <Tag key={scope}>{scope}</Tag>
-      ))}
-      {authenticated && <Tag>Authenticated</Tag>}
-      {isBot && <Tag>Bot</Tag>}
-      <ValueRow label="Messages Sent Across Clients" value={totalMessagesSent.toString()} />
-      <ValueRow label="User Created" value={createdAtDate} />
-      <ValueRow label="Known As" value={previousNames.join(',')} />
-      <Collapse accordion>
-        <Panel header="Currently Connected Clients" key="connected-clients">
-          <Collapse accordion>
-            {connectedClients.map(client => (
-              <Panel header={formatUAstring(client.userAgent)} key={client.id}>
-                <ConnectedClient client={client} />
-              </Panel>
-            ))}
-          </Collapse>
-        </Panel>
+    <ErrorBoundary
+      // eslint-disable-next-line react/no-unstable-nested-components
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ComponentError
+          componentName="ChatModerationDetailsModal"
+          message={error.message}
+          retryFunction={resetErrorBoundary}
+        />
+      )}
+    >
+      <Spin spinning={loading}>
+        <UserColorBlock color={displayColor} />
+        {scopes?.map(scope => (
+          <Tag key={scope}>{scope}</Tag>
+        ))}
+        {authenticated && <Tag>Authenticated</Tag>}
+        {isBot && <Tag>Bot</Tag>}
+        <ValueRow label="Messages Sent Across Clients" value={totalMessagesSent.toString()} />
+        <ValueRow label="User Created" value={createdAtDate} />
+        <ValueRow label="Known As" value={previousNames.join(',')} />
         <Collapse accordion>
-          <Panel header="Recent Chat Messages" key="chat-messages">
-            <Table
-              size="small"
-              pagination={null}
-              columns={chatMessageColumns}
-              dataSource={messages}
-              rowKey="id"
-            />
+          <Panel header="Currently Connected Clients" key="connected-clients">
+            <Collapse accordion>
+              {connectedClients.map(client => (
+                <Panel header={formatUAstring(client.userAgent)} key={client.id}>
+                  <ConnectedClient client={client} />
+                </Panel>
+              ))}
+            </Collapse>
           </Panel>
+          <Collapse accordion>
+            <Panel header="Recent Chat Messages" key="chat-messages">
+              <Table
+                size="small"
+                pagination={null}
+                columns={chatMessageColumns}
+                dataSource={messages}
+                rowKey="id"
+              />
+            </Panel>
+          </Collapse>
         </Collapse>
-      </Collapse>
-    </Spin>
+      </Spin>
+    </ErrorBoundary>
   );
 };
