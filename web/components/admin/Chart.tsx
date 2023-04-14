@@ -71,7 +71,7 @@ export const Chart: FC<ChartProps> = ({
 }) => {
   const renderData = [];
 
-  const chartRef = useRef();
+  const chartRef = useRef(null);
   const downloadChart = () => {
     if(chartRef.current){
       let link = document.createElement('a');
@@ -128,12 +128,12 @@ export const Chart: FC<ChartProps> = ({
   return (
     <div className="line-chart-container">
       <Line
+        ref={chartRef}
         data={{ datasets: renderData }}
         options={options as ChartOptions<'line'>}
         height="70vh"
       />
       <Button onClick={downloadChart} type="default" icon={<DownloadOutlined />} className="download-btn" />
-
     </div>
   );
 };
