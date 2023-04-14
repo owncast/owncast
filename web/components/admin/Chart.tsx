@@ -126,7 +126,12 @@ export const Chart: FC<ChartProps> = ({
 
   return (
     <div className="line-chart-container">
-      <Line ref={chartRef} data={{ datasets: renderData }} options={options} height="70vh" />
+      <Line 
+      ref={chartRef}
+      data={{ datasets: renderData }} 
+      options={options as ChartOptions<'line'>}
+      height="70vh"
+      />
       <Button
         onClick={downloadChart}
         type="default"
