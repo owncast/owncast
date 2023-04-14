@@ -36,6 +36,10 @@ export default {
   },
 } satisfies ComponentMeta<typeof Main>;
 
+// mock the Websocket to prevent ani webhook calls from being made in storybook
+// @ts-ignore
+window.WebSocket = () => {};
+
 type StateInitializer = (mutableState: MutableSnapshot) => void;
 
 const composeStateInitializers =
