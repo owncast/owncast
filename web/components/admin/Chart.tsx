@@ -73,7 +73,7 @@ export const Chart: FC<ChartProps> = ({
   const chartRef = useRef(null);
   const downloadChart = () => {
     if (chartRef.current) {
-      let link = document.createElement('a');
+      const link = document.createElement('a');
       link.download = 'chart.png';
       link.href = chartRef.current.canvas.toDataURL();
       link.click();
