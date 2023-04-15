@@ -237,3 +237,12 @@ th {
 .ant-menu-light .ant-menu-item:hover {
   color: var(--theme-color-palette-12);
 }
+
+.line-chart-container{
+  position: relative;
+  .download-btn{
+    position:absolute;
+    top: 0.3rem;
+    right: 0.35rem;
+  }
+}
