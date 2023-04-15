@@ -7,6 +7,7 @@
  */
 import { FC, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import Head from 'next/head';
 import { serverStatusState, chatMessagesAtom } from '../stores/ClientConfigStore';
 
 export type TitleNotifierProps = {
@@ -18,12 +19,9 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
   const serverStatus = useRecoilValue(serverStatusState);
 
   const [backgrounded, setBackgrounded] = useState(false);
+  const [title, setTitle] = useState(name);
 
   const { online } = serverStatus;
-
-  const setTitle = (title: string) => {
-    document.title = title;
-  };
 
   const onBlur = () => {
     setBackgrounded(true);
@@ -47,6 +45,7 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
 
   useEffect(() => {
     listenForEvents();
+    setTitle(name);
 
     return () => {
       removeEvents();
@@ -71,7 +70,6 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
     if (!backgrounded) {
       return;
     }
-
     if (online) {
       setTitle(` 🟢 :: ${name}`);
     } else if (!online) {
@@ -79,5 +77,9 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
     }
   }, [online, name]);
 
-  return null;
+  return (
+    <Head>
+      <title>{title}</title>
+    </Head>
+  );
 };
