@@ -1,6 +1,7 @@
 import format from 'date-fns/format';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 
+import { DownloadOutlined } from '@ant-design/icons';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,6 +15,7 @@ import {
   ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { Button } from 'antd';
 
 ChartJS.register(
   CategoryScale,
@@ -68,6 +70,16 @@ export const Chart: FC<ChartProps> = ({
 }) => {
   const renderData = [];
 
+  const chartRef = useRef(null);
+  const downloadChart = () => {
+    if (chartRef.current) {
+      const link = document.createElement('a');
+      link.download = 'chart.png';
+      link.href = chartRef.current.canvas.toDataURL();
+      link.click();
+    }
+  };
+
   if (data && data.length > 0) {
     renderData.push({
       id: title,
@@ -115,9 +127,17 @@ export const Chart: FC<ChartProps> = ({
   return (
     <div className="line-chart-container">
       <Line
+        ref={chartRef}
         data={{ datasets: renderData }}
         options={options as ChartOptions<'line'>}
         height="70vh"
+      />
+      <Button
+        size="small"
+        onClick={downloadChart}
+        type="ghost"
+        icon={<DownloadOutlined />}
+        className="download-btn"
       />
     </div>
   );
