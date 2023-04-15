@@ -28,17 +28,7 @@ const { Panel } = Collapse;
 // we could probably add more detailed checks here
 // `currentValues` is what's currently in the global store and in the db
 function checkSaveable(formValues: any, currentValues: any) {
-  const {
-    endpoint,
-    accessKey,
-    secret,
-    bucket,
-    region,
-    enabled,
-    servingEndpoint,
-    acl,
-    forcePathStyle,
-  } = formValues;
+  const { endpoint, accessKey, secret, bucket, region, enabled, acl, forcePathStyle } = formValues;
   // if fields are filled out and different from what's in store, then return true
   if (enabled) {
     if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
@@ -49,8 +39,6 @@ function checkSaveable(formValues: any, currentValues: any) {
         secret !== currentValues.secret ||
         bucket !== currentValues.bucket ||
         region !== currentValues.region ||
-        (!currentValues.servingEndpoint && servingEndpoint !== '') ||
-        (!!currentValues.servingEndpoint && servingEndpoint !== currentValues.servingEndpoint) ||
         (!currentValues.acl && acl !== '') ||
         (!!currentValues.acl && acl !== currentValues.acl) ||
         forcePathStyle !== currentValues.forcePathStyle
@@ -84,7 +72,6 @@ export default function EditStorage() {
     endpoint = '',
     region = '',
     secret = '',
-    servingEndpoint = '',
     forcePathStyle = false,
   } = s3;
 
@@ -97,7 +84,6 @@ export default function EditStorage() {
       endpoint,
       region,
       secret,
-      servingEndpoint,
       forcePathStyle,
     });
     setShouldDisplayForm(enabled);
@@ -232,13 +218,7 @@ export default function EditStorage() {
                 onChange={handleFieldChange}
               />
             </div>
-            <div className="field-container">
-              <TextField
-                {...S3_TEXT_FIELDS_INFO.servingEndpoint}
-                value={formDataValues.servingEndpoint}
-                onChange={handleFieldChange}
-              />
-            </div>
+
             <div className="enable-switch">
               <ToggleSwitch
                 {...S3_TEXT_FIELDS_INFO.forcePathStyle}

@@ -771,6 +771,28 @@ func SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "search indexing support updated")
 }
 
+// SetVideoServingEndpoint will save the video serving endpoint.
+func SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
+	endpoint, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update custom video serving endpoint")
+		return
+	}
+
+	value, ok := endpoint.Value.(string)
+	if !ok {
+		controllers.WriteSimpleResponse(w, false, "unable to update custom video serving endpoint")
+		return
+	}
+
+	if err := data.SetVideoServingEndpoint(value); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "custom video serving endpoint updated")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
