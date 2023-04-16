@@ -28,7 +28,13 @@ import (
 // S3Storage is the s3 implementation of a storage provider.
 type S3Storage struct {
 	sess *session.Session
-	host string
+
+	// If we try to upload a playlist but it is not yet on disk
+	// then keep a reference to it here.
+	queuedPlaylistUpdates map[string]string
+
+	uploader *s3manager.Uploader
+	host     string
 
 	s3Endpoint        string
 	s3ServingEndpoint string
@@ -38,12 +44,6 @@ type S3Storage struct {
 	s3Secret          string
 	s3ACL             string
 	s3ForcePathStyle  bool
-
-	// If we try to upload a playlist but it is not yet on disk
-	// then keep a reference to it here.
-	queuedPlaylistUpdates map[string]string
-
-	uploader *s3manager.Uploader
 }
 
 // NewS3Storage returns a new S3Storage instance.

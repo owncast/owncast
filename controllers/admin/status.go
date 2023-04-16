@@ -42,11 +42,11 @@ func Status(w http.ResponseWriter, r *http.Request) {
 type adminStatusResponse struct {
 	Broadcaster            *models.Broadcaster          `json:"broadcaster"`
 	CurrentBroadcast       *models.CurrentBroadcast     `json:"currentBroadcast"`
-	Online                 bool                         `json:"online"`
+	Health                 *models.StreamHealthOverview `json:"health"`
+	StreamTitle            string                       `json:"streamTitle"`
+	VersionNumber          string                       `json:"versionNumber"`
 	ViewerCount            int                          `json:"viewerCount"`
 	OverallPeakViewerCount int                          `json:"overallPeakViewerCount"`
 	SessionPeakViewerCount int                          `json:"sessionPeakViewerCount"`
-	StreamTitle            string                       `json:"streamTitle"`
-	Health                 *models.StreamHealthOverview `json:"health"`
-	VersionNumber          string                       `json:"versionNumber"`
+	Online                 bool                         `json:"online"`
 }
