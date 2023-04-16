@@ -1,4 +1,5 @@
 export async function saveNotificationRegistration(channel, destination, accessToken) {
+  console.log('saveNotificationRegistration');
   const URL_REGISTER_NOTIFICATION = `/api/notifications/register`;
 
   const options = {
@@ -9,11 +10,7 @@ export async function saveNotificationRegistration(channel, destination, accessT
     body: JSON.stringify({ channel, destination }),
   };
 
-  try {
-    await fetch(`${URL_REGISTER_NOTIFICATION}?accessToken=${accessToken}`, options);
-  } catch (e) {
-    console.error(e);
-  }
+  await fetch(`${URL_REGISTER_NOTIFICATION}?accessToken=${accessToken}`, options);
 }
 
 export function isPushNotificationSupported() {
@@ -27,6 +24,7 @@ function urlBase64ToUint8Array(base64String: string) {
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
 
+  // eslint-disable-next-line no-plusplus
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }

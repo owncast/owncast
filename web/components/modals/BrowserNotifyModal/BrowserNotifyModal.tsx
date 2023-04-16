@@ -17,6 +17,10 @@ const NotificationsNotSupported = () => (
   <div>Browser notifications are not supported in your browser.</div>
 );
 
+const NotificationsNotSupportedLocal = () => (
+  <div>Browser notifications are not supported for local servers.</div>
+);
+
 export type PermissionPopupPreviewProps = {
   start: () => void;
 };
@@ -105,6 +109,10 @@ export const BrowserNotifyModal = () => {
     }
     setBrowserPushPermissionsPending(false);
   };
+
+  if (window.location.hostname === 'localhost') {
+    return <NotificationsNotSupportedLocal />;
+  }
 
   if (!browserPushSupported) {
     return <NotificationsNotSupported />;
