@@ -6,45 +6,41 @@
   border-style: solid;
   padding: 10px 10px;
   border-radius: 15px;
-  height: 75px;
-  font-size: 0.8rem;
-  margin: 5px;
-  color: var(--theme-color-components-text-on-light);
+  background-color: var(--theme-color-background-main);
+  margin: 0.5em;
+  font-size: 1rem;
 
-  .name {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--theme-color-components-text-on-light);
-    display: inline-block;
+  &:hover {
+    border-color: var(--theme-text-link);
+  }
 
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: calc(85%);
-    white-space: nowrap;
+  .avatar {
+    height: 60px;
+    width: 60px;
+    border-color: rgba(0, 0, 0, 0.3);
+    border-width: 1px;
+    border-style: solid;
+    font-size: 1.8rem;
+  }
+
+  .avatarColumn {
+    max-width: 75px;
+    min-width: 75px;
   }
 
   .account {
     color: var(--theme-color-components-text-on-light);
-    word-break: break-all;
-    line-height: 1rem;
-  }
+    text-overflow: ellipsis;
+    line-height: 1.2rem;
 
-  @include screen(mobile) {
-    margin: auto;
-  }
-
-  &:hover {
-    border-color: var(--theme-color-action);
-  }
-
-  .avatar {
-    border-color: rgba(0, 0, 0, 0.3);
-    border-width: 1px;
-    border-style: solid;
-    background-color: var(--theme-color-background-main);
-
-    span {
-      font-size: 1.6rem;
+    p {
+      margin: 0;
     }
+  }
+
+  .username {
+    font-family: var(--theme-text-display-font-family);
+    font-weight: 600;
+    color: var(--theme-color-components-text-on-light);
   }
 }
