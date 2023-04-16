@@ -10,5 +10,10 @@
   padding: 2vw;
   background-color: var(--theme-color-components-modal-content-background);
   color: var(--theme-color-components-modal-content-text);
-}
 
+  h1:first-child,
+  h2:first-child,
+  h3:first-child {
+    margin-top: unset;
+  }
+}
