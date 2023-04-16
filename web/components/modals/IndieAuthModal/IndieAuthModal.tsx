@@ -1,7 +1,7 @@
 import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { FC, useState } from 'react';
-import { isValidUrl } from '../../../utils/urls';
+import { isValidUrl } from '../../../utils/validators';
 
 const { Panel } = Collapse;
 const { Link } = Typography;

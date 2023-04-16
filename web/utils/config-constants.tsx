@@ -1,7 +1,7 @@
 // DEFAULT VALUES
 import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
-import { DEFAULT_TEXTFIELD_URL_PATTERN } from './urls';
+import { DEFAULT_TEXTFIELD_URL_PATTERN } from './validators';
 
 export const TEXT_MAXLENGTH = 255;
 

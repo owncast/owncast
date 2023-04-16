@@ -2,7 +2,7 @@ import { Alert, Button, Input, Space, Spin, Collapse } from 'antd';
 import React, { FC, useState } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './FediAuthModal.module.scss';
-import { validateAccount } from '../../../utils/validators';
+import { isValidFediverseAccount } from '../../../utils/validators';
 
 const { Panel } = Collapse;
 
@@ -50,7 +50,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
   }
 
   const validate = (acct: string) => {
-    setValid(validateAccount(acct));
+    setValid(isValidFediverseAccount(acct));
   };
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {

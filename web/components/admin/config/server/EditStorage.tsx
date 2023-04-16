@@ -20,7 +20,7 @@ import {
 } from '../../../../utils/input-statuses';
 import { TextField } from '../../TextField';
 import { FormStatusIndicator } from '../../FormStatusIndicator';
-import { isValidUrl } from '../../../../utils/urls';
+import { isValidUrl } from '../../../../utils/validators';
 import { ToggleSwitch } from '../../ToggleSwitch';
 
 const { Panel } = Collapse;
