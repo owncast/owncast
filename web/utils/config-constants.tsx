@@ -17,6 +17,7 @@ export const API_SOCIAL_HANDLES = '/socialhandles';
 export const API_VIDEO_SEGMENTS = '/video/streamlatencylevel';
 export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
 export const API_YP_SWITCH = '/directoryenabled';
+export const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 export const API_CHAT_FORBIDDEN_USERNAMES = '/chat/forbiddenusernames';
 export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
@@ -210,6 +211,13 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
   configPath: '',
   label: 'Hide viewer count',
   tip: 'Turn this ON to hide the viewer count on the web page.',
+};
+
+export const FIELD_PROPS_DISABLE_SEARCH_INDEXING = {
+  apiPath: API_DISABLE_SEARCH_INDEXING,
+  configPath: '',
+  label: 'Disable search engine indexing',
+  tip: 'Turn this ON to to tell search engines not to index this site.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
