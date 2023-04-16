@@ -9,9 +9,9 @@ export type SingleFollowerProps = {
 };
 
 export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
-  <div className={cn([styles.follower, 'followers-follower'])}>
+  <div>
     <a href={follower.link} target="_blank" rel="noreferrer">
-      <Row wrap={false}>
+      <Row wrap={false} className={cn([styles.follower, 'followers-follower'])}>
         <Col span={6} className={styles.avatarColumn}>
           <Avatar
             src={follower.image}
