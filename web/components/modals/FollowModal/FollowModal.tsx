@@ -2,6 +2,7 @@
 import { Input, Button, Alert, Spin, Space } from 'antd';
 import { FC, useState } from 'react';
 import styles from './FollowModal.module.scss';
+import { isValidFediverseAccount } from '../../../utils/validators';
 
 const ENDPOINT = '/api/remotefollow';
 
@@ -11,13 +12,6 @@ export type FollowModalProps = {
   name: string;
 };
 
-function validateAccount(a) {
-  const sanitized = a.replace(/^@+/, '');
-  const regex =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return regex.test(String(sanitized).toLowerCase());
-}
-
 export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }) => {
   const [remoteAccount, setRemoteAccount] = useState(null);
   const [valid, setValid] = useState(false);
@@ -26,7 +20,7 @@ export const FollowModal: FC<FollowModalProps> = ({ handleClose, account, name }
 
   const handleAccountChange = a => {
     setRemoteAccount(a);
-    if (validateAccount(a)) {
+    if (isValidFediverseAccount(a)) {
       setValid(true);
     } else {
       setValid(false);

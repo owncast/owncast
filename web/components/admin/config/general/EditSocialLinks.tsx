@@ -18,7 +18,7 @@ import {
   isValidAccount,
   isValidUrl,
   DEFAULT_TEXTFIELD_URL_PATTERN,
-} from '../../../../utils/urls';
+} from '../../../../utils/validators';
 import { TextField } from '../../TextField';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../../../utils/input-statuses';
 import { FormStatusIndicator } from '../../FormStatusIndicator';

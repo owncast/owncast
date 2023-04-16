@@ -12,7 +12,7 @@ import {
 import { TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { UpdateArgs } from '../../types/config-section';
-import { isValidUrl } from '../../utils/urls';
+import { isValidUrl } from '../../utils/validators';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 

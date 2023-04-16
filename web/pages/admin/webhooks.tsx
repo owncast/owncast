@@ -15,7 +15,7 @@ import {
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
-import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/urls';
+import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/validators';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
