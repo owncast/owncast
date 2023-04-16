@@ -132,4 +132,10 @@
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
   width: 100%;
+
+  h1:first-child,
+  h2:first-child,
+  h3:first-child {
+    margin-top: unset;
+  }
 }
