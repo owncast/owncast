@@ -9,6 +9,7 @@
   background-color: var(--theme-color-background-main);
   margin: 0.5em;
   font-size: 1rem;
+  line-height: 1.5rem;
 
   &:hover {
     border-color: var(--theme-text-link);
@@ -29,18 +30,19 @@
   }
 
   .account {
+    display: block;
     color: var(--theme-color-components-text-on-light);
-    text-overflow: ellipsis;
-    line-height: 1.2rem;
-
-    p {
-      margin: 0;
-    }
+    font-size: 0.7rem;
+    line-height: 1.2;
   }
 
   .username {
+    display: block;
     font-family: var(--theme-text-display-font-family);
     font-weight: 600;
     color: var(--theme-color-components-text-on-light);
+    font-size: 1rem;
+    line-height: 1.1;
+    padding-bottom: 5px;
   }
 }
