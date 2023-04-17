@@ -34,12 +34,11 @@ const saveKeys = async (keys, setError) => {
     setError(error);
   }
 };
-
-const generateRndKey = () => {
+export const generateRndKey = () => {
   let defaultKey = '';
   let isValidStreamKey = false;
-  const streamKeyRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
-  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+  const streamKeyRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$^&*]).{8,192}$/;
+  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$^&*';
 
   while (!isValidStreamKey) {
     const temp = Array.apply(20, Array(30))
