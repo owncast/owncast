@@ -35,14 +35,14 @@
 
   div[role='textbox'] {
     font-size: 13px;
-		font-weight: 400;
+    font-weight: 400;
     padding: 0.3rem;
     background-color: inherit;
     border-color: var(--theme-color-components-form-field-border);
     box-shadow: 0;
     transition: box-shadow 50ms ease-in-out;
     &:focus {
-      outline: 1px solid var(--color-owncast-gray-500) !important;
+      outline: 1px solid var(--theme-color-components-form-field-background) !important;
     }
     & > p {
       margin: 0px;
@@ -54,7 +54,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  padding: 0 .25rem;
+  padding: 0 0.25rem;
 }
 
 .sendButton {
@@ -62,4 +62,33 @@
   background: none;
   cursor: pointer;
   padding: 0 1rem;
+}
+
+.userMention {
+  display: inline;
+  font-size: 0.7rem;
+  padding: 3px;
+  margin-right: 2px;
+  margin-left: 2px;
+  border-radius: 5px;
+  color: var(--theme-color-components-form-field-text);
+  border: 0.05rem solid var(--theme-color-components-form-field-border);
+  background-color: var(--theme-color-components-form-field-background);
+}
+
+.autocompleteSelectMenu {
+  width: 120px;
+  right: '5px';
+  bottom: '5px';
+  z-index: 99999;
+
+  :global {
+    .ant-select-selection-item {
+      display: none;
+    }
+
+    .ant-select-dropdown {
+      display: block;
+    }
+  }
 }

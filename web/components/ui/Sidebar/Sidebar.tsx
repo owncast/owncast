@@ -8,6 +8,7 @@ import styles from './Sidebar.module.scss';
 
 import {
   currentUserAtom,
+  knownChatUserDisplayNamesAtom,
   visibleChatMessagesSelector,
   isChatAvailableSelector,
 } from '../../stores/ClientConfigStore';
@@ -24,6 +25,7 @@ export const Sidebar: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
   const isChatAvailable = useRecoilValue(isChatAvailableSelector);
+  const knownChatUserDisplayNames = useRecoilValue(knownChatUserDisplayNamesAtom);
 
   if (!currentUser) {
     return (
@@ -43,6 +45,7 @@ export const Sidebar: FC = () => {
         isModerator={isModerator}
         chatAvailable={isChatAvailable}
         showInput={!!currentUser}
+        knownChatUserDisplayNames={knownChatUserDisplayNames}
       />
     </Sider>
   );

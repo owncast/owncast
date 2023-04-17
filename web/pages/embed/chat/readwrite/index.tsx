@@ -10,6 +10,7 @@ import {
   visibleChatMessagesSelector,
   clientConfigStateAtom,
   appStateAtom,
+  knownChatUserDisplayNamesAtom,
   serverStatusState,
   isChatAvailableSelector,
 } from '../../../../components/stores/ClientConfigStore';
@@ -28,6 +29,7 @@ export default function ReadWriteChatEmbed() {
 
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const isChatAvailable = useRecoilValue(isChatAvailableSelector);
+  const knownChatUserDisplayNames = useRecoilValue(knownChatUserDisplayNamesAtom);
 
   const { name, chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
@@ -73,6 +75,7 @@ export default function ReadWriteChatEmbed() {
               showInput
               height="92vh"
               chatAvailable={isChatAvailable}
+              knownChatUserDisplayNames={knownChatUserDisplayNames}
             />
           </div>
         )}
