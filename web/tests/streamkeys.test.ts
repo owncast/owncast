@@ -11,7 +11,6 @@ describe('generateRndKey', () => {
     expect(typeof result).toBe('string');
   });
 
-
   test('should generate a key of length between 8 and 192 characters', () => {
     const key = generateRndKey();
     expect(key.length).toBeGreaterThanOrEqual(8);
