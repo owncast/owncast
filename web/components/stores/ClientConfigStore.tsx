@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { FC, useContext, useEffect, useState } from 'react';
 import { atom, selector, useRecoilState, useSetRecoilState, RecoilEnv } from 'recoil';
 import { useMachine } from '@xstate/react';
@@ -113,6 +114,11 @@ const removedMessageIdsAtom = atom<string[]>({
   default: [],
 });
 
+export const knownChatUserDisplayNamesAtom = atom<string[]>({
+  key: 'knownChatUserDisplayNames',
+  default: [],
+});
+
 export const isChatAvailableSelector = selector({
   key: 'isChatAvailableSelector',
   get: ({ get }) => {
@@ -171,6 +177,7 @@ export const ClientConfigStore: FC = () => {
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   const [hiddenMessageIds, setHiddenMessageIds] = useRecoilState<string[]>(removedMessageIdsAtom);
+  const setKnownChatUserDisplayNames = useSetRecoilState<string[]>(knownChatUserDisplayNamesAtom);
   const [hasLoadedConfig, setHasLoadedConfig] = useState(false);
 
   let ws: WebsocketService;
@@ -291,6 +298,10 @@ export const ClientConfigStore: FC = () => {
     hasWebsocketDisconnected = false;
   };
 
+  const handleChatUserDisplayNameAdd = (displayName: string) => {
+    setKnownChatUserDisplayNames(currentState => [...currentState, displayName]);
+  };
+
   const handleMessage = (message: SocketEvent) => {
     switch (message.type) {
       case MessageType.ERROR_NEEDS_REGISTRATION:
@@ -304,6 +315,7 @@ export const ClientConfigStore: FC = () => {
         );
         if (message as ChatEvent) {
           const m = new ChatEvent(message);
+          handleChatUserDisplayNameAdd(m.user.displayName);
           if (!hasBeenModeratorNotified && m.user?.isModerator) {
             setChatMessages(currentState => [...currentState, message as ChatEvent]);
             hasBeenModeratorNotified = true;
@@ -313,6 +325,8 @@ export const ClientConfigStore: FC = () => {
         break;
       case MessageType.CHAT:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        const m = new ChatEvent(message);
+        handleChatUserDisplayNameAdd(m.user.displayName);
         break;
       case MessageType.NAME_CHANGE:
         handleNameChangeEvent(message as ChatEvent, setChatMessages);

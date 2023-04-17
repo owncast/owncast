@@ -5,6 +5,7 @@ import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatCon
 import {
   ClientConfigStore,
   currentUserAtom,
+  knownChatUserDisplayNamesAtom,
   visibleChatMessagesSelector,
   isChatAvailableSelector,
 } from '../../../../components/stores/ClientConfigStore';
@@ -15,6 +16,7 @@ export default function ReadOnlyChatEmbed() {
   const currentUser = useRecoilValue(currentUserAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
   const isChatAvailable = useRecoilValue(isChatAvailableSelector);
+  const knownChatUserDisplayNames = useRecoilValue(knownChatUserDisplayNamesAtom);
 
   return (
     <div>
@@ -35,6 +37,7 @@ export default function ReadOnlyChatEmbed() {
             showInput={false}
             height="100vh"
             chatAvailable={isChatAvailable}
+            knownChatUserDisplayNames={knownChatUserDisplayNames}
           />
         )}
       </ErrorBoundary>
