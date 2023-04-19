@@ -78,7 +78,7 @@ func Start() error {
 	rtmpPort := data.GetRTMPPortNumber()
 	log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 
-	webhooks.InitWorkerPool()
+	webhooks.SetupWebhooks(GetStatus)
 
 	notifications.Setup(data.GetStore())
 
