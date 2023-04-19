@@ -73,7 +73,7 @@ require (
 
 require (
 	github.com/CAFxX/httpcompression v0.0.8
-	github.com/andybalholm/cascadia v1.3.1
+	github.com/andybalholm/cascadia v1.3.2
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0
 )
