@@ -1,9 +1,8 @@
-import { Tag, Tooltip } from 'antd';
+import { Tag, Tooltip, Avatar } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { OwncastLogo } from '../../common/OwncastLogo/OwncastLogo';
 import styles from './Header.module.scss';
 
 // Lazy loaded components
@@ -41,7 +40,7 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
     </Link>
     <div className={styles.logo}>
       <div id="header-logo" className={styles.logoImage}>
-        <OwncastLogo variant="contrast" />
+        <Avatar src="/logo" size="large" shape="circle" className={styles.avatar} />
       </div>
       <h1 className={styles.title} id="global-header-text">
         {name}
