@@ -39,7 +39,7 @@ BUTTONS
 .ant-btn-primary {
   height: 2rem;
   font-size: 0.85rem;
-  font-weight: bold;
+  // font-weight: bold;
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
   color: var(--theme-color-components-primary-button-text);
@@ -110,30 +110,39 @@ DROPDOWN
     background-color: var(--theme-color-components-menu-item-focus-bg);
   }
 }
+.ant-dropdown-menu-item,
+.ant-dropdown-menu-submenu-title {
+	font-size: .8rem;
+	padding: 4px 15px;
+}
 
-.ant-modal-header {
-  color: var(--theme-color-components-modal-header-text);
-  font-family: var(--theme-text-display-font-family);
-}
-.ant-modal-title {
-  color: var(--theme-color-components-modal-header-text);
-}
-.ant-modal-body {
-  overflow: auto;
-  border-radius: 0 0 var(--theme-rounded-corners) var(--theme-rounded-corners);
-}
-.ant-modal {
-  color: var(--theme-color-components-text-on-light);
-  h1 {
-    color: var(--theme-color-components-text-on-light);
-  }
-}
-.ant-modal-content {
-  box-shadow: 3px 15px 15px -3px rgba(0, 0, 0, 0.15), 0px 4px 6px -2px rgba(0, 0, 0, 0.08);
-}
+// .ant-modal-header {
+//   color: var(--theme-color-components-modal-header-text);
+//   font-family: var(--theme-text-display-font-family);
+// }
+// .ant-modal-title {
+//   color: var(--theme-color-components-modal-header-text);
+// 	font-size: 17px;
+// 	font-weight: 600;
+// }
+// .ant-modal-body {
+//   overflow: auto;
+//   border-radius: 0 0 var(--theme-rounded-corners) var(--theme-rounded-corners);
+// }
+// .ant-modal-close-x {
+// 	font-size: 12px;
+// }
+// .ant-modal {
+//   color: var(--theme-color-components-text-on-light);
+//   h1 {
+//     color: var(--theme-color-components-text-on-light);
+//   }
+// }
+// .ant-modal-content {
+//   box-shadow: 3px 15px 15px -3px rgba(0, 0, 0, 0.15), 0px 4px 6px -2px rgba(0, 0, 0, 0.08);
+// }
 
 .ant-input-affix-wrapper {
-  padding: 4px 5px;
   background-color: var(--theme-color-components-form-field-background);
 }
 

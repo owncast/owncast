@@ -63,12 +63,12 @@ export const Statusbar: FC<StatusbarProps> = ({
     const duration = makeDurationString(new Date(lastConnectTime));
     onlineMessage = online ? `Live for  ${duration}` : 'Offline';
     rightSideMessage = viewerCount > 0 && (
-      <div className={styles.right}>
-        <span>
+      <>
+        <span className={styles.viewerIcon}>
           <EyeFilled />
         </span>
         <span>{` ${viewerCount}`}</span>
-      </div>
+      </>
     );
   } else if (!online) {
     onlineMessage = 'Offline';
@@ -79,8 +79,8 @@ export const Statusbar: FC<StatusbarProps> = ({
 
   return (
     <div className={classNames(styles.statusbar, className)} role="status">
-      <div>{onlineMessage}</div>
-      <div>{rightSideMessage}</div>
+      <span className={styles.onlineMessage}>{onlineMessage}</span>
+      <span className={styles.viewerCount}>{rightSideMessage}</span>
     </div>
   );
 };
