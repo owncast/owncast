@@ -19,7 +19,7 @@
 		"@codemirror/lang-javascript": "^6.1.2",
 		"@codemirror/lang-markdown": "6.1.1",
 		"@codemirror/language-data": "6.2.1",
-		"@fontsource/open-sans": "4.5.14",
+		"@fontsource/inter": "^4.5.15",
 		"@fontsource/poppins": "4.5.10",
 		"@next/bundle-analyzer": "^13.1.1",
 		"@uiw/codemirror-theme-bbedit": "4.19.16",
