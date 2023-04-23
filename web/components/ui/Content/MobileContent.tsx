@@ -4,6 +4,7 @@ import { Skeleton, TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
+import mobileStyles from './MobileContent.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -87,6 +88,25 @@ const ChatContent: FC<ChatContentProps> = ({ showChat, chatEnabled, messages, cu
   );
 };
 
+const ActionButton = ({
+  supportFediverseFeatures,
+  supportsBrowserNotifications,
+  actions,
+  setExternalActionToDisplay,
+  setShowNotifyPopup,
+  setShowFollowModal,
+}) => (
+  <ActionButtonMenu
+    className={styles.actionButtonMenu}
+    showFollowItem={supportFediverseFeatures}
+    showNotifyItem={supportsBrowserNotifications}
+    actions={actions}
+    externalActionSelected={setExternalActionToDisplay}
+    notifyItemSelected={() => setShowNotifyPopup(true)}
+    followItemSelected={() => setShowFollowModal(true)}
+  />
+);
+
 export const MobileContent: FC<MobileContentProps> = ({
   name,
   summary,
@@ -143,14 +163,13 @@ export const MobileContent: FC<MobileContentProps> = ({
   const replacementTabBar = (props, DefaultTabBar) => (
     <div className={styles.replacementBar}>
       <DefaultTabBar {...props} className={styles.defaultTabBar} />
-      <ActionButtonMenu
-        className={styles.actionButtonMenu}
-        showFollowItem={supportFediverseFeatures}
-        showNotifyItem={supportsBrowserNotifications}
+      <ActionButton
+        supportFediverseFeatures={supportFediverseFeatures}
+        supportsBrowserNotifications={supportsBrowserNotifications}
         actions={actions}
-        externalActionSelected={setExternalActionToDisplay}
-        notifyItemSelected={() => setShowNotifyPopup(true)}
-        followItemSelected={() => setShowFollowModal(true)}
+        setExternalActionToDisplay={setExternalActionToDisplay}
+        setShowNotifyPopup={setShowNotifyPopup}
+        setShowFollowModal={setShowFollowModal}
       />
     </div>
   );
@@ -171,7 +190,19 @@ export const MobileContent: FC<MobileContentProps> = ({
             renderTabBar={replacementTabBar}
           />
         ) : (
-          aboutTabContent
+          <>
+            <div className={mobileStyles.noTabsActionMenuButton}>
+              <ActionButton
+                supportFediverseFeatures={supportFediverseFeatures}
+                supportsBrowserNotifications={supportsBrowserNotifications}
+                actions={actions}
+                setExternalActionToDisplay={setExternalActionToDisplay}
+                setShowNotifyPopup={setShowNotifyPopup}
+                setShowFollowModal={setShowFollowModal}
+              />
+            </div>
+            <div className={mobileStyles.noTabsAboutContent}>{aboutTabContent}</div>
+          </>
         )}
       </div>
     </ErrorBoundary>
