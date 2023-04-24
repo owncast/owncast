@@ -46,7 +46,7 @@ http://owncast.online/components
 
 http://owncast.online/components/?path=/story/owncast-style-guide-typography--page
 
-Body text: OpenSans
+Body text: Inter
 
 Display/Header text: Poppins
 
