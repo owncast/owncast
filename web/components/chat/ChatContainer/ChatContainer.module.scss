@@ -15,6 +15,8 @@
     align-items: center;
     opacity: 0;
     animation: show 250ms forwards ease-in-out 500ms;
+		font-size: 12px;
+		font-weight: 600;
   }
 }
 
@@ -23,6 +25,7 @@
   flex-direction: column;
   background-color: var(--theme-color-components-chat-background);
   height: 100%;
+	font-size: var(--chat-message-text-size);
 }
 .virtuoso {
   width: auto;

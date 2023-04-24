@@ -5,7 +5,7 @@
 
 theme:
   rounded-corners:
-    value: 9px
+    value: 5px
     comment: 'How much corners are rounded in places in the UI.'
   unknown-1:
     value: 'green'
@@ -36,7 +36,7 @@ theme:
       5:
         value: 'var(--color-owncast-user-5)'
       6:
-        value: 'var(--color-owncast-user-6)'
+      value: 'var(--color-owncast-user-6)'
       7:
         value: 'var(--color-owncast-user-7)'
 

@@ -101,7 +101,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
           <UserTooltip user={user}>
             <div className={styles.user} style={{ color }}>
               <span className={styles.userName}>{displayName}</span>
-              <span>{badgeNodes}</span>
+              {badgeNodes}
             </div>
           </UserTooltip>
         )}

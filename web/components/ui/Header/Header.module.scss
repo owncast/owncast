@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: space-between;
   z-index: 20;
-  padding: 0.7rem;
+  padding: 0.7rem var(--content-padding);
   box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
   background-color: var(--theme-color-background-header);
 
@@ -22,6 +22,7 @@
 
 .logoImage {
   padding: 0.2rem;
+	margin-right: .75rem;
   display: none;
 
   @include screen(desktop) {
@@ -37,7 +38,6 @@
 .title {
   color: var(--theme-color-components-text-on-dark);
   font-family: var(--theme-text-display-font-family);
-  margin-left: 0.5rem;
   margin-bottom: 0px;
   font-size: clamp(1rem, 4vw, 1.6rem);
   font-weight: 600;
@@ -73,4 +73,12 @@
 .avatar {
   background-color: white;
   padding: 0.2rem;
+}
+
+.chatOfflineText {
+	color: var(--theme-color-palette-8);
+	font-size: .75rem;
+}
+.toolTip {
+	font-size: .8rem;
 }

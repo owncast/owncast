@@ -1,7 +1,6 @@
 .statusbar {
   display: flex;
   align-items: center;
-  font-size: 0.8rem;
   justify-content: space-between;
   height: 2rem;
   width: 100%;
@@ -9,5 +8,19 @@
   color: var(--theme-color-components-video-status-bar-foreground);
   background-color: var(--theme-color-components-video-status-bar-background);
   font-family: var(--theme-text-display-font-family);
+
+	font-size: 11px;
   font-weight: 400;
+}
+
+.onlineMessage {
+	letter-spacing: .5px;
+}
+
+.viewerCount {
+	vertical-align: middle;
+}
+.viewerIcon {
+	display: inline-block;
+	margin-right: .5rem;
 }

@@ -1,0 +1,42 @@
+.nameChangeModal {
+
+
+}
+
+
+.inputGroup {
+	:global(.ant-input-affix-wrapper) {
+		border-width: 2px;
+	}
+
+	:global(.ant-input-show-count-suffix) {
+		font-size: 11px;
+	}
+	:global(.ant-btn-primary) {
+		font-weight: 600;
+	}
+
+
+}
+
+.colorChange {
+	padding-top: 8px;
+
+	:global(.ant-form-item-label) {
+		z-index: 1000;
+		margin-bottom: 0;
+		label {
+			font-weight: 600;
+
+		}
+	}
+}
+
+.colorDropdown {
+	:global(.ant-select):not(.ant-select-customize-input) {
+		:global(.ant-select-selector) {
+			padding-left:0;
+			border-width: 2px;
+		}
+	}
+}

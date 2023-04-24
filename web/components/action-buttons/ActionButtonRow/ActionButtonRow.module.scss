@@ -1,11 +1,14 @@
 .row {
-  padding: .3rem;
+  padding: 0.75rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   button {
-    margin-left: .3rem;
-    margin-right: .3rem;
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    &:last-of-type {
+      margin-right: 0;
+    }
   }
 }

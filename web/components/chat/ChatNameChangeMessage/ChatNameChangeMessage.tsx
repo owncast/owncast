@@ -22,7 +22,7 @@ export const ChatNameChangeMessage: FC<ChatNameChangeMessageProps> = ({ message 
 
   return (
     <div className={styles.nameChangeView}>
-      <div style={{ marginRight: 5, height: 'max-content', margin: 'auto 5px auto 0' }}>
+      <div className={styles.icon}>
         <EditFilled />
       </div>
       <div className={styles.nameChangeText}>

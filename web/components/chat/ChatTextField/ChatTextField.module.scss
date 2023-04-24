@@ -34,7 +34,8 @@
   }
 
   div[role='textbox'] {
-    font-size: 16px;
+    font-size: 13px;
+		font-weight: 400;
     padding: 0.3rem;
     background-color: inherit;
     border-color: var(--theme-color-components-form-field-border);
@@ -53,7 +54,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  padding: 0 1rem;
+  padding: 0 .25rem;
 }
 
 .sendButton {

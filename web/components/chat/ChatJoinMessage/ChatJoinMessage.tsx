@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import dynamic from 'next/dynamic';
-import styles from './ChatJoinMessage.module.scss';
 import { ModerationBadge } from '../ChatUserBadge/ModerationBadge';
+
+import styles from './ChatJoinMessage.module.scss';
 
 // Lazy loaded components
 
@@ -25,10 +26,10 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
   return (
     <div className={styles.root}>
       <span style={{ color }}>
-        <span style={{ padding: '0 10px' }}>
+        <span className={styles.icon}>
           <TeamOutlined />
         </span>
-        <span style={{ fontWeight: 'bold' }}>{displayName}</span>
+        <span className={styles.user}>{displayName}</span>
         {isAuthorModerator && (
           <span>
             <ModerationBadge userColor={userColor} />

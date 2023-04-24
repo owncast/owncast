@@ -72,6 +72,7 @@ export const Modal: FC<ModalProps> = ({
       footer={null}
       centered
       destroyOnClose
+      className={styles.modal}
     >
       <ErrorBoundary
         // eslint-disable-next-line react/no-unstable-nested-components

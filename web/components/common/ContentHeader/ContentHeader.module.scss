@@ -1,14 +1,15 @@
 @import '../../../styles/mixins.scss';
 
+$vert-spacing: 0.75rem;
+
 .root {
   position: relative;
   display: grid;
-  padding: 1.4rem;
-  padding-top: unset;
+  padding: var(--content-padding);
 }
 
 .row {
-  margin-bottom: 7px;
+  margin-bottom: $vert-spacing;
 }
 
 .logoTitleSection {
@@ -17,6 +18,7 @@
   .logo {
     margin: auto 0.6rem;
   }
+
   @include screen(desktop) {
     flex-direction: row;
     .logo {
@@ -24,8 +26,11 @@
     }
   }
 
-  @include screen(mobile) {
+  @include screen(tablet) {
     align-items: center;
+    .logo {
+      margin: 1.2rem auto;
+    }
   }
 }
 
@@ -33,23 +38,25 @@
   display: flex;
   flex-direction: column;
   margin-left: 0.6rem;
+  @include screen(tablet) {
+    margin-left: 0;
+  }
 
   .title {
     font-family: var(--theme-text-display-font-family);
     color: var(--theme-color-palette-0);
-    font-size: 1.7rem;
-    font-weight: bold;
+    font-size: 1.8rem;
+    font-weight: 600;
     line-height: 30px;
     margin: unset;
   }
 
   .subtitle {
-    font-size: 1.2rem;
-    font-weight: 400;
-    line-height: 1.3;
+    font-size: 1.15rem;
+    font-weight: 300;
     color: var(--theme-color-palette-0);
     max-width: 900px;
-    margin-top: 7px;
+    margin: $vert-spacing 0;
   }
 }
 
@@ -59,7 +66,6 @@
   span {
     display: inline-block;
     margin-right: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 400;
   }
 }
