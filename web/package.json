@@ -57,7 +57,7 @@
 		"ua-parser-js": "1.0.35",
 		"video.js": "7.20.3",
 		"xstate": "4.37.1",
-		"yaml": "2.2.1"
+		"yaml": "2.2.2"
 	},
 	"devDependencies": {
 		"@babel/core": "7.21.4",
