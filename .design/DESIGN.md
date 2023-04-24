@@ -44,7 +44,7 @@ http://owncast.online/components
 
 ### Fonts
 
-http://owncast.online/components/?path=/story/owncast-style-guide-typography--page
+https://owncast.online/components/?path=%2Fdocs%2Fowncast-styles-typography--page
 
 Body text: Inter
 
@@ -52,7 +52,7 @@ Display/Header text: Poppins
 
 ### Colors
 
-http://owncast.online/components/?path=/story/owncast-style-guide-default-theme--page
+https://owncast.online/components/?path=%2Fdocs%2Fowncast-styles-colors-components--page
 
 ### Design Files, Screenshots, etc
 
