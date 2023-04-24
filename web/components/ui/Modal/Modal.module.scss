@@ -8,7 +8,7 @@
 .content {
   display: block;
   height: 100%;
-  padding: 2vw;
+  padding: 1.25rem;
   background-color: var(--theme-color-components-modal-content-background);
   color: var(--theme-color-components-modal-content-text);
 
@@ -23,6 +23,7 @@
 	:global(.ant-modal-header) {
 		color: var(--theme-color-components-modal-header-text);
 		font-family: var(--theme-text-display-font-family);
+		padding: 1rem 1.25rem;
 	}
 
 	:global(.ant-modal-title) {

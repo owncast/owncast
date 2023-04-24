@@ -2,6 +2,7 @@
 
 .customPageContent {
   font-size: 1rem;
+	font-weight: 300;
   line-height: 1.6em;
   color: var(--theme-color-components-text-on-light);
 
@@ -18,4 +19,7 @@
   p {
     margin: 0.5rem 0;
   }
+	a:hover {
+		color: var(--color-owncast-palette-7)
+	}
 }

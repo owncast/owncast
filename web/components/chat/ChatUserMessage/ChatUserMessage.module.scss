@@ -1,5 +1,7 @@
-$border-style: 4px solid currentColor;
+$border-style: 3px solid currentColor;
 $p-size: 8px;
+$p-h-size: 8px;
+$p-v-size: 2px;
 
 .root {
   * {
@@ -7,28 +9,27 @@ $p-size: 8px;
   }
   border-left: $border-style;
   position: relative;
-  font-size: 0.9rem;
-  padding: 0px $p-size $p-size $p-size;
+  font-size: var(--chat-message-text-size);
+  padding: $p-v-size $p-h-size;
   color: var(--theme-color-components-chat-text);
 
   .user {
     display: flex;
     align-items: center;
-    font-family: var(--theme-text-display-font-family);
-    font-weight: 600;
+		font-weight: 600;
   }
 
   .message {
     overflow: hidden;
     overflow-wrap: anywhere;
-    font-weight: 500;
+    font-weight: 400;
     position: relative;
 
     mark {
       padding-left: 0.3em;
       padding-right: 0.3em;
       color: var(--theme-color-palette-4);
-      border-radius: var(--theme-rounded-corners);
+      border-radius: var(--chat-text-highlight-border-radius);
       background-color: var(--color-owncast-palette-7);
     }
 
@@ -60,7 +61,7 @@ $p-size: 8px;
   .modMenuWrapper {
     position: absolute;
     display: none;
-    top: 0;
+    top: 5px;
     right: 10px;
     color: var(--theme-color-components-text-on-light);
     & button:focus,
@@ -70,7 +71,8 @@ $p-size: 8px;
 
     button {
       border-radius: var(--theme-rounded-corners);
-      opacity: 0.8;
+			border-width: 0;
+			opacity: 0.8;
     }
   }
 

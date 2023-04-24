@@ -1,5 +1,16 @@
 .chatAction {
-  padding: 5px;
-  text-align: center;
-  color: var(--theme-color-components-chat-text);
+  padding: 8px;
+	margin: 4px 1rem;
+	border-radius: 4px;
+
+	text-align: center;
+	font-size: 12px;
+
+	color: var(--theme-color-components-chat-text);
+	background-color: var(--theme-color-palette-0);
+
+
+	p {
+		margin: 0;
+	}
 }

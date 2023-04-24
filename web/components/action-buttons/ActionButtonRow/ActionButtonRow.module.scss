@@ -1,5 +1,5 @@
 .row {
-  padding: .3rem;
+  padding: .75rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -7,5 +7,8 @@
   button {
     margin-left: .3rem;
     margin-right: .3rem;
+		&:last-of-type {
+			margin-right: 0;
+		}
   }
 }

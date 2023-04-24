@@ -4,6 +4,7 @@ import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import styles from './Header.module.scss';
+import { MessageOutlined } from '@ant-design/icons';
 
 // Lazy loaded components
 
@@ -48,8 +49,10 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
     </div>
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (
-      <Tooltip title="Chat is available when the stream is live." placement="left">
-        <Tag className={styles.offlineTag}>Chat offline</Tag>
+      <Tooltip overlayClassName={styles.toolTip} title="Chat is offline. It will be available when the stream is live." placement="left">
+        {/* <Tag className={styles.offlineTag}>Chat offline</Tag>
+				 */}
+				 <MessageOutlined className={styles.chatDisabledIcon} />
       </Tooltip>
     )}
   </header>
