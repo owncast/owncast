@@ -90,7 +90,7 @@ export const NameChangeModal: FC = () => {
           style={{ width: 120 }}
           onChange={handleColorChange}
           defaultValue={displayColor.toString()}
-					className={styles.colorDropdown}
+          className={styles.colorDropdown}
         >
           {colorOptions.map(e => (
             <Option key={e.toString()} title={e}>
