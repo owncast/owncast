@@ -1,4 +1,4 @@
-import { Tag, Tooltip, Avatar } from 'antd';
+import { Tooltip, Avatar } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
@@ -48,8 +48,12 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
     </div>
     {chatAvailable && !chatDisabled && <UserDropdown />}
     {!chatAvailable && !chatDisabled && (
-      <Tooltip title="Chat is available when the stream is live." placement="left">
-        <Tag className={styles.offlineTag}>Chat offline</Tag>
+      <Tooltip
+        overlayClassName={styles.toolTip}
+        title="Chat will be available when the stream is live."
+        placement="left"
+      >
+        <span className={styles.chatOfflineText}>Chat is offline</span>
       </Tooltip>
     )}
   </header>

@@ -9,14 +9,9 @@
   width: clamp(00px, 100%, 600px);
   display: flex;
   flex-direction: column;
-  color: var(--theme-color-components-text-on-light);
-  background-color: var(--theme-color-background-main);
+  color: var(--theme-color-background-main);
   margin: 3rem auto;
-  border-radius: var(--theme-rounded-corners);
   padding: 2.4em;
-  font-size: 1.3rem;
-  border: 1px solid lightgray;
-  font-family: var(--theme-text-display-font-family);
 
   @include screen(tablet) {
     font-size: 1.2rem;
@@ -27,6 +22,7 @@
 
 .bodyText {
   line-height: 2rem;
+	font-size: 1.2rem;
 }
 
 .separator {
@@ -35,18 +31,21 @@
 }
 
 .lastLiveDate {
-  margin-top: 15px;
-  font-size: 1rem;
-  opacity: 0.5;
+  margin-top: 2rem;
+  font-size: .8rem;
+  color: var(--theme-color-palette-8);
   font-family: var(--theme-text-body-font-family);
+	font-weight: 300;
 
   .clockIcon {
-    margin-right: 5px;
+    margin-right: 6px;
   }
 }
 
 .header {
-  font-weight: bold;
+	font-family: var(--theme-text-display-font-family);
+	font-weight: 600;
+	font-size: 1.4rem;
 }
 
 .footer {

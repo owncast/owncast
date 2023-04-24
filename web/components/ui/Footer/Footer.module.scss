@@ -11,9 +11,9 @@
   color: var(--theme-color-components-text-on-dark);
   font-family: var(--theme-text-body-font-family);
 
-  padding: 0.6rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 0.6rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 400;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
 
   @include screen(tablet) {

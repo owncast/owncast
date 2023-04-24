@@ -4,6 +4,7 @@ import { Input, Button, Select, Form } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
+import styles from './NameChangeModal.module.scss';
 
 const { Option } = Select;
 
@@ -70,7 +71,7 @@ export const NameChangeModal: FC = () => {
   return (
     <div>
       Your chat display name is what people see when you send chat messages.
-      <Form onSubmitCapture={handleNameChange} style={{ paddingTop: '8px' }}>
+      <Form onSubmitCapture={handleNameChange} className={styles.form}>
         <Input.Search
           enterButton={saveButton}
           id="name-change-field"
@@ -81,13 +82,15 @@ export const NameChangeModal: FC = () => {
           maxLength={30}
           showCount
           defaultValue={displayName}
+          className={styles.inputGroup}
         />
       </Form>
-      <Form.Item label="Your Color" style={{ paddingTop: '8px', zIndex: 1000, marginBottom: 0 }}>
+      <Form.Item label="Your Color" className={styles.colorChange}>
         <Select
           style={{ width: 120 }}
           onChange={handleColorChange}
           defaultValue={displayColor.toString()}
+          className={styles.colorDropdown}
         >
           {colorOptions.map(e => (
             <Option key={e.toString()} title={e}>

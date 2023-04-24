@@ -7,12 +7,18 @@
 @import './mixins.scss';
 
 :root {
-  --content-padding: 12px;
+  --content-padding: 0.95rem;
   --module-spacing: 12px; // margin size between lines of stuff, if needed
   --header-height: 4.3rem; // needed for making main content scrollable;
   --footer-height: 2.5rem; // needed for making main content scrollable;
   --content-height: calc(100vh - var(--header-height));
   --replacement-bar-height: 46px; // needed for making main content scrollable on mobile;
+
+  // chat modules
+  --chat-message-text-size: 0.825rem;
+  --chat-notification-icon-padding: 6px;
+  --chat-message-padding: 10px;
+  --chat-text-highlight-border-radius: 3px;
 }
 
 ::selection {
@@ -25,7 +31,7 @@ html {
 
 body {
   font-family: var(--theme-text-body-font-family);
-  line-height: 1.5em;
+  font-weight: 300;
   margin: 0;
   background-color: var(--theme-color-background-main);
 
@@ -54,6 +60,7 @@ body {
 
   h1 {
     font-size: 2em;
+    font-weight: 600;
   }
 
   h2 {
@@ -64,7 +71,7 @@ body {
   h3 {
     font-family: var(--theme-text-body-font-family);
     font-size: 1.25em;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   h4 {
@@ -101,7 +108,7 @@ body {
 
   strong,
   b {
-    font-weight: 700;
+    font-weight: 600;
   }
 }
 

@@ -9,18 +9,14 @@
 			}
 		}
   }
-  .userIcon {
-	@include screen(desktop) {
-		margin-right: .5rem;
-	}
-  }
 
-  .username {
+	.username {
 	  display: none;
-  
+
 	  @include screen(desktop) {
 		  display: inline;
+			font-weight: 600;
+			font-size: .8rem;
 	  }
   }
 }
-
