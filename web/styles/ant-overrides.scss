@@ -39,7 +39,6 @@ BUTTONS
 .ant-btn-primary {
   height: 2rem;
   font-size: 0.85rem;
-  // font-weight: bold;
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
   color: var(--theme-color-components-primary-button-text);
@@ -112,8 +111,8 @@ DROPDOWN
 }
 .ant-dropdown-menu-item,
 .ant-dropdown-menu-submenu-title {
-	font-size: .8rem;
-	padding: 4px 15px;
+  font-size: 0.8rem;
+  padding: 4px 15px;
 }
 
 .ant-input-affix-wrapper {
@@ -221,10 +220,10 @@ th {
   color: var(--theme-color-palette-12);
 }
 
-.line-chart-container{
+.line-chart-container {
   position: relative;
-  .download-btn{
-    position:absolute;
+  .download-btn {
+    position: absolute;
     top: 0.3rem;
     right: 0.35rem;
   }
