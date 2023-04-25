@@ -17,7 +17,7 @@ docker-all:
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
-  RUN apk add --update --no-cache tar gzip >> /dev/null
+  RUN apk add --update --no-cache tar gzip upx >> /dev/null
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
@@ -75,6 +75,11 @@ build:
   WORKDIR /build
   # MacOSX disallows static executables, so we omit the static flag on this platform
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
+
+	# Decrease the size of the shipped binary
+	RUN upx --best --lzma owncast
+	# Test the binary
+	RUN upx -t owncast
 
   SAVE ARTIFACT owncast owncast
 
