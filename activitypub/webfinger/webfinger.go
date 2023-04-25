@@ -29,7 +29,14 @@ func GetWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	query.Add("resource", fmt.Sprintf("acct:%s", account))
 	requestURL.RawQuery = query.Encode()
 
-	response, err := http.DefaultClient.Get(requestURL.String())
+	// Do not support redirects.
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	response, err := client.Get(requestURL.String())
 	if err != nil {
 		return nil, err
 	}

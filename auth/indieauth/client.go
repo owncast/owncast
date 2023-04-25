@@ -80,7 +80,13 @@ func HandleCallbackCode(code, state string) (*Request, *Response, error) {
 	data.Set("redirect_uri", request.Callback.String())
 	data.Set("code_verifier", request.CodeVerifier)
 
-	client := &http.Client{}
+	// Do not support redirects.
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
 	r, err := http.NewRequest("POST", request.Endpoint.String(), strings.NewReader(data.Encode())) // URL-encoded payload
 	if err != nil {
 		return nil, nil, err
