@@ -83,7 +83,7 @@
 		"@types/markdown-it": "12.2.3",
 		"@types/node": "18.15.13",
 		"@types/prop-types": "15.7.5",
-		"@types/react": "18.0.37",
+		"@types/react": "18.0.38",
 		"@types/react-linkify": "1.0.1",
 		"@types/ua-parser-js": "0.7.36",
 		"@types/video.js": "^7.3.50",
