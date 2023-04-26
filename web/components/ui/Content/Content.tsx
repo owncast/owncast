@@ -210,7 +210,7 @@ export const Content: FC = () => {
                   lastLive={lastDisconnectTime}
                   onNotifyClick={() => setShowNotifyModal(true)}
                   onFollowClick={() => setShowFollowModal(true)}
-                  className={styles.topSectionElement}
+                  className={classnames([styles.topSectionElement, styles.offlineBanner])}
                 />
               </div>
             )}

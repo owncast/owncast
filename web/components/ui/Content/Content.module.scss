@@ -1,18 +1,18 @@
 @import '../../../styles/mixins.scss';
 
-  .lowerSection {
-    padding: var(--content-padding);
-  }
+.lowerSection {
+  padding: var(--content-padding);
+}
 
-  .lowerSectionMobile {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-shrink: 0;
-    padding: 0.3em;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+.lowerSectionMobile {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  padding: 0.3em;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 
   @include screen(tablet) {
     //sets the position of tabbed content for online mode
@@ -21,14 +21,13 @@
 
   @include screen(mobile) {
     //sets the position of tabbed content for online mode
-  top: 280px;
+    top: 280px;
   }
-      
-  }
+}
 
 .mobileNoTabs {
   padding-top: 20px;
-} 
+}
 
 .topSectionElement {
   background-color: var(--theme-color-components-video-background);
@@ -75,4 +74,7 @@
   h3:first-child {
     margin-top: unset;
   }
+}
+.offlineBanner {
+  color: var(--theme-color-background-main);
 }
