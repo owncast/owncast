@@ -8,8 +8,6 @@ import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { CurrentUser } from '../../../interfaces/current-user';
-import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
-import { ExternalAction } from '../../../interfaces/external-action';
 import { ComponentError } from '../ComponentError/ComponentError';
 
 export type MobileContentProps = {
@@ -18,16 +16,12 @@ export type MobileContentProps = {
   tags: string[];
   socialHandles: SocialLink[];
   extraPageContent: string;
-  setExternalActionToDisplay: (action: ExternalAction) => void;
-  setShowNotifyPopup: (show: boolean) => void;
   setShowFollowModal: (show: boolean) => void;
   supportFediverseFeatures: boolean;
   messages: ChatMessage[];
   currentUser: CurrentUser;
   showChat: boolean;
   chatEnabled: boolean;
-  actions: ExternalAction[];
-  supportsBrowserNotifications: boolean;
 };
 
 // lazy loaded components
@@ -94,12 +88,8 @@ export const MobileContent: FC<MobileContentProps> = ({
   currentUser,
   showChat,
   chatEnabled,
-  actions,
-  setExternalActionToDisplay,
-  setShowNotifyPopup,
   setShowFollowModal,
   supportFediverseFeatures,
-  supportsBrowserNotifications,
 }) => {
   const aboutTabContent = (
     <>
@@ -137,8 +127,6 @@ export const MobileContent: FC<MobileContentProps> = ({
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
   }
 
-  console.log('ITEMS', items.length);
-
   return (
     <ErrorBoundary
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -148,17 +136,6 @@ export const MobileContent: FC<MobileContentProps> = ({
     >
       <div className={styles.lowerSectionMobile}>
         {items.length > 1 && <Tabs defaultActiveKey="0" items={items} />}
-        <div className={styles.mobileActionButtonMenu}>
-          <ActionButtonMenu
-            className={styles.actionButtonMenu}
-            showFollowItem={supportFediverseFeatures}
-            showNotifyItem={supportsBrowserNotifications}
-            actions={actions}
-            externalActionSelected={setExternalActionToDisplay}
-            notifyItemSelected={() => setShowNotifyPopup(true)}
-            followItemSelected={() => setShowFollowModal(true)}
-          />
-        </div>
       </div>
       <div className={styles.mobileNoTabs}>{items.length <= 1 && aboutTabContent}</div>
     </ErrorBoundary>

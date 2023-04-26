@@ -3,6 +3,7 @@ import { Skeleton, Col, Row } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import classnames from 'classnames';
+import ActionButtons from './ActionButtons';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import isPushNotificationSupported from '../../../utils/browserPushNotifications';
 
@@ -21,13 +22,8 @@ import { ClientConfig } from '../../../interfaces/client-config.model';
 
 import styles from './Content.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
-
-import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
-import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
-import { FollowButton } from '../../action-buttons/FollowButton';
-import { NotifyButton } from '../../action-buttons/NotifyButton';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -54,14 +50,6 @@ const BrowserNotifyModal = dynamic(
   {
     ssr: false,
     loading: () => <Skeleton loading active paragraph={{ rows: 6 }} />,
-  },
-);
-
-const NotifyReminderPopup = dynamic(
-  () => import('../NotifyReminderPopup/NotifyReminderPopup').then(mod => mod.NotifyReminderPopup),
-  {
-    ssr: false,
-    loading: () => <Skeleton loading active paragraph={{ rows: 8 }} />,
   },
 );
 
@@ -144,14 +132,6 @@ export const Content: FC = () => {
       setExternalActionToDisplay(action);
     }
   };
-
-  const externalActionButtons = externalActions.map(action => (
-    <ActionButton
-      key={action.url || action.html}
-      action={action}
-      externalActionSelected={externalActionSelected}
-    />
-  ));
 
   const incrementVisitCounter = () => {
     let visits = parseInt(getLocalStorage(LOCAL_STORAGE_KEYS.userVisitCount), 10);
@@ -251,23 +231,18 @@ export const Content: FC = () => {
         </Row>
         <Row>
           <Col span={24} style={{ paddingRight: dynamicPadding }}>
-            {!isMobile && (
-              <ActionButtonRow>
-                {externalActionButtons}
-                {supportFediverseFeatures && (
-                  <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
-                )}
-                {supportsBrowserNotifications && (
-                  <NotifyReminderPopup
-                    open={showNotifyReminder}
-                    notificationClicked={() => setShowNotifyModal(true)}
-                    notificationClosed={() => disableNotifyReminderPopup()}
-                  >
-                    <NotifyButton onClick={() => setShowNotifyModal(true)} />
-                  </NotifyReminderPopup>
-                )}
-              </ActionButtonRow>
-            )}
+            <ActionButtons
+              isMobile={isMobile}
+              supportFediverseFeatures={supportFediverseFeatures}
+              supportsBrowserNotifications={supportsBrowserNotifications}
+              showNotifyReminder={showNotifyReminder}
+              setShowNotifyModal={setShowNotifyModal}
+              disableNotifyReminderPopup={disableNotifyReminderPopup}
+              externalActions={externalActions}
+              setExternalActionToDisplay={setExternalActionToDisplay}
+              setShowFollowModal={setShowFollowModal}
+              externalActionSelected={externalActionSelected}
+            />
           </Col>
         </Row>
 
@@ -290,12 +265,8 @@ export const Content: FC = () => {
               messages={messages}
               currentUser={currentUser}
               showChat={showChat}
-              actions={externalActions}
-              setExternalActionToDisplay={externalActionSelected}
-              setShowNotifyPopup={setShowNotifyModal}
               setShowFollowModal={setShowFollowModal}
               supportFediverseFeatures={supportFediverseFeatures}
-              supportsBrowserNotifications={supportsBrowserNotifications}
               chatEnabled={isChatAvailable}
             />
           ) : (

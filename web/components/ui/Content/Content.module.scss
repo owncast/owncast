@@ -1,52 +1,5 @@
 @import '../../../styles/mixins.scss';
 
-
-
-  // @include screen(mobile) {
-  //   .VideoPoster_image__DAj_o {
-  //       max-height: 100px !important;
-  //     }
-  // }
-
-  // @include screen(tablet) {
-  //   .VideoPoster_image__DAj_o {
-  //     max-height: 100px !important;
-  //   }
-  // }
-
-//   .mainSection {
-//     display: grid;
-//     grid-template-rows: min-content // Skeleton when app is loading
-//       minmax(30px, min-content) // player
-//       min-content // status bar when live
-//       min-content // mid section
-//       minmax(250px, 1fr) // mobile content
-// ;
-//     grid-template-columns: 100%;
-
-//     &.offline {
-//       grid-template-rows: min-content // Skeleton when app is loading
-//         min-content // offline banner
-//         min-content // status bar when live
-//         min-content // mid section
-//         minmax(250px, 1fr) // mobile content
-// ;
-//     }
-
-//     // @include screen(tablet) {
-//     //   grid-template-columns: 100vw;
-//     // }
-
-//     @include screen(desktop) {
-//       overflow-y: scroll;
-//       grid-template-rows: unset;
-
-//       &.offline {
-//         grid-template-rows: unset;
-//       }
-//     }
-//   }
-
   .lowerSection {
     padding: var(--content-padding);
   }
@@ -79,13 +32,6 @@
 
 .topSectionElement {
   background-color: var(--theme-color-components-video-background);
-
-  // @include screen(mobile) {
-  //   // "sticks" the stream to the top of the page
-  //   position: sticky;
-  //   z-index: 100;
-  // }
-
   @include screen(tablet) {
     // "sticks" the stream to the top of the page
     position: sticky;
@@ -101,6 +47,7 @@
   position: absolute;
   top: 4px;
   right: 10px;
+  z-index: 200;
 }
 
 //not sure if this is needed
@@ -108,67 +55,14 @@
   flex-shrink: 0;
 }
 
-
-// .leftCol {
-//   display: flex;
-//   flex-direction: column;
-// }
-
 // not sure if this is needed
 .loadingSpinner {
   display: grid;
 }
 
-// .replacementBar {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: flex-start;
-
-//   @include screen(tablet) {
-//     .defaultTabBar {
-//         width: 100%;
-//       }
-//   }
-// }
-
 .defaultTabBar {
   width: 85%;
 }
-
-// .defaultTabBar,
-// .actionButtonMenu {
-//   @include screen(tablet) {
-//     margin-bottom: 0 !important;
-//     padding-bottom: 0 !important;
-//   }
-// }
-
-// .tabs {
-//   @include screen(tablet) {
-//   > :global(.ant-tabs-content-holder) {
-//     position: absolute;
-//     height: 270px;
-//     width: 100%;
-//     top: 100px;
-//     left: 0;
-//     right: 0;
-//     bottom: 0;
-//   }
-    
-//   }
-
-//   @include screen(mobile) {
-//   > :global(.ant-tabs-content-holder) {
-//       position: absolute;
-//       height: 270px;
-//       width: 100%;
-//       top: 100px;
-//       left: 0;
-//       right: 0;
-//       bottom: 0;
-//     }
-//   }
-// }
 
 .bottomPageContentContainer {
   background-color: var(--theme-color-components-content-background);
