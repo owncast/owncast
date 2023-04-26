@@ -5,8 +5,8 @@
   align-items: center;
   justify-content: flex-end;
   button {
-    margin-left: 0.3rem;
-    margin-right: 0.3rem;
+    margin-left: clamp(1px, 0.2vw, 0.3rem);
+    margin-right: clamp(1px, 0.2vw, 0.3rem);
     &:last-of-type {
       margin-right: 0;
     }
