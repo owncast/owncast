@@ -104,6 +104,7 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
           onClick={e => e.preventDefault()}
           size="large"
           icon={<EllipsisOutlined size={6} style={{ rotate: '90deg' }} />}
+          className={styles.menuButton}
         />
       </div>
     </Dropdown>

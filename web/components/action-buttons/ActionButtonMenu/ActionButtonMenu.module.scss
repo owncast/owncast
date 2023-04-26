@@ -8,6 +8,7 @@
   align-items: center;
   height: 100%;
   padding-bottom: 16px; // to match antd nav margin-bottom
+
   button {
     height: 100%;
   }
@@ -20,4 +21,8 @@
 
 .menu {
   color: currentColor;
+}
+
+.menuButton {
+  border-color: var(--theme-color-components-content-background);
 }
