@@ -71,6 +71,10 @@
   background-color: var(--theme-color-components-video-background);
 }
 
+.offlineBanner {
+  color: var(--theme-color-background-main);
+}
+
 .statusBar {
   flex-shrink: 0;
 }

@@ -47,7 +47,12 @@ export default function VideoEmbed() {
   const loadingState = <Skeleton active style={{ padding: '10px' }} paragraph={{ rows: 10 }} />;
 
   const offlineState = (
-    <OfflineBanner streamName={name} customText={offlineMessage} notificationsEnabled={false} />
+    <OfflineBanner
+      streamName={name}
+      customText={offlineMessage}
+      lastLive={lastDisconnectTime}
+      notificationsEnabled={false}
+    />
   );
 
   const onlineState = (
