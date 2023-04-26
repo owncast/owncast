@@ -22,7 +22,7 @@
 
 .logoImage {
   padding: 0.2rem;
-	margin-right: .75rem;
+  margin-right: 0.75rem;
   display: none;
 
   @include screen(desktop) {
@@ -72,13 +72,12 @@
 
 .avatar {
   background-color: white;
-  padding: 0.2rem;
 }
 
 .chatOfflineText {
-	color: var(--theme-color-palette-8);
-	font-size: .75rem;
+  color: var(--theme-color-palette-8);
+  font-size: 0.75rem;
 }
 .toolTip {
-	font-size: .8rem;
+  font-size: 0.8rem;
 }
