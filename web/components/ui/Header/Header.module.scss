@@ -71,7 +71,11 @@
 }
 
 .avatar {
-  background-color: white;
+  background-color: var(--theme-color-background-header);
+  box-sizing: content-box;
+  border-color: #ffffff26;
+  border-width: 2px;
+  border-style: solid;
 }
 
 .chatOfflineText {
