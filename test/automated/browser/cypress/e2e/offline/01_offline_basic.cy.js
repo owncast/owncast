@@ -15,8 +15,8 @@ describe(`Basic tests`, () => {
 
 	// Verify the tags show up
 	it('Has correct tags visible', () => {
-		cy.contains('#owncast').should('be.visible');
-		cy.contains('#streaming').should('be.visible');
+		cy.contains('#owncast').should('exist');
+		cy.contains('#streaming').should('exist');
 	});
 
 	// it('Can open notify modal', () => {

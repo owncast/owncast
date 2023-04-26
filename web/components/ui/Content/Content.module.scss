@@ -1,59 +1,5 @@
 @import '../../../styles/mixins.scss';
 
-.root {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: 100%;
-  width: 100%;
-  background-color: var(--theme-color-background-main);
-  height: 100%;
-  min-height: 0;
-
-  @include screen(desktop) {
-    height: var(--content-height);
-  }
-
-  .mainSection {
-    display: grid;
-    grid-template-rows: min-content // Skeleton when app is loading
-      minmax(30px, min-content) // player
-      min-content // status bar when live
-      min-content // mid section
-      minmax(250px, 1fr) // mobile content
-;
-    grid-template-columns: 100%;
-
-    &.offline {
-      grid-template-rows: min-content // Skeleton when app is loading
-        min-content // offline banner
-        min-content // status bar when live
-        min-content // mid section
-        minmax(250px, 1fr) // mobile content
-;
-    }
-
-    @include screen(tablet) {
-      grid-template-columns: 100vw;
-    }
-
-    @include screen(desktop) {
-      overflow-y: scroll;
-      grid-template-rows: unset;
-
-      &.offline {
-        grid-template-rows: unset;
-      }
-    }
-  }
-
-  .mainSection::-webkit-scrollbar {
-    display: none;
-  }
-
-  .mainSection::-webkit-scrollbar-thumb {
-    display: none;
-  }
-
   .lowerSection {
     padding: var(--content-padding);
   }
@@ -64,70 +10,58 @@
     flex-grow: 1;
     flex-shrink: 0;
     padding: 0.3em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+  @include screen(tablet) {
+    //sets the position of tabbed content for online mode
+    top: 430px;
   }
-}
+
+  @include screen(mobile) {
+    //sets the position of tabbed content for online mode
+  top: 280px;
+  }
+      
+  }
+
+.mobileNoTabs {
+  padding-top: 20px;
+} 
 
 .topSectionElement {
   background-color: var(--theme-color-components-video-background);
+  @include screen(tablet) {
+    // "sticks" the stream to the top of the page
+    position: sticky;
+    z-index: 100;
+  }
 }
 
 .offlineBanner {
   color: var(--theme-color-background-main);
 }
 
+.mobileActionButtonMenu {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  z-index: 200;
+}
+
+//not sure if this is needed
 .statusBar {
   flex-shrink: 0;
 }
 
-.leftCol {
-  display: flex;
-  flex-direction: column;
-}
-
+// not sure if this is needed
 .loadingSpinner {
   display: grid;
 }
 
-.replacementBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-
-  @include screen(tablet) {
-    height: var(--replacement-bar-height);
-  }
-}
-
 .defaultTabBar {
   width: 85%;
-}
-
-.defaultTabBar,
-.actionButtonMenu {
-  @include screen(tablet) {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-  }
-}
-
-.tabs {
-  width: 100%;
-
-  @include screen(tablet) {
-    position: relative;
-    > :global(.ant-tabs-content-holder) {
-      position: absolute;
-      height: calc(100% - var(--replacement-bar-height));
-      top: var(--replacement-bar-height);
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
-    > :global(.ant-tabs-content-holder .ant-tabs-content) {
-      padding-top: 16px;
-    }
-  }
 }
 
 .bottomPageContentContainer {
