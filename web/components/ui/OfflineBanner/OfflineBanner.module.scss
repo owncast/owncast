@@ -6,10 +6,10 @@
   align-items: center;
 
   @include screen(tablet) {
-      height: 430px;
+    height: 430px;
   }
 
-  @include screen (mobile) {
+  @include screen(mobile) {
     height: 280px;
   }
 }
@@ -20,7 +20,6 @@
   flex-direction: column;
   margin: 3rem auto;
   padding: 2.4em;
-  color: var(--color-owncast-palette-3);
 
   @include screen(tablet) {
     font-size: 1.2rem;
