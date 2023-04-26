@@ -51,7 +51,6 @@ export default function EditInstanceDetails() {
   }
 
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
-    console.log('handleFieldChange', fieldName, value);
     setFormDataValues({
       ...formDataValues,
       [fieldName]: value,
