@@ -70,7 +70,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
         />
       )}
     >
-      <div className={styles.lowerHalf} id="skip-to-content">
+      <div id="skip-to-content">
         <ContentHeader
           name={name}
           summary={summary}
@@ -80,7 +80,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
         />
       </div>
 
-      <div className={styles.lowerSection}>
+      <div>
         {items.length > 1 ? (
           <Tabs defaultActiveKey="0" items={items} />
         ) : (

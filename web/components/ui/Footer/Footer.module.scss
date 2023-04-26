@@ -1,7 +1,7 @@
 @import '../../../styles/mixins.scss';
 
 .footer {
-  display: none;
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
   height: var(--footer-height);
@@ -16,8 +16,17 @@
   font-weight: 400;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
 
+  @include screen(mobile) {
+    position: fixed;
+    bottom: 0;
+  
+  }
+
   @include screen(tablet) {
     font-size: 10px;
+    position: fixed;
+    bottom: 0;
+
   }
 
   @include screen(desktop) {

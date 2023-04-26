@@ -2,10 +2,16 @@
 
 .root {
   background-color: var(--theme-color-components-chat-background);
-  display: none;
   @include screen(desktop) {
-    position: sticky;
-    display: block;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    top: 69px;
+    z-index:100;
+  }
+
+  @media screen and (max-width: 1120px) and (min-width: 768px) {
+    top: 65px;
   }
 }
 
@@ -19,4 +25,5 @@ Only way to target it apparently
   -moz-box-flex: 1 !important;
   flex-grow: 1 !important;
   height: 100% !important;
+  width: 100%!important;
 }

@@ -9,14 +9,20 @@
   padding: 0.7rem var(--content-padding);
   box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
   background-color: var(--theme-color-background-header);
-
+  position: fixed;
+  top:0;
+  width: 100%;
+  z-index: 200;
   h1 {
     margin-top: unset;
     margin-bottom: unset;
   }
-
-  @include screen(mobile) {
+  // fixes header on tablet and below
+  @include screen(tablet) {
     --header-height: 3.85rem;
+    position: fixed;
+    top: 0px;
+    width: 100%;
   }
 }
 

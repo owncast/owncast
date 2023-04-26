@@ -10,6 +10,8 @@
       @content;
     }
   }
+
+  // tablet will also apply to mobile as there is no cut-off for min-width, however changing this now could break CSS all over the site.
   @if $breakpoint == tablet {
     @media only screen and (max-width: 768px) {
       @content;
