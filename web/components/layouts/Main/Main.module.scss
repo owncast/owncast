@@ -13,4 +13,12 @@
     // this one is for fixed footer
     margin-bottom: 30px;
   }
+
+  @include screen(mobile) {
+    margin-bottom: 0px;
+
+    footer {
+      display: none;
+    }
+  }
 }
