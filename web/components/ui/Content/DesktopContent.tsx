@@ -34,6 +34,20 @@ const FollowerCollection = dynamic(
   },
 );
 
+const autoScrollToSection = (key) => {
+  let elementToScroll = null;
+  if (key === '2') {
+    elementToScroll = document.getElementById('custom-page-content');
+  } else {
+    elementToScroll = document.getElementById('followers-collection');
+  }
+
+  // Since we want to wait for sometime for the UI to reflect that the tab changed we add a
+  setTimeout(() => {
+    elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'start' });
+  }, 500);
+}
+
 export const DesktopContent: FC<DesktopContentProps> = ({
   name,
   summary,
@@ -82,7 +96,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
 
       <div>
         {items.length > 1 ? (
-          <Tabs defaultActiveKey="0" items={items} />
+          <Tabs defaultActiveKey="0" items={items} onChange={autoScrollToSection}/>
         ) : (
           !!extraPageContent && aboutTabContent
         )}
