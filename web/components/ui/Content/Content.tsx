@@ -21,6 +21,7 @@ import {
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
 import styles from './Content.module.scss';
+import desktopStyles from './DesktopContent.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
@@ -271,15 +272,17 @@ export const Content: FC = () => {
             />
           ) : (
             <Col span={24} style={{ paddingRight: dynamicPadding }}>
-              <DesktopContent
-                name={name}
-                summary={summary}
-                tags={tags}
-                socialHandles={socialHandles}
-                extraPageContent={extraPageContent}
-                setShowFollowModal={setShowFollowModal}
-                supportFediverseFeatures={supportFediverseFeatures}
-              />
+              <div className={desktopStyles.bottomSectionContent}>
+                <DesktopContent
+                  name={name}
+                  summary={summary}
+                  tags={tags}
+                  socialHandles={socialHandles}
+                  extraPageContent={extraPageContent}
+                  setShowFollowModal={setShowFollowModal}
+                  supportFediverseFeatures={supportFediverseFeatures}
+                />
+              </div>
             </Col>
           )}
         </Row>
