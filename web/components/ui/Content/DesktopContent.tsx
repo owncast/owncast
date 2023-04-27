@@ -34,7 +34,7 @@ const FollowerCollection = dynamic(
   },
 );
 
-const autoScrollToSection = (key) => {
+const autoScrollToSection = key => {
   let elementToScroll = null;
   if (key === '2') {
     elementToScroll = document.getElementById('custom-page-content');
@@ -46,7 +46,7 @@ const autoScrollToSection = (key) => {
   setTimeout(() => {
     elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'start' });
   }, 500);
-}
+};
 
 export const DesktopContent: FC<DesktopContentProps> = ({
   name,
@@ -96,7 +96,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
 
       <div>
         {items.length > 1 ? (
-          <Tabs defaultActiveKey="0" items={items} onChange={autoScrollToSection}/>
+          <Tabs defaultActiveKey="0" items={items} onChange={autoScrollToSection} />
         ) : (
           !!extraPageContent && aboutTabContent
         )}
