@@ -1,0 +1,7 @@
+$bottomMargin: 4vh;
+
+.bottomSectionContent {
+  // background-color: green;
+  width: calc(100% - (2 * $bottomMargin));
+  margin: 0 $bottomMargin 0 $bottomMargin;
+}

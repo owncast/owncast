@@ -3,6 +3,7 @@
 .layout {
   // this margin is for fixed header
   margin-top: 55px;
+  background-color: var(--theme-color-main-background);
   @include screen(tablet) {
     position: absolute;
     top: 0;
@@ -10,7 +11,6 @@
     bottom: 0;
     right: 0;
     // this one is for fixed footer
-    margin-bottom: 30px
+    margin-bottom: 30px;
   }
-  
 }
