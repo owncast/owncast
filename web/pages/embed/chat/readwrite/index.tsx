@@ -1,4 +1,6 @@
+/* eslint-disable react/no-unknown-property */
 import { useRecoilValue } from 'recoil';
+import { useEffect } from 'react';
 import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
@@ -30,8 +32,20 @@ export default function ReadWriteChatEmbed() {
 
   const headerText = online ? streamTitle || name : name;
 
+  // This is a hack to force a specific body background color for just this page.
+  useEffect(() => {
+    document.body.classList.add('body-background');
+  }, []);
+
   return (
     <div>
+      <style jsx global>
+        {`
+          .body-background {
+            background: var(--theme-color-components-chat-background);
+          }
+        `}
+      </style>
       <ClientConfigStore />
       <Header name={headerText} chatAvailable chatDisabled={chatDisabled} online={videoAvailable} />
       {currentUser && (
@@ -42,7 +56,7 @@ export default function ReadWriteChatEmbed() {
             chatUserId={currentUser.id}
             isModerator={currentUser.isModerator}
             showInput
-            height="80vh"
+            height="92vh"
             chatAvailable={isChatAvailable}
           />
         </div>
