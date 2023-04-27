@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react/no-unknown-property */
+import React, { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useRouter } from 'next/router';
 import { Skeleton } from 'antd';
@@ -16,6 +17,7 @@ import { ClientConfig } from '../../../interfaces/client-config.model';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { AppStateOptions } from '../../../components/stores/application-state';
 import { Theme } from '../../../components/theme/Theme';
+import styles from './VideoEmbed.module.scss';
 
 export default function VideoEmbed() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
@@ -46,6 +48,11 @@ export default function VideoEmbed() {
 
   const loadingState = <Skeleton active style={{ padding: '10px' }} paragraph={{ rows: 10 }} />;
 
+  // This is a hack to force a specific body background color for just this page.
+  useEffect(() => {
+    document.body.classList.add('body-background');
+  }, []);
+
   const offlineState = (
     <OfflineBanner
       streamName={name}
@@ -56,7 +63,14 @@ export default function VideoEmbed() {
   );
 
   const onlineState = (
-    <>
+    <div className={styles.onlineContainer}>
+      <style jsx global>
+        {`
+          .body-background {
+            background: var(--theme-color-components-video-status-bar-background);
+          }
+        `}
+      </style>
       <OwncastPlayer
         source="/hls/stream.m3u8"
         online={online}
@@ -70,7 +84,7 @@ export default function VideoEmbed() {
         lastDisconnectTime={lastDisconnectTime}
         viewerCount={viewerCount}
       />
-    </>
+    </div>
   );
 
   const getView = () => {
