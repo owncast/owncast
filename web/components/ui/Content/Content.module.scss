@@ -23,6 +23,10 @@
     //sets the position of tabbed content for online mode
     top: 280px;
   }
+
+  :global(.ant-tabs-nav) {
+    margin-bottom: 0px;
+  }
 }
 
 .mobileNoTabs {
