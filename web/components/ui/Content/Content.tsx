@@ -233,7 +233,6 @@ export const Content: FC = () => {
         <Row>
           <Col span={24} style={{ paddingRight: dynamicPadding }}>
             <ActionButtons
-              isMobile={isMobile}
               supportFediverseFeatures={supportFediverseFeatures}
               supportsBrowserNotifications={supportsBrowserNotifications}
               showNotifyReminder={showNotifyReminder}

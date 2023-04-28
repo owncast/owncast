@@ -10,7 +10,6 @@ import styles from './Content.module.scss';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 
 interface ActionButtonProps {
-  isMobile: boolean;
   supportFediverseFeatures: boolean;
   externalActions: ExternalAction[];
   supportsBrowserNotifications: boolean;
@@ -31,7 +30,6 @@ const NotifyReminderPopup = dynamic(
 );
 
 const ActionButtons: FC<ActionButtonProps> = ({
-  isMobile,
   supportFediverseFeatures,
   supportsBrowserNotifications,
   showNotifyReminder,
@@ -50,38 +48,37 @@ const ActionButtons: FC<ActionButtonProps> = ({
     />
   ));
 
-  if (!isMobile) {
-    return (
-      <ActionButtonRow>
-        {externalActionButtons}
-        {supportFediverseFeatures && (
-          <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
-        )}
-        {supportsBrowserNotifications && (
-          <NotifyReminderPopup
-            open={showNotifyReminder}
-            notificationClicked={() => setShowNotifyModal(true)}
-            notificationClosed={() => disableNotifyReminderPopup()}
-          >
-            <NotifyButton onClick={() => setShowNotifyModal(true)} />
-          </NotifyReminderPopup>
-        )}
-      </ActionButtonRow>
-    );
-  }
-
   return (
-    <div className={styles.mobileActionButtonMenu}>
-      <ActionButtonMenu
-        className={styles.actionButtonMenu}
-        showFollowItem={supportFediverseFeatures}
-        showNotifyItem={supportsBrowserNotifications}
-        actions={externalActions}
-        externalActionSelected={setExternalActionToDisplay}
-        notifyItemSelected={() => setShowNotifyModal(true)}
-        followItemSelected={() => setShowFollowModal(true)}
-      />
-    </div>
+    <>
+      <div className={styles.desktopActionButtons}>
+        <ActionButtonRow>
+          {externalActionButtons}
+          {supportFediverseFeatures && (
+            <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
+          )}
+          {supportsBrowserNotifications && (
+            <NotifyReminderPopup
+              open={showNotifyReminder}
+              notificationClicked={() => setShowNotifyModal(true)}
+              notificationClosed={() => disableNotifyReminderPopup()}
+            >
+              <NotifyButton onClick={() => setShowNotifyModal(true)} />
+            </NotifyReminderPopup>
+          )}
+        </ActionButtonRow>
+      </div>
+      <div className={styles.mobileActionButtonMenu}>
+        <ActionButtonMenu
+          className={styles.actionButtonMenu}
+          showFollowItem={supportFediverseFeatures}
+          showNotifyItem={supportsBrowserNotifications}
+          actions={externalActions}
+          externalActionSelected={setExternalActionToDisplay}
+          notifyItemSelected={() => setShowNotifyModal(true)}
+          followItemSelected={() => setShowFollowModal(true)}
+        />
+      </div>
+    </>
   );
 };
 
