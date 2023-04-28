@@ -47,10 +47,24 @@
 }
 
 .mobileActionButtonMenu {
-  position: absolute;
-  top: 4px;
-  right: 10px;
-  z-index: 200;
+  display: none;
+
+  @include screen(tablet) {
+    display: block;
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    z-index: 200;
+  }
+}
+
+.desktopActionButtons {
+  display: block;
+
+  @include screen(tablet) {
+    display: none;
+  }
+
 }
 
 //not sure if this is needed
