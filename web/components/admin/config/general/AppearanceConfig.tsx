@@ -235,7 +235,7 @@ export default function Appearance() {
         <Paragraph>The following colors are used across the user interface.</Paragraph>
         <div>
           <Collapse defaultActiveKey={['1']}>
-            <Panel header={<Title level={3}>Section Colors</Title>} key="1">
+            <Panel header={<strong>Section Colors</strong>} key="1">
               <p>
                 Certain sections of the interface can be customized by selecting new colors for
                 them.
@@ -247,7 +247,7 @@ export default function Appearance() {
                 />
               </Row>
             </Panel>
-            <Panel header={<Title level={3}>Chat User Colors</Title>} key="2">
+            <Panel header={<strong>Chat User Colors</strong>} key="2">
               <Row gutter={[16, 16]}>
                 <ColorCollection
                   variables={transformToColorMap(chatColorVariables)}
@@ -255,7 +255,7 @@ export default function Appearance() {
                 />
               </Row>
             </Panel>
-            <Panel header={<Title level={3}>Other Settings</Title>} key="4">
+            <Panel header={<strong>Other Settings</strong>} key="4">
               How rounded should corners be?
               <Row gutter={[16, 16]}>
                 <Col span={12}>
