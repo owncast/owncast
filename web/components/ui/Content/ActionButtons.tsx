@@ -10,6 +10,7 @@ import styles from './Content.module.scss';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 
 interface ActionButtonProps {
+  online: boolean;
   supportFediverseFeatures: boolean;
   externalActions: ExternalAction[];
   supportsBrowserNotifications: boolean;
@@ -30,6 +31,7 @@ const NotifyReminderPopup = dynamic(
 );
 
 const ActionButtons: FC<ActionButtonProps> = ({
+  online,
   supportFediverseFeatures,
   supportsBrowserNotifications,
   showNotifyReminder,
@@ -67,7 +69,7 @@ const ActionButtons: FC<ActionButtonProps> = ({
           )}
         </ActionButtonRow>
       </div>
-      <div className={styles.mobileActionButtonMenu}>
+      <div className={styles.mobileActionButtonMenu} style={!online ? { right: '10px' } : {}}>
         <ActionButtonMenu
           className={styles.actionButtonMenu}
           showFollowItem={supportFediverseFeatures}

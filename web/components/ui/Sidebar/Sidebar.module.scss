@@ -2,11 +2,11 @@
 
 .root {
   background-color: var(--theme-color-components-chat-background);
-  @include screen(desktop) {
+  @include screen(streamAndChatSideBySide) {
     position: fixed;
     right: 0;
     bottom: 0;
-    top: 69px;
+    top: 0;
     z-index:100;
   }
 

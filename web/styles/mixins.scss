@@ -22,4 +22,18 @@
       @content;
     }
   }
+
+  // Handles situations where we are displaying the side by side experience, but need slightly different presentational logic for mobile landscape.
+  @if $breakpoint == streamAndChatSideBySideMobileLandscapeOnly {
+    @media only  screen and (max-height: 450px) and (max-width: 768px) {
+      @content;
+    }
+  }
+
+  // Handles desktop and mobile landscape (side by side) experience.
+  @if $breakpoint == streamAndChatSideBySide {
+    @media only screen and (min-width: 769px), screen and (max-height: 400px) {
+      @content
+    }
+  }
 }

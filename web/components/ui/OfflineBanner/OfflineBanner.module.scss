@@ -12,6 +12,10 @@
   @include screen(mobile) {
     height: 280px;
   }
+
+  @include screen(mobileLandscape) {
+    height: 280px;
+  }
 }
 
 .innerContainer {

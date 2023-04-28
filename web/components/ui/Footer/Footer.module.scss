@@ -15,18 +15,13 @@
   font-size: 0.75rem;
   font-weight: 400;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
-  width: 100%;
-
-  @include screen(tablet) {
-    font-size: 10px;
-    position: fixed;
-    bottom: 0;
-
-  }
 
   @include screen(mobile) {
-    position: fixed;
-    bottom: 0;
+    display: none;
+  }
+
+  @include screen(tablet) {
+    display: none;
   }
 
 

@@ -21,7 +21,6 @@ import {
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
 import styles from './Content.module.scss';
-import desktopStyles from './DesktopContent.module.scss';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
 import { AppStateOptions } from '../../stores/application-state';
@@ -30,8 +29,7 @@ import { Statusbar } from '../Statusbar/Statusbar';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
-import { DesktopContent } from './DesktopContent';
-import { MobileContent } from './MobileContent';
+import { TabsAndChat } from './TabsAndChat';
 
 // Lazy loaded components
 
@@ -155,12 +153,13 @@ export const Content: FC = () => {
 
   const checkIfMobile = () => {
     const w = window.innerWidth;
+    const h = window.innerHeight;
     if (isMobile === undefined) {
-      if (w <= 768) setIsMobile(true);
+      if (w <= 768 && h > 400) setIsMobile(true);
       else setIsMobile(false);
     }
-    if (!isMobile && w <= 768) setIsMobile(true);
-    if (isMobile && w > 768) setIsMobile(false);
+    if (!isMobile && w <= 768 && h > 400) setIsMobile(true);
+    if (isMobile && (w > 768 || h < 400)) setIsMobile(false);
   };
 
   useEffect(() => {
@@ -180,9 +179,6 @@ export const Content: FC = () => {
 
   const showChat = online && !chatDisabled && isChatVisible;
 
-  // accounts for sidebar width when online in desktop
-  const dynamicPadding = online && !isMobile ? '320px' : '0px';
-
   return (
     <>
       <>
@@ -191,7 +187,7 @@ export const Content: FC = () => {
         )}
         {showChat && !isMobile && <Sidebar />}
         <Row>
-          <Col span={24} style={{ paddingRight: dynamicPadding }}>
+          <Col span={24} className={showChat && styles.desktopPaddingForChat}>
             {online && (
               <OwncastPlayer
                 source="/hls/stream.m3u8"
@@ -218,7 +214,7 @@ export const Content: FC = () => {
           </Col>
         </Row>
         <Row>
-          <Col span={24} style={{ paddingRight: dynamicPadding }}>
+          <Col span={24} className={showChat && styles.desktopPaddingForChat}>
             {isStreamLive && (
               <Statusbar
                 online={online}
@@ -231,8 +227,9 @@ export const Content: FC = () => {
           </Col>
         </Row>
         <Row>
-          <Col span={24} style={{ paddingRight: dynamicPadding }}>
+          <Col span={24} className={showChat && styles.desktopPaddingForChat}>
             <ActionButtons
+              online={online}
               supportFediverseFeatures={supportFediverseFeatures}
               supportsBrowserNotifications={supportsBrowserNotifications}
               showNotifyReminder={showNotifyReminder}
@@ -255,35 +252,20 @@ export const Content: FC = () => {
           <BrowserNotifyModal />
         </Modal>
         <Row>
-          {isMobile ? (
-            <MobileContent
-              name={name}
-              summary={summary}
-              tags={tags}
-              socialHandles={socialHandles}
-              extraPageContent={extraPageContent}
-              messages={messages}
-              currentUser={currentUser}
-              showChat={showChat}
-              setShowFollowModal={setShowFollowModal}
-              supportFediverseFeatures={supportFediverseFeatures}
-              chatEnabled={isChatAvailable}
-            />
-          ) : (
-            <Col span={24} style={{ paddingRight: dynamicPadding }}>
-              <div className={desktopStyles.bottomSectionContent}>
-                <DesktopContent
-                  name={name}
-                  summary={summary}
-                  tags={tags}
-                  socialHandles={socialHandles}
-                  extraPageContent={extraPageContent}
-                  setShowFollowModal={setShowFollowModal}
-                  supportFediverseFeatures={supportFediverseFeatures}
-                />
-              </div>
-            </Col>
-          )}
+          <TabsAndChat
+            isMobile={isMobile}
+            name={name}
+            summary={summary}
+            tags={tags}
+            socialHandles={socialHandles}
+            extraPageContent={extraPageContent}
+            messages={messages}
+            currentUser={currentUser}
+            showChat={showChat}
+            setShowFollowModal={setShowFollowModal}
+            supportFediverseFeatures={supportFediverseFeatures}
+            chatEnabled={isChatAvailable}
+          />
         </Row>
       </>
       {externalActionToDisplay && (

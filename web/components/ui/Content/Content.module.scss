@@ -4,24 +4,52 @@
   padding: var(--content-padding);
 }
 
-.lowerSectionMobile {
+.contentHeaderMobile {
+  @include screen (tablet) {
+    display: flex;
+  }
+  @include screen(streamAndChatSideBySide) {
+    display: none;
+  }
+}
+
+.contentHeaderDesktop {
+  @include screen (tablet) {
+    display: none;
+  }
+
+  @include screen(streamAndChatSideBySide) {
+    display: flex;
+  }
+
+
+}
+
+.tabSection {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
   padding: 0.3em;
-  position: absolute;
-  bottom: 0;
   width: 100%;
 
   @include screen(tablet) {
     //sets the position of tabbed content for online mode
     top: 430px;
+    position: absolute;
+    bottom: 0;
   }
 
   @include screen(mobile) {
     //sets the position of tabbed content for online mode
     top: 280px;
+    position: absolute;
+    bottom: 0;
+  }
+
+  @include screen(streamAndChatSideBySide) {
+    // covers both desktop and landscape mobile - when the chat and stream player are side by side
+    position: unset;
   }
 
   :global(.ant-tabs-nav) {
@@ -29,7 +57,16 @@
   }
 }
 
-.mobileNoTabs {
+.desktopPaddingForChat {
+  padding-right: 0px;
+
+  @include screen (streamAndChatSideBySide) {
+    padding-right: 320px;
+  }
+
+}
+
+.noTabs {
   padding-top: 20px;
 }
 
@@ -56,14 +93,20 @@
     right: 10px;
     z-index: 200;
   }
+
+  // Handles overflow issue for mobile landscape
+  @include screen(streamAndChatSideBySideMobileLandscapeOnly) {
+      right: 330px;
+      top: 4px;
+  }
 }
 
 .desktopActionButtons {
   display: block;
 
   @include screen(tablet) {
-    display: none;
-  }
+      display: none;
+    }
 
 }
 
