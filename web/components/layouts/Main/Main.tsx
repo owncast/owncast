@@ -52,9 +52,9 @@ export const Main: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const layoutRef = useRef<HTMLDivElement>(null);
-  const { chatDisabled, version } = clientConfig;
+  const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
-  const { online, streamTitle } = clientStatus;
+  const { online, streamTitle, versionNumber: version } = clientStatus;
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
