@@ -112,7 +112,7 @@
 		"mermaid": "^10.0.0",
 		"npm": "^9.4.0",
 		"prettier": "2.8.8",
-		"sass": "1.62.0",
+		"sass": "1.62.1",
 		"sass-loader": "13.2.2",
 		"sb": "6.5.16",
 		"storybook-addon-designs": "6.3.1",
