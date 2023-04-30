@@ -8,6 +8,7 @@ $vert-spacing: 0.75rem;
   padding: var(--content-padding);
   padding-left: var(--content-padding);
   padding-right: var(--content-padding);
+  padding-top: calc(var(--content-padding) * 0.5);
 }
 
 .row {
