@@ -170,6 +170,8 @@ func (c *VaapiCodec) DisplayName() string {
 // GlobalFlags are the global flags used with this codec in the transcoder.
 func (c *VaapiCodec) GlobalFlags() string {
 	flags := []string{
+		"-hwaccel", "vaapi",
+		"-hwaccel_output_format", "vaapi",
 		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
@@ -183,7 +185,7 @@ func (c *VaapiCodec) PixelFormat() string {
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
 func (c *VaapiCodec) ExtraFilters() string {
-	return "format=nv12,hwupload"
+	return ""
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
@@ -232,7 +234,7 @@ func (c *NvencCodec) DisplayName() string {
 // GlobalFlags are the global flags used with this codec in the transcoder.
 func (c *NvencCodec) GlobalFlags() string {
 	flags := []string{
-		"-hwaccel cuda",
+		"-hwaccel", "cuda",
 	}
 
 	return strings.Join(flags, " ")
