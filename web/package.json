@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.0",
-		"@codemirror/lang-css": "6.1.1",
+		"@codemirror/lang-css": "6.2.0",
 		"@codemirror/lang-html": "^6.4.2",
 		"@codemirror/lang-javascript": "^6.1.2",
 		"@codemirror/lang-markdown": "6.1.1",
