@@ -145,7 +145,7 @@ func RenderSimpleMarkdown(raw string) string {
 		log.Fatalln(err)
 	}
 
-	return buf.String()
+	return strings.TrimSpace(buf.String())
 }
 
 // RenderPageContentMarkdown will return HTML specifically handled for the user-specified page content.

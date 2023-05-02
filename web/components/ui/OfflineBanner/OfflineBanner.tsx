@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Divider } from 'antd';
 import { FC } from 'react';
@@ -85,7 +86,12 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
             <Divider className={styles.separator} />
           </>
         )}
-        <div className={styles.bodyText}>{text}</div>
+        {customText ? (
+          <div className={styles.bodyText} dangerouslySetInnerHTML={{ __html: text }} />
+        ) : (
+          <div className={styles.bodyText}>{text}</div>
+        )}
+
         {lastLive && (
           <div className={styles.lastLiveDate}>
             <ClockCircleOutlined className={styles.clockIcon} />

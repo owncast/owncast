@@ -371,11 +371,12 @@ test('set override websocket host', async (done) => {
 
 test('verify updated config values', async (done) => {
 	const res = await request.get('/api/config');
+
 	expect(res.body.name).toBe(newServerName);
 	expect(res.body.streamTitle).toBe(newStreamTitle);
 	expect(res.body.summary).toBe(`${newServerSummary}`);
 	expect(res.body.extraPageContent).toBe(newPageContent);
-	expect(res.body.offlineMessage).toBe(newOfflineMessage);
+	expect(res.body.offlineMessage).toBe(`<p>${newOfflineMessage}</p>`);
 	expect(res.body.logo).toBe('/logo');
 	expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
 	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);

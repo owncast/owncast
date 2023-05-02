@@ -72,6 +72,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 func getConfigResponse() webConfigResponse {
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
+	offlineMessage := utils.RenderSimpleMarkdown(data.GetCustomOfflineMessage())
 	socialHandles := data.GetSocialHandles()
 	for i, handle := range socialHandles {
 		platform := models.GetSocialHandle(handle.Platform)
@@ -119,7 +120,7 @@ func getConfigResponse() webConfigResponse {
 	return webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
-		OfflineMessage:       data.GetCustomOfflineMessage(),
+		OfflineMessage:       offlineMessage,
 		Logo:                 "/logo",
 		Tags:                 data.GetServerMetadataTags(),
 		Version:              config.GetReleaseString(),
