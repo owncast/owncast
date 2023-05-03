@@ -5,7 +5,7 @@ on:
   push:
     paths:
       - web/**
-  pull_request_target:
+  pull_request:
     paths:
       - web/**
 
@@ -53,7 +53,7 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
-          
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
