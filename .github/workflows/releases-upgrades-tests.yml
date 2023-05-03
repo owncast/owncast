@@ -18,6 +18,9 @@ jobs:
         with:
           version: 'latest'
 
+      - name: Install ffmpeg
+        run: sudo apt-get install ffmpeg
+
       - name: Earthly version
         run: earthly --version
 
