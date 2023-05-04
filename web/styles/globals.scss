@@ -117,3 +117,11 @@ body {
   margin-left: 5px;
   margin-right: 5px;
 }
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body::-webkit-scrollbar-thumb {
+  display: none;
+}
