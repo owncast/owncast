@@ -30,7 +30,7 @@ export type OwncastPlayerProps = {
   initiallyMuted?: boolean;
   title: string;
   className?: string;
-  fill?: boolean;
+  embedded?: boolean;
 };
 
 export const OwncastPlayer: FC<OwncastPlayerProps> = ({
@@ -39,7 +39,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   initiallyMuted = false,
   title,
   className,
-  fill,
+  embedded = false,
 }) => {
   const VideoSettingsService = useContext(VideoSettingsServiceContext);
   const playerRef = React.useRef(null);
@@ -314,7 +314,10 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
         />
       )}
     >
-      <div className={classNames(styles.container, className, fill && styles.fill)} id="player">
+      <div
+        className={classNames(styles.container, className, embedded && styles.embedded)}
+        id="player"
+      >
         {online && (
           <div className={styles.player}>
             <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />

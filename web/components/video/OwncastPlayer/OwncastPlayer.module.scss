@@ -22,7 +22,7 @@
     height: 400px;
     max-height: 400px;
   }
-  
+
   //set height of player for mobile
   @include screen(mobile) {
     height: 250px;
@@ -37,6 +37,7 @@
   }
 }
 
-.fill {
+.embedded {
+  height: 100vh;
   max-height: unset;
 }
