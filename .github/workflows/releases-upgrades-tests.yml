@@ -2,7 +2,7 @@ name: Release and upgrade tests
 
 on:
   schedule:
-    - cron: '0 */4 * * * '
+    - cron: '0 */12 * * * '
 
 jobs:
   test:
