@@ -16,6 +16,7 @@ import {
   fatalErrorStateAtom,
   appStateAtom,
   serverStatusState,
+  isMobileAtom,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -50,11 +51,15 @@ export const Main: FC = () => {
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+  const isMobile = useRecoilValue<boolean | undefined>(isMobileAtom);
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
   const { online, streamTitle, versionNumber: version } = clientStatus;
+
+  // accounts for sidebar width when online in desktop
+  const dynamicPadding = online && !isMobile ? '320px' : '0px';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -164,7 +169,9 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-        <Footer version={version} />
+        <div style={{ paddingRight: dynamicPadding }}>
+          <Footer version={version} />
+        </div>
       </Layout>
 
       <Noscript />
