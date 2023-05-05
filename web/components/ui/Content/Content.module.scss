@@ -64,7 +64,6 @@
   @include screen(tablet) {
     display: none;
   }
-
 }
 
 //not sure if this is needed
@@ -86,6 +85,7 @@
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
   width: 100%;
+  margin-bottom: 20px;
 
   h1:first-child,
   h2:first-child,
