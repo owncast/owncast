@@ -7,6 +7,7 @@ import {
   visibleChatMessagesSelector,
   isChatAvailableSelector,
 } from '../../../../components/stores/ClientConfigStore';
+import { Theme } from '../../../../components/theme/Theme';
 
 export default function ReadOnlyChatEmbed() {
   const currentUser = useRecoilValue(currentUserAtom);
@@ -16,6 +17,7 @@ export default function ReadOnlyChatEmbed() {
   return (
     <div>
       <ClientConfigStore />
+      <Theme />
       {currentUser && (
         <ChatContainer
           messages={messages}

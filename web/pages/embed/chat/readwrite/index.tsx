@@ -16,6 +16,7 @@ import Header from '../../../../components/ui/Header/Header';
 import { ClientConfig } from '../../../../interfaces/client-config.model';
 import { AppStateOptions } from '../../../../components/stores/application-state';
 import { ServerStatus } from '../../../../interfaces/server-status.model';
+import { Theme } from '../../../../components/theme/Theme';
 
 export default function ReadWriteChatEmbed() {
   const currentUser = useRecoilValue(currentUserAtom);
@@ -47,6 +48,7 @@ export default function ReadWriteChatEmbed() {
         `}
       </style>
       <ClientConfigStore />
+      <Theme />
       <Header name={headerText} chatAvailable chatDisabled={chatDisabled} online={videoAvailable} />
       {currentUser && (
         <div id="chat-container">
