@@ -9,7 +9,6 @@
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
-  padding: 0.3em;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -26,6 +25,8 @@
 
   :global(.ant-tabs-nav) {
     margin-bottom: 0px;
+    padding-top: 0.5vh;
+    padding-left: 1vw;
   }
 }
 
