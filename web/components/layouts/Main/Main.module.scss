@@ -2,7 +2,7 @@
 
 .layout {
   // this margin is for fixed header
-  margin-top: 55px;
+  margin-top: var(--header-height);
   background-color: var(--theme-color-main-background);
   @include screen(tablet) {
     position: absolute;

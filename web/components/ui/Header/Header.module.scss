@@ -10,7 +10,7 @@
   box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
   background-color: var(--theme-color-background-header);
   position: fixed;
-  top:0;
+  top: 0;
   width: 100%;
   z-index: 200;
   h1 {
@@ -19,7 +19,6 @@
   }
   // fixes header on tablet and below
   @include screen(tablet) {
-    --header-height: 3.85rem;
     position: fixed;
     top: 0px;
     width: 100%;
