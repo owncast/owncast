@@ -18,7 +18,7 @@
 		"@codemirror/lang-html": "^6.4.2",
 		"@codemirror/lang-javascript": "^6.1.2",
 		"@codemirror/lang-markdown": "6.1.1",
-		"@codemirror/language-data": "6.3.0",
+		"@codemirror/language-data": "6.3.1",
 		"@fontsource/inter": "^4.5.15",
 		"@fontsource/poppins": "4.5.10",
 		"@next/bundle-analyzer": "^13.1.1",
