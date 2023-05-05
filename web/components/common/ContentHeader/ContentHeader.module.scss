@@ -9,6 +9,7 @@ $vert-spacing: 0.75rem;
   padding-left: var(--content-padding);
   padding-right: var(--content-padding);
   padding-top: calc(var(--content-padding) * 0.5);
+  color: var(--theme-color-components-text-on-light);
 }
 
 .row {
@@ -47,7 +48,6 @@ $vert-spacing: 0.75rem;
 
   .title {
     font-family: var(--theme-text-display-font-family);
-    color: var(--theme-color-palette-0);
     font-size: 1.8rem;
     font-weight: 600;
     line-height: 30px;
@@ -57,7 +57,6 @@ $vert-spacing: 0.75rem;
   .subtitle {
     font-size: 1.15rem;
     font-weight: 300;
-    color: var(--theme-color-palette-0);
     max-width: 900px;
     margin: $vert-spacing 0;
   }
