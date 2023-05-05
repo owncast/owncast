@@ -87,6 +87,12 @@
   width: 100%;
   margin-bottom: 20px;
 
+  h1,
+  h2,
+  h3 {
+    line-height: 2rem;
+  }
+
   h1:first-child,
   h2:first-child,
   h3:first-child {
