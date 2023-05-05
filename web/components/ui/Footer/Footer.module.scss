@@ -21,7 +21,6 @@
     font-size: 10px;
     position: fixed;
     bottom: 0;
-
   }
 
   @include screen(mobile) {
@@ -29,10 +28,7 @@
     bottom: 0;
   }
 
-
-
   a {
-    color: var(--theme-color-components-text-on-dark);
     text-decoration: none;
   }
 
