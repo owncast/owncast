@@ -36,6 +36,12 @@
       border-radius: var(--chat-text-highlight-border-radius);
       background-color: var(--color-owncast-palette-7);
     }
+
+    img {
+      max-width: 100%;
+      max-height: 30vh;
+      object-fit: contain;
+    }
   }
 
   a {
