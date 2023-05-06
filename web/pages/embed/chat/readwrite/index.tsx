@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 import { useRecoilValue } from 'recoil';
 import { useEffect } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
@@ -17,6 +18,7 @@ import { ClientConfig } from '../../../../interfaces/client-config.model';
 import { AppStateOptions } from '../../../../components/stores/application-state';
 import { ServerStatus } from '../../../../interfaces/server-status.model';
 import { Theme } from '../../../../components/theme/Theme';
+import { ComponentError } from '../../../../components/ui/ComponentError/ComponentError';
 
 export default function ReadWriteChatEmbed() {
   const currentUser = useRecoilValue(currentUserAtom);
@@ -47,22 +49,34 @@ export default function ReadWriteChatEmbed() {
           }
         `}
       </style>
-      <ClientConfigStore />
-      <Theme />
-      <Header name={headerText} chatAvailable chatDisabled={chatDisabled} online={videoAvailable} />
-      {currentUser && (
-        <div id="chat-container">
-          <ChatContainer
-            messages={messages}
-            usernameToHighlight={currentUser.displayName}
-            chatUserId={currentUser.id}
-            isModerator={currentUser.isModerator}
-            showInput
-            height="92vh"
-            chatAvailable={isChatAvailable}
-          />
-        </div>
-      )}
+      <ErrorBoundary
+        // eslint-disable-next-line react/no-unstable-nested-components
+        fallbackRender={({ error }) => (
+          <ComponentError componentName="ReadWriteChatEmbed" message={error.message} />
+        )}
+      >
+        <ClientConfigStore />
+        <Theme />
+        <Header
+          name={headerText}
+          chatAvailable
+          chatDisabled={chatDisabled}
+          online={videoAvailable}
+        />
+        {currentUser && (
+          <div id="chat-container">
+            <ChatContainer
+              messages={messages}
+              usernameToHighlight={currentUser.displayName}
+              chatUserId={currentUser.id}
+              isModerator={currentUser.isModerator}
+              showInput
+              height="92vh"
+              chatAvailable={isChatAvailable}
+            />
+          </div>
+        )}
+      </ErrorBoundary>
     </div>
   );
 }
