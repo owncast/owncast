@@ -8,7 +8,7 @@ export const Theme: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { appearanceVariables, customStyles } = clientConfig;
 
-  const appearanceVars = Object.keys(appearanceVariables)
+  const appearanceVars = Object.keys(appearanceVariables || {})
     .filter(variable => !!appearanceVariables[variable])
     .map(variable => `--${variable}: ${appearanceVariables[variable]}`);
 
