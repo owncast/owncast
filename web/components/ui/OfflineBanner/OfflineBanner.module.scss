@@ -4,21 +4,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
-  @include screen(tablet) {
-    height: 430px;
-  }
-
-  @include screen(mobile) {
-    height: 280px;
-  }
 }
 
 .innerContainer {
   width: clamp(00px, 100%, 600px);
   display: flex;
   flex-direction: column;
-  margin: 3rem auto;
+  margin: 5vh auto;
   padding: 2.4em;
 
   @include screen(tablet) {
