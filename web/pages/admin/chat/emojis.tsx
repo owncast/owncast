@@ -1,11 +1,9 @@
-import { Button, Space, Table, Typography, Upload } from 'antd';
-import { RcFile } from 'antd/lib/upload';
+import { Avatar, Button, Card, Col, Row, Space, Typography } from 'antd';
+import Upload, { RcFile } from 'antd/lib/upload';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';
-
 import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
-
 import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../../utils/images';
 import {
   createInputStatus,
@@ -15,9 +13,9 @@ import {
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
 import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
-
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
+const { Meta } = Card;
 // Lazy loaded components
 
 const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
@@ -33,7 +31,6 @@ const { Title, Paragraph } = Typography;
 
 const Emoji = () => {
   const [emojis, setEmojis] = useState<CustomEmoji[]>([]);
-
   const [loading, setLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [uploadFile, setUploadFile] = useState<RcFile>(null);
@@ -133,30 +130,6 @@ const Emoji = () => {
     setLoading(false);
   }
 
-  const columns = [
-    {
-      title: '',
-      key: 'delete',
-      render: (text, record) => (
-        <Space size="middle">
-          <Button onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />
-        </Space>
-      ),
-    },
-    {
-      title: 'Name',
-      key: 'name',
-      dataIndex: 'name',
-    },
-    {
-      title: 'Emoji',
-      key: 'url',
-      render: (text, record) => (
-        <img src={record.url} alt={record.name} style={{ maxWidth: '2vw' }} />
-      ),
-    },
-  ];
-
   return (
     <div>
       <Title>Emojis</Title>
@@ -164,13 +137,6 @@ const Emoji = () => {
         Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
         filename will be used as emoji name.
       </Paragraph>
-
-      <Table
-        rowKey={record => record.url}
-        dataSource={emojis}
-        columns={columns}
-        pagination={false}
-      />
       <br />
       <Upload
         name="emoji"
@@ -187,6 +153,24 @@ const Emoji = () => {
         </Button>
       </Upload>
       <FormStatusIndicator status={submitStatus} />
+      <br />
+      <Row>
+        {emojis.map(record => (
+          <Col key={record.name} flex={4}>
+            <Card
+              style={{ width: 250, marginTop: 16 }}
+              actions={[
+                <Space size="middle">
+                  <Button onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />{' '}
+                </Space>,
+              ]}
+            >
+              <Meta avatar={<Avatar src={record.url} />} title={record.name} />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <br />
     </div>
   );
 };
