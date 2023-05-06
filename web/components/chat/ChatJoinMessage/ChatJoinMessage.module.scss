@@ -1,10 +1,10 @@
 .root {
   padding: 10px 0px;
   color: var(--theme-color-components-chat-text);
-	font-weight: 300;
-	font-size: var(--chat-message-text-size);
+  font-weight: 400;
+  font-size: var(--chat-message-text-size);
 }
 
 .icon {
-	padding: 0 var(--chat-notification-icon-padding) 0 16px;
+  padding: 0 var(--chat-notification-icon-padding) 0 16px;
 }
