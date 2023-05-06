@@ -146,7 +146,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) 
       return;
     }
 
-    const message = serialize(editor);
+    let message = serialize(editor);
+    // Strip the opening and closing <p> tags.
+    message = message.replace(/^<p>|<\/p>$/g, '');
     websocketService.send({ type: MessageType.CHAT, body: message });
 
     // Clear the editor.
