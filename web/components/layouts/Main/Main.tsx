@@ -59,7 +59,7 @@ export const Main: FC = () => {
   const { online, streamTitle, versionNumber: version } = clientStatus;
 
   // accounts for sidebar width when online in desktop
-  const dynamicPadding = online && !isMobile ? '320px' : '0px';
+  const dynamicPadding = online && !chatDisabled && !isMobile ? '320px' : '0px';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
