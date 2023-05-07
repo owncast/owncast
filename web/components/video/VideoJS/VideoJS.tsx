@@ -31,8 +31,12 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
     }
 
     // Add a cachebuster param to playlist URLs.
-    if ((videojs.getPlayer(videoRef.current).tech() as any)?.vhs) {
-      (videojs.getPlayer(videoRef.current).tech() as any).vhs.xhr.beforeRequest = o => {
+    if (
+      (videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any)?.vhs
+    ) {
+      (
+        videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any
+      ).vhs.xhr.beforeRequest = o => {
         if (o.uri.match('m3u8')) {
           const cachebuster = Math.random().toString(16).substr(2, 8);
           // eslint-disable-next-line no-param-reassign
