@@ -95,7 +95,6 @@ export const Main: FC = () => {
         <link rel="authorization_endpoint" href="/api/auth/provider/indieauth" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
