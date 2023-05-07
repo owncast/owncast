@@ -18,11 +18,9 @@ import { AdminLayout } from '../../../components/layouts/AdminLayout';
 const { Meta } = Card;
 // Lazy loaded components
 
-
 const CloseOutlined = dynamic(() => import('@ant-design/icons/CloseOutlined'), {
   ssr: false,
 });
-
 
 type CustomEmoji = {
   name: string;
@@ -174,11 +172,18 @@ const Emoji = () => {
                     <Tooltip title={record.name}>
                       <Avatar style={{ height: 50, width: 50 }} src={record.url} />
                     </Tooltip>
-                    <Button size='small' style={{
-                        position: "absolute",right: 0,top: 0,
-                        height :24,
-                        width : 24
-                    }} onClick={() => handleDelete(record.url)} icon={<CloseOutlined />} />
+                    <Button
+                      size="small"
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        height: 24,
+                        width: 24,
+                      }}
+                      onClick={() => handleDelete(record.url)}
+                      icon={<CloseOutlined />}
+                    />
                   </div>,
                 ]}
               />
