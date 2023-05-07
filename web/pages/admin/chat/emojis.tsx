@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Col, Row, Space, Typography } from 'antd';
+import { Avatar, Button, Card, Col, Row, Space, Tooltip, Typography } from 'antd';
 import Upload, { RcFile } from 'antd/lib/upload';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -16,6 +16,7 @@ import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 const { Meta } = Card;
+const { Text } = Typography;
 // Lazy loaded components
 
 const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
@@ -156,16 +157,26 @@ const Emoji = () => {
       <br />
       <Row>
         {emojis.map(record => (
-          <Col key={record.name} flex={4}>
-            <Card
-              style={{ width: 250, marginTop: 16 }}
-              actions={[
-                <Space size="middle">
-                  <Button onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />{' '}
-                </Space>,
-              ]}
-            >
-              <Meta avatar={<Avatar src={record.url} />} title={record.name} />
+          <Col style={{ padding: '10px' }} key={record.name}>
+            <Card style={{ width: 120, marginTop: 16 }} actions={[]}>
+              <Meta
+                description={[
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyItems: 'center',
+                      alignItems: 'center',
+                      flexDirection: 'column',
+                      gap: '20px',
+                    }}
+                  >
+                    <Tooltip title={record.name}>
+                      <Avatar style={{ height: 50, width: 50 }} src={record.url} />
+                    </Tooltip>
+                    <Button onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />
+                  </div>,
+                ]}
+              />
             </Card>
           </Col>
         ))}
