@@ -182,6 +182,10 @@ DROPDOWN
   color: var(--theme-color-components-modal-header-text);
 }
 
+.ant-modal-title {
+  color: var(--theme-color-components-modal-header-text);
+}
+
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: unset;
 }
