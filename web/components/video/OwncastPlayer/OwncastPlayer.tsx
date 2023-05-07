@@ -1,7 +1,6 @@
 import React, { FC, useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { VideoJsPlayerOptions } from 'video.js';
 import classNames from 'classnames';
 import { ErrorBoundary } from 'react-error-boundary';
 import { VideoJS } from '../VideoJS/VideoJS';
@@ -244,7 +243,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
         type: 'application/x-mpegURL',
       },
     ],
-  } satisfies VideoJsPlayerOptions;
+  };
 
   const handlePlayerReady = (player, videojs) => {
     playerRef.current = player;
