@@ -172,7 +172,9 @@ const Emoji = () => {
                     <Tooltip title={record.name}>
                       <Avatar style={{ height: 50, width: 50 }} src={record.url} />
                     </Tooltip>
-                    <Button onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />
+                    <Button style={{
+                        position: "absolute",right: 0,top: 0
+                    }} onClick={() => handleDelete(record.url)} icon={<DeleteOutlined />} />
                   </div>,
                 ]}
               />
