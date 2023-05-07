@@ -1,12 +1,14 @@
 import React, { FC } from 'react';
-import videojs, { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
+import videojs from 'video.js';
+import type VideoJsPlayer from 'video.js/dist/types/player';
+
 import styles from './VideoJS.module.scss';
 
 require('video.js/dist/video-js.css');
 
 export type VideoJSProps = {
-  options: VideoJsPlayerOptions;
-  onReady: (player: videojs.Player, vjsInstance: typeof videojs) => void;
+  options: any;
+  onReady: (player: VideoJsPlayer, vjsInstance: typeof videojs) => void;
 };
 
 export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
@@ -29,15 +31,21 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
     }
 
     // Add a cachebuster param to playlist URLs.
-    videojs.Vhs.xhr.beforeRequest = o => {
-      if (o.uri.match('m3u8')) {
-        const cachebuster = Math.random().toString(16).substr(2, 8);
-        // eslint-disable-next-line no-param-reassign
-        o.uri = `${o.uri}?cachebust=${cachebuster}`;
-      }
+    if (
+      (videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any)?.vhs
+    ) {
+      (
+        videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any
+      ).vhs.xhr.beforeRequest = o => {
+        if (o.uri.match('m3u8')) {
+          const cachebuster = Math.random().toString(16).substr(2, 8);
+          // eslint-disable-next-line no-param-reassign
+          o.uri = `${o.uri}?cachebust=${cachebuster}`;
+        }
 
-      return o;
-    };
+        return o;
+      };
+    }
   }, [options, videoRef]);
 
   return (

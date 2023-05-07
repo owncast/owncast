@@ -181,7 +181,7 @@ export const Content: FC = () => {
   const showChat = online && !chatDisabled && isChatVisible;
 
   // accounts for sidebar width when online in desktop
-  const dynamicPadding = online && !isMobile ? '320px' : '0px';
+  const dynamicPadding = showChat && !isMobile ? '320px' : '0px';
 
   return (
     <>
