@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Col, Row, Space, Tooltip, Typography } from 'antd';
+import { Avatar, Button, Card, Col, Row, Tooltip, Typography } from 'antd';
 import Upload, { RcFile } from 'antd/lib/upload';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -16,7 +16,6 @@ import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
 const { Meta } = Card;
-const { Text } = Typography;
 // Lazy loaded components
 
 const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), {
