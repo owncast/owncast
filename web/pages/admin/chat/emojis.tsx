@@ -174,12 +174,16 @@ const Emoji = () => {
                     </Tooltip>
                     <Button
                       size="small"
+                      type="ghost"
+                      title="Delete emoji"
                       style={{
                         position: 'absolute',
                         right: 0,
                         top: 0,
                         height: 24,
                         width: 24,
+                        border: 'none',
+                        color: 'gray',
                       }}
                       onClick={() => handleDelete(record.url)}
                       icon={<CloseOutlined />}
