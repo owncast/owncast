@@ -17,6 +17,7 @@ import {
   appStateAtom,
   serverStatusState,
   isMobileAtom,
+  isChatVisibleSelector,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -52,6 +53,7 @@ export const Main: FC = () => {
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const isMobile = useRecoilValue<boolean | undefined>(isMobileAtom);
+  const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
@@ -59,7 +61,8 @@ export const Main: FC = () => {
   const { online, streamTitle, versionNumber: version } = clientStatus;
 
   // accounts for sidebar width when online in desktop
-  const dynamicPadding = online && !isMobile ? '320px' : '0px';
+  const showChat = online && !chatDisabled && isChatVisible;
+  const dynamicPadding = showChat && !isMobile ? '320px' : '0px';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -95,7 +98,6 @@ export const Main: FC = () => {
         <link rel="authorization_endpoint" href="/api/auth/provider/indieauth" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
