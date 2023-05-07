@@ -1,5 +1,6 @@
 /* eslint-disable react/no-danger */
-import { FC } from 'react';
+import Head from 'next/head';
+import { FC, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
@@ -12,16 +13,30 @@ export const Theme: FC = () => {
     .filter(variable => !!appearanceVariables[variable])
     .map(variable => `--${variable}: ${appearanceVariables[variable]}`);
 
+  const [themeColor, setThemeColor] = useState('#fff');
+
+  useEffect(() => {
+    const color = getComputedStyle(document.documentElement).getPropertyValue(
+      '--theme-color-background-header',
+    );
+    setThemeColor(color);
+  }, [appearanceVars]);
+
   return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: `
+    <>
+      <Head>
+        <meta name="theme-color" content={themeColor} />
+      </Head>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
 				:root {
 					${appearanceVars.join(';\n')}
 				}
 				${customStyles}
 			`,
-      }}
-    />
+        }}
+      />
+    </>
   );
 };
