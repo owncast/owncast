@@ -25,7 +25,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => {
         />
       )}
     >
-      <div className={styles.links}>
+      <div className={styles.links} id="social-links">
         {links?.map(link => (
           <a
             key={link.platform}
