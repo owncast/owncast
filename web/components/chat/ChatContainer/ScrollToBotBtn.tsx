@@ -17,7 +17,7 @@ type Props = {
 };
 
 export const ScrollToBotBtn: FC<Props> = ({ onClick }) => (
-  <div className={styles.toBottomWrap}>
+  <div className={styles.toBottomWrap} id="scroll-to-chat-bottom">
     <Button
       type="default"
       style={{ color: 'currentColor' }}
