@@ -211,7 +211,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       });
       setIsAtBottom(true);
       setShowScrollToBottomButton(false);
-    }, 100);
+    }, 150);
   };
 
   // This is a hack to force a scroll to the very bottom of the chat messages
