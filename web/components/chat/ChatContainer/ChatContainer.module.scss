@@ -17,8 +17,8 @@
     align-items: center;
     opacity: 0;
     animation: show 250ms forwards ease-in-out 500ms;
-		font-size: 12px;
-		font-weight: 600;
+    font-size: 12px;
+    font-weight: 600;
   }
 }
 
@@ -27,13 +27,14 @@
   flex-direction: column;
   background-color: var(--theme-color-components-chat-background);
   height: 100%;
-	font-size: var(--chat-message-text-size);
+  font-size: var(--chat-message-text-size);
 }
 .virtuoso {
   width: auto;
   flex-grow: 1;
   overflow-y: scroll;
   overflow-x: hidden;
+  margin-bottom: 5px;
 }
 
 .virtuoso::-webkit-scrollbar {
@@ -52,7 +53,8 @@
   from {
     opacity: 0;
     transform: translateY(5px);
-  } to {
+  }
+  to {
     opacity: 1;
     transform: translateY(0px);
   }
