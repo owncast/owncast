@@ -200,6 +200,7 @@ func (t *Transcoder) getString() string {
 		"-loglevel warning",
 		t.codec.GlobalFlags(),
 		"-fflags +genpts", // Generate presentation time stamp if missing
+		"-flags +cgop",    // Force closed GOPs
 		"-i ", t.input,
 
 		t.getVariantsString(),
