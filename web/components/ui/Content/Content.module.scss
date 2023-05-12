@@ -14,8 +14,7 @@
   width: 100%;
 
   @include screen(tablet) {
-    //sets the position of tabbed content for online mode
-    top: 430px;
+    position: relative;
   }
 
   @include screen(mobile) {
@@ -27,6 +26,14 @@
     margin-bottom: 0px;
     padding-top: 0.5vh;
     padding-left: 1vw;
+  }
+}
+
+.online {
+  @include screen(tablet) {
+    //sets the position of tabbed content for online mode
+    position: absolute;
+    top: 430px;
   }
 }
 
