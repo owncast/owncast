@@ -3,10 +3,11 @@ import styles from './Footer.module.scss';
 
 export type FooterProps = {
   version: string;
+  dynamicPadding: string;
 };
 
-export const Footer: FC<FooterProps> = ({ version }) => (
-  <footer className={styles.footer} id="footer">
+export const Footer: FC<FooterProps> = ({ version, dynamicPadding }) => (
+  <footer className={styles.footer} id="footer" style={{ paddingRight: dynamicPadding }}>
     <span>
       Powered by <a href="https://owncast.online">Owncast v{version}</a>
     </span>
