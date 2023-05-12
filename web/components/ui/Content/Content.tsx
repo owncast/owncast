@@ -268,6 +268,7 @@ export const Content: FC = () => {
               setShowFollowModal={setShowFollowModal}
               supportFediverseFeatures={supportFediverseFeatures}
               chatEnabled={isChatAvailable}
+              online={online}
             />
           ) : (
             <Col span={24} style={{ paddingRight: dynamicPadding }}>
