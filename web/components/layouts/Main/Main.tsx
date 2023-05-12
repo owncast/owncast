@@ -62,7 +62,7 @@ export const Main: FC = () => {
 
   // accounts for sidebar width when online in desktop
   const showChat = online && !chatDisabled && isChatVisible;
-  const dynamicPadding = showChat && !isMobile ? '340px' : '0px';
+  const dynamicFooterPadding = showChat && !isMobile ? '340px' : '20px';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -200,7 +200,7 @@ export const Main: FC = () => {
           style={displayFooter ? { display: 'flex' } : { display: 'none' }}
           className={styles.fadeIn}
         >
-          <Footer version={version} dynamicPadding={dynamicPadding} />
+          <Footer version={version} dynamicPadding={dynamicFooterPadding} />
         </div>
       </Layout>
       <Noscript />
