@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
@@ -46,6 +46,7 @@ const FatalErrorStateModal = dynamic(
 );
 
 export const Main: FC = () => {
+  const [displayFooter, setDisplayFooter] = useState(false);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const { name } = clientConfig;
@@ -54,7 +55,6 @@ export const Main: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const isMobile = useRecoilValue<boolean | undefined>(isMobileAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
-
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
@@ -62,11 +62,37 @@ export const Main: FC = () => {
 
   // accounts for sidebar width when online in desktop
   const showChat = online && !chatDisabled && isChatVisible;
-  const dynamicPadding = showChat && !isMobile ? '320px' : '0px';
+  const dynamicFooterPadding = showChat && !isMobile ? '340px' : '20px';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
   }, []);
+
+  const handleScroll = () => {
+    const documentHeight = document.body.scrollHeight;
+    const currentScroll = window.scrollY + window.innerHeight;
+
+    // When the user is [modifier]px from the bottom, fire the event.
+    const modifier = 10;
+    if (currentScroll + modifier > documentHeight) {
+      if (!displayFooter) {
+        setDisplayFooter(true);
+      }
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (displayFooter) {
+        setDisplayFooter(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [displayFooter]);
 
   const isProduction = process.env.NODE_ENV === 'production';
   const headerText = online ? streamTitle || name : name;
@@ -159,7 +185,6 @@ export const Main: FC = () => {
       <TitleNotifier name={name} />
       <Theme />
       <Script strategy="afterInteractive" src="/customjavascript" />
-
       <Layout ref={layoutRef} className={styles.layout}>
         <Header
           name={headerText}
@@ -171,11 +196,13 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-        <div style={{ paddingRight: dynamicPadding }}>
-          <Footer version={version} />
+        <div
+          style={displayFooter ? { display: 'flex' } : { display: 'none' }}
+          className={styles.fadeIn}
+        >
+          <Footer version={version} dynamicPadding={dynamicFooterPadding} />
         </div>
       </Layout>
-
       <Noscript />
     </>
   );
