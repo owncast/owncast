@@ -16,6 +16,8 @@
   font-weight: 400;
   border-top: 1px solid rgba(214, 211, 211, 0.5);
   width: 100%;
+      position: fixed;
+        bottom: 0;
 
   @include screen(tablet) {
     font-size: 10px;
