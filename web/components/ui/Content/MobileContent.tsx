@@ -2,6 +2,7 @@ import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton, TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
+import classNames from 'classnames';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
@@ -22,6 +23,7 @@ export type MobileContentProps = {
   currentUser: CurrentUser;
   showChat: boolean;
   chatEnabled: boolean;
+  online: boolean;
 };
 
 // lazy loaded components
@@ -90,6 +92,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   chatEnabled,
   setShowFollowModal,
   supportFediverseFeatures,
+  online,
 }) => {
   const aboutTabContent = (
     <>
@@ -134,7 +137,7 @@ export const MobileContent: FC<MobileContentProps> = ({
         <ComponentErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
       )}
     >
-      <div className={styles.lowerSectionMobile}>
+      <div className={classNames([styles.lowerSectionMobile, online && styles.online])}>
         {items.length > 1 && <Tabs defaultActiveKey="0" items={items} />}
       </div>
       <div className={styles.mobileNoTabs}>{items.length <= 1 && aboutTabContent}</div>
