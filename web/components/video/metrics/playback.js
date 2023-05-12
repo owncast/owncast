@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
 const METRICS_SEND_INTERVAL = 10000;
-const MAX_VALID_LATENCY_SECONDS = 40; // Anything > this gets thrown out.
+const MAX_VALID_LATENCY_SECONDS = 100; // Anything > this gets thrown out.
 
 function getCurrentlyPlayingSegment(tech) {
   const targetMedia = tech.vhs.playlists.media();
