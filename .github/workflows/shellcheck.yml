@@ -18,7 +18,7 @@ jobs:
     env:
       LANG: C.UTF-8
     container:
-      image: docker.io/ubuntu:23.04
+      image: docker.io/ubuntu:23.10
     steps:
       - uses: actions/checkout@v3
 
