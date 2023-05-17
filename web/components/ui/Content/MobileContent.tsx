@@ -5,13 +5,11 @@ import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
-import mobileStyles from './MobileContent.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { CurrentUser } from '../../../interfaces/current-user';
 import { ComponentError } from '../ComponentError/ComponentError';
-import Footer from '../Footer/Footer';
 
 export type MobileContentProps = {
   name: string;
@@ -102,11 +100,6 @@ export const MobileContent: FC<MobileContentProps> = ({
       {!!extraPageContent && (
         <div className={styles.bottomPageContentContainer}>
           <CustomPageContent content={extraPageContent} />
-        </div>
-      )}
-      {online && (
-        <div className={mobileStyles.footerContainer}>
-          <Footer />
         </div>
       )}
     </>
