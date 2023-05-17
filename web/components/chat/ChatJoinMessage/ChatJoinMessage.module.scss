@@ -1,5 +1,8 @@
 .root {
   padding: 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-items: center;
   color: var(--theme-color-components-chat-text);
   font-weight: 400;
   font-size: var(--chat-message-text-size);
