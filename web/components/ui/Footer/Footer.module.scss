@@ -14,7 +14,7 @@
   color: var(--theme-color-components-text-on-dark);
   font-family: var(--theme-text-body-font-family);
 
-  padding: 0.6rem 1rem;
+  padding: 0.6rem var(--footer-padding-x);
   font-size: 0.75rem;
   font-weight: 400;
   border-top: 1px solid rgba(214, 211, 211, 0.5);

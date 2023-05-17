@@ -5,11 +5,13 @@ import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
+import mobileStyles from './MobileContent.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { CurrentUser } from '../../../interfaces/current-user';
 import { ComponentError } from '../ComponentError/ComponentError';
+import Footer from '../Footer/Footer';
 
 export type MobileContentProps = {
   name: string;
@@ -102,6 +104,11 @@ export const MobileContent: FC<MobileContentProps> = ({
           <CustomPageContent content={extraPageContent} />
         </div>
       )}
+      {online && (
+        <div className={mobileStyles.footerContainer}>
+          <Footer />
+        </div>
+      )}
     </>
   );
   const followersTabContent = (
@@ -137,10 +144,13 @@ export const MobileContent: FC<MobileContentProps> = ({
         <ComponentErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
       )}
     >
-      <div className={classNames([styles.lowerSectionMobile, online && styles.online])}>
-        {items.length > 1 && <Tabs defaultActiveKey="0" items={items} />}
-      </div>
-      <div className={styles.mobileNoTabs}>{items.length <= 1 && aboutTabContent}</div>
+      {items.length > 1 ? (
+        <div className={classNames([styles.lowerSectionMobileTabbed, online && styles.online])}>
+          <Tabs defaultActiveKey="0" items={items} />
+        </div>
+      ) : (
+        <div className={styles.lowerSectionMobileNoTabs}>{aboutTabContent}</div>
+      )}
     </ErrorBoundary>
   );
 };
