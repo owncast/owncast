@@ -196,12 +196,7 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-        <div
-          style={displayFooter ? { display: 'flex' } : { display: 'none' }}
-          className={styles.fadeIn}
-        >
-          <Footer version={version} dynamicPadding={dynamicFooterPadding} />
-        </div>
+        <Footer version={version} dynamicPadding={dynamicFooterPadding} />
       </Layout>
       <Noscript />
     </>

@@ -13,11 +13,6 @@
   bottom: 0;
   width: 100%;
 
-  // @include screen(mobile) {
-  //   //sets the position of tabbed content for online mode
-  //   top: 280px;
-  // }
-
 	@include screen(tablet) {
     position: relative;
 		top: calc(var(--player-container-height) + var(--status-bar-height));

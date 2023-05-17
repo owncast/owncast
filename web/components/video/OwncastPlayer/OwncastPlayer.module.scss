@@ -23,12 +23,6 @@
     max-height: var(--player-container-height);
   }
 
-  // //set height of player for mobile
-  // @include screen(mobile) {
-  //   height: var(--mobile-player-container-height);
-  //   max-height: var(--mobile-player-container-height);
-  // }
-
   .player,
   .poster {
     width: 100%;
