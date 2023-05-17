@@ -13,13 +13,14 @@
   bottom: 0;
   width: 100%;
 
-  @include screen(tablet) {
-    position: relative;
-  }
+  // @include screen(mobile) {
+  //   //sets the position of tabbed content for online mode
+  //   top: 280px;
+  // }
 
-  @include screen(mobile) {
-    //sets the position of tabbed content for online mode
-    top: 280px;
+	@include screen(tablet) {
+    position: relative;
+		top: calc(var(--player-container-height) + var(--status-bar-height));
   }
 
   :global(.ant-tabs-nav) {
@@ -33,7 +34,7 @@
   @include screen(tablet) {
     //sets the position of tabbed content for online mode
     position: absolute;
-    top: 430px;
+    // top: 430px;
   }
 }
 
