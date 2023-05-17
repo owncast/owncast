@@ -64,7 +64,7 @@ export const Main: FC = () => {
   const showChat = online && !chatDisabled && isChatVisible;
   const dynamicFooterPadding = showChat && !isMobile ? DYNAMIC_PADDING_VALUE : '';
 
-	console.log({showChat, isChatVisible,appState})
+  console.log({ showChat, isChatVisible, appState });
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
