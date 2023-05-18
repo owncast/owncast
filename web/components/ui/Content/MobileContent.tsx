@@ -137,10 +137,13 @@ export const MobileContent: FC<MobileContentProps> = ({
         <ComponentErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
       )}
     >
-      <div className={classNames([styles.lowerSectionMobile, online && styles.online])}>
-        {items.length > 1 && <Tabs defaultActiveKey="0" items={items} />}
-      </div>
-      <div className={styles.mobileNoTabs}>{items.length <= 1 && aboutTabContent}</div>
+      {items.length > 1 ? (
+        <div className={classNames([styles.lowerSectionMobileTabbed, online && styles.online])}>
+          <Tabs defaultActiveKey="0" items={items} />
+        </div>
+      ) : (
+        <div className={styles.lowerSectionMobileNoTabs}>{aboutTabContent}</div>
+      )}
     </ErrorBoundary>
   );
 };

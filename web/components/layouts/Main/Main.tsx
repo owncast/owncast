@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
@@ -32,6 +32,7 @@ import { PushNotificationServiceWorker } from '../../workers/PushNotificationSer
 import { AppStateOptions } from '../../stores/application-state';
 import { Noscript } from '../../ui/Noscript/Noscript';
 import { ServerStatus } from '../../../interfaces/server-status.model';
+import { DYNAMIC_PADDING_VALUE } from '../../../utils/constants';
 
 // Lazy loaded components
 
@@ -46,7 +47,6 @@ const FatalErrorStateModal = dynamic(
 );
 
 export const Main: FC = () => {
-  const [displayFooter, setDisplayFooter] = useState(false);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const { name } = clientConfig;
@@ -58,41 +58,15 @@ export const Main: FC = () => {
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
-  const { online, streamTitle, versionNumber: version } = clientStatus;
+  const { online, streamTitle } = clientStatus;
 
   // accounts for sidebar width when online in desktop
   const showChat = online && !chatDisabled && isChatVisible;
-  const dynamicFooterPadding = showChat && !isMobile ? '340px' : '20px';
+  const dynamicFooterPadding = showChat && !isMobile ? DYNAMIC_PADDING_VALUE : '';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
   }, []);
-
-  const handleScroll = () => {
-    const documentHeight = document.body.scrollHeight;
-    const currentScroll = window.scrollY + window.innerHeight;
-
-    // When the user is [modifier]px from the bottom, fire the event.
-    const modifier = 10;
-    if (currentScroll + modifier > documentHeight) {
-      if (!displayFooter) {
-        setDisplayFooter(true);
-      }
-    } else {
-      // eslint-disable-next-line no-lonely-if
-      if (displayFooter) {
-        setDisplayFooter(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [displayFooter]);
 
   const isProduction = process.env.NODE_ENV === 'production';
   const headerText = online ? streamTitle || name : name;
@@ -196,12 +170,8 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-        <div
-          style={displayFooter ? { display: 'flex' } : { display: 'none' }}
-          className={styles.fadeIn}
-        >
-          <Footer version={version} dynamicPadding={dynamicFooterPadding} />
-        </div>
+
+        {(!isMobile || !online) && <Footer dynamicPaddingValue={dynamicFooterPadding} />}
       </Layout>
       <Noscript />
     </>
