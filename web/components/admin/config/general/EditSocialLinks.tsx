@@ -214,7 +214,7 @@ export default function EditSocialLinks() {
       title: 'Social Link',
       dataIndex: '',
       key: 'combo',
-      render: (data, record) => {
+      render: (_, record) => {
         const { platform, url } = record;
         const platformInfo = isPredefinedSocial(platform);
 
@@ -251,7 +251,7 @@ export default function EditSocialLinks() {
       title: '',
       dataIndex: '',
       key: 'edit',
-      render: (data, record, index) => (
+      render: (_, _record, index) => (
         <div className="actions">
           <Button
             size="small"

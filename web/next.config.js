@@ -42,8 +42,14 @@ module.exports = withPWA(
 
         config.plugins.push(
           new DeadCodePlugin({
-            patterns: ['src/**/*.(js|jsx|tsx|css)'],
-            exclude: ['**/*.(stories|spec).(js|jsx|tsx)'],
+            detectUnusedFiles: false,
+            patterns: ['**/*.(js|jsx|tsx|css)'],
+            exclude: [
+              '**/*.(stories|spec).(js|jsx|tsx)',
+              'node_modules/**/*',
+              'storybook-static/**/*',
+              'out/**/*',
+            ],
           }),
         );
 

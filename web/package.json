@@ -61,7 +61,8 @@
 		"workbox-precaching": "^6.5.4",
 		"workbox-window": "^6.5.4",
 		"xstate": "4.37.2",
-		"yaml": "2.2.2"
+		"yaml": "2.2.2",
+		"webpack-deadcode-plugin": "^0.1.17"
 	},
 	"devDependencies": {
 		"@babel/core": "7.21.8",
@@ -125,7 +126,6 @@
 		"style-dictionary": "3.8.0",
 		"style-loader": "3.3.2",
 		"ts-jest": "^29.1.0",
-		"typescript": "4.9.5",
-		"webpack-deadcode-plugin": "^0.1.17"
+		"typescript": "4.9.5"
 	}
 }

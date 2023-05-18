@@ -32,7 +32,7 @@ export default {
 } as ComponentMeta<typeof FollowModal>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof FollowModal> = args => <Example />;
+const Template: ComponentStory<typeof FollowModal> = () => <Example />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Basic = Template.bind({});
