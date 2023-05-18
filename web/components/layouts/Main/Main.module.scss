@@ -2,7 +2,7 @@
 
 .layout {
   // this margin is for fixed header
-  margin-top: var(--header-height);
+  padding-top: var(--header-height);
   background-color: var(--theme-color-main-background);
 	min-height: 100vh;
 	position: relative;

@@ -19,7 +19,7 @@
 
 		&.online {
 			position: absolute;
-			top: calc(var(--player-container-height) + var(--status-bar-height));
+			top: calc(var(--player-container-height) + var(--status-bar-height) + var(--header-height));
 		}
   }
 
