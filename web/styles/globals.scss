@@ -10,7 +10,6 @@
   --content-padding: 0.95rem;
   --module-spacing: 12px; // margin size between lines of stuff, if needed
   --header-height: 70px; // needed for making main content scrollable;
-  --footer-height: 2.5rem; // needed for making main content scrollable;
   --content-height: calc(100vh - var(--header-height));
   --replacement-bar-height: 46px; // needed for making main content scrollable on mobile;
 
@@ -19,10 +18,19 @@
   --chat-notification-icon-padding: 6px;
   --chat-message-padding: 10px;
   --chat-text-highlight-border-radius: 3px;
+	--chat-col-width: 320px;
+
+	--player-container-height: 75vh;
+	--status-bar-height: 2rem;
+	--footer-padding-x: 1rem;
 
   @include screen(tablet) {
     --header-height: 3.85rem;
+		--player-container-height: 400px;
   }
+	@include screen(mobile) {
+		--player-container-height: 250px;
+	}
 }
 
 ::selection {

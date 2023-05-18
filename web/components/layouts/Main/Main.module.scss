@@ -2,37 +2,15 @@
 
 .layout {
   // this margin is for fixed header
-  margin-top: var(--header-height);
+  padding-top: var(--header-height);
   background-color: var(--theme-color-main-background);
-  @include screen(tablet) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    // this one is for fixed footer
-    margin-bottom: 30px;
-  }
+	min-height: 100vh;
+	position: relative;
 
-  @include screen(mobile) {
-    margin-bottom: 0px;
-
-    footer {
-      display: none;
-    }
-  }
-}
-
-.fadeIn {
-  animation: fadein 0.5s;
-}
-
-@keyframes fadein {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+	// add some spacing between the last row of content and the footer
+	:global(.ant-row) {
+		&:last-of-type {
+			margin-bottom: 5em;
+		}
+	}
 }

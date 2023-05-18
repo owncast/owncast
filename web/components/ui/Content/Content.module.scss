@@ -4,22 +4,23 @@
   padding: var(--content-padding);
 }
 
-.lowerSectionMobile {
+.lowerSectionMobileTabbed {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
-  position: absolute;
+  position: relative;
   bottom: 0;
   width: 100%;
 
-  @include screen(tablet) {
+	@include screen(tablet) {
+		top: 0;
     position: relative;
-  }
 
-  @include screen(mobile) {
-    //sets the position of tabbed content for online mode
-    top: 280px;
+		&.online {
+			position: absolute;
+			top: calc(var(--player-container-height) + var(--status-bar-height) + var(--header-height));
+		}
   }
 
   :global(.ant-tabs-nav) {
@@ -29,15 +30,7 @@
   }
 }
 
-.online {
-  @include screen(tablet) {
-    //sets the position of tabbed content for online mode
-    position: absolute;
-    top: 430px;
-  }
-}
-
-.mobileNoTabs {
+.lowerSectionMobileNoTabs {
   padding-top: 20px;
 }
 

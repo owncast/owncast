@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { RecoilRoot } from 'recoil';
 import { Footer } from './Footer';
 
 export default {
@@ -8,7 +9,11 @@ export default {
   parameters: {},
 } as ComponentMeta<typeof Footer>;
 
-const Template: ComponentStory<typeof Footer> = args => <Footer {...args} />;
+const Template: ComponentStory<typeof Footer> = args => (
+  <RecoilRoot>
+    <Footer {...args} />
+  </RecoilRoot>
+);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Example = Template.bind({});
