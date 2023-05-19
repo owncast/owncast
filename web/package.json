@@ -35,7 +35,9 @@
 		"linkifyjs": "^4.1.0",
 		"lodash": "4.17.21",
 		"next": "13.3.0",
+		"next-pwa": "^5.6.0",
 		"next-with-less": "2.0.5",
+		"next-with-workbox": "^3.0.5",
 		"picmo": "5.8.4",
 		"postcss-flexbugs-fixes": "5.0.2",
 		"prop-types": "15.8.1",
@@ -56,6 +58,8 @@
 		"slate-react": "0.94.2",
 		"ua-parser-js": "1.0.35",
 		"video.js": "^8.3.0",
+		"workbox-precaching": "^6.5.4",
+		"workbox-window": "^6.5.4",
 		"xstate": "4.37.2",
 		"yaml": "2.2.2"
 	},
