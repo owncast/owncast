@@ -78,9 +78,9 @@
 .avatar {
   background-color: var(--theme-color-background-header);
   box-sizing: content-box;
-  border-color: #ffffff26;
-  border-width: 2px;
-  border-style: solid;
+  outline-color: #ffffff26;
+  outline-width: 2px;
+  outline-style: solid;
 }
 
 .chatOfflineText {
