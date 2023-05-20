@@ -34,9 +34,13 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
           <span>
             <ModerationBadge userColor={userColor} />
           </span>
-        )}
-      </span>{' '}
-      joined the chat.
+        )} 
+      </span>
+      <span style={{marginLeft:5}}>
+    
+        joined the chat.
+      </span>
     </div>
+    
   );
 };
