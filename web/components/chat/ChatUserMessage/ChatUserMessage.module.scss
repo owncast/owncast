@@ -16,7 +16,7 @@ $p-v-size: 2px;
   .user {
     display: flex;
     align-items: center;
-		font-weight: 600;
+    font-weight: 600;
   }
 
   .message {
@@ -63,16 +63,17 @@ $p-v-size: 2px;
     display: none;
     top: 5px;
     right: 10px;
-    color: var(--theme-color-components-text-on-light);
+    color: black;
     & button:focus,
     & button:active {
       display: block !important;
     }
 
     button {
+      background-color: white;
       border-radius: var(--theme-rounded-corners);
-			border-width: 0;
-			opacity: 0.8;
+      border-width: 0;
+      opacity: 0.8;
     }
   }
 
