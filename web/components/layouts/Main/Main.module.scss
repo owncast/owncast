@@ -4,13 +4,11 @@
   // this margin is for fixed header
   padding-top: var(--header-height);
   background-color: var(--theme-color-main-background);
-	min-height: 100vh;
-	position: relative;
+  min-height: 100vh;
+  position: relative;
 
-	// add some spacing between the last row of content and the footer
-	:global(.ant-row) {
-		&:last-of-type {
-			margin-bottom: 5em;
-		}
-	}
+  // add some spacing between the last row of content and the footer
+  .footerContainer {
+    margin-top: 5em;
+  }
 }
