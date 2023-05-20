@@ -18,7 +18,7 @@ export default class WebsocketService {
 
   isShutdown = false;
 
-  backOff = 1000;
+  backOff = 0;
 
   handleMessage?: (message: SocketEvent) => void;
 
@@ -54,7 +54,6 @@ export default class WebsocketService {
     url.port = window.location.port === '3000' ? '8080' : window.location.port;
     url.searchParams.append('accessToken', this.accessToken);
 
-    console.debug('connecting to ', url.toString());
     const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
     ws.onerror = this.onError.bind(this);
@@ -68,6 +67,7 @@ export default class WebsocketService {
       clearTimeout(this.websocketReconnectTimer);
     }
     this.socketConnected();
+    this.backOff = 0;
   }
 
   // On ws error just close the socket and let it re-connect again for now.
@@ -88,11 +88,11 @@ export default class WebsocketService {
     if (this.websocketReconnectTimer) {
       clearTimeout(this.websocketReconnectTimer);
     }
-    this.backOff *= 2;
     this.websocketReconnectTimer = setTimeout(
       this.createAndConnect,
-      5000 + Math.min(this.backOff, 10_000),
+      Math.min(this.backOff, 10_000),
     );
+    this.backOff += 1000;
   }
 
   shutdown() {
