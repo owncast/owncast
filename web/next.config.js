@@ -2,13 +2,18 @@ const withLess = require('next-with-less');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+
+const runtimeCaching = require('next-pwa/cache');
+
 const withPWA = require('next-pwa')({
   dest: 'public',
+  runtimeCaching,
   register: true,
   skipWaiting: true,
   publicExcludes: ['!img/platformlogos/**/*', '!styles/admin/**/*'],
   buildExcludes: [/chunks\/pages\/admin.*/, '!**/admin/**/*'],
   sourcemap: process.env.NODE_ENV === 'development',
+  disable: process.env.NODE_ENV === 'development',
 });
 
 module.exports = withPWA(
