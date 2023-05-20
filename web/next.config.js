@@ -7,7 +7,13 @@ const runtimeCaching = require('next-pwa/cache');
 
 const withPWA = require('next-pwa')({
   dest: 'public',
-  runtimeCaching,
+  runtimeCaching: [
+    ...runtimeCaching,
+    {
+      urlPattern: /\.(?:ts|m3u8)$/i,
+      handler: 'NetworkOnly',
+    },
+  ],
   register: true,
   skipWaiting: true,
   publicExcludes: ['!img/platformlogos/**/*', '!styles/admin/**/*'],
