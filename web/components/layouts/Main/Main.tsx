@@ -171,7 +171,11 @@ export const Main: FC = () => {
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
 
-        {(!isMobile || !online) && <Footer dynamicPaddingValue={dynamicFooterPadding} />}
+        {(!isMobile || !online) && (
+          <div className={styles.footerContainer}>
+            <Footer dynamicPaddingValue={dynamicFooterPadding} />
+          </div>
+        )}
       </Layout>
       <Noscript />
     </>
