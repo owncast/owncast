@@ -20,6 +20,11 @@
 		&.online {
 			position: absolute;
 			top: calc(var(--player-container-height) + var(--status-bar-height) + var(--header-height));
+
+
+			:global(.ant-tabs-content) {
+				 height: 100% !important;
+			}
 		}
   }
 
