@@ -4,7 +4,8 @@
   // this margin is for fixed header
   padding-top: var(--header-height);
   background-color: var(--theme-color-main-background);
-  min-height: 100vh;
+  min-height: 100dvh;
+
   position: relative;
 
   // add some spacing between the last row of content and the footer
