@@ -93,4 +93,4 @@ jobs:
         run: npm install
 
       - name: Check for unused JS code and dependencies
-        run: npx knip --production --include dependencies,files
+        run: npx knip --include dependencies,files,exports

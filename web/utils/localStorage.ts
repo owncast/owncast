@@ -26,7 +26,3 @@ export function setLocalStorage(key, value) {
   }
   return false;
 }
-
-export function clearLocalStorage(key) {
-  localStorage.removeItem(key);
-}

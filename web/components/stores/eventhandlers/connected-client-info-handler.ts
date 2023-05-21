@@ -16,4 +16,3 @@ export function handleConnectedClientInfoMessage(
     isModerator: scopes?.includes('MODERATOR'),
   });
 }
-export default handleConnectedClientInfoMessage;
