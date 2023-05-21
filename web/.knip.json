@@ -1,0 +1,25 @@
+{
+	"ignore": [
+		"**/.eslintrc.js",
+		".storybook/**",
+		"**/*config.?s",
+		"**/*mock.?s",
+		"**/*fixture.?s",
+		"next-env.d.ts",
+		"public/**"
+	],
+	"ignoreDependencies": [
+		"@fontsource/inter",
+		"@fontsource/poppins",
+		"@next/bundle-analyzer",
+		"autoprefixer",
+		"webpack-deadcode-plugin",
+		"yaml",
+		"postcss-flexbugs-fixes",
+		"sharp",
+		"next-with-less",
+		"next-pwa",
+		"workbox-precaching",
+		"workbox-window"
+	]
+}
