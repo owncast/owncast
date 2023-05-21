@@ -84,7 +84,6 @@ export const Statusbar: FC<StatusbarProps> = ({
     </div>
   );
 };
-export default Statusbar;
 
 Statusbar.defaultProps = {
   lastConnectTime: null,

@@ -34,7 +34,7 @@ export default {
 } as ComponentMeta<typeof BrowserNotifyModal>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof BrowserNotifyModal> = args => (
+const Template: ComponentStory<typeof BrowserNotifyModal> = () => (
   <RecoilRoot>
     <Example />
   </RecoilRoot>

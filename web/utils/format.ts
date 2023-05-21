@@ -20,7 +20,7 @@ export function isEmptyObject(obj) {
   return !obj || (Object.keys(obj).length === 0 && obj.constructor === Object);
 }
 
-export function padLeft(text, pad, size) {
+function padLeft(text, pad, size) {
   return String(pad.repeat(size) + text).slice(-size);
 }
 
@@ -40,13 +40,6 @@ export function parseSecondsToDurationString(seconds = 0) {
   const secsString = padLeft(`${secs}`, '0', 2);
 
   return daysString + hoursString + minString + secsString;
-}
-
-export function makeAndStringFromArray(arr: string[]): string {
-  if (arr.length === 1) return arr[0];
-  const firsts = arr.slice(0, arr.length - 1);
-  const last = arr[arr.length - 1];
-  return `${firsts.join(', ')} and ${last}`;
 }
 
 export function formatUAstring(uaString: string) {

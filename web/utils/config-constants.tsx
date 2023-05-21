@@ -3,7 +3,7 @@ import { fetchData, SERVER_CONFIG_UPDATE_URL } from './apis';
 import { ApiPostArgs, VideoVariant, SocialHandle } from '../types/config-section';
 import { DEFAULT_TEXTFIELD_URL_PATTERN } from './validators';
 
-export const TEXT_MAXLENGTH = 255;
+const TEXT_MAXLENGTH = 255;
 
 export const RESET_TIMEOUT = 3000;
 
@@ -11,41 +11,42 @@ export const RESET_TIMEOUT = 3000;
 export const API_CUSTOM_CONTENT = '/pagecontent';
 export const API_CUSTOM_CSS_STYLES = '/customstyles';
 export const API_CUSTOM_JAVASCRIPT = '/customjavascript';
-export const API_FFMPEG = '/ffmpegpath';
-export const API_INSTANCE_URL = '/serverurl';
-export const API_LOGO = '/logo';
-export const API_NSFW_SWITCH = '/nsfw';
-export const API_RTMP_PORT = '/rtmpserverport';
 export const API_S3_INFO = '/s3';
-export const API_SERVER_SUMMARY = '/serversummary';
-export const API_SERVER_WELCOME_MESSAGE = '/welcomemessage';
 export const API_SERVER_OFFLINE_MESSAGE = '/offlinemessage';
-export const API_SERVER_NAME = '/name';
 export const API_SOCIAL_HANDLES = '/socialhandles';
-export const API_STREAM_KEY = '/adminpass';
-export const API_STREAM_TITLE = '/streamtitle';
-export const API_TAGS = '/tags';
-export const API_USERNAME = '/name';
 export const API_VIDEO_SEGMENTS = '/video/streamlatencylevel';
 export const API_VIDEO_VARIANTS = '/video/streamoutputvariants';
-export const API_WEB_PORT = '/webserverport';
 export const API_YP_SWITCH = '/directoryenabled';
-export const API_HIDE_VIEWER_COUNT = '/hideviewercount';
-export const API_CHAT_DISABLE = '/chat/disable';
-export const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
-export const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
 export const API_CHAT_FORBIDDEN_USERNAMES = '/chat/forbiddenusernames';
 export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
 export const API_VIDEO_CODEC = '/video/codec';
-export const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
+
+const API_FFMPEG = '/ffmpegpath';
+const API_INSTANCE_URL = '/serverurl';
+const API_LOGO = '/logo';
+const API_NSFW_SWITCH = '/nsfw';
+const API_RTMP_PORT = '/rtmpserverport';
+const API_SERVER_SUMMARY = '/serversummary';
+const API_SERVER_WELCOME_MESSAGE = '/welcomemessage';
+const API_SERVER_NAME = '/name';
+const API_STREAM_KEY = '/adminpass';
+const API_STREAM_TITLE = '/streamtitle';
+const API_TAGS = '/tags';
+const API_WEB_PORT = '/webserverport';
+const API_HIDE_VIEWER_COUNT = '/hideviewercount';
+const API_CHAT_DISABLE = '/chat/disable';
+const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
+const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
+
+const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 
 // Federation
-export const API_FEDERATION_ENABLED = '/federation/enable';
-export const API_FEDERATION_PRIVATE = '/federation/private';
-export const API_FEDERATION_USERNAME = '/federation/username';
-export const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
-export const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
+const API_FEDERATION_ENABLED = '/federation/enable';
+const API_FEDERATION_PRIVATE = '/federation/private';
+const API_FEDERATION_USERNAME = '/federation/username';
+const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
+const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
 export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
 
 const TEXTFIELD_TYPE_URL = 'url';
@@ -466,10 +467,6 @@ export const DEFAULT_SOCIAL_HANDLE: SocialHandle = {
 };
 
 export const OTHER_SOCIAL_HANDLE_OPTION = 'OTHER_SOCIAL_HANDLE_OPTION';
-
-export const TEXTFIELD_PROPS_S3_COMMON = {
-  maxLength: 255,
-};
 
 export const S3_TEXT_FIELDS_INFO = {
   accessKey: {

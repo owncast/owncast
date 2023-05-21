@@ -19,7 +19,7 @@ import { FormStatusIndicator } from '../FormStatusIndicator';
 
 const { Title } = Typography;
 
-export const ConfigNotify = () => {
+export const BrowserNotify = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { notifications } = serverConfig || {};
@@ -127,4 +127,3 @@ export const ConfigNotify = () => {
     </>
   );
 };
-export default ConfigNotify;

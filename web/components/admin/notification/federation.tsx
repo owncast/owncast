@@ -5,7 +5,7 @@ import { ServerStatusContext } from '../../../utils/server-status-context';
 
 const { Title } = Typography;
 
-export const ConfigNotify = () => {
+export const FediverseNotify = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
   const { federation } = serverConfig || {};
@@ -49,4 +49,3 @@ export const ConfigNotify = () => {
     </>
   );
 };
-export default ConfigNotify;

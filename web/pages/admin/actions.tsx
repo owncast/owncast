@@ -256,7 +256,7 @@ const Actions = () => {
     });
   }
 
-  async function handleDelete(action, index) {
+  async function handleDelete(index) {
     const actionsData = [...actions];
     actionsData.splice(index, 1);
 
@@ -269,7 +269,7 @@ const Actions = () => {
   }
 
   async function handleSave(
-    oldAction: ExternalAction | null,
+    _oldAction: ExternalAction | null,
     oldActionIndex: number,
     url: string,
     html: string,
@@ -353,9 +353,9 @@ const Actions = () => {
     {
       title: '',
       key: 'delete-edit',
-      render: (text, record, index) => (
+      render: (_, record, index) => (
         <Space size="middle">
-          <Button onClick={() => handleDelete(record, index)} icon={<DeleteOutlined />} />
+          <Button onClick={() => handleDelete(index)} icon={<DeleteOutlined />} />
           <Button onClick={() => handleEdit(record, index)} icon={<EditOutlined />} />
         </Space>
       ),
@@ -374,7 +374,7 @@ const Actions = () => {
       title: 'URL / Embed',
       key: 'url',
       dataIndex: 'url',
-      render: (text, record) => (record.html ? 'HTML embed' : record.url),
+      render: (_, record) => (record.html ? 'HTML embed' : record.url),
     },
     {
       title: 'Icon',
