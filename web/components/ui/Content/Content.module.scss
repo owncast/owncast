@@ -20,6 +20,12 @@
 		&.online {
 			position: absolute;
 			top: calc(var(--player-container-height) + var(--status-bar-height) + var(--header-height));
+
+			// As we want content in the tabs to scroll within itself, force the tabs to display max height at all times.
+			// (We don't have to do this when not-online because we're having the entire layout scroll.
+			:global(.ant-tabs-content) {
+				 height: 100% !important;
+			}
 		}
   }
 
@@ -55,7 +61,7 @@
     position: absolute;
     top: 4px;
     right: 10px;
-    z-index: 200;
+    z-index: 199;
   }
 }
 
