@@ -12,8 +12,9 @@ import {
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
-import { URL_CUSTOM_EMOJIS } from '../../../utils/constants';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
+
+const URL_CUSTOM_EMOJIS = `/api/emoji`;
 
 const { Meta } = Card;
 // Lazy loaded components

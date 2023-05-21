@@ -19,7 +19,7 @@ import { UpdateArgs } from '../../../types/config-section';
 
 const { Title } = Typography;
 
-export const ConfigNotify = () => {
+export const DiscordNotify = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { notifications } = serverConfig || {};
@@ -151,4 +151,3 @@ export const ConfigNotify = () => {
     </>
   );
 };
-export default ConfigNotify;

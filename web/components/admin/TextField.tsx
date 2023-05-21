@@ -212,7 +212,6 @@ export const TextField: FC<TextFieldProps> = ({
     </div>
   );
 };
-export default TextField;
 
 TextField.defaultProps = {
   className: '',

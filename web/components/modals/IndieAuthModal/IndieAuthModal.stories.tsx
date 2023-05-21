@@ -22,7 +22,7 @@ export default {
 } as ComponentMeta<typeof IndieAuthModal>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof IndieAuthModal> = args => <Example />;
+const Template: ComponentStory<typeof IndieAuthModal> = () => <Example />;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Basic = Template.bind({});

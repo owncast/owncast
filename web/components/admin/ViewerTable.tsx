@@ -1,14 +1,9 @@
 import { Table } from 'antd';
-import format from 'date-fns/format';
 import { SortOrder } from 'antd/lib/table/interface';
 import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
 import { User } from '../../types/chat';
 import { formatUAstring } from '../../utils/format';
-
-export function formatDisplayDate(date: string | Date) {
-  return format(new Date(date), 'MMM d H:mma');
-}
 
 export type ViewerTableProps = {
   data: User[];

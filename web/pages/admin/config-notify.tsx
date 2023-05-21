@@ -2,9 +2,9 @@ import { Alert, Button, Col, Row, Typography } from 'antd';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import Discord from '../../components/admin/notification/discord';
-import Browser from '../../components/admin/notification/browser';
-import Federation from '../../components/admin/notification/federation';
+import { DiscordNotify as Discord } from '../../components/admin/notification/discord';
+import { BrowserNotify as Browser } from '../../components/admin/notification/browser';
+import { FediverseNotify as Federation } from '../../components/admin/notification/federation';
 import {
   TextFieldWithSubmit,
   TEXTFIELD_TYPE_URL,

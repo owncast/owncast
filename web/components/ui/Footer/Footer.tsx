@@ -33,4 +33,3 @@ export const Footer: FC<FooterProps> = ({ dynamicPaddingValue }) => {
     </footer>
   );
 };
-export default Footer;

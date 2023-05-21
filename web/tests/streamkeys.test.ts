@@ -1,4 +1,5 @@
 import { generateRndKey } from '../components/admin/config/server/StreamKeys';
+
 describe('generateRndKey', () => {
   test('should generate a key that matches the regular expression', () => {
     const key = generateRndKey();

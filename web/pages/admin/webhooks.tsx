@@ -195,7 +195,7 @@ const Webhooks = () => {
     {
       title: '',
       key: 'delete',
-      render: (text, record) => (
+      render: (_, record) => (
         <Space size="middle">
           <Button onClick={() => handleDelete(record.id)} icon={<DeleteOutlined />} />
         </Space>

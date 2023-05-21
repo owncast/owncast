@@ -10,12 +10,6 @@ export const FETCH_INTERVAL = 15000;
 // Current inbound broadcaster info
 export const STATUS = `${API_LOCATION}status`;
 
-// Disconnect inbound stream
-export const DISCONNECT = `${API_LOCATION}disconnect`;
-
-// Change the current streaming key in memory
-export const STREAMKEY_CHANGE = `${API_LOCATION}changekey`;
-
 // Current server config
 export const SERVER_CONFIG = `${API_LOCATION}serverconfig`;
 
@@ -91,9 +85,6 @@ export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
 // hard coded social icons list
 export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
 
-// set external action links
-export const EXTERNAL_ACTIONS = `${API_LOCATION}api/externalactions`;
-
 // send a message to the fediverse
 export const FEDERATION_MESSAGE_SEND = `${API_LOCATION}federation/send`;
 
@@ -118,8 +109,6 @@ export const API_STREAM_HEALTH_METRICS = `${API_LOCATION}metrics/video`;
 export const UPDATE_STREAM_KEYS = `${API_LOCATION}config/streamkeys`;
 
 export const API_YP_RESET = `${API_LOCATION}yp/reset`;
-
-export const TEMP_UPDATER_API = LOGS_ALL;
 
 const GITHUB_RELEASE_URL = 'https://api.github.com/repos/owncast/owncast/releases/latest';
 

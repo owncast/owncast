@@ -2,6 +2,7 @@ const withLess = require('next-with-less');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+const DeadCodePlugin = require('webpack-deadcode-plugin');
 
 const runtimeCaching = require('next-pwa/cache');
 
@@ -38,6 +39,19 @@ module.exports = withPWA(
           issuer: /\.[jt]sx?$/,
           use: ['@svgr/webpack'],
         });
+
+        config.plugins.push(
+          new DeadCodePlugin({
+            detectUnusedFiles: false,
+            patterns: ['**/*.(js|jsx|tsx|css)'],
+            exclude: [
+              '**/*.(stories|spec).(js|jsx|tsx)',
+              'node_modules/**/*',
+              'storybook-static/**/*',
+              'out/**/*',
+            ],
+          }),
+        );
 
         return config;
       },

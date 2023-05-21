@@ -55,7 +55,7 @@ export const NameChangeModal: FC = () => {
   };
 
   const maxColor = 8; // 0...n
-  const colorOptions = [...Array(maxColor)].map((e, i) => i);
+  const colorOptions = [...Array(maxColor)].map((_, i) => i);
 
   const saveButton = (
     <Button

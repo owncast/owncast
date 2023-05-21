@@ -139,7 +139,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
     {
       title: 'Delete',
       key: 'delete',
-      render: (text, record) => (
+      render: (_text, record) => (
         <Button
           type="primary"
           ghost

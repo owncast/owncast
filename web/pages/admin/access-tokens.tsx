@@ -189,7 +189,7 @@ const AccessTokens = () => {
     {
       title: '',
       key: 'delete',
-      render: (text, record) => (
+      render: (_, record) => (
         <Space size="middle">
           <Button onClick={() => handleDeleteToken(record.accessToken)} icon={<DeleteOutlined />} />
         </Space>

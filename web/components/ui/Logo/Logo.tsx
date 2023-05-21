@@ -12,4 +12,3 @@ export const Logo: FC<LogoProps> = ({ src }) => (
     </div>
   </div>
 );
-export default Logo;

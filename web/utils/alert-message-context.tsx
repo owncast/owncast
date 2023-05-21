@@ -2,8 +2,7 @@ import React, { useState, FC, ReactElement } from 'react';
 
 export const AlertMessageContext = React.createContext({
   message: null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setMessage: (text?: string) => null,
+  setMessage: (_text?: string) => null,
 });
 
 export type AlertMessageProviderProps = {

@@ -67,3 +67,30 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+  unused-code:
+    name: Test for unused code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Check for unused JS code and dependencies
+        run: npx knip --include dependencies,files,exports

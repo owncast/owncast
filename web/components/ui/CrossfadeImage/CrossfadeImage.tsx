@@ -70,7 +70,6 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
     </span>
   );
 };
-export default CrossfadeImage;
 
 CrossfadeImage.defaultProps = {
   objectFit: 'fill',

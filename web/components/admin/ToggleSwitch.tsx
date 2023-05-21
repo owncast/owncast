@@ -106,7 +106,6 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
     </div>
   );
 };
-export default ToggleSwitch;
 
 ToggleSwitch.defaultProps = {
   apiPath: '',
