@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import classnames from 'classnames';
 import ActionButtons from './ActionButtons';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
-import isPushNotificationSupported from '../../../utils/browserPushNotifications';
+import { canPushNotificationsBeSupported } from '../../../utils/browserPushNotifications';
 
 import {
   clientConfigStateAtom,
@@ -179,7 +179,9 @@ export const Content: FC = () => {
   useEffect(() => {
     // isPushNotificationSupported relies on `navigator` so that needs to be
     // fired from this useEffect.
-    setSupportsBrowserNotifications(isPushNotificationSupported() && browserNotificationsEnabled);
+    setSupportsBrowserNotifications(
+      canPushNotificationsBeSupported() && browserNotificationsEnabled,
+    );
   }, [browserNotificationsEnabled]);
 
   const showChat = isChatAvailable && !chatDisabled && isChatVisible;
@@ -238,7 +240,7 @@ export const Content: FC = () => {
           <Col span={24} style={{ paddingRight: dynamicPadding }}>
             <ActionButtons
               supportFediverseFeatures={supportFediverseFeatures}
-              supportsBrowserNotifications={supportsBrowserNotifications}
+              supportsBrowserNotifications
               showNotifyReminder={showNotifyReminder}
               setShowNotifyModal={setShowNotifyModal}
               disableNotifyReminderPopup={disableNotifyReminderPopup}
