@@ -40,7 +40,6 @@
 		"next-with-workbox": "^3.0.5",
 		"picmo": "5.8.4",
 		"postcss-flexbugs-fixes": "5.0.2",
-		"prop-types": "15.8.1",
 		"react": "18.2.0",
 		"react-chartjs-2": "^5.2.0",
 		"react-chartkick": "^0.5.3",
@@ -60,9 +59,9 @@
 		"video.js": "^8.3.0",
 		"workbox-precaching": "^6.5.4",
 		"workbox-window": "^6.5.4",
+		"webpack-deadcode-plugin": "^0.1.17",
 		"xstate": "4.37.2",
-		"yaml": "2.2.2",
-		"webpack-deadcode-plugin": "^0.1.17"
+		"yaml": "2.2.2"
 	},
 	"devDependencies": {
 		"@babel/core": "7.21.8",
