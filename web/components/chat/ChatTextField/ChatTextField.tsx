@@ -241,7 +241,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   };
 
   return (
-    <div className={styles.root}>
+    <div id="chat-input" className={styles.root}>
       <div
         className={classNames(
           styles.inputWrap,

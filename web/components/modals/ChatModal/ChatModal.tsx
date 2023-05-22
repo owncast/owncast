@@ -43,7 +43,7 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
         centered
         maskClosable={false}
         footer={null}
-        title={<UserDropdown showToggleChatOption={false} />}
+        title={<UserDropdown id="chat-modal-user-menu" showToggleChatOption={false} />}
         maskStyle={{
           zIndex: 700,
         }}

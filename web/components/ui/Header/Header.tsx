@@ -54,7 +54,7 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
         </h1>
       </div>
       {chatAvailable && !chatDisabled && (
-        <UserDropdown hideTitleOnMobile showToggleChatOption={canHideChat} />
+        <UserDropdown id="user-menu" hideTitleOnMobile showToggleChatOption={canHideChat} />
       )}
       {!chatAvailable && !chatDisabled && (
         <Tooltip

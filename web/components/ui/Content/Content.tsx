@@ -312,6 +312,7 @@ export const Content: FC = () => {
       )}
       {isChatVisible && (
         <Button
+          id="mobile-chat-button"
           type="primary"
           onClick={() => setShowChatModal(true)}
           className={styles.floatingMobileChatModalButton}
