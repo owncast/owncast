@@ -46,7 +46,7 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
         {name}
       </h1>
     </div>
-    {chatAvailable && !chatDisabled && <UserDropdown />}
+    {chatAvailable && !chatDisabled && <UserDropdown hideTitleOnMobile />}
     {!chatAvailable && !chatDisabled && (
       <Tooltip
         overlayClassName={styles.toolTip}

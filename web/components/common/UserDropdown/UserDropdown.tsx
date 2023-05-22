@@ -1,4 +1,5 @@
 import { Menu, Dropdown, Button } from 'antd';
+import classnames from 'classnames';
 
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useState } from 'react';
@@ -56,9 +57,13 @@ const AuthModal = dynamic(
 
 export type UserDropdownProps = {
   username?: string;
+  hideTitleOnMobile?: boolean;
 };
 
-export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername = undefined }) => {
+export const UserDropdown: FC<UserDropdownProps> = ({
+  username: defaultUsername = undefined,
+  hideTitleOnMobile = false,
+}) => {
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
@@ -103,6 +108,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
           icon={<MessageOutlined />}
           onClick={() => toggleChatVisibility()}
           aria-expanded={chatToggleVisible}
+          className={styles.chatToggle}
         >
           {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
@@ -124,7 +130,14 @@ export const UserDropdown: FC<UserDropdownProps> = ({ username: defaultUsername 
       <div id="user-menu" className={styles.root}>
         <Dropdown overlay={menu} trigger={['click']}>
           <Button type="primary" icon={<UserOutlined className={styles.userIcon} />}>
-            <span className={styles.username}>{username}</span>
+            <span
+              className={classnames([
+                styles.username,
+                hideTitleOnMobile && styles.hideTitleOnMobile,
+              ])}
+            >
+              {username}
+            </span>
             <CaretDownOutlined />
           </Button>
         </Dropdown>
