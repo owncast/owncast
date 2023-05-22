@@ -72,9 +72,9 @@ export const MobileContent: FC<MobileContentProps> = ({
 
   const items = [];
 
-  items.push({ label: 'About', key: '2', children: aboutTabContent });
+  items.push({ label: 'About', key: '0', children: aboutTabContent });
   if (supportFediverseFeatures) {
-    items.push({ label: 'Followers', key: '3', children: followersTabContent });
+    items.push({ label: 'Followers', key: '1', children: followersTabContent });
   }
 
   return (

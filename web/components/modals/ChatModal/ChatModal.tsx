@@ -46,8 +46,6 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
         title={<UserDropdown />}
         maskStyle={{
           zIndex: 700,
-          background:
-            'linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.5) 100%)',
         }}
         className={styles.root}
         bodyStyle={modalBodyStyle}
