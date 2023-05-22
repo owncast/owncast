@@ -315,6 +315,7 @@ export const Content: FC = () => {
           type="primary"
           onClick={() => setShowChatModal(true)}
           className={styles.floatingMobileChatModalButton}
+          style={{ zIndex: 99 }}
         >
           Chat <MessageFilled />
         </Button>
