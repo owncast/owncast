@@ -119,7 +119,7 @@
 		"storybook-addon-fetch-mock": "1.0.1",
 		"storybook-preset-less": "1.1.3",
 		"style-dictionary": "3.8.0",
-		"style-loader": "3.3.2",
+		"style-loader": "3.3.3",
 		"ts-jest": "^29.1.0",
 		"typescript": "4.9.5"
 	}
