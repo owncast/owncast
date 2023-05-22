@@ -58,11 +58,13 @@ const AuthModal = dynamic(
 export type UserDropdownProps = {
   username?: string;
   hideTitleOnMobile?: boolean;
+  showToggleChatOption?: boolean;
 };
 
 export const UserDropdown: FC<UserDropdownProps> = ({
   username: defaultUsername = undefined,
   hideTitleOnMobile = false,
+  showToggleChatOption: showHideChatOption = true,
 }) => {
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
@@ -70,6 +72,11 @@ export const UserDropdown: FC<UserDropdownProps> = ({
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const toggleChatVisibility = () => {
+    // If we don't support the hide chat option then don't do anything.
+    if (!showHideChatOption) {
+      return;
+    }
+
     setChatToggleVisible(!chatToggleVisible);
   };
 
@@ -102,7 +109,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       <Menu.Item key="1" icon={<LockOutlined />} onClick={() => setShowAuthModal(true)}>
         Authenticate
       </Menu.Item>
-      {appState.chatAvailable && (
+      {showHideChatOption && appState.chatAvailable && (
         <Menu.Item
           key="3"
           icon={<MessageOutlined />}
