@@ -13,20 +13,9 @@
   bottom: 0;
   width: 100%;
 
-	@include screen(tablet) {
-		top: 0;
+  @include screen(tablet) {
+    top: 0;
     position: relative;
-
-		&.online {
-			position: absolute;
-			top: calc(var(--player-container-height) + var(--status-bar-height) + var(--header-height));
-
-			// As we want content in the tabs to scroll within itself, force the tabs to display max height at all times.
-			// (We don't have to do this when not-online because we're having the entire layout scroll.
-			:global(.ant-tabs-content) {
-				 height: 100% !important;
-			}
-		}
   }
 
   :global(.ant-tabs-nav) {
@@ -53,15 +42,21 @@
   color: var(--theme-color-background-main);
 }
 
-.mobileActionButtonMenu {
+.mobileActionButtons {
   display: none;
 
   @include screen(tablet) {
-    display: block;
+    display: flex;
+    align-items: center;
     position: absolute;
     top: 4px;
     right: 10px;
     z-index: 199;
+  }
+
+  > * {
+    margin-left: 5px;
+    margin-right: 5px;
   }
 }
 
@@ -108,4 +103,13 @@
 }
 .offlineBanner {
   color: var(--theme-color-background-main);
+}
+
+.floatingMobileChatModalButton {
+  position: fixed;
+  width: 100px;
+  height: 40px;
+  bottom: 40px;
+  right: 10px;
+  font-weight: 600;
 }

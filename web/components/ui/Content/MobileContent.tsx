@@ -1,14 +1,12 @@
 import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
-import { Skeleton, TabsProps } from 'antd';
+import { TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { CurrentUser } from '../../../interfaces/current-user';
 import { ComponentError } from '../ComponentError/ComponentError';
 
 export type MobileContentProps = {
@@ -19,10 +17,6 @@ export type MobileContentProps = {
   extraPageContent: string;
   setShowFollowModal: (show: boolean) => void;
   supportFediverseFeatures: boolean;
-  messages: ChatMessage[];
-  currentUser: CurrentUser;
-  showChat: boolean;
-  chatEnabled: boolean;
   online: boolean;
 };
 
@@ -42,20 +36,6 @@ const FollowerCollection = dynamic(
   },
 );
 
-const ChatContainer = dynamic(
-  () => import('../../chat/ChatContainer/ChatContainer').then(mod => mod.ChatContainer),
-  {
-    ssr: false,
-  },
-);
-
-type ChatContentProps = {
-  showChat: boolean;
-  chatEnabled: boolean;
-  messages: ChatMessage[];
-  currentUser: CurrentUser;
-};
-
 const ComponentErrorFallback = ({ error, resetErrorBoundary }) => (
   <ComponentError
     message={error}
@@ -64,32 +44,12 @@ const ComponentErrorFallback = ({ error, resetErrorBoundary }) => (
   />
 );
 
-const ChatContent: FC<ChatContentProps> = ({ showChat, chatEnabled, messages, currentUser }) => {
-  const { id, displayName } = currentUser;
-
-  return showChat && !!currentUser ? (
-    <ChatContainer
-      messages={messages}
-      usernameToHighlight={displayName}
-      chatUserId={id}
-      isModerator={false}
-      chatAvailable={chatEnabled}
-    />
-  ) : (
-    <Skeleton loading active paragraph={{ rows: 7 }} />
-  );
-};
-
 export const MobileContent: FC<MobileContentProps> = ({
   name,
   summary,
   tags,
   socialHandles,
   extraPageContent,
-  messages,
-  currentUser,
-  showChat,
-  chatEnabled,
   setShowFollowModal,
   supportFediverseFeatures,
   online,
@@ -111,23 +71,10 @@ export const MobileContent: FC<MobileContentProps> = ({
   );
 
   const items = [];
-  if (showChat && currentUser) {
-    items.push({
-      label: 'Chat',
-      key: '0',
-      children: (
-        <ChatContent
-          showChat={showChat}
-          chatEnabled={chatEnabled}
-          messages={messages}
-          currentUser={currentUser}
-        />
-      ),
-    });
-  }
-  items.push({ label: 'About', key: '2', children: aboutTabContent });
+
+  items.push({ label: 'About', key: '0', children: aboutTabContent });
   if (supportFediverseFeatures) {
-    items.push({ label: 'Followers', key: '3', children: followersTabContent });
+    items.push({ label: 'Followers', key: '1', children: followersTabContent });
   }
 
   return (
