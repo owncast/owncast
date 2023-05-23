@@ -1,3 +1,5 @@
+/* eslint-disable object-shorthand */
+
 import React, { useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
@@ -11,15 +13,7 @@ export default {
   component: ChatModal,
   parameters: {
     chromatic: { diffThreshold: 0.8 },
-    docs: {
-      description: {
-        component: `
-- Renders a list of messages from the bottom up.
-- Auto-scrolls to the bottom as new messages come in.
-- Pauses auto-scroll when reading backlog.
-- Uses [Virtuoso](https://virtuoso.dev/) for rendering.`,
-      },
-    },
+    docs: {},
   },
 } as ComponentMeta<typeof ChatModal>;
 
