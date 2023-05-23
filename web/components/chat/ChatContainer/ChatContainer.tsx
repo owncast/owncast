@@ -29,6 +29,7 @@ export type ChatContainerProps = {
   showInput?: boolean;
   height?: string;
   chatAvailable: boolean;
+  focusInput?: boolean;
 };
 
 function shouldCollapseMessages(
@@ -93,6 +94,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   showInput,
   height,
   chatAvailable: chatEnabled,
+  focusInput = true,
 }) => {
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
@@ -282,7 +284,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         {MessagesTable}
         {showInput && (
           <div className={styles.chatTextField}>
-            <ChatTextField enabled={chatEnabled} />
+            <ChatTextField enabled={chatEnabled} focusInput={focusInput} />
           </div>
         )}
       </div>

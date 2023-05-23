@@ -1,0 +1,12 @@
+.modalWrapper {
+  // This is so modals and popovers spawned from this modal will
+  // be on top of it. Modals usually have a z-index of 1000 and popovers 800.
+  // We're getting into really hacky territory here. Don't judge, there
+  // is history behind this. Ask an elder to tell you tales.
+  z-index: 799;
+  top: unset;
+}
+
+.root {
+  // margin-top: 18vh;
+}

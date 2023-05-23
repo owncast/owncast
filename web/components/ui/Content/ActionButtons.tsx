@@ -67,7 +67,7 @@ const ActionButtons: FC<ActionButtonProps> = ({
           )}
         </ActionButtonRow>
       </div>
-      <div className={styles.mobileActionButtonMenu}>
+      <div className={styles.mobileActionButtons}>
         {(supportsBrowserNotifications ||
           supportsBrowserNotifications ||
           externalActionButtons.length > 0) && (

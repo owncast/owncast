@@ -131,11 +131,12 @@ const getCharacterCount = node => {
 export type ChatTextFieldProps = {
   defaultText?: string;
   enabled: boolean;
+  focusInput: boolean;
 };
 
 const characterLimit = 300;
 
-export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) => {
+export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
@@ -240,7 +241,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) 
   };
 
   return (
-    <div className={styles.root}>
+    <div id="chat-input" className={styles.root}>
       <div
         className={classNames(
           styles.inputWrap,
@@ -269,7 +270,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) 
             style={{ width: '100%' }}
             role="textbox"
             aria-label="Chat text input"
-            autoFocus
+            autoFocus={focusInput}
           />
           <Popover
             content={

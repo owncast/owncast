@@ -26,7 +26,7 @@ const Example = args => {
     [],
   );
 
-  return <UserDropdown {...args} />;
+  return <UserDropdown id="user-menu" {...args} />;
 };
 
 const Template: ComponentStory<typeof UserDropdown> = args => (
