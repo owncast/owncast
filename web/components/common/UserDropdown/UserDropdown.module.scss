@@ -27,7 +27,7 @@
 }
 
 .chatToggle {
-  @include screen(mobile) {
+  @include screen(tablet) {
     display: none;
   }
 }

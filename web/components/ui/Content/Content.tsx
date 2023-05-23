@@ -303,22 +303,21 @@ export const Content: FC = () => {
           handleClose={() => setShowFollowModal(false)}
         />
       </Modal>
-      {showChatModal && isChatVisible && (
+      {isMobile && showChatModal && isChatVisible && (
         <ChatModal
           messages={messages}
           currentUser={currentUser}
           handleClose={() => setShowChatModal(false)}
         />
       )}
-      {isChatVisible && (
+      {isMobile && isChatVisible && (
         <Button
           id="mobile-chat-button"
           type="primary"
           onClick={() => setShowChatModal(true)}
           className={styles.floatingMobileChatModalButton}
-          style={{ zIndex: 99 }}
         >
-          Chat <MessageFilled style={{ transform: 'translateX(-1px)' }} />
+          Chat <MessageFilled />
         </Button>
       )}
     </>
