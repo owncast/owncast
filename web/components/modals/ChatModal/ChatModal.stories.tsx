@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { ChatModal, ChatModalProps } from './ChatModal';
