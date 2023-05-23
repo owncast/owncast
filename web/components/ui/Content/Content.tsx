@@ -318,7 +318,7 @@ export const Content: FC = () => {
           className={styles.floatingMobileChatModalButton}
           style={{ zIndex: 99 }}
         >
-          Chat <MessageFilled style={{ overflow: 'auto', position: 'relative', top: '2px' }} />
+          Chat <MessageFilled style={{ transform: 'translateX(-1px)' }} />
         </Button>
       )}
     </>
