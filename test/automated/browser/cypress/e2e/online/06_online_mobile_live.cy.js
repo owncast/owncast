@@ -29,6 +29,10 @@ filterTests(['mobile'], () => {
 			cy.get('#chat-input').should('be.visible');
 		});
 
+		it('Chat user menu should be visible', () => {
+			cy.get('#chat-modal-user-menu').should('be.visible');
+		});
+
 		it('Click on user menu', () => {
 			cy.get('#chat-modal-user-menu').click();
 		});

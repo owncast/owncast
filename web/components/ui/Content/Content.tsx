@@ -17,6 +17,7 @@ import {
   isOnlineSelector,
   isMobileAtom,
   serverStatusState,
+  isChatAvailableSelector,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
@@ -97,6 +98,7 @@ export const Content: FC = () => {
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
+  const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
 
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
@@ -180,7 +182,7 @@ export const Content: FC = () => {
     setSupportsBrowserNotifications(isPushNotificationSupported() && browserNotificationsEnabled);
   }, [browserNotificationsEnabled]);
 
-  const showChat = online && !chatDisabled && isChatVisible;
+  const showChat = isChatAvailable && !chatDisabled && isChatVisible;
 
   // accounts for sidebar width when online in desktop
   const dynamicPadding = showChat && !isMobile ? '320px' : '0px';
@@ -303,22 +305,21 @@ export const Content: FC = () => {
           handleClose={() => setShowFollowModal(false)}
         />
       </Modal>
-      {showChatModal && isChatVisible && (
+      {isMobile && showChatModal && isChatVisible && (
         <ChatModal
           messages={messages}
           currentUser={currentUser}
           handleClose={() => setShowChatModal(false)}
         />
       )}
-      {isChatVisible && (
+      {isMobile && isChatAvailable && (
         <Button
           id="mobile-chat-button"
           type="primary"
           onClick={() => setShowChatModal(true)}
           className={styles.floatingMobileChatModalButton}
-          style={{ zIndex: 99 }}
         >
-          Chat <MessageFilled style={{ transform: 'translateX(-1px)' }} />
+          Chat <MessageFilled />
         </Button>
       )}
     </>
