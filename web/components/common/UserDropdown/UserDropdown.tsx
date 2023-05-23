@@ -136,9 +136,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({
         />
       )}
     >
-      <div id={id} className={styles.root}>
+      <div className={styles.root}>
         <Dropdown overlay={menu} trigger={['click']}>
-          <Button type="primary" icon={<UserOutlined className={styles.userIcon} />}>
+          <Button id={id} type="primary" icon={<UserOutlined className={styles.userIcon} />}>
             <span
               className={classnames([
                 styles.username,
