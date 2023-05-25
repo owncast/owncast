@@ -89,7 +89,7 @@ export const MobileContent: FC<MobileContentProps> = ({
           <Tabs defaultActiveKey="0" items={items} />
         </div>
       ) : (
-        <div className={styles.lowerSectionMobileNoTabs}>{aboutTabContent}</div>
+        <div>{aboutTabContent}</div>
       )}
     </ErrorBoundary>
   );
