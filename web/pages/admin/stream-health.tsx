@@ -300,7 +300,7 @@ const StreamHealth = () => {
               </div>
             </Card>
           </Col>
-          <Col>
+          {latencyStat && <Col>
             <Card type="inner">
               <div style={statStyle}>
                 <Statistic
@@ -312,7 +312,7 @@ const StreamHealth = () => {
                 />
               </div>
             </Card>
-          </Col>
+          </Col>}
           <Col>
             <Card type="inner">
               <div style={statStyle}>
