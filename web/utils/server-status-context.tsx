@@ -6,7 +6,7 @@ import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { ConfigDetails, UpdateArgs } from '../types/config-section';
 import { DEFAULT_VARIANT_STATE } from './config-constants';
 
-export const initialServerConfigState: ConfigDetails = {
+const initialServerConfigState: ConfigDetails = {
   streamKeys: [],
   streamKeyOverridden: false,
   adminPassword: '',
@@ -102,7 +102,7 @@ export const ServerStatusContext = React.createContext({
   serverConfig: initialServerConfigState,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setFieldInConfigState: (args: UpdateArgs) => null,
+  setFieldInConfigState: (_args: UpdateArgs) => null,
 });
 
 export type ServerStatusProviderProps = {

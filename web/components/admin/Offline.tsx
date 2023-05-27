@@ -174,4 +174,3 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
     </>
   );
 };
-export default Offline;

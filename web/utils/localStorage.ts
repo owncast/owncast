@@ -7,7 +7,9 @@ export const LOCAL_STORAGE_KEYS = {
 export function getLocalStorage(key) {
   try {
     return localStorage.getItem(key);
-  } catch (e) {}
+  } catch (e) {
+    console.error(e);
+  }
   return null;
 }
 
@@ -19,31 +21,8 @@ export function setLocalStorage(key, value) {
       localStorage.removeItem(key);
     }
     return true;
-  } catch (e) {}
-  return false;
-}
-
-export function clearLocalStorage(key) {
-  localStorage.removeItem(key);
-}
-
-// jump down to the max height of a div, with a slight delay
-export function jumpToBottom(element, behavior) {
-  if (!element) return;
-
-  if (!behavior) {
-    behavior = document.visibilityState === 'visible' ? 'smooth' : 'instant';
+  } catch (e) {
+    console.error(e);
   }
-
-  setTimeout(
-    () => {
-      element.scrollTo({
-        top: element.scrollHeight,
-        left: 0,
-        behavior,
-      });
-    },
-    50,
-    element,
-  );
+  return false;
 }

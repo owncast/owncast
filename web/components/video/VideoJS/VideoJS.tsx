@@ -58,5 +58,3 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
     </div>
   );
 };
-
-export default VideoJS;
