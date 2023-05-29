@@ -90,7 +90,7 @@ func MakeLocalIRIforLogo() *url.URL {
 	return u
 }
 
-// GetLogoType will return the rel value for the webfinger repsonse and
+// GetLogoType will return the rel value for the webfinger response and
 // the default static image is of type png.
 func GetLogoType() string {
 	imageFilename := data.GetLogoPath()
