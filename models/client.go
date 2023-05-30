@@ -17,12 +17,12 @@ type ConnectedClientsResponse struct {
 type Client struct {
 	ConnectedAt  time.Time         `json:"connectedAt"`
 	LastSeen     time.Time         `json:"-"`
-	MessageCount int               `json:"messageCount"`
+	Username     *string           `json:"username"`
+	Geo          *geoip.GeoDetails `json:"geo"`
 	UserAgent    string            `json:"userAgent"`
 	IPAddress    string            `json:"ipAddress"`
-	Username     *string           `json:"username"`
 	ClientID     string            `json:"clientID"`
-	Geo          *geoip.GeoDetails `json:"geo"`
+	MessageCount int               `json:"messageCount"`
 }
 
 // GenerateClientFromRequest will return a chat client from a http request.

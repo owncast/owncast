@@ -16,26 +16,26 @@ import (
 
 // ActivityPubActor represents a single actor in handling ActivityPub activity.
 type ActivityPubActor struct {
+	// RequestObject is the actual follow request object.
+	RequestObject vocab.ActivityStreamsFollow
+	// W3IDSecurityV1PublicKey is the public key of the actor.
+	W3IDSecurityV1PublicKey vocab.W3IDSecurityV1PublicKeyProperty
 	// ActorIRI is the IRI of the remote actor.
 	ActorIri *url.URL
 	// FollowRequestIRI is the unique identifier of the follow request.
 	FollowRequestIri *url.URL
 	// Inbox is the inbox URL of the remote follower
 	Inbox *url.URL
+	// Image is the avatar image of the Actor.
+	Image *url.URL
+	// DisabledAt is the time, if any, this follower was blocked/removed.
+	DisabledAt *time.Time
 	// Name is the display name of the follower.
 	Name string
 	// Username is the account username of the remote actor.
 	Username string
 	// FullUsername is the username@account.tld representation of the user.
 	FullUsername string
-	// Image is the avatar image of the Actor.
-	Image *url.URL
-	// RequestObject is the actual follow request object.
-	RequestObject vocab.ActivityStreamsFollow
-	// W3IDSecurityV1PublicKey is the public key of the actor.
-	W3IDSecurityV1PublicKey vocab.W3IDSecurityV1PublicKeyProperty
-	// DisabledAt is the time, if any, this follower was blocked/removed.
-	DisabledAt *time.Time
 }
 
 // DeleteRequest represents a request for delete.

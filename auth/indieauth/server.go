@@ -12,13 +12,13 @@ import (
 // ServerAuthRequest is n inbound request to authenticate against
 // this Owncast instance.
 type ServerAuthRequest struct {
+	Timestamp     time.Time
 	ClientID      string
 	RedirectURI   string
 	CodeChallenge string
 	State         string
 	Me            string
 	Code          string
-	Timestamp     time.Time
 }
 
 // ServerProfile represents basic user-provided data about this Owncast instance.

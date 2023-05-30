@@ -19,27 +19,27 @@ import (
 
 // Client represents a single chat client.
 type Client struct {
-	mu          sync.RWMutex
-	Id          uint `json:"-"`
-	accessToken string
-	conn        *websocket.Conn
-	User        *user.User `json:"user"`
-	server      *Server
-	IPAddress   string `json:"-"`
+	ConnectedAt  time.Time `json:"connectedAt"`
+	timeoutTimer *time.Timer
+	rateLimiter  *rate.Limiter
+	conn         *websocket.Conn
+	User         *user.User `json:"user"`
+	server       *Server
+	Geo          *geoip.GeoDetails `json:"geo"`
 	// Buffered channel of outbound messages.
 	send         chan []byte
-	rateLimiter  *rate.Limiter
-	timeoutTimer *time.Timer
+	accessToken  string
+	IPAddress    string `json:"-"`
+	UserAgent    string `json:"userAgent"`
+	MessageCount int    `json:"messageCount"`
+	Id           uint   `json:"-"`
+	mu           sync.RWMutex
 	inTimeout    bool
-	Geo          *geoip.GeoDetails `json:"geo"`
-	MessageCount int               `json:"messageCount"`
-	UserAgent    string            `json:"userAgent"`
-	ConnectedAt  time.Time         `json:"connectedAt"`
 }
 
 type chatClientEvent struct {
-	data   []byte
 	client *Client
+	data   []byte
 }
 
 const (

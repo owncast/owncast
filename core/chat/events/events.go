@@ -28,16 +28,16 @@ type OutboundEvent interface {
 
 // Event is any kind of event.  A type is required to be specified.
 type Event struct {
+	Timestamp time.Time `json:"timestamp"`
 	Type      EventType `json:"type,omitempty"`
 	ID        string    `json:"id"`
-	Timestamp time.Time `json:"timestamp"`
 }
 
 // UserEvent is an event with an associated user.
 type UserEvent struct {
 	User     *user.User `json:"user"`
-	ClientID uint       `json:"clientId,omitempty"`
 	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
+	ClientID uint       `json:"clientId,omitempty"`
 }
 
 // MessageEvent is an event that has a message body.

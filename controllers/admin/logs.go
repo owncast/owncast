@@ -44,9 +44,9 @@ func GetWarnings(w http.ResponseWriter, r *http.Request) {
 }
 
 type logsResponse struct {
+	Time    time.Time `json:"time"`
 	Message string    `json:"message"`
 	Level   string    `json:"level"`
-	Time    time.Time `json:"time"`
 }
 
 func fromEntry(e *logrus.Entry) logsResponse {

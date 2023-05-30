@@ -40,12 +40,12 @@ func getStatusResponse() webStatusResponse {
 }
 
 type webStatusResponse struct {
-	Online             bool            `json:"online"`
-	ViewerCount        int             `json:"viewerCount,omitempty"`
 	ServerTime         time.Time       `json:"serverTime"`
 	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
 
 	VersionNumber string `json:"versionNumber"`
 	StreamTitle   string `json:"streamTitle"`
+	ViewerCount   int    `json:"viewerCount,omitempty"`
+	Online        bool   `json:"online"`
 }

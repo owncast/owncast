@@ -283,11 +283,11 @@ func migrateToSchema1(db *sql.DB) {
 
 	// Migrate access tokens to become chat users
 	type oldAccessToken struct {
+		createdAt   time.Time
+		lastUsedAt  *time.Time
 		accessToken string
 		displayName string
 		scopes      string
-		createdAt   time.Time
-		lastUsedAt  *time.Time
 	}
 
 	oldAccessTokens := make([]oldAccessToken, 0)

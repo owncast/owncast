@@ -13,11 +13,11 @@ import (
 
 // OTPRegistration represents a single OTP request.
 type OTPRegistration struct {
+	Timestamp       time.Time
 	UserID          string
 	UserDisplayName string
 	Code            string
 	Account         string
-	Timestamp       time.Time
 }
 
 // Key by access token to limit one OTP request for a person

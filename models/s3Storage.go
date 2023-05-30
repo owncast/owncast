@@ -2,7 +2,6 @@ package models
 
 // S3 is the storage configuration.
 type S3 struct {
-	Enabled         bool   `json:"enabled"`
 	Endpoint        string `json:"endpoint,omitempty"`
 	ServingEndpoint string `json:"servingEndpoint,omitempty"`
 	AccessKey       string `json:"accessKey,omitempty"`
@@ -10,5 +9,6 @@ type S3 struct {
 	Bucket          string `json:"bucket,omitempty"`
 	Region          string `json:"region,omitempty"`
 	ACL             string `json:"acl,omitempty"`
+	Enabled         bool   `json:"enabled"`
 	ForcePathStyle  bool   `json:"forcePathStyle"`
 }

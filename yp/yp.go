@@ -27,9 +27,9 @@ type YP struct {
 
 type ypPingResponse struct {
 	Key       string `json:"key"`
-	Success   bool   `json:"success"`
 	Error     string `json:"error"`
 	ErrorCode int    `json:"errorCode"`
+	Success   bool   `json:"success"`
 }
 
 type ypPingRequest struct {

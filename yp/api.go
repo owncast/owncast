@@ -11,19 +11,19 @@ import (
 )
 
 type ypDetailsResponse struct {
-	Name                  string                `json:"name"`
-	Description           string                `json:"description"`
-	StreamTitle           string                `json:"streamTitle,omitempty"`
-	Logo                  string                `json:"logo"`
-	NSFW                  bool                  `json:"nsfw"`
-	Tags                  []string              `json:"tags"`
-	Online                bool                  `json:"online"`
-	ViewerCount           int                   `json:"viewerCount"`
-	OverallMaxViewerCount int                   `json:"overallMaxViewerCount"`
-	SessionMaxViewerCount int                   `json:"sessionMaxViewerCount"`
-	Social                []models.SocialHandle `json:"social"`
+	LastConnectTime *utils.NullTime       `json:"lastConnectTime"`
+	Name            string                `json:"name"`
+	Description     string                `json:"description"`
+	StreamTitle     string                `json:"streamTitle,omitempty"`
+	Logo            string                `json:"logo"`
+	Tags            []string              `json:"tags"`
+	Social          []models.SocialHandle `json:"social"`
 
-	LastConnectTime *utils.NullTime `json:"lastConnectTime"`
+	ViewerCount           int  `json:"viewerCount"`
+	OverallMaxViewerCount int  `json:"overallMaxViewerCount"`
+	SessionMaxViewerCount int  `json:"sessionMaxViewerCount"`
+	NSFW                  bool `json:"nsfw"`
+	Online                bool `json:"online"`
 }
 
 // GetYPResponse gets the status of the server for YP purposes.

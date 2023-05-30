@@ -97,8 +97,8 @@ func getBitrateString(bitrate int) string {
 func (q *StreamOutputVariant) MarshalJSON() ([]byte, error) {
 	type Alias StreamOutputVariant
 	return json.Marshal(&struct {
-		Framerate int `json:"framerate"`
 		*Alias
+		Framerate int `json:"framerate"`
 	}{
 		Framerate: q.GetFramerate(),
 		Alias:     (*Alias)(q),
