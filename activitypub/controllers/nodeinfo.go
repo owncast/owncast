@@ -154,13 +154,13 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		LocalComments int   `json:"localComments"`
 	}
 	type response struct {
-		Organization      Organization `json:"organization"`
 		Server            Server       `json:"server"`
+		Organization      Organization `json:"organization"`
+		Version           string       `json:"version"`
 		Services          Services     `json:"services"`
 		Protocols         []string     `json:"protocols"`
-		Version           string       `json:"version"`
-		OpenRegistrations bool         `json:"openRegistrations"`
 		Usage             Usage        `json:"usage"`
+		OpenRegistrations bool         `json:"openRegistrations"`
 	}
 
 	if !data.GetFederationEnabled() {
@@ -224,9 +224,9 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 		ShortDescription string   `json:"short_description"`
 		Description      string   `json:"description"`
 		Version          string   `json:"version"`
-		Stats            Stats    `json:"stats"`
 		Thumbnail        string   `json:"thumbnail"`
 		Languages        []string `json:"languages"`
+		Stats            Stats    `json:"stats"`
 		Registrations    bool     `json:"registrations"`
 		ApprovalRequired bool     `json:"approval_required"`
 		InvitesEnabled   bool     `json:"invites_enabled"`

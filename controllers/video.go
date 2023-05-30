@@ -8,15 +8,15 @@ import (
 )
 
 type variantsSort struct {
-	Index              int
 	Name               string
-	IsVideoPassthrough bool
+	Index              int
 	VideoBitrate       int
+	IsVideoPassthrough bool
 }
 
 type variantsResponse struct {
-	Index int    `json:"index"`
 	Name  string `json:"name"`
+	Index int    `json:"index"`
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
