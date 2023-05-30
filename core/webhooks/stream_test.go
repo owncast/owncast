@@ -21,6 +21,16 @@ func TestSendStreamStatusEvent(t *testing.T) {
 		"name": "my server",
 		"streamTitle": "my stream",
 		"summary": "my server where I stream",
-		"timestamp": "1970-01-01T00:01:12.000000006Z"
+		"timestamp": "1970-01-01T00:01:12.000000006Z",
+		"status": {
+			"lastConnectTime": null,
+			"lastDisconnectTime": null,
+			"online": true,
+			"overallMaxViewerCount": 420,
+			"sessionMaxViewerCount": 69,
+			"streamTitle": "my stream",
+			"versionNumber": "1.2.3",
+			"viewerCount": 5
+		}
 	}`)
 }

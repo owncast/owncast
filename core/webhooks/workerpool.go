@@ -24,10 +24,19 @@ type Job struct {
 	wg      *sync.WaitGroup
 }
 
-var queue chan Job
+var (
+	queue     chan Job
+	getStatus func() models.Status
+)
 
-// InitWorkerPool starts n go routines that await webhook jobs.
-func InitWorkerPool() {
+// SetupWebhooks initializes the webhook worker pool and sets the function to get the current status.
+func SetupWebhooks(getStatusFunc func() models.Status) {
+	getStatus = getStatusFunc
+	initWorkerPool()
+}
+
+// initWorkerPool starts n go routines that await webhook jobs.
+func initWorkerPool() {
 	queue = make(chan Job)
 
 	// start workers

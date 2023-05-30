@@ -21,6 +21,7 @@ func sendStreamStatusEvent(eventType models.EventType, id string, timestamp time
 			"name":        data.GetServerName(),
 			"summary":     data.GetServerSummary(),
 			"streamTitle": data.GetStreamTitle(),
+			"status":      getStatus(),
 			"timestamp":   timestamp,
 		},
 	})
