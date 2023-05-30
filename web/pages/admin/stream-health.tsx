@@ -300,19 +300,21 @@ const StreamHealth = () => {
               </div>
             </Card>
           </Col>
-          <Col>
-            <Card type="inner">
-              <div style={statStyle}>
-                <Statistic
-                  title="Viewer Latency"
-                  value={`${latencyStat}`}
-                  prefix={<ClockCircleOutlined style={{ marginRight: '5px' }} />}
-                  precision={0}
-                  suffix="seconds"
-                />
-              </div>
-            </Card>
-          </Col>
+          {latencyStat && (
+            <Col>
+              <Card type="inner">
+                <div style={statStyle}>
+                  <Statistic
+                    title="Viewer Latency"
+                    value={`${latencyStat}`}
+                    prefix={<ClockCircleOutlined style={{ marginRight: '5px' }} />}
+                    precision={0}
+                    suffix="seconds"
+                  />
+                </div>
+              </Card>
+            </Col>
+          )}
           <Col>
             <Card type="inner">
               <div style={statStyle}>
