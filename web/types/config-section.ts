@@ -156,4 +156,5 @@ export interface ConfigDetails {
   chatJoinMessagesEnabled: boolean;
   chatEstablishedUserMode: boolean;
   hideViewerCount: boolean;
+  disableSearchIndexing: boolean;
 }

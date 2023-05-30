@@ -50,6 +50,9 @@ func Start() error {
 	// return a logo that's compatible with external social networks
 	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
+	// robots.txt
+	http.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
+
 	// status of the system
 	http.HandleFunc("/api/status", controllers.GetStatus)
 
@@ -326,6 +329,9 @@ func Start() error {
 
 	// Is the viewer count hidden from viewers
 	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
+
+	// set disabling of search indexing
+	http.HandleFunc("/api/admin/config/disablesearchindexing", middleware.RequireAdminAuth(admin.SetDisableSearchIndexing))
 
 	// Inline chat moderation actions
 

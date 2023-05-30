@@ -61,6 +61,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
 		HideViewerCount:         data.GetHideViewerCount(),
+		DisableSearchIndexing:   data.GetDisableSearchIndexing(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -121,6 +122,7 @@ type serverConfigAdminResponse struct {
 	ChatEstablishedUserMode bool                        `json:"chatEstablishedUserMode"`
 	StreamKeyOverridden     bool                        `json:"streamKeyOverridden"`
 	HideViewerCount         bool                        `json:"hideViewerCount"`
+	DisableSearchIndexing   bool                        `json:"disableSearchIndexing"`
 }
 
 type videoSettings struct {
