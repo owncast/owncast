@@ -21,6 +21,9 @@ type FileWriterReceiverServiceCallback interface {
 }
 
 // FileWriterReceiverService accepts transcoder responses via HTTP and fires the callbacks.
+// It is intended to be the middleman between the transcoder and the storage provider and allows
+// the transcoder process to be completely isolated and even run remotely in the future, as long
+// as it can send HTTP requests to this service with the results.
 type FileWriterReceiverService struct {
 	callbacks FileWriterReceiverServiceCallback
 }

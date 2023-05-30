@@ -3,7 +3,6 @@ package admin
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -147,7 +146,7 @@ func getContainerID() string {
 	pid := os.Getppid()
 	cgroupPath := fmt.Sprintf("/proc/%s/cgroup", strconv.Itoa(pid))
 	containerID := ""
-	content, err := ioutil.ReadFile(cgroupPath) //nolint:gosec
+	content, err := os.ReadFile(cgroupPath) //nolint:gosec
 	if err != nil {
 		return containerID
 	}
